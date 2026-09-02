@@ -1,0 +1,107 @@
+{
+  "appName": "איזי-פלייט",
+  "common": {
+    "save": "שמירה",
+    "cancel": "ביטול",
+    "next": "הבא",
+    "back": "חזרה",
+    "done": "סיום",
+    "add": "הוספה",
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "search": "חיפוש",
+    "retry": "נסה שוב",
+    "loading": "טוען...",
+    "error": "אירעה שגיאה",
+    "missingInfo": "[חסר מידע]"
+  },
+  "onboarding": {
+    "welcomeTitle": "ברוכים הבאים ל-EasyPlate",
+    "welcomeSubtitle": "תכננו ארוחות, בשלו וקנו — הכל במקום אחד",
+    "shoppingDayTitle": "מתי יום הקניות השבועי שלכם?",
+    "dietaryTitle": "מהן ההעדפות התזונתיות שלכם?",
+    "dietarySubtitle": "אפשר לבחור יותר מאחת",
+    "finish": "בואו נתחיל"
+  },
+  "dietary": {
+    "meat": "בשרי",
+    "dairy": "חלבי",
+    "vegetarian": "צמחוני",
+    "vegan": "טבעוני",
+    "kosher": "כשר",
+    "glutenFree": "ללא גלוטן",
+    "allergy": "אלרגיה"
+  },
+  "weekday": {
+    "sunday": "ראשון",
+    "monday": "שני",
+    "tuesday": "שלישי",
+    "wednesday": "רביעי",
+    "thursday": "חמישי",
+    "friday": "שישי",
+    "saturday": "שבת"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "dietaryPreferences": "העדפות תזונתיות",
+    "shoppingDay": "יום קניות",
+    "soundEffects": "אפקטי קול (דפדוף עמודים)",
+    "sharedAccess": "ניהול שיתופים",
+    "noSharedAccess": "עדיין לא שיתפתם ספרים או רשימות"
+  },
+  "books": {
+    "myLibrary": "הספרייה שלי",
+    "myRecipes": "המתכונים שלי",
+    "newBook": "ספר חדש",
+    "newBookTitle": "שם הספר",
+    "tableOfContents": "תוכן עניינים",
+    "emptyLibrary": "עדיין אין לכם ספרים. צרו את הספר הראשון שלכם!",
+    "emptyBook": "הספר הזה ריק. הוסיפו מתכון ראשון",
+    "quickNav": "ניווט מהיר",
+    "share": "שיתוף ספר",
+    "viewer": "צופה",
+    "editor": "עורך"
+  },
+  "recipe": {
+    "prepTime": "זמן הכנה",
+    "cookTime": "זמן בישול",
+    "ingredients": "מצרכים",
+    "instructions": "אופן ההכנה",
+    "addToBook": "הוסף לספר",
+    "removeFromBook": "הסר מהספר",
+    "deleteRecipe": "מחיקת מתכון"
+  },
+  "ingestion": {
+    "title": "הוספת מתכון",
+    "pasteText": "הדבקת טקסט",
+    "pasteHint": "הדביקו כאן מתכון מוואטסאפ או מכל מקור אחר",
+    "webSearch": "חיפוש באינטרנט",
+    "urlScrape": "קישור לאתר",
+    "socialVideo": "TikTok / Reels",
+    "parse": "נתח מתכון",
+    "parsing": "מנתח את המתכון...",
+    "parseError": "לא הצלחנו לנתח את המתכון",
+    "reviewTitle": "בדקו לפני שמירה",
+    "notConfigured": "התכונה הזו דורשת חיבור לשירות חיצוני שטרם הוגדר"
+  },
+  "mealPlanner": {
+    "title": "תכנון ארוחות",
+    "newPlan": "תפריט חדש",
+    "planName": "שם התפריט",
+    "addMeal": "הוספת ארוחה",
+    "mealName": "שם הארוחה",
+    "addItem": "הוספת פריט",
+    "pickRecipe": "בחירת מתכון",
+    "quickEntry": "פריט מהיר"
+  },
+  "groceryList": {
+    "title": "רשימת קניות",
+    "aggregated": "מרוכז מכל התפריטים הפעילים",
+    "addItem": "פריט חדש",
+    "category": "קטגוריה",
+    "breakdownTitle": "מקורות הכמות",
+    "buffer": "תוספת חופשית",
+    "share": "שיתוף רשימה",
+    "empty": "הרשימה ריקה כרגע"
+  }
+}

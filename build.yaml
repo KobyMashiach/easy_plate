@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      slang_build_runner:
+        options:
+          base_locale: he
+          fallback_strategy: base_locale
+          input_directory: assets/i18n
+          input_file_pattern: .i18n.json
+          output_directory: lib/core/utils/i18n
+          output_file_name: strings.g.dart
+          translate_var: t
