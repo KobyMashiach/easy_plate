@@ -157,6 +157,55 @@ class AccessRoleAdapter extends TypeAdapter<AccessRole> {
           typeId == other.typeId;
 }
 
+class AppLanguageAdapter extends TypeAdapter<AppLanguage> {
+  @override
+  final typeId = 24;
+
+  @override
+  AppLanguage read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return AppLanguage.hebrew;
+      case 1:
+        return AppLanguage.english;
+      case 2:
+        return AppLanguage.arabic;
+      case 3:
+        return AppLanguage.french;
+      case 4:
+        return AppLanguage.russian;
+      default:
+        return AppLanguage.hebrew;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, AppLanguage obj) {
+    switch (obj) {
+      case AppLanguage.hebrew:
+        writer.writeByte(0);
+      case AppLanguage.english:
+        writer.writeByte(1);
+      case AppLanguage.arabic:
+        writer.writeByte(2);
+      case AppLanguage.french:
+        writer.writeByte(3);
+      case AppLanguage.russian:
+        writer.writeByte(4);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppLanguageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class MeasurementUnitAdapter extends TypeAdapter<MeasurementUnit> {
   @override
   final typeId = 23;

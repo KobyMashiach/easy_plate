@@ -6,6 +6,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/services/shopping_reminder_service.dart';
+import '../../../../core/utils/i18n/app_language_mapper.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../grocery_list/domain/repositories/grocery_lists_repository.dart';
 import '../../../recipe_books/domain/repositories/recipe_books_repository.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
@@ -21,6 +23,8 @@ sealed class SettingsEvent with _$SettingsEvent {
   const factory SettingsEvent.toggleDietaryPreference(DietaryPreference preference) =
       _ToggleDietaryPreference;
   const factory SettingsEvent.toggleSoundEffects(bool enabled) = _ToggleSoundEffects;
+  const factory SettingsEvent.changeLanguage(AppLanguage language) = _ChangeLanguage;
+  const factory SettingsEvent.toggleFastPageTurn(bool enabled) = _ToggleFastPageTurn;
 }
 
 @freezed
@@ -50,6 +54,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<_UpdateShoppingDay>(_updateShoppingDay);
     on<_ToggleDietaryPreference>(_toggleDietaryPreference);
     on<_ToggleSoundEffects>(_toggleSoundEffects);
+    on<_ChangeLanguage>(_changeLanguage);
+    on<_ToggleFastPageTurn>(_toggleFastPageTurn);
     add(const SettingsEvent.init());
   }
 
@@ -102,6 +108,33 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         ? preferences.remove(event.preference)
         : preferences.add(event.preference);
     final updated = current.preferences.copyWith(dietaryPreferences: preferences);
+    await saveUserPreferencesUseCase(updated);
+    emit(.loaded(
+      updated,
+      sharedBooksCount: current.sharedBooksCount,
+      sharedListsCount: current.sharedListsCount,
+    ));
+  }
+
+  /// Persists the choice and switches the live locale, so every screen using
+  /// `t` re-renders in the new language without a restart.
+  Future<void> _changeLanguage(_ChangeLanguage event, Emitter<SettingsState> emit) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    final updated = current.preferences.copyWith(language: event.language);
+    await saveUserPreferencesUseCase(updated);
+    await LocaleSettings.setLocale(event.language.locale);
+    emit(.loaded(
+      updated,
+      sharedBooksCount: current.sharedBooksCount,
+      sharedListsCount: current.sharedListsCount,
+    ));
+  }
+
+  Future<void> _toggleFastPageTurn(_ToggleFastPageTurn event, Emitter<SettingsState> emit) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    final updated = current.preferences.copyWith(fastPageTurnEnabled: event.enabled);
     await saveUserPreferencesUseCase(updated);
     emit(.loaded(
       updated,

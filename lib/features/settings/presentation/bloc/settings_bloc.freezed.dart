@@ -55,14 +55,16 @@ extension SettingsEventPatterns on SettingsEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _UpdateShoppingDay value)?  updateShoppingDay,TResult Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult Function( _ToggleSoundEffects value)?  toggleSoundEffects,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _UpdateShoppingDay value)?  updateShoppingDay,TResult Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult Function( _ToggleSoundEffects value)?  toggleSoundEffects,TResult Function( _ChangeLanguage value)?  changeLanguage,TResult Function( _ToggleFastPageTurn value)?  toggleFastPageTurn,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _UpdateShoppingDay() when updateShoppingDay != null:
 return updateShoppingDay(_that);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
 return toggleDietaryPreference(_that);case _ToggleSoundEffects() when toggleSoundEffects != null:
-return toggleSoundEffects(_that);case _:
+return toggleSoundEffects(_that);case _ChangeLanguage() when changeLanguage != null:
+return changeLanguage(_that);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
+return toggleFastPageTurn(_that);case _:
   return orElse();
 
 }
@@ -80,14 +82,16 @@ return toggleSoundEffects(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _UpdateShoppingDay value)  updateShoppingDay,required TResult Function( _ToggleDietaryPreference value)  toggleDietaryPreference,required TResult Function( _ToggleSoundEffects value)  toggleSoundEffects,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _UpdateShoppingDay value)  updateShoppingDay,required TResult Function( _ToggleDietaryPreference value)  toggleDietaryPreference,required TResult Function( _ToggleSoundEffects value)  toggleSoundEffects,required TResult Function( _ChangeLanguage value)  changeLanguage,required TResult Function( _ToggleFastPageTurn value)  toggleFastPageTurn,}){
 final _that = this;
 switch (_that) {
 case _Init():
 return init(_that);case _UpdateShoppingDay():
 return updateShoppingDay(_that);case _ToggleDietaryPreference():
 return toggleDietaryPreference(_that);case _ToggleSoundEffects():
-return toggleSoundEffects(_that);}
+return toggleSoundEffects(_that);case _ChangeLanguage():
+return changeLanguage(_that);case _ToggleFastPageTurn():
+return toggleFastPageTurn(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -101,14 +105,16 @@ return toggleSoundEffects(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _UpdateShoppingDay value)?  updateShoppingDay,TResult? Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult? Function( _ToggleSoundEffects value)?  toggleSoundEffects,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _UpdateShoppingDay value)?  updateShoppingDay,TResult? Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult? Function( _ToggleSoundEffects value)?  toggleSoundEffects,TResult? Function( _ChangeLanguage value)?  changeLanguage,TResult? Function( _ToggleFastPageTurn value)?  toggleFastPageTurn,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _UpdateShoppingDay() when updateShoppingDay != null:
 return updateShoppingDay(_that);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
 return toggleDietaryPreference(_that);case _ToggleSoundEffects() when toggleSoundEffects != null:
-return toggleSoundEffects(_that);case _:
+return toggleSoundEffects(_that);case _ChangeLanguage() when changeLanguage != null:
+return changeLanguage(_that);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
+return toggleFastPageTurn(_that);case _:
   return null;
 
 }
@@ -125,13 +131,15 @@ return toggleSoundEffects(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( ShoppingDay day)?  updateShoppingDay,TResult Function( DietaryPreference preference)?  toggleDietaryPreference,TResult Function( bool enabled)?  toggleSoundEffects,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( ShoppingDay day)?  updateShoppingDay,TResult Function( DietaryPreference preference)?  toggleDietaryPreference,TResult Function( bool enabled)?  toggleSoundEffects,TResult Function( AppLanguage language)?  changeLanguage,TResult Function( bool enabled)?  toggleFastPageTurn,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _UpdateShoppingDay() when updateShoppingDay != null:
 return updateShoppingDay(_that.day);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
 return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects() when toggleSoundEffects != null:
-return toggleSoundEffects(_that.enabled);case _:
+return toggleSoundEffects(_that.enabled);case _ChangeLanguage() when changeLanguage != null:
+return changeLanguage(_that.language);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
+return toggleFastPageTurn(_that.enabled);case _:
   return orElse();
 
 }
@@ -149,13 +157,15 @@ return toggleSoundEffects(_that.enabled);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( ShoppingDay day)  updateShoppingDay,required TResult Function( DietaryPreference preference)  toggleDietaryPreference,required TResult Function( bool enabled)  toggleSoundEffects,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( ShoppingDay day)  updateShoppingDay,required TResult Function( DietaryPreference preference)  toggleDietaryPreference,required TResult Function( bool enabled)  toggleSoundEffects,required TResult Function( AppLanguage language)  changeLanguage,required TResult Function( bool enabled)  toggleFastPageTurn,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _UpdateShoppingDay():
 return updateShoppingDay(_that.day);case _ToggleDietaryPreference():
 return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects():
-return toggleSoundEffects(_that.enabled);}
+return toggleSoundEffects(_that.enabled);case _ChangeLanguage():
+return changeLanguage(_that.language);case _ToggleFastPageTurn():
+return toggleFastPageTurn(_that.enabled);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -169,13 +179,15 @@ return toggleSoundEffects(_that.enabled);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( ShoppingDay day)?  updateShoppingDay,TResult? Function( DietaryPreference preference)?  toggleDietaryPreference,TResult? Function( bool enabled)?  toggleSoundEffects,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( ShoppingDay day)?  updateShoppingDay,TResult? Function( DietaryPreference preference)?  toggleDietaryPreference,TResult? Function( bool enabled)?  toggleSoundEffects,TResult? Function( AppLanguage language)?  changeLanguage,TResult? Function( bool enabled)?  toggleFastPageTurn,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _UpdateShoppingDay() when updateShoppingDay != null:
 return updateShoppingDay(_that.day);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
 return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects() when toggleSoundEffects != null:
-return toggleSoundEffects(_that.enabled);case _:
+return toggleSoundEffects(_that.enabled);case _ChangeLanguage() when changeLanguage != null:
+return changeLanguage(_that.language);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
+return toggleFastPageTurn(_that.enabled);case _:
   return null;
 
 }
@@ -405,6 +417,138 @@ class __$ToggleSoundEffectsCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? enabled = null,}) {
   return _then(_ToggleSoundEffects(
+null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ChangeLanguage implements SettingsEvent {
+  const _ChangeLanguage(this.language);
+  
+
+ final  AppLanguage language;
+
+/// Create a copy of SettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ChangeLanguageCopyWith<_ChangeLanguage> get copyWith => __$ChangeLanguageCopyWithImpl<_ChangeLanguage>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangeLanguage&&(identical(other.language, language) || other.language == language));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,language);
+
+@override
+String toString() {
+  return 'SettingsEvent.changeLanguage(language: $language)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ChangeLanguageCopyWith<$Res> implements $SettingsEventCopyWith<$Res> {
+  factory _$ChangeLanguageCopyWith(_ChangeLanguage value, $Res Function(_ChangeLanguage) _then) = __$ChangeLanguageCopyWithImpl;
+@useResult
+$Res call({
+ AppLanguage language
+});
+
+
+
+
+}
+/// @nodoc
+class __$ChangeLanguageCopyWithImpl<$Res>
+    implements _$ChangeLanguageCopyWith<$Res> {
+  __$ChangeLanguageCopyWithImpl(this._self, this._then);
+
+  final _ChangeLanguage _self;
+  final $Res Function(_ChangeLanguage) _then;
+
+/// Create a copy of SettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? language = null,}) {
+  return _then(_ChangeLanguage(
+null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
+as AppLanguage,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ToggleFastPageTurn implements SettingsEvent {
+  const _ToggleFastPageTurn(this.enabled);
+  
+
+ final  bool enabled;
+
+/// Create a copy of SettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ToggleFastPageTurnCopyWith<_ToggleFastPageTurn> get copyWith => __$ToggleFastPageTurnCopyWithImpl<_ToggleFastPageTurn>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ToggleFastPageTurn&&(identical(other.enabled, enabled) || other.enabled == enabled));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,enabled);
+
+@override
+String toString() {
+  return 'SettingsEvent.toggleFastPageTurn(enabled: $enabled)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ToggleFastPageTurnCopyWith<$Res> implements $SettingsEventCopyWith<$Res> {
+  factory _$ToggleFastPageTurnCopyWith(_ToggleFastPageTurn value, $Res Function(_ToggleFastPageTurn) _then) = __$ToggleFastPageTurnCopyWithImpl;
+@useResult
+$Res call({
+ bool enabled
+});
+
+
+
+
+}
+/// @nodoc
+class __$ToggleFastPageTurnCopyWithImpl<$Res>
+    implements _$ToggleFastPageTurnCopyWith<$Res> {
+  __$ToggleFastPageTurnCopyWithImpl(this._self, this._then);
+
+  final _ToggleFastPageTurn _self;
+  final $Res Function(_ToggleFastPageTurn) _then;
+
+/// Create a copy of SettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? enabled = null,}) {
+  return _then(_ToggleFastPageTurn(
 null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

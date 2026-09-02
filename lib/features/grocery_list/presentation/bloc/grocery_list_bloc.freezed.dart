@@ -55,7 +55,7 @@ extension GroceryListEventPatterns on GroceryListEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Regenerate value)?  regenerate,TResult Function( _ToggleItem value)?  toggleItem,TResult Function( _AddAdHocItem value)?  addAdHocItem,TResult Function( _RemoveItem value)?  removeItem,TResult Function( _AddBuffer value)?  addBuffer,TResult Function( _AdjustSource value)?  adjustSource,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Regenerate value)?  regenerate,TResult Function( _ToggleItem value)?  toggleItem,TResult Function( _AddAdHocItem value)?  addAdHocItem,TResult Function( _RemoveItem value)?  removeItem,TResult Function( _AddBuffer value)?  addBuffer,TResult Function( _AdjustSource value)?  adjustSource,TResult Function( _RemoveSource value)?  removeSource,TResult Function( _ChangeUnit value)?  changeUnit,TResult Function( _SetAllChecked value)?  setAllChecked,TResult Function( _DeleteCheckedItems value)?  deleteCheckedItems,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -65,7 +65,11 @@ return toggleItem(_that);case _AddAdHocItem() when addAdHocItem != null:
 return addAdHocItem(_that);case _RemoveItem() when removeItem != null:
 return removeItem(_that);case _AddBuffer() when addBuffer != null:
 return addBuffer(_that);case _AdjustSource() when adjustSource != null:
-return adjustSource(_that);case _:
+return adjustSource(_that);case _RemoveSource() when removeSource != null:
+return removeSource(_that);case _ChangeUnit() when changeUnit != null:
+return changeUnit(_that);case _SetAllChecked() when setAllChecked != null:
+return setAllChecked(_that);case _DeleteCheckedItems() when deleteCheckedItems != null:
+return deleteCheckedItems(_that);case _:
   return orElse();
 
 }
@@ -83,7 +87,7 @@ return adjustSource(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Regenerate value)  regenerate,required TResult Function( _ToggleItem value)  toggleItem,required TResult Function( _AddAdHocItem value)  addAdHocItem,required TResult Function( _RemoveItem value)  removeItem,required TResult Function( _AddBuffer value)  addBuffer,required TResult Function( _AdjustSource value)  adjustSource,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Regenerate value)  regenerate,required TResult Function( _ToggleItem value)  toggleItem,required TResult Function( _AddAdHocItem value)  addAdHocItem,required TResult Function( _RemoveItem value)  removeItem,required TResult Function( _AddBuffer value)  addBuffer,required TResult Function( _AdjustSource value)  adjustSource,required TResult Function( _RemoveSource value)  removeSource,required TResult Function( _ChangeUnit value)  changeUnit,required TResult Function( _SetAllChecked value)  setAllChecked,required TResult Function( _DeleteCheckedItems value)  deleteCheckedItems,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -93,7 +97,11 @@ return toggleItem(_that);case _AddAdHocItem():
 return addAdHocItem(_that);case _RemoveItem():
 return removeItem(_that);case _AddBuffer():
 return addBuffer(_that);case _AdjustSource():
-return adjustSource(_that);}
+return adjustSource(_that);case _RemoveSource():
+return removeSource(_that);case _ChangeUnit():
+return changeUnit(_that);case _SetAllChecked():
+return setAllChecked(_that);case _DeleteCheckedItems():
+return deleteCheckedItems(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -107,7 +115,7 @@ return adjustSource(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Regenerate value)?  regenerate,TResult? Function( _ToggleItem value)?  toggleItem,TResult? Function( _AddAdHocItem value)?  addAdHocItem,TResult? Function( _RemoveItem value)?  removeItem,TResult? Function( _AddBuffer value)?  addBuffer,TResult? Function( _AdjustSource value)?  adjustSource,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Regenerate value)?  regenerate,TResult? Function( _ToggleItem value)?  toggleItem,TResult? Function( _AddAdHocItem value)?  addAdHocItem,TResult? Function( _RemoveItem value)?  removeItem,TResult? Function( _AddBuffer value)?  addBuffer,TResult? Function( _AdjustSource value)?  adjustSource,TResult? Function( _RemoveSource value)?  removeSource,TResult? Function( _ChangeUnit value)?  changeUnit,TResult? Function( _SetAllChecked value)?  setAllChecked,TResult? Function( _DeleteCheckedItems value)?  deleteCheckedItems,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -117,7 +125,11 @@ return toggleItem(_that);case _AddAdHocItem() when addAdHocItem != null:
 return addAdHocItem(_that);case _RemoveItem() when removeItem != null:
 return removeItem(_that);case _AddBuffer() when addBuffer != null:
 return addBuffer(_that);case _AdjustSource() when adjustSource != null:
-return adjustSource(_that);case _:
+return adjustSource(_that);case _RemoveSource() when removeSource != null:
+return removeSource(_that);case _ChangeUnit() when changeUnit != null:
+return changeUnit(_that);case _SetAllChecked() when setAllChecked != null:
+return setAllChecked(_that);case _DeleteCheckedItems() when deleteCheckedItems != null:
+return deleteCheckedItems(_that);case _:
   return null;
 
 }
@@ -134,16 +146,20 @@ return adjustSource(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  regenerate,TResult Function( String itemId)?  toggleItem,TResult Function( String name)?  addAdHocItem,TResult Function( String itemId)?  removeItem,TResult Function( String itemId,  double amount)?  addBuffer,TResult Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  regenerate,TResult Function( String itemId)?  toggleItem,TResult Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult Function( String itemId)?  removeItem,TResult Function( String itemId,  double amount)?  addBuffer,TResult Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult Function( String itemId,  int sourceIndex)?  removeSource,TResult Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult Function( bool checked)?  setAllChecked,TResult Function()?  deleteCheckedItems,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Regenerate() when regenerate != null:
 return regenerate();case _ToggleItem() when toggleItem != null:
 return toggleItem(_that.itemId);case _AddAdHocItem() when addAdHocItem != null:
-return addAdHocItem(_that.name);case _RemoveItem() when removeItem != null:
+return addAdHocItem(_that.name,_that.amount,_that.unit);case _RemoveItem() when removeItem != null:
 return removeItem(_that.itemId);case _AddBuffer() when addBuffer != null:
 return addBuffer(_that.itemId,_that.amount);case _AdjustSource() when adjustSource != null:
-return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _:
+return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSource() when removeSource != null:
+return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit() when changeUnit != null:
+return changeUnit(_that.itemId,_that.unit);case _SetAllChecked() when setAllChecked != null:
+return setAllChecked(_that.checked);case _DeleteCheckedItems() when deleteCheckedItems != null:
+return deleteCheckedItems();case _:
   return orElse();
 
 }
@@ -161,16 +177,20 @@ return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  regenerate,required TResult Function( String itemId)  toggleItem,required TResult Function( String name)  addAdHocItem,required TResult Function( String itemId)  removeItem,required TResult Function( String itemId,  double amount)  addBuffer,required TResult Function( String itemId,  int sourceIndex,  double amount)  adjustSource,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  regenerate,required TResult Function( String itemId)  toggleItem,required TResult Function( String name,  double amount,  MeasurementUnit unit)  addAdHocItem,required TResult Function( String itemId)  removeItem,required TResult Function( String itemId,  double amount)  addBuffer,required TResult Function( String itemId,  int sourceIndex,  double amount)  adjustSource,required TResult Function( String itemId,  int sourceIndex)  removeSource,required TResult Function( String itemId,  MeasurementUnit unit)  changeUnit,required TResult Function( bool checked)  setAllChecked,required TResult Function()  deleteCheckedItems,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Regenerate():
 return regenerate();case _ToggleItem():
 return toggleItem(_that.itemId);case _AddAdHocItem():
-return addAdHocItem(_that.name);case _RemoveItem():
+return addAdHocItem(_that.name,_that.amount,_that.unit);case _RemoveItem():
 return removeItem(_that.itemId);case _AddBuffer():
 return addBuffer(_that.itemId,_that.amount);case _AdjustSource():
-return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);}
+return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSource():
+return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit():
+return changeUnit(_that.itemId,_that.unit);case _SetAllChecked():
+return setAllChecked(_that.checked);case _DeleteCheckedItems():
+return deleteCheckedItems();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -184,16 +204,20 @@ return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  regenerate,TResult? Function( String itemId)?  toggleItem,TResult? Function( String name)?  addAdHocItem,TResult? Function( String itemId)?  removeItem,TResult? Function( String itemId,  double amount)?  addBuffer,TResult? Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  regenerate,TResult? Function( String itemId)?  toggleItem,TResult? Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult? Function( String itemId)?  removeItem,TResult? Function( String itemId,  double amount)?  addBuffer,TResult? Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult? Function( String itemId,  int sourceIndex)?  removeSource,TResult? Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult? Function( bool checked)?  setAllChecked,TResult? Function()?  deleteCheckedItems,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Regenerate() when regenerate != null:
 return regenerate();case _ToggleItem() when toggleItem != null:
 return toggleItem(_that.itemId);case _AddAdHocItem() when addAdHocItem != null:
-return addAdHocItem(_that.name);case _RemoveItem() when removeItem != null:
+return addAdHocItem(_that.name,_that.amount,_that.unit);case _RemoveItem() when removeItem != null:
 return removeItem(_that.itemId);case _AddBuffer() when addBuffer != null:
 return addBuffer(_that.itemId,_that.amount);case _AdjustSource() when adjustSource != null:
-return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _:
+return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSource() when removeSource != null:
+return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit() when changeUnit != null:
+return changeUnit(_that.itemId,_that.unit);case _SetAllChecked() when setAllChecked != null:
+return setAllChecked(_that.checked);case _DeleteCheckedItems() when deleteCheckedItems != null:
+return deleteCheckedItems();case _:
   return null;
 
 }
@@ -335,10 +359,12 @@ as String,
 
 
 class _AddAdHocItem implements GroceryListEvent {
-  const _AddAdHocItem(this.name);
+  const _AddAdHocItem(this.name, this.amount, this.unit);
   
 
  final  String name;
+ final  double amount;
+ final  MeasurementUnit unit;
 
 /// Create a copy of GroceryListEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -350,16 +376,16 @@ _$AddAdHocItemCopyWith<_AddAdHocItem> get copyWith => __$AddAdHocItemCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddAdHocItem&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddAdHocItem&&(identical(other.name, name) || other.name == name)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.unit, unit) || other.unit == unit));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name);
+int get hashCode => Object.hash(runtimeType,name,amount,unit);
 
 @override
 String toString() {
-  return 'GroceryListEvent.addAdHocItem(name: $name)';
+  return 'GroceryListEvent.addAdHocItem(name: $name, amount: $amount, unit: $unit)';
 }
 
 
@@ -370,7 +396,7 @@ abstract mixin class _$AddAdHocItemCopyWith<$Res> implements $GroceryListEventCo
   factory _$AddAdHocItemCopyWith(_AddAdHocItem value, $Res Function(_AddAdHocItem) _then) = __$AddAdHocItemCopyWithImpl;
 @useResult
 $Res call({
- String name
+ String name, double amount, MeasurementUnit unit
 });
 
 
@@ -387,10 +413,12 @@ class __$AddAdHocItemCopyWithImpl<$Res>
 
 /// Create a copy of GroceryListEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? name = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? name = null,Object? amount = null,Object? unit = null,}) {
   return _then(_AddAdHocItem(
 null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as double,null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
+as MeasurementUnit,
   ));
 }
 
@@ -600,6 +628,240 @@ as double,
 
 
 }
+
+/// @nodoc
+
+
+class _RemoveSource implements GroceryListEvent {
+  const _RemoveSource(this.itemId, this.sourceIndex);
+  
+
+ final  String itemId;
+ final  int sourceIndex;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RemoveSourceCopyWith<_RemoveSource> get copyWith => __$RemoveSourceCopyWithImpl<_RemoveSource>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoveSource&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.sourceIndex, sourceIndex) || other.sourceIndex == sourceIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,itemId,sourceIndex);
+
+@override
+String toString() {
+  return 'GroceryListEvent.removeSource(itemId: $itemId, sourceIndex: $sourceIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RemoveSourceCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$RemoveSourceCopyWith(_RemoveSource value, $Res Function(_RemoveSource) _then) = __$RemoveSourceCopyWithImpl;
+@useResult
+$Res call({
+ String itemId, int sourceIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$RemoveSourceCopyWithImpl<$Res>
+    implements _$RemoveSourceCopyWith<$Res> {
+  __$RemoveSourceCopyWithImpl(this._self, this._then);
+
+  final _RemoveSource _self;
+  final $Res Function(_RemoveSource) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? sourceIndex = null,}) {
+  return _then(_RemoveSource(
+null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
+as String,null == sourceIndex ? _self.sourceIndex : sourceIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ChangeUnit implements GroceryListEvent {
+  const _ChangeUnit(this.itemId, this.unit);
+  
+
+ final  String itemId;
+ final  MeasurementUnit unit;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ChangeUnitCopyWith<_ChangeUnit> get copyWith => __$ChangeUnitCopyWithImpl<_ChangeUnit>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangeUnit&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.unit, unit) || other.unit == unit));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,itemId,unit);
+
+@override
+String toString() {
+  return 'GroceryListEvent.changeUnit(itemId: $itemId, unit: $unit)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ChangeUnitCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$ChangeUnitCopyWith(_ChangeUnit value, $Res Function(_ChangeUnit) _then) = __$ChangeUnitCopyWithImpl;
+@useResult
+$Res call({
+ String itemId, MeasurementUnit unit
+});
+
+
+
+
+}
+/// @nodoc
+class __$ChangeUnitCopyWithImpl<$Res>
+    implements _$ChangeUnitCopyWith<$Res> {
+  __$ChangeUnitCopyWithImpl(this._self, this._then);
+
+  final _ChangeUnit _self;
+  final $Res Function(_ChangeUnit) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? unit = null,}) {
+  return _then(_ChangeUnit(
+null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
+as String,null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
+as MeasurementUnit,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SetAllChecked implements GroceryListEvent {
+  const _SetAllChecked(this.checked);
+  
+
+ final  bool checked;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SetAllCheckedCopyWith<_SetAllChecked> get copyWith => __$SetAllCheckedCopyWithImpl<_SetAllChecked>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SetAllChecked&&(identical(other.checked, checked) || other.checked == checked));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,checked);
+
+@override
+String toString() {
+  return 'GroceryListEvent.setAllChecked(checked: $checked)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SetAllCheckedCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$SetAllCheckedCopyWith(_SetAllChecked value, $Res Function(_SetAllChecked) _then) = __$SetAllCheckedCopyWithImpl;
+@useResult
+$Res call({
+ bool checked
+});
+
+
+
+
+}
+/// @nodoc
+class __$SetAllCheckedCopyWithImpl<$Res>
+    implements _$SetAllCheckedCopyWith<$Res> {
+  __$SetAllCheckedCopyWithImpl(this._self, this._then);
+
+  final _SetAllChecked _self;
+  final $Res Function(_SetAllChecked) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? checked = null,}) {
+  return _then(_SetAllChecked(
+null == checked ? _self.checked : checked // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _DeleteCheckedItems implements GroceryListEvent {
+  const _DeleteCheckedItems();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteCheckedItems);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'GroceryListEvent.deleteCheckedItems()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 mixin _$GroceryListState {

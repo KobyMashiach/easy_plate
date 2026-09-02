@@ -20,19 +20,24 @@ class MealItemModelAdapter extends TypeAdapter<MealItemModel> {
       id: fields[0] as String,
       recipeId: fields[1] as String?,
       freeText: fields[2] as String?,
+      ingredients: fields[3] == null
+          ? []
+          : (fields[3] as List).cast<RecipeIngredientModel>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, MealItemModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.recipeId)
       ..writeByte(2)
-      ..write(obj.freeText);
+      ..write(obj.freeText)
+      ..writeByte(3)
+      ..write(obj.ingredients);
   }
 
   @override
@@ -55,6 +60,14 @@ _MealItemModel _$MealItemModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       recipeId: json['recipeId'] as String?,
       freeText: json['freeText'] as String?,
+      ingredients:
+          (json['ingredients'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    RecipeIngredientModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$MealItemModelToJson(_MealItemModel instance) =>
@@ -62,4 +75,5 @@ Map<String, dynamic> _$MealItemModelToJson(_MealItemModel instance) =>
       'id': instance.id,
       'recipeId': instance.recipeId,
       'freeText': instance.freeText,
+      'ingredients': instance.ingredients,
     };

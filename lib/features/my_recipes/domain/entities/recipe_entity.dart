@@ -11,6 +11,10 @@ class RecipeEntity {
   final List<DietaryPreference> dietaryTags;
   final RecipeIngestionChannel? sourceChannel;
   final String? sourceUrl;
+
+  /// File name of the recipe photo inside the app's image directory — never an
+  /// absolute path, which would not survive a reinstall.
+  final String? imageFileName;
   final DateTime createdAt;
 
   const RecipeEntity({
@@ -24,6 +28,7 @@ class RecipeEntity {
     this.dietaryTags = const [],
     this.sourceChannel,
     this.sourceUrl,
+    this.imageFileName,
   });
 
   RecipeEntity copyWith({
@@ -33,6 +38,9 @@ class RecipeEntity {
     List<RecipeIngredientEntity>? ingredients,
     List<String>? steps,
     List<DietaryPreference>? dietaryTags,
+    String? imageFileName,
+    // A null `imageFileName` means "unchanged", so clearing needs its own flag.
+    bool removeImage = false,
   }) {
     return RecipeEntity(
       id: id,
@@ -44,6 +52,7 @@ class RecipeEntity {
       dietaryTags: dietaryTags ?? this.dietaryTags,
       sourceChannel: sourceChannel,
       sourceUrl: sourceUrl,
+      imageFileName: removeImage ? null : (imageFileName ?? this.imageFileName),
       createdAt: createdAt,
     );
   }

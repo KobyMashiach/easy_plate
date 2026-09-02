@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/app_enums.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../../domain/entities/meal_item_entity.dart';
@@ -18,13 +21,24 @@ part 'meal_planner_bloc.freezed.dart';
 @freezed
 sealed class MealPlannerEvent with _$MealPlannerEvent {
   const factory MealPlannerEvent.init() = _Init;
-  const factory MealPlannerEvent.createPlan(String name) = _CreatePlan;
+  const factory MealPlannerEvent.createPlan(String name, MealPlanTemplate template) =
+      _CreatePlan;
   const factory MealPlannerEvent.selectPlan(String planId) = _SelectPlan;
   const factory MealPlannerEvent.deletePlan(String planId) = _DeletePlan;
   const factory MealPlannerEvent.addMeal(int weekday, String name) = _AddMeal;
   const factory MealPlannerEvent.removeMeal(String mealId) = _RemoveMeal;
   const factory MealPlannerEvent.addRecipeItem(String mealId, String recipeId) = _AddRecipeItem;
-  const factory MealPlannerEvent.addFreeTextItem(String mealId, String text) = _AddFreeTextItem;
+  const factory MealPlannerEvent.addFreeTextItem(
+    String mealId,
+    String text,
+    List<RecipeIngredientEntity> ingredients,
+  ) = _AddFreeTextItem;
+  const factory MealPlannerEvent.updateFreeTextItem(
+    String mealId,
+    String itemId,
+    String text,
+    List<RecipeIngredientEntity> ingredients,
+  ) = _UpdateFreeTextItem;
   const factory MealPlannerEvent.removeItem(String mealId, String itemId) = _RemoveItem;
 }
 
@@ -60,6 +74,7 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     on<_RemoveMeal>(_removeMeal);
     on<_AddRecipeItem>(_addRecipeItem);
     on<_AddFreeTextItem>(_addFreeTextItem);
+    on<_UpdateFreeTextItem>(_updateFreeTextItem);
     on<_RemoveItem>(_removeItem);
     add(const MealPlannerEvent.init());
   }
@@ -104,11 +119,45 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
 
   Future<void> _init(_Init event, Emitter<MealPlannerState> emit) => _reload(emit);
 
+  /// Meal names for a template, in the order they're eaten.
+  List<String> _templateMeals(MealPlanTemplate template) => switch (template) {
+        MealPlanTemplate.free => const [],
+        MealPlanTemplate.threeMeals => [
+            t.mealPlanner.breakfast,
+            t.mealPlanner.lunch,
+            t.mealPlanner.dinner,
+          ],
+        MealPlanTemplate.sixMeals => [
+            t.mealPlanner.breakfast,
+            t.mealPlanner.morningSnack,
+            t.mealPlanner.lunch,
+            t.mealPlanner.afternoonSnack,
+            t.mealPlanner.dinner,
+            t.mealPlanner.eveningSnack,
+          ],
+      };
+
   Future<void> _createPlan(_CreatePlan event, Emitter<MealPlannerState> emit) async {
+    final names = _templateMeals(event.template);
+
+    // A template seeds the same meals on every weekday; it's only a starting
+    // point, and each meal can be removed or renamed afterwards.
+    final meals = [
+      for (var weekday = 0; weekday < ShoppingDay.values.length; weekday++)
+        for (var order = 0; order < names.length; order++)
+          MealEntity(
+            id: _uuid.v4(),
+            weekday: weekday,
+            name: names[order],
+            order: order,
+            items: const [],
+          ),
+    ];
+
     final plan = MealPlanEntity(
       id: _uuid.v4(),
       name: event.name,
-      meals: const [],
+      meals: meals,
       createdAt: DateTime.now(),
     );
     await saveMealPlanUseCase(plan);
@@ -171,9 +220,38 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       (plan) => _withItemAdded(
         plan,
         event.mealId,
-        MealItemEntity(id: _uuid.v4(), freeText: event.text),
+        MealItemEntity(
+          id: _uuid.v4(),
+          freeText: event.text,
+          ingredients: event.ingredients,
+        ),
       ),
     );
+  }
+
+  Future<void> _updateFreeTextItem(
+    _UpdateFreeTextItem event,
+    Emitter<MealPlannerState> emit,
+  ) {
+    return _updateSelectedPlan(emit, (plan) {
+      return plan.copyWith(
+        meals: plan.meals.map((meal) {
+          if (meal.id != event.mealId) return meal;
+          return meal.copyWith(
+            items: meal.items
+                .map(
+                  (item) => item.id == event.itemId
+                      ? item.copyWith(
+                          freeText: event.text,
+                          ingredients: event.ingredients,
+                        )
+                      : item,
+                )
+                .toList(),
+          );
+        }).toList(),
+      );
+    });
   }
 
   Future<void> _removeItem(_RemoveItem event, Emitter<MealPlannerState> emit) {

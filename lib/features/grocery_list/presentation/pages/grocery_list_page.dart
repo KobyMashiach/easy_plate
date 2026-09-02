@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_enums.dart';
+import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
-import '../widgets/item_breakdown_sheet.dart';
+import '../widgets/grocery_progress_card.dart';
+import '../widgets/grocery_section.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -16,66 +21,30 @@ class GroceryListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => GroceryListBloc.fromContext(context),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(t.groceryList.title),
-          actions: [
-            Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.refresh),
-                tooltip: t.groceryList.aggregated,
-                onPressed: () =>
-                  context.read<GroceryListBloc>().add(const GroceryListEvent.regenerate()),
-              ),
-            ),
-          ],
-        ),
-        floatingActionButton: Builder(
-          builder: (context) => FloatingActionButton(
-            heroTag: 'groceryListFab',
-            onPressed: () => _showAddItemDialog(context),
-            child: const Icon(Icons.add),
+      child: Builder(
+        builder: (context) => ClayScaffold(
+          appBar: ClayTopAppBar(
+            title: t.appName,
+            leadingIcon: Icons.autorenew_rounded,
+            onLeadingTap: () =>
+                context.read<GroceryListBloc>().add(const GroceryListEvent.regenerate()),
+            trailingIcon: Icons.add_rounded,
+            onTrailingTap: () => showAddGroceryItemSheet(context),
           ),
-        ),
-        body: BlocBuilder<GroceryListBloc, GroceryListState>(
-          builder: (context, state) {
-            return switch (state) {
-              GroceryListLoading() => const Center(child: CircularProgressIndicator()),
-              GroceryListLoaded(list: final list) => _ListBody(list: list),
-              GroceryListError(error: final error) => ErrorRetryView(
-                  error: error,
-                  onRetry: () => context.read<GroceryListBloc>().add(const GroceryListEvent.init()),
-                ),
-            };
-          },
-        ),
-      ),
-    );
-  }
-
-  void _showAddItemDialog(BuildContext context) {
-    final bloc = context.read<GroceryListBloc>();
-    final controller = TextEditingController();
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.groceryList.addItem),
-        content: TextField(controller: controller, autofocus: true),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(t.common.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                bloc.add(.addAdHocItem(controller.text.trim()));
-              }
-              Navigator.of(dialogContext).pop();
+          body: BlocBuilder<GroceryListBloc, GroceryListState>(
+            builder: (context, state) {
+              return switch (state) {
+                GroceryListLoading() => const Center(child: CircularProgressIndicator()),
+                GroceryListLoaded(list: final list) => _ListBody(list: list),
+                GroceryListError(error: final error) => ErrorRetryView(
+                    error: error,
+                    onRetry: () =>
+                        context.read<GroceryListBloc>().add(const GroceryListEvent.init()),
+                  ),
+              };
             },
-            child: Text(t.common.add),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -88,52 +57,249 @@ class _ListBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (list.items.isEmpty) {
-      return Center(child: Text(t.groceryList.empty));
-    }
     final bloc = context.read<GroceryListBloc>();
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: list.items.length,
-      itemBuilder: (context, index) {
-        final item = list.items[index];
-        final unit = measurementUnitLabel(item.unit);
-        final amountLabel = item.isAdHoc ? '' : '${item.totalAmount} $unit'.trim();
-        return Dismissible(
-          key: ValueKey(item.id),
-          direction: DismissDirection.endToStart,
-          onDismissed: (_) => bloc.add(.removeItem(item.id)),
-          background: Container(
-            color: Colors.red.shade300,
-            alignment: AlignmentDirectional.centerEnd,
-            padding: const EdgeInsetsDirectional.only(end: 20),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          child: CheckboxListTile(
-            value: item.isChecked,
-            onChanged: (_) => bloc.add(.toggleItem(item.id)),
-            title: Text(
-              item.name,
-              style: AppTextStyles.body.copyWith(
-                decoration: item.isChecked ? TextDecoration.lineThrough : null,
+
+    if (list.items.isEmpty) {
+      return ClayEmptyState(
+        icon: Icons.shopping_basket_rounded,
+        message: t.groceryList.empty,
+        action: ClayButton(
+          label: t.groceryList.aggregated,
+          icon: Icons.autorenew_rounded,
+          onPressed: () =>
+              bloc.add(const GroceryListEvent.regenerate()),
+        ),
+      );
+    }
+
+    final unchecked = list.items.where((i) => !i.isChecked).toList();
+    final checked = list.items.where((i) => i.isChecked).toList();
+    final allChecked = unchecked.isEmpty;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.marginMobile,
+        AppSpacing.md,
+        AppSpacing.marginMobile,
+        ClayNavDock.reservedHeight,
+      ),
+      children: [
+        ClayPageHeader(title: t.groceryList.title, subtitle: t.groceryList.aggregated),
+        const SizedBox(height: AppSpacing.lg),
+        GroceryProgressCard(collected: checked.length, total: list.items.length),
+        const SizedBox(height: AppSpacing.gutter),
+        Row(
+          children: [
+            Expanded(
+              child: _BulkAction(
+                icon: allChecked
+                    ? Icons.remove_done_rounded
+                    : Icons.done_all_rounded,
+                label: allChecked ? t.groceryList.clearAll : t.groceryList.selectAll,
+                onTap: () => bloc.add(.setAllChecked(!allChecked)),
               ),
             ),
-            subtitle: amountLabel.isEmpty ? null : Text(amountLabel, style: AppTextStyles.caption),
-            secondary: item.sources.isEmpty
-                ? null
-                : IconButton(
-                    icon: const Icon(Icons.unfold_more),
-                    onPressed: () => showItemBreakdownSheet(
-                      context,
-                      item,
-                      onAdjustSource: (sourceIndex, amount) =>
-                          bloc.add(.adjustSource(item.id, sourceIndex, amount)),
-                      onAddBuffer: (amount) => bloc.add(.addBuffer(item.id, amount)),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _BulkAction(
+                icon: Icons.delete_sweep_rounded,
+                label: t.groceryList.deleteChecked,
+                isDestructive: true,
+                onTap: checked.isEmpty
+                    ? null
+                    : () => bloc.add(const GroceryListEvent.deleteCheckedItems()),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        GrocerySection(title: t.groceryList.uncheckedSection, items: unchecked),
+        const SizedBox(height: AppSpacing.lg),
+        GrocerySection(
+          title: t.groceryList.checkedSection,
+          items: checked,
+          // Collected lines are done with — kept out of the way by default.
+          initiallyExpanded: false,
+        ),
+      ],
+    );
+  }
+}
+
+class _BulkAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool isDestructive;
+
+  const _BulkAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+    final color = !enabled
+        ? AppColors.outlineVariant
+        : isDestructive
+            ? AppColors.error
+            : AppColors.primary;
+
+    return ClayCard(
+      radius: AppRadius.full,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.sm,
+      ),
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: AppSpacing.base),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.labelMd.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Adds a free-text line. It captures a quantity and unit up front so the new
+/// item behaves exactly like one that came from a recipe.
+Future<void> showAddGroceryItemSheet(BuildContext context) {
+  final bloc = context.read<GroceryListBloc>();
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (sheetContext) => _AddItemForm(
+      onSubmit: (name, amount, unit) => bloc.add(.addAdHocItem(name, amount, unit)),
+    ),
+  );
+}
+
+class _AddItemForm extends StatefulWidget {
+  final void Function(String name, double amount, MeasurementUnit unit) onSubmit;
+
+  const _AddItemForm({required this.onSubmit});
+
+  @override
+  State<_AddItemForm> createState() => _AddItemFormState();
+}
+
+class _AddItemFormState extends State<_AddItemForm> {
+  final _nameController = TextEditingController();
+  final _amountController = TextEditingController(text: '1');
+  MeasurementUnit _unit = MeasurementUnit.unit;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  /// Drives the add button's enabled state, so an empty name reads as a
+  /// disabled button rather than a tap that silently does nothing.
+  bool get _canSubmit => _nameController.text.trim().isNotEmpty;
+
+  void _submit() {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+    final amount = double.tryParse(_amountController.text.trim()) ?? 1;
+    widget.onSubmit(name, amount, _unit);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: AppSpacing.marginMobile,
+        right: AppSpacing.marginMobile,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(t.groceryList.addItem, style: AppTextStyles.headlineMd),
+            const SizedBox(height: AppSpacing.gutter),
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              style: AppTextStyles.bodyMd,
+              decoration: InputDecoration(labelText: t.groceryList.itemName),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextField(
+              controller: _amountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              style: AppTextStyles.bodyMd,
+              decoration: InputDecoration(labelText: t.groceryList.amount),
+            ),
+            const SizedBox(height: AppSpacing.gutter),
+            Text(t.groceryList.unit, style: AppTextStyles.labelMd),
+            const SizedBox(height: AppSpacing.base),
+            Wrap(
+              spacing: AppSpacing.base,
+              runSpacing: AppSpacing.base,
+              children: MeasurementUnit.values.map((unit) {
+                final isSelected = unit == _unit;
+                return GestureDetector(
+                  onTap: () => setState(() => _unit = unit),
+                  behavior: HitTestBehavior.opaque,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.base,
+                    ),
+                    decoration: ShapeDecoration(
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.surfaceContainerLow,
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.outlineVariant,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      measurementUnitPickerLabel(unit),
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
+                      ),
                     ),
                   ),
-          ),
-        );
-      },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ClayButton(
+              label: t.common.add,
+              icon: Icons.add_rounded,
+              expanded: true,
+              onPressed: _canSubmit ? _submit : null,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
+      ),
     );
   }
 }

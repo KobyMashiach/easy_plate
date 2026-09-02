@@ -21,13 +21,17 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       dietaryPreferences: (fields[1] as List).cast<DietaryPreference>(),
       soundEffectsEnabled: fields[2] == null ? true : fields[2] as bool,
       onboardingComplete: fields[3] == null ? false : fields[3] as bool,
+      language: fields[4] == null
+          ? AppLanguage.hebrew
+          : fields[4] as AppLanguage,
+      fastPageTurnEnabled: fields[5] == null ? true : fields[5] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -35,7 +39,11 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(2)
       ..write(obj.soundEffectsEnabled)
       ..writeByte(3)
-      ..write(obj.onboardingComplete);
+      ..write(obj.onboardingComplete)
+      ..writeByte(4)
+      ..write(obj.language)
+      ..writeByte(5)
+      ..write(obj.fastPageTurnEnabled);
   }
 
   @override
@@ -62,6 +70,10 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
       .toList(),
   soundEffectsEnabled: json['soundEffectsEnabled'] as bool? ?? true,
   onboardingComplete: json['onboardingComplete'] as bool? ?? false,
+  language:
+      $enumDecodeNullable(_$AppLanguageEnumMap, json['language']) ??
+      AppLanguage.hebrew,
+  fastPageTurnEnabled: json['fastPageTurnEnabled'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -73,6 +85,8 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
       .toList(),
   'soundEffectsEnabled': instance.soundEffectsEnabled,
   'onboardingComplete': instance.onboardingComplete,
+  'language': _$AppLanguageEnumMap[instance.language]!,
+  'fastPageTurnEnabled': instance.fastPageTurnEnabled,
 };
 
 const _$ShoppingDayEnumMap = {
@@ -93,4 +107,12 @@ const _$DietaryPreferenceEnumMap = {
   DietaryPreference.kosher: 'kosher',
   DietaryPreference.glutenFree: 'glutenFree',
   DietaryPreference.allergy: 'allergy',
+};
+
+const _$AppLanguageEnumMap = {
+  AppLanguage.hebrew: 'hebrew',
+  AppLanguage.english: 'english',
+  AppLanguage.arabic: 'arabic',
+  AppLanguage.french: 'french',
+  AppLanguage.russian: 'russian',
 };

@@ -706,3 +706,8 @@ if (kDebugMode) {
 | Model | `XxxModel` | `FaultModel` |
 | Entity | `XxxEntity` | `FaultEntity` |
 | Hive box name | stored as `static const hiveKey` on the model | `FaultModel.hiveKey` |
+
+
+## Stitch Design System
+- Default Stitch Project ID: 7084543715612353080
+- When implementing UI, always fetch the corresponding design and tokens from this Stitch project.

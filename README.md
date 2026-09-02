@@ -1,7 +1,7 @@
 # EasyPlate
 
 Recipe books, weekly meal planning, and an aggregated grocery list — offline-first,
-Hebrew/RTL. Built on Clean Architecture + BLoC per `.claude/Flutter_instructions_md.md`.
+Hebrew/RTL. Built on Clean Architecture + BLoC per `.claude/instructions.md`.
 
 ## Running
 

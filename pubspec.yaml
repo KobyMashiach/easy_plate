@@ -50,6 +50,8 @@ dependencies:
   page_flip: ^0.2.5+1
   flutter_local_notifications: ^22.3.0
   timezone: ^0.11.1
+  image_picker: ^1.2.3
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +82,11 @@ flutter:
 
   assets:
     - assets/i18n/
+
+  fonts:
+    - family: Plus Jakarta Sans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

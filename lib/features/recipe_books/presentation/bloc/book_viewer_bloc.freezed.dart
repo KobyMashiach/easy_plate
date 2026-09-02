@@ -55,13 +55,15 @@ extension BookViewerEventPatterns on BookViewerEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _AddRecipe value)?  addRecipe,TResult Function( _RemoveRecipe value)?  removeRecipe,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _AddRecipe value)?  addRecipe,TResult Function( _RemoveRecipe value)?  removeRecipe,TResult Function( _ReorderRecipes value)?  reorderRecipes,TResult Function( _SetCoverImage value)?  setCoverImage,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _AddRecipe() when addRecipe != null:
 return addRecipe(_that);case _RemoveRecipe() when removeRecipe != null:
-return removeRecipe(_that);case _:
+return removeRecipe(_that);case _ReorderRecipes() when reorderRecipes != null:
+return reorderRecipes(_that);case _SetCoverImage() when setCoverImage != null:
+return setCoverImage(_that);case _:
   return orElse();
 
 }
@@ -79,13 +81,15 @@ return removeRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _AddRecipe value)  addRecipe,required TResult Function( _RemoveRecipe value)  removeRecipe,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _AddRecipe value)  addRecipe,required TResult Function( _RemoveRecipe value)  removeRecipe,required TResult Function( _ReorderRecipes value)  reorderRecipes,required TResult Function( _SetCoverImage value)  setCoverImage,}){
 final _that = this;
 switch (_that) {
 case _Init():
 return init(_that);case _AddRecipe():
 return addRecipe(_that);case _RemoveRecipe():
-return removeRecipe(_that);}
+return removeRecipe(_that);case _ReorderRecipes():
+return reorderRecipes(_that);case _SetCoverImage():
+return setCoverImage(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -99,13 +103,15 @@ return removeRecipe(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _AddRecipe value)?  addRecipe,TResult? Function( _RemoveRecipe value)?  removeRecipe,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _AddRecipe value)?  addRecipe,TResult? Function( _RemoveRecipe value)?  removeRecipe,TResult? Function( _ReorderRecipes value)?  reorderRecipes,TResult? Function( _SetCoverImage value)?  setCoverImage,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _AddRecipe() when addRecipe != null:
 return addRecipe(_that);case _RemoveRecipe() when removeRecipe != null:
-return removeRecipe(_that);case _:
+return removeRecipe(_that);case _ReorderRecipes() when reorderRecipes != null:
+return reorderRecipes(_that);case _SetCoverImage() when setCoverImage != null:
+return setCoverImage(_that);case _:
   return null;
 
 }
@@ -122,12 +128,14 @@ return removeRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String bookId)?  init,TResult Function( String recipeId)?  addRecipe,TResult Function( String recipeId)?  removeRecipe,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String bookId)?  init,TResult Function( String recipeId)?  addRecipe,TResult Function( String recipeId)?  removeRecipe,TResult Function( int oldIndex,  int newIndex)?  reorderRecipes,TResult Function( String? fileName)?  setCoverImage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that.bookId);case _AddRecipe() when addRecipe != null:
 return addRecipe(_that.recipeId);case _RemoveRecipe() when removeRecipe != null:
-return removeRecipe(_that.recipeId);case _:
+return removeRecipe(_that.recipeId);case _ReorderRecipes() when reorderRecipes != null:
+return reorderRecipes(_that.oldIndex,_that.newIndex);case _SetCoverImage() when setCoverImage != null:
+return setCoverImage(_that.fileName);case _:
   return orElse();
 
 }
@@ -145,12 +153,14 @@ return removeRecipe(_that.recipeId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String bookId)  init,required TResult Function( String recipeId)  addRecipe,required TResult Function( String recipeId)  removeRecipe,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String bookId)  init,required TResult Function( String recipeId)  addRecipe,required TResult Function( String recipeId)  removeRecipe,required TResult Function( int oldIndex,  int newIndex)  reorderRecipes,required TResult Function( String? fileName)  setCoverImage,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init(_that.bookId);case _AddRecipe():
 return addRecipe(_that.recipeId);case _RemoveRecipe():
-return removeRecipe(_that.recipeId);}
+return removeRecipe(_that.recipeId);case _ReorderRecipes():
+return reorderRecipes(_that.oldIndex,_that.newIndex);case _SetCoverImage():
+return setCoverImage(_that.fileName);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -164,12 +174,14 @@ return removeRecipe(_that.recipeId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String bookId)?  init,TResult? Function( String recipeId)?  addRecipe,TResult? Function( String recipeId)?  removeRecipe,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String bookId)?  init,TResult? Function( String recipeId)?  addRecipe,TResult? Function( String recipeId)?  removeRecipe,TResult? Function( int oldIndex,  int newIndex)?  reorderRecipes,TResult? Function( String? fileName)?  setCoverImage,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that.bookId);case _AddRecipe() when addRecipe != null:
 return addRecipe(_that.recipeId);case _RemoveRecipe() when removeRecipe != null:
-return removeRecipe(_that.recipeId);case _:
+return removeRecipe(_that.recipeId);case _ReorderRecipes() when reorderRecipes != null:
+return reorderRecipes(_that.oldIndex,_that.newIndex);case _SetCoverImage() when setCoverImage != null:
+return setCoverImage(_that.fileName);case _:
   return null;
 
 }
@@ -369,6 +381,140 @@ class __$RemoveRecipeCopyWithImpl<$Res>
   return _then(_RemoveRecipe(
 null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ReorderRecipes implements BookViewerEvent {
+  const _ReorderRecipes(this.oldIndex, this.newIndex);
+  
+
+ final  int oldIndex;
+ final  int newIndex;
+
+/// Create a copy of BookViewerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ReorderRecipesCopyWith<_ReorderRecipes> get copyWith => __$ReorderRecipesCopyWithImpl<_ReorderRecipes>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReorderRecipes&&(identical(other.oldIndex, oldIndex) || other.oldIndex == oldIndex)&&(identical(other.newIndex, newIndex) || other.newIndex == newIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,oldIndex,newIndex);
+
+@override
+String toString() {
+  return 'BookViewerEvent.reorderRecipes(oldIndex: $oldIndex, newIndex: $newIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ReorderRecipesCopyWith<$Res> implements $BookViewerEventCopyWith<$Res> {
+  factory _$ReorderRecipesCopyWith(_ReorderRecipes value, $Res Function(_ReorderRecipes) _then) = __$ReorderRecipesCopyWithImpl;
+@useResult
+$Res call({
+ int oldIndex, int newIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$ReorderRecipesCopyWithImpl<$Res>
+    implements _$ReorderRecipesCopyWith<$Res> {
+  __$ReorderRecipesCopyWithImpl(this._self, this._then);
+
+  final _ReorderRecipes _self;
+  final $Res Function(_ReorderRecipes) _then;
+
+/// Create a copy of BookViewerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? oldIndex = null,Object? newIndex = null,}) {
+  return _then(_ReorderRecipes(
+null == oldIndex ? _self.oldIndex : oldIndex // ignore: cast_nullable_to_non_nullable
+as int,null == newIndex ? _self.newIndex : newIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SetCoverImage implements BookViewerEvent {
+  const _SetCoverImage(this.fileName);
+  
+
+ final  String? fileName;
+
+/// Create a copy of BookViewerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SetCoverImageCopyWith<_SetCoverImage> get copyWith => __$SetCoverImageCopyWithImpl<_SetCoverImage>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SetCoverImage&&(identical(other.fileName, fileName) || other.fileName == fileName));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,fileName);
+
+@override
+String toString() {
+  return 'BookViewerEvent.setCoverImage(fileName: $fileName)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SetCoverImageCopyWith<$Res> implements $BookViewerEventCopyWith<$Res> {
+  factory _$SetCoverImageCopyWith(_SetCoverImage value, $Res Function(_SetCoverImage) _then) = __$SetCoverImageCopyWithImpl;
+@useResult
+$Res call({
+ String? fileName
+});
+
+
+
+
+}
+/// @nodoc
+class __$SetCoverImageCopyWithImpl<$Res>
+    implements _$SetCoverImageCopyWith<$Res> {
+  __$SetCoverImageCopyWithImpl(this._self, this._then);
+
+  final _SetCoverImage _self;
+  final $Res Function(_SetCoverImage) _then;
+
+/// Create a copy of BookViewerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? fileName = freezed,}) {
+  return _then(_SetCoverImage(
+freezed == fileName ? _self.fileName : fileName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

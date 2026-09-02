@@ -48,6 +48,27 @@ enum AccessRole {
 
 enum RecipeIngestionChannel { rawText, webSearch, urlScrape, socialVideo }
 
+/// Starting shape for a new meal plan. Not persisted — it only decides which
+/// meals get pre-created across the week, and the plan is freely editable
+/// afterwards.
+enum MealPlanTemplate { free, threeMeals, sixMeals }
+
+/// UI languages the app ships with. Persisted, so the choice survives a
+/// restart; mapped to a slang `AppLocale` in the presentation layer.
+@HiveType(typeId: 24)
+enum AppLanguage {
+  @HiveField(0)
+  hebrew,
+  @HiveField(1)
+  english,
+  @HiveField(2)
+  arabic,
+  @HiveField(3)
+  french,
+  @HiveField(4)
+  russian,
+}
+
 @HiveType(typeId: 23)
 enum MeasurementUnit {
   @HiveField(0)

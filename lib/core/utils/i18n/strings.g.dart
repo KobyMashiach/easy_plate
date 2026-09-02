@@ -3,10 +3,10 @@
 /// Source: assets/i18n
 /// To regenerate, run: `dart run slang`
 ///
-/// Locales: 1
-/// Strings: 85
+/// Locales: 5
+/// Strings: 760 (152 per locale)
 ///
-/// Built on 2026-09-02 at 04:37 UTC
+/// Built on 2026-09-02 at 21:54 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
@@ -18,6 +18,10 @@ import 'package:slang/generated.dart';
 import 'package:slang_flutter/slang_flutter.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 
+import 'strings_ar.g.dart' deferred as l_ar;
+import 'strings_en.g.dart' deferred as l_en;
+import 'strings_fr.g.dart' deferred as l_fr;
+import 'strings_ru.g.dart' deferred as l_ru;
 part 'strings_he.g.dart';
 
 /// Supported locales.
@@ -27,7 +31,11 @@ part 'strings_he.g.dart';
 /// - Locale locale = AppLocale.he.flutterLocale // get flutter locale from enum
 /// - if (LocaleSettings.currentLocale == AppLocale.he) // locale check
 enum AppLocale with BaseAppLocale<AppLocale, Translations> {
-	he(languageCode: 'he');
+	he(languageCode: 'he'),
+	ar(languageCode: 'ar'),
+	en(languageCode: 'en'),
+	fr(languageCode: 'fr'),
+	ru(languageCode: 'ru');
 
 	const AppLocale({
 		required this.languageCode,
@@ -52,6 +60,34 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,
 				);
+			case AppLocale.ar:
+				await l_ar.loadLibrary();
+				return l_ar.TranslationsAr(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.en:
+				await l_en.loadLibrary();
+				return l_en.TranslationsEn(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.fr:
+				await l_fr.loadLibrary();
+				return l_fr.TranslationsFr(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.ru:
+				await l_ru.loadLibrary();
+				return l_ru.TranslationsRu(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
 		}
 	}
 
@@ -64,6 +100,30 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 		switch (this) {
 			case AppLocale.he:
 				return TranslationsHe(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.ar:
+				return l_ar.TranslationsAr(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.en:
+				return l_en.TranslationsEn(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.fr:
+				return l_fr.TranslationsFr(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.ru:
+				return l_ru.TranslationsRu(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,

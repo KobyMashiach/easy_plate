@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Take photos of your recipes and book covers.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose photos for your recipes and book covers.</string>
 </dict>
 </plist>

@@ -111,4 +111,50 @@ void main() {
     expect(items.single.name, 'טוסט וביצים');
     expect(items.single.isAdHoc, isTrue);
   });
+
+  test('a free-text item with products shops for the products, not the item', () async {
+    final items = await BuildAggregateGroceryListUseCase(_FakeRecipesRepository({}))([
+      _planWith(const [
+        MealItemEntity(
+          id: '1',
+          freeText: 'חביתה',
+          ingredients: [
+            RecipeIngredientEntity(name: 'ביצים', amount: 2, unit: MeasurementUnit.unit),
+            RecipeIngredientEntity(name: 'חלב', amount: 50, unit: MeasurementUnit.milliliter),
+          ],
+        ),
+      ]),
+    ]);
+
+    expect(items.map((i) => i.name), ['ביצים', 'חלב']);
+    // The entry itself is not shopped for — only what it is made of.
+    expect(items.any((i) => i.name == 'חביתה'), isFalse);
+    // Each line is credited to the entry that asked for it.
+    expect(items.first.sources.single.label, 'חביתה');
+  });
+
+  test('quick-entry products merge with matching recipe ingredients', () async {
+    final repository = _FakeRecipesRepository({
+      'a': _recipe('a', 'שקשוקה', const [
+        RecipeIngredientEntity(name: 'ביצים', amount: 4, unit: MeasurementUnit.unit),
+      ]),
+    });
+
+    final items = await BuildAggregateGroceryListUseCase(repository)([
+      _planWith(const [
+        MealItemEntity(id: '1', recipeId: 'a'),
+        MealItemEntity(
+          id: '2',
+          freeText: 'חביתה',
+          ingredients: [
+            RecipeIngredientEntity(name: 'ביצים', amount: 2, unit: MeasurementUnit.unit),
+          ],
+        ),
+      ]),
+    ]);
+
+    expect(items, hasLength(1));
+    expect(items.single.totalAmount, 6);
+    expect(items.single.sources.map((s) => s.label), ['שקשוקה', 'חביתה']);
+  });
 }

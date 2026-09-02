@@ -1,4 +1,4 @@
-package com.example.easy_plate
+package com.KHEasyDev.easy_plate
 
 import io.flutter.embedding.android.FlutterActivity
 

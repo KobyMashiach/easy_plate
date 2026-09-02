@@ -9,8 +9,10 @@ import 'core/logger/memory_logger.dart';
 import 'core/main_imports/app_dependencies.dart';
 import 'core/main_imports/repository_providers.dart';
 import 'core/services/connectivity_service.dart';
+import 'core/services/image_storage_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
+import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
 import 'core/utils/routing/app_router.dart';
 
@@ -22,6 +24,9 @@ Future<void> main() async {
 
   await Hive.initFlutter();
   await AdaptersController.registerAdapters();
+  // Caches the images directory so ClayImage can resolve paths synchronously
+  // while building.
+  await ImageStorageService().init();
 
   final deps = await AppDependencies.create();
   // Only after onboarding — asking for notification permission before the user
@@ -30,7 +35,9 @@ Future<void> main() async {
     await ShoppingReminderService().scheduleForShoppingDay(deps.preferences.shoppingDay);
   }
 
-  LocaleSettings.setLocale(AppLocale.he);
+  // Must be awaited: slang builds the translations lazily, so running the app
+  // before this resolves would render the base locale regardless of the choice.
+  await LocaleSettings.setLocale(deps.preferences.language.locale);
 
   runApp(
     TranslationProvider(
@@ -56,22 +63,17 @@ class _EasyPlateAppState extends State<EasyPlateApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Reading the locale through TranslationProvider rebuilds the whole app
+    // when the language changes, and lets Flutter derive text direction from
+    // the locale — Hebrew and Arabic get RTL, the rest LTR.
     return MaterialApp.router(
       title: 'EasyPlate',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: _router,
-      locale: const Locale('he', 'IL'),
-      supportedLocales: const [Locale('he', 'IL')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      builder: (context, child) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: child ?? const SizedBox.shrink(),
-      ),
+      locale: TranslationProvider.of(context).flutterLocale,
+      supportedLocales: AppLocaleUtils.supportedLocales,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
     );
   }
 }

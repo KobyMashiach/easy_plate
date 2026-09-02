@@ -26,11 +26,12 @@ class GroceryItemEntity {
     List<GroceryItemSourceEntity>? sources,
     bool? isChecked,
     String? category,
+    MeasurementUnit? unit,
   }) {
     return GroceryItemEntity(
       id: id,
       name: name,
-      unit: unit,
+      unit: unit ?? this.unit,
       sources: sources ?? this.sources,
       isChecked: isChecked ?? this.isChecked,
       category: category ?? this.category,

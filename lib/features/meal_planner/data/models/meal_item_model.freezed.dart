@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MealItemModel {
 
-@HiveField(0) String get id;@HiveField(1) String? get recipeId;@HiveField(2) String? get freeText;
+@HiveField(0) String get id;@HiveField(1) String? get recipeId;@HiveField(2) String? get freeText;@HiveField(3) List<RecipeIngredientModel> get ingredients;
 /// Create a copy of MealItemModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $MealItemModelCopyWith<MealItemModel> get copyWith => _$MealItemModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.freeText, freeText) || other.freeText == freeText));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.freeText, freeText) || other.freeText == freeText)&&const DeepCollectionEquality().equals(other.ingredients, ingredients));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,recipeId,freeText);
+int get hashCode => Object.hash(runtimeType,id,recipeId,freeText,const DeepCollectionEquality().hash(ingredients));
 
 @override
 String toString() {
-  return 'MealItemModel(id: $id, recipeId: $recipeId, freeText: $freeText)';
+  return 'MealItemModel(id: $id, recipeId: $recipeId, freeText: $freeText, ingredients: $ingredients)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $MealItemModelCopyWith<$Res>  {
   factory $MealItemModelCopyWith(MealItemModel value, $Res Function(MealItemModel) _then) = _$MealItemModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String? recipeId,@HiveField(2) String? freeText
+@HiveField(0) String id,@HiveField(1) String? recipeId,@HiveField(2) String? freeText,@HiveField(3) List<RecipeIngredientModel> ingredients
 });
 
 
@@ -65,12 +65,13 @@ class _$MealItemModelCopyWithImpl<$Res>
 
 /// Create a copy of MealItemModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? recipeId = freezed,Object? freeText = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? recipeId = freezed,Object? freeText = freezed,Object? ingredients = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
 as String?,freeText: freezed == freeText ? _self.freeText : freeText // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,ingredients: null == ingredients ? _self.ingredients : ingredients // ignore: cast_nullable_to_non_nullable
+as List<RecipeIngredientModel>,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? recipeId, @HiveField(2)  String? freeText)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? recipeId, @HiveField(2)  String? freeText, @HiveField(3)  List<RecipeIngredientModel> ingredients)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MealItemModel() when $default != null:
-return $default(_that.id,_that.recipeId,_that.freeText);case _:
+return $default(_that.id,_that.recipeId,_that.freeText,_that.ingredients);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.id,_that.recipeId,_that.freeText);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? recipeId, @HiveField(2)  String? freeText)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? recipeId, @HiveField(2)  String? freeText, @HiveField(3)  List<RecipeIngredientModel> ingredients)  $default,) {final _that = this;
 switch (_that) {
 case _MealItemModel():
-return $default(_that.id,_that.recipeId,_that.freeText);}
+return $default(_that.id,_that.recipeId,_that.freeText,_that.ingredients);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -190,10 +191,10 @@ return $default(_that.id,_that.recipeId,_that.freeText);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? recipeId, @HiveField(2)  String? freeText)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? recipeId, @HiveField(2)  String? freeText, @HiveField(3)  List<RecipeIngredientModel> ingredients)?  $default,) {final _that = this;
 switch (_that) {
 case _MealItemModel() when $default != null:
-return $default(_that.id,_that.recipeId,_that.freeText);case _:
+return $default(_that.id,_that.recipeId,_that.freeText,_that.ingredients);case _:
   return null;
 
 }
@@ -205,12 +206,19 @@ return $default(_that.id,_that.recipeId,_that.freeText);case _:
 @JsonSerializable()
 
 class _MealItemModel implements MealItemModel {
-  const _MealItemModel({@HiveField(0) required this.id, @HiveField(1) this.recipeId, @HiveField(2) this.freeText});
+  const _MealItemModel({@HiveField(0) required this.id, @HiveField(1) this.recipeId, @HiveField(2) this.freeText, @HiveField(3) final  List<RecipeIngredientModel> ingredients = const []}): _ingredients = ingredients;
   factory _MealItemModel.fromJson(Map<String, dynamic> json) => _$MealItemModelFromJson(json);
 
 @override@HiveField(0) final  String id;
 @override@HiveField(1) final  String? recipeId;
 @override@HiveField(2) final  String? freeText;
+ final  List<RecipeIngredientModel> _ingredients;
+@override@JsonKey()@HiveField(3) List<RecipeIngredientModel> get ingredients {
+  if (_ingredients is EqualUnmodifiableListView) return _ingredients;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_ingredients);
+}
+
 
 /// Create a copy of MealItemModel
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.freeText, freeText) || other.freeText == freeText));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.freeText, freeText) || other.freeText == freeText)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,recipeId,freeText);
+int get hashCode => Object.hash(runtimeType,id,recipeId,freeText,const DeepCollectionEquality().hash(_ingredients));
 
 @override
 String toString() {
-  return 'MealItemModel(id: $id, recipeId: $recipeId, freeText: $freeText)';
+  return 'MealItemModel(id: $id, recipeId: $recipeId, freeText: $freeText, ingredients: $ingredients)';
 }
 
 
@@ -245,7 +253,7 @@ abstract mixin class _$MealItemModelCopyWith<$Res> implements $MealItemModelCopy
   factory _$MealItemModelCopyWith(_MealItemModel value, $Res Function(_MealItemModel) _then) = __$MealItemModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String? recipeId,@HiveField(2) String? freeText
+@HiveField(0) String id,@HiveField(1) String? recipeId,@HiveField(2) String? freeText,@HiveField(3) List<RecipeIngredientModel> ingredients
 });
 
 
@@ -262,12 +270,13 @@ class __$MealItemModelCopyWithImpl<$Res>
 
 /// Create a copy of MealItemModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? recipeId = freezed,Object? freeText = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? recipeId = freezed,Object? freeText = freezed,Object? ingredients = null,}) {
   return _then(_MealItemModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
 as String?,freeText: freezed == freeText ? _self.freeText : freeText // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,ingredients: null == ingredients ? _self._ingredients : ingredients // ignore: cast_nullable_to_non_nullable
+as List<RecipeIngredientModel>,
   ));
 }
 

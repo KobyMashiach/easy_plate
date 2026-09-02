@@ -24,13 +24,14 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
           ? {}
           : (fields[3] as Map).cast<String, String>(),
       createdAt: fields[4] as DateTime,
+      coverImageFileName: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeBookModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -40,7 +41,9 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
       ..writeByte(3)
       ..write(obj.collaborators)
       ..writeByte(4)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(5)
+      ..write(obj.coverImageFileName);
   }
 
   @override
@@ -71,6 +74,7 @@ _RecipeBookModel _$RecipeBookModelFromJson(Map<String, dynamic> json) =>
           ) ??
           const {},
       createdAt: DateTime.parse(json['createdAt'] as String),
+      coverImageFileName: json['coverImageFileName'] as String?,
     );
 
 Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
@@ -80,4 +84,5 @@ Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
       'recipeRefs': instance.recipeRefs,
       'collaborators': instance.collaborators,
       'createdAt': instance.createdAt.toIso8601String(),
+      'coverImageFileName': instance.coverImageFileName,
     };

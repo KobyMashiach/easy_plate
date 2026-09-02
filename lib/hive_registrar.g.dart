@@ -19,6 +19,7 @@ import 'package:easy_plate/features/user_profile/data/models/user_preferences_mo
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(AccessRoleAdapter());
+    registerAdapter(AppLanguageAdapter());
     registerAdapter(BookRecipeRefModelAdapter());
     registerAdapter(DietaryPreferenceAdapter());
     registerAdapter(GroceryItemModelAdapter());
@@ -39,6 +40,7 @@ extension HiveRegistrar on HiveInterface {
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(AccessRoleAdapter());
+    registerAdapter(AppLanguageAdapter());
     registerAdapter(BookRecipeRefModelAdapter());
     registerAdapter(DietaryPreferenceAdapter());
     registerAdapter(GroceryItemModelAdapter());

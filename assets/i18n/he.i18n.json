@@ -45,13 +45,27 @@
     "title": "הגדרות",
     "dietaryPreferences": "העדפות תזונתיות",
     "shoppingDay": "יום קניות",
+    "language": "שפה",
     "soundEffects": "אפקטי קול (דפדוף עמודים)",
+    "fastPageTurn": "מעבר מהיר בספר",
+    "fastPageTurnHint": "קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.",
     "sharedAccess": "ניהול שיתופים",
     "noSharedAccess": "עדיין לא שיתפתם ספרים או רשימות"
+  },
+  "language": {
+    "hebrew": "עברית",
+    "english": "English",
+    "arabic": "العربية",
+    "french": "Français",
+    "russian": "Русский"
   },
   "books": {
     "myLibrary": "הספרייה שלי",
     "myRecipes": "המתכונים שלי",
+    "librarySubtitle": "כל ספרי המתכונים שלכם במקום אחד",
+    "recipesSubtitle": "חפשו וסננו את כל המתכונים שאספתם",
+    "collection": "אוסף",
+    "recipesCount": "$count מתכונים",
     "newBook": "ספר חדש",
     "newBookTitle": "שם הספר",
     "tableOfContents": "תוכן עניינים",
@@ -60,16 +74,22 @@
     "quickNav": "ניווט מהיר",
     "share": "שיתוף ספר",
     "viewer": "צופה",
-    "editor": "עורך"
+    "editor": "עורך",
+    "reorderHint": "גררו כדי לשנות את סדר המתכונים",
+    "coverImage": "תמונת כריכה",
+    "bookOptions": "אפשרויות ספר"
   },
   "recipe": {
     "prepTime": "זמן הכנה",
     "cookTime": "זמן בישול",
     "ingredients": "מצרכים",
+    "ingredientsCount": "$count מצרכים",
+    "minutes": "$count דק׳",
     "instructions": "אופן ההכנה",
     "addToBook": "הוסף לספר",
     "removeFromBook": "הסר מהספר",
-    "deleteRecipe": "מחיקת מתכון"
+    "deleteRecipe": "מחיקת מתכון",
+    "photo": "תמונת המתכון"
   },
   "ingestion": {
     "title": "הוספת מתכון",
@@ -92,7 +112,29 @@
     "mealName": "שם הארוחה",
     "addItem": "הוספת פריט",
     "pickRecipe": "בחירת מתכון",
-    "quickEntry": "פריט מהיר"
+    "quickEntry": "פריט מהיר",
+    "noPlans": "עדיין אין תפריטים. צרו את התפריט הראשון שלכם!",
+    "addMealHint": "בחרו מתכון או הוסיפו פריט מהיר",
+    "breakfast": "בוקר",
+    "lunch": "צהריים",
+    "dinner": "ערב",
+    "morningSnack": "ביניים בוקר",
+    "afternoonSnack": "ביניים צהריים",
+    "eveningSnack": "ביניים ערב",
+    "template": "תבנית התחלתית",
+    "templateFree": "בחירה חופשית",
+    "templateThree": "3 ארוחות",
+    "templateSix": "6 ארוחות",
+    "templateFreeHint": "תפריט ריק — הוסיפו ארוחות בעצמכם",
+    "templateThreeHint": "בוקר, צהריים וערב בכל ימות השבוע",
+    "templateSixHint": "3 ארוחות עיקריות + ארוחות ביניים בכל ימות השבוע",
+    "nameRequired": "צריך לתת שם לתפריט",
+    "products": "מוצרים",
+    "addProduct": "הוספת מוצר",
+    "productName": "שם המוצר",
+    "noProducts": "בלי מוצרים הפריט ייכנס לרשימת הקניות כשורה אחת בשמו",
+    "itemName": "שם הפריט",
+    "editItem": "עריכת פריט"
   },
   "groceryList": {
     "title": "רשימת קניות",
@@ -100,8 +142,39 @@
     "addItem": "פריט חדש",
     "category": "קטגוריה",
     "breakdownTitle": "מקורות הכמות",
+    "collectionProgress": "התקדמות איסוף",
+    "itemsCollected": "$collected מתוך $total פריטים נאספו",
+    "adjustAmounts": "עדכון כמויות",
     "buffer": "תוספת חופשית",
     "share": "שיתוף רשימה",
-    "empty": "הרשימה ריקה כרגע"
+    "empty": "הרשימה ריקה כרגע",
+    "uncheckedSection": "פריטים לא מסומנים",
+    "checkedSection": "פריטים מסומנים",
+    "selectAll": "סמן הכל",
+    "clearAll": "בטל הכל",
+    "deleteChecked": "מחק מסומנים",
+    "amount": "כמות",
+    "unit": "יחידת מידה",
+    "lastSource": "חייב להישאר לפחות מקור אחד",
+    "itemName": "שם הפריט"
+  },
+  "unit": {
+    "gram": "גרם",
+    "kilogram": "ק\"ג",
+    "milliliter": "מ\"ל",
+    "liter": "ליטר",
+    "teaspoon": "כפית",
+    "tablespoon": "כף",
+    "cup": "כוס",
+    "unit": "יחידה",
+    "pinch": "קורט",
+    "unspecified": "—"
+  },
+  "image": {
+    "add": "הוספת תמונה",
+    "change": "שינוי תמונה",
+    "gallery": "בחירה מהגלריה",
+    "camera": "צילום תמונה",
+    "remove": "הסרת התמונה"
   }
 }

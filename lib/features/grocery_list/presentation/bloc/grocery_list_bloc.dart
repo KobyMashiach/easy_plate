@@ -21,11 +21,19 @@ sealed class GroceryListEvent with _$GroceryListEvent {
   const factory GroceryListEvent.init() = _Init;
   const factory GroceryListEvent.regenerate() = _Regenerate;
   const factory GroceryListEvent.toggleItem(String itemId) = _ToggleItem;
-  const factory GroceryListEvent.addAdHocItem(String name) = _AddAdHocItem;
+  const factory GroceryListEvent.addAdHocItem(
+    String name,
+    double amount,
+    MeasurementUnit unit,
+  ) = _AddAdHocItem;
   const factory GroceryListEvent.removeItem(String itemId) = _RemoveItem;
   const factory GroceryListEvent.addBuffer(String itemId, double amount) = _AddBuffer;
   const factory GroceryListEvent.adjustSource(String itemId, int sourceIndex, double amount) =
       _AdjustSource;
+  const factory GroceryListEvent.removeSource(String itemId, int sourceIndex) = _RemoveSource;
+  const factory GroceryListEvent.changeUnit(String itemId, MeasurementUnit unit) = _ChangeUnit;
+  const factory GroceryListEvent.setAllChecked(bool checked) = _SetAllChecked;
+  const factory GroceryListEvent.deleteCheckedItems() = _DeleteCheckedItems;
 }
 
 @freezed
@@ -56,6 +64,10 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     on<_RemoveItem>(_removeItem);
     on<_AddBuffer>(_addBuffer);
     on<_AdjustSource>(_adjustSource);
+    on<_RemoveSource>(_removeSource);
+    on<_ChangeUnit>(_changeUnit);
+    on<_SetAllChecked>(_setAllChecked);
+    on<_DeleteCheckedItems>(_deleteCheckedItems);
     add(const GroceryListEvent.init());
   }
 
@@ -130,18 +142,60 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     return _updateItem(emit, event.itemId, (item) => item.copyWith(isChecked: !item.isChecked));
   }
 
+  /// Ad-hoc lines get a single manual source so they carry a quantity and can
+  /// be edited through exactly the same breakdown sheet as recipe-derived ones.
   Future<void> _addAdHocItem(_AddAdHocItem event, Emitter<GroceryListState> emit) async {
     final current = state;
     if (current is! GroceryListLoaded) return;
     final item = GroceryItemEntity(
       id: _uuid.v4(),
       name: event.name,
-      unit: MeasurementUnit.unspecified,
-      sources: const [],
+      unit: event.unit,
+      sources: [GroceryItemSourceEntity(label: event.name, amount: event.amount)],
       category: 'כללי',
       isAdHoc: true,
     );
     await _persist(current.list.copyWith(items: [...current.list.items, item]), emit);
+  }
+
+  /// Drops one contributing source, but never the last one — an item with no
+  /// sources would silently lose its quantity.
+  Future<void> _removeSource(_RemoveSource event, Emitter<GroceryListState> emit) {
+    return _updateItem(emit, event.itemId, (item) {
+      if (item.sources.length <= 1) return item;
+      if (event.sourceIndex < 0 || event.sourceIndex >= item.sources.length) return item;
+      final sources = [...item.sources]..removeAt(event.sourceIndex);
+      return item.copyWith(sources: sources);
+    });
+  }
+
+  Future<void> _changeUnit(_ChangeUnit event, Emitter<GroceryListState> emit) {
+    return _updateItem(emit, event.itemId, (item) => item.copyWith(unit: event.unit));
+  }
+
+  Future<void> _setAllChecked(_SetAllChecked event, Emitter<GroceryListState> emit) async {
+    final current = state;
+    if (current is! GroceryListLoaded) return;
+    await _persist(
+      current.list.copyWith(
+        items: current.list.items.map((i) => i.copyWith(isChecked: event.checked)).toList(),
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _deleteCheckedItems(
+    _DeleteCheckedItems event,
+    Emitter<GroceryListState> emit,
+  ) async {
+    final current = state;
+    if (current is! GroceryListLoaded) return;
+    await _persist(
+      current.list.copyWith(
+        items: current.list.items.where((i) => !i.isChecked).toList(),
+      ),
+      emit,
+    );
   }
 
   Future<void> _removeItem(_RemoveItem event, Emitter<GroceryListState> emit) async {
