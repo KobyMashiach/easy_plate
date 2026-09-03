@@ -48,6 +48,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$en language = _Translations$language$en._(_root);
 	@override late final _Translations$books$en books = _Translations$books$en._(_root);
 	@override late final _Translations$recipe$en recipe = _Translations$recipe$en._(_root);
+	@override late final _Translations$editor$en editor = _Translations$editor$en._(_root);
 	@override late final _Translations$ingestion$en ingestion = _Translations$ingestion$en._(_root);
 	@override late final _Translations$mealPlanner$en mealPlanner = _Translations$mealPlanner$en._(_root);
 	@override late final _Translations$groceryList$en groceryList = _Translations$groceryList$en._(_root);
@@ -202,6 +203,38 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get removeFromBook => 'Remove from book';
 	@override String get deleteRecipe => 'Delete recipe';
 	@override String get photo => 'Recipe photo';
+}
+
+// Path: editor
+class _Translations$editor$en extends Translations$editor$he {
+	_Translations$editor$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Edit recipe';
+	@override String get recipeTitle => 'Recipe name';
+	@override String get titleHint => 'For example: Jerusalem shakshuka';
+	@override String get titleRequired => 'A recipe name is required';
+	@override String get prepMinutes => 'Prep time (min)';
+	@override String get cookMinutes => 'Cook time (min)';
+	@override String get amount => 'Amount';
+	@override String get unit => 'Unit';
+	@override String get ingredientName => 'Ingredient name';
+	@override String get stepHint => 'Describe the step';
+	@override String get addIngredient => 'Add ingredient';
+	@override String get addStep => 'Add step';
+	@override String get removeIngredient => 'Remove ingredient';
+	@override String get removeStep => 'Remove step';
+	@override String get fixSpelling => 'Fix spelling';
+	@override String get refining => 'Correcting the recipe...';
+	@override String get refineError => 'We could not correct the recipe';
+	@override String get spellingFixed => 'Recipe corrected';
+	@override String get noChanges => 'No spelling mistakes found';
+	@override String get timesSynced => 'Times in the instructions were updated to match';
+	@override String get discardTitle => 'Discard changes?';
+	@override String get discardBody => 'Your edits will not be saved.';
+	@override String get discard => 'Discard';
 }
 
 // Path: ingestion
@@ -424,6 +457,29 @@ extension on TranslationsEn {
 			'recipe.removeFromBook' => 'Remove from book',
 			'recipe.deleteRecipe' => 'Delete recipe',
 			'recipe.photo' => 'Recipe photo',
+			'editor.title' => 'Edit recipe',
+			'editor.recipeTitle' => 'Recipe name',
+			'editor.titleHint' => 'For example: Jerusalem shakshuka',
+			'editor.titleRequired' => 'A recipe name is required',
+			'editor.prepMinutes' => 'Prep time (min)',
+			'editor.cookMinutes' => 'Cook time (min)',
+			'editor.amount' => 'Amount',
+			'editor.unit' => 'Unit',
+			'editor.ingredientName' => 'Ingredient name',
+			'editor.stepHint' => 'Describe the step',
+			'editor.addIngredient' => 'Add ingredient',
+			'editor.addStep' => 'Add step',
+			'editor.removeIngredient' => 'Remove ingredient',
+			'editor.removeStep' => 'Remove step',
+			'editor.fixSpelling' => 'Fix spelling',
+			'editor.refining' => 'Correcting the recipe...',
+			'editor.refineError' => 'We could not correct the recipe',
+			'editor.spellingFixed' => 'Recipe corrected',
+			'editor.noChanges' => 'No spelling mistakes found',
+			'editor.timesSynced' => 'Times in the instructions were updated to match',
+			'editor.discardTitle' => 'Discard changes?',
+			'editor.discardBody' => 'Your edits will not be saved.',
+			'editor.discard' => 'Discard',
 			'ingestion.title' => 'Add a recipe',
 			'ingestion.pasteText' => 'Paste text',
 			'ingestion.pasteHint' => 'Paste a recipe here from WhatsApp or any other source',

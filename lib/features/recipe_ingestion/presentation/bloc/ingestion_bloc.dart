@@ -24,6 +24,7 @@ sealed class IngestionEvent with _$IngestionEvent {
   const factory IngestionEvent.searchWeb(String query) = _SearchWeb;
   const factory IngestionEvent.parseUrl(String url) = _ParseUrl;
   const factory IngestionEvent.parseSocialVideo(String url) = _ParseSocialVideo;
+  const factory IngestionEvent.updateRecipe(RecipeEntity recipe) = _UpdateRecipe;
   const factory IngestionEvent.saveRecipe(RecipeEntity recipe) = _SaveRecipe;
 }
 
@@ -65,6 +66,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     on<_SearchWeb>(_searchWeb);
     on<_ParseUrl>(_parseUrl);
     on<_ParseSocialVideo>(_parseSocialVideo);
+    on<_UpdateRecipe>(_updateRecipe);
     on<_SaveRecipe>(_saveRecipe);
   }
 
@@ -125,6 +127,12 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       debugPrint('Web search error: $e');
       emit(.errorMessage(_channel, e.toString()));
     }
+  }
+
+  /// The editor hands back the whole recipe, so the review simply re-renders
+  /// what came out of it — nothing is persisted until the user saves.
+  FutureOr<void> _updateRecipe(_UpdateRecipe event, Emitter<IngestionState> emit) {
+    emit(.review(_channel, event.recipe));
   }
 
   Future<void> _saveRecipe(_SaveRecipe event, Emitter<IngestionState> emit) async {

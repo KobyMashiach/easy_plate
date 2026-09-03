@@ -52,6 +52,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$language$he language = Translations$language$he.internal(_root);
 	late final Translations$books$he books = Translations$books$he.internal(_root);
 	late final Translations$recipe$he recipe = Translations$recipe$he.internal(_root);
+	late final Translations$editor$he editor = Translations$editor$he.internal(_root);
 	late final Translations$ingestion$he ingestion = Translations$ingestion$he.internal(_root);
 	late final Translations$mealPlanner$he mealPlanner = Translations$mealPlanner$he.internal(_root);
 	late final Translations$groceryList$he groceryList = Translations$groceryList$he.internal(_root);
@@ -358,6 +359,84 @@ class Translations$recipe$he {
 
 	/// he: 'תמונת המתכון'
 	String get photo => 'תמונת המתכון';
+}
+
+// Path: editor
+class Translations$editor$he {
+	Translations$editor$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'עריכת מתכון'
+	String get title => 'עריכת מתכון';
+
+	/// he: 'שם המתכון'
+	String get recipeTitle => 'שם המתכון';
+
+	/// he: 'לדוגמה: שקשוקה ירושלמית'
+	String get titleHint => 'לדוגמה: שקשוקה ירושלמית';
+
+	/// he: 'חובה להזין שם למתכון'
+	String get titleRequired => 'חובה להזין שם למתכון';
+
+	/// he: 'זמן הכנה (דק׳)'
+	String get prepMinutes => 'זמן הכנה (דק׳)';
+
+	/// he: 'זמן בישול (דק׳)'
+	String get cookMinutes => 'זמן בישול (דק׳)';
+
+	/// he: 'כמות'
+	String get amount => 'כמות';
+
+	/// he: 'יחידה'
+	String get unit => 'יחידה';
+
+	/// he: 'שם המצרך'
+	String get ingredientName => 'שם המצרך';
+
+	/// he: 'תארו את השלב'
+	String get stepHint => 'תארו את השלב';
+
+	/// he: 'הוספת מצרך'
+	String get addIngredient => 'הוספת מצרך';
+
+	/// he: 'הוספת שלב'
+	String get addStep => 'הוספת שלב';
+
+	/// he: 'הסרת מצרך'
+	String get removeIngredient => 'הסרת מצרך';
+
+	/// he: 'הסרת שלב'
+	String get removeStep => 'הסרת שלב';
+
+	/// he: 'תיקון שגיאות כתיב'
+	String get fixSpelling => 'תיקון שגיאות כתיב';
+
+	/// he: 'מתקן את המתכון...'
+	String get refining => 'מתקן את המתכון...';
+
+	/// he: 'לא הצלחנו לתקן את המתכון'
+	String get refineError => 'לא הצלחנו לתקן את המתכון';
+
+	/// he: 'המתכון תוקן'
+	String get spellingFixed => 'המתכון תוקן';
+
+	/// he: 'לא נמצאו שגיאות כתיב'
+	String get noChanges => 'לא נמצאו שגיאות כתיב';
+
+	/// he: 'הזמנים באופן ההכנה עודכנו לפי הזמנים החדשים'
+	String get timesSynced => 'הזמנים באופן ההכנה עודכנו לפי הזמנים החדשים';
+
+	/// he: 'לבטל את השינויים?'
+	String get discardTitle => 'לבטל את השינויים?';
+
+	/// he: 'השינויים שביצעתם לא יישמרו.'
+	String get discardBody => 'השינויים שביצעתם לא יישמרו.';
+
+	/// he: 'בטל שינויים'
+	String get discard => 'בטל שינויים';
 }
 
 // Path: ingestion
@@ -742,6 +821,29 @@ extension on Translations {
 			'recipe.removeFromBook' => 'הסר מהספר',
 			'recipe.deleteRecipe' => 'מחיקת מתכון',
 			'recipe.photo' => 'תמונת המתכון',
+			'editor.title' => 'עריכת מתכון',
+			'editor.recipeTitle' => 'שם המתכון',
+			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
+			'editor.titleRequired' => 'חובה להזין שם למתכון',
+			'editor.prepMinutes' => 'זמן הכנה (דק׳)',
+			'editor.cookMinutes' => 'זמן בישול (דק׳)',
+			'editor.amount' => 'כמות',
+			'editor.unit' => 'יחידה',
+			'editor.ingredientName' => 'שם המצרך',
+			'editor.stepHint' => 'תארו את השלב',
+			'editor.addIngredient' => 'הוספת מצרך',
+			'editor.addStep' => 'הוספת שלב',
+			'editor.removeIngredient' => 'הסרת מצרך',
+			'editor.removeStep' => 'הסרת שלב',
+			'editor.fixSpelling' => 'תיקון שגיאות כתיב',
+			'editor.refining' => 'מתקן את המתכון...',
+			'editor.refineError' => 'לא הצלחנו לתקן את המתכון',
+			'editor.spellingFixed' => 'המתכון תוקן',
+			'editor.noChanges' => 'לא נמצאו שגיאות כתיב',
+			'editor.timesSynced' => 'הזמנים באופן ההכנה עודכנו לפי הזמנים החדשים',
+			'editor.discardTitle' => 'לבטל את השינויים?',
+			'editor.discardBody' => 'השינויים שביצעתם לא יישמרו.',
+			'editor.discard' => 'בטל שינויים',
 			'ingestion.title' => 'הוספת מתכון',
 			'ingestion.pasteText' => 'הדבקת טקסט',
 			'ingestion.pasteHint' => 'הדביקו כאן מתכון מוואטסאפ או מכל מקור אחר',

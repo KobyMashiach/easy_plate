@@ -1,0 +1,4 @@
+{
+  "// dart.flutterRunAdditionalArgs": "Covers runs started outside a launch config. Passing the same file twice when a launch config also sets it is harmless.",
+  "dart.flutterRunAdditionalArgs": ["--dart-define-from-file=dart_defines/dev.json"]
+}

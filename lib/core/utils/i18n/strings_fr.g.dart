@@ -48,6 +48,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$fr language = _Translations$language$fr._(_root);
 	@override late final _Translations$books$fr books = _Translations$books$fr._(_root);
 	@override late final _Translations$recipe$fr recipe = _Translations$recipe$fr._(_root);
+	@override late final _Translations$editor$fr editor = _Translations$editor$fr._(_root);
 	@override late final _Translations$ingestion$fr ingestion = _Translations$ingestion$fr._(_root);
 	@override late final _Translations$mealPlanner$fr mealPlanner = _Translations$mealPlanner$fr._(_root);
 	@override late final _Translations$groceryList$fr groceryList = _Translations$groceryList$fr._(_root);
@@ -202,6 +203,38 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get removeFromBook => 'Retirer du livre';
 	@override String get deleteRecipe => 'Supprimer la recette';
 	@override String get photo => 'Photo de la recette';
+}
+
+// Path: editor
+class _Translations$editor$fr extends Translations$editor$he {
+	_Translations$editor$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Modifier la recette';
+	@override String get recipeTitle => 'Nom de la recette';
+	@override String get titleHint => 'Par exemple : shakshuka de Jérusalem';
+	@override String get titleRequired => 'Un nom de recette est requis';
+	@override String get prepMinutes => 'Préparation (min)';
+	@override String get cookMinutes => 'Cuisson (min)';
+	@override String get amount => 'Quantité';
+	@override String get unit => 'Unité';
+	@override String get ingredientName => 'Nom de l\'ingrédient';
+	@override String get stepHint => 'Décrivez l\'étape';
+	@override String get addIngredient => 'Ajouter un ingrédient';
+	@override String get addStep => 'Ajouter une étape';
+	@override String get removeIngredient => 'Retirer l\'ingrédient';
+	@override String get removeStep => 'Retirer l\'étape';
+	@override String get fixSpelling => 'Corriger l\'orthographe';
+	@override String get refining => 'Correction de la recette...';
+	@override String get refineError => 'Impossible de corriger la recette';
+	@override String get spellingFixed => 'Recette corrigée';
+	@override String get noChanges => 'Aucune faute d\'orthographe trouvée';
+	@override String get timesSynced => 'Les durées des étapes ont été mises à jour';
+	@override String get discardTitle => 'Abandonner les modifications ?';
+	@override String get discardBody => 'Vos modifications ne seront pas enregistrées.';
+	@override String get discard => 'Abandonner';
 }
 
 // Path: ingestion
@@ -424,6 +457,29 @@ extension on TranslationsFr {
 			'recipe.removeFromBook' => 'Retirer du livre',
 			'recipe.deleteRecipe' => 'Supprimer la recette',
 			'recipe.photo' => 'Photo de la recette',
+			'editor.title' => 'Modifier la recette',
+			'editor.recipeTitle' => 'Nom de la recette',
+			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
+			'editor.titleRequired' => 'Un nom de recette est requis',
+			'editor.prepMinutes' => 'Préparation (min)',
+			'editor.cookMinutes' => 'Cuisson (min)',
+			'editor.amount' => 'Quantité',
+			'editor.unit' => 'Unité',
+			'editor.ingredientName' => 'Nom de l\'ingrédient',
+			'editor.stepHint' => 'Décrivez l\'étape',
+			'editor.addIngredient' => 'Ajouter un ingrédient',
+			'editor.addStep' => 'Ajouter une étape',
+			'editor.removeIngredient' => 'Retirer l\'ingrédient',
+			'editor.removeStep' => 'Retirer l\'étape',
+			'editor.fixSpelling' => 'Corriger l\'orthographe',
+			'editor.refining' => 'Correction de la recette...',
+			'editor.refineError' => 'Impossible de corriger la recette',
+			'editor.spellingFixed' => 'Recette corrigée',
+			'editor.noChanges' => 'Aucune faute d\'orthographe trouvée',
+			'editor.timesSynced' => 'Les durées des étapes ont été mises à jour',
+			'editor.discardTitle' => 'Abandonner les modifications ?',
+			'editor.discardBody' => 'Vos modifications ne seront pas enregistrées.',
+			'editor.discard' => 'Abandonner',
 			'ingestion.title' => 'Ajouter une recette',
 			'ingestion.pasteText' => 'Coller du texte',
 			'ingestion.pasteHint' => 'Collez ici une recette venant de WhatsApp ou de toute autre source',

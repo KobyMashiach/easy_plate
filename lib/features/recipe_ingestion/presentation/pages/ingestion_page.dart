@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -7,6 +8,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
@@ -242,6 +244,17 @@ class _ReviewRecipe extends StatelessWidget {
 
   const _ReviewRecipe({required this.recipe});
 
+  /// The editor is reached by route name so ingestion never reaches into
+  /// another feature's presentation layer, and it pops the edited recipe back.
+  Future<void> _openEditor(BuildContext context, RecipeEntity current) async {
+    final bloc = context.read<IngestionBloc>();
+    final edited = await context.pushNamed<RecipeEntity>(
+      Routing.recipeEditor,
+      extra: current,
+    );
+    if (edited != null) bloc.add(IngestionEvent.updateRecipe(edited));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -335,11 +348,23 @@ class _ReviewRecipe extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.all(AppSpacing.marginMobile),
-          child: ClayButton(
-            label: t.common.save,
-            icon: Icons.bookmark_added_rounded,
-            expanded: true,
-            onPressed: () => context.read<IngestionBloc>().add(.saveRecipe(recipe)),
+          child: Row(
+            children: [
+              ClayButton(
+                label: t.common.edit,
+                icon: Icons.edit_rounded,
+                onPressed: () => _openEditor(context, recipe),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: ClayButton(
+                  label: t.common.save,
+                  icon: Icons.bookmark_added_rounded,
+                  expanded: true,
+                  onPressed: () => context.read<IngestionBloc>().add(.saveRecipe(recipe)),
+                ),
+              ),
+            ],
           ),
         ),
       ],

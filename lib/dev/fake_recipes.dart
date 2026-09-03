@@ -7,7 +7,7 @@ import '../features/recipe_ingestion/domain/entities/web_search_result_entity.da
 
 const _uuid = Uuid();
 
-/// Debug-only stand-in used when no Claude API key is configured, so the
+/// Debug-only stand-in used when no Gemini API key is configured, so the
 /// ingestion flow can be exercised end to end without network access.
 RecipeEntity fakeParsedRecipe(RecipeIngestionChannel channel, {String? sourceUrl}) {
   return RecipeEntity(

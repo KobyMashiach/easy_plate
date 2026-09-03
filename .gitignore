@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local --dart-define-from-file values. Never commit a real key; the committed
+# dev.example.json is the template to copy.
+/dart_defines/*.json
+!/dart_defines/*.example.json

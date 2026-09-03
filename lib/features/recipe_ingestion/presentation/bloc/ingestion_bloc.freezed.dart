@@ -61,7 +61,7 @@ extension IngestionEventPatterns on IngestionEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SelectChannel value)?  selectChannel,TResult Function( _ParseRawText value)?  parseRawText,TResult Function( _SearchWeb value)?  searchWeb,TResult Function( _ParseUrl value)?  parseUrl,TResult Function( _ParseSocialVideo value)?  parseSocialVideo,TResult Function( _SaveRecipe value)?  saveRecipe,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SelectChannel value)?  selectChannel,TResult Function( _ParseRawText value)?  parseRawText,TResult Function( _SearchWeb value)?  searchWeb,TResult Function( _ParseUrl value)?  parseUrl,TResult Function( _ParseSocialVideo value)?  parseSocialVideo,TResult Function( _UpdateRecipe value)?  updateRecipe,TResult Function( _SaveRecipe value)?  saveRecipe,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
@@ -69,7 +69,8 @@ return selectChannel(_that);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that);case _ParseUrl() when parseUrl != null:
 return parseUrl(_that);case _ParseSocialVideo() when parseSocialVideo != null:
-return parseSocialVideo(_that);case _SaveRecipe() when saveRecipe != null:
+return parseSocialVideo(_that);case _UpdateRecipe() when updateRecipe != null:
+return updateRecipe(_that);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that);case _:
   return orElse();
 
@@ -88,7 +89,7 @@ return saveRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SelectChannel value)  selectChannel,required TResult Function( _ParseRawText value)  parseRawText,required TResult Function( _SearchWeb value)  searchWeb,required TResult Function( _ParseUrl value)  parseUrl,required TResult Function( _ParseSocialVideo value)  parseSocialVideo,required TResult Function( _SaveRecipe value)  saveRecipe,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SelectChannel value)  selectChannel,required TResult Function( _ParseRawText value)  parseRawText,required TResult Function( _SearchWeb value)  searchWeb,required TResult Function( _ParseUrl value)  parseUrl,required TResult Function( _ParseSocialVideo value)  parseSocialVideo,required TResult Function( _UpdateRecipe value)  updateRecipe,required TResult Function( _SaveRecipe value)  saveRecipe,}){
 final _that = this;
 switch (_that) {
 case _SelectChannel():
@@ -96,7 +97,8 @@ return selectChannel(_that);case _ParseRawText():
 return parseRawText(_that);case _SearchWeb():
 return searchWeb(_that);case _ParseUrl():
 return parseUrl(_that);case _ParseSocialVideo():
-return parseSocialVideo(_that);case _SaveRecipe():
+return parseSocialVideo(_that);case _UpdateRecipe():
+return updateRecipe(_that);case _SaveRecipe():
 return saveRecipe(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -111,7 +113,7 @@ return saveRecipe(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SelectChannel value)?  selectChannel,TResult? Function( _ParseRawText value)?  parseRawText,TResult? Function( _SearchWeb value)?  searchWeb,TResult? Function( _ParseUrl value)?  parseUrl,TResult? Function( _ParseSocialVideo value)?  parseSocialVideo,TResult? Function( _SaveRecipe value)?  saveRecipe,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SelectChannel value)?  selectChannel,TResult? Function( _ParseRawText value)?  parseRawText,TResult? Function( _SearchWeb value)?  searchWeb,TResult? Function( _ParseUrl value)?  parseUrl,TResult? Function( _ParseSocialVideo value)?  parseSocialVideo,TResult? Function( _UpdateRecipe value)?  updateRecipe,TResult? Function( _SaveRecipe value)?  saveRecipe,}){
 final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
@@ -119,7 +121,8 @@ return selectChannel(_that);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that);case _ParseUrl() when parseUrl != null:
 return parseUrl(_that);case _ParseSocialVideo() when parseSocialVideo != null:
-return parseSocialVideo(_that);case _SaveRecipe() when saveRecipe != null:
+return parseSocialVideo(_that);case _UpdateRecipe() when updateRecipe != null:
+return updateRecipe(_that);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that);case _:
   return null;
 
@@ -137,14 +140,15 @@ return saveRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String url)?  parseUrl,TResult Function( String url)?  parseSocialVideo,TResult Function( RecipeEntity recipe)?  saveRecipe,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String url)?  parseUrl,TResult Function( String url)?  parseSocialVideo,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that.text);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that.query);case _ParseUrl() when parseUrl != null:
 return parseUrl(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
-return parseSocialVideo(_that.url);case _SaveRecipe() when saveRecipe != null:
+return parseSocialVideo(_that.url);case _UpdateRecipe() when updateRecipe != null:
+return updateRecipe(_that.recipe);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that.recipe);case _:
   return orElse();
 
@@ -163,14 +167,15 @@ return saveRecipe(_that.recipe);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String url)  parseUrl,required TResult Function( String url)  parseSocialVideo,required TResult Function( RecipeEntity recipe)  saveRecipe,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String url)  parseUrl,required TResult Function( String url)  parseSocialVideo,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,}) {final _that = this;
 switch (_that) {
 case _SelectChannel():
 return selectChannel(_that.channel);case _ParseRawText():
 return parseRawText(_that.text);case _SearchWeb():
 return searchWeb(_that.query);case _ParseUrl():
 return parseUrl(_that.url);case _ParseSocialVideo():
-return parseSocialVideo(_that.url);case _SaveRecipe():
+return parseSocialVideo(_that.url);case _UpdateRecipe():
+return updateRecipe(_that.recipe);case _SaveRecipe():
 return saveRecipe(_that.recipe);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -185,14 +190,15 @@ return saveRecipe(_that.recipe);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  parseSocialVideo,TResult? Function( RecipeEntity recipe)?  saveRecipe,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  parseSocialVideo,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that.text);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that.query);case _ParseUrl() when parseUrl != null:
 return parseUrl(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
-return parseSocialVideo(_that.url);case _SaveRecipe() when saveRecipe != null:
+return parseSocialVideo(_that.url);case _UpdateRecipe() when updateRecipe != null:
+return updateRecipe(_that.recipe);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that.recipe);case _:
   return null;
 
@@ -555,6 +561,78 @@ class __$ParseSocialVideoCopyWithImpl<$Res>
   return _then(_ParseSocialVideo(
 null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _UpdateRecipe with DiagnosticableTreeMixin implements IngestionEvent {
+  const _UpdateRecipe(this.recipe);
+  
+
+ final  RecipeEntity recipe;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateRecipeCopyWith<_UpdateRecipe> get copyWith => __$UpdateRecipeCopyWithImpl<_UpdateRecipe>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionEvent.updateRecipe'))
+    ..add(DiagnosticsProperty('recipe', recipe));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateRecipe&&(identical(other.recipe, recipe) || other.recipe == recipe));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,recipe);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionEvent.updateRecipe(recipe: $recipe)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateRecipeCopyWith<$Res> implements $IngestionEventCopyWith<$Res> {
+  factory _$UpdateRecipeCopyWith(_UpdateRecipe value, $Res Function(_UpdateRecipe) _then) = __$UpdateRecipeCopyWithImpl;
+@useResult
+$Res call({
+ RecipeEntity recipe
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateRecipeCopyWithImpl<$Res>
+    implements _$UpdateRecipeCopyWith<$Res> {
+  __$UpdateRecipeCopyWithImpl(this._self, this._then);
+
+  final _UpdateRecipe _self;
+  final $Res Function(_UpdateRecipe) _then;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? recipe = null,}) {
+  return _then(_UpdateRecipe(
+null == recipe ? _self.recipe : recipe // ignore: cast_nullable_to_non_nullable
+as RecipeEntity,
   ));
 }
 

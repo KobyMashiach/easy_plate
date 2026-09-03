@@ -33,7 +33,7 @@ List<SingleChildWidget> buildRepositoryProviders() {
     RepositoryProvider<GroceryListsLocalDataSource>(
       create: (_) => GroceryListsLocalDataSourceImpl(),
     ),
-    RepositoryProvider<RecipeAiDataSource>(create: (_) => ClaudeRecipeAiDataSource()),
+    RepositoryProvider<RecipeAiDataSource>(create: (_) => GeminiRecipeAiDataSource()),
     RepositoryProvider<UserPreferencesRepository>(
       create: (context) => UserPreferencesRepositoryImpl(localDataSource: context.read()),
     ),

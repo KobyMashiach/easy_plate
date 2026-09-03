@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,104 +16,163 @@ abstract class RecipeAiDataSource {
   Future<List<WebSearchResultEntity>> searchWeb(String query, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences);
+  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged});
 }
 
-/// Calls the Claude Messages API over raw HTTP (there is no official Anthropic
-/// Dart SDK). Structured extraction uses a strict tool schema so the model's
-/// output validates exactly against the recipe shape.
-class ClaudeRecipeAiDataSource implements RecipeAiDataSource {
+/// Calls the Gemini Interactions API over raw HTTP (there is no official Google
+/// GenAI Dart SDK). Extraction runs in structured-output mode so the model's
+/// answer validates against the recipe shape, and the `url_context` /
+/// `google_search` server tools handle fetching and searching.
+class GeminiRecipeAiDataSource implements RecipeAiDataSource {
   final HttpCalls httpCalls;
   static const _uuid = Uuid();
 
-  ClaudeRecipeAiDataSource({HttpCalls? httpCalls})
+  GeminiRecipeAiDataSource({HttpCalls? httpCalls})
       : httpCalls = httpCalls ??
             HttpCalls(
               baseUrl: ApiConfig.aiBaseUrl,
-              headers: {
-                'x-api-key': ApiConfig.anthropicApiKey,
-                'anthropic-version': ApiConfig.anthropicVersion,
-              },
+              // Must be x-goog-api-key. An `Authorization: Bearer` header takes
+              // precedence at the edge and is read as an OAuth2 token, which
+              // fails the key with ACCESS_TOKEN_TYPE_UNSUPPORTED.
+              headers: {'x-goog-api-key': ApiConfig.geminiApiKey},
             );
 
   static const _systemPrompt = '''
 אתה מנתח מתכונים. החזר אך ורק מידע שמופיע במקור.
 מדיניות אפס הזיות: אסור להמציא מצרכים, כמויות, יחידות מידה או שלבים שאינם מופיעים במקור.
-אם כמות, יחידה או זמן חסרים במקור — החזר null עבורם. אל תנחש.
+אם כמות, יחידה או זמן חסרים במקור — השמט את השדה לגמרי. אל תנחש.
 המר כמויות ליחידות מטריות כאשר המקור מציין יחידה ברורה.
-שמור על סדר השלבים כפי שהוא במקור.''';
+שמור על סדר השלבים כפי שהוא במקור.
+החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
 
-  static final _saveRecipeTool = {
-    'name': 'save_recipe',
-    'description': 'Records the recipe exactly as it appears in the source material.',
-    'strict': true,
-    'input_schema': {
-      'type': 'object',
-      'additionalProperties': false,
-      'properties': {
-        'title': {'type': 'string', 'description': 'Dish title as written in the source'},
-        'prep_time_minutes': {
-          'type': ['integer', 'null'],
-          'description': 'Preparation time in minutes, or null if the source does not state it',
-        },
-        'cook_time_minutes': {
-          'type': ['integer', 'null'],
-          'description': 'Cook time in minutes, or null if the source does not state it',
-        },
-        'ingredients': {
-          'type': 'array',
-          'items': {
-            'type': 'object',
-            'additionalProperties': false,
-            'properties': {
-              'name': {'type': 'string'},
-              'amount': {
-                'type': ['number', 'null'],
-                'description': 'Numeric amount, or null if the source omits it',
-              },
-              'unit': {
-                'type': 'string',
-                'enum': [
-                  'gram',
-                  'kilogram',
-                  'milliliter',
-                  'liter',
-                  'teaspoon',
-                  'tablespoon',
-                  'cup',
-                  'unit',
-                  'pinch',
-                  'unspecified',
-                ],
-              },
+  /// Optional fields are deliberately left out of `required` rather than typed
+  /// as nullable — an omitted key is how the model says "the source does not
+  /// say", and it keeps the schema inside the subset Gemini accepts.
+  static const _recipeSchema = {
+    'type': 'object',
+    'properties': {
+      'title': {'type': 'string', 'description': 'Dish title as written in the source'},
+      'prep_time_minutes': {
+        'type': 'integer',
+        'description': 'Preparation time in minutes. Omit if the source does not state it',
+      },
+      'cook_time_minutes': {
+        'type': 'integer',
+        'description': 'Cook time in minutes. Omit if the source does not state it',
+      },
+      'ingredients': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'name': {'type': 'string'},
+            'amount': {
+              'type': 'number',
+              'description': 'Numeric amount. Omit if the source omits it',
             },
-            'required': ['name', 'amount', 'unit'],
+            'unit': {
+              'type': 'string',
+              'enum': [
+                'gram',
+                'kilogram',
+                'milliliter',
+                'liter',
+                'teaspoon',
+                'tablespoon',
+                'cup',
+                'unit',
+                'pinch',
+                'unspecified',
+              ],
+            },
           },
-        },
-        'steps': {
-          'type': 'array',
-          'items': {'type': 'string'},
-          'description': 'Ordered preparation steps, without numbering prefixes',
+          'required': ['name', 'unit'],
         },
       },
-      'required': ['title', 'prep_time_minutes', 'cook_time_minutes', 'ingredients', 'steps'],
+      'steps': {
+        'type': 'array',
+        'items': {'type': 'string'},
+        'description': 'Ordered preparation steps, without numbering prefixes',
+      },
     },
+    'required': ['title', 'ingredients', 'steps'],
   };
 
-  Map<String, dynamic> _baseBody({
-    required String userContent,
-    List<Map<String, dynamic>> extraTools = const [],
-    bool forceSaveRecipe = true,
+  static const _searchResultsSchema = {
+    'type': 'object',
+    'properties': {
+      'results': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'title': {'type': 'string'},
+            'url': {'type': 'string'},
+            'snippet': {'type': 'string'},
+          },
+          'required': ['title', 'url', 'snippet'],
+        },
+      },
+    },
+    'required': ['results'],
+  };
+
+  static const _refineSystemPrompt = '''
+אתה מגיה עברית של מתכונים. הטקסט הוקלד בנייד ולכן הוא מלא בשגיאות הקלדה.
+המשימה העיקרית שלך: לתקן כל שגיאת כתיב והקלדה בכותרת, בשמות המצרכים ובשלבי ההכנה.
+
+רוב השגיאות הן אותיות שכנות במקלדת העברית או אות סופית במקום רגילה. תקן אותן תמיד:
+"ןאז" → "ואז"
+"עפ מלח" → "עם מלח"
+"לאיזב דקה" → "לאיזה דקה"
+"מערביפ" → "מערבים"
+"בסיר" נשאר "בסיר" — מילה תקינה לא משתנה.
+כל מילה שאינה מילה תקינה בעברית היא שגיאת הקלדה שצריך לתקן למילה הקרובה ביותר שמתאימה להקשר של המתכון.
+
+בנוסף: עדכן זמנים שמוזכרים בתוך טקסט השלבים כך שיתאימו לזמן ההכנה ולזמן הבישול שהמשתמש קבע.
+
+מגבלות:
+אסור להוסיף, למחוק, לפצל או לאחד מצרכים או שלבים — החזר בדיוק את אותו מספר פריטים ובאותו סדר.
+אסור לשנות כמויות, יחידות מידה, או את הזמנים המספריים עצמם.
+אל תשנה סגנון או ניסוח של טקסט תקין — רק שגיאות.
+החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
+
+  /// Only the free-text fields come back. Amounts, units and the times the user
+  /// set are merged in locally, so a refine can never restructure the recipe.
+  static const _refineSchema = {
+    'type': 'object',
+    'properties': {
+      'title': {'type': 'string'},
+      'ingredient_names': {
+        'type': 'array',
+        'items': {'type': 'string'},
+        'description': 'Same names in the same order, spelling corrected',
+      },
+      'steps': {
+        'type': 'array',
+        'items': {'type': 'string'},
+        'description': 'Same steps in the same order, spelling and stated times corrected',
+      },
+    },
+    'required': ['title', 'ingredient_names', 'steps'],
+  };
+
+  Map<String, dynamic> _body({
+    required String input,
+    required Map<String, dynamic> schema,
+    String systemInstruction = _systemPrompt,
+    List<Map<String, dynamic>> tools = const [],
   }) {
     return {
       'model': ApiConfig.model,
-      'max_tokens': ApiConfig.maxTokens,
-      'output_config': {'effort': 'low'},
-      'system': _systemPrompt,
-      'tools': [...extraTools, _saveRecipeTool],
-      if (forceSaveRecipe) 'tool_choice': {'type': 'tool', 'name': 'save_recipe'},
-      'messages': [
-        {'role': 'user', 'content': userContent},
-      ],
+      'system_instruction': systemInstruction,
+      'input': input,
+      if (tools.isNotEmpty) 'tools': tools,
+      'response_format': {
+        'type': 'text',
+        'mime_type': 'application/json',
+        'schema': schema,
+      },
     };
   }
 
@@ -119,37 +180,64 @@ class ClaudeRecipeAiDataSource implements RecipeAiDataSource {
     if (!ApiConfig.isConfigured) {
       throw const AppException(
         AppErrorType.unauthorized,
-        message: 'ANTHROPIC_API_KEY is not configured',
+        message: 'GEMINI_API_KEY is not configured',
       );
     }
   }
 
-  Future<Map<String, dynamic>> _callToolUse(Map<String, dynamic> body) async {
-    _assertConfigured();
-    var request = Map<String, dynamic>.from(body);
+  /// The model's answer sits in the `model_output` step, but tool-using turns
+  /// interleave thought and tool steps around it, so every text block is
+  /// collected and the JSON object is taken from the tail of the result.
+  String _extractText(Map<String, dynamic> data) {
+    final buffer = StringBuffer();
 
-    // Server tools (web_search / web_fetch) can hand back a pause_turn; resume
-    // by echoing the assistant content until the model reaches save_recipe.
-    for (var attempt = 0; attempt < 4; attempt++) {
-      final response = await httpCalls.post(ApiConfig.messagesPath, data: request);
-      final data = response?.data as Map<String, dynamic>?;
-      if (data == null) throw const AppException(AppErrorType.parsingFailed);
-
-      final content = (data['content'] as List?) ?? const [];
-      final toolUse = content.cast<Map<String, dynamic>>().firstWhere(
-            (block) => block['type'] == 'tool_use' && block['name'] == 'save_recipe',
-            orElse: () => const {},
-          );
-      if (toolUse.isNotEmpty) return toolUse['input'] as Map<String, dynamic>;
-
-      if (data['stop_reason'] != 'pause_turn') break;
-
-      final messages = [...request['messages'] as List];
-      messages.add({'role': 'assistant', 'content': content});
-      request = {...request, 'messages': messages};
+    for (final step in (data['steps'] as List?) ?? const []) {
+      if (step is! Map) continue;
+      for (final block in (step['content'] as List?) ?? const []) {
+        if (block is Map && block['text'] is String) buffer.write(block['text']);
+      }
     }
 
-    throw const AppException(AppErrorType.parsingFailed, message: 'No recipe returned by the model');
+    return buffer.toString();
+  }
+
+  /// Capacity spikes on a hot model answer with a retryable status rather than
+  /// a permanent failure, so the identical request is worth re-sending before
+  /// surfacing the error to the user.
+  Future<Map<String, dynamic>> _callStructured(Map<String, dynamic> body) async {
+    _assertConfigured();
+
+    Map<String, dynamic>? data;
+    for (var attempt = 0; ; attempt++) {
+      try {
+        final response = await httpCalls.post(ApiConfig.interactionsPath, data: body);
+        data = response?.data as Map<String, dynamic>?;
+        break;
+      } on AppException catch (e) {
+        if (e.type != AppErrorType.overloaded || attempt >= 2) rethrow;
+        debugPrint('Gemini busy, retrying (attempt ${attempt + 1}): ${e.message}');
+        await Future.delayed(Duration(seconds: 2 << attempt));
+      }
+    }
+    if (data == null) throw const AppException(AppErrorType.parsingFailed);
+
+    final text = _extractText(data);
+    final start = text.indexOf('{');
+    final end = text.lastIndexOf('}');
+    if (start == -1 || end <= start) {
+      debugPrint('Gemini returned no JSON object: $text');
+      throw const AppException(
+        AppErrorType.parsingFailed,
+        message: 'No recipe returned by the model',
+      );
+    }
+
+    try {
+      return jsonDecode(text.substring(start, end + 1)) as Map<String, dynamic>;
+    } on FormatException catch (e) {
+      debugPrint('Gemini JSON decode failed: $e');
+      throw AppException(AppErrorType.parsingFailed, message: e.message);
+    }
   }
 
   RecipeEntity _toEntity(
@@ -191,22 +279,25 @@ class ClaudeRecipeAiDataSource implements RecipeAiDataSource {
 
   @override
   Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> preferences) async {
-    final input = await _callToolUse(
-      _baseBody(userContent: 'נתח את המתכון הבא לפורמט מובנה:\n\n$text'),
+    final input = await _callStructured(
+      _body(
+        input: 'נתח את המתכון הבא לפורמט מובנה:\n\n$text',
+        schema: _recipeSchema,
+      ),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.rawText);
   }
 
   @override
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences) async {
-    final input = await _callToolUse(
-      _baseBody(
-        userContent:
+    final input = await _callStructured(
+      _body(
+        input:
             'שלוף את המתכון מהכתובת הבאה והחזר אותו בפורמט מובנה. התעלם מפרסומות ותוכן שאינו חלק מהמתכון.\n$url',
-        extraTools: [
-          {'type': 'web_fetch_20260209', 'name': 'web_fetch', 'max_uses': 3},
+        schema: _recipeSchema,
+        tools: const [
+          {'type': 'url_context'},
         ],
-        forceSaveRecipe: false,
       ),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.urlScrape, sourceUrl: url);
@@ -217,14 +308,14 @@ class ClaudeRecipeAiDataSource implements RecipeAiDataSource {
   /// service that this client does not have access to.
   @override
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) async {
-    final input = await _callToolUse(
-      _baseBody(
-        userContent:
+    final input = await _callStructured(
+      _body(
+        input:
             'שלוף את המתכון מהכותרת, מהתיאור ומהתגובות בעמוד הסרטון הבא. אם אין מספיק מידע למתכון מלא, החזר את מה שקיים בלבד.\n$url',
-        extraTools: [
-          {'type': 'web_fetch_20260209', 'name': 'web_fetch', 'max_uses': 3},
+        schema: _recipeSchema,
+        tools: const [
+          {'type': 'url_context'},
         ],
-        forceSaveRecipe: false,
       ),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.socialVideo, sourceUrl: url);
@@ -235,78 +326,67 @@ class ClaudeRecipeAiDataSource implements RecipeAiDataSource {
     String query,
     List<DietaryPreference> preferences,
   ) async {
-    _assertConfigured();
-    final body = {
-      'model': ApiConfig.model,
-      'max_tokens': ApiConfig.maxTokens,
-      'output_config': {'effort': 'low'},
-      'tools': [
-        {'type': 'web_search_20260209', 'name': 'web_search', 'max_uses': 3},
-        {
-          'name': 'return_results',
-          'description': 'Returns the recipe pages found for the query.',
-          'strict': true,
-          'input_schema': {
-            'type': 'object',
-            'additionalProperties': false,
-            'properties': {
-              'results': {
-                'type': 'array',
-                'items': {
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'properties': {
-                    'title': {'type': 'string'},
-                    'url': {'type': 'string'},
-                    'snippet': {'type': 'string'},
-                  },
-                  'required': ['title', 'url', 'snippet'],
-                },
-              },
-            },
-            'required': ['results'],
-          },
-        },
-      ],
-      'messages': [
-        {
-          'role': 'user',
-          'content':
-              'חפש 3 עד 5 מתכונים באינטרנט עבור: $query.${_dietaryHint(preferences)}\nהחזר את התוצאות באמצעות return_results.',
-        },
-      ],
-    };
+    final data = await _callStructured(
+      _body(
+        input: 'חפש 3 עד 5 מתכונים באינטרנט עבור: $query.${_dietaryHint(preferences)}',
+        schema: _searchResultsSchema,
+        tools: const [
+          {'type': 'google_search'},
+        ],
+      ),
+    );
 
-    var request = Map<String, dynamic>.from(body);
-    for (var attempt = 0; attempt < 4; attempt++) {
-      final response = await httpCalls.post(ApiConfig.messagesPath, data: request);
-      final data = response?.data as Map<String, dynamic>?;
-      if (data == null) throw const AppException(AppErrorType.parsingFailed);
+    return ((data['results'] as List?) ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map((r) => WebSearchResultEntity(
+              title: r['title'] as String,
+              url: r['url'] as String,
+              snippet: r['snippet'] as String,
+            ))
+        .toList();
+  }
 
-      final content = (data['content'] as List?) ?? const [];
-      final toolUse = content.cast<Map<String, dynamic>>().firstWhere(
-            (block) => block['type'] == 'tool_use' && block['name'] == 'return_results',
-            orElse: () => const {},
-          );
-      if (toolUse.isNotEmpty) {
-        final results = ((toolUse['input'] as Map<String, dynamic>)['results'] as List?) ?? const [];
-        return results
-            .cast<Map<String, dynamic>>()
-            .map((r) => WebSearchResultEntity(
-                  title: r['title'] as String,
-                  url: r['url'] as String,
-                  snippet: r['snippet'] as String,
-                ))
-            .toList();
-      }
+  @override
+  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) async {
+    final payload = jsonEncode({
+      'title': recipe.title,
+      'prep_time_minutes': recipe.prepTimeMinutes,
+      'cook_time_minutes': recipe.cookTimeMinutes,
+      'ingredient_names': recipe.ingredients.map((i) => i.name).toList(),
+      'steps': recipe.steps,
+    });
 
-      if (data['stop_reason'] != 'pause_turn') break;
-      final messages = [...request['messages'] as List];
-      messages.add({'role': 'assistant', 'content': content});
-      request = {...request, 'messages': messages};
-    }
+    final instruction = timesChanged
+        ? 'המשתמש שינה את זמן ההכנה או את זמן הבישול. תקן שגיאות כתיב, וגם ודא שכל זמן שמוזכר בתוך שלבי ההכנה תואם לזמנים החדשים.'
+        : 'תקן שגיאות כתיב ודקדוק בלבד.';
 
-    debugPrint('Web recipe search returned no structured results');
-    return [];
+    final data = await _callStructured(
+      _body(
+        input: '$instruction\n\n$payload',
+        schema: _refineSchema,
+        systemInstruction: _refineSystemPrompt,
+      ),
+    );
+
+    final title = data['title'];
+    final names = ((data['ingredient_names'] as List?) ?? const []).whereType<String>().toList();
+    final steps = ((data['steps'] as List?) ?? const []).whereType<String>().toList();
+
+    // A changed length means the model restructured the recipe instead of only
+    // rewording it, so that part falls back to exactly what the user typed.
+    return recipe.copyWith(
+      title: title is String && title.trim().isNotEmpty ? title.trim() : recipe.title,
+      ingredients: names.length == recipe.ingredients.length
+          ? [
+              for (var i = 0; i < names.length; i++)
+                RecipeIngredientEntity(
+                  name: names[i],
+                  amount: recipe.ingredients[i].amount,
+                  unit: recipe.ingredients[i].unit,
+                ),
+            ]
+          : recipe.ingredients,
+      steps: steps.length == recipe.steps.length ? steps : recipe.steps,
+    );
   }
 }

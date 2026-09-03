@@ -48,6 +48,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
 	@override late final _Translations$recipe$ar recipe = _Translations$recipe$ar._(_root);
+	@override late final _Translations$editor$ar editor = _Translations$editor$ar._(_root);
 	@override late final _Translations$ingestion$ar ingestion = _Translations$ingestion$ar._(_root);
 	@override late final _Translations$mealPlanner$ar mealPlanner = _Translations$mealPlanner$ar._(_root);
 	@override late final _Translations$groceryList$ar groceryList = _Translations$groceryList$ar._(_root);
@@ -202,6 +203,38 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get removeFromBook => 'إزالة من الكتاب';
 	@override String get deleteRecipe => 'حذف الوصفة';
 	@override String get photo => 'صورة الوصفة';
+}
+
+// Path: editor
+class _Translations$editor$ar extends Translations$editor$he {
+	_Translations$editor$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'تعديل الوصفة';
+	@override String get recipeTitle => 'اسم الوصفة';
+	@override String get titleHint => 'مثال: شكشوكة القدس';
+	@override String get titleRequired => 'يجب إدخال اسم للوصفة';
+	@override String get prepMinutes => 'وقت التحضير (دقيقة)';
+	@override String get cookMinutes => 'وقت الطهي (دقيقة)';
+	@override String get amount => 'الكمية';
+	@override String get unit => 'الوحدة';
+	@override String get ingredientName => 'اسم المكوّن';
+	@override String get stepHint => 'صف الخطوة';
+	@override String get addIngredient => 'إضافة مكوّن';
+	@override String get addStep => 'إضافة خطوة';
+	@override String get removeIngredient => 'إزالة المكوّن';
+	@override String get removeStep => 'إزالة الخطوة';
+	@override String get fixSpelling => 'تصحيح الإملاء';
+	@override String get refining => 'جارٍ تصحيح الوصفة...';
+	@override String get refineError => 'تعذّر تصحيح الوصفة';
+	@override String get spellingFixed => 'تم تصحيح الوصفة';
+	@override String get noChanges => 'لم يتم العثور على أخطاء إملائية';
+	@override String get timesSynced => 'تم تحديث الأوقات في خطوات التحضير';
+	@override String get discardTitle => 'تجاهل التغييرات؟';
+	@override String get discardBody => 'لن يتم حفظ تعديلاتك.';
+	@override String get discard => 'تجاهل';
 }
 
 // Path: ingestion
@@ -424,6 +457,29 @@ extension on TranslationsAr {
 			'recipe.removeFromBook' => 'إزالة من الكتاب',
 			'recipe.deleteRecipe' => 'حذف الوصفة',
 			'recipe.photo' => 'صورة الوصفة',
+			'editor.title' => 'تعديل الوصفة',
+			'editor.recipeTitle' => 'اسم الوصفة',
+			'editor.titleHint' => 'مثال: شكشوكة القدس',
+			'editor.titleRequired' => 'يجب إدخال اسم للوصفة',
+			'editor.prepMinutes' => 'وقت التحضير (دقيقة)',
+			'editor.cookMinutes' => 'وقت الطهي (دقيقة)',
+			'editor.amount' => 'الكمية',
+			'editor.unit' => 'الوحدة',
+			'editor.ingredientName' => 'اسم المكوّن',
+			'editor.stepHint' => 'صف الخطوة',
+			'editor.addIngredient' => 'إضافة مكوّن',
+			'editor.addStep' => 'إضافة خطوة',
+			'editor.removeIngredient' => 'إزالة المكوّن',
+			'editor.removeStep' => 'إزالة الخطوة',
+			'editor.fixSpelling' => 'تصحيح الإملاء',
+			'editor.refining' => 'جارٍ تصحيح الوصفة...',
+			'editor.refineError' => 'تعذّر تصحيح الوصفة',
+			'editor.spellingFixed' => 'تم تصحيح الوصفة',
+			'editor.noChanges' => 'لم يتم العثور على أخطاء إملائية',
+			'editor.timesSynced' => 'تم تحديث الأوقات في خطوات التحضير',
+			'editor.discardTitle' => 'تجاهل التغييرات؟',
+			'editor.discardBody' => 'لن يتم حفظ تعديلاتك.',
+			'editor.discard' => 'تجاهل',
 			'ingestion.title' => 'إضافة وصفة',
 			'ingestion.pasteText' => 'لصق نص',
 			'ingestion.pasteHint' => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر',

@@ -7,4 +7,9 @@ abstract class RecipeIngestionRepository {
   Future<List<WebSearchResultEntity>> searchWeb(String query, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences);
+
+  /// Spelling/grammar pass over the free text of a hand-edited recipe, and —
+  /// when [timesChanged] — a rewrite of any time stated inside the steps so it
+  /// agrees with the prep and cook times the user just set.
+  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged});
 }

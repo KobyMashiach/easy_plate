@@ -48,6 +48,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
 	@override late final _Translations$recipe$ru recipe = _Translations$recipe$ru._(_root);
+	@override late final _Translations$editor$ru editor = _Translations$editor$ru._(_root);
 	@override late final _Translations$ingestion$ru ingestion = _Translations$ingestion$ru._(_root);
 	@override late final _Translations$mealPlanner$ru mealPlanner = _Translations$mealPlanner$ru._(_root);
 	@override late final _Translations$groceryList$ru groceryList = _Translations$groceryList$ru._(_root);
@@ -202,6 +203,38 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get removeFromBook => 'Убрать из книги';
 	@override String get deleteRecipe => 'Удалить рецепт';
 	@override String get photo => 'Фото рецепта';
+}
+
+// Path: editor
+class _Translations$editor$ru extends Translations$editor$he {
+	_Translations$editor$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Редактирование рецепта';
+	@override String get recipeTitle => 'Название рецепта';
+	@override String get titleHint => 'Например: иерусалимская шакшука';
+	@override String get titleRequired => 'Укажите название рецепта';
+	@override String get prepMinutes => 'Подготовка (мин)';
+	@override String get cookMinutes => 'Готовка (мин)';
+	@override String get amount => 'Количество';
+	@override String get unit => 'Единица';
+	@override String get ingredientName => 'Название ингредиента';
+	@override String get stepHint => 'Опишите шаг';
+	@override String get addIngredient => 'Добавить ингредиент';
+	@override String get addStep => 'Добавить шаг';
+	@override String get removeIngredient => 'Удалить ингредиент';
+	@override String get removeStep => 'Удалить шаг';
+	@override String get fixSpelling => 'Исправить орфографию';
+	@override String get refining => 'Исправляем рецепт...';
+	@override String get refineError => 'Не удалось исправить рецепт';
+	@override String get spellingFixed => 'Рецепт исправлен';
+	@override String get noChanges => 'Орфографических ошибок не найдено';
+	@override String get timesSynced => 'Время в инструкциях обновлено';
+	@override String get discardTitle => 'Отменить изменения?';
+	@override String get discardBody => 'Ваши правки не будут сохранены.';
+	@override String get discard => 'Отменить';
 }
 
 // Path: ingestion
@@ -424,6 +457,29 @@ extension on TranslationsRu {
 			'recipe.removeFromBook' => 'Убрать из книги',
 			'recipe.deleteRecipe' => 'Удалить рецепт',
 			'recipe.photo' => 'Фото рецепта',
+			'editor.title' => 'Редактирование рецепта',
+			'editor.recipeTitle' => 'Название рецепта',
+			'editor.titleHint' => 'Например: иерусалимская шакшука',
+			'editor.titleRequired' => 'Укажите название рецепта',
+			'editor.prepMinutes' => 'Подготовка (мин)',
+			'editor.cookMinutes' => 'Готовка (мин)',
+			'editor.amount' => 'Количество',
+			'editor.unit' => 'Единица',
+			'editor.ingredientName' => 'Название ингредиента',
+			'editor.stepHint' => 'Опишите шаг',
+			'editor.addIngredient' => 'Добавить ингредиент',
+			'editor.addStep' => 'Добавить шаг',
+			'editor.removeIngredient' => 'Удалить ингредиент',
+			'editor.removeStep' => 'Удалить шаг',
+			'editor.fixSpelling' => 'Исправить орфографию',
+			'editor.refining' => 'Исправляем рецепт...',
+			'editor.refineError' => 'Не удалось исправить рецепт',
+			'editor.spellingFixed' => 'Рецепт исправлен',
+			'editor.noChanges' => 'Орфографических ошибок не найдено',
+			'editor.timesSynced' => 'Время в инструкциях обновлено',
+			'editor.discardTitle' => 'Отменить изменения?',
+			'editor.discardBody' => 'Ваши правки не будут сохранены.',
+			'editor.discard' => 'Отменить',
 			'ingestion.title' => 'Добавить рецепт',
 			'ingestion.pasteText' => 'Вставить текст',
 			'ingestion.pasteHint' => 'Вставьте сюда рецепт из WhatsApp или любого другого источника',

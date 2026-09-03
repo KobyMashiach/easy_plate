@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/services/image_storage_service.dart';
@@ -50,6 +52,20 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     if (mounted) setState(() => recipe = updated);
   }
 
+  /// Photo changes stay on the image itself, so the bar action opens the
+  /// structured editor. Saving here is immediate — the recipe already exists.
+  Future<void> _edit() async {
+    final repository = context.read<RecipesRepository>();
+    final edited = await context.pushNamed<RecipeEntity>(
+      Routing.recipeEditor,
+      extra: recipe,
+    );
+    if (edited == null || !mounted) return;
+
+    await SaveRecipeUseCase(repository)(edited);
+    if (mounted) setState(() => recipe = edited);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ClayScaffold(
@@ -57,8 +73,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         title: t.appName,
         leadingIcon: Icons.arrow_back_rounded,
         onLeadingTap: () => Navigator.of(context).maybePop(),
-        trailingIcon: Icons.add_a_photo_rounded,
-        onTrailingTap: _changePhoto,
+        trailingIcon: Icons.edit_rounded,
+        onTrailingTap: _edit,
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(

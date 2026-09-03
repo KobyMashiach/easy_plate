@@ -42,4 +42,13 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
     }
     return aiDataSource.parseFromSocialVideo(url, preferences);
   }
+
+  /// Deliberately has no fake branch. Sample data stands in for a recipe the
+  /// app could not fetch, but a faked correction is indistinguishable from a
+  /// correction that found nothing — so with no key this reports the missing
+  /// key instead of handing back unchanged text as though it had worked.
+  @override
+  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) {
+    return aiDataSource.refineRecipe(recipe, timesChanged: timesChanged);
+  }
 }

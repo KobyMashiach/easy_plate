@@ -39,7 +39,11 @@ class HttpCalls {
         DioExceptionType.receiveTimeout =>
           const AppException(AppErrorType.networkError),
         _ => AppException(
-            e.response?.statusCode == 401 ? AppErrorType.unauthorized : AppErrorType.unknown,
+            switch (e.response?.statusCode) {
+              401 || 403 => AppErrorType.unauthorized,
+              429 || 500 || 502 || 503 || 504 || 529 => AppErrorType.overloaded,
+              _ => AppErrorType.unknown,
+            },
             message: e.response?.data?.toString() ?? e.message ?? '',
           ),
       };

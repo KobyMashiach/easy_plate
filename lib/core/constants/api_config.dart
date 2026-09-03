@@ -1,20 +1,24 @@
-/// Claude Messages API configuration for the recipe ingestion pipeline.
+import 'package:easy_plate/data_delete.dart';
+
+/// Gemini Interactions API configuration for the recipe ingestion pipeline.
 ///
 /// SECURITY: shipping an API key inside a mobile binary makes it extractable.
 /// For production, point [aiBaseUrl] at your own backend proxy that holds the
-/// key server-side; the direct-to-Anthropic path below is for local development
-/// only, via `--dart-define=ANTHROPIC_API_KEY=sk-ant-...`.
+/// key server-side; the direct-to-Google path below is for local development
+/// only, via `--dart-define=GEMINI_API_KEY=...`.
 abstract class ApiConfig {
-  static const anthropicApiKey = String.fromEnvironment('ANTHROPIC_API_KEY');
+  static const geminiApiKey = geminiApiKeyTemp;
+  // static const geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
   static const aiBaseUrl = String.fromEnvironment(
     'AI_BASE_URL',
-    defaultValue: 'https://api.anthropic.com',
+    defaultValue: 'https://generativelanguage.googleapis.com',
   );
 
-  static const messagesPath = '/v1/messages';
-  static const anthropicVersion = '2023-06-01';
-  static const model = 'claude-opus-5';
-  static const maxTokens = 16000;
+  static const interactionsPath = '/v1beta/interactions';
+  static const model = String.fromEnvironment(
+    'GEMINI_MODEL',
+    defaultValue: 'gemini-3.8-flash',
+  );
 
-  static bool get isConfigured => anthropicApiKey.isNotEmpty;
+  static bool get isConfigured => geminiApiKey.isNotEmpty;
 }
