@@ -77,7 +77,8 @@
     "editor": "עורך",
     "reorderHint": "גררו כדי לשנות את סדר המתכונים",
     "coverImage": "תמונת כריכה",
-    "bookOptions": "אפשרויות ספר"
+    "bookOptions": "אפשרויות ספר",
+    "renameBook": "עריכת שם הספר"
   },
   "recipe": {
     "prepTime": "זמן הכנה",
@@ -176,5 +177,12 @@
     "gallery": "בחירה מהגלריה",
     "camera": "צילום תמונה",
     "remove": "הסרת התמונה"
+  },
+  "nav": {
+    "library": "ספרייה",
+    "recipes": "מתכונים",
+    "mealPlan": "תפריטים",
+    "groceries": "קניות",
+    "settings": "הגדרות"
   }
 }

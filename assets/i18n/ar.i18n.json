@@ -77,7 +77,8 @@
     "editor": "محرّر",
     "reorderHint": "اسحب لإعادة ترتيب الوصفات",
     "coverImage": "صورة الغلاف",
-    "bookOptions": "خيارات الكتاب"
+    "bookOptions": "خيارات الكتاب",
+    "renameBook": "تعديل اسم الكتاب"
   },
   "recipe": {
     "prepTime": "وقت التحضير",
@@ -176,5 +177,12 @@
     "gallery": "اختيار من المعرض",
     "camera": "التقاط صورة",
     "remove": "إزالة الصورة"
+  },
+  "nav": {
+    "library": "المكتبة",
+    "recipes": "الوصفات",
+    "mealPlan": "الوجبات",
+    "groceries": "التسوّق",
+    "settings": "الإعدادات"
   }
 }

@@ -77,7 +77,8 @@
     "editor": "Éditeur",
     "reorderHint": "Faites glisser pour réorganiser les recettes",
     "coverImage": "Photo de couverture",
-    "bookOptions": "Options du livre"
+    "bookOptions": "Options du livre",
+    "renameBook": "Renommer le livre"
   },
   "recipe": {
     "prepTime": "Temps de préparation",
@@ -176,5 +177,12 @@
     "gallery": "Choisir dans la galerie",
     "camera": "Prendre une photo",
     "remove": "Supprimer la photo"
+  },
+  "nav": {
+    "library": "Livres",
+    "recipes": "Recettes",
+    "mealPlan": "Repas",
+    "groceries": "Courses",
+    "settings": "Réglages"
   }
 }

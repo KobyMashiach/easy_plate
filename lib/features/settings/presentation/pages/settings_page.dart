@@ -38,9 +38,9 @@ class SettingsPage extends StatelessWidget {
                   sharedListsCount: sharedLists,
                 ),
               SettingsError(error: final error) => ErrorRetryView(
-                  error: error,
-                  onRetry: () => context.read<SettingsBloc>().add(const SettingsEvent.init()),
-                ),
+                error: error,
+                onRetry: () => context.read<SettingsBloc>().add(const SettingsEvent.init()),
+              ),
             };
           },
         ),
@@ -64,79 +64,96 @@ class _SettingsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<SettingsBloc>();
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.marginMobile,
-        AppSpacing.md,
-        AppSpacing.marginMobile,
-        ClayNavDock.reservedHeight,
+    final sections = <Widget>[
+      _SettingsCard(
+        title: t.settings.shoppingDay,
+        child: WeekdaySelector(
+          selected: preferences.shoppingDay,
+          onSelect: (day) => bloc.add(.updateShoppingDay(day)),
+        ),
       ),
+      _SettingsCard(
+        title: t.settings.dietaryPreferences,
+        child: DietaryChipSelector(
+          selected: preferences.dietaryPreferences,
+          onToggle: (pref) => bloc.add(.toggleDietaryPreference(pref)),
+        ),
+      ),
+      _SettingsToggle(
+        title: t.settings.fastPageTurn,
+        description: t.settings.fastPageTurnHint,
+        value: preferences.fastPageTurnEnabled,
+        onChanged: (enabled) => bloc.add(.toggleFastPageTurn(enabled)),
+      ),
+      _SettingsToggle(
+        title: t.settings.soundEffects,
+        value: preferences.soundEffectsEnabled,
+        onChanged: (enabled) => bloc.add(.toggleSoundEffects(enabled)),
+      ),
+      _SettingsCard(
+        title: t.settings.sharedAccess,
+        child: sharedBooksCount == 0 && sharedListsCount == 0
+            ? Text(
+                t.settings.noSharedAccess,
+                style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+              )
+            : Wrap(
+                spacing: AppSpacing.base,
+                runSpacing: AppSpacing.base,
+                children: [
+                  if (sharedBooksCount > 0)
+                    ClayTag(
+                      label: '$sharedBooksCount ${t.books.myLibrary}',
+                      icon: Icons.menu_book_rounded,
+                    ),
+                  if (sharedListsCount > 0)
+                    ClayTag(
+                      label: '$sharedListsCount ${t.groceryList.title}',
+                      icon: Icons.shopping_cart_rounded,
+                      background: AppColors.secondaryContainer,
+                      foreground: AppColors.onSecondaryContainer,
+                    ),
+                ],
+              ),
+      ),
+      _SettingsCard(
+        title: t.settings.language,
+        child: _LanguageSelector(
+          selected: preferences.language,
+          onSelect: (language) => bloc.add(.changeLanguage(language)),
+        ),
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ClayPageHeader(title: t.settings.title),
+        // The heading sits outside the list so it stays put while the
+        // settings scroll under it.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.marginMobile,
+            AppSpacing.md,
+            AppSpacing.marginMobile,
+            0,
+          ),
+          child: ClayPageHeader(title: t.settings.title),
+        ),
         const SizedBox(height: AppSpacing.lg),
-        _SettingsCard(
-          title: t.settings.shoppingDay,
-          child: WeekdaySelector(
-            selected: preferences.shoppingDay,
-            onSelect: (day) => bloc.add(.updateShoppingDay(day)),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.marginMobile,
+              0,
+              AppSpacing.marginMobile,
+              ClayNavDock.reservedHeight,
+            ),
+            itemCount: sections.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+            itemBuilder: (context, index) => sections[index],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        _SettingsCard(
-          title: t.settings.language,
-          child: _LanguageSelector(
-            selected: preferences.language,
-            onSelect: (language) => bloc.add(.changeLanguage(language)),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _SettingsCard(
-          title: t.settings.dietaryPreferences,
-          child: DietaryChipSelector(
-            selected: preferences.dietaryPreferences,
-            onToggle: (pref) => bloc.add(.toggleDietaryPreference(pref)),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _SettingsToggle(
-          title: t.settings.fastPageTurn,
-          description: t.settings.fastPageTurnHint,
-          value: preferences.fastPageTurnEnabled,
-          onChanged: (enabled) => bloc.add(.toggleFastPageTurn(enabled)),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _SettingsToggle(
-          title: t.settings.soundEffects,
-          value: preferences.soundEffectsEnabled,
-          onChanged: (enabled) => bloc.add(.toggleSoundEffects(enabled)),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _SettingsCard(
-          title: t.settings.sharedAccess,
-          child: sharedBooksCount == 0 && sharedListsCount == 0
-              ? Text(
-                  t.settings.noSharedAccess,
-                  style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
-                )
-              : Wrap(
-                  spacing: AppSpacing.base,
-                  runSpacing: AppSpacing.base,
-                  children: [
-                    if (sharedBooksCount > 0)
-                      ClayTag(
-                        label: '$sharedBooksCount ${t.books.myLibrary}',
-                        icon: Icons.menu_book_rounded,
-                      ),
-                    if (sharedListsCount > 0)
-                      ClayTag(
-                        label: '$sharedListsCount ${t.groceryList.title}',
-                        icon: Icons.shopping_cart_rounded,
-                        background: AppColors.secondaryContainer,
-                        foreground: AppColors.onSecondaryContainer,
-                      ),
-                  ],
-                ),
-        ),
+        const SizedBox(height: AppSpacing.lg),
       ],
     );
   }

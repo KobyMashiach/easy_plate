@@ -19,6 +19,7 @@ sealed class LibraryEvent with _$LibraryEvent {
   const factory LibraryEvent.createBook(String title) = _CreateBook;
   const factory LibraryEvent.deleteBook(String id) = _DeleteBook;
   const factory LibraryEvent.setCoverImage(String id, String? fileName) = _SetCoverImage;
+  const factory LibraryEvent.renameBook(String id, String title) = _RenameBook;
 }
 
 @freezed
@@ -43,6 +44,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     on<_CreateBook>(_createBook);
     on<_DeleteBook>(_deleteBook);
     on<_SetCoverImage>(_setCoverImage);
+    on<_RenameBook>(_renameBook);
     add(const LibraryEvent.init());
   }
 
@@ -81,6 +83,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
 
   Future<void> _deleteBook(_DeleteBook event, Emitter<LibraryState> emit) {
     return _emitBooks(emit, () => deleteBookUseCase(event.id));
+  }
+
+  Future<void> _renameBook(_RenameBook event, Emitter<LibraryState> emit) {
+    return _emitBooks(emit, () async {
+      final current = state;
+      if (current is! LibraryLoaded) return;
+      final book = current.books.where((b) => b.id == event.id).firstOrNull;
+      if (book == null) return;
+      await saveBookUseCase(book.copyWith(title: event.title));
+    });
   }
 
   /// Swapping or clearing a cover deletes the previous file so removed photos

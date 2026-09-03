@@ -61,23 +61,23 @@ class _MainNavBarState extends State<MainNavBar> {
                 destinations: [
                   ClayNavDestination(
                     icon: Icons.library_books_rounded,
-                    label: t.books.myLibrary,
+                    label: t.nav.library,
                   ),
                   ClayNavDestination(
                     icon: Icons.receipt_long_rounded,
-                    label: t.books.myRecipes,
+                    label: t.nav.recipes,
                   ),
                   ClayNavDestination(
                     icon: Icons.calendar_today_rounded,
-                    label: t.mealPlanner.title,
+                    label: t.nav.mealPlan,
                   ),
                   ClayNavDestination(
                     icon: Icons.shopping_cart_rounded,
-                    label: t.groceryList.title,
+                    label: t.nav.groceries,
                   ),
                   ClayNavDestination(
                     icon: Icons.person_rounded,
-                    label: t.settings.title,
+                    label: t.nav.settings,
                   ),
                 ],
               ),

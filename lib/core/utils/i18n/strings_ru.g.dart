@@ -53,6 +53,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$groceryList$ru groceryList = _Translations$groceryList$ru._(_root);
 	@override late final _Translations$unit$ru unit = _Translations$unit$ru._(_root);
 	@override late final _Translations$image$ru image = _Translations$image$ru._(_root);
+	@override late final _Translations$nav$ru nav = _Translations$nav$ru._(_root);
 }
 
 // Path: common
@@ -181,6 +182,7 @@ class _Translations$books$ru extends Translations$books$he {
 	@override String get reorderHint => 'Перетащите, чтобы изменить порядок рецептов';
 	@override String get coverImage => 'Обложка';
 	@override String get bookOptions => 'Параметры книги';
+	@override String get renameBook => 'Переименовать книгу';
 }
 
 // Path: recipe
@@ -323,6 +325,20 @@ class _Translations$image$ru extends Translations$image$he {
 	@override String get remove => 'Удалить фото';
 }
 
+// Path: nav
+class _Translations$nav$ru extends Translations$nav$he {
+	_Translations$nav$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get library => 'Книги';
+	@override String get recipes => 'Рецепты';
+	@override String get mealPlan => 'Меню';
+	@override String get groceries => 'Покупки';
+	@override String get settings => 'Настройки';
+}
+
 /// The flat map containing all translations for locale <ru>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -397,6 +413,7 @@ extension on TranslationsRu {
 			'books.reorderHint' => 'Перетащите, чтобы изменить порядок рецептов',
 			'books.coverImage' => 'Обложка',
 			'books.bookOptions' => 'Параметры книги',
+			'books.renameBook' => 'Переименовать книгу',
 			'recipe.prepTime' => 'Время подготовки',
 			'recipe.cookTime' => 'Время приготовления',
 			'recipe.ingredients' => 'Ингредиенты',
@@ -483,6 +500,11 @@ extension on TranslationsRu {
 			'image.gallery' => 'Выбрать из галереи',
 			'image.camera' => 'Сделать фото',
 			'image.remove' => 'Удалить фото',
+			'nav.library' => 'Книги',
+			'nav.recipes' => 'Рецепты',
+			'nav.mealPlan' => 'Меню',
+			'nav.groceries' => 'Покупки',
+			'nav.settings' => 'Настройки',
 			_ => null,
 		};
 	}

@@ -113,7 +113,7 @@ class _DockItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.labelSm.copyWith(color: color, fontSize: 10),
+                  style: AppTextStyles.labelSm.copyWith(color: color, fontSize: 11),
                 ),
               ],
             ),

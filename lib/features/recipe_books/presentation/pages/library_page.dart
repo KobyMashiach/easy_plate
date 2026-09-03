@@ -79,10 +79,18 @@ class LibraryPage extends StatelessWidget {
                                 final book = books[index];
                                 return BookCoverCard(
                                   book: book,
-                                  onTap: () => context.pushNamed(
-                                    Routing.bookDetails,
-                                    extra: book.id,
-                                  ),
+                                  // Reload on return: the cover can be changed
+                                  // inside the book, and this page is kept
+                                  // alive by the IndexedStack so it would
+                                  // otherwise keep showing the old shelf.
+                                  onTap: () async {
+                                    final bloc = context.read<LibraryBloc>();
+                                    await context.pushNamed(
+                                      Routing.bookDetails,
+                                      extra: book.id,
+                                    );
+                                    bloc.add(const LibraryEvent.init());
+                                  },
                                   onLongPress: () => _showBookOptions(context, book),
                                 );
                               },
@@ -150,6 +158,23 @@ class LibraryPage extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.gutter),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
+                  _showRenameBookDialog(context, bloc, book);
+                },
+                child: Row(
+                  children: [
+                    const Icon(Icons.drive_file_rename_outline_rounded,
+                        color: AppColors.primary),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(t.books.renameBook, style: AppTextStyles.bodyMd),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.base),
+              ClayCard(
+                radius: AppRadius.md,
+                padding: const EdgeInsets.all(AppSpacing.gutter),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
                   bloc.add(.deleteBook(book.id));
                 },
                 child: Row(
@@ -166,6 +191,39 @@ class LibraryPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showRenameBookDialog(
+    BuildContext context,
+    LibraryBloc bloc,
+    RecipeBookEntity book,
+  ) {
+    final controller = TextEditingController(text: book.title);
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(t.books.renameBook),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: t.books.newBookTitle),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(t.common.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final title = controller.text.trim();
+              if (title.isNotEmpty) bloc.add(.renameBook(book.id, title));
+              Navigator.of(dialogContext).pop();
+            },
+            child: Text(t.common.save),
+          ),
+        ],
       ),
     );
   }

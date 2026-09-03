@@ -57,6 +57,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$groceryList$he groceryList = Translations$groceryList$he.internal(_root);
 	late final Translations$unit$he unit = Translations$unit$he.internal(_root);
 	late final Translations$image$he image = Translations$image$he.internal(_root);
+	late final Translations$nav$he nav = Translations$nav$he.internal(_root);
 }
 
 // Path: common
@@ -315,6 +316,9 @@ class Translations$books$he {
 
 	/// he: 'אפשרויות ספר'
 	String get bookOptions => 'אפשרויות ספר';
+
+	/// he: 'עריכת שם הספר'
+	String get renameBook => 'עריכת שם הספר';
 }
 
 // Path: recipe
@@ -629,6 +633,30 @@ class Translations$image$he {
 	String get remove => 'הסרת התמונה';
 }
 
+// Path: nav
+class Translations$nav$he {
+	Translations$nav$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ספרייה'
+	String get library => 'ספרייה';
+
+	/// he: 'מתכונים'
+	String get recipes => 'מתכונים';
+
+	/// he: 'תפריטים'
+	String get mealPlan => 'תפריטים';
+
+	/// he: 'קניות'
+	String get groceries => 'קניות';
+
+	/// he: 'הגדרות'
+	String get settings => 'הגדרות';
+}
+
 /// The flat map containing all translations for locale <he>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -703,6 +731,7 @@ extension on Translations {
 			'books.reorderHint' => 'גררו כדי לשנות את סדר המתכונים',
 			'books.coverImage' => 'תמונת כריכה',
 			'books.bookOptions' => 'אפשרויות ספר',
+			'books.renameBook' => 'עריכת שם הספר',
 			'recipe.prepTime' => 'זמן הכנה',
 			'recipe.cookTime' => 'זמן בישול',
 			'recipe.ingredients' => 'מצרכים',
@@ -789,6 +818,11 @@ extension on Translations {
 			'image.gallery' => 'בחירה מהגלריה',
 			'image.camera' => 'צילום תמונה',
 			'image.remove' => 'הסרת התמונה',
+			'nav.library' => 'ספרייה',
+			'nav.recipes' => 'מתכונים',
+			'nav.mealPlan' => 'תפריטים',
+			'nav.groceries' => 'קניות',
+			'nav.settings' => 'הגדרות',
 			_ => null,
 		};
 	}

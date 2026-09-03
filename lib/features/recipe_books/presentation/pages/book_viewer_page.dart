@@ -45,6 +45,10 @@ class _BookViewerBodyState extends State<_BookViewerBody> {
   /// through the book rather than teleporting.
   static const _pageFlipDuration = Duration(milliseconds: 300);
 
+  /// Vertical room the floating quick-jump capsule occupies, so the book can
+  /// be inset by this plus a gap and the two never touch.
+  static const _capsuleHeight = 72.0;
+
   final _controller = PageFlipController();
   int _currentPage = 0;
   bool _soundEnabled = true;
@@ -165,7 +169,7 @@ class _BookViewerBodyState extends State<_BookViewerBody> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(
                         AppSpacing.gutter,
-                        72,
+                        _capsuleHeight + AppSpacing.base,
                         AppSpacing.gutter,
                         AppSpacing.gutter,
                       ),

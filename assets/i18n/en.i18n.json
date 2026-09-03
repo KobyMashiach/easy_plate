@@ -77,7 +77,8 @@
     "editor": "Editor",
     "reorderHint": "Drag to reorder the recipes",
     "coverImage": "Cover photo",
-    "bookOptions": "Book options"
+    "bookOptions": "Book options",
+    "renameBook": "Rename book"
   },
   "recipe": {
     "prepTime": "Prep time",
@@ -176,5 +177,12 @@
     "gallery": "Choose from gallery",
     "camera": "Take a photo",
     "remove": "Remove photo"
+  },
+  "nav": {
+    "library": "Library",
+    "recipes": "Recipes",
+    "mealPlan": "Meals",
+    "groceries": "Groceries",
+    "settings": "Settings"
   }
 }

@@ -53,6 +53,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$groceryList$en groceryList = _Translations$groceryList$en._(_root);
 	@override late final _Translations$unit$en unit = _Translations$unit$en._(_root);
 	@override late final _Translations$image$en image = _Translations$image$en._(_root);
+	@override late final _Translations$nav$en nav = _Translations$nav$en._(_root);
 }
 
 // Path: common
@@ -181,6 +182,7 @@ class _Translations$books$en extends Translations$books$he {
 	@override String get reorderHint => 'Drag to reorder the recipes';
 	@override String get coverImage => 'Cover photo';
 	@override String get bookOptions => 'Book options';
+	@override String get renameBook => 'Rename book';
 }
 
 // Path: recipe
@@ -323,6 +325,20 @@ class _Translations$image$en extends Translations$image$he {
 	@override String get remove => 'Remove photo';
 }
 
+// Path: nav
+class _Translations$nav$en extends Translations$nav$he {
+	_Translations$nav$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get library => 'Library';
+	@override String get recipes => 'Recipes';
+	@override String get mealPlan => 'Meals';
+	@override String get groceries => 'Groceries';
+	@override String get settings => 'Settings';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -397,6 +413,7 @@ extension on TranslationsEn {
 			'books.reorderHint' => 'Drag to reorder the recipes',
 			'books.coverImage' => 'Cover photo',
 			'books.bookOptions' => 'Book options',
+			'books.renameBook' => 'Rename book',
 			'recipe.prepTime' => 'Prep time',
 			'recipe.cookTime' => 'Cook time',
 			'recipe.ingredients' => 'Ingredients',
@@ -483,6 +500,11 @@ extension on TranslationsEn {
 			'image.gallery' => 'Choose from gallery',
 			'image.camera' => 'Take a photo',
 			'image.remove' => 'Remove photo',
+			'nav.library' => 'Library',
+			'nav.recipes' => 'Recipes',
+			'nav.mealPlan' => 'Meals',
+			'nav.groceries' => 'Groceries',
+			'nav.settings' => 'Settings',
 			_ => null,
 		};
 	}

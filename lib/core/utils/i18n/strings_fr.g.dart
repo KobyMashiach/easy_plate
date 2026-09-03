@@ -53,6 +53,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$groceryList$fr groceryList = _Translations$groceryList$fr._(_root);
 	@override late final _Translations$unit$fr unit = _Translations$unit$fr._(_root);
 	@override late final _Translations$image$fr image = _Translations$image$fr._(_root);
+	@override late final _Translations$nav$fr nav = _Translations$nav$fr._(_root);
 }
 
 // Path: common
@@ -181,6 +182,7 @@ class _Translations$books$fr extends Translations$books$he {
 	@override String get reorderHint => 'Faites glisser pour réorganiser les recettes';
 	@override String get coverImage => 'Photo de couverture';
 	@override String get bookOptions => 'Options du livre';
+	@override String get renameBook => 'Renommer le livre';
 }
 
 // Path: recipe
@@ -323,6 +325,20 @@ class _Translations$image$fr extends Translations$image$he {
 	@override String get remove => 'Supprimer la photo';
 }
 
+// Path: nav
+class _Translations$nav$fr extends Translations$nav$he {
+	_Translations$nav$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get library => 'Livres';
+	@override String get recipes => 'Recettes';
+	@override String get mealPlan => 'Repas';
+	@override String get groceries => 'Courses';
+	@override String get settings => 'Réglages';
+}
+
 /// The flat map containing all translations for locale <fr>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -397,6 +413,7 @@ extension on TranslationsFr {
 			'books.reorderHint' => 'Faites glisser pour réorganiser les recettes',
 			'books.coverImage' => 'Photo de couverture',
 			'books.bookOptions' => 'Options du livre',
+			'books.renameBook' => 'Renommer le livre',
 			'recipe.prepTime' => 'Temps de préparation',
 			'recipe.cookTime' => 'Temps de cuisson',
 			'recipe.ingredients' => 'Ingrédients',
@@ -483,6 +500,11 @@ extension on TranslationsFr {
 			'image.gallery' => 'Choisir dans la galerie',
 			'image.camera' => 'Prendre une photo',
 			'image.remove' => 'Supprimer la photo',
+			'nav.library' => 'Livres',
+			'nav.recipes' => 'Recettes',
+			'nav.mealPlan' => 'Repas',
+			'nav.groceries' => 'Courses',
+			'nav.settings' => 'Réglages',
 			_ => null,
 		};
 	}
