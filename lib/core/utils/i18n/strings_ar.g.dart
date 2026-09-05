@@ -47,6 +47,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$dietary$ar dietary = _Translations$dietary$ar._(_root);
 	@override late final _Translations$weekday$ar weekday = _Translations$weekday$ar._(_root);
 	@override late final _Translations$settings$ar settings = _Translations$settings$ar._(_root);
+	@override late final _Translations$more$ar more = _Translations$more$ar._(_root);
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
 	@override late final _Translations$recipe$ar recipe = _Translations$recipe$ar._(_root);
@@ -122,6 +123,22 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get errorUnknown => 'فشل تسجيل الدخول، حاولوا مجددًا';
 	@override String get signOutTitle => 'تسجيل الخروج؟';
 	@override String get signOutBody => 'ستحتاجون إلى تسجيل الدخول مجددًا للوصول إلى وصفاتكم.';
+	@override String get errorOperationNotAllowed => 'طريقة تسجيل الدخول هذه غير متاحة حاليًا';
+	@override String get errorTooManyRequests => 'محاولات كثيرة. حاولوا بعد بضع دقائق';
+	@override String get errorInvalidPhone => 'رقم الهاتف غير صالح';
+	@override String get errorEmailInUse => 'البريد الإلكتروني مسجّل بالفعل';
+	@override String get verifyEmailTitle => 'تأكيد البريد الإلكتروني';
+	@override String verifyEmailBody({required Object email}) => 'أرسلنا رابط تأكيد إلى ${email}. افتحوه ثم عودوا إلى هنا.';
+	@override String get resendEmail => 'إعادة إرسال الرابط';
+	@override String get emailResent => 'تم إرسال الرابط مجددًا';
+	@override String get checkVerification => 'لقد أكّدت';
+	@override String get stillNotVerified => 'لم يتم التأكيد بعد';
+	@override String get linkPhone => 'تأكيد الهاتف';
+	@override String get phoneLinked => 'تم تأكيد الهاتف';
+	@override String get phoneAlreadyUsed => 'هذا الرقم مرتبط بحساب آخر';
+	@override String get emailAlreadyLinked => 'الحساب مرتبط ببريد إلكتروني بالفعل';
+	@override String get addEmailPassword => 'إضافة بريد وكلمة مرور';
+	@override String get verified => 'مؤكَّد';
 }
 
 // Path: profile
@@ -209,6 +226,24 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.';
 	@override String get sharedAccess => 'إدارة المشاركة';
 	@override String get noSharedAccess => 'لم تشارك أي كتب أو قوائم بعد';
+}
+
+// Path: more
+class _Translations$more$ar extends Translations$more$he {
+	_Translations$more$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'المزيد';
+	@override String get settings => 'الإعدادات';
+	@override String get profile => 'ملفي الشخصي';
+	@override String get support => 'الدعم';
+	@override String get supportTitle => 'كيف يمكننا المساعدة؟';
+	@override String get supportBody => 'اكتبوا لنا وسنعود إليكم قريبًا.';
+	@override String get whatsapp => 'راسلونا على واتساب';
+	@override String get email => 'إرسال بريد';
+	@override String get supportUnavailable => 'تعذّر فتح التطبيق';
 }
 
 // Path: language
@@ -539,6 +574,22 @@ extension on TranslationsAr {
 			'auth.errorUnknown' => 'فشل تسجيل الدخول، حاولوا مجددًا',
 			'auth.signOutTitle' => 'تسجيل الخروج؟',
 			'auth.signOutBody' => 'ستحتاجون إلى تسجيل الدخول مجددًا للوصول إلى وصفاتكم.',
+			'auth.errorOperationNotAllowed' => 'طريقة تسجيل الدخول هذه غير متاحة حاليًا',
+			'auth.errorTooManyRequests' => 'محاولات كثيرة. حاولوا بعد بضع دقائق',
+			'auth.errorInvalidPhone' => 'رقم الهاتف غير صالح',
+			'auth.errorEmailInUse' => 'البريد الإلكتروني مسجّل بالفعل',
+			'auth.verifyEmailTitle' => 'تأكيد البريد الإلكتروني',
+			'auth.verifyEmailBody' => ({required Object email}) => 'أرسلنا رابط تأكيد إلى ${email}. افتحوه ثم عودوا إلى هنا.',
+			'auth.resendEmail' => 'إعادة إرسال الرابط',
+			'auth.emailResent' => 'تم إرسال الرابط مجددًا',
+			'auth.checkVerification' => 'لقد أكّدت',
+			'auth.stillNotVerified' => 'لم يتم التأكيد بعد',
+			'auth.linkPhone' => 'تأكيد الهاتف',
+			'auth.phoneLinked' => 'تم تأكيد الهاتف',
+			'auth.phoneAlreadyUsed' => 'هذا الرقم مرتبط بحساب آخر',
+			'auth.emailAlreadyLinked' => 'الحساب مرتبط ببريد إلكتروني بالفعل',
+			'auth.addEmailPassword' => 'إضافة بريد وكلمة مرور',
+			'auth.verified' => 'مؤكَّد',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',
@@ -581,6 +632,15 @@ extension on TranslationsAr {
 			'settings.fastPageTurnHint' => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.',
 			'settings.sharedAccess' => 'إدارة المشاركة',
 			'settings.noSharedAccess' => 'لم تشارك أي كتب أو قوائم بعد',
+			'more.title' => 'المزيد',
+			'more.settings' => 'الإعدادات',
+			'more.profile' => 'ملفي الشخصي',
+			'more.support' => 'الدعم',
+			'more.supportTitle' => 'كيف يمكننا المساعدة؟',
+			'more.supportBody' => 'اكتبوا لنا وسنعود إليكم قريبًا.',
+			'more.whatsapp' => 'راسلونا على واتساب',
+			'more.email' => 'إرسال بريد',
+			'more.supportUnavailable' => 'تعذّر فتح التطبيق',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',

@@ -9,9 +9,19 @@ import '../../features/user_profile/domain/repositories/user_profile_repository.
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
 import 'firebase_service.dart';
 
-/// Where the user stands in the gate: signed out, signed in but without a
-/// profile document, profile filled in but preferences not chosen, or through.
-enum AuthStage { unknown, signedOut, needsProfile, needsOnboarding, ready }
+/// Where the user stands in the gate: signed out, email not yet confirmed,
+/// signed in but without a profile document, profile filled in but preferences
+/// not chosen, or through.
+enum AuthStage {
+  unknown,
+  signedOut,
+  /// Signed in with a password the user chose, but the address behind it
+  /// has not been confirmed yet.
+  needsEmailVerification,
+  needsProfile,
+  needsOnboarding,
+  ready,
+}
 
 /// Single source of truth for the auth gate, and the router's refresh signal.
 ///
@@ -68,7 +78,20 @@ class AuthSessionService extends ChangeNotifier {
     }
 
     unawaited(FirebaseService().setAnalyticsUser(user.uid));
+
+    if (user.needsEmailVerification) {
+      _set(AuthStage.needsEmailVerification);
+      return;
+    }
+
     await _resolveProfile(user);
+  }
+
+  /// Called by the verification screen once Firebase confirms the address, and
+  /// after linking a credential — both change what the gate should allow.
+  Future<void> refreshUser(AppUserEntity user) async {
+    _user = user;
+    await _onAuthChanged(user);
   }
 
   Future<void> _resolveProfile(AppUserEntity user) async {

@@ -7,6 +7,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../domain/entities/app_user_entity.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/confirm_phone_code_usecase.dart';
 import '../../domain/usecases/register_with_email_usecase.dart';
 import '../../domain/usecases/send_password_reset_usecase.dart';
@@ -53,7 +55,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SendPasswordResetUseCase sendPasswordResetUseCase;
   final SignOutUseCase signOutUseCase;
 
+  /// The account as Firebase currently sees it. Read after a link, where the
+  /// stream has not fired but the user's identities have changed.
+  final AuthRepository authRepository;
+
+  AppUserEntity? get currentUser => authRepository.currentUser;
+
   AuthBloc({
+    required this.authRepository,
     required this.signInWithEmailUseCase,
     required this.registerWithEmailUseCase,
     required this.signInWithGoogleUseCase,
@@ -73,6 +82,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   factory AuthBloc.fromContext(BuildContext context) {
     return AuthBloc(
+      authRepository: context.read(),
       signInWithEmailUseCase: SignInWithEmailUseCase(context.read()),
       registerWithEmailUseCase: RegisterWithEmailUseCase(context.read()),
       signInWithGoogleUseCase: SignInWithGoogleUseCase(context.read()),
@@ -91,9 +101,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await action();
     } on AppException catch (e) {
       debugPrint('Auth error: $e');
+      // The Firebase code when there is one, else the error type — the screen
+      // translates either.
       emit(e.type == AppErrorType.cancelled
           ? const AuthState.idle()
-          : AuthState.errorMessage(e.type.name));
+          : AuthState.errorMessage(e.message.isNotEmpty ? e.message : e.type.name));
     } catch (e) {
       debugPrint('Auth error: $e');
       emit(AuthState.errorMessage(e.toString()));

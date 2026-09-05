@@ -48,7 +48,23 @@
     "errorNetwork": "لا يوجد اتصال بالإنترنت",
     "errorUnknown": "فشل تسجيل الدخول، حاولوا مجددًا",
     "signOutTitle": "تسجيل الخروج؟",
-    "signOutBody": "ستحتاجون إلى تسجيل الدخول مجددًا للوصول إلى وصفاتكم."
+    "signOutBody": "ستحتاجون إلى تسجيل الدخول مجددًا للوصول إلى وصفاتكم.",
+    "errorOperationNotAllowed": "طريقة تسجيل الدخول هذه غير متاحة حاليًا",
+    "errorTooManyRequests": "محاولات كثيرة. حاولوا بعد بضع دقائق",
+    "errorInvalidPhone": "رقم الهاتف غير صالح",
+    "errorEmailInUse": "البريد الإلكتروني مسجّل بالفعل",
+    "verifyEmailTitle": "تأكيد البريد الإلكتروني",
+    "verifyEmailBody": "أرسلنا رابط تأكيد إلى $email. افتحوه ثم عودوا إلى هنا.",
+    "resendEmail": "إعادة إرسال الرابط",
+    "emailResent": "تم إرسال الرابط مجددًا",
+    "checkVerification": "لقد أكّدت",
+    "stillNotVerified": "لم يتم التأكيد بعد",
+    "linkPhone": "تأكيد الهاتف",
+    "phoneLinked": "تم تأكيد الهاتف",
+    "phoneAlreadyUsed": "هذا الرقم مرتبط بحساب آخر",
+    "emailAlreadyLinked": "الحساب مرتبط ببريد إلكتروني بالفعل",
+    "addEmailPassword": "إضافة بريد وكلمة مرور",
+    "verified": "مؤكَّد"
   },
   "profile": {
     "setupTitle": "تفاصيل أخيرة",
@@ -101,6 +117,17 @@
     "fastPageTurnHint": "الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.",
     "sharedAccess": "إدارة المشاركة",
     "noSharedAccess": "لم تشارك أي كتب أو قوائم بعد"
+  },
+  "more": {
+    "title": "المزيد",
+    "settings": "الإعدادات",
+    "profile": "ملفي الشخصي",
+    "support": "الدعم",
+    "supportTitle": "كيف يمكننا المساعدة؟",
+    "supportBody": "اكتبوا لنا وسنعود إليكم قريبًا.",
+    "whatsapp": "راسلونا على واتساب",
+    "email": "إرسال بريد",
+    "supportUnavailable": "تعذّر فتح التطبيق"
   },
   "language": {
     "hebrew": "עברית",

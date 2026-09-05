@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/account_avatar_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../forum/presentation/pages/forum_page.dart';
 import '../../../shared_recipes/presentation/pages/shared_recipes_page.dart';
@@ -23,7 +24,10 @@ class _CommunityPageState extends State<CommunityPage> {
   @override
   Widget build(BuildContext context) {
     return ClayScaffold(
-      appBar: ClayTopAppBar(title: t.community.title),
+      appBar: ClayTopAppBar(
+        title: t.community.title,
+        leading: const AccountAvatarButton(),
+      ),
       body: SafeArea(
         child: Column(
           children: [

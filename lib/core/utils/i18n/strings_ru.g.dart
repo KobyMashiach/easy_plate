@@ -47,6 +47,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$dietary$ru dietary = _Translations$dietary$ru._(_root);
 	@override late final _Translations$weekday$ru weekday = _Translations$weekday$ru._(_root);
 	@override late final _Translations$settings$ru settings = _Translations$settings$ru._(_root);
+	@override late final _Translations$more$ru more = _Translations$more$ru._(_root);
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
 	@override late final _Translations$recipe$ru recipe = _Translations$recipe$ru._(_root);
@@ -122,6 +123,22 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get errorUnknown => 'Не удалось войти, попробуйте снова';
 	@override String get signOutTitle => 'Выйти?';
 	@override String get signOutBody => 'Чтобы вернуться к рецептам, нужно будет войти снова.';
+	@override String get errorOperationNotAllowed => 'Этот способ входа сейчас недоступен';
+	@override String get errorTooManyRequests => 'Слишком много попыток. Повторите через несколько минут';
+	@override String get errorInvalidPhone => 'Неверный номер телефона';
+	@override String get errorEmailInUse => 'Эта почта уже зарегистрирована';
+	@override String get verifyEmailTitle => 'Подтвердите почту';
+	@override String verifyEmailBody({required Object email}) => 'Мы отправили ссылку на ${email}. Откройте её и вернитесь сюда.';
+	@override String get resendEmail => 'Отправить ссылку снова';
+	@override String get emailResent => 'Ссылка отправлена снова';
+	@override String get checkVerification => 'Я подтвердил';
+	@override String get stillNotVerified => 'Почта ещё не подтверждена';
+	@override String get linkPhone => 'Подтвердить телефон';
+	@override String get phoneLinked => 'Телефон подтверждён';
+	@override String get phoneAlreadyUsed => 'Этот номер уже привязан к другому аккаунту';
+	@override String get emailAlreadyLinked => 'К аккаунту уже привязана почта';
+	@override String get addEmailPassword => 'Добавить почту и пароль';
+	@override String get verified => 'Подтверждено';
 }
 
 // Path: profile
@@ -209,6 +226,24 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.';
 	@override String get sharedAccess => 'Управление доступом';
 	@override String get noSharedAccess => 'Вы ещё не делились книгами или списками';
+}
+
+// Path: more
+class _Translations$more$ru extends Translations$more$he {
+	_Translations$more$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Ещё';
+	@override String get settings => 'Настройки';
+	@override String get profile => 'Мой профиль';
+	@override String get support => 'Поддержка';
+	@override String get supportTitle => 'Чем помочь?';
+	@override String get supportBody => 'Напишите нам, и мы ответим.';
+	@override String get whatsapp => 'Написать в WhatsApp';
+	@override String get email => 'Отправить письмо';
+	@override String get supportUnavailable => 'Не удалось открыть приложение';
 }
 
 // Path: language
@@ -539,6 +574,22 @@ extension on TranslationsRu {
 			'auth.errorUnknown' => 'Не удалось войти, попробуйте снова',
 			'auth.signOutTitle' => 'Выйти?',
 			'auth.signOutBody' => 'Чтобы вернуться к рецептам, нужно будет войти снова.',
+			'auth.errorOperationNotAllowed' => 'Этот способ входа сейчас недоступен',
+			'auth.errorTooManyRequests' => 'Слишком много попыток. Повторите через несколько минут',
+			'auth.errorInvalidPhone' => 'Неверный номер телефона',
+			'auth.errorEmailInUse' => 'Эта почта уже зарегистрирована',
+			'auth.verifyEmailTitle' => 'Подтвердите почту',
+			'auth.verifyEmailBody' => ({required Object email}) => 'Мы отправили ссылку на ${email}. Откройте её и вернитесь сюда.',
+			'auth.resendEmail' => 'Отправить ссылку снова',
+			'auth.emailResent' => 'Ссылка отправлена снова',
+			'auth.checkVerification' => 'Я подтвердил',
+			'auth.stillNotVerified' => 'Почта ещё не подтверждена',
+			'auth.linkPhone' => 'Подтвердить телефон',
+			'auth.phoneLinked' => 'Телефон подтверждён',
+			'auth.phoneAlreadyUsed' => 'Этот номер уже привязан к другому аккаунту',
+			'auth.emailAlreadyLinked' => 'К аккаунту уже привязана почта',
+			'auth.addEmailPassword' => 'Добавить почту и пароль',
+			'auth.verified' => 'Подтверждено',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',
@@ -581,6 +632,15 @@ extension on TranslationsRu {
 			'settings.fastPageTurnHint' => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.',
 			'settings.sharedAccess' => 'Управление доступом',
 			'settings.noSharedAccess' => 'Вы ещё не делились книгами или списками',
+			'more.title' => 'Ещё',
+			'more.settings' => 'Настройки',
+			'more.profile' => 'Мой профиль',
+			'more.support' => 'Поддержка',
+			'more.supportTitle' => 'Чем помочь?',
+			'more.supportBody' => 'Напишите нам, и мы ответим.',
+			'more.whatsapp' => 'Написать в WhatsApp',
+			'more.email' => 'Отправить письмо',
+			'more.supportUnavailable' => 'Не удалось открыть приложение',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',

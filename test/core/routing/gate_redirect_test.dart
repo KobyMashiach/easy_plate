@@ -32,6 +32,26 @@ void main() {
     });
   });
 
+  group('needsEmailVerification', () {
+    test('holds a password account on the verification screen', () {
+      expect(
+        gateRedirect(stage: AuthStage.needsEmailVerification, location: Routing.home),
+        Routing.verifyEmail,
+      );
+      expect(
+        gateRedirect(stage: AuthStage.needsEmailVerification, location: Routing.verifyEmail),
+        isNull,
+      );
+    });
+
+    test('does not let registration be reached before the address is confirmed', () {
+      expect(
+        gateRedirect(stage: AuthStage.needsEmailVerification, location: Routing.register),
+        Routing.verifyEmail,
+      );
+    });
+  });
+
   group('needsProfile', () {
     test('forces registration and does not accept the login as done', () {
       expect(
@@ -74,6 +94,7 @@ void main() {
       for (final location in [
         Routing.splash,
         Routing.login,
+        Routing.verifyEmail,
         Routing.register,
         Routing.onboarding,
       ]) {

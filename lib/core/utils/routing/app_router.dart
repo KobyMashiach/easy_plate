@@ -4,9 +4,12 @@ import 'package:go_router/go_router.dart';
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/phone_verification_page.dart';
 import '../../../features/auth/presentation/pages/profile_setup_page.dart';
+import '../../../features/auth/presentation/pages/email_verification_page.dart';
 import '../../../features/auth/presentation/pages/splash_page.dart';
 import '../../../features/forum/domain/entities/forum_post_entity.dart';
 import '../../../features/forum/presentation/pages/forum_thread_page.dart';
+import '../../../features/more/presentation/pages/account_menu_page.dart';
+import '../../../features/more/presentation/pages/support_page.dart';
 import '../../../features/my_recipes/domain/entities/recipe_entity.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_editor_page.dart';
@@ -14,6 +17,7 @@ import '../../../features/navigation/presentation/pages/main_nav_bar.dart';
 import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../../features/recipe_books/presentation/pages/book_viewer_page.dart';
 import '../../../features/recipe_ingestion/presentation/pages/ingestion_page.dart';
+import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
 import 'routing.dart';
@@ -23,6 +27,7 @@ import 'routing.dart';
 const _stageEntryPoint = {
   AuthStage.unknown: Routing.splash,
   AuthStage.signedOut: Routing.login,
+  AuthStage.needsEmailVerification: Routing.verifyEmail,
   AuthStage.needsProfile: Routing.register,
   AuthStage.needsOnboarding: Routing.onboarding,
 };
@@ -77,6 +82,11 @@ GoRouter buildRouter() {
             PhoneVerificationPage(args: state.extra as PhoneVerificationArgs),
       ),
       GoRoute(
+        path: Routing.verifyEmail,
+        name: Routing.verifyEmail,
+        builder: (context, state) => const EmailVerificationPage(),
+      ),
+      GoRoute(
         path: Routing.register,
         name: Routing.register,
         builder: (context, state) => const ProfileSetupPage(),
@@ -105,6 +115,26 @@ GoRouter buildRouter() {
             path: Routing.recipeEditor,
             name: Routing.recipeEditor,
             builder: (context, state) => RecipeEditorPage(recipe: state.extra as RecipeEntity),
+          ),
+          GoRoute(
+            path: Routing.accountMenu,
+            name: Routing.accountMenu,
+            builder: (context, state) => const AccountMenuPage(),
+          ),
+          GoRoute(
+            path: Routing.settings,
+            name: Routing.settings,
+            builder: (context, state) => const SettingsPage(),
+          ),
+          GoRoute(
+            path: Routing.profileEdit,
+            name: Routing.profileEdit,
+            builder: (context, state) => const ProfileSetupPage(isEditing: true),
+          ),
+          GoRoute(
+            path: Routing.support,
+            name: Routing.support,
+            builder: (context, state) => const SupportPage(),
           ),
           GoRoute(
             path: Routing.forumThread,

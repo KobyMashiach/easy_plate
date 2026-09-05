@@ -48,7 +48,23 @@
     "errorNetwork": "No internet connection",
     "errorUnknown": "Sign-in failed, please try again",
     "signOutTitle": "Sign out?",
-    "signOutBody": "You will need to sign in again to reach your recipes."
+    "signOutBody": "You will need to sign in again to reach your recipes.",
+    "errorOperationNotAllowed": "This sign-in method is not available right now",
+    "errorTooManyRequests": "Too many attempts. Try again in a few minutes",
+    "errorInvalidPhone": "That phone number is not valid",
+    "errorEmailInUse": "That email is already registered",
+    "verifyEmailTitle": "Verify your email",
+    "verifyEmailBody": "We sent a verification link to $email. Open it, then come back here.",
+    "resendEmail": "Resend the link",
+    "emailResent": "Link sent again",
+    "checkVerification": "I have verified",
+    "stillNotVerified": "Not verified yet",
+    "linkPhone": "Verify phone",
+    "phoneLinked": "Phone verified",
+    "phoneAlreadyUsed": "That number already belongs to another account",
+    "emailAlreadyLinked": "This account already has an email",
+    "addEmailPassword": "Add email and password",
+    "verified": "Verified"
   },
   "profile": {
     "setupTitle": "A few last details",
@@ -101,6 +117,17 @@
     "fastPageTurnHint": "Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.",
     "sharedAccess": "Manage sharing",
     "noSharedAccess": "You haven't shared any books or lists yet"
+  },
+  "more": {
+    "title": "More",
+    "settings": "Settings",
+    "profile": "My profile",
+    "support": "Support",
+    "supportTitle": "How can we help?",
+    "supportBody": "Write to us and we will get back to you.",
+    "whatsapp": "Message us on WhatsApp",
+    "email": "Send an email",
+    "supportUnavailable": "We could not open that app"
   },
   "language": {
     "hebrew": "עברית",

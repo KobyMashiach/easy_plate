@@ -23,4 +23,21 @@ abstract class AuthRepository {
   Future<AppUserEntity> confirmPhoneCode(String verificationId, String smsCode);
 
   Future<void> signOut();
+
+  /// Language for the SMS and email messages Firebase sends on our behalf.
+  Future<void> setLanguage(String languageCode);
+
+  Future<void> sendEmailVerification();
+
+  /// Re-reads the account from the server and reports whether the email has
+  /// been confirmed since.
+  Future<bool> refreshEmailVerified();
+
+  /// Attaches a phone number to the account that is already signed in, so a
+  /// later phone sign-in resolves to this same user rather than a new one.
+  Future<String> startPhoneLink(String phoneNumber);
+  Future<void> linkPhone(String verificationId, String smsCode);
+
+  /// The mirror of [startPhoneLink] for an account created by phone.
+  Future<void> linkEmailPassword(String email, String password);
 }

@@ -21,6 +21,21 @@ abstract class AuthDataSource {
   });
   Future<AppUserEntity> confirmPhoneCode(String verificationId, String smsCode);
   Future<void> signOut();
+  Future<void> setLanguage(String languageCode);
+
+  Future<void> sendEmailVerification();
+
+  /// Re-reads the account from the server and reports whether the email has
+  /// been confirmed since. `emailVerified` on a cached user never changes on
+  /// its own.
+  Future<bool> refreshEmailVerified();
+
+  Future<String> startPhoneLink(
+    String phoneNumber, {
+    void Function(Object error)? onFailed,
+  });
+  Future<void> linkPhone(String verificationId, String smsCode);
+  Future<void> linkEmailPassword(String email, String password);
 }
 
 class FirebaseAuthDataSource implements AuthDataSource {
@@ -43,22 +58,47 @@ class FirebaseAuthDataSource implements AuthDataSource {
       phoneNumber: user.phoneNumber,
       displayName: user.displayName,
       photoUrl: user.photoURL,
+      emailVerified: user.emailVerified,
+      providerIds: user.providerData.map((p) => p.providerId).toList(),
     );
   }
 
-  /// Firebase reports every failure as a code string; mapping them here keeps
-  /// the raw plugin exception out of the bloc and the UI.
-  Never _rethrow(FirebaseAuthException e) {
-    throw switch (e.code) {
+  User get _requireUser {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw const AppException(AppErrorType.unauthorized, message: 'no-current-user');
+    }
+    return user;
+  }
+
+  /// Firebase reports every failure as a code string. The code is carried
+  /// through as the message — it is stable across locales and SDK versions,
+  /// unlike `e.message`, so the UI can translate it instead of showing an
+  /// English sentence.
+  AppException _mapAuthError(FirebaseAuthException e) {
+    // The human-readable text is dropped from the exception but is the only
+    // place Firebase explains *why*, so it goes to the log.
+    debugPrint('FirebaseAuthException ${e.code}: ${e.message}');
+
+    return switch (e.code) {
       'invalid-credential' ||
       'wrong-password' ||
       'user-not-found' ||
       'invalid-verification-code' =>
         AppException(AppErrorType.unauthorized, message: e.code),
       'network-request-failed' => const AppException(AppErrorType.networkError),
-      _ => AppException(AppErrorType.unknown, message: e.message ?? e.code),
+      'too-many-requests' => AppException(AppErrorType.overloaded, message: e.code),
+      _ => AppException(AppErrorType.unknown, message: e.code),
     };
   }
+
+  Never _rethrow(FirebaseAuthException e) => throw _mapAuthError(e);
+
+  /// Localises the SMS and email templates Firebase sends on our behalf.
+  /// Without it every request carries a null `X-Firebase-Locale`.
+  @override
+  Future<void> setLanguage(String languageCode) async =>
+      _auth.setLanguageCode(languageCode);
 
   @override
   Stream<AppUserEntity?> authStateChanges() => _auth.authStateChanges().map(_map);
@@ -144,9 +184,7 @@ class FirebaseAuthDataSource implements AuthDataSource {
       },
       verificationFailed: (e) {
         if (!completer.isCompleted) {
-          completer.completeError(
-            AppException(AppErrorType.unauthorized, message: e.message ?? e.code),
-          );
+          completer.completeError(_mapAuthError(e));
         } else {
           onFailed?.call(e);
         }
@@ -187,5 +225,84 @@ class FirebaseAuthDataSource implements AuthDataSource {
       debugPrint('Google sign-out skipped: $e');
     }
     await _auth.signOut();
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    try {
+      await _requireUser.sendEmailVerification();
+    } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  @override
+  Future<bool> refreshEmailVerified() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    await user.reload();
+    // reload() mutates the cached instance rather than returning a new one, so
+    // the flag has to be read off currentUser again.
+    return _auth.currentUser?.emailVerified ?? false;
+  }
+
+  /// Same SMS round trip as signing in, but the resulting credential is
+  /// attached to the account that is already signed in instead of starting a
+  /// new session.
+  @override
+  Future<String> startPhoneLink(
+    String phoneNumber, {
+    void Function(Object error)? onFailed,
+  }) {
+    final completer = Completer<String>();
+
+    _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      // Deliberately empty: auto-retrieval would sign the credential in, and
+      // linking has to stay an explicit step against the current user.
+      verificationCompleted: (_) {},
+      verificationFailed: (e) {
+        if (!completer.isCompleted) {
+          completer.completeError(_mapAuthError(e));
+        } else {
+          onFailed?.call(e);
+        }
+      },
+      codeSent: (verificationId, _) {
+        if (!completer.isCompleted) completer.complete(verificationId);
+      },
+      codeAutoRetrievalTimeout: (verificationId) {
+        if (!completer.isCompleted) completer.complete(verificationId);
+      },
+    );
+
+    return completer.future;
+  }
+
+  @override
+  Future<void> linkPhone(String verificationId, String smsCode) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      await _requireUser.linkWithCredential(credential);
+      // The linked number only appears on the cached user after a reload.
+      await _auth.currentUser?.reload();
+    } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  @override
+  Future<void> linkEmailPassword(String email, String password) async {
+    try {
+      final credential = EmailAuthProvider.credential(email: email, password: password);
+      await _requireUser.linkWithCredential(credential);
+      await _auth.currentUser?.reload();
+      await _auth.currentUser?.sendEmailVerification();
+    } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
   }
 }

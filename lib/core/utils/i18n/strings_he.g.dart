@@ -51,6 +51,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$dietary$he dietary = Translations$dietary$he.internal(_root);
 	late final Translations$weekday$he weekday = Translations$weekday$he.internal(_root);
 	late final Translations$settings$he settings = Translations$settings$he.internal(_root);
+	late final Translations$more$he more = Translations$more$he.internal(_root);
 	late final Translations$language$he language = Translations$language$he.internal(_root);
 	late final Translations$books$he books = Translations$books$he.internal(_root);
 	late final Translations$recipe$he recipe = Translations$recipe$he.internal(_root);
@@ -218,6 +219,54 @@ class Translations$auth$he {
 
 	/// he: 'תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.'
 	String get signOutBody => 'תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.';
+
+	/// he: 'שיטת ההתחברות הזו אינה זמינה כרגע'
+	String get errorOperationNotAllowed => 'שיטת ההתחברות הזו אינה זמינה כרגע';
+
+	/// he: 'יותר מדי ניסיונות. נסו שוב עוד כמה דקות'
+	String get errorTooManyRequests => 'יותר מדי ניסיונות. נסו שוב עוד כמה דקות';
+
+	/// he: 'מספר הטלפון אינו תקין'
+	String get errorInvalidPhone => 'מספר הטלפון אינו תקין';
+
+	/// he: 'כתובת האימייל כבר רשומה'
+	String get errorEmailInUse => 'כתובת האימייל כבר רשומה';
+
+	/// he: 'אימות כתובת המייל'
+	String get verifyEmailTitle => 'אימות כתובת המייל';
+
+	/// he: 'שלחנו קישור אימות אל $email. פתחו אותו ואז חזרו לכאן.'
+	String verifyEmailBody({required Object email}) => 'שלחנו קישור אימות אל ${email}. פתחו אותו ואז חזרו לכאן.';
+
+	/// he: 'שליחת הקישור מחדש'
+	String get resendEmail => 'שליחת הקישור מחדש';
+
+	/// he: 'הקישור נשלח שוב'
+	String get emailResent => 'הקישור נשלח שוב';
+
+	/// he: 'כבר אימתתי'
+	String get checkVerification => 'כבר אימתתי';
+
+	/// he: 'הכתובת עדיין לא אומתה'
+	String get stillNotVerified => 'הכתובת עדיין לא אומתה';
+
+	/// he: 'אימות טלפון'
+	String get linkPhone => 'אימות טלפון';
+
+	/// he: 'הטלפון אומת'
+	String get phoneLinked => 'הטלפון אומת';
+
+	/// he: 'המספר הזה כבר משויך לחשבון אחר'
+	String get phoneAlreadyUsed => 'המספר הזה כבר משויך לחשבון אחר';
+
+	/// he: 'לחשבון כבר משויכת כתובת מייל'
+	String get emailAlreadyLinked => 'לחשבון כבר משויכת כתובת מייל';
+
+	/// he: 'הוספת מייל וסיסמה'
+	String get addEmailPassword => 'הוספת מייל וסיסמה';
+
+	/// he: 'מאומת'
+	String get verified => 'מאומת';
 }
 
 // Path: profile
@@ -389,6 +438,42 @@ class Translations$settings$he {
 
 	/// he: 'עדיין לא שיתפתם ספרים או רשימות'
 	String get noSharedAccess => 'עדיין לא שיתפתם ספרים או רשימות';
+}
+
+// Path: more
+class Translations$more$he {
+	Translations$more$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'עוד'
+	String get title => 'עוד';
+
+	/// he: 'הגדרות'
+	String get settings => 'הגדרות';
+
+	/// he: 'פרופיל אישי'
+	String get profile => 'פרופיל אישי';
+
+	/// he: 'תמיכה'
+	String get support => 'תמיכה';
+
+	/// he: 'איך אפשר לעזור?'
+	String get supportTitle => 'איך אפשר לעזור?';
+
+	/// he: 'כתבו לנו ונחזור אליכם בהקדם.'
+	String get supportBody => 'כתבו לנו ונחזור אליכם בהקדם.';
+
+	/// he: 'שליחת הודעה בוואטסאפ'
+	String get whatsapp => 'שליחת הודעה בוואטסאפ';
+
+	/// he: 'שליחת מייל'
+	String get email => 'שליחת מייל';
+
+	/// he: 'לא הצלחנו לפתוח את האפליקציה'
+	String get supportUnavailable => 'לא הצלחנו לפתוח את האפליקציה';
 }
 
 // Path: language
@@ -1067,6 +1152,22 @@ extension on Translations {
 			'auth.errorUnknown' => 'ההתחברות נכשלה, נסו שוב',
 			'auth.signOutTitle' => 'להתנתק?',
 			'auth.signOutBody' => 'תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.',
+			'auth.errorOperationNotAllowed' => 'שיטת ההתחברות הזו אינה זמינה כרגע',
+			'auth.errorTooManyRequests' => 'יותר מדי ניסיונות. נסו שוב עוד כמה דקות',
+			'auth.errorInvalidPhone' => 'מספר הטלפון אינו תקין',
+			'auth.errorEmailInUse' => 'כתובת האימייל כבר רשומה',
+			'auth.verifyEmailTitle' => 'אימות כתובת המייל',
+			'auth.verifyEmailBody' => ({required Object email}) => 'שלחנו קישור אימות אל ${email}. פתחו אותו ואז חזרו לכאן.',
+			'auth.resendEmail' => 'שליחת הקישור מחדש',
+			'auth.emailResent' => 'הקישור נשלח שוב',
+			'auth.checkVerification' => 'כבר אימתתי',
+			'auth.stillNotVerified' => 'הכתובת עדיין לא אומתה',
+			'auth.linkPhone' => 'אימות טלפון',
+			'auth.phoneLinked' => 'הטלפון אומת',
+			'auth.phoneAlreadyUsed' => 'המספר הזה כבר משויך לחשבון אחר',
+			'auth.emailAlreadyLinked' => 'לחשבון כבר משויכת כתובת מייל',
+			'auth.addEmailPassword' => 'הוספת מייל וסיסמה',
+			'auth.verified' => 'מאומת',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',
@@ -1109,6 +1210,15 @@ extension on Translations {
 			'settings.fastPageTurnHint' => 'קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.',
 			'settings.sharedAccess' => 'ניהול שיתופים',
 			'settings.noSharedAccess' => 'עדיין לא שיתפתם ספרים או רשימות',
+			'more.title' => 'עוד',
+			'more.settings' => 'הגדרות',
+			'more.profile' => 'פרופיל אישי',
+			'more.support' => 'תמיכה',
+			'more.supportTitle' => 'איך אפשר לעזור?',
+			'more.supportBody' => 'כתבו לנו ונחזור אליכם בהקדם.',
+			'more.whatsapp' => 'שליחת הודעה בוואטסאפ',
+			'more.email' => 'שליחת מייל',
+			'more.supportUnavailable' => 'לא הצלחנו לפתוח את האפליקציה',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',

@@ -48,7 +48,23 @@
     "errorNetwork": "Pas de connexion Internet",
     "errorUnknown": "Échec de la connexion, réessayez",
     "signOutTitle": "Se déconnecter ?",
-    "signOutBody": "Vous devrez vous reconnecter pour accéder à vos recettes."
+    "signOutBody": "Vous devrez vous reconnecter pour accéder à vos recettes.",
+    "errorOperationNotAllowed": "Cette méthode de connexion n'est pas disponible",
+    "errorTooManyRequests": "Trop de tentatives. Réessayez dans quelques minutes",
+    "errorInvalidPhone": "Ce numéro de téléphone n'est pas valide",
+    "errorEmailInUse": "Cet e-mail est déjà enregistré",
+    "verifyEmailTitle": "Vérifiez votre e-mail",
+    "verifyEmailBody": "Nous avons envoyé un lien à $email. Ouvrez-le puis revenez ici.",
+    "resendEmail": "Renvoyer le lien",
+    "emailResent": "Lien renvoyé",
+    "checkVerification": "J'ai vérifié",
+    "stillNotVerified": "Pas encore vérifié",
+    "linkPhone": "Vérifier le téléphone",
+    "phoneLinked": "Téléphone vérifié",
+    "phoneAlreadyUsed": "Ce numéro appartient déjà à un autre compte",
+    "emailAlreadyLinked": "Ce compte a déjà un e-mail",
+    "addEmailPassword": "Ajouter e-mail et mot de passe",
+    "verified": "Vérifié"
   },
   "profile": {
     "setupTitle": "Encore quelques détails",
@@ -101,6 +117,17 @@
     "fastPageTurnHint": "Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.",
     "sharedAccess": "Gérer le partage",
     "noSharedAccess": "Vous n'avez encore partagé aucun livre ni aucune liste"
+  },
+  "more": {
+    "title": "Plus",
+    "settings": "Paramètres",
+    "profile": "Mon profil",
+    "support": "Assistance",
+    "supportTitle": "Comment pouvons-nous aider ?",
+    "supportBody": "Écrivez-nous et nous reviendrons vers vous.",
+    "whatsapp": "Nous écrire sur WhatsApp",
+    "email": "Envoyer un e-mail",
+    "supportUnavailable": "Impossible d'ouvrir cette application"
   },
   "language": {
     "hebrew": "עברית",

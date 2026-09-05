@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 import 'core/hive/adapters_controller.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
 import 'core/logger/memory_logger.dart';
 import 'core/main_imports/app_dependencies.dart';
 import 'core/main_imports/repository_providers.dart';
@@ -51,8 +52,12 @@ Future<void> main() async {
         // needs the same repository instances the rest of the app reads.
         child: Builder(
           builder: (context) {
+            final auth = context.read<AuthRepository>();
+            // Rebuilt on every locale change, which is when Firebase's SMS and
+            // email templates need re-pointing at the new language.
+            auth.setLanguage(LocaleSettings.currentLocale.languageCode);
             AuthSessionService().bind(
-              auth: context.read(),
+              auth: auth,
               profiles: context.read(),
               preferences: context.read(),
               onboardingComplete: deps.preferences.onboardingComplete,

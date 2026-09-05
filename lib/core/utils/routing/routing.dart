@@ -2,6 +2,7 @@ class Routing {
   static const splash = '/';
   static const login = '/login';
   static const phoneVerify = '/phone_verify';
+  static const verifyEmail = '/verify_email';
   static const register = '/register';
   static const onboarding = '/onboarding';
   static const home = '/home';
@@ -15,5 +16,8 @@ class Routing {
   static const mealPlanDetails = 'meal_plan_details';
   static const groceryListDetails = 'grocery_list_details';
   static const settings = 'settings';
+  static const accountMenu = 'account_menu';
+  static const support = 'support';
+  static const profileEdit = 'profile_edit';
   static const forumThread = 'forum_thread';
 }

@@ -9,7 +9,6 @@ import '../../../grocery_list/presentation/pages/grocery_list_page.dart';
 import '../../../meal_planner/presentation/pages/meal_planner_page.dart';
 import '../../../my_recipes/presentation/pages/my_recipes_page.dart';
 import '../../../recipe_books/presentation/pages/library_page.dart';
-import '../../../settings/presentation/pages/settings_page.dart';
 
 class MainNavBar extends StatefulWidget {
   const MainNavBar({super.key});
@@ -40,7 +39,6 @@ class _MainNavBarState extends State<MainNavBar> {
       MealPlannerPage(key: ValueKey('mealPlanner-$locale')),
       GroceryListPage(key: ValueKey('groceries-$locale')),
       CommunityPage(key: ValueKey('community-$locale')),
-      SettingsPage(key: ValueKey('settings-$locale')),
     ];
 
     return Scaffold(
@@ -80,10 +78,6 @@ class _MainNavBarState extends State<MainNavBar> {
                   ClayNavDestination(
                     icon: Icons.groups_rounded,
                     label: t.nav.community,
-                  ),
-                  ClayNavDestination(
-                    icon: Icons.person_rounded,
-                    label: t.nav.settings,
                   ),
                 ],
               ),

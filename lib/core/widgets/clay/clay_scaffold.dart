@@ -13,6 +13,14 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   final IconData? trailingIcon;
   final VoidCallback? onTrailingTap;
 
+  /// Takes the leading slot instead of [leadingIcon] — the account avatar needs
+  /// to render an image, which an IconData cannot.
+  final Widget? leading;
+
+  /// Extra trailing widgets, for bars that carry more than one action. Shown
+  /// after [trailingIcon] when both are given.
+  final List<Widget> actions;
+
   const ClayTopAppBar({
     super.key,
     required this.title,
@@ -20,6 +28,8 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onLeadingTap,
     this.trailingIcon,
     this.onTrailingTap,
+    this.leading,
+    this.actions = const [],
   });
 
   @override
@@ -35,7 +45,7 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           child: Row(
             children: [
-              _BarIcon(icon: leadingIcon, onTap: onLeadingTap),
+              leading ?? _BarIcon(icon: leadingIcon, onTap: onLeadingTap),
               Expanded(
                 child: Text(
                   title,
@@ -45,7 +55,9 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
                   style: AppTextStyles.headlineMd.copyWith(color: AppColors.primary),
                 ),
               ),
-              _BarIcon(icon: trailingIcon, onTap: onTrailingTap),
+              if (trailingIcon != null || actions.isEmpty)
+                _BarIcon(icon: trailingIcon, onTap: onTrailingTap),
+              ...actions,
             ],
           ),
         ),

@@ -11,8 +11,6 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/weekday_selector.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/widgets/account_card.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
 
@@ -21,13 +19,14 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => SettingsBloc.fromContext(context)),
-        BlocProvider(create: (context) => AuthBloc.fromContext(context)),
-      ],
+    return BlocProvider(
+      create: (context) => SettingsBloc.fromContext(context),
       child: ClayScaffold(
-        appBar: ClayTopAppBar(title: t.appName, leadingIcon: Icons.person_rounded),
+        appBar: ClayTopAppBar(
+          title: t.more.settings,
+          leadingIcon: Icons.arrow_back_rounded,
+          onLeadingTap: () => Navigator.of(context).maybePop(),
+        ),
         body: BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, state) {
             return switch (state) {
@@ -128,7 +127,6 @@ class _SettingsBody extends StatelessWidget {
           onSelect: (language) => bloc.add(.changeLanguage(language)),
         ),
       ),
-      const AccountCard(),
     ];
 
     return Column(

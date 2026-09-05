@@ -47,6 +47,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$dietary$fr dietary = _Translations$dietary$fr._(_root);
 	@override late final _Translations$weekday$fr weekday = _Translations$weekday$fr._(_root);
 	@override late final _Translations$settings$fr settings = _Translations$settings$fr._(_root);
+	@override late final _Translations$more$fr more = _Translations$more$fr._(_root);
 	@override late final _Translations$language$fr language = _Translations$language$fr._(_root);
 	@override late final _Translations$books$fr books = _Translations$books$fr._(_root);
 	@override late final _Translations$recipe$fr recipe = _Translations$recipe$fr._(_root);
@@ -122,6 +123,22 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get errorUnknown => 'Échec de la connexion, réessayez';
 	@override String get signOutTitle => 'Se déconnecter ?';
 	@override String get signOutBody => 'Vous devrez vous reconnecter pour accéder à vos recettes.';
+	@override String get errorOperationNotAllowed => 'Cette méthode de connexion n\'est pas disponible';
+	@override String get errorTooManyRequests => 'Trop de tentatives. Réessayez dans quelques minutes';
+	@override String get errorInvalidPhone => 'Ce numéro de téléphone n\'est pas valide';
+	@override String get errorEmailInUse => 'Cet e-mail est déjà enregistré';
+	@override String get verifyEmailTitle => 'Vérifiez votre e-mail';
+	@override String verifyEmailBody({required Object email}) => 'Nous avons envoyé un lien à ${email}. Ouvrez-le puis revenez ici.';
+	@override String get resendEmail => 'Renvoyer le lien';
+	@override String get emailResent => 'Lien renvoyé';
+	@override String get checkVerification => 'J\'ai vérifié';
+	@override String get stillNotVerified => 'Pas encore vérifié';
+	@override String get linkPhone => 'Vérifier le téléphone';
+	@override String get phoneLinked => 'Téléphone vérifié';
+	@override String get phoneAlreadyUsed => 'Ce numéro appartient déjà à un autre compte';
+	@override String get emailAlreadyLinked => 'Ce compte a déjà un e-mail';
+	@override String get addEmailPassword => 'Ajouter e-mail et mot de passe';
+	@override String get verified => 'Vérifié';
 }
 
 // Path: profile
@@ -209,6 +226,24 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.';
 	@override String get sharedAccess => 'Gérer le partage';
 	@override String get noSharedAccess => 'Vous n\'avez encore partagé aucun livre ni aucune liste';
+}
+
+// Path: more
+class _Translations$more$fr extends Translations$more$he {
+	_Translations$more$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Plus';
+	@override String get settings => 'Paramètres';
+	@override String get profile => 'Mon profil';
+	@override String get support => 'Assistance';
+	@override String get supportTitle => 'Comment pouvons-nous aider ?';
+	@override String get supportBody => 'Écrivez-nous et nous reviendrons vers vous.';
+	@override String get whatsapp => 'Nous écrire sur WhatsApp';
+	@override String get email => 'Envoyer un e-mail';
+	@override String get supportUnavailable => 'Impossible d\'ouvrir cette application';
 }
 
 // Path: language
@@ -539,6 +574,22 @@ extension on TranslationsFr {
 			'auth.errorUnknown' => 'Échec de la connexion, réessayez',
 			'auth.signOutTitle' => 'Se déconnecter ?',
 			'auth.signOutBody' => 'Vous devrez vous reconnecter pour accéder à vos recettes.',
+			'auth.errorOperationNotAllowed' => 'Cette méthode de connexion n\'est pas disponible',
+			'auth.errorTooManyRequests' => 'Trop de tentatives. Réessayez dans quelques minutes',
+			'auth.errorInvalidPhone' => 'Ce numéro de téléphone n\'est pas valide',
+			'auth.errorEmailInUse' => 'Cet e-mail est déjà enregistré',
+			'auth.verifyEmailTitle' => 'Vérifiez votre e-mail',
+			'auth.verifyEmailBody' => ({required Object email}) => 'Nous avons envoyé un lien à ${email}. Ouvrez-le puis revenez ici.',
+			'auth.resendEmail' => 'Renvoyer le lien',
+			'auth.emailResent' => 'Lien renvoyé',
+			'auth.checkVerification' => 'J\'ai vérifié',
+			'auth.stillNotVerified' => 'Pas encore vérifié',
+			'auth.linkPhone' => 'Vérifier le téléphone',
+			'auth.phoneLinked' => 'Téléphone vérifié',
+			'auth.phoneAlreadyUsed' => 'Ce numéro appartient déjà à un autre compte',
+			'auth.emailAlreadyLinked' => 'Ce compte a déjà un e-mail',
+			'auth.addEmailPassword' => 'Ajouter e-mail et mot de passe',
+			'auth.verified' => 'Vérifié',
 			'profile.setupTitle' => 'Encore quelques détails',
 			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
 			'profile.fullName' => 'Nom complet',
@@ -581,6 +632,15 @@ extension on TranslationsFr {
 			'settings.fastPageTurnHint' => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.',
 			'settings.sharedAccess' => 'Gérer le partage',
 			'settings.noSharedAccess' => 'Vous n\'avez encore partagé aucun livre ni aucune liste',
+			'more.title' => 'Plus',
+			'more.settings' => 'Paramètres',
+			'more.profile' => 'Mon profil',
+			'more.support' => 'Assistance',
+			'more.supportTitle' => 'Comment pouvons-nous aider ?',
+			'more.supportBody' => 'Écrivez-nous et nous reviendrons vers vous.',
+			'more.whatsapp' => 'Nous écrire sur WhatsApp',
+			'more.email' => 'Envoyer un e-mail',
+			'more.supportUnavailable' => 'Impossible d\'ouvrir cette application',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',

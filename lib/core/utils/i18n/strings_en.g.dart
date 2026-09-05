@@ -47,6 +47,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$dietary$en dietary = _Translations$dietary$en._(_root);
 	@override late final _Translations$weekday$en weekday = _Translations$weekday$en._(_root);
 	@override late final _Translations$settings$en settings = _Translations$settings$en._(_root);
+	@override late final _Translations$more$en more = _Translations$more$en._(_root);
 	@override late final _Translations$language$en language = _Translations$language$en._(_root);
 	@override late final _Translations$books$en books = _Translations$books$en._(_root);
 	@override late final _Translations$recipe$en recipe = _Translations$recipe$en._(_root);
@@ -122,6 +123,22 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get errorUnknown => 'Sign-in failed, please try again';
 	@override String get signOutTitle => 'Sign out?';
 	@override String get signOutBody => 'You will need to sign in again to reach your recipes.';
+	@override String get errorOperationNotAllowed => 'This sign-in method is not available right now';
+	@override String get errorTooManyRequests => 'Too many attempts. Try again in a few minutes';
+	@override String get errorInvalidPhone => 'That phone number is not valid';
+	@override String get errorEmailInUse => 'That email is already registered';
+	@override String get verifyEmailTitle => 'Verify your email';
+	@override String verifyEmailBody({required Object email}) => 'We sent a verification link to ${email}. Open it, then come back here.';
+	@override String get resendEmail => 'Resend the link';
+	@override String get emailResent => 'Link sent again';
+	@override String get checkVerification => 'I have verified';
+	@override String get stillNotVerified => 'Not verified yet';
+	@override String get linkPhone => 'Verify phone';
+	@override String get phoneLinked => 'Phone verified';
+	@override String get phoneAlreadyUsed => 'That number already belongs to another account';
+	@override String get emailAlreadyLinked => 'This account already has an email';
+	@override String get addEmailPassword => 'Add email and password';
+	@override String get verified => 'Verified';
 }
 
 // Path: profile
@@ -209,6 +226,24 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.';
 	@override String get sharedAccess => 'Manage sharing';
 	@override String get noSharedAccess => 'You haven\'t shared any books or lists yet';
+}
+
+// Path: more
+class _Translations$more$en extends Translations$more$he {
+	_Translations$more$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'More';
+	@override String get settings => 'Settings';
+	@override String get profile => 'My profile';
+	@override String get support => 'Support';
+	@override String get supportTitle => 'How can we help?';
+	@override String get supportBody => 'Write to us and we will get back to you.';
+	@override String get whatsapp => 'Message us on WhatsApp';
+	@override String get email => 'Send an email';
+	@override String get supportUnavailable => 'We could not open that app';
 }
 
 // Path: language
@@ -539,6 +574,22 @@ extension on TranslationsEn {
 			'auth.errorUnknown' => 'Sign-in failed, please try again',
 			'auth.signOutTitle' => 'Sign out?',
 			'auth.signOutBody' => 'You will need to sign in again to reach your recipes.',
+			'auth.errorOperationNotAllowed' => 'This sign-in method is not available right now',
+			'auth.errorTooManyRequests' => 'Too many attempts. Try again in a few minutes',
+			'auth.errorInvalidPhone' => 'That phone number is not valid',
+			'auth.errorEmailInUse' => 'That email is already registered',
+			'auth.verifyEmailTitle' => 'Verify your email',
+			'auth.verifyEmailBody' => ({required Object email}) => 'We sent a verification link to ${email}. Open it, then come back here.',
+			'auth.resendEmail' => 'Resend the link',
+			'auth.emailResent' => 'Link sent again',
+			'auth.checkVerification' => 'I have verified',
+			'auth.stillNotVerified' => 'Not verified yet',
+			'auth.linkPhone' => 'Verify phone',
+			'auth.phoneLinked' => 'Phone verified',
+			'auth.phoneAlreadyUsed' => 'That number already belongs to another account',
+			'auth.emailAlreadyLinked' => 'This account already has an email',
+			'auth.addEmailPassword' => 'Add email and password',
+			'auth.verified' => 'Verified',
 			'profile.setupTitle' => 'A few last details',
 			'profile.setupSubtitle' => 'So we know what to call you',
 			'profile.fullName' => 'Full name',
@@ -581,6 +632,15 @@ extension on TranslationsEn {
 			'settings.fastPageTurnHint' => 'Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.',
 			'settings.sharedAccess' => 'Manage sharing',
 			'settings.noSharedAccess' => 'You haven\'t shared any books or lists yet',
+			'more.title' => 'More',
+			'more.settings' => 'Settings',
+			'more.profile' => 'My profile',
+			'more.support' => 'Support',
+			'more.supportTitle' => 'How can we help?',
+			'more.supportBody' => 'Write to us and we will get back to you.',
+			'more.whatsapp' => 'Message us on WhatsApp',
+			'more.email' => 'Send an email',
+			'more.supportUnavailable' => 'We could not open that app',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',

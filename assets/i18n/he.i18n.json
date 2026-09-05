@@ -48,7 +48,23 @@
     "errorNetwork": "אין חיבור לאינטרנט",
     "errorUnknown": "ההתחברות נכשלה, נסו שוב",
     "signOutTitle": "להתנתק?",
-    "signOutBody": "תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם."
+    "signOutBody": "תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.",
+    "errorOperationNotAllowed": "שיטת ההתחברות הזו אינה זמינה כרגע",
+    "errorTooManyRequests": "יותר מדי ניסיונות. נסו שוב עוד כמה דקות",
+    "errorInvalidPhone": "מספר הטלפון אינו תקין",
+    "errorEmailInUse": "כתובת האימייל כבר רשומה",
+    "verifyEmailTitle": "אימות כתובת המייל",
+    "verifyEmailBody": "שלחנו קישור אימות אל $email. פתחו אותו ואז חזרו לכאן.",
+    "resendEmail": "שליחת הקישור מחדש",
+    "emailResent": "הקישור נשלח שוב",
+    "checkVerification": "כבר אימתתי",
+    "stillNotVerified": "הכתובת עדיין לא אומתה",
+    "linkPhone": "אימות טלפון",
+    "phoneLinked": "הטלפון אומת",
+    "phoneAlreadyUsed": "המספר הזה כבר משויך לחשבון אחר",
+    "emailAlreadyLinked": "לחשבון כבר משויכת כתובת מייל",
+    "addEmailPassword": "הוספת מייל וסיסמה",
+    "verified": "מאומת"
   },
   "profile": {
     "setupTitle": "כמה פרטים אחרונים",
@@ -101,6 +117,17 @@
     "fastPageTurnHint": "קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.",
     "sharedAccess": "ניהול שיתופים",
     "noSharedAccess": "עדיין לא שיתפתם ספרים או רשימות"
+  },
+  "more": {
+    "title": "עוד",
+    "settings": "הגדרות",
+    "profile": "פרופיל אישי",
+    "support": "תמיכה",
+    "supportTitle": "איך אפשר לעזור?",
+    "supportBody": "כתבו לנו ונחזור אליכם בהקדם.",
+    "whatsapp": "שליחת הודעה בוואטסאפ",
+    "email": "שליחת מייל",
+    "supportUnavailable": "לא הצלחנו לפתוח את האפליקציה"
   },
   "language": {
     "hebrew": "עברית",

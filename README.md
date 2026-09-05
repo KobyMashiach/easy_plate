@@ -16,14 +16,30 @@ Codegen must run after any change to a model, a bloc, or `assets/i18n/he.i18n.js
 ## Accounts and Firebase
 
 Sign-in is mandatory — the router gates every screen behind
-`AuthSessionService`, which moves the user through `signedOut → needsProfile →
-needsOnboarding → ready`. Three providers are wired: Email/Password, Phone
-(SMS), and Google. Sign-out lives in Settings.
+`AuthSessionService`, which moves the user through `signedOut →
+needsEmailVerification → needsProfile → needsOnboarding → ready`. Three
+providers are wired: Email/Password, Phone (SMS), and Google.
 
-New accounts land on `ProfileSetupPage` (full name, photo, phone, email) before
-onboarding. The profile is a Firestore document at `users/{uid}`; the photo goes
-to Storage at `profile_photos/{uid}.jpg`. Local `UserPreferencesEntity` stays on
-the device and is unrelated.
+`needsEmailVerification` applies only to accounts with a `password` provider:
+Google arrives verified and a phone account has no address to prove.
+
+New accounts land on `ProfileSetupPage` (full name, photo) before onboarding.
+Email and phone are shown there as *identities*, not editable text — the only
+way to add one is its verification flow (`linkWithCredential`). That is what
+makes signing in later by a linked phone resolve to the same account rather
+than creating a second one; `credential-already-in-use` is surfaced when the
+number belongs to somebody else. The profile is a Firestore document at
+`users/{uid}`; the photo goes to Storage at `profile_photos/{uid}.jpg`. Local
+`UserPreferencesEntity` stays on the device and is unrelated.
+
+There is no settings tab. Every main screen carries the account avatar (photo,
+or initials) in its app bar, which opens the account menu: Settings, My
+profile, Support, and sign-out. Support hands off to WhatsApp or an email
+client — both need the `<queries>` entries in `AndroidManifest.xml` to be
+visible on Android 11+.
+
+**Support contacts are placeholders.** `SupportPage.supportPhone` and
+`supportEmail` need real values before release.
 
 Analytics, Crashlytics, Messaging and Remote Config are booted in
 `FirebaseService` (`lib/core/services/firebase_service.dart`). Push permission

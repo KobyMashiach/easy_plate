@@ -45,4 +45,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signOut() => dataSource.signOut();
+
+  @override
+  Future<void> setLanguage(String languageCode) => dataSource.setLanguage(languageCode);
+
+  @override
+  Future<void> sendEmailVerification() => dataSource.sendEmailVerification();
+
+  @override
+  Future<bool> refreshEmailVerified() => dataSource.refreshEmailVerified();
+
+  @override
+  Future<String> startPhoneLink(String phoneNumber) => dataSource.startPhoneLink(phoneNumber);
+
+  @override
+  Future<void> linkPhone(String verificationId, String smsCode) =>
+      dataSource.linkPhone(verificationId, smsCode);
+
+  @override
+  Future<void> linkEmailPassword(String email, String password) =>
+      dataSource.linkEmailPassword(email, password);
 }

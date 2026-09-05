@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/account_avatar_button.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
@@ -25,7 +26,7 @@ class LibraryPage extends StatelessWidget {
         builder: (context) => ClayScaffold(
           appBar: ClayTopAppBar(
             title: t.appName,
-            leadingIcon: Icons.menu_book_rounded,
+            leading: const AccountAvatarButton(),
             trailingIcon: Icons.add_rounded,
             onTrailingTap: () => _showCreateBookDialog(context),
           ),

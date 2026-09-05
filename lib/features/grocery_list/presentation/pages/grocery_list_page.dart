@@ -6,6 +6,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/account_avatar_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
@@ -27,11 +28,18 @@ class GroceryListPage extends StatelessWidget {
         builder: (context) => ClayScaffold(
           appBar: ClayTopAppBar(
             title: t.appName,
-            leadingIcon: Icons.autorenew_rounded,
-            onLeadingTap: () =>
-                context.read<GroceryListBloc>().add(const GroceryListEvent.regenerate()),
-            trailingIcon: Icons.add_rounded,
-            onTrailingTap: () => showAddGroceryItemSheet(context),
+            leading: const AccountAvatarButton(),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.autorenew_rounded, color: AppColors.primary),
+                onPressed: () =>
+                    context.read<GroceryListBloc>().add(const GroceryListEvent.regenerate()),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add_rounded, color: AppColors.primary),
+                onPressed: () => showAddGroceryItemSheet(context),
+              ),
+            ],
           ),
           body: BlocBuilder<GroceryListBloc, GroceryListState>(
             builder: (context, state) {
