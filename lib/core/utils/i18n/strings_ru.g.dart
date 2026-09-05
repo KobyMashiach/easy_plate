@@ -41,6 +41,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	// Translations
 	@override String get appName => 'EasyPlate';
 	@override late final _Translations$common$ru common = _Translations$common$ru._(_root);
+	@override late final _Translations$auth$ru auth = _Translations$auth$ru._(_root);
+	@override late final _Translations$profile$ru profile = _Translations$profile$ru._(_root);
 	@override late final _Translations$onboarding$ru onboarding = _Translations$onboarding$ru._(_root);
 	@override late final _Translations$dietary$ru dietary = _Translations$dietary$ru._(_root);
 	@override late final _Translations$weekday$ru weekday = _Translations$weekday$ru._(_root);
@@ -76,7 +78,71 @@ class _Translations$common$ru extends Translations$common$he {
 	@override String get retry => 'Повторить';
 	@override String get loading => 'Загрузка...';
 	@override String get error => 'Произошла ошибка';
+	@override String get or => 'или';
 	@override String get missingInfo => '[нет данных]';
+}
+
+// Path: auth
+class _Translations$auth$ru extends Translations$auth$he {
+	_Translations$auth$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get welcome => 'Добро пожаловать в EasyPlate';
+	@override String get subtitle => 'Войдите, чтобы сохранять рецепты';
+	@override String get signIn => 'Вход';
+	@override String get signUp => 'Регистрация';
+	@override String get signOut => 'Выйти';
+	@override String get email => 'Эл. почта';
+	@override String get emailHint => 'name@example.com';
+	@override String get password => 'Пароль';
+	@override String get passwordHint => 'Минимум 6 символов';
+	@override String get continueWithGoogle => 'Продолжить с Google';
+	@override String get continueWithPhone => 'Продолжить по телефону';
+	@override String get continueWithEmail => 'Продолжить по почте';
+	@override String get phoneNumber => 'Номер телефона';
+	@override String get phoneHint => '+79161234567';
+	@override String get sendCode => 'Отправить код';
+	@override String get smsCode => 'Код из SMS';
+	@override String codeSentTo({required Object phone}) => 'Мы отправили код на ${phone}';
+	@override String get verify => 'Подтвердить';
+	@override String get resendCode => 'Отправить снова';
+	@override String get forgotPassword => 'Забыли пароль';
+	@override String get resetSent => 'Письмо для сброса отправлено';
+	@override String get noAccount => 'Нет аккаунта? Зарегистрируйтесь';
+	@override String get haveAccount => 'Есть аккаунт? Войдите';
+	@override String get invalidEmail => 'Неверный адрес эл. почты';
+	@override String get passwordTooShort => 'Пароль должен содержать минимум 6 символов';
+	@override String get invalidPhone => 'Неверный номер телефона';
+	@override String get codeRequired => 'Введите полученный код';
+	@override String get errorUnauthorized => 'Введённые данные неверны';
+	@override String get errorNetwork => 'Нет подключения к интернету';
+	@override String get errorUnknown => 'Не удалось войти, попробуйте снова';
+	@override String get signOutTitle => 'Выйти?';
+	@override String get signOutBody => 'Чтобы вернуться к рецептам, нужно будет войти снова.';
+}
+
+// Path: profile
+class _Translations$profile$ru extends Translations$profile$he {
+	_Translations$profile$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get setupTitle => 'Последние детали';
+	@override String get setupSubtitle => 'Чтобы знать, как к вам обращаться';
+	@override String get fullName => 'Полное имя';
+	@override String get fullNameHint => 'Иван Иванов';
+	@override String get fullNameRequired => 'Укажите полное имя';
+	@override String get photo => 'Фото профиля';
+	@override String get addPhoto => 'Добавить фото';
+	@override String get phoneOptional => 'Телефон (необязательно)';
+	@override String get emailOptional => 'Почта (необязательно)';
+	@override String get save => 'Завершить регистрацию';
+	@override String get saving => 'Сохранение...';
+	@override String get saveFailed => 'Не удалось сохранить профиль';
+	@override String get myProfile => 'Мой профиль';
 }
 
 // Path: onboarding
@@ -393,7 +459,53 @@ extension on TranslationsRu {
 			'common.retry' => 'Повторить',
 			'common.loading' => 'Загрузка...',
 			'common.error' => 'Произошла ошибка',
+			'common.or' => 'или',
 			'common.missingInfo' => '[нет данных]',
+			'auth.welcome' => 'Добро пожаловать в EasyPlate',
+			'auth.subtitle' => 'Войдите, чтобы сохранять рецепты',
+			'auth.signIn' => 'Вход',
+			'auth.signUp' => 'Регистрация',
+			'auth.signOut' => 'Выйти',
+			'auth.email' => 'Эл. почта',
+			'auth.emailHint' => 'name@example.com',
+			'auth.password' => 'Пароль',
+			'auth.passwordHint' => 'Минимум 6 символов',
+			'auth.continueWithGoogle' => 'Продолжить с Google',
+			'auth.continueWithPhone' => 'Продолжить по телефону',
+			'auth.continueWithEmail' => 'Продолжить по почте',
+			'auth.phoneNumber' => 'Номер телефона',
+			'auth.phoneHint' => '+79161234567',
+			'auth.sendCode' => 'Отправить код',
+			'auth.smsCode' => 'Код из SMS',
+			'auth.codeSentTo' => ({required Object phone}) => 'Мы отправили код на ${phone}',
+			'auth.verify' => 'Подтвердить',
+			'auth.resendCode' => 'Отправить снова',
+			'auth.forgotPassword' => 'Забыли пароль',
+			'auth.resetSent' => 'Письмо для сброса отправлено',
+			'auth.noAccount' => 'Нет аккаунта? Зарегистрируйтесь',
+			'auth.haveAccount' => 'Есть аккаунт? Войдите',
+			'auth.invalidEmail' => 'Неверный адрес эл. почты',
+			'auth.passwordTooShort' => 'Пароль должен содержать минимум 6 символов',
+			'auth.invalidPhone' => 'Неверный номер телефона',
+			'auth.codeRequired' => 'Введите полученный код',
+			'auth.errorUnauthorized' => 'Введённые данные неверны',
+			'auth.errorNetwork' => 'Нет подключения к интернету',
+			'auth.errorUnknown' => 'Не удалось войти, попробуйте снова',
+			'auth.signOutTitle' => 'Выйти?',
+			'auth.signOutBody' => 'Чтобы вернуться к рецептам, нужно будет войти снова.',
+			'profile.setupTitle' => 'Последние детали',
+			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
+			'profile.fullName' => 'Полное имя',
+			'profile.fullNameHint' => 'Иван Иванов',
+			'profile.fullNameRequired' => 'Укажите полное имя',
+			'profile.photo' => 'Фото профиля',
+			'profile.addPhoto' => 'Добавить фото',
+			'profile.phoneOptional' => 'Телефон (необязательно)',
+			'profile.emailOptional' => 'Почта (необязательно)',
+			'profile.save' => 'Завершить регистрацию',
+			'profile.saving' => 'Сохранение...',
+			'profile.saveFailed' => 'Не удалось сохранить профиль',
+			'profile.myProfile' => 'Мой профиль',
 			'onboarding.welcomeTitle' => 'Добро пожаловать в EasyPlate',
 			'onboarding.welcomeSubtitle' => 'Планируйте меню, готовьте и делайте покупки — всё в одном месте',
 			'onboarding.shoppingDayTitle' => 'Какой у вас день еженедельных покупок?',

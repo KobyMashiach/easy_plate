@@ -41,6 +41,8 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	// Translations
 	@override String get appName => 'EasyPlate';
 	@override late final _Translations$common$fr common = _Translations$common$fr._(_root);
+	@override late final _Translations$auth$fr auth = _Translations$auth$fr._(_root);
+	@override late final _Translations$profile$fr profile = _Translations$profile$fr._(_root);
 	@override late final _Translations$onboarding$fr onboarding = _Translations$onboarding$fr._(_root);
 	@override late final _Translations$dietary$fr dietary = _Translations$dietary$fr._(_root);
 	@override late final _Translations$weekday$fr weekday = _Translations$weekday$fr._(_root);
@@ -76,7 +78,71 @@ class _Translations$common$fr extends Translations$common$he {
 	@override String get retry => 'Réessayer';
 	@override String get loading => 'Chargement...';
 	@override String get error => 'Une erreur est survenue';
+	@override String get or => 'ou';
 	@override String get missingInfo => '[information manquante]';
+}
+
+// Path: auth
+class _Translations$auth$fr extends Translations$auth$he {
+	_Translations$auth$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get welcome => 'Bienvenue sur EasyPlate';
+	@override String get subtitle => 'Connectez-vous pour garder vos recettes';
+	@override String get signIn => 'Se connecter';
+	@override String get signUp => 'S\'inscrire';
+	@override String get signOut => 'Se déconnecter';
+	@override String get email => 'E-mail';
+	@override String get emailHint => 'nom@exemple.com';
+	@override String get password => 'Mot de passe';
+	@override String get passwordHint => 'Au moins 6 caractères';
+	@override String get continueWithGoogle => 'Continuer avec Google';
+	@override String get continueWithPhone => 'Continuer avec le téléphone';
+	@override String get continueWithEmail => 'Continuer avec l\'e-mail';
+	@override String get phoneNumber => 'Numéro de téléphone';
+	@override String get phoneHint => '+33612345678';
+	@override String get sendCode => 'Envoyer le code';
+	@override String get smsCode => 'Code SMS';
+	@override String codeSentTo({required Object phone}) => 'Nous avons envoyé un code à ${phone}';
+	@override String get verify => 'Vérifier';
+	@override String get resendCode => 'Renvoyer';
+	@override String get forgotPassword => 'Mot de passe oublié';
+	@override String get resetSent => 'E-mail de réinitialisation envoyé';
+	@override String get noAccount => 'Pas de compte ? Inscrivez-vous';
+	@override String get haveAccount => 'Déjà un compte ? Connectez-vous';
+	@override String get invalidEmail => 'Adresse e-mail invalide';
+	@override String get passwordTooShort => 'Le mot de passe doit faire au moins 6 caractères';
+	@override String get invalidPhone => 'Numéro de téléphone invalide';
+	@override String get codeRequired => 'Saisissez le code reçu';
+	@override String get errorUnauthorized => 'Ces informations sont incorrectes';
+	@override String get errorNetwork => 'Pas de connexion Internet';
+	@override String get errorUnknown => 'Échec de la connexion, réessayez';
+	@override String get signOutTitle => 'Se déconnecter ?';
+	@override String get signOutBody => 'Vous devrez vous reconnecter pour accéder à vos recettes.';
+}
+
+// Path: profile
+class _Translations$profile$fr extends Translations$profile$he {
+	_Translations$profile$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get setupTitle => 'Encore quelques détails';
+	@override String get setupSubtitle => 'Pour savoir comment vous appeler';
+	@override String get fullName => 'Nom complet';
+	@override String get fullNameHint => 'Jean Dupont';
+	@override String get fullNameRequired => 'Le nom complet est requis';
+	@override String get photo => 'Photo de profil';
+	@override String get addPhoto => 'Ajouter une photo';
+	@override String get phoneOptional => 'Téléphone (facultatif)';
+	@override String get emailOptional => 'E-mail (facultatif)';
+	@override String get save => 'Terminer l\'inscription';
+	@override String get saving => 'Enregistrement...';
+	@override String get saveFailed => 'Impossible d\'enregistrer le profil';
+	@override String get myProfile => 'Mon profil';
 }
 
 // Path: onboarding
@@ -393,7 +459,53 @@ extension on TranslationsFr {
 			'common.retry' => 'Réessayer',
 			'common.loading' => 'Chargement...',
 			'common.error' => 'Une erreur est survenue',
+			'common.or' => 'ou',
 			'common.missingInfo' => '[information manquante]',
+			'auth.welcome' => 'Bienvenue sur EasyPlate',
+			'auth.subtitle' => 'Connectez-vous pour garder vos recettes',
+			'auth.signIn' => 'Se connecter',
+			'auth.signUp' => 'S\'inscrire',
+			'auth.signOut' => 'Se déconnecter',
+			'auth.email' => 'E-mail',
+			'auth.emailHint' => 'nom@exemple.com',
+			'auth.password' => 'Mot de passe',
+			'auth.passwordHint' => 'Au moins 6 caractères',
+			'auth.continueWithGoogle' => 'Continuer avec Google',
+			'auth.continueWithPhone' => 'Continuer avec le téléphone',
+			'auth.continueWithEmail' => 'Continuer avec l\'e-mail',
+			'auth.phoneNumber' => 'Numéro de téléphone',
+			'auth.phoneHint' => '+33612345678',
+			'auth.sendCode' => 'Envoyer le code',
+			'auth.smsCode' => 'Code SMS',
+			'auth.codeSentTo' => ({required Object phone}) => 'Nous avons envoyé un code à ${phone}',
+			'auth.verify' => 'Vérifier',
+			'auth.resendCode' => 'Renvoyer',
+			'auth.forgotPassword' => 'Mot de passe oublié',
+			'auth.resetSent' => 'E-mail de réinitialisation envoyé',
+			'auth.noAccount' => 'Pas de compte ? Inscrivez-vous',
+			'auth.haveAccount' => 'Déjà un compte ? Connectez-vous',
+			'auth.invalidEmail' => 'Adresse e-mail invalide',
+			'auth.passwordTooShort' => 'Le mot de passe doit faire au moins 6 caractères',
+			'auth.invalidPhone' => 'Numéro de téléphone invalide',
+			'auth.codeRequired' => 'Saisissez le code reçu',
+			'auth.errorUnauthorized' => 'Ces informations sont incorrectes',
+			'auth.errorNetwork' => 'Pas de connexion Internet',
+			'auth.errorUnknown' => 'Échec de la connexion, réessayez',
+			'auth.signOutTitle' => 'Se déconnecter ?',
+			'auth.signOutBody' => 'Vous devrez vous reconnecter pour accéder à vos recettes.',
+			'profile.setupTitle' => 'Encore quelques détails',
+			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
+			'profile.fullName' => 'Nom complet',
+			'profile.fullNameHint' => 'Jean Dupont',
+			'profile.fullNameRequired' => 'Le nom complet est requis',
+			'profile.photo' => 'Photo de profil',
+			'profile.addPhoto' => 'Ajouter une photo',
+			'profile.phoneOptional' => 'Téléphone (facultatif)',
+			'profile.emailOptional' => 'E-mail (facultatif)',
+			'profile.save' => 'Terminer l\'inscription',
+			'profile.saving' => 'Enregistrement...',
+			'profile.saveFailed' => 'Impossible d\'enregistrer le profil',
+			'profile.myProfile' => 'Mon profil',
 			'onboarding.welcomeTitle' => 'Bienvenue sur EasyPlate',
 			'onboarding.welcomeSubtitle' => 'Planifiez vos repas, cuisinez et faites vos courses — tout au même endroit',
 			'onboarding.shoppingDayTitle' => 'Quel est votre jour de courses hebdomadaire ?',

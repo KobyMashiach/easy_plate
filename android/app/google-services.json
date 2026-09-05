@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1012123687685",
+    "project_id": "easy-plate",
+    "storage_bucket": "easy-plate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012123687685:android:995afe4e31edfbdbadb56c",
+        "android_client_info": {
+          "package_name": "com.KHEasyDev.easy_plate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012123687685-37vn757kq1vpn9a9j9p893rogouvi6j5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.KHEasyDev.easy_plate",
+            "certificate_hash": "8a9dc587850d25c791316f93f42ac99115cd7e98"
+          }
+        },
+        {
+          "client_id": "1012123687685-gkqplatuv0ruradqqjld5cs2cc7t46q3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOC2EyMQPgdcWz6OjtBRGOwudLvPQ-hkY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012123687685-gkqplatuv0ruradqqjld5cs2cc7t46q3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1012123687685-dhsllm9v9m4cr9li8qif4hr8hmml1p3c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "om.KHEasyDev.easyPlate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

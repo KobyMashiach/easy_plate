@@ -8,7 +8,9 @@ import 'core/hive/adapters_controller.dart';
 import 'core/logger/memory_logger.dart';
 import 'core/main_imports/app_dependencies.dart';
 import 'core/main_imports/repository_providers.dart';
+import 'core/services/auth_session_service.dart';
 import 'core/services/connectivity_service.dart';
+import 'core/services/firebase_service.dart';
 import 'core/services/image_storage_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
@@ -19,6 +21,8 @@ import 'core/utils/routing/app_router.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await MemoryLogger.init();
+  // Before anything that might throw, so Crashlytics captures startup failures.
+  await FirebaseService().init();
   await ConnectivityService().initialize();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
@@ -43,23 +47,33 @@ Future<void> main() async {
     TranslationProvider(
       child: MultiRepositoryProvider(
         providers: buildRepositoryProviders(),
-        child: EasyPlateApp(onboardingComplete: deps.preferences.onboardingComplete),
+        // The session has to be bound from inside the provider tree, since it
+        // needs the same repository instances the rest of the app reads.
+        child: Builder(
+          builder: (context) {
+            AuthSessionService().bind(
+              auth: context.read(),
+              profiles: context.read(),
+              preferences: context.read(),
+              onboardingComplete: deps.preferences.onboardingComplete,
+            );
+            return const EasyPlateApp();
+          },
+        ),
       ),
     ),
   );
 }
 
 class EasyPlateApp extends StatefulWidget {
-  final bool onboardingComplete;
-
-  const EasyPlateApp({super.key, required this.onboardingComplete});
+  const EasyPlateApp({super.key});
 
   @override
   State<EasyPlateApp> createState() => _EasyPlateAppState();
 }
 
 class _EasyPlateAppState extends State<EasyPlateApp> {
-  late final _router = buildRouter(onboardingComplete: widget.onboardingComplete);
+  late final _router = buildRouter();
 
   @override
   Widget build(BuildContext context) {

@@ -13,6 +13,35 @@ flutter run
 
 Codegen must run after any change to a model, a bloc, or `assets/i18n/he.i18n.json`.
 
+## Accounts and Firebase
+
+Sign-in is mandatory — the router gates every screen behind
+`AuthSessionService`, which moves the user through `signedOut → needsProfile →
+needsOnboarding → ready`. Three providers are wired: Email/Password, Phone
+(SMS), and Google. Sign-out lives in Settings.
+
+New accounts land on `ProfileSetupPage` (full name, photo, phone, email) before
+onboarding. The profile is a Firestore document at `users/{uid}`; the photo goes
+to Storage at `profile_photos/{uid}.jpg`. Local `UserPreferencesEntity` stays on
+the device and is unrelated.
+
+Analytics, Crashlytics, Messaging and Remote Config are booted in
+`FirebaseService` (`lib/core/services/firebase_service.dart`). Push permission
+is deliberately requested only once a user is signed in and onboarded, so the
+prompt has context.
+
+### Setup that lives outside this repo
+
+```bash
+firebase deploy --only firestore:rules,storage   # firestore.rules, storage.rules
+```
+
+Without those rules the default deny-all blocks every profile read and write.
+
+Config comes from `android/app/google-services.json` and
+`ios/Runner/GoogleService-Info.plist` — there is no generated
+`firebase_options.dart` to keep in sync.
+
 ## AI recipe ingestion
 
 Parsing goes through the Gemini Interactions API (`lib/features/recipe_ingestion/`)
@@ -77,8 +106,8 @@ what the user typed.
 flutter test
 ```
 
-Coverage is the grocery aggregation engine, the page-flip cadence, and the
-recipe editor. The rest of the UI has been verified by running the app on an iOS
+Coverage is the grocery aggregation engine, the page-flip cadence, the recipe
+editor, and the auth gate's redirect rules. The rest of the UI has been verified by running the app on an iOS
 simulator, not by widget tests.
 
 ## Not yet implemented

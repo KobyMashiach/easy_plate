@@ -1,5 +1,8 @@
 class Routing {
   static const splash = '/';
+  static const login = '/login';
+  static const phoneVerify = '/phone_verify';
+  static const register = '/register';
   static const onboarding = '/onboarding';
   static const home = '/home';
 

@@ -45,6 +45,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	String get appName => 'איזי-פלייט';
 
 	late final Translations$common$he common = Translations$common$he.internal(_root);
+	late final Translations$auth$he auth = Translations$auth$he.internal(_root);
+	late final Translations$profile$he profile = Translations$profile$he.internal(_root);
 	late final Translations$onboarding$he onboarding = Translations$onboarding$he.internal(_root);
 	late final Translations$dietary$he dietary = Translations$dietary$he.internal(_root);
 	late final Translations$weekday$he weekday = Translations$weekday$he.internal(_root);
@@ -105,8 +107,164 @@ class Translations$common$he {
 	/// he: 'אירעה שגיאה'
 	String get error => 'אירעה שגיאה';
 
+	/// he: 'או'
+	String get or => 'או';
+
 	/// he: '[חסר מידע]'
 	String get missingInfo => '[חסר מידע]';
+}
+
+// Path: auth
+class Translations$auth$he {
+	Translations$auth$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ברוכים הבאים ל-EasyPlate'
+	String get welcome => 'ברוכים הבאים ל-EasyPlate';
+
+	/// he: 'התחברו כדי לשמור את המתכונים שלכם'
+	String get subtitle => 'התחברו כדי לשמור את המתכונים שלכם';
+
+	/// he: 'התחברות'
+	String get signIn => 'התחברות';
+
+	/// he: 'הרשמה'
+	String get signUp => 'הרשמה';
+
+	/// he: 'התנתקות'
+	String get signOut => 'התנתקות';
+
+	/// he: 'אימייל'
+	String get email => 'אימייל';
+
+	/// he: 'name@example.com'
+	String get emailHint => 'name@example.com';
+
+	/// he: 'סיסמה'
+	String get password => 'סיסמה';
+
+	/// he: 'לפחות 6 תווים'
+	String get passwordHint => 'לפחות 6 תווים';
+
+	/// he: 'המשך עם Google'
+	String get continueWithGoogle => 'המשך עם Google';
+
+	/// he: 'המשך עם טלפון'
+	String get continueWithPhone => 'המשך עם טלפון';
+
+	/// he: 'המשך עם אימייל'
+	String get continueWithEmail => 'המשך עם אימייל';
+
+	/// he: 'מספר טלפון'
+	String get phoneNumber => 'מספר טלפון';
+
+	/// he: '+972501234567'
+	String get phoneHint => '+972501234567';
+
+	/// he: 'שליחת קוד'
+	String get sendCode => 'שליחת קוד';
+
+	/// he: 'קוד מה-SMS'
+	String get smsCode => 'קוד מה-SMS';
+
+	/// he: 'שלחנו קוד אימות אל $phone'
+	String codeSentTo({required Object phone}) => 'שלחנו קוד אימות אל ${phone}';
+
+	/// he: 'אימות'
+	String get verify => 'אימות';
+
+	/// he: 'שליחה מחדש'
+	String get resendCode => 'שליחה מחדש';
+
+	/// he: 'שכחתי סיסמה'
+	String get forgotPassword => 'שכחתי סיסמה';
+
+	/// he: 'נשלח מייל לאיפוס הסיסמה'
+	String get resetSent => 'נשלח מייל לאיפוס הסיסמה';
+
+	/// he: 'אין לכם חשבון? הרשמו'
+	String get noAccount => 'אין לכם חשבון? הרשמו';
+
+	/// he: 'יש לכם חשבון? התחברו'
+	String get haveAccount => 'יש לכם חשבון? התחברו';
+
+	/// he: 'כתובת אימייל לא תקינה'
+	String get invalidEmail => 'כתובת אימייל לא תקינה';
+
+	/// he: 'הסיסמה חייבת להכיל לפחות 6 תווים'
+	String get passwordTooShort => 'הסיסמה חייבת להכיל לפחות 6 תווים';
+
+	/// he: 'מספר טלפון לא תקין'
+	String get invalidPhone => 'מספר טלפון לא תקין';
+
+	/// he: 'יש להזין את הקוד שקיבלתם'
+	String get codeRequired => 'יש להזין את הקוד שקיבלתם';
+
+	/// he: 'הפרטים שהוזנו שגויים'
+	String get errorUnauthorized => 'הפרטים שהוזנו שגויים';
+
+	/// he: 'אין חיבור לאינטרנט'
+	String get errorNetwork => 'אין חיבור לאינטרנט';
+
+	/// he: 'ההתחברות נכשלה, נסו שוב'
+	String get errorUnknown => 'ההתחברות נכשלה, נסו שוב';
+
+	/// he: 'להתנתק?'
+	String get signOutTitle => 'להתנתק?';
+
+	/// he: 'תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.'
+	String get signOutBody => 'תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.';
+}
+
+// Path: profile
+class Translations$profile$he {
+	Translations$profile$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'כמה פרטים אחרונים'
+	String get setupTitle => 'כמה פרטים אחרונים';
+
+	/// he: 'כדי שנדע איך לפנות אליכם'
+	String get setupSubtitle => 'כדי שנדע איך לפנות אליכם';
+
+	/// he: 'שם מלא'
+	String get fullName => 'שם מלא';
+
+	/// he: 'ישראל ישראלי'
+	String get fullNameHint => 'ישראל ישראלי';
+
+	/// he: 'יש להזין שם מלא'
+	String get fullNameRequired => 'יש להזין שם מלא';
+
+	/// he: 'תמונת פרופיל'
+	String get photo => 'תמונת פרופיל';
+
+	/// he: 'הוספת תמונה'
+	String get addPhoto => 'הוספת תמונה';
+
+	/// he: 'טלפון (לא חובה)'
+	String get phoneOptional => 'טלפון (לא חובה)';
+
+	/// he: 'אימייל (לא חובה)'
+	String get emailOptional => 'אימייל (לא חובה)';
+
+	/// he: 'סיום הרשמה'
+	String get save => 'סיום הרשמה';
+
+	/// he: 'שומר...'
+	String get saving => 'שומר...';
+
+	/// he: 'לא הצלחנו לשמור את הפרופיל'
+	String get saveFailed => 'לא הצלחנו לשמור את הפרופיל';
+
+	/// he: 'הפרופיל שלי'
+	String get myProfile => 'הפרופיל שלי';
 }
 
 // Path: onboarding
@@ -757,7 +915,53 @@ extension on Translations {
 			'common.retry' => 'נסה שוב',
 			'common.loading' => 'טוען...',
 			'common.error' => 'אירעה שגיאה',
+			'common.or' => 'או',
 			'common.missingInfo' => '[חסר מידע]',
+			'auth.welcome' => 'ברוכים הבאים ל-EasyPlate',
+			'auth.subtitle' => 'התחברו כדי לשמור את המתכונים שלכם',
+			'auth.signIn' => 'התחברות',
+			'auth.signUp' => 'הרשמה',
+			'auth.signOut' => 'התנתקות',
+			'auth.email' => 'אימייל',
+			'auth.emailHint' => 'name@example.com',
+			'auth.password' => 'סיסמה',
+			'auth.passwordHint' => 'לפחות 6 תווים',
+			'auth.continueWithGoogle' => 'המשך עם Google',
+			'auth.continueWithPhone' => 'המשך עם טלפון',
+			'auth.continueWithEmail' => 'המשך עם אימייל',
+			'auth.phoneNumber' => 'מספר טלפון',
+			'auth.phoneHint' => '+972501234567',
+			'auth.sendCode' => 'שליחת קוד',
+			'auth.smsCode' => 'קוד מה-SMS',
+			'auth.codeSentTo' => ({required Object phone}) => 'שלחנו קוד אימות אל ${phone}',
+			'auth.verify' => 'אימות',
+			'auth.resendCode' => 'שליחה מחדש',
+			'auth.forgotPassword' => 'שכחתי סיסמה',
+			'auth.resetSent' => 'נשלח מייל לאיפוס הסיסמה',
+			'auth.noAccount' => 'אין לכם חשבון? הרשמו',
+			'auth.haveAccount' => 'יש לכם חשבון? התחברו',
+			'auth.invalidEmail' => 'כתובת אימייל לא תקינה',
+			'auth.passwordTooShort' => 'הסיסמה חייבת להכיל לפחות 6 תווים',
+			'auth.invalidPhone' => 'מספר טלפון לא תקין',
+			'auth.codeRequired' => 'יש להזין את הקוד שקיבלתם',
+			'auth.errorUnauthorized' => 'הפרטים שהוזנו שגויים',
+			'auth.errorNetwork' => 'אין חיבור לאינטרנט',
+			'auth.errorUnknown' => 'ההתחברות נכשלה, נסו שוב',
+			'auth.signOutTitle' => 'להתנתק?',
+			'auth.signOutBody' => 'תצטרכו להתחבר מחדש כדי להגיע למתכונים שלכם.',
+			'profile.setupTitle' => 'כמה פרטים אחרונים',
+			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
+			'profile.fullName' => 'שם מלא',
+			'profile.fullNameHint' => 'ישראל ישראלי',
+			'profile.fullNameRequired' => 'יש להזין שם מלא',
+			'profile.photo' => 'תמונת פרופיל',
+			'profile.addPhoto' => 'הוספת תמונה',
+			'profile.phoneOptional' => 'טלפון (לא חובה)',
+			'profile.emailOptional' => 'אימייל (לא חובה)',
+			'profile.save' => 'סיום הרשמה',
+			'profile.saving' => 'שומר...',
+			'profile.saveFailed' => 'לא הצלחנו לשמור את הפרופיל',
+			'profile.myProfile' => 'הפרופיל שלי',
 			'onboarding.welcomeTitle' => 'ברוכים הבאים ל-EasyPlate',
 			'onboarding.welcomeSubtitle' => 'תכננו ארוחות, בשלו וקנו — הכל במקום אחד',
 			'onboarding.shoppingDayTitle' => 'מתי יום הקניות השבועי שלכם?',

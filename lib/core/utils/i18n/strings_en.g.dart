@@ -41,6 +41,8 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	// Translations
 	@override String get appName => 'EasyPlate';
 	@override late final _Translations$common$en common = _Translations$common$en._(_root);
+	@override late final _Translations$auth$en auth = _Translations$auth$en._(_root);
+	@override late final _Translations$profile$en profile = _Translations$profile$en._(_root);
 	@override late final _Translations$onboarding$en onboarding = _Translations$onboarding$en._(_root);
 	@override late final _Translations$dietary$en dietary = _Translations$dietary$en._(_root);
 	@override late final _Translations$weekday$en weekday = _Translations$weekday$en._(_root);
@@ -76,7 +78,71 @@ class _Translations$common$en extends Translations$common$he {
 	@override String get retry => 'Try again';
 	@override String get loading => 'Loading...';
 	@override String get error => 'Something went wrong';
+	@override String get or => 'or';
 	@override String get missingInfo => '[missing info]';
+}
+
+// Path: auth
+class _Translations$auth$en extends Translations$auth$he {
+	_Translations$auth$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get welcome => 'Welcome to EasyPlate';
+	@override String get subtitle => 'Sign in to keep your recipes';
+	@override String get signIn => 'Sign in';
+	@override String get signUp => 'Sign up';
+	@override String get signOut => 'Sign out';
+	@override String get email => 'Email';
+	@override String get emailHint => 'name@example.com';
+	@override String get password => 'Password';
+	@override String get passwordHint => 'At least 6 characters';
+	@override String get continueWithGoogle => 'Continue with Google';
+	@override String get continueWithPhone => 'Continue with phone';
+	@override String get continueWithEmail => 'Continue with email';
+	@override String get phoneNumber => 'Phone number';
+	@override String get phoneHint => '+972501234567';
+	@override String get sendCode => 'Send code';
+	@override String get smsCode => 'SMS code';
+	@override String codeSentTo({required Object phone}) => 'We sent a verification code to ${phone}';
+	@override String get verify => 'Verify';
+	@override String get resendCode => 'Resend';
+	@override String get forgotPassword => 'Forgot password';
+	@override String get resetSent => 'Password reset email sent';
+	@override String get noAccount => 'No account? Sign up';
+	@override String get haveAccount => 'Have an account? Sign in';
+	@override String get invalidEmail => 'Invalid email address';
+	@override String get passwordTooShort => 'Password must be at least 6 characters';
+	@override String get invalidPhone => 'Invalid phone number';
+	@override String get codeRequired => 'Enter the code you received';
+	@override String get errorUnauthorized => 'Those details are incorrect';
+	@override String get errorNetwork => 'No internet connection';
+	@override String get errorUnknown => 'Sign-in failed, please try again';
+	@override String get signOutTitle => 'Sign out?';
+	@override String get signOutBody => 'You will need to sign in again to reach your recipes.';
+}
+
+// Path: profile
+class _Translations$profile$en extends Translations$profile$he {
+	_Translations$profile$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get setupTitle => 'A few last details';
+	@override String get setupSubtitle => 'So we know what to call you';
+	@override String get fullName => 'Full name';
+	@override String get fullNameHint => 'Jane Doe';
+	@override String get fullNameRequired => 'A full name is required';
+	@override String get photo => 'Profile photo';
+	@override String get addPhoto => 'Add photo';
+	@override String get phoneOptional => 'Phone (optional)';
+	@override String get emailOptional => 'Email (optional)';
+	@override String get save => 'Finish signing up';
+	@override String get saving => 'Saving...';
+	@override String get saveFailed => 'We could not save your profile';
+	@override String get myProfile => 'My profile';
 }
 
 // Path: onboarding
@@ -393,7 +459,53 @@ extension on TranslationsEn {
 			'common.retry' => 'Try again',
 			'common.loading' => 'Loading...',
 			'common.error' => 'Something went wrong',
+			'common.or' => 'or',
 			'common.missingInfo' => '[missing info]',
+			'auth.welcome' => 'Welcome to EasyPlate',
+			'auth.subtitle' => 'Sign in to keep your recipes',
+			'auth.signIn' => 'Sign in',
+			'auth.signUp' => 'Sign up',
+			'auth.signOut' => 'Sign out',
+			'auth.email' => 'Email',
+			'auth.emailHint' => 'name@example.com',
+			'auth.password' => 'Password',
+			'auth.passwordHint' => 'At least 6 characters',
+			'auth.continueWithGoogle' => 'Continue with Google',
+			'auth.continueWithPhone' => 'Continue with phone',
+			'auth.continueWithEmail' => 'Continue with email',
+			'auth.phoneNumber' => 'Phone number',
+			'auth.phoneHint' => '+972501234567',
+			'auth.sendCode' => 'Send code',
+			'auth.smsCode' => 'SMS code',
+			'auth.codeSentTo' => ({required Object phone}) => 'We sent a verification code to ${phone}',
+			'auth.verify' => 'Verify',
+			'auth.resendCode' => 'Resend',
+			'auth.forgotPassword' => 'Forgot password',
+			'auth.resetSent' => 'Password reset email sent',
+			'auth.noAccount' => 'No account? Sign up',
+			'auth.haveAccount' => 'Have an account? Sign in',
+			'auth.invalidEmail' => 'Invalid email address',
+			'auth.passwordTooShort' => 'Password must be at least 6 characters',
+			'auth.invalidPhone' => 'Invalid phone number',
+			'auth.codeRequired' => 'Enter the code you received',
+			'auth.errorUnauthorized' => 'Those details are incorrect',
+			'auth.errorNetwork' => 'No internet connection',
+			'auth.errorUnknown' => 'Sign-in failed, please try again',
+			'auth.signOutTitle' => 'Sign out?',
+			'auth.signOutBody' => 'You will need to sign in again to reach your recipes.',
+			'profile.setupTitle' => 'A few last details',
+			'profile.setupSubtitle' => 'So we know what to call you',
+			'profile.fullName' => 'Full name',
+			'profile.fullNameHint' => 'Jane Doe',
+			'profile.fullNameRequired' => 'A full name is required',
+			'profile.photo' => 'Profile photo',
+			'profile.addPhoto' => 'Add photo',
+			'profile.phoneOptional' => 'Phone (optional)',
+			'profile.emailOptional' => 'Email (optional)',
+			'profile.save' => 'Finish signing up',
+			'profile.saving' => 'Saving...',
+			'profile.saveFailed' => 'We could not save your profile',
+			'profile.myProfile' => 'My profile',
 			'onboarding.welcomeTitle' => 'Welcome to EasyPlate',
 			'onboarding.welcomeSubtitle' => 'Plan meals, cook and shop — all in one place',
 			'onboarding.shoppingDayTitle' => 'When is your weekly shopping day?',

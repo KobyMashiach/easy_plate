@@ -7,6 +7,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
@@ -22,7 +23,11 @@ class OnboardingPage extends StatelessWidget {
       create: (context) => OnboardingBloc.fromContext(context),
       child: BlocConsumer<OnboardingBloc, OnboardingState>(
         listener: (context, state) {
-          if (state is Complete) context.go(Routing.home);
+          if (state is Complete) {
+            // Lets the auth gate stop redirecting back here before we navigate.
+            AuthSessionService().markOnboardingComplete();
+            context.go(Routing.home);
+          }
         },
         builder: (context, state) {
           return ClayScaffold(

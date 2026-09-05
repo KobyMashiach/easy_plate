@@ -1,0 +1,9 @@
+import '../entities/app_user_entity.dart';
+import '../repositories/auth_repository.dart';
+
+class SignInWithGoogleUseCase {
+  final AuthRepository repository;
+  SignInWithGoogleUseCase(this.repository);
+
+  Future<AppUserEntity> call() => repository.signInWithGoogle();
+}

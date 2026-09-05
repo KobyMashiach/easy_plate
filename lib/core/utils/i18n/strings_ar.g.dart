@@ -41,6 +41,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	// Translations
 	@override String get appName => 'إيزي بليت';
 	@override late final _Translations$common$ar common = _Translations$common$ar._(_root);
+	@override late final _Translations$auth$ar auth = _Translations$auth$ar._(_root);
+	@override late final _Translations$profile$ar profile = _Translations$profile$ar._(_root);
 	@override late final _Translations$onboarding$ar onboarding = _Translations$onboarding$ar._(_root);
 	@override late final _Translations$dietary$ar dietary = _Translations$dietary$ar._(_root);
 	@override late final _Translations$weekday$ar weekday = _Translations$weekday$ar._(_root);
@@ -76,7 +78,71 @@ class _Translations$common$ar extends Translations$common$he {
 	@override String get retry => 'حاول مرة أخرى';
 	@override String get loading => 'جارٍ التحميل...';
 	@override String get error => 'حدث خطأ ما';
+	@override String get or => 'أو';
 	@override String get missingInfo => '[معلومات ناقصة]';
+}
+
+// Path: auth
+class _Translations$auth$ar extends Translations$auth$he {
+	_Translations$auth$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get welcome => 'أهلًا بكم في EasyPlate';
+	@override String get subtitle => 'سجّلوا الدخول لحفظ وصفاتكم';
+	@override String get signIn => 'تسجيل الدخول';
+	@override String get signUp => 'إنشاء حساب';
+	@override String get signOut => 'تسجيل الخروج';
+	@override String get email => 'البريد الإلكتروني';
+	@override String get emailHint => 'name@example.com';
+	@override String get password => 'كلمة المرور';
+	@override String get passwordHint => '6 أحرف على الأقل';
+	@override String get continueWithGoogle => 'المتابعة عبر Google';
+	@override String get continueWithPhone => 'المتابعة عبر الهاتف';
+	@override String get continueWithEmail => 'المتابعة عبر البريد';
+	@override String get phoneNumber => 'رقم الهاتف';
+	@override String get phoneHint => '+972501234567';
+	@override String get sendCode => 'إرسال الرمز';
+	@override String get smsCode => 'رمز الرسالة';
+	@override String codeSentTo({required Object phone}) => 'أرسلنا رمز تحقق إلى ${phone}';
+	@override String get verify => 'تحقق';
+	@override String get resendCode => 'إعادة الإرسال';
+	@override String get forgotPassword => 'نسيت كلمة المرور';
+	@override String get resetSent => 'تم إرسال بريد إعادة التعيين';
+	@override String get noAccount => 'لا يوجد حساب؟ سجّلوا';
+	@override String get haveAccount => 'لديكم حساب؟ ادخلوا';
+	@override String get invalidEmail => 'بريد إلكتروني غير صالح';
+	@override String get passwordTooShort => 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل';
+	@override String get invalidPhone => 'رقم هاتف غير صالح';
+	@override String get codeRequired => 'أدخلوا الرمز الذي وصلكم';
+	@override String get errorUnauthorized => 'البيانات المُدخلة غير صحيحة';
+	@override String get errorNetwork => 'لا يوجد اتصال بالإنترنت';
+	@override String get errorUnknown => 'فشل تسجيل الدخول، حاولوا مجددًا';
+	@override String get signOutTitle => 'تسجيل الخروج؟';
+	@override String get signOutBody => 'ستحتاجون إلى تسجيل الدخول مجددًا للوصول إلى وصفاتكم.';
+}
+
+// Path: profile
+class _Translations$profile$ar extends Translations$profile$he {
+	_Translations$profile$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get setupTitle => 'تفاصيل أخيرة';
+	@override String get setupSubtitle => 'لكي نعرف كيف نخاطبكم';
+	@override String get fullName => 'الاسم الكامل';
+	@override String get fullNameHint => 'محمد أحمد';
+	@override String get fullNameRequired => 'الاسم الكامل مطلوب';
+	@override String get photo => 'صورة الملف الشخصي';
+	@override String get addPhoto => 'إضافة صورة';
+	@override String get phoneOptional => 'الهاتف (اختياري)';
+	@override String get emailOptional => 'البريد (اختياري)';
+	@override String get save => 'إنهاء التسجيل';
+	@override String get saving => 'جارٍ الحفظ...';
+	@override String get saveFailed => 'تعذّر حفظ الملف الشخصي';
+	@override String get myProfile => 'ملفي الشخصي';
 }
 
 // Path: onboarding
@@ -393,7 +459,53 @@ extension on TranslationsAr {
 			'common.retry' => 'حاول مرة أخرى',
 			'common.loading' => 'جارٍ التحميل...',
 			'common.error' => 'حدث خطأ ما',
+			'common.or' => 'أو',
 			'common.missingInfo' => '[معلومات ناقصة]',
+			'auth.welcome' => 'أهلًا بكم في EasyPlate',
+			'auth.subtitle' => 'سجّلوا الدخول لحفظ وصفاتكم',
+			'auth.signIn' => 'تسجيل الدخول',
+			'auth.signUp' => 'إنشاء حساب',
+			'auth.signOut' => 'تسجيل الخروج',
+			'auth.email' => 'البريد الإلكتروني',
+			'auth.emailHint' => 'name@example.com',
+			'auth.password' => 'كلمة المرور',
+			'auth.passwordHint' => '6 أحرف على الأقل',
+			'auth.continueWithGoogle' => 'المتابعة عبر Google',
+			'auth.continueWithPhone' => 'المتابعة عبر الهاتف',
+			'auth.continueWithEmail' => 'المتابعة عبر البريد',
+			'auth.phoneNumber' => 'رقم الهاتف',
+			'auth.phoneHint' => '+972501234567',
+			'auth.sendCode' => 'إرسال الرمز',
+			'auth.smsCode' => 'رمز الرسالة',
+			'auth.codeSentTo' => ({required Object phone}) => 'أرسلنا رمز تحقق إلى ${phone}',
+			'auth.verify' => 'تحقق',
+			'auth.resendCode' => 'إعادة الإرسال',
+			'auth.forgotPassword' => 'نسيت كلمة المرور',
+			'auth.resetSent' => 'تم إرسال بريد إعادة التعيين',
+			'auth.noAccount' => 'لا يوجد حساب؟ سجّلوا',
+			'auth.haveAccount' => 'لديكم حساب؟ ادخلوا',
+			'auth.invalidEmail' => 'بريد إلكتروني غير صالح',
+			'auth.passwordTooShort' => 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل',
+			'auth.invalidPhone' => 'رقم هاتف غير صالح',
+			'auth.codeRequired' => 'أدخلوا الرمز الذي وصلكم',
+			'auth.errorUnauthorized' => 'البيانات المُدخلة غير صحيحة',
+			'auth.errorNetwork' => 'لا يوجد اتصال بالإنترنت',
+			'auth.errorUnknown' => 'فشل تسجيل الدخول، حاولوا مجددًا',
+			'auth.signOutTitle' => 'تسجيل الخروج؟',
+			'auth.signOutBody' => 'ستحتاجون إلى تسجيل الدخول مجددًا للوصول إلى وصفاتكم.',
+			'profile.setupTitle' => 'تفاصيل أخيرة',
+			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
+			'profile.fullName' => 'الاسم الكامل',
+			'profile.fullNameHint' => 'محمد أحمد',
+			'profile.fullNameRequired' => 'الاسم الكامل مطلوب',
+			'profile.photo' => 'صورة الملف الشخصي',
+			'profile.addPhoto' => 'إضافة صورة',
+			'profile.phoneOptional' => 'الهاتف (اختياري)',
+			'profile.emailOptional' => 'البريد (اختياري)',
+			'profile.save' => 'إنهاء التسجيل',
+			'profile.saving' => 'جارٍ الحفظ...',
+			'profile.saveFailed' => 'تعذّر حفظ الملف الشخصي',
+			'profile.myProfile' => 'ملفي الشخصي',
 			'onboarding.welcomeTitle' => 'أهلًا بك في EasyPlate',
 			'onboarding.welcomeSubtitle' => 'خطّط لوجباتك، اطبخ وتسوّق — كل ذلك في مكان واحد',
 			'onboarding.shoppingDayTitle' => 'ما هو يوم التسوّق الأسبوعي لديك؟',
