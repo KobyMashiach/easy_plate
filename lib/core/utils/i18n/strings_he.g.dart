@@ -54,6 +54,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$language$he language = Translations$language$he.internal(_root);
 	late final Translations$books$he books = Translations$books$he.internal(_root);
 	late final Translations$recipe$he recipe = Translations$recipe$he.internal(_root);
+	late final Translations$community$he community = Translations$community$he.internal(_root);
 	late final Translations$editor$he editor = Translations$editor$he.internal(_root);
 	late final Translations$ingestion$he ingestion = Translations$ingestion$he.internal(_root);
 	late final Translations$mealPlanner$he mealPlanner = Translations$mealPlanner$he.internal(_root);
@@ -519,6 +520,93 @@ class Translations$recipe$he {
 	String get photo => 'תמונת המתכון';
 }
 
+// Path: community
+class Translations$community$he {
+	Translations$community$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'קהילה'
+	String get title => 'קהילה';
+
+	/// he: 'פורום'
+	String get forum => 'פורום';
+
+	/// he: 'מתכונים משותפים'
+	String get sharedRecipes => 'מתכונים משותפים';
+
+	/// he: 'פוסט חדש'
+	String get newPost => 'פוסט חדש';
+
+	/// he: 'כותרת'
+	String get postTitle => 'כותרת';
+
+	/// he: 'מה בא לכם לשאול או לספר?'
+	String get postBody => 'מה בא לכם לשאול או לספר?';
+
+	/// he: 'צריך כותרת לפוסט'
+	String get postTitleRequired => 'צריך כותרת לפוסט';
+
+	/// he: 'צריך תוכן לפוסט'
+	String get postBodyRequired => 'צריך תוכן לפוסט';
+
+	/// he: 'פרסום'
+	String get publish => 'פרסום';
+
+	/// he: '$count תגובות'
+	String replies({required Object count}) => '${count} תגובות';
+
+	/// he: 'עדיין אין תגובות'
+	String get noReplies => 'עדיין אין תגובות';
+
+	/// he: 'תגובה אחת'
+	String get oneReply => 'תגובה אחת';
+
+	/// he: 'כתבו תגובה...'
+	String get writeReply => 'כתבו תגובה...';
+
+	/// he: 'שליחה'
+	String get send => 'שליחה';
+
+	/// he: 'אין עדיין פוסטים. תהיו הראשונים!'
+	String get noPosts => 'אין עדיין פוסטים. תהיו הראשונים!';
+
+	/// he: 'עדיין לא שותפו מתכונים. שתפו את הראשון!'
+	String get noSharedRecipes => 'עדיין לא שותפו מתכונים. שתפו את הראשון!';
+
+	/// he: 'שיתוף מתכון'
+	String get shareRecipe => 'שיתוף מתכון';
+
+	/// he: 'איזה מתכון לשתף?'
+	String get pickRecipeToShare => 'איזה מתכון לשתף?';
+
+	/// he: 'שמירה למתכונים שלי'
+	String get saveToMyRecipes => 'שמירה למתכונים שלי';
+
+	/// he: 'המתכון נשמר אצלכם'
+	String get savedToMyRecipes => 'המתכון נשמר אצלכם';
+
+	/// he: 'מחיקת פוסט'
+	String get deletePost => 'מחיקת פוסט';
+
+	/// he: 'הפוסט והתגובות שלו יימחקו לצמיתות.'
+	String get deletePostConfirm => 'הפוסט והתגובות שלו יימחקו לצמיתות.';
+
+	/// he: 'הסרת השיתוף'
+	String get unshare => 'הסרת השיתוף';
+
+	/// he: 'המתכון יוסר מהפיד המשותף.'
+	String get unshareConfirm => 'המתכון יוסר מהפיד המשותף.';
+
+	/// he: 'מאת $name'
+	String byAuthor({required Object name}) => 'מאת ${name}';
+
+	/// he: 'לא הצלחנו לטעון את התוכן'
+	String get loadFailed => 'לא הצלחנו לטעון את התוכן';
+}
+
 // Path: editor
 class Translations$editor$he {
 	Translations$editor$he.internal(this._root);
@@ -805,6 +893,33 @@ class Translations$groceryList$he {
 
 	/// he: 'שם הפריט'
 	String get itemName => 'שם הפריט';
+
+	/// he: 'כל התפריטים'
+	String get planFilter => 'כל התפריטים';
+
+	/// he: 'בחר תפריטים'
+	String get choosePlans => 'בחר תפריטים';
+
+	/// he: '$count תפריטים נבחרו'
+	String plansSelected({required Object count}) => '${count} תפריטים נבחרו';
+
+	/// he: 'תפריט אחד נבחר'
+	String get onePlanSelected => 'תפריט אחד נבחר';
+
+	/// he: 'עדיין אין תפריטים לבחור מהם'
+	String get noPlansToPick => 'עדיין אין תפריטים לבחור מהם';
+
+	/// he: 'הרשימה מרוכזת מכל התפריטים'
+	String get allPlansHint => 'הרשימה מרוכזת מכל התפריטים';
+
+	/// he: 'אילו תפריטים ייכנסו לרשימה?'
+	String get selectPlansTitle => 'אילו תפריטים ייכנסו לרשימה?';
+
+	/// he: 'עדכון הרשימה'
+	String get applySelection => 'עדכון הרשימה';
+
+	/// he: 'כל התפריטים'
+	String get selectAllPlans => 'כל התפריטים';
 }
 
 // Path: unit
@@ -892,6 +1007,9 @@ class Translations$nav$he {
 
 	/// he: 'הגדרות'
 	String get settings => 'הגדרות';
+
+	/// he: 'קהילה'
+	String get community => 'קהילה';
 }
 
 /// The flat map containing all translations for locale <he>.
@@ -1025,6 +1143,32 @@ extension on Translations {
 			'recipe.removeFromBook' => 'הסר מהספר',
 			'recipe.deleteRecipe' => 'מחיקת מתכון',
 			'recipe.photo' => 'תמונת המתכון',
+			'community.title' => 'קהילה',
+			'community.forum' => 'פורום',
+			'community.sharedRecipes' => 'מתכונים משותפים',
+			'community.newPost' => 'פוסט חדש',
+			'community.postTitle' => 'כותרת',
+			'community.postBody' => 'מה בא לכם לשאול או לספר?',
+			'community.postTitleRequired' => 'צריך כותרת לפוסט',
+			'community.postBodyRequired' => 'צריך תוכן לפוסט',
+			'community.publish' => 'פרסום',
+			'community.replies' => ({required Object count}) => '${count} תגובות',
+			'community.noReplies' => 'עדיין אין תגובות',
+			'community.oneReply' => 'תגובה אחת',
+			'community.writeReply' => 'כתבו תגובה...',
+			'community.send' => 'שליחה',
+			'community.noPosts' => 'אין עדיין פוסטים. תהיו הראשונים!',
+			'community.noSharedRecipes' => 'עדיין לא שותפו מתכונים. שתפו את הראשון!',
+			'community.shareRecipe' => 'שיתוף מתכון',
+			'community.pickRecipeToShare' => 'איזה מתכון לשתף?',
+			'community.saveToMyRecipes' => 'שמירה למתכונים שלי',
+			'community.savedToMyRecipes' => 'המתכון נשמר אצלכם',
+			'community.deletePost' => 'מחיקת פוסט',
+			'community.deletePostConfirm' => 'הפוסט והתגובות שלו יימחקו לצמיתות.',
+			'community.unshare' => 'הסרת השיתוף',
+			'community.unshareConfirm' => 'המתכון יוסר מהפיד המשותף.',
+			'community.byAuthor' => ({required Object name}) => 'מאת ${name}',
+			'community.loadFailed' => 'לא הצלחנו לטעון את התוכן',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -1109,6 +1253,15 @@ extension on Translations {
 			'groceryList.unit' => 'יחידת מידה',
 			'groceryList.lastSource' => 'חייב להישאר לפחות מקור אחד',
 			'groceryList.itemName' => 'שם הפריט',
+			'groceryList.planFilter' => 'כל התפריטים',
+			'groceryList.choosePlans' => 'בחר תפריטים',
+			'groceryList.plansSelected' => ({required Object count}) => '${count} תפריטים נבחרו',
+			'groceryList.onePlanSelected' => 'תפריט אחד נבחר',
+			'groceryList.noPlansToPick' => 'עדיין אין תפריטים לבחור מהם',
+			'groceryList.allPlansHint' => 'הרשימה מרוכזת מכל התפריטים',
+			'groceryList.selectPlansTitle' => 'אילו תפריטים ייכנסו לרשימה?',
+			'groceryList.applySelection' => 'עדכון הרשימה',
+			'groceryList.selectAllPlans' => 'כל התפריטים',
 			'unit.gram' => 'גרם',
 			'unit.kilogram' => 'ק"ג',
 			'unit.milliliter' => 'מ"ל',
@@ -1129,6 +1282,7 @@ extension on Translations {
 			'nav.mealPlan' => 'תפריטים',
 			'nav.groceries' => 'קניות',
 			'nav.settings' => 'הגדרות',
+			'nav.community' => 'קהילה',
 			_ => null,
 		};
 	}

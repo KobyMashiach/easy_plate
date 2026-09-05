@@ -15,4 +15,5 @@ class Routing {
   static const mealPlanDetails = 'meal_plan_details';
   static const groceryListDetails = 'grocery_list_details';
   static const settings = 'settings';
+  static const forumThread = 'forum_thread';
 }

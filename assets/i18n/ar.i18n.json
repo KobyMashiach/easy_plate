@@ -142,6 +142,34 @@
     "deleteRecipe": "حذف الوصفة",
     "photo": "صورة الوصفة"
   },
+  "community": {
+    "title": "المجتمع",
+    "forum": "المنتدى",
+    "sharedRecipes": "وصفات مشتركة",
+    "newPost": "منشور جديد",
+    "postTitle": "العنوان",
+    "postBody": "ما الذي تودّون سؤاله أو مشاركته؟",
+    "postTitleRequired": "العنوان مطلوب",
+    "postBodyRequired": "المحتوى مطلوب",
+    "publish": "نشر",
+    "replies": "$count ردود",
+    "noReplies": "لا توجد ردود بعد",
+    "oneReply": "رد واحد",
+    "writeReply": "اكتبوا ردًا...",
+    "send": "إرسال",
+    "noPosts": "لا توجد منشورات بعد. كونوا الأوائل!",
+    "noSharedRecipes": "لم تتم مشاركة وصفات بعد. شاركوا الأولى!",
+    "shareRecipe": "مشاركة وصفة",
+    "pickRecipeToShare": "أي وصفة تريدون مشاركتها؟",
+    "saveToMyRecipes": "حفظ في وصفاتي",
+    "savedToMyRecipes": "تم حفظ الوصفة",
+    "deletePost": "حذف المنشور",
+    "deletePostConfirm": "سيتم حذف المنشور وردوده نهائيًا.",
+    "unshare": "إزالة المشاركة",
+    "unshareConfirm": "ستتم إزالة الوصفة من الخلاصة المشتركة.",
+    "byAuthor": "بواسطة $name",
+    "loadFailed": "تعذّر تحميل المحتوى"
+  },
   "editor": {
     "title": "تعديل الوصفة",
     "recipeTitle": "اسم الوصفة",
@@ -232,7 +260,16 @@
     "amount": "الكمية",
     "unit": "وحدة القياس",
     "lastSource": "يجب أن يبقى مصدر واحد على الأقل",
-    "itemName": "اسم العنصر"
+    "itemName": "اسم العنصر",
+    "planFilter": "كل القوائم",
+    "choosePlans": "اختيار القوائم",
+    "plansSelected": "تم اختيار $count قوائم",
+    "onePlanSelected": "تم اختيار قائمة واحدة",
+    "noPlansToPick": "لا توجد قوائم للاختيار بعد",
+    "allPlansHint": "مجمّعة من كل القوائم",
+    "selectPlansTitle": "أي القوائم تغذّي هذه اللائحة؟",
+    "applySelection": "تحديث اللائحة",
+    "selectAllPlans": "كل القوائم"
   },
   "unit": {
     "gram": "غرام",
@@ -258,6 +295,7 @@
     "recipes": "الوصفات",
     "mealPlan": "الوجبات",
     "groceries": "التسوّق",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "community": "المجتمع"
   }
 }

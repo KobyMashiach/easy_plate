@@ -50,6 +50,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$fr language = _Translations$language$fr._(_root);
 	@override late final _Translations$books$fr books = _Translations$books$fr._(_root);
 	@override late final _Translations$recipe$fr recipe = _Translations$recipe$fr._(_root);
+	@override late final _Translations$community$fr community = _Translations$community$fr._(_root);
 	@override late final _Translations$editor$fr editor = _Translations$editor$fr._(_root);
 	@override late final _Translations$ingestion$fr ingestion = _Translations$ingestion$fr._(_root);
 	@override late final _Translations$mealPlanner$fr mealPlanner = _Translations$mealPlanner$fr._(_root);
@@ -271,6 +272,41 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get photo => 'Photo de la recette';
 }
 
+// Path: community
+class _Translations$community$fr extends Translations$community$he {
+	_Translations$community$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Communauté';
+	@override String get forum => 'Forum';
+	@override String get sharedRecipes => 'Recettes partagées';
+	@override String get newPost => 'Nouveau message';
+	@override String get postTitle => 'Titre';
+	@override String get postBody => 'Que voulez-vous demander ou partager ?';
+	@override String get postTitleRequired => 'Un titre est requis';
+	@override String get postBodyRequired => 'Un contenu est requis';
+	@override String get publish => 'Publier';
+	@override String replies({required Object count}) => '${count} réponses';
+	@override String get noReplies => 'Aucune réponse pour l\'instant';
+	@override String get oneReply => 'Une réponse';
+	@override String get writeReply => 'Écrire une réponse...';
+	@override String get send => 'Envoyer';
+	@override String get noPosts => 'Aucun message. Soyez le premier !';
+	@override String get noSharedRecipes => 'Aucune recette partagée. Partagez la première !';
+	@override String get shareRecipe => 'Partager une recette';
+	@override String get pickRecipeToShare => 'Quelle recette partager ?';
+	@override String get saveToMyRecipes => 'Enregistrer dans mes recettes';
+	@override String get savedToMyRecipes => 'Recette enregistrée';
+	@override String get deletePost => 'Supprimer le message';
+	@override String get deletePostConfirm => 'Le message et ses réponses seront supprimés définitivement.';
+	@override String get unshare => 'Retirer du fil';
+	@override String get unshareConfirm => 'La recette sera retirée du fil partagé.';
+	@override String byAuthor({required Object name}) => 'par ${name}';
+	@override String get loadFailed => 'Impossible de charger le contenu';
+}
+
 // Path: editor
 class _Translations$editor$fr extends Translations$editor$he {
 	_Translations$editor$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -389,6 +425,15 @@ class _Translations$groceryList$fr extends Translations$groceryList$he {
 	@override String get unit => 'Unité';
 	@override String get lastSource => 'Au moins une source doit rester';
 	@override String get itemName => 'Nom de l\'article';
+	@override String get planFilter => 'Tous les menus';
+	@override String get choosePlans => 'Choisir les menus';
+	@override String plansSelected({required Object count}) => '${count} menus sélectionnés';
+	@override String get onePlanSelected => 'Un menu sélectionné';
+	@override String get noPlansToPick => 'Aucun menu à choisir pour l\'instant';
+	@override String get allPlansHint => 'Agrégé depuis tous les menus';
+	@override String get selectPlansTitle => 'Quels menus alimentent cette liste ?';
+	@override String get applySelection => 'Mettre à jour';
+	@override String get selectAllPlans => 'Tous les menus';
 }
 
 // Path: unit
@@ -436,6 +481,7 @@ class _Translations$nav$fr extends Translations$nav$he {
 	@override String get mealPlan => 'Repas';
 	@override String get groceries => 'Courses';
 	@override String get settings => 'Réglages';
+	@override String get community => 'Communauté';
 }
 
 /// The flat map containing all translations for locale <fr>.
@@ -569,6 +615,32 @@ extension on TranslationsFr {
 			'recipe.removeFromBook' => 'Retirer du livre',
 			'recipe.deleteRecipe' => 'Supprimer la recette',
 			'recipe.photo' => 'Photo de la recette',
+			'community.title' => 'Communauté',
+			'community.forum' => 'Forum',
+			'community.sharedRecipes' => 'Recettes partagées',
+			'community.newPost' => 'Nouveau message',
+			'community.postTitle' => 'Titre',
+			'community.postBody' => 'Que voulez-vous demander ou partager ?',
+			'community.postTitleRequired' => 'Un titre est requis',
+			'community.postBodyRequired' => 'Un contenu est requis',
+			'community.publish' => 'Publier',
+			'community.replies' => ({required Object count}) => '${count} réponses',
+			'community.noReplies' => 'Aucune réponse pour l\'instant',
+			'community.oneReply' => 'Une réponse',
+			'community.writeReply' => 'Écrire une réponse...',
+			'community.send' => 'Envoyer',
+			'community.noPosts' => 'Aucun message. Soyez le premier !',
+			'community.noSharedRecipes' => 'Aucune recette partagée. Partagez la première !',
+			'community.shareRecipe' => 'Partager une recette',
+			'community.pickRecipeToShare' => 'Quelle recette partager ?',
+			'community.saveToMyRecipes' => 'Enregistrer dans mes recettes',
+			'community.savedToMyRecipes' => 'Recette enregistrée',
+			'community.deletePost' => 'Supprimer le message',
+			'community.deletePostConfirm' => 'Le message et ses réponses seront supprimés définitivement.',
+			'community.unshare' => 'Retirer du fil',
+			'community.unshareConfirm' => 'La recette sera retirée du fil partagé.',
+			'community.byAuthor' => ({required Object name}) => 'par ${name}',
+			'community.loadFailed' => 'Impossible de charger le contenu',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
@@ -653,6 +725,15 @@ extension on TranslationsFr {
 			'groceryList.unit' => 'Unité',
 			'groceryList.lastSource' => 'Au moins une source doit rester',
 			'groceryList.itemName' => 'Nom de l\'article',
+			'groceryList.planFilter' => 'Tous les menus',
+			'groceryList.choosePlans' => 'Choisir les menus',
+			'groceryList.plansSelected' => ({required Object count}) => '${count} menus sélectionnés',
+			'groceryList.onePlanSelected' => 'Un menu sélectionné',
+			'groceryList.noPlansToPick' => 'Aucun menu à choisir pour l\'instant',
+			'groceryList.allPlansHint' => 'Agrégé depuis tous les menus',
+			'groceryList.selectPlansTitle' => 'Quels menus alimentent cette liste ?',
+			'groceryList.applySelection' => 'Mettre à jour',
+			'groceryList.selectAllPlans' => 'Tous les menus',
 			'unit.gram' => 'g',
 			'unit.kilogram' => 'kg',
 			'unit.milliliter' => 'ml',
@@ -673,6 +754,7 @@ extension on TranslationsFr {
 			'nav.mealPlan' => 'Repas',
 			'nav.groceries' => 'Courses',
 			'nav.settings' => 'Réglages',
+			'nav.community' => 'Communauté',
 			_ => null,
 		};
 	}

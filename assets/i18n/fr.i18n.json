@@ -142,6 +142,34 @@
     "deleteRecipe": "Supprimer la recette",
     "photo": "Photo de la recette"
   },
+  "community": {
+    "title": "Communauté",
+    "forum": "Forum",
+    "sharedRecipes": "Recettes partagées",
+    "newPost": "Nouveau message",
+    "postTitle": "Titre",
+    "postBody": "Que voulez-vous demander ou partager ?",
+    "postTitleRequired": "Un titre est requis",
+    "postBodyRequired": "Un contenu est requis",
+    "publish": "Publier",
+    "replies": "$count réponses",
+    "noReplies": "Aucune réponse pour l'instant",
+    "oneReply": "Une réponse",
+    "writeReply": "Écrire une réponse...",
+    "send": "Envoyer",
+    "noPosts": "Aucun message. Soyez le premier !",
+    "noSharedRecipes": "Aucune recette partagée. Partagez la première !",
+    "shareRecipe": "Partager une recette",
+    "pickRecipeToShare": "Quelle recette partager ?",
+    "saveToMyRecipes": "Enregistrer dans mes recettes",
+    "savedToMyRecipes": "Recette enregistrée",
+    "deletePost": "Supprimer le message",
+    "deletePostConfirm": "Le message et ses réponses seront supprimés définitivement.",
+    "unshare": "Retirer du fil",
+    "unshareConfirm": "La recette sera retirée du fil partagé.",
+    "byAuthor": "par $name",
+    "loadFailed": "Impossible de charger le contenu"
+  },
   "editor": {
     "title": "Modifier la recette",
     "recipeTitle": "Nom de la recette",
@@ -232,7 +260,16 @@
     "amount": "Quantité",
     "unit": "Unité",
     "lastSource": "Au moins une source doit rester",
-    "itemName": "Nom de l'article"
+    "itemName": "Nom de l'article",
+    "planFilter": "Tous les menus",
+    "choosePlans": "Choisir les menus",
+    "plansSelected": "$count menus sélectionnés",
+    "onePlanSelected": "Un menu sélectionné",
+    "noPlansToPick": "Aucun menu à choisir pour l'instant",
+    "allPlansHint": "Agrégé depuis tous les menus",
+    "selectPlansTitle": "Quels menus alimentent cette liste ?",
+    "applySelection": "Mettre à jour",
+    "selectAllPlans": "Tous les menus"
   },
   "unit": {
     "gram": "g",
@@ -258,6 +295,7 @@
     "recipes": "Recettes",
     "mealPlan": "Repas",
     "groceries": "Courses",
-    "settings": "Réglages"
+    "settings": "Réglages",
+    "community": "Communauté"
   }
 }

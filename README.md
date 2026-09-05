@@ -36,11 +36,38 @@ prompt has context.
 firebase deploy --only firestore:rules,storage   # firestore.rules, storage.rules
 ```
 
-Without those rules the default deny-all blocks every profile read and write.
+Without those rules the default deny-all blocks every profile read and write,
+and the whole Community tab as well.
 
 Config comes from `android/app/google-services.json` and
 `ios/Runner/GoogleService-Info.plist` — there is no generated
 `firebase_options.dart` to keep in sync.
+
+## Community
+
+Two Firestore-backed surfaces behind one **Community** nav tab
+(`lib/features/community/`), so the dock keeps a workable number of tabs:
+
+- **Forum** (`lib/features/forum/`) — threads at `forum_posts/{id}` with replies
+  in a subcollection. A reply and the thread's `replyCount` are written in one
+  batch so the counter cannot drift; deleting a thread sweeps its replies,
+  because Firestore does not cascade.
+- **Shared recipes** (`lib/features/shared_recipes/`) — a public feed at
+  `shared_recipes/{id}`. Each entry stores a *copy* of the recipe, so the author
+  editing or deleting their own copy does not change what the feed shows.
+  Liking is one document per user (`likes/{uid}`) plus a denormalised counter,
+  moved together in a transaction so a double tap stays one like. Saving a feed
+  recipe re-keys it, so the imported copy is the user's own.
+
+Both require the rules below; the collections are deny-all without them.
+
+## Grocery list scope
+
+The list aggregates the menus named in `selectedPlanIds` on the stored
+`GroceryListEntity`. An **empty list means every menu** — which is also what a
+list written before the field existed decodes to, and what a fully-ticked
+picker collapses back to, so a menu added later is picked up rather than
+silently excluded by a frozen set of ids.
 
 ## AI recipe ingestion
 
@@ -106,8 +133,9 @@ what the user typed.
 flutter test
 ```
 
-Coverage is the grocery aggregation engine, the page-flip cadence, the recipe
-editor, and the auth gate's redirect rules. The rest of the UI has been verified by running the app on an iOS
+Coverage is the grocery aggregation engine and its menu filtering, the
+page-flip cadence, the recipe editor, the auth gate's redirect rules and stage
+machine, and the shared-recipes feed logic. The rest of the UI has been verified by running the app on an iOS
 simulator, not by widget tests.
 
 ## Not yet implemented

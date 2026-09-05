@@ -5,6 +5,8 @@ import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/auth/presentation/pages/phone_verification_page.dart';
 import '../../../features/auth/presentation/pages/profile_setup_page.dart';
 import '../../../features/auth/presentation/pages/splash_page.dart';
+import '../../../features/forum/domain/entities/forum_post_entity.dart';
+import '../../../features/forum/presentation/pages/forum_thread_page.dart';
 import '../../../features/my_recipes/domain/entities/recipe_entity.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_editor_page.dart';
@@ -103,6 +105,12 @@ GoRouter buildRouter() {
             path: Routing.recipeEditor,
             name: Routing.recipeEditor,
             builder: (context, state) => RecipeEditorPage(recipe: state.extra as RecipeEntity),
+          ),
+          GoRoute(
+            path: Routing.forumThread,
+            name: Routing.forumThread,
+            builder: (context, state) =>
+                ForumThreadPage(post: state.extra as ForumPostEntity),
           ),
           GoRoute(
             path: Routing.ingestion,

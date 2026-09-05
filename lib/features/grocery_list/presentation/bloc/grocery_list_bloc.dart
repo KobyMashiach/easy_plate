@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../../meal_planner/domain/usecases/get_meal_plans_usecase.dart';
 import '../../domain/entities/grocery_item_entity.dart';
 import '../../domain/entities/grocery_item_source_entity.dart';
@@ -20,6 +21,7 @@ part 'grocery_list_bloc.freezed.dart';
 sealed class GroceryListEvent with _$GroceryListEvent {
   const factory GroceryListEvent.init() = _Init;
   const factory GroceryListEvent.regenerate() = _Regenerate;
+  const factory GroceryListEvent.selectPlans(List<String> planIds) = _SelectPlans;
   const factory GroceryListEvent.toggleItem(String itemId) = _ToggleItem;
   const factory GroceryListEvent.addAdHocItem(
     String name,
@@ -39,7 +41,10 @@ sealed class GroceryListEvent with _$GroceryListEvent {
 @freezed
 sealed class GroceryListState with _$GroceryListState {
   const factory GroceryListState.loading() = GroceryListLoading;
-  const factory GroceryListState.loaded(GroceryListEntity list) = GroceryListLoaded;
+  const factory GroceryListState.loaded(
+    GroceryListEntity list, {
+    @Default(<MealPlanEntity>[]) List<MealPlanEntity> plans,
+  }) = GroceryListLoaded;
   const factory GroceryListState.errorMessage(String error) = GroceryListError;
 }
 
@@ -59,6 +64,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   }) : super(const GroceryListState.loading()) {
     on<_Init>(_init);
     on<_Regenerate>(_regenerate);
+    on<_SelectPlans>(_selectPlans);
     on<_ToggleItem>(_toggleItem);
     on<_AddAdHocItem>(_addAdHocItem);
     on<_RemoveItem>(_removeItem);
@@ -91,9 +97,19 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
         );
   }
 
-  Future<void> _persist(GroceryListEntity list, Emitter<GroceryListState> emit) async {
+  /// Meal plans are only reloaded where they might have changed; every other
+  /// write reuses the ones already in state so the selector keeps its labels.
+  Future<void> _persist(
+    GroceryListEntity list,
+    Emitter<GroceryListState> emit, {
+    List<MealPlanEntity>? plans,
+  }) async {
     await saveGroceryListUseCase(list);
-    emit(.loaded(list));
+    final current = state;
+    emit(.loaded(
+      list,
+      plans: plans ?? (current is GroceryListLoaded ? current.plans : const []),
+    ));
   }
 
   Future<void> _updateItem(
@@ -111,11 +127,19 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
 
   Future<void> _init(_Init event, Emitter<GroceryListState> emit) async {
     try {
-      emit(.loaded(await _currentList()));
+      emit(.loaded(await _currentList(), plans: await getMealPlansUseCase()));
     } catch (e) {
       debugPrint('Grocery list error: $e');
       emit(.errorMessage(e.toString()));
     }
+  }
+
+  /// Stores the choice and rebuilds straight away, so picking menus has a
+  /// visible effect without a second tap on regenerate.
+  Future<void> _selectPlans(_SelectPlans event, Emitter<GroceryListState> emit) async {
+    final existing = await _currentList();
+    await saveGroceryListUseCase(existing.copyWith(selectedPlanIds: event.planIds));
+    await _regenerate(const _Regenerate(), emit);
   }
 
   /// Rebuilds the aggregated lines from the active meal plans while keeping
@@ -123,7 +147,13 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   Future<void> _regenerate(_Regenerate event, Emitter<GroceryListState> emit) async {
     final existing = await _currentList();
     final plans = await getMealPlansUseCase();
-    final aggregated = await buildAggregateGroceryListUseCase(plans);
+
+    // An empty selection means "all plans", which is also what a plan list
+    // that has since been deleted degrades to rather than an empty basket.
+    final selected = existing.includesAllPlans
+        ? plans
+        : plans.where((p) => existing.selectedPlanIds.contains(p.id)).toList();
+    final aggregated = await buildAggregateGroceryListUseCase(selected);
 
     final checkedIds = existing.items.where((i) => i.isChecked).map((i) => i.id).toSet();
     final adHocItems = existing.items.where((i) => i.isAdHoc).toList();
@@ -135,7 +165,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       ...adHocItems,
     ];
 
-    await _persist(existing.copyWith(items: merged), emit);
+    await _persist(existing.copyWith(items: merged), emit, plans: plans);
   }
 
   Future<void> _toggleItem(_ToggleItem event, Emitter<GroceryListState> emit) {

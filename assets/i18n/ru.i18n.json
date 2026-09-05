@@ -142,6 +142,34 @@
     "deleteRecipe": "Удалить рецепт",
     "photo": "Фото рецепта"
   },
+  "community": {
+    "title": "Сообщество",
+    "forum": "Форум",
+    "sharedRecipes": "Общие рецепты",
+    "newPost": "Новый пост",
+    "postTitle": "Заголовок",
+    "postBody": "О чём хотите спросить или рассказать?",
+    "postTitleRequired": "Нужен заголовок",
+    "postBodyRequired": "Нужен текст",
+    "publish": "Опубликовать",
+    "replies": "Ответов: $count",
+    "noReplies": "Ответов пока нет",
+    "oneReply": "Один ответ",
+    "writeReply": "Написать ответ...",
+    "send": "Отправить",
+    "noPosts": "Постов пока нет. Будьте первым!",
+    "noSharedRecipes": "Рецептов пока не публиковали. Поделитесь первым!",
+    "shareRecipe": "Поделиться рецептом",
+    "pickRecipeToShare": "Каким рецептом поделиться?",
+    "saveToMyRecipes": "Сохранить к себе",
+    "savedToMyRecipes": "Рецепт сохранён",
+    "deletePost": "Удалить пост",
+    "deletePostConfirm": "Пост и ответы будут удалены навсегда.",
+    "unshare": "Убрать из ленты",
+    "unshareConfirm": "Рецепт будет убран из общей ленты.",
+    "byAuthor": "от $name",
+    "loadFailed": "Не удалось загрузить содержимое"
+  },
   "editor": {
     "title": "Редактирование рецепта",
     "recipeTitle": "Название рецепта",
@@ -232,7 +260,16 @@
     "amount": "Количество",
     "unit": "Единица",
     "lastSource": "Должен остаться хотя бы один источник",
-    "itemName": "Название позиции"
+    "itemName": "Название позиции",
+    "planFilter": "Все меню",
+    "choosePlans": "Выбрать меню",
+    "plansSelected": "Выбрано меню: $count",
+    "onePlanSelected": "Выбрано одно меню",
+    "noPlansToPick": "Пока нет меню для выбора",
+    "allPlansHint": "Сводка по всем меню",
+    "selectPlansTitle": "Какие меню входят в список?",
+    "applySelection": "Обновить список",
+    "selectAllPlans": "Все меню"
   },
   "unit": {
     "gram": "г",
@@ -258,6 +295,7 @@
     "recipes": "Рецепты",
     "mealPlan": "Меню",
     "groceries": "Покупки",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "community": "Сообщество"
   }
 }

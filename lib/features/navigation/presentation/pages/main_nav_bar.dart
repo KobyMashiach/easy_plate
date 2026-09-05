@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../community/presentation/pages/community_page.dart';
 import '../../../grocery_list/presentation/pages/grocery_list_page.dart';
 import '../../../meal_planner/presentation/pages/meal_planner_page.dart';
 import '../../../my_recipes/presentation/pages/my_recipes_page.dart';
@@ -38,6 +39,7 @@ class _MainNavBarState extends State<MainNavBar> {
       MyRecipesPage(key: ValueKey('recipes-$locale')),
       MealPlannerPage(key: ValueKey('mealPlanner-$locale')),
       GroceryListPage(key: ValueKey('groceries-$locale')),
+      CommunityPage(key: ValueKey('community-$locale')),
       SettingsPage(key: ValueKey('settings-$locale')),
     ];
 
@@ -74,6 +76,10 @@ class _MainNavBarState extends State<MainNavBar> {
                   ClayNavDestination(
                     icon: Icons.shopping_cart_rounded,
                     label: t.nav.groceries,
+                  ),
+                  ClayNavDestination(
+                    icon: Icons.groups_rounded,
+                    label: t.nav.community,
                   ),
                   ClayNavDestination(
                     icon: Icons.person_rounded,

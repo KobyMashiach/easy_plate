@@ -142,6 +142,34 @@
     "deleteRecipe": "Delete recipe",
     "photo": "Recipe photo"
   },
+  "community": {
+    "title": "Community",
+    "forum": "Forum",
+    "sharedRecipes": "Shared recipes",
+    "newPost": "New post",
+    "postTitle": "Title",
+    "postBody": "What would you like to ask or share?",
+    "postTitleRequired": "A title is required",
+    "postBodyRequired": "Some content is required",
+    "publish": "Publish",
+    "replies": "$count replies",
+    "noReplies": "No replies yet",
+    "oneReply": "One reply",
+    "writeReply": "Write a reply...",
+    "send": "Send",
+    "noPosts": "No posts yet. Be the first!",
+    "noSharedRecipes": "No shared recipes yet. Share the first one!",
+    "shareRecipe": "Share a recipe",
+    "pickRecipeToShare": "Which recipe would you like to share?",
+    "saveToMyRecipes": "Save to my recipes",
+    "savedToMyRecipes": "Recipe saved to your collection",
+    "deletePost": "Delete post",
+    "deletePostConfirm": "The post and its replies will be permanently deleted.",
+    "unshare": "Remove from feed",
+    "unshareConfirm": "The recipe will be removed from the shared feed.",
+    "byAuthor": "by $name",
+    "loadFailed": "We could not load the content"
+  },
   "editor": {
     "title": "Edit recipe",
     "recipeTitle": "Recipe name",
@@ -232,7 +260,16 @@
     "amount": "Amount",
     "unit": "Unit",
     "lastSource": "At least one source must remain",
-    "itemName": "Item name"
+    "itemName": "Item name",
+    "planFilter": "All menus",
+    "choosePlans": "Choose menus",
+    "plansSelected": "$count menus selected",
+    "onePlanSelected": "One menu selected",
+    "noPlansToPick": "No menus to choose from yet",
+    "allPlansHint": "Aggregated from every menu",
+    "selectPlansTitle": "Which menus feed this list?",
+    "applySelection": "Update list",
+    "selectAllPlans": "All menus"
   },
   "unit": {
     "gram": "g",
@@ -258,6 +295,7 @@
     "recipes": "Recipes",
     "mealPlan": "Meals",
     "groceries": "Groceries",
-    "settings": "Settings"
+    "settings": "Settings",
+    "community": "Community"
   }
 }

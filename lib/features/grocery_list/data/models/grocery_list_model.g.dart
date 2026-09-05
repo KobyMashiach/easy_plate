@@ -24,13 +24,16 @@ class GroceryListModelAdapter extends TypeAdapter<GroceryListModel> {
           ? {}
           : (fields[3] as Map).cast<String, String>(),
       createdAt: fields[4] as DateTime,
+      selectedPlanIds: fields[5] == null
+          ? []
+          : (fields[5] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, GroceryListModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -40,7 +43,9 @@ class GroceryListModelAdapter extends TypeAdapter<GroceryListModel> {
       ..writeByte(3)
       ..write(obj.collaborators)
       ..writeByte(4)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(5)
+      ..write(obj.selectedPlanIds);
   }
 
   @override
@@ -71,6 +76,11 @@ _GroceryListModel _$GroceryListModelFromJson(Map<String, dynamic> json) =>
           ) ??
           const {},
       createdAt: DateTime.parse(json['createdAt'] as String),
+      selectedPlanIds:
+          (json['selectedPlanIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const <String>[],
     );
 
 Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
@@ -80,4 +90,5 @@ Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
       'items': instance.items,
       'collaborators': instance.collaborators,
       'createdAt': instance.createdAt.toIso8601String(),
+      'selectedPlanIds': instance.selectedPlanIds,
     };

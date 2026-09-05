@@ -4,10 +4,70 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // The author is asserted by the client, so it has to be checked against the
+    // token or anyone could post under someone else's name.
+    function authoredByCaller() {
+      return signedIn() && request.resource.data.authorUid == request.auth.uid;
+    }
+
     // A profile document is private to its owner. The id is the Firebase Auth
     // uid, so ownership is the document path itself.
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    // Community recipes: readable by every signed-in user, writable only by
+    // whoever published them.
+    match /shared_recipes/{postId} {
+      allow read: if signedIn();
+      allow create: if authoredByCaller();
+      // The like counter is the one field a non-author may move, and only by
+      // one step, so a reader cannot rewrite someone else's recipe.
+      allow update: if signedIn()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['likeCount'])
+                    && request.resource.data.likeCount is int
+                    && (request.resource.data.likeCount - resource.data.likeCount) in [1, -1];
+      allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
+
+      // One like document per user, named by uid so a double tap cannot
+      // become two likes.
+      match /likes/{uid} {
+        allow read: if signedIn();
+        allow create, update: if signedIn() && request.auth.uid == uid;
+        // The author sweeps these when unsharing, so they may delete likes
+        // that belong to other people — but only their own recipe's.
+        allow delete: if signedIn()
+                      && (request.auth.uid == uid
+                          || get(/databases/$(database)/documents/shared_recipes/$(postId))
+                               .data.authorUid == request.auth.uid);
+      }
+    }
+
+    match /forum_posts/{postId} {
+      allow read: if signedIn();
+      allow create: if authoredByCaller();
+      // Only the reply counter moves after creation, and only upward by one.
+      allow update: if signedIn()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['replyCount'])
+                    && request.resource.data.replyCount == resource.data.replyCount + 1;
+      allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
+
+      match /replies/{replyId} {
+        allow read: if signedIn();
+        allow create: if authoredByCaller();
+        // Deleting the thread deletes its replies, which is why a reply may be
+        // removed by its own author or by the thread's.
+        allow delete: if signedIn()
+                      && (resource.data.authorUid == request.auth.uid
+                          || get(/databases/$(database)/documents/forum_posts/$(postId))
+                               .data.authorUid == request.auth.uid);
+      }
     }
 
     // Nothing else is reachable until it has a rule of its own.

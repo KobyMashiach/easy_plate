@@ -142,6 +142,34 @@
     "deleteRecipe": "מחיקת מתכון",
     "photo": "תמונת המתכון"
   },
+  "community": {
+    "title": "קהילה",
+    "forum": "פורום",
+    "sharedRecipes": "מתכונים משותפים",
+    "newPost": "פוסט חדש",
+    "postTitle": "כותרת",
+    "postBody": "מה בא לכם לשאול או לספר?",
+    "postTitleRequired": "צריך כותרת לפוסט",
+    "postBodyRequired": "צריך תוכן לפוסט",
+    "publish": "פרסום",
+    "replies": "$count תגובות",
+    "noReplies": "עדיין אין תגובות",
+    "oneReply": "תגובה אחת",
+    "writeReply": "כתבו תגובה...",
+    "send": "שליחה",
+    "noPosts": "אין עדיין פוסטים. תהיו הראשונים!",
+    "noSharedRecipes": "עדיין לא שותפו מתכונים. שתפו את הראשון!",
+    "shareRecipe": "שיתוף מתכון",
+    "pickRecipeToShare": "איזה מתכון לשתף?",
+    "saveToMyRecipes": "שמירה למתכונים שלי",
+    "savedToMyRecipes": "המתכון נשמר אצלכם",
+    "deletePost": "מחיקת פוסט",
+    "deletePostConfirm": "הפוסט והתגובות שלו יימחקו לצמיתות.",
+    "unshare": "הסרת השיתוף",
+    "unshareConfirm": "המתכון יוסר מהפיד המשותף.",
+    "byAuthor": "מאת $name",
+    "loadFailed": "לא הצלחנו לטעון את התוכן"
+  },
   "editor": {
     "title": "עריכת מתכון",
     "recipeTitle": "שם המתכון",
@@ -232,7 +260,16 @@
     "amount": "כמות",
     "unit": "יחידת מידה",
     "lastSource": "חייב להישאר לפחות מקור אחד",
-    "itemName": "שם הפריט"
+    "itemName": "שם הפריט",
+    "planFilter": "כל התפריטים",
+    "choosePlans": "בחר תפריטים",
+    "plansSelected": "$count תפריטים נבחרו",
+    "onePlanSelected": "תפריט אחד נבחר",
+    "noPlansToPick": "עדיין אין תפריטים לבחור מהם",
+    "allPlansHint": "הרשימה מרוכזת מכל התפריטים",
+    "selectPlansTitle": "אילו תפריטים ייכנסו לרשימה?",
+    "applySelection": "עדכון הרשימה",
+    "selectAllPlans": "כל התפריטים"
   },
   "unit": {
     "gram": "גרם",
@@ -258,6 +295,7 @@
     "recipes": "מתכונים",
     "mealPlan": "תפריטים",
     "groceries": "קניות",
-    "settings": "הגדרות"
+    "settings": "הגדרות",
+    "community": "קהילה"
   }
 }

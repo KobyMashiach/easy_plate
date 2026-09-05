@@ -11,7 +11,9 @@ import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
+import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../widgets/grocery_progress_card.dart';
+import '../widgets/meal_plan_filter_card.dart';
 import '../widgets/grocery_section.dart';
 
 class GroceryListPage extends StatelessWidget {
@@ -35,7 +37,8 @@ class GroceryListPage extends StatelessWidget {
             builder: (context, state) {
               return switch (state) {
                 GroceryListLoading() => const Center(child: CircularProgressIndicator()),
-                GroceryListLoaded(list: final list) => _ListBody(list: list),
+                GroceryListLoaded(list: final list, plans: final plans) =>
+                  _ListBody(list: list, plans: plans),
                 GroceryListError(error: final error) => ErrorRetryView(
                     error: error,
                     onRetry: () =>
@@ -52,23 +55,37 @@ class GroceryListPage extends StatelessWidget {
 
 class _ListBody extends StatelessWidget {
   final GroceryListEntity list;
+  final List<MealPlanEntity> plans;
 
-  const _ListBody({required this.list});
+  const _ListBody({required this.list, required this.plans});
 
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<GroceryListBloc>();
 
     if (list.items.isEmpty) {
-      return ClayEmptyState(
-        icon: Icons.shopping_basket_rounded,
-        message: t.groceryList.empty,
-        action: ClayButton(
-          label: t.groceryList.aggregated,
-          icon: Icons.autorenew_rounded,
-          onPressed: () =>
-              bloc.add(const GroceryListEvent.regenerate()),
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.marginMobile,
+          AppSpacing.md,
+          AppSpacing.marginMobile,
+          ClayNavDock.reservedHeight,
         ),
+        children: [
+          ClayPageHeader(title: t.groceryList.title),
+          const SizedBox(height: AppSpacing.lg),
+          MealPlanFilterCard(list: list, plans: plans),
+          const SizedBox(height: AppSpacing.lg),
+          ClayEmptyState(
+            icon: Icons.shopping_basket_rounded,
+            message: t.groceryList.empty,
+            action: ClayButton(
+              label: t.groceryList.aggregated,
+              icon: Icons.autorenew_rounded,
+              onPressed: () => bloc.add(const GroceryListEvent.regenerate()),
+            ),
+          ),
+        ],
       );
     }
 
@@ -84,8 +101,10 @@ class _ListBody extends StatelessWidget {
         ClayNavDock.reservedHeight,
       ),
       children: [
-        ClayPageHeader(title: t.groceryList.title, subtitle: t.groceryList.aggregated),
+        ClayPageHeader(title: t.groceryList.title),
         const SizedBox(height: AppSpacing.lg),
+        MealPlanFilterCard(list: list, plans: plans),
+        const SizedBox(height: AppSpacing.gutter),
         GroceryProgressCard(collected: checked.length, total: list.items.length),
         const SizedBox(height: AppSpacing.gutter),
         Row(

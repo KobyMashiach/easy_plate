@@ -50,6 +50,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
 	@override late final _Translations$recipe$ru recipe = _Translations$recipe$ru._(_root);
+	@override late final _Translations$community$ru community = _Translations$community$ru._(_root);
 	@override late final _Translations$editor$ru editor = _Translations$editor$ru._(_root);
 	@override late final _Translations$ingestion$ru ingestion = _Translations$ingestion$ru._(_root);
 	@override late final _Translations$mealPlanner$ru mealPlanner = _Translations$mealPlanner$ru._(_root);
@@ -271,6 +272,41 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get photo => 'Фото рецепта';
 }
 
+// Path: community
+class _Translations$community$ru extends Translations$community$he {
+	_Translations$community$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Сообщество';
+	@override String get forum => 'Форум';
+	@override String get sharedRecipes => 'Общие рецепты';
+	@override String get newPost => 'Новый пост';
+	@override String get postTitle => 'Заголовок';
+	@override String get postBody => 'О чём хотите спросить или рассказать?';
+	@override String get postTitleRequired => 'Нужен заголовок';
+	@override String get postBodyRequired => 'Нужен текст';
+	@override String get publish => 'Опубликовать';
+	@override String replies({required Object count}) => 'Ответов: ${count}';
+	@override String get noReplies => 'Ответов пока нет';
+	@override String get oneReply => 'Один ответ';
+	@override String get writeReply => 'Написать ответ...';
+	@override String get send => 'Отправить';
+	@override String get noPosts => 'Постов пока нет. Будьте первым!';
+	@override String get noSharedRecipes => 'Рецептов пока не публиковали. Поделитесь первым!';
+	@override String get shareRecipe => 'Поделиться рецептом';
+	@override String get pickRecipeToShare => 'Каким рецептом поделиться?';
+	@override String get saveToMyRecipes => 'Сохранить к себе';
+	@override String get savedToMyRecipes => 'Рецепт сохранён';
+	@override String get deletePost => 'Удалить пост';
+	@override String get deletePostConfirm => 'Пост и ответы будут удалены навсегда.';
+	@override String get unshare => 'Убрать из ленты';
+	@override String get unshareConfirm => 'Рецепт будет убран из общей ленты.';
+	@override String byAuthor({required Object name}) => 'от ${name}';
+	@override String get loadFailed => 'Не удалось загрузить содержимое';
+}
+
 // Path: editor
 class _Translations$editor$ru extends Translations$editor$he {
 	_Translations$editor$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -389,6 +425,15 @@ class _Translations$groceryList$ru extends Translations$groceryList$he {
 	@override String get unit => 'Единица';
 	@override String get lastSource => 'Должен остаться хотя бы один источник';
 	@override String get itemName => 'Название позиции';
+	@override String get planFilter => 'Все меню';
+	@override String get choosePlans => 'Выбрать меню';
+	@override String plansSelected({required Object count}) => 'Выбрано меню: ${count}';
+	@override String get onePlanSelected => 'Выбрано одно меню';
+	@override String get noPlansToPick => 'Пока нет меню для выбора';
+	@override String get allPlansHint => 'Сводка по всем меню';
+	@override String get selectPlansTitle => 'Какие меню входят в список?';
+	@override String get applySelection => 'Обновить список';
+	@override String get selectAllPlans => 'Все меню';
 }
 
 // Path: unit
@@ -436,6 +481,7 @@ class _Translations$nav$ru extends Translations$nav$he {
 	@override String get mealPlan => 'Меню';
 	@override String get groceries => 'Покупки';
 	@override String get settings => 'Настройки';
+	@override String get community => 'Сообщество';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -569,6 +615,32 @@ extension on TranslationsRu {
 			'recipe.removeFromBook' => 'Убрать из книги',
 			'recipe.deleteRecipe' => 'Удалить рецепт',
 			'recipe.photo' => 'Фото рецепта',
+			'community.title' => 'Сообщество',
+			'community.forum' => 'Форум',
+			'community.sharedRecipes' => 'Общие рецепты',
+			'community.newPost' => 'Новый пост',
+			'community.postTitle' => 'Заголовок',
+			'community.postBody' => 'О чём хотите спросить или рассказать?',
+			'community.postTitleRequired' => 'Нужен заголовок',
+			'community.postBodyRequired' => 'Нужен текст',
+			'community.publish' => 'Опубликовать',
+			'community.replies' => ({required Object count}) => 'Ответов: ${count}',
+			'community.noReplies' => 'Ответов пока нет',
+			'community.oneReply' => 'Один ответ',
+			'community.writeReply' => 'Написать ответ...',
+			'community.send' => 'Отправить',
+			'community.noPosts' => 'Постов пока нет. Будьте первым!',
+			'community.noSharedRecipes' => 'Рецептов пока не публиковали. Поделитесь первым!',
+			'community.shareRecipe' => 'Поделиться рецептом',
+			'community.pickRecipeToShare' => 'Каким рецептом поделиться?',
+			'community.saveToMyRecipes' => 'Сохранить к себе',
+			'community.savedToMyRecipes' => 'Рецепт сохранён',
+			'community.deletePost' => 'Удалить пост',
+			'community.deletePostConfirm' => 'Пост и ответы будут удалены навсегда.',
+			'community.unshare' => 'Убрать из ленты',
+			'community.unshareConfirm' => 'Рецепт будет убран из общей ленты.',
+			'community.byAuthor' => ({required Object name}) => 'от ${name}',
+			'community.loadFailed' => 'Не удалось загрузить содержимое',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -653,6 +725,15 @@ extension on TranslationsRu {
 			'groceryList.unit' => 'Единица',
 			'groceryList.lastSource' => 'Должен остаться хотя бы один источник',
 			'groceryList.itemName' => 'Название позиции',
+			'groceryList.planFilter' => 'Все меню',
+			'groceryList.choosePlans' => 'Выбрать меню',
+			'groceryList.plansSelected' => ({required Object count}) => 'Выбрано меню: ${count}',
+			'groceryList.onePlanSelected' => 'Выбрано одно меню',
+			'groceryList.noPlansToPick' => 'Пока нет меню для выбора',
+			'groceryList.allPlansHint' => 'Сводка по всем меню',
+			'groceryList.selectPlansTitle' => 'Какие меню входят в список?',
+			'groceryList.applySelection' => 'Обновить список',
+			'groceryList.selectAllPlans' => 'Все меню',
 			'unit.gram' => 'г',
 			'unit.kilogram' => 'кг',
 			'unit.milliliter' => 'мл',
@@ -673,6 +754,7 @@ extension on TranslationsRu {
 			'nav.mealPlan' => 'Меню',
 			'nav.groceries' => 'Покупки',
 			'nav.settings' => 'Настройки',
+			'nav.community' => 'Сообщество',
 			_ => null,
 		};
 	}

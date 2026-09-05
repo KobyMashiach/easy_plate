@@ -50,6 +50,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
 	@override late final _Translations$recipe$ar recipe = _Translations$recipe$ar._(_root);
+	@override late final _Translations$community$ar community = _Translations$community$ar._(_root);
 	@override late final _Translations$editor$ar editor = _Translations$editor$ar._(_root);
 	@override late final _Translations$ingestion$ar ingestion = _Translations$ingestion$ar._(_root);
 	@override late final _Translations$mealPlanner$ar mealPlanner = _Translations$mealPlanner$ar._(_root);
@@ -271,6 +272,41 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get photo => 'صورة الوصفة';
 }
 
+// Path: community
+class _Translations$community$ar extends Translations$community$he {
+	_Translations$community$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'المجتمع';
+	@override String get forum => 'المنتدى';
+	@override String get sharedRecipes => 'وصفات مشتركة';
+	@override String get newPost => 'منشور جديد';
+	@override String get postTitle => 'العنوان';
+	@override String get postBody => 'ما الذي تودّون سؤاله أو مشاركته؟';
+	@override String get postTitleRequired => 'العنوان مطلوب';
+	@override String get postBodyRequired => 'المحتوى مطلوب';
+	@override String get publish => 'نشر';
+	@override String replies({required Object count}) => '${count} ردود';
+	@override String get noReplies => 'لا توجد ردود بعد';
+	@override String get oneReply => 'رد واحد';
+	@override String get writeReply => 'اكتبوا ردًا...';
+	@override String get send => 'إرسال';
+	@override String get noPosts => 'لا توجد منشورات بعد. كونوا الأوائل!';
+	@override String get noSharedRecipes => 'لم تتم مشاركة وصفات بعد. شاركوا الأولى!';
+	@override String get shareRecipe => 'مشاركة وصفة';
+	@override String get pickRecipeToShare => 'أي وصفة تريدون مشاركتها؟';
+	@override String get saveToMyRecipes => 'حفظ في وصفاتي';
+	@override String get savedToMyRecipes => 'تم حفظ الوصفة';
+	@override String get deletePost => 'حذف المنشور';
+	@override String get deletePostConfirm => 'سيتم حذف المنشور وردوده نهائيًا.';
+	@override String get unshare => 'إزالة المشاركة';
+	@override String get unshareConfirm => 'ستتم إزالة الوصفة من الخلاصة المشتركة.';
+	@override String byAuthor({required Object name}) => 'بواسطة ${name}';
+	@override String get loadFailed => 'تعذّر تحميل المحتوى';
+}
+
 // Path: editor
 class _Translations$editor$ar extends Translations$editor$he {
 	_Translations$editor$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -389,6 +425,15 @@ class _Translations$groceryList$ar extends Translations$groceryList$he {
 	@override String get unit => 'وحدة القياس';
 	@override String get lastSource => 'يجب أن يبقى مصدر واحد على الأقل';
 	@override String get itemName => 'اسم العنصر';
+	@override String get planFilter => 'كل القوائم';
+	@override String get choosePlans => 'اختيار القوائم';
+	@override String plansSelected({required Object count}) => 'تم اختيار ${count} قوائم';
+	@override String get onePlanSelected => 'تم اختيار قائمة واحدة';
+	@override String get noPlansToPick => 'لا توجد قوائم للاختيار بعد';
+	@override String get allPlansHint => 'مجمّعة من كل القوائم';
+	@override String get selectPlansTitle => 'أي القوائم تغذّي هذه اللائحة؟';
+	@override String get applySelection => 'تحديث اللائحة';
+	@override String get selectAllPlans => 'كل القوائم';
 }
 
 // Path: unit
@@ -436,6 +481,7 @@ class _Translations$nav$ar extends Translations$nav$he {
 	@override String get mealPlan => 'الوجبات';
 	@override String get groceries => 'التسوّق';
 	@override String get settings => 'الإعدادات';
+	@override String get community => 'المجتمع';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -569,6 +615,32 @@ extension on TranslationsAr {
 			'recipe.removeFromBook' => 'إزالة من الكتاب',
 			'recipe.deleteRecipe' => 'حذف الوصفة',
 			'recipe.photo' => 'صورة الوصفة',
+			'community.title' => 'المجتمع',
+			'community.forum' => 'المنتدى',
+			'community.sharedRecipes' => 'وصفات مشتركة',
+			'community.newPost' => 'منشور جديد',
+			'community.postTitle' => 'العنوان',
+			'community.postBody' => 'ما الذي تودّون سؤاله أو مشاركته؟',
+			'community.postTitleRequired' => 'العنوان مطلوب',
+			'community.postBodyRequired' => 'المحتوى مطلوب',
+			'community.publish' => 'نشر',
+			'community.replies' => ({required Object count}) => '${count} ردود',
+			'community.noReplies' => 'لا توجد ردود بعد',
+			'community.oneReply' => 'رد واحد',
+			'community.writeReply' => 'اكتبوا ردًا...',
+			'community.send' => 'إرسال',
+			'community.noPosts' => 'لا توجد منشورات بعد. كونوا الأوائل!',
+			'community.noSharedRecipes' => 'لم تتم مشاركة وصفات بعد. شاركوا الأولى!',
+			'community.shareRecipe' => 'مشاركة وصفة',
+			'community.pickRecipeToShare' => 'أي وصفة تريدون مشاركتها؟',
+			'community.saveToMyRecipes' => 'حفظ في وصفاتي',
+			'community.savedToMyRecipes' => 'تم حفظ الوصفة',
+			'community.deletePost' => 'حذف المنشور',
+			'community.deletePostConfirm' => 'سيتم حذف المنشور وردوده نهائيًا.',
+			'community.unshare' => 'إزالة المشاركة',
+			'community.unshareConfirm' => 'ستتم إزالة الوصفة من الخلاصة المشتركة.',
+			'community.byAuthor' => ({required Object name}) => 'بواسطة ${name}',
+			'community.loadFailed' => 'تعذّر تحميل المحتوى',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -653,6 +725,15 @@ extension on TranslationsAr {
 			'groceryList.unit' => 'وحدة القياس',
 			'groceryList.lastSource' => 'يجب أن يبقى مصدر واحد على الأقل',
 			'groceryList.itemName' => 'اسم العنصر',
+			'groceryList.planFilter' => 'كل القوائم',
+			'groceryList.choosePlans' => 'اختيار القوائم',
+			'groceryList.plansSelected' => ({required Object count}) => 'تم اختيار ${count} قوائم',
+			'groceryList.onePlanSelected' => 'تم اختيار قائمة واحدة',
+			'groceryList.noPlansToPick' => 'لا توجد قوائم للاختيار بعد',
+			'groceryList.allPlansHint' => 'مجمّعة من كل القوائم',
+			'groceryList.selectPlansTitle' => 'أي القوائم تغذّي هذه اللائحة؟',
+			'groceryList.applySelection' => 'تحديث اللائحة',
+			'groceryList.selectAllPlans' => 'كل القوائم',
 			'unit.gram' => 'غرام',
 			'unit.kilogram' => 'كغ',
 			'unit.milliliter' => 'مل',
@@ -673,6 +754,7 @@ extension on TranslationsAr {
 			'nav.mealPlan' => 'الوجبات',
 			'nav.groceries' => 'التسوّق',
 			'nav.settings' => 'الإعدادات',
+			'nav.community' => 'المجتمع',
 			_ => null,
 		};
 	}
