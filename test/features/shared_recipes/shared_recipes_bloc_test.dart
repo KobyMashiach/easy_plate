@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repository.dart';
 import 'package:easy_plate/features/my_recipes/domain/usecases/get_recipes_usecase.dart';
@@ -14,13 +16,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeSharedRepository implements SharedRecipesRepository {
   List<SharedRecipeEntity> feed = [];
+  bool feedThrows = false;
+  int feedCalls = 0;
   bool likeThrows = false;
   int likeCalls = 0;
   final unshared = <String>[];
 
   @override
-  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50}) async =>
-      feed;
+  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50}) async {
+    feedCalls++;
+    if (feedThrows) throw Exception('offline');
+    return feed;
+  }
 
   @override
   Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async =>
@@ -111,6 +118,57 @@ void main() {
 
     expect(bloc.state, isA<SharedRecipesLoaded>());
     expect((bloc.state as SharedRecipesLoaded).recipes, hasLength(1));
+  });
+
+  group('pull to refresh', () {
+    test('re-reads the feed and completes the indicator\'s future', () async {
+      shared.feed = [buildShared(id: 's1')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+      final callsBefore = shared.feedCalls;
+
+      shared.feed = [buildShared(id: 's1'), buildShared(id: 's2')];
+      final done = Completer<void>();
+      bloc.add(SharedRecipesEvent.refresh(done));
+      await done.future;
+
+      expect(shared.feedCalls, callsBefore + 1);
+      expect((bloc.state as SharedRecipesLoaded).recipes, hasLength(2));
+    });
+
+    test('completes even when the reloaded data is identical', () async {
+      // The reason refresh carries a completer at all: bloc skips emitting a
+      // state equal to the current one, so a future derived from the state
+      // stream would never resolve here and the spinner would hang forever.
+      shared.feed = [buildShared(id: 's1')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      final done = Completer<void>();
+      bloc.add(SharedRecipesEvent.refresh(done));
+
+      await done.future.timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => fail('refresh future never completed'),
+      );
+    });
+
+    test('completes even when the reload fails', () async {
+      shared.feed = [buildShared(id: 's1')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      // A spinner left turning after a failed refresh is worse than the error.
+      shared.feedThrows = true;
+      final done = Completer<void>();
+      bloc.add(SharedRecipesEvent.refresh(done));
+
+      await done.future.timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => fail('refresh future never completed'),
+      );
+      expect(bloc.state, isA<SharedRecipesError>());
+    });
   });
 
   test('liking flips the row and bumps the count before the write lands', () async {

@@ -23,6 +23,21 @@ providers are wired: Email/Password, Phone (SMS), and Google.
 `needsEmailVerification` applies only to accounts with a `password` provider:
 Google arrives verified and a phone account has no address to prove.
 
+A profile is split across two documents. `users/{uid}` is private to its owner
+and holds the email, phone and push token. `public_profiles/{uid}` holds only
+the display name and photo and is readable by any signed-in user — the split
+exists because Firestore rules grant or deny a *whole* document, so opening
+`users` up far enough to show an author's name would have exposed their contact
+details too.
+
+Community posts and shared recipes store `authorUid` and resolve the name and
+photo from `public_profiles` at read time, one batched lookup per page. That is
+what makes renaming an account update everything it ever posted on the next
+refresh. Each document still keeps the name it was published with, used only as
+a fallback for an author whose public profile is missing (a pre-split account,
+or a deleted one) so those rows render a name rather than a blank. Signing in
+republishes the public half, which backfills accounts that predate it.
+
 New accounts land on `ProfileSetupPage` (full name, photo) before onboarding.
 Email and phone are shown there as *identities*, not editable text — the only
 way to add one is its verification flow (`linkWithCredential`). That is what
@@ -111,7 +126,52 @@ The recipe list is driven by `watchRecipes()` off the box itself, so a recipe
 saved from ingestion, the editor, or the community shows up without the list
 having to notice it was navigated back to.
 
+## Sharing a recipe with another account
+
+Long-press a recipe in My Recipes (owner only) to share it by the other
+person's **email or phone**, as viewer or editor. Finding them never exposes a
+contact: `user_directory/{sha256(contact)}` maps a hash to a uid, written for
+each verified contact whenever the public profile is published. A share turns
+the recipe into a Firestore document, `collab_recipes/{id}`, which becomes the
+source of truth — every account's local copy is a cache of it, refreshed when
+the recipe is opened (`SyncCollabRecipeUseCase`) and written through on save
+(`SaveCollabRecipeUseCase`: document first, cache second). Viewers are
+read-only at three layers: the UI, the use case, and the rules.
+
+An invite is `share_invites/{collabId}_{targetUid}` — a deterministic id, so
+when the target adds themselves to the recipe's members the rules can look the
+invite up and verify the role they claim is the one they were offered. The
+recipient answers from the inbox or from *ניהול שיתופים*; accepting writes a
+local cache under a fresh id. If the owner deletes the shared document, a
+member's cache degrades to an ordinary private recipe rather than vanishing.
+
+### Notifications and push
+
+Every share also drops an item into `notifications/{targetUid}/items`, which
+the bell in every main screen's bar watches live (`NotificationsService`, one
+subscription per session, unread count as a badge). A client cannot send FCM
+to another device, so the push is a Cloud Function (`functions/index.js`)
+that mirrors each new inbox item to the recipient's `pushToken`. Tapping the
+push opens the inbox, whether the app was running or was launched by the tap.
+
+```bash
+cd functions && npm install && cd ..
+firebase deploy --only firestore:rules,functions
+```
+
+Without the rules deploy every sharing write is denied; without the function
+the in-app inbox still works but no push is sent. The push text is Hebrew —
+the function does not know the recipient's locale.
+
 ## Community
+
+Both tabs (shared recipes first, then the forum) and a forum thread pull to
+refresh. The refresh event carries a `Completer` rather than deriving its future
+from the bloc's state stream: bloc skips emitting a state equal to the current
+one, so an unchanged reload would never resolve and the spinner would turn
+forever. Empty lists are wrapped in `RefreshableEmptyState` so the gesture is
+still reachable when there is nothing to overscroll — which is exactly when a
+refresh is wanted.
 
 Two Firestore-backed surfaces behind one **Community** nav tab
 (`lib/features/community/`), so the dock keeps a workable number of tabs:
@@ -201,15 +261,62 @@ put the proxy there instead — nothing in the app changes:
 
 The proxy must expose `POST /v1beta/interactions` with the same request/response shape.
 
+### Web search: two ways to open a result
+
+Web search runs on the lightest model (`GEMINI_SEARCH_MODEL`, default
+`gemini-3.5-flash-lite`): it only returns titles and links, so there is no
+reasoning to pay for. Tapping a result no longer commits to the model — a sheet
+offers two paths:
+
+- **View the original** fetches the page directly (`WebPageDataSource`) and
+  shows its text through `readableTextFromHtml`, a small tag-stripper that keeps
+  the main content region and block boundaries. No model, so it loads in the
+  time of one HTTP round trip.
+- **Create a structured recipe** is the previous behaviour: `url_context`
+  extraction into ingredients and steps. It stays one tap away from the original
+  view, so reading first does not mean searching again.
+
+### JSON-LD first
+
+Most recipe sites embed a schema.org `Recipe` in `application/ld+json` for
+search engines. `parseJsonLdRecipe` (`lib/core/utils/`) lifts it out — title,
+ISO-8601 prep/cook durations, ingredient lines, instructions in every shape the
+schema allows (a string, a list, `HowToStep`s, `HowToSection`s), and
+`suitableForDiet` mapped onto the app's chips. It is used on *both* paths:
+"view the original" surfaces it as a one-tap structured import, and "create a
+structured recipe" tries it before the model, so a site that publishes its data
+imports instantly, with no API key, and with nothing invented. The model is the
+fallback, not the default. Ingredient lines are split by
+`parseIngredientLine` — a visible heuristic for "2 כוסות קמח" → 2, cup, קמח —
+and a line it cannot split keeps its whole text as the name with an unstated
+amount, the same "the source did not say" the model reports.
+
+### When the analysis is slow
+
+An analysis is capped at 30 seconds (`IngestionBloc.analysisTimeout`). Past
+that, or on any failure, the text it was working from is offered back instead
+of an error — the pasted text, or for a link the page text fetched without the
+model — with three ways on: try again, edit by hand in the structured editor,
+or **save and analyse later**. The last one stores a *template*: a recipe
+flagged `pendingAnalysis` whose steps hold the complete original text, one line
+each. The details screen shows the flag and an "analyse now" action that runs
+the model on that text and replaces the recipe in place, keeping its id, photo
+and origin. Structuring it by hand in the editor clears the flag too.
+
+A fifth ingestion channel, **write by hand**, opens the same editor on a blank
+recipe — no model, no waiting.
+
 ## Editing a recipe
 
 `RecipeEditorPage` edits a recipe in the same structured shape the parser
 produces — title, prep/cook time, ingredient rows, steps. It is reached from the
 ingestion review screen before saving, and from a saved recipe's details screen.
 
-Two corrections run through the model. The spellcheck action fixes typos across
-the title, ingredient names and steps; changing a time re-runs it on save so any
-duration written into the steps agrees with the new time. The model only ever
+Saving never waits on the model by itself. The save button opens a sheet:
+plain **save** pops immediately, **save with AI review** runs the refine first —
+spelling across title, ingredient names and steps, plus re-syncing any duration
+written into the steps when a time changed. The spellcheck action in the app
+bar runs the same pass in place without leaving the editor. The model only ever
 returns free text — amounts, units and the times the user set are merged back in
 locally, and a reply with a different number of items is discarded in favour of
 what the user typed.

@@ -25,6 +25,7 @@ class AppUserEntity {
 
   bool get hasPassword => providerIds.contains('password');
   bool get hasPhone => providerIds.contains('phone');
+  bool get hasGoogle => providerIds.contains('google.com');
 
   /// Only a password account has an email the user chose and must prove. A
   /// Google account arrives already verified, and a phone account has no email

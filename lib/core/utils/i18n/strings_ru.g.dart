@@ -52,6 +52,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
 	@override late final _Translations$recipe$ru recipe = _Translations$recipe$ru._(_root);
 	@override late final _Translations$community$ru community = _Translations$community$ru._(_root);
+	@override late final _Translations$sharing$ru sharing = _Translations$sharing$ru._(_root);
+	@override late final _Translations$notifications$ru notifications = _Translations$notifications$ru._(_root);
 	@override late final _Translations$editor$ru editor = _Translations$editor$ru._(_root);
 	@override late final _Translations$ingestion$ru ingestion = _Translations$ingestion$ru._(_root);
 	@override late final _Translations$mealPlanner$ru mealPlanner = _Translations$mealPlanner$ru._(_root);
@@ -139,6 +141,10 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get emailAlreadyLinked => 'К аккаунту уже привязана почта';
 	@override String get addEmailPassword => 'Добавить почту и пароль';
 	@override String get verified => 'Подтверждено';
+	@override String get linkGoogle => 'Привязать аккаунт Google';
+	@override String get googleLinked => 'Привязан';
+	@override String get googleAlreadyUsed => 'Этот аккаунт Google уже привязан к другому пользователю';
+	@override String get googleAlreadyLinked => 'Аккаунт Google уже привязан';
 }
 
 // Path: profile
@@ -311,6 +317,11 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get saved => 'Сохранённые';
 	@override String get noneMine => 'Вы ещё не создали ни одного рецепта';
 	@override String get noneSaved => 'Вы ещё ничего не сохранили';
+	@override String get pendingAnalysis => 'Ожидает анализа';
+	@override String get pendingAnalysisHint => 'Сохранён как сырой текст. Проанализируйте сейчас или отредактируйте вручную.';
+	@override String get analyzeNow => 'Проанализировать с AI';
+	@override String get analyzing => 'Анализируем рецепт...';
+	@override String get analyzeFailed => 'Анализ не удался — попробуйте позже';
 }
 
 // Path: community
@@ -377,6 +388,71 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String get splitTimes => 'Разделить на подготовку и готовку';
 }
 
+// Path: sharing
+class _Translations$sharing$ru extends Translations$sharing$he {
+	_Translations$sharing$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Поделиться рецептом';
+	@override String get contactLabel => 'Почта или телефон человека';
+	@override String get contactHint => 'name@example.com или 05…';
+	@override String get roleTitle => 'Права';
+	@override String get roleViewer => 'Только просмотр';
+	@override String get roleViewerHint => 'Видит рецепт, но не может менять';
+	@override String get roleEditor => 'Редактирование';
+	@override String get roleEditorHint => 'Его изменения появятся и у вас';
+	@override String get send => 'Отправить приглашение';
+	@override String get sent => 'Приглашение отправлено';
+	@override String get invalidContact => 'Введите корректную почту или телефон';
+	@override String get notFound => 'Аккаунт с такими данными не найден';
+	@override String get self => 'Нельзя поделиться рецептом с самим собой';
+	@override String get failed => 'Не удалось поделиться, попробуйте снова';
+	@override String get pendingInvites => 'Ожидающие приглашения';
+	@override String get noPendingInvites => 'Нет ожидающих приглашений';
+	@override String get sharedByMe => 'Рецепты, которыми я поделился';
+	@override String get sharedWithMe => 'Рецепты, которыми поделились со мной';
+	@override String get nothingSharedByMe => 'Вы ещё ничем не делились';
+	@override String get nothingSharedWithMe => 'С вами ещё не делились рецептами';
+	@override String get accept => 'Принять';
+	@override String get decline => 'Отклонить';
+	@override String get accepted => 'Рецепт добавлен к вашим';
+	@override String get declined => 'Приглашение отклонено';
+	@override String get acceptFailed => 'Не удалось принять, попробуйте снова';
+	@override String get members => 'Участники';
+	@override String get noMembersYet => 'Пока никто не принял';
+	@override String get remove => 'Удалить';
+	@override String get leave => 'Покинуть';
+	@override String get removed => 'Участник удалён';
+	@override String get left => 'Вы вышли из общего доступа';
+	@override String invitedBy({required Object name}) => 'от ${name}';
+	@override String get sharedTag => 'Общий';
+	@override String get viewerTag => 'Только просмотр';
+	@override String get editorTag => 'Редактор';
+	@override String get ownerTag => 'Мой';
+	@override String get syncFailed => 'Не удалось обновить общий рецепт, показана сохранённая версия';
+	@override String get viewerCannotEdit => 'Рецепт доступен вам только для просмотра';
+	@override String get shareAction => 'Поделиться';
+}
+
+// Path: notifications
+class _Translations$notifications$ru extends Translations$notifications$he {
+	_Translations$notifications$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Уведомления';
+	@override String get empty => 'Уведомлений нет';
+	@override String sharedRecipe({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»';
+	@override String get asViewer => 'только просмотр';
+	@override String get asEditor => 'для редактирования';
+	@override String get markAllRead => 'Отметить все прочитанными';
+	@override String get openRecipe => 'Открыть рецепт';
+	@override String get alreadyHandled => 'Приглашение уже обработано';
+}
+
 // Path: editor
 class _Translations$editor$ru extends Translations$editor$he {
 	_Translations$editor$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -409,6 +485,10 @@ class _Translations$editor$ru extends Translations$editor$he {
 	@override String get discardTitle => 'Отменить изменения?';
 	@override String get discardBody => 'Ваши правки не будут сохранены.';
 	@override String get discard => 'Отменить';
+	@override String get saveOptionsTitle => 'Как сохранить?';
+	@override String get savePlainHint => 'Сохранить изменения как есть, без ожидания';
+	@override String get saveWithAi => 'Сохранить с проверкой AI';
+	@override String get saveWithAiHint => 'Исправить орфографию и согласовать время в шагах';
 }
 
 // Path: ingestion
@@ -429,6 +509,27 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get parseError => 'Не удалось разобрать рецепт';
 	@override String get reviewTitle => 'Проверьте перед сохранением';
 	@override String get notConfigured => 'Для этой функции нужен внешний сервис, который ещё не настроен';
+	@override String get openOptionsTitle => 'Как открыть рецепт?';
+	@override String get viewOriginal => 'Показать оригинал';
+	@override String get viewOriginalHint => 'Текст страницы как есть, без обработки — мгновенно';
+	@override String get generateStructured => 'Создать структурированный рецепт';
+	@override String get generateStructuredHint => 'Автоматическое извлечение ингредиентов, количеств и шагов';
+	@override String get originalTitle => 'Оригинальный рецепт';
+	@override String get fetchFailed => 'Не удалось загрузить страницу';
+	@override String get loadingOriginal => 'Загружаем страницу...';
+	@override String get structuredFromSite => 'Прочитано напрямую из структурированных данных сайта, без AI';
+	@override String get useStructured => 'Продолжить со структурированным рецептом';
+	@override String get preferAi => 'Обработать через AI';
+	@override String get analysisTimedOut => 'Анализ не завершился вовремя';
+	@override String get analysisFailed => 'Анализ не удался';
+	@override String get unparsedHint => 'Текст сохранён как есть. Попробуйте снова, отредактируйте вручную или сохраните и проанализируйте позже.';
+	@override String get retryAnalysis => 'Попробовать снова';
+	@override String get editManually => 'Редактировать вручную';
+	@override String get saveForLater => 'Сохранить и проанализировать позже';
+	@override String get untitledRecipe => 'Рецепт без названия';
+	@override String get manual => 'Написать вручную';
+	@override String get manualHint => 'Заполните рецепт сами в структурированном формате — без AI и без ожидания.';
+	@override String get openBlankEditor => 'Открыть пустой редактор';
 }
 
 // Path: mealPlanner
@@ -627,6 +728,10 @@ extension on TranslationsRu {
 			'auth.emailAlreadyLinked' => 'К аккаунту уже привязана почта',
 			'auth.addEmailPassword' => 'Добавить почту и пароль',
 			'auth.verified' => 'Подтверждено',
+			'auth.linkGoogle' => 'Привязать аккаунт Google',
+			'auth.googleLinked' => 'Привязан',
+			'auth.googleAlreadyUsed' => 'Этот аккаунт Google уже привязан к другому пользователю',
+			'auth.googleAlreadyLinked' => 'Аккаунт Google уже привязан',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',
@@ -718,6 +823,11 @@ extension on TranslationsRu {
 			'recipe.saved' => 'Сохранённые',
 			'recipe.noneMine' => 'Вы ещё не создали ни одного рецепта',
 			'recipe.noneSaved' => 'Вы ещё ничего не сохранили',
+			'recipe.pendingAnalysis' => 'Ожидает анализа',
+			'recipe.pendingAnalysisHint' => 'Сохранён как сырой текст. Проанализируйте сейчас или отредактируйте вручную.',
+			'recipe.analyzeNow' => 'Проанализировать с AI',
+			'recipe.analyzing' => 'Анализируем рецепт...',
+			'recipe.analyzeFailed' => 'Анализ не удался — попробуйте позже',
 			'community.title' => 'Сообщество',
 			'community.forum' => 'Форум',
 			'community.sharedRecipes' => 'Общие рецепты',
@@ -773,6 +883,53 @@ extension on TranslationsRu {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Разделить на подготовку и готовку',
+			'sharing.title' => 'Поделиться рецептом',
+			'sharing.contactLabel' => 'Почта или телефон человека',
+			'sharing.contactHint' => 'name@example.com или 05…',
+			'sharing.roleTitle' => 'Права',
+			'sharing.roleViewer' => 'Только просмотр',
+			'sharing.roleViewerHint' => 'Видит рецепт, но не может менять',
+			'sharing.roleEditor' => 'Редактирование',
+			'sharing.roleEditorHint' => 'Его изменения появятся и у вас',
+			'sharing.send' => 'Отправить приглашение',
+			'sharing.sent' => 'Приглашение отправлено',
+			'sharing.invalidContact' => 'Введите корректную почту или телефон',
+			'sharing.notFound' => 'Аккаунт с такими данными не найден',
+			'sharing.self' => 'Нельзя поделиться рецептом с самим собой',
+			'sharing.failed' => 'Не удалось поделиться, попробуйте снова',
+			'sharing.pendingInvites' => 'Ожидающие приглашения',
+			'sharing.noPendingInvites' => 'Нет ожидающих приглашений',
+			'sharing.sharedByMe' => 'Рецепты, которыми я поделился',
+			'sharing.sharedWithMe' => 'Рецепты, которыми поделились со мной',
+			'sharing.nothingSharedByMe' => 'Вы ещё ничем не делились',
+			'sharing.nothingSharedWithMe' => 'С вами ещё не делились рецептами',
+			'sharing.accept' => 'Принять',
+			'sharing.decline' => 'Отклонить',
+			'sharing.accepted' => 'Рецепт добавлен к вашим',
+			'sharing.declined' => 'Приглашение отклонено',
+			'sharing.acceptFailed' => 'Не удалось принять, попробуйте снова',
+			'sharing.members' => 'Участники',
+			'sharing.noMembersYet' => 'Пока никто не принял',
+			'sharing.remove' => 'Удалить',
+			'sharing.leave' => 'Покинуть',
+			'sharing.removed' => 'Участник удалён',
+			'sharing.left' => 'Вы вышли из общего доступа',
+			'sharing.invitedBy' => ({required Object name}) => 'от ${name}',
+			'sharing.sharedTag' => 'Общий',
+			'sharing.viewerTag' => 'Только просмотр',
+			'sharing.editorTag' => 'Редактор',
+			'sharing.ownerTag' => 'Мой',
+			'sharing.syncFailed' => 'Не удалось обновить общий рецепт, показана сохранённая версия',
+			'sharing.viewerCannotEdit' => 'Рецепт доступен вам только для просмотра',
+			'sharing.shareAction' => 'Поделиться',
+			'notifications.title' => 'Уведомления',
+			'notifications.empty' => 'Уведомлений нет',
+			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»',
+			'notifications.asViewer' => 'только просмотр',
+			'notifications.asEditor' => 'для редактирования',
+			'notifications.markAllRead' => 'Отметить все прочитанными',
+			'notifications.openRecipe' => 'Открыть рецепт',
+			'notifications.alreadyHandled' => 'Приглашение уже обработано',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -798,6 +955,10 @@ extension on TranslationsRu {
 			'editor.discardTitle' => 'Отменить изменения?',
 			'editor.discardBody' => 'Ваши правки не будут сохранены.',
 			'editor.discard' => 'Отменить',
+			'editor.saveOptionsTitle' => 'Как сохранить?',
+			'editor.savePlainHint' => 'Сохранить изменения как есть, без ожидания',
+			'editor.saveWithAi' => 'Сохранить с проверкой AI',
+			'editor.saveWithAiHint' => 'Исправить орфографию и согласовать время в шагах',
 			'ingestion.title' => 'Добавить рецепт',
 			'ingestion.pasteText' => 'Вставить текст',
 			'ingestion.pasteHint' => 'Вставьте сюда рецепт из WhatsApp или любого другого источника',
@@ -809,6 +970,27 @@ extension on TranslationsRu {
 			'ingestion.parseError' => 'Не удалось разобрать рецепт',
 			'ingestion.reviewTitle' => 'Проверьте перед сохранением',
 			'ingestion.notConfigured' => 'Для этой функции нужен внешний сервис, который ещё не настроен',
+			'ingestion.openOptionsTitle' => 'Как открыть рецепт?',
+			'ingestion.viewOriginal' => 'Показать оригинал',
+			'ingestion.viewOriginalHint' => 'Текст страницы как есть, без обработки — мгновенно',
+			'ingestion.generateStructured' => 'Создать структурированный рецепт',
+			'ingestion.generateStructuredHint' => 'Автоматическое извлечение ингредиентов, количеств и шагов',
+			'ingestion.originalTitle' => 'Оригинальный рецепт',
+			'ingestion.fetchFailed' => 'Не удалось загрузить страницу',
+			'ingestion.loadingOriginal' => 'Загружаем страницу...',
+			'ingestion.structuredFromSite' => 'Прочитано напрямую из структурированных данных сайта, без AI',
+			'ingestion.useStructured' => 'Продолжить со структурированным рецептом',
+			'ingestion.preferAi' => 'Обработать через AI',
+			'ingestion.analysisTimedOut' => 'Анализ не завершился вовремя',
+			'ingestion.analysisFailed' => 'Анализ не удался',
+			'ingestion.unparsedHint' => 'Текст сохранён как есть. Попробуйте снова, отредактируйте вручную или сохраните и проанализируйте позже.',
+			'ingestion.retryAnalysis' => 'Попробовать снова',
+			'ingestion.editManually' => 'Редактировать вручную',
+			'ingestion.saveForLater' => 'Сохранить и проанализировать позже',
+			'ingestion.untitledRecipe' => 'Рецепт без названия',
+			'ingestion.manual' => 'Написать вручную',
+			'ingestion.manualHint' => 'Заполните рецепт сами в структурированном формате — без AI и без ожидания.',
+			'ingestion.openBlankEditor' => 'Открыть пустой редактор',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',

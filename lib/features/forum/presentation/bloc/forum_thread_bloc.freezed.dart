@@ -61,11 +61,12 @@ extension ForumThreadEventPatterns on ForumThreadEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _AddReply value)?  addReply,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _AddReply value)?  addReply,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init(_that);case _AddReply() when addReply != null:
+return init(_that);case _Refresh() when refresh != null:
+return refresh(_that);case _AddReply() when addReply != null:
 return addReply(_that);case _:
   return orElse();
 
@@ -84,11 +85,12 @@ return addReply(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _AddReply value)  addReply,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _AddReply value)  addReply,}){
 final _that = this;
 switch (_that) {
 case _Init():
-return init(_that);case _AddReply():
+return init(_that);case _Refresh():
+return refresh(_that);case _AddReply():
 return addReply(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -103,11 +105,12 @@ return addReply(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _AddReply value)?  addReply,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _AddReply value)?  addReply,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init(_that);case _AddReply() when addReply != null:
+return init(_that);case _Refresh() when refresh != null:
+return refresh(_that);case _AddReply() when addReply != null:
 return addReply(_that);case _:
   return null;
 
@@ -125,10 +128,11 @@ return addReply(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init();case _AddReply() when addReply != null:
+return init();case _Refresh() when refresh != null:
+return refresh(_that.done);case _AddReply() when addReply != null:
 return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
   return orElse();
 
@@ -147,10 +151,11 @@ return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)  addReply,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)  addReply,}) {final _that = this;
 switch (_that) {
 case _Init():
-return init();case _AddReply():
+return init();case _Refresh():
+return refresh(_that.done);case _AddReply():
 return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -165,10 +170,11 @@ return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init();case _AddReply() when addReply != null:
+return init();case _Refresh() when refresh != null:
+return refresh(_that.done);case _AddReply() when addReply != null:
 return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
   return null;
 
@@ -214,6 +220,78 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 
+
+/// @nodoc
+
+
+class _Refresh with DiagnosticableTreeMixin implements ForumThreadEvent {
+  const _Refresh(this.done);
+  
+
+ final  Completer<void> done;
+
+/// Create a copy of ForumThreadEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RefreshCopyWith<_Refresh> get copyWith => __$RefreshCopyWithImpl<_Refresh>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumThreadEvent.refresh'))
+    ..add(DiagnosticsProperty('done', done));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Refresh&&(identical(other.done, done) || other.done == done));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,done);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumThreadEvent.refresh(done: $done)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RefreshCopyWith<$Res> implements $ForumThreadEventCopyWith<$Res> {
+  factory _$RefreshCopyWith(_Refresh value, $Res Function(_Refresh) _then) = __$RefreshCopyWithImpl;
+@useResult
+$Res call({
+ Completer<void> done
+});
+
+
+
+
+}
+/// @nodoc
+class __$RefreshCopyWithImpl<$Res>
+    implements _$RefreshCopyWith<$Res> {
+  __$RefreshCopyWithImpl(this._self, this._then);
+
+  final _Refresh _self;
+  final $Res Function(_Refresh) _then;
+
+/// Create a copy of ForumThreadEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? done = null,}) {
+  return _then(_Refresh(
+null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
+as Completer<void>,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

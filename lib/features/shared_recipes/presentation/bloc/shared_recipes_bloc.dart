@@ -22,6 +22,12 @@ part 'shared_recipes_bloc.freezed.dart';
 @freezed
 sealed class SharedRecipesEvent with _$SharedRecipesEvent {
   const factory SharedRecipesEvent.init() = _Init;
+
+  /// Carries a completer so the pull-to-refresh spinner is told exactly when the
+  /// reload finished. Waiting on the state stream instead would hang whenever
+  /// the reloaded data is identical, because bloc skips emitting a state equal
+  /// to the current one.
+  const factory SharedRecipesEvent.refresh(Completer<void> done) = _Refresh;
   const factory SharedRecipesEvent.share(RecipeEntity recipe) = _Share;
   const factory SharedRecipesEvent.toggleLike(String id) = _ToggleLike;
   const factory SharedRecipesEvent.updateShared(String id, RecipeEntity recipe) =
@@ -66,6 +72,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     required this.getRecipesUseCase,
   }) : super(const SharedRecipesState.loading()) {
     on<_Init>(_init);
+    on<_Refresh>(_refresh);
     on<_Share>(_share);
     on<_ToggleLike>(_toggleLike);
     on<_UpdateShared>(_updateShared);
@@ -108,6 +115,14 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     } catch (e) {
       debugPrint('Saved ids lookup failed: $e');
       _savedIds = {};
+    }
+  }
+
+  Future<void> _refresh(_Refresh event, Emitter<SharedRecipesState> emit) async {
+    try {
+      await _init(const _Init(), emit);
+    } finally {
+      if (!event.done.isCompleted) event.done.complete();
     }
   }
 

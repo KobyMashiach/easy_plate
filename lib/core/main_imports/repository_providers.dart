@@ -14,12 +14,19 @@ import '../../features/meal_planner/data/datasources/meal_plans_local_datasource
 import '../../features/meal_planner/data/repositories_impl/meal_plans_repository_impl.dart';
 import '../../features/meal_planner/domain/repositories/meal_plans_repository.dart';
 import '../../features/my_recipes/data/datasources/recipes_local_datasource.dart';
+import '../../features/notifications/data/datasources/notifications_remote_datasource.dart';
+import '../../features/notifications/data/repositories_impl/notifications_repository_impl.dart';
+import '../../features/notifications/domain/repositories/notifications_repository.dart';
 import '../../features/my_recipes/data/repositories_impl/recipes_repository_impl.dart';
 import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
 import '../../features/recipe_books/data/datasources/recipe_books_local_datasource.dart';
 import '../../features/recipe_books/data/repositories_impl/recipe_books_repository_impl.dart';
 import '../../features/recipe_books/domain/repositories/recipe_books_repository.dart';
 import '../../features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart';
+import '../../features/recipe_sharing/data/datasources/recipe_sharing_remote_datasource.dart';
+import '../../features/recipe_sharing/data/repositories_impl/recipe_sharing_repository_impl.dart';
+import '../../features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
+import '../../features/recipe_ingestion/data/datasources/web_page_datasource.dart';
 import '../../features/recipe_ingestion/data/repositories_impl/recipe_ingestion_repository_impl.dart';
 import '../../features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../features/shared_recipes/data/datasources/shared_recipes_remote_datasource.dart';
@@ -54,17 +61,41 @@ List<SingleChildWidget> buildRepositoryProviders() {
       create: (_) => GroceryListsLocalDataSourceImpl(),
     ),
     RepositoryProvider<RecipeAiDataSource>(create: (_) => GeminiRecipeAiDataSource()),
+    RepositoryProvider<WebPageDataSource>(create: (_) => WebPageDataSourceImpl()),
+    RepositoryProvider<RecipeSharingRemoteDataSource>(
+      create: (_) => RecipeSharingFirestoreDataSource(),
+    ),
+    RepositoryProvider<NotificationsRemoteDataSource>(
+      create: (_) => NotificationsFirestoreDataSource(),
+    ),
     RepositoryProvider<AuthRepository>(
       create: (context) => AuthRepositoryImpl(dataSource: context.read()),
     ),
-    RepositoryProvider<ForumRepository>(
-      create: (context) => ForumRepositoryImpl(remoteDataSource: context.read()),
-    ),
-    RepositoryProvider<SharedRecipesRepository>(
-      create: (context) => SharedRecipesRepositoryImpl(remoteDataSource: context.read()),
-    ),
     RepositoryProvider<UserProfileRepository>(
       create: (context) => UserProfileRepositoryImpl(remoteDataSource: context.read()),
+    ),
+    // After UserProfileRepository: both resolve author names through it, and
+    // `create:` resolves earlier entries only.
+    RepositoryProvider<ForumRepository>(
+      create: (context) => ForumRepositoryImpl(
+        remoteDataSource: context.read(),
+        userProfileRepository: context.read(),
+      ),
+    ),
+    RepositoryProvider<SharedRecipesRepository>(
+      create: (context) => SharedRecipesRepositoryImpl(
+        remoteDataSource: context.read(),
+        userProfileRepository: context.read(),
+      ),
+    ),
+    RepositoryProvider<RecipeSharingRepository>(
+      create: (context) => RecipeSharingRepositoryImpl(remoteDataSource: context.read()),
+    ),
+    RepositoryProvider<NotificationsRepository>(
+      create: (context) => NotificationsRepositoryImpl(
+        remoteDataSource: context.read(),
+        userProfileRepository: context.read(),
+      ),
     ),
     RepositoryProvider<UserPreferencesRepository>(
       create: (context) => UserPreferencesRepositoryImpl(localDataSource: context.read()),
@@ -82,7 +113,10 @@ List<SingleChildWidget> buildRepositoryProviders() {
       create: (context) => GroceryListsRepositoryImpl(localDataSource: context.read()),
     ),
     RepositoryProvider<RecipeIngestionRepository>(
-      create: (context) => RecipeIngestionRepositoryImpl(aiDataSource: context.read()),
+      create: (context) => RecipeIngestionRepositoryImpl(
+        aiDataSource: context.read(),
+        webPageDataSource: context.read(),
+      ),
     ),
   ];
 }

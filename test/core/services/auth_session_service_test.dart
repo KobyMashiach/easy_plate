@@ -6,6 +6,7 @@ import 'package:easy_plate/core/services/auth_session_service.dart';
 import 'package:easy_plate/features/auth/domain/entities/app_user_entity.dart';
 import 'package:easy_plate/features/auth/domain/repositories/auth_repository.dart';
 import 'package:easy_plate/features/user_profile/domain/entities/user_preferences_entity.dart';
+import 'package:easy_plate/features/user_profile/domain/entities/public_profile_entity.dart';
 import 'package:easy_plate/features/user_profile/domain/entities/user_profile_entity.dart';
 import 'package:easy_plate/features/user_profile/domain/repositories/user_preferences_repository.dart';
 import 'package:easy_plate/features/user_profile/domain/repositories/user_profile_repository.dart';
@@ -47,6 +48,19 @@ class _FakeProfileRepository implements UserProfileRepository {
 
   @override
   Future<void> savePushToken(String uid, String token) async {}
+
+  UserProfileEntity? published;
+
+  @override
+  Future<String?> findUidByContact(String contact) async => null;
+
+  @override
+  Future<void> publishPublicProfile(UserProfileEntity profile) async =>
+      published = profile;
+
+  @override
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) async =>
+      const {};
 }
 
 class _FakePreferencesRepository implements UserPreferencesRepository {
@@ -139,6 +153,17 @@ void main() {
 
     session.markOnboardingComplete();
     expect(session.stage, AuthStage.ready);
+  });
+
+  test('signing in republishes the public profile, backfilling old accounts',
+      () async {
+    // Accounts created before public_profiles existed have none, so their old
+    // posts would keep showing the name stored at post time.
+    profiles.profile = buildProfile(fullName: 'כובי');
+    await signIn(_user);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(profiles.published?.fullName, 'כובי');
   });
 
   test('a failed profile lookup does not push a known user back to registration',

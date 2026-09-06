@@ -15,6 +15,12 @@ part 'forum_thread_bloc.freezed.dart';
 @freezed
 sealed class ForumThreadEvent with _$ForumThreadEvent {
   const factory ForumThreadEvent.init() = _Init;
+
+  /// Carries a completer so the pull-to-refresh spinner is told exactly when the
+  /// reload finished. Waiting on the state stream instead would hang whenever
+  /// the reloaded data is identical, because bloc skips emitting a state equal
+  /// to the current one.
+  const factory ForumThreadEvent.refresh(Completer<void> done) = _Refresh;
   const factory ForumThreadEvent.addReply(
     String body, {
     String? sharedRecipeId,
@@ -43,6 +49,7 @@ class ForumThreadBloc extends Bloc<ForumThreadEvent, ForumThreadState> {
     required this.addForumReplyUseCase,
   }) : super(const ForumThreadState.loading()) {
     on<_Init>(_init);
+    on<_Refresh>(_refresh);
     on<_AddReply>(_addReply);
     add(const ForumThreadEvent.init());
   }
@@ -61,6 +68,14 @@ class ForumThreadBloc extends Bloc<ForumThreadEvent, ForumThreadState> {
     } catch (e) {
       debugPrint('Thread error: $e');
       emit(.errorMessage(e.toString()));
+    }
+  }
+
+  Future<void> _refresh(_Refresh event, Emitter<ForumThreadState> emit) async {
+    try {
+      await _init(const _Init(), emit);
+    } finally {
+      if (!event.done.isCompleted) event.done.complete();
     }
   }
 

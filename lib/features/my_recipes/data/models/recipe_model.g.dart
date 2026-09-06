@@ -31,13 +31,16 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       createdAt: fields[9] as DateTime,
       imageFileName: fields[10] as String?,
       savedFromSharedId: fields[11] as String?,
+      pendingAnalysis: fields[12] == null ? false : fields[12] as bool,
+      collabId: fields[13] as String?,
+      collabRole: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeModel obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -61,7 +64,13 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       ..writeByte(10)
       ..write(obj.imageFileName)
       ..writeByte(11)
-      ..write(obj.savedFromSharedId);
+      ..write(obj.savedFromSharedId)
+      ..writeByte(12)
+      ..write(obj.pendingAnalysis)
+      ..writeByte(13)
+      ..write(obj.collabId)
+      ..writeByte(14)
+      ..write(obj.collabRole);
   }
 
   @override
@@ -98,6 +107,9 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   createdAt: DateTime.parse(json['createdAt'] as String),
   imageFileName: json['imageFileName'] as String?,
   savedFromSharedId: json['savedFromSharedId'] as String?,
+  pendingAnalysis: json['pendingAnalysis'] as bool? ?? false,
+  collabId: json['collabId'] as String?,
+  collabRole: json['collabRole'] as String?,
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -116,6 +128,9 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'createdAt': instance.createdAt.toIso8601String(),
       'imageFileName': instance.imageFileName,
       'savedFromSharedId': instance.savedFromSharedId,
+      'pendingAnalysis': instance.pendingAnalysis,
+      'collabId': instance.collabId,
+      'collabRole': instance.collabRole,
     };
 
 const _$DietaryPreferenceEnumMap = {

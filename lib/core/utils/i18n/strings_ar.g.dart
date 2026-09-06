@@ -52,6 +52,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
 	@override late final _Translations$recipe$ar recipe = _Translations$recipe$ar._(_root);
 	@override late final _Translations$community$ar community = _Translations$community$ar._(_root);
+	@override late final _Translations$sharing$ar sharing = _Translations$sharing$ar._(_root);
+	@override late final _Translations$notifications$ar notifications = _Translations$notifications$ar._(_root);
 	@override late final _Translations$editor$ar editor = _Translations$editor$ar._(_root);
 	@override late final _Translations$ingestion$ar ingestion = _Translations$ingestion$ar._(_root);
 	@override late final _Translations$mealPlanner$ar mealPlanner = _Translations$mealPlanner$ar._(_root);
@@ -139,6 +141,10 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get emailAlreadyLinked => 'الحساب مرتبط ببريد إلكتروني بالفعل';
 	@override String get addEmailPassword => 'إضافة بريد وكلمة مرور';
 	@override String get verified => 'مؤكَّد';
+	@override String get linkGoogle => 'ربط حساب Google';
+	@override String get googleLinked => 'مرتبط';
+	@override String get googleAlreadyUsed => 'حساب Google هذا مرتبط بمستخدم آخر';
+	@override String get googleAlreadyLinked => 'يوجد حساب Google مرتبط بالفعل';
 }
 
 // Path: profile
@@ -311,6 +317,11 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get saved => 'وصفات محفوظة';
 	@override String get noneMine => 'لم تنشئوا وصفات بعد';
 	@override String get noneSaved => 'لم تحفظوا وصفات من المجتمع بعد';
+	@override String get pendingAnalysis => 'بانتظار التحليل';
+	@override String get pendingAnalysisHint => 'محفوظة كنص خام. حلّلوها الآن أو عدّلوها يدويًا.';
+	@override String get analyzeNow => 'التحليل عبر AI الآن';
+	@override String get analyzing => 'جارٍ تحليل الوصفة...';
+	@override String get analyzeFailed => 'فشل التحليل — يمكنكم المحاولة لاحقًا';
 }
 
 // Path: community
@@ -377,6 +388,71 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String get splitTimes => 'الفصل بين التحضير والطهي';
 }
 
+// Path: sharing
+class _Translations$sharing$ar extends Translations$sharing$he {
+	_Translations$sharing$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'مشاركة الوصفة';
+	@override String get contactLabel => 'بريد أو هاتف الشريك';
+	@override String get contactHint => 'name@example.com أو 05…';
+	@override String get roleTitle => 'الصلاحية';
+	@override String get roleViewer => 'عرض فقط';
+	@override String get roleViewerHint => 'يرى الوصفة ولا يمكنه تغييرها';
+	@override String get roleEditor => 'تعديل';
+	@override String get roleEditorHint => 'تعديلاته تظهر لديكم أيضًا';
+	@override String get send => 'إرسال الدعوة';
+	@override String get sent => 'تم إرسال الدعوة';
+	@override String get invalidContact => 'أدخلوا بريدًا أو رقم هاتف صالحًا';
+	@override String get notFound => 'لا يوجد حساب بهذه البيانات';
+	@override String get self => 'لا يمكن مشاركة وصفة مع نفسك';
+	@override String get failed => 'فشلت المشاركة، حاولوا مجددًا';
+	@override String get pendingInvites => 'دعوات معلّقة';
+	@override String get noPendingInvites => 'لا توجد دعوات معلّقة';
+	@override String get sharedByMe => 'وصفات شاركتها';
+	@override String get sharedWithMe => 'وصفات شُوركت معي';
+	@override String get nothingSharedByMe => 'لم تشاركوا وصفات بعد';
+	@override String get nothingSharedWithMe => 'لم تُشارك معكم وصفات بعد';
+	@override String get accept => 'قبول';
+	@override String get decline => 'رفض';
+	@override String get accepted => 'أُضيفت الوصفة إلى وصفاتكم';
+	@override String get declined => 'رُفضت الدعوة';
+	@override String get acceptFailed => 'فشل القبول، حاولوا مجددًا';
+	@override String get members => 'الشركاء';
+	@override String get noMembersYet => 'لم يقبل أحد بعد';
+	@override String get remove => 'إزالة';
+	@override String get leave => 'مغادرة';
+	@override String get removed => 'تمت إزالة الشريك';
+	@override String get left => 'غادرتم المشاركة';
+	@override String invitedBy({required Object name}) => 'من ${name}';
+	@override String get sharedTag => 'مشتركة';
+	@override String get viewerTag => 'عرض فقط';
+	@override String get editorTag => 'محرّر';
+	@override String get ownerTag => 'ملكي';
+	@override String get syncFailed => 'تعذّر تحديث الوصفة المشتركة، تُعرض النسخة المحفوظة';
+	@override String get viewerCannotEdit => 'هذه الوصفة مشتركة معكم للعرض فقط';
+	@override String get shareAction => 'مشاركة';
+}
+
+// Path: notifications
+class _Translations$notifications$ar extends Translations$notifications$he {
+	_Translations$notifications$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'الإشعارات';
+	@override String get empty => 'لا توجد إشعارات';
+	@override String sharedRecipe({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"';
+	@override String get asViewer => 'للعرض فقط';
+	@override String get asEditor => 'للتعديل';
+	@override String get markAllRead => 'تعليم الكل كمقروء';
+	@override String get openRecipe => 'فتح الوصفة';
+	@override String get alreadyHandled => 'تمت معالجة هذه الدعوة';
+}
+
 // Path: editor
 class _Translations$editor$ar extends Translations$editor$he {
 	_Translations$editor$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -409,6 +485,10 @@ class _Translations$editor$ar extends Translations$editor$he {
 	@override String get discardTitle => 'تجاهل التغييرات؟';
 	@override String get discardBody => 'لن يتم حفظ تعديلاتك.';
 	@override String get discard => 'تجاهل';
+	@override String get saveOptionsTitle => 'كيف تريدون الحفظ؟';
+	@override String get savePlainHint => 'حفظ التغييرات كما هي، بدون انتظار';
+	@override String get saveWithAi => 'حفظ مع مراجعة AI';
+	@override String get saveWithAiHint => 'تصحيح الإملاء ومطابقة الأوقات المذكورة في الخطوات';
 }
 
 // Path: ingestion
@@ -429,6 +509,27 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get parseError => 'لم نتمكّن من تحليل الوصفة';
 	@override String get reviewTitle => 'راجع قبل الحفظ';
 	@override String get notConfigured => 'تتطلّب هذه الميزة خدمة خارجية لم يتم إعدادها بعد';
+	@override String get openOptionsTitle => 'كيف تريدون فتح الوصفة؟';
+	@override String get viewOriginal => 'عرض الوصفة الأصلية';
+	@override String get viewOriginalHint => 'النص كما هو في الموقع، بدون معالجة — يُحمَّل فورًا';
+	@override String get generateStructured => 'إنشاء وصفة منظّمة';
+	@override String get generateStructuredHint => 'استخراج تلقائي للمكوّنات والكميات والخطوات';
+	@override String get originalTitle => 'الوصفة الأصلية';
+	@override String get fetchFailed => 'تعذّر تحميل الصفحة';
+	@override String get loadingOriginal => 'جارٍ تحميل الصفحة...';
+	@override String get structuredFromSite => 'قُرئت مباشرة من البيانات المنظّمة للموقع، بدون AI';
+	@override String get useStructured => 'المتابعة بالوصفة المنظّمة';
+	@override String get preferAi => 'المعالجة عبر AI بدلًا من ذلك';
+	@override String get analysisTimedOut => 'لم يكتمل التحليل في الوقت المحدد';
+	@override String get analysisFailed => 'فشل التحليل';
+	@override String get unparsedHint => 'تم حفظ النص كما هو. يمكنكم المحاولة مجددًا أو التعديل يدويًا أو الحفظ والتحليل لاحقًا.';
+	@override String get retryAnalysis => 'محاولة أخرى';
+	@override String get editManually => 'تعديل يدوي';
+	@override String get saveForLater => 'حفظ وتحليل لاحقًا';
+	@override String get untitledRecipe => 'وصفة بلا اسم';
+	@override String get manual => 'كتابة يدوية';
+	@override String get manualHint => 'املؤوا الوصفة بأنفسكم بالتنسيق المنظّم — بدون AI وبدون انتظار.';
+	@override String get openBlankEditor => 'فتح محرّر فارغ';
 }
 
 // Path: mealPlanner
@@ -627,6 +728,10 @@ extension on TranslationsAr {
 			'auth.emailAlreadyLinked' => 'الحساب مرتبط ببريد إلكتروني بالفعل',
 			'auth.addEmailPassword' => 'إضافة بريد وكلمة مرور',
 			'auth.verified' => 'مؤكَّد',
+			'auth.linkGoogle' => 'ربط حساب Google',
+			'auth.googleLinked' => 'مرتبط',
+			'auth.googleAlreadyUsed' => 'حساب Google هذا مرتبط بمستخدم آخر',
+			'auth.googleAlreadyLinked' => 'يوجد حساب Google مرتبط بالفعل',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',
@@ -718,6 +823,11 @@ extension on TranslationsAr {
 			'recipe.saved' => 'وصفات محفوظة',
 			'recipe.noneMine' => 'لم تنشئوا وصفات بعد',
 			'recipe.noneSaved' => 'لم تحفظوا وصفات من المجتمع بعد',
+			'recipe.pendingAnalysis' => 'بانتظار التحليل',
+			'recipe.pendingAnalysisHint' => 'محفوظة كنص خام. حلّلوها الآن أو عدّلوها يدويًا.',
+			'recipe.analyzeNow' => 'التحليل عبر AI الآن',
+			'recipe.analyzing' => 'جارٍ تحليل الوصفة...',
+			'recipe.analyzeFailed' => 'فشل التحليل — يمكنكم المحاولة لاحقًا',
 			'community.title' => 'المجتمع',
 			'community.forum' => 'المنتدى',
 			'community.sharedRecipes' => 'وصفات مشتركة',
@@ -773,6 +883,53 @@ extension on TranslationsAr {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'الفصل بين التحضير والطهي',
+			'sharing.title' => 'مشاركة الوصفة',
+			'sharing.contactLabel' => 'بريد أو هاتف الشريك',
+			'sharing.contactHint' => 'name@example.com أو 05…',
+			'sharing.roleTitle' => 'الصلاحية',
+			'sharing.roleViewer' => 'عرض فقط',
+			'sharing.roleViewerHint' => 'يرى الوصفة ولا يمكنه تغييرها',
+			'sharing.roleEditor' => 'تعديل',
+			'sharing.roleEditorHint' => 'تعديلاته تظهر لديكم أيضًا',
+			'sharing.send' => 'إرسال الدعوة',
+			'sharing.sent' => 'تم إرسال الدعوة',
+			'sharing.invalidContact' => 'أدخلوا بريدًا أو رقم هاتف صالحًا',
+			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات',
+			'sharing.self' => 'لا يمكن مشاركة وصفة مع نفسك',
+			'sharing.failed' => 'فشلت المشاركة، حاولوا مجددًا',
+			'sharing.pendingInvites' => 'دعوات معلّقة',
+			'sharing.noPendingInvites' => 'لا توجد دعوات معلّقة',
+			'sharing.sharedByMe' => 'وصفات شاركتها',
+			'sharing.sharedWithMe' => 'وصفات شُوركت معي',
+			'sharing.nothingSharedByMe' => 'لم تشاركوا وصفات بعد',
+			'sharing.nothingSharedWithMe' => 'لم تُشارك معكم وصفات بعد',
+			'sharing.accept' => 'قبول',
+			'sharing.decline' => 'رفض',
+			'sharing.accepted' => 'أُضيفت الوصفة إلى وصفاتكم',
+			'sharing.declined' => 'رُفضت الدعوة',
+			'sharing.acceptFailed' => 'فشل القبول، حاولوا مجددًا',
+			'sharing.members' => 'الشركاء',
+			'sharing.noMembersYet' => 'لم يقبل أحد بعد',
+			'sharing.remove' => 'إزالة',
+			'sharing.leave' => 'مغادرة',
+			'sharing.removed' => 'تمت إزالة الشريك',
+			'sharing.left' => 'غادرتم المشاركة',
+			'sharing.invitedBy' => ({required Object name}) => 'من ${name}',
+			'sharing.sharedTag' => 'مشتركة',
+			'sharing.viewerTag' => 'عرض فقط',
+			'sharing.editorTag' => 'محرّر',
+			'sharing.ownerTag' => 'ملكي',
+			'sharing.syncFailed' => 'تعذّر تحديث الوصفة المشتركة، تُعرض النسخة المحفوظة',
+			'sharing.viewerCannotEdit' => 'هذه الوصفة مشتركة معكم للعرض فقط',
+			'sharing.shareAction' => 'مشاركة',
+			'notifications.title' => 'الإشعارات',
+			'notifications.empty' => 'لا توجد إشعارات',
+			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"',
+			'notifications.asViewer' => 'للعرض فقط',
+			'notifications.asEditor' => 'للتعديل',
+			'notifications.markAllRead' => 'تعليم الكل كمقروء',
+			'notifications.openRecipe' => 'فتح الوصفة',
+			'notifications.alreadyHandled' => 'تمت معالجة هذه الدعوة',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -798,6 +955,10 @@ extension on TranslationsAr {
 			'editor.discardTitle' => 'تجاهل التغييرات؟',
 			'editor.discardBody' => 'لن يتم حفظ تعديلاتك.',
 			'editor.discard' => 'تجاهل',
+			'editor.saveOptionsTitle' => 'كيف تريدون الحفظ؟',
+			'editor.savePlainHint' => 'حفظ التغييرات كما هي، بدون انتظار',
+			'editor.saveWithAi' => 'حفظ مع مراجعة AI',
+			'editor.saveWithAiHint' => 'تصحيح الإملاء ومطابقة الأوقات المذكورة في الخطوات',
 			'ingestion.title' => 'إضافة وصفة',
 			'ingestion.pasteText' => 'لصق نص',
 			'ingestion.pasteHint' => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر',
@@ -809,6 +970,27 @@ extension on TranslationsAr {
 			'ingestion.parseError' => 'لم نتمكّن من تحليل الوصفة',
 			'ingestion.reviewTitle' => 'راجع قبل الحفظ',
 			'ingestion.notConfigured' => 'تتطلّب هذه الميزة خدمة خارجية لم يتم إعدادها بعد',
+			'ingestion.openOptionsTitle' => 'كيف تريدون فتح الوصفة؟',
+			'ingestion.viewOriginal' => 'عرض الوصفة الأصلية',
+			'ingestion.viewOriginalHint' => 'النص كما هو في الموقع، بدون معالجة — يُحمَّل فورًا',
+			'ingestion.generateStructured' => 'إنشاء وصفة منظّمة',
+			'ingestion.generateStructuredHint' => 'استخراج تلقائي للمكوّنات والكميات والخطوات',
+			'ingestion.originalTitle' => 'الوصفة الأصلية',
+			'ingestion.fetchFailed' => 'تعذّر تحميل الصفحة',
+			'ingestion.loadingOriginal' => 'جارٍ تحميل الصفحة...',
+			'ingestion.structuredFromSite' => 'قُرئت مباشرة من البيانات المنظّمة للموقع، بدون AI',
+			'ingestion.useStructured' => 'المتابعة بالوصفة المنظّمة',
+			'ingestion.preferAi' => 'المعالجة عبر AI بدلًا من ذلك',
+			'ingestion.analysisTimedOut' => 'لم يكتمل التحليل في الوقت المحدد',
+			'ingestion.analysisFailed' => 'فشل التحليل',
+			'ingestion.unparsedHint' => 'تم حفظ النص كما هو. يمكنكم المحاولة مجددًا أو التعديل يدويًا أو الحفظ والتحليل لاحقًا.',
+			'ingestion.retryAnalysis' => 'محاولة أخرى',
+			'ingestion.editManually' => 'تعديل يدوي',
+			'ingestion.saveForLater' => 'حفظ وتحليل لاحقًا',
+			'ingestion.untitledRecipe' => 'وصفة بلا اسم',
+			'ingestion.manual' => 'كتابة يدوية',
+			'ingestion.manualHint' => 'املؤوا الوصفة بأنفسكم بالتنسيق المنظّم — بدون AI وبدون انتظار.',
+			'ingestion.openBlankEditor' => 'فتح محرّر فارغ',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',

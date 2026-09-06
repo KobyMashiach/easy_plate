@@ -15,6 +15,9 @@ import '../../../../core/widgets/profile_avatar.dart';
 import '../../../user_profile/domain/entities/user_profile_entity.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../../user_profile/domain/usecases/save_user_profile_usecase.dart';
+import '../../../../core/errors/app_exception.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/link_google_usecase.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/link_credential_sheets.dart';
 
@@ -74,6 +77,31 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     final linked = await showLinkEmailSheet(context);
     if (linked != true || !mounted) return;
     await _refreshIdentity();
+  }
+
+  Future<void> _linkGoogle() async {
+    final useCase = LinkGoogleUseCase(context.read<AuthRepository>());
+    setState(() => _busy = true);
+    try {
+      await useCase();
+      await _refreshIdentity();
+      if (mounted) _toast(t.auth.googleLinked);
+    } on AppException catch (e) {
+      debugPrint('Google link failed: $e');
+      if (!mounted) return;
+      // Cancelling the account picker is a normal gesture, not a failure.
+      if (e.type == AppErrorType.cancelled) return;
+      _toast(switch (e.message) {
+        'credential-already-in-use' => t.auth.googleAlreadyUsed,
+        'provider-already-linked' => t.auth.googleAlreadyLinked,
+        _ => t.auth.errorUnknown,
+      });
+    } catch (e) {
+      debugPrint('Google link failed: $e');
+      if (mounted) _toast(t.auth.errorUnknown);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   /// Linking changes what the account *is*, so the gate has to re-read it —
@@ -232,6 +260,16 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             verified: user?.phoneNumber != null,
             actionLabel: t.auth.linkPhone,
             onAction: _linkPhone,
+          ),
+          const Divider(color: AppColors.outlineVariant),
+          _identityRow(
+            icon: Icons.g_mobiledata_rounded,
+            label: 'Google',
+            // Google has no separate value to show; linked is the whole state.
+            value: (user?.hasGoogle ?? false) ? t.auth.googleLinked : null,
+            verified: user?.hasGoogle ?? false,
+            actionLabel: t.auth.linkGoogle,
+            onAction: _linkGoogle,
           ),
         ],
       ),

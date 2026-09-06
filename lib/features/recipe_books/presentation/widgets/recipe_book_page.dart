@@ -7,6 +7,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/duration_label.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import 'book_page_surface.dart';
@@ -42,6 +43,25 @@ class RecipeBookPage extends StatelessWidget {
                   ],
                   Text(recipe.title, style: AppTextStyles.headlineLgMobile),
                   const SizedBox(height: AppSpacing.sm),
+                  // Topics sit above the times, right under the title, so what kind
+                  // of dish it is reads before how long it takes.
+                  if (recipe.dietaryTags.isNotEmpty) ...[
+                    Wrap(
+                      spacing: AppSpacing.base,
+                      runSpacing: AppSpacing.base,
+                      children: [
+                        for (final tag in recipe.dietaryTags)
+                          if (dietaryColors(tag) case (final background, final foreground))
+                            ClayTag(
+                              label: dietaryLabel(tag),
+                              icon: dietaryIcon(tag),
+                              background: background,
+                              foreground: foreground,
+                            ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
                   Wrap(
                     spacing: AppSpacing.base,
                     runSpacing: AppSpacing.base,

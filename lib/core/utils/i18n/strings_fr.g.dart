@@ -52,6 +52,8 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$books$fr books = _Translations$books$fr._(_root);
 	@override late final _Translations$recipe$fr recipe = _Translations$recipe$fr._(_root);
 	@override late final _Translations$community$fr community = _Translations$community$fr._(_root);
+	@override late final _Translations$sharing$fr sharing = _Translations$sharing$fr._(_root);
+	@override late final _Translations$notifications$fr notifications = _Translations$notifications$fr._(_root);
 	@override late final _Translations$editor$fr editor = _Translations$editor$fr._(_root);
 	@override late final _Translations$ingestion$fr ingestion = _Translations$ingestion$fr._(_root);
 	@override late final _Translations$mealPlanner$fr mealPlanner = _Translations$mealPlanner$fr._(_root);
@@ -139,6 +141,10 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get emailAlreadyLinked => 'Ce compte a déjà un e-mail';
 	@override String get addEmailPassword => 'Ajouter e-mail et mot de passe';
 	@override String get verified => 'Vérifié';
+	@override String get linkGoogle => 'Lier un compte Google';
+	@override String get googleLinked => 'Lié';
+	@override String get googleAlreadyUsed => 'Ce compte Google appartient déjà à un autre utilisateur';
+	@override String get googleAlreadyLinked => 'Un compte Google est déjà lié';
 }
 
 // Path: profile
@@ -311,6 +317,11 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get saved => 'Recettes enregistrées';
 	@override String get noneMine => 'Vous n\'avez pas encore créé de recette';
 	@override String get noneSaved => 'Vous n\'avez encore rien enregistré';
+	@override String get pendingAnalysis => 'En attente d\'analyse';
+	@override String get pendingAnalysisHint => 'Enregistrée en texte brut. Analysez-la maintenant ou modifiez-la à la main.';
+	@override String get analyzeNow => 'Analyser avec l\'IA maintenant';
+	@override String get analyzing => 'Analyse de la recette...';
+	@override String get analyzeFailed => 'L\'analyse a échoué — réessayez plus tard';
 }
 
 // Path: community
@@ -377,6 +388,71 @@ class _Translations$community$fr extends Translations$community$he {
 	@override String get splitTimes => 'Séparer préparation et cuisson';
 }
 
+// Path: sharing
+class _Translations$sharing$fr extends Translations$sharing$he {
+	_Translations$sharing$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Partager la recette';
+	@override String get contactLabel => 'E-mail ou téléphone de la personne';
+	@override String get contactHint => 'nom@exemple.com ou 05…';
+	@override String get roleTitle => 'Autorisation';
+	@override String get roleViewer => 'Lecture seule';
+	@override String get roleViewerHint => 'Voit la recette sans pouvoir la modifier';
+	@override String get roleEditor => 'Modification';
+	@override String get roleEditorHint => 'Ses modifications apparaissent aussi chez vous';
+	@override String get send => 'Envoyer l\'invitation';
+	@override String get sent => 'Invitation envoyée';
+	@override String get invalidContact => 'Saisissez un e-mail ou un téléphone valide';
+	@override String get notFound => 'Aucun compte avec ces informations';
+	@override String get self => 'Impossible de partager une recette avec vous-même';
+	@override String get failed => 'Le partage a échoué, réessayez';
+	@override String get pendingInvites => 'Invitations en attente';
+	@override String get noPendingInvites => 'Aucune invitation en attente';
+	@override String get sharedByMe => 'Recettes partagées par moi';
+	@override String get sharedWithMe => 'Recettes partagées avec moi';
+	@override String get nothingSharedByMe => 'Vous n\'avez encore rien partagé';
+	@override String get nothingSharedWithMe => 'Aucune recette ne vous a été partagée';
+	@override String get accept => 'Accepter';
+	@override String get decline => 'Refuser';
+	@override String get accepted => 'La recette a été ajoutée à vos recettes';
+	@override String get declined => 'Invitation refusée';
+	@override String get acceptFailed => 'L\'acceptation a échoué, réessayez';
+	@override String get members => 'Membres';
+	@override String get noMembersYet => 'Personne n\'a encore accepté';
+	@override String get remove => 'Retirer';
+	@override String get leave => 'Quitter';
+	@override String get removed => 'Membre retiré';
+	@override String get left => 'Vous avez quitté le partage';
+	@override String invitedBy({required Object name}) => 'de ${name}';
+	@override String get sharedTag => 'Partagée';
+	@override String get viewerTag => 'Lecture seule';
+	@override String get editorTag => 'Éditeur';
+	@override String get ownerTag => 'Propriétaire';
+	@override String get syncFailed => 'Impossible d\'actualiser la recette partagée, version enregistrée affichée';
+	@override String get viewerCannotEdit => 'Cette recette vous est partagée en lecture seule';
+	@override String get shareAction => 'Partager';
+}
+
+// Path: notifications
+class _Translations$notifications$fr extends Translations$notifications$he {
+	_Translations$notifications$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Notifications';
+	@override String get empty => 'Aucune notification';
+	@override String sharedRecipe({required Object name, required Object recipe}) => '${name} a partagé « ${recipe} » avec vous';
+	@override String get asViewer => 'en lecture seule';
+	@override String get asEditor => 'en modification';
+	@override String get markAllRead => 'Tout marquer comme lu';
+	@override String get openRecipe => 'Ouvrir la recette';
+	@override String get alreadyHandled => 'Cette invitation a déjà été traitée';
+}
+
 // Path: editor
 class _Translations$editor$fr extends Translations$editor$he {
 	_Translations$editor$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -409,6 +485,10 @@ class _Translations$editor$fr extends Translations$editor$he {
 	@override String get discardTitle => 'Abandonner les modifications ?';
 	@override String get discardBody => 'Vos modifications ne seront pas enregistrées.';
 	@override String get discard => 'Abandonner';
+	@override String get saveOptionsTitle => 'Comment enregistrer ?';
+	@override String get savePlainHint => 'Enregistrer tel quel, sans attendre';
+	@override String get saveWithAi => 'Enregistrer avec relecture IA';
+	@override String get saveWithAiHint => 'Corriger l\'orthographe et aligner les durées des étapes';
 }
 
 // Path: ingestion
@@ -429,6 +509,27 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get parseError => 'Nous n\'avons pas pu analyser la recette';
 	@override String get reviewTitle => 'Vérifiez avant d\'enregistrer';
 	@override String get notConfigured => 'Cette fonctionnalité nécessite un service externe qui n\'est pas encore configuré';
+	@override String get openOptionsTitle => 'Comment ouvrir cette recette ?';
+	@override String get viewOriginal => 'Voir l\'original';
+	@override String get viewOriginalHint => 'Le texte de la page tel quel, sans traitement — immédiat';
+	@override String get generateStructured => 'Créer une recette structurée';
+	@override String get generateStructuredHint => 'Extraction automatique des ingrédients, quantités et étapes';
+	@override String get originalTitle => 'Recette originale';
+	@override String get fetchFailed => 'Impossible de charger la page';
+	@override String get loadingOriginal => 'Chargement de la page...';
+	@override String get structuredFromSite => 'Lue directement depuis les données structurées du site, sans IA';
+	@override String get useStructured => 'Continuer avec la recette structurée';
+	@override String get preferAi => 'Traiter avec l\'IA à la place';
+	@override String get analysisTimedOut => 'L\'analyse n\'a pas abouti à temps';
+	@override String get analysisFailed => 'L\'analyse a échoué';
+	@override String get unparsedHint => 'Votre texte est conservé tel quel. Réessayez, modifiez-le à la main, ou enregistrez-le pour l\'analyser plus tard.';
+	@override String get retryAnalysis => 'Réessayer';
+	@override String get editManually => 'Modifier manuellement';
+	@override String get saveForLater => 'Enregistrer et analyser plus tard';
+	@override String get untitledRecipe => 'Recette sans titre';
+	@override String get manual => 'Saisie manuelle';
+	@override String get manualHint => 'Remplissez la recette vous-même, au format structuré — sans IA, sans attente.';
+	@override String get openBlankEditor => 'Ouvrir un éditeur vide';
 }
 
 // Path: mealPlanner
@@ -627,6 +728,10 @@ extension on TranslationsFr {
 			'auth.emailAlreadyLinked' => 'Ce compte a déjà un e-mail',
 			'auth.addEmailPassword' => 'Ajouter e-mail et mot de passe',
 			'auth.verified' => 'Vérifié',
+			'auth.linkGoogle' => 'Lier un compte Google',
+			'auth.googleLinked' => 'Lié',
+			'auth.googleAlreadyUsed' => 'Ce compte Google appartient déjà à un autre utilisateur',
+			'auth.googleAlreadyLinked' => 'Un compte Google est déjà lié',
 			'profile.setupTitle' => 'Encore quelques détails',
 			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
 			'profile.fullName' => 'Nom complet',
@@ -718,6 +823,11 @@ extension on TranslationsFr {
 			'recipe.saved' => 'Recettes enregistrées',
 			'recipe.noneMine' => 'Vous n\'avez pas encore créé de recette',
 			'recipe.noneSaved' => 'Vous n\'avez encore rien enregistré',
+			'recipe.pendingAnalysis' => 'En attente d\'analyse',
+			'recipe.pendingAnalysisHint' => 'Enregistrée en texte brut. Analysez-la maintenant ou modifiez-la à la main.',
+			'recipe.analyzeNow' => 'Analyser avec l\'IA maintenant',
+			'recipe.analyzing' => 'Analyse de la recette...',
+			'recipe.analyzeFailed' => 'L\'analyse a échoué — réessayez plus tard',
 			'community.title' => 'Communauté',
 			'community.forum' => 'Forum',
 			'community.sharedRecipes' => 'Recettes partagées',
@@ -773,6 +883,53 @@ extension on TranslationsFr {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Séparer préparation et cuisson',
+			'sharing.title' => 'Partager la recette',
+			'sharing.contactLabel' => 'E-mail ou téléphone de la personne',
+			'sharing.contactHint' => 'nom@exemple.com ou 05…',
+			'sharing.roleTitle' => 'Autorisation',
+			'sharing.roleViewer' => 'Lecture seule',
+			'sharing.roleViewerHint' => 'Voit la recette sans pouvoir la modifier',
+			'sharing.roleEditor' => 'Modification',
+			'sharing.roleEditorHint' => 'Ses modifications apparaissent aussi chez vous',
+			'sharing.send' => 'Envoyer l\'invitation',
+			'sharing.sent' => 'Invitation envoyée',
+			'sharing.invalidContact' => 'Saisissez un e-mail ou un téléphone valide',
+			'sharing.notFound' => 'Aucun compte avec ces informations',
+			'sharing.self' => 'Impossible de partager une recette avec vous-même',
+			'sharing.failed' => 'Le partage a échoué, réessayez',
+			'sharing.pendingInvites' => 'Invitations en attente',
+			'sharing.noPendingInvites' => 'Aucune invitation en attente',
+			'sharing.sharedByMe' => 'Recettes partagées par moi',
+			'sharing.sharedWithMe' => 'Recettes partagées avec moi',
+			'sharing.nothingSharedByMe' => 'Vous n\'avez encore rien partagé',
+			'sharing.nothingSharedWithMe' => 'Aucune recette ne vous a été partagée',
+			'sharing.accept' => 'Accepter',
+			'sharing.decline' => 'Refuser',
+			'sharing.accepted' => 'La recette a été ajoutée à vos recettes',
+			'sharing.declined' => 'Invitation refusée',
+			'sharing.acceptFailed' => 'L\'acceptation a échoué, réessayez',
+			'sharing.members' => 'Membres',
+			'sharing.noMembersYet' => 'Personne n\'a encore accepté',
+			'sharing.remove' => 'Retirer',
+			'sharing.leave' => 'Quitter',
+			'sharing.removed' => 'Membre retiré',
+			'sharing.left' => 'Vous avez quitté le partage',
+			'sharing.invitedBy' => ({required Object name}) => 'de ${name}',
+			'sharing.sharedTag' => 'Partagée',
+			'sharing.viewerTag' => 'Lecture seule',
+			'sharing.editorTag' => 'Éditeur',
+			'sharing.ownerTag' => 'Propriétaire',
+			'sharing.syncFailed' => 'Impossible d\'actualiser la recette partagée, version enregistrée affichée',
+			'sharing.viewerCannotEdit' => 'Cette recette vous est partagée en lecture seule',
+			'sharing.shareAction' => 'Partager',
+			'notifications.title' => 'Notifications',
+			'notifications.empty' => 'Aucune notification',
+			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} a partagé « ${recipe} » avec vous',
+			'notifications.asViewer' => 'en lecture seule',
+			'notifications.asEditor' => 'en modification',
+			'notifications.markAllRead' => 'Tout marquer comme lu',
+			'notifications.openRecipe' => 'Ouvrir la recette',
+			'notifications.alreadyHandled' => 'Cette invitation a déjà été traitée',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
@@ -798,6 +955,10 @@ extension on TranslationsFr {
 			'editor.discardTitle' => 'Abandonner les modifications ?',
 			'editor.discardBody' => 'Vos modifications ne seront pas enregistrées.',
 			'editor.discard' => 'Abandonner',
+			'editor.saveOptionsTitle' => 'Comment enregistrer ?',
+			'editor.savePlainHint' => 'Enregistrer tel quel, sans attendre',
+			'editor.saveWithAi' => 'Enregistrer avec relecture IA',
+			'editor.saveWithAiHint' => 'Corriger l\'orthographe et aligner les durées des étapes',
 			'ingestion.title' => 'Ajouter une recette',
 			'ingestion.pasteText' => 'Coller du texte',
 			'ingestion.pasteHint' => 'Collez ici une recette venant de WhatsApp ou de toute autre source',
@@ -809,6 +970,27 @@ extension on TranslationsFr {
 			'ingestion.parseError' => 'Nous n\'avons pas pu analyser la recette',
 			'ingestion.reviewTitle' => 'Vérifiez avant d\'enregistrer',
 			'ingestion.notConfigured' => 'Cette fonctionnalité nécessite un service externe qui n\'est pas encore configuré',
+			'ingestion.openOptionsTitle' => 'Comment ouvrir cette recette ?',
+			'ingestion.viewOriginal' => 'Voir l\'original',
+			'ingestion.viewOriginalHint' => 'Le texte de la page tel quel, sans traitement — immédiat',
+			'ingestion.generateStructured' => 'Créer une recette structurée',
+			'ingestion.generateStructuredHint' => 'Extraction automatique des ingrédients, quantités et étapes',
+			'ingestion.originalTitle' => 'Recette originale',
+			'ingestion.fetchFailed' => 'Impossible de charger la page',
+			'ingestion.loadingOriginal' => 'Chargement de la page...',
+			'ingestion.structuredFromSite' => 'Lue directement depuis les données structurées du site, sans IA',
+			'ingestion.useStructured' => 'Continuer avec la recette structurée',
+			'ingestion.preferAi' => 'Traiter avec l\'IA à la place',
+			'ingestion.analysisTimedOut' => 'L\'analyse n\'a pas abouti à temps',
+			'ingestion.analysisFailed' => 'L\'analyse a échoué',
+			'ingestion.unparsedHint' => 'Votre texte est conservé tel quel. Réessayez, modifiez-le à la main, ou enregistrez-le pour l\'analyser plus tard.',
+			'ingestion.retryAnalysis' => 'Réessayer',
+			'ingestion.editManually' => 'Modifier manuellement',
+			'ingestion.saveForLater' => 'Enregistrer et analyser plus tard',
+			'ingestion.untitledRecipe' => 'Recette sans titre',
+			'ingestion.manual' => 'Saisie manuelle',
+			'ingestion.manualHint' => 'Remplissez la recette vous-même, au format structuré — sans IA, sans attente.',
+			'ingestion.openBlankEditor' => 'Ouvrir un éditeur vide',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',

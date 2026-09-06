@@ -61,17 +61,20 @@ extension IngestionEventPatterns on IngestionEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SelectChannel value)?  selectChannel,TResult Function( _ParseRawText value)?  parseRawText,TResult Function( _SearchWeb value)?  searchWeb,TResult Function( _ParseUrl value)?  parseUrl,TResult Function( _ParseSocialVideo value)?  parseSocialVideo,TResult Function( _UpdateRecipe value)?  updateRecipe,TResult Function( _SaveRecipe value)?  saveRecipe,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SelectChannel value)?  selectChannel,TResult Function( _ParseRawText value)?  parseRawText,TResult Function( _SearchWeb value)?  searchWeb,TResult Function( _ParseUrl value)?  parseUrl,TResult Function( _ViewOriginal value)?  viewOriginal,TResult Function( _ParseSocialVideo value)?  parseSocialVideo,TResult Function( _UpdateRecipe value)?  updateRecipe,TResult Function( _SaveRecipe value)?  saveRecipe,TResult Function( _SaveAsTemplate value)?  saveAsTemplate,TResult Function( _EditManually value)?  editManually,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that);case _ParseUrl() when parseUrl != null:
-return parseUrl(_that);case _ParseSocialVideo() when parseSocialVideo != null:
+return parseUrl(_that);case _ViewOriginal() when viewOriginal != null:
+return viewOriginal(_that);case _ParseSocialVideo() when parseSocialVideo != null:
 return parseSocialVideo(_that);case _UpdateRecipe() when updateRecipe != null:
 return updateRecipe(_that);case _SaveRecipe() when saveRecipe != null:
-return saveRecipe(_that);case _:
+return saveRecipe(_that);case _SaveAsTemplate() when saveAsTemplate != null:
+return saveAsTemplate(_that);case _EditManually() when editManually != null:
+return editManually(_that);case _:
   return orElse();
 
 }
@@ -89,17 +92,20 @@ return saveRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SelectChannel value)  selectChannel,required TResult Function( _ParseRawText value)  parseRawText,required TResult Function( _SearchWeb value)  searchWeb,required TResult Function( _ParseUrl value)  parseUrl,required TResult Function( _ParseSocialVideo value)  parseSocialVideo,required TResult Function( _UpdateRecipe value)  updateRecipe,required TResult Function( _SaveRecipe value)  saveRecipe,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SelectChannel value)  selectChannel,required TResult Function( _ParseRawText value)  parseRawText,required TResult Function( _SearchWeb value)  searchWeb,required TResult Function( _ParseUrl value)  parseUrl,required TResult Function( _ViewOriginal value)  viewOriginal,required TResult Function( _ParseSocialVideo value)  parseSocialVideo,required TResult Function( _UpdateRecipe value)  updateRecipe,required TResult Function( _SaveRecipe value)  saveRecipe,required TResult Function( _SaveAsTemplate value)  saveAsTemplate,required TResult Function( _EditManually value)  editManually,}){
 final _that = this;
 switch (_that) {
 case _SelectChannel():
 return selectChannel(_that);case _ParseRawText():
 return parseRawText(_that);case _SearchWeb():
 return searchWeb(_that);case _ParseUrl():
-return parseUrl(_that);case _ParseSocialVideo():
+return parseUrl(_that);case _ViewOriginal():
+return viewOriginal(_that);case _ParseSocialVideo():
 return parseSocialVideo(_that);case _UpdateRecipe():
 return updateRecipe(_that);case _SaveRecipe():
-return saveRecipe(_that);}
+return saveRecipe(_that);case _SaveAsTemplate():
+return saveAsTemplate(_that);case _EditManually():
+return editManually(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -113,17 +119,20 @@ return saveRecipe(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SelectChannel value)?  selectChannel,TResult? Function( _ParseRawText value)?  parseRawText,TResult? Function( _SearchWeb value)?  searchWeb,TResult? Function( _ParseUrl value)?  parseUrl,TResult? Function( _ParseSocialVideo value)?  parseSocialVideo,TResult? Function( _UpdateRecipe value)?  updateRecipe,TResult? Function( _SaveRecipe value)?  saveRecipe,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SelectChannel value)?  selectChannel,TResult? Function( _ParseRawText value)?  parseRawText,TResult? Function( _SearchWeb value)?  searchWeb,TResult? Function( _ParseUrl value)?  parseUrl,TResult? Function( _ViewOriginal value)?  viewOriginal,TResult? Function( _ParseSocialVideo value)?  parseSocialVideo,TResult? Function( _UpdateRecipe value)?  updateRecipe,TResult? Function( _SaveRecipe value)?  saveRecipe,TResult? Function( _SaveAsTemplate value)?  saveAsTemplate,TResult? Function( _EditManually value)?  editManually,}){
 final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that);case _ParseUrl() when parseUrl != null:
-return parseUrl(_that);case _ParseSocialVideo() when parseSocialVideo != null:
+return parseUrl(_that);case _ViewOriginal() when viewOriginal != null:
+return viewOriginal(_that);case _ParseSocialVideo() when parseSocialVideo != null:
 return parseSocialVideo(_that);case _UpdateRecipe() when updateRecipe != null:
 return updateRecipe(_that);case _SaveRecipe() when saveRecipe != null:
-return saveRecipe(_that);case _:
+return saveRecipe(_that);case _SaveAsTemplate() when saveAsTemplate != null:
+return saveAsTemplate(_that);case _EditManually() when editManually != null:
+return editManually(_that);case _:
   return null;
 
 }
@@ -140,16 +149,19 @@ return saveRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String url)?  parseUrl,TResult Function( String url)?  parseSocialVideo,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String url)?  parseUrl,TResult Function( String url)?  viewOriginal,TResult Function( String url)?  parseSocialVideo,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,TResult Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult Function( String text,  String? sourceUrl)?  editManually,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that.text);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that.query);case _ParseUrl() when parseUrl != null:
-return parseUrl(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
+return parseUrl(_that.url);case _ViewOriginal() when viewOriginal != null:
+return viewOriginal(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
 return parseSocialVideo(_that.url);case _UpdateRecipe() when updateRecipe != null:
 return updateRecipe(_that.recipe);case _SaveRecipe() when saveRecipe != null:
-return saveRecipe(_that.recipe);case _:
+return saveRecipe(_that.recipe);case _SaveAsTemplate() when saveAsTemplate != null:
+return saveAsTemplate(_that.text,_that.sourceUrl);case _EditManually() when editManually != null:
+return editManually(_that.text,_that.sourceUrl);case _:
   return orElse();
 
 }
@@ -167,16 +179,19 @@ return saveRecipe(_that.recipe);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String url)  parseUrl,required TResult Function( String url)  parseSocialVideo,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String url)  parseUrl,required TResult Function( String url)  viewOriginal,required TResult Function( String url)  parseSocialVideo,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,required TResult Function( String text,  String? sourceUrl)  saveAsTemplate,required TResult Function( String text,  String? sourceUrl)  editManually,}) {final _that = this;
 switch (_that) {
 case _SelectChannel():
 return selectChannel(_that.channel);case _ParseRawText():
 return parseRawText(_that.text);case _SearchWeb():
 return searchWeb(_that.query);case _ParseUrl():
-return parseUrl(_that.url);case _ParseSocialVideo():
+return parseUrl(_that.url);case _ViewOriginal():
+return viewOriginal(_that.url);case _ParseSocialVideo():
 return parseSocialVideo(_that.url);case _UpdateRecipe():
 return updateRecipe(_that.recipe);case _SaveRecipe():
-return saveRecipe(_that.recipe);}
+return saveRecipe(_that.recipe);case _SaveAsTemplate():
+return saveAsTemplate(_that.text,_that.sourceUrl);case _EditManually():
+return editManually(_that.text,_that.sourceUrl);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -190,16 +205,19 @@ return saveRecipe(_that.recipe);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  parseSocialVideo,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  viewOriginal,TResult? Function( String url)?  parseSocialVideo,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,TResult? Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult? Function( String text,  String? sourceUrl)?  editManually,}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that.text);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that.query);case _ParseUrl() when parseUrl != null:
-return parseUrl(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
+return parseUrl(_that.url);case _ViewOriginal() when viewOriginal != null:
+return viewOriginal(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
 return parseSocialVideo(_that.url);case _UpdateRecipe() when updateRecipe != null:
 return updateRecipe(_that.recipe);case _SaveRecipe() when saveRecipe != null:
-return saveRecipe(_that.recipe);case _:
+return saveRecipe(_that.recipe);case _SaveAsTemplate() when saveAsTemplate != null:
+return saveAsTemplate(_that.text,_that.sourceUrl);case _EditManually() when editManually != null:
+return editManually(_that.text,_that.sourceUrl);case _:
   return null;
 
 }
@@ -498,6 +516,78 @@ as String,
 /// @nodoc
 
 
+class _ViewOriginal with DiagnosticableTreeMixin implements IngestionEvent {
+  const _ViewOriginal(this.url);
+  
+
+ final  String url;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ViewOriginalCopyWith<_ViewOriginal> get copyWith => __$ViewOriginalCopyWithImpl<_ViewOriginal>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionEvent.viewOriginal'))
+    ..add(DiagnosticsProperty('url', url));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ViewOriginal&&(identical(other.url, url) || other.url == url));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,url);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionEvent.viewOriginal(url: $url)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ViewOriginalCopyWith<$Res> implements $IngestionEventCopyWith<$Res> {
+  factory _$ViewOriginalCopyWith(_ViewOriginal value, $Res Function(_ViewOriginal) _then) = __$ViewOriginalCopyWithImpl;
+@useResult
+$Res call({
+ String url
+});
+
+
+
+
+}
+/// @nodoc
+class __$ViewOriginalCopyWithImpl<$Res>
+    implements _$ViewOriginalCopyWith<$Res> {
+  __$ViewOriginalCopyWithImpl(this._self, this._then);
+
+  final _ViewOriginal _self;
+  final $Res Function(_ViewOriginal) _then;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? url = null,}) {
+  return _then(_ViewOriginal(
+null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class _ParseSocialVideo with DiagnosticableTreeMixin implements IngestionEvent {
   const _ParseSocialVideo(this.url);
   
@@ -712,6 +802,154 @@ as RecipeEntity,
 }
 
 /// @nodoc
+
+
+class _SaveAsTemplate with DiagnosticableTreeMixin implements IngestionEvent {
+  const _SaveAsTemplate(this.text, {this.sourceUrl});
+  
+
+ final  String text;
+ final  String? sourceUrl;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SaveAsTemplateCopyWith<_SaveAsTemplate> get copyWith => __$SaveAsTemplateCopyWithImpl<_SaveAsTemplate>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionEvent.saveAsTemplate'))
+    ..add(DiagnosticsProperty('text', text))..add(DiagnosticsProperty('sourceUrl', sourceUrl));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SaveAsTemplate&&(identical(other.text, text) || other.text == text)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,text,sourceUrl);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionEvent.saveAsTemplate(text: $text, sourceUrl: $sourceUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SaveAsTemplateCopyWith<$Res> implements $IngestionEventCopyWith<$Res> {
+  factory _$SaveAsTemplateCopyWith(_SaveAsTemplate value, $Res Function(_SaveAsTemplate) _then) = __$SaveAsTemplateCopyWithImpl;
+@useResult
+$Res call({
+ String text, String? sourceUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$SaveAsTemplateCopyWithImpl<$Res>
+    implements _$SaveAsTemplateCopyWith<$Res> {
+  __$SaveAsTemplateCopyWithImpl(this._self, this._then);
+
+  final _SaveAsTemplate _self;
+  final $Res Function(_SaveAsTemplate) _then;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? text = null,Object? sourceUrl = freezed,}) {
+  return _then(_SaveAsTemplate(
+null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,sourceUrl: freezed == sourceUrl ? _self.sourceUrl : sourceUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _EditManually with DiagnosticableTreeMixin implements IngestionEvent {
+  const _EditManually(this.text, {this.sourceUrl});
+  
+
+ final  String text;
+ final  String? sourceUrl;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$EditManuallyCopyWith<_EditManually> get copyWith => __$EditManuallyCopyWithImpl<_EditManually>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionEvent.editManually'))
+    ..add(DiagnosticsProperty('text', text))..add(DiagnosticsProperty('sourceUrl', sourceUrl));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EditManually&&(identical(other.text, text) || other.text == text)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,text,sourceUrl);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionEvent.editManually(text: $text, sourceUrl: $sourceUrl)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$EditManuallyCopyWith<$Res> implements $IngestionEventCopyWith<$Res> {
+  factory _$EditManuallyCopyWith(_EditManually value, $Res Function(_EditManually) _then) = __$EditManuallyCopyWithImpl;
+@useResult
+$Res call({
+ String text, String? sourceUrl
+});
+
+
+
+
+}
+/// @nodoc
+class __$EditManuallyCopyWithImpl<$Res>
+    implements _$EditManuallyCopyWith<$Res> {
+  __$EditManuallyCopyWithImpl(this._self, this._then);
+
+  final _EditManually _self;
+  final $Res Function(_EditManually) _then;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? text = null,Object? sourceUrl = freezed,}) {
+  return _then(_EditManually(
+null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,sourceUrl: freezed == sourceUrl ? _self.sourceUrl : sourceUrl // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$IngestionState implements DiagnosticableTreeMixin {
 
 
@@ -761,15 +999,17 @@ extension IngestionStatePatterns on IngestionState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( IngestionIdle value)?  idle,TResult Function( IngestionParsing value)?  parsing,TResult Function( IngestionSearchResults value)?  searchResults,TResult Function( IngestionReview value)?  review,TResult Function( IngestionSaved value)?  saved,TResult Function( IngestionError value)?  errorMessage,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( IngestionIdle value)?  idle,TResult Function( IngestionParsing value)?  parsing,TResult Function( IngestionSearchResults value)?  searchResults,TResult Function( IngestionReview value)?  review,TResult Function( IngestionOriginal value)?  original,TResult Function( IngestionSaved value)?  saved,TResult Function( IngestionUnparsed value)?  unparsed,TResult Function( IngestionError value)?  errorMessage,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that);case IngestionParsing() when parsing != null:
 return parsing(_that);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that);case IngestionReview() when review != null:
-return review(_that);case IngestionSaved() when saved != null:
-return saved(_that);case IngestionError() when errorMessage != null:
+return review(_that);case IngestionOriginal() when original != null:
+return original(_that);case IngestionSaved() when saved != null:
+return saved(_that);case IngestionUnparsed() when unparsed != null:
+return unparsed(_that);case IngestionError() when errorMessage != null:
 return errorMessage(_that);case _:
   return orElse();
 
@@ -788,15 +1028,17 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( IngestionIdle value)  idle,required TResult Function( IngestionParsing value)  parsing,required TResult Function( IngestionSearchResults value)  searchResults,required TResult Function( IngestionReview value)  review,required TResult Function( IngestionSaved value)  saved,required TResult Function( IngestionError value)  errorMessage,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( IngestionIdle value)  idle,required TResult Function( IngestionParsing value)  parsing,required TResult Function( IngestionSearchResults value)  searchResults,required TResult Function( IngestionReview value)  review,required TResult Function( IngestionOriginal value)  original,required TResult Function( IngestionSaved value)  saved,required TResult Function( IngestionUnparsed value)  unparsed,required TResult Function( IngestionError value)  errorMessage,}){
 final _that = this;
 switch (_that) {
 case IngestionIdle():
 return idle(_that);case IngestionParsing():
 return parsing(_that);case IngestionSearchResults():
 return searchResults(_that);case IngestionReview():
-return review(_that);case IngestionSaved():
-return saved(_that);case IngestionError():
+return review(_that);case IngestionOriginal():
+return original(_that);case IngestionSaved():
+return saved(_that);case IngestionUnparsed():
+return unparsed(_that);case IngestionError():
 return errorMessage(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -811,15 +1053,17 @@ return errorMessage(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( IngestionIdle value)?  idle,TResult? Function( IngestionParsing value)?  parsing,TResult? Function( IngestionSearchResults value)?  searchResults,TResult? Function( IngestionReview value)?  review,TResult? Function( IngestionSaved value)?  saved,TResult? Function( IngestionError value)?  errorMessage,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( IngestionIdle value)?  idle,TResult? Function( IngestionParsing value)?  parsing,TResult? Function( IngestionSearchResults value)?  searchResults,TResult? Function( IngestionReview value)?  review,TResult? Function( IngestionOriginal value)?  original,TResult? Function( IngestionSaved value)?  saved,TResult? Function( IngestionUnparsed value)?  unparsed,TResult? Function( IngestionError value)?  errorMessage,}){
 final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that);case IngestionParsing() when parsing != null:
 return parsing(_that);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that);case IngestionReview() when review != null:
-return review(_that);case IngestionSaved() when saved != null:
-return saved(_that);case IngestionError() when errorMessage != null:
+return review(_that);case IngestionOriginal() when original != null:
+return original(_that);case IngestionSaved() when saved != null:
+return saved(_that);case IngestionUnparsed() when unparsed != null:
+return unparsed(_that);case IngestionError() when errorMessage != null:
 return errorMessage(_that);case _:
   return null;
 
@@ -837,14 +1081,16 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  idle,TResult Function( RecipeIngestionChannel channel)?  parsing,TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe)?  review,TResult Function()?  saved,TResult Function( RecipeIngestionChannel channel,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  idle,TResult Function( RecipeIngestionChannel channel)?  parsing,TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe)?  review,TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult Function()?  saved,TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut)?  unparsed,TResult Function( RecipeIngestionChannel channel,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that.channel);case IngestionParsing() when parsing != null:
 return parsing(_that.channel);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that.channel,_that.results);case IngestionReview() when review != null:
-return review(_that.channel,_that.recipe);case IngestionSaved() when saved != null:
-return saved();case IngestionError() when errorMessage != null:
+return review(_that.channel,_that.recipe);case IngestionOriginal() when original != null:
+return original(_that.channel,_that.page);case IngestionSaved() when saved != null:
+return saved();case IngestionUnparsed() when unparsed != null:
+return unparsed(_that.channel,_that.text,_that.sourceUrl,_that.timedOut);case IngestionError() when errorMessage != null:
 return errorMessage(_that.channel,_that.error);case _:
   return orElse();
 
@@ -863,14 +1109,16 @@ return errorMessage(_that.channel,_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  idle,required TResult Function( RecipeIngestionChannel channel)  parsing,required TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)  searchResults,required TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe)  review,required TResult Function()  saved,required TResult Function( RecipeIngestionChannel channel,  String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  idle,required TResult Function( RecipeIngestionChannel channel)  parsing,required TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)  searchResults,required TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe)  review,required TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)  original,required TResult Function()  saved,required TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut)  unparsed,required TResult Function( RecipeIngestionChannel channel,  String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case IngestionIdle():
 return idle(_that.channel);case IngestionParsing():
 return parsing(_that.channel);case IngestionSearchResults():
 return searchResults(_that.channel,_that.results);case IngestionReview():
-return review(_that.channel,_that.recipe);case IngestionSaved():
-return saved();case IngestionError():
+return review(_that.channel,_that.recipe);case IngestionOriginal():
+return original(_that.channel,_that.page);case IngestionSaved():
+return saved();case IngestionUnparsed():
+return unparsed(_that.channel,_that.text,_that.sourceUrl,_that.timedOut);case IngestionError():
 return errorMessage(_that.channel,_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -885,14 +1133,16 @@ return errorMessage(_that.channel,_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  idle,TResult? Function( RecipeIngestionChannel channel)?  parsing,TResult? Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult? Function( RecipeIngestionChannel channel,  RecipeEntity recipe)?  review,TResult? Function()?  saved,TResult? Function( RecipeIngestionChannel channel,  String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  idle,TResult? Function( RecipeIngestionChannel channel)?  parsing,TResult? Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult? Function( RecipeIngestionChannel channel,  RecipeEntity recipe)?  review,TResult? Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult? Function()?  saved,TResult? Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut)?  unparsed,TResult? Function( RecipeIngestionChannel channel,  String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that.channel);case IngestionParsing() when parsing != null:
 return parsing(_that.channel);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that.channel,_that.results);case IngestionReview() when review != null:
-return review(_that.channel,_that.recipe);case IngestionSaved() when saved != null:
-return saved();case IngestionError() when errorMessage != null:
+return review(_that.channel,_that.recipe);case IngestionOriginal() when original != null:
+return original(_that.channel,_that.page);case IngestionSaved() when saved != null:
+return saved();case IngestionUnparsed() when unparsed != null:
+return unparsed(_that.channel,_that.text,_that.sourceUrl,_that.timedOut);case IngestionError() when errorMessage != null:
 return errorMessage(_that.channel,_that.error);case _:
   return null;
 
@@ -1202,6 +1452,80 @@ as RecipeEntity,
 /// @nodoc
 
 
+class IngestionOriginal with DiagnosticableTreeMixin implements IngestionState {
+  const IngestionOriginal(this.channel, this.page);
+  
+
+ final  RecipeIngestionChannel channel;
+ final  OriginalRecipePageEntity page;
+
+/// Create a copy of IngestionState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$IngestionOriginalCopyWith<IngestionOriginal> get copyWith => _$IngestionOriginalCopyWithImpl<IngestionOriginal>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionState.original'))
+    ..add(DiagnosticsProperty('channel', channel))..add(DiagnosticsProperty('page', page));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngestionOriginal&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.page, page) || other.page == page));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,channel,page);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionState.original(channel: $channel, page: $page)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $IngestionOriginalCopyWith<$Res> implements $IngestionStateCopyWith<$Res> {
+  factory $IngestionOriginalCopyWith(IngestionOriginal value, $Res Function(IngestionOriginal) _then) = _$IngestionOriginalCopyWithImpl;
+@useResult
+$Res call({
+ RecipeIngestionChannel channel, OriginalRecipePageEntity page
+});
+
+
+
+
+}
+/// @nodoc
+class _$IngestionOriginalCopyWithImpl<$Res>
+    implements $IngestionOriginalCopyWith<$Res> {
+  _$IngestionOriginalCopyWithImpl(this._self, this._then);
+
+  final IngestionOriginal _self;
+  final $Res Function(IngestionOriginal) _then;
+
+/// Create a copy of IngestionState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? channel = null,Object? page = null,}) {
+  return _then(IngestionOriginal(
+null == channel ? _self.channel : channel // ignore: cast_nullable_to_non_nullable
+as RecipeIngestionChannel,null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
+as OriginalRecipePageEntity,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class IngestionSaved with DiagnosticableTreeMixin implements IngestionState {
   const IngestionSaved();
   
@@ -1236,6 +1560,84 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 
+
+/// @nodoc
+
+
+class IngestionUnparsed with DiagnosticableTreeMixin implements IngestionState {
+  const IngestionUnparsed(this.channel, this.text, {this.sourceUrl, required this.timedOut});
+  
+
+ final  RecipeIngestionChannel channel;
+ final  String text;
+ final  String? sourceUrl;
+ final  bool timedOut;
+
+/// Create a copy of IngestionState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$IngestionUnparsedCopyWith<IngestionUnparsed> get copyWith => _$IngestionUnparsedCopyWithImpl<IngestionUnparsed>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionState.unparsed'))
+    ..add(DiagnosticsProperty('channel', channel))..add(DiagnosticsProperty('text', text))..add(DiagnosticsProperty('sourceUrl', sourceUrl))..add(DiagnosticsProperty('timedOut', timedOut));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngestionUnparsed&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.text, text) || other.text == text)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.timedOut, timedOut) || other.timedOut == timedOut));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,channel,text,sourceUrl,timedOut);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionState.unparsed(channel: $channel, text: $text, sourceUrl: $sourceUrl, timedOut: $timedOut)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $IngestionUnparsedCopyWith<$Res> implements $IngestionStateCopyWith<$Res> {
+  factory $IngestionUnparsedCopyWith(IngestionUnparsed value, $Res Function(IngestionUnparsed) _then) = _$IngestionUnparsedCopyWithImpl;
+@useResult
+$Res call({
+ RecipeIngestionChannel channel, String text, String? sourceUrl, bool timedOut
+});
+
+
+
+
+}
+/// @nodoc
+class _$IngestionUnparsedCopyWithImpl<$Res>
+    implements $IngestionUnparsedCopyWith<$Res> {
+  _$IngestionUnparsedCopyWithImpl(this._self, this._then);
+
+  final IngestionUnparsed _self;
+  final $Res Function(IngestionUnparsed) _then;
+
+/// Create a copy of IngestionState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? channel = null,Object? text = null,Object? sourceUrl = freezed,Object? timedOut = null,}) {
+  return _then(IngestionUnparsed(
+null == channel ? _self.channel : channel // ignore: cast_nullable_to_non_nullable
+as RecipeIngestionChannel,null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,sourceUrl: freezed == sourceUrl ? _self.sourceUrl : sourceUrl // ignore: cast_nullable_to_non_nullable
+as String?,timedOut: null == timedOut ? _self.timedOut : timedOut // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

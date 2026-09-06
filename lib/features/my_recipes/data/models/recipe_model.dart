@@ -28,6 +28,10 @@ sealed class RecipeModel with _$RecipeModel {
     // Appended, never reordered: recipes written before this existed decode
     // as null, which correctly reads as "mine".
     @HiveField(11) String? savedFromSharedId,
+    @HiveField(12) @Default(false) bool pendingAnalysis,
+    @HiveField(13) String? collabId,
+    // Enum name as a string, like `sourceChannel`, so no adapter is needed.
+    @HiveField(14) String? collabRole,
   }) = _RecipeModel;
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
@@ -48,6 +52,11 @@ extension RecipeModelMapper on RecipeModel {
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,
         savedFromSharedId: savedFromSharedId,
+        pendingAnalysis: pendingAnalysis,
+        collabId: collabId,
+        collabRole: collabRole == null
+            ? null
+            : CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
         createdAt: createdAt,
       );
 }
@@ -65,6 +74,9 @@ extension RecipeEntityMapper on RecipeEntity {
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,
         savedFromSharedId: savedFromSharedId,
+        pendingAnalysis: pendingAnalysis,
+        collabId: collabId,
+        collabRole: collabRole?.name,
         createdAt: createdAt,
       );
 }

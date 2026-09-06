@@ -94,32 +94,6 @@ class _SettingsBody extends StatelessWidget {
         onChanged: (enabled) => bloc.add(.toggleSoundEffects(enabled)),
       ),
       _SettingsCard(
-        title: t.settings.sharedAccess,
-        child: sharedBooksCount == 0 && sharedListsCount == 0
-            ? Text(
-                t.settings.noSharedAccess,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
-              )
-            : Wrap(
-                spacing: AppSpacing.base,
-                runSpacing: AppSpacing.base,
-                children: [
-                  if (sharedBooksCount > 0)
-                    ClayTag(
-                      label: '$sharedBooksCount ${t.books.myLibrary}',
-                      icon: Icons.menu_book_rounded,
-                    ),
-                  if (sharedListsCount > 0)
-                    ClayTag(
-                      label: '$sharedListsCount ${t.groceryList.title}',
-                      icon: Icons.shopping_cart_rounded,
-                      background: AppColors.secondaryContainer,
-                      foreground: AppColors.onSecondaryContainer,
-                    ),
-                ],
-              ),
-      ),
-      _SettingsCard(
         title: t.settings.language,
         child: LanguageSelector(
           selected: preferences.language,

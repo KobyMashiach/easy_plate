@@ -98,6 +98,12 @@ class AccountMenuPage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 _MenuRow(
+                  icon: Icons.group_rounded,
+                  label: t.settings.sharedAccess,
+                  onTap: () => context.pushNamed(Routing.sharing),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _MenuRow(
                   icon: Icons.tune_rounded,
                   label: t.more.settings,
                   onTap: () => context.pushNamed(Routing.settings),

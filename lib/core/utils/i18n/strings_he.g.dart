@@ -56,6 +56,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$books$he books = Translations$books$he.internal(_root);
 	late final Translations$recipe$he recipe = Translations$recipe$he.internal(_root);
 	late final Translations$community$he community = Translations$community$he.internal(_root);
+	late final Translations$sharing$he sharing = Translations$sharing$he.internal(_root);
+	late final Translations$notifications$he notifications = Translations$notifications$he.internal(_root);
 	late final Translations$editor$he editor = Translations$editor$he.internal(_root);
 	late final Translations$ingestion$he ingestion = Translations$ingestion$he.internal(_root);
 	late final Translations$mealPlanner$he mealPlanner = Translations$mealPlanner$he.internal(_root);
@@ -267,6 +269,18 @@ class Translations$auth$he {
 
 	/// he: 'מאומת'
 	String get verified => 'מאומת';
+
+	/// he: 'קישור חשבון Google'
+	String get linkGoogle => 'קישור חשבון Google';
+
+	/// he: 'מקושר'
+	String get googleLinked => 'מקושר';
+
+	/// he: 'חשבון Google הזה כבר משויך למשתמש אחר'
+	String get googleAlreadyUsed => 'חשבון Google הזה כבר משויך למשתמש אחר';
+
+	/// he: 'כבר מקושר חשבון Google'
+	String get googleAlreadyLinked => 'כבר מקושר חשבון Google';
 }
 
 // Path: profile
@@ -621,6 +635,21 @@ class Translations$recipe$he {
 
 	/// he: 'עדיין לא שמרתם מתכונים מהקהילה'
 	String get noneSaved => 'עדיין לא שמרתם מתכונים מהקהילה';
+
+	/// he: 'ממתין לניתוח'
+	String get pendingAnalysis => 'ממתין לניתוח';
+
+	/// he: 'המתכון נשמר כטקסט גולמי. אפשר לנתח אותו עכשיו או לערוך ידנית.'
+	String get pendingAnalysisHint => 'המתכון נשמר כטקסט גולמי. אפשר לנתח אותו עכשיו או לערוך ידנית.';
+
+	/// he: 'ניתוח באמצעות AI עכשיו'
+	String get analyzeNow => 'ניתוח באמצעות AI עכשיו';
+
+	/// he: 'מנתח את המתכון...'
+	String get analyzing => 'מנתח את המתכון...';
+
+	/// he: 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר'
+	String get analyzeFailed => 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר';
 }
 
 // Path: community
@@ -797,6 +826,165 @@ class Translations$community$he {
 	String get splitTimes => 'פיצול להכנה ובישול';
 }
 
+// Path: sharing
+class Translations$sharing$he {
+	Translations$sharing$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'שיתוף מתכון'
+	String get title => 'שיתוף מתכון';
+
+	/// he: 'אימייל או טלפון של השותף/ה'
+	String get contactLabel => 'אימייל או טלפון של השותף/ה';
+
+	/// he: 'name@example.com או 05…'
+	String get contactHint => 'name@example.com או 05…';
+
+	/// he: 'הרשאה'
+	String get roleTitle => 'הרשאה';
+
+	/// he: 'צפייה בלבד'
+	String get roleViewer => 'צפייה בלבד';
+
+	/// he: 'רואה את המתכון, לא יכול/ה לשנות אותו'
+	String get roleViewerHint => 'רואה את המתכון, לא יכול/ה לשנות אותו';
+
+	/// he: 'עריכה'
+	String get roleEditor => 'עריכה';
+
+	/// he: 'שינויים שלו/ה יופיעו גם אצלכם'
+	String get roleEditorHint => 'שינויים שלו/ה יופיעו גם אצלכם';
+
+	/// he: 'שליחת הזמנה'
+	String get send => 'שליחת הזמנה';
+
+	/// he: 'ההזמנה נשלחה'
+	String get sent => 'ההזמנה נשלחה';
+
+	/// he: 'יש להזין אימייל או מספר טלפון תקינים'
+	String get invalidContact => 'יש להזין אימייל או מספר טלפון תקינים';
+
+	/// he: 'לא נמצא חשבון עם הפרטים האלה'
+	String get notFound => 'לא נמצא חשבון עם הפרטים האלה';
+
+	/// he: 'אי אפשר לשתף מתכון עם עצמכם'
+	String get self => 'אי אפשר לשתף מתכון עם עצמכם';
+
+	/// he: 'השיתוף נכשל, נסו שוב'
+	String get failed => 'השיתוף נכשל, נסו שוב';
+
+	/// he: 'הזמנות ממתינות'
+	String get pendingInvites => 'הזמנות ממתינות';
+
+	/// he: 'אין הזמנות ממתינות'
+	String get noPendingInvites => 'אין הזמנות ממתינות';
+
+	/// he: 'מתכונים ששיתפתי'
+	String get sharedByMe => 'מתכונים ששיתפתי';
+
+	/// he: 'מתכונים ששותפו איתי'
+	String get sharedWithMe => 'מתכונים ששותפו איתי';
+
+	/// he: 'עדיין לא שיתפתם מתכונים'
+	String get nothingSharedByMe => 'עדיין לא שיתפתם מתכונים';
+
+	/// he: 'עדיין לא שותפו איתכם מתכונים'
+	String get nothingSharedWithMe => 'עדיין לא שותפו איתכם מתכונים';
+
+	/// he: 'אישור'
+	String get accept => 'אישור';
+
+	/// he: 'ביטול'
+	String get decline => 'ביטול';
+
+	/// he: 'המתכון נוסף למתכונים שלכם'
+	String get accepted => 'המתכון נוסף למתכונים שלכם';
+
+	/// he: 'ההזמנה נדחתה'
+	String get declined => 'ההזמנה נדחתה';
+
+	/// he: 'האישור נכשל, נסו שוב'
+	String get acceptFailed => 'האישור נכשל, נסו שוב';
+
+	/// he: 'שותפים'
+	String get members => 'שותפים';
+
+	/// he: 'עדיין אין שותפים שאישרו'
+	String get noMembersYet => 'עדיין אין שותפים שאישרו';
+
+	/// he: 'הסרה'
+	String get remove => 'הסרה';
+
+	/// he: 'יציאה מהשיתוף'
+	String get leave => 'יציאה מהשיתוף';
+
+	/// he: 'השותף/ה הוסר/ה'
+	String get removed => 'השותף/ה הוסר/ה';
+
+	/// he: 'יצאתם מהשיתוף'
+	String get left => 'יצאתם מהשיתוף';
+
+	/// he: 'מאת $name'
+	String invitedBy({required Object name}) => 'מאת ${name}';
+
+	/// he: 'משותף'
+	String get sharedTag => 'משותף';
+
+	/// he: 'צפייה בלבד'
+	String get viewerTag => 'צפייה בלבד';
+
+	/// he: 'עריכה'
+	String get editorTag => 'עריכה';
+
+	/// he: 'בבעלותי'
+	String get ownerTag => 'בבעלותי';
+
+	/// he: 'לא הצלחנו לרענן את המתכון המשותף, מוצגת הגרסה השמורה'
+	String get syncFailed => 'לא הצלחנו לרענן את המתכון המשותף, מוצגת הגרסה השמורה';
+
+	/// he: 'המתכון שותף איתכם לצפייה בלבד'
+	String get viewerCannotEdit => 'המתכון שותף איתכם לצפייה בלבד';
+
+	/// he: 'שיתוף'
+	String get shareAction => 'שיתוף';
+}
+
+// Path: notifications
+class Translations$notifications$he {
+	Translations$notifications$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'התראות'
+	String get title => 'התראות';
+
+	/// he: 'אין התראות'
+	String get empty => 'אין התראות';
+
+	/// he: '$name שיתף/ה איתך את "$recipe"'
+	String sharedRecipe({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את "${recipe}"';
+
+	/// he: 'לצפייה בלבד'
+	String get asViewer => 'לצפייה בלבד';
+
+	/// he: 'לעריכה'
+	String get asEditor => 'לעריכה';
+
+	/// he: 'סימון הכל כנקרא'
+	String get markAllRead => 'סימון הכל כנקרא';
+
+	/// he: 'פתיחת המתכון'
+	String get openRecipe => 'פתיחת המתכון';
+
+	/// he: 'ההזמנה כבר טופלה'
+	String get alreadyHandled => 'ההזמנה כבר טופלה';
+}
+
 // Path: editor
 class Translations$editor$he {
 	Translations$editor$he.internal(this._root);
@@ -879,6 +1067,18 @@ class Translations$editor$he {
 
 	/// he: 'בטל שינויים'
 	String get discard => 'בטל שינויים';
+
+	/// he: 'איך לשמור?'
+	String get saveOptionsTitle => 'איך לשמור?';
+
+	/// he: 'שמירת השינויים כפי שהם, ללא המתנה'
+	String get savePlainHint => 'שמירת השינויים כפי שהם, ללא המתנה';
+
+	/// he: 'שמירה עם עיבוד AI'
+	String get saveWithAi => 'שמירה עם עיבוד AI';
+
+	/// he: 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה'
+	String get saveWithAiHint => 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה';
 }
 
 // Path: ingestion
@@ -921,6 +1121,69 @@ class Translations$ingestion$he {
 
 	/// he: 'התכונה הזו דורשת חיבור לשירות חיצוני שטרם הוגדר'
 	String get notConfigured => 'התכונה הזו דורשת חיבור לשירות חיצוני שטרם הוגדר';
+
+	/// he: 'איך לפתוח את המתכון?'
+	String get openOptionsTitle => 'איך לפתוח את המתכון?';
+
+	/// he: 'הצגת המתכון המקורי'
+	String get viewOriginal => 'הצגת המתכון המקורי';
+
+	/// he: 'הטקסט כפי שמופיע באתר, ללא עיבוד — נטען מיד'
+	String get viewOriginalHint => 'הטקסט כפי שמופיע באתר, ללא עיבוד — נטען מיד';
+
+	/// he: 'יצירת מתכון מובנה'
+	String get generateStructured => 'יצירת מתכון מובנה';
+
+	/// he: 'ניתוח אוטומטי למצרכים, לכמויות ולשלבי ההכנה'
+	String get generateStructuredHint => 'ניתוח אוטומטי למצרכים, לכמויות ולשלבי ההכנה';
+
+	/// he: 'המתכון המקורי'
+	String get originalTitle => 'המתכון המקורי';
+
+	/// he: 'לא הצלחנו לטעון את העמוד'
+	String get fetchFailed => 'לא הצלחנו לטעון את העמוד';
+
+	/// he: 'טוען את העמוד...'
+	String get loadingOriginal => 'טוען את העמוד...';
+
+	/// he: 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI'
+	String get structuredFromSite => 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI';
+
+	/// he: 'המשך למתכון המובנה'
+	String get useStructured => 'המשך למתכון המובנה';
+
+	/// he: 'עיבוד באמצעות AI במקום'
+	String get preferAi => 'עיבוד באמצעות AI במקום';
+
+	/// he: 'הניתוח לא הושלם בזמן'
+	String get analysisTimedOut => 'הניתוח לא הושלם בזמן';
+
+	/// he: 'הניתוח נכשל'
+	String get analysisFailed => 'הניתוח נכשל';
+
+	/// he: 'הטקסט נשמר כפי שהוא. אפשר לנסות שוב, לערוך ידנית, או לשמור ולנתח מאוחר יותר.'
+	String get unparsedHint => 'הטקסט נשמר כפי שהוא. אפשר לנסות שוב, לערוך ידנית, או לשמור ולנתח מאוחר יותר.';
+
+	/// he: 'ניסיון נוסף'
+	String get retryAnalysis => 'ניסיון נוסף';
+
+	/// he: 'עריכה ידנית'
+	String get editManually => 'עריכה ידנית';
+
+	/// he: 'שמירה לניתוח מאוחר יותר'
+	String get saveForLater => 'שמירה לניתוח מאוחר יותר';
+
+	/// he: 'מתכון ללא שם'
+	String get untitledRecipe => 'מתכון ללא שם';
+
+	/// he: 'כתיבה ידנית'
+	String get manual => 'כתיבה ידנית';
+
+	/// he: 'מילוי המתכון בעצמכם בפורמט המובנה — ללא ניתוח AI וללא המתנה.'
+	String get manualHint => 'מילוי המתכון בעצמכם בפורמט המובנה — ללא ניתוח AI וללא המתנה.';
+
+	/// he: 'פתיחת עורך ריק'
+	String get openBlankEditor => 'פתיחת עורך ריק';
 }
 
 // Path: mealPlanner
@@ -1279,6 +1542,10 @@ extension on Translations {
 			'auth.emailAlreadyLinked' => 'לחשבון כבר משויכת כתובת מייל',
 			'auth.addEmailPassword' => 'הוספת מייל וסיסמה',
 			'auth.verified' => 'מאומת',
+			'auth.linkGoogle' => 'קישור חשבון Google',
+			'auth.googleLinked' => 'מקושר',
+			'auth.googleAlreadyUsed' => 'חשבון Google הזה כבר משויך למשתמש אחר',
+			'auth.googleAlreadyLinked' => 'כבר מקושר חשבון Google',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',
@@ -1370,6 +1637,11 @@ extension on Translations {
 			'recipe.saved' => 'מתכונים ששמרתי',
 			'recipe.noneMine' => 'עדיין לא יצרתם מתכונים',
 			'recipe.noneSaved' => 'עדיין לא שמרתם מתכונים מהקהילה',
+			'recipe.pendingAnalysis' => 'ממתין לניתוח',
+			'recipe.pendingAnalysisHint' => 'המתכון נשמר כטקסט גולמי. אפשר לנתח אותו עכשיו או לערוך ידנית.',
+			'recipe.analyzeNow' => 'ניתוח באמצעות AI עכשיו',
+			'recipe.analyzing' => 'מנתח את המתכון...',
+			'recipe.analyzeFailed' => 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר',
 			'community.title' => 'קהילה',
 			'community.forum' => 'פורום',
 			'community.sharedRecipes' => 'מתכונים משותפים',
@@ -1425,6 +1697,53 @@ extension on Translations {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'פיצול להכנה ובישול',
+			'sharing.title' => 'שיתוף מתכון',
+			'sharing.contactLabel' => 'אימייל או טלפון של השותף/ה',
+			'sharing.contactHint' => 'name@example.com או 05…',
+			'sharing.roleTitle' => 'הרשאה',
+			'sharing.roleViewer' => 'צפייה בלבד',
+			'sharing.roleViewerHint' => 'רואה את המתכון, לא יכול/ה לשנות אותו',
+			'sharing.roleEditor' => 'עריכה',
+			'sharing.roleEditorHint' => 'שינויים שלו/ה יופיעו גם אצלכם',
+			'sharing.send' => 'שליחת הזמנה',
+			'sharing.sent' => 'ההזמנה נשלחה',
+			'sharing.invalidContact' => 'יש להזין אימייל או מספר טלפון תקינים',
+			'sharing.notFound' => 'לא נמצא חשבון עם הפרטים האלה',
+			'sharing.self' => 'אי אפשר לשתף מתכון עם עצמכם',
+			'sharing.failed' => 'השיתוף נכשל, נסו שוב',
+			'sharing.pendingInvites' => 'הזמנות ממתינות',
+			'sharing.noPendingInvites' => 'אין הזמנות ממתינות',
+			'sharing.sharedByMe' => 'מתכונים ששיתפתי',
+			'sharing.sharedWithMe' => 'מתכונים ששותפו איתי',
+			'sharing.nothingSharedByMe' => 'עדיין לא שיתפתם מתכונים',
+			'sharing.nothingSharedWithMe' => 'עדיין לא שותפו איתכם מתכונים',
+			'sharing.accept' => 'אישור',
+			'sharing.decline' => 'ביטול',
+			'sharing.accepted' => 'המתכון נוסף למתכונים שלכם',
+			'sharing.declined' => 'ההזמנה נדחתה',
+			'sharing.acceptFailed' => 'האישור נכשל, נסו שוב',
+			'sharing.members' => 'שותפים',
+			'sharing.noMembersYet' => 'עדיין אין שותפים שאישרו',
+			'sharing.remove' => 'הסרה',
+			'sharing.leave' => 'יציאה מהשיתוף',
+			'sharing.removed' => 'השותף/ה הוסר/ה',
+			'sharing.left' => 'יצאתם מהשיתוף',
+			'sharing.invitedBy' => ({required Object name}) => 'מאת ${name}',
+			'sharing.sharedTag' => 'משותף',
+			'sharing.viewerTag' => 'צפייה בלבד',
+			'sharing.editorTag' => 'עריכה',
+			'sharing.ownerTag' => 'בבעלותי',
+			'sharing.syncFailed' => 'לא הצלחנו לרענן את המתכון המשותף, מוצגת הגרסה השמורה',
+			'sharing.viewerCannotEdit' => 'המתכון שותף איתכם לצפייה בלבד',
+			'sharing.shareAction' => 'שיתוף',
+			'notifications.title' => 'התראות',
+			'notifications.empty' => 'אין התראות',
+			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את "${recipe}"',
+			'notifications.asViewer' => 'לצפייה בלבד',
+			'notifications.asEditor' => 'לעריכה',
+			'notifications.markAllRead' => 'סימון הכל כנקרא',
+			'notifications.openRecipe' => 'פתיחת המתכון',
+			'notifications.alreadyHandled' => 'ההזמנה כבר טופלה',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -1450,6 +1769,10 @@ extension on Translations {
 			'editor.discardTitle' => 'לבטל את השינויים?',
 			'editor.discardBody' => 'השינויים שביצעתם לא יישמרו.',
 			'editor.discard' => 'בטל שינויים',
+			'editor.saveOptionsTitle' => 'איך לשמור?',
+			'editor.savePlainHint' => 'שמירת השינויים כפי שהם, ללא המתנה',
+			'editor.saveWithAi' => 'שמירה עם עיבוד AI',
+			'editor.saveWithAiHint' => 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה',
 			'ingestion.title' => 'הוספת מתכון',
 			'ingestion.pasteText' => 'הדבקת טקסט',
 			'ingestion.pasteHint' => 'הדביקו כאן מתכון מוואטסאפ או מכל מקור אחר',
@@ -1461,6 +1784,27 @@ extension on Translations {
 			'ingestion.parseError' => 'לא הצלחנו לנתח את המתכון',
 			'ingestion.reviewTitle' => 'בדקו לפני שמירה',
 			'ingestion.notConfigured' => 'התכונה הזו דורשת חיבור לשירות חיצוני שטרם הוגדר',
+			'ingestion.openOptionsTitle' => 'איך לפתוח את המתכון?',
+			'ingestion.viewOriginal' => 'הצגת המתכון המקורי',
+			'ingestion.viewOriginalHint' => 'הטקסט כפי שמופיע באתר, ללא עיבוד — נטען מיד',
+			'ingestion.generateStructured' => 'יצירת מתכון מובנה',
+			'ingestion.generateStructuredHint' => 'ניתוח אוטומטי למצרכים, לכמויות ולשלבי ההכנה',
+			'ingestion.originalTitle' => 'המתכון המקורי',
+			'ingestion.fetchFailed' => 'לא הצלחנו לטעון את העמוד',
+			'ingestion.loadingOriginal' => 'טוען את העמוד...',
+			'ingestion.structuredFromSite' => 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI',
+			'ingestion.useStructured' => 'המשך למתכון המובנה',
+			'ingestion.preferAi' => 'עיבוד באמצעות AI במקום',
+			'ingestion.analysisTimedOut' => 'הניתוח לא הושלם בזמן',
+			'ingestion.analysisFailed' => 'הניתוח נכשל',
+			'ingestion.unparsedHint' => 'הטקסט נשמר כפי שהוא. אפשר לנסות שוב, לערוך ידנית, או לשמור ולנתח מאוחר יותר.',
+			'ingestion.retryAnalysis' => 'ניסיון נוסף',
+			'ingestion.editManually' => 'עריכה ידנית',
+			'ingestion.saveForLater' => 'שמירה לניתוח מאוחר יותר',
+			'ingestion.untitledRecipe' => 'מתכון ללא שם',
+			'ingestion.manual' => 'כתיבה ידנית',
+			'ingestion.manualHint' => 'מילוי המתכון בעצמכם בפורמט המובנה — ללא ניתוח AI וללא המתנה.',
+			'ingestion.openBlankEditor' => 'פתיחת עורך ריק',
 			'mealPlanner.title' => 'תכנון ארוחות',
 			'mealPlanner.newPlan' => 'תפריט חדש',
 			'mealPlanner.planName' => 'שם התפריט',

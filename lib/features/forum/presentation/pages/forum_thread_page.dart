@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -78,8 +80,26 @@ class _ThreadState extends State<_Thread> {
   /// Recipe attached to the reply being written, if any.
   SharedRecipeEntity? _attached;
 
+  /// Mirrors the text field so the send button can disable itself; the guard
+  /// in [_send] alone made an empty tap look like a dead button.
+  bool _hasText = false;
+
+  bool get _canSend => !widget.sending && (_hasText || _attached != null);
+
+  @override
+  void initState() {
+    super.initState();
+    _reply.addListener(_syncHasText);
+  }
+
+  void _syncHasText() {
+    final hasText = _reply.text.trim().isNotEmpty;
+    if (hasText != _hasText) setState(() => _hasText = hasText);
+  }
+
   @override
   void dispose() {
+    _reply.removeListener(_syncHasText);
     _reply.dispose();
     super.dispose();
   }
@@ -113,71 +133,84 @@ class _ThreadState extends State<_Thread> {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.marginMobile),
-            children: [
-              ClayCard(
-                radius: AppRadius.md,
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AuthorRow(
-                      name: widget.post.authorName,
-                      photoUrl: widget.post.authorPhotoUrl,
-                      createdAt: widget.post.createdAt,
+          child: RefreshIndicator(
+            onRefresh: () {
+              final done = Completer<void>();
+              context.read<ForumThreadBloc>().add(
+                ForumThreadEvent.refresh(done),
+              );
+              return done.future;
+            },
+            color: AppColors.primary,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(AppSpacing.marginMobile),
+              children: [
+                ClayCard(
+                  radius: AppRadius.md,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AuthorRow(
+                        name: widget.post.authorName,
+                        photoUrl: widget.post.authorPhotoUrl,
+                        createdAt: widget.post.createdAt,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(widget.post.title, style: AppTextStyles.headlineMd),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(widget.post.body, style: AppTextStyles.bodyMd),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                if (widget.replies.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                    ),
+                    child: Text(
+                      t.community.noReplies,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                else
+                  for (final reply in widget.replies) ...[
+                    ClayCard(
+                      radius: AppRadius.md,
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AuthorRow(
+                            name: reply.authorName,
+                            photoUrl: reply.authorPhotoUrl,
+                            createdAt: reply.createdAt,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          if (reply.body.isNotEmpty)
+                            Text(reply.body, style: AppTextStyles.bodyMd),
+                          if (reply.hasRecipe) ...[
+                            const SizedBox(height: AppSpacing.sm),
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: ReplyRecipeLink(
+                                sharedRecipeId: reply.sharedRecipeId!,
+                                title: reply.sharedRecipeTitle,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    Text(widget.post.title, style: AppTextStyles.headlineMd),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(widget.post.body, style: AppTextStyles.bodyMd),
                   ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              if (widget.replies.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  child: Text(
-                    t.community.noReplies,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.labelMd.copyWith(
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                  ),
-                )
-              else
-                for (final reply in widget.replies) ...[
-                  ClayCard(
-                    radius: AppRadius.md,
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AuthorRow(
-                          name: reply.authorName,
-                          photoUrl: reply.authorPhotoUrl,
-                          createdAt: reply.createdAt,
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        if (reply.body.isNotEmpty)
-                          Text(reply.body, style: AppTextStyles.bodyMd),
-                        if (reply.hasRecipe) ...[
-                          const SizedBox(height: AppSpacing.sm),
-                          Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: ReplyRecipeLink(
-                              sharedRecipeId: reply.sharedRecipeId!,
-                              title: reply.sharedRecipeTitle,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
-            ],
+              ],
+            ),
           ),
         ),
         Padding(
@@ -247,7 +280,7 @@ class _ThreadState extends State<_Thread> {
                             Icons.send_rounded,
                             color: AppColors.primary,
                           ),
-                    onPressed: widget.sending ? null : _send,
+                    onPressed: _canSend ? _send : null,
                   ),
                 ],
               ),

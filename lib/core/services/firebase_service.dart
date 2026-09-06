@@ -117,11 +117,40 @@ class FirebaseService {
     };
   }
 
+  /// Set by the app once the router exists; a tap before that is held in
+  /// [_pendingTap] and delivered by [deliverPendingNotificationTap].
+  VoidCallback? onNotificationOpened;
+  bool _pendingTap = false;
+
   void _wireMessaging() {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint('Foreground FCM message: ${message.notification?.title}');
     });
+    FirebaseMessaging.onMessageOpenedApp.listen((_) => _notifyTap());
+  }
+
+  void _notifyTap() {
+    final handler = onNotificationOpened;
+    if (handler == null) {
+      _pendingTap = true;
+      return;
+    }
+    handler();
+  }
+
+  /// A push that *launched* the app is reported by `getInitialMessage`, not the
+  /// stream; the app calls this once its router can navigate.
+  Future<void> deliverPendingNotificationTap() async {
+    try {
+      final initial = await FirebaseMessaging.instance.getInitialMessage();
+      if (initial != null || _pendingTap) {
+        _pendingTap = false;
+        onNotificationOpened?.call();
+      }
+    } catch (e) {
+      debugPrint('Initial message check failed: $e');
+    }
   }
 
   Future<void> _initRemoteConfig() async {

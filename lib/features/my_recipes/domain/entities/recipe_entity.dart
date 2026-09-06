@@ -20,6 +20,21 @@ class RecipeEntity {
   /// separates "recipes I saved" from "recipes I wrote", and the copy stays
   /// fully editable — editing it changes only this local copy.
   final String? savedFromSharedId;
+
+  /// True for a recipe saved as a raw-text template because the analysis
+  /// timed out or failed. Its steps hold the original text, one line each, so
+  /// the analysis can be run later from the details screen. Cleared the moment
+  /// the user structures it — by the model or by hand in the editor.
+  final bool pendingAnalysis;
+
+  /// Set once this recipe is shared between accounts. Points at the Firestore
+  /// document that is then the source of truth; the local copy is a cache of
+  /// it, refreshed when the recipe is opened.
+  final String? collabId;
+
+  /// This account's standing on the shared recipe. Null for a recipe that is
+  /// not shared at all.
+  final CollabRole? collabRole;
   final DateTime createdAt;
 
   const RecipeEntity({
@@ -35,9 +50,21 @@ class RecipeEntity {
     this.sourceUrl,
     this.imageFileName,
     this.savedFromSharedId,
+    this.pendingAnalysis = false,
+    this.collabId,
+    this.collabRole,
   });
 
+  bool get isShared => collabId != null;
+
+  /// Viewers read; everyone else on a shared recipe — and anyone on an
+  /// unshared one — may edit.
+  bool get canEdit => collabRole != CollabRole.viewer;
+
   bool get isSavedFromCommunity => savedFromSharedId != null;
+
+  /// The original text a template was saved from, for a later analysis.
+  String get rawText => steps.join('\n');
 
   RecipeEntity copyWith({
     String? title,
@@ -49,6 +76,9 @@ class RecipeEntity {
     String? imageFileName,
     // A null `imageFileName` means "unchanged", so clearing needs its own flag.
     bool removeImage = false,
+    bool? pendingAnalysis,
+    String? collabId,
+    CollabRole? collabRole,
   }) {
     return RecipeEntity(
       id: id,
@@ -62,6 +92,9 @@ class RecipeEntity {
       sourceUrl: sourceUrl,
       imageFileName: removeImage ? null : (imageFileName ?? this.imageFileName),
       savedFromSharedId: savedFromSharedId,
+      pendingAnalysis: pendingAnalysis ?? this.pendingAnalysis,
+      collabId: collabId ?? this.collabId,
+      collabRole: collabRole ?? this.collabRole,
       createdAt: createdAt,
     );
   }

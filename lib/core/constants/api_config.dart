@@ -20,5 +20,13 @@ abstract class ApiConfig {
     defaultValue: 'gemini-3.8-flash',
   );
 
+  /// Web search only returns titles and links — no reasoning to speak of — so
+  /// it runs on the lightest model available. The main model is kept for
+  /// extraction, where accuracy matters more than the wait.
+  static const searchModel = String.fromEnvironment(
+    'GEMINI_SEARCH_MODEL',
+    defaultValue: 'gemini-3.5-flash-lite',
+  );
+
   static bool get isConfigured => geminiApiKey.isNotEmpty;
 }

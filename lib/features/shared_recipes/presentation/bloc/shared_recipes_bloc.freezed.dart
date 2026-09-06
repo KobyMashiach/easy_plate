@@ -61,11 +61,12 @@ extension SharedRecipesEventPatterns on SharedRecipesEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Share value)?  share,TResult Function( _ToggleLike value)?  toggleLike,TResult Function( _UpdateShared value)?  updateShared,TResult Function( _Unshare value)?  unshare,TResult Function( _Import value)?  importToMyRecipes,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _Share value)?  share,TResult Function( _ToggleLike value)?  toggleLike,TResult Function( _UpdateShared value)?  updateShared,TResult Function( _Unshare value)?  unshare,TResult Function( _Import value)?  importToMyRecipes,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init(_that);case _Share() when share != null:
+return init(_that);case _Refresh() when refresh != null:
+return refresh(_that);case _Share() when share != null:
 return share(_that);case _ToggleLike() when toggleLike != null:
 return toggleLike(_that);case _UpdateShared() when updateShared != null:
 return updateShared(_that);case _Unshare() when unshare != null:
@@ -88,11 +89,12 @@ return importToMyRecipes(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Share value)  share,required TResult Function( _ToggleLike value)  toggleLike,required TResult Function( _UpdateShared value)  updateShared,required TResult Function( _Unshare value)  unshare,required TResult Function( _Import value)  importToMyRecipes,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _Share value)  share,required TResult Function( _ToggleLike value)  toggleLike,required TResult Function( _UpdateShared value)  updateShared,required TResult Function( _Unshare value)  unshare,required TResult Function( _Import value)  importToMyRecipes,}){
 final _that = this;
 switch (_that) {
 case _Init():
-return init(_that);case _Share():
+return init(_that);case _Refresh():
+return refresh(_that);case _Share():
 return share(_that);case _ToggleLike():
 return toggleLike(_that);case _UpdateShared():
 return updateShared(_that);case _Unshare():
@@ -111,11 +113,12 @@ return importToMyRecipes(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Share value)?  share,TResult? Function( _ToggleLike value)?  toggleLike,TResult? Function( _UpdateShared value)?  updateShared,TResult? Function( _Unshare value)?  unshare,TResult? Function( _Import value)?  importToMyRecipes,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _Share value)?  share,TResult? Function( _ToggleLike value)?  toggleLike,TResult? Function( _UpdateShared value)?  updateShared,TResult? Function( _Unshare value)?  unshare,TResult? Function( _Import value)?  importToMyRecipes,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init(_that);case _Share() when share != null:
+return init(_that);case _Refresh() when refresh != null:
+return refresh(_that);case _Share() when share != null:
 return share(_that);case _ToggleLike() when toggleLike != null:
 return toggleLike(_that);case _UpdateShared() when updateShared != null:
 return updateShared(_that);case _Unshare() when unshare != null:
@@ -137,10 +140,11 @@ return importToMyRecipes(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( RecipeEntity recipe)?  share,TResult Function( String id)?  toggleLike,TResult Function( String id,  RecipeEntity recipe)?  updateShared,TResult Function( String id)?  unshare,TResult Function( SharedRecipeEntity shared)?  importToMyRecipes,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( RecipeEntity recipe)?  share,TResult Function( String id)?  toggleLike,TResult Function( String id,  RecipeEntity recipe)?  updateShared,TResult Function( String id)?  unshare,TResult Function( SharedRecipeEntity shared)?  importToMyRecipes,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init();case _Share() when share != null:
+return init();case _Refresh() when refresh != null:
+return refresh(_that.done);case _Share() when share != null:
 return share(_that.recipe);case _ToggleLike() when toggleLike != null:
 return toggleLike(_that.id);case _UpdateShared() when updateShared != null:
 return updateShared(_that.id,_that.recipe);case _Unshare() when unshare != null:
@@ -163,10 +167,11 @@ return importToMyRecipes(_that.shared);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( RecipeEntity recipe)  share,required TResult Function( String id)  toggleLike,required TResult Function( String id,  RecipeEntity recipe)  updateShared,required TResult Function( String id)  unshare,required TResult Function( SharedRecipeEntity shared)  importToMyRecipes,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( RecipeEntity recipe)  share,required TResult Function( String id)  toggleLike,required TResult Function( String id,  RecipeEntity recipe)  updateShared,required TResult Function( String id)  unshare,required TResult Function( SharedRecipeEntity shared)  importToMyRecipes,}) {final _that = this;
 switch (_that) {
 case _Init():
-return init();case _Share():
+return init();case _Refresh():
+return refresh(_that.done);case _Share():
 return share(_that.recipe);case _ToggleLike():
 return toggleLike(_that.id);case _UpdateShared():
 return updateShared(_that.id,_that.recipe);case _Unshare():
@@ -185,10 +190,11 @@ return importToMyRecipes(_that.shared);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( RecipeEntity recipe)?  share,TResult? Function( String id)?  toggleLike,TResult? Function( String id,  RecipeEntity recipe)?  updateShared,TResult? Function( String id)?  unshare,TResult? Function( SharedRecipeEntity shared)?  importToMyRecipes,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( RecipeEntity recipe)?  share,TResult? Function( String id)?  toggleLike,TResult? Function( String id,  RecipeEntity recipe)?  updateShared,TResult? Function( String id)?  unshare,TResult? Function( SharedRecipeEntity shared)?  importToMyRecipes,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init();case _Share() when share != null:
+return init();case _Refresh() when refresh != null:
+return refresh(_that.done);case _Share() when share != null:
 return share(_that.recipe);case _ToggleLike() when toggleLike != null:
 return toggleLike(_that.id);case _UpdateShared() when updateShared != null:
 return updateShared(_that.id,_that.recipe);case _Unshare() when unshare != null:
@@ -238,6 +244,78 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 
+
+/// @nodoc
+
+
+class _Refresh with DiagnosticableTreeMixin implements SharedRecipesEvent {
+  const _Refresh(this.done);
+  
+
+ final  Completer<void> done;
+
+/// Create a copy of SharedRecipesEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RefreshCopyWith<_Refresh> get copyWith => __$RefreshCopyWithImpl<_Refresh>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SharedRecipesEvent.refresh'))
+    ..add(DiagnosticsProperty('done', done));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Refresh&&(identical(other.done, done) || other.done == done));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,done);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'SharedRecipesEvent.refresh(done: $done)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RefreshCopyWith<$Res> implements $SharedRecipesEventCopyWith<$Res> {
+  factory _$RefreshCopyWith(_Refresh value, $Res Function(_Refresh) _then) = __$RefreshCopyWithImpl;
+@useResult
+$Res call({
+ Completer<void> done
+});
+
+
+
+
+}
+/// @nodoc
+class __$RefreshCopyWithImpl<$Res>
+    implements _$RefreshCopyWith<$Res> {
+  __$RefreshCopyWithImpl(this._self, this._then);
+
+  final _Refresh _self;
+  final $Res Function(_Refresh) _then;
+
+/// Create a copy of SharedRecipesEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? done = null,}) {
+  return _then(_Refresh(
+null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
+as Completer<void>,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

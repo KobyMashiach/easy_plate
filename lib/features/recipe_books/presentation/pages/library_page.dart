@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/account_avatar_button.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
@@ -29,6 +30,7 @@ class LibraryPage extends StatelessWidget {
             leading: const AccountAvatarButton(),
             trailingIcon: Icons.add_rounded,
             onTrailingTap: () => _showCreateBookDialog(context),
+            actions: const [NotificationBellButton()],
           ),
           body: BlocBuilder<LibraryBloc, LibraryState>(
             builder: (context, state) {

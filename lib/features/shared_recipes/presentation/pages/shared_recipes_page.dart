@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,10 +13,12 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
+import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../community/presentation/widgets/author_row.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
 import '../widgets/shared_feed_filter_sheet.dart';
 import '../widgets/shared_feed_query.dart';
@@ -104,6 +108,14 @@ class _FeedState extends State<_Feed> {
         SharedFeedScope.saved || SharedFeedScope.all => t.community.noSharedRecipes,
       };
 
+  /// Hands the indicator a future that completes when the bloc has finished,
+  /// rather than one derived from the state stream.
+  Future<void> _refreshFeed(BuildContext context) {
+    final done = Completer<void>();
+    context.read<SharedRecipesBloc>().add(SharedRecipesEvent.refresh(done));
+    return done.future;
+  }
+
   Future<void> _openFilters() async {
     final updated = await showSharedFeedFilterSheet(context, _query);
     if (updated != null && mounted) setState(() => _query = updated);
@@ -168,26 +180,35 @@ class _FeedState extends State<_Feed> {
           ),
         ),
         Expanded(
-          child: visible.isEmpty
-              ? ClayEmptyState(
-                  icon: isSearchingOrFiltering
-                      ? Icons.search_off_rounded
-                      : Icons.public_rounded,
-                  message: isSearchingOrFiltering
-                      ? t.community.noResults
-                      : _emptyMessage,
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.marginMobile,
-                    0,
-                    AppSpacing.marginMobile,
-                    ClayNavDock.reservedHeight,
+          child: RefreshIndicator(
+            onRefresh: () => _refreshFeed(context),
+            color: AppColors.primary,
+            child: visible.isEmpty
+                ? RefreshableEmptyState(
+                    child: ClayEmptyState(
+                      icon: isSearchingOrFiltering
+                          ? Icons.search_off_rounded
+                          : Icons.public_rounded,
+                      message: isSearchingOrFiltering
+                          ? t.community.noResults
+                          : _emptyMessage,
+                    ),
+                  )
+                : ListView.separated(
+                    // Always scrollable so a list too short to overflow can
+                    // still be pulled.
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.marginMobile,
+                      0,
+                      AppSpacing.marginMobile,
+                      ClayNavDock.reservedHeight,
+                    ),
+                    itemCount: visible.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                    itemBuilder: (context, index) => _SharedCard(shared: visible[index]),
                   ),
-                  itemCount: visible.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                  itemBuilder: (context, index) => _SharedCard(shared: visible[index]),
-                ),
+          ),
         ),
       ],
     );
@@ -357,7 +378,12 @@ class _SharedCard extends StatelessWidget {
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
-      onTap: () => context.pushNamed(Routing.recipeDetails, extra: recipe),
+      // Read-only for everyone, the author included: their edit lives on the
+      // card above and rewrites the shared copy, not a local one.
+      onTap: () => context.pushNamed(
+        Routing.recipeDetails,
+        extra: RecipeDetailsArgs(recipe: recipe, readOnly: true),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

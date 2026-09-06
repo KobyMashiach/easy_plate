@@ -20,6 +20,14 @@ service cloud.firestore {
       allow read, write: if signedIn() && request.auth.uid == uid;
     }
 
+    // The display half of a profile, split out because rules grant or deny a
+    // whole document: opening /users up so authors' names could be shown would
+    // have exposed their email, phone and push token too.
+    match /public_profiles/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == uid;
+    }
+
     // Community recipes: readable by every signed-in user, writable only by
     // whoever published them.
     match /shared_recipes/{postId} {
@@ -77,6 +85,87 @@ service cloud.firestore {
                           || get(/databases/$(database)/documents/forum_posts/$(postId))
                                .data.authorUid == request.auth.uid);
       }
+    }
+
+    // Hash of a contact → uid. Anyone signed in may look a hash up; only the
+    // account it points at may claim it, so nobody can register someone else's
+    // email as their own.
+    match /user_directory/{hash} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    // A recipe shared between accounts: the source of truth the local copies
+    // sync from. `memberUids` mirrors the keys of `members` so membership is
+    // queryable and provable here.
+    match /collab_recipes/{collabId} {
+      function isOwner() {
+        return signedIn() && resource.data.ownerUid == request.auth.uid;
+      }
+      function isMember() {
+        return signedIn() && request.auth.uid in resource.data.memberUids;
+      }
+      function isEditor() {
+        return isMember() && resource.data.members[request.auth.uid] == 'editor';
+      }
+      function changedOnly(keys) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+      }
+      // The invite this account was sent for this recipe, by its deterministic id.
+      function myInvite() {
+        return get(/databases/$(database)/documents/share_invites/$(collabId + '_' + request.auth.uid)).data;
+      }
+
+      allow read: if isOwner() || isMember();
+      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow delete: if isOwner();
+      allow update: if
+        // The owner may do anything but hand the recipe to someone else.
+        (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid)
+        // An editor rewrites the recipe but never the roster.
+        || (isEditor()
+            && request.resource.data.ownerUid == resource.data.ownerUid
+            && request.resource.data.members == resource.data.members
+            && request.resource.data.memberUids == resource.data.memberUids)
+        // Accepting: add exactly yourself, with exactly the role you were
+        // offered, on an invite you have marked accepted.
+        || (signedIn()
+            && changedOnly(['members', 'memberUids', 'updatedAt'])
+            && request.resource.data.members.diff(resource.data.members).addedKeys().hasOnly([request.auth.uid])
+            && myInvite().status == 'accepted'
+            && request.resource.data.members[request.auth.uid] == myInvite().role)
+        // Leaving: remove exactly yourself.
+        || (isMember()
+            && changedOnly(['members', 'memberUids', 'updatedAt'])
+            && request.resource.data.members.diff(resource.data.members).removedKeys().hasOnly([request.auth.uid]));
+    }
+
+    match /share_invites/{inviteId} {
+      allow read: if signedIn()
+                  && (resource.data.ownerUid == request.auth.uid
+                      || resource.data.targetUid == request.auth.uid);
+      allow create: if signedIn()
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.status == 'pending';
+      // The target answers; nothing else on the invite moves.
+      allow update: if signedIn()
+                    && resource.data.targetUid == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'respondedAt'])
+                    && request.resource.data.status in ['accepted', 'declined'];
+      allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    // Each account's inbox. Anyone signed in may drop an item into someone
+    // else's inbox as long as they sign it as themselves; only the inbox
+    // owner reads it or marks it read.
+    match /notifications/{uid}/items/{itemId} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
+      allow update: if signedIn()
+                    && request.auth.uid == uid
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow delete: if signedIn() && request.auth.uid == uid;
     }
 
     // Nothing else is reachable until it has a rule of its own.

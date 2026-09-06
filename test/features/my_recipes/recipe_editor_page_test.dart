@@ -2,6 +2,7 @@ import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import 'package:easy_plate/features/my_recipes/presentation/pages/recipe_editor_page.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/entities/original_recipe_page_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_result_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,10 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
 
   @override
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) =>
+      throw UnimplementedError();
+
+  @override
+  Future<OriginalRecipePageEntity> fetchOriginalPage(String url) =>
       throw UnimplementedError();
 }
 
@@ -91,8 +96,22 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> save(WidgetTester tester) async {
+  Future<void> openSaveSheet(WidgetTester tester) async {
     await tester.tap(find.byIcon(Icons.check_rounded));
+    await tester.pumpAndSettle();
+  }
+
+  /// Plain save: pops straight away, never touches the model.
+  Future<void> save(WidgetTester tester) async {
+    await openSaveSheet(tester);
+    await tester.tap(find.text('שמירת השינויים כפי שהם, ללא המתנה'));
+    await tester.pumpAndSettle();
+  }
+
+  /// Save with the AI pass — the only route that reaches the model on save.
+  Future<void> saveWithAi(WidgetTester tester) async {
+    await openSaveSheet(tester);
+    await tester.tap(find.text('שמירה עם עיבוד AI'));
     await tester.pumpAndSettle();
   }
 
@@ -155,22 +174,36 @@ void main() {
     expect(repository.refineCalls, 0, reason: 'times unchanged, so no refine');
   });
 
-  testWidgets('an empty title blocks saving', (tester) async {
+  testWidgets('an empty title blocks saving before the sheet even opens', (tester) async {
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_title), '   ');
-    await save(tester);
+    await openSaveSheet(tester);
 
     expect(popped, isNull);
+    expect(find.text('איך לשמור?'), findsNothing);
     expect(find.byType(RecipeEditorPage), findsOneWidget);
   });
 
-  testWidgets('changing the cook time re-syncs the steps through the model', (tester) async {
-    repository.onRefine = (recipe) => recipe.copyWith(steps: ['ערבוב עם מלח פלפל', 'מבשלים 35 דקות']);
+  testWidgets('a plain save after a time change does not wait on the model', (tester) async {
+    // The whole point of the sheet: a quick edit must stay quick.
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_cook), '35');
     await save(tester);
+
+    expect(repository.refineCalls, 0);
+    expect(popped?.cookTimeMinutes, 35);
+    // The steps are left exactly as typed — nothing rewrote "20 דקות".
+    expect(popped?.steps.last, 'מבשלים 20 דקות');
+  });
+
+  testWidgets('saving with AI after a time change re-syncs the steps', (tester) async {
+    repository.onRefine = (recipe) => recipe.copyWith(steps: ['ערבוב עם מלח פלפל', 'מבשלים 35 דקות']);
+    await openEditor(tester, buildRecipe());
+
+    await tester.enterText(find.byType(TextField).at(_cook), '35');
+    await saveWithAi(tester);
 
     expect(repository.refinedTimesChanged, isTrue);
     expect(repository.refined?.cookTimeMinutes, 35);
@@ -243,7 +276,7 @@ void main() {
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_cook), '35');
-    await save(tester);
+    await saveWithAi(tester);
 
     expect(popped?.cookTimeMinutes, 35);
     expect(popped?.steps.first, 'ערבוב עפ מלח פלפל');

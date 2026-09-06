@@ -8,6 +8,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
+import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
 import '../../../shared_recipes/domain/usecases/get_shared_recipe_by_id_usecase.dart';
 
@@ -48,7 +49,10 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
         );
         return;
       }
-      router.pushNamed(Routing.recipeDetails, extra: shared.recipe);
+      router.pushNamed(
+        Routing.recipeDetails,
+        extra: RecipeDetailsArgs(recipe: shared.recipe, readOnly: true),
+      );
     } catch (e) {
       debugPrint('Opening linked recipe failed: $e');
       messenger.showSnackBar(

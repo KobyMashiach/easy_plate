@@ -24,4 +24,20 @@ class ForumReplyEntity {
   });
 
   bool get hasRecipe => sharedRecipeId != null;
+
+  /// Replaces the display fields with the author's live profile. Kept as a
+  /// dedicated method rather than a general copyWith: the author's *identity*
+  /// (`authorUid`) is never rewritten, only how it is shown.
+  ForumReplyEntity withAuthor({required String name, String? photoUrl}) {
+    return ForumReplyEntity(
+      id: id,
+      body: body,
+      authorUid: authorUid,
+      authorName: name,
+      authorPhotoUrl: photoUrl,
+      createdAt: createdAt,
+      sharedRecipeId: sharedRecipeId,
+      sharedRecipeTitle: sharedRecipeTitle,
+    );
+  }
 }

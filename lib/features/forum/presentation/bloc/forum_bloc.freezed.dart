@@ -61,11 +61,12 @@ extension ForumEventPatterns on ForumEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _CreatePost value)?  createPost,TResult Function( _DeletePost value)?  deletePost,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _CreatePost value)?  createPost,TResult Function( _DeletePost value)?  deletePost,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init(_that);case _CreatePost() when createPost != null:
+return init(_that);case _Refresh() when refresh != null:
+return refresh(_that);case _CreatePost() when createPost != null:
 return createPost(_that);case _DeletePost() when deletePost != null:
 return deletePost(_that);case _:
   return orElse();
@@ -85,11 +86,12 @@ return deletePost(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _CreatePost value)  createPost,required TResult Function( _DeletePost value)  deletePost,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _CreatePost value)  createPost,required TResult Function( _DeletePost value)  deletePost,}){
 final _that = this;
 switch (_that) {
 case _Init():
-return init(_that);case _CreatePost():
+return init(_that);case _Refresh():
+return refresh(_that);case _CreatePost():
 return createPost(_that);case _DeletePost():
 return deletePost(_that);}
 }
@@ -105,11 +107,12 @@ return deletePost(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _CreatePost value)?  createPost,TResult? Function( _DeletePost value)?  deletePost,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _CreatePost value)?  createPost,TResult? Function( _DeletePost value)?  deletePost,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init(_that);case _CreatePost() when createPost != null:
+return init(_that);case _Refresh() when refresh != null:
+return refresh(_that);case _CreatePost() when createPost != null:
 return createPost(_that);case _DeletePost() when deletePost != null:
 return deletePost(_that);case _:
   return null;
@@ -128,10 +131,11 @@ return deletePost(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String title,  String body)?  createPost,TResult Function( String postId)?  deletePost,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String title,  String body)?  createPost,TResult Function( String postId)?  deletePost,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init();case _CreatePost() when createPost != null:
+return init();case _Refresh() when refresh != null:
+return refresh(_that.done);case _CreatePost() when createPost != null:
 return createPost(_that.title,_that.body);case _DeletePost() when deletePost != null:
 return deletePost(_that.postId);case _:
   return orElse();
@@ -151,10 +155,11 @@ return deletePost(_that.postId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String title,  String body)  createPost,required TResult Function( String postId)  deletePost,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String title,  String body)  createPost,required TResult Function( String postId)  deletePost,}) {final _that = this;
 switch (_that) {
 case _Init():
-return init();case _CreatePost():
+return init();case _Refresh():
+return refresh(_that.done);case _CreatePost():
 return createPost(_that.title,_that.body);case _DeletePost():
 return deletePost(_that.postId);}
 }
@@ -170,10 +175,11 @@ return deletePost(_that.postId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String title,  String body)?  createPost,TResult? Function( String postId)?  deletePost,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String title,  String body)?  createPost,TResult? Function( String postId)?  deletePost,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
-return init();case _CreatePost() when createPost != null:
+return init();case _Refresh() when refresh != null:
+return refresh(_that.done);case _CreatePost() when createPost != null:
 return createPost(_that.title,_that.body);case _DeletePost() when deletePost != null:
 return deletePost(_that.postId);case _:
   return null;
@@ -220,6 +226,78 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 
+
+/// @nodoc
+
+
+class _Refresh with DiagnosticableTreeMixin implements ForumEvent {
+  const _Refresh(this.done);
+  
+
+ final  Completer<void> done;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RefreshCopyWith<_Refresh> get copyWith => __$RefreshCopyWithImpl<_Refresh>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumEvent.refresh'))
+    ..add(DiagnosticsProperty('done', done));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Refresh&&(identical(other.done, done) || other.done == done));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,done);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumEvent.refresh(done: $done)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RefreshCopyWith<$Res> implements $ForumEventCopyWith<$Res> {
+  factory _$RefreshCopyWith(_Refresh value, $Res Function(_Refresh) _then) = __$RefreshCopyWithImpl;
+@useResult
+$Res call({
+ Completer<void> done
+});
+
+
+
+
+}
+/// @nodoc
+class __$RefreshCopyWithImpl<$Res>
+    implements _$RefreshCopyWith<$Res> {
+  __$RefreshCopyWithImpl(this._self, this._then);
+
+  final _Refresh _self;
+  final $Res Function(_Refresh) _then;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? done = null,}) {
+  return _then(_Refresh(
+null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
+as Completer<void>,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

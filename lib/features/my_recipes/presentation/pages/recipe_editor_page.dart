@@ -132,6 +132,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       sourceChannel: base.sourceChannel,
       sourceUrl: base.sourceUrl,
       imageFileName: base.imageFileName,
+      savedFromSharedId: base.savedFromSharedId,
+      // Whoever saves from here has structured the recipe themselves; the
+      // template no longer waits on the model.
+      pendingAnalysis: false,
       createdAt: base.createdAt,
     );
   }
@@ -205,18 +209,31 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     return true;
   }
 
-  /// Changing a time silently invalidates any duration written into the steps,
-  /// so the correction runs on the way out rather than waiting to be asked for.
+  /// Saving never waits on the model by itself. The AI pass — spelling, and
+  /// re-syncing any duration written into the steps when a time changed — is
+  /// offered as the second option, so a quick edit stays quick.
   Future<void> _save() async {
     if (!_validate()) return;
 
+    final withAi = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: AppColors.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
+      ),
+      builder: (sheetContext) => _SaveOptionsSheet(
+        onPick: (value) => Navigator.of(sheetContext).pop(value),
+      ),
+    );
+    if (withAi == null || !mounted) return;
+
     var result = _collect();
-    if (_timesChanged && result.steps.isNotEmpty) {
-      final refined = await _refine(timesChanged: true);
+    if (withAi) {
+      final refined = await _refine(timesChanged: _timesChanged);
       if (!mounted) return;
       if (refined != null) {
         result = refined;
-        _toast(t.editor.timesSynced);
+        if (_timesChanged) _toast(t.editor.timesSynced);
       }
     }
 
@@ -537,6 +554,76 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
             icon: const Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
             onPressed: () => setState(() => _steps.removeAt(index).dispose()),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The two ways out of the editor. Plain save pops immediately; the AI option
+/// runs the refine first.
+class _SaveOptionsSheet extends StatelessWidget {
+  final ValueChanged<bool> onPick;
+
+  const _SaveOptionsSheet({required this.onPick});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClaySectionHeader(title: t.editor.saveOptionsTitle, underline: true),
+            const SizedBox(height: AppSpacing.md),
+            _option(
+              icon: Icons.save_rounded,
+              title: t.common.save,
+              hint: t.editor.savePlainHint,
+              onTap: () => onPick(false),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _option(
+              icon: Icons.auto_awesome_rounded,
+              title: t.editor.saveWithAi,
+              hint: t.editor.saveWithAiHint,
+              onTap: () => onPick(true),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _option({
+    required IconData icon,
+    required String title,
+    required String hint,
+    required VoidCallback onTap,
+  }) {
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, size: 22, color: AppColors.primary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTextStyles.bodyLg),
+                Text(
+                  hint,
+                  style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
         ],
       ),
     );

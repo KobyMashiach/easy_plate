@@ -65,4 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> linkEmailPassword(String email, String password) =>
       dataSource.linkEmailPassword(email, password);
+
+  @override
+  Future<void> linkGoogle() => dataSource.linkGoogle();
 }

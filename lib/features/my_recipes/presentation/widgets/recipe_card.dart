@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/duration_label.dart';
@@ -18,7 +19,11 @@ class RecipeCard extends StatelessWidget {
   final RecipeEntity recipe;
   final VoidCallback onTap;
 
-  const RecipeCard({super.key, required this.recipe, required this.onTap});
+  /// Present only for recipes this account may share — its own, unshared or
+  /// owned. Members of someone else's recipe do not get to invite others.
+  final VoidCallback? onShare;
+
+  const RecipeCard({super.key, required this.recipe, required this.onTap, this.onShare});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +33,7 @@ class RecipeCard extends StatelessWidget {
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.sm),
       onTap: onTap,
+      onLongPress: onShare,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,6 +54,24 @@ class RecipeCard extends StatelessWidget {
                   spacing: AppSpacing.xs,
                   runSpacing: AppSpacing.xs,
                   children: [
+                    if (recipe.collabRole case final role?)
+                      ClayTag(
+                        label: switch (role) {
+                          CollabRole.owner => t.sharing.ownerTag,
+                          CollabRole.editor => t.sharing.editorTag,
+                          CollabRole.viewer => t.sharing.viewerTag,
+                        },
+                        icon: Icons.group_rounded,
+                        background: AppColors.secondaryContainer,
+                        foreground: AppColors.onSecondaryContainer,
+                      ),
+                    if (recipe.pendingAnalysis)
+                      ClayTag(
+                        label: t.recipe.pendingAnalysis,
+                        icon: Icons.hourglass_top_rounded,
+                        background: AppColors.secondaryContainer,
+                        foreground: AppColors.onSecondaryContainer,
+                      ),
                     if (totalMinutes > 0)
                       ClayTag(
                         label: durationLabel(totalMinutes),

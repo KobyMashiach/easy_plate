@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/account_avatar_button.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
@@ -30,6 +31,7 @@ class GroceryListPage extends StatelessWidget {
             title: t.appName,
             leading: const AccountAvatarButton(),
             actions: [
+              const NotificationBellButton(),
               IconButton(
                 icon: const Icon(Icons.autorenew_rounded, color: AppColors.primary),
                 onPressed: () =>

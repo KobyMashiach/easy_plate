@@ -21,4 +21,20 @@ class ForumPostEntity {
     this.authorPhotoUrl,
     this.replyCount = 0,
   });
+
+  /// Replaces the display fields with the author's live profile. Kept as a
+  /// dedicated method rather than a general copyWith: the author's *identity*
+  /// (`authorUid`) is never rewritten, only how it is shown.
+  ForumPostEntity withAuthor({required String name, String? photoUrl}) {
+    return ForumPostEntity(
+      id: id,
+      title: title,
+      body: body,
+      authorUid: authorUid,
+      authorName: name,
+      authorPhotoUrl: photoUrl,
+      createdAt: createdAt,
+      replyCount: replyCount,
+    );
+  }
 }

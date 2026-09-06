@@ -8,7 +8,9 @@ import '../../features/user_profile/domain/entities/user_profile_entity.dart';
 import '../../features/user_profile/domain/repositories/user_profile_repository.dart';
 import '../../features/user_profile/domain/entities/user_preferences_entity.dart';
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
+import '../../features/notifications/domain/repositories/notifications_repository.dart';
 import '../hive/user_scope.dart';
+import 'notifications_service.dart';
 import 'firebase_service.dart';
 
 /// Where the user stands in the gate: signed out, email not yet confirmed,
@@ -37,6 +39,7 @@ class AuthSessionService extends ChangeNotifier {
 
   UserProfileRepository? _profiles;
   UserPreferencesRepository? _preferences;
+  NotificationsRepository? _notifications;
   StreamSubscription<AppUserEntity?>? _subscription;
 
   bool _bound = false;
@@ -62,6 +65,7 @@ class AuthSessionService extends ChangeNotifier {
     required AuthRepository auth,
     required UserProfileRepository profiles,
     required UserPreferencesRepository preferences,
+    NotificationsRepository? notifications,
     Future<void> Function(UserPreferencesEntity preferences)? onPreferencesLoaded,
   }) {
     if (_bound) return;
@@ -69,6 +73,7 @@ class AuthSessionService extends ChangeNotifier {
 
     _profiles = profiles;
     _preferences = preferences;
+    _notifications = notifications;
     this.onPreferencesLoaded = onPreferencesLoaded;
     _subscription = auth.authStateChanges().listen(_onAuthChanged);
   }
@@ -79,6 +84,7 @@ class AuthSessionService extends ChangeNotifier {
     if (user == null) {
       _profile = null;
       _onboardingComplete = false;
+      NotificationsService().unbind();
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
       return;
@@ -136,6 +142,24 @@ class AuthSessionService extends ChangeNotifier {
 
     _set(_onboardingComplete ? AuthStage.ready : AuthStage.needsOnboarding);
     unawaited(_registerPush(user.uid));
+    unawaited(_publishPublicProfile());
+    if (_notifications case final repository?) {
+      NotificationsService().bind(user.uid, repository);
+    }
+  }
+
+  /// Keeps the world-readable half of the profile in step on every sign-in.
+  /// Accounts created before it existed have none, and their old posts would
+  /// keep showing the name stored at post time until they next edited their
+  /// profile.
+  Future<void> _publishPublicProfile() async {
+    final profile = _profile;
+    if (profile == null) return;
+    try {
+      await _profiles!.publishPublicProfile(profile);
+    } catch (e) {
+      debugPrint('Public profile publish failed: $e');
+    }
   }
 
   Future<void> _registerPush(String uid) async {
@@ -179,6 +203,7 @@ class AuthSessionService extends ChangeNotifier {
     _profile = null;
     _onboardingComplete = false;
     onPreferencesLoaded = null;
+    _notifications = null;
   }
 
   void _set(AuthStage stage) {

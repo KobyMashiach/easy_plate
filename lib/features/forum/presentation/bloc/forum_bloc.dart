@@ -16,6 +16,12 @@ part 'forum_bloc.freezed.dart';
 @freezed
 sealed class ForumEvent with _$ForumEvent {
   const factory ForumEvent.init() = _Init;
+
+  /// Carries a completer so the pull-to-refresh spinner is told exactly when the
+  /// reload finished. Waiting on the state stream instead would hang whenever
+  /// the reloaded data is identical, because bloc skips emitting a state equal
+  /// to the current one.
+  const factory ForumEvent.refresh(Completer<void> done) = _Refresh;
   const factory ForumEvent.createPost(String title, String body) = _CreatePost;
   const factory ForumEvent.deletePost(String postId) = _DeletePost;
 }
@@ -38,6 +44,7 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
     required this.deleteForumPostUseCase,
   }) : super(const ForumState.loading()) {
     on<_Init>(_init);
+    on<_Refresh>(_refresh);
     on<_CreatePost>(_createPost);
     on<_DeletePost>(_deletePost);
     add(const ForumEvent.init());
@@ -57,6 +64,14 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
     } catch (e) {
       debugPrint('Forum error: $e');
       emit(.errorMessage(e.toString()));
+    }
+  }
+
+  Future<void> _refresh(_Refresh event, Emitter<ForumState> emit) async {
+    try {
+      await _init(const _Init(), emit);
+    } finally {
+      if (!event.done.isCompleted) event.done.complete();
     }
   }
 

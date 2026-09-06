@@ -36,6 +36,7 @@ abstract class AuthDataSource {
   });
   Future<void> linkPhone(String verificationId, String smsCode);
   Future<void> linkEmailPassword(String email, String password);
+  Future<void> linkGoogle();
 }
 
 class FirebaseAuthDataSource implements AuthDataSource {
@@ -50,14 +51,22 @@ class FirebaseAuthDataSource implements AuthDataSource {
     return _googleInit ??= GoogleSignIn.instance.initialize();
   }
 
+  /// Firebase reports an identity the account does not have as an empty
+  /// string on some platforms, not null. Left as-is, "no email" looked like an
+  /// email to every `== null` check downstream — the profile screen showed
+  /// neither a value nor the button to add one.
+  @visibleForTesting
+  static String? blankToNull(String? value) =>
+      value == null || value.trim().isEmpty ? null : value;
+
   AppUserEntity? _map(User? user) {
     if (user == null) return null;
     return AppUserEntity(
       uid: user.uid,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      displayName: user.displayName,
-      photoUrl: user.photoURL,
+      email: blankToNull(user.email),
+      phoneNumber: blankToNull(user.phoneNumber),
+      displayName: blankToNull(user.displayName),
+      photoUrl: blankToNull(user.photoURL),
       emailVerified: user.emailVerified,
       providerIds: user.providerData.map((p) => p.providerId).toList(),
     );
@@ -289,6 +298,33 @@ class FirebaseAuthDataSource implements AuthDataSource {
       await _requireUser.linkWithCredential(credential);
       // The linked number only appears on the cached user after a reload.
       await _auth.currentUser?.reload();
+    } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  /// Attaches a Google account, so signing in with Google later resolves to
+  /// this same user. Firebase also adopts the Google address as the account's
+  /// email — already verified — when it has none, which is the quickest way
+  /// for a phone-only account to end up with a confirmed email.
+  @override
+  Future<void> linkGoogle() async {
+    try {
+      await _ensureGoogleReady();
+      final account = await GoogleSignIn.instance.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        throw const AppException(
+          AppErrorType.unauthorized,
+          message: 'Google returned no ID token',
+        );
+      }
+      await _requireUser.linkWithCredential(GoogleAuthProvider.credential(idToken: idToken));
+      await _auth.currentUser?.reload();
+    } on GoogleSignInException catch (e) {
+      throw e.code == GoogleSignInExceptionCode.canceled
+          ? const AppException(AppErrorType.cancelled)
+          : AppException(AppErrorType.unknown, message: e.description ?? e.code.name);
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }

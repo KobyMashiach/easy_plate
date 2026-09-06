@@ -40,4 +40,8 @@ abstract class AuthRepository {
 
   /// The mirror of [startPhoneLink] for an account created by phone.
   Future<void> linkEmailPassword(String email, String password);
+
+  /// Attaches a Google account. Also gives a phone-only account a verified
+  /// email, since Firebase adopts Google's address when the account has none.
+  Future<void> linkGoogle();
 }

@@ -8,13 +8,16 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/account_avatar_button.dart';
+import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../bloc/my_recipes_bloc.dart';
+import '../../../recipe_sharing/presentation/widgets/recipe_share_sheet.dart';
 import '../widgets/recipe_card.dart';
+import 'recipe_details_page.dart';
 
 class MyRecipesPage extends StatelessWidget {
   const MyRecipesPage({super.key});
@@ -28,6 +31,7 @@ class MyRecipesPage extends StatelessWidget {
           appBar: ClayTopAppBar(
             title: t.appName,
             leading: const AccountAvatarButton(),
+            actions: const [NotificationBellButton()],
             trailingIcon: Icons.auto_awesome_rounded,
             // The page lives in an IndexedStack, so returning from ingestion
             // doesn't rebuild it — reload explicitly or a freshly saved recipe
@@ -172,7 +176,22 @@ class _RecipesBodyState extends State<_RecipesBody> {
                 recipe: recipe,
                 // No reload on return: the list is driven by the box, so an
                 // edit made on the details page arrives on its own.
-                onTap: () => context.pushNamed(Routing.recipeDetails, extra: recipe),
+                onTap: () => context.pushNamed(
+                  Routing.recipeDetails,
+                  extra: RecipeDetailsArgs(recipe: recipe),
+                ),
+                // Long-press to share. Only for recipes this account owns —
+                // a member of someone else's recipe cannot invite others.
+                onShare: recipe.collabRole == null || recipe.collabRole == CollabRole.owner
+                    ? () async {
+                        final sent = await showRecipeShareSheet(context, recipe);
+                        if (sent == true && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(t.sharing.sent, style: AppTextStyles.bodyMd)),
+                          );
+                        }
+                      }
+                    : null,
               ),
             ),
       ],

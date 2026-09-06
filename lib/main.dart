@@ -18,6 +18,7 @@ import 'core/styles/app_theme.dart';
 import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
 import 'core/utils/routing/app_router.dart';
+import 'core/utils/routing/routing.dart';
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 
 Future<void> main() async {
@@ -61,6 +62,7 @@ Future<void> main() async {
               auth: auth,
               profiles: context.read(),
               preferences: context.read(),
+              notifications: context.read(),
               onPreferencesLoaded: _applyPreferences,
             );
             return const EasyPlateApp();
@@ -97,6 +99,10 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // A tapped push lands on the inbox — whether the app was already running
+    // or was launched by the tap.
+    FirebaseService().onNotificationOpened = () => _router.pushNamed(Routing.notifications);
+    FirebaseService().deliverPendingNotificationTap();
   }
 
   @override

@@ -14,6 +14,7 @@ class ClayCard extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final double radius;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool showSpine;
   final Color spineColor;
   final bool isActive;
@@ -25,6 +26,7 @@ class ClayCard extends StatefulWidget {
     this.padding = const EdgeInsets.all(AppSpacing.gutter),
     this.radius = AppRadius.std,
     this.onTap,
+    this.onLongPress,
     this.showSpine = false,
     this.spineColor = AppColors.primaryFixed,
     this.isActive = false,
@@ -106,6 +108,7 @@ class _ClayCardState extends State<ClayCard> {
 
     return GestureDetector(
       onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) => setState(() => _pressed = false),
       onTapCancel: () => setState(() => _pressed = false),

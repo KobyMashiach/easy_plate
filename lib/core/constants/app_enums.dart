@@ -46,7 +46,9 @@ enum AccessRole {
   editor,
 }
 
-enum RecipeIngestionChannel { rawText, webSearch, urlScrape, socialVideo }
+/// Stored on recipes as a plain string, so adding a value is safe for
+/// existing boxes.
+enum RecipeIngestionChannel { rawText, webSearch, urlScrape, socialVideo, manual }
 
 /// Starting shape for a new meal plan. Not persisted — it only decides which
 /// meals get pre-created across the week, and the plan is freely editable
@@ -92,3 +94,12 @@ enum MeasurementUnit {
   @HiveField(9)
   unspecified,
 }
+
+/// A person's standing on a recipe shared between accounts. Stored on recipes
+/// as a plain string. Owner is not an [AccessRole] because the owner alone
+/// manages members; an invite only ever grants viewer or editor.
+enum CollabRole { owner, editor, viewer }
+
+enum ShareInviteStatus { pending, accepted, declined }
+
+enum AppNotificationType { shareInvite }

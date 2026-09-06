@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../../domain/entities/public_profile_entity.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_profile_repository.dart';
 import '../datasources/user_profile_remote_datasource.dart';
@@ -21,4 +22,16 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   @override
   Future<void> savePushToken(String uid, String token) =>
       remoteDataSource.savePushToken(uid, token);
+
+  @override
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) =>
+      remoteDataSource.getPublicProfiles(uids);
+
+  @override
+  Future<void> publishPublicProfile(UserProfileEntity profile) =>
+      remoteDataSource.publishPublicProfile(profile);
+
+  @override
+  Future<String?> findUidByContact(String contact) =>
+      remoteDataSource.findUidByContact(contact);
 }

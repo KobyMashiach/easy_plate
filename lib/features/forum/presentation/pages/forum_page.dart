@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +12,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
+import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../community/presentation/widgets/author_row.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../bloc/forum_bloc.dart';
@@ -67,6 +70,14 @@ Future<void> _openComposer(BuildContext context) async {
   if (result != null) bloc.add(ForumEvent.createPost(result.title, result.body));
 }
 
+/// Dispatches a reload and hands the indicator a future that completes when the
+/// bloc is actually done with it.
+Future<void> refreshForum(BuildContext context) {
+  final done = Completer<void>();
+  context.read<ForumBloc>().add(ForumEvent.refresh(done));
+  return done.future;
+}
+
 class _PostList extends StatelessWidget {
   final List<ForumPostEntity> posts;
 
@@ -74,20 +85,27 @@ class _PostList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (posts.isEmpty) {
-      return ClayEmptyState(icon: Icons.forum_rounded, message: t.community.noPosts);
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.marginMobile,
-        0,
-        AppSpacing.marginMobile,
-        ClayNavDock.reservedHeight,
-      ),
-      itemCount: posts.length,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (context, index) => _PostCard(post: posts[index]),
+    return RefreshIndicator(
+      onRefresh: () => refreshForum(context),
+      color: AppColors.primary,
+      child: posts.isEmpty
+          ? RefreshableEmptyState(
+              child: ClayEmptyState(icon: Icons.forum_rounded, message: t.community.noPosts),
+            )
+          : ListView.separated(
+              // Always scrollable so a list too short to overflow can still be
+              // pulled.
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.marginMobile,
+                0,
+                AppSpacing.marginMobile,
+                ClayNavDock.reservedHeight,
+              ),
+              itemCount: posts.length,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (context, index) => _PostCard(post: posts[index]),
+            ),
     );
   }
 }

@@ -162,9 +162,10 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
     required Map<String, dynamic> schema,
     String systemInstruction = _systemPrompt,
     List<Map<String, dynamic>> tools = const [],
+    String model = ApiConfig.model,
   }) {
     return {
-      'model': ApiConfig.model,
+      'model': model,
       'system_instruction': systemInstruction,
       'input': input,
       if (tools.isNotEmpty) 'tools': tools,
@@ -333,6 +334,7 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
         tools: const [
           {'type': 'google_search'},
         ],
+        model: ApiConfig.searchModel,
       ),
     );
 
