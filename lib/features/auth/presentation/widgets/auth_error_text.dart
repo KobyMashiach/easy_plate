@@ -19,5 +19,11 @@ String authErrorMessage(String error) => switch (error) {
       'too-many-requests' || 'overloaded' => t.auth.errorTooManyRequests,
       'invalid-phone-number' => t.auth.errorInvalidPhone,
       'email-already-in-use' => t.auth.errorEmailInUse,
+      // Both mean "this identity belongs to a different account". They used to
+      // fall through to the generic failure, which told the user nothing about
+      // why signing in had stopped working.
+      'account-exists-with-different-credential' =>
+        t.auth.errorAccountExistsDifferentCredential,
+      'credential-already-in-use' => t.auth.errorCredentialInUse,
       _ => t.auth.errorUnknown,
     };

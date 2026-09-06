@@ -53,4 +53,51 @@ void main() {
     expect(user.hasPhone, isTrue);
     expect(user.needsEmailVerification, isFalse);
   });
+
+  group('needsPhoneVerification', () {
+    test('a Google account without a number is held', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['google.com']);
+      expect(user.needsPhoneVerification, isTrue);
+    });
+
+    test('a password account without a number is held', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['password']);
+      expect(user.needsPhoneVerification, isTrue);
+    });
+
+    test('a phone account is through', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['phone']);
+      expect(user.needsPhoneVerification, isFalse);
+    });
+
+    test('a linked account keeps the number it proved', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['google.com', 'phone']);
+      expect(user.needsPhoneVerification, isFalse);
+    });
+
+    test('a phone number with no phone provider does not count', () {
+      // Firebase only adds the provider once the SMS code was accepted, so the
+      // provider list is the truth and a stray field is not.
+      const user = AppUserEntity(
+        uid: 'u',
+        phoneNumber: '+972500000000',
+        providerIds: ['google.com'],
+      );
+      expect(user.needsPhoneVerification, isTrue);
+    });
+  });
+
+  group('hasApple', () {
+    test('reads the apple.com provider', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['phone', 'apple.com']);
+      expect(user.hasApple, isTrue);
+      expect(user.hasGoogle, isFalse);
+    });
+
+    test('an Apple account still has to prove a phone', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['apple.com']);
+      expect(user.hasApple, isTrue);
+      expect(user.needsPhoneVerification, isTrue);
+    });
+  });
 }

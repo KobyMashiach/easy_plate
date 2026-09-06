@@ -77,7 +77,21 @@ class _FakePreferencesRepository implements UserPreferencesRepository {
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
-const _user = AppUserEntity(uid: 'u1', email: 'a@b.com');
+/// Every account past the gate carries a verified phone, so the fixture does
+/// too — without it each of these tests would stop at [AuthStage.needsPhone].
+const _user = AppUserEntity(
+  uid: 'u1',
+  email: 'a@b.com',
+  phoneNumber: '+972500000000',
+  providerIds: ['phone'],
+);
+
+/// Arrived by Google and has never proved a number.
+const _phonelessUser = AppUserEntity(
+  uid: 'u2',
+  email: 'g@b.com',
+  providerIds: ['google.com'],
+);
 
 UserProfileEntity buildProfile({String fullName = 'כובי'}) => UserProfileEntity(
       uid: 'u1',
@@ -177,6 +191,45 @@ void main() {
     await session.refreshProfile();
     expect(session.stage, AuthStage.needsOnboarding);
     expect(session.profile, isNotNull);
+  });
+
+  test('an account with no verified phone is held at the phone gate', () async {
+    await signIn(_phonelessUser);
+    expect(session.stage, AuthStage.needsPhone);
+  });
+
+  test('the phone gate is reached before the profile is ever looked up', () async {
+    await signIn(_phonelessUser);
+    // Holding here without touching Firestore is the point: an account that has
+    // not proved a number should not open a per-user box or read a profile.
+    expect(profiles.reads, 0);
+  });
+
+  test('linking a phone releases the gate', () async {
+    await signIn(_phonelessUser);
+    expect(session.stage, AuthStage.needsPhone);
+
+    profiles.profile = buildProfile();
+    await session.refreshUser(const AppUserEntity(
+      uid: 'u2',
+      email: 'g@b.com',
+      phoneNumber: '+972500000001',
+      providerIds: ['google.com', 'phone'],
+    ));
+
+    expect(session.stage, isNot(AuthStage.needsPhone));
+  });
+
+  test('a phone account with an unverified linked email still stops for the email',
+      () async {
+    profiles.profile = buildProfile();
+    await signIn(const AppUserEntity(
+      uid: 'u1',
+      email: 'a@b.com',
+      phoneNumber: '+972500000000',
+      providerIds: ['phone', 'password'],
+    ));
+    expect(session.stage, AuthStage.needsEmailVerification);
   });
 
   test('signing out forgets the previous account\'s onboarding state', () async {

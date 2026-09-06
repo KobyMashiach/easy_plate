@@ -32,6 +32,37 @@ void main() {
     });
   });
 
+  group('needsPhone', () {
+    test('holds every other screen until a number is proved', () {
+      for (final location in [
+        Routing.home,
+        Routing.login,
+        Routing.register,
+        Routing.onboarding,
+        Routing.verifyEmail,
+      ]) {
+        expect(
+          gateRedirect(stage: AuthStage.needsPhone, location: location),
+          Routing.phoneGate,
+        );
+      }
+    });
+
+    test('lets its own screen through', () {
+      expect(
+        gateRedirect(stage: AuthStage.needsPhone, location: Routing.phoneGate),
+        isNull,
+      );
+    });
+
+    test('does not reuse the sign-in SMS screen, which needs arguments', () {
+      expect(
+        gateRedirect(stage: AuthStage.needsPhone, location: Routing.phoneVerify),
+        Routing.phoneGate,
+      );
+    });
+  });
+
   group('needsEmailVerification', () {
     test('holds a password account on the verification screen', () {
       expect(
@@ -94,6 +125,10 @@ void main() {
       for (final location in [
         Routing.splash,
         Routing.login,
+        Routing.phoneGate,
+        // Pushed with arguments rather than owned by a stage, so it used to
+        // stay reachable once the user was through.
+        Routing.phoneVerify,
         Routing.verifyEmail,
         Routing.register,
         Routing.onboarding,

@@ -68,7 +68,19 @@
     "linkGoogle": "Привязать аккаунт Google",
     "googleLinked": "Привязан",
     "googleAlreadyUsed": "Этот аккаунт Google уже привязан к другому пользователю",
-    "googleAlreadyLinked": "Аккаунт Google уже привязан"
+    "googleAlreadyLinked": "Аккаунт Google уже привязан",
+    "phoneGateTitle": "Подтвердите телефон",
+    "phoneGateBody": "Каждый аккаунт подтверждается по телефону. Мы отправим вам код в SMS.",
+    "changeNumber": "Изменить номер",
+    "signInTitle": "Вход",
+    "phoneFirstHint": "Впервые здесь? Продолжите с телефоном.",
+    "errorAccountExistsDifferentCredential": "Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.",
+    "errorCredentialInUse": "Эти данные уже принадлежат другому аккаунту",
+    "continueWithApple": "Продолжить с Apple",
+    "linkApple": "Привязать аккаунт Apple",
+    "appleLinked": "Привязан",
+    "appleAlreadyUsed": "Этот аккаунт Apple уже принадлежит другому пользователю",
+    "appleAlreadyLinked": "Аккаунт Apple уже привязан"
   },
   "profile": {
     "setupTitle": "Последние детали",

@@ -13,6 +13,7 @@ import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/language_selector.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/apple_sign_in.dart';
 import '../widgets/auth_error_text.dart';
 import 'phone_verification_page.dart';
 
@@ -42,8 +43,7 @@ class _LoginViewState extends State<_LoginView> {
   final _password = TextEditingController();
   final _phone = TextEditingController();
 
-  _Method _method = _Method.email;
-  bool _registering = false;
+  _Method _method = _Method.phone;
   String? _fieldError;
 
   @override
@@ -79,10 +79,9 @@ class _LoginViewState extends State<_LoginView> {
     }
 
     setState(() => _fieldError = null);
-    final bloc = context.read<AuthBloc>();
-    bloc.add(_registering
-        ? AuthEvent.registerWithEmail(email, password)
-        : AuthEvent.signInWithEmail(email, password));
+    // Sign-in only. An account is opened by phone and nothing else, so email
+    // and password are a way back into an account that already linked them.
+    context.read<AuthBloc>().add(AuthEvent.signInWithEmail(email, password));
   }
 
   void _submitPhone() {
@@ -167,6 +166,20 @@ class _LoginViewState extends State<_LoginView> {
                   onPressed:
                       busy ? null : () => context.read<AuthBloc>().add(const AuthEvent.signInWithGoogle()),
                 ),
+                // iOS only: Apple requires an equivalent privacy-focused option
+                // wherever a third-party sign-in is offered, and Android has no
+                // such requirement or native sheet.
+                if (appleSignInAvailable) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  ClayButton(
+                    label: t.auth.continueWithApple,
+                    icon: Icons.apple_rounded,
+                    expanded: true,
+                    onPressed: busy
+                        ? null
+                        : () => context.read<AuthBloc>().add(const AuthEvent.signInWithApple()),
+                  ),
+                ],
                 if (busy) ...[
                   const SizedBox(height: AppSpacing.lg),
                   const Center(child: CircularProgressIndicator()),
@@ -248,7 +261,7 @@ class _LoginViewState extends State<_LoginView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ClaySectionHeader(title: _registering ? t.auth.signUp : t.auth.signIn),
+        ClaySectionHeader(title: t.auth.signInTitle),
         const SizedBox(height: AppSpacing.gutter),
         TextField(
           controller: _email,
@@ -273,7 +286,7 @@ class _LoginViewState extends State<_LoginView> {
         ),
         const SizedBox(height: AppSpacing.md),
         ClayButton(
-          label: _registering ? t.auth.signUp : t.auth.signIn,
+          label: t.auth.signIn,
           icon: Icons.login_rounded,
           expanded: true,
           onPressed: busy ? null : _submitEmail,
@@ -282,21 +295,19 @@ class _LoginViewState extends State<_LoginView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            TextButton(
-              onPressed: busy ? null : () => setState(() => _registering = !_registering),
+            Flexible(
               child: Text(
-                _registering ? t.auth.haveAccount : t.auth.noAccount,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+                t.auth.phoneFirstHint,
+                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
               ),
             ),
-            if (!_registering)
-              TextButton(
-                onPressed: busy ? null : _resetPassword,
-                child: Text(
-                  t.auth.forgotPassword,
-                  style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
-                ),
+            TextButton(
+              onPressed: busy ? null : _resetPassword,
+              child: Text(
+                t.auth.forgotPassword,
+                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
               ),
+            ),
           ],
         ),
       ],

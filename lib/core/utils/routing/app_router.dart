@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../features/auth/presentation/pages/login_page.dart';
+import '../../../features/auth/presentation/pages/phone_gate_page.dart';
 import '../../../features/auth/presentation/pages/phone_verification_page.dart';
 import '../../../features/auth/presentation/pages/profile_setup_page.dart';
 import '../../../features/auth/presentation/pages/email_verification_page.dart';
@@ -29,6 +30,7 @@ import 'routing.dart';
 const _stageEntryPoint = {
   AuthStage.unknown: Routing.splash,
   AuthStage.signedOut: Routing.login,
+  AuthStage.needsPhone: Routing.phoneGate,
   AuthStage.needsEmailVerification: Routing.verifyEmail,
   AuthStage.needsProfile: Routing.register,
   AuthStage.needsOnboarding: Routing.onboarding,
@@ -41,7 +43,11 @@ const _stageEntryPoint = {
 String? gateRedirect({required AuthStage stage, required String location}) {
   if (stage == AuthStage.ready) {
     // Nothing left to gate; the gate's own screens must not stay reachable.
-    return _stageEntryPoint.values.contains(location) ? Routing.home : null;
+    // `phoneVerify` is listed separately because it is pushed with arguments
+    // rather than being a stage's entry point, so it is not in the map.
+    return _stageEntryPoint.values.contains(location) || location == Routing.phoneVerify
+        ? Routing.home
+        : null;
   }
 
   // The SMS code screen belongs to the signed-out stage: the user is mid
@@ -82,6 +88,11 @@ GoRouter buildRouter() {
         name: Routing.phoneVerify,
         builder: (context, state) =>
             PhoneVerificationPage(args: state.extra as PhoneVerificationArgs),
+      ),
+      GoRoute(
+        path: Routing.phoneGate,
+        name: Routing.phoneGate,
+        builder: (context, state) => const PhoneGatePage(),
       ),
       GoRoute(
         path: Routing.verifyEmail,

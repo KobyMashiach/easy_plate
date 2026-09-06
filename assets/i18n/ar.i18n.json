@@ -68,7 +68,19 @@
     "linkGoogle": "ربط حساب Google",
     "googleLinked": "مرتبط",
     "googleAlreadyUsed": "حساب Google هذا مرتبط بمستخدم آخر",
-    "googleAlreadyLinked": "يوجد حساب Google مرتبط بالفعل"
+    "googleAlreadyLinked": "يوجد حساب Google مرتبط بالفعل",
+    "phoneGateTitle": "تأكيد رقم الهاتف",
+    "phoneGateBody": "كل حساب يتم تأكيده برقم هاتف. سنرسل لك رمزًا عبر رسالة نصية.",
+    "changeNumber": "تغيير الرقم",
+    "signInTitle": "تسجيل الدخول",
+    "phoneFirstHint": "جديد هنا؟ تابع باستخدام الهاتف.",
+    "errorAccountExistsDifferentCredential": "هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.",
+    "errorCredentialInUse": "هذه البيانات تخص حسابًا آخر بالفعل",
+    "continueWithApple": "المتابعة باستخدام Apple",
+    "linkApple": "ربط حساب Apple",
+    "appleLinked": "مرتبط",
+    "appleAlreadyUsed": "حساب Apple هذا مرتبط بمستخدم آخر",
+    "appleAlreadyLinked": "تم ربط حساب Apple بالفعل"
   },
   "profile": {
     "setupTitle": "تفاصيل أخيرة",

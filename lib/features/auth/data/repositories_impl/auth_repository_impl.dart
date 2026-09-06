@@ -25,6 +25,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AppUserEntity> signInWithGoogle() => dataSource.signInWithGoogle();
 
   @override
+  Future<AppUserEntity> signInWithApple() => dataSource.signInWithApple();
+
+  @override
   Future<void> sendPasswordReset(String email) => dataSource.sendPasswordReset(email);
 
   @override
@@ -68,4 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> linkGoogle() => dataSource.linkGoogle();
+
+  @override
+  Future<void> linkApple() => dataSource.linkApple();
 }

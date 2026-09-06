@@ -61,13 +61,14 @@ extension AuthEventPatterns on AuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SignInWithEmail value)?  signInWithEmail,TResult Function( _RegisterWithEmail value)?  registerWithEmail,TResult Function( _SignInWithGoogle value)?  signInWithGoogle,TResult Function( _StartPhoneVerification value)?  startPhoneVerification,TResult Function( _ConfirmPhoneCode value)?  confirmPhoneCode,TResult Function( _SendPasswordReset value)?  sendPasswordReset,TResult Function( _SignOut value)?  signOut,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SignInWithEmail value)?  signInWithEmail,TResult Function( _RegisterWithEmail value)?  registerWithEmail,TResult Function( _SignInWithGoogle value)?  signInWithGoogle,TResult Function( _SignInWithApple value)?  signInWithApple,TResult Function( _StartPhoneVerification value)?  startPhoneVerification,TResult Function( _ConfirmPhoneCode value)?  confirmPhoneCode,TResult Function( _SendPasswordReset value)?  sendPasswordReset,TResult Function( _SignOut value)?  signOut,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _SignInWithEmail() when signInWithEmail != null:
 return signInWithEmail(_that);case _RegisterWithEmail() when registerWithEmail != null:
 return registerWithEmail(_that);case _SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle(_that);case _StartPhoneVerification() when startPhoneVerification != null:
+return signInWithGoogle(_that);case _SignInWithApple() when signInWithApple != null:
+return signInWithApple(_that);case _StartPhoneVerification() when startPhoneVerification != null:
 return startPhoneVerification(_that);case _ConfirmPhoneCode() when confirmPhoneCode != null:
 return confirmPhoneCode(_that);case _SendPasswordReset() when sendPasswordReset != null:
 return sendPasswordReset(_that);case _SignOut() when signOut != null:
@@ -89,13 +90,14 @@ return signOut(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SignInWithEmail value)  signInWithEmail,required TResult Function( _RegisterWithEmail value)  registerWithEmail,required TResult Function( _SignInWithGoogle value)  signInWithGoogle,required TResult Function( _StartPhoneVerification value)  startPhoneVerification,required TResult Function( _ConfirmPhoneCode value)  confirmPhoneCode,required TResult Function( _SendPasswordReset value)  sendPasswordReset,required TResult Function( _SignOut value)  signOut,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SignInWithEmail value)  signInWithEmail,required TResult Function( _RegisterWithEmail value)  registerWithEmail,required TResult Function( _SignInWithGoogle value)  signInWithGoogle,required TResult Function( _SignInWithApple value)  signInWithApple,required TResult Function( _StartPhoneVerification value)  startPhoneVerification,required TResult Function( _ConfirmPhoneCode value)  confirmPhoneCode,required TResult Function( _SendPasswordReset value)  sendPasswordReset,required TResult Function( _SignOut value)  signOut,}){
 final _that = this;
 switch (_that) {
 case _SignInWithEmail():
 return signInWithEmail(_that);case _RegisterWithEmail():
 return registerWithEmail(_that);case _SignInWithGoogle():
-return signInWithGoogle(_that);case _StartPhoneVerification():
+return signInWithGoogle(_that);case _SignInWithApple():
+return signInWithApple(_that);case _StartPhoneVerification():
 return startPhoneVerification(_that);case _ConfirmPhoneCode():
 return confirmPhoneCode(_that);case _SendPasswordReset():
 return sendPasswordReset(_that);case _SignOut():
@@ -113,13 +115,14 @@ return signOut(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SignInWithEmail value)?  signInWithEmail,TResult? Function( _RegisterWithEmail value)?  registerWithEmail,TResult? Function( _SignInWithGoogle value)?  signInWithGoogle,TResult? Function( _StartPhoneVerification value)?  startPhoneVerification,TResult? Function( _ConfirmPhoneCode value)?  confirmPhoneCode,TResult? Function( _SendPasswordReset value)?  sendPasswordReset,TResult? Function( _SignOut value)?  signOut,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SignInWithEmail value)?  signInWithEmail,TResult? Function( _RegisterWithEmail value)?  registerWithEmail,TResult? Function( _SignInWithGoogle value)?  signInWithGoogle,TResult? Function( _SignInWithApple value)?  signInWithApple,TResult? Function( _StartPhoneVerification value)?  startPhoneVerification,TResult? Function( _ConfirmPhoneCode value)?  confirmPhoneCode,TResult? Function( _SendPasswordReset value)?  sendPasswordReset,TResult? Function( _SignOut value)?  signOut,}){
 final _that = this;
 switch (_that) {
 case _SignInWithEmail() when signInWithEmail != null:
 return signInWithEmail(_that);case _RegisterWithEmail() when registerWithEmail != null:
 return registerWithEmail(_that);case _SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle(_that);case _StartPhoneVerification() when startPhoneVerification != null:
+return signInWithGoogle(_that);case _SignInWithApple() when signInWithApple != null:
+return signInWithApple(_that);case _StartPhoneVerification() when startPhoneVerification != null:
 return startPhoneVerification(_that);case _ConfirmPhoneCode() when confirmPhoneCode != null:
 return confirmPhoneCode(_that);case _SendPasswordReset() when sendPasswordReset != null:
 return sendPasswordReset(_that);case _SignOut() when signOut != null:
@@ -140,12 +143,13 @@ return signOut(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String email,  String password)?  signInWithEmail,TResult Function( String email,  String password)?  registerWithEmail,TResult Function()?  signInWithGoogle,TResult Function( String phoneNumber)?  startPhoneVerification,TResult Function( String verificationId,  String smsCode)?  confirmPhoneCode,TResult Function( String email)?  sendPasswordReset,TResult Function()?  signOut,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String email,  String password)?  signInWithEmail,TResult Function( String email,  String password)?  registerWithEmail,TResult Function()?  signInWithGoogle,TResult Function()?  signInWithApple,TResult Function( String phoneNumber)?  startPhoneVerification,TResult Function( String verificationId,  String smsCode)?  confirmPhoneCode,TResult Function( String email)?  sendPasswordReset,TResult Function()?  signOut,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SignInWithEmail() when signInWithEmail != null:
 return signInWithEmail(_that.email,_that.password);case _RegisterWithEmail() when registerWithEmail != null:
 return registerWithEmail(_that.email,_that.password);case _SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle();case _StartPhoneVerification() when startPhoneVerification != null:
+return signInWithGoogle();case _SignInWithApple() when signInWithApple != null:
+return signInWithApple();case _StartPhoneVerification() when startPhoneVerification != null:
 return startPhoneVerification(_that.phoneNumber);case _ConfirmPhoneCode() when confirmPhoneCode != null:
 return confirmPhoneCode(_that.verificationId,_that.smsCode);case _SendPasswordReset() when sendPasswordReset != null:
 return sendPasswordReset(_that.email);case _SignOut() when signOut != null:
@@ -167,12 +171,13 @@ return signOut();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String email,  String password)  signInWithEmail,required TResult Function( String email,  String password)  registerWithEmail,required TResult Function()  signInWithGoogle,required TResult Function( String phoneNumber)  startPhoneVerification,required TResult Function( String verificationId,  String smsCode)  confirmPhoneCode,required TResult Function( String email)  sendPasswordReset,required TResult Function()  signOut,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String email,  String password)  signInWithEmail,required TResult Function( String email,  String password)  registerWithEmail,required TResult Function()  signInWithGoogle,required TResult Function()  signInWithApple,required TResult Function( String phoneNumber)  startPhoneVerification,required TResult Function( String verificationId,  String smsCode)  confirmPhoneCode,required TResult Function( String email)  sendPasswordReset,required TResult Function()  signOut,}) {final _that = this;
 switch (_that) {
 case _SignInWithEmail():
 return signInWithEmail(_that.email,_that.password);case _RegisterWithEmail():
 return registerWithEmail(_that.email,_that.password);case _SignInWithGoogle():
-return signInWithGoogle();case _StartPhoneVerification():
+return signInWithGoogle();case _SignInWithApple():
+return signInWithApple();case _StartPhoneVerification():
 return startPhoneVerification(_that.phoneNumber);case _ConfirmPhoneCode():
 return confirmPhoneCode(_that.verificationId,_that.smsCode);case _SendPasswordReset():
 return sendPasswordReset(_that.email);case _SignOut():
@@ -190,12 +195,13 @@ return signOut();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String email,  String password)?  signInWithEmail,TResult? Function( String email,  String password)?  registerWithEmail,TResult? Function()?  signInWithGoogle,TResult? Function( String phoneNumber)?  startPhoneVerification,TResult? Function( String verificationId,  String smsCode)?  confirmPhoneCode,TResult? Function( String email)?  sendPasswordReset,TResult? Function()?  signOut,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String email,  String password)?  signInWithEmail,TResult? Function( String email,  String password)?  registerWithEmail,TResult? Function()?  signInWithGoogle,TResult? Function()?  signInWithApple,TResult? Function( String phoneNumber)?  startPhoneVerification,TResult? Function( String verificationId,  String smsCode)?  confirmPhoneCode,TResult? Function( String email)?  sendPasswordReset,TResult? Function()?  signOut,}) {final _that = this;
 switch (_that) {
 case _SignInWithEmail() when signInWithEmail != null:
 return signInWithEmail(_that.email,_that.password);case _RegisterWithEmail() when registerWithEmail != null:
 return registerWithEmail(_that.email,_that.password);case _SignInWithGoogle() when signInWithGoogle != null:
-return signInWithGoogle();case _StartPhoneVerification() when startPhoneVerification != null:
+return signInWithGoogle();case _SignInWithApple() when signInWithApple != null:
+return signInWithApple();case _StartPhoneVerification() when startPhoneVerification != null:
 return startPhoneVerification(_that.phoneNumber);case _ConfirmPhoneCode() when confirmPhoneCode != null:
 return confirmPhoneCode(_that.verificationId,_that.smsCode);case _SendPasswordReset() when sendPasswordReset != null:
 return sendPasswordReset(_that.email);case _SignOut() when signOut != null:
@@ -385,6 +391,44 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'AuthEvent.signInWithGoogle()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _SignInWithApple with DiagnosticableTreeMixin implements AuthEvent {
+  const _SignInWithApple();
+  
+
+
+
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'AuthEvent.signInWithApple'))
+    ;
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SignInWithApple);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'AuthEvent.signInWithApple()';
 }
 
 

@@ -5,7 +5,12 @@ import '../errors/app_exception.dart';
 class HttpCalls {
   final Dio _dio;
 
-  HttpCalls({String? baseUrl, Map<String, String>? headers})
+  /// Resolved before every request, for headers that cannot be fixed at
+  /// construction. A Firebase ID token expires after an hour, so a header built
+  /// once would start failing mid-session.
+  final Future<Map<String, String>> Function()? headerProvider;
+
+  HttpCalls({String? baseUrl, Map<String, String>? headers, this.headerProvider})
       : _dio = Dio(BaseOptions(
           baseUrl: baseUrl ?? '',
           connectTimeout: const Duration(seconds: 15),
@@ -25,11 +30,13 @@ class HttpCalls {
     Map<String, dynamic>? queryParameters,
   ) async {
     try {
+      // Per-request headers win over the ones fixed at construction.
+      final dynamicHeaders = await headerProvider?.call();
       return await _dio.request(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(method: method),
+        options: Options(method: method, headers: dynamicHeaders),
       );
     } on DioException catch (e) {
       throw switch (e.type) {

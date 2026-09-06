@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/api_config.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/network/ai_auth_header.dart';
 import '../../../../core/network/http_calls.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
@@ -28,14 +29,26 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
   static const _uuid = Uuid();
 
   GeminiRecipeAiDataSource({HttpCalls? httpCalls})
-      : httpCalls = httpCalls ??
-            HttpCalls(
-              baseUrl: ApiConfig.aiBaseUrl,
-              // Must be x-goog-api-key. An `Authorization: Bearer` header takes
-              // precedence at the edge and is read as an OAuth2 token, which
-              // fails the key with ACCESS_TOKEN_TYPE_UNSUPPORTED.
-              headers: {'x-goog-api-key': ApiConfig.geminiApiKey},
-            );
+      : httpCalls = httpCalls ?? _defaultHttpCalls();
+
+  /// Two transports behind one interface. Against our proxy the credential is
+  /// the signed-in user, resolved per request because ID tokens expire. Against
+  /// Google it is the development key.
+  static HttpCalls _defaultHttpCalls() {
+    if (ApiConfig.usesProxy) {
+      return HttpCalls(
+        baseUrl: ApiConfig.aiBaseUrl,
+        headerProvider: aiProxyAuthHeader,
+      );
+    }
+    return HttpCalls(
+      baseUrl: ApiConfig.aiBaseUrl,
+      // Must be x-goog-api-key. An `Authorization: Bearer` header takes
+      // precedence at the edge and is read as an OAuth2 token, which
+      // fails the key with ACCESS_TOKEN_TYPE_UNSUPPORTED.
+      headers: {'x-goog-api-key': ApiConfig.geminiApiKey},
+    );
+  }
 
   static const _systemPrompt = '''
 אתה מנתח מתכונים. החזר אך ורק מידע שמופיע במקור.

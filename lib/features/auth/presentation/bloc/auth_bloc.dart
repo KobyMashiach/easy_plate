@@ -13,6 +13,7 @@ import '../../domain/usecases/confirm_phone_code_usecase.dart';
 import '../../domain/usecases/register_with_email_usecase.dart';
 import '../../domain/usecases/send_password_reset_usecase.dart';
 import '../../domain/usecases/sign_in_with_email_usecase.dart';
+import '../../domain/usecases/sign_in_with_apple_usecase.dart';
 import '../../domain/usecases/sign_in_with_google_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/usecases/start_phone_verification_usecase.dart';
@@ -24,6 +25,7 @@ sealed class AuthEvent with _$AuthEvent {
   const factory AuthEvent.signInWithEmail(String email, String password) = _SignInWithEmail;
   const factory AuthEvent.registerWithEmail(String email, String password) = _RegisterWithEmail;
   const factory AuthEvent.signInWithGoogle() = _SignInWithGoogle;
+  const factory AuthEvent.signInWithApple() = _SignInWithApple;
   const factory AuthEvent.startPhoneVerification(String phoneNumber) = _StartPhoneVerification;
   const factory AuthEvent.confirmPhoneCode(String verificationId, String smsCode) =
       _ConfirmPhoneCode;
@@ -50,6 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignInWithEmailUseCase signInWithEmailUseCase;
   final RegisterWithEmailUseCase registerWithEmailUseCase;
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  final SignInWithAppleUseCase signInWithAppleUseCase;
   final StartPhoneVerificationUseCase startPhoneVerificationUseCase;
   final ConfirmPhoneCodeUseCase confirmPhoneCodeUseCase;
   final SendPasswordResetUseCase sendPasswordResetUseCase;
@@ -66,6 +69,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.signInWithEmailUseCase,
     required this.registerWithEmailUseCase,
     required this.signInWithGoogleUseCase,
+    required this.signInWithAppleUseCase,
     required this.startPhoneVerificationUseCase,
     required this.confirmPhoneCodeUseCase,
     required this.sendPasswordResetUseCase,
@@ -74,6 +78,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<_SignInWithEmail>(_signInWithEmail);
     on<_RegisterWithEmail>(_registerWithEmail);
     on<_SignInWithGoogle>(_signInWithGoogle);
+    on<_SignInWithApple>(_signInWithApple);
     on<_StartPhoneVerification>(_startPhoneVerification);
     on<_ConfirmPhoneCode>(_confirmPhoneCode);
     on<_SendPasswordReset>(_sendPasswordReset);
@@ -86,6 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       signInWithEmailUseCase: SignInWithEmailUseCase(context.read()),
       registerWithEmailUseCase: RegisterWithEmailUseCase(context.read()),
       signInWithGoogleUseCase: SignInWithGoogleUseCase(context.read()),
+      signInWithAppleUseCase: SignInWithAppleUseCase(context.read()),
       startPhoneVerificationUseCase: StartPhoneVerificationUseCase(context.read()),
       confirmPhoneCodeUseCase: ConfirmPhoneCodeUseCase(context.read()),
       sendPasswordResetUseCase: SendPasswordResetUseCase(context.read()),
@@ -129,6 +135,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _signInWithGoogle(_SignInWithGoogle event, Emitter<AuthState> emit) {
     return _run(emit, () async {
       await signInWithGoogleUseCase();
+      emit(const AuthState.authenticated());
+    });
+  }
+
+  Future<void> _signInWithApple(_SignInWithApple event, Emitter<AuthState> emit) {
+    return _run(emit, () async {
+      await signInWithAppleUseCase();
       emit(const AuthState.authenticated());
     });
   }

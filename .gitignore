@@ -48,3 +48,6 @@ app.*.map.json
 # dev.example.json is the template to copy.
 /dart_defines/*.json
 !/dart_defines/*.example.json
+
+# Cloud Functions
+functions/node_modules/

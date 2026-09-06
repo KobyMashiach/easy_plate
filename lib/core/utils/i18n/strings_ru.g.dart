@@ -145,6 +145,18 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get googleLinked => 'Привязан';
 	@override String get googleAlreadyUsed => 'Этот аккаунт Google уже привязан к другому пользователю';
 	@override String get googleAlreadyLinked => 'Аккаунт Google уже привязан';
+	@override String get phoneGateTitle => 'Подтвердите телефон';
+	@override String get phoneGateBody => 'Каждый аккаунт подтверждается по телефону. Мы отправим вам код в SMS.';
+	@override String get changeNumber => 'Изменить номер';
+	@override String get signInTitle => 'Вход';
+	@override String get phoneFirstHint => 'Впервые здесь? Продолжите с телефоном.';
+	@override String get errorAccountExistsDifferentCredential => 'Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.';
+	@override String get errorCredentialInUse => 'Эти данные уже принадлежат другому аккаунту';
+	@override String get continueWithApple => 'Продолжить с Apple';
+	@override String get linkApple => 'Привязать аккаунт Apple';
+	@override String get appleLinked => 'Привязан';
+	@override String get appleAlreadyUsed => 'Этот аккаунт Apple уже принадлежит другому пользователю';
+	@override String get appleAlreadyLinked => 'Аккаунт Apple уже привязан';
 }
 
 // Path: profile
@@ -734,6 +746,18 @@ extension on TranslationsRu {
 			'auth.googleLinked' => 'Привязан',
 			'auth.googleAlreadyUsed' => 'Этот аккаунт Google уже привязан к другому пользователю',
 			'auth.googleAlreadyLinked' => 'Аккаунт Google уже привязан',
+			'auth.phoneGateTitle' => 'Подтвердите телефон',
+			'auth.phoneGateBody' => 'Каждый аккаунт подтверждается по телефону. Мы отправим вам код в SMS.',
+			'auth.changeNumber' => 'Изменить номер',
+			'auth.signInTitle' => 'Вход',
+			'auth.phoneFirstHint' => 'Впервые здесь? Продолжите с телефоном.',
+			'auth.errorAccountExistsDifferentCredential' => 'Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.',
+			'auth.errorCredentialInUse' => 'Эти данные уже принадлежат другому аккаунту',
+			'auth.continueWithApple' => 'Продолжить с Apple',
+			'auth.linkApple' => 'Привязать аккаунт Apple',
+			'auth.appleLinked' => 'Привязан',
+			'auth.appleAlreadyUsed' => 'Этот аккаунт Apple уже принадлежит другому пользователю',
+			'auth.appleAlreadyLinked' => 'Аккаунт Apple уже привязан',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',

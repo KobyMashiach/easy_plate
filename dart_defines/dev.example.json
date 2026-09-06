@@ -1,4 +1,5 @@
 {
-  "GEMINI_API_KEY": "",
-  "GEMINI_MODEL": "gemini-3.8-flash"
+  "AI_BASE_URL": "https://us-central1-<your-project>.cloudfunctions.net/aiProxy",
+  "GEMINI_MODEL": "gemini-3.8-flash",
+  "GEMINI_SEARCH_MODEL": "gemini-3.5-flash-lite"
 }

@@ -68,7 +68,19 @@
     "linkGoogle": "Link Google account",
     "googleLinked": "Linked",
     "googleAlreadyUsed": "That Google account already belongs to another user",
-    "googleAlreadyLinked": "A Google account is already linked"
+    "googleAlreadyLinked": "A Google account is already linked",
+    "phoneGateTitle": "Verify your phone",
+    "phoneGateBody": "Every account is verified by phone. We'll text you a code.",
+    "changeNumber": "Change number",
+    "signInTitle": "Sign in",
+    "phoneFirstHint": "New here? Continue with phone.",
+    "errorAccountExistsDifferentCredential": "That email already belongs to another account. Sign in the way you registered.",
+    "errorCredentialInUse": "Those details already belong to another account",
+    "continueWithApple": "Continue with Apple",
+    "linkApple": "Link Apple account",
+    "appleLinked": "Linked",
+    "appleAlreadyUsed": "That Apple account already belongs to another user",
+    "appleAlreadyLinked": "An Apple account is already linked"
   },
   "profile": {
     "setupTitle": "A few last details",

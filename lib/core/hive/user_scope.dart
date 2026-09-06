@@ -30,6 +30,14 @@ class UserScope {
   String? _uid;
   String? get uid => _uid;
 
+  /// The boxes this class has opened, by full scoped name.
+  ///
+  /// Held because Hive can only hand a box back at the type it was opened with,
+  /// and closing one means naming that type. Keeping the reference sidesteps
+  /// the question entirely — every scoped box is opened through [open], so this
+  /// map is the complete set.
+  final Map<String, BoxBase<dynamic>> _opened = {};
+
   /// Points the scope at [uid], closing the previous account's boxes first.
   ///
   /// Only ever called on sign-in. Closing at sign-out instead would race the
@@ -41,7 +49,8 @@ class UserScope {
     if (previous != null) {
       for (final base in scopedBoxes) {
         final name = '${base}_$previous';
-        if (Hive.isBoxOpen(name)) await Hive.box<dynamic>(name).close();
+        final box = _opened.remove(name);
+        if (box != null && box.isOpen) await box.close();
       }
     }
     _uid = uid;
@@ -50,15 +59,21 @@ class UserScope {
   /// Opens [base] for the current account. Throws rather than falling back to
   /// an unscoped box: a silent fallback is exactly the bug this class exists
   /// to prevent.
-  Future<Box<T>> open<T>(String base) {
+  Future<Box<T>> open<T>(String base) async {
     final uid = _uid;
     if (uid == null) {
       throw StateError('UserScope.open("$base") before any user was resolved');
     }
-    return Hive.openBox<T>('${base}_$uid');
+    final name = '${base}_$uid';
+    final box = await Hive.openBox<T>(name);
+    _opened[name] = box;
+    return box;
   }
 
   /// Test seam — the singleton otherwise carries a uid between tests.
   @visibleForTesting
-  void resetForTest() => _uid = null;
+  void resetForTest() {
+    _uid = null;
+    _opened.clear();
+  }
 }

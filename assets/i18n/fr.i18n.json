@@ -68,7 +68,19 @@
     "linkGoogle": "Lier un compte Google",
     "googleLinked": "Lié",
     "googleAlreadyUsed": "Ce compte Google appartient déjà à un autre utilisateur",
-    "googleAlreadyLinked": "Un compte Google est déjà lié"
+    "googleAlreadyLinked": "Un compte Google est déjà lié",
+    "phoneGateTitle": "Vérifiez votre téléphone",
+    "phoneGateBody": "Chaque compte est vérifié par téléphone. Nous vous enverrons un code par SMS.",
+    "changeNumber": "Changer de numéro",
+    "signInTitle": "Connexion",
+    "phoneFirstHint": "Nouveau ici ? Continuez avec le téléphone.",
+    "errorAccountExistsDifferentCredential": "Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.",
+    "errorCredentialInUse": "Ces informations appartiennent déjà à un autre compte",
+    "continueWithApple": "Continuer avec Apple",
+    "linkApple": "Lier un compte Apple",
+    "appleLinked": "Lié",
+    "appleAlreadyUsed": "Ce compte Apple appartient déjà à un autre utilisateur",
+    "appleAlreadyLinked": "Un compte Apple est déjà lié"
   },
   "profile": {
     "setupTitle": "Encore quelques détails",

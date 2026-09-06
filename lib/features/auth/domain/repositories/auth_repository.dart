@@ -9,6 +9,7 @@ abstract class AuthRepository {
   Future<AppUserEntity> signInWithEmail(String email, String password);
   Future<AppUserEntity> registerWithEmail(String email, String password);
   Future<AppUserEntity> signInWithGoogle();
+  Future<AppUserEntity> signInWithApple();
   Future<void> sendPasswordReset(String email);
 
   /// Starts SMS verification and resolves with the verification id needed by
@@ -44,4 +45,5 @@ abstract class AuthRepository {
   /// Attaches a Google account. Also gives a phone-only account a verified
   /// email, since Firebase adopts Google's address when the account has none.
   Future<void> linkGoogle();
+  Future<void> linkApple();
 }

@@ -281,6 +281,42 @@ class Translations$auth$he {
 
 	/// he: 'כבר מקושר חשבון Google'
 	String get googleAlreadyLinked => 'כבר מקושר חשבון Google';
+
+	/// he: 'אימות מספר טלפון'
+	String get phoneGateTitle => 'אימות מספר טלפון';
+
+	/// he: 'כל חשבון מאומת במספר טלפון. נשלח לכם קוד ב-SMS.'
+	String get phoneGateBody => 'כל חשבון מאומת במספר טלפון. נשלח לכם קוד ב-SMS.';
+
+	/// he: 'שינוי המספר'
+	String get changeNumber => 'שינוי המספר';
+
+	/// he: 'כניסה'
+	String get signInTitle => 'כניסה';
+
+	/// he: 'חדשים כאן? המשיכו עם טלפון.'
+	String get phoneFirstHint => 'חדשים כאן? המשיכו עם טלפון.';
+
+	/// he: 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.'
+	String get errorAccountExistsDifferentCredential => 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.';
+
+	/// he: 'הפרטים האלה כבר משויכים לחשבון אחר'
+	String get errorCredentialInUse => 'הפרטים האלה כבר משויכים לחשבון אחר';
+
+	/// he: 'המשך עם Apple'
+	String get continueWithApple => 'המשך עם Apple';
+
+	/// he: 'קישור חשבון Apple'
+	String get linkApple => 'קישור חשבון Apple';
+
+	/// he: 'מקושר'
+	String get appleLinked => 'מקושר';
+
+	/// he: 'חשבון Apple הזה כבר משויך למשתמש אחר'
+	String get appleAlreadyUsed => 'חשבון Apple הזה כבר משויך למשתמש אחר';
+
+	/// he: 'כבר מקושר חשבון Apple'
+	String get appleAlreadyLinked => 'כבר מקושר חשבון Apple';
 }
 
 // Path: profile
@@ -1552,6 +1588,18 @@ extension on Translations {
 			'auth.googleLinked' => 'מקושר',
 			'auth.googleAlreadyUsed' => 'חשבון Google הזה כבר משויך למשתמש אחר',
 			'auth.googleAlreadyLinked' => 'כבר מקושר חשבון Google',
+			'auth.phoneGateTitle' => 'אימות מספר טלפון',
+			'auth.phoneGateBody' => 'כל חשבון מאומת במספר טלפון. נשלח לכם קוד ב-SMS.',
+			'auth.changeNumber' => 'שינוי המספר',
+			'auth.signInTitle' => 'כניסה',
+			'auth.phoneFirstHint' => 'חדשים כאן? המשיכו עם טלפון.',
+			'auth.errorAccountExistsDifferentCredential' => 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.',
+			'auth.errorCredentialInUse' => 'הפרטים האלה כבר משויכים לחשבון אחר',
+			'auth.continueWithApple' => 'המשך עם Apple',
+			'auth.linkApple' => 'קישור חשבון Apple',
+			'auth.appleLinked' => 'מקושר',
+			'auth.appleAlreadyUsed' => 'חשבון Apple הזה כבר משויך למשתמש אחר',
+			'auth.appleAlreadyLinked' => 'כבר מקושר חשבון Apple',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',

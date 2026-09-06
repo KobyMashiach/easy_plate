@@ -2,6 +2,7 @@ class Routing {
   static const splash = '/';
   static const login = '/login';
   static const phoneVerify = '/phone_verify';
+  static const phoneGate = '/phone_gate';
   static const verifyEmail = '/verify_email';
   static const register = '/register';
   static const onboarding = '/onboarding';

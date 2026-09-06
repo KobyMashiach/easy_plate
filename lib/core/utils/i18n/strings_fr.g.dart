@@ -145,6 +145,18 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get googleLinked => 'Lié';
 	@override String get googleAlreadyUsed => 'Ce compte Google appartient déjà à un autre utilisateur';
 	@override String get googleAlreadyLinked => 'Un compte Google est déjà lié';
+	@override String get phoneGateTitle => 'Vérifiez votre téléphone';
+	@override String get phoneGateBody => 'Chaque compte est vérifié par téléphone. Nous vous enverrons un code par SMS.';
+	@override String get changeNumber => 'Changer de numéro';
+	@override String get signInTitle => 'Connexion';
+	@override String get phoneFirstHint => 'Nouveau ici ? Continuez avec le téléphone.';
+	@override String get errorAccountExistsDifferentCredential => 'Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.';
+	@override String get errorCredentialInUse => 'Ces informations appartiennent déjà à un autre compte';
+	@override String get continueWithApple => 'Continuer avec Apple';
+	@override String get linkApple => 'Lier un compte Apple';
+	@override String get appleLinked => 'Lié';
+	@override String get appleAlreadyUsed => 'Ce compte Apple appartient déjà à un autre utilisateur';
+	@override String get appleAlreadyLinked => 'Un compte Apple est déjà lié';
 }
 
 // Path: profile
@@ -734,6 +746,18 @@ extension on TranslationsFr {
 			'auth.googleLinked' => 'Lié',
 			'auth.googleAlreadyUsed' => 'Ce compte Google appartient déjà à un autre utilisateur',
 			'auth.googleAlreadyLinked' => 'Un compte Google est déjà lié',
+			'auth.phoneGateTitle' => 'Vérifiez votre téléphone',
+			'auth.phoneGateBody' => 'Chaque compte est vérifié par téléphone. Nous vous enverrons un code par SMS.',
+			'auth.changeNumber' => 'Changer de numéro',
+			'auth.signInTitle' => 'Connexion',
+			'auth.phoneFirstHint' => 'Nouveau ici ? Continuez avec le téléphone.',
+			'auth.errorAccountExistsDifferentCredential' => 'Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.',
+			'auth.errorCredentialInUse' => 'Ces informations appartiennent déjà à un autre compte',
+			'auth.continueWithApple' => 'Continuer avec Apple',
+			'auth.linkApple' => 'Lier un compte Apple',
+			'auth.appleLinked' => 'Lié',
+			'auth.appleAlreadyUsed' => 'Ce compte Apple appartient déjà à un autre utilisateur',
+			'auth.appleAlreadyLinked' => 'Un compte Apple est déjà lié',
 			'profile.setupTitle' => 'Encore quelques détails',
 			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
 			'profile.fullName' => 'Nom complet',

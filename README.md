@@ -16,12 +16,57 @@ Codegen must run after any change to a model, a bloc, or `assets/i18n/he.i18n.js
 ## Accounts and Firebase
 
 Sign-in is mandatory — the router gates every screen behind
-`AuthSessionService`, which moves the user through `signedOut →
+`AuthSessionService`, which moves the user through `signedOut → needsPhone →
 needsEmailVerification → needsProfile → needsOnboarding → ready`. Three
-providers are wired: Email/Password, Phone (SMS), and Google.
+providers are wired: Phone (SMS), Google, and Email/Password.
 
+**A verified phone is the root identity of every account.** Only the phone flow
+opens one: the login screen offers Google, Apple and email as ways back into an
+account that already linked them, never as a way to sign up. `registerWithEmail`
+still exists on the repository but nothing calls it.
+
+Sign in with Apple is **iOS only** — `appleSignInAvailable` gates both the login
+button and the profile's identity row. Apple's guideline 4.8 only binds iOS, and
+on Android the button would be a browser round trip solving a problem that does
+not exist there. It uses `firebase_auth`'s own `signInWithProvider(AppleAuthProvider())`
+rather than a separate package, which drives ASAuthorization natively, so Hide My
+Email works and there is no dependency to keep current.
+
+Apple hands back the user's name **only on the very first authorization** for an
+app; a reinstall gets nothing. That is why the profile screen asks for a name
+rather than trusting whatever the provider supplied.
+
+`ios/Runner/Runner.entitlements` is new and carries `com.apple.developer.applesignin`.
+It is wired to all three build configurations. Two things live outside this repo:
+enable Apple as a provider in the Firebase console, and enable Sign In with Apple
+on the App ID in the Apple Developer portal. The console asks for the redirect
+`https://easy-plate.firebaseapp.com/__/auth/handler` — that URL is only used by
+the web/Android flow, so it does not affect the native iOS path, but the console
+still wants it configured.
+
+**The entitlements file does not yet carry `aps-environment`.** Push is still
+broken on iOS for that reason; adding it also requires the capability on the App
+ID, so it is deliberately a separate step.
+
+The rule is enforced at the gate rather than at the button, which is what makes
+it hold. `AppUserEntity.needsPhoneVerification` is simply the absence of the
+`phone` provider, and Firebase only adds that provider once an SMS code has been
+accepted — so there is no unverified state to reason about. An account that
+arrives by Google, or one created before the rule existed, lands on
+`PhoneGatePage` and cannot go anywhere else until it proves a number. That screen
+*links* rather than signs in, so whatever brought the user there is preserved.
+
+The check runs before the local Hive scope is switched and before the profile is
+read, so an account that has not proved a number never opens a per-user box.
+
+Linking Google or an email afterwards stays optional, from the profile screen.
 `needsEmailVerification` applies only to accounts with a `password` provider:
-Google arrives verified and a phone account has no address to prove.
+Google arrives verified and a phone account has no address to prove — so linking
+an email later does raise it.
+
+**Every registration now costs an SMS**, and phone auth is a known target for
+SMS-pumping fraud. Restrict the allowed regions in the Firebase console, and
+treat App Check as a prerequisite rather than a nice-to-have.
 
 A profile is split across two documents. `users/{uid}` is private to its owner
 and holds the email, phone and push token. `public_profiles/{uid}` holds only
@@ -118,7 +163,12 @@ Consequences worth knowing:
 - `UserScope.open` throws rather than falling back to an unscoped box. A silent
   fallback is exactly the bug it exists to prevent.
 - Boxes are closed when a *different* account signs in, not at sign-out —
-  closing at sign-out races the screens still being torn down.
+  closing at sign-out races the screens still being torn down. `UserScope` keeps
+  a reference to every box it opened, because Hive only hands a box back at the
+  type it was opened with: closing one by asking for `Box<dynamic>` threw
+  *"already open and of type Box<UserPreferencesModel>"*, which aborted the
+  sign-in mid-transition and stranded the user on the OTP screen. Holding the
+  reference sidesteps the type question and makes concurrent switches safe.
 - **Local data written before this existed stays in the old unscoped boxes and
   will not appear.** There is no migration.
 
@@ -257,17 +307,61 @@ Leaving `GEMINI_API_KEY` empty is a valid state — debug builds then fall back 
 the sample data. `flutter test` is deliberately left without the key so tests
 exercise that fallback rather than the network.
 
-**Do not ship a key this way.** A key compiled into a mobile binary is extractable.
-For production, stand up a backend that holds the key and point the app at it:
+**Do not ship a key this way.** A key compiled into a mobile binary is extractable
+with `strings`, however it got there. `dart_defines/dev.json` is a development
+answer only.
 
-Once that proxy exists, drop `GEMINI_API_KEY` from `dart_defines/dev.json` and
-put the proxy there instead — nothing in the app changes:
+### The production path: the AI proxy
 
-```json
-{ "AI_BASE_URL": "https://your-proxy.example.com" }
+`functions/aiProxy.js` is a Cloud Function that holds the key and stands between
+the app and Google. It exposes the same `POST /v1beta/interactions` with the same
+request and response shape, so the ingestion pipeline is unchanged — only the base
+URL and the credential differ.
+
+`ApiConfig.aiBaseUrl` is the only switch. Left at Google's own endpoint the app
+authenticates with `x-goog-api-key` from the dart-define; pointed anywhere else it
+sends the signed-in user's Firebase ID token as a bearer token instead, and needs
+no key at all. `ApiConfig.isConfigured` is true in both states, which is why a
+proxied build has a working AI feature with nothing secret inside it.
+
+The function does three things the app cannot do for itself: it keeps the key out
+of the binary, it refuses any path but the one the app calls, and it enforces a
+per-user daily quota. That last one is not decoration — an authenticated user can
+still burn the budget in a loop, and only the server can say no. The limit lives in
+`FREE_DAILY_CALLS`, and `dailyLimitForUser` is the single place that becomes an
+entitlement lookup once subscriptions exist.
+
+Usage counts live at `ai_usage/{uid}`, written only by the Admin SDK. The rules'
+closing deny-all already makes that collection unreachable from any client.
+
+Deploying it, once per machine:
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use --add                                   # writes .firebaserc
+cd functions && npm install && cd ..
+firebase functions:secrets:set GEMINI_API_KEY        # prompts for the value
+firebase deploy --only functions
 ```
 
-The proxy must expose `POST /v1beta/interactions` with the same request/response shape.
+The deploy prints the function URL. Put it in `dart_defines/dev.json` and drop the
+key:
+
+```json
+{ "AI_BASE_URL": "https://us-central1-easy-plate.cloudfunctions.net/aiProxy" }
+```
+
+Rotating the key later is `firebase functions:secrets:set GEMINI_API_KEY` followed
+by a redeploy. No app release is involved, because no build ever contained it.
+
+`cd functions && npm test` covers the quota decision: the day rollover, the call
+that reaches the limit, and the one past it.
+
+**Still missing:** App Check. Until it is enabled, the proxy trusts any valid
+Firebase ID token, which means any account — including one created by a script.
+The quota bounds the damage per account; App Check is what stops the accounts
+being created by something other than the app.
 
 ### Web search: two ways to open a result
 

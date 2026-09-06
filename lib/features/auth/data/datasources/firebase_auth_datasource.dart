@@ -13,6 +13,7 @@ abstract class AuthDataSource {
   Future<AppUserEntity> signInWithEmail(String email, String password);
   Future<AppUserEntity> registerWithEmail(String email, String password);
   Future<AppUserEntity> signInWithGoogle();
+  Future<AppUserEntity> signInWithApple();
   Future<void> sendPasswordReset(String email);
   Future<String> startPhoneVerification(
     String phoneNumber, {
@@ -37,6 +38,7 @@ abstract class AuthDataSource {
   Future<void> linkPhone(String verificationId, String smsCode);
   Future<void> linkEmailPassword(String email, String password);
   Future<void> linkGoogle();
+  Future<void> linkApple();
 }
 
 class FirebaseAuthDataSource implements AuthDataSource {
@@ -159,6 +161,33 @@ class FirebaseAuthDataSource implements AuthDataSource {
       _rethrow(e);
     }
   }
+
+  /// Native on iOS, so there is no browser hop and Apple's own "Hide My Email"
+  /// relay works. Firebase's own provider flow is used rather than a separate
+  /// package: `signInWithProvider` drives ASAuthorization directly.
+  ///
+  /// Apple hands back the name **only on the very first authorization** for an
+  /// app. A reinstall gets nothing, which is why the profile screen asks for a
+  /// name rather than trusting what the provider supplied.
+  @override
+  Future<AppUserEntity> signInWithApple() async {
+    try {
+      final result = await _auth.signInWithProvider(AppleAuthProvider());
+      return _map(result.user)!;
+    } on FirebaseAuthException catch (e) {
+      // A dismissed sheet surfaces as a cancel code rather than an error the
+      // user should be shown.
+      if (_appleCancelled(e)) throw const AppException(AppErrorType.cancelled);
+      _rethrow(e);
+    }
+  }
+
+  /// Apple reports a dismissed sheet through a couple of different codes
+  /// depending on the OS version; none of them are a failure worth a message.
+  static bool _appleCancelled(FirebaseAuthException e) =>
+      e.code == 'canceled' ||
+      e.code == 'user-canceled' ||
+      e.code == 'web-context-canceled';
 
   @override
   Future<void> sendPasswordReset(String email) async {
@@ -326,6 +355,19 @@ class FirebaseAuthDataSource implements AuthDataSource {
           ? const AppException(AppErrorType.cancelled)
           : AppException(AppErrorType.unknown, message: e.description ?? e.code.name);
     } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  /// Attaches an Apple account to the signed-in user, so signing in with Apple
+  /// later resolves here rather than opening a second account.
+  @override
+  Future<void> linkApple() async {
+    try {
+      await _requireUser.linkWithProvider(AppleAuthProvider());
+      await _auth.currentUser?.reload();
+    } on FirebaseAuthException catch (e) {
+      if (_appleCancelled(e)) throw const AppException(AppErrorType.cancelled);
       _rethrow(e);
     }
   }

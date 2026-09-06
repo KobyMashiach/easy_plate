@@ -39,4 +39,14 @@ void main() {
   test('an unrecognised code falls back instead of throwing', () {
     expect(authErrorMessage('some-brand-new-code'), t.auth.errorUnknown);
   });
+
+  test('an identity that belongs to another account says so', () {
+    // Both used to fall through to the generic failure, which left the user
+    // with no idea why signing in had stopped working.
+    expect(
+      authErrorMessage('account-exists-with-different-credential'),
+      isNot(t.auth.errorUnknown),
+    );
+    expect(authErrorMessage('credential-already-in-use'), isNot(t.auth.errorUnknown));
+  });
 }

@@ -145,6 +145,18 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get googleLinked => 'مرتبط';
 	@override String get googleAlreadyUsed => 'حساب Google هذا مرتبط بمستخدم آخر';
 	@override String get googleAlreadyLinked => 'يوجد حساب Google مرتبط بالفعل';
+	@override String get phoneGateTitle => 'تأكيد رقم الهاتف';
+	@override String get phoneGateBody => 'كل حساب يتم تأكيده برقم هاتف. سنرسل لك رمزًا عبر رسالة نصية.';
+	@override String get changeNumber => 'تغيير الرقم';
+	@override String get signInTitle => 'تسجيل الدخول';
+	@override String get phoneFirstHint => 'جديد هنا؟ تابع باستخدام الهاتف.';
+	@override String get errorAccountExistsDifferentCredential => 'هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.';
+	@override String get errorCredentialInUse => 'هذه البيانات تخص حسابًا آخر بالفعل';
+	@override String get continueWithApple => 'المتابعة باستخدام Apple';
+	@override String get linkApple => 'ربط حساب Apple';
+	@override String get appleLinked => 'مرتبط';
+	@override String get appleAlreadyUsed => 'حساب Apple هذا مرتبط بمستخدم آخر';
+	@override String get appleAlreadyLinked => 'تم ربط حساب Apple بالفعل';
 }
 
 // Path: profile
@@ -734,6 +746,18 @@ extension on TranslationsAr {
 			'auth.googleLinked' => 'مرتبط',
 			'auth.googleAlreadyUsed' => 'حساب Google هذا مرتبط بمستخدم آخر',
 			'auth.googleAlreadyLinked' => 'يوجد حساب Google مرتبط بالفعل',
+			'auth.phoneGateTitle' => 'تأكيد رقم الهاتف',
+			'auth.phoneGateBody' => 'كل حساب يتم تأكيده برقم هاتف. سنرسل لك رمزًا عبر رسالة نصية.',
+			'auth.changeNumber' => 'تغيير الرقم',
+			'auth.signInTitle' => 'تسجيل الدخول',
+			'auth.phoneFirstHint' => 'جديد هنا؟ تابع باستخدام الهاتف.',
+			'auth.errorAccountExistsDifferentCredential' => 'هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.',
+			'auth.errorCredentialInUse' => 'هذه البيانات تخص حسابًا آخر بالفعل',
+			'auth.continueWithApple' => 'المتابعة باستخدام Apple',
+			'auth.linkApple' => 'ربط حساب Apple',
+			'auth.appleLinked' => 'مرتبط',
+			'auth.appleAlreadyUsed' => 'حساب Apple هذا مرتبط بمستخدم آخر',
+			'auth.appleAlreadyLinked' => 'تم ربط حساب Apple بالفعل',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',

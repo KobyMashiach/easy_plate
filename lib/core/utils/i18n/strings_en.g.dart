@@ -145,6 +145,18 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get googleLinked => 'Linked';
 	@override String get googleAlreadyUsed => 'That Google account already belongs to another user';
 	@override String get googleAlreadyLinked => 'A Google account is already linked';
+	@override String get phoneGateTitle => 'Verify your phone';
+	@override String get phoneGateBody => 'Every account is verified by phone. We\'ll text you a code.';
+	@override String get changeNumber => 'Change number';
+	@override String get signInTitle => 'Sign in';
+	@override String get phoneFirstHint => 'New here? Continue with phone.';
+	@override String get errorAccountExistsDifferentCredential => 'That email already belongs to another account. Sign in the way you registered.';
+	@override String get errorCredentialInUse => 'Those details already belong to another account';
+	@override String get continueWithApple => 'Continue with Apple';
+	@override String get linkApple => 'Link Apple account';
+	@override String get appleLinked => 'Linked';
+	@override String get appleAlreadyUsed => 'That Apple account already belongs to another user';
+	@override String get appleAlreadyLinked => 'An Apple account is already linked';
 }
 
 // Path: profile
@@ -734,6 +746,18 @@ extension on TranslationsEn {
 			'auth.googleLinked' => 'Linked',
 			'auth.googleAlreadyUsed' => 'That Google account already belongs to another user',
 			'auth.googleAlreadyLinked' => 'A Google account is already linked',
+			'auth.phoneGateTitle' => 'Verify your phone',
+			'auth.phoneGateBody' => 'Every account is verified by phone. We\'ll text you a code.',
+			'auth.changeNumber' => 'Change number',
+			'auth.signInTitle' => 'Sign in',
+			'auth.phoneFirstHint' => 'New here? Continue with phone.',
+			'auth.errorAccountExistsDifferentCredential' => 'That email already belongs to another account. Sign in the way you registered.',
+			'auth.errorCredentialInUse' => 'Those details already belong to another account',
+			'auth.continueWithApple' => 'Continue with Apple',
+			'auth.linkApple' => 'Link Apple account',
+			'auth.appleLinked' => 'Linked',
+			'auth.appleAlreadyUsed' => 'That Apple account already belongs to another user',
+			'auth.appleAlreadyLinked' => 'An Apple account is already linked',
 			'profile.setupTitle' => 'A few last details',
 			'profile.setupSubtitle' => 'So we know what to call you',
 			'profile.fullName' => 'Full name',

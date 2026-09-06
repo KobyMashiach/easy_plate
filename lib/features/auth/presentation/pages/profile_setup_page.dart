@@ -17,8 +17,10 @@ import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../../user_profile/domain/usecases/save_user_profile_usecase.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/link_apple_usecase.dart';
 import '../../domain/usecases/link_google_usecase.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/apple_sign_in.dart';
 import '../widgets/link_credential_sheets.dart';
 
 /// Runs once per account for whatever the provider did not give us, and again
@@ -98,6 +100,31 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       });
     } catch (e) {
       debugPrint('Google link failed: $e');
+      if (mounted) _toast(t.auth.errorUnknown);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _linkApple() async {
+    final useCase = LinkAppleUseCase(context.read<AuthRepository>());
+    setState(() => _busy = true);
+    try {
+      await useCase();
+      await _refreshIdentity();
+      if (mounted) _toast(t.auth.appleLinked);
+    } on AppException catch (e) {
+      debugPrint('Apple link failed: $e');
+      if (!mounted) return;
+      // Dismissing Apple's sheet is a normal gesture, not a failure.
+      if (e.type == AppErrorType.cancelled) return;
+      _toast(switch (e.message) {
+        'credential-already-in-use' => t.auth.appleAlreadyUsed,
+        'provider-already-linked' => t.auth.appleAlreadyLinked,
+        _ => t.auth.errorUnknown,
+      });
+    } catch (e) {
+      debugPrint('Apple link failed: $e');
       if (mounted) _toast(t.auth.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -271,6 +298,21 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             actionLabel: t.auth.linkGoogle,
             onAction: _linkGoogle,
           ),
+          // Absent on Android, where there is no native sheet to present and
+          // no guideline asking for one.
+          if (appleSignInAvailable) ...[
+            const Divider(color: AppColors.outlineVariant),
+            _identityRow(
+              icon: Icons.apple_rounded,
+              label: 'Apple',
+              // Like Google, linked is the whole state — Apple's relay address
+              // is not something to show back at the user.
+              value: (user?.hasApple ?? false) ? t.auth.appleLinked : null,
+              verified: user?.hasApple ?? false,
+              actionLabel: t.auth.linkApple,
+              onAction: _linkApple,
+            ),
+          ],
         ],
       ),
     );

@@ -1,20 +1,36 @@
-import 'package:easy_plate/data_delete.dart';
-
-/// Gemini Interactions API configuration for the recipe ingestion pipeline.
+/// Gemini configuration for the recipe ingestion pipeline.
 ///
-/// SECURITY: shipping an API key inside a mobile binary makes it extractable.
-/// For production, point [aiBaseUrl] at your own backend proxy that holds the
-/// key server-side; the direct-to-Google path below is for local development
-/// only, via `--dart-define=GEMINI_API_KEY=...`.
+/// There are two ways to reach the model, and [aiBaseUrl] is the only knob that
+/// picks between them.
+///
+/// **Development** talks to Google directly, authenticating with a key supplied
+/// through `--dart-define-from-file=dart_defines/dev.json`.
+///
+/// **Production** talks to our own Cloud Function, which holds the key in Secret
+/// Manager and authenticates the caller by their Firebase ID token. A key
+/// compiled into a mobile binary is extractable with `strings`, so a shipped
+/// build must carry none.
 abstract class ApiConfig {
-  static const geminiApiKey = geminiApiKeyTemp;
-  // static const geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
+  /// Google's own endpoint. Anything else in [aiBaseUrl] is taken to be our
+  /// proxy, which is what flips the authentication scheme below.
+  static const googleDirectBaseUrl = 'https://generativelanguage.googleapis.com';
+
+  static const geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
+
   static const aiBaseUrl = String.fromEnvironment(
     'AI_BASE_URL',
-    defaultValue: 'https://generativelanguage.googleapis.com',
+    defaultValue: googleDirectBaseUrl,
   );
 
+  /// True when requests go through our backend rather than straight to Google.
+  static bool get usesProxy => proxyFor(aiBaseUrl);
+
+  /// The switch itself, as a pure function. [aiBaseUrl] is fixed at compile
+  /// time, so this is the only way to cover both branches in a test.
+  static bool proxyFor(String baseUrl) => baseUrl != googleDirectBaseUrl;
+
   static const interactionsPath = '/v1beta/interactions';
+
   static const model = String.fromEnvironment(
     'GEMINI_MODEL',
     defaultValue: 'gemini-3.8-flash',
@@ -28,5 +44,10 @@ abstract class ApiConfig {
     defaultValue: 'gemini-3.5-flash-lite',
   );
 
-  static bool get isConfigured => geminiApiKey.isNotEmpty;
+  /// Behind the proxy there is nothing to configure in the app: the key lives
+  /// on the server, and the caller's identity is the credential.
+  static bool get isConfigured => configuredFor(aiBaseUrl, geminiApiKey);
+
+  static bool configuredFor(String baseUrl, String key) =>
+      proxyFor(baseUrl) || key.isNotEmpty;
 }

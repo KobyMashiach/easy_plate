@@ -13,12 +13,15 @@ import '../hive/user_scope.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
 
-/// Where the user stands in the gate: signed out, email not yet confirmed,
-/// signed in but without a profile document, profile filled in but preferences
-/// not chosen, or through.
+/// Where the user stands in the gate: signed out, phone not yet proved, email
+/// not yet confirmed, signed in but without a profile document, profile filled
+/// in but preferences not chosen, or through.
 enum AuthStage {
   unknown,
   signedOut,
+  /// Signed in, but the account carries no verified phone number. Every account
+  /// must, so this holds Google and email arrivals until they prove one.
+  needsPhone,
   /// Signed in with a password the user chose, but the address behind it
   /// has not been confirmed yet.
   needsEmailVerification,
@@ -91,6 +94,14 @@ class AuthSessionService extends ChangeNotifier {
     }
 
     unawaited(FirebaseService().setAnalyticsUser(user.uid));
+
+    // Checked before the email stage, and before any local box is opened: a
+    // phone is the root identity, so an account without one has not finished
+    // being created no matter which provider brought it here.
+    if (user.needsPhoneVerification) {
+      _set(AuthStage.needsPhone);
+      return;
+    }
 
     if (user.needsEmailVerification) {
       _set(AuthStage.needsEmailVerification);

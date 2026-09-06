@@ -68,7 +68,19 @@
     "linkGoogle": "קישור חשבון Google",
     "googleLinked": "מקושר",
     "googleAlreadyUsed": "חשבון Google הזה כבר משויך למשתמש אחר",
-    "googleAlreadyLinked": "כבר מקושר חשבון Google"
+    "googleAlreadyLinked": "כבר מקושר חשבון Google",
+    "phoneGateTitle": "אימות מספר טלפון",
+    "phoneGateBody": "כל חשבון מאומת במספר טלפון. נשלח לכם קוד ב-SMS.",
+    "changeNumber": "שינוי המספר",
+    "signInTitle": "כניסה",
+    "phoneFirstHint": "חדשים כאן? המשיכו עם טלפון.",
+    "errorAccountExistsDifferentCredential": "כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.",
+    "errorCredentialInUse": "הפרטים האלה כבר משויכים לחשבון אחר",
+    "continueWithApple": "המשך עם Apple",
+    "linkApple": "קישור חשבון Apple",
+    "appleLinked": "מקושר",
+    "appleAlreadyUsed": "חשבון Apple הזה כבר משויך למשתמש אחר",
+    "appleAlreadyLinked": "כבר מקושר חשבון Apple"
   },
   "profile": {
     "setupTitle": "כמה פרטים אחרונים",
