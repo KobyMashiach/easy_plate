@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -114,6 +115,19 @@ class AccountMenuPage extends StatelessWidget {
                   onTap: () => context.pushNamed(Routing.support),
                 ),
                 const SizedBox(height: AppSpacing.xl),
+                // Non-production builds are marked so a tester can tell at a
+                // glance which one is on the device. Listens rather than reads
+                // once, so a refresh landing while this page is open takes
+                // effect immediately.
+                ValueListenableBuilder<bool>(
+                  valueListenable: FirebaseService().isProdListenable,
+                  builder: (context, isProd, _) => isProd
+                      ? const SizedBox.shrink()
+                      : const Padding(
+                          padding: EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: _DevBadge(),
+                        ),
+                ),
                 ClayButton(
                   label: t.auth.signOut,
                   icon: Icons.logout_rounded,
@@ -149,6 +163,41 @@ class _MenuRow extends StatelessWidget {
           Expanded(child: Text(label, style: AppTextStyles.bodyLg)),
           const Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
         ],
+      ),
+    );
+  }
+}
+
+class _DevBadge extends StatelessWidget {
+  const _DevBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.base,
+        ),
+        decoration: const ShapeDecoration(
+          color: AppColors.errorContainer,
+          shape: StadiumBorder(),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.construction_rounded,
+                size: 16, color: AppColors.onErrorContainer),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              'DEV',
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onErrorContainer,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

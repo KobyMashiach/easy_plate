@@ -10,7 +10,10 @@ import '../../../../core/widgets/error_retry_view.dart';
 import '../../../community/presentation/widgets/author_row.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../../domain/entities/forum_reply_entity.dart';
+import '../../../shared_recipes/domain/entities/shared_recipe_entity.dart';
+import '../../../shared_recipes/presentation/widgets/shared_recipe_picker_sheet.dart';
 import '../bloc/forum_thread_bloc.dart';
+import '../widgets/reply_recipe_link.dart';
 
 class ForumThreadPage extends StatelessWidget {
   final ForumPostEntity post;
@@ -31,14 +34,20 @@ class ForumThreadPage extends StatelessWidget {
           child: BlocBuilder<ForumThreadBloc, ForumThreadState>(
             builder: (context, state) {
               return switch (state) {
-                ForumThreadLoading() => const Center(child: CircularProgressIndicator()),
-                ForumThreadLoaded(replies: final replies, sending: final sending) =>
+                ForumThreadLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                ForumThreadLoaded(
+                  replies: final replies,
+                  sending: final sending,
+                ) =>
                   _Thread(post: post, replies: replies, sending: sending),
                 ForumThreadError(error: final error) => ErrorRetryView(
-                    error: error,
-                    onRetry: () =>
-                        context.read<ForumThreadBloc>().add(const ForumThreadEvent.init()),
+                  error: error,
+                  onRetry: () => context.read<ForumThreadBloc>().add(
+                    const ForumThreadEvent.init(),
                   ),
+                ),
               };
             },
           ),
@@ -53,7 +62,11 @@ class _Thread extends StatefulWidget {
   final List<ForumReplyEntity> replies;
   final bool sending;
 
-  const _Thread({required this.post, required this.replies, required this.sending});
+  const _Thread({
+    required this.post,
+    required this.replies,
+    required this.sending,
+  });
 
   @override
   State<_Thread> createState() => _ThreadState();
@@ -62,17 +75,34 @@ class _Thread extends StatefulWidget {
 class _ThreadState extends State<_Thread> {
   final _reply = TextEditingController();
 
+  /// Recipe attached to the reply being written, if any.
+  SharedRecipeEntity? _attached;
+
   @override
   void dispose() {
     _reply.dispose();
     super.dispose();
   }
 
+  Future<void> _attachRecipe() async {
+    final shared = await showSharedRecipePickerSheet(context);
+    if (shared != null && mounted) setState(() => _attached = shared);
+  }
+
   void _send() {
     final body = _reply.text.trim();
-    if (body.isEmpty) return;
-    context.read<ForumThreadBloc>().add(ForumThreadEvent.addReply(body));
+    // A recipe link is a complete reply on its own — the title carries it.
+    if (body.isEmpty && _attached == null) return;
+
+    context.read<ForumThreadBloc>().add(
+      ForumThreadEvent.addReply(
+        body,
+        sharedRecipeId: _attached?.id,
+        sharedRecipeTitle: _attached?.recipe.title,
+      ),
+    );
     _reply.clear();
+    setState(() => _attached = null);
     // Dismiss so the freshly posted reply is visible instead of hidden behind
     // the keyboard.
     FocusScope.of(context).unfocus();
@@ -111,7 +141,9 @@ class _ThreadState extends State<_Thread> {
                   child: Text(
                     t.community.noReplies,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ),
                 )
               else
@@ -128,7 +160,18 @@ class _ThreadState extends State<_Thread> {
                           createdAt: reply.createdAt,
                         ),
                         const SizedBox(height: AppSpacing.sm),
-                        Text(reply.body, style: AppTextStyles.bodyMd),
+                        if (reply.body.isNotEmpty)
+                          Text(reply.body, style: AppTextStyles.bodyMd),
+                        if (reply.hasRecipe) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: ReplyRecipeLink(
+                              sharedRecipeId: reply.sharedRecipeId!,
+                              title: reply.sharedRecipeTitle,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -144,29 +187,69 @@ class _ThreadState extends State<_Thread> {
             bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.sm,
             top: AppSpacing.sm,
           ),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _reply,
-                  maxLines: 3,
-                  minLines: 1,
-                  style: AppTextStyles.bodyMd,
-                  decoration: InputDecoration(hintText: t.community.writeReply),
-                  onSubmitted: (_) => _send(),
+              if (_attached case final attached?) ...[
+                Row(
+                  children: [
+                    Flexible(
+                      child: ReplyRecipeLink(
+                        sharedRecipeId: attached.id,
+                        title: attached.recipe.title,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: AppColors.tertiary,
+                      ),
+                      onPressed: () => setState(() => _attached = null),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              IconButton(
-                tooltip: t.community.send,
-                icon: widget.sending
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.send_rounded, color: AppColors.primary),
-                onPressed: widget.sending ? null : _send,
+                const SizedBox(height: AppSpacing.xs),
+              ],
+              Row(
+                children: [
+                  IconButton(
+                    tooltip: t.community.attachRecipe,
+                    icon: const Icon(
+                      Icons.attach_file_rounded,
+                      color: AppColors.primary,
+                    ),
+                    onPressed: widget.sending ? null : _attachRecipe,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _reply,
+                      maxLines: 3,
+                      minLines: 1,
+                      style: AppTextStyles.bodyMd,
+                      decoration: InputDecoration(
+                        hintText: t.community.writeReply,
+                      ),
+                      onSubmitted: (_) => _send(),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  IconButton(
+                    tooltip: t.community.send,
+                    icon: widget.sending
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(
+                            Icons.send_rounded,
+                            color: AppColors.primary,
+                          ),
+                    onPressed: widget.sending ? null : _send,
+                  ),
+                ],
               ),
             ],
           ),

@@ -30,13 +30,14 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       sourceUrl: fields[8] as String?,
       createdAt: fields[9] as DateTime,
       imageFileName: fields[10] as String?,
+      savedFromSharedId: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -58,7 +59,9 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       ..writeByte(9)
       ..write(obj.createdAt)
       ..writeByte(10)
-      ..write(obj.imageFileName);
+      ..write(obj.imageFileName)
+      ..writeByte(11)
+      ..write(obj.savedFromSharedId);
   }
 
   @override
@@ -94,6 +97,7 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   sourceUrl: json['sourceUrl'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
   imageFileName: json['imageFileName'] as String?,
+  savedFromSharedId: json['savedFromSharedId'] as String?,
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -111,6 +115,7 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'sourceUrl': instance.sourceUrl,
       'createdAt': instance.createdAt.toIso8601String(),
       'imageFileName': instance.imageFileName,
+      'savedFromSharedId': instance.savedFromSharedId,
     };
 
 const _$DietaryPreferenceEnumMap = {

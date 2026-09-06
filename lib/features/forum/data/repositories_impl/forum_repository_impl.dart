@@ -39,6 +39,8 @@ class ForumRepositoryImpl implements ForumRepository {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
+    String? sharedRecipeId,
+    String? sharedRecipeTitle,
   }) =>
       remoteDataSource.addReply(
         postId: postId,
@@ -46,6 +48,8 @@ class ForumRepositoryImpl implements ForumRepository {
         authorUid: authorUid,
         authorName: authorName,
         authorPhotoUrl: authorPhotoUrl,
+        sharedRecipeId: sharedRecipeId,
+        sharedRecipeTitle: sharedRecipeTitle,
       );
 
   @override

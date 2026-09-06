@@ -22,6 +22,8 @@ abstract class ForumRepository {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
+    String? sharedRecipeId,
+    String? sharedRecipeTitle,
   });
 
   Future<void> deletePost(String postId);

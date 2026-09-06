@@ -12,11 +12,17 @@ part of 'my_recipes_bloc.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$MyRecipesEvent {
+mixin _$MyRecipesEvent implements DiagnosticableTreeMixin {
 
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesEvent'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -28,7 +34,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesEvent()';
 }
 
@@ -55,14 +61,15 @@ extension MyRecipesEventPatterns on MyRecipesEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Search value)?  search,TResult Function( _FilterByDietary value)?  filterByDietary,TResult Function( _DeleteRecipe value)?  deleteRecipe,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Search value)?  search,TResult Function( _FilterByDietary value)?  filterByDietary,TResult Function( _DeleteRecipe value)?  deleteRecipe,TResult Function( _RecipesUpdated value)?  recipesUpdated,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _Search() when search != null:
 return search(_that);case _FilterByDietary() when filterByDietary != null:
 return filterByDietary(_that);case _DeleteRecipe() when deleteRecipe != null:
-return deleteRecipe(_that);case _:
+return deleteRecipe(_that);case _RecipesUpdated() when recipesUpdated != null:
+return recipesUpdated(_that);case _:
   return orElse();
 
 }
@@ -80,14 +87,15 @@ return deleteRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Search value)  search,required TResult Function( _FilterByDietary value)  filterByDietary,required TResult Function( _DeleteRecipe value)  deleteRecipe,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Search value)  search,required TResult Function( _FilterByDietary value)  filterByDietary,required TResult Function( _DeleteRecipe value)  deleteRecipe,required TResult Function( _RecipesUpdated value)  recipesUpdated,}){
 final _that = this;
 switch (_that) {
 case _Init():
 return init(_that);case _Search():
 return search(_that);case _FilterByDietary():
 return filterByDietary(_that);case _DeleteRecipe():
-return deleteRecipe(_that);}
+return deleteRecipe(_that);case _RecipesUpdated():
+return recipesUpdated(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -101,14 +109,15 @@ return deleteRecipe(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Search value)?  search,TResult? Function( _FilterByDietary value)?  filterByDietary,TResult? Function( _DeleteRecipe value)?  deleteRecipe,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Search value)?  search,TResult? Function( _FilterByDietary value)?  filterByDietary,TResult? Function( _DeleteRecipe value)?  deleteRecipe,TResult? Function( _RecipesUpdated value)?  recipesUpdated,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _Search() when search != null:
 return search(_that);case _FilterByDietary() when filterByDietary != null:
 return filterByDietary(_that);case _DeleteRecipe() when deleteRecipe != null:
-return deleteRecipe(_that);case _:
+return deleteRecipe(_that);case _RecipesUpdated() when recipesUpdated != null:
+return recipesUpdated(_that);case _:
   return null;
 
 }
@@ -125,13 +134,14 @@ return deleteRecipe(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String query)?  search,TResult Function( List<DietaryPreference> preferences)?  filterByDietary,TResult Function( String id)?  deleteRecipe,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String query)?  search,TResult Function( List<DietaryPreference> preferences)?  filterByDietary,TResult Function( String id)?  deleteRecipe,TResult Function( List<RecipeEntity> recipes)?  recipesUpdated,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Search() when search != null:
 return search(_that.query);case _FilterByDietary() when filterByDietary != null:
 return filterByDietary(_that.preferences);case _DeleteRecipe() when deleteRecipe != null:
-return deleteRecipe(_that.id);case _:
+return deleteRecipe(_that.id);case _RecipesUpdated() when recipesUpdated != null:
+return recipesUpdated(_that.recipes);case _:
   return orElse();
 
 }
@@ -149,13 +159,14 @@ return deleteRecipe(_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String query)  search,required TResult Function( List<DietaryPreference> preferences)  filterByDietary,required TResult Function( String id)  deleteRecipe,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String query)  search,required TResult Function( List<DietaryPreference> preferences)  filterByDietary,required TResult Function( String id)  deleteRecipe,required TResult Function( List<RecipeEntity> recipes)  recipesUpdated,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Search():
 return search(_that.query);case _FilterByDietary():
 return filterByDietary(_that.preferences);case _DeleteRecipe():
-return deleteRecipe(_that.id);}
+return deleteRecipe(_that.id);case _RecipesUpdated():
+return recipesUpdated(_that.recipes);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -169,13 +180,14 @@ return deleteRecipe(_that.id);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String query)?  search,TResult? Function( List<DietaryPreference> preferences)?  filterByDietary,TResult? Function( String id)?  deleteRecipe,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String query)?  search,TResult? Function( List<DietaryPreference> preferences)?  filterByDietary,TResult? Function( String id)?  deleteRecipe,TResult? Function( List<RecipeEntity> recipes)?  recipesUpdated,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Search() when search != null:
 return search(_that.query);case _FilterByDietary() when filterByDietary != null:
 return filterByDietary(_that.preferences);case _DeleteRecipe() when deleteRecipe != null:
-return deleteRecipe(_that.id);case _:
+return deleteRecipe(_that.id);case _RecipesUpdated() when recipesUpdated != null:
+return recipesUpdated(_that.recipes);case _:
   return null;
 
 }
@@ -186,7 +198,7 @@ return deleteRecipe(_that.id);case _:
 /// @nodoc
 
 
-class _Init implements MyRecipesEvent {
+class _Init with DiagnosticableTreeMixin implements MyRecipesEvent {
   const _Init();
   
 
@@ -194,6 +206,12 @@ class _Init implements MyRecipesEvent {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesEvent.init'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -205,7 +223,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesEvent.init()';
 }
 
@@ -218,7 +236,7 @@ String toString() {
 /// @nodoc
 
 
-class _Search implements MyRecipesEvent {
+class _Search with DiagnosticableTreeMixin implements MyRecipesEvent {
   const _Search(this.query);
   
 
@@ -231,6 +249,12 @@ class _Search implements MyRecipesEvent {
 _$SearchCopyWith<_Search> get copyWith => __$SearchCopyWithImpl<_Search>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesEvent.search'))
+    ..add(DiagnosticsProperty('query', query));
+}
 
 @override
 bool operator ==(Object other) {
@@ -242,7 +266,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,query);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesEvent.search(query: $query)';
 }
 
@@ -284,7 +308,7 @@ as String,
 /// @nodoc
 
 
-class _FilterByDietary implements MyRecipesEvent {
+class _FilterByDietary with DiagnosticableTreeMixin implements MyRecipesEvent {
   const _FilterByDietary(final  List<DietaryPreference> preferences): _preferences = preferences;
   
 
@@ -303,6 +327,12 @@ class _FilterByDietary implements MyRecipesEvent {
 _$FilterByDietaryCopyWith<_FilterByDietary> get copyWith => __$FilterByDietaryCopyWithImpl<_FilterByDietary>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesEvent.filterByDietary'))
+    ..add(DiagnosticsProperty('preferences', preferences));
+}
 
 @override
 bool operator ==(Object other) {
@@ -314,7 +344,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_preferences));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesEvent.filterByDietary(preferences: $preferences)';
 }
 
@@ -356,7 +386,7 @@ as List<DietaryPreference>,
 /// @nodoc
 
 
-class _DeleteRecipe implements MyRecipesEvent {
+class _DeleteRecipe with DiagnosticableTreeMixin implements MyRecipesEvent {
   const _DeleteRecipe(this.id);
   
 
@@ -369,6 +399,12 @@ class _DeleteRecipe implements MyRecipesEvent {
 _$DeleteRecipeCopyWith<_DeleteRecipe> get copyWith => __$DeleteRecipeCopyWithImpl<_DeleteRecipe>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesEvent.deleteRecipe'))
+    ..add(DiagnosticsProperty('id', id));
+}
 
 @override
 bool operator ==(Object other) {
@@ -380,7 +416,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,id);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesEvent.deleteRecipe(id: $id)';
 }
 
@@ -420,11 +456,95 @@ as String,
 }
 
 /// @nodoc
-mixin _$MyRecipesState {
+
+
+class _RecipesUpdated with DiagnosticableTreeMixin implements MyRecipesEvent {
+  const _RecipesUpdated(final  List<RecipeEntity> recipes): _recipes = recipes;
+  
+
+ final  List<RecipeEntity> _recipes;
+ List<RecipeEntity> get recipes {
+  if (_recipes is EqualUnmodifiableListView) return _recipes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_recipes);
+}
+
+
+/// Create a copy of MyRecipesEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RecipesUpdatedCopyWith<_RecipesUpdated> get copyWith => __$RecipesUpdatedCopyWithImpl<_RecipesUpdated>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesEvent.recipesUpdated'))
+    ..add(DiagnosticsProperty('recipes', recipes));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipesUpdated&&const DeepCollectionEquality().equals(other._recipes, _recipes));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes));
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'MyRecipesEvent.recipesUpdated(recipes: $recipes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RecipesUpdatedCopyWith<$Res> implements $MyRecipesEventCopyWith<$Res> {
+  factory _$RecipesUpdatedCopyWith(_RecipesUpdated value, $Res Function(_RecipesUpdated) _then) = __$RecipesUpdatedCopyWithImpl;
+@useResult
+$Res call({
+ List<RecipeEntity> recipes
+});
 
 
 
 
+}
+/// @nodoc
+class __$RecipesUpdatedCopyWithImpl<$Res>
+    implements _$RecipesUpdatedCopyWith<$Res> {
+  __$RecipesUpdatedCopyWithImpl(this._self, this._then);
+
+  final _RecipesUpdated _self;
+  final $Res Function(_RecipesUpdated) _then;
+
+/// Create a copy of MyRecipesEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? recipes = null,}) {
+  return _then(_RecipesUpdated(
+null == recipes ? _self._recipes : recipes // ignore: cast_nullable_to_non_nullable
+as List<RecipeEntity>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$MyRecipesState implements DiagnosticableTreeMixin {
+
+
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesState'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -436,7 +556,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesState()';
 }
 
@@ -588,7 +708,7 @@ return errorMessage(_that.error);case _:
 /// @nodoc
 
 
-class MyRecipesLoading implements MyRecipesState {
+class MyRecipesLoading with DiagnosticableTreeMixin implements MyRecipesState {
   const MyRecipesLoading();
   
 
@@ -596,6 +716,12 @@ class MyRecipesLoading implements MyRecipesState {
 
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesState.loading'))
+    ;
+}
 
 @override
 bool operator ==(Object other) {
@@ -607,7 +733,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesState.loading()';
 }
 
@@ -620,7 +746,7 @@ String toString() {
 /// @nodoc
 
 
-class MyRecipesLoaded implements MyRecipesState {
+class MyRecipesLoaded with DiagnosticableTreeMixin implements MyRecipesState {
   const MyRecipesLoaded(final  List<RecipeEntity> recipes, {this.query = '', final  List<DietaryPreference> dietaryFilters = const []}): _recipes = recipes,_dietaryFilters = dietaryFilters;
   
 
@@ -647,6 +773,12 @@ class MyRecipesLoaded implements MyRecipesState {
 $MyRecipesLoadedCopyWith<MyRecipesLoaded> get copyWith => _$MyRecipesLoadedCopyWithImpl<MyRecipesLoaded>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesState.loaded'))
+    ..add(DiagnosticsProperty('recipes', recipes))..add(DiagnosticsProperty('query', query))..add(DiagnosticsProperty('dietaryFilters', dietaryFilters));
+}
 
 @override
 bool operator ==(Object other) {
@@ -658,7 +790,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes),query,const DeepCollectionEquality().hash(_dietaryFilters));
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesState.loaded(recipes: $recipes, query: $query, dietaryFilters: $dietaryFilters)';
 }
 
@@ -702,7 +834,7 @@ as List<DietaryPreference>,
 /// @nodoc
 
 
-class MyRecipesError implements MyRecipesState {
+class MyRecipesError with DiagnosticableTreeMixin implements MyRecipesState {
   const MyRecipesError(this.error);
   
 
@@ -715,6 +847,12 @@ class MyRecipesError implements MyRecipesState {
 $MyRecipesErrorCopyWith<MyRecipesError> get copyWith => _$MyRecipesErrorCopyWithImpl<MyRecipesError>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'MyRecipesState.errorMessage'))
+    ..add(DiagnosticsProperty('error', error));
+}
 
 @override
 bool operator ==(Object other) {
@@ -726,7 +864,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,error);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'MyRecipesState.errorMessage(error: $error)';
 }
 

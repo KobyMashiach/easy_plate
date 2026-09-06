@@ -300,11 +300,17 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get ingredients => 'المكوّنات';
 	@override String ingredientsCount({required Object count}) => '${count} مكوّنات';
 	@override String minutes({required Object count}) => '${count} دقيقة';
+	@override String hours({required Object count}) => '${count} ساعة';
+	@override String hoursAndMinutes({required Object hours, required Object minutes}) => '${hours} ساعة و${minutes} دقيقة';
 	@override String get instructions => 'طريقة التحضير';
 	@override String get addToBook => 'إضافة إلى كتاب';
 	@override String get removeFromBook => 'إزالة من الكتاب';
 	@override String get deleteRecipe => 'حذف الوصفة';
 	@override String get photo => 'صورة الوصفة';
+	@override String get mine => 'وصفاتي';
+	@override String get saved => 'وصفات محفوظة';
+	@override String get noneMine => 'لم تنشئوا وصفات بعد';
+	@override String get noneSaved => 'لم تحفظوا وصفات من المجتمع بعد';
 }
 
 // Path: community
@@ -340,6 +346,35 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String get unshareConfirm => 'ستتم إزالة الوصفة من الخلاصة المشتركة.';
 	@override String byAuthor({required Object name}) => 'بواسطة ${name}';
 	@override String get loadFailed => 'تعذّر تحميل المحتوى';
+	@override String get allRecipes => 'كل الوصفات';
+	@override String get myRecipes => 'وصفاتي';
+	@override String get editShared => 'تعديل الوصفة المشتركة';
+	@override String get sharedUpdated => 'تم تحديث الوصفة';
+	@override String get noneOfMine => 'لم تشاركوا أي وصفات بعد';
+	@override String get search => 'بحث';
+	@override String get searchHint => 'اسم الوصفة أو الناشر';
+	@override String get savedOnly => 'المحفوظة';
+	@override String get noResults => 'لا توجد نتائج';
+	@override String get attachRecipe => 'إرفاق وصفة';
+	@override String get openRecipe => 'فتح الوصفة';
+	@override String get recipeUnavailable => 'هذه الوصفة لم تعد متاحة';
+	@override String get sortAndFilter => 'الترتيب والتصفية';
+	@override String get sort => 'ترتيب';
+	@override String get sortNewest => 'الأحدث';
+	@override String get sortOldest => 'الأقدم';
+	@override String get sortMostLiked => 'الأكثر إعجابًا';
+	@override String get topics => 'المواضيع';
+	@override String get likes => 'الإعجابات';
+	@override String get anyLikes => 'الكل';
+	@override String atLeastLikes({required Object count}) => '${count} فأكثر';
+	@override String get totalTime => 'الوقت الإجمالي';
+	@override String get anyTime => 'أي وقت';
+	@override String upTo({required Object duration}) => 'حتى ${duration}';
+	@override String get clearFilters => 'مسح التصفية';
+	@override String get applyFilters => 'عرض النتائج';
+	@override String likesPlus({required Object count}) => '${count}+';
+	@override String durationPlus({required Object duration}) => '${duration}+';
+	@override String get splitTimes => 'الفصل بين التحضير والطهي';
 }
 
 // Path: editor
@@ -352,6 +387,7 @@ class _Translations$editor$ar extends Translations$editor$he {
 	@override String get title => 'تعديل الوصفة';
 	@override String get recipeTitle => 'اسم الوصفة';
 	@override String get titleHint => 'مثال: شكشوكة القدس';
+	@override String get topics => 'المواضيع';
 	@override String get titleRequired => 'يجب إدخال اسم للوصفة';
 	@override String get prepMinutes => 'وقت التحضير (دقيقة)';
 	@override String get cookMinutes => 'وقت الطهي (دقيقة)';
@@ -363,6 +399,7 @@ class _Translations$editor$ar extends Translations$editor$he {
 	@override String get addStep => 'إضافة خطوة';
 	@override String get removeIngredient => 'إزالة المكوّن';
 	@override String get removeStep => 'إزالة الخطوة';
+	@override String get reorderStep => 'إعادة ترتيب الخطوة';
 	@override String get fixSpelling => 'تصحيح الإملاء';
 	@override String get refining => 'جارٍ تصحيح الوصفة...';
 	@override String get refineError => 'تعذّر تصحيح الوصفة';
@@ -670,11 +707,17 @@ extension on TranslationsAr {
 			'recipe.ingredients' => 'المكوّنات',
 			'recipe.ingredientsCount' => ({required Object count}) => '${count} مكوّنات',
 			'recipe.minutes' => ({required Object count}) => '${count} دقيقة',
+			'recipe.hours' => ({required Object count}) => '${count} ساعة',
+			'recipe.hoursAndMinutes' => ({required Object hours, required Object minutes}) => '${hours} ساعة و${minutes} دقيقة',
 			'recipe.instructions' => 'طريقة التحضير',
 			'recipe.addToBook' => 'إضافة إلى كتاب',
 			'recipe.removeFromBook' => 'إزالة من الكتاب',
 			'recipe.deleteRecipe' => 'حذف الوصفة',
 			'recipe.photo' => 'صورة الوصفة',
+			'recipe.mine' => 'وصفاتي',
+			'recipe.saved' => 'وصفات محفوظة',
+			'recipe.noneMine' => 'لم تنشئوا وصفات بعد',
+			'recipe.noneSaved' => 'لم تحفظوا وصفات من المجتمع بعد',
 			'community.title' => 'المجتمع',
 			'community.forum' => 'المنتدى',
 			'community.sharedRecipes' => 'وصفات مشتركة',
@@ -701,9 +744,39 @@ extension on TranslationsAr {
 			'community.unshareConfirm' => 'ستتم إزالة الوصفة من الخلاصة المشتركة.',
 			'community.byAuthor' => ({required Object name}) => 'بواسطة ${name}',
 			'community.loadFailed' => 'تعذّر تحميل المحتوى',
+			'community.allRecipes' => 'كل الوصفات',
+			'community.myRecipes' => 'وصفاتي',
+			'community.editShared' => 'تعديل الوصفة المشتركة',
+			'community.sharedUpdated' => 'تم تحديث الوصفة',
+			'community.noneOfMine' => 'لم تشاركوا أي وصفات بعد',
+			'community.search' => 'بحث',
+			'community.searchHint' => 'اسم الوصفة أو الناشر',
+			'community.savedOnly' => 'المحفوظة',
+			'community.noResults' => 'لا توجد نتائج',
+			'community.attachRecipe' => 'إرفاق وصفة',
+			'community.openRecipe' => 'فتح الوصفة',
+			'community.recipeUnavailable' => 'هذه الوصفة لم تعد متاحة',
+			'community.sortAndFilter' => 'الترتيب والتصفية',
+			'community.sort' => 'ترتيب',
+			'community.sortNewest' => 'الأحدث',
+			'community.sortOldest' => 'الأقدم',
+			'community.sortMostLiked' => 'الأكثر إعجابًا',
+			'community.topics' => 'المواضيع',
+			'community.likes' => 'الإعجابات',
+			'community.anyLikes' => 'الكل',
+			'community.atLeastLikes' => ({required Object count}) => '${count} فأكثر',
+			'community.totalTime' => 'الوقت الإجمالي',
+			'community.anyTime' => 'أي وقت',
+			'community.upTo' => ({required Object duration}) => 'حتى ${duration}',
+			'community.clearFilters' => 'مسح التصفية',
+			'community.applyFilters' => 'عرض النتائج',
+			'community.likesPlus' => ({required Object count}) => '${count}+',
+			'community.durationPlus' => ({required Object duration}) => '${duration}+',
+			'community.splitTimes' => 'الفصل بين التحضير والطهي',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
+			'editor.topics' => 'المواضيع',
 			'editor.titleRequired' => 'يجب إدخال اسم للوصفة',
 			'editor.prepMinutes' => 'وقت التحضير (دقيقة)',
 			'editor.cookMinutes' => 'وقت الطهي (دقيقة)',
@@ -715,6 +788,7 @@ extension on TranslationsAr {
 			'editor.addStep' => 'إضافة خطوة',
 			'editor.removeIngredient' => 'إزالة المكوّن',
 			'editor.removeStep' => 'إزالة الخطوة',
+			'editor.reorderStep' => 'إعادة ترتيب الخطوة',
 			'editor.fixSpelling' => 'تصحيح الإملاء',
 			'editor.refining' => 'جارٍ تصحيح الوصفة...',
 			'editor.refineError' => 'تعذّر تصحيح الوصفة',

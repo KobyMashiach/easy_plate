@@ -10,6 +10,8 @@ class AddForumReplyUseCase {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
+    String? sharedRecipeId,
+    String? sharedRecipeTitle,
   }) =>
       repository.addReply(
         postId: postId,
@@ -17,5 +19,7 @@ class AddForumReplyUseCase {
         authorUid: authorUid,
         authorName: authorName,
         authorPhotoUrl: authorPhotoUrl,
+        sharedRecipeId: sharedRecipeId,
+        sharedRecipeTitle: sharedRecipeTitle,
       );
 }

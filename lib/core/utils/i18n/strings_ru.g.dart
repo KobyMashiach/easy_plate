@@ -300,11 +300,17 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get ingredients => 'Ингредиенты';
 	@override String ingredientsCount({required Object count}) => 'Ингредиентов: ${count}';
 	@override String minutes({required Object count}) => '${count} мин';
+	@override String hours({required Object count}) => '${count} ч';
+	@override String hoursAndMinutes({required Object hours, required Object minutes}) => '${hours} ч ${minutes} мин';
 	@override String get instructions => 'Приготовление';
 	@override String get addToBook => 'Добавить в книгу';
 	@override String get removeFromBook => 'Убрать из книги';
 	@override String get deleteRecipe => 'Удалить рецепт';
 	@override String get photo => 'Фото рецепта';
+	@override String get mine => 'Мои рецепты';
+	@override String get saved => 'Сохранённые';
+	@override String get noneMine => 'Вы ещё не создали ни одного рецепта';
+	@override String get noneSaved => 'Вы ещё ничего не сохранили';
 }
 
 // Path: community
@@ -340,6 +346,35 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String get unshareConfirm => 'Рецепт будет убран из общей ленты.';
 	@override String byAuthor({required Object name}) => 'от ${name}';
 	@override String get loadFailed => 'Не удалось загрузить содержимое';
+	@override String get allRecipes => 'Все рецепты';
+	@override String get myRecipes => 'Мои рецепты';
+	@override String get editShared => 'Редактировать общий рецепт';
+	@override String get sharedUpdated => 'Рецепт обновлён';
+	@override String get noneOfMine => 'Вы ещё ничего не публиковали';
+	@override String get search => 'Поиск';
+	@override String get searchHint => 'Название рецепта или автор';
+	@override String get savedOnly => 'Сохранённые';
+	@override String get noResults => 'Ничего не найдено';
+	@override String get attachRecipe => 'Прикрепить рецепт';
+	@override String get openRecipe => 'Открыть рецепт';
+	@override String get recipeUnavailable => 'Этот рецепт больше недоступен';
+	@override String get sortAndFilter => 'Сортировка и фильтр';
+	@override String get sort => 'Сортировка';
+	@override String get sortNewest => 'Сначала новые';
+	@override String get sortOldest => 'Сначала старые';
+	@override String get sortMostLiked => 'Самые популярные';
+	@override String get topics => 'Темы';
+	@override String get likes => 'Лайки';
+	@override String get anyLikes => 'Любое';
+	@override String atLeastLikes({required Object count}) => 'от ${count}';
+	@override String get totalTime => 'Общее время';
+	@override String get anyTime => 'Любое время';
+	@override String upTo({required Object duration}) => 'До ${duration}';
+	@override String get clearFilters => 'Сбросить фильтры';
+	@override String get applyFilters => 'Показать результаты';
+	@override String likesPlus({required Object count}) => '${count}+';
+	@override String durationPlus({required Object duration}) => '${duration}+';
+	@override String get splitTimes => 'Разделить на подготовку и готовку';
 }
 
 // Path: editor
@@ -352,6 +387,7 @@ class _Translations$editor$ru extends Translations$editor$he {
 	@override String get title => 'Редактирование рецепта';
 	@override String get recipeTitle => 'Название рецепта';
 	@override String get titleHint => 'Например: иерусалимская шакшука';
+	@override String get topics => 'Темы';
 	@override String get titleRequired => 'Укажите название рецепта';
 	@override String get prepMinutes => 'Подготовка (мин)';
 	@override String get cookMinutes => 'Готовка (мин)';
@@ -363,6 +399,7 @@ class _Translations$editor$ru extends Translations$editor$he {
 	@override String get addStep => 'Добавить шаг';
 	@override String get removeIngredient => 'Удалить ингредиент';
 	@override String get removeStep => 'Удалить шаг';
+	@override String get reorderStep => 'Изменить порядок шага';
 	@override String get fixSpelling => 'Исправить орфографию';
 	@override String get refining => 'Исправляем рецепт...';
 	@override String get refineError => 'Не удалось исправить рецепт';
@@ -670,11 +707,17 @@ extension on TranslationsRu {
 			'recipe.ingredients' => 'Ингредиенты',
 			'recipe.ingredientsCount' => ({required Object count}) => 'Ингредиентов: ${count}',
 			'recipe.minutes' => ({required Object count}) => '${count} мин',
+			'recipe.hours' => ({required Object count}) => '${count} ч',
+			'recipe.hoursAndMinutes' => ({required Object hours, required Object minutes}) => '${hours} ч ${minutes} мин',
 			'recipe.instructions' => 'Приготовление',
 			'recipe.addToBook' => 'Добавить в книгу',
 			'recipe.removeFromBook' => 'Убрать из книги',
 			'recipe.deleteRecipe' => 'Удалить рецепт',
 			'recipe.photo' => 'Фото рецепта',
+			'recipe.mine' => 'Мои рецепты',
+			'recipe.saved' => 'Сохранённые',
+			'recipe.noneMine' => 'Вы ещё не создали ни одного рецепта',
+			'recipe.noneSaved' => 'Вы ещё ничего не сохранили',
 			'community.title' => 'Сообщество',
 			'community.forum' => 'Форум',
 			'community.sharedRecipes' => 'Общие рецепты',
@@ -701,9 +744,39 @@ extension on TranslationsRu {
 			'community.unshareConfirm' => 'Рецепт будет убран из общей ленты.',
 			'community.byAuthor' => ({required Object name}) => 'от ${name}',
 			'community.loadFailed' => 'Не удалось загрузить содержимое',
+			'community.allRecipes' => 'Все рецепты',
+			'community.myRecipes' => 'Мои рецепты',
+			'community.editShared' => 'Редактировать общий рецепт',
+			'community.sharedUpdated' => 'Рецепт обновлён',
+			'community.noneOfMine' => 'Вы ещё ничего не публиковали',
+			'community.search' => 'Поиск',
+			'community.searchHint' => 'Название рецепта или автор',
+			'community.savedOnly' => 'Сохранённые',
+			'community.noResults' => 'Ничего не найдено',
+			'community.attachRecipe' => 'Прикрепить рецепт',
+			'community.openRecipe' => 'Открыть рецепт',
+			'community.recipeUnavailable' => 'Этот рецепт больше недоступен',
+			'community.sortAndFilter' => 'Сортировка и фильтр',
+			'community.sort' => 'Сортировка',
+			'community.sortNewest' => 'Сначала новые',
+			'community.sortOldest' => 'Сначала старые',
+			'community.sortMostLiked' => 'Самые популярные',
+			'community.topics' => 'Темы',
+			'community.likes' => 'Лайки',
+			'community.anyLikes' => 'Любое',
+			'community.atLeastLikes' => ({required Object count}) => 'от ${count}',
+			'community.totalTime' => 'Общее время',
+			'community.anyTime' => 'Любое время',
+			'community.upTo' => ({required Object duration}) => 'До ${duration}',
+			'community.clearFilters' => 'Сбросить фильтры',
+			'community.applyFilters' => 'Показать результаты',
+			'community.likesPlus' => ({required Object count}) => '${count}+',
+			'community.durationPlus' => ({required Object duration}) => '${duration}+',
+			'community.splitTimes' => 'Разделить на подготовку и готовку',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
+			'editor.topics' => 'Темы',
 			'editor.titleRequired' => 'Укажите название рецепта',
 			'editor.prepMinutes' => 'Подготовка (мин)',
 			'editor.cookMinutes' => 'Готовка (мин)',
@@ -715,6 +788,7 @@ extension on TranslationsRu {
 			'editor.addStep' => 'Добавить шаг',
 			'editor.removeIngredient' => 'Удалить ингредиент',
 			'editor.removeStep' => 'Удалить шаг',
+			'editor.reorderStep' => 'Изменить порядок шага',
 			'editor.fixSpelling' => 'Исправить орфографию',
 			'editor.refining' => 'Исправляем рецепт...',
 			'editor.refineError' => 'Не удалось исправить рецепт',

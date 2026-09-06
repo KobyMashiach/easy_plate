@@ -300,11 +300,17 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get ingredients => 'Ingrédients';
 	@override String ingredientsCount({required Object count}) => '${count} ingrédients';
 	@override String minutes({required Object count}) => '${count} min';
+	@override String hours({required Object count}) => '${count} h';
+	@override String hoursAndMinutes({required Object hours, required Object minutes}) => '${hours} h ${minutes} min';
 	@override String get instructions => 'Préparation';
 	@override String get addToBook => 'Ajouter au livre';
 	@override String get removeFromBook => 'Retirer du livre';
 	@override String get deleteRecipe => 'Supprimer la recette';
 	@override String get photo => 'Photo de la recette';
+	@override String get mine => 'Mes recettes';
+	@override String get saved => 'Recettes enregistrées';
+	@override String get noneMine => 'Vous n\'avez pas encore créé de recette';
+	@override String get noneSaved => 'Vous n\'avez encore rien enregistré';
 }
 
 // Path: community
@@ -340,6 +346,35 @@ class _Translations$community$fr extends Translations$community$he {
 	@override String get unshareConfirm => 'La recette sera retirée du fil partagé.';
 	@override String byAuthor({required Object name}) => 'par ${name}';
 	@override String get loadFailed => 'Impossible de charger le contenu';
+	@override String get allRecipes => 'Toutes les recettes';
+	@override String get myRecipes => 'Mes recettes';
+	@override String get editShared => 'Modifier la recette partagée';
+	@override String get sharedUpdated => 'Recette mise à jour';
+	@override String get noneOfMine => 'Vous n\'avez encore rien partagé';
+	@override String get search => 'Recherche';
+	@override String get searchHint => 'Nom de recette ou d\'auteur';
+	@override String get savedOnly => 'Enregistrées';
+	@override String get noResults => 'Aucun résultat';
+	@override String get attachRecipe => 'Joindre une recette';
+	@override String get openRecipe => 'Ouvrir la recette';
+	@override String get recipeUnavailable => 'Cette recette n\'est plus disponible';
+	@override String get sortAndFilter => 'Trier et filtrer';
+	@override String get sort => 'Tri';
+	@override String get sortNewest => 'Plus récentes';
+	@override String get sortOldest => 'Plus anciennes';
+	@override String get sortMostLiked => 'Plus aimées';
+	@override String get topics => 'Thèmes';
+	@override String get likes => 'J\'aime';
+	@override String get anyLikes => 'Peu importe';
+	@override String atLeastLikes({required Object count}) => '${count} et plus';
+	@override String get totalTime => 'Temps total';
+	@override String get anyTime => 'Toute durée';
+	@override String upTo({required Object duration}) => 'Jusqu\'à ${duration}';
+	@override String get clearFilters => 'Effacer les filtres';
+	@override String get applyFilters => 'Voir les résultats';
+	@override String likesPlus({required Object count}) => '${count}+';
+	@override String durationPlus({required Object duration}) => '${duration}+';
+	@override String get splitTimes => 'Séparer préparation et cuisson';
 }
 
 // Path: editor
@@ -352,6 +387,7 @@ class _Translations$editor$fr extends Translations$editor$he {
 	@override String get title => 'Modifier la recette';
 	@override String get recipeTitle => 'Nom de la recette';
 	@override String get titleHint => 'Par exemple : shakshuka de Jérusalem';
+	@override String get topics => 'Thèmes';
 	@override String get titleRequired => 'Un nom de recette est requis';
 	@override String get prepMinutes => 'Préparation (min)';
 	@override String get cookMinutes => 'Cuisson (min)';
@@ -363,6 +399,7 @@ class _Translations$editor$fr extends Translations$editor$he {
 	@override String get addStep => 'Ajouter une étape';
 	@override String get removeIngredient => 'Retirer l\'ingrédient';
 	@override String get removeStep => 'Retirer l\'étape';
+	@override String get reorderStep => 'Réordonner l\'étape';
 	@override String get fixSpelling => 'Corriger l\'orthographe';
 	@override String get refining => 'Correction de la recette...';
 	@override String get refineError => 'Impossible de corriger la recette';
@@ -670,11 +707,17 @@ extension on TranslationsFr {
 			'recipe.ingredients' => 'Ingrédients',
 			'recipe.ingredientsCount' => ({required Object count}) => '${count} ingrédients',
 			'recipe.minutes' => ({required Object count}) => '${count} min',
+			'recipe.hours' => ({required Object count}) => '${count} h',
+			'recipe.hoursAndMinutes' => ({required Object hours, required Object minutes}) => '${hours} h ${minutes} min',
 			'recipe.instructions' => 'Préparation',
 			'recipe.addToBook' => 'Ajouter au livre',
 			'recipe.removeFromBook' => 'Retirer du livre',
 			'recipe.deleteRecipe' => 'Supprimer la recette',
 			'recipe.photo' => 'Photo de la recette',
+			'recipe.mine' => 'Mes recettes',
+			'recipe.saved' => 'Recettes enregistrées',
+			'recipe.noneMine' => 'Vous n\'avez pas encore créé de recette',
+			'recipe.noneSaved' => 'Vous n\'avez encore rien enregistré',
 			'community.title' => 'Communauté',
 			'community.forum' => 'Forum',
 			'community.sharedRecipes' => 'Recettes partagées',
@@ -701,9 +744,39 @@ extension on TranslationsFr {
 			'community.unshareConfirm' => 'La recette sera retirée du fil partagé.',
 			'community.byAuthor' => ({required Object name}) => 'par ${name}',
 			'community.loadFailed' => 'Impossible de charger le contenu',
+			'community.allRecipes' => 'Toutes les recettes',
+			'community.myRecipes' => 'Mes recettes',
+			'community.editShared' => 'Modifier la recette partagée',
+			'community.sharedUpdated' => 'Recette mise à jour',
+			'community.noneOfMine' => 'Vous n\'avez encore rien partagé',
+			'community.search' => 'Recherche',
+			'community.searchHint' => 'Nom de recette ou d\'auteur',
+			'community.savedOnly' => 'Enregistrées',
+			'community.noResults' => 'Aucun résultat',
+			'community.attachRecipe' => 'Joindre une recette',
+			'community.openRecipe' => 'Ouvrir la recette',
+			'community.recipeUnavailable' => 'Cette recette n\'est plus disponible',
+			'community.sortAndFilter' => 'Trier et filtrer',
+			'community.sort' => 'Tri',
+			'community.sortNewest' => 'Plus récentes',
+			'community.sortOldest' => 'Plus anciennes',
+			'community.sortMostLiked' => 'Plus aimées',
+			'community.topics' => 'Thèmes',
+			'community.likes' => 'J\'aime',
+			'community.anyLikes' => 'Peu importe',
+			'community.atLeastLikes' => ({required Object count}) => '${count} et plus',
+			'community.totalTime' => 'Temps total',
+			'community.anyTime' => 'Toute durée',
+			'community.upTo' => ({required Object duration}) => 'Jusqu\'à ${duration}',
+			'community.clearFilters' => 'Effacer les filtres',
+			'community.applyFilters' => 'Voir les résultats',
+			'community.likesPlus' => ({required Object count}) => '${count}+',
+			'community.durationPlus' => ({required Object duration}) => '${duration}+',
+			'community.splitTimes' => 'Séparer préparation et cuisson',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
+			'editor.topics' => 'Thèmes',
 			'editor.titleRequired' => 'Un nom de recette est requis',
 			'editor.prepMinutes' => 'Préparation (min)',
 			'editor.cookMinutes' => 'Cuisson (min)',
@@ -715,6 +788,7 @@ extension on TranslationsFr {
 			'editor.addStep' => 'Ajouter une étape',
 			'editor.removeIngredient' => 'Retirer l\'ingrédient',
 			'editor.removeStep' => 'Retirer l\'étape',
+			'editor.reorderStep' => 'Réordonner l\'étape',
 			'editor.fixSpelling' => 'Corriger l\'orthographe',
 			'editor.refining' => 'Correction de la recette...',
 			'editor.refineError' => 'Impossible de corriger la recette',

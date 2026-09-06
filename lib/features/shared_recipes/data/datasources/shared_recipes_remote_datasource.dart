@@ -8,6 +8,7 @@ import '../../domain/entities/shared_recipe_entity.dart';
 
 abstract class SharedRecipesRemoteDataSource {
   Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50});
+  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid});
   Future<void> share(
     RecipeEntity recipe, {
     required String authorUid,
@@ -15,6 +16,7 @@ abstract class SharedRecipesRemoteDataSource {
     String? authorPhotoUrl,
   });
   Future<bool> toggleLike(String sharedRecipeId, {required String viewerUid});
+  Future<void> updateShared(String sharedRecipeId, RecipeEntity recipe);
   Future<void> unshare(String sharedRecipeId);
 }
 
@@ -46,11 +48,20 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
     ];
   }
 
+  /// Null when the recipe has been unshared since the link to it was posted.
+  @override
+  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async {
+    final doc = await _root.doc(id).get();
+    if (!doc.exists) return null;
+    final liked = await doc.reference.collection(_likes).doc(viewerUid).get();
+    return _toEntity(doc, likedByMe: liked.exists);
+  }
+
   SharedRecipeEntity _toEntity(
-    QueryDocumentSnapshot<Map<String, dynamic>> doc, {
+    DocumentSnapshot<Map<String, dynamic>> doc, {
     required bool likedByMe,
   }) {
-    final data = doc.data();
+    final data = doc.data() ?? const <String, dynamic>{};
     final ingredients = ((data['ingredients'] as List?) ?? const [])
         .whereType<Map<String, dynamic>>()
         .map((raw) => RecipeIngredientEntity(
@@ -134,6 +145,24 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
       transaction.set(like, {'createdAt': Timestamp.now()});
       transaction.update(post, {'likeCount': FieldValue.increment(1)});
       return true;
+    });
+  }
+
+  /// Only the recipe's own fields move. The author, the created date and the
+  /// like counter are left alone — the rules reject a write that touches them.
+  @override
+  Future<void> updateShared(String sharedRecipeId, RecipeEntity recipe) {
+    return _root.doc(sharedRecipeId).update({
+      'title': recipe.title,
+      'prepTimeMinutes': recipe.prepTimeMinutes,
+      'cookTimeMinutes': recipe.cookTimeMinutes,
+      'ingredients': [
+        for (final i in recipe.ingredients)
+          {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
+      ],
+      'steps': recipe.steps,
+      'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 

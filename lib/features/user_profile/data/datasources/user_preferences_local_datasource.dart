@@ -1,4 +1,4 @@
-import 'package:hive_ce/hive.dart';
+import '../../../../core/hive/user_scope.dart';
 
 import '../models/user_preferences_model.dart';
 
@@ -10,13 +10,13 @@ abstract class UserPreferencesLocalDataSource {
 class UserPreferencesLocalDataSourceImpl implements UserPreferencesLocalDataSource {
   @override
   Future<UserPreferencesModel?> getPreferences() async {
-    final box = await Hive.openBox<UserPreferencesModel>(UserPreferencesModel.hiveKey);
+    final box = await UserScope().open<UserPreferencesModel>(UserPreferencesModel.hiveKey);
     return box.get(UserPreferencesModel.storageKey);
   }
 
   @override
   Future<void> savePreferences(UserPreferencesModel preferences) async {
-    final box = await Hive.openBox<UserPreferencesModel>(UserPreferencesModel.hiveKey);
+    final box = await UserScope().open<UserPreferencesModel>(UserPreferencesModel.hiveKey);
     await box.put(UserPreferencesModel.storageKey, preferences);
   }
 }

@@ -7,10 +7,10 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'core/hive/adapters_controller.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'core/logger/memory_logger.dart';
-import 'core/main_imports/app_dependencies.dart';
 import 'core/main_imports/repository_providers.dart';
 import 'core/services/auth_session_service.dart';
 import 'core/services/connectivity_service.dart';
+import 'core/services/device_locale_store.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/image_storage_service.dart';
 import 'core/services/shopping_reminder_service.dart';
@@ -18,6 +18,7 @@ import 'core/styles/app_theme.dart';
 import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
 import 'core/utils/routing/app_router.dart';
+import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,16 +34,16 @@ Future<void> main() async {
   // while building.
   await ImageStorageService().init();
 
-  final deps = await AppDependencies.create();
-  // Only after onboarding — asking for notification permission before the user
-  // has picked a shopping day has nothing to schedule and no context to explain.
-  if (deps.preferences.onboardingComplete) {
-    await ShoppingReminderService().scheduleForShoppingDay(deps.preferences.shoppingDay);
+  // Preferences are stored per account, so they cannot be read until auth
+  // resolves. Until then the gate shows the splash and the login in whatever
+  // language was last chosen on this device, falling back to the device locale
+  // the first time.
+  final deviceLanguage = await DeviceLocaleStore().read();
+  if (deviceLanguage != null) {
+    await LocaleSettings.setLocale(deviceLanguage.locale);
+  } else {
+    await LocaleSettings.useDeviceLocale();
   }
-
-  // Must be awaited: slang builds the translations lazily, so running the app
-  // before this resolves would render the base locale regardless of the choice.
-  await LocaleSettings.setLocale(deps.preferences.language.locale);
 
   runApp(
     TranslationProvider(
@@ -60,7 +61,7 @@ Future<void> main() async {
               auth: auth,
               profiles: context.read(),
               preferences: context.read(),
-              onboardingComplete: deps.preferences.onboardingComplete,
+              onPreferencesLoaded: _applyPreferences,
             );
             return const EasyPlateApp();
           },
@@ -70,6 +71,18 @@ Future<void> main() async {
   );
 }
 
+/// Runs each time an account's preferences are read: on sign-in, and again
+/// after settings change them.
+Future<void> _applyPreferences(UserPreferencesEntity preferences) async {
+  await LocaleSettings.setLocale(preferences.language.locale);
+
+  // Only after onboarding — asking for notification permission before the user
+  // has picked a shopping day has nothing to schedule and no context to explain.
+  if (preferences.onboardingComplete) {
+    await ShoppingReminderService().scheduleForShoppingDay(preferences.shoppingDay);
+  }
+}
+
 class EasyPlateApp extends StatefulWidget {
   const EasyPlateApp({super.key});
 
@@ -77,8 +90,30 @@ class EasyPlateApp extends StatefulWidget {
   State<EasyPlateApp> createState() => _EasyPlateAppState();
 }
 
-class _EasyPlateAppState extends State<EasyPlateApp> {
+class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver {
   late final _router = buildRouter();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Remote Config keeps its last activated values on disk, so coming back to
+    // a session that started before a console change would otherwise run on
+    // stale flags for as long as the app stays alive.
+    if (state == AppLifecycleState.resumed) {
+      FirebaseService().refreshRemoteConfig();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

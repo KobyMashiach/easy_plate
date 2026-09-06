@@ -41,6 +41,27 @@ visible on Android 11+.
 **Support contacts are placeholders.** `SupportPage.supportPhone` and
 `supportEmail` need real values before release.
 
+Remote Config carries `isProd`. Non-production builds show a **DEV** badge
+above sign-out in the account menu; production behaves exactly as before. The
+in-app default is `true`, so a failed or slow fetch never puts a DEV marker in
+front of a real user — the console conditions (`IsAndroidProd` / `IsIosProd`,
+keyed on app version) decide the rest.
+
+A parameter that exists in the console with **no value** comes back as an empty
+string with `source=valueRemote`, which shadows the in-app default; `asBool("")`
+is false, so a blank parameter would mark a production build as DEV. Blank is
+therefore treated as "not configured" and falls back to the default. Set both
+the parameter's default value and its conditional values in the console —
+`false` by default, `true` under `IsAndroidProd` / `IsIosProd` — or the flag
+never actually does anything.
+
+Remote Config **persists activated values on disk**, so a value fetched under
+an old condition survives restarts. The app therefore re-fetches on every
+entry — at launch and on each resume (`FirebaseService.refreshRemoteConfig`) —
+and the flag is a `ValueNotifier` so screens re-render when a refresh lands
+rather than holding whatever they read once. Each refresh logs the value, its
+source (`remote` = console, `static` = in-app default) and the fetch status.
+
 Analytics, Crashlytics, Messaging and Remote Config are booted in
 `FirebaseService` (`lib/core/services/firebase_service.dart`). Push permission
 is deliberately requested only once a user is signed in and onboarded, so the
@@ -59,6 +80,37 @@ Config comes from `android/app/google-services.json` and
 `ios/Runner/GoogleService-Info.plist` — there is no generated
 `firebase_options.dart` to keep in sync.
 
+## Per-account local data
+
+Every Hive box is namespaced by the signed-in uid (`UserScope`, in
+`lib/core/hive/`): `recipesBox_<uid>`, and the same for books, meal plans,
+grocery lists and preferences. A single fixed box name is one shared file for
+whoever happens to be signed in, which is how one account's recipes were
+visible to the next. Firestore holds the community and is deliberately *not*
+scoped — it is shared by design.
+
+Consequences worth knowing:
+
+- Preferences (including language and `onboardingComplete`) are per account, so
+  they cannot be read until auth resolves. The splash and login run on
+  `DeviceLocaleStore` — a device-wide box holding only the language, which is
+  deliberately *not* scoped because it is needed before any account exists. It
+  falls back to the device locale the first time, and the account's own
+  language takes over on sign-in.
+- The login screen has a language picker, and a new account inherits whatever
+  was picked there; changing language in settings mirrors back to the device
+  store so the next login screen opens in the language last actually used.
+- `UserScope.open` throws rather than falling back to an unscoped box. A silent
+  fallback is exactly the bug it exists to prevent.
+- Boxes are closed when a *different* account signs in, not at sign-out —
+  closing at sign-out races the screens still being torn down.
+- **Local data written before this existed stays in the old unscoped boxes and
+  will not appear.** There is no migration.
+
+The recipe list is driven by `watchRecipes()` off the box itself, so a recipe
+saved from ingestion, the editor, or the community shows up without the list
+having to notice it was navigated back to.
+
 ## Community
 
 Two Firestore-backed surfaces behind one **Community** nav tab
@@ -73,7 +125,26 @@ Two Firestore-backed surfaces behind one **Community** nav tab
   editing or deleting their own copy does not change what the feed shows.
   Liking is one document per user (`likes/{uid}`) plus a denormalised counter,
   moved together in a transaction so a double tap stays one like. Saving a feed
-  recipe re-keys it, so the imported copy is the user's own.
+  recipe re-keys it and stamps `savedFromSharedId`, so the imported copy is the
+  user's own — that field is what splits My Recipes into "mine" and "saved",
+  and what the feed's saved filter reads. The feed's whole narrowing and
+  ordering decision lives in `SharedFeedQuery` — a pure value class over the
+  already-loaded page, so no Firestore composite index is needed per
+  combination and the rules are unit-testable. It covers search (title or
+  author), scope (all/mine/saved), sort (newest/oldest/most liked), dietary
+  topics, a minimum like count (a slider in tens, topping out at an open-ended
+  100+), and time — `TimeBucket` rather than a plain maximum, so the top stop
+  means "over two hours" instead of "no cap". A checkbox splits time into
+  separate prep and cook sliders; whichever side is hidden is ignored, so the
+  badge never points at a filter the user cannot see. Every bucket but `any`
+  excludes recipes that state no time, since filtering by time is a question
+  about recipes that answer it.
+  Only the author can edit or unshare their own post.
+
+  A forum reply can carry a pointer to a feed recipe (`sharedRecipeId` plus the
+  title captured at the time), rendered as a chip that resolves the live recipe
+  on tap — a reply outlives the recipe it links to, so that lookup can come
+  back empty.
 
 Both require the rules below; the collections are deny-all without them.
 

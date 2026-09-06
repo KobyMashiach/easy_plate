@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -8,6 +9,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/get_recipes_usecase.dart';
+import '../../domain/usecases/watch_recipes_usecase.dart';
 
 part 'my_recipes_bloc.freezed.dart';
 
@@ -17,6 +19,7 @@ sealed class MyRecipesEvent with _$MyRecipesEvent {
   const factory MyRecipesEvent.search(String query) = _Search;
   const factory MyRecipesEvent.filterByDietary(List<DietaryPreference> preferences) = _FilterByDietary;
   const factory MyRecipesEvent.deleteRecipe(String id) = _DeleteRecipe;
+  const factory MyRecipesEvent.recipesUpdated(List<RecipeEntity> recipes) = _RecipesUpdated;
 }
 
 @freezed
@@ -33,21 +36,35 @@ sealed class MyRecipesState with _$MyRecipesState {
 class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
   final GetRecipesUseCase getRecipesUseCase;
   final DeleteRecipeUseCase deleteRecipeUseCase;
+  final WatchRecipesUseCase watchRecipesUseCase;
+  StreamSubscription<List<RecipeEntity>>? _subscription;
   List<RecipeEntity> _allRecipes = [];
 
-  MyRecipesBloc({required this.getRecipesUseCase, required this.deleteRecipeUseCase})
-      : super(const MyRecipesState.loading()) {
+  MyRecipesBloc({
+    required this.getRecipesUseCase,
+    required this.deleteRecipeUseCase,
+    required this.watchRecipesUseCase,
+  }) : super(const MyRecipesState.loading()) {
     on<_Init>(_init);
     on<_Search>(_search);
     on<_FilterByDietary>(_filterByDietary);
     on<_DeleteRecipe>(_deleteRecipe);
-    add(const MyRecipesEvent.init());
+    on<_RecipesUpdated>(_recipesUpdated);
+
+    // The list is fed by the box itself, so a recipe saved from ingestion,
+    // the editor or the community feed shows up without this page having to
+    // notice it was navigated back to.
+    _subscription = watchRecipesUseCase().listen(
+      (recipes) => add(MyRecipesEvent.recipesUpdated(recipes)),
+      onError: (Object e) => debugPrint('Recipe watch error: $e'),
+    );
   }
 
   factory MyRecipesBloc.fromContext(BuildContext context) {
     return MyRecipesBloc(
       getRecipesUseCase: GetRecipesUseCase(context.read()),
       deleteRecipeUseCase: DeleteRecipeUseCase(context.read()),
+      watchRecipesUseCase: WatchRecipesUseCase(context.read()),
     );
   }
 
@@ -57,6 +74,22 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
       final matchesDietary = filters.isEmpty || filters.every((f) => recipe.dietaryTags.contains(f));
       return matchesQuery && matchesDietary;
     }).toList();
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
+  }
+
+  /// Re-applies whatever query and filters are on screen, so a background save
+  /// cannot silently widen the visible list.
+  Future<void> _recipesUpdated(_RecipesUpdated event, Emitter<MyRecipesState> emit) async {
+    _allRecipes = event.recipes;
+    final current = state;
+    final query = current is MyRecipesLoaded ? current.query : '';
+    final filters = current is MyRecipesLoaded ? current.dietaryFilters : <DietaryPreference>[];
+    emit(.loaded(_applyFilters(query, filters), query: query, dietaryFilters: filters));
   }
 
   Future<void> _init(_Init event, Emitter<MyRecipesState> emit) async {

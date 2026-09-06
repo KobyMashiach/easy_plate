@@ -6,7 +6,9 @@ import '../../features/auth/domain/entities/app_user_entity.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/user_profile/domain/entities/user_profile_entity.dart';
 import '../../features/user_profile/domain/repositories/user_profile_repository.dart';
+import '../../features/user_profile/domain/entities/user_preferences_entity.dart';
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
+import '../hive/user_scope.dart';
 import 'firebase_service.dart';
 
 /// Where the user stands in the gate: signed out, email not yet confirmed,
@@ -52,18 +54,22 @@ class AuthSessionService extends ChangeNotifier {
   /// resubscribe and reset [_onboardingComplete] to its startup value, sending
   /// a user who has finished onboarding back through it after switching
   /// language.
+  /// Applied whenever an account's preferences are read — locale and the
+  /// shopping reminder are the caller's concern, not this service's.
+  Future<void> Function(UserPreferencesEntity preferences)? onPreferencesLoaded;
+
   void bind({
     required AuthRepository auth,
     required UserProfileRepository profiles,
     required UserPreferencesRepository preferences,
-    required bool onboardingComplete,
+    Future<void> Function(UserPreferencesEntity preferences)? onPreferencesLoaded,
   }) {
     if (_bound) return;
     _bound = true;
 
     _profiles = profiles;
     _preferences = preferences;
-    _onboardingComplete = onboardingComplete;
+    this.onPreferencesLoaded = onPreferencesLoaded;
     _subscription = auth.authStateChanges().listen(_onAuthChanged);
   }
 
@@ -72,6 +78,7 @@ class AuthSessionService extends ChangeNotifier {
 
     if (user == null) {
       _profile = null;
+      _onboardingComplete = false;
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
       return;
@@ -84,7 +91,25 @@ class AuthSessionService extends ChangeNotifier {
       return;
     }
 
+    // Everything stored locally is namespaced by uid, so the scope has to move
+    // before anything reads a box — otherwise the previous account's recipes
+    // are what comes back.
+    await UserScope().switchTo(user.uid);
+    await _loadPreferences();
     await _resolveProfile(user);
+  }
+
+  /// Read only once the scope points at this account, since the preferences
+  /// box is itself per-user.
+  Future<void> _loadPreferences() async {
+    try {
+      final preferences = await _preferences!.getPreferences();
+      _onboardingComplete = preferences.onboardingComplete;
+      await onPreferencesLoaded?.call(preferences);
+    } catch (e) {
+      debugPrint('Preferences load failed: $e');
+      _onboardingComplete = false;
+    }
   }
 
   /// Called by the verification screen once Firebase confirms the address, and
@@ -136,12 +161,10 @@ class AuthSessionService extends ChangeNotifier {
     if (_stage == AuthStage.needsOnboarding) _set(AuthStage.ready);
   }
 
-  /// Re-reads the locally stored preferences. Used after a sign-out, where the
-  /// next account may not have completed onboarding on this device.
+  /// Re-reads the signed-in account's preferences, after settings change them.
   Future<void> reloadPreferences() async {
-    final preferences = _preferences;
-    if (preferences == null) return;
-    _onboardingComplete = (await preferences.getPreferences()).onboardingComplete;
+    if (_preferences == null || _user == null) return;
+    await _loadPreferences();
   }
 
   /// Returns the singleton to its pre-[bind] state. Tests only — the app has
@@ -155,6 +178,7 @@ class AuthSessionService extends ChangeNotifier {
     _user = null;
     _profile = null;
     _onboardingComplete = false;
+    onPreferencesLoaded = null;
   }
 
   void _set(AuthStage stage) {

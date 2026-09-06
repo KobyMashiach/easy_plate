@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
-import '../../../../core/utils/i18n/app_language_mapper.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
+import '../../../../core/widgets/language_selector.dart';
 import '../../../../core/widgets/weekday_selector.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
@@ -122,7 +121,7 @@ class _SettingsBody extends StatelessWidget {
       ),
       _SettingsCard(
         title: t.settings.language,
-        child: _LanguageSelector(
+        child: LanguageSelector(
           selected: preferences.language,
           onSelect: (language) => bloc.add(.changeLanguage(language)),
         ),
@@ -215,58 +214,6 @@ class _SettingsToggle extends StatelessWidget {
 
 /// Pill list of the shipped UI languages, each shown in its own script so the
 /// choice is readable whatever the current locale.
-class _LanguageSelector extends StatelessWidget {
-  final AppLanguage selected;
-  final ValueChanged<AppLanguage> onSelect;
-
-  const _LanguageSelector({required this.selected, required this.onSelect});
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.base,
-      runSpacing: AppSpacing.base,
-      children: AppLanguage.values.map((language) {
-        final isSelected = language == selected;
-        return GestureDetector(
-          onTap: () => onSelect(language),
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter,
-              vertical: AppSpacing.base,
-            ),
-            decoration: ShapeDecoration(
-              color: isSelected ? AppColors.primary : AppColors.surfaceContainerLow,
-              shape: StadiumBorder(
-                side: BorderSide(
-                  color: isSelected ? AppColors.primary : AppColors.outlineVariant,
-                ),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isSelected) ...[
-                  const Icon(Icons.check_rounded, size: 16, color: AppColors.onPrimary),
-                  const SizedBox(width: AppSpacing.xs),
-                ],
-                Text(
-                  language.label,
-                  style: AppTextStyles.labelMd.copyWith(
-                    color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
 class _SettingsCard extends StatelessWidget {
   final String title;
   final Widget child;

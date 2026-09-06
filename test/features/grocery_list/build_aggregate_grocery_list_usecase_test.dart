@@ -13,6 +13,9 @@ class _FakeRecipesRepository implements RecipesRepository {
   _FakeRecipesRepository(this.recipes);
 
   @override
+  noSuchMethod(Invocation invocation) => throw UnimplementedError();
+
+  @override
   Future<RecipeEntity?> getRecipeById(String id) async => recipes[id];
 
   @override

@@ -1,5 +1,6 @@
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repository.dart';
+import 'package:easy_plate/features/my_recipes/domain/usecases/get_recipes_usecase.dart';
 import 'package:easy_plate/features/my_recipes/domain/usecases/save_recipe_usecase.dart';
 import 'package:easy_plate/features/shared_recipes/domain/entities/shared_recipe_entity.dart';
 import 'package:easy_plate/features/shared_recipes/domain/repositories/shared_recipes_repository.dart';
@@ -7,6 +8,7 @@ import 'package:easy_plate/features/shared_recipes/domain/usecases/get_shared_re
 import 'package:easy_plate/features/shared_recipes/domain/usecases/share_recipe_usecase.dart';
 import 'package:easy_plate/features/shared_recipes/domain/usecases/toggle_shared_recipe_like_usecase.dart';
 import 'package:easy_plate/features/shared_recipes/domain/usecases/unshare_recipe_usecase.dart';
+import 'package:easy_plate/features/shared_recipes/domain/usecases/update_shared_recipe_usecase.dart';
 import 'package:easy_plate/features/shared_recipes/presentation/bloc/shared_recipes_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,6 +23,10 @@ class _FakeSharedRepository implements SharedRecipesRepository {
       feed;
 
   @override
+  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async =>
+      feed.where((r) => r.id == id).firstOrNull;
+
+  @override
   Future<bool> toggleLike(String id, {required String viewerUid}) async {
     likeCalls++;
     if (likeThrows) throw Exception('offline');
@@ -29,6 +35,12 @@ class _FakeSharedRepository implements SharedRecipesRepository {
 
   @override
   Future<void> unshare(String id) async => unshared.add(id);
+
+  final updated = <String, RecipeEntity>{};
+
+  @override
+  Future<void> updateShared(String id, RecipeEntity recipe) async =>
+      updated[id] = recipe;
 
   @override
   Future<void> share(
@@ -41,6 +53,9 @@ class _FakeSharedRepository implements SharedRecipesRepository {
 
 class _FakeRecipesRepository implements RecipesRepository {
   final saved = <RecipeEntity>[];
+
+  @override
+  Future<List<RecipeEntity>> getRecipes() async => saved;
 
   @override
   Future<void> saveRecipe(RecipeEntity recipe) async => saved.add(recipe);
@@ -79,7 +94,9 @@ void main() {
         shareRecipeUseCase: ShareRecipeUseCase(shared),
         toggleLikeUseCase: ToggleSharedRecipeLikeUseCase(shared),
         unshareRecipeUseCase: UnshareRecipeUseCase(shared),
+        updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(shared),
         saveRecipeUseCase: SaveRecipeUseCase(recipes),
+        getRecipesUseCase: GetRecipesUseCase(recipes),
       );
 
   setUp(() {
@@ -151,6 +168,46 @@ void main() {
     expect(copy.title, 'שקשוקה');
     expect(copy.steps, ['ערבוב']);
     expect(copy.id, isNot('s1'), reason: 'a copy must not collide with the shared original');
+  });
+
+  test('editing a shared recipe replaces the row in place', () async {
+    shared.feed = [buildShared(id: 's1', likeCount: 7, likedByMe: true)];
+    final bloc = buildBloc();
+    await Future<void>.delayed(Duration.zero);
+
+    final edited = RecipeEntity(
+      id: 's1',
+      title: 'שקשוקה חריפה',
+      ingredients: const [],
+      steps: const ['ערבוב', 'בישול'],
+      createdAt: DateTime(2026, 1, 1),
+    );
+    bloc.add(SharedRecipesEvent.updateShared('s1', edited));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(shared.updated['s1']?.title, 'שקשוקה חריפה');
+    final row = (bloc.state as SharedRecipesLoaded).recipes.single;
+    expect(row.recipe.title, 'שקשוקה חריפה');
+    expect(row.recipe.steps, ['ערבוב', 'בישול']);
+    // The edit must not disturb what the post already accumulated.
+    expect(row.likeCount, 7);
+    expect(row.likedByMe, isTrue);
+    expect(row.authorUid, 'someone');
+  });
+
+  test('a saved recipe is reported back so the feed can mark it', () async {
+    shared.feed = [buildShared(id: 's1'), buildShared(id: 's2')];
+    final bloc = buildBloc();
+    await Future<void>.delayed(Duration.zero);
+    expect((bloc.state as SharedRecipesLoaded).savedIds, isEmpty);
+
+    bloc.add(SharedRecipesEvent.importToMyRecipes(shared.feed.first));
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+
+    // Read back off the local copy's savedFromSharedId, not tracked separately.
+    expect(recipes.saved.single.savedFromSharedId, 's1');
+    expect((bloc.state as SharedRecipesLoaded).savedIds, {'s1'});
   });
 
   test('unsharing drops the row from the feed', () async {

@@ -125,11 +125,11 @@ return addReply(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String body)?  addReply,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _AddReply() when addReply != null:
-return addReply(_that.body);case _:
+return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
   return orElse();
 
 }
@@ -147,11 +147,11 @@ return addReply(_that.body);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String body)  addReply,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)  addReply,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _AddReply():
-return addReply(_that.body);}
+return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -165,11 +165,11 @@ return addReply(_that.body);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String body)?  addReply,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _AddReply() when addReply != null:
-return addReply(_that.body);case _:
+return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
   return null;
 
 }
@@ -219,10 +219,12 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 class _AddReply with DiagnosticableTreeMixin implements ForumThreadEvent {
-  const _AddReply(this.body);
+  const _AddReply(this.body, {this.sharedRecipeId, this.sharedRecipeTitle});
   
 
  final  String body;
+ final  String? sharedRecipeId;
+ final  String? sharedRecipeTitle;
 
 /// Create a copy of ForumThreadEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -235,21 +237,21 @@ _$AddReplyCopyWith<_AddReply> get copyWith => __$AddReplyCopyWithImpl<_AddReply>
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ForumThreadEvent.addReply'))
-    ..add(DiagnosticsProperty('body', body));
+    ..add(DiagnosticsProperty('body', body))..add(DiagnosticsProperty('sharedRecipeId', sharedRecipeId))..add(DiagnosticsProperty('sharedRecipeTitle', sharedRecipeTitle));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddReply&&(identical(other.body, body) || other.body == body));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddReply&&(identical(other.body, body) || other.body == body)&&(identical(other.sharedRecipeId, sharedRecipeId) || other.sharedRecipeId == sharedRecipeId)&&(identical(other.sharedRecipeTitle, sharedRecipeTitle) || other.sharedRecipeTitle == sharedRecipeTitle));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,body);
+int get hashCode => Object.hash(runtimeType,body,sharedRecipeId,sharedRecipeTitle);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ForumThreadEvent.addReply(body: $body)';
+  return 'ForumThreadEvent.addReply(body: $body, sharedRecipeId: $sharedRecipeId, sharedRecipeTitle: $sharedRecipeTitle)';
 }
 
 
@@ -260,7 +262,7 @@ abstract mixin class _$AddReplyCopyWith<$Res> implements $ForumThreadEventCopyWi
   factory _$AddReplyCopyWith(_AddReply value, $Res Function(_AddReply) _then) = __$AddReplyCopyWithImpl;
 @useResult
 $Res call({
- String body
+ String body, String? sharedRecipeId, String? sharedRecipeTitle
 });
 
 
@@ -277,10 +279,12 @@ class __$AddReplyCopyWithImpl<$Res>
 
 /// Create a copy of ForumThreadEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? body = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? body = null,Object? sharedRecipeId = freezed,Object? sharedRecipeTitle = freezed,}) {
   return _then(_AddReply(
 null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
-as String,
+as String,sharedRecipeId: freezed == sharedRecipeId ? _self.sharedRecipeId : sharedRecipeId // ignore: cast_nullable_to_non_nullable
+as String?,sharedRecipeTitle: freezed == sharedRecipeTitle ? _self.sharedRecipeTitle : sharedRecipeTitle // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

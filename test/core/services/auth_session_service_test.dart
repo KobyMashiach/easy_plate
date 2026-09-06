@@ -91,12 +91,7 @@ void main() {
     preferences = _FakePreferencesRepository();
     session = AuthSessionService();
     session.resetForTest();
-    session.bind(
-      auth: auth,
-      profiles: profiles,
-      preferences: preferences,
-      onboardingComplete: false,
-    );
+    session.bind(auth: auth, profiles: profiles, preferences: preferences);
   });
 
   tearDown(() => auth.close());
@@ -130,13 +125,8 @@ void main() {
   });
 
   test('a complete profile with onboarding already done is ready', () async {
-    session.resetForTest();
-    session.bind(
-      auth: auth,
-      profiles: profiles,
-      preferences: preferences,
-      onboardingComplete: true,
-    );
+    // Read from this account's own preferences box, not from a device-wide flag.
+    preferences.onboardingComplete = true;
     profiles.profile = buildProfile();
     await signIn(_user);
     expect(session.stage, AuthStage.ready);
@@ -164,20 +154,52 @@ void main() {
     expect(session.profile, isNotNull);
   });
 
-  test('rebinding is ignored so a locale rebuild cannot reset the gate', () async {
+  test('signing out forgets the previous account\'s onboarding state', () async {
+    preferences.onboardingComplete = true;
     profiles.profile = buildProfile();
     await signIn(_user);
-    session.markOnboardingComplete();
     expect(session.stage, AuthStage.ready);
 
-    // Same call main.dart makes, re-run by a rebuild under TranslationProvider.
+    await signIn(null);
+    expect(session.stage, AuthStage.signedOut);
+
+    // A second account on the same device has its own preferences box, and
+    // must not inherit the first one's completed onboarding.
+    preferences.onboardingComplete = false;
+    await signIn(_user);
+    expect(session.stage, AuthStage.needsOnboarding);
+  });
+
+  test('preferences are handed to the caller for locale and reminders', () async {
+    UserPreferencesEntity? applied;
+    session.resetForTest();
     session.bind(
       auth: auth,
       profiles: profiles,
       preferences: preferences,
-      onboardingComplete: false,
+      onPreferencesLoaded: (p) async => applied = p,
     );
+    profiles.profile = buildProfile();
+    preferences.onboardingComplete = true;
+
     await signIn(_user);
+    expect(applied, isNotNull);
+    expect(applied!.onboardingComplete, isTrue);
+  });
+
+  test('rebinding does not resubscribe, so one auth event is handled once', () async {
+    preferences.onboardingComplete = true;
+    profiles.profile = buildProfile();
+    await signIn(_user);
+    expect(session.stage, AuthStage.ready);
+
+    final readsBefore = profiles.reads;
+    // Same call main.dart makes, re-run by a rebuild under TranslationProvider.
+    session.bind(auth: auth, profiles: profiles, preferences: preferences);
+    await signIn(_user);
+
+    // A second subscription would resolve the same event twice.
+    expect(profiles.reads - readsBefore, 1);
     expect(session.stage, AuthStage.ready);
   });
 }

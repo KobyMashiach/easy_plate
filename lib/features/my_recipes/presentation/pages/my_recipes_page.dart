@@ -59,15 +59,29 @@ class MyRecipesPage extends StatelessWidget {
   }
 }
 
-class _RecipesBody extends StatelessWidget {
+class _RecipesBody extends StatefulWidget {
   final List<RecipeEntity> recipes;
   final List<DietaryPreference> filters;
 
   const _RecipesBody({required this.recipes, required this.filters});
 
   @override
+  State<_RecipesBody> createState() => _RecipesBodyState();
+}
+
+class _RecipesBodyState extends State<_RecipesBody> {
+  /// Recipes the user wrote versus ones saved from the community. A saved copy
+  /// is fully theirs — editing it changes only the local copy, never the
+  /// published original.
+  bool _savedTab = false;
+
+  @override
   Widget build(BuildContext context) {
     final bloc = context.read<MyRecipesBloc>();
+    final filters = widget.filters;
+    final recipes = widget.recipes
+        .where((r) => r.isSavedFromCommunity == _savedTab)
+        .toList();
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -104,6 +118,28 @@ class _RecipesBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.gutter),
+        Row(
+          children: [
+            Expanded(
+              child: _tab(
+                label: t.recipe.mine,
+                icon: Icons.edit_note_rounded,
+                selected: !_savedTab,
+                onTap: () => setState(() => _savedTab = false),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _tab(
+                label: t.recipe.saved,
+                icon: Icons.bookmark_rounded,
+                selected: _savedTab,
+                onTap: () => setState(() => _savedTab = true),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.gutter),
         DietaryChipSelector(
           selected: filters,
           onToggle: (pref) {
@@ -117,13 +153,15 @@ class _RecipesBody extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.lg),
             child: ClayEmptyState(
-              icon: Icons.restaurant_menu_rounded,
-              message: t.books.emptyBook,
-              action: ClayButton(
-                label: t.ingestion.title,
-                icon: Icons.add_rounded,
-                onPressed: () => context.pushNamed(Routing.ingestion),
-              ),
+              icon: _savedTab ? Icons.bookmark_border_rounded : Icons.restaurant_menu_rounded,
+              message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
+              action: _savedTab
+                  ? null
+                  : ClayButton(
+                      label: t.ingestion.title,
+                      icon: Icons.add_rounded,
+                      onPressed: () => context.pushNamed(Routing.ingestion),
+                    ),
             ),
           )
         else
@@ -132,17 +170,51 @@ class _RecipesBody extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
               child: RecipeCard(
                 recipe: recipe,
-                // Reload on return: the details page can change the photo, and
-                // this page is kept alive by the IndexedStack.
-                onTap: () async {
-                  await context.pushNamed(Routing.recipeDetails, extra: recipe);
-                  if (context.mounted) {
-                    bloc.add(const MyRecipesEvent.init());
-                  }
-                },
+                // No reload on return: the list is driven by the box, so an
+                // edit made on the details page arrives on its own.
+                onTap: () => context.pushNamed(Routing.recipeDetails, extra: recipe),
               ),
             ),
       ],
+    );
+  }
+
+  Widget _tab({
+    required String label,
+    required IconData icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
+        decoration: ShapeDecoration(
+          color: selected ? AppColors.primaryFixed : AppColors.surfaceContainerLow,
+          shape: StadiumBorder(
+            side: BorderSide(color: selected ? AppColors.primary : AppColors.outlineVariant),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: selected ? AppColors.primary : AppColors.tertiary),
+            const SizedBox(width: AppSpacing.xs),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.labelMd.copyWith(
+                  color: selected ? AppColors.primary : AppColors.tertiary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

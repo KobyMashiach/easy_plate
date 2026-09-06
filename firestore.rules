@@ -27,11 +27,20 @@ service cloud.firestore {
       allow create: if authoredByCaller();
       // The like counter is the one field a non-author may move, and only by
       // one step, so a reader cannot rewrite someone else's recipe.
-      allow update: if signedIn()
-                    && request.resource.data.diff(resource.data).affectedKeys()
+      allow update: if signedIn() && (
+                      // Anyone signed in may move the like counter, one step,
+                      // and nothing else.
+                      (request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['likeCount'])
-                    && request.resource.data.likeCount is int
-                    && (request.resource.data.likeCount - resource.data.likeCount) in [1, -1];
+                       && request.resource.data.likeCount is int
+                       && (request.resource.data.likeCount - resource.data.likeCount) in [1, -1])
+                      ||
+                      // The author may rewrite the recipe itself, but cannot
+                      // hand it to someone else or inflate its likes.
+                      (resource.data.authorUid == request.auth.uid
+                       && request.resource.data.authorUid == resource.data.authorUid
+                       && request.resource.data.likeCount == resource.data.likeCount)
+                    );
       allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
 
       // One like document per user, named by uid so a double tap cannot

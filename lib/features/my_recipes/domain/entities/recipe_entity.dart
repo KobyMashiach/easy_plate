@@ -15,6 +15,11 @@ class RecipeEntity {
   /// File name of the recipe photo inside the app's image directory — never an
   /// absolute path, which would not survive a reinstall.
   final String? imageFileName;
+
+  /// Set when this recipe was saved from the community feed. It is what
+  /// separates "recipes I saved" from "recipes I wrote", and the copy stays
+  /// fully editable — editing it changes only this local copy.
+  final String? savedFromSharedId;
   final DateTime createdAt;
 
   const RecipeEntity({
@@ -29,7 +34,10 @@ class RecipeEntity {
     this.sourceChannel,
     this.sourceUrl,
     this.imageFileName,
+    this.savedFromSharedId,
   });
+
+  bool get isSavedFromCommunity => savedFromSharedId != null;
 
   RecipeEntity copyWith({
     String? title,
@@ -53,6 +61,7 @@ class RecipeEntity {
       sourceChannel: sourceChannel,
       sourceUrl: sourceUrl,
       imageFileName: removeImage ? null : (imageFileName ?? this.imageFileName),
+      savedFromSharedId: savedFromSharedId,
       createdAt: createdAt,
     );
   }

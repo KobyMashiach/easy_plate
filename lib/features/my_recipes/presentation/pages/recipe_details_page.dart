@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/utils/duration_label.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -128,11 +129,11 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
             runSpacing: AppSpacing.base,
             children: [
               ClayTag(
-                label: '${t.recipe.prepTime} · ${_minutes(recipe.prepTimeMinutes)}',
+                label: '${t.recipe.prepTime} · ${optionalDurationLabel(recipe.prepTimeMinutes)}',
                 icon: Icons.timer_rounded,
               ),
               ClayTag(
-                label: '${t.recipe.cookTime} · ${_minutes(recipe.cookTimeMinutes)}',
+                label: '${t.recipe.cookTime} · ${optionalDurationLabel(recipe.cookTimeMinutes)}',
                 icon: Icons.local_fire_department_rounded,
                 background: AppColors.secondaryContainer,
                 foreground: AppColors.onSecondaryContainer,
@@ -231,8 +232,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     );
   }
 
-  String _minutes(int? minutes) =>
-      minutes != null ? t.recipe.minutes(count: minutes) : kMissingInfoPlaceholder;
+
 
   String _ingredientLine(RecipeIngredientEntity ingredient) {
     final amount =

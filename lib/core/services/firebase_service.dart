@@ -31,10 +31,66 @@ class FirebaseService {
   FirebaseAnalytics? get analytics => _analytics;
 
   /// Remote Config keys, with the values used until the first fetch lands.
-  static const _remoteDefaults = <String, dynamic>{
+  @visibleForTesting
+  static const remoteDefaults = <String, dynamic>{
     'ai_ingestion_enabled': true,
     'max_recipes_per_book': 50,
+    // Defaults to production. A failed or slow fetch must never be what puts a
+    // DEV marker in front of a real user; a developer briefly not seeing one is
+    // the cheaper mistake.
+    isProdKey: true,
   };
+
+  static const isProdKey = 'isProd';
+
+  /// Whether this build is running as production, per Remote Config.
+  ///
+  /// A [ValueNotifier] rather than a plain getter: activated values survive a
+  /// restart, so a screen that read the flag once would keep showing a stale
+  /// answer after the console changed. Widgets listen and re-render when a
+  /// refresh lands.
+  final isProdListenable = ValueNotifier<bool>(remoteDefaults[isProdKey]! as bool);
+
+  bool get isProd => isProdListenable.value;
+
+  /// Re-fetches and activates, then republishes the flag.
+  ///
+  /// Called on every app entry — launch and each resume — because Remote
+  /// Config caches the last activated values on disk. Without it the app can
+  /// run for a whole session on a value the console has already changed, which
+  /// is exactly how a DEV badge outlived the condition that produced it.
+  Future<void> refreshRemoteConfig() async {
+    try {
+      final config = FirebaseRemoteConfig.instance;
+      await config.fetchAndActivate();
+      _publishFlags(config);
+    } catch (e) {
+      debugPrint('Remote Config refresh failed: $e');
+    }
+  }
+
+  /// A parameter that exists in the console but has no value comes back as an
+  /// empty string, and that still counts as a *remote* value — it shadows the
+  /// in-app default. `asBool("")` is false, so a blank console parameter would
+  /// mark a production build as DEV. Blank is treated as "not configured" and
+  /// falls back to the default instead.
+  @visibleForTesting
+  static bool resolveIsProd({required String raw, required bool parsed}) =>
+      raw.trim().isEmpty ? remoteDefaults[isProdKey]! as bool : parsed;
+
+  void _publishFlags(FirebaseRemoteConfig config) {
+    final value = config.getValue(isProdKey);
+    final raw = value.asString();
+    final resolved = resolveIsProd(raw: raw, parsed: config.getBool(isProdKey));
+
+    // Source says where the answer came from: `valueRemote` is the console,
+    // `valueStatic`/`valueDefault` mean the in-app default is in play.
+    debugPrint(
+      'Remote Config $isProdKey="$raw" source=${value.source.name} '
+      'lastFetch=${config.lastFetchStatus.name} resolved=$resolved',
+    );
+    isProdListenable.value = resolved;
+  }
 
   Future<void> init() async {
     if (_initialized) return;
@@ -77,8 +133,9 @@ class FirebaseService {
         // see the latest values.
         minimumFetchInterval: kDebugMode ? Duration.zero : const Duration(hours: 1),
       ));
-      await config.setDefaults(_remoteDefaults);
+      await config.setDefaults(remoteDefaults);
       await config.fetchAndActivate();
+      _publishFlags(config);
     } catch (e) {
       debugPrint('Remote Config unavailable: $e');
     }

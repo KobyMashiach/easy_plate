@@ -589,6 +589,12 @@ class Translations$recipe$he {
 	/// he: '$count דק׳'
 	String minutes({required Object count}) => '${count} דק׳';
 
+	/// he: '$count שע׳'
+	String hours({required Object count}) => '${count} שע׳';
+
+	/// he: '$hours שע׳ ו$minutes דק׳'
+	String hoursAndMinutes({required Object hours, required Object minutes}) => '${hours} שע׳ ו${minutes} דק׳';
+
 	/// he: 'אופן ההכנה'
 	String get instructions => 'אופן ההכנה';
 
@@ -603,6 +609,18 @@ class Translations$recipe$he {
 
 	/// he: 'תמונת המתכון'
 	String get photo => 'תמונת המתכון';
+
+	/// he: 'המתכונים שלי'
+	String get mine => 'המתכונים שלי';
+
+	/// he: 'מתכונים ששמרתי'
+	String get saved => 'מתכונים ששמרתי';
+
+	/// he: 'עדיין לא יצרתם מתכונים'
+	String get noneMine => 'עדיין לא יצרתם מתכונים';
+
+	/// he: 'עדיין לא שמרתם מתכונים מהקהילה'
+	String get noneSaved => 'עדיין לא שמרתם מתכונים מהקהילה';
 }
 
 // Path: community
@@ -690,6 +708,93 @@ class Translations$community$he {
 
 	/// he: 'לא הצלחנו לטעון את התוכן'
 	String get loadFailed => 'לא הצלחנו לטעון את התוכן';
+
+	/// he: 'כל המתכונים'
+	String get allRecipes => 'כל המתכונים';
+
+	/// he: 'המתכונים שלי'
+	String get myRecipes => 'המתכונים שלי';
+
+	/// he: 'עריכת המתכון המשותף'
+	String get editShared => 'עריכת המתכון המשותף';
+
+	/// he: 'המתכון המשותף עודכן'
+	String get sharedUpdated => 'המתכון המשותף עודכן';
+
+	/// he: 'עדיין לא שיתפתם מתכונים'
+	String get noneOfMine => 'עדיין לא שיתפתם מתכונים';
+
+	/// he: 'חיפוש'
+	String get search => 'חיפוש';
+
+	/// he: 'שם מתכון או שם מפרסם'
+	String get searchHint => 'שם מתכון או שם מפרסם';
+
+	/// he: 'ששמרתי'
+	String get savedOnly => 'ששמרתי';
+
+	/// he: 'לא נמצאו תוצאות'
+	String get noResults => 'לא נמצאו תוצאות';
+
+	/// he: 'צירוף מתכון'
+	String get attachRecipe => 'צירוף מתכון';
+
+	/// he: 'פתיחת המתכון'
+	String get openRecipe => 'פתיחת המתכון';
+
+	/// he: 'המתכון הזה כבר לא זמין'
+	String get recipeUnavailable => 'המתכון הזה כבר לא זמין';
+
+	/// he: 'מיון וסינון'
+	String get sortAndFilter => 'מיון וסינון';
+
+	/// he: 'מיון'
+	String get sort => 'מיון';
+
+	/// he: 'החדשים ביותר'
+	String get sortNewest => 'החדשים ביותר';
+
+	/// he: 'הישנים ביותר'
+	String get sortOldest => 'הישנים ביותר';
+
+	/// he: 'הכי אהובים'
+	String get sortMostLiked => 'הכי אהובים';
+
+	/// he: 'נושאים'
+	String get topics => 'נושאים';
+
+	/// he: 'לייקים'
+	String get likes => 'לייקים';
+
+	/// he: 'כל כמות'
+	String get anyLikes => 'כל כמות';
+
+	/// he: '$count ומעלה'
+	String atLeastLikes({required Object count}) => '${count} ומעלה';
+
+	/// he: 'זמן הכנה כולל'
+	String get totalTime => 'זמן הכנה כולל';
+
+	/// he: 'כל זמן'
+	String get anyTime => 'כל זמן';
+
+	/// he: 'עד $duration'
+	String upTo({required Object duration}) => 'עד ${duration}';
+
+	/// he: 'ניקוי סינונים'
+	String get clearFilters => 'ניקוי סינונים';
+
+	/// he: 'הצגת התוצאות'
+	String get applyFilters => 'הצגת התוצאות';
+
+	/// he: '$count+'
+	String likesPlus({required Object count}) => '${count}+';
+
+	/// he: '$duration+'
+	String durationPlus({required Object duration}) => '${duration}+';
+
+	/// he: 'פיצול להכנה ובישול'
+	String get splitTimes => 'פיצול להכנה ובישול';
 }
 
 // Path: editor
@@ -708,6 +813,9 @@ class Translations$editor$he {
 
 	/// he: 'לדוגמה: שקשוקה ירושלמית'
 	String get titleHint => 'לדוגמה: שקשוקה ירושלמית';
+
+	/// he: 'נושאים'
+	String get topics => 'נושאים';
 
 	/// he: 'חובה להזין שם למתכון'
 	String get titleRequired => 'חובה להזין שם למתכון';
@@ -741,6 +849,9 @@ class Translations$editor$he {
 
 	/// he: 'הסרת שלב'
 	String get removeStep => 'הסרת שלב';
+
+	/// he: 'שינוי סדר השלב'
+	String get reorderStep => 'שינוי סדר השלב';
 
 	/// he: 'תיקון שגיאות כתיב'
 	String get fixSpelling => 'תיקון שגיאות כתיב';
@@ -1248,11 +1359,17 @@ extension on Translations {
 			'recipe.ingredients' => 'מצרכים',
 			'recipe.ingredientsCount' => ({required Object count}) => '${count} מצרכים',
 			'recipe.minutes' => ({required Object count}) => '${count} דק׳',
+			'recipe.hours' => ({required Object count}) => '${count} שע׳',
+			'recipe.hoursAndMinutes' => ({required Object hours, required Object minutes}) => '${hours} שע׳ ו${minutes} דק׳',
 			'recipe.instructions' => 'אופן ההכנה',
 			'recipe.addToBook' => 'הוסף לספר',
 			'recipe.removeFromBook' => 'הסר מהספר',
 			'recipe.deleteRecipe' => 'מחיקת מתכון',
 			'recipe.photo' => 'תמונת המתכון',
+			'recipe.mine' => 'המתכונים שלי',
+			'recipe.saved' => 'מתכונים ששמרתי',
+			'recipe.noneMine' => 'עדיין לא יצרתם מתכונים',
+			'recipe.noneSaved' => 'עדיין לא שמרתם מתכונים מהקהילה',
 			'community.title' => 'קהילה',
 			'community.forum' => 'פורום',
 			'community.sharedRecipes' => 'מתכונים משותפים',
@@ -1279,9 +1396,39 @@ extension on Translations {
 			'community.unshareConfirm' => 'המתכון יוסר מהפיד המשותף.',
 			'community.byAuthor' => ({required Object name}) => 'מאת ${name}',
 			'community.loadFailed' => 'לא הצלחנו לטעון את התוכן',
+			'community.allRecipes' => 'כל המתכונים',
+			'community.myRecipes' => 'המתכונים שלי',
+			'community.editShared' => 'עריכת המתכון המשותף',
+			'community.sharedUpdated' => 'המתכון המשותף עודכן',
+			'community.noneOfMine' => 'עדיין לא שיתפתם מתכונים',
+			'community.search' => 'חיפוש',
+			'community.searchHint' => 'שם מתכון או שם מפרסם',
+			'community.savedOnly' => 'ששמרתי',
+			'community.noResults' => 'לא נמצאו תוצאות',
+			'community.attachRecipe' => 'צירוף מתכון',
+			'community.openRecipe' => 'פתיחת המתכון',
+			'community.recipeUnavailable' => 'המתכון הזה כבר לא זמין',
+			'community.sortAndFilter' => 'מיון וסינון',
+			'community.sort' => 'מיון',
+			'community.sortNewest' => 'החדשים ביותר',
+			'community.sortOldest' => 'הישנים ביותר',
+			'community.sortMostLiked' => 'הכי אהובים',
+			'community.topics' => 'נושאים',
+			'community.likes' => 'לייקים',
+			'community.anyLikes' => 'כל כמות',
+			'community.atLeastLikes' => ({required Object count}) => '${count} ומעלה',
+			'community.totalTime' => 'זמן הכנה כולל',
+			'community.anyTime' => 'כל זמן',
+			'community.upTo' => ({required Object duration}) => 'עד ${duration}',
+			'community.clearFilters' => 'ניקוי סינונים',
+			'community.applyFilters' => 'הצגת התוצאות',
+			'community.likesPlus' => ({required Object count}) => '${count}+',
+			'community.durationPlus' => ({required Object duration}) => '${duration}+',
+			'community.splitTimes' => 'פיצול להכנה ובישול',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
+			'editor.topics' => 'נושאים',
 			'editor.titleRequired' => 'חובה להזין שם למתכון',
 			'editor.prepMinutes' => 'זמן הכנה (דק׳)',
 			'editor.cookMinutes' => 'זמן בישול (דק׳)',
@@ -1293,6 +1440,7 @@ extension on Translations {
 			'editor.addStep' => 'הוספת שלב',
 			'editor.removeIngredient' => 'הסרת מצרך',
 			'editor.removeStep' => 'הסרת שלב',
+			'editor.reorderStep' => 'שינוי סדר השלב',
 			'editor.fixSpelling' => 'תיקון שגיאות כתיב',
 			'editor.refining' => 'מתקן את המתכון...',
 			'editor.refineError' => 'לא הצלחנו לתקן את המתכון',

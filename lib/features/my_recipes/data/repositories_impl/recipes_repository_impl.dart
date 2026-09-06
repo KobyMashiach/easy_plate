@@ -15,6 +15,10 @@ class RecipesRepositoryImpl implements RecipesRepository {
   }
 
   @override
+  Stream<List<RecipeEntity>> watchRecipes() =>
+      localDataSource.watchRecipes().map((models) => models.map((m) => m.toEntity()).toList());
+
+  @override
   Future<RecipeEntity?> getRecipeById(String id) async {
     final model = await localDataSource.getRecipeById(id);
     return model?.toEntity();

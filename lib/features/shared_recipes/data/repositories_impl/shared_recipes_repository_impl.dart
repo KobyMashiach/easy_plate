@@ -13,6 +13,10 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
       remoteDataSource.getFeed(viewerUid: viewerUid, limit: limit);
 
   @override
+  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) =>
+      remoteDataSource.getById(id, viewerUid: viewerUid);
+
+  @override
   Future<void> share(
     RecipeEntity recipe, {
     required String authorUid,
@@ -29,6 +33,10 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
   @override
   Future<bool> toggleLike(String sharedRecipeId, {required String viewerUid}) =>
       remoteDataSource.toggleLike(sharedRecipeId, viewerUid: viewerUid);
+
+  @override
+  Future<void> updateShared(String sharedRecipeId, RecipeEntity recipe) =>
+      remoteDataSource.updateShared(sharedRecipeId, recipe);
 
   @override
   Future<void> unshare(String sharedRecipeId) => remoteDataSource.unshare(sharedRecipeId);

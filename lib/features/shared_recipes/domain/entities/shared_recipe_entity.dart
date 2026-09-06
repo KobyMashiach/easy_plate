@@ -29,10 +29,10 @@ class SharedRecipeEntity {
     this.likedByMe = false,
   });
 
-  SharedRecipeEntity copyWith({int? likeCount, bool? likedByMe}) {
+  SharedRecipeEntity copyWith({int? likeCount, bool? likedByMe, RecipeEntity? recipe}) {
     return SharedRecipeEntity(
       id: id,
-      recipe: recipe,
+      recipe: recipe ?? this.recipe,
       authorUid: authorUid,
       authorName: authorName,
       authorPhotoUrl: authorPhotoUrl,

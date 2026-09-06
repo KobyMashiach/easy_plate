@@ -20,6 +20,8 @@ abstract class ForumRemoteDataSource {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
+    String? sharedRecipeId,
+    String? sharedRecipeTitle,
   });
   Future<void> deletePost(String postId);
 }
@@ -85,6 +87,8 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
         authorUid: (data['authorUid'] as String?) ?? '',
         authorName: (data['authorName'] as String?) ?? '',
         authorPhotoUrl: data['authorPhotoUrl'] as String?,
+        sharedRecipeId: data['sharedRecipeId'] as String?,
+        sharedRecipeTitle: data['sharedRecipeTitle'] as String?,
         createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       );
     }).toList();
@@ -99,6 +103,8 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
+    String? sharedRecipeId,
+    String? sharedRecipeTitle,
   }) {
     final post = _root.doc(postId);
     final reply = post.collection(_replies).doc(_uuid.v4());
@@ -109,6 +115,8 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
       'authorUid': authorUid,
       'authorName': authorName,
       'authorPhotoUrl': authorPhotoUrl,
+      'sharedRecipeId': sharedRecipeId,
+      'sharedRecipeTitle': sharedRecipeTitle,
       'createdAt': Timestamp.now(),
     });
     batch.update(post, {'replyCount': FieldValue.increment(1)});

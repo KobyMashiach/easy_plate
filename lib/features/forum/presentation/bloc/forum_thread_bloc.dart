@@ -15,7 +15,11 @@ part 'forum_thread_bloc.freezed.dart';
 @freezed
 sealed class ForumThreadEvent with _$ForumThreadEvent {
   const factory ForumThreadEvent.init() = _Init;
-  const factory ForumThreadEvent.addReply(String body) = _AddReply;
+  const factory ForumThreadEvent.addReply(
+    String body, {
+    String? sharedRecipeId,
+    String? sharedRecipeTitle,
+  }) = _AddReply;
 }
 
 @freezed
@@ -72,6 +76,8 @@ class ForumThreadBloc extends Bloc<ForumThreadEvent, ForumThreadState> {
         authorUid: session.user?.uid ?? '',
         authorName: session.profile?.fullName ?? '',
         authorPhotoUrl: session.profile?.photoUrl,
+        sharedRecipeId: event.sharedRecipeId,
+        sharedRecipeTitle: event.sharedRecipeTitle,
       );
       await _init(const _Init(), emit);
     } catch (e) {

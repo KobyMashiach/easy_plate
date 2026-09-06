@@ -9,6 +9,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_ingestion/domain/usecases/refine_recipe_usecase.dart';
@@ -80,6 +81,12 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     for (final step in widget.recipe.steps) TextEditingController(text: step),
   ];
 
+  /// Editable copy: the parser only fills these in when the source says so, and
+  /// nothing else in the app ever set them — so a hand-written recipe had no
+  /// way to carry a topic, and the community's topic filter could never match
+  /// one.
+  late final List<DietaryPreference> _topics = [...widget.recipe.dietaryTags];
+
   bool _busy = false;
   String? _titleError;
 
@@ -121,7 +128,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           .where((ingredient) => ingredient.name.isNotEmpty)
           .toList(),
       steps: _steps.map((c) => c.text.trim()).where((step) => step.isNotEmpty).toList(),
-      dietaryTags: base.dietaryTags,
+      dietaryTags: _topics,
       sourceChannel: base.sourceChannel,
       sourceUrl: base.sourceUrl,
       imageFileName: base.imageFileName,
@@ -245,6 +252,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                       const SizedBox(height: AppSpacing.md),
                       _timesCard(),
                       const SizedBox(height: AppSpacing.md),
+                      _topicsCard(),
+                      const SizedBox(height: AppSpacing.md),
                       _ingredientsCard(),
                       const SizedBox(height: AppSpacing.md),
                       _stepsCard(),
@@ -327,6 +336,20 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
             const SizedBox(width: AppSpacing.sm),
             Expanded(child: _minutesField(_cook, t.editor.cookMinutes)),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _topicsCard() {
+    return _card(
+      title: t.editor.topics,
+      children: [
+        DietaryChipSelector(
+          selected: _topics,
+          onToggle: (topic) => setState(() {
+            _topics.contains(topic) ? _topics.remove(topic) : _topics.add(topic);
+          }),
         ),
       ],
     );
@@ -417,11 +440,38 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     );
   }
 
+  /// Dropping a row below its old position removes it first, which shifts
+  /// everything after it down by one — without this correction a downward move
+  /// always lands one place short.
+  void _reorderSteps(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      _steps.insert(newIndex, _steps.removeAt(oldIndex));
+    });
+  }
+
   Widget _stepsCard() {
     return _card(
       title: t.recipe.instructions,
       children: [
-        for (var i = 0; i < _steps.length; i++) _stepRow(i),
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          // The card already scrolls inside the page's ListView.
+          physics: const NeverScrollableScrollPhysics(),
+          // A long press inside a step belongs to the text field's own
+          // selection gesture, so dragging starts from an explicit handle
+          // rather than from anywhere on the row.
+          buildDefaultDragHandles: false,
+          itemCount: _steps.length,
+          // Dragging a row whose field still holds focus puts the text
+          // selection overlay and the drag proxy in the same overlay, which
+          // trips a leader/follower paint-order assertion. Dropping focus also
+          // gets the keyboard out of the way while reordering.
+          onReorderStart: (_) => FocusScope.of(context).unfocus(),
+          onReorder: _reorderSteps,
+          itemBuilder: (context, index) => _stepRow(index),
+        ),
         const SizedBox(height: AppSpacing.xs),
         ClayButton(
           label: t.editor.addStep,
@@ -434,22 +484,29 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
 
   Widget _stepRow(int index) {
     return Padding(
+      // Keyed by the controller, not the index: the identity has to survive a
+      // reorder or the rows animate to the wrong places and the text follows
+      // the position instead of the step.
+      key: ObjectKey(_steps[index]),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 26,
-            height: 26,
-            margin: const EdgeInsets.only(top: AppSpacing.sm),
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.primaryFixed,
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              '${index + 1}',
-              style: AppTextStyles.labelSm.copyWith(color: AppColors.primary),
+          ReorderableDragStartListener(
+            index: index,
+            child: Container(
+              width: 26,
+              height: 26,
+              margin: const EdgeInsets.only(top: AppSpacing.sm),
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: AppColors.primaryFixed,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                '${index + 1}',
+                style: AppTextStyles.labelSm.copyWith(color: AppColors.primary),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -459,6 +516,20 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
               maxLines: null,
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(hintText: t.editor.stepHint),
+            ),
+          ),
+          // Doubles up with the number badge as a drag target, because a
+          // numbered circle does not read as draggable on its own.
+          ReorderableDragStartListener(
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.sm, left: AppSpacing.xs),
+              child: Icon(
+                Icons.drag_handle_rounded,
+                size: 20,
+                color: AppColors.tertiary,
+                semanticLabel: t.editor.reorderStep,
+              ),
             ),
           ),
           IconButton(

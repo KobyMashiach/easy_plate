@@ -25,6 +25,9 @@ sealed class RecipeModel with _$RecipeModel {
     @HiveField(8) String? sourceUrl,
     @HiveField(9) required DateTime createdAt,
     @HiveField(10) String? imageFileName,
+    // Appended, never reordered: recipes written before this existed decode
+    // as null, which correctly reads as "mine".
+    @HiveField(11) String? savedFromSharedId,
   }) = _RecipeModel;
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
@@ -44,6 +47,7 @@ extension RecipeModelMapper on RecipeModel {
             : RecipeIngestionChannel.values.firstWhere((c) => c.name == sourceChannel),
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,
+        savedFromSharedId: savedFromSharedId,
         createdAt: createdAt,
       );
 }
@@ -60,6 +64,7 @@ extension RecipeEntityMapper on RecipeEntity {
         sourceChannel: sourceChannel?.name,
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,
+        savedFromSharedId: savedFromSharedId,
         createdAt: createdAt,
       );
 }

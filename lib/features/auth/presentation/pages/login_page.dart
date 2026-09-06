@@ -3,11 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/services/device_locale_store.dart';
+import '../../../../core/utils/i18n/app_language_mapper.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/language_selector.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_error_text.dart';
 import 'phone_verification_page.dart';
@@ -130,7 +134,10 @@ class _LoginViewState extends State<_LoginView> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.marginMobile),
               children: [
-                const SizedBox(height: AppSpacing.lg),
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: _LanguageButton(onChanged: () => setState(() {})),
+                ),
                 Text(
                   t.auth.welcome,
                   textAlign: TextAlign.center,
@@ -339,6 +346,78 @@ class _LoginViewState extends State<_LoginView> {
         ),
         const Expanded(child: Divider(color: AppColors.outlineVariant)),
       ],
+    );
+  }
+}
+
+/// Language control for the pre-sign-in screens.
+///
+/// The account's own language only becomes available once it is signed in, so
+/// the choice made here is stored per device and is what the splash and login
+/// use on the next launch.
+class _LanguageButton extends StatelessWidget {
+  final VoidCallback onChanged;
+
+  const _LanguageButton({required this.onChanged});
+
+  AppLanguage get _current => AppLanguage.values.firstWhere(
+        (language) => language.locale == LocaleSettings.currentLocale,
+        orElse: () => AppLanguage.hebrew,
+      );
+
+  Future<void> _pick(BuildContext context) async {
+    final picked = await showModalBottomSheet<AppLanguage>(
+      context: context,
+      backgroundColor: AppColors.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClaySectionHeader(title: t.settings.language, underline: true),
+              const SizedBox(height: AppSpacing.md),
+              LanguageSelector(
+                selected: _current,
+                onSelect: (language) => Navigator.of(sheetContext).pop(language),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (picked == null) return;
+
+    await DeviceLocaleStore().write(picked);
+    await LocaleSettings.setLocale(picked.locale);
+    onChanged();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _pick(context),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.language_rounded, size: 18, color: AppColors.primary),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              _current.label,
+              style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+            ),
+            const Icon(Icons.keyboard_arrow_down_rounded,
+                size: 18, color: AppColors.primary),
+          ],
+        ),
+      ),
     );
   }
 }

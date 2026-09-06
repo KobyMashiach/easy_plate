@@ -96,6 +96,28 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Drags step [from] onto step [to]. The move is walked in small increments
+  /// because the reorder recognizer recomputes the drop slot per pointer
+  /// update — a single jump reports one move and lands nowhere.
+  Future<void> dragStep(WidgetTester tester, int from, int to) async {
+    final handles = find.byIcon(Icons.drag_handle_rounded);
+    final start = tester.getCenter(handles.at(from));
+    final end = tester.getCenter(handles.at(to));
+
+    final gesture = await tester.startGesture(start);
+    await tester.pump(const Duration(milliseconds: 100));
+
+    const steps = 12;
+    final step = (end - start) / steps.toDouble();
+    for (var i = 0; i < steps; i++) {
+      await gesture.moveBy(step);
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+
+    await gesture.up();
+    await tester.pumpAndSettle();
+  }
+
   setUp(() {
     repository = _FakeIngestionRepository();
 
@@ -225,6 +247,59 @@ void main() {
 
     expect(popped?.cookTimeMinutes, 35);
     expect(popped?.steps.first, 'ערבוב עפ מלח פלפל');
+  });
+
+  testWidgets('topics can be set on a recipe that had none', (tester) async {
+    // Nothing else in the app sets dietaryTags, so without this the community's
+    // topic filter could never match a recipe the user wrote.
+    await openEditor(tester, buildRecipe());
+    expect(buildRecipe().dietaryTags, isEmpty);
+
+    await tester.tap(find.text('חלבי'));
+    await tester.pumpAndSettle();
+    await save(tester);
+
+    expect(popped?.dietaryTags, [DietaryPreference.dairy]);
+  });
+
+  testWidgets('an existing topic can be removed', (tester) async {
+    final tagged = RecipeEntity(
+      id: 'r1',
+      title: 'שקשוקה',
+      ingredients: const [],
+      steps: const ['ערבוב'],
+      dietaryTags: const [DietaryPreference.dairy, DietaryPreference.vegetarian],
+      createdAt: DateTime(2026, 1, 1),
+    );
+    await openEditor(tester, tagged);
+
+    await tester.tap(find.text('חלבי'));
+    await tester.pumpAndSettle();
+    await save(tester);
+
+    expect(popped?.dietaryTags, [DietaryPreference.vegetarian]);
+  });
+
+  testWidgets('dragging a step by its handle reorders the saved recipe', (tester) async {
+    await openEditor(tester, buildRecipe());
+
+    await dragStep(tester, 0, 1);
+    await save(tester);
+
+    expect(popped?.steps, ['מבשלים 20 דקות', 'ערבוב עפ מלח פלפל']);
+  });
+
+  testWidgets('reordering carries the text with the step, not the position',
+      (tester) async {
+    await openEditor(tester, buildRecipe());
+
+    await tester.enterText(find.byType(TextField).at(_firstStep), 'שלב ראשון ערוך');
+    await tester.pumpAndSettle();
+
+    await dragStep(tester, 0, 1);
+    await save(tester);
+
+    expect(popped?.steps.last, 'שלב ראשון ערוך');
   });
 
   testWidgets('dropping a step removes it from the saved recipe', (tester) async {
