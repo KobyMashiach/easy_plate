@@ -4,14 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../../core/services/auth_session_service.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/usecases/get_recipes_usecase.dart';
 import '../../../my_recipes/domain/usecases/save_recipe_usecase.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
+import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../domain/usecases/get_shared_recipes_usecase.dart';
+import '../../domain/usecases/import_shared_recipe_usecase.dart';
 import '../../domain/usecases/share_recipe_usecase.dart';
 import '../../domain/usecases/toggle_shared_recipe_like_usecase.dart';
 import '../../domain/usecases/unshare_recipe_usecase.dart';
@@ -57,8 +58,8 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
   final UpdateSharedRecipeUseCase updateSharedRecipeUseCase;
   final SaveRecipeUseCase saveRecipeUseCase;
   final GetRecipesUseCase getRecipesUseCase;
+  final RecipesRepository recipesRepository;
 
-  static const _uuid = Uuid();
   List<SharedRecipeEntity> _feed = [];
   Set<String> _savedIds = {};
 
@@ -70,6 +71,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     required this.updateSharedRecipeUseCase,
     required this.saveRecipeUseCase,
     required this.getRecipesUseCase,
+    required this.recipesRepository,
   }) : super(const SharedRecipesState.loading()) {
     on<_Init>(_init);
     on<_Refresh>(_refresh);
@@ -90,6 +92,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
       updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(context.read()),
       saveRecipeUseCase: SaveRecipeUseCase(context.read()),
       getRecipesUseCase: GetRecipesUseCase(context.read()),
+      recipesRepository: context.read(),
     );
   }
 
@@ -192,23 +195,10 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     }
   }
 
-  /// Saves a copy under a fresh id, so the imported recipe is the user's own
-  /// and editing it cannot write back over the shared original.
+  /// Delegates to the shared import so the feed and a forum reply's recipe
+  /// link save exactly the same way — and neither makes a second copy.
   Future<void> _import(_Import event, Emitter<SharedRecipesState> emit) async {
-    final source = event.shared.recipe;
-    await saveRecipeUseCase(RecipeEntity(
-      id: _uuid.v4(),
-      title: source.title,
-      prepTimeMinutes: source.prepTimeMinutes,
-      cookTimeMinutes: source.cookTimeMinutes,
-      ingredients: source.ingredients,
-      steps: source.steps,
-      dietaryTags: source.dietaryTags,
-      // Remembers where it came from, which is what separates "saved" from
-      // "mine" in the recipe list and what the community's saved filter reads.
-      savedFromSharedId: event.shared.id,
-      createdAt: DateTime.now(),
-    ));
+    await ImportSharedRecipeUseCase(recipesRepository)(event.shared);
     await _refreshSavedIds();
     emit(.loaded(_feed, imported: true, savedIds: _savedIds));
   }

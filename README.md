@@ -160,7 +160,15 @@ firebase deploy --only firestore:rules,functions
 ```
 
 Without the rules deploy every sharing write is denied; without the function
-the in-app inbox still works but no push is sent. The push text is Hebrew —
+the in-app inbox still works but no push is sent.
+
+A directory entry is written when an account signs in, so a person who has
+not opened this build yet cannot be found — that is "לא נמצא חשבון". If not
+even the *sender's* own contacts resolve, the directory was never populated
+for this account (the rules were not deployed when it signed in) and the app
+says so instead: sign out and back in after deploying. Every publish and
+lookup logs the hash it used, so a miss can be checked against the
+`user_directory` collection in the console. The push text is Hebrew —
 the function does not know the recipient's locale.
 
 ## Community

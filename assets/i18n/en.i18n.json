@@ -239,7 +239,8 @@
     "applyFilters": "Show results",
     "likesPlus": "$count+",
     "durationPlus": "$duration+",
-    "splitTimes": "Split into prep and cook"
+    "splitTimes": "Split into prep and cook",
+    "alreadySaved": "You already have this recipe"
   },
   "sharing": {
     "title": "Share recipe",
@@ -253,7 +254,7 @@
     "send": "Send invite",
     "sent": "Invite sent",
     "invalidContact": "Enter a valid email or phone number",
-    "notFound": "No account with those details",
+    "notFound": "No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.",
     "self": "You cannot share a recipe with yourself",
     "failed": "Sharing failed, try again",
     "pendingInvites": "Pending invites",
@@ -280,7 +281,8 @@
     "ownerTag": "Owner",
     "syncFailed": "Could not refresh the shared recipe, showing the saved version",
     "viewerCannotEdit": "This recipe is shared with you view-only",
-    "shareAction": "Share"
+    "shareAction": "Share",
+    "directoryUnavailable": "Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying."
   },
   "notifications": {
     "title": "Notifications",

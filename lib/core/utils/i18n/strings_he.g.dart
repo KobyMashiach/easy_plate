@@ -824,6 +824,9 @@ class Translations$community$he {
 
 	/// he: 'פיצול להכנה ובישול'
 	String get splitTimes => 'פיצול להכנה ובישול';
+
+	/// he: 'המתכון כבר שמור אצלכם'
+	String get alreadySaved => 'המתכון כבר שמור אצלכם';
 }
 
 // Path: sharing
@@ -867,8 +870,8 @@ class Translations$sharing$he {
 	/// he: 'יש להזין אימייל או מספר טלפון תקינים'
 	String get invalidContact => 'יש להזין אימייל או מספר טלפון תקינים';
 
-	/// he: 'לא נמצא חשבון עם הפרטים האלה'
-	String get notFound => 'לא נמצא חשבון עם הפרטים האלה';
+	/// he: 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.'
+	String get notFound => 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.';
 
 	/// he: 'אי אפשר לשתף מתכון עם עצמכם'
 	String get self => 'אי אפשר לשתף מתכון עם עצמכם';
@@ -950,6 +953,9 @@ class Translations$sharing$he {
 
 	/// he: 'שיתוף'
 	String get shareAction => 'שיתוף';
+
+	/// he: 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.'
+	String get directoryUnavailable => 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.';
 }
 
 // Path: notifications
@@ -1697,6 +1703,7 @@ extension on Translations {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'פיצול להכנה ובישול',
+			'community.alreadySaved' => 'המתכון כבר שמור אצלכם',
 			'sharing.title' => 'שיתוף מתכון',
 			'sharing.contactLabel' => 'אימייל או טלפון של השותף/ה',
 			'sharing.contactHint' => 'name@example.com או 05…',
@@ -1708,7 +1715,7 @@ extension on Translations {
 			'sharing.send' => 'שליחת הזמנה',
 			'sharing.sent' => 'ההזמנה נשלחה',
 			'sharing.invalidContact' => 'יש להזין אימייל או מספר טלפון תקינים',
-			'sharing.notFound' => 'לא נמצא חשבון עם הפרטים האלה',
+			'sharing.notFound' => 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.',
 			'sharing.self' => 'אי אפשר לשתף מתכון עם עצמכם',
 			'sharing.failed' => 'השיתוף נכשל, נסו שוב',
 			'sharing.pendingInvites' => 'הזמנות ממתינות',
@@ -1736,6 +1743,7 @@ extension on Translations {
 			'sharing.syncFailed' => 'לא הצלחנו לרענן את המתכון המשותף, מוצגת הגרסה השמורה',
 			'sharing.viewerCannotEdit' => 'המתכון שותף איתכם לצפייה בלבד',
 			'sharing.shareAction' => 'שיתוף',
+			'sharing.directoryUnavailable' => 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.',
 			'notifications.title' => 'התראות',
 			'notifications.empty' => 'אין התראות',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את "${recipe}"',

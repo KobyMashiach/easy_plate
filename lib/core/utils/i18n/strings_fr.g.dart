@@ -386,6 +386,7 @@ class _Translations$community$fr extends Translations$community$he {
 	@override String likesPlus({required Object count}) => '${count}+';
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'Séparer préparation et cuisson';
+	@override String get alreadySaved => 'Vous avez déjà cette recette';
 }
 
 // Path: sharing
@@ -406,7 +407,7 @@ class _Translations$sharing$fr extends Translations$sharing$he {
 	@override String get send => 'Envoyer l\'invitation';
 	@override String get sent => 'Invitation envoyée';
 	@override String get invalidContact => 'Saisissez un e-mail ou un téléphone valide';
-	@override String get notFound => 'Aucun compte avec ces informations';
+	@override String get notFound => 'Aucun compte ne correspond. Vérifiez que l\'e-mail ou le téléphone est lié à son compte et qu\'il/elle a ouvert l\'application récemment.';
 	@override String get self => 'Impossible de partager une recette avec vous-même';
 	@override String get failed => 'Le partage a échoué, réessayez';
 	@override String get pendingInvites => 'Invitations en attente';
@@ -434,6 +435,7 @@ class _Translations$sharing$fr extends Translations$sharing$he {
 	@override String get syncFailed => 'Impossible d\'actualiser la recette partagée, version enregistrée affichée';
 	@override String get viewerCannotEdit => 'Cette recette vous est partagée en lecture seule';
 	@override String get shareAction => 'Partager';
+	@override String get directoryUnavailable => 'Le partage n\'est pas encore configuré côté serveur. Déconnectez-vous puis reconnectez-vous ; si cela persiste, les règles Firestore doivent être déployées.';
 }
 
 // Path: notifications
@@ -883,6 +885,7 @@ extension on TranslationsFr {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Séparer préparation et cuisson',
+			'community.alreadySaved' => 'Vous avez déjà cette recette',
 			'sharing.title' => 'Partager la recette',
 			'sharing.contactLabel' => 'E-mail ou téléphone de la personne',
 			'sharing.contactHint' => 'nom@exemple.com ou 05…',
@@ -894,7 +897,7 @@ extension on TranslationsFr {
 			'sharing.send' => 'Envoyer l\'invitation',
 			'sharing.sent' => 'Invitation envoyée',
 			'sharing.invalidContact' => 'Saisissez un e-mail ou un téléphone valide',
-			'sharing.notFound' => 'Aucun compte avec ces informations',
+			'sharing.notFound' => 'Aucun compte ne correspond. Vérifiez que l\'e-mail ou le téléphone est lié à son compte et qu\'il/elle a ouvert l\'application récemment.',
 			'sharing.self' => 'Impossible de partager une recette avec vous-même',
 			'sharing.failed' => 'Le partage a échoué, réessayez',
 			'sharing.pendingInvites' => 'Invitations en attente',
@@ -922,6 +925,7 @@ extension on TranslationsFr {
 			'sharing.syncFailed' => 'Impossible d\'actualiser la recette partagée, version enregistrée affichée',
 			'sharing.viewerCannotEdit' => 'Cette recette vous est partagée en lecture seule',
 			'sharing.shareAction' => 'Partager',
+			'sharing.directoryUnavailable' => 'Le partage n\'est pas encore configuré côté serveur. Déconnectez-vous puis reconnectez-vous ; si cela persiste, les règles Firestore doivent être déployées.',
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'Aucune notification',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} a partagé « ${recipe} » avec vous',

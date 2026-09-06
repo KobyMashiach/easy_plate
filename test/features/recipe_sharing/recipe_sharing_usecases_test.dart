@@ -162,6 +162,38 @@ void main() {
       expect(recipes.saved, isEmpty);
     });
 
+    test('an empty directory for the sender itself is reported as a server problem',
+        () async {
+      // Neither the target nor the sender's own email resolves: the directory
+      // was never populated for this account, so the remedy is deploying the
+      // rules and signing in again — not asking the other person to check.
+      await expectLater(
+        useCase(
+          localRecipe(),
+          contact: 'dana@x.com',
+          role: CollabRole.viewer,
+          ownerUid: 'me',
+          senderContacts: const ['me@x.com'],
+        ),
+        throwsA(isA<ShareFailure>()
+            .having((f) => f.code, 'code', ShareFailure.directoryUnavailable)),
+      );
+    });
+
+    test('when the sender resolves but the target does not, it is the target', () async {
+      profiles.directory['me@x.com'] = 'me';
+      await expectLater(
+        useCase(
+          localRecipe(),
+          contact: 'dana@x.com',
+          role: CollabRole.viewer,
+          ownerUid: 'me',
+          senderContacts: const ['me@x.com'],
+        ),
+        throwsA(isA<ShareFailure>().having((f) => f.code, 'code', ShareFailure.notFound)),
+      );
+    });
+
     test('sharing with yourself is refused', () async {
       profiles.directory['me@x.com'] = 'me';
       await expectLater(

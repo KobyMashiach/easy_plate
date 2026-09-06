@@ -239,7 +239,8 @@
     "applyFilters": "Voir les résultats",
     "likesPlus": "$count+",
     "durationPlus": "$duration+",
-    "splitTimes": "Séparer préparation et cuisson"
+    "splitTimes": "Séparer préparation et cuisson",
+    "alreadySaved": "Vous avez déjà cette recette"
   },
   "sharing": {
     "title": "Partager la recette",
@@ -253,7 +254,7 @@
     "send": "Envoyer l'invitation",
     "sent": "Invitation envoyée",
     "invalidContact": "Saisissez un e-mail ou un téléphone valide",
-    "notFound": "Aucun compte avec ces informations",
+    "notFound": "Aucun compte ne correspond. Vérifiez que l'e-mail ou le téléphone est lié à son compte et qu'il/elle a ouvert l'application récemment.",
     "self": "Impossible de partager une recette avec vous-même",
     "failed": "Le partage a échoué, réessayez",
     "pendingInvites": "Invitations en attente",
@@ -280,7 +281,8 @@
     "ownerTag": "Propriétaire",
     "syncFailed": "Impossible d'actualiser la recette partagée, version enregistrée affichée",
     "viewerCannotEdit": "Cette recette vous est partagée en lecture seule",
-    "shareAction": "Partager"
+    "shareAction": "Partager",
+    "directoryUnavailable": "Le partage n'est pas encore configuré côté serveur. Déconnectez-vous puis reconnectez-vous ; si cela persiste, les règles Firestore doivent être déployées."
   },
   "notifications": {
     "title": "Notifications",

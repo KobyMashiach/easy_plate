@@ -10,7 +10,9 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
+import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../shared_recipes/domain/usecases/get_shared_recipe_by_id_usecase.dart';
+import '../../../shared_recipes/domain/usecases/import_shared_recipe_usecase.dart';
 
 /// The "[link to recipe]" chip inside a forum reply.
 ///
@@ -29,6 +31,45 @@ class ReplyRecipeLink extends StatefulWidget {
 
 class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
   bool _opening = false;
+  bool _saving = false;
+
+  /// Same import as the feed's save button, so a recipe linked in a reply can
+  /// be kept without going back to find it in the feed.
+  Future<void> _save() async {
+    final repository = context.read<SharedRecipesRepository>();
+    final recipes = context.read<RecipesRepository>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    setState(() => _saving = true);
+    try {
+      final shared = await GetSharedRecipeByIdUseCase(repository)(
+        widget.sharedRecipeId,
+        viewerUid: AuthSessionService().user?.uid ?? '',
+      );
+      if (shared == null) {
+        messenger.showSnackBar(SnackBar(
+          content: Text(t.community.recipeUnavailable, style: AppTextStyles.bodyMd),
+        ));
+        return;
+      }
+      final outcome = await ImportSharedRecipeUseCase(recipes)(shared);
+      messenger.showSnackBar(SnackBar(
+        content: Text(
+          outcome == ImportOutcome.saved
+              ? t.community.savedToMyRecipes
+              : t.community.alreadySaved,
+          style: AppTextStyles.bodyMd,
+        ),
+      ));
+    } catch (e) {
+      debugPrint('Saving linked recipe failed: $e');
+      messenger.showSnackBar(
+        SnackBar(content: Text(t.community.loadFailed, style: AppTextStyles.bodyMd)),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   Future<void> _open() async {
     final repository = context.read<SharedRecipesRepository>();
@@ -65,6 +106,24 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
 
   @override
   Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(child: _chip()),
+        IconButton(
+          tooltip: t.community.saveToMyRecipes,
+          visualDensity: VisualDensity.compact,
+          icon: _saving
+              ? const SizedBox(
+                  width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              : const Icon(Icons.bookmark_add_rounded, size: 20, color: AppColors.primary),
+          onPressed: _saving || _opening ? null : _save,
+        ),
+      ],
+    );
+  }
+
+  Widget _chip() {
     return GestureDetector(
       onTap: _opening ? null : _open,
       behavior: HitTestBehavior.opaque,

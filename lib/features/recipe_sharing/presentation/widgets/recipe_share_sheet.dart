@@ -64,7 +64,8 @@ class _RecipeShareSheetState extends State<_RecipeShareSheet> {
       setState(() => _error = t.sharing.invalidContact);
       return;
     }
-    final uid = AuthSessionService().user?.uid;
+    final user = AuthSessionService().user;
+    final uid = user?.uid;
     if (uid == null) return;
 
     final useCase = ShareRecipeUseCase(
@@ -77,12 +78,19 @@ class _RecipeShareSheetState extends State<_RecipeShareSheet> {
       _busy = true;
     });
     try {
-      await useCase(widget.recipe, contact: _contact.text, role: _role, ownerUid: uid);
+      await useCase(
+        widget.recipe,
+        contact: _contact.text,
+        role: _role,
+        ownerUid: uid,
+        senderContacts: [user?.email, user?.phoneNumber].nonNulls.toList(),
+      );
       if (mounted) Navigator.of(context).pop(true);
     } on ShareFailure catch (e) {
       if (!mounted) return;
       setState(() => _error = switch (e.code) {
             ShareFailure.notFound => t.sharing.notFound,
+            ShareFailure.directoryUnavailable => t.sharing.directoryUnavailable,
             ShareFailure.self => t.sharing.self,
             _ => t.sharing.invalidContact,
           });

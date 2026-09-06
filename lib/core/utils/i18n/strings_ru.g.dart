@@ -386,6 +386,7 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String likesPlus({required Object count}) => '${count}+';
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'Разделить на подготовку и готовку';
+	@override String get alreadySaved => 'Этот рецепт у вас уже есть';
 }
 
 // Path: sharing
@@ -406,7 +407,7 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get send => 'Отправить приглашение';
 	@override String get sent => 'Приглашение отправлено';
 	@override String get invalidContact => 'Введите корректную почту или телефон';
-	@override String get notFound => 'Аккаунт с такими данными не найден';
+	@override String get notFound => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.';
 	@override String get self => 'Нельзя поделиться рецептом с самим собой';
 	@override String get failed => 'Не удалось поделиться, попробуйте снова';
 	@override String get pendingInvites => 'Ожидающие приглашения';
@@ -434,6 +435,7 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get syncFailed => 'Не удалось обновить общий рецепт, показана сохранённая версия';
 	@override String get viewerCannotEdit => 'Рецепт доступен вам только для просмотра';
 	@override String get shareAction => 'Поделиться';
+	@override String get directoryUnavailable => 'Общий доступ ещё не настроен на сервере. Выйдите и войдите снова; если не помогает — нужно развернуть правила Firestore.';
 }
 
 // Path: notifications
@@ -883,6 +885,7 @@ extension on TranslationsRu {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Разделить на подготовку и готовку',
+			'community.alreadySaved' => 'Этот рецепт у вас уже есть',
 			'sharing.title' => 'Поделиться рецептом',
 			'sharing.contactLabel' => 'Почта или телефон человека',
 			'sharing.contactHint' => 'name@example.com или 05…',
@@ -894,7 +897,7 @@ extension on TranslationsRu {
 			'sharing.send' => 'Отправить приглашение',
 			'sharing.sent' => 'Приглашение отправлено',
 			'sharing.invalidContact' => 'Введите корректную почту или телефон',
-			'sharing.notFound' => 'Аккаунт с такими данными не найден',
+			'sharing.notFound' => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.',
 			'sharing.self' => 'Нельзя поделиться рецептом с самим собой',
 			'sharing.failed' => 'Не удалось поделиться, попробуйте снова',
 			'sharing.pendingInvites' => 'Ожидающие приглашения',
@@ -922,6 +925,7 @@ extension on TranslationsRu {
 			'sharing.syncFailed' => 'Не удалось обновить общий рецепт, показана сохранённая версия',
 			'sharing.viewerCannotEdit' => 'Рецепт доступен вам только для просмотра',
 			'sharing.shareAction' => 'Поделиться',
+			'sharing.directoryUnavailable' => 'Общий доступ ещё не настроен на сервере. Выйдите и войдите снова; если не помогает — нужно развернуть правила Firestore.',
 			'notifications.title' => 'Уведомления',
 			'notifications.empty' => 'Уведомлений нет',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»',

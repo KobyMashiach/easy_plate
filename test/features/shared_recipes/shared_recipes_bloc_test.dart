@@ -104,6 +104,7 @@ void main() {
         updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(shared),
         saveRecipeUseCase: SaveRecipeUseCase(recipes),
         getRecipesUseCase: GetRecipesUseCase(recipes),
+        recipesRepository: recipes,
       );
 
   setUp(() {

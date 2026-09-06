@@ -386,6 +386,7 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String likesPlus({required Object count}) => '${count}+';
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'الفصل بين التحضير والطهي';
+	@override String get alreadySaved => 'هذه الوصفة محفوظة لديكم بالفعل';
 }
 
 // Path: sharing
@@ -406,7 +407,7 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get send => 'إرسال الدعوة';
 	@override String get sent => 'تم إرسال الدعوة';
 	@override String get invalidContact => 'أدخلوا بريدًا أو رقم هاتف صالحًا';
-	@override String get notFound => 'لا يوجد حساب بهذه البيانات';
+	@override String get notFound => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.';
 	@override String get self => 'لا يمكن مشاركة وصفة مع نفسك';
 	@override String get failed => 'فشلت المشاركة، حاولوا مجددًا';
 	@override String get pendingInvites => 'دعوات معلّقة';
@@ -434,6 +435,7 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get syncFailed => 'تعذّر تحديث الوصفة المشتركة، تُعرض النسخة المحفوظة';
 	@override String get viewerCannotEdit => 'هذه الوصفة مشتركة معكم للعرض فقط';
 	@override String get shareAction => 'مشاركة';
+	@override String get directoryUnavailable => 'المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.';
 }
 
 // Path: notifications
@@ -883,6 +885,7 @@ extension on TranslationsAr {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'الفصل بين التحضير والطهي',
+			'community.alreadySaved' => 'هذه الوصفة محفوظة لديكم بالفعل',
 			'sharing.title' => 'مشاركة الوصفة',
 			'sharing.contactLabel' => 'بريد أو هاتف الشريك',
 			'sharing.contactHint' => 'name@example.com أو 05…',
@@ -894,7 +897,7 @@ extension on TranslationsAr {
 			'sharing.send' => 'إرسال الدعوة',
 			'sharing.sent' => 'تم إرسال الدعوة',
 			'sharing.invalidContact' => 'أدخلوا بريدًا أو رقم هاتف صالحًا',
-			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات',
+			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.',
 			'sharing.self' => 'لا يمكن مشاركة وصفة مع نفسك',
 			'sharing.failed' => 'فشلت المشاركة، حاولوا مجددًا',
 			'sharing.pendingInvites' => 'دعوات معلّقة',
@@ -922,6 +925,7 @@ extension on TranslationsAr {
 			'sharing.syncFailed' => 'تعذّر تحديث الوصفة المشتركة، تُعرض النسخة المحفوظة',
 			'sharing.viewerCannotEdit' => 'هذه الوصفة مشتركة معكم للعرض فقط',
 			'sharing.shareAction' => 'مشاركة',
+			'sharing.directoryUnavailable' => 'المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.',
 			'notifications.title' => 'الإشعارات',
 			'notifications.empty' => 'لا توجد إشعارات',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"',

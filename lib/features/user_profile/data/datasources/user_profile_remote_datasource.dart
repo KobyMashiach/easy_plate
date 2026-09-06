@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../../core/utils/contact_hash.dart';
@@ -118,25 +119,29 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   /// One directory entry per verified contact. Written on every publish so an
   /// account that later links a phone becomes findable by it.
   void _addDirectoryEntries(WriteBatch batch, UserProfileEntity profile) {
+    final hashes = <String>[];
     for (final raw in [profile.email, profile.phoneNumber]) {
       final contact = raw == null ? null : normalizeContact(raw);
       if (contact == null) continue;
-      batch.set(
-        _firestore.collection(directoryCollection).doc(contactHash(contact.value)),
-        {'uid': profile.uid},
-      );
+      final hash = contactHash(contact.value);
+      hashes.add(hash);
+      batch.set(_firestore.collection(directoryCollection).doc(hash), {'uid': profile.uid});
     }
+    // Logged so a "not found" on the other side can be checked against the
+    // console: these are the document ids that should exist under the
+    // directory for this account.
+    debugPrint('Directory publish ${profile.uid}: ${hashes.isEmpty ? '(no contacts)' : hashes}');
   }
 
   @override
   Future<String?> findUidByContact(String contact) async {
     final normalized = normalizeContact(contact);
     if (normalized == null) return null;
-    final doc = await _firestore
-        .collection(directoryCollection)
-        .doc(contactHash(normalized.value))
-        .get();
-    return doc.data()?['uid'] as String?;
+    final hash = contactHash(normalized.value);
+    final doc = await _firestore.collection(directoryCollection).doc(hash).get();
+    final uid = doc.data()?['uid'] as String?;
+    debugPrint('Directory lookup "${normalized.value}" → $hash → ${uid ?? 'not found'}');
+    return uid;
   }
 
   @override

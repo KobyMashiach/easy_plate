@@ -15,6 +15,12 @@ class ShareFailure implements Exception {
   static const self = 'cannot-share-with-self';
   static const invalid = 'invalid-contact';
 
+  /// Not even the sender's own contacts resolve: the directory is empty for
+  /// this account, which means the rules were not deployed when it signed in
+  /// (the write was denied) or have not been deployed at all. Distinct from
+  /// [notFound] because the remedy is on the server, not the other person.
+  static const directoryUnavailable = 'directory-unavailable';
+
   @override
   String toString() => 'ShareFailure($code)';
 }
@@ -40,6 +46,9 @@ class ShareRecipeUseCase {
     required String contact,
     required CollabRole role,
     required String ownerUid,
+    /// The sender's own verified contacts, used only when the target is not
+    /// found — to tell "they never published" from "nobody can be found".
+    List<String> senderContacts = const [],
   }) async {
     assert(role != CollabRole.owner, 'an invite grants viewer or editor only');
 
@@ -49,7 +58,15 @@ class ShareRecipeUseCase {
     } on AppException {
       rethrow;
     }
-    if (targetUid == null) throw const ShareFailure(ShareFailure.notFound);
+    if (targetUid == null) {
+      // Only on the failure path, so the happy path stays a single read.
+      final anySenderFound = await _anyResolves(senderContacts);
+      throw ShareFailure(
+        anySenderFound || senderContacts.isEmpty
+            ? ShareFailure.notFound
+            : ShareFailure.directoryUnavailable,
+      );
+    }
     if (targetUid == ownerUid) throw const ShareFailure(ShareFailure.self);
 
     final collabId = await sharing.ensureCollab(recipe, ownerUid: ownerUid);
@@ -64,5 +81,12 @@ class ShareRecipeUseCase {
       role: role,
     );
     return owned;
+  }
+
+  Future<bool> _anyResolves(List<String> contacts) async {
+    for (final contact in contacts) {
+      if (await profiles.findUidByContact(contact) != null) return true;
+    }
+    return false;
   }
 }

@@ -386,6 +386,7 @@ class _Translations$community$en extends Translations$community$he {
 	@override String likesPlus({required Object count}) => '${count}+';
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'Split into prep and cook';
+	@override String get alreadySaved => 'You already have this recipe';
 }
 
 // Path: sharing
@@ -406,7 +407,7 @@ class _Translations$sharing$en extends Translations$sharing$he {
 	@override String get send => 'Send invite';
 	@override String get sent => 'Invite sent';
 	@override String get invalidContact => 'Enter a valid email or phone number';
-	@override String get notFound => 'No account with those details';
+	@override String get notFound => 'No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.';
 	@override String get self => 'You cannot share a recipe with yourself';
 	@override String get failed => 'Sharing failed, try again';
 	@override String get pendingInvites => 'Pending invites';
@@ -434,6 +435,7 @@ class _Translations$sharing$en extends Translations$sharing$he {
 	@override String get syncFailed => 'Could not refresh the shared recipe, showing the saved version';
 	@override String get viewerCannotEdit => 'This recipe is shared with you view-only';
 	@override String get shareAction => 'Share';
+	@override String get directoryUnavailable => 'Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying.';
 }
 
 // Path: notifications
@@ -883,6 +885,7 @@ extension on TranslationsEn {
 			'community.likesPlus' => ({required Object count}) => '${count}+',
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Split into prep and cook',
+			'community.alreadySaved' => 'You already have this recipe',
 			'sharing.title' => 'Share recipe',
 			'sharing.contactLabel' => 'Email or phone of the person',
 			'sharing.contactHint' => 'name@example.com or 05…',
@@ -894,7 +897,7 @@ extension on TranslationsEn {
 			'sharing.send' => 'Send invite',
 			'sharing.sent' => 'Invite sent',
 			'sharing.invalidContact' => 'Enter a valid email or phone number',
-			'sharing.notFound' => 'No account with those details',
+			'sharing.notFound' => 'No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.',
 			'sharing.self' => 'You cannot share a recipe with yourself',
 			'sharing.failed' => 'Sharing failed, try again',
 			'sharing.pendingInvites' => 'Pending invites',
@@ -922,6 +925,7 @@ extension on TranslationsEn {
 			'sharing.syncFailed' => 'Could not refresh the shared recipe, showing the saved version',
 			'sharing.viewerCannotEdit' => 'This recipe is shared with you view-only',
 			'sharing.shareAction' => 'Share',
+			'sharing.directoryUnavailable' => 'Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying.',
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'No notifications',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} shared "${recipe}" with you',
