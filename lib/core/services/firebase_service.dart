@@ -39,9 +39,26 @@ class FirebaseService {
     // DEV marker in front of a real user; a developer briefly not seeing one is
     // the cheaper mistake.
     isProdKey: true,
+    // Version gating, read by AppUpdateService. Both default to a version no
+    // build can be behind, so an app that cannot reach the console never
+    // decides on its own that it is out of date and locks the user out.
+    minimumVersionKey: '0.0.0',
+    latestVersionKey: '0.0.0',
+    // Set once the app has an App Store listing; the numeric id is the only
+    // way to link to it. Empty means "no iOS listing yet".
+    iosAppStoreIdKey: '',
   };
 
   static const isProdKey = 'isProd';
+
+  /// The oldest build still allowed to run. Below this the update is forced.
+  static const minimumVersionKey = 'minimumVersion';
+
+  /// The newest build available in the stores. Above the running one — and
+  /// with [minimumVersionKey] satisfied — the update is offered, not forced.
+  static const latestVersionKey = 'latestVersion';
+
+  static const iosAppStoreIdKey = 'iosAppStoreId';
 
   /// Whether this build is running as production, per Remote Config.
   ///
@@ -52,6 +69,24 @@ class FirebaseService {
   final isProdListenable = ValueNotifier<bool>(remoteDefaults[isProdKey]! as bool);
 
   bool get isProd => isProdListenable.value;
+
+  /// Ticks once per activation, so a listener can re-read the keys it cares
+  /// about without this class having to grow a notifier per key.
+  final configRevision = ValueNotifier<int>(0);
+
+  /// A string parameter, with the blank-value trap of [resolveIsProd] handled
+  /// the same way: a parameter that exists in the console but carries no value
+  /// comes back as an empty string and would otherwise shadow the in-app
+  /// default. Blank is treated as "not configured".
+  String remoteString(String key) {
+    try {
+      final raw = FirebaseRemoteConfig.instance.getString(key).trim();
+      return raw.isEmpty ? remoteDefaults[key]! as String : raw;
+    } catch (e) {
+      // Firebase not up yet; the default is the honest answer.
+      return remoteDefaults[key]! as String;
+    }
+  }
 
   /// Re-fetches and activates, then republishes the flag.
   ///
@@ -90,6 +125,7 @@ class FirebaseService {
       'lastFetch=${config.lastFetchStatus.name} resolved=$resolved',
     );
     isProdListenable.value = resolved;
+    configRevision.value++;
   }
 
   Future<void> init() async {

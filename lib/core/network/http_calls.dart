@@ -46,14 +46,32 @@ class HttpCalls {
         DioExceptionType.receiveTimeout =>
           const AppException(AppErrorType.networkError),
         _ => AppException(
-            switch (e.response?.statusCode) {
-              401 || 403 => AppErrorType.unauthorized,
-              429 || 500 || 502 || 503 || 504 || 529 => AppErrorType.overloaded,
-              _ => AppErrorType.unknown,
-            },
+            errorTypeFor(e.response?.statusCode, e.response?.data),
             message: e.response?.data?.toString() ?? e.message ?? '',
           ),
       };
     }
+  }
+
+  /// The status-to-error mapping, as a pure function so both 429 branches can
+  /// be pinned by a test.
+  ///
+  /// A spent daily allowance and upstream capacity both arrive as 429, and
+  /// callers retry capacity errors — so telling them apart is what keeps the
+  /// app from sitting through a backoff for a refusal that will stand until the
+  /// quota resets. Our AI proxy is the only thing that sends the `quota`
+  /// object, which is what makes them distinguishable at all.
+  static AppErrorType errorTypeFor(int? statusCode, dynamic body) {
+    return switch (statusCode) {
+      401 || 403 => AppErrorType.unauthorized,
+      429 when _carriesQuota(body) => AppErrorType.quotaExceeded,
+      429 || 500 || 502 || 503 || 504 || 529 => AppErrorType.overloaded,
+      _ => AppErrorType.unknown,
+    };
+  }
+
+  static bool _carriesQuota(dynamic body) {
+    final error = body is Map ? body['error'] : null;
+    return error is Map && error['quota'] != null;
   }
 }

@@ -9,7 +9,11 @@ import '../../features/user_profile/domain/repositories/user_profile_repository.
 import '../../features/user_profile/domain/entities/user_preferences_entity.dart';
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
 import '../../features/notifications/domain/repositories/notifications_repository.dart';
+import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
+import '../../features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
+import '../../features/recipe_sharing/domain/usecases/refresh_collab_recipes_usecase.dart';
 import '../hive/user_scope.dart';
+import '../sync/cloud_sync_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
 
@@ -43,6 +47,8 @@ class AuthSessionService extends ChangeNotifier {
   UserProfileRepository? _profiles;
   UserPreferencesRepository? _preferences;
   NotificationsRepository? _notifications;
+  RecipeSharingRepository? _sharing;
+  RecipesRepository? _recipes;
   StreamSubscription<AppUserEntity?>? _subscription;
 
   bool _bound = false;
@@ -69,6 +75,8 @@ class AuthSessionService extends ChangeNotifier {
     required UserProfileRepository profiles,
     required UserPreferencesRepository preferences,
     NotificationsRepository? notifications,
+    RecipeSharingRepository? sharing,
+    RecipesRepository? recipes,
     Future<void> Function(UserPreferencesEntity preferences)? onPreferencesLoaded,
   }) {
     if (_bound) return;
@@ -77,6 +85,8 @@ class AuthSessionService extends ChangeNotifier {
     _profiles = profiles;
     _preferences = preferences;
     _notifications = notifications;
+    _sharing = sharing;
+    _recipes = recipes;
     this.onPreferencesLoaded = onPreferencesLoaded;
     _subscription = auth.authStateChanges().listen(_onAuthChanged);
   }
@@ -112,6 +122,15 @@ class AuthSessionService extends ChangeNotifier {
     // before anything reads a box — otherwise the previous account's recipes
     // are what comes back.
     await UserScope().switchTo(user.uid);
+    // Then fill those boxes from the account's own cloud copy, before the
+    // preferences read below: a phone that has never run the app has empty
+    // boxes, and reading them first would show an account with no recipes and
+    // send it back through onboarding to pick a shopping day it already has.
+    // It is a no-op for an account already hydrated in this session.
+    await CloudSyncService().hydrate(user.uid);
+    // Not awaited: the gate's stage does not depend on it, and a shared recipe
+    // arriving a second late is not worth holding the splash for.
+    unawaited(refreshSharedRecipes());
     await _loadPreferences();
     await _resolveProfile(user);
   }
@@ -196,6 +215,24 @@ class AuthSessionService extends ChangeNotifier {
     if (_stage == AuthStage.needsOnboarding) _set(AuthStage.ready);
   }
 
+  /// Pulls every shared recipe this account is part of into its local caches.
+  ///
+  /// Runs on sign-in and again on every resume, because a co-editor's change
+  /// otherwise reached this device only when the recipe itself was opened —
+  /// the list, the book and the planner all kept showing the stale copy. The
+  /// recipe box is watched, so the screens update themselves once this writes.
+  Future<void> refreshSharedRecipes() async {
+    final uid = _user?.uid;
+    if (uid == null || _sharing == null || _recipes == null) return;
+    try {
+      await RefreshCollabRecipesUseCase(sharing: _sharing!, recipes: _recipes!)(uid: uid);
+    } catch (e) {
+      // Offline, or the rules refused a query. The caches stay as they are and
+      // the next resume tries again.
+      debugPrint('Shared recipe refresh failed: $e');
+    }
+  }
+
   /// Re-reads the signed-in account's preferences, after settings change them.
   Future<void> reloadPreferences() async {
     if (_preferences == null || _user == null) return;
@@ -215,6 +252,8 @@ class AuthSessionService extends ChangeNotifier {
     _onboardingComplete = false;
     onPreferencesLoaded = null;
     _notifications = null;
+    _sharing = null;
+    _recipes = null;
   }
 
   void _set(AuthStage stage) {

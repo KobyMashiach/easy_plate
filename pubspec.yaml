@@ -1,5 +1,5 @@
 name: easy_plate
-description: "A new Flutter project."
+description: "Recipe books, weekly meal planning and an aggregated grocery list."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -63,6 +63,7 @@ dependencies:
   google_sign_in: ^7.2.0
   url_launcher: ^6.3.2
   crypto: ^3.0.7
+  package_info_plus: ^10.2.1
 
 dev_dependencies:
   flutter_test:

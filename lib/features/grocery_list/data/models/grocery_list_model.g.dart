@@ -87,7 +87,7 @@ Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'items': instance.items,
+      'items': instance.items.map((e) => e.toJson()).toList(),
       'collaborators': instance.collaborators,
       'createdAt': instance.createdAt.toIso8601String(),
       'selectedPlanIds': instance.selectedPlanIds,

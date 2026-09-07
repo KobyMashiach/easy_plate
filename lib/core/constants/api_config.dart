@@ -44,6 +44,25 @@ abstract class ApiConfig {
     defaultValue: 'gemini-3.5-flash-lite',
   );
 
+  /// How long the model may reason before it starts answering.
+  ///
+  /// Gemini 3 thinks by default, and on a recipe extraction that reasoning was
+  /// most of the wait — the work is transcription against a fixed schema, not a
+  /// problem to be solved, so it buys nothing. `low` is the floor for
+  /// [model]: `minimal` exists but the flash models that take it are a
+  /// different tier, and sending it to one that does not is a 400.
+  static const thinkingLevel = String.fromEnvironment(
+    'GEMINI_THINKING_LEVEL',
+    defaultValue: 'low',
+  );
+
+  /// [searchModel] is a lite model, which does accept `minimal` — and picking
+  /// five links needs no deliberation at all.
+  static const searchThinkingLevel = String.fromEnvironment(
+    'GEMINI_SEARCH_THINKING_LEVEL',
+    defaultValue: 'minimal',
+  );
+
   /// Behind the proxy there is nothing to configure in the app: the key lives
   /// on the server, and the caller's identity is the credential.
   static bool get isConfigured => configuredFor(aiBaseUrl, geminiApiKey);

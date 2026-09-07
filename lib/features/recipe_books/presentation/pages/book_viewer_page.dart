@@ -190,6 +190,7 @@ class _BookViewerBodyState extends State<_BookViewerBody> {
                             TableOfContentsPage(
                               bookTitle: book.title,
                               coverImageFileName: book.coverImageFileName,
+                              coverImageRemotePath: book.coverImageStoragePath,
                               onTapCover: () async {
                                 final bloc = context.read<BookViewerBloc>();
                                 final result = await showImageSourceSheet(

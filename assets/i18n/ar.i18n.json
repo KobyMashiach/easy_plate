@@ -460,5 +460,13 @@
     "groceries": "التسوّق",
     "settings": "الإعدادات",
     "community": "المجتمع"
+  },
+  "update": {
+    "forcedTitle": "التحديث مطلوب",
+    "forcedBody": "لم تعد هذه النسخة من EasyPlate مدعومة. حدِّث إلى $version للمتابعة.",
+    "optionalTitle": "صدرت نسخة جديدة",
+    "optionalBody": "النسخة $version من EasyPlate متوفرة في المتجر مع آخر التحسينات.",
+    "updateNow": "تحديث الآن",
+    "later": "تخطٍ"
   }
 }

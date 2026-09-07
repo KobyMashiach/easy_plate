@@ -65,6 +65,24 @@ class ImageStorageService {
     }
   }
 
+  /// Writes [bytes] into the image directory under [fileName].
+  ///
+  /// Fills the cache from a copy fetched over the network, so a photo that
+  /// arrived with a shared recipe — or came back with a restored one — becomes
+  /// indistinguishable from one taken on this phone: [pathFor] resolves it
+  /// from then on, offline included, and it is never downloaded twice.
+  Future<String?> storeBytes(String fileName, Uint8List bytes) async {
+    try {
+      await init();
+      final file = File('${_directory!.path}/$fileName');
+      await file.writeAsBytes(bytes, flush: true);
+      return file.path;
+    } catch (e) {
+      debugPrint('Image cache write error: $e');
+      return null;
+    }
+  }
+
   Future<void> delete(String? fileName) async {
     final path = pathFor(fileName);
     if (path == null) return;

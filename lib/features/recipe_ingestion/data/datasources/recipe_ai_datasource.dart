@@ -176,12 +176,17 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
     String systemInstruction = _systemPrompt,
     List<Map<String, dynamic>> tools = const [],
     String model = ApiConfig.model,
+    String thinkingLevel = ApiConfig.thinkingLevel,
   }) {
     return {
       'model': model,
       'system_instruction': systemInstruction,
       'input': input,
       if (tools.isNotEmpty) 'tools': tools,
+      // Left out entirely when blank, so an empty define hands the decision
+      // back to the model's own default rather than sending an invalid level.
+      if (thinkingLevel.isNotEmpty)
+        'generation_config': {'thinking_level': thinkingLevel},
       'response_format': {
         'type': 'text',
         'mime_type': 'application/json',
@@ -228,9 +233,16 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
         data = response?.data as Map<String, dynamic>?;
         break;
       } on AppException catch (e) {
+        // Only capacity errors come back here — a spent daily allowance is
+        // typed `quotaExceeded` and falls straight through, since waiting for
+        // it cannot help.
         if (e.type != AppErrorType.overloaded || attempt >= 2) rethrow;
         debugPrint('Gemini busy, retrying (attempt ${attempt + 1}): ${e.message}');
-        await Future.delayed(Duration(seconds: 2 << attempt));
+        // Sub-second, deliberately. The whole analysis runs under the bloc's
+        // timeout, and the old 2s/4s pair spent a fifth of that budget waiting
+        // rather than working — a retry that lands after the deadline is the
+        // same as no retry at all.
+        await Future.delayed(Duration(milliseconds: 600 << attempt));
       }
     }
     if (data == null) throw const AppException(AppErrorType.parsingFailed);
@@ -348,6 +360,7 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
           {'type': 'google_search'},
         ],
         model: ApiConfig.searchModel,
+        thinkingLevel: ApiConfig.searchThinkingLevel,
       ),
     );
 

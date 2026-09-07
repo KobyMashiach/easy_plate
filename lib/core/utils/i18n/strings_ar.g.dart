@@ -61,6 +61,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$unit$ar unit = _Translations$unit$ar._(_root);
 	@override late final _Translations$image$ar image = _Translations$image$ar._(_root);
 	@override late final _Translations$nav$ar nav = _Translations$nav$ar._(_root);
+	@override late final _Translations$update$ar update = _Translations$update$ar._(_root);
 }
 
 // Path: common
@@ -671,6 +672,21 @@ class _Translations$nav$ar extends Translations$nav$he {
 	@override String get community => 'المجتمع';
 }
 
+// Path: update
+class _Translations$update$ar extends Translations$update$he {
+	_Translations$update$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get forcedTitle => 'التحديث مطلوب';
+	@override String forcedBody({required Object version}) => 'لم تعد هذه النسخة من EasyPlate مدعومة. حدِّث إلى ${version} للمتابعة.';
+	@override String get optionalTitle => 'صدرت نسخة جديدة';
+	@override String optionalBody({required Object version}) => 'النسخة ${version} من EasyPlate متوفرة في المتجر مع آخر التحسينات.';
+	@override String get updateNow => 'تحديث الآن';
+	@override String get later => 'تخطٍ';
+}
+
 /// The flat map containing all translations for locale <ar>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1099,6 +1115,12 @@ extension on TranslationsAr {
 			'nav.groceries' => 'التسوّق',
 			'nav.settings' => 'الإعدادات',
 			'nav.community' => 'المجتمع',
+			'update.forcedTitle' => 'التحديث مطلوب',
+			'update.forcedBody' => ({required Object version}) => 'لم تعد هذه النسخة من EasyPlate مدعومة. حدِّث إلى ${version} للمتابعة.',
+			'update.optionalTitle' => 'صدرت نسخة جديدة',
+			'update.optionalBody' => ({required Object version}) => 'النسخة ${version} من EasyPlate متوفرة في المتجر مع آخر التحسينات.',
+			'update.updateNow' => 'تحديث الآن',
+			'update.later' => 'تخطٍ',
 			_ => null,
 		};
 	}

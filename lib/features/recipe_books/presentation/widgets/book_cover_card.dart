@@ -31,6 +31,7 @@ class BookCoverCard extends StatelessWidget {
       meta: t.books.recipesCount(count: book.recipeRefs.length),
       spineColor: _spineColors[book.id.hashCode.abs() % _spineColors.length],
       imageFileName: book.coverImageFileName,
+      imageRemotePath: book.coverImageStoragePath,
       onTap: onTap,
       onLongPress: onLongPress,
     );

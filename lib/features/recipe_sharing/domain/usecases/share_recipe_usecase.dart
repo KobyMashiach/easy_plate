@@ -69,6 +69,13 @@ class ShareRecipeUseCase {
     }
     if (targetUid == ownerUid) throw const ShareFailure(ShareFailure.self);
 
+    // Awaited, unlike the background upload a plain save does: the collab
+    // document is written from this recipe, and one published a moment after
+    // its photo was picked would carry no image path at all. The recipient's
+    // copy would then be blank for good — the upload finishing later does not
+    // go back and amend what was already sent.
+    recipe = await recipes.readyForSharing(recipe);
+
     final collabId = await sharing.ensureCollab(recipe, ownerUid: ownerUid);
     final owned = recipe.copyWith(collabId: collabId, collabRole: CollabRole.owner);
     if (recipe.collabId == null) await recipes.saveRecipe(owned);

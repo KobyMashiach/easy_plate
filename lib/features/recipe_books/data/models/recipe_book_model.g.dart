@@ -25,13 +25,14 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
           : (fields[3] as Map).cast<String, String>(),
       createdAt: fields[4] as DateTime,
       coverImageFileName: fields[5] as String?,
+      coverImageStoragePath: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeBookModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -43,7 +44,9 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
       ..writeByte(4)
       ..write(obj.createdAt)
       ..writeByte(5)
-      ..write(obj.coverImageFileName);
+      ..write(obj.coverImageFileName)
+      ..writeByte(6)
+      ..write(obj.coverImageStoragePath);
   }
 
   @override
@@ -75,14 +78,16 @@ _RecipeBookModel _$RecipeBookModelFromJson(Map<String, dynamic> json) =>
           const {},
       createdAt: DateTime.parse(json['createdAt'] as String),
       coverImageFileName: json['coverImageFileName'] as String?,
+      coverImageStoragePath: json['coverImageStoragePath'] as String?,
     );
 
 Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'recipeRefs': instance.recipeRefs,
+      'recipeRefs': instance.recipeRefs.map((e) => e.toJson()).toList(),
       'collaborators': instance.collaborators,
       'createdAt': instance.createdAt.toIso8601String(),
       'coverImageFileName': instance.coverImageFileName,
+      'coverImageStoragePath': instance.coverImageStoragePath,
     };

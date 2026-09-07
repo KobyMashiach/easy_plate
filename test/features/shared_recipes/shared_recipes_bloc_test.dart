@@ -67,6 +67,11 @@ class _FakeRecipesRepository implements RecipesRepository {
   @override
   Future<void> saveRecipe(RecipeEntity recipe) async => saved.add(recipe);
 
+  /// Nothing to upload in a test, which is also what the real repository
+  /// returns for a recipe with no photo.
+  @override
+  Future<RecipeEntity> readyForSharing(RecipeEntity recipe) async => recipe;
+
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -98,10 +103,10 @@ void main() {
 
   SharedRecipesBloc buildBloc() => SharedRecipesBloc(
         getSharedRecipesUseCase: GetSharedRecipesUseCase(shared),
-        shareRecipeUseCase: ShareRecipeUseCase(shared),
+        shareRecipeUseCase: ShareRecipeUseCase(shared, recipes),
         toggleLikeUseCase: ToggleSharedRecipeLikeUseCase(shared),
         unshareRecipeUseCase: UnshareRecipeUseCase(shared),
-        updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(shared),
+        updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(shared, recipes),
         saveRecipeUseCase: SaveRecipeUseCase(recipes),
         getRecipesUseCase: GetRecipesUseCase(recipes),
         recipesRepository: recipes,

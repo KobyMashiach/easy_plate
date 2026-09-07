@@ -61,6 +61,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$unit$fr unit = _Translations$unit$fr._(_root);
 	@override late final _Translations$image$fr image = _Translations$image$fr._(_root);
 	@override late final _Translations$nav$fr nav = _Translations$nav$fr._(_root);
+	@override late final _Translations$update$fr update = _Translations$update$fr._(_root);
 }
 
 // Path: common
@@ -671,6 +672,21 @@ class _Translations$nav$fr extends Translations$nav$he {
 	@override String get community => 'Communauté';
 }
 
+// Path: update
+class _Translations$update$fr extends Translations$update$he {
+	_Translations$update$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get forcedTitle => 'Mise à jour requise';
+	@override String forcedBody({required Object version}) => 'Cette version d\'EasyPlate n\'est plus prise en charge. Installez la version ${version} pour continuer.';
+	@override String get optionalTitle => 'Une nouvelle version est disponible';
+	@override String optionalBody({required Object version}) => 'EasyPlate ${version} est dans le store, avec les dernières améliorations.';
+	@override String get updateNow => 'Mettre à jour';
+	@override String get later => 'Ignorer';
+}
+
 /// The flat map containing all translations for locale <fr>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1099,6 +1115,12 @@ extension on TranslationsFr {
 			'nav.groceries' => 'Courses',
 			'nav.settings' => 'Réglages',
 			'nav.community' => 'Communauté',
+			'update.forcedTitle' => 'Mise à jour requise',
+			'update.forcedBody' => ({required Object version}) => 'Cette version d\'EasyPlate n\'est plus prise en charge. Installez la version ${version} pour continuer.',
+			'update.optionalTitle' => 'Une nouvelle version est disponible',
+			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} est dans le store, avec les dernières améliorations.',
+			'update.updateNow' => 'Mettre à jour',
+			'update.later' => 'Ignorer',
 			_ => null,
 		};
 	}

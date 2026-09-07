@@ -86,7 +86,7 @@ Map<String, dynamic> _$GroceryItemModelToJson(_GroceryItemModel instance) =>
       'id': instance.id,
       'name': instance.name,
       'unit': _$MeasurementUnitEnumMap[instance.unit]!,
-      'sources': instance.sources,
+      'sources': instance.sources.map((e) => e.toJson()).toList(),
       'isChecked': instance.isChecked,
       'category': instance.category,
       'isAdHoc': instance.isAdHoc,

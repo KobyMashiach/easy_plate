@@ -460,5 +460,13 @@
     "groceries": "Courses",
     "settings": "Réglages",
     "community": "Communauté"
+  },
+  "update": {
+    "forcedTitle": "Mise à jour requise",
+    "forcedBody": "Cette version d'EasyPlate n'est plus prise en charge. Installez la version $version pour continuer.",
+    "optionalTitle": "Une nouvelle version est disponible",
+    "optionalBody": "EasyPlate $version est dans le store, avec les dernières améliorations.",
+    "updateNow": "Mettre à jour",
+    "later": "Ignorer"
   }
 }

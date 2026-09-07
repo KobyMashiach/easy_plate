@@ -460,5 +460,13 @@
     "groceries": "Покупки",
     "settings": "Настройки",
     "community": "Сообщество"
+  },
+  "update": {
+    "forcedTitle": "Требуется обновление",
+    "forcedBody": "Эта версия EasyPlate больше не поддерживается. Обновитесь до версии $version, чтобы продолжить.",
+    "optionalTitle": "Вышла новая версия",
+    "optionalBody": "EasyPlate $version уже в магазине — с последними улучшениями.",
+    "updateNow": "Обновить",
+    "later": "Пропустить"
   }
 }

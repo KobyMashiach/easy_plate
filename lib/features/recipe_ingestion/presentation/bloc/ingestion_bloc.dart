@@ -87,10 +87,15 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
 
   /// How long an analysis may run before the raw text is offered instead.
   /// Injectable so a test does not have to wait it out.
+  ///
+  /// A call has to cross the proxy, wait out a model that is thinking, and come
+  /// back — and it may have retried a capacity error on the way. At 30s a
+  /// perfectly good answer arriving a second late was thrown away and reported
+  /// as a timeout, which is what made the feature feel broken rather than slow.
   final Duration analysisTimeout;
 
   IngestionBloc({
-    this.analysisTimeout = const Duration(seconds: 30),
+    this.analysisTimeout = const Duration(seconds: 45),
     required this.parseRawTextUseCase,
     required this.searchWebRecipesUseCase,
     required this.parseRecipeFromUrlUseCase,

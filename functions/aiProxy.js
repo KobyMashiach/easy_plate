@@ -6,11 +6,21 @@
 // same request body, same response shape — so nothing in the ingestion pipeline
 // changed. Only the base URL and the auth header did.
 const { onRequest } = require("firebase-functions/v2/https");
-const { defineSecret } = require("firebase-functions/params");
+const { defineSecret, defineInt } = require("firebase-functions/params");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
+
+// The proxy's sizing, owned by Remote Config rather than by this file. These
+// three are deploy-time properties of the function, so they cannot be read per
+// request; scripts/syncRuntimeOptions.js copies the console's `gemini_*`
+// parameters into .env.<project> before each deploy and these params resolve
+// from there. The defaults below are what a deploy falls back to when that
+// sync could not reach the console.
+const minInstances = defineInt("GEMINI_MIN_INSTANCES", { default: 1 });
+const maxInstances = defineInt("GEMINI_MAX_INSTANCES", { default: 10 });
+const timeoutSeconds = defineInt("GEMINI_TIMEOUT_SECONDS", { default: 120 });
 
 const GOOGLE_ORIGIN = "https://generativelanguage.googleapis.com";
 
@@ -100,12 +110,24 @@ async function refundQuotaSlot(uid) {
 exports.aiProxy = onRequest(
   {
     secrets: [geminiApiKey],
-    // The app caps an analysis at 30s and gives the socket 120s. Matching the
-    // socket keeps a slow model from being cut off here first.
-    timeoutSeconds: 120,
+    // Close to the users. Every call from an Israeli phone used to cross to
+    // Iowa and back before Gemini was even reached. Note this is only the HTTP
+    // proxy — pushOnNotification is a Firestore trigger and has to stay in the
+    // database's own region.
+    region: "europe-west1",
+    // The app caps an analysis at 45s and gives the socket 120s, so the console
+    // value wants to stay at or above that or a slow model gets cut off here
+    // first.
+    timeoutSeconds,
     memory: "256MiB",
+    // Warm instances. A cold start plus the secret mount costs several seconds
+    // on the one request the user is actually watching, and with few users the
+    // function was idle between almost every call — so this is normally 1, and
+    // billed as idle time. Set gemini_minInstances to 0 in the console (and
+    // redeploy) to stop that charge and accept the cold starts again.
+    minInstances,
     // Bounded so a burst cannot fan out into an unbounded Gemini bill.
-    maxInstances: 10,
+    maxInstances,
     cors: false,
   },
   async (req, res) => {

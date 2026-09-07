@@ -42,6 +42,7 @@ class RecipeCard extends StatelessWidget {
             height: 88,
             child: ClayImage(
               fileName: recipe.imageFileName,
+              remotePath: recipe.imageStoragePath,
               fallbackIconSize: 40,
             ),
           ),

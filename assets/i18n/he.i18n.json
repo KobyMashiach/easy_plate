@@ -460,5 +460,13 @@
     "groceries": "קניות",
     "settings": "הגדרות",
     "community": "קהילה"
+  },
+  "update": {
+    "forcedTitle": "נדרש עדכון",
+    "forcedBody": "הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה $version כדי להמשיך.",
+    "optionalTitle": "יש גרסה חדשה",
+    "optionalBody": "גרסה $version של EasyPlate כבר בחנות, עם השיפורים האחרונים.",
+    "updateNow": "עדכון עכשיו",
+    "later": "דלג"
   }
 }

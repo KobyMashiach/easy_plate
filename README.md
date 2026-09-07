@@ -176,6 +176,100 @@ The recipe list is driven by `watchRecipes()` off the box itself, so a recipe
 saved from ingestion, the editor, or the community shows up without the list
 having to notice it was navigated back to.
 
+### The cloud mirror
+
+A box is a file in the app's container: it dies with an uninstall and never
+existed on a second device. Scoping alone therefore gave the right answer on one
+phone and an empty app on the next — a returning account found no recipes, no
+library, and was sent back through onboarding to pick a shopping day it had
+already chosen.
+
+So every scoped box is mirrored into the account's own Firestore subtree
+(`lib/core/sync/`):
+
+| Box | Document path |
+| --- | --- |
+| `userPreferencesBox` | `users/{uid}/preferences/current` |
+| `recipesBox` | `users/{uid}/recipes/{id}` |
+| `recipeBooksBox` | `users/{uid}/books/{id}` |
+| `mealPlansBox` | `users/{uid}/meal_plans/{id}` |
+| `groceryListsBox` | `users/{uid}/grocery_lists/{id}` |
+
+`UserCloudCollection<T>` is one generic mirror per box; `CloudSyncService` holds
+the five instances and is the singleton both the repositories and the auth gate
+talk to. The repository writes local first and then pushes, deliberately
+*without* awaiting: offline, Firestore applies the write to its own queue at
+once but does not complete the future until a server acknowledges it, so
+awaiting would hang saving a recipe until the network came back.
+
+`AuthSessionService` hydrates on sign-in, after `UserScope.switchTo` and before
+preferences are read — the stage the gate picks depends on `onboardingComplete`,
+which is one of the things being restored. It is skipped for an account already
+hydrated this session, and capped at 12 seconds so a hanging network costs a
+pause rather than the app.
+
+The merge is cloud-wins, then push-back: remote documents overwrite the box, and
+anything the box holds that the cloud has never seen goes up. The push-back half
+is what carries an account whose data predates the mirror, and anything saved
+while the network was down. Two consequences to know:
+
+- **There are no tombstones.** A record deleted on another device while this one
+  was offline is restored rather than removed. Deletes propagate immediately
+  when online, which is the case that matters.
+- Photos travel separately — see [Photos](#photos) below. The mirror carries
+  only fields; a picture is a file.
+
+Rules-wise the subtree is owner-only, and it needs a rule of its own: Firestore
+rules do not cascade into subcollections, so `match /users/{uid}` alone would not
+have reached any of it.
+
+### Photos
+
+An entity carries a photo's *file name*, and that name means something only
+inside this device's image directory. So the picture went nowhere: not to a
+second device, not to the account a recipe was shared with, not to the community
+feed. Three bug reports, one missing piece.
+
+`RecipeImageStore` (`lib/core/sync/`) is that piece. On save the file is
+uploaded to `recipe_images/{uid}/{fileName}` and the recipe records the
+**Storage path** — not a download URL. A download URL carries an access token
+that makes the object readable by anyone holding the link whatever the rules
+say; a path is resolved through the SDK, so `storage.rules` actually decides.
+
+`ClayImage` takes that path as `remotePath`. When the file is not on this
+device it is fetched **once**, into the same local directory under the same file
+name, and read off the disk on every build after that — so a shared or restored
+recipe costs one download, not one per rebuild, and works offline afterwards.
+Concurrent asks for the same photo share one download.
+
+The paths that publish a recipe to someone else — sharing, accepting an invite,
+editing a shared recipe, posting to the community, updating a post — go through
+`RecipesRepository.readyForSharing`, which **awaits** the upload. A plain save
+deliberately does not: uploading in the background keeps the editor from waiting
+on a picture, and a failed upload leaves `imageStoragePath` null so the next save
+retries. Sharing cannot afford that, because a recipe published seconds after
+its photo was picked would be sent with no path at all, and the copy the other
+side keeps would stay blank for good.
+
+Two rules that are easy to get wrong, both pinned in
+`test/core/sync/recipe_photo_travel_test.dart`:
+
+- **A new photo clears `imageStoragePath`.** `copyWith` does this whenever the
+  file name changes. Keeping the old path would leave every other copy of the
+  recipe showing the picture that was just replaced.
+- **A saved community recipe keeps the *author's* path**, rather than
+  re-uploading the same bytes once per saver. So deleting that copy must not
+  delete the object — `RecipeImageStore.ownsPath` is the guard, and it is why
+  deletion is namespaced by uid at all.
+
+Nested models are written as plain maps because `build.yaml` sets
+`explicit_to_json: true` for `json_serializable`. Without it the generated
+`toJson` hands nested freezed objects over untouched — fine for `jsonEncode`,
+rejected by Firestore, which takes only primitives, lists and maps.
+`test/core/sync/cloud_round_trip_test.dart` pins both halves: that every model
+survives `fromJson(toJson(x))`, and that the encoded map contains nothing
+Firestore cannot store.
+
 ## Sharing a recipe with another account
 
 Long-press a recipe in My Recipes (owner only) to share it by the other
@@ -349,7 +443,7 @@ The deploy prints the function URL. Put it in `dart_defines/dev.json` and drop t
 key:
 
 ```json
-{ "AI_BASE_URL": "https://us-central1-easy-plate.cloudfunctions.net/aiProxy" }
+{ "AI_BASE_URL": "https://europe-west1-easy-plate.cloudfunctions.net/aiProxy" }
 ```
 
 Rotating the key later is `firebase functions:secrets:set GEMINI_API_KEY` followed
@@ -395,7 +489,7 @@ amount, the same "the source did not say" the model reports.
 
 ### When the analysis is slow
 
-An analysis is capped at 30 seconds (`IngestionBloc.analysisTimeout`). Past
+An analysis is capped at 45 seconds (`IngestionBloc.analysisTimeout`). Past
 that, or on any failure, the text it was working from is offered back instead
 of an error — the pasted text, or for a link the page text fetched without the
 model — with three ways on: try again, edit by hand in the structured editor,
@@ -407,6 +501,32 @@ and origin. Structuring it by hand in the editor clears the flag too.
 
 A fifth ingestion channel, **write by hand**, opens the same editor on a blank
 recipe — no model, no waiting.
+
+What the budget is spent on, and what was done about each:
+
+- **The model thinking.** Gemini 3 reasons before answering by default, and on an
+  extraction that was most of the wait for nothing — the job is transcription
+  against a fixed schema, not a problem to solve. `ApiConfig.thinkingLevel` sends
+  `generation_config.thinking_level`, `low` for extraction and refine and
+  `minimal` for search. `low` is the floor for `gemini-3.8-flash`; `minimal` is
+  only accepted by the lite tier, and sending it to a model that does not take it
+  is a 400. Override with `GEMINI_THINKING_LEVEL` / `GEMINI_SEARCH_THINKING_LEVEL`,
+  or set either to empty to send no level at all.
+- **Cold starts.** The proxy sat idle between calls, so a Node boot and a secret
+  mount were charged to the one request the user was watching. `minInstances: 1`
+  keeps an instance warm; it is billed as idle time, and setting it back to `0`
+  is the way to stop that charge.
+- **Distance.** The proxy runs in `europe-west1` rather than `us-central1`, so a
+  call from an Israeli phone no longer crosses the Atlantic twice. Only the HTTP
+  proxy moved — `pushOnNotification` is a Firestore trigger and stays in the
+  database's region.
+- **Retries.** A capacity error is retried twice, now at 0.6s and 1.2s rather
+  than 2s and 4s: the retry runs inside the same 45-second budget, and one that
+  lands after the deadline is the same as no retry at all. A *spent daily quota*
+  is no longer retried at all — it arrives as a 429 like a capacity error, but
+  `HttpCalls.errorTypeFor` reads the proxy's `quota` object and types it
+  `AppErrorType.quotaExceeded`, because waiting cannot change the answer until
+  the quota resets.
 
 ## Editing a recipe
 
@@ -422,6 +542,49 @@ bar runs the same pass in place without leaving the editor. The model only ever
 returns free text — amounts, units and the times the user set are merged back in
 locally, and a reply with a different number of items is discarded in favour of
 what the user typed.
+
+## Releasing to Google Play
+
+Play rejects anything signed with the debug key, so `android/app/build.gradle.kts`
+reads `android/key.properties` and signs `release` with it. Both that file and
+`*.jks` are excluded by `android/.gitignore` — nothing about the key is in this
+repo, and a machine without it can still build debug. A **release** build with no
+credentials fails with a message rather than quietly producing an unusable
+artefact.
+
+```bash
+flutter build appbundle --release --dart-define-from-file=dart_defines/dev.json
+```
+
+The store wants the App Bundle, not an APK. `debugSymbolLevel = "SYMBOL_TABLE"`
+ships native symbols so Crashlytics can symbolicate; `FULL` also works but tripled
+the bundle, because it carries complete DWARF debug info for the whole engine.
+
+To check what actually signed a bundle:
+
+```bash
+unzip -p build/app/outputs/bundle/release/app-release.aab META-INF/UPLOAD.RSA | keytool -printcert
+```
+
+`CN=Android Debug` there is the rejection above; the upload key is anything else.
+
+### The SHA-1 trap
+
+`google-services.json` carries **one** certificate hash, and until the release key
+was added it was the debug one. Google Sign-In matches on that hash, so a store
+build fails with `ApiException: 10` for every user while everything else keeps
+working — a failure that never appears in development.
+
+Three fingerprints have to be registered in Firebase → Project settings → your
+Android app, after which `google-services.json` must be re-downloaded:
+
+1. the debug key, so development keeps working,
+2. the **upload** key (`keytool -printcert` above),
+3. the **app signing** key, which Play generates and shows under Release →
+   Setup → App signing only *after* the first upload.
+
+Missing the third is the usual reason sign-in works in internal testing and
+breaks in production.
 
 ## Testing
 

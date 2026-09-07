@@ -51,6 +51,11 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
         ],
         'steps': recipe.steps,
         'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
+        // The photo travels as its Storage path plus the file name to cache it
+        // under. Before this the picture was simply left behind, and the other
+        // account's copy of a shared recipe was permanently blank.
+        'imageFileName': recipe.imageFileName,
+        'imageStoragePath': recipe.imageStoragePath,
       };
 
   RecipeEntity _recipeFrom(String id, Map<String, dynamic> data, DateTime createdAt) {
@@ -76,6 +81,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
           .map((n) => DietaryPreference.values.where((d) => d.name == n).firstOrNull)
           .nonNulls
           .toList(),
+      imageFileName: data['imageFileName'] as String?,
+      imageStoragePath: data['imageStoragePath'] as String?,
       createdAt: createdAt,
     );
   }

@@ -15,6 +15,9 @@ import 'book_page_surface.dart';
 class TableOfContentsPage extends StatelessWidget {
   final String bookTitle;
   final String? coverImageFileName;
+
+  /// Storage path of the same cover, for a book restored on another device.
+  final String? coverImageRemotePath;
   final List<RecipeEntity> recipes;
   final ValueChanged<int> onSelectRecipe;
 
@@ -27,6 +30,7 @@ class TableOfContentsPage extends StatelessWidget {
     required this.recipes,
     required this.onSelectRecipe,
     this.coverImageFileName,
+    this.coverImageRemotePath,
     this.onTapCover,
   });
 
@@ -47,6 +51,7 @@ class TableOfContentsPage extends StatelessWidget {
                   Positioned.fill(
                     child: ClayImage(
                       fileName: coverImageFileName,
+                      remotePath: coverImageRemotePath,
                       radius: AppRadius.md,
                       fallbackIconSize: 56,
                     ),

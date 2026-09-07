@@ -460,5 +460,13 @@
     "groceries": "Groceries",
     "settings": "Settings",
     "community": "Community"
+  },
+  "update": {
+    "forcedTitle": "Update required",
+    "forcedBody": "This version of EasyPlate is no longer supported. Update to $version to continue.",
+    "optionalTitle": "A new version is out",
+    "optionalBody": "EasyPlate $version is in the store, with the latest improvements.",
+    "updateNow": "Update now",
+    "later": "Skip"
   }
 }

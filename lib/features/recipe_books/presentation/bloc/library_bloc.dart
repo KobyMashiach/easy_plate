@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
+import '../../../../core/sync/recipe_image_store.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../../domain/usecases/delete_book_usecase.dart';
 import '../../domain/usecases/get_books_usecase.dart';
@@ -107,6 +109,9 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       final previous = book.coverImageFileName;
       if (previous != null && previous != event.fileName) {
         await ImageStorageService().delete(previous);
+        unawaited(
+          RecipeImageStore().remove(book.coverImageStoragePath, uid: UserScope().uid),
+        );
       }
       await saveBookUseCase(
         book.copyWith(

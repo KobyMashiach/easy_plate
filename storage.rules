@@ -15,6 +15,23 @@ service firebase.storage {
                    && request.resource.contentType.matches('image/.*');
     }
 
+    // Recipe and book-cover photos, namespaced by the account that took them —
+    // which is what stops one account from overwriting another's picture, and
+    // is the same shape the recipe stores as its `imageStoragePath`.
+    //
+    // Readable by any signed-in user because a photo travels with the recipe:
+    // to whoever it was shared with, and to the whole community feed when it is
+    // published. Narrowing it to the recipe's members would mean a
+    // `firestore.get()` on every image load — a billed read per thumbnail — for
+    // a photo the reader was shown in the app anyway.
+    match /recipe_images/{uid}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

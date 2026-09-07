@@ -34,13 +34,14 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       pendingAnalysis: fields[12] == null ? false : fields[12] as bool,
       collabId: fields[13] as String?,
       collabRole: fields[14] as String?,
+      imageStoragePath: fields[15] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeModel obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -70,7 +71,9 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       ..writeByte(13)
       ..write(obj.collabId)
       ..writeByte(14)
-      ..write(obj.collabRole);
+      ..write(obj.collabRole)
+      ..writeByte(15)
+      ..write(obj.imageStoragePath);
   }
 
   @override
@@ -110,6 +113,7 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   pendingAnalysis: json['pendingAnalysis'] as bool? ?? false,
   collabId: json['collabId'] as String?,
   collabRole: json['collabRole'] as String?,
+  imageStoragePath: json['imageStoragePath'] as String?,
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -118,7 +122,7 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'title': instance.title,
       'prepTimeMinutes': instance.prepTimeMinutes,
       'cookTimeMinutes': instance.cookTimeMinutes,
-      'ingredients': instance.ingredients,
+      'ingredients': instance.ingredients.map((e) => e.toJson()).toList(),
       'steps': instance.steps,
       'dietaryTags': instance.dietaryTags
           .map((e) => _$DietaryPreferenceEnumMap[e]!)
@@ -131,6 +135,7 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'pendingAnalysis': instance.pendingAnalysis,
       'collabId': instance.collabId,
       'collabRole': instance.collabRole,
+      'imageStoragePath': instance.imageStoragePath,
     };
 
 const _$DietaryPreferenceEnumMap = {

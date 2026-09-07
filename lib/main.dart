@@ -8,6 +8,7 @@ import 'core/hive/adapters_controller.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'core/logger/memory_logger.dart';
 import 'core/main_imports/repository_providers.dart';
+import 'core/services/app_update_service.dart';
 import 'core/services/auth_session_service.dart';
 import 'core/services/connectivity_service.dart';
 import 'core/services/device_locale_store.dart';
@@ -19,6 +20,7 @@ import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
 import 'core/utils/routing/app_router.dart';
 import 'core/utils/routing/routing.dart';
+import 'core/widgets/update_gate.dart';
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 
 Future<void> main() async {
@@ -34,6 +36,11 @@ Future<void> main() async {
   // Caches the images directory so ClayImage can resolve paths synchronously
   // while building.
   await ImageStorageService().init();
+
+  // After Hive, which holds the skipped-version record, and after Firebase, so
+  // the first verdict already sees whatever Remote Config had activated on the
+  // previous run. A later fetch re-runs it on its own.
+  await AppUpdateService().init();
 
   // Preferences are stored per account, so they cannot be read until auth
   // resolves. Until then the gate shows the splash and the login in whatever
@@ -63,6 +70,11 @@ Future<void> main() async {
               profiles: context.read(),
               preferences: context.read(),
               notifications: context.read(),
+              // Both only for the shared-recipe refresh below; the session
+              // needs them because it is what knows when an account becomes
+              // active, and on which uid.
+              sharing: context.read(),
+              recipes: context.read(),
               onPreferencesLoaded: _applyPreferences,
             );
             return const EasyPlateApp();
@@ -118,6 +130,9 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
     // stale flags for as long as the app stays alive.
     if (state == AppLifecycleState.resumed) {
       FirebaseService().refreshRemoteConfig();
+      // Same reasoning, for the recipes other accounts may have edited while
+      // this app was in the background.
+      AuthSessionService().refreshSharedRecipes();
     }
   }
 
@@ -134,6 +149,9 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
       locale: TranslationProvider.of(context).flutterLocale,
       supportedLocales: AppLocaleUtils.supportedLocales,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      // Above the router, so a forced update outlives whatever route the user
+      // is on — including one a notification tap pushed.
+      builder: (context, child) => UpdateGate(child: child ?? const SizedBox.shrink()),
     );
   }
 }

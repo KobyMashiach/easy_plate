@@ -75,5 +75,5 @@ Map<String, dynamic> _$MealItemModelToJson(_MealItemModel instance) =>
       'id': instance.id,
       'recipeId': instance.recipeId,
       'freeText': instance.freeText,
-      'ingredients': instance.ingredients,
+      'ingredients': instance.ingredients.map((e) => e.toJson()).toList(),
     };

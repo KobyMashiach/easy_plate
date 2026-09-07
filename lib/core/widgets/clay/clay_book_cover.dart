@@ -15,6 +15,9 @@ class ClayBookCover extends StatefulWidget {
   final Color spineColor;
   final IconData icon;
   final String? imageFileName;
+
+  /// Storage path of the same cover, for a book restored on another device.
+  final String? imageRemotePath;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
@@ -27,6 +30,7 @@ class ClayBookCover extends StatefulWidget {
     this.spineColor = AppColors.primary,
     this.icon = Icons.menu_book_rounded,
     this.imageFileName,
+    this.imageRemotePath,
     this.onLongPress,
   });
 
@@ -74,6 +78,7 @@ class _ClayBookCoverState extends State<ClayBookCover> {
                       Expanded(
                         child: ClayImage(
                           fileName: widget.imageFileName,
+                          remotePath: widget.imageRemotePath,
                           fallbackIcon: widget.icon,
                           fallbackIconSize: 56,
                           radius: 0,

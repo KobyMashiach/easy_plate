@@ -61,6 +61,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$unit$en unit = _Translations$unit$en._(_root);
 	@override late final _Translations$image$en image = _Translations$image$en._(_root);
 	@override late final _Translations$nav$en nav = _Translations$nav$en._(_root);
+	@override late final _Translations$update$en update = _Translations$update$en._(_root);
 }
 
 // Path: common
@@ -671,6 +672,21 @@ class _Translations$nav$en extends Translations$nav$he {
 	@override String get community => 'Community';
 }
 
+// Path: update
+class _Translations$update$en extends Translations$update$he {
+	_Translations$update$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get forcedTitle => 'Update required';
+	@override String forcedBody({required Object version}) => 'This version of EasyPlate is no longer supported. Update to ${version} to continue.';
+	@override String get optionalTitle => 'A new version is out';
+	@override String optionalBody({required Object version}) => 'EasyPlate ${version} is in the store, with the latest improvements.';
+	@override String get updateNow => 'Update now';
+	@override String get later => 'Skip';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1099,6 +1115,12 @@ extension on TranslationsEn {
 			'nav.groceries' => 'Groceries',
 			'nav.settings' => 'Settings',
 			'nav.community' => 'Community',
+			'update.forcedTitle' => 'Update required',
+			'update.forcedBody' => ({required Object version}) => 'This version of EasyPlate is no longer supported. Update to ${version} to continue.',
+			'update.optionalTitle' => 'A new version is out',
+			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} is in the store, with the latest improvements.',
+			'update.updateNow' => 'Update now',
+			'update.later' => 'Skip',
 			_ => null,
 		};
 	}

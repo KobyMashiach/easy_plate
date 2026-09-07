@@ -32,6 +32,9 @@ sealed class RecipeModel with _$RecipeModel {
     @HiveField(13) String? collabId,
     // Enum name as a string, like `sourceChannel`, so no adapter is needed.
     @HiveField(14) String? collabRole,
+    // Appended like the fields above it: a recipe stored before photos could
+    // travel decodes as null, which correctly reads as "never uploaded".
+    @HiveField(15) String? imageStoragePath,
   }) = _RecipeModel;
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
@@ -51,6 +54,7 @@ extension RecipeModelMapper on RecipeModel {
             : RecipeIngestionChannel.values.firstWhere((c) => c.name == sourceChannel),
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,
+        imageStoragePath: imageStoragePath,
         savedFromSharedId: savedFromSharedId,
         pendingAnalysis: pendingAnalysis,
         collabId: collabId,
@@ -73,6 +77,7 @@ extension RecipeEntityMapper on RecipeEntity {
         sourceChannel: sourceChannel?.name,
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,
+        imageStoragePath: imageStoragePath,
         savedFromSharedId: savedFromSharedId,
         pendingAnalysis: pendingAnalysis,
         collabId: collabId,

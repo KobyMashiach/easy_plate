@@ -1,6 +1,14 @@
 targets:
   $default:
     builders:
+      # Nested models are serialised by calling their own `toJson`, rather than
+      # being handed over as objects for `jsonEncode` to deal with later. The
+      # cloud mirror writes these maps straight to Firestore, which takes only
+      # primitives, lists and maps — without this, a recipe's ingredients
+      # reached it as RecipeIngredientModel instances and the write was refused.
+      json_serializable:
+        options:
+          explicit_to_json: true
       slang_build_runner:
         options:
           base_locale: he

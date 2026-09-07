@@ -65,6 +65,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$unit$he unit = Translations$unit$he.internal(_root);
 	late final Translations$image$he image = Translations$image$he.internal(_root);
 	late final Translations$nav$he nav = Translations$nav$he.internal(_root);
+	late final Translations$update$he update = Translations$update$he.internal(_root);
 }
 
 // Path: common
@@ -1513,6 +1514,33 @@ class Translations$nav$he {
 	String get community => 'קהילה';
 }
 
+// Path: update
+class Translations$update$he {
+	Translations$update$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'נדרש עדכון'
+	String get forcedTitle => 'נדרש עדכון';
+
+	/// he: 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה $version כדי להמשיך.'
+	String forcedBody({required Object version}) => 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה ${version} כדי להמשיך.';
+
+	/// he: 'יש גרסה חדשה'
+	String get optionalTitle => 'יש גרסה חדשה';
+
+	/// he: 'גרסה $version של EasyPlate כבר בחנות, עם השיפורים האחרונים.'
+	String optionalBody({required Object version}) => 'גרסה ${version} של EasyPlate כבר בחנות, עם השיפורים האחרונים.';
+
+	/// he: 'עדכון עכשיו'
+	String get updateNow => 'עדכון עכשיו';
+
+	/// he: 'דלג'
+	String get later => 'דלג';
+}
+
 /// The flat map containing all translations for locale <he>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1941,6 +1969,12 @@ extension on Translations {
 			'nav.groceries' => 'קניות',
 			'nav.settings' => 'הגדרות',
 			'nav.community' => 'קהילה',
+			'update.forcedTitle' => 'נדרש עדכון',
+			'update.forcedBody' => ({required Object version}) => 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה ${version} כדי להמשיך.',
+			'update.optionalTitle' => 'יש גרסה חדשה',
+			'update.optionalBody' => ({required Object version}) => 'גרסה ${version} של EasyPlate כבר בחנות, עם השיפורים האחרונים.',
+			'update.updateNow' => 'עדכון עכשיו',
+			'update.later' => 'דלג',
 			_ => null,
 		};
 	}

@@ -25,6 +25,11 @@ class RespondToShareInviteUseCase {
       ingredients: collab.recipe.ingredients,
       steps: collab.recipe.steps,
       dietaryTags: collab.recipe.dietaryTags,
+      // The owner's photo comes across as a Storage path; the file lands on
+      // this device the first time the recipe is drawn, and is read from disk
+      // after that.
+      imageFileName: collab.recipe.imageFileName,
+      imageStoragePath: collab.recipe.imageStoragePath,
       collabId: collab.id,
       collabRole: invite.role,
       createdAt: DateTime.now(),

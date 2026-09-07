@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
@@ -8,6 +9,7 @@ import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repos
 import 'package:easy_plate/features/recipe_sharing/domain/entities/collab_recipe_entity.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/entities/share_invite_entity.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
+import 'package:easy_plate/features/recipe_sharing/domain/usecases/refresh_collab_recipes_usecase.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/usecases/respond_to_share_invite_usecase.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/usecases/save_collab_recipe_usecase.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/usecases/share_recipe_usecase.dart';
@@ -21,6 +23,15 @@ class _FakeSharing implements RecipeSharingRepository {
   final log = <String>[];
   CollabRecipeEntity? collab;
   String createdId = 'collab-new';
+
+  /// What the two collab queries answer with.
+  List<CollabRecipeEntity> owned = const [];
+  List<CollabRecipeEntity> sharedWith = const [];
+
+  /// A write that never completes, standing in for Firestore queuing one
+  /// offline; and one that is refused outright.
+  bool stallWrite = false;
+  Object? writeError;
 
   @override
   Future<String> ensureCollab(RecipeEntity recipe, {required String ownerUid}) async {
@@ -55,25 +66,48 @@ class _FakeSharing implements RecipeSharingRepository {
   }
 
   @override
-  Future<void> writeCollab(String collabId, RecipeEntity recipe, {required String byUid}) async =>
-      log.add('write:$collabId:$byUid');
+  Future<void> writeCollab(String collabId, RecipeEntity recipe, {required String byUid}) {
+    log.add('write:$collabId:$byUid');
+    if (writeError case final error?) return Future.error(error);
+    if (stallWrite) return Completer<void>().future;
+    return Future.value();
+  }
 
   @override
   Future<List<ShareInviteEntity>> incomingInvites(String uid) async => const [];
   @override
   Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid) async => const [];
   @override
-  Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid) async => const [];
+  Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid) async {
+    log.add('owned:$uid');
+    return owned;
+  }
+
   @override
-  Future<List<CollabRecipeEntity>> collabsSharedWith(String uid) async => const [];
+  Future<List<CollabRecipeEntity>> collabsSharedWith(String uid) async {
+    log.add('sharedWith:$uid');
+    return sharedWith;
+  }
   @override
   Future<void> removeMember(String collabId, String memberUid) async {}
 }
 
 class _FakeRecipes implements RecipesRepository {
   final saved = <RecipeEntity>[];
+
+  /// What the local box holds before the use case runs.
+  List<RecipeEntity> stored = const [];
+
+  @override
+  Future<List<RecipeEntity>> getRecipes() async => stored;
+
   @override
   Future<void> saveRecipe(RecipeEntity recipe) async => saved.add(recipe);
+  /// Nothing to upload in a test, which is also what the real repository
+  /// returns for a recipe with no photo.
+  @override
+  Future<RecipeEntity> readyForSharing(RecipeEntity recipe) async => recipe;
+
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -122,6 +156,23 @@ CollabRecipeEntity remote({
         title: title,
         ingredients: const [RecipeIngredientEntity(name: 'פלפל', amount: 1)],
         steps: const ['קוצצים', 'מטגנים'],
+        createdAt: DateTime(2026, 1, 1),
+      ),
+      updatedAt: DateTime(2026, 2, 1),
+    );
+
+/// A shared document whose content already equals [localRecipe]'s, so a test
+/// can change exactly one thing and see whether that alone is picked up.
+CollabRecipeEntity remoteMatchingLocal({Map<String, CollabRole> members = const {}}) =>
+    CollabRecipeEntity(
+      id: 'collab-1',
+      ownerUid: 'owner',
+      members: members,
+      recipe: RecipeEntity(
+        id: 'collab-1',
+        title: 'שקשוקה',
+        ingredients: const [RecipeIngredientEntity(name: 'ביצים', amount: 4)],
+        steps: const ['מטגנים'],
         createdAt: DateTime(2026, 1, 1),
       ),
       updatedAt: DateTime(2026, 2, 1),
@@ -329,6 +380,98 @@ void main() {
       );
       expect(sharing.log, isEmpty);
       expect(recipes.saved, isEmpty);
+    });
+
+    test('a write that is only queued still reaches the local cache', () async {
+      // Offline, Firestore takes the write but its future waits for a server
+      // ack. Blocking the editor on that would hang it for the whole outage.
+      sharing.stallWrite = true;
+      final quick = SaveCollabRecipeUseCase(
+        sharing: sharing,
+        recipes: recipes,
+        remoteWriteTimeout: const Duration(milliseconds: 10),
+      );
+
+      await quick(localRecipe(collabId: 'collab-1', role: CollabRole.editor), byUid: 'me');
+      expect(recipes.saved, hasLength(1));
+    });
+
+    test('a refused write is not cached', () async {
+      // A revoked member, or the rules saying no: the local copy must not be
+      // left holding an edit the shared document rejected.
+      sharing.writeError = StateError('permission-denied');
+      await expectLater(
+        useCase(localRecipe(collabId: 'collab-1', role: CollabRole.editor), byUid: 'me'),
+        throwsA(isA<StateError>()),
+      );
+      expect(recipes.saved, isEmpty);
+    });
+
+    test('the stored recipe is returned, not the one handed in', () async {
+      final stored = await useCase(localRecipe(), byUid: 'me');
+      expect(identical(stored, recipes.saved.single), isTrue);
+    });
+  });
+
+  group('RefreshCollabRecipesUseCase', () {
+    late RefreshCollabRecipesUseCase useCase;
+    setUp(() => useCase = RefreshCollabRecipesUseCase(sharing: sharing, recipes: recipes));
+
+    test('an account that shares nothing is not queried at all', () async {
+      recipes.stored = [localRecipe()];
+      expect(await useCase(uid: 'me'), 0);
+      expect(sharing.log, isEmpty, reason: 'two billed queries for no reason');
+    });
+
+    test("a co-editor's change reaches the cache without the recipe being opened",
+        () async {
+      recipes.stored = [localRecipe(collabId: 'collab-1', role: CollabRole.editor)];
+      sharing.sharedWith = [remote(members: {'me': CollabRole.editor})];
+
+      expect(await useCase(uid: 'me'), 1);
+      expect(recipes.saved.single.title, 'שקשוקה חריפה');
+      expect(recipes.saved.single.id, 'local-1', reason: 'still this account\'s copy');
+    });
+
+    test('a cache that already matches is not rewritten', () async {
+      // Otherwise every resume pushes every shared recipe through the cloud
+      // mirror for nothing.
+      recipes.stored = [localRecipe(collabId: 'collab-1', role: CollabRole.editor)];
+      sharing.sharedWith = [remoteMatchingLocal(members: {'me': CollabRole.editor})];
+
+      expect(await useCase(uid: 'me'), 0);
+      expect(recipes.saved, isEmpty);
+    });
+
+    test('a role changed by the owner is picked up on its own', () async {
+      recipes.stored = [localRecipe(collabId: 'collab-1', role: CollabRole.editor)];
+      // Content identical to the cache: the demotion is the only difference,
+      // so this also pins that `differs` looks at the role at all.
+      sharing.sharedWith = [remoteMatchingLocal(members: {'me': CollabRole.viewer})];
+
+      expect(await useCase(uid: 'me'), 1);
+      expect(recipes.saved.single.collabRole, CollabRole.viewer);
+    });
+
+    test('a recipe the queries did not answer for is left alone, not orphaned', () async {
+      // An offline query answers from cache and can come back empty; concluding
+      // "removed from the share" here would quietly unshare the whole account.
+      recipes.stored = [localRecipe(collabId: 'collab-1', role: CollabRole.editor)];
+      sharing.sharedWith = const [];
+      sharing.owned = const [];
+
+      expect(await useCase(uid: 'me'), 0);
+      expect(recipes.saved, isEmpty);
+    });
+
+    test('recipes this account owns are refreshed too', () async {
+      // The owner's own second device is as stale as anyone else's.
+      recipes.stored = [localRecipe(collabId: 'collab-1', role: CollabRole.owner)];
+      sharing.owned = [remote()];
+
+      expect(await useCase(uid: 'owner'), 1);
+      expect(recipes.saved.single.collabRole, CollabRole.owner);
+      expect(recipes.saved.single.title, 'שקשוקה חריפה');
     });
   });
 }

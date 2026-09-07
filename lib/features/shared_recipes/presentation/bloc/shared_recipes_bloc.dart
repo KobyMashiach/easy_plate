@@ -86,10 +86,10 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
   factory SharedRecipesBloc.fromContext(BuildContext context) {
     return SharedRecipesBloc(
       getSharedRecipesUseCase: GetSharedRecipesUseCase(context.read()),
-      shareRecipeUseCase: ShareRecipeUseCase(context.read()),
+      shareRecipeUseCase: ShareRecipeUseCase(context.read(), context.read()),
       toggleLikeUseCase: ToggleSharedRecipeLikeUseCase(context.read()),
       unshareRecipeUseCase: UnshareRecipeUseCase(context.read()),
-      updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(context.read()),
+      updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(context.read(), context.read()),
       saveRecipeUseCase: SaveRecipeUseCase(context.read()),
       getRecipesUseCase: GetRecipesUseCase(context.read()),
       recipesRepository: context.read(),

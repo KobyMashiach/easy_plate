@@ -7,6 +7,10 @@ enum AppErrorType {
   /// Upstream is up but refused this call for now — rate limit or capacity.
   /// Retrying the identical request later is expected to succeed.
   overloaded,
+  /// The account's allowance for the day is spent. Distinct from [overloaded]
+  /// because retrying cannot help: the refusal stands until the quota resets,
+  /// so a backoff only makes the user wait longer for the same answer.
+  quotaExceeded,
   unknown,
 }
 

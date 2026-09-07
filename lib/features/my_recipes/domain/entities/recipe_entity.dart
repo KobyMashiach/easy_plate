@@ -16,6 +16,15 @@ class RecipeEntity {
   /// absolute path, which would not survive a reinstall.
   final String? imageFileName;
 
+  /// Firebase Storage path of that same photo, once it has been uploaded.
+  ///
+  /// [imageFileName] alone only means something on the device that took the
+  /// picture, which is why a photo reached neither a shared copy, nor the
+  /// community feed, nor a reinstall. This is what every other copy resolves
+  /// the image through. Null until the upload succeeds, and the save path
+  /// tries again next time rather than recording a path that leads nowhere.
+  final String? imageStoragePath;
+
   /// Set when this recipe was saved from the community feed. It is what
   /// separates "recipes I saved" from "recipes I wrote", and the copy stays
   /// fully editable — editing it changes only this local copy.
@@ -49,6 +58,7 @@ class RecipeEntity {
     this.sourceChannel,
     this.sourceUrl,
     this.imageFileName,
+    this.imageStoragePath,
     this.savedFromSharedId,
     this.pendingAnalysis = false,
     this.collabId,
@@ -76,6 +86,7 @@ class RecipeEntity {
     String? imageFileName,
     // A null `imageFileName` means "unchanged", so clearing needs its own flag.
     bool removeImage = false,
+    String? imageStoragePath,
     bool? pendingAnalysis,
     String? collabId,
     CollabRole? collabRole,
@@ -91,6 +102,13 @@ class RecipeEntity {
       sourceChannel: sourceChannel,
       sourceUrl: sourceUrl,
       imageFileName: removeImage ? null : (imageFileName ?? this.imageFileName),
+      // A new photo invalidates the uploaded one. Carrying the old path over
+      // would leave every other copy of this recipe — the shared one, the
+      // community post, the same account on another phone — showing the
+      // picture that was just replaced.
+      imageStoragePath: removeImage
+          ? null
+          : (imageStoragePath ?? (imageFileName != null ? null : this.imageStoragePath)),
       savedFromSharedId: savedFromSharedId,
       pendingAnalysis: pendingAnalysis ?? this.pendingAnalysis,
       collabId: collabId ?? this.collabId,

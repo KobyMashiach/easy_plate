@@ -9,6 +9,11 @@ class RecipeBookEntity {
 
   /// File name of the cover photo inside the app's image directory.
   final String? coverImageFileName;
+
+  /// Firebase Storage path of that cover, once uploaded — the same reason
+  /// `RecipeEntity.imageStoragePath` exists: the file name alone is meaningless
+  /// on any device but the one that picked the photo.
+  final String? coverImageStoragePath;
   final DateTime createdAt;
 
   const RecipeBookEntity({
@@ -18,6 +23,7 @@ class RecipeBookEntity {
     required this.createdAt,
     this.collaborators = const {},
     this.coverImageFileName,
+    this.coverImageStoragePath,
   });
 
   List<BookRecipeRefEntity> get orderedRefs => [...recipeRefs]..sort((a, b) => a.order.compareTo(b.order));
@@ -29,6 +35,7 @@ class RecipeBookEntity {
     String? coverImageFileName,
     // A null `coverImageFileName` means "unchanged", so clearing needs a flag.
     bool removeCoverImage = false,
+    String? coverImageStoragePath,
   }) {
     return RecipeBookEntity(
       id: id,
@@ -37,6 +44,11 @@ class RecipeBookEntity {
       collaborators: collaborators ?? this.collaborators,
       coverImageFileName:
           removeCoverImage ? null : (coverImageFileName ?? this.coverImageFileName),
+      // A replaced cover invalidates the uploaded one, as with a recipe photo.
+      coverImageStoragePath: removeCoverImage
+          ? null
+          : (coverImageStoragePath ??
+              (coverImageFileName != null ? null : this.coverImageStoragePath)),
       createdAt: createdAt,
     );
   }

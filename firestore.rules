@@ -18,6 +18,15 @@ service cloud.firestore {
     // uid, so ownership is the document path itself.
     match /users/{uid} {
       allow read, write: if signedIn() && request.auth.uid == uid;
+
+      // The account's own data — preferences, recipes, books, meal plans and
+      // grocery lists — mirrored from the device so it survives a reinstall.
+      // Rules do not cascade into subcollections, so this match is what makes
+      // the subtree reachable at all; it stays owner-only, which is the whole
+      // point of hanging it under /users/{uid}.
+      match /{document=**} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
     }
 
     // The display half of a profile, split out because rules grant or deny a

@@ -36,6 +36,7 @@ class RecipeBookPage extends StatelessWidget {
                       height: 160,
                       child: ClayImage(
                         fileName: recipe.imageFileName,
+                        remotePath: recipe.imageStoragePath,
                         radius: AppRadius.md,
                       ),
                     ),

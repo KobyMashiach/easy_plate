@@ -1,3 +1,14 @@
+import java.util.Properties
+
+// Signing credentials live outside the repo: android/.gitignore excludes both
+// key.properties and *.jks. A missing file is not an error here, so a debug
+// build still works on a machine that has no release key — the release build
+// type is what refuses to fall back.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -36,11 +47,41 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            val storePath = keystoreProperties.getProperty("storeFile")
+            if (storePath != null) {
+                // Resolved against android/app, which is where key.properties
+                // names the file relative to.
+                storeFile = file(storePath)
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Play rejects anything signed with the debug key, so a release
+            // build without credentials must fail loudly rather than quietly
+            // produce an artefact that cannot be uploaded.
+            if (keystoreProperties.getProperty("storeFile") == null) {
+                throw GradleException(
+                    "Release build needs android/key.properties with storeFile, " +
+                        "storePassword, keyAlias and keyPassword."
+                )
+            }
+            signingConfig = signingConfigs.getByName("release")
+
+            // Native crashes arrive unsymbolicated without this, and Play warns
+            // on every upload that debug symbols are missing. SYMBOL_TABLE
+            // rather than FULL: it symbolicates stack traces just as well and
+            // costs a fraction of the bundle size, since FULL carries complete
+            // DWARF debug info for the whole Flutter engine.
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
         }
     }
 }

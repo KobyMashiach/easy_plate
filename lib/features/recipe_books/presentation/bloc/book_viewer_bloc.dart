@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
+import '../../../../core/sync/recipe_image_store.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../domain/entities/book_recipe_ref_entity.dart';
@@ -121,6 +123,8 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
     if (current is! BookViewerLoaded) return;
 
     final previous = current.book.coverImageFileName;
+    // Read before the copyWith clears it, so the replaced upload can go too.
+    final previousRemote = current.book.coverImageStoragePath;
     final updatedBook = current.book.copyWith(
       coverImageFileName: event.fileName,
       removeCoverImage: event.fileName == null,
@@ -128,6 +132,7 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
     await saveBookUseCase(updatedBook);
     if (previous != null && previous != event.fileName) {
       await ImageStorageService().delete(previous);
+      unawaited(RecipeImageStore().remove(previousRemote, uid: UserScope().uid));
     }
     await _loadAndEmit(updatedBook, emit);
   }

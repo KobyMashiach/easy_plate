@@ -72,5 +72,5 @@ Map<String, dynamic> _$MealModelToJson(_MealModel instance) =>
       'weekday': instance.weekday,
       'name': instance.name,
       'order': instance.order,
-      'items': instance.items,
+      'items': instance.items.map((e) => e.toJson()).toList(),
     };

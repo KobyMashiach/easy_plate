@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../sync/cloud_sync_service.dart';
+import '../sync/recipe_image_store.dart';
 import '../../features/auth/data/datasources/firebase_auth_datasource.dart';
 import '../../features/auth/data/repositories_impl/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -97,20 +99,40 @@ List<SingleChildWidget> buildRepositoryProviders() {
         userProfileRepository: context.read(),
       ),
     ),
+    // The cloud mirrors come from the singleton rather than being built here,
+    // because the auth gate drives the same instances when it hydrates an
+    // account on sign-in.
     RepositoryProvider<UserPreferencesRepository>(
-      create: (context) => UserPreferencesRepositoryImpl(localDataSource: context.read()),
+      create: (context) => UserPreferencesRepositoryImpl(
+        localDataSource: context.read(),
+        cloud: CloudSyncService().preferences,
+      ),
     ),
     RepositoryProvider<RecipesRepository>(
-      create: (context) => RecipesRepositoryImpl(localDataSource: context.read()),
+      create: (context) => RecipesRepositoryImpl(
+        localDataSource: context.read(),
+        cloud: CloudSyncService().recipes,
+        images: RecipeImageStore(),
+      ),
     ),
     RepositoryProvider<RecipeBooksRepository>(
-      create: (context) => RecipeBooksRepositoryImpl(localDataSource: context.read()),
+      create: (context) => RecipeBooksRepositoryImpl(
+        localDataSource: context.read(),
+        cloud: CloudSyncService().books,
+        images: RecipeImageStore(),
+      ),
     ),
     RepositoryProvider<MealPlansRepository>(
-      create: (context) => MealPlansRepositoryImpl(localDataSource: context.read()),
+      create: (context) => MealPlansRepositoryImpl(
+        localDataSource: context.read(),
+        cloud: CloudSyncService().mealPlans,
+      ),
     ),
     RepositoryProvider<GroceryListsRepository>(
-      create: (context) => GroceryListsRepositoryImpl(localDataSource: context.read()),
+      create: (context) => GroceryListsRepositoryImpl(
+        localDataSource: context.read(),
+        cloud: CloudSyncService().groceryLists,
+      ),
     ),
     RepositoryProvider<RecipeIngestionRepository>(
       create: (context) => RecipeIngestionRepositoryImpl(

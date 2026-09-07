@@ -61,6 +61,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$unit$ru unit = _Translations$unit$ru._(_root);
 	@override late final _Translations$image$ru image = _Translations$image$ru._(_root);
 	@override late final _Translations$nav$ru nav = _Translations$nav$ru._(_root);
+	@override late final _Translations$update$ru update = _Translations$update$ru._(_root);
 }
 
 // Path: common
@@ -671,6 +672,21 @@ class _Translations$nav$ru extends Translations$nav$he {
 	@override String get community => 'Сообщество';
 }
 
+// Path: update
+class _Translations$update$ru extends Translations$update$he {
+	_Translations$update$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get forcedTitle => 'Требуется обновление';
+	@override String forcedBody({required Object version}) => 'Эта версия EasyPlate больше не поддерживается. Обновитесь до версии ${version}, чтобы продолжить.';
+	@override String get optionalTitle => 'Вышла новая версия';
+	@override String optionalBody({required Object version}) => 'EasyPlate ${version} уже в магазине — с последними улучшениями.';
+	@override String get updateNow => 'Обновить';
+	@override String get later => 'Пропустить';
+}
+
 /// The flat map containing all translations for locale <ru>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1099,6 +1115,12 @@ extension on TranslationsRu {
 			'nav.groceries' => 'Покупки',
 			'nav.settings' => 'Настройки',
 			'nav.community' => 'Сообщество',
+			'update.forcedTitle' => 'Требуется обновление',
+			'update.forcedBody' => ({required Object version}) => 'Эта версия EasyPlate больше не поддерживается. Обновитесь до версии ${version}, чтобы продолжить.',
+			'update.optionalTitle' => 'Вышла новая версия',
+			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} уже в магазине — с последними улучшениями.',
+			'update.updateNow' => 'Обновить',
+			'update.later' => 'Пропустить',
 			_ => null,
 		};
 	}

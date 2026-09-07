@@ -20,6 +20,7 @@ sealed class RecipeBookModel with _$RecipeBookModel {
     @HiveField(3) @Default({}) Map<String, String> collaborators,
     @HiveField(4) required DateTime createdAt,
     @HiveField(5) String? coverImageFileName,
+    @HiveField(6) String? coverImageStoragePath,
   }) = _RecipeBookModel;
 
   factory RecipeBookModel.fromJson(Map<String, dynamic> json) => _$RecipeBookModelFromJson(json);
@@ -32,6 +33,7 @@ extension RecipeBookModelMapper on RecipeBookModel {
         recipeRefs: recipeRefs.map((r) => r.toEntity()).toList(),
         collaborators: collaborators.map((k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v))),
         coverImageFileName: coverImageFileName,
+        coverImageStoragePath: coverImageStoragePath,
         createdAt: createdAt,
       );
 }
@@ -43,6 +45,7 @@ extension RecipeBookEntityMapper on RecipeBookEntity {
         recipeRefs: recipeRefs.map((r) => r.toModel()).toList(),
         collaborators: collaborators.map((k, v) => MapEntry(k, v.name)),
         coverImageFileName: coverImageFileName,
+        coverImageStoragePath: coverImageStoragePath,
         createdAt: createdAt,
       );
 }

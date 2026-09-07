@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +14,9 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
+import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
+import '../../../../core/sync/recipe_image_store.dart';
 import '../../../../core/widgets/image_source_sheet.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/recipe_entity.dart';
@@ -135,16 +139,29 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     if (result == null || !mounted) return;
 
     final previous = recipe.imageFileName;
+    // Read before the copyWith, which clears it: a new photo invalidates the
+    // uploaded one, and this is the last moment the old path is known.
+    final previousRemote = recipe.imageStoragePath;
     final updated = recipe.copyWith(
       imageFileName: result.fileName,
       removeImage: result.removed,
     );
-    await SaveRecipeUseCase(context.read<RecipesRepository>())(updated);
-    // Drop the replaced file so removed photos don't accumulate on disk.
+    // Through the collab use case, not a plain save: a photo is part of what a
+    // shared recipe carries, so swapping one here has to reach the shared
+    // document too — otherwise the co-editors keep the picture that was
+    // replaced, and only this device ever sees the new one.
+    final stored = await SaveCollabRecipeUseCase(
+      sharing: context.read<RecipeSharingRepository>(),
+      recipes: context.read<RecipesRepository>(),
+    )(updated, byUid: AuthSessionService().user?.uid ?? '');
+    // Drop the replaced file so removed photos don't accumulate on disk, and
+    // the copy in Storage with it — nothing points at it any more, but it would
+    // go on being billed.
     if (previous != null && previous != updated.imageFileName) {
       await ImageStorageService().delete(previous);
+      unawaited(RecipeImageStore().remove(previousRemote, uid: UserScope().uid));
     }
-    if (mounted) setState(() => recipe = updated);
+    if (mounted) setState(() => recipe = stored);
   }
 
   /// Photo changes stay on the image itself, so the bar action opens the
@@ -159,11 +176,11 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
 
     // Shared recipes write to the shared document first; the use case falls
     // through to a plain local save for everything else.
-    await SaveCollabRecipeUseCase(
+    final stored = await SaveCollabRecipeUseCase(
       sharing: context.read<RecipeSharingRepository>(),
       recipes: repository,
     )(edited, byUid: AuthSessionService().user?.uid ?? '');
-    if (mounted) setState(() => recipe = edited);
+    if (mounted) setState(() => recipe = stored);
   }
 
   @override
@@ -194,6 +211,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                   Positioned.fill(
                     child: ClayImage(
                       fileName: recipe.imageFileName,
+                      remotePath: recipe.imageStoragePath,
                       radius: AppRadius.md,
                       fallbackIconSize: 64,
                     ),
