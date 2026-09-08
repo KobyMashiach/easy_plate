@@ -53,76 +53,88 @@ class _UpdatePrompt extends StatelessWidget {
     final version = service.latestVersion;
 
     return Positioned.fill(
-      child: Semantics(
-        // Named so the whole prompt is announced as one thing, and so a
-        // forced barrier does not read as an unlabelled blocker.
-        container: true,
-        label: forced ? t.update.forcedTitle : t.update.optionalTitle,
-        child: Stack(
-          children: [
-            // Non-dismissible in both cases: the optional prompt is left
-            // through its own Skip button, so a stray tap outside cannot be
-            // mistaken for having taken the update.
-            ModalBarrier(
-              key: barrierKey,
-              color: AppColors.onSurface.withValues(alpha: forced ? 0.92 : 0.62),
-              dismissible: false,
-            ),
-            Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                child: ClayCard(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Icon(
-                        forced ? Icons.system_update_rounded : Icons.auto_awesome_rounded,
-                        size: AppSpacing.xl,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(height: AppSpacing.gutter),
-                      Text(
-                        forced ? t.update.forcedTitle : t.update.optionalTitle,
-                        style: AppTextStyles.headlineMd,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.base),
-                      Text(
-                        forced
-                            ? t.update.forcedBody(version: version)
-                            : t.update.optionalBody(version: version),
-                        style: AppTextStyles.bodyMd.copyWith(
-                          color: AppColors.onSurfaceVariant,
+      // The gate sits in MaterialApp.builder, above the Navigator, so no
+      // Scaffold supplies a Material ancestor here. Without one, Text falls
+      // back to the framework's yellow-underlined "missing Material" style.
+      child: Material(
+        type: MaterialType.transparency,
+        child: Semantics(
+          // Named so the whole prompt is announced as one thing, and so a
+          // forced barrier does not read as an unlabelled blocker.
+          container: true,
+          label: forced ? t.update.forcedTitle : t.update.optionalTitle,
+          child: Stack(
+            children: [
+              // Non-dismissible in both cases: the optional prompt is left
+              // through its own Skip button, so a stray tap outside cannot be
+              // mistaken for having taken the update.
+              ModalBarrier(
+                key: barrierKey,
+                color: AppColors.onSurface.withValues(
+                  alpha: forced ? 0.92 : 0.62,
+                ),
+                dismissible: false,
+              ),
+              Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                  child: ClayCard(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Icon(
+                          forced
+                              ? Icons.system_update_rounded
+                              : Icons.auto_awesome_rounded,
+                          size: AppSpacing.xl,
+                          color: AppColors.primary,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      ClayButton(
-                        label: t.update.updateNow,
-                        icon: Icons.download_rounded,
-                        expanded: true,
-                        onPressed: service.openStore,
-                      ),
-                      if (!forced) ...[
+                        const SizedBox(height: AppSpacing.gutter),
+                        Text(
+                          forced
+                              ? t.update.forcedTitle
+                              : t.update.optionalTitle,
+                          style: AppTextStyles.headlineMd,
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: AppSpacing.base),
-                        TextButton(
-                          onPressed: service.skip,
-                          child: Text(
-                            t.update.later,
-                            style: AppTextStyles.labelMd.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                        Text(
+                          forced
+                              ? t.update.forcedBody(version: version)
+                              : t.update.optionalBody(version: version),
+                          style: AppTextStyles.bodyMd.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        ClayButton(
+                          label: t.update.updateNow,
+                          icon: Icons.download_rounded,
+                          expanded: true,
+                          onPressed: service.openStore,
+                        ),
+                        if (!forced) ...[
+                          const SizedBox(height: AppSpacing.base),
+                          TextButton(
+                            onPressed: service.skip,
+                            child: Text(
+                              t.update.later,
+                              style: AppTextStyles.labelMd.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
