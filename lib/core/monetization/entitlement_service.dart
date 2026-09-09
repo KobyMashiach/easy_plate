@@ -14,6 +14,11 @@ import 'package:flutter/foundation.dart';
 /// The document shape is `{premium: bool, premiumUntil?: Timestamp}`. A past
 /// `premiumUntil` reads as not premium, so a lapsed subscription needs no
 /// second write to take effect.
+///
+/// A second source is the RevenueCat SDK on this device (see
+/// `PurchasesService`), which knows about a purchase the instant it completes,
+/// seconds before the webhook has written the document. Premium is the OR of
+/// the two: either alone unlocks, and each expires on its own terms.
 class EntitlementService extends ChangeNotifier {
   static final EntitlementService _instance = EntitlementService._internal();
   factory EntitlementService() => _instance;
@@ -22,6 +27,8 @@ class EntitlementService extends ChangeNotifier {
   static const collection = 'entitlements';
 
   bool _premium = false;
+  bool _server = false;
+  bool _store = false;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _subscription;
 
   bool get isPremium => _premium;
@@ -37,7 +44,7 @@ class EntitlementService extends ChangeNotifier {
           .doc(uid)
           .snapshots()
           .listen(
-            (snapshot) => _set(resolvePremium(snapshot.data(), DateTime.now())),
+            (snapshot) => _setServer(resolvePremium(snapshot.data(), DateTime.now())),
             onError: (Object e) => debugPrint('Entitlement watch failed: $e'),
           );
     } catch (e) {
@@ -50,7 +57,18 @@ class EntitlementService extends ChangeNotifier {
   void clear() {
     _subscription?.cancel();
     _subscription = null;
-    _set(false);
+    _server = false;
+    _store = false;
+    _recompute();
+  }
+
+  /// What the store SDK reports for the signed-in account. Called on every
+  /// `CustomerInfo` update, so it goes both ways: a purchase turns it on, an
+  /// expiry the SDK notices turns it off — and the server flag still holds
+  /// premium for as long as the document says so.
+  void setFromStore(bool premium) {
+    _store = premium;
+    _recompute();
   }
 
   @visibleForTesting
@@ -62,9 +80,19 @@ class EntitlementService extends ChangeNotifier {
   }
 
   @visibleForTesting
-  void setForTest(bool premium) => _set(premium);
+  void setForTest(bool premium) {
+    _server = premium;
+    _store = false;
+    _recompute();
+  }
 
-  void _set(bool premium) {
+  void _setServer(bool premium) {
+    _server = premium;
+    _recompute();
+  }
+
+  void _recompute() {
+    final premium = _server || _store;
     if (_premium == premium) return;
     _premium = premium;
     notifyListeners();

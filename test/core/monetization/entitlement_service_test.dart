@@ -49,4 +49,46 @@ void main() {
     expect(service.isPremium, isFalse);
     expect(notified, 2);
   });
+
+  _storeAndServerTests();
+}
+
+void _storeAndServerTests() {
+  group('two sources', () {
+    late EntitlementService service;
+    setUp(() {
+      service = EntitlementService();
+      service.clear();
+    });
+
+    test('the store SDK alone unlocks premium', () {
+      expect(service.isPremium, isFalse);
+      service.setFromStore(true);
+      expect(service.isPremium, isTrue);
+    });
+
+    test('the store going quiet does not revoke what the server grants', () {
+      service.setForTest(true);
+      service.setFromStore(true);
+      service.setFromStore(false);
+      expect(service.isPremium, isTrue);
+    });
+
+    test('sign-out drops both', () {
+      service.setForTest(true);
+      service.setFromStore(true);
+      service.clear();
+      expect(service.isPremium, isFalse);
+    });
+
+    test('notifies once per real change', () {
+      var notifications = 0;
+      service.addListener(() => notifications++);
+      service.setFromStore(true);
+      service.setFromStore(true);
+      service.setForTest(true);
+      expect(service.isPremium, isTrue);
+      expect(notifications, 1);
+    });
+  });
 }

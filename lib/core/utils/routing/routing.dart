@@ -19,6 +19,7 @@ class Routing {
   static const settings = 'settings';
   static const accountMenu = 'account_menu';
   static const support = 'support';
+  static const premium = 'premium';
   static const sharing = 'sharing';
   static const notifications = 'notifications';
   static const profileEdit = 'profile_edit';

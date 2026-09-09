@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Google Play only lets a subscription product be created once an
+         uploaded build declares this permission; the Play Billing library
+         behind purchases_flutter merges it in as well, but declaring it
+         here keeps that requirement visible. -->
+    <uses-permission android:name="com.android.vending.BILLING" />
     <application
         android:label="Easy Plate"
         android:name="${applicationName}"

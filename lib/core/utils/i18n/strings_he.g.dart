@@ -67,6 +67,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$nav$he nav = Translations$nav$he.internal(_root);
 	late final Translations$update$he update = Translations$update$he.internal(_root);
 	late final Translations$ads$he ads = Translations$ads$he.internal(_root);
+	late final Translations$premium$he premium = Translations$premium$he.internal(_root);
 }
 
 // Path: common
@@ -1602,6 +1603,96 @@ class Translations$ads$he {
 	String get videoUnavailable => 'אין סרטון זמין כרגע, נסו שוב בעוד רגע';
 }
 
+// Path: premium
+class Translations$premium$he {
+	Translations$premium$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'איזי-פלייט פרימיום'
+	String get title => 'איזי-פלייט פרימיום';
+
+	/// he: 'בלי מודעות, בלי מכסות'
+	String get headline => 'בלי מודעות, בלי מכסות';
+
+	/// he: 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.'
+	String get subtitle => 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.';
+
+	/// he: 'בלי מודעות בפידים של הקהילה'
+	String get benefitNoAds => 'בלי מודעות בפידים של הקהילה';
+
+	/// he: 'מתכונים משותפים ללא הגבלה יומית'
+	String get benefitShared => 'מתכונים משותפים ללא הגבלה יומית';
+
+	/// he: 'חילוץ מתכונים עם AI מכל קישור, ללא הגבלה'
+	String get benefitAi => 'חילוץ מתכונים עם AI מכל קישור, ללא הגבלה';
+
+	/// he: 'שבועי'
+	String get periodWeekly => 'שבועי';
+
+	/// he: 'חודשי'
+	String get periodMonthly => 'חודשי';
+
+	/// he: 'דו-חודשי'
+	String get periodTwoMonth => 'דו-חודשי';
+
+	/// he: 'רבעוני'
+	String get periodThreeMonth => 'רבעוני';
+
+	/// he: 'חצי-שנתי'
+	String get periodSixMonth => 'חצי-שנתי';
+
+	/// he: 'שנתי'
+	String get periodAnnual => 'שנתי';
+
+	/// he: 'לכל החיים'
+	String get periodLifetime => 'לכל החיים';
+
+	/// he: 'הכי משתלם'
+	String get bestValue => 'הכי משתלם';
+
+	/// he: 'הרשמה למנוי ב-$price'
+	String subscribeFor({required Object price}) => 'הרשמה למנוי ב-${price}';
+
+	/// he: 'רכישה ב-$price'
+	String buyFor({required Object price}) => 'רכישה ב-${price}';
+
+	/// he: 'שחזור רכישות'
+	String get restore => 'שחזור רכישות';
+
+	/// he: 'המנוי שוחזר בהצלחה'
+	String get restored => 'המנוי שוחזר בהצלחה';
+
+	/// he: 'לא נמצאו רכישות לשחזור'
+	String get nothingToRestore => 'לא נמצאו רכישות לשחזור';
+
+	/// he: 'פרימיום פעיל'
+	String get activeTitle => 'פרימיום פעיל';
+
+	/// he: 'תודה! המודעות והמכסות היומיות כבויות בחשבון הזה.'
+	String get activeBody => 'תודה! המודעות והמכסות היומיות כבויות בחשבון הזה.';
+
+	/// he: 'המנוי אינו זמין כרגע. נסו שוב מאוחר יותר.'
+	String get unavailable => 'המנוי אינו זמין כרגע. נסו שוב מאוחר יותר.';
+
+	/// he: 'הרכישה לא הושלמה'
+	String get purchaseFailed => 'הרכישה לא הושלמה';
+
+	/// he: 'ברוכים הבאים לפרימיום!'
+	String get purchased => 'ברוכים הבאים לפרימיום!';
+
+	/// he: 'המנוי מתחדש אוטומטית בסוף כל תקופה, אלא אם בוטל לפחות 24 שעות לפני סיומה. החיוב מתבצע דרך חשבון החנות שלך, וניתן לנהל או לבטל אותו בהגדרות החנות.'
+	String get legal => 'המנוי מתחדש אוטומטית בסוף כל תקופה, אלא אם בוטל לפחות 24 שעות לפני סיומה. החיוב מתבצע דרך חשבון החנות שלך, וניתן לנהל או לבטל אותו בהגדרות החנות.';
+
+	/// he: 'תנאי שימוש'
+	String get terms => 'תנאי שימוש';
+
+	/// he: 'מדיניות פרטיות'
+	String get privacy => 'מדיניות פרטיות';
+}
+
 /// The flat map containing all translations for locale <he>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -2053,6 +2144,33 @@ extension on Translations {
 			'ads.loadingVideo' => 'טוען סרטון...',
 			'ads.videoNotCompleted' => 'הסרטון לא הושלם, המתכון נשאר נעול',
 			'ads.videoUnavailable' => 'אין סרטון זמין כרגע, נסו שוב בעוד רגע',
+			'premium.title' => 'איזי-פלייט פרימיום',
+			'premium.headline' => 'בלי מודעות, בלי מכסות',
+			'premium.subtitle' => 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.',
+			'premium.benefitNoAds' => 'בלי מודעות בפידים של הקהילה',
+			'premium.benefitShared' => 'מתכונים משותפים ללא הגבלה יומית',
+			'premium.benefitAi' => 'חילוץ מתכונים עם AI מכל קישור, ללא הגבלה',
+			'premium.periodWeekly' => 'שבועי',
+			'premium.periodMonthly' => 'חודשי',
+			'premium.periodTwoMonth' => 'דו-חודשי',
+			'premium.periodThreeMonth' => 'רבעוני',
+			'premium.periodSixMonth' => 'חצי-שנתי',
+			'premium.periodAnnual' => 'שנתי',
+			'premium.periodLifetime' => 'לכל החיים',
+			'premium.bestValue' => 'הכי משתלם',
+			'premium.subscribeFor' => ({required Object price}) => 'הרשמה למנוי ב-${price}',
+			'premium.buyFor' => ({required Object price}) => 'רכישה ב-${price}',
+			'premium.restore' => 'שחזור רכישות',
+			'premium.restored' => 'המנוי שוחזר בהצלחה',
+			'premium.nothingToRestore' => 'לא נמצאו רכישות לשחזור',
+			'premium.activeTitle' => 'פרימיום פעיל',
+			'premium.activeBody' => 'תודה! המודעות והמכסות היומיות כבויות בחשבון הזה.',
+			'premium.unavailable' => 'המנוי אינו זמין כרגע. נסו שוב מאוחר יותר.',
+			'premium.purchaseFailed' => 'הרכישה לא הושלמה',
+			'premium.purchased' => 'ברוכים הבאים לפרימיום!',
+			'premium.legal' => 'המנוי מתחדש אוטומטית בסוף כל תקופה, אלא אם בוטל לפחות 24 שעות לפני סיומה. החיוב מתבצע דרך חשבון החנות שלך, וניתן לנהל או לבטל אותו בהגדרות החנות.',
+			'premium.terms' => 'תנאי שימוש',
+			'premium.privacy' => 'מדיניות פרטיות',
 			_ => null,
 		};
 	}

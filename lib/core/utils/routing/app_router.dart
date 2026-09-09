@@ -12,6 +12,7 @@ import '../../../features/forum/presentation/pages/forum_thread_page.dart';
 import '../../../features/more/presentation/pages/account_menu_page.dart';
 import '../../../features/more/presentation/pages/sharing_management_page.dart';
 import '../../../features/more/presentation/pages/support_page.dart';
+import '../../../features/premium/presentation/pages/paywall_page.dart';
 import '../../../features/my_recipes/domain/entities/recipe_entity.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_editor_page.dart';
@@ -161,6 +162,11 @@ GoRouter buildRouter() {
             path: Routing.support,
             name: Routing.support,
             builder: (context, state) => const SupportPage(),
+          ),
+          GoRoute(
+            path: Routing.premium,
+            name: Routing.premium,
+            builder: (context, state) => const PaywallPage(),
           ),
           GoRoute(
             path: Routing.forumThread,

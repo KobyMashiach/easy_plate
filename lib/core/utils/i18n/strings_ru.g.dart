@@ -63,6 +63,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$nav$ru nav = _Translations$nav$ru._(_root);
 	@override late final _Translations$update$ru update = _Translations$update$ru._(_root);
 	@override late final _Translations$ads$ru ads = _Translations$ads$ru._(_root);
+	@override late final _Translations$premium$ru premium = _Translations$premium$ru._(_root);
 }
 
 // Path: common
@@ -714,6 +715,42 @@ class _Translations$ads$ru extends Translations$ads$he {
 	@override String get videoUnavailable => 'Сейчас нет доступного видео, попробуйте через минуту';
 }
 
+// Path: premium
+class _Translations$premium$ru extends Translations$premium$he {
+	_Translations$premium$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'EasyPlate Premium';
+	@override String get headline => 'Без рекламы, без ограничений';
+	@override String get subtitle => 'Всё, что умеет EasyPlate, не дожидаясь завтра.';
+	@override String get benefitNoAds => 'Без рекламы в лентах сообщества';
+	@override String get benefitShared => 'Общие рецепты без дневного лимита';
+	@override String get benefitAi => 'Извлечение рецептов с помощью ИИ из любой ссылки, без ограничений';
+	@override String get periodWeekly => 'Еженедельно';
+	@override String get periodMonthly => 'Ежемесячно';
+	@override String get periodTwoMonth => 'Раз в 2 месяца';
+	@override String get periodThreeMonth => 'Ежеквартально';
+	@override String get periodSixMonth => 'Раз в 6 месяцев';
+	@override String get periodAnnual => 'Ежегодно';
+	@override String get periodLifetime => 'Навсегда';
+	@override String get bestValue => 'Выгоднее всего';
+	@override String subscribeFor({required Object price}) => 'Оформить за ${price}';
+	@override String buyFor({required Object price}) => 'Купить за ${price}';
+	@override String get restore => 'Восстановить покупки';
+	@override String get restored => 'Подписка восстановлена';
+	@override String get nothingToRestore => 'Покупок для восстановления не найдено';
+	@override String get activeTitle => 'Premium активен';
+	@override String get activeBody => 'Спасибо! Реклама и дневные лимиты отключены для этого аккаунта.';
+	@override String get unavailable => 'Подписки сейчас недоступны. Попробуйте позже.';
+	@override String get purchaseFailed => 'Покупка не завершена';
+	@override String get purchased => 'Добро пожаловать в Premium!';
+	@override String get legal => 'Подписка продлевается автоматически в конце каждого периода, если не отменить её минимум за 24 часа до окончания. Оплата списывается с аккаунта магазина; управлять подпиской или отменить её можно в настройках магазина.';
+	@override String get terms => 'Условия использования';
+	@override String get privacy => 'Политика конфиденциальности';
+}
+
 /// The flat map containing all translations for locale <ru>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1165,6 +1202,33 @@ extension on TranslationsRu {
 			'ads.loadingVideo' => 'Загрузка видео...',
 			'ads.videoNotCompleted' => 'Видео не досмотрено, рецепт остаётся закрытым',
 			'ads.videoUnavailable' => 'Сейчас нет доступного видео, попробуйте через минуту',
+			'premium.title' => 'EasyPlate Premium',
+			'premium.headline' => 'Без рекламы, без ограничений',
+			'premium.subtitle' => 'Всё, что умеет EasyPlate, не дожидаясь завтра.',
+			'premium.benefitNoAds' => 'Без рекламы в лентах сообщества',
+			'premium.benefitShared' => 'Общие рецепты без дневного лимита',
+			'premium.benefitAi' => 'Извлечение рецептов с помощью ИИ из любой ссылки, без ограничений',
+			'premium.periodWeekly' => 'Еженедельно',
+			'premium.periodMonthly' => 'Ежемесячно',
+			'premium.periodTwoMonth' => 'Раз в 2 месяца',
+			'premium.periodThreeMonth' => 'Ежеквартально',
+			'premium.periodSixMonth' => 'Раз в 6 месяцев',
+			'premium.periodAnnual' => 'Ежегодно',
+			'premium.periodLifetime' => 'Навсегда',
+			'premium.bestValue' => 'Выгоднее всего',
+			'premium.subscribeFor' => ({required Object price}) => 'Оформить за ${price}',
+			'premium.buyFor' => ({required Object price}) => 'Купить за ${price}',
+			'premium.restore' => 'Восстановить покупки',
+			'premium.restored' => 'Подписка восстановлена',
+			'premium.nothingToRestore' => 'Покупок для восстановления не найдено',
+			'premium.activeTitle' => 'Premium активен',
+			'premium.activeBody' => 'Спасибо! Реклама и дневные лимиты отключены для этого аккаунта.',
+			'premium.unavailable' => 'Подписки сейчас недоступны. Попробуйте позже.',
+			'premium.purchaseFailed' => 'Покупка не завершена',
+			'premium.purchased' => 'Добро пожаловать в Premium!',
+			'premium.legal' => 'Подписка продлевается автоматически в конце каждого периода, если не отменить её минимум за 24 часа до окончания. Оплата списывается с аккаунта магазина; управлять подпиской или отменить её можно в настройках магазина.',
+			'premium.terms' => 'Условия использования',
+			'premium.privacy' => 'Политика конфиденциальности',
 			_ => null,
 		};
 	}

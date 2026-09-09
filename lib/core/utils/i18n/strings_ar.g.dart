@@ -63,6 +63,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$nav$ar nav = _Translations$nav$ar._(_root);
 	@override late final _Translations$update$ar update = _Translations$update$ar._(_root);
 	@override late final _Translations$ads$ar ads = _Translations$ads$ar._(_root);
+	@override late final _Translations$premium$ar premium = _Translations$premium$ar._(_root);
 }
 
 // Path: common
@@ -714,6 +715,42 @@ class _Translations$ads$ar extends Translations$ads$he {
 	@override String get videoUnavailable => 'لا يوجد فيديو متاح الآن، حاول مجددًا بعد قليل';
 }
 
+// Path: premium
+class _Translations$premium$ar extends Translations$premium$he {
+	_Translations$premium$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'إيزي-بلايت بريميوم';
+	@override String get headline => 'بلا إعلانات، بلا حدود';
+	@override String get subtitle => 'كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.';
+	@override String get benefitNoAds => 'بلا إعلانات في خلاصات المجتمع';
+	@override String get benefitShared => 'وصفات مشتركة بلا حدّ يومي';
+	@override String get benefitAi => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، بلا حدود';
+	@override String get periodWeekly => 'أسبوعي';
+	@override String get periodMonthly => 'شهري';
+	@override String get periodTwoMonth => 'كل شهرين';
+	@override String get periodThreeMonth => 'ربع سنوي';
+	@override String get periodSixMonth => 'كل 6 أشهر';
+	@override String get periodAnnual => 'سنوي';
+	@override String get periodLifetime => 'مدى الحياة';
+	@override String get bestValue => 'الأوفر';
+	@override String subscribeFor({required Object price}) => 'الاشتراك مقابل ${price}';
+	@override String buyFor({required Object price}) => 'الشراء مقابل ${price}';
+	@override String get restore => 'استعادة المشتريات';
+	@override String get restored => 'تمت استعادة اشتراكك';
+	@override String get nothingToRestore => 'لا توجد مشتريات لاستعادتها';
+	@override String get activeTitle => 'بريميوم مفعّل';
+	@override String get activeBody => 'شكرًا! الإعلانات والحدود اليومية متوقفة في هذا الحساب.';
+	@override String get unavailable => 'الاشتراكات غير متاحة حاليًا. حاول مرة أخرى لاحقًا.';
+	@override String get purchaseFailed => 'لم تكتمل عملية الشراء';
+	@override String get purchased => 'مرحبًا بك في بريميوم!';
+	@override String get legal => 'يتجدد الاشتراك تلقائيًا في نهاية كل فترة ما لم يتم إلغاؤه قبل 24 ساعة على الأقل من انتهائها. يتم الدفع عبر حساب المتجر الخاص بك، ويمكن إدارته أو إلغاؤه من إعدادات المتجر.';
+	@override String get terms => 'شروط الاستخدام';
+	@override String get privacy => 'سياسة الخصوصية';
+}
+
 /// The flat map containing all translations for locale <ar>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1165,6 +1202,33 @@ extension on TranslationsAr {
 			'ads.loadingVideo' => 'جارٍ تحميل الفيديو...',
 			'ads.videoNotCompleted' => 'لم يكتمل الفيديو، تبقى الوصفة مغلقة',
 			'ads.videoUnavailable' => 'لا يوجد فيديو متاح الآن، حاول مجددًا بعد قليل',
+			'premium.title' => 'إيزي-بلايت بريميوم',
+			'premium.headline' => 'بلا إعلانات، بلا حدود',
+			'premium.subtitle' => 'كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.',
+			'premium.benefitNoAds' => 'بلا إعلانات في خلاصات المجتمع',
+			'premium.benefitShared' => 'وصفات مشتركة بلا حدّ يومي',
+			'premium.benefitAi' => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، بلا حدود',
+			'premium.periodWeekly' => 'أسبوعي',
+			'premium.periodMonthly' => 'شهري',
+			'premium.periodTwoMonth' => 'كل شهرين',
+			'premium.periodThreeMonth' => 'ربع سنوي',
+			'premium.periodSixMonth' => 'كل 6 أشهر',
+			'premium.periodAnnual' => 'سنوي',
+			'premium.periodLifetime' => 'مدى الحياة',
+			'premium.bestValue' => 'الأوفر',
+			'premium.subscribeFor' => ({required Object price}) => 'الاشتراك مقابل ${price}',
+			'premium.buyFor' => ({required Object price}) => 'الشراء مقابل ${price}',
+			'premium.restore' => 'استعادة المشتريات',
+			'premium.restored' => 'تمت استعادة اشتراكك',
+			'premium.nothingToRestore' => 'لا توجد مشتريات لاستعادتها',
+			'premium.activeTitle' => 'بريميوم مفعّل',
+			'premium.activeBody' => 'شكرًا! الإعلانات والحدود اليومية متوقفة في هذا الحساب.',
+			'premium.unavailable' => 'الاشتراكات غير متاحة حاليًا. حاول مرة أخرى لاحقًا.',
+			'premium.purchaseFailed' => 'لم تكتمل عملية الشراء',
+			'premium.purchased' => 'مرحبًا بك في بريميوم!',
+			'premium.legal' => 'يتجدد الاشتراك تلقائيًا في نهاية كل فترة ما لم يتم إلغاؤه قبل 24 ساعة على الأقل من انتهائها. يتم الدفع عبر حساب المتجر الخاص بك، ويمكن إدارته أو إلغاؤه من إعدادات المتجر.',
+			'premium.terms' => 'شروط الاستخدام',
+			'premium.privacy' => 'سياسة الخصوصية',
 			_ => null,
 		};
 	}

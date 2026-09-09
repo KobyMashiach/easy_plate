@@ -15,6 +15,7 @@ import '../../features/recipe_sharing/domain/usecases/refresh_collab_recipes_use
 import '../hive/user_scope.dart';
 import '../monetization/daily_usage_service.dart';
 import '../monetization/entitlement_service.dart';
+import '../monetization/purchases_service.dart';
 import '../sync/cloud_sync_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
@@ -104,12 +105,17 @@ class AuthSessionService extends ChangeNotifier {
       // next sign-in, and a quota count would be charged to the wrong person.
       EntitlementService().clear();
       DailyUsageService().reset();
+      unawaited(PurchasesService().logOut());
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
       return;
     }
 
     unawaited(FirebaseService().setAnalyticsUser(user.uid));
+    // Before the phone check on purpose: a subscription belongs to the
+    // Firebase account from the moment it exists, and identifying early is
+    // what lets a receipt restored on a new phone reach the right uid.
+    unawaited(PurchasesService().logIn(user.uid));
 
     // Checked before the email stage, and before any local box is opened: a
     // phone is the root identity, so an account without one has not finished

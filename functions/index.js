@@ -8,6 +8,8 @@ admin.initializeApp();
 
 // The Gemini proxy lives in its own file; it shares this app instance.
 exports.aiProxy = require("./aiProxy").aiProxy;
+// RevenueCat's subscription events, written onto entitlements/{uid}.
+exports.revenueCatWebhook = require("./revenueCatWebhook").revenueCatWebhook;
 
 // The recipient's locale is not known here; Hebrew is the app's primary
 // language, and the in-app inbox is localised properly once they open it.

@@ -3,20 +3,24 @@
 # Organized by Android, iOS, and Tools
 # Supports both interactive menu and direct commands (androidRun, iosBuildIpa, etc.)
 
+# Every build reads its ad units, RevenueCat keys and proxy URL from this
+# file; a build without it ships blank ad units and no store SDK.
+DEFINES="--dart-define-from-file=dart_defines/dev.json"
+
 # === ANDROID FUNCTIONS (01–09) ===
 function androidRun() {
   echo "Run  Android"
-  flutter run --release
+  flutter run --release $DEFINES
 }
 
 function androidBuildApk() {
   echo "Build (Dev) Android"
-  flutter build apk  --release
+  flutter build apk --release $DEFINES
 }
 
 function androidBuildAab() {
   echo "Build (Test) Android"
-  flutter build appbundle --release
+  flutter build appbundle --release $DEFINES
 }
 
 
@@ -33,12 +37,12 @@ function androidLogs() {
 # === IOS FUNCTIONS (11–19) ===
 function iosRun() {
   echo "Run iOS"
-  flutter run --release
+  flutter run --release $DEFINES
 }
 
 function iosBuildIpa() {
   echo "Build IPA iOS"
-  flutter build ipa --release
+  flutter build ipa --release $DEFINES
 }
 
 function openBuilderIos() {
@@ -104,6 +108,11 @@ function clearGradleCache() {
   echo "✅ Gradle cache fully cleared. Next build will re-download Gradle and dependencies."
 }
 
+function storeScreenshots() {
+  echo "Render the App Store review screenshots into store_assets/app_store"
+  flutter test test/store_assets --dart-define=STORE_SCREENSHOTS=true
+}
+
 function createLauncherIcons() {
   echo "Create Launcher Icons"
   dart run flutter_launcher_icons
@@ -137,6 +146,7 @@ function menu() {
   echo "25. Flutter Doctor"
   echo "26. Clear Gradle Cache"
   echo "27. Create Launcher Icons"
+  echo "28. Store Screenshots (paywall review image)"
   echo ""
   echo "📜 LOGS"
   echo "--------------------------------------"
@@ -163,6 +173,7 @@ function menu() {
     25) doctorCheck ;;
     26) clearGradleCache ;;
     27) createLauncherIcons ;;
+    28) storeScreenshots ;;
 
     31) androidLogs ;;
     32) iosLogs ;;

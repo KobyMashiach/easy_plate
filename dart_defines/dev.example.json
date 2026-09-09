@@ -5,5 +5,7 @@
   "ADMOB_NATIVE_AD_UNIT_ANDROID": "ca-app-pub-<publisher>/<native-unit>",
   "ADMOB_NATIVE_AD_UNIT_IOS": "ca-app-pub-<publisher>/<native-unit>",
   "ADMOB_REWARDED_AD_UNIT_ANDROID": "ca-app-pub-<publisher>/<rewarded-unit>",
-  "ADMOB_REWARDED_AD_UNIT_IOS": "ca-app-pub-<publisher>/<rewarded-unit>"
+  "ADMOB_REWARDED_AD_UNIT_IOS": "ca-app-pub-<publisher>/<rewarded-unit>",
+  "REVENUECAT_API_KEY_ANDROID": "goog_<public-sdk-key>",
+  "REVENUECAT_API_KEY_IOS": "appl_<public-sdk-key>"
 }

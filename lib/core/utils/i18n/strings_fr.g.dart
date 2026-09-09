@@ -63,6 +63,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$nav$fr nav = _Translations$nav$fr._(_root);
 	@override late final _Translations$update$fr update = _Translations$update$fr._(_root);
 	@override late final _Translations$ads$fr ads = _Translations$ads$fr._(_root);
+	@override late final _Translations$premium$fr premium = _Translations$premium$fr._(_root);
 }
 
 // Path: common
@@ -714,6 +715,42 @@ class _Translations$ads$fr extends Translations$ads$he {
 	@override String get videoUnavailable => 'Aucune vidéo disponible pour le moment, réessayez dans un instant';
 }
 
+// Path: premium
+class _Translations$premium$fr extends Translations$premium$he {
+	_Translations$premium$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'EasyPlate Premium';
+	@override String get headline => 'Sans publicité, sans limites';
+	@override String get subtitle => 'Tout ce qu\'EasyPlate sait faire, sans attendre demain.';
+	@override String get benefitNoAds => 'Aucune publicité dans les fils de la communauté';
+	@override String get benefitShared => 'Recettes partagées sans limite quotidienne';
+	@override String get benefitAi => 'Extraction de recettes par IA depuis n\'importe quel lien, illimitée';
+	@override String get periodWeekly => 'Hebdomadaire';
+	@override String get periodMonthly => 'Mensuel';
+	@override String get periodTwoMonth => 'Tous les 2 mois';
+	@override String get periodThreeMonth => 'Trimestriel';
+	@override String get periodSixMonth => 'Tous les 6 mois';
+	@override String get periodAnnual => 'Annuel';
+	@override String get periodLifetime => 'À vie';
+	@override String get bestValue => 'Meilleure offre';
+	@override String subscribeFor({required Object price}) => 'S\'abonner pour ${price}';
+	@override String buyFor({required Object price}) => 'Acheter pour ${price}';
+	@override String get restore => 'Restaurer les achats';
+	@override String get restored => 'Votre abonnement a été restauré';
+	@override String get nothingToRestore => 'Aucun achat à restaurer';
+	@override String get activeTitle => 'Premium actif';
+	@override String get activeBody => 'Merci ! Les publicités et les limites quotidiennes sont désactivées sur ce compte.';
+	@override String get unavailable => 'Les abonnements ne sont pas disponibles pour le moment. Réessayez plus tard.';
+	@override String get purchaseFailed => 'L\'achat n\'a pas abouti';
+	@override String get purchased => 'Bienvenue dans Premium !';
+	@override String get legal => 'L\'abonnement se renouvelle automatiquement à la fin de chaque période, sauf annulation au moins 24 heures avant son terme. Le paiement est prélevé sur votre compte de la boutique et peut être géré ou annulé dans ses réglages.';
+	@override String get terms => 'Conditions d\'utilisation';
+	@override String get privacy => 'Politique de confidentialité';
+}
+
 /// The flat map containing all translations for locale <fr>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1165,6 +1202,33 @@ extension on TranslationsFr {
 			'ads.loadingVideo' => 'Chargement de la vidéo...',
 			'ads.videoNotCompleted' => 'La vidéo n\'a pas été terminée, la recette reste verrouillée',
 			'ads.videoUnavailable' => 'Aucune vidéo disponible pour le moment, réessayez dans un instant',
+			'premium.title' => 'EasyPlate Premium',
+			'premium.headline' => 'Sans publicité, sans limites',
+			'premium.subtitle' => 'Tout ce qu\'EasyPlate sait faire, sans attendre demain.',
+			'premium.benefitNoAds' => 'Aucune publicité dans les fils de la communauté',
+			'premium.benefitShared' => 'Recettes partagées sans limite quotidienne',
+			'premium.benefitAi' => 'Extraction de recettes par IA depuis n\'importe quel lien, illimitée',
+			'premium.periodWeekly' => 'Hebdomadaire',
+			'premium.periodMonthly' => 'Mensuel',
+			'premium.periodTwoMonth' => 'Tous les 2 mois',
+			'premium.periodThreeMonth' => 'Trimestriel',
+			'premium.periodSixMonth' => 'Tous les 6 mois',
+			'premium.periodAnnual' => 'Annuel',
+			'premium.periodLifetime' => 'À vie',
+			'premium.bestValue' => 'Meilleure offre',
+			'premium.subscribeFor' => ({required Object price}) => 'S\'abonner pour ${price}',
+			'premium.buyFor' => ({required Object price}) => 'Acheter pour ${price}',
+			'premium.restore' => 'Restaurer les achats',
+			'premium.restored' => 'Votre abonnement a été restauré',
+			'premium.nothingToRestore' => 'Aucun achat à restaurer',
+			'premium.activeTitle' => 'Premium actif',
+			'premium.activeBody' => 'Merci ! Les publicités et les limites quotidiennes sont désactivées sur ce compte.',
+			'premium.unavailable' => 'Les abonnements ne sont pas disponibles pour le moment. Réessayez plus tard.',
+			'premium.purchaseFailed' => 'L\'achat n\'a pas abouti',
+			'premium.purchased' => 'Bienvenue dans Premium !',
+			'premium.legal' => 'L\'abonnement se renouvelle automatiquement à la fin de chaque période, sauf annulation au moins 24 heures avant son terme. Le paiement est prélevé sur votre compte de la boutique et peut être géré ou annulé dans ses réglages.',
+			'premium.terms' => 'Conditions d\'utilisation',
+			'premium.privacy' => 'Politique de confidentialité',
 			_ => null,
 		};
 	}

@@ -10,6 +10,7 @@ import 'core/ads/ads_service.dart';
 import 'core/hive/adapters_controller.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'core/logger/memory_logger.dart';
+import 'core/monetization/purchases_service.dart';
 import 'core/monetization/trusted_clock.dart';
 import 'core/main_imports/repository_providers.dart';
 import 'core/services/app_update_service.dart';
@@ -37,6 +38,9 @@ Future<void> main() async {
   // daily quotas fall back to the device clock until the server time lands.
   unawaited(AdsService().init());
   unawaited(TrustedClock().sync());
+  // Same: the store SDK is slow to start, and the account is free until it
+  // says otherwise — nothing on the splash depends on it.
+  unawaited(PurchasesService().init());
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Hive.initFlutter();

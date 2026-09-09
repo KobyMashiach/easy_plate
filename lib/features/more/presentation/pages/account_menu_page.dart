@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/monetization/entitlement_service.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -97,6 +98,18 @@ class AccountMenuPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
+                // Premium first: it is the one row that costs money, and the
+                // label flips to "active" so a subscriber sees their status
+                // rather than a second sales pitch.
+                ListenableBuilder(
+                  listenable: EntitlementService(),
+                  builder: (context, _) => _MenuRow(
+                    icon: Icons.workspace_premium_rounded,
+                    label: EntitlementService().isPremium ? t.premium.activeTitle : t.premium.title,
+                    onTap: () => context.pushNamed(Routing.premium),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
                 _MenuRow(
                   icon: Icons.group_rounded,
                   label: t.settings.sharedAccess,
