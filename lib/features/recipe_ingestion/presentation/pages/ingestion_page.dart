@@ -8,6 +8,12 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/monetization/daily_quota_policy.dart';
+import '../../../../core/monetization/daily_usage_service.dart';
+import '../../../../core/monetization/entitlement_service.dart';
+import '../../../../core/monetization/monetization_config.dart';
+import '../../../../core/monetization/quota_gates.dart';
+import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -17,6 +23,21 @@ import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../bloc/ingestion_bloc.dart';
+import '../widgets/ai_quota_indicator.dart';
+
+/// The channels whose analysis is an AI call on a link — the ones behind the
+/// daily quota. Pasted text and a hand-written recipe are not.
+bool _isLinkExtraction(RecipeIngestionChannel channel) =>
+    channel == RecipeIngestionChannel.urlScrape || channel == RecipeIngestionChannel.socialVideo;
+
+/// Starts a link extraction once the quota gate has let it through. Every
+/// path that hands a URL to the model goes through here, so the gate can never
+/// be walked around by a second button.
+Future<void> _extractUrl(BuildContext context, String url) async {
+  final bloc = context.read<IngestionBloc>();
+  if (!await QuotaGates.extractWithAi(context)) return;
+  bloc.add(IngestionEvent.parseUrl(url));
+}
 
 String _channelLabel(RecipeIngestionChannel channel) => switch (channel) {
       RecipeIngestionChannel.rawText => t.ingestion.pasteText,
@@ -137,10 +158,15 @@ class _ChannelFormState extends State<_ChannelForm> {
         RecipeIngestionChannel.manual => '',
       };
 
-  void _submit() {
+  Future<void> _submit() async {
     final value = _controller.text.trim();
     if (value.isEmpty) return;
     final bloc = context.read<IngestionBloc>();
+    // The link channels cost a daily extraction, and a video: asked for
+    // before the model is touched, so a refused gate costs nothing.
+    if (_isLinkExtraction(widget.channel)) {
+      if (!await QuotaGates.extractWithAi(context)) return;
+    }
     switch (widget.channel) {
       case RecipeIngestionChannel.rawText:
         bloc.add(.parseRawText(value));
@@ -153,6 +179,44 @@ class _ChannelFormState extends State<_ChannelForm> {
       case RecipeIngestionChannel.manual:
         break;
     }
+  }
+
+  /// What the analyse button says on a link channel: the plain label while
+  /// the account is ad-free, "watch a video and parse" while extractions
+  /// remain, and a disabled "locked for today" once they are spent.
+  Widget _parseButton() {
+    if (!_isLinkExtraction(widget.channel) || MonetizationConfig.adFree) {
+      return ClayButton(
+        label: t.ingestion.parse,
+        icon: Icons.auto_awesome_rounded,
+        expanded: true,
+        onPressed: _hasInput ? _submit : null,
+      );
+    }
+    final verdict = DailyQuotaPolicy.aiExtraction(
+      usedToday: DailyUsageService().aiExtractionsToday,
+      premium: false,
+      limits: MonetizationConfig.limits,
+    );
+    return switch (verdict) {
+      GateVerdict.blocked => ClayButton(
+          label: t.ads.blockedForToday,
+          icon: Icons.lock_outline_rounded,
+          expanded: true,
+        ),
+      GateVerdict.rewarded => ClayButton(
+          label: t.ads.parseWithVideo,
+          icon: Icons.play_circle_rounded,
+          expanded: true,
+          onPressed: _hasInput ? _submit : null,
+        ),
+      GateVerdict.free => ClayButton(
+          label: t.ingestion.parse,
+          icon: Icons.auto_awesome_rounded,
+          expanded: true,
+          onPressed: _hasInput ? _submit : null,
+        ),
+    };
   }
 
   /// A recipe written by hand starts from the same structured editor a parsed
@@ -259,11 +323,14 @@ class _ChannelFormState extends State<_ChannelForm> {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          ClayButton(
-            label: t.ingestion.parse,
-            icon: Icons.auto_awesome_rounded,
-            expanded: true,
-            onPressed: _hasInput ? _submit : null,
+          if (_isLinkExtraction(widget.channel)) const AiQuotaIndicator(),
+          ListenableBuilder(
+            listenable: Listenable.merge([
+              DailyUsageService(),
+              EntitlementService(),
+              FirebaseService().configRevision,
+            ]),
+            builder: (context, _) => _parseButton(),
           ),
         ],
       ],
@@ -537,8 +604,12 @@ Future<void> showOpenRecipeSheet(BuildContext context, String url) async {
       ),
     ),
   );
-  if (generate == null) return;
-  bloc.add(generate ? IngestionEvent.parseUrl(url) : IngestionEvent.viewOriginal(url));
+  if (generate == null || !context.mounted) return;
+  if (!generate) {
+    bloc.add(IngestionEvent.viewOriginal(url));
+    return;
+  }
+  await _extractUrl(context, url);
 }
 
 class _OpenOption extends StatelessWidget {
@@ -646,8 +717,7 @@ class _OriginalView extends StatelessWidget {
                           context.read<IngestionBloc>().add(.updateRecipe(structured)),
                     ),
                     TextButton(
-                      onPressed: () =>
-                          context.read<IngestionBloc>().add(.parseUrl(page.url)),
+                      onPressed: () => _extractUrl(context, page.url),
                       child: Text(
                         t.ingestion.preferAi,
                         style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
@@ -659,7 +729,7 @@ class _OriginalView extends StatelessWidget {
                   label: t.ingestion.generateStructured,
                   icon: Icons.auto_awesome_rounded,
                   expanded: true,
-                  onPressed: () => context.read<IngestionBloc>().add(.parseUrl(page.url)),
+                  onPressed: () => _extractUrl(context, page.url),
                 ),
         ),
       ],
@@ -683,7 +753,9 @@ class _UnparsedView extends StatelessWidget {
   });
 
   /// Retries the same analysis, not a different one: a link is re-parsed as a
-  /// link, pasted text as text.
+  /// link, pasted text as text. Deliberately not behind the quota gate: the
+  /// extraction was paid for when it started, and a slow model is not the
+  /// user's fault.
   void _retry(BuildContext context) {
     final bloc = context.read<IngestionBloc>();
     final url = sourceUrl;

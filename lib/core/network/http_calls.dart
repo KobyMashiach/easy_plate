@@ -19,15 +19,18 @@ class HttpCalls {
         ));
 
   Future<Response?> get(String path, {Map<String, dynamic>? queryParameters}) =>
-      _request('GET', path, null, queryParameters);
+      _request('GET', path, null, queryParameters, null);
 
-  Future<Response?> post(String path, {dynamic data}) => _request('POST', path, data, null);
+  /// [headers] are for this one call, on top of the fixed and provided ones.
+  Future<Response?> post(String path, {dynamic data, Map<String, String>? headers}) =>
+      _request('POST', path, data, null, headers);
 
   Future<Response?> _request(
     String method,
     String path,
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
   ) async {
     try {
       // Per-request headers win over the ones fixed at construction.
@@ -36,7 +39,7 @@ class HttpCalls {
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(method: method, headers: dynamicHeaders),
+        options: Options(method: method, headers: {...?dynamicHeaders, ...?headers}),
       );
     } on DioException catch (e) {
       throw switch (e.type) {

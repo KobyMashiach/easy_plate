@@ -4,6 +4,7 @@
 
 import 'package:hive_ce/hive_ce.dart';
 import 'package:easy_plate/core/constants/app_enums.dart';
+import 'package:easy_plate/core/monetization/daily_usage_model.dart';
 import 'package:easy_plate/features/grocery_list/data/models/grocery_item_model.dart';
 import 'package:easy_plate/features/grocery_list/data/models/grocery_item_source_model.dart';
 import 'package:easy_plate/features/grocery_list/data/models/grocery_list_model.dart';
@@ -21,6 +22,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(AccessRoleAdapter());
     registerAdapter(AppLanguageAdapter());
     registerAdapter(BookRecipeRefModelAdapter());
+    registerAdapter(DailyUsageModelAdapter());
     registerAdapter(DietaryPreferenceAdapter());
     registerAdapter(GroceryItemModelAdapter());
     registerAdapter(GroceryItemSourceModelAdapter());
@@ -42,6 +44,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(AccessRoleAdapter());
     registerAdapter(AppLanguageAdapter());
     registerAdapter(BookRecipeRefModelAdapter());
+    registerAdapter(DailyUsageModelAdapter());
     registerAdapter(DietaryPreferenceAdapter());
     registerAdapter(GroceryItemModelAdapter());
     registerAdapter(GroceryItemSourceModelAdapter());

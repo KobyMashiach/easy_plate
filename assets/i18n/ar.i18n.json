@@ -468,5 +468,24 @@
     "optionalBody": "النسخة $version من EasyPlate متوفرة في المتجر مع آخر التحسينات.",
     "updateNow": "تحديث الآن",
     "later": "تخطٍ"
+  },
+  "ads": {
+    "badge": "إعلان",
+    "freeViewsLeft": "تبقّى لك $count وصفات مجانية لليوم",
+    "rewardedViewsLeft": "تبقّى $count فتحات بفيديو قصير لليوم",
+    "sharedQuotaReached": "وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!",
+    "unlockRecipeTitle": "فتح وصفة مشتركة",
+    "unlockRecipeMessage": "شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى $count لليوم)",
+    "aiQuotaLeft": "تبقّى لك $remaining/$total استخراجات بالذكاء الاصطناعي لليوم",
+    "aiQuotaReached": "وصلت إلى الحد اليومي لاستخراجات الذكاء الاصطناعي. سيُفتح غدًا!",
+    "aiLockedHint": "الاستخراج من رابط يتطلب مشاهدة فيديو قصير",
+    "unlockAiTitle": "استخراج وصفة بالذكاء الاصطناعي",
+    "unlockAiMessage": "شاهد فيديو قصيرًا لاستخراج الوصفة من الرابط (تبقّى $count لليوم)",
+    "watchVideo": "مشاهدة الفيديو",
+    "parseWithVideo": "مشاهدة فيديو ثم التحليل",
+    "blockedForToday": "مغلق لليوم",
+    "loadingVideo": "جارٍ تحميل الفيديو...",
+    "videoNotCompleted": "لم يكتمل الفيديو، تبقى الوصفة مغلقة",
+    "videoUnavailable": "لا يوجد فيديو متاح الآن، حاول مجددًا بعد قليل"
   }
 }

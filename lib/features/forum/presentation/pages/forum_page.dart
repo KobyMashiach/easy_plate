@@ -4,10 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/ads/feed_ad_layout.dart';
+import '../../../../core/ads/feed_ad_pool.dart';
+import '../../../../core/ads/native_ad_card.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/monetization/entitlement_service.dart';
+import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -78,13 +84,34 @@ Future<void> refreshForum(BuildContext context) {
   return done.future;
 }
 
-class _PostList extends StatelessWidget {
+class _PostList extends StatefulWidget {
   final List<ForumPostEntity> posts;
 
   const _PostList({required this.posts});
 
   @override
+  State<_PostList> createState() => _PostListState();
+}
+
+class _PostListState extends State<_PostList> {
+  /// Kept across rebuilds so a new reply count does not re-request the ads.
+  final _ads = FeedAdPool();
+
+  late final Listenable _adSources = Listenable.merge([
+    EntitlementService(),
+    FirebaseService().configRevision,
+  ]);
+
+  @override
+  void dispose() {
+    _ads.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final posts = widget.posts;
+
     return RefreshIndicator(
       onRefresh: () => refreshForum(context),
       color: AppColors.primary,
@@ -92,19 +119,37 @@ class _PostList extends StatelessWidget {
           ? RefreshableEmptyState(
               child: ClayEmptyState(icon: Icons.forum_rounded, message: t.community.noPosts),
             )
-          : ListView.separated(
-              // Always scrollable so a list too short to overflow can still be
-              // pulled.
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.marginMobile,
-                0,
-                AppSpacing.marginMobile,
-                ClayNavDock.reservedHeight,
-              ),
-              itemCount: posts.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-              itemBuilder: (context, index) => _PostCard(post: posts[index]),
+          : ListenableBuilder(
+              listenable: _adSources,
+              builder: (context, _) {
+                // A native card after every few posts, for accounts that see
+                // ads at all.
+                final layout = FeedAdLayout(
+                  itemCount: posts.length,
+                  interval:
+                      MonetizationConfig.adFree ? 0 : MonetizationConfig.feedAdInterval,
+                );
+                return ListView.separated(
+                  // Always scrollable so a list too short to overflow can
+                  // still be pulled.
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.marginMobile,
+                    0,
+                    AppSpacing.marginMobile,
+                    ClayNavDock.reservedHeight,
+                  ),
+                  itemCount: layout.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, position) => switch (layout.slotAt(position)) {
+                    ContentSlot(index: final index) => _PostCard(post: posts[index]),
+                    AdSlot(adIndex: final adIndex) => switch (_ads.slot(adIndex)) {
+                        final slot? => NativeAdCard(slot: slot),
+                        null => const SizedBox.shrink(),
+                      },
+                  },
+                );
+              },
             ),
     );
   }

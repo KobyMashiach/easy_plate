@@ -62,6 +62,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$image$ar image = _Translations$image$ar._(_root);
 	@override late final _Translations$nav$ar nav = _Translations$nav$ar._(_root);
 	@override late final _Translations$update$ar update = _Translations$update$ar._(_root);
+	@override late final _Translations$ads$ar ads = _Translations$ads$ar._(_root);
 }
 
 // Path: common
@@ -687,6 +688,32 @@ class _Translations$update$ar extends Translations$update$he {
 	@override String get later => 'تخطٍ';
 }
 
+// Path: ads
+class _Translations$ads$ar extends Translations$ads$he {
+	_Translations$ads$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get badge => 'إعلان';
+	@override String freeViewsLeft({required Object count}) => 'تبقّى لك ${count} وصفات مجانية لليوم';
+	@override String rewardedViewsLeft({required Object count}) => 'تبقّى ${count} فتحات بفيديو قصير لليوم';
+	@override String get sharedQuotaReached => 'وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!';
+	@override String get unlockRecipeTitle => 'فتح وصفة مشتركة';
+	@override String unlockRecipeMessage({required Object count}) => 'شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى ${count} لليوم)';
+	@override String aiQuotaLeft({required Object remaining, required Object total}) => 'تبقّى لك ${remaining}/${total} استخراجات بالذكاء الاصطناعي لليوم';
+	@override String get aiQuotaReached => 'وصلت إلى الحد اليومي لاستخراجات الذكاء الاصطناعي. سيُفتح غدًا!';
+	@override String get aiLockedHint => 'الاستخراج من رابط يتطلب مشاهدة فيديو قصير';
+	@override String get unlockAiTitle => 'استخراج وصفة بالذكاء الاصطناعي';
+	@override String unlockAiMessage({required Object count}) => 'شاهد فيديو قصيرًا لاستخراج الوصفة من الرابط (تبقّى ${count} لليوم)';
+	@override String get watchVideo => 'مشاهدة الفيديو';
+	@override String get parseWithVideo => 'مشاهدة فيديو ثم التحليل';
+	@override String get blockedForToday => 'مغلق لليوم';
+	@override String get loadingVideo => 'جارٍ تحميل الفيديو...';
+	@override String get videoNotCompleted => 'لم يكتمل الفيديو، تبقى الوصفة مغلقة';
+	@override String get videoUnavailable => 'لا يوجد فيديو متاح الآن، حاول مجددًا بعد قليل';
+}
+
 /// The flat map containing all translations for locale <ar>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1121,6 +1148,23 @@ extension on TranslationsAr {
 			'update.optionalBody' => ({required Object version}) => 'النسخة ${version} من EasyPlate متوفرة في المتجر مع آخر التحسينات.',
 			'update.updateNow' => 'تحديث الآن',
 			'update.later' => 'تخطٍ',
+			'ads.badge' => 'إعلان',
+			'ads.freeViewsLeft' => ({required Object count}) => 'تبقّى لك ${count} وصفات مجانية لليوم',
+			'ads.rewardedViewsLeft' => ({required Object count}) => 'تبقّى ${count} فتحات بفيديو قصير لليوم',
+			'ads.sharedQuotaReached' => 'وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!',
+			'ads.unlockRecipeTitle' => 'فتح وصفة مشتركة',
+			'ads.unlockRecipeMessage' => ({required Object count}) => 'شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى ${count} لليوم)',
+			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'تبقّى لك ${remaining}/${total} استخراجات بالذكاء الاصطناعي لليوم',
+			'ads.aiQuotaReached' => 'وصلت إلى الحد اليومي لاستخراجات الذكاء الاصطناعي. سيُفتح غدًا!',
+			'ads.aiLockedHint' => 'الاستخراج من رابط يتطلب مشاهدة فيديو قصير',
+			'ads.unlockAiTitle' => 'استخراج وصفة بالذكاء الاصطناعي',
+			'ads.unlockAiMessage' => ({required Object count}) => 'شاهد فيديو قصيرًا لاستخراج الوصفة من الرابط (تبقّى ${count} لليوم)',
+			'ads.watchVideo' => 'مشاهدة الفيديو',
+			'ads.parseWithVideo' => 'مشاهدة فيديو ثم التحليل',
+			'ads.blockedForToday' => 'مغلق لليوم',
+			'ads.loadingVideo' => 'جارٍ تحميل الفيديو...',
+			'ads.videoNotCompleted' => 'لم يكتمل الفيديو، تبقى الوصفة مغلقة',
+			'ads.videoUnavailable' => 'لا يوجد فيديو متاح الآن، حاول مجددًا بعد قليل',
 			_ => null,
 		};
 	}

@@ -30,6 +30,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- AdMob *App* ID (the one with a tilde), not an ad unit. The SDK
+             refuses to initialise without it. This is Google's sample App ID;
+             replace it with the EasyPlate Android App ID from the AdMob
+             console before a store build. Ad *unit* IDs come from
+             dart_defines/dev.json, see lib/core/constants/ads_config.dart. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

@@ -29,6 +29,15 @@ service cloud.firestore {
       }
     }
 
+    // Premium status, written by the subscription webhook (or by hand from the
+    // console) and only ever read by the app. Kept out of /users/{uid} on
+    // purpose: that document is owner-writable, and an entitlement the owner
+    // can grant themselves is not one.
+    match /entitlements/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     // The display half of a profile, split out because rules grant or deny a
     // whole document: opening /users up so authors' names could be shown would
     // have exposed their email, phone and push token too.

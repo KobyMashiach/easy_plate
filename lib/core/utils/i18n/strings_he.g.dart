@@ -66,6 +66,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$image$he image = Translations$image$he.internal(_root);
 	late final Translations$nav$he nav = Translations$nav$he.internal(_root);
 	late final Translations$update$he update = Translations$update$he.internal(_root);
+	late final Translations$ads$he ads = Translations$ads$he.internal(_root);
 }
 
 // Path: common
@@ -1541,6 +1542,66 @@ class Translations$update$he {
 	String get later => 'דלג';
 }
 
+// Path: ads
+class Translations$ads$he {
+	Translations$ads$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'מודעה'
+	String get badge => 'מודעה';
+
+	/// he: 'נשארו לך $count מתכונים חופשיים להיום'
+	String freeViewsLeft({required Object count}) => 'נשארו לך ${count} מתכונים חופשיים להיום';
+
+	/// he: 'נותרו $count פתיחות עם סרטון קצר להיום'
+	String rewardedViewsLeft({required Object count}) => 'נותרו ${count} פתיחות עם סרטון קצר להיום';
+
+	/// he: 'הגעת למכסה היומית של מתכונים משותפים. המכסה תתאפס מחר!'
+	String get sharedQuotaReached => 'הגעת למכסה היומית של מתכונים משותפים. המכסה תתאפס מחר!';
+
+	/// he: 'פתיחת מתכון משותף'
+	String get unlockRecipeTitle => 'פתיחת מתכון משותף';
+
+	/// he: 'צפה בסרטון קצר כדי לפתוח מתכון זה (נשארו עוד $count להיום)'
+	String unlockRecipeMessage({required Object count}) => 'צפה בסרטון קצר כדי לפתוח מתכון זה (נשארו עוד ${count} להיום)';
+
+	/// he: 'נשארו לך $remaining/$total חילוצי AI להיום'
+	String aiQuotaLeft({required Object remaining, required Object total}) => 'נשארו לך ${remaining}/${total} חילוצי AI להיום';
+
+	/// he: 'הגעת למכסה היומית של חילוצי AI. האפשרות תיפתח מחר!'
+	String get aiQuotaReached => 'הגעת למכסה היומית של חילוצי AI. האפשרות תיפתח מחר!';
+
+	/// he: 'חילוץ מקישור דורש צפייה בסרטון קצר'
+	String get aiLockedHint => 'חילוץ מקישור דורש צפייה בסרטון קצר';
+
+	/// he: 'חילוץ מתכון עם AI'
+	String get unlockAiTitle => 'חילוץ מתכון עם AI';
+
+	/// he: 'צפה בסרטון קצר כדי לחלץ את המתכון מהקישור (נשארו עוד $count להיום)'
+	String unlockAiMessage({required Object count}) => 'צפה בסרטון קצר כדי לחלץ את המתכון מהקישור (נשארו עוד ${count} להיום)';
+
+	/// he: 'צפייה בסרטון'
+	String get watchVideo => 'צפייה בסרטון';
+
+	/// he: 'צפייה בסרטון וניתוח'
+	String get parseWithVideo => 'צפייה בסרטון וניתוח';
+
+	/// he: 'נחסם להיום'
+	String get blockedForToday => 'נחסם להיום';
+
+	/// he: 'טוען סרטון...'
+	String get loadingVideo => 'טוען סרטון...';
+
+	/// he: 'הסרטון לא הושלם, המתכון נשאר נעול'
+	String get videoNotCompleted => 'הסרטון לא הושלם, המתכון נשאר נעול';
+
+	/// he: 'אין סרטון זמין כרגע, נסו שוב בעוד רגע'
+	String get videoUnavailable => 'אין סרטון זמין כרגע, נסו שוב בעוד רגע';
+}
+
 /// The flat map containing all translations for locale <he>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1975,6 +2036,23 @@ extension on Translations {
 			'update.optionalBody' => ({required Object version}) => 'גרסה ${version} של EasyPlate כבר בחנות, עם השיפורים האחרונים.',
 			'update.updateNow' => 'עדכון עכשיו',
 			'update.later' => 'דלג',
+			'ads.badge' => 'מודעה',
+			'ads.freeViewsLeft' => ({required Object count}) => 'נשארו לך ${count} מתכונים חופשיים להיום',
+			'ads.rewardedViewsLeft' => ({required Object count}) => 'נותרו ${count} פתיחות עם סרטון קצר להיום',
+			'ads.sharedQuotaReached' => 'הגעת למכסה היומית של מתכונים משותפים. המכסה תתאפס מחר!',
+			'ads.unlockRecipeTitle' => 'פתיחת מתכון משותף',
+			'ads.unlockRecipeMessage' => ({required Object count}) => 'צפה בסרטון קצר כדי לפתוח מתכון זה (נשארו עוד ${count} להיום)',
+			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'נשארו לך ${remaining}/${total} חילוצי AI להיום',
+			'ads.aiQuotaReached' => 'הגעת למכסה היומית של חילוצי AI. האפשרות תיפתח מחר!',
+			'ads.aiLockedHint' => 'חילוץ מקישור דורש צפייה בסרטון קצר',
+			'ads.unlockAiTitle' => 'חילוץ מתכון עם AI',
+			'ads.unlockAiMessage' => ({required Object count}) => 'צפה בסרטון קצר כדי לחלץ את המתכון מהקישור (נשארו עוד ${count} להיום)',
+			'ads.watchVideo' => 'צפייה בסרטון',
+			'ads.parseWithVideo' => 'צפייה בסרטון וניתוח',
+			'ads.blockedForToday' => 'נחסם להיום',
+			'ads.loadingVideo' => 'טוען סרטון...',
+			'ads.videoNotCompleted' => 'הסרטון לא הושלם, המתכון נשאר נעול',
+			'ads.videoUnavailable' => 'אין סרטון זמין כרגע, נסו שוב בעוד רגע',
 			_ => null,
 		};
 	}

@@ -62,6 +62,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$image$fr image = _Translations$image$fr._(_root);
 	@override late final _Translations$nav$fr nav = _Translations$nav$fr._(_root);
 	@override late final _Translations$update$fr update = _Translations$update$fr._(_root);
+	@override late final _Translations$ads$fr ads = _Translations$ads$fr._(_root);
 }
 
 // Path: common
@@ -687,6 +688,32 @@ class _Translations$update$fr extends Translations$update$he {
 	@override String get later => 'Ignorer';
 }
 
+// Path: ads
+class _Translations$ads$fr extends Translations$ads$he {
+	_Translations$ads$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get badge => 'Publicité';
+	@override String freeViewsLeft({required Object count}) => 'Il vous reste ${count} recettes gratuites aujourd\'hui';
+	@override String rewardedViewsLeft({required Object count}) => 'Il reste ${count} ouvertures avec une courte vidéo aujourd\'hui';
+	@override String get sharedQuotaReached => 'Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !';
+	@override String get unlockRecipeTitle => 'Débloquer une recette partagée';
+	@override String unlockRecipeMessage({required Object count}) => 'Regardez une courte vidéo pour débloquer cette recette (${count} restantes aujourd\'hui)';
+	@override String aiQuotaLeft({required Object remaining, required Object total}) => 'Il vous reste ${remaining}/${total} extractions IA aujourd\'hui';
+	@override String get aiQuotaReached => 'Vous avez atteint la limite quotidienne d\'extractions IA. Elle rouvre demain !';
+	@override String get aiLockedHint => 'L\'extraction depuis un lien nécessite de regarder une courte vidéo';
+	@override String get unlockAiTitle => 'Extraire une recette avec l\'IA';
+	@override String unlockAiMessage({required Object count}) => 'Regardez une courte vidéo pour extraire la recette du lien (${count} restantes aujourd\'hui)';
+	@override String get watchVideo => 'Regarder la vidéo';
+	@override String get parseWithVideo => 'Regarder une vidéo et analyser';
+	@override String get blockedForToday => 'Bloqué pour aujourd\'hui';
+	@override String get loadingVideo => 'Chargement de la vidéo...';
+	@override String get videoNotCompleted => 'La vidéo n\'a pas été terminée, la recette reste verrouillée';
+	@override String get videoUnavailable => 'Aucune vidéo disponible pour le moment, réessayez dans un instant';
+}
+
 /// The flat map containing all translations for locale <fr>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1121,6 +1148,23 @@ extension on TranslationsFr {
 			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} est dans le store, avec les dernières améliorations.',
 			'update.updateNow' => 'Mettre à jour',
 			'update.later' => 'Ignorer',
+			'ads.badge' => 'Publicité',
+			'ads.freeViewsLeft' => ({required Object count}) => 'Il vous reste ${count} recettes gratuites aujourd\'hui',
+			'ads.rewardedViewsLeft' => ({required Object count}) => 'Il reste ${count} ouvertures avec une courte vidéo aujourd\'hui',
+			'ads.sharedQuotaReached' => 'Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !',
+			'ads.unlockRecipeTitle' => 'Débloquer une recette partagée',
+			'ads.unlockRecipeMessage' => ({required Object count}) => 'Regardez une courte vidéo pour débloquer cette recette (${count} restantes aujourd\'hui)',
+			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'Il vous reste ${remaining}/${total} extractions IA aujourd\'hui',
+			'ads.aiQuotaReached' => 'Vous avez atteint la limite quotidienne d\'extractions IA. Elle rouvre demain !',
+			'ads.aiLockedHint' => 'L\'extraction depuis un lien nécessite de regarder une courte vidéo',
+			'ads.unlockAiTitle' => 'Extraire une recette avec l\'IA',
+			'ads.unlockAiMessage' => ({required Object count}) => 'Regardez une courte vidéo pour extraire la recette du lien (${count} restantes aujourd\'hui)',
+			'ads.watchVideo' => 'Regarder la vidéo',
+			'ads.parseWithVideo' => 'Regarder une vidéo et analyser',
+			'ads.blockedForToday' => 'Bloqué pour aujourd\'hui',
+			'ads.loadingVideo' => 'Chargement de la vidéo...',
+			'ads.videoNotCompleted' => 'La vidéo n\'a pas été terminée, la recette reste verrouillée',
+			'ads.videoUnavailable' => 'Aucune vidéo disponible pour le moment, réessayez dans un instant',
 			_ => null,
 		};
 	}

@@ -62,6 +62,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$image$en image = _Translations$image$en._(_root);
 	@override late final _Translations$nav$en nav = _Translations$nav$en._(_root);
 	@override late final _Translations$update$en update = _Translations$update$en._(_root);
+	@override late final _Translations$ads$en ads = _Translations$ads$en._(_root);
 }
 
 // Path: common
@@ -687,6 +688,32 @@ class _Translations$update$en extends Translations$update$he {
 	@override String get later => 'Skip';
 }
 
+// Path: ads
+class _Translations$ads$en extends Translations$ads$he {
+	_Translations$ads$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get badge => 'Ad';
+	@override String freeViewsLeft({required Object count}) => '${count} free recipes left today';
+	@override String rewardedViewsLeft({required Object count}) => '${count} unlocks with a short video left today';
+	@override String get sharedQuotaReached => 'You\'ve reached today\'s limit of shared recipes. It resets tomorrow!';
+	@override String get unlockRecipeTitle => 'Unlock a shared recipe';
+	@override String unlockRecipeMessage({required Object count}) => 'Watch a short video to unlock this recipe (${count} left today)';
+	@override String aiQuotaLeft({required Object remaining, required Object total}) => '${remaining}/${total} AI extractions left today';
+	@override String get aiQuotaReached => 'You\'ve reached today\'s limit of AI extractions. It reopens tomorrow!';
+	@override String get aiLockedHint => 'Extracting from a link requires watching a short video';
+	@override String get unlockAiTitle => 'Extract a recipe with AI';
+	@override String unlockAiMessage({required Object count}) => 'Watch a short video to extract the recipe from the link (${count} left today)';
+	@override String get watchVideo => 'Watch the video';
+	@override String get parseWithVideo => 'Watch a video and parse';
+	@override String get blockedForToday => 'Locked for today';
+	@override String get loadingVideo => 'Loading the video...';
+	@override String get videoNotCompleted => 'The video wasn\'t completed, the recipe stays locked';
+	@override String get videoUnavailable => 'No video is available right now, try again in a moment';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1121,6 +1148,23 @@ extension on TranslationsEn {
 			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} is in the store, with the latest improvements.',
 			'update.updateNow' => 'Update now',
 			'update.later' => 'Skip',
+			'ads.badge' => 'Ad',
+			'ads.freeViewsLeft' => ({required Object count}) => '${count} free recipes left today',
+			'ads.rewardedViewsLeft' => ({required Object count}) => '${count} unlocks with a short video left today',
+			'ads.sharedQuotaReached' => 'You\'ve reached today\'s limit of shared recipes. It resets tomorrow!',
+			'ads.unlockRecipeTitle' => 'Unlock a shared recipe',
+			'ads.unlockRecipeMessage' => ({required Object count}) => 'Watch a short video to unlock this recipe (${count} left today)',
+			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => '${remaining}/${total} AI extractions left today',
+			'ads.aiQuotaReached' => 'You\'ve reached today\'s limit of AI extractions. It reopens tomorrow!',
+			'ads.aiLockedHint' => 'Extracting from a link requires watching a short video',
+			'ads.unlockAiTitle' => 'Extract a recipe with AI',
+			'ads.unlockAiMessage' => ({required Object count}) => 'Watch a short video to extract the recipe from the link (${count} left today)',
+			'ads.watchVideo' => 'Watch the video',
+			'ads.parseWithVideo' => 'Watch a video and parse',
+			'ads.blockedForToday' => 'Locked for today',
+			'ads.loadingVideo' => 'Loading the video...',
+			'ads.videoNotCompleted' => 'The video wasn\'t completed, the recipe stays locked',
+			'ads.videoUnavailable' => 'No video is available right now, try again in a moment',
 			_ => null,
 		};
 	}

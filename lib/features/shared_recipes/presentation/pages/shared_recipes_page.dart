@@ -4,11 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/ads/feed_ad_layout.dart';
+import '../../../../core/ads/feed_ad_pool.dart';
+import '../../../../core/ads/native_ad_card.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/monetization/daily_quota_policy.dart';
+import '../../../../core/monetization/daily_usage_service.dart';
+import '../../../../core/monetization/entitlement_service.dart';
+import '../../../../core/monetization/monetization_config.dart';
+import '../../../../core/monetization/quota_gates.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -22,6 +31,7 @@ import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
 import '../widgets/shared_feed_filter_sheet.dart';
 import '../widgets/shared_feed_query.dart';
+import '../widgets/shared_quota_banner.dart';
 import '../bloc/shared_recipes_bloc.dart';
 
 class SharedRecipesPage extends StatelessWidget {
@@ -97,9 +107,21 @@ class _FeedState extends State<_Feed> {
   final _search = TextEditingController();
   SharedFeedQuery _query = const SharedFeedQuery();
 
+  /// The feed's native ads, kept across rebuilds so a like or a filter does
+  /// not re-request them.
+  final _ads = FeedAdPool();
+
+  /// What the lock badges on the cards depend on.
+  late final Listenable _gateSources = Listenable.merge([
+    DailyUsageService(),
+    EntitlementService(),
+    FirebaseService().configRevision,
+  ]);
+
   @override
   void dispose() {
     _search.dispose();
+    _ads.dispose();
     super.dispose();
   }
 
@@ -144,6 +166,7 @@ class _FeedState extends State<_Feed> {
           ),
           child: Column(
             children: [
+              const SharedQuotaBanner(),
               Row(
                 children: [
                   Expanded(child: _searchField()),
@@ -194,23 +217,43 @@ class _FeedState extends State<_Feed> {
                           : _emptyMessage,
                     ),
                   )
-                : ListView.separated(
-                    // Always scrollable so a list too short to overflow can
-                    // still be pulled.
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.marginMobile,
-                      0,
-                      AppSpacing.marginMobile,
-                      ClayNavDock.reservedHeight,
-                    ),
-                    itemCount: visible.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, index) => _SharedCard(shared: visible[index]),
+                : ListenableBuilder(
+                    listenable: _gateSources,
+                    builder: (context, _) => _list(visible),
                   ),
           ),
         ),
       ],
+    );
+  }
+
+  /// The recipes with a native ad card after every few of them — for accounts
+  /// that see ads at all. The card positions are arithmetic on the visible
+  /// list, so a filter that shortens the list moves the ads with it.
+  Widget _list(List<SharedRecipeEntity> visible) {
+    final layout = FeedAdLayout(
+      itemCount: visible.length,
+      interval: MonetizationConfig.adFree ? 0 : MonetizationConfig.feedAdInterval,
+    );
+
+    return ListView.separated(
+      // Always scrollable so a list too short to overflow can still be pulled.
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.marginMobile,
+        0,
+        AppSpacing.marginMobile,
+        ClayNavDock.reservedHeight,
+      ),
+      itemCount: layout.length,
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+      itemBuilder: (context, position) => switch (layout.slotAt(position)) {
+        ContentSlot(index: final index) => _SharedCard(shared: visible[index]),
+        AdSlot(adIndex: final adIndex) => switch (_ads.slot(adIndex)) {
+            final slot? => NativeAdCard(slot: slot),
+            null => const SizedBox.shrink(),
+          },
+      },
     );
   }
 
@@ -369,21 +412,51 @@ class _SharedCard extends StatelessWidget {
     if (confirmed ?? false) bloc.add(SharedRecipesEvent.unshare(shared.id));
   }
 
+  /// Through the daily quota first. Read-only for everyone, the author
+  /// included: their edit lives on the card above and rewrites the shared
+  /// copy, not a local one.
+  Future<void> _open(BuildContext context) async {
+    final allowed = await QuotaGates.openSharedRecipe(
+      context,
+      sharedId: shared.id,
+      authorUid: shared.authorUid,
+    );
+    if (!allowed || !context.mounted) return;
+    context.pushNamed(
+      Routing.recipeDetails,
+      extra: RecipeDetailsArgs(recipe: shared.recipe, readOnly: true),
+    );
+  }
+
+  /// The badge that says what opening this card will cost — nothing for a
+  /// free or already-opened recipe, a play icon for a video, a lock when the
+  /// day's allowance is spent.
+  IconData? _gateBadge(bool isMine) {
+    if (isMine || MonetizationConfig.adFree) return null;
+    final usage = DailyUsageService();
+    return switch (DailyQuotaPolicy.sharedRecipe(
+      viewedToday: usage.sharedViewsToday,
+      alreadyViewed: usage.hasViewedShared(shared.id),
+      premium: false,
+      limits: MonetizationConfig.limits,
+    )) {
+      GateVerdict.free => null,
+      GateVerdict.rewarded => Icons.play_circle_outline_rounded,
+      GateVerdict.blocked => Icons.lock_outline_rounded,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<SharedRecipesBloc>();
     final isMine = AuthSessionService().user?.uid == shared.authorUid;
     final recipe = shared.recipe;
+    final badge = _gateBadge(isMine);
 
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
-      // Read-only for everyone, the author included: their edit lives on the
-      // card above and rewrites the shared copy, not a local one.
-      onTap: () => context.pushNamed(
-        Routing.recipeDetails,
-        extra: RecipeDetailsArgs(recipe: recipe, readOnly: true),
-      ),
+      onTap: () => _open(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -412,7 +485,15 @@ class _SharedCard extends StatelessWidget {
                 : null,
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(recipe.title, style: AppTextStyles.bodyLg),
+          Row(
+            children: [
+              Expanded(child: Text(recipe.title, style: AppTextStyles.bodyLg)),
+              if (badge != null) ...[
+                const SizedBox(width: AppSpacing.base),
+                Icon(badge, size: 18, color: AppColors.tertiary),
+              ],
+            ],
+          ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             recipe.ingredients.take(4).map((i) {

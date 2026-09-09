@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mirrors lib/core/constants/app_colors.dart. The native ad card is a
+     platform view, so it cannot read the Dart tokens; keep these in step. -->
+<resources>
+    <color name="ep_primary">#5B3CDD</color>
+    <color name="ep_on_primary">#FFFFFF</color>
+    <color name="ep_primary_fixed">#E5DEFF</color>
+    <color name="ep_on_surface">#181445</color>
+    <color name="ep_on_surface_variant">#484555</color>
+    <color name="ep_surface_container_low">#F6F2FF</color>
+    <color name="ep_surface_container_lowest">#FFFFFF</color>
+</resources>

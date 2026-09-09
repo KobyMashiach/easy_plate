@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/monetization/quota_gates.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
@@ -90,6 +91,15 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
         );
         return;
       }
+      // The same daily quota as the feed: a link in a reply is another door
+      // to the same community recipe.
+      if (!mounted) return;
+      final allowed = await QuotaGates.openSharedRecipe(
+        context,
+        sharedId: shared.id,
+        authorUid: shared.authorUid,
+      );
+      if (!allowed) return;
       router.pushNamed(
         Routing.recipeDetails,
         extra: RecipeDetailsArgs(recipe: shared.recipe, readOnly: true),

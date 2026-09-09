@@ -64,6 +64,7 @@ dependencies:
   url_launcher: ^6.3.2
   crypto: ^3.0.7
   package_info_plus: ^10.2.1
+  google_mobile_ads: ^9.1.0
 
 dev_dependencies:
   flutter_test:

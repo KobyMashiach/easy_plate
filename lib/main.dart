@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
+import 'core/ads/ads_service.dart';
 import 'core/hive/adapters_controller.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'core/logger/memory_logger.dart';
+import 'core/monetization/trusted_clock.dart';
 import 'core/main_imports/repository_providers.dart';
 import 'core/services/app_update_service.dart';
 import 'core/services/auth_session_service.dart';
@@ -29,6 +33,10 @@ Future<void> main() async {
   // Before anything that might throw, so Crashlytics captures startup failures.
   await FirebaseService().init();
   await ConnectivityService().initialize();
+  // Neither is awaited: consent and the first ad can take seconds, and the
+  // daily quotas fall back to the device clock until the server time lands.
+  unawaited(AdsService().init());
+  unawaited(TrustedClock().sync());
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Hive.initFlutter();
@@ -133,6 +141,9 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
       // Same reasoning, for the recipes other accounts may have edited while
       // this app was in the background.
       AuthSessionService().refreshSharedRecipes();
+      // And for the date: an app left open across midnight must not keep
+      // charging today's openings to yesterday's allowance.
+      TrustedClock().sync();
     }
   }
 

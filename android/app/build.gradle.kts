@@ -39,9 +39,9 @@ android {
         applicationId = "com.KHEasyDev.easy_plate"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        // Firebase Auth/Firestore require API 23; maxOf keeps whatever Flutter
+        // Firebase needs API 23 and google_mobile_ads 9.x needs 24; maxOf keeps whatever Flutter
         // asks for when its own floor is higher.
-        minSdk = maxOf(flutter.minSdkVersion, 23)
+        minSdk = maxOf(flutter.minSdkVersion, 24)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

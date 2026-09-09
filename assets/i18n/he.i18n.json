@@ -468,5 +468,24 @@
     "optionalBody": "גרסה $version של EasyPlate כבר בחנות, עם השיפורים האחרונים.",
     "updateNow": "עדכון עכשיו",
     "later": "דלג"
+  },
+  "ads": {
+    "badge": "מודעה",
+    "freeViewsLeft": "נשארו לך $count מתכונים חופשיים להיום",
+    "rewardedViewsLeft": "נותרו $count פתיחות עם סרטון קצר להיום",
+    "sharedQuotaReached": "הגעת למכסה היומית של מתכונים משותפים. המכסה תתאפס מחר!",
+    "unlockRecipeTitle": "פתיחת מתכון משותף",
+    "unlockRecipeMessage": "צפה בסרטון קצר כדי לפתוח מתכון זה (נשארו עוד $count להיום)",
+    "aiQuotaLeft": "נשארו לך $remaining/$total חילוצי AI להיום",
+    "aiQuotaReached": "הגעת למכסה היומית של חילוצי AI. האפשרות תיפתח מחר!",
+    "aiLockedHint": "חילוץ מקישור דורש צפייה בסרטון קצר",
+    "unlockAiTitle": "חילוץ מתכון עם AI",
+    "unlockAiMessage": "צפה בסרטון קצר כדי לחלץ את המתכון מהקישור (נשארו עוד $count להיום)",
+    "watchVideo": "צפייה בסרטון",
+    "parseWithVideo": "צפייה בסרטון וניתוח",
+    "blockedForToday": "נחסם להיום",
+    "loadingVideo": "טוען סרטון...",
+    "videoNotCompleted": "הסרטון לא הושלם, המתכון נשאר נעול",
+    "videoUnavailable": "אין סרטון זמין כרגע, נסו שוב בעוד רגע"
   }
 }

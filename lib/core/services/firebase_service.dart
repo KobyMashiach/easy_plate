@@ -47,7 +47,28 @@ class FirebaseService {
     // Set once the app has an App Store listing; the numeric id is the only
     // way to link to it. Empty means "no iOS listing yet".
     iosAppStoreIdKey: '',
+    // Monetisation, read by MonetizationConfig. Every ad and every daily quota
+    // hangs off these, so a console change reaches users on their next resume
+    // without a release.
+    adsEnabledKey: true,
+    // When no rewarded ad can be served (no fill, offline), the unlock is
+    // granted anyway. A brand-new AdMob account fills poorly for a while, and
+    // a user refused their recipe because *we* had nothing to show them is
+    // the wrong person to punish.
+    adsFailOpenKey: true,
+    // One native card after every N feed items.
+    feedAdIntervalKey: 5,
+    quotaSharedFreeKey: 3,
+    quotaSharedRewardedKey: 3,
+    quotaAiRewardedKey: 2,
   };
+
+  static const adsEnabledKey = 'ads_enabled';
+  static const adsFailOpenKey = 'ads_fail_open';
+  static const feedAdIntervalKey = 'ads_feed_interval';
+  static const quotaSharedFreeKey = 'quota_shared_free';
+  static const quotaSharedRewardedKey = 'quota_shared_rewarded';
+  static const quotaAiRewardedKey = 'quota_ai_rewarded';
 
   static const isProdKey = 'isProd';
 
@@ -85,6 +106,29 @@ class FirebaseService {
     } catch (e) {
       // Firebase not up yet; the default is the honest answer.
       return remoteDefaults[key]! as String;
+    }
+  }
+
+  /// A boolean parameter, blank-safe the same way [remoteString] is.
+  bool remoteBool(String key) {
+    final fallback = remoteDefaults[key]! as bool;
+    try {
+      final value = FirebaseRemoteConfig.instance.getValue(key);
+      return value.asString().trim().isEmpty ? fallback : value.asBool();
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  /// An integer parameter. Blank or non-numeric falls back to the default, so
+  /// a typo in the console can never set a quota to zero by accident.
+  int remoteInt(String key) {
+    final fallback = remoteDefaults[key]! as int;
+    try {
+      final raw = FirebaseRemoteConfig.instance.getString(key).trim();
+      return int.tryParse(raw) ?? fallback;
+    } catch (e) {
+      return fallback;
     }
   }
 

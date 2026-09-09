@@ -25,6 +25,7 @@ class UserScope {
     'recipeBooksBox',
     'mealPlansBox',
     'groceryListsBox',
+    'dailyUsageBox',
   ];
 
   String? _uid;

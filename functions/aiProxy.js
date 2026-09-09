@@ -9,6 +9,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret, defineInt } = require("firebase-functions/params");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
+const crypto = require("node:crypto");
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
@@ -46,6 +47,170 @@ function dailyLimitForUser(_uid) {
 
 function utcDay() {
   return new Date().toISOString().slice(0, 10);
+}
+
+// ---------------------------------------------------------------------------
+// The URL cache. A recipe page does not change between two people pasting
+// it, and the model call is the one thing in here that costs money — so a
+// link that has been extracted before is answered from Firestore, for free,
+// without touching the quota. The app names the link in two headers (see
+// GeminiRecipeAiDataSource.sourceUrlHeaders); the prompt itself is still in
+// the body, and the response goes back byte-for-byte as Gemini sent it, so
+// the app cannot tell a hit from a miss except by the `x-easyplate-cache`
+// header.
+// ---------------------------------------------------------------------------
+
+const CACHE_COLLECTION = "ai_url_cache";
+const SOURCE_URL_HEADER = "x-easyplate-source-url";
+const SOURCE_KIND_HEADER = "x-easyplate-source-kind";
+const CACHE_KINDS = new Set(["url", "social"]);
+
+// Half a year. Recipes are edited rarely; the odd stale one is the price of
+// never paying twice for the same page.
+const CACHE_TTL_MS = 180 * 24 * 60 * 60 * 1000;
+
+// Query parameters that identify the *visit*, not the page. Stripped so a
+// TikTok link shared from two phones, each with its own tracking tail, is
+// the same recipe.
+const TRACKING_PARAMS = new Set([
+  "fbclid", "gclid", "dclid", "msclkid", "mc_cid", "mc_eid", "yclid",
+  "igsh", "igshid", "ig_rid",
+  "si", "feature",
+  "_t", "_r", "_d", "is_from_webapp", "is_copy_url", "sender_device",
+  "sender_web_id", "web_id", "share_app_id", "share_item_id", "share_link_id",
+  "ref", "ref_src", "ref_url", "source", "s", "sfnsn", "mibextid",
+]);
+
+/// The canonical form of a link, or null when it is not an http(s) URL.
+///
+/// Scheme and host are case-folded, a leading `www.` and the default port go,
+/// the fragment goes, the tracking parameters above go, the rest are sorted,
+/// and a trailing slash is dropped from any path but the root.
+function normalizeSourceUrl(raw) {
+  if (typeof raw !== "string") return null;
+  let url;
+  try {
+    url = new URL(raw.trim());
+  } catch (err) {
+    return null;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+
+  let host = url.hostname.toLowerCase();
+  if (host.startsWith("www.")) host = host.slice(4);
+
+  const kept = [];
+  for (const [key, value] of url.searchParams) {
+    if (key.startsWith("utm_") || TRACKING_PARAMS.has(key)) continue;
+    kept.push([key, value]);
+  }
+  kept.sort(([a, av], [b, bv]) => (a < b ? -1 : a > b ? 1 : av < bv ? -1 : av > bv ? 1 : 0));
+  const query = new URLSearchParams(kept).toString();
+
+  let path = url.pathname || "/";
+  if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+
+  const port = url.port ? `:${url.port}` : "";
+  return `${url.protocol}//${host}${port}${path}${query ? `?${query}` : ""}`;
+}
+
+function cacheKeyFor(kind, normalizedUrl) {
+  return crypto.createHash("sha256").update(`${kind}\n${normalizedUrl}`).digest("hex");
+}
+
+/// What this request wants cached, or null when it is not a link extraction.
+///
+/// The URL named in the header has to appear in the body: the header is what
+/// the cache is keyed on, and without that check a client could send the
+/// prompt for page A under the header for page B and poison B's entry.
+function cacheRequestFor(headers, body) {
+  const raw = headers[SOURCE_URL_HEADER];
+  const kind = headers[SOURCE_KIND_HEADER];
+  if (typeof raw !== "string" || !CACHE_KINDS.has(kind)) return null;
+  if (typeof body !== "string" || !body.includes(raw.trim())) return null;
+  const normalizedUrl = normalizeSourceUrl(raw);
+  if (!normalizedUrl) return null;
+  return { kind, url: raw.trim(), normalizedUrl, key: cacheKeyFor(kind, normalizedUrl) };
+}
+
+/// The recipe inside a Gemini Interactions response, or null when the body
+/// holds no usable one — a refusal, an empty page, a malformed answer. Only a
+/// real recipe is worth remembering; caching a "nothing found" would serve
+/// that failure to everyone who pastes the link later.
+function extractedRecipe(responseText) {
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch (err) {
+    return null;
+  }
+  let text = "";
+  for (const step of Array.isArray(data?.steps) ? data.steps : []) {
+    for (const block of Array.isArray(step?.content) ? step.content : []) {
+      if (typeof block?.text === "string") text += block.text;
+    }
+  }
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end <= start) return null;
+  let recipe;
+  try {
+    recipe = JSON.parse(text.slice(start, end + 1));
+  } catch (err) {
+    return null;
+  }
+  if (typeof recipe?.title !== "string" || !recipe.title.trim()) return null;
+  const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+  const steps = Array.isArray(recipe.steps) ? recipe.steps : [];
+  if (ingredients.length === 0 && steps.length === 0) return null;
+  return recipe;
+}
+
+function isFresh(createdAt, now) {
+  const created = createdAt && typeof createdAt.toMillis === "function" ? createdAt.toMillis() : null;
+  return created !== null && now - created < CACHE_TTL_MS;
+}
+
+async function readCache(entry) {
+  try {
+    const snap = await admin.firestore().doc(`${CACHE_COLLECTION}/${entry.key}`).get();
+    if (!snap.exists) return null;
+    const data = snap.data();
+    if (!isFresh(data.createdAt, Date.now()) || typeof data.body !== "string") return null;
+    return data;
+  } catch (err) {
+    logger.warn("url cache read failed", { key: entry.key, reason: err.message });
+    return null;
+  }
+}
+
+async function writeCache(entry, body, contentType, model) {
+  try {
+    await admin.firestore().doc(`${CACHE_COLLECTION}/${entry.key}`).set({
+      kind: entry.kind,
+      url: entry.url,
+      normalizedUrl: entry.normalizedUrl,
+      body,
+      contentType,
+      model: typeof model === "string" ? model : null,
+      hits: 0,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      lastHitAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    logger.warn("url cache write failed", { key: entry.key, reason: err.message });
+  }
+}
+
+function countHit(entry) {
+  admin
+    .firestore()
+    .doc(`${CACHE_COLLECTION}/${entry.key}`)
+    .update({
+      hits: admin.firestore.FieldValue.increment(1),
+      lastHitAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+    .catch((err) => logger.warn("url cache hit count failed", { reason: err.message }));
 }
 
 async function verifyCaller(req) {
@@ -154,6 +319,24 @@ exports.aiProxy = onRequest(
     }
 
     const uid = caller.uid;
+
+    // A link already extracted is answered here, for nothing: no model call,
+    // no quota slot. The app still shows its rewarded video for it — that is
+    // the app's business, and its daily count is the app's to keep.
+    const cacheEntry = cacheRequestFor(req.headers, body);
+    if (cacheEntry) {
+      const cached = await readCache(cacheEntry);
+      if (cached) {
+        countHit(cacheEntry);
+        logger.info("url cache hit", { uid, kind: cacheEntry.kind, key: cacheEntry.key });
+        return res
+          .status(200)
+          .set("Content-Type", cached.contentType || "application/json")
+          .set("x-easyplate-cache", "hit")
+          .send(cached.body);
+      }
+    }
+
     const limit = dailyLimitForUser(uid);
 
     let slot;
@@ -193,16 +376,26 @@ exports.aiProxy = onRequest(
         await refundQuotaSlot(uid);
       }
 
+      const contentType = upstream.headers.get("content-type") || "application/json";
+
+      // Remembered only when the answer holds a recipe; a 200 that says
+      // "nothing here" is not worth serving to the next person.
+      if (cacheEntry && upstream.status === 200 && extractedRecipe(text)) {
+        await writeCache(cacheEntry, text, contentType, req.body?.model);
+      }
+
       logger.info("proxied", {
         uid,
         status: upstream.status,
         used: slot.used,
         limit,
+        cache: cacheEntry ? "miss" : "n/a",
       });
 
       return res
         .status(upstream.status)
-        .set("Content-Type", upstream.headers.get("content-type") || "application/json")
+        .set("Content-Type", contentType)
+        .set("x-easyplate-cache", cacheEntry ? "miss" : "none")
         .send(text);
     } catch (err) {
       await refundQuotaSlot(uid);
@@ -218,7 +411,16 @@ exports.internals = {
   decideQuota,
   utcDay,
   dailyLimitForUser,
+  normalizeSourceUrl,
+  cacheKeyFor,
+  cacheRequestFor,
+  extractedRecipe,
+  isFresh,
   ALLOWED_PATH,
   MAX_BODY_BYTES,
   FREE_DAILY_CALLS,
+  CACHE_COLLECTION,
+  CACHE_TTL_MS,
+  SOURCE_URL_HEADER,
+  SOURCE_KIND_HEADER,
 };

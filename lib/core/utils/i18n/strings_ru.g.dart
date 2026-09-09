@@ -62,6 +62,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$image$ru image = _Translations$image$ru._(_root);
 	@override late final _Translations$nav$ru nav = _Translations$nav$ru._(_root);
 	@override late final _Translations$update$ru update = _Translations$update$ru._(_root);
+	@override late final _Translations$ads$ru ads = _Translations$ads$ru._(_root);
 }
 
 // Path: common
@@ -687,6 +688,32 @@ class _Translations$update$ru extends Translations$update$he {
 	@override String get later => 'Пропустить';
 }
 
+// Path: ads
+class _Translations$ads$ru extends Translations$ads$he {
+	_Translations$ads$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get badge => 'Реклама';
+	@override String freeViewsLeft({required Object count}) => 'На сегодня осталось бесплатных рецептов: ${count}';
+	@override String rewardedViewsLeft({required Object count}) => 'На сегодня осталось открытий за короткое видео: ${count}';
+	@override String get sharedQuotaReached => 'Вы достигли дневного лимита общих рецептов. Завтра он обнулится!';
+	@override String get unlockRecipeTitle => 'Открыть общий рецепт';
+	@override String unlockRecipeMessage({required Object count}) => 'Посмотрите короткое видео, чтобы открыть этот рецепт (осталось на сегодня: ${count})';
+	@override String aiQuotaLeft({required Object remaining, required Object total}) => 'На сегодня осталось ИИ-извлечений: ${remaining}/${total}';
+	@override String get aiQuotaReached => 'Вы достигли дневного лимита ИИ-извлечений. Завтра снова откроется!';
+	@override String get aiLockedHint => 'Для извлечения по ссылке нужно посмотреть короткое видео';
+	@override String get unlockAiTitle => 'Извлечь рецепт с помощью ИИ';
+	@override String unlockAiMessage({required Object count}) => 'Посмотрите короткое видео, чтобы извлечь рецепт по ссылке (осталось на сегодня: ${count})';
+	@override String get watchVideo => 'Смотреть видео';
+	@override String get parseWithVideo => 'Посмотреть видео и разобрать';
+	@override String get blockedForToday => 'Закрыто на сегодня';
+	@override String get loadingVideo => 'Загрузка видео...';
+	@override String get videoNotCompleted => 'Видео не досмотрено, рецепт остаётся закрытым';
+	@override String get videoUnavailable => 'Сейчас нет доступного видео, попробуйте через минуту';
+}
+
 /// The flat map containing all translations for locale <ru>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1121,6 +1148,23 @@ extension on TranslationsRu {
 			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} уже в магазине — с последними улучшениями.',
 			'update.updateNow' => 'Обновить',
 			'update.later' => 'Пропустить',
+			'ads.badge' => 'Реклама',
+			'ads.freeViewsLeft' => ({required Object count}) => 'На сегодня осталось бесплатных рецептов: ${count}',
+			'ads.rewardedViewsLeft' => ({required Object count}) => 'На сегодня осталось открытий за короткое видео: ${count}',
+			'ads.sharedQuotaReached' => 'Вы достигли дневного лимита общих рецептов. Завтра он обнулится!',
+			'ads.unlockRecipeTitle' => 'Открыть общий рецепт',
+			'ads.unlockRecipeMessage' => ({required Object count}) => 'Посмотрите короткое видео, чтобы открыть этот рецепт (осталось на сегодня: ${count})',
+			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'На сегодня осталось ИИ-извлечений: ${remaining}/${total}',
+			'ads.aiQuotaReached' => 'Вы достигли дневного лимита ИИ-извлечений. Завтра снова откроется!',
+			'ads.aiLockedHint' => 'Для извлечения по ссылке нужно посмотреть короткое видео',
+			'ads.unlockAiTitle' => 'Извлечь рецепт с помощью ИИ',
+			'ads.unlockAiMessage' => ({required Object count}) => 'Посмотрите короткое видео, чтобы извлечь рецепт по ссылке (осталось на сегодня: ${count})',
+			'ads.watchVideo' => 'Смотреть видео',
+			'ads.parseWithVideo' => 'Посмотреть видео и разобрать',
+			'ads.blockedForToday' => 'Закрыто на сегодня',
+			'ads.loadingVideo' => 'Загрузка видео...',
+			'ads.videoNotCompleted' => 'Видео не досмотрено, рецепт остаётся закрытым',
+			'ads.videoUnavailable' => 'Сейчас нет доступного видео, попробуйте через минуту',
 			_ => null,
 		};
 	}

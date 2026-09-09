@@ -133,8 +133,12 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
 
   /// Linking changes what the account *is*, so the gate has to re-read it —
   /// adding an email, for instance, introduces something to verify.
+  ///
+  /// Read from the repository, not from an `AuthBloc`: this page is built by
+  /// the router without one, and the link used to succeed and then throw
+  /// `Provider<AuthBloc> not found` from this very line.
   Future<void> _refreshIdentity() async {
-    final user = context.read<AuthBloc>().currentUser;
+    final user = context.read<AuthRepository>().currentUser;
     if (user != null) await _session.refreshUser(user);
     if (mounted) setState(() {});
   }

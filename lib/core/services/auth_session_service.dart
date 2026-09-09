@@ -13,6 +13,8 @@ import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
 import '../../features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../features/recipe_sharing/domain/usecases/refresh_collab_recipes_usecase.dart';
 import '../hive/user_scope.dart';
+import '../monetization/daily_usage_service.dart';
+import '../monetization/entitlement_service.dart';
 import '../sync/cloud_sync_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
@@ -98,6 +100,10 @@ class AuthSessionService extends ChangeNotifier {
       _profile = null;
       _onboardingComplete = false;
       NotificationsService().unbind();
+      // Neither may outlive the account: a premium flag would carry into the
+      // next sign-in, and a quota count would be charged to the wrong person.
+      EntitlementService().clear();
+      DailyUsageService().reset();
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
       return;
@@ -122,6 +128,9 @@ class AuthSessionService extends ChangeNotifier {
     // before anything reads a box — otherwise the previous account's recipes
     // are what comes back.
     await UserScope().switchTo(user.uid);
+    // A different account than the one whose usage is in memory, if any.
+    DailyUsageService().reset();
+    EntitlementService().watch(user.uid);
     // Then fill those boxes from the account's own cloud copy, before the
     // preferences read below: a phone that has never run the app has empty
     // boxes, and reading them first would show an account with no recipes and

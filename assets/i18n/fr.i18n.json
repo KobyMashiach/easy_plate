@@ -468,5 +468,24 @@
     "optionalBody": "EasyPlate $version est dans le store, avec les dernières améliorations.",
     "updateNow": "Mettre à jour",
     "later": "Ignorer"
+  },
+  "ads": {
+    "badge": "Publicité",
+    "freeViewsLeft": "Il vous reste $count recettes gratuites aujourd'hui",
+    "rewardedViewsLeft": "Il reste $count ouvertures avec une courte vidéo aujourd'hui",
+    "sharedQuotaReached": "Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !",
+    "unlockRecipeTitle": "Débloquer une recette partagée",
+    "unlockRecipeMessage": "Regardez une courte vidéo pour débloquer cette recette ($count restantes aujourd'hui)",
+    "aiQuotaLeft": "Il vous reste $remaining/$total extractions IA aujourd'hui",
+    "aiQuotaReached": "Vous avez atteint la limite quotidienne d'extractions IA. Elle rouvre demain !",
+    "aiLockedHint": "L'extraction depuis un lien nécessite de regarder une courte vidéo",
+    "unlockAiTitle": "Extraire une recette avec l'IA",
+    "unlockAiMessage": "Regardez une courte vidéo pour extraire la recette du lien ($count restantes aujourd'hui)",
+    "watchVideo": "Regarder la vidéo",
+    "parseWithVideo": "Regarder une vidéo et analyser",
+    "blockedForToday": "Bloqué pour aujourd'hui",
+    "loadingVideo": "Chargement de la vidéo...",
+    "videoNotCompleted": "La vidéo n'a pas été terminée, la recette reste verrouillée",
+    "videoUnavailable": "Aucune vidéo disponible pour le moment, réessayez dans un instant"
   }
 }

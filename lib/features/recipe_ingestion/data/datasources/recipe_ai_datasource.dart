@@ -220,16 +220,32 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
     return buffer.toString();
   }
 
+  /// Headers that let the proxy cache a link extraction by its URL.
+  ///
+  /// The proxy answers a link it has already extracted from Firestore rather
+  /// than from Gemini — a recipe page does not change between two people
+  /// pasting it, and the model call is the one thing here that costs money.
+  /// [kind] keeps the web and social prompts apart: they ask for different
+  /// things from the same URL. Ignored by Google when talking to it directly.
+  static Map<String, String> sourceUrlHeaders(String url, {required String kind}) => {
+        'x-easyplate-source-url': url,
+        'x-easyplate-source-kind': kind,
+      };
+
   /// Capacity spikes on a hot model answer with a retryable status rather than
   /// a permanent failure, so the identical request is worth re-sending before
   /// surfacing the error to the user.
-  Future<Map<String, dynamic>> _callStructured(Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> _callStructured(
+    Map<String, dynamic> body, {
+    Map<String, String>? headers,
+  }) async {
     _assertConfigured();
 
     Map<String, dynamic>? data;
     for (var attempt = 0; ; attempt++) {
       try {
-        final response = await httpCalls.post(ApiConfig.interactionsPath, data: body);
+        final response =
+            await httpCalls.post(ApiConfig.interactionsPath, data: body, headers: headers);
         data = response?.data as Map<String, dynamic>?;
         break;
       } on AppException catch (e) {
@@ -325,6 +341,7 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
           {'type': 'url_context'},
         ],
       ),
+      headers: sourceUrlHeaders(url, kind: 'url'),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.urlScrape, sourceUrl: url);
   }
@@ -343,6 +360,7 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
           {'type': 'url_context'},
         ],
       ),
+      headers: sourceUrlHeaders(url, kind: 'social'),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.socialVideo, sourceUrl: url);
   }

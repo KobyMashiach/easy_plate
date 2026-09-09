@@ -5,6 +5,7 @@ import '../../features/meal_planner/data/models/meal_plan_model.dart';
 import '../../features/my_recipes/data/models/recipe_model.dart';
 import '../../features/recipe_books/data/models/recipe_book_model.dart';
 import '../../features/user_profile/data/models/user_preferences_model.dart';
+import '../monetization/daily_usage_model.dart';
 import 'user_cloud_collection.dart';
 
 /// Every per-account box that is mirrored to Firestore, in one place.
@@ -60,7 +61,19 @@ class CloudSyncService {
     fromJson: GroceryListModel.fromJson,
   );
 
-  List<CloudMirror> get _mirrors => [preferences, recipes, books, mealPlans, groceryLists];
+  /// The day's quota spend, one record like the preferences. Mirrored so a
+  /// second device — or a reinstall — continues today's count instead of
+  /// starting a fresh one.
+  late final UserCloudCollection<DailyUsageModel> dailyUsage = UserCloudCollection(
+    boxName: DailyUsageModel.hiveKey,
+    collection: 'usage',
+    idOf: (_) => DailyUsageModel.storageKey,
+    toJson: (model) => model.toJson(),
+    fromJson: DailyUsageModel.fromJson,
+  );
+
+  List<CloudMirror> get _mirrors =>
+      [preferences, recipes, books, mealPlans, groceryLists, dailyUsage];
 
   /// The account already hydrated in this session, so the repeated auth events
   /// that follow a credential link or an email confirmation do not re-read the
