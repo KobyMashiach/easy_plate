@@ -28,9 +28,10 @@ abstract class BookNavigator {
 /// guide, the guide itself — is this one widget with different pages, so
 /// they cannot drift apart in look or feel.
 ///
-/// The only place the app may be turned on its side. Upright it shows one
+/// The only place the app may be turned on its side, and only on a tablet:
+/// a phone's half-width page is too narrow to read. Upright it shows one
 /// page at a time; on its side, two pages on a spine, turned like a real
-/// book. The page being read carries across the turn of the phone.
+/// book. The page being read carries across the turn.
 class OpenBookShell extends StatefulWidget {
   /// Covers everything that can change on a page. `PageFlipWidget` snapshots
   /// its children in initState and ignores later updates, so a change that
@@ -65,6 +66,13 @@ class _OpenBookShellState extends State<OpenBookShell> implements BookNavigator 
   /// portrait lock only comes back when the last of them closes.
   static int _openBooks = 0;
 
+  /// The shortest side a screen needs to count as a tablet, in logical
+  /// pixels — the same line Material draws between compact and medium.
+  static const tabletShortestSide = 600.0;
+
+  /// Whether this book let the screen turn, and so has to lock it again.
+  bool _unlocked = false;
+
   final _controller = PageFlipController();
   final _spread = BookSpreadController();
   int _currentPage = 0;
@@ -86,6 +94,16 @@ class _OpenBookShellState extends State<OpenBookShell> implements BookNavigator 
   void initState() {
     super.initState();
     _loadPreferences();
+  }
+
+  /// The screen size is only known once the tree is up, so the unlock waits
+  /// for it — and happens once, whatever the size does afterwards.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_unlocked) return;
+    if (MediaQuery.sizeOf(context).shortestSide < tabletShortestSide) return;
+    _unlocked = true;
     if (_openBooks++ == 0) {
       SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     }
@@ -93,7 +111,7 @@ class _OpenBookShellState extends State<OpenBookShell> implements BookNavigator 
 
   @override
   void dispose() {
-    if (--_openBooks == 0) {
+    if (_unlocked && --_openBooks == 0) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
     super.dispose();

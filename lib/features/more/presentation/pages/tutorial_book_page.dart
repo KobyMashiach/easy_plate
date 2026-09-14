@@ -109,9 +109,11 @@ class _ContentsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // One scroll for the whole page, like a book's contents page: a short
+    // leaf scrolls the cover away rather than running out of room.
     return BookPageSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           const SizedBox(
             width: double.infinity,
@@ -128,47 +130,46 @@ class _ContentsPage extends StatelessWidget {
           const SizedBox(height: AppSpacing.base),
           Text(
             t.walkthrough.bookSubtitle,
-            style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.bodyMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           Container(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.primaryFixed, width: 2)),
+              border: Border(
+                bottom: BorderSide(color: AppColors.primaryFixed, width: 2),
+              ),
             ),
             child: Text(
               t.walkthrough.contents,
-              style: AppTextStyles.headlineMd.copyWith(color: AppColors.primary),
+              style: AppTextStyles.headlineMd.copyWith(
+                color: AppColors.primary,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                BookContentsRow(
-                  title: t.walkthrough.demoRecipes,
-                  pageNumber: 2,
-                  onTap: () => onOpen(1),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                BookContentsRow(
-                  title: t.walkthrough.demoBooks,
-                  pageNumber: 3,
-                  onTap: () => onOpen(2),
-                ),
-                for (var i = 0; i < topics.length; i++) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  BookContentsRow(
-                    title: topics[i].title,
-                    pageNumber: i + TutorialBookPage._firstChapterPage + 1,
-                    onTap: () => onOpen(i + TutorialBookPage._firstChapterPage),
-                  ),
-                ],
-              ],
-            ),
+          BookContentsRow(
+            title: t.walkthrough.demoRecipes,
+            pageNumber: 2,
+            onTap: () => onOpen(1),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.sm),
+          BookContentsRow(
+            title: t.walkthrough.demoBooks,
+            pageNumber: 3,
+            onTap: () => onOpen(2),
+          ),
+          for (var i = 0; i < topics.length; i++) ...[
+            const SizedBox(height: AppSpacing.sm),
+            BookContentsRow(
+              title: topics[i].title,
+              pageNumber: i + TutorialBookPage._firstChapterPage + 1,
+              onTap: () => onOpen(i + TutorialBookPage._firstChapterPage),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.lg),
           ClayButton(
             label: t.walkthrough.startFull,
             icon: Icons.play_arrow_rounded,
@@ -217,48 +218,62 @@ class _ChapterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The head scrolls with the steps: a short leaf keeps the page number
+    // printed at the foot and lets the rest scroll under it.
     return BookPageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  t.walkthrough.chapter(number: number),
-                  style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
-                ),
-              ),
-              // The live version of this chapter, kept small and out of the
-              // reading line: the page is the guide, this is the shortcut.
-              TextButton.icon(
-                onPressed: onFocused,
-                style: TextButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  foregroundColor: AppColors.primary,
-                ),
-                icon: const Icon(Icons.center_focus_strong_rounded, size: 16),
-                label: Text(t.walkthrough.focused, style: AppTextStyles.labelSm),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(topic.title, style: AppTextStyles.headlineLgMobile),
-          const SizedBox(height: AppSpacing.base),
-          Text(
-            topic.summary,
-            style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          BookPageHeading(title: t.walkthrough.stepsTitle),
-          const SizedBox(height: AppSpacing.base),
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.walkthrough.chapter(number: number),
+                        style: AppTextStyles.labelSm.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    // The live version of this chapter, kept small and out of the
+                    // reading line: the page is the guide, this is the shortcut.
+                    TextButton.icon(
+                      onPressed: onFocused,
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        foregroundColor: AppColors.primary,
+                      ),
+                      icon: const Icon(
+                        Icons.center_focus_strong_rounded,
+                        size: 16,
+                      ),
+                      label: Text(
+                        t.walkthrough.focused,
+                        style: AppTextStyles.labelSm,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(topic.title, style: AppTextStyles.headlineLgMobile),
+                const SizedBox(height: AppSpacing.base),
+                Text(
+                  topic.summary,
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                BookPageHeading(title: t.walkthrough.stepsTitle),
+                const SizedBox(height: AppSpacing.base),
                 for (var i = 0; i < topic.steps.length; i++)
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.base,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -272,11 +287,18 @@ class _ChapterPage extends StatelessWidget {
                           ),
                           child: Text(
                             '${i + 1}',
-                            style: AppTextStyles.labelSm.copyWith(color: AppColors.primary),
+                            style: AppTextStyles.labelSm.copyWith(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
-                        Expanded(child: Text(topic.steps[i].body, style: AppTextStyles.bodyMd)),
+                        Expanded(
+                          child: Text(
+                            topic.steps[i].body,
+                            style: AppTextStyles.bodyMd,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -291,7 +313,8 @@ class _ChapterPage extends StatelessWidget {
 }
 
 /// The sample recipes, on the same cards the recipes tab uses. Opening one
-/// shows the real recipe page, read-only.
+/// shows the real recipe page, read-only. The head scrolls with the cards,
+/// so a short leaf never runs out of room for them.
 class _DemoRecipesPage extends StatelessWidget {
   final int pageNumber;
 
@@ -305,11 +328,14 @@ class _DemoRecipesPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _SampleHeader(title: t.walkthrough.demoRecipes, hint: t.walkthrough.demoRecipesHint),
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
+                _SampleHeader(
+                  title: t.walkthrough.demoRecipes,
+                  hint: t.walkthrough.demoRecipesHint,
+                ),
                 for (final recipe in recipes)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -317,7 +343,10 @@ class _DemoRecipesPage extends StatelessWidget {
                       recipe: recipe,
                       onTap: () => context.pushNamed(
                         Routing.recipeDetails,
-                        extra: RecipeDetailsArgs(recipe: recipe, readOnly: true),
+                        extra: RecipeDetailsArgs(
+                          recipe: recipe,
+                          readOnly: true,
+                        ),
                       ),
                     ),
                   ),
@@ -346,34 +375,42 @@ class _DemoBooksPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _SampleHeader(title: t.walkthrough.demoBooks, hint: t.walkthrough.demoBooksHint),
           Expanded(
-            child: GridView.builder(
-              padding: EdgeInsets.zero,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: AppSpacing.lg,
-                crossAxisSpacing: AppSpacing.gutter,
-                childAspectRatio: 0.72,
-              ),
-              itemCount: books.length,
-              itemBuilder: (context, index) {
-                final book = books[index];
-                return BookCoverCard(
-                  book: book,
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => DemoBookViewerPage(
-                        book: book,
-                        recipes: DemoContent.recipesOf(book),
-                      ),
-                    ),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _SampleHeader(
+                    title: t.walkthrough.demoBooks,
+                    hint: t.walkthrough.demoBooksHint,
                   ),
-                  // A sample has no options; the press does nothing on
-                  // purpose rather than opening a menu it cannot honour.
-                  onLongPress: () {},
-                );
-              },
+                ),
+                SliverGrid.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: AppSpacing.lg,
+                    crossAxisSpacing: AppSpacing.gutter,
+                    childAspectRatio: 0.72,
+                  ),
+                  itemCount: books.length,
+                  itemBuilder: (context, index) {
+                    final book = books[index];
+                    return BookCoverCard(
+                      book: book,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => DemoBookViewerPage(
+                            book: book,
+                            recipes: DemoContent.recipesOf(book),
+                          ),
+                        ),
+                      ),
+                      // A sample has no options; the press does nothing on
+                      // purpose rather than opening a menu it cannot honour.
+                      onLongPress: () {},
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           _PageFoot(pageNumber: pageNumber),
@@ -406,7 +443,12 @@ class _SampleHeader extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.base),
-        Text(hint, style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant)),
+        Text(
+          hint,
+          style: AppTextStyles.bodyMd.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: AppSpacing.gutter),
       ],
     );

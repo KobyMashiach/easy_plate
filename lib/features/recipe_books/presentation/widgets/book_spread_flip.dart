@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import 'book_page_surface.dart';
 
 /// Drives a [BookSpreadFlip] from outside: the capsule's jumps, a contents
@@ -211,8 +212,6 @@ class _BookSpreadFlipState extends State<BookSpreadFlip> with SingleTickerProvid
           startBase = 2 * _spread - 2;
           endBase = 2 * _spread + 1;
         }
-        final leftIndex = rtl ? endBase : startBase;
-        final rightIndex = rtl ? startBase : endBase;
 
         return GestureDetector(
           onHorizontalDragStart: _onDragStart,
@@ -222,12 +221,36 @@ class _BookSpreadFlipState extends State<BookSpreadFlip> with SingleTickerProvid
           child: ClipRect(
             child: Stack(
               children: [
+                // Start page first: the row follows the text direction, so
+                // in a Hebrew book the first page lies on the right.
                 Positioned.fill(
                   child: Row(
                     children: [
-                      Expanded(child: _page(leftIndex, isStart: !rtl)),
-                      Expanded(child: _page(rightIndex, isStart: rtl)),
+                      Expanded(child: _page(startBase, isStart: true)),
+                      Expanded(child: _page(endBase, isStart: false)),
                     ],
+                  ),
+                ),
+                // The spine: a hairline where the two leaves meet, with the
+                // gutter's shadow on either side of it.
+                Positioned(
+                  left: _halfWidth - 1,
+                  width: 2,
+                  top: 0,
+                  bottom: 0,
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.outlineVariant,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.onSurface.withValues(alpha: 0.12),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 if (_turning) _leaf(rtl),
@@ -251,9 +274,11 @@ class _BookSpreadFlipState extends State<BookSpreadFlip> with SingleTickerProvid
     final onLeft = showFront ? fromLeft : !fromLeft;
     // Hinged on the spine, which is the leaf's inner edge either way.
     final hinge = onLeft ? Alignment.centerRight : Alignment.centerLeft;
+    // Signed so the free edge swings toward the reader — the page rises off
+    // the desk and comes over — rather than sinking away into it.
     final rotation = showFront
-        ? (fromLeft ? angle : -angle)
-        : (fromLeft ? -(math.pi - angle) : math.pi - angle);
+        ? (fromLeft ? -angle : angle)
+        : (fromLeft ? math.pi - angle : -(math.pi - angle));
     final pageIndex = showFront ? front : back;
     final isStart = onLeft ? !rtl : rtl;
     // The leaf darkens as it stands up, the way paper turns from the light.

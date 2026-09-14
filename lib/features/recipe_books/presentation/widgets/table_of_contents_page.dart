@@ -36,9 +36,12 @@ class TableOfContentsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // One scroll for the whole page: on a short leaf — a phone on its side —
+    // the cover and the title scroll away with the list rather than leaving
+    // it no room.
     return BookPageSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           GestureDetector(
             onTap: onTapCover,
@@ -91,39 +94,38 @@ class TableOfContentsPage extends StatelessWidget {
             ),
             child: Text(
               t.books.tableOfContents,
-              style: AppTextStyles.headlineMd.copyWith(color: AppColors.primary),
+              style: AppTextStyles.headlineMd.copyWith(
+                color: AppColors.primary,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Expanded(
-            child: recipes.isEmpty
-                ? Center(
-                    child: Text(
-                      t.books.emptyBook,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.bodyMd.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                  )
-                : ListView.separated(
-                    itemCount: recipes.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, index) => BookContentsRow(
-                      title: recipes[index].title,
-                      pageNumber: index + 2,
-                      onTap: () => onSelectRecipe(index),
-                    ),
-                  ),
-          ),
+          if (recipes.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+              child: Text(
+                t.books.emptyBook,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+            )
+          else
+            for (var index = 0; index < recipes.length; index++) ...[
+              if (index > 0) const SizedBox(height: AppSpacing.sm),
+              BookContentsRow(
+                title: recipes[index].title,
+                pageNumber: index + 2,
+                onTap: () => onSelectRecipe(index),
+              ),
+            ],
         ],
       ),
     );
   }
 }
 
-/// One line of a contents page: the title, a dotted leader, the page number.
-/// Public because the guide's own contents page is set the same way.
 class BookContentsRow extends StatelessWidget {
   final String title;
   final int pageNumber;
@@ -156,8 +158,14 @@ class BookContentsRow extends StatelessWidget {
             ),
             const Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppSpacing.base, vertical: 6),
-                child: CustomPaint(size: Size.fromHeight(2), painter: _LeaderPainter()),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.base,
+                  vertical: 6,
+                ),
+                child: CustomPaint(
+                  size: Size.fromHeight(2),
+                  painter: _LeaderPainter(),
+                ),
               ),
             ),
             Text(
