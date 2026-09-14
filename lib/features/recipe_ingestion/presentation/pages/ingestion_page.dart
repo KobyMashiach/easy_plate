@@ -26,11 +26,14 @@ import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../bloc/ingestion_bloc.dart';
 import '../widgets/ai_quota_indicator.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 /// The channels whose analysis is an AI call on a link — the ones behind the
 /// daily quota. Pasted text and a hand-written recipe are not.
 bool _isLinkExtraction(RecipeIngestionChannel channel) =>
-    channel == RecipeIngestionChannel.urlScrape || channel == RecipeIngestionChannel.socialVideo;
+    channel == RecipeIngestionChannel.urlScrape ||
+    channel == RecipeIngestionChannel.socialVideo;
 
 /// Starts a link extraction once the quota gate has let it through. Every
 /// path that hands a URL to the model goes through here, so the gate can never
@@ -42,22 +45,22 @@ Future<void> _extractUrl(BuildContext context, String url) async {
 }
 
 String _channelLabel(RecipeIngestionChannel channel) => switch (channel) {
-      RecipeIngestionChannel.rawText => t.ingestion.pasteText,
-      RecipeIngestionChannel.webSearch => t.ingestion.webSearch,
-      RecipeIngestionChannel.urlScrape => t.ingestion.urlScrape,
-      RecipeIngestionChannel.socialVideo => t.ingestion.socialVideo,
-      RecipeIngestionChannel.aiRequest => t.ingestion.aiRequest,
-      RecipeIngestionChannel.manual => t.ingestion.manual,
-    };
+  RecipeIngestionChannel.rawText => t.ingestion.pasteText,
+  RecipeIngestionChannel.webSearch => t.ingestion.webSearch,
+  RecipeIngestionChannel.urlScrape => t.ingestion.urlScrape,
+  RecipeIngestionChannel.socialVideo => t.ingestion.socialVideo,
+  RecipeIngestionChannel.aiRequest => t.ingestion.aiRequest,
+  RecipeIngestionChannel.manual => t.ingestion.manual,
+};
 
 IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
-      RecipeIngestionChannel.rawText => Icons.content_paste_rounded,
-      RecipeIngestionChannel.webSearch => Icons.travel_explore_rounded,
-      RecipeIngestionChannel.urlScrape => Icons.link_rounded,
-      RecipeIngestionChannel.socialVideo => Icons.play_circle_rounded,
-      RecipeIngestionChannel.aiRequest => Icons.auto_awesome_rounded,
-      RecipeIngestionChannel.manual => Icons.edit_note_rounded,
-    };
+  RecipeIngestionChannel.rawText => Icons.content_paste_rounded,
+  RecipeIngestionChannel.webSearch => Icons.travel_explore_rounded,
+  RecipeIngestionChannel.urlScrape => Icons.link_rounded,
+  RecipeIngestionChannel.socialVideo => Icons.play_circle_rounded,
+  RecipeIngestionChannel.aiRequest => Icons.auto_awesome_rounded,
+  RecipeIngestionChannel.manual => Icons.edit_note_rounded,
+};
 
 class IngestionPage extends StatelessWidget {
   const IngestionPage({super.key});
@@ -79,26 +82,32 @@ class IngestionPage extends StatelessWidget {
             ),
             body: SafeArea(
               child: switch (state) {
-                IngestionIdle(channel: final channel) => _ChannelForm(channel: channel),
+                IngestionIdle(channel: final channel) => _ChannelForm(
+                  channel: channel,
+                ),
                 IngestionParsing(channel: final channel) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: AppSpacing.gutter),
-                        Text(
-                          channel == RecipeIngestionChannel.aiRequest
-                              ? t.ingestion.generating
-                              : t.ingestion.parsing,
-                          style: AppTextStyles.bodyMd,
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: AppSpacing.gutter),
+                      Text(
+                        channel == RecipeIngestionChannel.aiRequest
+                            ? t.ingestion.generating
+                            : t.ingestion.parsing,
+                        style: AppTextStyles.bodyMd,
+                      ),
+                    ],
                   ),
+                ),
                 IngestionSearchResults(results: final results) =>
                   _SearchResults(results: results),
-                IngestionReview(recipe: final recipe) => _ReviewRecipe(recipe: recipe),
-                IngestionOriginal(page: final page) => _OriginalView(page: page),
+                IngestionReview(recipe: final recipe) => _ReviewRecipe(
+                  recipe: recipe,
+                ),
+                IngestionOriginal(page: final page) => _OriginalView(
+                  page: page,
+                ),
                 IngestionError(channel: final channel, error: final error) =>
                   _ErrorView(channel: channel, error: error),
                 IngestionUnparsed(
@@ -113,7 +122,9 @@ class IngestionPage extends StatelessWidget {
                     sourceUrl: sourceUrl,
                     timedOut: timedOut,
                   ),
-                IngestionSaved() => const Center(child: CircularProgressIndicator()),
+                IngestionSaved() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
               },
             ),
           );
@@ -159,14 +170,14 @@ class _ChannelFormState extends State<_ChannelForm> {
   }
 
   String get _hint => switch (widget.channel) {
-        RecipeIngestionChannel.rawText => t.ingestion.pasteHint,
-        RecipeIngestionChannel.webSearch => 'קובה סלק',
-        RecipeIngestionChannel.urlScrape => 'https://...',
-        RecipeIngestionChannel.socialVideo => 'https://www.tiktok.com/...',
-        RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestHint,
-        // No text input on this channel; the editor is the form.
-        RecipeIngestionChannel.manual => '',
-      };
+    RecipeIngestionChannel.rawText => t.ingestion.pasteHint,
+    RecipeIngestionChannel.webSearch => 'קובה סלק',
+    RecipeIngestionChannel.urlScrape => 'https://...',
+    RecipeIngestionChannel.socialVideo => 'https://www.tiktok.com/...',
+    RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestHint,
+    // No text input on this channel; the editor is the form.
+    RecipeIngestionChannel.manual => '',
+  };
 
   Future<void> _submit() async {
     final value = _controller.text.trim();
@@ -215,22 +226,22 @@ class _ChannelFormState extends State<_ChannelForm> {
     );
     return switch (verdict) {
       GateVerdict.blocked => ClayButton(
-          label: t.ads.blockedForToday,
-          icon: Icons.lock_outline_rounded,
-          expanded: true,
-        ),
+        label: t.ads.blockedForToday,
+        icon: Icons.lock_outline_rounded,
+        expanded: true,
+      ),
       GateVerdict.rewarded => ClayButton(
-          label: t.ads.parseWithVideo,
-          icon: Icons.play_circle_rounded,
-          expanded: true,
-          onPressed: _hasInput ? _submit : null,
-        ),
+        label: t.ads.parseWithVideo,
+        icon: Icons.play_circle_rounded,
+        expanded: true,
+        onPressed: _hasInput ? _submit : null,
+      ),
       GateVerdict.free => ClayButton(
-          label: t.ingestion.parse,
-          icon: Icons.auto_awesome_rounded,
-          expanded: true,
-          onPressed: _hasInput ? _submit : null,
-        ),
+        label: t.ingestion.parse,
+        icon: Icons.auto_awesome_rounded,
+        expanded: true,
+        onPressed: _hasInput ? _submit : null,
+      ),
     };
   }
 
@@ -252,48 +263,60 @@ class _ChannelFormState extends State<_ChannelForm> {
       children: [
         ClayPageHeader(title: t.ingestion.title),
         const SizedBox(height: AppSpacing.md),
-        Wrap(
-          spacing: AppSpacing.base,
-          runSpacing: AppSpacing.base,
-          children: RecipeIngestionChannel.values.map((channel) {
-            final isSelected = widget.channel == channel;
-            return GestureDetector(
-              onTap: () => context.read<IngestionBloc>().add(.selectChannel(channel)),
-              behavior: HitTestBehavior.opaque,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.base,
-                ),
-                decoration: ShapeDecoration(
-                  color: isSelected ? AppColors.primaryFixed : AppColors.surfaceContainerLow,
-                  shape: StadiumBorder(
-                    side: BorderSide(
-                      color: isSelected ? AppColors.primary : AppColors.outlineVariant,
-                    ),
+        WalkthroughTarget(
+          id: WalkthroughIds.ingestionChannels,
+          child: Wrap(
+            spacing: AppSpacing.base,
+            runSpacing: AppSpacing.base,
+            children: RecipeIngestionChannel.values.map((channel) {
+              final isSelected = widget.channel == channel;
+              return GestureDetector(
+                onTap: () =>
+                    context.read<IngestionBloc>().add(.selectChannel(channel)),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.base,
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _channelIcon(channel),
-                      size: 16,
-                      color: isSelected ? AppColors.primary : AppColors.tertiary,
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      _channelLabel(channel),
-                      style: AppTextStyles.labelMd.copyWith(
-                        color: isSelected ? AppColors.primary : AppColors.tertiary,
+                  decoration: ShapeDecoration(
+                    color: isSelected
+                        ? AppColors.primaryFixed
+                        : AppColors.surfaceContainerLow,
+                    shape: StadiumBorder(
+                      side: BorderSide(
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.outlineVariant,
                       ),
                     ),
-                  ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _channelIcon(channel),
+                        size: 16,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.tertiary,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        _channelLabel(channel),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.tertiary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         if (widget.channel == RecipeIngestionChannel.manual) ...[
@@ -307,7 +330,9 @@ class _ChannelFormState extends State<_ChannelForm> {
                 const SizedBox(height: AppSpacing.gutter),
                 Text(
                   t.ingestion.manualHint,
-                  style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -390,7 +415,9 @@ class _SearchResults extends StatelessWidget {
                 result.snippet,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -424,7 +451,10 @@ class _ReviewRecipe extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.marginMobile),
             children: [
-              ClayTag(label: t.ingestion.reviewTitle, icon: Icons.fact_check_rounded),
+              ClayTag(
+                label: t.ingestion.reviewTitle,
+                icon: Icons.fact_check_rounded,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Text(recipe.title, style: AppTextStyles.headlineLgMobile),
               // The tags the analysis settled on, up front so a wrong one is
@@ -445,7 +475,10 @@ class _ReviewRecipe extends StatelessWidget {
                   }).toList(),
                 ),
               ],
-              AllergenNotice(allergens: recipe.allergens, mayContain: recipe.mayContain),
+              AllergenNotice(
+                allergens: recipe.allergens,
+                mayContain: recipe.mayContain,
+              ),
               const SizedBox(height: AppSpacing.md),
               ClayCard(
                 radius: AppRadius.md,
@@ -453,28 +486,41 @@ class _ReviewRecipe extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClaySectionHeader(title: t.recipe.ingredients, underline: true),
+                    ClaySectionHeader(
+                      title: t.recipe.ingredients,
+                      underline: true,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     ...recipe.ingredients.map((ingredient) {
                       final amount = ingredient.isAmountMissing
                           ? kMissingInfoPlaceholder
                           : ingredient.amount.toString();
                       final unit = measurementUnitLabel(ingredient.unit);
-                      final line = [amount, unit, ingredient.name]
-                          .where((s) => s.isNotEmpty)
-                          .join(' ');
+                      final line = [
+                        amount,
+                        unit,
+                        ingredient.name,
+                      ].where((s) => s.isNotEmpty).join(' ');
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xs,
+                        ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(
                               padding: EdgeInsets.only(top: 7),
-                              child: Icon(Icons.circle, size: 6, color: AppColors.primary),
+                              child: Icon(
+                                Icons.circle,
+                                size: 6,
+                                color: AppColors.primary,
+                              ),
                             ),
                             const SizedBox(width: AppSpacing.sm),
-                            Expanded(child: Text(line, style: AppTextStyles.bodyMd)),
+                            Expanded(
+                              child: Text(line, style: AppTextStyles.bodyMd),
+                            ),
                           ],
                         ),
                       );
@@ -489,37 +535,45 @@ class _ReviewRecipe extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClaySectionHeader(title: t.recipe.instructions, underline: true),
+                    ClaySectionHeader(
+                      title: t.recipe.instructions,
+                      underline: true,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     ...recipe.steps.asMap().entries.map(
-                          (entry) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 26,
-                                  height: 26,
-                                  alignment: Alignment.center,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primaryFixed,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '${entry.key + 1}',
-                                    style: AppTextStyles.labelSm.copyWith(
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  child: Text(entry.value, style: AppTextStyles.bodyMd),
-                                ),
-                              ],
-                            ),
-                          ),
+                      (entry) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.base,
                         ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 26,
+                              height: 26,
+                              alignment: Alignment.center,
+                              decoration: const BoxDecoration(
+                                color: AppColors.primaryFixed,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                '${entry.key + 1}',
+                                style: AppTextStyles.labelSm.copyWith(
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Text(
+                                entry.value,
+                                style: AppTextStyles.bodyMd,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -541,7 +595,8 @@ class _ReviewRecipe extends StatelessWidget {
                   label: t.common.save,
                   icon: Icons.bookmark_added_rounded,
                   expanded: true,
-                  onPressed: () => context.read<IngestionBloc>().add(.saveRecipe(recipe)),
+                  onPressed: () =>
+                      context.read<IngestionBloc>().add(.saveRecipe(recipe)),
                 ),
               ),
             ],
@@ -588,13 +643,16 @@ class _ErrorView extends StatelessWidget {
               Text(
                 error,
                 textAlign: TextAlign.center,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: AppSpacing.gutter),
               ClayButton(
                 label: t.common.retry,
                 icon: Icons.refresh_rounded,
-                onPressed: () => context.read<IngestionBloc>().add(.selectChannel(channel)),
+                onPressed: () =>
+                    context.read<IngestionBloc>().add(.selectChannel(channel)),
               ),
             ],
           ),
@@ -622,7 +680,10 @@ Future<void> showOpenRecipeSheet(BuildContext context, String url) async {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClaySectionHeader(title: t.ingestion.openOptionsTitle, underline: true),
+            ClaySectionHeader(
+              title: t.ingestion.openOptionsTitle,
+              underline: true,
+            ),
             const SizedBox(height: AppSpacing.md),
             _OpenOption(
               icon: Icons.article_rounded,
@@ -680,7 +741,9 @@ class _OpenOption extends StatelessWidget {
                 Text(title, style: AppTextStyles.bodyLg),
                 Text(
                   hint,
-                  style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -710,7 +773,10 @@ class _OriginalView extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.marginMobile),
             children: [
-              ClayTag(label: t.ingestion.originalTitle, icon: Icons.article_rounded),
+              ClayTag(
+                label: t.ingestion.originalTitle,
+                icon: Icons.article_rounded,
+              ),
               const SizedBox(height: AppSpacing.sm),
               if (page.title case final title?) ...[
                 Text(title, style: AppTextStyles.headlineLgMobile),
@@ -721,7 +787,9 @@ class _OriginalView extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textDirection: TextDirection.ltr,
-                style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelSm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
               ClayCard(
@@ -744,21 +812,26 @@ class _OriginalView extends StatelessWidget {
                     Text(
                       t.ingestion.structuredFromSite,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                      style: AppTextStyles.labelSm.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     ClayButton(
                       label: t.ingestion.useStructured,
                       icon: Icons.check_rounded,
                       expanded: true,
-                      onPressed: () =>
-                          context.read<IngestionBloc>().add(.updateRecipe(structured)),
+                      onPressed: () => context.read<IngestionBloc>().add(
+                        .updateRecipe(structured),
+                      ),
                     ),
                     TextButton(
                       onPressed: () => _extractUrl(context, page.url),
                       child: Text(
                         t.ingestion.preferAi,
-                        style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ],
@@ -800,7 +873,8 @@ class _UnparsedView extends StatelessWidget {
     switch (channel) {
       case RecipeIngestionChannel.socialVideo when url != null:
         bloc.add(.parseSocialVideo(url));
-      case RecipeIngestionChannel.urlScrape || RecipeIngestionChannel.webSearch when url != null:
+      case RecipeIngestionChannel.urlScrape || RecipeIngestionChannel.webSearch
+          when url != null:
         bloc.add(.parseUrl(url));
       case RecipeIngestionChannel.aiRequest:
         bloc.add(.generateRecipe(text));
@@ -820,15 +894,21 @@ class _UnparsedView extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.marginMobile),
             children: [
               ClayTag(
-                label: timedOut ? t.ingestion.analysisTimedOut : t.ingestion.analysisFailed,
-                icon: timedOut ? Icons.hourglass_bottom_rounded : Icons.error_outline_rounded,
+                label: timedOut
+                    ? t.ingestion.analysisTimedOut
+                    : t.ingestion.analysisFailed,
+                icon: timedOut
+                    ? Icons.hourglass_bottom_rounded
+                    : Icons.error_outline_rounded,
                 background: AppColors.errorContainer,
                 foreground: AppColors.onErrorContainer,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 t.ingestion.unparsedHint,
-                style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.bodyMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
               ClayCard(
@@ -848,7 +928,8 @@ class _UnparsedView extends StatelessWidget {
                 label: t.ingestion.saveForLater,
                 icon: Icons.bookmark_add_rounded,
                 expanded: true,
-                onPressed: () => bloc.add(.saveAsTemplate(text, sourceUrl: sourceUrl)),
+                onPressed: () =>
+                    bloc.add(.saveAsTemplate(text, sourceUrl: sourceUrl)),
               ),
               const SizedBox(height: AppSpacing.sm),
               Row(
@@ -858,7 +939,8 @@ class _UnparsedView extends StatelessWidget {
                       label: t.ingestion.editManually,
                       icon: Icons.edit_rounded,
                       expanded: true,
-                      onPressed: () => bloc.add(.editManually(text, sourceUrl: sourceUrl)),
+                      onPressed: () =>
+                          bloc.add(.editManually(text, sourceUrl: sourceUrl)),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),

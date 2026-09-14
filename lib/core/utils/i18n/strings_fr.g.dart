@@ -65,6 +65,8 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$update$fr update = _Translations$update$fr._(_root);
 	@override late final _Translations$ads$fr ads = _Translations$ads$fr._(_root);
 	@override late final _Translations$premium$fr premium = _Translations$premium$fr._(_root);
+	@override late final _Translations$walkthrough$fr walkthrough = _Translations$walkthrough$fr._(_root);
+	@override late final _Translations$feedback$fr feedback = _Translations$feedback$fr._(_root);
 }
 
 // Path: common
@@ -782,6 +784,174 @@ class _Translations$premium$fr extends Translations$premium$he {
 	@override String get privacy => 'Politique de confidentialité';
 }
 
+// Path: walkthrough
+class _Translations$walkthrough$fr extends Translations$walkthrough$he {
+	_Translations$walkthrough$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Guide';
+	@override String get start => 'Lancer le guide';
+	@override String get startHint => 'Une visite guidée de toutes les fonctions de l\'application, pas à pas';
+	@override String get startFull => 'Lancer la visite complète';
+	@override String get focused => 'Afficher l\'aide ciblée';
+	@override String get next => 'Suivant';
+	@override String get finish => 'Terminer';
+	@override String get skipStep => 'Passer l\'étape';
+	@override String get close => 'Fermer le guide';
+	@override String stepOf({required Object current, required Object total}) => 'Étape ${current} sur ${total}';
+	@override String get tapHint => 'Touchez la zone en surbrillance ou « Suivant »';
+	@override String get bookTitle => 'Guide EasyPlate';
+	@override String get bookSubtitle => 'Tout ce que l\'application sait faire, chapitre par chapitre. Un guide seulement : rien n\'est enregistré.';
+	@override String get contents => 'Sommaire';
+	@override String chapter({required Object number}) => 'Chapitre ${number}';
+	@override String get backToContents => 'Retour au sommaire';
+	@override String get stepsTitle => 'Les étapes';
+	@override String get welcomeTitle => 'Bienvenue sur EasyPlate';
+	@override String get welcomeBody => 'Parcourons ensemble les actions principales. Passez n\'importe quelle étape, ou fermez et relancez depuis l\'écran d\'assistance.';
+	@override late final _Translations$walkthrough$topics$fr topics = _Translations$walkthrough$topics$fr._(_root);
+	@override String get demoRecipes => 'Recettes d\'exemple';
+	@override String get demoRecipesHint => 'Voici à quoi ressemblent les recettes dans l\'application. Touchez-en une pour voir sa page complète : temps, thèmes, allergènes, ingrédients et étapes.';
+	@override String get demoBooks => 'Livres d\'exemple';
+	@override String get demoBooksHint => 'Voici à quoi ressemble un livre de recettes. Touchez-en un pour l\'ouvrir, tourner ses pages et naviguer depuis le sommaire.';
+	@override String get demoOnly => 'Exemple seulement, rien n\'est enregistré';
+}
+
+// Path: feedback
+class _Translations$feedback$fr extends Translations$feedback$he {
+	_Translations$feedback$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Signaler et suggérer';
+	@override String get subtitle => 'Un bug ? Une idée ? Écrivez-nous ici ; chaque message est lu.';
+	@override String get bug => 'Bug';
+	@override String get suggestion => 'Suggestion';
+	@override String get bugHint => 'Décrivez le bug : ce que vous avez fait, ce qui s\'est passé et ce que vous attendiez...';
+	@override String get suggestionHint => 'Dites-nous ce que vous aimeriez que l\'application fasse, et en quoi cela vous aiderait...';
+	@override String get send => 'Envoyer';
+	@override String get sent => 'Merci ! Votre message a été envoyé.';
+	@override String get failed => 'L\'envoi a échoué, réessayez plus tard';
+	@override String get admin => 'Messages reçus';
+	@override String get all => 'Tous';
+	@override String get bugs => 'Bugs';
+	@override String get suggestions => 'Suggestions';
+	@override String get none => 'Aucun message pour l\'instant';
+	@override String version({required Object version}) => 'Version ${version}';
+	@override String get notAllowed => 'Cet écran est réservé à l\'administrateur';
+}
+
+// Path: walkthrough.topics
+class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topics$he {
+	_Translations$walkthrough$topics$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$walkthrough$topics$addRecipe$fr addRecipe = _Translations$walkthrough$topics$addRecipe$fr._(_root);
+	@override late final _Translations$walkthrough$topics$myRecipes$fr myRecipes = _Translations$walkthrough$topics$myRecipes$fr._(_root);
+	@override late final _Translations$walkthrough$topics$library$fr library = _Translations$walkthrough$topics$library$fr._(_root);
+	@override late final _Translations$walkthrough$topics$mealPlan$fr mealPlan = _Translations$walkthrough$topics$mealPlan$fr._(_root);
+	@override late final _Translations$walkthrough$topics$groceries$fr groceries = _Translations$walkthrough$topics$groceries$fr._(_root);
+	@override late final _Translations$walkthrough$topics$community$fr community = _Translations$walkthrough$topics$community$fr._(_root);
+	@override late final _Translations$walkthrough$topics$account$fr account = _Translations$walkthrough$topics$account$fr._(_root);
+}
+
+// Path: walkthrough.topics.addRecipe
+class _Translations$walkthrough$topics$addRecipe$fr extends Translations$walkthrough$topics$addRecipe$he {
+	_Translations$walkthrough$topics$addRecipe$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Ajouter une recette';
+	@override String get summary => 'Importez une recette de n\'importe quelle source ; l\'IA la range dans un format unique : ingrédients, quantités, étapes et étiquettes.';
+	@override String get s1 => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.';
+	@override String get s2 => 'Choisissez une source : texte collé, recherche web, lien d\'un site, vidéo TikTok/Reels, demande libre à l\'IA, ou saisie manuelle. Après l\'analyse, vous vérifiez, modifiez et enregistrez.';
+}
+
+// Path: walkthrough.topics.myRecipes
+class _Translations$walkthrough$topics$myRecipes$fr extends Translations$walkthrough$topics$myRecipes$he {
+	_Translations$walkthrough$topics$myRecipes$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Mes recettes et enregistrées';
+	@override String get summary => 'Les recettes que vous avez écrites et celles enregistrées depuis la communauté, avec recherche et filtres par thème.';
+	@override String get s1 => 'Passez ici des recettes que vous avez écrites à celles enregistrées depuis la communauté.';
+	@override String get s2 => 'Recherche par nom et filtre par thème : viande, lait, végétarien, végan, casher, sans gluten et allergie.';
+}
+
+// Path: walkthrough.topics.library
+class _Translations$walkthrough$topics$library$fr extends Translations$walkthrough$topics$library$he {
+	_Translations$walkthrough$topics$library$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Livres de recettes';
+	@override String get summary => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner.';
+	@override String get s1 => 'Touchez « Bibliothèque » pour passer aux livres.';
+	@override String get s2 => 'Créez ici un nouveau livre. À l\'intérieur, ajoutez des recettes, tournez les pages et changez la couverture.';
+}
+
+// Path: walkthrough.topics.mealPlan
+class _Translations$walkthrough$topics$mealPlan$fr extends Translations$walkthrough$topics$mealPlan$he {
+	_Translations$walkthrough$topics$mealPlan$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Menu de la semaine';
+	@override String get summary => 'Un plan de repas pour toute la semaine qui alimente la liste de courses.';
+	@override String get s1 => 'Touchez « Repas » pour planifier la semaine.';
+	@override String get s2 => 'Créez un plan hebdomadaire et placez des recettes sur chaque jour et chaque repas.';
+}
+
+// Path: walkthrough.topics.groceries
+class _Translations$walkthrough$topics$groceries$fr extends Translations$walkthrough$topics$groceries$he {
+	_Translations$walkthrough$topics$groceries$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Liste de courses';
+	@override String get summary => 'Une liste construite depuis le menu, avec ce qui est déjà pris coché.';
+	@override String get s1 => 'Touchez « Courses ».';
+	@override String get s2 => 'Actualiser reconstruit la liste à partir de toutes les recettes du menu de la semaine.';
+	@override String get s3 => 'Et ici vous ajoutez un article libre à la main.';
+}
+
+// Path: walkthrough.topics.community
+class _Translations$walkthrough$topics$community$fr extends Translations$walkthrough$topics$community$he {
+	_Translations$walkthrough$topics$community$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Communauté';
+	@override String get summary => 'Les recettes partagées par tous, et un forum de questions-réponses.';
+	@override String get s1 => 'Touchez « Communauté ».';
+	@override String get s2 => 'Recettes partagées et forum. Aimez, enregistrez une recette chez vous, et joignez une recette à une réponse du forum.';
+	@override String get s3 => 'Le bouton de partage publie une de vos recettes dans la communauté.';
+}
+
+// Path: walkthrough.topics.account
+class _Translations$walkthrough$topics$account$fr extends Translations$walkthrough$topics$account$he {
+	_Translations$walkthrough$topics$account$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Compte et notifications';
+	@override String get summary => 'Les notifications d\'invitations de partage, et le compte avec premium, réglages et assistance.';
+	@override String get s1 => 'Notifications : invitations à partager des recettes et mises à jour.';
+	@override String get s2 => 'Le compte : premium, partage entre comptes, réglages, profil et assistance. C\'est aussi là que ce guide se relance.';
+}
+
 /// The flat map containing all translations for locale <fr>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1281,6 +1451,78 @@ extension on TranslationsFr {
 			'premium.legal' => 'L\'abonnement se renouvelle automatiquement à la fin de chaque période, sauf annulation au moins 24 heures avant son terme. Le paiement est prélevé sur votre compte de la boutique et peut être géré ou annulé dans ses réglages.',
 			'premium.terms' => 'Conditions d\'utilisation',
 			'premium.privacy' => 'Politique de confidentialité',
+			'walkthrough.title' => 'Guide',
+			'walkthrough.start' => 'Lancer le guide',
+			'walkthrough.startHint' => 'Une visite guidée de toutes les fonctions de l\'application, pas à pas',
+			'walkthrough.startFull' => 'Lancer la visite complète',
+			'walkthrough.focused' => 'Afficher l\'aide ciblée',
+			'walkthrough.next' => 'Suivant',
+			'walkthrough.finish' => 'Terminer',
+			'walkthrough.skipStep' => 'Passer l\'étape',
+			'walkthrough.close' => 'Fermer le guide',
+			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Étape ${current} sur ${total}',
+			'walkthrough.tapHint' => 'Touchez la zone en surbrillance ou « Suivant »',
+			'walkthrough.bookTitle' => 'Guide EasyPlate',
+			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Un guide seulement : rien n\'est enregistré.',
+			'walkthrough.contents' => 'Sommaire',
+			'walkthrough.chapter' => ({required Object number}) => 'Chapitre ${number}',
+			'walkthrough.backToContents' => 'Retour au sommaire',
+			'walkthrough.stepsTitle' => 'Les étapes',
+			'walkthrough.welcomeTitle' => 'Bienvenue sur EasyPlate',
+			'walkthrough.welcomeBody' => 'Parcourons ensemble les actions principales. Passez n\'importe quelle étape, ou fermez et relancez depuis l\'écran d\'assistance.',
+			'walkthrough.topics.addRecipe.title' => 'Ajouter une recette',
+			'walkthrough.topics.addRecipe.summary' => 'Importez une recette de n\'importe quelle source ; l\'IA la range dans un format unique : ingrédients, quantités, étapes et étiquettes.',
+			_ => null,
+		} ?? switch (path) {
+			'walkthrough.topics.addRecipe.s1' => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.',
+			'walkthrough.topics.addRecipe.s2' => 'Choisissez une source : texte collé, recherche web, lien d\'un site, vidéo TikTok/Reels, demande libre à l\'IA, ou saisie manuelle. Après l\'analyse, vous vérifiez, modifiez et enregistrez.',
+			'walkthrough.topics.myRecipes.title' => 'Mes recettes et enregistrées',
+			'walkthrough.topics.myRecipes.summary' => 'Les recettes que vous avez écrites et celles enregistrées depuis la communauté, avec recherche et filtres par thème.',
+			'walkthrough.topics.myRecipes.s1' => 'Passez ici des recettes que vous avez écrites à celles enregistrées depuis la communauté.',
+			'walkthrough.topics.myRecipes.s2' => 'Recherche par nom et filtre par thème : viande, lait, végétarien, végan, casher, sans gluten et allergie.',
+			'walkthrough.topics.library.title' => 'Livres de recettes',
+			'walkthrough.topics.library.summary' => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner.',
+			'walkthrough.topics.library.s1' => 'Touchez « Bibliothèque » pour passer aux livres.',
+			'walkthrough.topics.library.s2' => 'Créez ici un nouveau livre. À l\'intérieur, ajoutez des recettes, tournez les pages et changez la couverture.',
+			'walkthrough.topics.mealPlan.title' => 'Menu de la semaine',
+			'walkthrough.topics.mealPlan.summary' => 'Un plan de repas pour toute la semaine qui alimente la liste de courses.',
+			'walkthrough.topics.mealPlan.s1' => 'Touchez « Repas » pour planifier la semaine.',
+			'walkthrough.topics.mealPlan.s2' => 'Créez un plan hebdomadaire et placez des recettes sur chaque jour et chaque repas.',
+			'walkthrough.topics.groceries.title' => 'Liste de courses',
+			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le menu, avec ce qui est déjà pris coché.',
+			'walkthrough.topics.groceries.s1' => 'Touchez « Courses ».',
+			'walkthrough.topics.groceries.s2' => 'Actualiser reconstruit la liste à partir de toutes les recettes du menu de la semaine.',
+			'walkthrough.topics.groceries.s3' => 'Et ici vous ajoutez un article libre à la main.',
+			'walkthrough.topics.community.title' => 'Communauté',
+			'walkthrough.topics.community.summary' => 'Les recettes partagées par tous, et un forum de questions-réponses.',
+			'walkthrough.topics.community.s1' => 'Touchez « Communauté ».',
+			'walkthrough.topics.community.s2' => 'Recettes partagées et forum. Aimez, enregistrez une recette chez vous, et joignez une recette à une réponse du forum.',
+			'walkthrough.topics.community.s3' => 'Le bouton de partage publie une de vos recettes dans la communauté.',
+			'walkthrough.topics.account.title' => 'Compte et notifications',
+			'walkthrough.topics.account.summary' => 'Les notifications d\'invitations de partage, et le compte avec premium, réglages et assistance.',
+			'walkthrough.topics.account.s1' => 'Notifications : invitations à partager des recettes et mises à jour.',
+			'walkthrough.topics.account.s2' => 'Le compte : premium, partage entre comptes, réglages, profil et assistance. C\'est aussi là que ce guide se relance.',
+			'walkthrough.demoRecipes' => 'Recettes d\'exemple',
+			'walkthrough.demoRecipesHint' => 'Voici à quoi ressemblent les recettes dans l\'application. Touchez-en une pour voir sa page complète : temps, thèmes, allergènes, ingrédients et étapes.',
+			'walkthrough.demoBooks' => 'Livres d\'exemple',
+			'walkthrough.demoBooksHint' => 'Voici à quoi ressemble un livre de recettes. Touchez-en un pour l\'ouvrir, tourner ses pages et naviguer depuis le sommaire.',
+			'walkthrough.demoOnly' => 'Exemple seulement, rien n\'est enregistré',
+			'feedback.title' => 'Signaler et suggérer',
+			'feedback.subtitle' => 'Un bug ? Une idée ? Écrivez-nous ici ; chaque message est lu.',
+			'feedback.bug' => 'Bug',
+			'feedback.suggestion' => 'Suggestion',
+			'feedback.bugHint' => 'Décrivez le bug : ce que vous avez fait, ce qui s\'est passé et ce que vous attendiez...',
+			'feedback.suggestionHint' => 'Dites-nous ce que vous aimeriez que l\'application fasse, et en quoi cela vous aiderait...',
+			'feedback.send' => 'Envoyer',
+			'feedback.sent' => 'Merci ! Votre message a été envoyé.',
+			'feedback.failed' => 'L\'envoi a échoué, réessayez plus tard',
+			'feedback.admin' => 'Messages reçus',
+			'feedback.all' => 'Tous',
+			'feedback.bugs' => 'Bugs',
+			'feedback.suggestions' => 'Suggestions',
+			'feedback.none' => 'Aucun message pour l\'instant',
+			'feedback.version' => ({required Object version}) => 'Version ${version}',
+			'feedback.notAllowed' => 'Cet écran est réservé à l\'administrateur',
 			_ => null,
 		};
 	}

@@ -40,6 +40,9 @@ import '../../features/user_profile/data/repositories_impl/user_profile_reposito
 import '../../features/user_profile/domain/repositories/user_profile_repository.dart';
 import '../../features/user_profile/data/repositories_impl/user_preferences_repository_impl.dart';
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
+import '../../features/feedback/data/datasources/feedback_remote_datasource.dart';
+import '../../features/feedback/data/repositories_impl/feedback_repository_impl.dart';
+import '../../features/feedback/domain/repositories/feedback_repository.dart';
 
 /// Data sources first, then the repositories that read them — order matters,
 /// `create:` resolves earlier entries with `context.read`.
@@ -69,6 +72,10 @@ List<SingleChildWidget> buildRepositoryProviders() {
     ),
     RepositoryProvider<NotificationsRemoteDataSource>(
       create: (_) => NotificationsFirestoreDataSource(),
+    ),
+    RepositoryProvider<FeedbackRemoteDataSource>(create: (_) => FeedbackFirestoreDataSource()),
+    RepositoryProvider<FeedbackRepository>(
+      create: (context) => FeedbackRepositoryImpl(remoteDataSource: context.read()),
     ),
     RepositoryProvider<AuthRepository>(
       create: (context) => AuthRepositoryImpl(dataSource: context.read()),

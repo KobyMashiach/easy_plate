@@ -11,6 +11,11 @@ class UserPreferencesEntity {
   final bool fastPageTurnEnabled;
   final bool onboardingComplete;
 
+  /// The first-run guided tour was finished or closed. Kept with the rest of
+  /// the preferences so it travels to the cloud mirror and a reinstall does
+  /// not replay the tour.
+  final bool walkthroughSeen;
+
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
@@ -18,6 +23,7 @@ class UserPreferencesEntity {
     this.soundEffectsEnabled = true,
     this.fastPageTurnEnabled = true,
     this.onboardingComplete = false,
+    this.walkthroughSeen = false,
   });
 
   UserPreferencesEntity copyWith({
@@ -27,6 +33,7 @@ class UserPreferencesEntity {
     bool? soundEffectsEnabled,
     bool? fastPageTurnEnabled,
     bool? onboardingComplete,
+    bool? walkthroughSeen,
   }) {
     return UserPreferencesEntity(
       shoppingDay: shoppingDay ?? this.shoppingDay,
@@ -35,6 +42,7 @@ class UserPreferencesEntity {
       soundEffectsEnabled: soundEffectsEnabled ?? this.soundEffectsEnabled,
       fastPageTurnEnabled: fastPageTurnEnabled ?? this.fastPageTurnEnabled,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
+      walkthroughSeen: walkthroughSeen ?? this.walkthroughSeen,
     );
   }
 }

@@ -80,7 +80,7 @@ class RecipeBookPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  _PageHeading(title: t.recipe.ingredients),
+                  BookPageHeading(title: t.recipe.ingredients),
                   const SizedBox(height: AppSpacing.base),
                   ...recipe.ingredients.map((ingredient) {
                     final amount = ingredient.isAmountMissing
@@ -106,7 +106,7 @@ class RecipeBookPage extends StatelessWidget {
                     );
                   }),
                   const SizedBox(height: AppSpacing.md),
-                  _PageHeading(title: t.recipe.instructions),
+                  BookPageHeading(title: t.recipe.instructions),
                   const SizedBox(height: AppSpacing.base),
                   ...recipe.steps.asMap().entries.map(
                         (entry) => Padding(
@@ -155,10 +155,11 @@ class RecipeBookPage extends StatelessWidget {
 
 }
 
-class _PageHeading extends StatelessWidget {
+/// A section heading on a book page: primary text over a double rule.
+class BookPageHeading extends StatelessWidget {
   final String title;
 
-  const _PageHeading({required this.title});
+  const BookPageHeading({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

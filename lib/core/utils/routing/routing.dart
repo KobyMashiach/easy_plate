@@ -24,4 +24,6 @@ class Routing {
   static const notifications = 'notifications';
   static const profileEdit = 'profile_edit';
   static const forumThread = 'forum_thread';
+  static const tutorial = 'tutorial';
+  static const adminFeedback = 'admin_feedback';
 }

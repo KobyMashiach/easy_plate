@@ -14,6 +14,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/profile_avatar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/services/admin_access.dart';
 
 /// Reached from the avatar in every main screen's app bar.
 class AccountMenuPage extends StatelessWidget {
@@ -122,6 +123,17 @@ class AccountMenuPage extends StatelessWidget {
                   label: t.more.support,
                   onTap: () => context.pushNamed(Routing.support),
                 ),
+                // The administrator alone: everyone else's feedback, in one
+                // inbox. The rules refuse the read to any other account, so
+                // hiding the row is a courtesy, not the protection.
+                if (AdminAccess.isAdmin) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  _MenuRow(
+                    icon: Icons.admin_panel_settings_rounded,
+                    label: t.feedback.admin,
+                    onTap: () => context.pushNamed(Routing.adminFeedback),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.xl),
                 // Non-production builds are marked so a tester can tell at a
                 // glance which one is on the device. Listens rather than reads

@@ -19,6 +19,8 @@ import '../../../recipe_sharing/presentation/widgets/recipe_share_sheet.dart';
 import '../widgets/recipe_card.dart';
 import 'recipe_details_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 class MyRecipesPage extends StatelessWidget {
   const MyRecipesPage({super.key});
@@ -37,12 +39,19 @@ class MyRecipesPage extends StatelessWidget {
           body: BlocBuilder<MyRecipesBloc, MyRecipesState>(
             builder: (context, state) {
               return switch (state) {
-                MyRecipesLoading() => const Center(child: CircularProgressIndicator()),
-                MyRecipesLoaded(recipes: final recipes, dietaryFilters: final filters) =>
+                MyRecipesLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                MyRecipesLoaded(
+                  recipes: final recipes,
+                  dietaryFilters: final filters,
+                ) =>
                   _RecipesBody(recipes: recipes, filters: filters),
                 MyRecipesError(error: final error) => ErrorRetryView(
                   error: error,
-                  onRetry: () => context.read<MyRecipesBloc>().add(const MyRecipesEvent.init()),
+                  onRetry: () => context.read<MyRecipesBloc>().add(
+                    const MyRecipesEvent.init(),
+                  ),
                 ),
               };
             },
@@ -89,7 +98,9 @@ class _RecipesBodyState extends State<_RecipesBody> {
   Widget build(BuildContext context) {
     final bloc = context.read<MyRecipesBloc>();
     final filters = widget.filters;
-    final recipes = widget.recipes.where((r) => r.isSavedFromCommunity == _savedTab).toList();
+    final recipes = widget.recipes
+        .where((r) => r.isSavedFromCommunity == _savedTab)
+        .toList();
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
@@ -105,15 +116,18 @@ class _RecipesBodyState extends State<_RecipesBody> {
           // The sparkle rather than a plus: adding a recipe here means the
           // model reads it in, and the same icon marks every AI action in
           // the app.
-          trailing: ClayIconButton(
-            icon: Icons.auto_awesome_rounded,
-            filled: true,
-            size: 48,
-            tooltip: t.ingestion.title,
-            onTap: () async {
-              await context.pushNamed(Routing.ingestion);
-              if (context.mounted) bloc.add(const MyRecipesEvent.init());
-            },
+          trailing: WalkthroughTarget(
+            id: WalkthroughIds.recipesAdd,
+            child: ClayIconButton(
+              icon: Icons.auto_awesome_rounded,
+              filled: true,
+              size: 48,
+              tooltip: t.ingestion.title,
+              onTap: () async {
+                await context.pushNamed(Routing.ingestion);
+                if (context.mounted) bloc.add(const MyRecipesEvent.init());
+              },
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -121,61 +135,77 @@ class _RecipesBodyState extends State<_RecipesBody> {
         // page's main division, so it stands on its own right under the
         // title; the search and the topic chips, which only narrow the list,
         // sit together in one card below it.
-        ClaySegmentedControl(
-          segments: [
-            ClaySegment(label: t.recipe.mine, icon: Icons.edit_note_rounded),
-            ClaySegment(label: t.recipe.saved, icon: Icons.bookmark_rounded),
-          ],
-          selectedIndex: _savedTab ? 1 : 0,
-          onSelected: (index) => setState(() => _savedTab = index == 1),
+        WalkthroughTarget(
+          id: WalkthroughIds.recipesSegments,
+          child: ClaySegmentedControl(
+            segments: [
+              ClaySegment(label: t.recipe.mine, icon: Icons.edit_note_rounded),
+              ClaySegment(label: t.recipe.saved, icon: Icons.bookmark_rounded),
+            ],
+            selectedIndex: _savedTab ? 1 : 0,
+            onSelected: (index) => setState(() => _savedTab = index == 1),
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        ClayCard(
-          radius: AppRadius.md,
-          padding: const EdgeInsets.all(AppSpacing.gutter),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Recessed search pill, per the Stitch library screen.
-              ClayInset(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search_rounded, color: AppColors.outline),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: TextField(
-                        style: AppTextStyles.bodyMd,
-                        decoration: InputDecoration(
-                          hintText: t.common.search,
-                          filled: false,
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: AppSpacing.gutter),
-                        ),
-                        onChanged: (value) => bloc.add(.search(value)),
+        WalkthroughTarget(
+          id: WalkthroughIds.recipesFilters,
+          child: ClayCard(
+            radius: AppRadius.md,
+            padding: const EdgeInsets.all(AppSpacing.gutter),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Recessed search pill, per the Stitch library screen.
+                ClayInset(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.search_rounded,
+                        color: AppColors.outline,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: TextField(
+                          style: AppTextStyles.bodyMd,
+                          decoration: InputDecoration(
+                            hintText: t.common.search,
+                            filled: false,
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.gutter,
+                            ),
+                          ),
+                          onChanged: (value) => bloc.add(.search(value)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.gutter),
-              Text(
-                t.editor.topics,
-                style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
-              ),
-              const SizedBox(height: AppSpacing.base),
-              DietaryChipSelector(
-                selected: filters,
-                onToggle: (pref) {
-                  final updated = [...filters];
-                  updated.contains(pref) ? updated.remove(pref) : updated.add(pref);
-                  bloc.add(.filterByDietary(updated));
-                },
-              ),
-            ],
+                const SizedBox(height: AppSpacing.gutter),
+                Text(
+                  t.editor.topics,
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.base),
+                DietaryChipSelector(
+                  selected: filters,
+                  onToggle: (pref) {
+                    final updated = [...filters];
+                    updated.contains(pref)
+                        ? updated.remove(pref)
+                        : updated.add(pref);
+                    bloc.add(.filterByDietary(updated));
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -183,7 +213,9 @@ class _RecipesBodyState extends State<_RecipesBody> {
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.lg),
             child: ClayEmptyState(
-              icon: _savedTab ? Icons.bookmark_border_rounded : Icons.restaurant_menu_rounded,
+              icon: _savedTab
+                  ? Icons.bookmark_border_rounded
+                  : Icons.restaurant_menu_rounded,
               message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
               action: _savedTab
                   ? null
@@ -215,9 +247,14 @@ class _RecipesBodyState extends State<_RecipesBody> {
                     : null,
                 onShare: recipe.isMine
                     ? () async {
-                        final sent = await showRecipeShareSheet(context, recipe);
+                        final sent = await showRecipeShareSheet(
+                          context,
+                          recipe,
+                        );
                         if (sent == true && context.mounted) {
-                          AppDialog.success(message: t.sharing.sent).notify(context);
+                          AppDialog.success(
+                            message: t.sharing.sent,
+                          ).notify(context);
                         }
                       }
                     : null,

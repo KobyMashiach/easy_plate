@@ -65,6 +65,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$update$ru update = _Translations$update$ru._(_root);
 	@override late final _Translations$ads$ru ads = _Translations$ads$ru._(_root);
 	@override late final _Translations$premium$ru premium = _Translations$premium$ru._(_root);
+	@override late final _Translations$walkthrough$ru walkthrough = _Translations$walkthrough$ru._(_root);
+	@override late final _Translations$feedback$ru feedback = _Translations$feedback$ru._(_root);
 }
 
 // Path: common
@@ -782,6 +784,174 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get privacy => 'Политика конфиденциальности';
 }
 
+// Path: walkthrough
+class _Translations$walkthrough$ru extends Translations$walkthrough$he {
+	_Translations$walkthrough$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Обучение';
+	@override String get start => 'Запустить обучение';
+	@override String get startHint => 'Пошаговая экскурсия по всем возможностям приложения';
+	@override String get startFull => 'Начать полную экскурсию';
+	@override String get focused => 'Показать подсказку по действию';
+	@override String get next => 'Далее';
+	@override String get finish => 'Готово';
+	@override String get skipStep => 'Пропустить шаг';
+	@override String get close => 'Закрыть обучение';
+	@override String stepOf({required Object current, required Object total}) => 'Шаг ${current} из ${total}';
+	@override String get tapHint => 'Нажмите на выделенную область или «Далее»';
+	@override String get bookTitle => 'Справочник EasyPlate';
+	@override String get bookSubtitle => 'Всё, что умеет приложение, глава за главой. Это только справочник: ничего не сохраняется.';
+	@override String get contents => 'Оглавление';
+	@override String chapter({required Object number}) => 'Глава ${number}';
+	@override String get backToContents => 'К оглавлению';
+	@override String get stepsTitle => 'Шаги';
+	@override String get welcomeTitle => 'Добро пожаловать в EasyPlate';
+	@override String get welcomeBody => 'Пройдём вместе по основным действиям. Любой шаг можно пропустить, а обучение закрыть и запустить снова с экрана поддержки.';
+	@override late final _Translations$walkthrough$topics$ru topics = _Translations$walkthrough$topics$ru._(_root);
+	@override String get demoRecipes => 'Примеры рецептов';
+	@override String get demoRecipesHint => 'Так выглядят рецепты в приложении. Нажмите на рецепт, чтобы увидеть его страницу целиком: время, темы, аллергены, ингредиенты и шаги.';
+	@override String get demoBooks => 'Примеры книг';
+	@override String get demoBooksHint => 'Так выглядит книга рецептов. Нажмите на книгу, чтобы открыть её, листать страницы и переходить из оглавления.';
+	@override String get demoOnly => 'Только пример, не сохраняется';
+}
+
+// Path: feedback
+class _Translations$feedback$ru extends Translations$feedback$he {
+	_Translations$feedback$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Сообщить и предложить';
+	@override String get subtitle => 'Нашли ошибку? Есть идея? Напишите нам здесь; мы читаем каждое сообщение.';
+	@override String get bug => 'Ошибка';
+	@override String get suggestion => 'Предложение';
+	@override String get bugHint => 'Опишите ошибку: что вы сделали, что произошло и чего ожидали...';
+	@override String get suggestionHint => 'Расскажите, что вы хотели бы видеть в приложении и чем это поможет...';
+	@override String get send => 'Отправить';
+	@override String get sent => 'Спасибо! Сообщение отправлено.';
+	@override String get failed => 'Не удалось отправить, попробуйте позже';
+	@override String get admin => 'Обращения';
+	@override String get all => 'Все';
+	@override String get bugs => 'Ошибки';
+	@override String get suggestions => 'Предложения';
+	@override String get none => 'Обращений пока нет';
+	@override String version({required Object version}) => 'Версия ${version}';
+	@override String get notAllowed => 'Этот экран только для администратора';
+}
+
+// Path: walkthrough.topics
+class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topics$he {
+	_Translations$walkthrough$topics$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$walkthrough$topics$addRecipe$ru addRecipe = _Translations$walkthrough$topics$addRecipe$ru._(_root);
+	@override late final _Translations$walkthrough$topics$myRecipes$ru myRecipes = _Translations$walkthrough$topics$myRecipes$ru._(_root);
+	@override late final _Translations$walkthrough$topics$library$ru library = _Translations$walkthrough$topics$library$ru._(_root);
+	@override late final _Translations$walkthrough$topics$mealPlan$ru mealPlan = _Translations$walkthrough$topics$mealPlan$ru._(_root);
+	@override late final _Translations$walkthrough$topics$groceries$ru groceries = _Translations$walkthrough$topics$groceries$ru._(_root);
+	@override late final _Translations$walkthrough$topics$community$ru community = _Translations$walkthrough$topics$community$ru._(_root);
+	@override late final _Translations$walkthrough$topics$account$ru account = _Translations$walkthrough$topics$account$ru._(_root);
+}
+
+// Path: walkthrough.topics.addRecipe
+class _Translations$walkthrough$topics$addRecipe$ru extends Translations$walkthrough$topics$addRecipe$he {
+	_Translations$walkthrough$topics$addRecipe$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Добавить рецепт';
+	@override String get summary => 'Добавьте рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги и теги.';
+	@override String get s1 => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.';
+	@override String get s2 => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео TikTok/Reels, свободный запрос к ИИ или ввод вручную. После разбора проверьте, отредактируйте и сохраните.';
+}
+
+// Path: walkthrough.topics.myRecipes
+class _Translations$walkthrough$topics$myRecipes$ru extends Translations$walkthrough$topics$myRecipes$he {
+	_Translations$walkthrough$topics$myRecipes$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Мои и сохранённые рецепты';
+	@override String get summary => 'Рецепты, которые вы написали, и сохранённые из сообщества, с поиском и фильтрами по темам.';
+	@override String get s1 => 'Здесь переключаются между написанными вами рецептами и сохранёнными из сообщества.';
+	@override String get s2 => 'Поиск по названию и фильтр по темам: мясное, молочное, вегетарианское, веганское, кошерное, без глютена и аллергены.';
+}
+
+// Path: walkthrough.topics.library
+class _Translations$walkthrough$topics$library$ru extends Translations$walkthrough$topics$library$he {
+	_Translations$walkthrough$topics$library$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Книги рецептов';
+	@override String get summary => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием.';
+	@override String get s1 => 'Нажмите «Библиотека», чтобы перейти к книгам.';
+	@override String get s2 => 'Здесь создают новую книгу. Внутри добавляют рецепты, листают страницы и меняют обложку.';
+}
+
+// Path: walkthrough.topics.mealPlan
+class _Translations$walkthrough$topics$mealPlan$ru extends Translations$walkthrough$topics$mealPlan$he {
+	_Translations$walkthrough$topics$mealPlan$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Меню на неделю';
+	@override String get summary => 'План приёмов пищи на всю неделю, из которого строится список покупок.';
+	@override String get s1 => 'Нажмите «Меню», чтобы спланировать неделю.';
+	@override String get s2 => 'Создайте недельный план и расставьте рецепты по дням и приёмам пищи.';
+}
+
+// Path: walkthrough.topics.groceries
+class _Translations$walkthrough$topics$groceries$ru extends Translations$walkthrough$topics$groceries$he {
+	_Translations$walkthrough$topics$groceries$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Список покупок';
+	@override String get summary => 'Список, собранный из меню, с отметками о том, что уже куплено.';
+	@override String get s1 => 'Нажмите «Покупки».';
+	@override String get s2 => 'Обновление заново собирает список из всех рецептов недельного меню.';
+	@override String get s3 => 'А здесь добавляют произвольный пункт вручную.';
+}
+
+// Path: walkthrough.topics.community
+class _Translations$walkthrough$topics$community$ru extends Translations$walkthrough$topics$community$he {
+	_Translations$walkthrough$topics$community$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Сообщество';
+	@override String get summary => 'Рецепты, которыми делятся все, и форум вопросов и ответов.';
+	@override String get s1 => 'Нажмите «Сообщество».';
+	@override String get s2 => 'Общие рецепты и форум. Ставьте лайки, сохраняйте рецепты себе и прикрепляйте рецепт к ответу на форуме.';
+	@override String get s3 => 'Кнопка «поделиться» публикует ваш рецепт в сообществе.';
+}
+
+// Path: walkthrough.topics.account
+class _Translations$walkthrough$topics$account$ru extends Translations$walkthrough$topics$account$he {
+	_Translations$walkthrough$topics$account$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Аккаунт и уведомления';
+	@override String get summary => 'Уведомления о приглашениях поделиться и аккаунт с премиумом, настройками и поддержкой.';
+	@override String get s1 => 'Уведомления: приглашения поделиться рецептами и обновления.';
+	@override String get s2 => 'Аккаунт: премиум, обмен между аккаунтами, настройки, профиль и поддержка. Оттуда же можно запустить это обучение снова.';
+}
+
 /// The flat map containing all translations for locale <ru>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1281,6 +1451,78 @@ extension on TranslationsRu {
 			'premium.legal' => 'Подписка продлевается автоматически в конце каждого периода, если не отменить её минимум за 24 часа до окончания. Оплата списывается с аккаунта магазина; управлять подпиской или отменить её можно в настройках магазина.',
 			'premium.terms' => 'Условия использования',
 			'premium.privacy' => 'Политика конфиденциальности',
+			'walkthrough.title' => 'Обучение',
+			'walkthrough.start' => 'Запустить обучение',
+			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
+			'walkthrough.startFull' => 'Начать полную экскурсию',
+			'walkthrough.focused' => 'Показать подсказку по действию',
+			'walkthrough.next' => 'Далее',
+			'walkthrough.finish' => 'Готово',
+			'walkthrough.skipStep' => 'Пропустить шаг',
+			'walkthrough.close' => 'Закрыть обучение',
+			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Шаг ${current} из ${total}',
+			'walkthrough.tapHint' => 'Нажмите на выделенную область или «Далее»',
+			'walkthrough.bookTitle' => 'Справочник EasyPlate',
+			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Это только справочник: ничего не сохраняется.',
+			'walkthrough.contents' => 'Оглавление',
+			'walkthrough.chapter' => ({required Object number}) => 'Глава ${number}',
+			'walkthrough.backToContents' => 'К оглавлению',
+			'walkthrough.stepsTitle' => 'Шаги',
+			'walkthrough.welcomeTitle' => 'Добро пожаловать в EasyPlate',
+			'walkthrough.welcomeBody' => 'Пройдём вместе по основным действиям. Любой шаг можно пропустить, а обучение закрыть и запустить снова с экрана поддержки.',
+			'walkthrough.topics.addRecipe.title' => 'Добавить рецепт',
+			'walkthrough.topics.addRecipe.summary' => 'Добавьте рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги и теги.',
+			_ => null,
+		} ?? switch (path) {
+			'walkthrough.topics.addRecipe.s1' => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.',
+			'walkthrough.topics.addRecipe.s2' => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео TikTok/Reels, свободный запрос к ИИ или ввод вручную. После разбора проверьте, отредактируйте и сохраните.',
+			'walkthrough.topics.myRecipes.title' => 'Мои и сохранённые рецепты',
+			'walkthrough.topics.myRecipes.summary' => 'Рецепты, которые вы написали, и сохранённые из сообщества, с поиском и фильтрами по темам.',
+			'walkthrough.topics.myRecipes.s1' => 'Здесь переключаются между написанными вами рецептами и сохранёнными из сообщества.',
+			'walkthrough.topics.myRecipes.s2' => 'Поиск по названию и фильтр по темам: мясное, молочное, вегетарианское, веганское, кошерное, без глютена и аллергены.',
+			'walkthrough.topics.library.title' => 'Книги рецептов',
+			'walkthrough.topics.library.summary' => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием.',
+			'walkthrough.topics.library.s1' => 'Нажмите «Библиотека», чтобы перейти к книгам.',
+			'walkthrough.topics.library.s2' => 'Здесь создают новую книгу. Внутри добавляют рецепты, листают страницы и меняют обложку.',
+			'walkthrough.topics.mealPlan.title' => 'Меню на неделю',
+			'walkthrough.topics.mealPlan.summary' => 'План приёмов пищи на всю неделю, из которого строится список покупок.',
+			'walkthrough.topics.mealPlan.s1' => 'Нажмите «Меню», чтобы спланировать неделю.',
+			'walkthrough.topics.mealPlan.s2' => 'Создайте недельный план и расставьте рецепты по дням и приёмам пищи.',
+			'walkthrough.topics.groceries.title' => 'Список покупок',
+			'walkthrough.topics.groceries.summary' => 'Список, собранный из меню, с отметками о том, что уже куплено.',
+			'walkthrough.topics.groceries.s1' => 'Нажмите «Покупки».',
+			'walkthrough.topics.groceries.s2' => 'Обновление заново собирает список из всех рецептов недельного меню.',
+			'walkthrough.topics.groceries.s3' => 'А здесь добавляют произвольный пункт вручную.',
+			'walkthrough.topics.community.title' => 'Сообщество',
+			'walkthrough.topics.community.summary' => 'Рецепты, которыми делятся все, и форум вопросов и ответов.',
+			'walkthrough.topics.community.s1' => 'Нажмите «Сообщество».',
+			'walkthrough.topics.community.s2' => 'Общие рецепты и форум. Ставьте лайки, сохраняйте рецепты себе и прикрепляйте рецепт к ответу на форуме.',
+			'walkthrough.topics.community.s3' => 'Кнопка «поделиться» публикует ваш рецепт в сообществе.',
+			'walkthrough.topics.account.title' => 'Аккаунт и уведомления',
+			'walkthrough.topics.account.summary' => 'Уведомления о приглашениях поделиться и аккаунт с премиумом, настройками и поддержкой.',
+			'walkthrough.topics.account.s1' => 'Уведомления: приглашения поделиться рецептами и обновления.',
+			'walkthrough.topics.account.s2' => 'Аккаунт: премиум, обмен между аккаунтами, настройки, профиль и поддержка. Оттуда же можно запустить это обучение снова.',
+			'walkthrough.demoRecipes' => 'Примеры рецептов',
+			'walkthrough.demoRecipesHint' => 'Так выглядят рецепты в приложении. Нажмите на рецепт, чтобы увидеть его страницу целиком: время, темы, аллергены, ингредиенты и шаги.',
+			'walkthrough.demoBooks' => 'Примеры книг',
+			'walkthrough.demoBooksHint' => 'Так выглядит книга рецептов. Нажмите на книгу, чтобы открыть её, листать страницы и переходить из оглавления.',
+			'walkthrough.demoOnly' => 'Только пример, не сохраняется',
+			'feedback.title' => 'Сообщить и предложить',
+			'feedback.subtitle' => 'Нашли ошибку? Есть идея? Напишите нам здесь; мы читаем каждое сообщение.',
+			'feedback.bug' => 'Ошибка',
+			'feedback.suggestion' => 'Предложение',
+			'feedback.bugHint' => 'Опишите ошибку: что вы сделали, что произошло и чего ожидали...',
+			'feedback.suggestionHint' => 'Расскажите, что вы хотели бы видеть в приложении и чем это поможет...',
+			'feedback.send' => 'Отправить',
+			'feedback.sent' => 'Спасибо! Сообщение отправлено.',
+			'feedback.failed' => 'Не удалось отправить, попробуйте позже',
+			'feedback.admin' => 'Обращения',
+			'feedback.all' => 'Все',
+			'feedback.bugs' => 'Ошибки',
+			'feedback.suggestions' => 'Предложения',
+			'feedback.none' => 'Обращений пока нет',
+			'feedback.version' => ({required Object version}) => 'Версия ${version}',
+			'feedback.notAllowed' => 'Этот экран только для администратора',
 			_ => null,
 		};
 	}

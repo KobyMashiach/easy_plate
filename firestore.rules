@@ -221,6 +221,19 @@ service cloud.firestore {
       allow delete: if signedIn() && request.auth.uid == uid;
     }
 
+    // Bug reports and suggestions from the support screen. Anyone signed in
+    // may leave one, signed as themselves; only the administrator reads them,
+    // and nothing is ever edited or removed from here.
+    match /feedback/{feedbackId} {
+      allow create: if authoredByCaller()
+                    && request.resource.data.type in ['bug', 'suggestion']
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() <= 4000;
+      allow read: if signedIn() && request.auth.token.email == 'koby9779@gmail.com';
+      allow update, delete: if false;
+    }
+
     // Nothing else is reachable until it has a rule of its own.
     match /{document=**} {
       allow read, write: if false;

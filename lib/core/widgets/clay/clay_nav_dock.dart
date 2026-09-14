@@ -7,6 +7,7 @@ import '../../constants/app_colors.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
+import '../../walkthrough/walkthrough_targets.dart';
 
 class ClayNavDestination {
   final IconData icon;
@@ -80,6 +81,9 @@ class ClayNavDock extends StatelessWidget {
                 children: [
                   for (var i = 0; i < destinations.length; i++)
                     _DockItem(
+                      // Registered by position, which is what a tour step
+                      // names — the labels change with the locale.
+                      targetId: 'nav.$i',
                       destination: destinations[i],
                       isActive: i == selectedIndex,
                       onTap: () => onSelected(i),
@@ -95,11 +99,13 @@ class ClayNavDock extends StatelessWidget {
 }
 
 class _DockItem extends StatelessWidget {
+  final String targetId;
   final ClayNavDestination destination;
   final bool isActive;
   final VoidCallback onTap;
 
   const _DockItem({
+    required this.targetId,
     required this.destination,
     required this.isActive,
     required this.onTap,
@@ -112,30 +118,36 @@ class _DockItem extends StatelessWidget {
         : AppColors.surfaceVariant.withValues(alpha: 0.6);
 
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedScale(
-          scale: isActive ? 1.1 : 1,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          child: Padding(
-            // Horizontal breathing room so neighbouring labels ellipsize into
-            // a gap instead of running together.
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(destination.icon, size: 22, color: color),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  destination.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.labelSm.copyWith(color: color, fontSize: 11),
-                ),
-              ],
+      child: WalkthroughTarget(
+        id: targetId,
+        child: GestureDetector(
+          onTap: onTap,
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedScale(
+            scale: isActive ? 1.1 : 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: Padding(
+              // Horizontal breathing room so neighbouring labels ellipsize into
+              // a gap instead of running together.
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(destination.icon, size: 22, color: color),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    destination.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: color,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -6,11 +7,13 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
-import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/widgets/clay/clay.dart';
+import '../../../feedback/presentation/widgets/feedback_form.dart';
 
-/// Two ways to reach a human. Both hand off to another app, so the only
-/// failure worth handling is "that app isn't installed".
+/// Ways to get help: the guide, a human by WhatsApp or mail, and a form for
+/// a bug or a suggestion that lands in the administrator's inbox.
 class SupportPage extends StatelessWidget {
   const SupportPage({super.key});
 
@@ -43,11 +46,44 @@ class SupportPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.marginMobile),
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.marginMobile,
+            AppSpacing.marginMobile,
+            AppSpacing.marginMobile,
+            MediaQuery.viewInsetsOf(context).bottom + AppSpacing.xl,
+          ),
           children: [
+            // The guide first: it answers most "how do I" questions before a
+            // message has to be written.
+            ClayCard(
+              radius: AppRadius.md,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              color: AppColors.primaryFixed,
+              onTap: () => context.pushNamed(Routing.tutorial),
+              child: Row(
+                children: [
+                  const ClayIconButton(icon: Icons.school_rounded, filled: true, size: 48),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(t.walkthrough.start, style: AppTextStyles.bodyLg),
+                        Text(
+                          t.walkthrough.startHint,
+                          style: AppTextStyles.labelSm
+                              .copyWith(color: AppColors.onPrimaryFixedVariant),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.primary),
+                ],
+              ),
+            ),
             const SizedBox(height: AppSpacing.lg),
-            const Icon(Icons.support_agent_rounded, size: 64, color: AppColors.primary),
-            const SizedBox(height: AppSpacing.lg),
+            const Icon(Icons.support_agent_rounded, size: 56, color: AppColors.primary),
+            const SizedBox(height: AppSpacing.gutter),
             Text(
               t.more.supportTitle,
               textAlign: TextAlign.center,
@@ -59,7 +95,7 @@ class SupportPage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
             ),
-            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.lg),
             ClayButton(
               label: t.more.whatsapp,
               icon: Icons.chat_rounded,
@@ -86,6 +122,8 @@ class SupportPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.xl),
+            const FeedbackForm(),
           ],
         ),
       ),

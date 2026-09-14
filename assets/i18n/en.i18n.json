@@ -539,5 +539,95 @@
     "legal": "The subscription renews automatically at the end of each period unless cancelled at least 24 hours before it ends. Payment is charged to your store account and can be managed or cancelled in the store's settings.",
     "terms": "Terms of Use",
     "privacy": "Privacy Policy"
+  },
+  "walkthrough": {
+    "title": "Guide",
+    "start": "Start the guide",
+    "startHint": "A guided tour of everything in the app, step by step",
+    "startFull": "Start the full tour",
+    "focused": "Show focused guidance",
+    "next": "Next",
+    "finish": "Done",
+    "skipStep": "Skip step",
+    "close": "Close guide",
+    "stepOf": "Step $current of $total",
+    "tapHint": "Tap the highlighted area, or \"Next\"",
+    "bookTitle": "EasyPlate guide",
+    "bookSubtitle": "Everything the app can do, chapter by chapter. A guide only: nothing is saved.",
+    "contents": "Contents",
+    "chapter": "Chapter $number",
+    "backToContents": "Back to contents",
+    "stepsTitle": "Steps",
+    "welcomeTitle": "Welcome to EasyPlate",
+    "welcomeBody": "Let's walk through the main actions together. Skip any step, or close and start again from the support screen.",
+    "topics": {
+      "addRecipe": {
+        "title": "Add a recipe",
+        "summary": "Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps and tags.",
+        "s1": "Tap the sparkle button next to the title to add a recipe.",
+        "s2": "Pick a source: pasted text, a web search, a website link, a TikTok/Reels video, a free request to the AI, or writing by hand. After the analysis you review, edit and save."
+      },
+      "myRecipes": {
+        "title": "My recipes and saved",
+        "summary": "The recipes you wrote and the ones you saved from the community, with search and topic filters.",
+        "s1": "Switch here between recipes you wrote and recipes you saved from the community.",
+        "s2": "Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy."
+      },
+      "library": {
+        "title": "Recipe books",
+        "summary": "Arrange recipes into books with a table of contents, a cover and page turning.",
+        "s1": "Tap \"Library\" to go to your books.",
+        "s2": "Create a new book here. Inside it you add recipes, turn pages and change the cover."
+      },
+      "mealPlan": {
+        "title": "Weekly meal plan",
+        "summary": "A plan for the whole week that feeds the grocery list.",
+        "s1": "Tap \"Meals\" to plan the week.",
+        "s2": "Create a weekly plan and place recipes on each day and meal."
+      },
+      "groceries": {
+        "title": "Grocery list",
+        "summary": "A list built from the plan, with what has already been picked up ticked off.",
+        "s1": "Tap \"Groceries\".",
+        "s2": "Refresh rebuilds the list from every recipe in the weekly plan.",
+        "s3": "And here you add a free item by hand."
+      },
+      "community": {
+        "title": "Community",
+        "summary": "Recipes shared by everyone, and a forum for questions and answers.",
+        "s1": "Tap \"Community\".",
+        "s2": "Shared recipes and the forum. Like, save a recipe to your own, and attach a recipe to a forum reply.",
+        "s3": "The share button publishes one of your own recipes to the community."
+      },
+      "account": {
+        "title": "Account and notifications",
+        "summary": "Notifications about share invites, and the account with premium, settings and support.",
+        "s1": "Notifications: invitations to share recipes, and updates.",
+        "s2": "The account: premium, sharing between accounts, settings, profile and support. That is also where this guide can be started again."
+      }
+    },
+    "demoRecipes": "Sample recipes",
+    "demoRecipesHint": "This is what recipes look like in the app. Tap one to see its full page: times, topics, allergens, ingredients and steps.",
+    "demoBooks": "Sample books",
+    "demoBooksHint": "This is what a recipe book looks like. Tap one to open it, turn its pages and jump from the contents.",
+    "demoOnly": "Sample only, not saved"
+  },
+  "feedback": {
+    "title": "Report and suggest",
+    "subtitle": "Found a bug? Have an idea? Write to us here; every message is read.",
+    "bug": "Bug",
+    "suggestion": "Suggestion",
+    "bugHint": "Describe the bug: what you did, what happened, and what you expected...",
+    "suggestionHint": "Tell us what you would like the app to do, and how it would help you...",
+    "send": "Send",
+    "sent": "Thanks! Your message was sent.",
+    "failed": "Sending failed, please try again later",
+    "admin": "Feedback inbox",
+    "all": "All",
+    "bugs": "Bugs",
+    "suggestions": "Suggestions",
+    "none": "No messages yet",
+    "version": "Version $version",
+    "notAllowed": "This screen is for the administrator only"
   }
 }

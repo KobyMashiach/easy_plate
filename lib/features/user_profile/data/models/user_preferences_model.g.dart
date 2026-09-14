@@ -25,13 +25,14 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
           ? AppLanguage.hebrew
           : fields[4] as AppLanguage,
       fastPageTurnEnabled: fields[5] == null ? true : fields[5] as bool,
+      walkthroughSeen: fields[6] == null ? false : fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -43,7 +44,9 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(4)
       ..write(obj.language)
       ..writeByte(5)
-      ..write(obj.fastPageTurnEnabled);
+      ..write(obj.fastPageTurnEnabled)
+      ..writeByte(6)
+      ..write(obj.walkthroughSeen);
   }
 
   @override
@@ -74,6 +77,7 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
       $enumDecodeNullable(_$AppLanguageEnumMap, json['language']) ??
       AppLanguage.hebrew,
   fastPageTurnEnabled: json['fastPageTurnEnabled'] as bool? ?? true,
+  walkthroughSeen: json['walkthroughSeen'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -87,6 +91,7 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'onboardingComplete': instance.onboardingComplete,
   'language': _$AppLanguageEnumMap[instance.language]!,
   'fastPageTurnEnabled': instance.fastPageTurnEnabled,
+  'walkthroughSeen': instance.walkthroughSeen,
 };
 
 const _$ShoppingDayEnumMap = {

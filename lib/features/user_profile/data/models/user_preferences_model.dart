@@ -20,6 +20,9 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     @HiveField(3) @Default(false) bool onboardingComplete,
     @HiveField(4) @Default(AppLanguage.hebrew) AppLanguage language,
     @HiveField(5) @Default(true) bool fastPageTurnEnabled,
+    // Appended: preferences stored before the tour existed decode as false,
+    // which correctly reads as "not seen yet".
+    @HiveField(6) @Default(false) bool walkthroughSeen,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +37,7 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
         soundEffectsEnabled: soundEffectsEnabled,
         fastPageTurnEnabled: fastPageTurnEnabled,
         onboardingComplete: onboardingComplete,
+        walkthroughSeen: walkthroughSeen,
       );
 }
 
@@ -45,5 +49,6 @@ extension UserPreferencesEntityMapper on UserPreferencesEntity {
         soundEffectsEnabled: soundEffectsEnabled,
         fastPageTurnEnabled: fastPageTurnEnabled,
         onboardingComplete: onboardingComplete,
+        walkthroughSeen: walkthroughSeen,
       );
 }

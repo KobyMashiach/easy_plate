@@ -17,6 +17,8 @@ import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../widgets/grocery_progress_card.dart';
 import '../widgets/meal_plan_filter_card.dart';
 import '../widgets/grocery_section.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -35,14 +37,17 @@ class GroceryListPage extends StatelessWidget {
           body: BlocBuilder<GroceryListBloc, GroceryListState>(
             builder: (context, state) {
               return switch (state) {
-                GroceryListLoading() => const Center(child: CircularProgressIndicator()),
+                GroceryListLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 GroceryListLoaded(list: final list, plans: final plans) =>
                   _ListBody(list: list, plans: plans),
                 GroceryListError(error: final error) => ErrorRetryView(
-                    error: error,
-                    onRetry: () =>
-                        context.read<GroceryListBloc>().add(const GroceryListEvent.init()),
+                  error: error,
+                  onRetry: () => context.read<GroceryListBloc>().add(
+                    const GroceryListEvent.init(),
                   ),
+                ),
               };
             },
           ),
@@ -104,7 +109,10 @@ class _ListBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         MealPlanFilterCard(list: list, plans: plans),
         const SizedBox(height: AppSpacing.gutter),
-        GroceryProgressCard(collected: checked.length, total: list.items.length),
+        GroceryProgressCard(
+          collected: checked.length,
+          total: list.items.length,
+        ),
         const SizedBox(height: AppSpacing.gutter),
         Row(
           children: [
@@ -113,7 +121,9 @@ class _ListBody extends StatelessWidget {
                 icon: allChecked
                     ? Icons.remove_done_rounded
                     : Icons.done_all_rounded,
-                label: allChecked ? t.groceryList.clearAll : t.groceryList.selectAll,
+                label: allChecked
+                    ? t.groceryList.clearAll
+                    : t.groceryList.selectAll,
                 onTap: () => bloc.add(.setAllChecked(!allChecked)),
               ),
             ),
@@ -125,7 +135,8 @@ class _ListBody extends StatelessWidget {
                 isDestructive: true,
                 onTap: checked.isEmpty
                     ? null
-                    : () => bloc.add(const GroceryListEvent.deleteCheckedItems()),
+                    : () =>
+                          bloc.add(const GroceryListEvent.deleteCheckedItems()),
               ),
             ),
           ],
@@ -152,19 +163,25 @@ Widget _header(BuildContext context, GroceryListBloc bloc) {
     trailing: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClayIconButton(
-          icon: Icons.autorenew_rounded,
-          size: 48,
-          tooltip: t.groceryList.aggregated,
-          onTap: () => bloc.add(const GroceryListEvent.regenerate()),
+        WalkthroughTarget(
+          id: WalkthroughIds.groceriesRegenerate,
+          child: ClayIconButton(
+            icon: Icons.autorenew_rounded,
+            size: 48,
+            tooltip: t.groceryList.aggregated,
+            onTap: () => bloc.add(const GroceryListEvent.regenerate()),
+          ),
         ),
         const SizedBox(width: AppSpacing.base),
-        ClayIconButton(
-          icon: Icons.add_rounded,
-          filled: true,
-          size: 48,
-          tooltip: t.groceryList.addItem,
-          onTap: () => showAddGroceryItemSheet(context),
+        WalkthroughTarget(
+          id: WalkthroughIds.groceriesAdd,
+          child: ClayIconButton(
+            icon: Icons.add_rounded,
+            filled: true,
+            size: 48,
+            tooltip: t.groceryList.addItem,
+            onTap: () => showAddGroceryItemSheet(context),
+          ),
         ),
       ],
     ),
@@ -190,8 +207,8 @@ class _BulkAction extends StatelessWidget {
     final color = !enabled
         ? AppColors.outlineVariant
         : isDestructive
-            ? AppColors.error
-            : AppColors.primary;
+        ? AppColors.error
+        : AppColors.primary;
 
     return ClayCard(
       radius: AppRadius.full,
@@ -227,13 +244,15 @@ Future<void> showAddGroceryItemSheet(BuildContext context) {
     context: context,
     isScrollControlled: true,
     builder: (sheetContext) => _AddItemForm(
-      onSubmit: (name, amount, unit) => bloc.add(.addAdHocItem(name, amount, unit)),
+      onSubmit: (name, amount, unit) =>
+          bloc.add(.addAdHocItem(name, amount, unit)),
     ),
   );
 }
 
 class _AddItemForm extends StatefulWidget {
-  final void Function(String name, double amount, MeasurementUnit unit) onSubmit;
+  final void Function(String name, double amount, MeasurementUnit unit)
+  onSubmit;
 
   const _AddItemForm({required this.onSubmit});
 
@@ -271,7 +290,8 @@ class _AddItemFormState extends State<_AddItemForm> {
       padding: EdgeInsets.only(
         left: AppSpacing.marginMobile,
         right: AppSpacing.marginMobile,
-        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -291,7 +311,9 @@ class _AddItemFormState extends State<_AddItemForm> {
             const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(labelText: t.groceryList.amount),
             ),
@@ -327,7 +349,9 @@ class _AddItemFormState extends State<_AddItemForm> {
                     child: Text(
                       measurementUnitPickerLabel(unit),
                       style: AppTextStyles.labelMd.copyWith(
-                        color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
+                        color: isSelected
+                            ? AppColors.onPrimary
+                            : AppColors.tertiary,
                       ),
                     ),
                   ),

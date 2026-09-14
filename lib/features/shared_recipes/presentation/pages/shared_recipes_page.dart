@@ -35,6 +35,8 @@ import '../widgets/shared_feed_query.dart';
 import '../widgets/shared_quota_banner.dart';
 import '../bloc/shared_recipes_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 class SharedRecipesPage extends StatelessWidget {
   const SharedRecipesPage({super.key});
@@ -44,40 +46,54 @@ class SharedRecipesPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => SharedRecipesBloc.fromContext(context),
       child: Builder(
-        builder: (context) => BlocConsumer<SharedRecipesBloc, SharedRecipesState>(
-          listener: (context, state) {
-            if (state is SharedRecipesLoaded && state.imported) {
-              AppDialog.success(message: t.community.savedToMyRecipes).notify(context);
-            }
-          },
-          builder: (context, state) {
-            return Stack(
-              children: [
-                switch (state) {
-                  SharedRecipesLoading() => const Center(child: CircularProgressIndicator()),
-                  SharedRecipesLoaded(recipes: final recipes, savedIds: final savedIds) =>
-                    _Feed(recipes: recipes, savedIds: savedIds),
-                  SharedRecipesError(error: final error) => ErrorRetryView(
-                      error: error,
-                      onRetry: () => context
-                          .read<SharedRecipesBloc>()
-                          .add(const SharedRecipesEvent.init()),
+        builder: (context) =>
+            BlocConsumer<SharedRecipesBloc, SharedRecipesState>(
+              listener: (context, state) {
+                if (state is SharedRecipesLoaded && state.imported) {
+                  AppDialog.success(
+                    message: t.community.savedToMyRecipes,
+                  ).notify(context);
+                }
+              },
+              builder: (context, state) {
+                return Stack(
+                  children: [
+                    switch (state) {
+                      SharedRecipesLoading() => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      SharedRecipesLoaded(
+                        recipes: final recipes,
+                        savedIds: final savedIds,
+                      ) =>
+                        _Feed(recipes: recipes, savedIds: savedIds),
+                      SharedRecipesError(error: final error) => ErrorRetryView(
+                        error: error,
+                        onRetry: () => context.read<SharedRecipesBloc>().add(
+                          const SharedRecipesEvent.init(),
+                        ),
+                      ),
+                    },
+                    PositionedDirectional(
+                      end: AppSpacing.marginMobile,
+                      bottom: ClayNavDock.bottomPadding(context),
+                      child: WalkthroughTarget(
+                        id: WalkthroughIds.communityShare,
+                        child: FloatingActionButton(
+                          heroTag: 'share-recipe',
+                          backgroundColor: AppColors.primary,
+                          onPressed: () => _pickAndShare(context),
+                          child: const Icon(
+                            Icons.ios_share_rounded,
+                            color: AppColors.onPrimary,
+                          ),
+                        ),
+                      ),
                     ),
-                },
-                PositionedDirectional(
-                  end: AppSpacing.marginMobile,
-                  bottom: ClayNavDock.bottomPadding(context),
-                  child: FloatingActionButton(
-                    heroTag: 'share-recipe',
-                    backgroundColor: AppColors.primary,
-                    onPressed: () => _pickAndShare(context),
-                    child: const Icon(Icons.ios_share_rounded, color: AppColors.onPrimary),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+                  ],
+                );
+              },
+            ),
       ),
     );
   }
@@ -89,7 +105,10 @@ class SharedRecipesPage extends StatelessWidget {
 /// already, and re-publishing it would put their recipe under this name.
 Future<void> _pickAndShare(BuildContext context) async {
   final bloc = context.read<SharedRecipesBloc>();
-  final picked = await showRecipePickerSheet(context, where: (recipe) => recipe.isMine);
+  final picked = await showRecipePickerSheet(
+    context,
+    where: (recipe) => recipe.isMine,
+  );
   if (picked != null) bloc.add(SharedRecipesEvent.share(picked));
 }
 
@@ -126,9 +145,9 @@ class _FeedState extends State<_Feed> {
   }
 
   String get _emptyMessage => switch (_query.scope) {
-        SharedFeedScope.mine => t.community.noneOfMine,
-        SharedFeedScope.saved || SharedFeedScope.all => t.community.noSharedRecipes,
-      };
+    SharedFeedScope.mine => t.community.noneOfMine,
+    SharedFeedScope.saved || SharedFeedScope.all => t.community.noSharedRecipes,
+  };
 
   /// Hands the indicator a future that completes when the bloc has finished,
   /// rather than one derived from the state stream.
@@ -153,7 +172,8 @@ class _FeedState extends State<_Feed> {
 
     // "Nothing matched" and "nothing has been shared" are different problems
     // and need different wording, so the empty state distinguishes them.
-    final isSearchingOrFiltering = _query.search.isNotEmpty || _query.isNarrowed;
+    final isSearchingOrFiltering =
+        _query.search.isNotEmpty || _query.isNarrowed;
 
     return Column(
       children: [
@@ -233,7 +253,9 @@ class _FeedState extends State<_Feed> {
   Widget _list(List<SharedRecipeEntity> visible) {
     final layout = FeedAdLayout(
       itemCount: visible.length,
-      interval: MonetizationConfig.adFree ? 0 : MonetizationConfig.feedAdInterval,
+      interval: MonetizationConfig.adFree
+          ? 0
+          : MonetizationConfig.feedAdInterval,
     );
 
     return ListView.separated(
@@ -249,13 +271,13 @@ class _FeedState extends State<_Feed> {
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, position) => switch (layout.slotAt(position)) {
         ContentSlot(index: final index) => _SharedCard(
-            shared: visible[index],
-            saved: widget.savedIds.contains(visible[index].id),
-          ),
+          shared: visible[index],
+          saved: widget.savedIds.contains(visible[index].id),
+        ),
         AdSlot(adIndex: final adIndex) => switch (_ads.slot(adIndex)) {
-            final slot? => NativeAdCard(slot: slot),
-            null => const SizedBox.shrink(),
-          },
+          final slot? => NativeAdCard(slot: slot),
+          null => const SizedBox.shrink(),
+        },
       },
     );
   }
@@ -277,10 +299,13 @@ class _FeedState extends State<_Feed> {
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.gutter),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: AppSpacing.gutter,
+                ),
               ),
-              onChanged: (value) =>
-                  setState(() => _query = _query.copyWith(search: value.trim())),
+              onChanged: (value) => setState(
+                () => _query = _query.copyWith(search: value.trim()),
+              ),
             ),
           ),
           if (_query.search.isNotEmpty)
@@ -314,9 +339,15 @@ class _FeedState extends State<_Feed> {
             padding: const EdgeInsets.all(AppSpacing.gutter),
             decoration: const ShapeDecoration(
               color: AppColors.surfaceContainerLow,
-              shape: StadiumBorder(side: BorderSide(color: AppColors.outlineVariant)),
+              shape: StadiumBorder(
+                side: BorderSide(color: AppColors.outlineVariant),
+              ),
             ),
-            child: const Icon(Icons.tune_rounded, size: 20, color: AppColors.tertiary),
+            child: const Icon(
+              Icons.tune_rounded,
+              size: 20,
+              color: AppColors.tertiary,
+            ),
           ),
           if (active)
             PositionedDirectional(
@@ -348,9 +379,13 @@ class _FeedState extends State<_Feed> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
         decoration: ShapeDecoration(
-          color: selected ? AppColors.primaryFixed : AppColors.surfaceContainerLow,
+          color: selected
+              ? AppColors.primaryFixed
+              : AppColors.surfaceContainerLow,
           shape: StadiumBorder(
-            side: BorderSide(color: selected ? AppColors.primary : AppColors.outlineVariant),
+            side: BorderSide(
+              color: selected ? AppColors.primary : AppColors.outlineVariant,
+            ),
           ),
         ),
         child: Text(
@@ -388,7 +423,9 @@ class _SharedCard extends StatelessWidget {
     if (edited == null) return;
 
     bloc.add(SharedRecipesEvent.updateShared(shared.id, edited));
-    if (context.mounted) AppDialog.success(message: t.community.sharedUpdated).notify(context);
+    if (context.mounted) {
+      AppDialog.success(message: t.community.sharedUpdated).notify(context);
+    }
   }
 
   Future<void> _confirmUnshare(BuildContext context) async {
@@ -462,14 +499,20 @@ class _SharedCard extends StatelessWidget {
                     children: [
                       IconButton(
                         tooltip: t.community.editShared,
-                        icon: const Icon(Icons.edit_rounded,
-                            size: 20, color: AppColors.primary),
+                        icon: const Icon(
+                          Icons.edit_rounded,
+                          size: 20,
+                          color: AppColors.primary,
+                        ),
                         onPressed: () => _edit(context),
                       ),
                       IconButton(
                         tooltip: t.community.unshare,
-                        icon: const Icon(Icons.delete_outline_rounded,
-                            size: 20, color: AppColors.error),
+                        icon: const Icon(
+                          Icons.delete_outline_rounded,
+                          size: 20,
+                          color: AppColors.error,
+                        ),
                         onPressed: () => _confirmUnshare(context),
                       ),
                     ],
@@ -488,14 +531,25 @@ class _SharedCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            recipe.ingredients.take(4).map((i) {
-              final unit = measurementUnitLabel(i.unit);
-              final amount = i.isAmountMissing ? kMissingInfoPlaceholder : '${i.amount}';
-              return [amount, unit, i.name].where((s) => s.isNotEmpty).join(' ');
-            }).join(' · '),
+            recipe.ingredients
+                .take(4)
+                .map((i) {
+                  final unit = measurementUnitLabel(i.unit);
+                  final amount = i.isAmountMissing
+                      ? kMissingInfoPlaceholder
+                      : '${i.amount}';
+                  return [
+                    amount,
+                    unit,
+                    i.name,
+                  ].where((s) => s.isNotEmpty).join(' ');
+                })
+                .join(' · '),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.labelMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Row(
@@ -503,7 +557,8 @@ class _SharedCard extends StatelessWidget {
               LikeButton(
                 liked: shared.likedByMe,
                 count: shared.likeCount,
-                onPressed: () => bloc.add(SharedRecipesEvent.toggleLike(shared.id)),
+                onPressed: () =>
+                    bloc.add(SharedRecipesEvent.toggleLike(shared.id)),
               ),
               const Spacer(),
               if (saved)
@@ -517,7 +572,8 @@ class _SharedCard extends StatelessWidget {
                 ClayButton(
                   label: t.community.saveToMyRecipes,
                   icon: Icons.bookmark_add_rounded,
-                  onPressed: () => bloc.add(SharedRecipesEvent.importToMyRecipes(shared)),
+                  onPressed: () =>
+                      bloc.add(SharedRecipesEvent.importToMyRecipes(shared)),
                 ),
             ],
           ),

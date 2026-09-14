@@ -25,6 +25,8 @@ import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
 import 'routing.dart';
+import '../../../features/more/presentation/pages/tutorial_book_page.dart';
+import '../../../features/feedback/presentation/pages/admin_feedback_page.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
 /// whatever the current [AuthStage] demands.
@@ -178,6 +180,16 @@ GoRouter buildRouter() {
             path: Routing.ingestion,
             name: Routing.ingestion,
             builder: (context, state) => const IngestionPage(),
+          ),
+          GoRoute(
+            path: Routing.tutorial,
+            name: Routing.tutorial,
+            builder: (context, state) => const TutorialBookPage(),
+          ),
+          GoRoute(
+            path: Routing.adminFeedback,
+            name: Routing.adminFeedback,
+            builder: (context, state) => const AdminFeedbackPage(),
           ),
         ],
       ),

@@ -69,6 +69,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$update$he update = Translations$update$he.internal(_root);
 	late final Translations$ads$he ads = Translations$ads$he.internal(_root);
 	late final Translations$premium$he premium = Translations$premium$he.internal(_root);
+	late final Translations$walkthrough$he walkthrough = Translations$walkthrough$he.internal(_root);
+	late final Translations$feedback$he feedback = Translations$feedback$he.internal(_root);
 }
 
 // Path: common
@@ -1766,6 +1768,315 @@ class Translations$premium$he {
 	String get privacy => 'מדיניות פרטיות';
 }
 
+// Path: walkthrough
+class Translations$walkthrough$he {
+	Translations$walkthrough$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'הדרכה'
+	String get title => 'הדרכה';
+
+	/// he: 'הפעל הדרכה'
+	String get start => 'הפעל הדרכה';
+
+	/// he: 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד'
+	String get startHint => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד';
+
+	/// he: 'התחל הדרכה מלאה'
+	String get startFull => 'התחל הדרכה מלאה';
+
+	/// he: 'הצג הנחיה ממוקדת'
+	String get focused => 'הצג הנחיה ממוקדת';
+
+	/// he: 'הבא'
+	String get next => 'הבא';
+
+	/// he: 'סיום'
+	String get finish => 'סיום';
+
+	/// he: 'דלג על שלב'
+	String get skipStep => 'דלג על שלב';
+
+	/// he: 'סגור הדרכה'
+	String get close => 'סגור הדרכה';
+
+	/// he: 'שלב $current מתוך $total'
+	String stepOf({required Object current, required Object total}) => 'שלב ${current} מתוך ${total}';
+
+	/// he: 'לחצו על האזור המודגש, או על ״הבא״'
+	String get tapHint => 'לחצו על האזור המודגש, או על ״הבא״';
+
+	/// he: 'מדריך EasyPlate'
+	String get bookTitle => 'מדריך EasyPlate';
+
+	/// he: 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. זהו מדריך בלבד: שום דבר לא נשמר.'
+	String get bookSubtitle => 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. זהו מדריך בלבד: שום דבר לא נשמר.';
+
+	/// he: 'תוכן עניינים'
+	String get contents => 'תוכן עניינים';
+
+	/// he: 'פרק $number'
+	String chapter({required Object number}) => 'פרק ${number}';
+
+	/// he: 'לתוכן העניינים'
+	String get backToContents => 'לתוכן העניינים';
+
+	/// he: 'השלבים'
+	String get stepsTitle => 'השלבים';
+
+	/// he: 'ברוכים הבאים ל-EasyPlate'
+	String get welcomeTitle => 'ברוכים הבאים ל-EasyPlate';
+
+	/// he: 'נעבור יחד על הפעולות העיקריות. אפשר לדלג על כל שלב, או לסגור ולהפעיל שוב ממסך התמיכה.'
+	String get welcomeBody => 'נעבור יחד על הפעולות העיקריות. אפשר לדלג על כל שלב, או לסגור ולהפעיל שוב ממסך התמיכה.';
+
+	late final Translations$walkthrough$topics$he topics = Translations$walkthrough$topics$he.internal(_root);
+
+	/// he: 'מתכונים לדוגמה'
+	String get demoRecipes => 'מתכונים לדוגמה';
+
+	/// he: 'כך נראים מתכונים באפליקציה. לחצו על מתכון כדי לראות את העמוד המלא: זמנים, נושאים, אלרגנים, מצרכים ושלבים.'
+	String get demoRecipesHint => 'כך נראים מתכונים באפליקציה. לחצו על מתכון כדי לראות את העמוד המלא: זמנים, נושאים, אלרגנים, מצרכים ושלבים.';
+
+	/// he: 'ספרים לדוגמה'
+	String get demoBooks => 'ספרים לדוגמה';
+
+	/// he: 'כך נראה ספר מתכונים. לחצו על ספר כדי לפתוח אותו, לדפדף בין העמודים ולקפוץ מתוכן העניינים.'
+	String get demoBooksHint => 'כך נראה ספר מתכונים. לחצו על ספר כדי לפתוח אותו, לדפדף בין העמודים ולקפוץ מתוכן העניינים.';
+
+	/// he: 'דוגמה בלבד, לא נשמר'
+	String get demoOnly => 'דוגמה בלבד, לא נשמר';
+}
+
+// Path: feedback
+class Translations$feedback$he {
+	Translations$feedback$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'דיווח והצעות'
+	String get title => 'דיווח והצעות';
+
+	/// he: 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.'
+	String get subtitle => 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.';
+
+	/// he: 'תקלה (באג)'
+	String get bug => 'תקלה (באג)';
+
+	/// he: 'הצעה לשיפור'
+	String get suggestion => 'הצעה לשיפור';
+
+	/// he: 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...'
+	String get bugHint => 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...';
+
+	/// he: 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...'
+	String get suggestionHint => 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...';
+
+	/// he: 'שליחה'
+	String get send => 'שליחה';
+
+	/// he: 'תודה! הפנייה נשלחה.'
+	String get sent => 'תודה! הפנייה נשלחה.';
+
+	/// he: 'השליחה נכשלה, נסו שוב מאוחר יותר'
+	String get failed => 'השליחה נכשלה, נסו שוב מאוחר יותר';
+
+	/// he: 'ניהול פניות'
+	String get admin => 'ניהול פניות';
+
+	/// he: 'הכל'
+	String get all => 'הכל';
+
+	/// he: 'תקלות'
+	String get bugs => 'תקלות';
+
+	/// he: 'הצעות'
+	String get suggestions => 'הצעות';
+
+	/// he: 'אין פניות עדיין'
+	String get none => 'אין פניות עדיין';
+
+	/// he: 'גרסה $version'
+	String version({required Object version}) => 'גרסה ${version}';
+
+	/// he: 'המסך הזה זמין למנהל בלבד'
+	String get notAllowed => 'המסך הזה זמין למנהל בלבד';
+}
+
+// Path: walkthrough.topics
+class Translations$walkthrough$topics$he {
+	Translations$walkthrough$topics$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	late final Translations$walkthrough$topics$addRecipe$he addRecipe = Translations$walkthrough$topics$addRecipe$he.internal(_root);
+	late final Translations$walkthrough$topics$myRecipes$he myRecipes = Translations$walkthrough$topics$myRecipes$he.internal(_root);
+	late final Translations$walkthrough$topics$library$he library = Translations$walkthrough$topics$library$he.internal(_root);
+	late final Translations$walkthrough$topics$mealPlan$he mealPlan = Translations$walkthrough$topics$mealPlan$he.internal(_root);
+	late final Translations$walkthrough$topics$groceries$he groceries = Translations$walkthrough$topics$groceries$he.internal(_root);
+	late final Translations$walkthrough$topics$community$he community = Translations$walkthrough$topics$community$he.internal(_root);
+	late final Translations$walkthrough$topics$account$he account = Translations$walkthrough$topics$account$he.internal(_root);
+}
+
+// Path: walkthrough.topics.addRecipe
+class Translations$walkthrough$topics$addRecipe$he {
+	Translations$walkthrough$topics$addRecipe$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'הוספת מתכון'
+	String get title => 'הוספת מתכון';
+
+	/// he: 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים ותגיות.'
+	String get summary => 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים ותגיות.';
+
+	/// he: 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.'
+	String get s1 => 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.';
+
+	/// he: 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון TikTok/Reels, בקשה חופשית מ-AI, או כתיבה ידנית. אחרי הניתוח בודקים, עורכים ושומרים.'
+	String get s2 => 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון TikTok/Reels, בקשה חופשית מ-AI, או כתיבה ידנית. אחרי הניתוח בודקים, עורכים ושומרים.';
+}
+
+// Path: walkthrough.topics.myRecipes
+class Translations$walkthrough$topics$myRecipes$he {
+	Translations$walkthrough$topics$myRecipes$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'המתכונים שלי ושמורים'
+	String get title => 'המתכונים שלי ושמורים';
+
+	/// he: 'המתכונים שכתבתם ואלה ששמרתם מהקהילה, עם חיפוש וסינון לפי נושאים.'
+	String get summary => 'המתכונים שכתבתם ואלה ששמרתם מהקהילה, עם חיפוש וסינון לפי נושאים.';
+
+	/// he: 'כאן עוברים בין המתכונים שכתבתם לבין מתכונים ששמרתם מהקהילה.'
+	String get s1 => 'כאן עוברים בין המתכונים שכתבתם לבין מתכונים ששמרתם מהקהילה.';
+
+	/// he: 'חיפוש לפי שם, וסינון לפי נושאים: בשרי, חלבי, צמחוני, טבעוני, כשר, ללא גלוטן ואלרגיה.'
+	String get s2 => 'חיפוש לפי שם, וסינון לפי נושאים: בשרי, חלבי, צמחוני, טבעוני, כשר, ללא גלוטן ואלרגיה.';
+}
+
+// Path: walkthrough.topics.library
+class Translations$walkthrough$topics$library$he {
+	Translations$walkthrough$topics$library$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ספרי מתכונים'
+	String get title => 'ספרי מתכונים';
+
+	/// he: 'מסדרים מתכונים בספרים עם תוכן עניינים, כריכה ודפדוף.'
+	String get summary => 'מסדרים מתכונים בספרים עם תוכן עניינים, כריכה ודפדוף.';
+
+	/// he: 'לחצו על ״ספרייה״ כדי לעבור לספרים.'
+	String get s1 => 'לחצו על ״ספרייה״ כדי לעבור לספרים.';
+
+	/// he: 'כאן יוצרים ספר חדש. בתוך הספר מוסיפים מתכונים, מדפדפים ומחליפים כריכה.'
+	String get s2 => 'כאן יוצרים ספר חדש. בתוך הספר מוסיפים מתכונים, מדפדפים ומחליפים כריכה.';
+}
+
+// Path: walkthrough.topics.mealPlan
+class Translations$walkthrough$topics$mealPlan$he {
+	Translations$walkthrough$topics$mealPlan$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'תפריט שבועי'
+	String get title => 'תפריט שבועי';
+
+	/// he: 'תוכנית ארוחות לכל השבוע, שמזינה את רשימת הקניות.'
+	String get summary => 'תוכנית ארוחות לכל השבוע, שמזינה את רשימת הקניות.';
+
+	/// he: 'לחצו על ״תפריטים״ לתכנון הארוחות.'
+	String get s1 => 'לחצו על ״תפריטים״ לתכנון הארוחות.';
+
+	/// he: 'יוצרים תוכנית שבועית ומשבצים מתכונים לכל יום ולכל ארוחה.'
+	String get s2 => 'יוצרים תוכנית שבועית ומשבצים מתכונים לכל יום ולכל ארוחה.';
+}
+
+// Path: walkthrough.topics.groceries
+class Translations$walkthrough$topics$groceries$he {
+	Translations$walkthrough$topics$groceries$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'רשימת קניות'
+	String get title => 'רשימת קניות';
+
+	/// he: 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף.'
+	String get summary => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף.';
+
+	/// he: 'לחצו על ״קניות״.'
+	String get s1 => 'לחצו על ״קניות״.';
+
+	/// he: 'רענון בונה מחדש את הרשימה מכל המתכונים בתפריט השבועי.'
+	String get s2 => 'רענון בונה מחדש את הרשימה מכל המתכונים בתפריט השבועי.';
+
+	/// he: 'וכאן מוסיפים פריט חופשי ביד.'
+	String get s3 => 'וכאן מוסיפים פריט חופשי ביד.';
+}
+
+// Path: walkthrough.topics.community
+class Translations$walkthrough$topics$community$he {
+	Translations$walkthrough$topics$community$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'קהילה'
+	String get title => 'קהילה';
+
+	/// he: 'מתכונים משותפים של כל המשתמשים, ופורום לשאלות ותשובות.'
+	String get summary => 'מתכונים משותפים של כל המשתמשים, ופורום לשאלות ותשובות.';
+
+	/// he: 'לחצו על ״קהילה״.'
+	String get s1 => 'לחצו על ״קהילה״.';
+
+	/// he: 'מתכונים משותפים ופורום. אפשר לעשות לייק, לשמור מתכון אצלכם, ולצרף מתכון לתגובה בפורום.'
+	String get s2 => 'מתכונים משותפים ופורום. אפשר לעשות לייק, לשמור מתכון אצלכם, ולצרף מתכון לתגובה בפורום.';
+
+	/// he: 'כפתור השיתוף מפרסם מתכון משלכם לקהילה.'
+	String get s3 => 'כפתור השיתוף מפרסם מתכון משלכם לקהילה.';
+}
+
+// Path: walkthrough.topics.account
+class Translations$walkthrough$topics$account$he {
+	Translations$walkthrough$topics$account$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'חשבון והתראות'
+	String get title => 'חשבון והתראות';
+
+	/// he: 'התראות על הזמנות לשיתוף, והחשבון עם פרימיום, הגדרות ותמיכה.'
+	String get summary => 'התראות על הזמנות לשיתוף, והחשבון עם פרימיום, הגדרות ותמיכה.';
+
+	/// he: 'התראות: הזמנות לשיתוף מתכונים ועדכונים.'
+	String get s1 => 'התראות: הזמנות לשיתוף מתכונים ועדכונים.';
+
+	/// he: 'החשבון: פרימיום, שיתוף בין חשבונות, הגדרות, פרופיל ותמיכה. משם גם מפעילים את ההדרכה הזו שוב.'
+	String get s2 => 'החשבון: פרימיום, שיתוף בין חשבונות, הגדרות, פרופיל ותמיכה. משם גם מפעילים את ההדרכה הזו שוב.';
+}
+
 /// The flat map containing all translations for locale <he>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -2265,6 +2576,78 @@ extension on Translations {
 			'premium.legal' => 'המנוי מתחדש אוטומטית בסוף כל תקופה, אלא אם בוטל לפחות 24 שעות לפני סיומה. החיוב מתבצע דרך חשבון החנות שלך, וניתן לנהל או לבטל אותו בהגדרות החנות.',
 			'premium.terms' => 'תנאי שימוש',
 			'premium.privacy' => 'מדיניות פרטיות',
+			'walkthrough.title' => 'הדרכה',
+			'walkthrough.start' => 'הפעל הדרכה',
+			'walkthrough.startHint' => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד',
+			'walkthrough.startFull' => 'התחל הדרכה מלאה',
+			'walkthrough.focused' => 'הצג הנחיה ממוקדת',
+			'walkthrough.next' => 'הבא',
+			'walkthrough.finish' => 'סיום',
+			'walkthrough.skipStep' => 'דלג על שלב',
+			'walkthrough.close' => 'סגור הדרכה',
+			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'שלב ${current} מתוך ${total}',
+			'walkthrough.tapHint' => 'לחצו על האזור המודגש, או על ״הבא״',
+			'walkthrough.bookTitle' => 'מדריך EasyPlate',
+			'walkthrough.bookSubtitle' => 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. זהו מדריך בלבד: שום דבר לא נשמר.',
+			'walkthrough.contents' => 'תוכן עניינים',
+			'walkthrough.chapter' => ({required Object number}) => 'פרק ${number}',
+			'walkthrough.backToContents' => 'לתוכן העניינים',
+			'walkthrough.stepsTitle' => 'השלבים',
+			'walkthrough.welcomeTitle' => 'ברוכים הבאים ל-EasyPlate',
+			'walkthrough.welcomeBody' => 'נעבור יחד על הפעולות העיקריות. אפשר לדלג על כל שלב, או לסגור ולהפעיל שוב ממסך התמיכה.',
+			'walkthrough.topics.addRecipe.title' => 'הוספת מתכון',
+			'walkthrough.topics.addRecipe.summary' => 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים ותגיות.',
+			_ => null,
+		} ?? switch (path) {
+			'walkthrough.topics.addRecipe.s1' => 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.',
+			'walkthrough.topics.addRecipe.s2' => 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון TikTok/Reels, בקשה חופשית מ-AI, או כתיבה ידנית. אחרי הניתוח בודקים, עורכים ושומרים.',
+			'walkthrough.topics.myRecipes.title' => 'המתכונים שלי ושמורים',
+			'walkthrough.topics.myRecipes.summary' => 'המתכונים שכתבתם ואלה ששמרתם מהקהילה, עם חיפוש וסינון לפי נושאים.',
+			'walkthrough.topics.myRecipes.s1' => 'כאן עוברים בין המתכונים שכתבתם לבין מתכונים ששמרתם מהקהילה.',
+			'walkthrough.topics.myRecipes.s2' => 'חיפוש לפי שם, וסינון לפי נושאים: בשרי, חלבי, צמחוני, טבעוני, כשר, ללא גלוטן ואלרגיה.',
+			'walkthrough.topics.library.title' => 'ספרי מתכונים',
+			'walkthrough.topics.library.summary' => 'מסדרים מתכונים בספרים עם תוכן עניינים, כריכה ודפדוף.',
+			'walkthrough.topics.library.s1' => 'לחצו על ״ספרייה״ כדי לעבור לספרים.',
+			'walkthrough.topics.library.s2' => 'כאן יוצרים ספר חדש. בתוך הספר מוסיפים מתכונים, מדפדפים ומחליפים כריכה.',
+			'walkthrough.topics.mealPlan.title' => 'תפריט שבועי',
+			'walkthrough.topics.mealPlan.summary' => 'תוכנית ארוחות לכל השבוע, שמזינה את רשימת הקניות.',
+			'walkthrough.topics.mealPlan.s1' => 'לחצו על ״תפריטים״ לתכנון הארוחות.',
+			'walkthrough.topics.mealPlan.s2' => 'יוצרים תוכנית שבועית ומשבצים מתכונים לכל יום ולכל ארוחה.',
+			'walkthrough.topics.groceries.title' => 'רשימת קניות',
+			'walkthrough.topics.groceries.summary' => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף.',
+			'walkthrough.topics.groceries.s1' => 'לחצו על ״קניות״.',
+			'walkthrough.topics.groceries.s2' => 'רענון בונה מחדש את הרשימה מכל המתכונים בתפריט השבועי.',
+			'walkthrough.topics.groceries.s3' => 'וכאן מוסיפים פריט חופשי ביד.',
+			'walkthrough.topics.community.title' => 'קהילה',
+			'walkthrough.topics.community.summary' => 'מתכונים משותפים של כל המשתמשים, ופורום לשאלות ותשובות.',
+			'walkthrough.topics.community.s1' => 'לחצו על ״קהילה״.',
+			'walkthrough.topics.community.s2' => 'מתכונים משותפים ופורום. אפשר לעשות לייק, לשמור מתכון אצלכם, ולצרף מתכון לתגובה בפורום.',
+			'walkthrough.topics.community.s3' => 'כפתור השיתוף מפרסם מתכון משלכם לקהילה.',
+			'walkthrough.topics.account.title' => 'חשבון והתראות',
+			'walkthrough.topics.account.summary' => 'התראות על הזמנות לשיתוף, והחשבון עם פרימיום, הגדרות ותמיכה.',
+			'walkthrough.topics.account.s1' => 'התראות: הזמנות לשיתוף מתכונים ועדכונים.',
+			'walkthrough.topics.account.s2' => 'החשבון: פרימיום, שיתוף בין חשבונות, הגדרות, פרופיל ותמיכה. משם גם מפעילים את ההדרכה הזו שוב.',
+			'walkthrough.demoRecipes' => 'מתכונים לדוגמה',
+			'walkthrough.demoRecipesHint' => 'כך נראים מתכונים באפליקציה. לחצו על מתכון כדי לראות את העמוד המלא: זמנים, נושאים, אלרגנים, מצרכים ושלבים.',
+			'walkthrough.demoBooks' => 'ספרים לדוגמה',
+			'walkthrough.demoBooksHint' => 'כך נראה ספר מתכונים. לחצו על ספר כדי לפתוח אותו, לדפדף בין העמודים ולקפוץ מתוכן העניינים.',
+			'walkthrough.demoOnly' => 'דוגמה בלבד, לא נשמר',
+			'feedback.title' => 'דיווח והצעות',
+			'feedback.subtitle' => 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.',
+			'feedback.bug' => 'תקלה (באג)',
+			'feedback.suggestion' => 'הצעה לשיפור',
+			'feedback.bugHint' => 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...',
+			'feedback.suggestionHint' => 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...',
+			'feedback.send' => 'שליחה',
+			'feedback.sent' => 'תודה! הפנייה נשלחה.',
+			'feedback.failed' => 'השליחה נכשלה, נסו שוב מאוחר יותר',
+			'feedback.admin' => 'ניהול פניות',
+			'feedback.all' => 'הכל',
+			'feedback.bugs' => 'תקלות',
+			'feedback.suggestions' => 'הצעות',
+			'feedback.none' => 'אין פניות עדיין',
+			'feedback.version' => ({required Object version}) => 'גרסה ${version}',
+			'feedback.notAllowed' => 'המסך הזה זמין למנהל בלבד',
 			_ => null,
 		};
 	}

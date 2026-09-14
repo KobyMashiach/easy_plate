@@ -65,6 +65,8 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$update$en update = _Translations$update$en._(_root);
 	@override late final _Translations$ads$en ads = _Translations$ads$en._(_root);
 	@override late final _Translations$premium$en premium = _Translations$premium$en._(_root);
+	@override late final _Translations$walkthrough$en walkthrough = _Translations$walkthrough$en._(_root);
+	@override late final _Translations$feedback$en feedback = _Translations$feedback$en._(_root);
 }
 
 // Path: common
@@ -782,6 +784,174 @@ class _Translations$premium$en extends Translations$premium$he {
 	@override String get privacy => 'Privacy Policy';
 }
 
+// Path: walkthrough
+class _Translations$walkthrough$en extends Translations$walkthrough$he {
+	_Translations$walkthrough$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Guide';
+	@override String get start => 'Start the guide';
+	@override String get startHint => 'A guided tour of everything in the app, step by step';
+	@override String get startFull => 'Start the full tour';
+	@override String get focused => 'Show focused guidance';
+	@override String get next => 'Next';
+	@override String get finish => 'Done';
+	@override String get skipStep => 'Skip step';
+	@override String get close => 'Close guide';
+	@override String stepOf({required Object current, required Object total}) => 'Step ${current} of ${total}';
+	@override String get tapHint => 'Tap the highlighted area, or "Next"';
+	@override String get bookTitle => 'EasyPlate guide';
+	@override String get bookSubtitle => 'Everything the app can do, chapter by chapter. A guide only: nothing is saved.';
+	@override String get contents => 'Contents';
+	@override String chapter({required Object number}) => 'Chapter ${number}';
+	@override String get backToContents => 'Back to contents';
+	@override String get stepsTitle => 'Steps';
+	@override String get welcomeTitle => 'Welcome to EasyPlate';
+	@override String get welcomeBody => 'Let\'s walk through the main actions together. Skip any step, or close and start again from the support screen.';
+	@override late final _Translations$walkthrough$topics$en topics = _Translations$walkthrough$topics$en._(_root);
+	@override String get demoRecipes => 'Sample recipes';
+	@override String get demoRecipesHint => 'This is what recipes look like in the app. Tap one to see its full page: times, topics, allergens, ingredients and steps.';
+	@override String get demoBooks => 'Sample books';
+	@override String get demoBooksHint => 'This is what a recipe book looks like. Tap one to open it, turn its pages and jump from the contents.';
+	@override String get demoOnly => 'Sample only, not saved';
+}
+
+// Path: feedback
+class _Translations$feedback$en extends Translations$feedback$he {
+	_Translations$feedback$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Report and suggest';
+	@override String get subtitle => 'Found a bug? Have an idea? Write to us here; every message is read.';
+	@override String get bug => 'Bug';
+	@override String get suggestion => 'Suggestion';
+	@override String get bugHint => 'Describe the bug: what you did, what happened, and what you expected...';
+	@override String get suggestionHint => 'Tell us what you would like the app to do, and how it would help you...';
+	@override String get send => 'Send';
+	@override String get sent => 'Thanks! Your message was sent.';
+	@override String get failed => 'Sending failed, please try again later';
+	@override String get admin => 'Feedback inbox';
+	@override String get all => 'All';
+	@override String get bugs => 'Bugs';
+	@override String get suggestions => 'Suggestions';
+	@override String get none => 'No messages yet';
+	@override String version({required Object version}) => 'Version ${version}';
+	@override String get notAllowed => 'This screen is for the administrator only';
+}
+
+// Path: walkthrough.topics
+class _Translations$walkthrough$topics$en extends Translations$walkthrough$topics$he {
+	_Translations$walkthrough$topics$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$walkthrough$topics$addRecipe$en addRecipe = _Translations$walkthrough$topics$addRecipe$en._(_root);
+	@override late final _Translations$walkthrough$topics$myRecipes$en myRecipes = _Translations$walkthrough$topics$myRecipes$en._(_root);
+	@override late final _Translations$walkthrough$topics$library$en library = _Translations$walkthrough$topics$library$en._(_root);
+	@override late final _Translations$walkthrough$topics$mealPlan$en mealPlan = _Translations$walkthrough$topics$mealPlan$en._(_root);
+	@override late final _Translations$walkthrough$topics$groceries$en groceries = _Translations$walkthrough$topics$groceries$en._(_root);
+	@override late final _Translations$walkthrough$topics$community$en community = _Translations$walkthrough$topics$community$en._(_root);
+	@override late final _Translations$walkthrough$topics$account$en account = _Translations$walkthrough$topics$account$en._(_root);
+}
+
+// Path: walkthrough.topics.addRecipe
+class _Translations$walkthrough$topics$addRecipe$en extends Translations$walkthrough$topics$addRecipe$he {
+	_Translations$walkthrough$topics$addRecipe$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Add a recipe';
+	@override String get summary => 'Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps and tags.';
+	@override String get s1 => 'Tap the sparkle button next to the title to add a recipe.';
+	@override String get s2 => 'Pick a source: pasted text, a web search, a website link, a TikTok/Reels video, a free request to the AI, or writing by hand. After the analysis you review, edit and save.';
+}
+
+// Path: walkthrough.topics.myRecipes
+class _Translations$walkthrough$topics$myRecipes$en extends Translations$walkthrough$topics$myRecipes$he {
+	_Translations$walkthrough$topics$myRecipes$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'My recipes and saved';
+	@override String get summary => 'The recipes you wrote and the ones you saved from the community, with search and topic filters.';
+	@override String get s1 => 'Switch here between recipes you wrote and recipes you saved from the community.';
+	@override String get s2 => 'Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy.';
+}
+
+// Path: walkthrough.topics.library
+class _Translations$walkthrough$topics$library$en extends Translations$walkthrough$topics$library$he {
+	_Translations$walkthrough$topics$library$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Recipe books';
+	@override String get summary => 'Arrange recipes into books with a table of contents, a cover and page turning.';
+	@override String get s1 => 'Tap "Library" to go to your books.';
+	@override String get s2 => 'Create a new book here. Inside it you add recipes, turn pages and change the cover.';
+}
+
+// Path: walkthrough.topics.mealPlan
+class _Translations$walkthrough$topics$mealPlan$en extends Translations$walkthrough$topics$mealPlan$he {
+	_Translations$walkthrough$topics$mealPlan$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Weekly meal plan';
+	@override String get summary => 'A plan for the whole week that feeds the grocery list.';
+	@override String get s1 => 'Tap "Meals" to plan the week.';
+	@override String get s2 => 'Create a weekly plan and place recipes on each day and meal.';
+}
+
+// Path: walkthrough.topics.groceries
+class _Translations$walkthrough$topics$groceries$en extends Translations$walkthrough$topics$groceries$he {
+	_Translations$walkthrough$topics$groceries$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Grocery list';
+	@override String get summary => 'A list built from the plan, with what has already been picked up ticked off.';
+	@override String get s1 => 'Tap "Groceries".';
+	@override String get s2 => 'Refresh rebuilds the list from every recipe in the weekly plan.';
+	@override String get s3 => 'And here you add a free item by hand.';
+}
+
+// Path: walkthrough.topics.community
+class _Translations$walkthrough$topics$community$en extends Translations$walkthrough$topics$community$he {
+	_Translations$walkthrough$topics$community$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Community';
+	@override String get summary => 'Recipes shared by everyone, and a forum for questions and answers.';
+	@override String get s1 => 'Tap "Community".';
+	@override String get s2 => 'Shared recipes and the forum. Like, save a recipe to your own, and attach a recipe to a forum reply.';
+	@override String get s3 => 'The share button publishes one of your own recipes to the community.';
+}
+
+// Path: walkthrough.topics.account
+class _Translations$walkthrough$topics$account$en extends Translations$walkthrough$topics$account$he {
+	_Translations$walkthrough$topics$account$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Account and notifications';
+	@override String get summary => 'Notifications about share invites, and the account with premium, settings and support.';
+	@override String get s1 => 'Notifications: invitations to share recipes, and updates.';
+	@override String get s2 => 'The account: premium, sharing between accounts, settings, profile and support. That is also where this guide can be started again.';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1281,6 +1451,78 @@ extension on TranslationsEn {
 			'premium.legal' => 'The subscription renews automatically at the end of each period unless cancelled at least 24 hours before it ends. Payment is charged to your store account and can be managed or cancelled in the store\'s settings.',
 			'premium.terms' => 'Terms of Use',
 			'premium.privacy' => 'Privacy Policy',
+			'walkthrough.title' => 'Guide',
+			'walkthrough.start' => 'Start the guide',
+			'walkthrough.startHint' => 'A guided tour of everything in the app, step by step',
+			'walkthrough.startFull' => 'Start the full tour',
+			'walkthrough.focused' => 'Show focused guidance',
+			'walkthrough.next' => 'Next',
+			'walkthrough.finish' => 'Done',
+			'walkthrough.skipStep' => 'Skip step',
+			'walkthrough.close' => 'Close guide',
+			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Step ${current} of ${total}',
+			'walkthrough.tapHint' => 'Tap the highlighted area, or "Next"',
+			'walkthrough.bookTitle' => 'EasyPlate guide',
+			'walkthrough.bookSubtitle' => 'Everything the app can do, chapter by chapter. A guide only: nothing is saved.',
+			'walkthrough.contents' => 'Contents',
+			'walkthrough.chapter' => ({required Object number}) => 'Chapter ${number}',
+			'walkthrough.backToContents' => 'Back to contents',
+			'walkthrough.stepsTitle' => 'Steps',
+			'walkthrough.welcomeTitle' => 'Welcome to EasyPlate',
+			'walkthrough.welcomeBody' => 'Let\'s walk through the main actions together. Skip any step, or close and start again from the support screen.',
+			'walkthrough.topics.addRecipe.title' => 'Add a recipe',
+			'walkthrough.topics.addRecipe.summary' => 'Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps and tags.',
+			_ => null,
+		} ?? switch (path) {
+			'walkthrough.topics.addRecipe.s1' => 'Tap the sparkle button next to the title to add a recipe.',
+			'walkthrough.topics.addRecipe.s2' => 'Pick a source: pasted text, a web search, a website link, a TikTok/Reels video, a free request to the AI, or writing by hand. After the analysis you review, edit and save.',
+			'walkthrough.topics.myRecipes.title' => 'My recipes and saved',
+			'walkthrough.topics.myRecipes.summary' => 'The recipes you wrote and the ones you saved from the community, with search and topic filters.',
+			'walkthrough.topics.myRecipes.s1' => 'Switch here between recipes you wrote and recipes you saved from the community.',
+			'walkthrough.topics.myRecipes.s2' => 'Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy.',
+			'walkthrough.topics.library.title' => 'Recipe books',
+			'walkthrough.topics.library.summary' => 'Arrange recipes into books with a table of contents, a cover and page turning.',
+			'walkthrough.topics.library.s1' => 'Tap "Library" to go to your books.',
+			'walkthrough.topics.library.s2' => 'Create a new book here. Inside it you add recipes, turn pages and change the cover.',
+			'walkthrough.topics.mealPlan.title' => 'Weekly meal plan',
+			'walkthrough.topics.mealPlan.summary' => 'A plan for the whole week that feeds the grocery list.',
+			'walkthrough.topics.mealPlan.s1' => 'Tap "Meals" to plan the week.',
+			'walkthrough.topics.mealPlan.s2' => 'Create a weekly plan and place recipes on each day and meal.',
+			'walkthrough.topics.groceries.title' => 'Grocery list',
+			'walkthrough.topics.groceries.summary' => 'A list built from the plan, with what has already been picked up ticked off.',
+			'walkthrough.topics.groceries.s1' => 'Tap "Groceries".',
+			'walkthrough.topics.groceries.s2' => 'Refresh rebuilds the list from every recipe in the weekly plan.',
+			'walkthrough.topics.groceries.s3' => 'And here you add a free item by hand.',
+			'walkthrough.topics.community.title' => 'Community',
+			'walkthrough.topics.community.summary' => 'Recipes shared by everyone, and a forum for questions and answers.',
+			'walkthrough.topics.community.s1' => 'Tap "Community".',
+			'walkthrough.topics.community.s2' => 'Shared recipes and the forum. Like, save a recipe to your own, and attach a recipe to a forum reply.',
+			'walkthrough.topics.community.s3' => 'The share button publishes one of your own recipes to the community.',
+			'walkthrough.topics.account.title' => 'Account and notifications',
+			'walkthrough.topics.account.summary' => 'Notifications about share invites, and the account with premium, settings and support.',
+			'walkthrough.topics.account.s1' => 'Notifications: invitations to share recipes, and updates.',
+			'walkthrough.topics.account.s2' => 'The account: premium, sharing between accounts, settings, profile and support. That is also where this guide can be started again.',
+			'walkthrough.demoRecipes' => 'Sample recipes',
+			'walkthrough.demoRecipesHint' => 'This is what recipes look like in the app. Tap one to see its full page: times, topics, allergens, ingredients and steps.',
+			'walkthrough.demoBooks' => 'Sample books',
+			'walkthrough.demoBooksHint' => 'This is what a recipe book looks like. Tap one to open it, turn its pages and jump from the contents.',
+			'walkthrough.demoOnly' => 'Sample only, not saved',
+			'feedback.title' => 'Report and suggest',
+			'feedback.subtitle' => 'Found a bug? Have an idea? Write to us here; every message is read.',
+			'feedback.bug' => 'Bug',
+			'feedback.suggestion' => 'Suggestion',
+			'feedback.bugHint' => 'Describe the bug: what you did, what happened, and what you expected...',
+			'feedback.suggestionHint' => 'Tell us what you would like the app to do, and how it would help you...',
+			'feedback.send' => 'Send',
+			'feedback.sent' => 'Thanks! Your message was sent.',
+			'feedback.failed' => 'Sending failed, please try again later',
+			'feedback.admin' => 'Feedback inbox',
+			'feedback.all' => 'All',
+			'feedback.bugs' => 'Bugs',
+			'feedback.suggestions' => 'Suggestions',
+			'feedback.none' => 'No messages yet',
+			'feedback.version' => ({required Object version}) => 'Version ${version}',
+			'feedback.notAllowed' => 'This screen is for the administrator only',
 			_ => null,
 		};
 	}

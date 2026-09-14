@@ -15,6 +15,8 @@ import '../../domain/entities/meal_plan_entity.dart';
 import '../bloc/meal_planner_bloc.dart';
 import '../widgets/meal_card.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 class MealPlannerPage extends StatelessWidget {
   const MealPlannerPage({super.key});
@@ -33,7 +35,9 @@ class MealPlannerPage extends StatelessWidget {
           body: BlocBuilder<MealPlannerBloc, MealPlannerState>(
             builder: (context, state) {
               return switch (state) {
-                MealPlannerLoading() => const Center(child: CircularProgressIndicator()),
+                MealPlannerLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 MealPlannerLoaded(
                   plans: final plans,
                   selectedPlan: final selected,
@@ -49,12 +53,17 @@ class MealPlannerPage extends StatelessWidget {
                             onPressed: () => _showCreatePlanDialog(context),
                           ),
                         )
-                      : _PlanBoard(plans: plans, plan: selected, recipeTitles: titles),
+                      : _PlanBoard(
+                          plans: plans,
+                          plan: selected,
+                          recipeTitles: titles,
+                        ),
                 MealPlannerError(error: final error) => ErrorRetryView(
-                    error: error,
-                    onRetry: () =>
-                        context.read<MealPlannerBloc>().add(const MealPlannerEvent.init()),
+                  error: error,
+                  onRetry: () => context.read<MealPlannerBloc>().add(
+                    const MealPlannerEvent.init(),
                   ),
+                ),
               };
             },
           ),
@@ -62,7 +71,6 @@ class MealPlannerPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 /// Top level rather than a method: the board's header reaches it too.
@@ -98,24 +106,25 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
     super.dispose();
   }
 
-  ({String label, String hint, IconData icon}) _describe(MealPlanTemplate template) =>
-      switch (template) {
-        MealPlanTemplate.free => (
-            label: t.mealPlanner.templateFree,
-            hint: t.mealPlanner.templateFreeHint,
-            icon: Icons.tune_rounded,
-          ),
-        MealPlanTemplate.threeMeals => (
-            label: t.mealPlanner.templateThree,
-            hint: t.mealPlanner.templateThreeHint,
-            icon: Icons.restaurant_rounded,
-          ),
-        MealPlanTemplate.sixMeals => (
-            label: t.mealPlanner.templateSix,
-            hint: t.mealPlanner.templateSixHint,
-            icon: Icons.local_cafe_rounded,
-          ),
-      };
+  ({String label, String hint, IconData icon}) _describe(
+    MealPlanTemplate template,
+  ) => switch (template) {
+    MealPlanTemplate.free => (
+      label: t.mealPlanner.templateFree,
+      hint: t.mealPlanner.templateFreeHint,
+      icon: Icons.tune_rounded,
+    ),
+    MealPlanTemplate.threeMeals => (
+      label: t.mealPlanner.templateThree,
+      hint: t.mealPlanner.templateThreeHint,
+      icon: Icons.restaurant_rounded,
+    ),
+    MealPlanTemplate.sixMeals => (
+      label: t.mealPlanner.templateSix,
+      hint: t.mealPlanner.templateSixHint,
+      icon: Icons.local_cafe_rounded,
+    ),
+  };
 
   /// Drives the save button's enabled state, so an empty name reads as a
   /// disabled button rather than a tap that silently does nothing.
@@ -134,7 +143,8 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
       padding: EdgeInsets.only(
         left: AppSpacing.marginMobile,
         right: AppSpacing.marginMobile,
-        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -234,7 +244,11 @@ class _PlanBoard extends StatefulWidget {
   final MealPlanEntity plan;
   final Map<String, String> recipeTitles;
 
-  const _PlanBoard({required this.plans, required this.plan, required this.recipeTitles});
+  const _PlanBoard({
+    required this.plans,
+    required this.plan,
+    required this.recipeTitles,
+  });
 
   @override
   State<_PlanBoard> createState() => _PlanBoardState();
@@ -253,7 +267,9 @@ class _PlanBoardState extends State<_PlanBoard> {
       padding: EdgeInsets.only(bottom: ClayNavDock.bottomPadding(context)),
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.marginMobile),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.marginMobile,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -261,12 +277,15 @@ class _PlanBoardState extends State<_PlanBoard> {
               ClayPageHeader(
                 title: widget.plan.name,
                 subtitle: t.mealPlanner.title,
-                trailing: ClayIconButton(
-                  icon: Icons.playlist_add_rounded,
-                  filled: true,
-                  size: 48,
-                  tooltip: t.mealPlanner.newPlan,
-                  onTap: () => _showCreatePlanDialog(context),
+                trailing: WalkthroughTarget(
+                  id: WalkthroughIds.mealPlanAdd,
+                  child: ClayIconButton(
+                    icon: Icons.playlist_add_rounded,
+                    filled: true,
+                    size: 48,
+                    tooltip: t.mealPlanner.newPlan,
+                    onTap: () => _showCreatePlanDialog(context),
+                  ),
                 ),
               ),
               if (widget.plans.length > 1) ...[
@@ -299,7 +318,9 @@ class _PlanBoardState extends State<_PlanBoard> {
                         child: Text(
                           p.name,
                           style: AppTextStyles.labelMd.copyWith(
-                            color: isSelected ? AppColors.primary : AppColors.tertiary,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.tertiary,
                           ),
                         ),
                       ),
@@ -314,20 +335,26 @@ class _PlanBoardState extends State<_PlanBoard> {
         ClayDaySelector(
           labels: [for (final day in days) weekdayLabel(day)],
           counts: [
-            for (var i = 0; i < days.length; i++) widget.plan.mealsForWeekday(i).length,
+            for (var i = 0; i < days.length; i++)
+              widget.plan.mealsForWeekday(i).length,
           ],
           selectedIndex: _weekday,
           onSelected: (index) => setState(() => _weekday = index),
         ),
         const SizedBox(height: AppSpacing.lg),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.marginMobile),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.marginMobile,
+          ),
           child: Column(
             children: [
               for (final meal in meals)
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: MealCard(meal: meal, recipeTitles: widget.recipeTitles),
+                  child: MealCard(
+                    meal: meal,
+                    recipeTitles: widget.recipeTitles,
+                  ),
                 ),
               ClayDashedCard(
                 label: t.mealPlanner.addMeal,

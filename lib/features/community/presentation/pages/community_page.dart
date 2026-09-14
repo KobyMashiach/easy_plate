@@ -7,6 +7,8 @@ import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../forum/presentation/pages/forum_page.dart';
 import '../../../shared_recipes/presentation/pages/shared_recipes_page.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 /// Hosts the two community surfaces behind one nav tab, so the dock keeps a
 /// workable number of destinations.
@@ -38,13 +40,22 @@ class _CommunityPageState extends State<CommunityPage> {
                 AppSpacing.marginMobile,
                 0,
               ),
-              child: ClaySegmentedControl(
-                segments: [
-                  ClaySegment(label: t.community.sharedRecipes, icon: Icons.public_rounded),
-                  ClaySegment(label: t.community.forum, icon: Icons.forum_rounded),
-                ],
-                selectedIndex: _index,
-                onSelected: (index) => setState(() => _index = index),
+              child: WalkthroughTarget(
+                id: WalkthroughIds.communitySegments,
+                child: ClaySegmentedControl(
+                  segments: [
+                    ClaySegment(
+                      label: t.community.sharedRecipes,
+                      icon: Icons.public_rounded,
+                    ),
+                    ClaySegment(
+                      label: t.community.forum,
+                      icon: Icons.forum_rounded,
+                    ),
+                  ],
+                  selectedIndex: _index,
+                  onSelected: (index) => setState(() => _index = index),
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),

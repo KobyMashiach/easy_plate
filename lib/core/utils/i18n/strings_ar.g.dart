@@ -65,6 +65,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$update$ar update = _Translations$update$ar._(_root);
 	@override late final _Translations$ads$ar ads = _Translations$ads$ar._(_root);
 	@override late final _Translations$premium$ar premium = _Translations$premium$ar._(_root);
+	@override late final _Translations$walkthrough$ar walkthrough = _Translations$walkthrough$ar._(_root);
+	@override late final _Translations$feedback$ar feedback = _Translations$feedback$ar._(_root);
 }
 
 // Path: common
@@ -782,6 +784,174 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get privacy => 'سياسة الخصوصية';
 }
 
+// Path: walkthrough
+class _Translations$walkthrough$ar extends Translations$walkthrough$he {
+	_Translations$walkthrough$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'الدليل';
+	@override String get start => 'تشغيل الدليل';
+	@override String get startHint => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة';
+	@override String get startFull => 'ابدأ الجولة الكاملة';
+	@override String get focused => 'عرض إرشاد مركّز';
+	@override String get next => 'التالي';
+	@override String get finish => 'إنهاء';
+	@override String get skipStep => 'تخطّي الخطوة';
+	@override String get close => 'إغلاق الدليل';
+	@override String stepOf({required Object current, required Object total}) => 'الخطوة ${current} من ${total}';
+	@override String get tapHint => 'اضغط على المنطقة المميّزة أو على "التالي"';
+	@override String get bookTitle => 'دليل EasyPlate';
+	@override String get bookSubtitle => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. هذا دليل فقط: لا يُحفظ أي شيء.';
+	@override String get contents => 'المحتويات';
+	@override String chapter({required Object number}) => 'الفصل ${number}';
+	@override String get backToContents => 'العودة إلى المحتويات';
+	@override String get stepsTitle => 'الخطوات';
+	@override String get welcomeTitle => 'مرحباً بك في EasyPlate';
+	@override String get welcomeBody => 'سنستعرض معاً الوظائف الأساسية. يمكنك تخطي أي خطوة، أو الإغلاق وإعادة التشغيل من شاشة الدعم.';
+	@override late final _Translations$walkthrough$topics$ar topics = _Translations$walkthrough$topics$ar._(_root);
+	@override String get demoRecipes => 'وصفات نموذجية';
+	@override String get demoRecipesHint => 'هكذا تبدو الوصفات في التطبيق. اضغط على وصفة لرؤية صفحتها الكاملة: الأوقات، المواضيع، مسببات الحساسية، المكونات والخطوات.';
+	@override String get demoBooks => 'كتب نموذجية';
+	@override String get demoBooksHint => 'هكذا يبدو كتاب الوصفات. اضغط على كتاب لفتحه وتقليب صفحاته والانتقال من الفهرس.';
+	@override String get demoOnly => 'نموذج فقط، لا يُحفظ';
+}
+
+// Path: feedback
+class _Translations$feedback$ar extends Translations$feedback$he {
+	_Translations$feedback$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'إبلاغ واقتراحات';
+	@override String get subtitle => 'وجدت خللاً؟ لديك فكرة؟ اكتب لنا هنا، ونقرأ كل رسالة.';
+	@override String get bug => 'خلل';
+	@override String get suggestion => 'اقتراح تحسين';
+	@override String get bugHint => 'صف الخلل: ماذا فعلت، ماذا حدث، وماذا توقعت أن يحدث...';
+	@override String get suggestionHint => 'أخبرنا بما تودّ أن يوفره التطبيق، وكيف سيساعدك...';
+	@override String get send => 'إرسال';
+	@override String get sent => 'شكراً! تم إرسال رسالتك.';
+	@override String get failed => 'فشل الإرسال، حاول لاحقاً';
+	@override String get admin => 'إدارة الرسائل';
+	@override String get all => 'الكل';
+	@override String get bugs => 'أخطاء';
+	@override String get suggestions => 'اقتراحات';
+	@override String get none => 'لا توجد رسائل بعد';
+	@override String version({required Object version}) => 'الإصدار ${version}';
+	@override String get notAllowed => 'هذه الشاشة للمدير فقط';
+}
+
+// Path: walkthrough.topics
+class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topics$he {
+	_Translations$walkthrough$topics$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$walkthrough$topics$addRecipe$ar addRecipe = _Translations$walkthrough$topics$addRecipe$ar._(_root);
+	@override late final _Translations$walkthrough$topics$myRecipes$ar myRecipes = _Translations$walkthrough$topics$myRecipes$ar._(_root);
+	@override late final _Translations$walkthrough$topics$library$ar library = _Translations$walkthrough$topics$library$ar._(_root);
+	@override late final _Translations$walkthrough$topics$mealPlan$ar mealPlan = _Translations$walkthrough$topics$mealPlan$ar._(_root);
+	@override late final _Translations$walkthrough$topics$groceries$ar groceries = _Translations$walkthrough$topics$groceries$ar._(_root);
+	@override late final _Translations$walkthrough$topics$community$ar community = _Translations$walkthrough$topics$community$ar._(_root);
+	@override late final _Translations$walkthrough$topics$account$ar account = _Translations$walkthrough$topics$account$ar._(_root);
+}
+
+// Path: walkthrough.topics.addRecipe
+class _Translations$walkthrough$topics$addRecipe$ar extends Translations$walkthrough$topics$addRecipe$he {
+	_Translations$walkthrough$topics$addRecipe$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'إضافة وصفة';
+	@override String get summary => 'أضف وصفة من أي مصدر ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم.';
+	@override String get s1 => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.';
+	@override String get s2 => 'اختر المصدر: نص ملصق، بحث في الإنترنت، رابط موقع، فيديو TikTok/Reels، طلب حر من الذكاء الاصطناعي، أو كتابة يدوية. بعد التحليل تراجع وتعدّل وتحفظ.';
+}
+
+// Path: walkthrough.topics.myRecipes
+class _Translations$walkthrough$topics$myRecipes$ar extends Translations$walkthrough$topics$myRecipes$he {
+	_Translations$walkthrough$topics$myRecipes$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'وصفاتي والمحفوظة';
+	@override String get summary => 'الوصفات التي كتبتها وتلك التي حفظتها من المجتمع، مع بحث وتصفية حسب الموضوع.';
+	@override String get s1 => 'هنا تنتقل بين الوصفات التي كتبتها والوصفات التي حفظتها من المجتمع.';
+	@override String get s2 => 'بحث بالاسم، وتصفية حسب الموضوع: لحوم، ألبان، نباتي، نباتي صرف، حلال/كوشر، خالٍ من الغلوتين وحساسية.';
+}
+
+// Path: walkthrough.topics.library
+class _Translations$walkthrough$topics$library$ar extends Translations$walkthrough$topics$library$he {
+	_Translations$walkthrough$topics$library$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'كتب الوصفات';
+	@override String get summary => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات.';
+	@override String get s1 => 'اضغط على "المكتبة" للانتقال إلى الكتب.';
+	@override String get s2 => 'هنا تنشئ كتاباً جديداً. داخله تضيف وصفات وتقلّب الصفحات وتغيّر الغلاف.';
+}
+
+// Path: walkthrough.topics.mealPlan
+class _Translations$walkthrough$topics$mealPlan$ar extends Translations$walkthrough$topics$mealPlan$he {
+	_Translations$walkthrough$topics$mealPlan$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'خطة الأسبوع';
+	@override String get summary => 'خطة وجبات للأسبوع كله تغذّي قائمة التسوق.';
+	@override String get s1 => 'اضغط على "الوجبات" لتخطيط الأسبوع.';
+	@override String get s2 => 'أنشئ خطة أسبوعية وضع الوصفات في كل يوم ووجبة.';
+}
+
+// Path: walkthrough.topics.groceries
+class _Translations$walkthrough$topics$groceries$ar extends Translations$walkthrough$topics$groceries$he {
+	_Translations$walkthrough$topics$groceries$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'قائمة التسوق';
+	@override String get summary => 'قائمة مبنية من الخطة، مع تعليم ما تم شراؤه.';
+	@override String get s1 => 'اضغط على "التسوق".';
+	@override String get s2 => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.';
+	@override String get s3 => 'وهنا تضيف عنصراً حراً يدوياً.';
+}
+
+// Path: walkthrough.topics.community
+class _Translations$walkthrough$topics$community$ar extends Translations$walkthrough$topics$community$he {
+	_Translations$walkthrough$topics$community$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'المجتمع';
+	@override String get summary => 'وصفات يشاركها الجميع، ومنتدى للأسئلة والأجوبة.';
+	@override String get s1 => 'اضغط على "المجتمع".';
+	@override String get s2 => 'وصفات مشتركة ومنتدى. أعجب، احفظ وصفة لديك، وأرفق وصفة بردّ في المنتدى.';
+	@override String get s3 => 'زر المشاركة ينشر وصفة من وصفاتك للمجتمع.';
+}
+
+// Path: walkthrough.topics.account
+class _Translations$walkthrough$topics$account$ar extends Translations$walkthrough$topics$account$he {
+	_Translations$walkthrough$topics$account$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'الحساب والإشعارات';
+	@override String get summary => 'إشعارات دعوات المشاركة، والحساب مع الاشتراك المميز والإعدادات والدعم.';
+	@override String get s1 => 'الإشعارات: دعوات لمشاركة الوصفات وتحديثات.';
+	@override String get s2 => 'الحساب: الاشتراك المميز، المشاركة بين الحسابات، الإعدادات، الملف الشخصي والدعم. ومن هناك يمكن تشغيل هذا الدليل مجدداً.';
+}
+
 /// The flat map containing all translations for locale <ar>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -1281,6 +1451,78 @@ extension on TranslationsAr {
 			'premium.legal' => 'يتجدد الاشتراك تلقائيًا في نهاية كل فترة ما لم يتم إلغاؤه قبل 24 ساعة على الأقل من انتهائها. يتم الدفع عبر حساب المتجر الخاص بك، ويمكن إدارته أو إلغاؤه من إعدادات المتجر.',
 			'premium.terms' => 'شروط الاستخدام',
 			'premium.privacy' => 'سياسة الخصوصية',
+			'walkthrough.title' => 'الدليل',
+			'walkthrough.start' => 'تشغيل الدليل',
+			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
+			'walkthrough.startFull' => 'ابدأ الجولة الكاملة',
+			'walkthrough.focused' => 'عرض إرشاد مركّز',
+			'walkthrough.next' => 'التالي',
+			'walkthrough.finish' => 'إنهاء',
+			'walkthrough.skipStep' => 'تخطّي الخطوة',
+			'walkthrough.close' => 'إغلاق الدليل',
+			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'الخطوة ${current} من ${total}',
+			'walkthrough.tapHint' => 'اضغط على المنطقة المميّزة أو على "التالي"',
+			'walkthrough.bookTitle' => 'دليل EasyPlate',
+			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. هذا دليل فقط: لا يُحفظ أي شيء.',
+			'walkthrough.contents' => 'المحتويات',
+			'walkthrough.chapter' => ({required Object number}) => 'الفصل ${number}',
+			'walkthrough.backToContents' => 'العودة إلى المحتويات',
+			'walkthrough.stepsTitle' => 'الخطوات',
+			'walkthrough.welcomeTitle' => 'مرحباً بك في EasyPlate',
+			'walkthrough.welcomeBody' => 'سنستعرض معاً الوظائف الأساسية. يمكنك تخطي أي خطوة، أو الإغلاق وإعادة التشغيل من شاشة الدعم.',
+			'walkthrough.topics.addRecipe.title' => 'إضافة وصفة',
+			'walkthrough.topics.addRecipe.summary' => 'أضف وصفة من أي مصدر ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم.',
+			_ => null,
+		} ?? switch (path) {
+			'walkthrough.topics.addRecipe.s1' => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.',
+			'walkthrough.topics.addRecipe.s2' => 'اختر المصدر: نص ملصق، بحث في الإنترنت، رابط موقع، فيديو TikTok/Reels، طلب حر من الذكاء الاصطناعي، أو كتابة يدوية. بعد التحليل تراجع وتعدّل وتحفظ.',
+			'walkthrough.topics.myRecipes.title' => 'وصفاتي والمحفوظة',
+			'walkthrough.topics.myRecipes.summary' => 'الوصفات التي كتبتها وتلك التي حفظتها من المجتمع، مع بحث وتصفية حسب الموضوع.',
+			'walkthrough.topics.myRecipes.s1' => 'هنا تنتقل بين الوصفات التي كتبتها والوصفات التي حفظتها من المجتمع.',
+			'walkthrough.topics.myRecipes.s2' => 'بحث بالاسم، وتصفية حسب الموضوع: لحوم، ألبان، نباتي، نباتي صرف، حلال/كوشر، خالٍ من الغلوتين وحساسية.',
+			'walkthrough.topics.library.title' => 'كتب الوصفات',
+			'walkthrough.topics.library.summary' => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات.',
+			'walkthrough.topics.library.s1' => 'اضغط على "المكتبة" للانتقال إلى الكتب.',
+			'walkthrough.topics.library.s2' => 'هنا تنشئ كتاباً جديداً. داخله تضيف وصفات وتقلّب الصفحات وتغيّر الغلاف.',
+			'walkthrough.topics.mealPlan.title' => 'خطة الأسبوع',
+			'walkthrough.topics.mealPlan.summary' => 'خطة وجبات للأسبوع كله تغذّي قائمة التسوق.',
+			'walkthrough.topics.mealPlan.s1' => 'اضغط على "الوجبات" لتخطيط الأسبوع.',
+			'walkthrough.topics.mealPlan.s2' => 'أنشئ خطة أسبوعية وضع الوصفات في كل يوم ووجبة.',
+			'walkthrough.topics.groceries.title' => 'قائمة التسوق',
+			'walkthrough.topics.groceries.summary' => 'قائمة مبنية من الخطة، مع تعليم ما تم شراؤه.',
+			'walkthrough.topics.groceries.s1' => 'اضغط على "التسوق".',
+			'walkthrough.topics.groceries.s2' => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.',
+			'walkthrough.topics.groceries.s3' => 'وهنا تضيف عنصراً حراً يدوياً.',
+			'walkthrough.topics.community.title' => 'المجتمع',
+			'walkthrough.topics.community.summary' => 'وصفات يشاركها الجميع، ومنتدى للأسئلة والأجوبة.',
+			'walkthrough.topics.community.s1' => 'اضغط على "المجتمع".',
+			'walkthrough.topics.community.s2' => 'وصفات مشتركة ومنتدى. أعجب، احفظ وصفة لديك، وأرفق وصفة بردّ في المنتدى.',
+			'walkthrough.topics.community.s3' => 'زر المشاركة ينشر وصفة من وصفاتك للمجتمع.',
+			'walkthrough.topics.account.title' => 'الحساب والإشعارات',
+			'walkthrough.topics.account.summary' => 'إشعارات دعوات المشاركة، والحساب مع الاشتراك المميز والإعدادات والدعم.',
+			'walkthrough.topics.account.s1' => 'الإشعارات: دعوات لمشاركة الوصفات وتحديثات.',
+			'walkthrough.topics.account.s2' => 'الحساب: الاشتراك المميز، المشاركة بين الحسابات، الإعدادات، الملف الشخصي والدعم. ومن هناك يمكن تشغيل هذا الدليل مجدداً.',
+			'walkthrough.demoRecipes' => 'وصفات نموذجية',
+			'walkthrough.demoRecipesHint' => 'هكذا تبدو الوصفات في التطبيق. اضغط على وصفة لرؤية صفحتها الكاملة: الأوقات، المواضيع، مسببات الحساسية، المكونات والخطوات.',
+			'walkthrough.demoBooks' => 'كتب نموذجية',
+			'walkthrough.demoBooksHint' => 'هكذا يبدو كتاب الوصفات. اضغط على كتاب لفتحه وتقليب صفحاته والانتقال من الفهرس.',
+			'walkthrough.demoOnly' => 'نموذج فقط، لا يُحفظ',
+			'feedback.title' => 'إبلاغ واقتراحات',
+			'feedback.subtitle' => 'وجدت خللاً؟ لديك فكرة؟ اكتب لنا هنا، ونقرأ كل رسالة.',
+			'feedback.bug' => 'خلل',
+			'feedback.suggestion' => 'اقتراح تحسين',
+			'feedback.bugHint' => 'صف الخلل: ماذا فعلت، ماذا حدث، وماذا توقعت أن يحدث...',
+			'feedback.suggestionHint' => 'أخبرنا بما تودّ أن يوفره التطبيق، وكيف سيساعدك...',
+			'feedback.send' => 'إرسال',
+			'feedback.sent' => 'شكراً! تم إرسال رسالتك.',
+			'feedback.failed' => 'فشل الإرسال، حاول لاحقاً',
+			'feedback.admin' => 'إدارة الرسائل',
+			'feedback.all' => 'الكل',
+			'feedback.bugs' => 'أخطاء',
+			'feedback.suggestions' => 'اقتراحات',
+			'feedback.none' => 'لا توجد رسائل بعد',
+			'feedback.version' => ({required Object version}) => 'الإصدار ${version}',
+			'feedback.notAllowed' => 'هذه الشاشة للمدير فقط',
 			_ => null,
 		};
 	}

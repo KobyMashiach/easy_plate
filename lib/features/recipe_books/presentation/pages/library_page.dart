@@ -17,6 +17,8 @@ import '../../domain/entities/recipe_book_entity.dart';
 import '../bloc/library_bloc.dart';
 import '../widgets/book_cover_card.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 class LibraryPage extends StatelessWidget {
   const LibraryPage({super.key});
@@ -35,83 +37,93 @@ class LibraryPage extends StatelessWidget {
           body: BlocBuilder<LibraryBloc, LibraryState>(
             builder: (context, state) {
               return switch (state) {
-                LibraryLoading() => const Center(child: CircularProgressIndicator()),
-                LibraryLoaded(books: final books) => books.isEmpty
-                    ? ClayEmptyState(
-                        icon: Icons.auto_stories_rounded,
-                        message: t.books.emptyLibrary,
-                        action: ClayButton(
-                          label: t.books.newBook,
-                          icon: Icons.add_rounded,
-                          onPressed: () => _showCreateBookDialog(context),
-                        ),
-                      )
-                    : CustomScrollView(
-                        slivers: [
-                          SliverPadding(
-                            padding: const EdgeInsets.fromLTRB(
-                              AppSpacing.marginMobile,
-                              AppSpacing.md,
-                              AppSpacing.marginMobile,
-                              AppSpacing.lg,
-                            ),
-                            sliver: SliverToBoxAdapter(
-                              child: ClayPageHeader(
-                                title: t.books.myLibrary,
-                                subtitle: t.books.librarySubtitle,
-                                trailing: ClayIconButton(
-                                  icon: Icons.add_rounded,
-                                  filled: true,
-                                  size: 48,
-                                  tooltip: t.books.newBook,
-                                  onTap: () => _showCreateBookDialog(context),
+                LibraryLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                LibraryLoaded(books: final books) =>
+                  books.isEmpty
+                      ? ClayEmptyState(
+                          icon: Icons.auto_stories_rounded,
+                          message: t.books.emptyLibrary,
+                          action: ClayButton(
+                            label: t.books.newBook,
+                            icon: Icons.add_rounded,
+                            onPressed: () => _showCreateBookDialog(context),
+                          ),
+                        )
+                      : CustomScrollView(
+                          slivers: [
+                            SliverPadding(
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSpacing.marginMobile,
+                                AppSpacing.md,
+                                AppSpacing.marginMobile,
+                                AppSpacing.lg,
+                              ),
+                              sliver: SliverToBoxAdapter(
+                                child: ClayPageHeader(
+                                  title: t.books.myLibrary,
+                                  subtitle: t.books.librarySubtitle,
+                                  trailing: WalkthroughTarget(
+                                    id: WalkthroughIds.libraryAdd,
+                                    child: ClayIconButton(
+                                      icon: Icons.add_rounded,
+                                      filled: true,
+                                      size: 48,
+                                      tooltip: t.books.newBook,
+                                      onTap: () =>
+                                          _showCreateBookDialog(context),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          SliverPadding(
-                            padding: EdgeInsets.fromLTRB(
-                              AppSpacing.marginMobile,
-                              0,
-                              AppSpacing.marginMobile,
-                              ClayNavDock.bottomPadding(context),
-                            ),
-                            sliver: SliverGrid.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: AppSpacing.lg,
-                                crossAxisSpacing: AppSpacing.gutter,
-                                childAspectRatio: 0.72,
+                            SliverPadding(
+                              padding: EdgeInsets.fromLTRB(
+                                AppSpacing.marginMobile,
+                                0,
+                                AppSpacing.marginMobile,
+                                ClayNavDock.bottomPadding(context),
                               ),
-                              itemCount: books.length,
-                              itemBuilder: (context, index) {
-                                final book = books[index];
-                                return BookCoverCard(
-                                  book: book,
-                                  // Reload on return: the cover can be changed
-                                  // inside the book, and this page is kept
-                                  // alive by the IndexedStack so it would
-                                  // otherwise keep showing the old shelf.
-                                  onTap: () async {
-                                    final bloc = context.read<LibraryBloc>();
-                                    await context.pushNamed(
-                                      Routing.bookDetails,
-                                      extra: book.id,
-                                    );
-                                    bloc.add(const LibraryEvent.init());
-                                  },
-                                  onLongPress: () => _showBookOptions(context, book),
-                                );
-                              },
+                              sliver: SliverGrid.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: AppSpacing.lg,
+                                      crossAxisSpacing: AppSpacing.gutter,
+                                      childAspectRatio: 0.72,
+                                    ),
+                                itemCount: books.length,
+                                itemBuilder: (context, index) {
+                                  final book = books[index];
+                                  return BookCoverCard(
+                                    book: book,
+                                    // Reload on return: the cover can be changed
+                                    // inside the book, and this page is kept
+                                    // alive by the IndexedStack so it would
+                                    // otherwise keep showing the old shelf.
+                                    onTap: () async {
+                                      final bloc = context.read<LibraryBloc>();
+                                      await context.pushNamed(
+                                        Routing.bookDetails,
+                                        extra: book.id,
+                                      );
+                                      bloc.add(const LibraryEvent.init());
+                                    },
+                                    onLongPress: () =>
+                                        _showBookOptions(context, book),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                 LibraryError(error: final error) => ErrorRetryView(
-                    error: error,
-                    onRetry: () => context.read<LibraryBloc>().add(const LibraryEvent.init()),
+                  error: error,
+                  onRetry: () => context.read<LibraryBloc>().add(
+                    const LibraryEvent.init(),
                   ),
+                ),
               };
             },
           ),
@@ -172,8 +184,10 @@ class LibraryPage extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    const Icon(Icons.drive_file_rename_outline_rounded,
-                        color: AppColors.primary),
+                    const Icon(
+                      Icons.drive_file_rename_outline_rounded,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(t.books.renameBook, style: AppTextStyles.bodyMd),
                   ],
@@ -189,11 +203,16 @@ class LibraryPage extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+                    const Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppColors.error,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       t.common.delete,
-                      style: AppTextStyles.bodyMd.copyWith(color: AppColors.error),
+                      style: AppTextStyles.bodyMd.copyWith(
+                        color: AppColors.error,
+                      ),
                     ),
                   ],
                 ),

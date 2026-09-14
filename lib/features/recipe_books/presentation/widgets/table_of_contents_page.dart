@@ -109,7 +109,7 @@ class TableOfContentsPage extends StatelessWidget {
                 : ListView.separated(
                     itemCount: recipes.length,
                     separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, index) => _ContentsRow(
+                    itemBuilder: (context, index) => BookContentsRow(
                       title: recipes[index].title,
                       pageNumber: index + 2,
                       onTap: () => onSelectRecipe(index),
@@ -122,12 +122,15 @@ class TableOfContentsPage extends StatelessWidget {
   }
 }
 
-class _ContentsRow extends StatelessWidget {
+/// One line of a contents page: the title, a dotted leader, the page number.
+/// Public because the guide's own contents page is set the same way.
+class BookContentsRow extends StatelessWidget {
   final String title;
   final int pageNumber;
   final VoidCallback onTap;
 
-  const _ContentsRow({
+  const BookContentsRow({
+    super.key,
     required this.title,
     required this.pageNumber,
     required this.onTap,
