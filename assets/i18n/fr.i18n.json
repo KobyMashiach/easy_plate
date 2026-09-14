@@ -114,6 +114,21 @@
     "glutenFree": "Sans gluten",
     "allergy": "Allergie"
   },
+  "allergens": {
+    "title": "Allergènes",
+    "pick": "Indiquer les allergènes",
+    "contains": "Contient",
+    "mayContain": "Peut contenir",
+    "gluten": "Gluten",
+    "milk": "Lait",
+    "eggs": "Œufs",
+    "fish": "Poisson",
+    "shellfish": "Fruits de mer",
+    "peanuts": "Arachides",
+    "treeNuts": "Fruits à coque",
+    "sesame": "Sésame",
+    "soy": "Soja"
+  },
   "weekday": {
     "sunday": "Dimanche",
     "monday": "Lundi",
@@ -344,6 +359,8 @@
     "webSearch": "Rechercher sur le web",
     "urlScrape": "Lien vers un site",
     "socialVideo": "TikTok / Reels",
+    "aiRequest": "Demander une recette",
+    "aiRequestHint": "Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits",
     "parse": "Analyser la recette",
     "parsing": "Analyse de la recette...",
     "parseError": "Nous n'avons pas pu analyser la recette",
@@ -369,7 +386,9 @@
     "untitledRecipe": "Recette sans titre",
     "manual": "Saisie manuelle",
     "manualHint": "Remplissez la recette vous-même, au format structuré — sans IA, sans attente.",
-    "openBlankEditor": "Ouvrir un éditeur vide"
+    "openBlankEditor": "Ouvrir un éditeur vide",
+    "generate": "Créer la recette",
+    "generating": "Rédaction de votre recette..."
   },
   "mealPlanner": {
     "title": "Planification des repas",

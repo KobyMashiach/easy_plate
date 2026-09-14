@@ -10,6 +10,7 @@ import '../../domain/entities/forum_post_entity.dart';
 import '../../domain/usecases/create_forum_post_usecase.dart';
 import '../../domain/usecases/delete_forum_post_usecase.dart';
 import '../../domain/usecases/get_forum_posts_usecase.dart';
+import '../../domain/usecases/toggle_forum_post_like_usecase.dart';
 
 part 'forum_bloc.freezed.dart';
 
@@ -24,6 +25,7 @@ sealed class ForumEvent with _$ForumEvent {
   const factory ForumEvent.refresh(Completer<void> done) = _Refresh;
   const factory ForumEvent.createPost(String title, String body) = _CreatePost;
   const factory ForumEvent.deletePost(String postId) = _DeletePost;
+  const factory ForumEvent.toggleLike(String postId) = _ToggleLike;
 }
 
 @freezed
@@ -37,16 +39,19 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
   final GetForumPostsUseCase getForumPostsUseCase;
   final CreateForumPostUseCase createForumPostUseCase;
   final DeleteForumPostUseCase deleteForumPostUseCase;
+  final ToggleForumPostLikeUseCase togglePostLikeUseCase;
 
   ForumBloc({
     required this.getForumPostsUseCase,
     required this.createForumPostUseCase,
     required this.deleteForumPostUseCase,
+    required this.togglePostLikeUseCase,
   }) : super(const ForumState.loading()) {
     on<_Init>(_init);
     on<_Refresh>(_refresh);
     on<_CreatePost>(_createPost);
     on<_DeletePost>(_deletePost);
+    on<_ToggleLike>(_toggleLike);
     add(const ForumEvent.init());
   }
 
@@ -55,12 +60,15 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
       getForumPostsUseCase: GetForumPostsUseCase(context.read()),
       createForumPostUseCase: CreateForumPostUseCase(context.read()),
       deleteForumPostUseCase: DeleteForumPostUseCase(context.read()),
+      togglePostLikeUseCase: ToggleForumPostLikeUseCase(context.read()),
     );
   }
 
+  String get _uid => AuthSessionService().user?.uid ?? '';
+
   Future<void> _init(_Init event, Emitter<ForumState> emit) async {
     try {
-      emit(.loaded(await getForumPostsUseCase()));
+      emit(.loaded(await getForumPostsUseCase(viewerUid: _uid)));
     } catch (e) {
       debugPrint('Forum error: $e');
       emit(.errorMessage(e.toString()));
@@ -102,6 +110,28 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
     } catch (e) {
       debugPrint('Delete post error: $e');
       emit(.errorMessage(e.toString()));
+    }
+  }
+
+  /// The row flips before the write lands so the tap feels immediate, and is
+  /// put back if the transaction fails — the same as a like on a shared recipe.
+  Future<void> _toggleLike(_ToggleLike event, Emitter<ForumState> emit) async {
+    final current = state;
+    if (current is! ForumLoaded) return;
+    final index = current.posts.indexWhere((p) => p.id == event.postId);
+    if (index == -1) return;
+
+    final original = current.posts[index];
+    emit(.loaded([...current.posts]..[index] = original.withLikeToggled()));
+
+    try {
+      await togglePostLikeUseCase(event.postId, viewerUid: _uid);
+    } catch (e) {
+      debugPrint('Post like failed: $e');
+      final latest = state;
+      if (latest is! ForumLoaded) return;
+      final at = latest.posts.indexWhere((p) => p.id == event.postId);
+      if (at != -1) emit(.loaded([...latest.posts]..[at] = original));
     }
   }
 }

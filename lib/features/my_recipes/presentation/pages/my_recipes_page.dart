@@ -180,9 +180,11 @@ class _RecipesBodyState extends State<_RecipesBody> {
                   Routing.recipeDetails,
                   extra: RecipeDetailsArgs(recipe: recipe),
                 ),
-                // Long-press to share. Only for recipes this account owns —
-                // a member of someone else's recipe cannot invite others.
-                onShare: recipe.collabRole == null || recipe.collabRole == CollabRole.owner
+                // Long-press to share. Only for recipes this account wrote —
+                // a member of someone else's recipe cannot invite others, and
+                // a copy saved from the community is not this account's to
+                // pass on.
+                onShare: recipe.isMine
                     ? () async {
                         final sent = await showRecipeShareSheet(context, recipe);
                         if (sent == true && context.mounted) {

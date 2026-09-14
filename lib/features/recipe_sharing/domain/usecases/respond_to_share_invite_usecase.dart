@@ -25,6 +25,8 @@ class RespondToShareInviteUseCase {
       ingredients: collab.recipe.ingredients,
       steps: collab.recipe.steps,
       dietaryTags: collab.recipe.dietaryTags,
+      allergens: collab.recipe.allergens,
+      mayContain: collab.recipe.mayContain,
       // The owner's photo comes across as a Storage path; the file lands on
       // this device the first time the recipe is drawn, and is read from disk
       // after that.

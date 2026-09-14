@@ -10,6 +10,11 @@ class ForumPostEntity {
 
   /// Denormalised so the list does not have to count a subcollection per row.
   final int replyCount;
+  final int likeCount;
+
+  /// Whether the signed-in user has liked this thread. Resolved per viewer, so
+  /// it is not part of the stored document.
+  final bool likedByMe;
 
   const ForumPostEntity({
     required this.id,
@@ -20,6 +25,8 @@ class ForumPostEntity {
     required this.createdAt,
     this.authorPhotoUrl,
     this.replyCount = 0,
+    this.likeCount = 0,
+    this.likedByMe = false,
   });
 
   /// Replaces the display fields with the author's live profile. Kept as a
@@ -35,6 +42,25 @@ class ForumPostEntity {
       authorPhotoUrl: photoUrl,
       createdAt: createdAt,
       replyCount: replyCount,
+      likeCount: likeCount,
+      likedByMe: likedByMe,
+    );
+  }
+
+  /// The same thread with this viewer's like flipped, counter included — what
+  /// the list shows while the write is still in flight.
+  ForumPostEntity withLikeToggled() {
+    return ForumPostEntity(
+      id: id,
+      title: title,
+      body: body,
+      authorUid: authorUid,
+      authorName: authorName,
+      authorPhotoUrl: authorPhotoUrl,
+      createdAt: createdAt,
+      replyCount: replyCount,
+      likeCount: likeCount + (likedByMe ? -1 : 1),
+      likedByMe: !likedByMe,
     );
   }
 }

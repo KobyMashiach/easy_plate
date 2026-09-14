@@ -33,9 +33,10 @@ class _MainNavBarState extends State<MainNavBar> {
     // untouched on every other rebuild. Const instances would be identical
     // across builds, which is what left the tabs in the old language.
     final locale = LocaleSettings.currentLocale;
+    // Recipes lead: they are the home tab, with the books right after them.
     final pages = [
-      LibraryPage(key: ValueKey('library-$locale')),
       MyRecipesPage(key: ValueKey('recipes-$locale')),
+      LibraryPage(key: ValueKey('library-$locale')),
       MealPlannerPage(key: ValueKey('mealPlanner-$locale')),
       GroceryListPage(key: ValueKey('groceries-$locale')),
       CommunityPage(key: ValueKey('community-$locale')),
@@ -60,12 +61,12 @@ class _MainNavBarState extends State<MainNavBar> {
                 onSelected: (index) => setState(() => _index = index),
                 destinations: [
                   ClayNavDestination(
-                    icon: Icons.library_books_rounded,
-                    label: t.nav.library,
-                  ),
-                  ClayNavDestination(
                     icon: Icons.receipt_long_rounded,
                     label: t.nav.recipes,
+                  ),
+                  ClayNavDestination(
+                    icon: Icons.library_books_rounded,
+                    label: t.nav.library,
                   ),
                   ClayNavDestination(
                     icon: Icons.calendar_today_rounded,

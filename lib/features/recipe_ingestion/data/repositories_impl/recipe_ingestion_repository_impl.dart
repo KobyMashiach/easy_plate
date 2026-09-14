@@ -67,6 +67,12 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
     return aiDataSource.parseFromSocialVideo(url, preferences);
   }
 
+  @override
+  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) {
+    if (_useFakeData) return Future.value(fakeParsedRecipe(RecipeIngestionChannel.aiRequest));
+    return aiDataSource.generateRecipe(request, preferences);
+  }
+
   /// Deliberately has no fake branch. Sample data stands in for a recipe the
   /// app could not fetch, but a faked correction is indistinguishable from a
   /// correction that found nothing — so with no key this reports the missing

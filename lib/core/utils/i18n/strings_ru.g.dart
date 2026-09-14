@@ -45,6 +45,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$profile$ru profile = _Translations$profile$ru._(_root);
 	@override late final _Translations$onboarding$ru onboarding = _Translations$onboarding$ru._(_root);
 	@override late final _Translations$dietary$ru dietary = _Translations$dietary$ru._(_root);
+	@override late final _Translations$allergens$ru allergens = _Translations$allergens$ru._(_root);
 	@override late final _Translations$weekday$ru weekday = _Translations$weekday$ru._(_root);
 	@override late final _Translations$settings$ru settings = _Translations$settings$ru._(_root);
 	@override late final _Translations$more$ru more = _Translations$more$ru._(_root);
@@ -213,6 +214,28 @@ class _Translations$dietary$ru extends Translations$dietary$he {
 	@override String get kosher => 'Кошерное';
 	@override String get glutenFree => 'Без глютена';
 	@override String get allergy => 'Аллергия';
+}
+
+// Path: allergens
+class _Translations$allergens$ru extends Translations$allergens$he {
+	_Translations$allergens$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Аллергены';
+	@override String get pick => 'Отметить аллергены';
+	@override String get contains => 'Содержит';
+	@override String get mayContain => 'Может содержать';
+	@override String get gluten => 'Глютен';
+	@override String get milk => 'Молоко';
+	@override String get eggs => 'Яйца';
+	@override String get fish => 'Рыба';
+	@override String get shellfish => 'Морепродукты';
+	@override String get peanuts => 'Арахис';
+	@override String get treeNuts => 'Орехи';
+	@override String get sesame => 'Кунжут';
+	@override String get soy => 'Соя';
 }
 
 // Path: weekday
@@ -521,6 +544,8 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get webSearch => 'Поиск в интернете';
 	@override String get urlScrape => 'Ссылка на сайт';
 	@override String get socialVideo => 'TikTok / Reels';
+	@override String get aiRequest => 'Запросить рецепт';
+	@override String get aiRequestHint => 'Опишите, что хотите приготовить. Например: манная каша для годовалого ребёнка с фруктами';
 	@override String get parse => 'Разобрать рецепт';
 	@override String get parsing => 'Разбираем рецепт...';
 	@override String get parseError => 'Не удалось разобрать рецепт';
@@ -547,6 +572,8 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get manual => 'Написать вручную';
 	@override String get manualHint => 'Заполните рецепт сами в структурированном формате — без AI и без ожидания.';
 	@override String get openBlankEditor => 'Открыть пустой редактор';
+	@override String get generate => 'Создать рецепт';
+	@override String get generating => 'Пишем ваш рецепт...';
 }
 
 // Path: mealPlanner
@@ -864,6 +891,19 @@ extension on TranslationsRu {
 			'dietary.kosher' => 'Кошерное',
 			'dietary.glutenFree' => 'Без глютена',
 			'dietary.allergy' => 'Аллергия',
+			'allergens.title' => 'Аллергены',
+			'allergens.pick' => 'Отметить аллергены',
+			'allergens.contains' => 'Содержит',
+			'allergens.mayContain' => 'Может содержать',
+			'allergens.gluten' => 'Глютен',
+			'allergens.milk' => 'Молоко',
+			'allergens.eggs' => 'Яйца',
+			'allergens.fish' => 'Рыба',
+			'allergens.shellfish' => 'Морепродукты',
+			'allergens.peanuts' => 'Арахис',
+			'allergens.treeNuts' => 'Орехи',
+			'allergens.sesame' => 'Кунжут',
+			'allergens.soy' => 'Соя',
 			'weekday.sunday' => 'Воскресенье',
 			'weekday.monday' => 'Понедельник',
 			'weekday.tuesday' => 'Вторник',
@@ -1073,6 +1113,8 @@ extension on TranslationsRu {
 			'ingestion.webSearch' => 'Поиск в интернете',
 			'ingestion.urlScrape' => 'Ссылка на сайт',
 			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.aiRequest' => 'Запросить рецепт',
+			'ingestion.aiRequestHint' => 'Опишите, что хотите приготовить. Например: манная каша для годовалого ребёнка с фруктами',
 			'ingestion.parse' => 'Разобрать рецепт',
 			'ingestion.parsing' => 'Разбираем рецепт...',
 			'ingestion.parseError' => 'Не удалось разобрать рецепт',
@@ -1099,6 +1141,8 @@ extension on TranslationsRu {
 			'ingestion.manual' => 'Написать вручную',
 			'ingestion.manualHint' => 'Заполните рецепт сами в структурированном формате — без AI и без ожидания.',
 			'ingestion.openBlankEditor' => 'Открыть пустой редактор',
+			'ingestion.generate' => 'Создать рецепт',
+			'ingestion.generating' => 'Пишем ваш рецепт...',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',

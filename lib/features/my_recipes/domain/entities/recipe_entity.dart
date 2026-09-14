@@ -9,6 +9,12 @@ class RecipeEntity {
   final List<RecipeIngredientEntity> ingredients;
   final List<String> steps;
   final List<DietaryPreference> dietaryTags;
+
+  /// Which allergens the ingredients actually contain, and which the recipe
+  /// may carry traces of. Both only mean something under the `allergy` tag:
+  /// the editor clears them when that tag is dropped.
+  final List<Allergen> allergens;
+  final List<Allergen> mayContain;
   final RecipeIngestionChannel? sourceChannel;
   final String? sourceUrl;
 
@@ -55,6 +61,8 @@ class RecipeEntity {
     this.prepTimeMinutes,
     this.cookTimeMinutes,
     this.dietaryTags = const [],
+    this.allergens = const [],
+    this.mayContain = const [],
     this.sourceChannel,
     this.sourceUrl,
     this.imageFileName,
@@ -73,6 +81,13 @@ class RecipeEntity {
 
   bool get isSavedFromCommunity => savedFromSharedId != null;
 
+  /// A recipe this account wrote, as opposed to one it saved from the
+  /// community or was let into by someone else. Only these may be shared on:
+  /// passing someone else's recipe along — to the feed or to a contact — is
+  /// not this account's to do.
+  bool get isMine =>
+      !isSavedFromCommunity && (collabRole == null || collabRole == CollabRole.owner);
+
   /// The original text a template was saved from, for a later analysis.
   String get rawText => steps.join('\n');
 
@@ -83,6 +98,8 @@ class RecipeEntity {
     List<RecipeIngredientEntity>? ingredients,
     List<String>? steps,
     List<DietaryPreference>? dietaryTags,
+    List<Allergen>? allergens,
+    List<Allergen>? mayContain,
     String? imageFileName,
     // A null `imageFileName` means "unchanged", so clearing needs its own flag.
     bool removeImage = false,
@@ -99,6 +116,8 @@ class RecipeEntity {
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
       dietaryTags: dietaryTags ?? this.dietaryTags,
+      allergens: allergens ?? this.allergens,
+      mayContain: mayContain ?? this.mayContain,
       sourceChannel: sourceChannel,
       sourceUrl: sourceUrl,
       imageFileName: removeImage ? null : (imageFileName ?? this.imageFileName),

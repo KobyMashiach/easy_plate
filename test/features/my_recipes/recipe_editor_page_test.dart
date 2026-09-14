@@ -7,6 +7,7 @@ import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_plate/core/widgets/clay/clay.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeIngestionRepository implements RecipeIngestionRepository {
@@ -39,6 +40,10 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
 
   @override
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) =>
+      throw UnimplementedError();
+
+  @override
+  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) =>
       throw UnimplementedError();
 
   @override
@@ -97,7 +102,8 @@ void main() {
   }
 
   Future<void> openSaveSheet(WidgetTester tester) async {
-    await tester.tap(find.byIcon(Icons.check_rounded));
+    // By label, not by icon: an open allergen toggle draws the same check.
+    await tester.tap(find.widgetWithText(ClayButton, 'שמירה'));
     await tester.pumpAndSettle();
   }
 
@@ -343,5 +349,75 @@ void main() {
     await save(tester);
 
     expect(popped?.steps, ['ערבוב עפ מלח פלפל']);
+  });
+
+  group('allergens', () {
+    Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+      await tester.ensureVisible(finder);
+      await tester.tap(finder);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the allergy topic opens the allergen lists, and both are saved', (tester) async {
+      await openEditor(tester, buildRecipe());
+
+      // Nothing about allergens until the topic is on.
+      expect(find.text('סימון אלרגנים'), findsNothing);
+
+      await tapVisible(tester, find.text('אלרגיה'));
+      await tapVisible(tester, find.text('סימון אלרגנים'));
+      await tapVisible(tester, find.text('ביצים'));
+      await tapVisible(tester, find.text('עלול להכיל'));
+      // Two pickers are open now; the trace list is the lower one.
+      await tapVisible(tester, find.text('אגוזים').last);
+      await save(tester);
+
+      expect(popped?.dietaryTags, contains(DietaryPreference.allergy));
+      expect(popped?.allergens, [Allergen.eggs]);
+      expect(popped?.mayContain, [Allergen.treeNuts]);
+    });
+
+    testWidgets('a recipe that arrives with allergens shows them open', (tester) async {
+      final tagged = RecipeEntity(
+        id: 'r1',
+        title: 'עוגה',
+        ingredients: const [],
+        steps: const ['ערבוב'],
+        dietaryTags: const [DietaryPreference.allergy],
+        allergens: const [Allergen.eggs, Allergen.gluten],
+        mayContain: const [Allergen.treeNuts],
+        createdAt: DateTime(2026, 1, 1),
+      );
+      await openEditor(tester, tagged);
+
+      // Both lists are open: the allergen names appear twice.
+      expect(find.text('ביצים'), findsNWidgets(2));
+      await save(tester);
+
+      // Untouched, in the order they came.
+      expect(popped?.allergens, [Allergen.eggs, Allergen.gluten]);
+      expect(popped?.mayContain, [Allergen.treeNuts]);
+    });
+
+    testWidgets('dropping the allergy topic drops the allergens with it', (tester) async {
+      final tagged = RecipeEntity(
+        id: 'r1',
+        title: 'עוגה',
+        ingredients: const [],
+        steps: const ['ערבוב'],
+        dietaryTags: const [DietaryPreference.allergy, DietaryPreference.dairy],
+        allergens: const [Allergen.eggs],
+        createdAt: DateTime(2026, 1, 1),
+      );
+      await openEditor(tester, tagged);
+
+      await tapVisible(tester, find.text('אלרגיה'));
+      expect(find.text('סימון אלרגנים'), findsNothing);
+      await save(tester);
+
+      expect(popped?.dietaryTags, [DietaryPreference.dairy]);
+      expect(popped?.allergens, isEmpty);
+      expect(popped?.mayContain, isEmpty);
+    });
   });
 }

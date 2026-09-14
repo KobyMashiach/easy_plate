@@ -17,6 +17,7 @@ abstract class RecipeAiDataSource {
   Future<List<WebSearchResultEntity>> searchWeb(String query, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences);
+  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences);
   Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged});
 }
 
@@ -50,12 +51,32 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
     );
   }
 
+  /// How the dietary tags are decided, appended to every prompt that returns
+  /// a recipe. Decided from the ingredient list, never from the title or a
+  /// hunch — an unjustified "kosher" or "gluten free" is worse than none, so
+  /// the rule for every tag is "only when the ingredients show it".
+  static const _dietaryTagRules = '''
+בנוסף, קבע את התגיות התזונתיות של המתכון בשדה dietary_tags — אך ורק לפי רשימת המצרכים, לא לפי הכותרת ולא לפי ניחוש:
+meat — המתכון מכיל בשר, עוף או מוצריהם.
+dairy — המתכון מכיל חלב, גבינה, חמאה, שמנת, יוגורט או מוצר חלב אחר.
+vegetarian — אין במתכון בשר, עוף או דגים (ביצים ומוצרי חלב מותרים).
+vegan — אין במתכון שום מוצר מן החי: לא בשר, לא דגים, לא ביצים, לא חלב ולא דבש. מתכון טבעוני הוא גם צמחוני — סמן את שתי התגיות.
+kosher — רק אם אין במתכון מאכלים אסורים (חזיר, פירות ים, דגים ללא סנפיר וקשקשת) וגם אין ערבוב של בשר עם חלב באותו מתכון.
+glutenFree — רק אם אין במתכון קמח חיטה, לחם, פסטה, קוסקוס, סולת, בורגול, שעורה, שיפון, שיבולת שועל רגילה, רוטב סויה או כל מצרך אחר שמכיל גלוטן.
+allergy — אם ורק אם שדה allergens אינו ריק.
+תגית נקבעת רק כשהמצרכים מצדיקים אותה בבירור. בספק — אל תסמן.
+
+קבע גם את שדה allergens — האלרגנים שנמצאים בפועל במצרכים, מתוך הרשימה הזו בלבד:
+gluten (חיטה, קמח, לחם, פסטה, קוסקוס, סולת, בורגול, שעורה, שיפון), milk (חלב, גבינה, חמאה, שמנת, יוגורט), eggs (ביצים), fish (דגים), shellfish (פירות ים), peanuts (בוטנים), treeNuts (שקדים, אגוזי מלך, אגוזי לוז, קשיו, פיסטוק, פקאן), sesame (שומשום, טחינה), soy (סויה, רוטב סויה, טופו).
+שדה may_contain — רק אלרגנים שהמקור מציין במפורש שהמתכון עלול להכיל אותם (למשל "עלול להכיל עקבות אגוזים"). בלי ציון מפורש כזה — רשימה ריקה. אל תנחש.''';
+
   static const _systemPrompt = '''
 אתה מנתח מתכונים. החזר אך ורק מידע שמופיע במקור.
 מדיניות אפס הזיות: אסור להמציא מצרכים, כמויות, יחידות מידה או שלבים שאינם מופיעים במקור.
 אם כמות, יחידה או זמן חסרים במקור — השמט את השדה לגמרי. אל תנחש.
 המר כמויות ליחידות מטריות כאשר המקור מציין יחידה ברורה.
 שמור על סדר השלבים כפי שהוא במקור.
+$_dietaryTagRules
 החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
 
   /// Optional fields are deliberately left out of `required` rather than typed
@@ -107,9 +128,46 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
         'items': {'type': 'string'},
         'description': 'Ordered preparation steps, without numbering prefixes',
       },
+      'dietary_tags': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          // Mirrors DietaryPreference by name; a value the model returns
+          // outside this list is dropped by dietaryTagsFromModel.
+          'enum': ['meat', 'dairy', 'vegetarian', 'vegan', 'kosher', 'glutenFree', 'allergy'],
+        },
+        'description':
+            'Dietary tags decided from the ingredient list alone. Empty when none clearly applies',
+      },
+      'allergens': {
+        'type': 'array',
+        'items': {'type': 'string', 'enum': _allergenNames},
+        'description': 'Allergens actually present in the ingredient list',
+      },
+      'may_contain': {
+        'type': 'array',
+        'items': {'type': 'string', 'enum': _allergenNames},
+        'description':
+            'Allergens the source explicitly warns may be present as traces. Empty unless stated',
+      },
     },
-    'required': ['title', 'ingredients', 'steps'],
+    // The tags and allergens are required so the model always rules on them —
+    // an empty list is an answer, a missing key would be silence.
+    'required': ['title', 'ingredients', 'steps', 'dietary_tags', 'allergens', 'may_contain'],
   };
+
+  // Mirrors Allergen by name.
+  static const _allergenNames = [
+    'gluten',
+    'milk',
+    'eggs',
+    'fish',
+    'shellfish',
+    'peanuts',
+    'treeNuts',
+    'sesame',
+    'soy',
+  ];
 
   static const _searchResultsSchema = {
     'type': 'object',
@@ -129,6 +187,18 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
     },
     'required': ['results'],
   };
+
+  /// The one prompt that *wants* the model to fill things in. Every other call
+  /// is an extraction under a no-invention rule; here there is no source, and
+  /// a recipe with amounts and times left out would be useless to cook from.
+  static const _generateSystemPrompt = '''
+אתה שף ומפתח מתכונים. המשתמש מתאר מנה שהוא רוצה להכין, ואתה כותב לו מתכון מלא ומעשי.
+כתוב את המתכון בשפה שבה נכתבה הבקשה.
+המתכון חייב להיות שלם: כותרת קצרה, זמן הכנה וזמן בישול בדקות, רשימת מצרכים עם כמות ויחידת מידה לכל מצרך, ושלבי הכנה ברורים לפי הסדר.
+השתמש ביחידות מטריות (גרם, מ"ל, כפית, כף, כוס, יחידה).
+התאם את המתכון לכל דרישה שבבקשה — גיל, אלרגיות, העדפות תזונתיות, כמות סועדים, זמן — ולהעדפות התזונתיות של המשתמש אם צוינו. אם הבקשה מזכירה תינוק או ילד קטן, הקפד על התאמה בטיחותית לגיל (ללא דבש מתחת לגיל שנה, ללא מלח או סוכר מוספים לתינוקות, מרקם מתאים).
+$_dietaryTagRules
+אל תוסיף הערות, הקדמות או הסברים מחוץ למבנה. החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
 
   static const _refineSystemPrompt = '''
 אתה מגיה עברית של מתכונים. הטקסט הוקלד בנייד ולכן הוא מלא בשגיאות הקלדה.
@@ -286,7 +356,6 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
     Map<String, dynamic> input, {
     required RecipeIngestionChannel channel,
     String? sourceUrl,
-    List<DietaryPreference> dietaryTags = const [],
   }) {
     final ingredients = ((input['ingredients'] as List?) ?? const [])
         .cast<Map<String, dynamic>>()
@@ -300,6 +369,8 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
             ))
         .toList();
 
+    final allergens = Allergen.fromNames(input['allergens']);
+
     return RecipeEntity(
       id: _uuid.v4(),
       title: input['title'] as String,
@@ -307,7 +378,12 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
       cookTimeMinutes: (input['cook_time_minutes'] as num?)?.toInt(),
       ingredients: ingredients,
       steps: ((input['steps'] as List?) ?? const []).cast<String>(),
-      dietaryTags: dietaryTags,
+      dietaryTags: dietaryTagsWithAllergens(
+        dietaryTagsFromModel(input['dietary_tags']),
+        allergens,
+      ),
+      allergens: allergens,
+      mayContain: Allergen.fromNames(input['may_contain']),
       sourceChannel: channel,
       sourceUrl: sourceUrl,
       createdAt: DateTime.now(),
@@ -363,6 +439,20 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
       headers: sourceUrlHeaders(url, kind: 'social'),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.socialVideo, sourceUrl: url);
+  }
+
+  /// No cache headers: two people asking for "a lasagne" are two requests,
+  /// and the proxy's URL cache keys on a link this call does not have.
+  @override
+  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) async {
+    final input = await _callStructured(
+      _body(
+        input: 'כתוב מתכון מלא לפי הבקשה הבאה:\n\n$request${_dietaryHint(preferences)}',
+        schema: _recipeSchema,
+        systemInstruction: _generateSystemPrompt,
+      ),
+    );
+    return _toEntity(input, channel: RecipeIngestionChannel.aiRequest);
   }
 
   @override
@@ -435,4 +525,25 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
       steps: steps.length == recipe.steps.length ? steps : recipe.steps,
     );
   }
+}
+
+/// The model's `dietary_tags` as enum values, in the app's own order and
+/// without repeats. Anything outside the enum — a value the schema should
+/// have refused, or a non-string — is dropped rather than failing the whole
+/// recipe over a tag.
+List<DietaryPreference> dietaryTagsFromModel(Object? raw) {
+  if (raw is! List) return const [];
+  final names = raw.whereType<String>().toSet();
+  return [for (final tag in DietaryPreference.values) if (names.contains(tag.name)) tag];
+}
+
+/// The `allergy` tag follows the allergen list: a recipe the model found
+/// eggs in is tagged as an allergy recipe even when it forgot the tag, so the
+/// two never disagree on the review screen.
+List<DietaryPreference> dietaryTagsWithAllergens(
+  List<DietaryPreference> tags,
+  List<Allergen> allergens,
+) {
+  if (allergens.isEmpty || tags.contains(DietaryPreference.allergy)) return tags;
+  return [...tags, DietaryPreference.allergy];
 }

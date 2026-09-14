@@ -51,6 +51,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
         ],
         'steps': recipe.steps,
         'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
+        'allergens': recipe.allergens.names,
+        'mayContain': recipe.mayContain.names,
         // The photo travels as its Storage path plus the file name to cache it
         // under. Before this the picture was simply left behind, and the other
         // account's copy of a shared recipe was permanently blank.
@@ -81,6 +83,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
           .map((n) => DietaryPreference.values.where((d) => d.name == n).firstOrNull)
           .nonNulls
           .toList(),
+      allergens: Allergen.fromNames(data['allergens']),
+      mayContain: Allergen.fromNames(data['mayContain']),
       imageFileName: data['imageFileName'] as String?,
       imageStoragePath: data['imageStoragePath'] as String?,
       createdAt: createdAt,

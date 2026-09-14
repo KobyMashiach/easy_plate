@@ -20,7 +20,9 @@ mixin _$RecipeModel {
 @HiveField(11) String? get savedFromSharedId;@HiveField(12) bool get pendingAnalysis;@HiveField(13) String? get collabId;// Enum name as a string, like `sourceChannel`, so no adapter is needed.
 @HiveField(14) String? get collabRole;// Appended like the fields above it: a recipe stored before photos could
 // travel decodes as null, which correctly reads as "never uploaded".
-@HiveField(15) String? get imageStoragePath;
+@HiveField(15) String? get imageStoragePath;// Allergen names as strings, like `collabRole`. Recipes stored before
+// these existed decode as null, which the adapter reads as empty.
+@HiveField(16) List<String> get allergens;@HiveField(17) List<String> get mayContain;
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -33,16 +35,16 @@ $RecipeModelCopyWith<RecipeModel> get copyWith => _$RecipeModelCopyWithImpl<Reci
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.prepTimeMinutes, prepTimeMinutes) || other.prepTimeMinutes == prepTimeMinutes)&&(identical(other.cookTimeMinutes, cookTimeMinutes) || other.cookTimeMinutes == cookTimeMinutes)&&const DeepCollectionEquality().equals(other.ingredients, ingredients)&&const DeepCollectionEquality().equals(other.steps, steps)&&const DeepCollectionEquality().equals(other.dietaryTags, dietaryTags)&&(identical(other.sourceChannel, sourceChannel) || other.sourceChannel == sourceChannel)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageFileName, imageFileName) || other.imageFileName == imageFileName)&&(identical(other.savedFromSharedId, savedFromSharedId) || other.savedFromSharedId == savedFromSharedId)&&(identical(other.pendingAnalysis, pendingAnalysis) || other.pendingAnalysis == pendingAnalysis)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole)&&(identical(other.imageStoragePath, imageStoragePath) || other.imageStoragePath == imageStoragePath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.prepTimeMinutes, prepTimeMinutes) || other.prepTimeMinutes == prepTimeMinutes)&&(identical(other.cookTimeMinutes, cookTimeMinutes) || other.cookTimeMinutes == cookTimeMinutes)&&const DeepCollectionEquality().equals(other.ingredients, ingredients)&&const DeepCollectionEquality().equals(other.steps, steps)&&const DeepCollectionEquality().equals(other.dietaryTags, dietaryTags)&&(identical(other.sourceChannel, sourceChannel) || other.sourceChannel == sourceChannel)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageFileName, imageFileName) || other.imageFileName == imageFileName)&&(identical(other.savedFromSharedId, savedFromSharedId) || other.savedFromSharedId == savedFromSharedId)&&(identical(other.pendingAnalysis, pendingAnalysis) || other.pendingAnalysis == pendingAnalysis)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole)&&(identical(other.imageStoragePath, imageStoragePath) || other.imageStoragePath == imageStoragePath)&&const DeepCollectionEquality().equals(other.allergens, allergens)&&const DeepCollectionEquality().equals(other.mayContain, mayContain));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,prepTimeMinutes,cookTimeMinutes,const DeepCollectionEquality().hash(ingredients),const DeepCollectionEquality().hash(steps),const DeepCollectionEquality().hash(dietaryTags),sourceChannel,sourceUrl,createdAt,imageFileName,savedFromSharedId,pendingAnalysis,collabId,collabRole,imageStoragePath);
+int get hashCode => Object.hash(runtimeType,id,title,prepTimeMinutes,cookTimeMinutes,const DeepCollectionEquality().hash(ingredients),const DeepCollectionEquality().hash(steps),const DeepCollectionEquality().hash(dietaryTags),sourceChannel,sourceUrl,createdAt,imageFileName,savedFromSharedId,pendingAnalysis,collabId,collabRole,imageStoragePath,const DeepCollectionEquality().hash(allergens),const DeepCollectionEquality().hash(mayContain));
 
 @override
 String toString() {
-  return 'RecipeModel(id: $id, title: $title, prepTimeMinutes: $prepTimeMinutes, cookTimeMinutes: $cookTimeMinutes, ingredients: $ingredients, steps: $steps, dietaryTags: $dietaryTags, sourceChannel: $sourceChannel, sourceUrl: $sourceUrl, createdAt: $createdAt, imageFileName: $imageFileName, savedFromSharedId: $savedFromSharedId, pendingAnalysis: $pendingAnalysis, collabId: $collabId, collabRole: $collabRole, imageStoragePath: $imageStoragePath)';
+  return 'RecipeModel(id: $id, title: $title, prepTimeMinutes: $prepTimeMinutes, cookTimeMinutes: $cookTimeMinutes, ingredients: $ingredients, steps: $steps, dietaryTags: $dietaryTags, sourceChannel: $sourceChannel, sourceUrl: $sourceUrl, createdAt: $createdAt, imageFileName: $imageFileName, savedFromSharedId: $savedFromSharedId, pendingAnalysis: $pendingAnalysis, collabId: $collabId, collabRole: $collabRole, imageStoragePath: $imageStoragePath, allergens: $allergens, mayContain: $mayContain)';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $RecipeModelCopyWith<$Res>  {
   factory $RecipeModelCopyWith(RecipeModel value, $Res Function(RecipeModel) _then) = _$RecipeModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) int? prepTimeMinutes,@HiveField(3) int? cookTimeMinutes,@HiveField(4) List<RecipeIngredientModel> ingredients,@HiveField(5) List<String> steps,@HiveField(6) List<DietaryPreference> dietaryTags,@HiveField(7) String? sourceChannel,@HiveField(8) String? sourceUrl,@HiveField(9) DateTime createdAt,@HiveField(10) String? imageFileName,@HiveField(11) String? savedFromSharedId,@HiveField(12) bool pendingAnalysis,@HiveField(13) String? collabId,@HiveField(14) String? collabRole,@HiveField(15) String? imageStoragePath
+@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) int? prepTimeMinutes,@HiveField(3) int? cookTimeMinutes,@HiveField(4) List<RecipeIngredientModel> ingredients,@HiveField(5) List<String> steps,@HiveField(6) List<DietaryPreference> dietaryTags,@HiveField(7) String? sourceChannel,@HiveField(8) String? sourceUrl,@HiveField(9) DateTime createdAt,@HiveField(10) String? imageFileName,@HiveField(11) String? savedFromSharedId,@HiveField(12) bool pendingAnalysis,@HiveField(13) String? collabId,@HiveField(14) String? collabRole,@HiveField(15) String? imageStoragePath,@HiveField(16) List<String> allergens,@HiveField(17) List<String> mayContain
 });
 
 
@@ -70,7 +72,7 @@ class _$RecipeModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? prepTimeMinutes = freezed,Object? cookTimeMinutes = freezed,Object? ingredients = null,Object? steps = null,Object? dietaryTags = null,Object? sourceChannel = freezed,Object? sourceUrl = freezed,Object? createdAt = null,Object? imageFileName = freezed,Object? savedFromSharedId = freezed,Object? pendingAnalysis = null,Object? collabId = freezed,Object? collabRole = freezed,Object? imageStoragePath = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? prepTimeMinutes = freezed,Object? cookTimeMinutes = freezed,Object? ingredients = null,Object? steps = null,Object? dietaryTags = null,Object? sourceChannel = freezed,Object? sourceUrl = freezed,Object? createdAt = null,Object? imageFileName = freezed,Object? savedFromSharedId = freezed,Object? pendingAnalysis = null,Object? collabId = freezed,Object? collabRole = freezed,Object? imageStoragePath = freezed,Object? allergens = null,Object? mayContain = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -88,7 +90,9 @@ as String?,pendingAnalysis: null == pendingAnalysis ? _self.pendingAnalysis : pe
 as bool,collabId: freezed == collabId ? _self.collabId : collabId // ignore: cast_nullable_to_non_nullable
 as String?,collabRole: freezed == collabRole ? _self.collabRole : collabRole // ignore: cast_nullable_to_non_nullable
 as String?,imageStoragePath: freezed == imageStoragePath ? _self.imageStoragePath : imageStoragePath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,allergens: null == allergens ? _self.allergens : allergens // ignore: cast_nullable_to_non_nullable
+as List<String>,mayContain: null == mayContain ? _self.mayContain : mayContain // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -170,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  int? prepTimeMinutes, @HiveField(3)  int? cookTimeMinutes, @HiveField(4)  List<RecipeIngredientModel> ingredients, @HiveField(5)  List<String> steps, @HiveField(6)  List<DietaryPreference> dietaryTags, @HiveField(7)  String? sourceChannel, @HiveField(8)  String? sourceUrl, @HiveField(9)  DateTime createdAt, @HiveField(10)  String? imageFileName, @HiveField(11)  String? savedFromSharedId, @HiveField(12)  bool pendingAnalysis, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole, @HiveField(15)  String? imageStoragePath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  int? prepTimeMinutes, @HiveField(3)  int? cookTimeMinutes, @HiveField(4)  List<RecipeIngredientModel> ingredients, @HiveField(5)  List<String> steps, @HiveField(6)  List<DietaryPreference> dietaryTags, @HiveField(7)  String? sourceChannel, @HiveField(8)  String? sourceUrl, @HiveField(9)  DateTime createdAt, @HiveField(10)  String? imageFileName, @HiveField(11)  String? savedFromSharedId, @HiveField(12)  bool pendingAnalysis, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole, @HiveField(15)  String? imageStoragePath, @HiveField(16)  List<String> allergens, @HiveField(17)  List<String> mayContain)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeModel() when $default != null:
-return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.ingredients,_that.steps,_that.dietaryTags,_that.sourceChannel,_that.sourceUrl,_that.createdAt,_that.imageFileName,_that.savedFromSharedId,_that.pendingAnalysis,_that.collabId,_that.collabRole,_that.imageStoragePath);case _:
+return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.ingredients,_that.steps,_that.dietaryTags,_that.sourceChannel,_that.sourceUrl,_that.createdAt,_that.imageFileName,_that.savedFromSharedId,_that.pendingAnalysis,_that.collabId,_that.collabRole,_that.imageStoragePath,_that.allergens,_that.mayContain);case _:
   return orElse();
 
 }
@@ -191,10 +195,10 @@ return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  int? prepTimeMinutes, @HiveField(3)  int? cookTimeMinutes, @HiveField(4)  List<RecipeIngredientModel> ingredients, @HiveField(5)  List<String> steps, @HiveField(6)  List<DietaryPreference> dietaryTags, @HiveField(7)  String? sourceChannel, @HiveField(8)  String? sourceUrl, @HiveField(9)  DateTime createdAt, @HiveField(10)  String? imageFileName, @HiveField(11)  String? savedFromSharedId, @HiveField(12)  bool pendingAnalysis, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole, @HiveField(15)  String? imageStoragePath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  int? prepTimeMinutes, @HiveField(3)  int? cookTimeMinutes, @HiveField(4)  List<RecipeIngredientModel> ingredients, @HiveField(5)  List<String> steps, @HiveField(6)  List<DietaryPreference> dietaryTags, @HiveField(7)  String? sourceChannel, @HiveField(8)  String? sourceUrl, @HiveField(9)  DateTime createdAt, @HiveField(10)  String? imageFileName, @HiveField(11)  String? savedFromSharedId, @HiveField(12)  bool pendingAnalysis, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole, @HiveField(15)  String? imageStoragePath, @HiveField(16)  List<String> allergens, @HiveField(17)  List<String> mayContain)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeModel():
-return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.ingredients,_that.steps,_that.dietaryTags,_that.sourceChannel,_that.sourceUrl,_that.createdAt,_that.imageFileName,_that.savedFromSharedId,_that.pendingAnalysis,_that.collabId,_that.collabRole,_that.imageStoragePath);}
+return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.ingredients,_that.steps,_that.dietaryTags,_that.sourceChannel,_that.sourceUrl,_that.createdAt,_that.imageFileName,_that.savedFromSharedId,_that.pendingAnalysis,_that.collabId,_that.collabRole,_that.imageStoragePath,_that.allergens,_that.mayContain);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -208,10 +212,10 @@ return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  int? prepTimeMinutes, @HiveField(3)  int? cookTimeMinutes, @HiveField(4)  List<RecipeIngredientModel> ingredients, @HiveField(5)  List<String> steps, @HiveField(6)  List<DietaryPreference> dietaryTags, @HiveField(7)  String? sourceChannel, @HiveField(8)  String? sourceUrl, @HiveField(9)  DateTime createdAt, @HiveField(10)  String? imageFileName, @HiveField(11)  String? savedFromSharedId, @HiveField(12)  bool pendingAnalysis, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole, @HiveField(15)  String? imageStoragePath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  int? prepTimeMinutes, @HiveField(3)  int? cookTimeMinutes, @HiveField(4)  List<RecipeIngredientModel> ingredients, @HiveField(5)  List<String> steps, @HiveField(6)  List<DietaryPreference> dietaryTags, @HiveField(7)  String? sourceChannel, @HiveField(8)  String? sourceUrl, @HiveField(9)  DateTime createdAt, @HiveField(10)  String? imageFileName, @HiveField(11)  String? savedFromSharedId, @HiveField(12)  bool pendingAnalysis, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole, @HiveField(15)  String? imageStoragePath, @HiveField(16)  List<String> allergens, @HiveField(17)  List<String> mayContain)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeModel() when $default != null:
-return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.ingredients,_that.steps,_that.dietaryTags,_that.sourceChannel,_that.sourceUrl,_that.createdAt,_that.imageFileName,_that.savedFromSharedId,_that.pendingAnalysis,_that.collabId,_that.collabRole,_that.imageStoragePath);case _:
+return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.ingredients,_that.steps,_that.dietaryTags,_that.sourceChannel,_that.sourceUrl,_that.createdAt,_that.imageFileName,_that.savedFromSharedId,_that.pendingAnalysis,_that.collabId,_that.collabRole,_that.imageStoragePath,_that.allergens,_that.mayContain);case _:
   return null;
 
 }
@@ -223,7 +227,7 @@ return $default(_that.id,_that.title,_that.prepTimeMinutes,_that.cookTimeMinutes
 @JsonSerializable()
 
 class _RecipeModel implements RecipeModel {
-  const _RecipeModel({@HiveField(0) required this.id, @HiveField(1) required this.title, @HiveField(2) this.prepTimeMinutes, @HiveField(3) this.cookTimeMinutes, @HiveField(4) required final  List<RecipeIngredientModel> ingredients, @HiveField(5) required final  List<String> steps, @HiveField(6) final  List<DietaryPreference> dietaryTags = const [], @HiveField(7) this.sourceChannel, @HiveField(8) this.sourceUrl, @HiveField(9) required this.createdAt, @HiveField(10) this.imageFileName, @HiveField(11) this.savedFromSharedId, @HiveField(12) this.pendingAnalysis = false, @HiveField(13) this.collabId, @HiveField(14) this.collabRole, @HiveField(15) this.imageStoragePath}): _ingredients = ingredients,_steps = steps,_dietaryTags = dietaryTags;
+  const _RecipeModel({@HiveField(0) required this.id, @HiveField(1) required this.title, @HiveField(2) this.prepTimeMinutes, @HiveField(3) this.cookTimeMinutes, @HiveField(4) required final  List<RecipeIngredientModel> ingredients, @HiveField(5) required final  List<String> steps, @HiveField(6) final  List<DietaryPreference> dietaryTags = const [], @HiveField(7) this.sourceChannel, @HiveField(8) this.sourceUrl, @HiveField(9) required this.createdAt, @HiveField(10) this.imageFileName, @HiveField(11) this.savedFromSharedId, @HiveField(12) this.pendingAnalysis = false, @HiveField(13) this.collabId, @HiveField(14) this.collabRole, @HiveField(15) this.imageStoragePath, @HiveField(16) final  List<String> allergens = const [], @HiveField(17) final  List<String> mayContain = const []}): _ingredients = ingredients,_steps = steps,_dietaryTags = dietaryTags,_allergens = allergens,_mayContain = mayContain;
   factory _RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -265,6 +269,24 @@ class _RecipeModel implements RecipeModel {
 // Appended like the fields above it: a recipe stored before photos could
 // travel decodes as null, which correctly reads as "never uploaded".
 @override@HiveField(15) final  String? imageStoragePath;
+// Allergen names as strings, like `collabRole`. Recipes stored before
+// these existed decode as null, which the adapter reads as empty.
+ final  List<String> _allergens;
+// Allergen names as strings, like `collabRole`. Recipes stored before
+// these existed decode as null, which the adapter reads as empty.
+@override@JsonKey()@HiveField(16) List<String> get allergens {
+  if (_allergens is EqualUnmodifiableListView) return _allergens;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_allergens);
+}
+
+ final  List<String> _mayContain;
+@override@JsonKey()@HiveField(17) List<String> get mayContain {
+  if (_mayContain is EqualUnmodifiableListView) return _mayContain;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_mayContain);
+}
+
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
@@ -279,16 +301,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.prepTimeMinutes, prepTimeMinutes) || other.prepTimeMinutes == prepTimeMinutes)&&(identical(other.cookTimeMinutes, cookTimeMinutes) || other.cookTimeMinutes == cookTimeMinutes)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients)&&const DeepCollectionEquality().equals(other._steps, _steps)&&const DeepCollectionEquality().equals(other._dietaryTags, _dietaryTags)&&(identical(other.sourceChannel, sourceChannel) || other.sourceChannel == sourceChannel)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageFileName, imageFileName) || other.imageFileName == imageFileName)&&(identical(other.savedFromSharedId, savedFromSharedId) || other.savedFromSharedId == savedFromSharedId)&&(identical(other.pendingAnalysis, pendingAnalysis) || other.pendingAnalysis == pendingAnalysis)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole)&&(identical(other.imageStoragePath, imageStoragePath) || other.imageStoragePath == imageStoragePath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.prepTimeMinutes, prepTimeMinutes) || other.prepTimeMinutes == prepTimeMinutes)&&(identical(other.cookTimeMinutes, cookTimeMinutes) || other.cookTimeMinutes == cookTimeMinutes)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients)&&const DeepCollectionEquality().equals(other._steps, _steps)&&const DeepCollectionEquality().equals(other._dietaryTags, _dietaryTags)&&(identical(other.sourceChannel, sourceChannel) || other.sourceChannel == sourceChannel)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageFileName, imageFileName) || other.imageFileName == imageFileName)&&(identical(other.savedFromSharedId, savedFromSharedId) || other.savedFromSharedId == savedFromSharedId)&&(identical(other.pendingAnalysis, pendingAnalysis) || other.pendingAnalysis == pendingAnalysis)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole)&&(identical(other.imageStoragePath, imageStoragePath) || other.imageStoragePath == imageStoragePath)&&const DeepCollectionEquality().equals(other._allergens, _allergens)&&const DeepCollectionEquality().equals(other._mayContain, _mayContain));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,prepTimeMinutes,cookTimeMinutes,const DeepCollectionEquality().hash(_ingredients),const DeepCollectionEquality().hash(_steps),const DeepCollectionEquality().hash(_dietaryTags),sourceChannel,sourceUrl,createdAt,imageFileName,savedFromSharedId,pendingAnalysis,collabId,collabRole,imageStoragePath);
+int get hashCode => Object.hash(runtimeType,id,title,prepTimeMinutes,cookTimeMinutes,const DeepCollectionEquality().hash(_ingredients),const DeepCollectionEquality().hash(_steps),const DeepCollectionEquality().hash(_dietaryTags),sourceChannel,sourceUrl,createdAt,imageFileName,savedFromSharedId,pendingAnalysis,collabId,collabRole,imageStoragePath,const DeepCollectionEquality().hash(_allergens),const DeepCollectionEquality().hash(_mayContain));
 
 @override
 String toString() {
-  return 'RecipeModel(id: $id, title: $title, prepTimeMinutes: $prepTimeMinutes, cookTimeMinutes: $cookTimeMinutes, ingredients: $ingredients, steps: $steps, dietaryTags: $dietaryTags, sourceChannel: $sourceChannel, sourceUrl: $sourceUrl, createdAt: $createdAt, imageFileName: $imageFileName, savedFromSharedId: $savedFromSharedId, pendingAnalysis: $pendingAnalysis, collabId: $collabId, collabRole: $collabRole, imageStoragePath: $imageStoragePath)';
+  return 'RecipeModel(id: $id, title: $title, prepTimeMinutes: $prepTimeMinutes, cookTimeMinutes: $cookTimeMinutes, ingredients: $ingredients, steps: $steps, dietaryTags: $dietaryTags, sourceChannel: $sourceChannel, sourceUrl: $sourceUrl, createdAt: $createdAt, imageFileName: $imageFileName, savedFromSharedId: $savedFromSharedId, pendingAnalysis: $pendingAnalysis, collabId: $collabId, collabRole: $collabRole, imageStoragePath: $imageStoragePath, allergens: $allergens, mayContain: $mayContain)';
 }
 
 
@@ -299,7 +321,7 @@ abstract mixin class _$RecipeModelCopyWith<$Res> implements $RecipeModelCopyWith
   factory _$RecipeModelCopyWith(_RecipeModel value, $Res Function(_RecipeModel) _then) = __$RecipeModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) int? prepTimeMinutes,@HiveField(3) int? cookTimeMinutes,@HiveField(4) List<RecipeIngredientModel> ingredients,@HiveField(5) List<String> steps,@HiveField(6) List<DietaryPreference> dietaryTags,@HiveField(7) String? sourceChannel,@HiveField(8) String? sourceUrl,@HiveField(9) DateTime createdAt,@HiveField(10) String? imageFileName,@HiveField(11) String? savedFromSharedId,@HiveField(12) bool pendingAnalysis,@HiveField(13) String? collabId,@HiveField(14) String? collabRole,@HiveField(15) String? imageStoragePath
+@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) int? prepTimeMinutes,@HiveField(3) int? cookTimeMinutes,@HiveField(4) List<RecipeIngredientModel> ingredients,@HiveField(5) List<String> steps,@HiveField(6) List<DietaryPreference> dietaryTags,@HiveField(7) String? sourceChannel,@HiveField(8) String? sourceUrl,@HiveField(9) DateTime createdAt,@HiveField(10) String? imageFileName,@HiveField(11) String? savedFromSharedId,@HiveField(12) bool pendingAnalysis,@HiveField(13) String? collabId,@HiveField(14) String? collabRole,@HiveField(15) String? imageStoragePath,@HiveField(16) List<String> allergens,@HiveField(17) List<String> mayContain
 });
 
 
@@ -316,7 +338,7 @@ class __$RecipeModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? prepTimeMinutes = freezed,Object? cookTimeMinutes = freezed,Object? ingredients = null,Object? steps = null,Object? dietaryTags = null,Object? sourceChannel = freezed,Object? sourceUrl = freezed,Object? createdAt = null,Object? imageFileName = freezed,Object? savedFromSharedId = freezed,Object? pendingAnalysis = null,Object? collabId = freezed,Object? collabRole = freezed,Object? imageStoragePath = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? prepTimeMinutes = freezed,Object? cookTimeMinutes = freezed,Object? ingredients = null,Object? steps = null,Object? dietaryTags = null,Object? sourceChannel = freezed,Object? sourceUrl = freezed,Object? createdAt = null,Object? imageFileName = freezed,Object? savedFromSharedId = freezed,Object? pendingAnalysis = null,Object? collabId = freezed,Object? collabRole = freezed,Object? imageStoragePath = freezed,Object? allergens = null,Object? mayContain = null,}) {
   return _then(_RecipeModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -334,7 +356,9 @@ as String?,pendingAnalysis: null == pendingAnalysis ? _self.pendingAnalysis : pe
 as bool,collabId: freezed == collabId ? _self.collabId : collabId // ignore: cast_nullable_to_non_nullable
 as String?,collabRole: freezed == collabRole ? _self.collabRole : collabRole // ignore: cast_nullable_to_non_nullable
 as String?,imageStoragePath: freezed == imageStoragePath ? _self.imageStoragePath : imageStoragePath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,allergens: null == allergens ? _self._allergens : allergens // ignore: cast_nullable_to_non_nullable
+as List<String>,mayContain: null == mayContain ? _self._mayContain : mayContain // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

@@ -15,6 +15,7 @@ import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../../domain/usecases/fetch_original_recipe_page_usecase.dart';
+import '../../domain/usecases/generate_recipe_usecase.dart';
 import '../../domain/usecases/parse_raw_text_usecase.dart';
 import '../../domain/usecases/parse_recipe_from_social_video_usecase.dart';
 import '../../domain/usecases/parse_recipe_from_url_usecase.dart';
@@ -30,6 +31,9 @@ sealed class IngestionEvent with _$IngestionEvent {
   const factory IngestionEvent.parseUrl(String url) = _ParseUrl;
   const factory IngestionEvent.viewOriginal(String url) = _ViewOriginal;
   const factory IngestionEvent.parseSocialVideo(String url) = _ParseSocialVideo;
+
+  /// Asks the model to write a recipe from a description of the dish.
+  const factory IngestionEvent.generateRecipe(String request) = _GenerateRecipe;
   const factory IngestionEvent.updateRecipe(RecipeEntity recipe) = _UpdateRecipe;
   const factory IngestionEvent.saveRecipe(RecipeEntity recipe) = _SaveRecipe;
 
@@ -79,6 +83,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   final ParseRecipeFromUrlUseCase parseRecipeFromUrlUseCase;
   final FetchOriginalRecipePageUseCase fetchOriginalRecipePageUseCase;
   final ParseRecipeFromSocialVideoUseCase parseRecipeFromSocialVideoUseCase;
+  final GenerateRecipeUseCase generateRecipeUseCase;
   final SaveRecipeUseCase saveRecipeUseCase;
   final GetUserPreferencesUseCase getUserPreferencesUseCase;
 
@@ -101,6 +106,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     required this.parseRecipeFromUrlUseCase,
     required this.fetchOriginalRecipePageUseCase,
     required this.parseRecipeFromSocialVideoUseCase,
+    required this.generateRecipeUseCase,
     required this.saveRecipeUseCase,
     required this.getUserPreferencesUseCase,
   }) : super(const IngestionState.idle(RecipeIngestionChannel.rawText)) {
@@ -110,6 +116,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     on<_ParseUrl>(_parseUrl);
     on<_ViewOriginal>(_viewOriginal);
     on<_ParseSocialVideo>(_parseSocialVideo);
+    on<_GenerateRecipe>(_generateRecipe);
     on<_UpdateRecipe>(_updateRecipe);
     on<_SaveRecipe>(_saveRecipe);
     on<_SaveAsTemplate>(_saveAsTemplate);
@@ -123,6 +130,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(context.read()),
       fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(context.read()),
       parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(context.read()),
+      generateRecipeUseCase: GenerateRecipeUseCase(context.read()),
       saveRecipeUseCase: SaveRecipeUseCase(context.read()),
       getUserPreferencesUseCase: GetUserPreferencesUseCase(context.read()),
     );
@@ -236,6 +244,16 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       (prefs) => parseRecipeFromSocialVideoUseCase(event.url, preferences: prefs),
       fallbackText: () => _pageText(event.url),
       sourceUrl: event.url,
+    );
+  }
+
+  /// The request itself is the fallback: kept as a template it can be run
+  /// again later from the details screen, the same as pasted text.
+  Future<void> _generateRecipe(_GenerateRecipe event, Emitter<IngestionState> emit) {
+    return _runParse(
+      emit,
+      (prefs) => generateRecipeUseCase(event.request, preferences: prefs),
+      fallbackText: () async => event.request,
     );
   }
 

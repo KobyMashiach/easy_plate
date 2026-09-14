@@ -25,6 +25,7 @@ import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../community/presentation/widgets/author_row.dart';
+import '../../../community/presentation/widgets/like_button.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
@@ -86,10 +87,12 @@ class SharedRecipesPage extends StatelessWidget {
 }
 
 /// The picker loads My Recipes through its own bloc and renders its own empty
-/// state, so there is nothing to pre-load or guard here.
+/// state, so there is nothing to pre-load or guard here. Only recipes this
+/// account wrote are offered: one saved from the feed is someone else's post
+/// already, and re-publishing it would put their recipe under this name.
 Future<void> _pickAndShare(BuildContext context) async {
   final bloc = context.read<SharedRecipesBloc>();
-  final picked = await showRecipePickerSheet(context);
+  final picked = await showRecipePickerSheet(context, where: (recipe) => recipe.isMine);
   if (picked != null) bloc.add(SharedRecipesEvent.share(picked));
 }
 
@@ -508,17 +511,10 @@ class _SharedCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
-              IconButton(
-                icon: Icon(
-                  shared.likedByMe ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                  size: 20,
-                  color: shared.likedByMe ? AppColors.error : AppColors.tertiary,
-                ),
+              LikeButton(
+                liked: shared.likedByMe,
+                count: shared.likeCount,
                 onPressed: () => bloc.add(SharedRecipesEvent.toggleLike(shared.id)),
-              ),
-              Text(
-                '${shared.likeCount}',
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.tertiary),
               ),
               const Spacer(),
               ClayButton(

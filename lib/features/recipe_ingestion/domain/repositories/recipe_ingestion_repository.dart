@@ -9,6 +9,11 @@ abstract class RecipeIngestionRepository {
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences);
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences);
 
+  /// Writes a recipe from a description of the dish — "semolina porridge for
+  /// a one-year-old, with fruit" — in the same structure every other channel
+  /// produces. The one call where the model is meant to invent.
+  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences);
+
   /// The page as written, fetched directly with no model involved. The fast
   /// alternative to [parseFromUrl] for someone who just wants to read it.
   Future<OriginalRecipePageEntity> fetchOriginalPage(String url);

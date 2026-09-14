@@ -27,6 +27,13 @@ RecipeEntity fakeParsedRecipe(RecipeIngestionChannel channel, {String? sourceUrl
       'מוסיפים את העגבניות המרוסקות ומבשלים 10 דקות.',
       'שוברים את הביצים לתוך הרוטב ומכסים עד שהחלבון מתקשה.',
     ],
+    // What the model would decide for these ingredients: no meat, eggs in.
+    dietaryTags: const [
+      DietaryPreference.vegetarian,
+      DietaryPreference.kosher,
+      DietaryPreference.allergy,
+    ],
+    allergens: const [Allergen.eggs],
     sourceChannel: channel,
     sourceUrl: sourceUrl,
     createdAt: DateTime.now(),

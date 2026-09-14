@@ -114,6 +114,21 @@
     "glutenFree": "خالٍ من الغلوتين",
     "allergy": "حساسية"
   },
+  "allergens": {
+    "title": "مسببات الحساسية",
+    "pick": "تحديد مسببات الحساسية",
+    "contains": "يحتوي على",
+    "mayContain": "قد يحتوي على",
+    "gluten": "غلوتين",
+    "milk": "حليب",
+    "eggs": "بيض",
+    "fish": "سمك",
+    "shellfish": "مأكولات بحرية",
+    "peanuts": "فول سوداني",
+    "treeNuts": "مكسرات",
+    "sesame": "سمسم",
+    "soy": "صويا"
+  },
   "weekday": {
     "sunday": "الأحد",
     "monday": "الاثنين",
@@ -344,6 +359,8 @@
     "webSearch": "بحث في الإنترنت",
     "urlScrape": "رابط موقع",
     "socialVideo": "TikTok / Reels",
+    "aiRequest": "طلب وصفة",
+    "aiRequestHint": "صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه",
     "parse": "تحليل الوصفة",
     "parsing": "جارٍ تحليل الوصفة...",
     "parseError": "لم نتمكّن من تحليل الوصفة",
@@ -369,7 +386,9 @@
     "untitledRecipe": "وصفة بلا اسم",
     "manual": "كتابة يدوية",
     "manualHint": "املؤوا الوصفة بأنفسكم بالتنسيق المنظّم — بدون AI وبدون انتظار.",
-    "openBlankEditor": "فتح محرّر فارغ"
+    "openBlankEditor": "فتح محرّر فارغ",
+    "generate": "إنشاء وصفة",
+    "generating": "جارٍ كتابة الوصفة..."
   },
   "mealPlanner": {
     "title": "تخطيط الوجبات",

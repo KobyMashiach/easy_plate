@@ -35,6 +35,10 @@ sealed class RecipeModel with _$RecipeModel {
     // Appended like the fields above it: a recipe stored before photos could
     // travel decodes as null, which correctly reads as "never uploaded".
     @HiveField(15) String? imageStoragePath,
+    // Allergen names as strings, like `collabRole`. Recipes stored before
+    // these existed decode as null, which the adapter reads as empty.
+    @HiveField(16) @Default([]) List<String> allergens,
+    @HiveField(17) @Default([]) List<String> mayContain,
   }) = _RecipeModel;
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
@@ -49,6 +53,8 @@ extension RecipeModelMapper on RecipeModel {
         ingredients: ingredients.map((i) => i.toEntity()).toList(),
         steps: steps,
         dietaryTags: dietaryTags,
+        allergens: Allergen.fromNames(allergens),
+        mayContain: Allergen.fromNames(mayContain),
         sourceChannel: sourceChannel == null
             ? null
             : RecipeIngestionChannel.values.firstWhere((c) => c.name == sourceChannel),
@@ -74,6 +80,8 @@ extension RecipeEntityMapper on RecipeEntity {
         ingredients: ingredients.map((i) => i.toModel()).toList(),
         steps: steps,
         dietaryTags: dietaryTags,
+        allergens: allergens.names,
+        mayContain: mayContain.names,
         sourceChannel: sourceChannel?.name,
         sourceUrl: sourceUrl,
         imageFileName: imageFileName,

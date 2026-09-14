@@ -50,10 +50,12 @@ class _FakeForumSource implements ForumRemoteDataSource {
   List<ForumReplyEntity> replies = [];
 
   @override
-  Future<List<ForumPostEntity>> getPosts({int limit = 50}) async => posts;
+  Future<List<ForumPostEntity>> getPosts({required String viewerUid, int limit = 50}) async =>
+      posts;
 
   @override
-  Future<List<ForumReplyEntity>> getReplies(String postId) async => replies;
+  Future<List<ForumReplyEntity>> getReplies(String postId, {required String viewerUid}) async =>
+      replies;
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -133,7 +135,7 @@ void main() {
         ),
       };
 
-      final posts = await repository.getPosts();
+      final posts = await repository.getPosts(viewerUid: 'me');
       expect(posts.single.authorName, 'שם חדש');
       expect(posts.single.authorPhotoUrl, 'https://new/photo.jpg');
     });
@@ -144,7 +146,7 @@ void main() {
       source.posts = [buildPost()];
       profiles.public = {};
 
-      final posts = await repository.getPosts();
+      final posts = await repository.getPosts(viewerUid: 'me');
       expect(posts.single.authorName, 'שם ישן');
     });
 
@@ -154,7 +156,7 @@ void main() {
         'u1': const PublicProfileEntity(uid: 'u1', fullName: 'שם חדש'),
       };
 
-      final post = (await repository.getPosts()).single;
+      final post = (await repository.getPosts(viewerUid: 'me')).single;
       expect(post.authorUid, 'u1');
       expect(post.title, 'איך מכינים קובה?');
       expect(post.replyCount, 2);
@@ -176,7 +178,7 @@ void main() {
         'u1': const PublicProfileEntity(uid: 'u1', fullName: 'שם חדש'),
       };
 
-      final reply = (await repository.getReplies('p1')).single;
+      final reply = (await repository.getReplies('p1', viewerUid: 'me')).single;
       expect(reply.authorName, 'שם חדש');
       // The attached recipe link must survive the rewrite.
       expect(reply.sharedRecipeId, 's1');
@@ -185,7 +187,7 @@ void main() {
 
     test('an empty list asks for no profiles at all', () async {
       source.posts = [];
-      expect(await repository.getPosts(), isEmpty);
+      expect(await repository.getPosts(viewerUid: 'me'), isEmpty);
       expect(profiles.lastRequested, isNull);
     });
   });

@@ -114,6 +114,21 @@
     "glutenFree": "ללא גלוטן",
     "allergy": "אלרגיה"
   },
+  "allergens": {
+    "title": "אלרגנים",
+    "pick": "סימון אלרגנים",
+    "contains": "מכיל",
+    "mayContain": "עלול להכיל",
+    "gluten": "גלוטן",
+    "milk": "חלב",
+    "eggs": "ביצים",
+    "fish": "דגים",
+    "shellfish": "פירות ים",
+    "peanuts": "בוטנים",
+    "treeNuts": "אגוזים",
+    "sesame": "שומשום",
+    "soy": "סויה"
+  },
   "weekday": {
     "sunday": "ראשון",
     "monday": "שני",
@@ -344,6 +359,8 @@
     "webSearch": "חיפוש באינטרנט",
     "urlScrape": "קישור לאתר",
     "socialVideo": "TikTok / Reels",
+    "aiRequest": "בקשת מתכון",
+    "aiRequestHint": "תארו מה בא לכם להכין. לדוגמה: מתכון לדייסת סולת לתינוקת בת שנה עם פירות",
     "parse": "נתח מתכון",
     "parsing": "מנתח את המתכון...",
     "parseError": "לא הצלחנו לנתח את המתכון",
@@ -369,7 +386,9 @@
     "untitledRecipe": "מתכון ללא שם",
     "manual": "כתיבה ידנית",
     "manualHint": "מילוי המתכון בעצמכם בפורמט המובנה — ללא ניתוח AI וללא המתנה.",
-    "openBlankEditor": "פתיחת עורך ריק"
+    "openBlankEditor": "פתיחת עורך ריק",
+    "generate": "יצירת מתכון",
+    "generating": "כותב לכם מתכון..."
   },
   "mealPlanner": {
     "title": "תכנון ארוחות",

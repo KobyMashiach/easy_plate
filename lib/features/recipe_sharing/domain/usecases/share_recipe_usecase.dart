@@ -51,6 +51,9 @@ class ShareRecipeUseCase {
     List<String> senderContacts = const [],
   }) async {
     assert(role != CollabRole.owner, 'an invite grants viewer or editor only');
+    // A copy saved from the community, or a recipe someone else let this
+    // account into, is not this account's to hand on.
+    if (!recipe.isMine) throw StateError('Only recipes this account wrote can be shared');
 
     String? targetUid;
     try {

@@ -12,6 +12,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/duration_label.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
+import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/hive/user_scope.dart';
@@ -28,6 +29,7 @@ import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.da
 import '../../../recipe_sharing/domain/usecases/save_collab_recipe_usecase.dart';
 import '../../../recipe_sharing/domain/usecases/sync_collab_recipe_usecase.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../recipe_ingestion/domain/usecases/generate_recipe_usecase.dart';
 import '../../../recipe_ingestion/domain/usecases/parse_raw_text_usecase.dart';
 
 /// Route payload for [RecipeDetailsPage]. A bare entity was not enough once
@@ -99,8 +101,12 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
 
     setState(() => _analyzing = true);
     try {
-      final parsed = await ParseRawTextUseCase(ingestion)(recipe.rawText)
-          .timeout(const Duration(seconds: 30));
+      // A template saved from a recipe *request* holds the request, not a
+      // recipe: it is written, not parsed.
+      final analysis = recipe.sourceChannel == RecipeIngestionChannel.aiRequest
+          ? GenerateRecipeUseCase(ingestion)(recipe.rawText)
+          : ParseRawTextUseCase(ingestion)(recipe.rawText);
+      final parsed = await analysis.timeout(const Duration(seconds: 30));
       final updated = RecipeEntity(
         id: recipe.id,
         title: parsed.title,
@@ -110,6 +116,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         steps: parsed.steps,
         // A topic the user already picked outranks the model's silence on it.
         dietaryTags: parsed.dietaryTags.isNotEmpty ? parsed.dietaryTags : recipe.dietaryTags,
+        allergens: parsed.allergens.isNotEmpty ? parsed.allergens : recipe.allergens,
+        mayContain: parsed.mayContain.isNotEmpty ? parsed.mayContain : recipe.mayContain,
         sourceChannel: recipe.sourceChannel,
         sourceUrl: recipe.sourceUrl,
         imageFileName: recipe.imageFileName,
@@ -278,6 +286,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
               }),
             ],
           ),
+          AllergenNotice(allergens: recipe.allergens, mayContain: recipe.mayContain),
           const SizedBox(height: AppSpacing.lg),
           if (recipe.pendingAnalysis) ...[
             ClayCard(

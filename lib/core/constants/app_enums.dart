@@ -47,8 +47,11 @@ enum AccessRole {
 }
 
 /// Stored on recipes as a plain string, so adding a value is safe for
-/// existing boxes.
-enum RecipeIngestionChannel { rawText, webSearch, urlScrape, socialVideo, manual }
+/// existing boxes. The order is the order the chips are offered in.
+///
+/// [aiRequest] is the one channel with no source to read from: the user
+/// describes the dish they want and the model writes the recipe.
+enum RecipeIngestionChannel { rawText, webSearch, urlScrape, socialVideo, aiRequest, manual }
 
 /// Starting shape for a new meal plan. Not persisted — it only decides which
 /// meals get pre-created across the week, and the plan is freely editable
@@ -93,6 +96,34 @@ enum MeasurementUnit {
   pinch,
   @HiveField(9)
   unspecified,
+}
+
+/// The common allergens a recipe can be marked with, both as "contains" and
+/// as "may contain" (traces). Stored on recipes as plain strings, like
+/// [CollabRole], so adding one later is safe for existing boxes.
+enum Allergen {
+  gluten,
+  milk,
+  eggs,
+  fish,
+  shellfish,
+  peanuts,
+  treeNuts,
+  sesame,
+  soy;
+
+  /// Names back to values, in this order and without repeats. Anything that
+  /// is not a known name — an old client's value, a model's slip — is dropped
+  /// rather than failing the recipe.
+  static List<Allergen> fromNames(Object? raw) {
+    if (raw is! List) return const [];
+    final names = raw.whereType<String>().toSet();
+    return [for (final a in values) if (names.contains(a.name)) a];
+  }
+}
+
+extension AllergenNames on List<Allergen> {
+  List<String> get names => [for (final a in this) a.name];
 }
 
 /// A person's standing on a recipe shared between accounts. Stored on recipes

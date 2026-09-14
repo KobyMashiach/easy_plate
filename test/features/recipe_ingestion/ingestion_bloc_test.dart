@@ -8,6 +8,7 @@ import 'package:easy_plate/features/recipe_ingestion/domain/entities/original_re
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_result_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/fetch_original_recipe_page_usecase.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/usecases/generate_recipe_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_raw_text_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_social_video_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_url_usecase.dart';
@@ -41,6 +42,10 @@ class _FakeIngestion implements RecipeIngestionRepository {
   @override
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> p) =>
       onParse!(url);
+
+  @override
+  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> p) =>
+      onParse!(request);
 
   @override
   Future<OriginalRecipePageEntity> fetchOriginalPage(String url) async {
@@ -86,6 +91,7 @@ void main() {
         searchWebRecipesUseCase: SearchWebRecipesUseCase(ingestion),
         parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(ingestion),
         parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(ingestion),
+        generateRecipeUseCase: GenerateRecipeUseCase(ingestion),
         fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(ingestion),
         saveRecipeUseCase: SaveRecipeUseCase(recipes),
         getUserPreferencesUseCase: GetUserPreferencesUseCase(_FakePreferences()),
@@ -185,5 +191,42 @@ void main() {
     expect(state, isA<IngestionReview>());
     expect((state as IngestionReview).recipe.pendingAnalysis, isTrue);
     expect(recipes.saved, isEmpty, reason: 'nothing persists until the user saves');
+  });
+
+  group('recipe request', () {
+    test('a request lands on review with the recipe the model wrote', () async {
+      ingestion.onParse = (request) async {
+        expect(request, contains('דייסת סולת'));
+        return parsed('דייסת סולת לתינוקות');
+      };
+      final bloc = buildBloc();
+
+      // Selecting the channel emits idle, which would satisfy [settle] on its
+      // own — so wait it out before asking for the recipe.
+      bloc.add(const IngestionEvent.selectChannel(RecipeIngestionChannel.aiRequest));
+      await bloc.stream.first;
+      bloc.add(const IngestionEvent.generateRecipe('מתכון לדייסת סולת לתינוקת בת שנה'));
+      final state = await settle(bloc);
+
+      expect(state, isA<IngestionReview>());
+      expect((state as IngestionReview).recipe.title, 'דייסת סולת לתינוקות');
+    });
+
+    test('a request the model never answers is handed back on its own channel', () async {
+      // So the retry re-asks for a recipe rather than parsing the request as one.
+      ingestion.onParse = (_) => Completer<RecipeEntity>().future;
+      final bloc = buildBloc();
+
+      bloc.add(const IngestionEvent.selectChannel(RecipeIngestionChannel.aiRequest));
+      await bloc.stream.first;
+      bloc.add(const IngestionEvent.generateRecipe('דייסת סולת'));
+      final state = await settle(bloc);
+
+      expect(state, isA<IngestionUnparsed>());
+      final unparsed = state as IngestionUnparsed;
+      expect(unparsed.channel, RecipeIngestionChannel.aiRequest);
+      expect(unparsed.text, 'דייסת סולת');
+      expect(unparsed.timedOut, isTrue);
+    });
   });
 }

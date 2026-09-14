@@ -42,6 +42,8 @@ class SyncCollabRecipeUseCase {
         ingredients: local.ingredients,
         steps: local.steps,
         dietaryTags: local.dietaryTags,
+        allergens: local.allergens,
+        mayContain: local.mayContain,
         sourceChannel: local.sourceChannel,
         sourceUrl: local.sourceUrl,
         imageFileName: local.imageFileName,
@@ -69,6 +71,8 @@ class SyncCollabRecipeUseCase {
         ingredients: collab.recipe.ingredients,
         steps: collab.recipe.steps,
         dietaryTags: collab.recipe.dietaryTags,
+        allergens: collab.recipe.allergens,
+        mayContain: collab.recipe.mayContain,
         sourceChannel: local.sourceChannel,
         sourceUrl: local.sourceUrl,
         // The photo is part of what is shared now. The shared document wins when

@@ -45,6 +45,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$profile$en profile = _Translations$profile$en._(_root);
 	@override late final _Translations$onboarding$en onboarding = _Translations$onboarding$en._(_root);
 	@override late final _Translations$dietary$en dietary = _Translations$dietary$en._(_root);
+	@override late final _Translations$allergens$en allergens = _Translations$allergens$en._(_root);
 	@override late final _Translations$weekday$en weekday = _Translations$weekday$en._(_root);
 	@override late final _Translations$settings$en settings = _Translations$settings$en._(_root);
 	@override late final _Translations$more$en more = _Translations$more$en._(_root);
@@ -213,6 +214,28 @@ class _Translations$dietary$en extends Translations$dietary$he {
 	@override String get kosher => 'Kosher';
 	@override String get glutenFree => 'Gluten-free';
 	@override String get allergy => 'Allergy';
+}
+
+// Path: allergens
+class _Translations$allergens$en extends Translations$allergens$he {
+	_Translations$allergens$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Allergens';
+	@override String get pick => 'Mark allergens';
+	@override String get contains => 'Contains';
+	@override String get mayContain => 'May contain';
+	@override String get gluten => 'Gluten';
+	@override String get milk => 'Milk';
+	@override String get eggs => 'Eggs';
+	@override String get fish => 'Fish';
+	@override String get shellfish => 'Shellfish';
+	@override String get peanuts => 'Peanuts';
+	@override String get treeNuts => 'Tree nuts';
+	@override String get sesame => 'Sesame';
+	@override String get soy => 'Soy';
 }
 
 // Path: weekday
@@ -521,6 +544,8 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get webSearch => 'Search the web';
 	@override String get urlScrape => 'Website link';
 	@override String get socialVideo => 'TikTok / Reels';
+	@override String get aiRequest => 'Ask for a recipe';
+	@override String get aiRequestHint => 'Describe what you want to make. For example: semolina porridge for a one-year-old, with fruit';
 	@override String get parse => 'Parse recipe';
 	@override String get parsing => 'Parsing the recipe...';
 	@override String get parseError => 'We couldn\'t parse the recipe';
@@ -547,6 +572,8 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get manual => 'Write by hand';
 	@override String get manualHint => 'Fill the recipe in yourself, in the structured format — no AI, no waiting.';
 	@override String get openBlankEditor => 'Open a blank editor';
+	@override String get generate => 'Create recipe';
+	@override String get generating => 'Writing your recipe...';
 }
 
 // Path: mealPlanner
@@ -864,6 +891,19 @@ extension on TranslationsEn {
 			'dietary.kosher' => 'Kosher',
 			'dietary.glutenFree' => 'Gluten-free',
 			'dietary.allergy' => 'Allergy',
+			'allergens.title' => 'Allergens',
+			'allergens.pick' => 'Mark allergens',
+			'allergens.contains' => 'Contains',
+			'allergens.mayContain' => 'May contain',
+			'allergens.gluten' => 'Gluten',
+			'allergens.milk' => 'Milk',
+			'allergens.eggs' => 'Eggs',
+			'allergens.fish' => 'Fish',
+			'allergens.shellfish' => 'Shellfish',
+			'allergens.peanuts' => 'Peanuts',
+			'allergens.treeNuts' => 'Tree nuts',
+			'allergens.sesame' => 'Sesame',
+			'allergens.soy' => 'Soy',
 			'weekday.sunday' => 'Sunday',
 			'weekday.monday' => 'Monday',
 			'weekday.tuesday' => 'Tuesday',
@@ -1073,6 +1113,8 @@ extension on TranslationsEn {
 			'ingestion.webSearch' => 'Search the web',
 			'ingestion.urlScrape' => 'Website link',
 			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.aiRequest' => 'Ask for a recipe',
+			'ingestion.aiRequestHint' => 'Describe what you want to make. For example: semolina porridge for a one-year-old, with fruit',
 			'ingestion.parse' => 'Parse recipe',
 			'ingestion.parsing' => 'Parsing the recipe...',
 			'ingestion.parseError' => 'We couldn\'t parse the recipe',
@@ -1099,6 +1141,8 @@ extension on TranslationsEn {
 			'ingestion.manual' => 'Write by hand',
 			'ingestion.manualHint' => 'Fill the recipe in yourself, in the structured format — no AI, no waiting.',
 			'ingestion.openBlankEditor' => 'Open a blank editor',
+			'ingestion.generate' => 'Create recipe',
+			'ingestion.generating' => 'Writing your recipe...',
 			'mealPlanner.title' => 'Meal planning',
 			'mealPlanner.newPlan' => 'New plan',
 			'mealPlanner.planName' => 'Plan name',

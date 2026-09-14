@@ -6,16 +6,19 @@ import 'package:easy_plate/features/forum/domain/repositories/forum_repository.d
 import 'package:easy_plate/features/forum/domain/usecases/create_forum_post_usecase.dart';
 import 'package:easy_plate/features/forum/domain/usecases/delete_forum_post_usecase.dart';
 import 'package:easy_plate/features/forum/domain/usecases/get_forum_posts_usecase.dart';
+import 'package:easy_plate/features/forum/domain/usecases/toggle_forum_post_like_usecase.dart';
 import 'package:easy_plate/features/forum/presentation/bloc/forum_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeForumRepository implements ForumRepository {
   List<ForumPostEntity> posts = [];
   bool throwsOnRead = false;
+  bool throwsOnLike = false;
   int reads = 0;
+  final likedPostIds = <String>[];
 
   @override
-  Future<List<ForumPostEntity>> getPosts({int limit = 50}) async {
+  Future<List<ForumPostEntity>> getPosts({required String viewerUid, int limit = 50}) async {
     reads++;
     if (throwsOnRead) throw Exception('offline');
     return posts;
@@ -31,7 +34,8 @@ class _FakeForumRepository implements ForumRepository {
   }) async {}
 
   @override
-  Future<List<ForumReplyEntity>> getReplies(String postId) async => const [];
+  Future<List<ForumReplyEntity>> getReplies(String postId, {required String viewerUid}) async =>
+      const [];
 
   @override
   Future<void> addReply({
@@ -45,17 +49,31 @@ class _FakeForumRepository implements ForumRepository {
   }) async {}
 
   @override
+  Future<bool> togglePostLike(String postId, {required String viewerUid}) async {
+    if (throwsOnLike) throw Exception('offline');
+    likedPostIds.add(postId);
+    return true;
+  }
+
+  @override
+  Future<bool> toggleReplyLike(String postId, String replyId, {required String viewerUid}) =>
+      throw UnimplementedError();
+
+  @override
   Future<void> deletePost(String postId) async =>
       posts = posts.where((p) => p.id != postId).toList();
 }
 
-ForumPostEntity buildPost({String id = 'p1'}) => ForumPostEntity(
+ForumPostEntity buildPost({String id = 'p1', int likeCount = 0, bool likedByMe = false}) =>
+    ForumPostEntity(
       id: id,
       title: 'איך מכינים קובה?',
       body: 'מחפש מתכון',
       authorUid: 'someone',
       authorName: 'דנה',
       createdAt: DateTime(2026, 1, 1),
+      likeCount: likeCount,
+      likedByMe: likedByMe,
     );
 
 void main() {
@@ -65,6 +83,7 @@ void main() {
         getForumPostsUseCase: GetForumPostsUseCase(repository),
         createForumPostUseCase: CreateForumPostUseCase(repository),
         deleteForumPostUseCase: DeleteForumPostUseCase(repository),
+        togglePostLikeUseCase: ToggleForumPostLikeUseCase(repository),
       );
 
   setUp(() => repository = _FakeForumRepository());
@@ -123,6 +142,51 @@ void main() {
         onTimeout: () => fail('refresh future never completed'),
       );
       expect(bloc.state, isA<ForumError>());
+    });
+  });
+
+  group('likes', () {
+    test('a tap flips the heart and the count before the write lands', () async {
+      repository.posts = [buildPost(likeCount: 2)];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const ForumEvent.toggleLike('p1'));
+      // Bloc handlers start on the next microtask; the flip is the very first
+      // thing the handler does, before it awaits the repository.
+      await Future<void>.delayed(Duration.zero);
+
+      final post = (bloc.state as ForumLoaded).posts.single;
+      expect(post.likedByMe, isTrue);
+      expect(post.likeCount, 3);
+      expect(repository.likedPostIds, ['p1']);
+    });
+
+    test('a second tap takes the like back', () async {
+      repository.posts = [buildPost(likeCount: 3, likedByMe: true)];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const ForumEvent.toggleLike('p1'));
+      await Future<void>.delayed(Duration.zero);
+
+      final post = (bloc.state as ForumLoaded).posts.single;
+      expect(post.likedByMe, isFalse);
+      expect(post.likeCount, 2);
+    });
+
+    test('a failed write puts the row back as it was', () async {
+      repository.posts = [buildPost(likeCount: 2)];
+      repository.throwsOnLike = true;
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const ForumEvent.toggleLike('p1'));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      final post = (bloc.state as ForumLoaded).posts.single;
+      expect(post.likedByMe, isFalse);
+      expect(post.likeCount, 2);
     });
   });
 }

@@ -45,6 +45,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$profile$fr profile = _Translations$profile$fr._(_root);
 	@override late final _Translations$onboarding$fr onboarding = _Translations$onboarding$fr._(_root);
 	@override late final _Translations$dietary$fr dietary = _Translations$dietary$fr._(_root);
+	@override late final _Translations$allergens$fr allergens = _Translations$allergens$fr._(_root);
 	@override late final _Translations$weekday$fr weekday = _Translations$weekday$fr._(_root);
 	@override late final _Translations$settings$fr settings = _Translations$settings$fr._(_root);
 	@override late final _Translations$more$fr more = _Translations$more$fr._(_root);
@@ -213,6 +214,28 @@ class _Translations$dietary$fr extends Translations$dietary$he {
 	@override String get kosher => 'Casher';
 	@override String get glutenFree => 'Sans gluten';
 	@override String get allergy => 'Allergie';
+}
+
+// Path: allergens
+class _Translations$allergens$fr extends Translations$allergens$he {
+	_Translations$allergens$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Allergènes';
+	@override String get pick => 'Indiquer les allergènes';
+	@override String get contains => 'Contient';
+	@override String get mayContain => 'Peut contenir';
+	@override String get gluten => 'Gluten';
+	@override String get milk => 'Lait';
+	@override String get eggs => 'Œufs';
+	@override String get fish => 'Poisson';
+	@override String get shellfish => 'Fruits de mer';
+	@override String get peanuts => 'Arachides';
+	@override String get treeNuts => 'Fruits à coque';
+	@override String get sesame => 'Sésame';
+	@override String get soy => 'Soja';
 }
 
 // Path: weekday
@@ -521,6 +544,8 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get webSearch => 'Rechercher sur le web';
 	@override String get urlScrape => 'Lien vers un site';
 	@override String get socialVideo => 'TikTok / Reels';
+	@override String get aiRequest => 'Demander une recette';
+	@override String get aiRequestHint => 'Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits';
 	@override String get parse => 'Analyser la recette';
 	@override String get parsing => 'Analyse de la recette...';
 	@override String get parseError => 'Nous n\'avons pas pu analyser la recette';
@@ -547,6 +572,8 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get manual => 'Saisie manuelle';
 	@override String get manualHint => 'Remplissez la recette vous-même, au format structuré — sans IA, sans attente.';
 	@override String get openBlankEditor => 'Ouvrir un éditeur vide';
+	@override String get generate => 'Créer la recette';
+	@override String get generating => 'Rédaction de votre recette...';
 }
 
 // Path: mealPlanner
@@ -864,6 +891,19 @@ extension on TranslationsFr {
 			'dietary.kosher' => 'Casher',
 			'dietary.glutenFree' => 'Sans gluten',
 			'dietary.allergy' => 'Allergie',
+			'allergens.title' => 'Allergènes',
+			'allergens.pick' => 'Indiquer les allergènes',
+			'allergens.contains' => 'Contient',
+			'allergens.mayContain' => 'Peut contenir',
+			'allergens.gluten' => 'Gluten',
+			'allergens.milk' => 'Lait',
+			'allergens.eggs' => 'Œufs',
+			'allergens.fish' => 'Poisson',
+			'allergens.shellfish' => 'Fruits de mer',
+			'allergens.peanuts' => 'Arachides',
+			'allergens.treeNuts' => 'Fruits à coque',
+			'allergens.sesame' => 'Sésame',
+			'allergens.soy' => 'Soja',
 			'weekday.sunday' => 'Dimanche',
 			'weekday.monday' => 'Lundi',
 			'weekday.tuesday' => 'Mardi',
@@ -1073,6 +1113,8 @@ extension on TranslationsFr {
 			'ingestion.webSearch' => 'Rechercher sur le web',
 			'ingestion.urlScrape' => 'Lien vers un site',
 			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.aiRequest' => 'Demander une recette',
+			'ingestion.aiRequestHint' => 'Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits',
 			'ingestion.parse' => 'Analyser la recette',
 			'ingestion.parsing' => 'Analyse de la recette...',
 			'ingestion.parseError' => 'Nous n\'avons pas pu analyser la recette',
@@ -1099,6 +1141,8 @@ extension on TranslationsFr {
 			'ingestion.manual' => 'Saisie manuelle',
 			'ingestion.manualHint' => 'Remplissez la recette vous-même, au format structuré — sans IA, sans attente.',
 			'ingestion.openBlankEditor' => 'Ouvrir un éditeur vide',
+			'ingestion.generate' => 'Créer la recette',
+			'ingestion.generating' => 'Rédaction de votre recette...',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',

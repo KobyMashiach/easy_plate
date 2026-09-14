@@ -61,13 +61,15 @@ extension ForumThreadEventPatterns on ForumThreadEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _AddReply value)?  addReply,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _AddReply value)?  addReply,TResult Function( _TogglePostLike value)?  togglePostLike,TResult Function( _ToggleReplyLike value)?  toggleReplyLike,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _Refresh() when refresh != null:
 return refresh(_that);case _AddReply() when addReply != null:
-return addReply(_that);case _:
+return addReply(_that);case _TogglePostLike() when togglePostLike != null:
+return togglePostLike(_that);case _ToggleReplyLike() when toggleReplyLike != null:
+return toggleReplyLike(_that);case _:
   return orElse();
 
 }
@@ -85,13 +87,15 @@ return addReply(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _AddReply value)  addReply,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _AddReply value)  addReply,required TResult Function( _TogglePostLike value)  togglePostLike,required TResult Function( _ToggleReplyLike value)  toggleReplyLike,}){
 final _that = this;
 switch (_that) {
 case _Init():
 return init(_that);case _Refresh():
 return refresh(_that);case _AddReply():
-return addReply(_that);}
+return addReply(_that);case _TogglePostLike():
+return togglePostLike(_that);case _ToggleReplyLike():
+return toggleReplyLike(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -105,13 +109,15 @@ return addReply(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _AddReply value)?  addReply,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _AddReply value)?  addReply,TResult? Function( _TogglePostLike value)?  togglePostLike,TResult? Function( _ToggleReplyLike value)?  toggleReplyLike,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _Refresh() when refresh != null:
 return refresh(_that);case _AddReply() when addReply != null:
-return addReply(_that);case _:
+return addReply(_that);case _TogglePostLike() when togglePostLike != null:
+return togglePostLike(_that);case _ToggleReplyLike() when toggleReplyLike != null:
+return toggleReplyLike(_that);case _:
   return null;
 
 }
@@ -128,12 +134,14 @@ return addReply(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,TResult Function()?  togglePostLike,TResult Function( String replyId)?  toggleReplyLike,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
 return refresh(_that.done);case _AddReply() when addReply != null:
-return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
+return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _TogglePostLike() when togglePostLike != null:
+return togglePostLike();case _ToggleReplyLike() when toggleReplyLike != null:
+return toggleReplyLike(_that.replyId);case _:
   return orElse();
 
 }
@@ -151,12 +159,14 @@ return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)  addReply,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)  addReply,required TResult Function()  togglePostLike,required TResult Function( String replyId)  toggleReplyLike,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Refresh():
 return refresh(_that.done);case _AddReply():
-return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);}
+return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _TogglePostLike():
+return togglePostLike();case _ToggleReplyLike():
+return toggleReplyLike(_that.replyId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -170,12 +180,14 @@ return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String body,  String? sharedRecipeId,  String? sharedRecipeTitle)?  addReply,TResult? Function()?  togglePostLike,TResult? Function( String replyId)?  toggleReplyLike,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
 return refresh(_that.done);case _AddReply() when addReply != null:
-return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _:
+return addReply(_that.body,_that.sharedRecipeId,_that.sharedRecipeTitle);case _TogglePostLike() when togglePostLike != null:
+return togglePostLike();case _ToggleReplyLike() when toggleReplyLike != null:
+return toggleReplyLike(_that.replyId);case _:
   return null;
 
 }
@@ -370,7 +382,12 @@ as String?,
 }
 
 /// @nodoc
-mixin _$ForumThreadState implements DiagnosticableTreeMixin {
+
+
+class _TogglePostLike with DiagnosticableTreeMixin implements ForumThreadEvent {
+  const _TogglePostLike();
+  
+
 
 
 
@@ -378,13 +395,13 @@ mixin _$ForumThreadState implements DiagnosticableTreeMixin {
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
-    ..add(DiagnosticsProperty('type', 'ForumThreadState'))
+    ..add(DiagnosticsProperty('type', 'ForumThreadEvent.togglePostLike'))
     ;
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadState);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TogglePostLike);
 }
 
 
@@ -393,15 +410,151 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ForumThreadState()';
+  return 'ForumThreadEvent.togglePostLike()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _ToggleReplyLike with DiagnosticableTreeMixin implements ForumThreadEvent {
+  const _ToggleReplyLike(this.replyId);
+  
+
+ final  String replyId;
+
+/// Create a copy of ForumThreadEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ToggleReplyLikeCopyWith<_ToggleReplyLike> get copyWith => __$ToggleReplyLikeCopyWithImpl<_ToggleReplyLike>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumThreadEvent.toggleReplyLike'))
+    ..add(DiagnosticsProperty('replyId', replyId));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ToggleReplyLike&&(identical(other.replyId, replyId) || other.replyId == replyId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,replyId);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumThreadEvent.toggleReplyLike(replyId: $replyId)';
 }
 
 
 }
 
 /// @nodoc
-class $ForumThreadStateCopyWith<$Res>  {
-$ForumThreadStateCopyWith(ForumThreadState _, $Res Function(ForumThreadState) __);
+abstract mixin class _$ToggleReplyLikeCopyWith<$Res> implements $ForumThreadEventCopyWith<$Res> {
+  factory _$ToggleReplyLikeCopyWith(_ToggleReplyLike value, $Res Function(_ToggleReplyLike) _then) = __$ToggleReplyLikeCopyWithImpl;
+@useResult
+$Res call({
+ String replyId
+});
+
+
+
+
+}
+/// @nodoc
+class __$ToggleReplyLikeCopyWithImpl<$Res>
+    implements _$ToggleReplyLikeCopyWith<$Res> {
+  __$ToggleReplyLikeCopyWithImpl(this._self, this._then);
+
+  final _ToggleReplyLike _self;
+  final $Res Function(_ToggleReplyLike) _then;
+
+/// Create a copy of ForumThreadEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? replyId = null,}) {
+  return _then(_ToggleReplyLike(
+null == replyId ? _self.replyId : replyId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$ForumThreadState implements DiagnosticableTreeMixin {
+
+ ForumPostEntity get post;
+/// Create a copy of ForumThreadState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ForumThreadStateCopyWith<ForumThreadState> get copyWith => _$ForumThreadStateCopyWithImpl<ForumThreadState>(this as ForumThreadState, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumThreadState'))
+    ..add(DiagnosticsProperty('post', post));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadState&&(identical(other.post, post) || other.post == post));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,post);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumThreadState(post: $post)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ForumThreadStateCopyWith<$Res>  {
+  factory $ForumThreadStateCopyWith(ForumThreadState value, $Res Function(ForumThreadState) _then) = _$ForumThreadStateCopyWithImpl;
+@useResult
+$Res call({
+ ForumPostEntity post
+});
+
+
+
+
+}
+/// @nodoc
+class _$ForumThreadStateCopyWithImpl<$Res>
+    implements $ForumThreadStateCopyWith<$Res> {
+  _$ForumThreadStateCopyWithImpl(this._self, this._then);
+
+  final ForumThreadState _self;
+  final $Res Function(ForumThreadState) _then;
+
+/// Create a copy of ForumThreadState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? post = null,}) {
+  return _then(_self.copyWith(
+post: null == post ? _self.post : post // ignore: cast_nullable_to_non_nullable
+as ForumPostEntity,
+  ));
+}
+
 }
 
 
@@ -486,12 +639,12 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<ForumReplyEntity> replies,  bool sending)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( ForumPostEntity post)?  loading,TResult Function( ForumPostEntity post,  List<ForumReplyEntity> replies,  bool sending)?  loaded,TResult Function( ForumPostEntity post,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ForumThreadLoading() when loading != null:
-return loading();case ForumThreadLoaded() when loaded != null:
-return loaded(_that.replies,_that.sending);case ForumThreadError() when errorMessage != null:
-return errorMessage(_that.error);case _:
+return loading(_that.post);case ForumThreadLoaded() when loaded != null:
+return loaded(_that.post,_that.replies,_that.sending);case ForumThreadError() when errorMessage != null:
+return errorMessage(_that.post,_that.error);case _:
   return orElse();
 
 }
@@ -509,12 +662,12 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<ForumReplyEntity> replies,  bool sending)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( ForumPostEntity post)  loading,required TResult Function( ForumPostEntity post,  List<ForumReplyEntity> replies,  bool sending)  loaded,required TResult Function( ForumPostEntity post,  String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case ForumThreadLoading():
-return loading();case ForumThreadLoaded():
-return loaded(_that.replies,_that.sending);case ForumThreadError():
-return errorMessage(_that.error);}
+return loading(_that.post);case ForumThreadLoaded():
+return loaded(_that.post,_that.replies,_that.sending);case ForumThreadError():
+return errorMessage(_that.post,_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -528,12 +681,12 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<ForumReplyEntity> replies,  bool sending)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( ForumPostEntity post)?  loading,TResult? Function( ForumPostEntity post,  List<ForumReplyEntity> replies,  bool sending)?  loaded,TResult? Function( ForumPostEntity post,  String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case ForumThreadLoading() when loading != null:
-return loading();case ForumThreadLoaded() when loaded != null:
-return loaded(_that.replies,_that.sending);case ForumThreadError() when errorMessage != null:
-return errorMessage(_that.error);case _:
+return loading(_that.post);case ForumThreadLoaded() when loaded != null:
+return loaded(_that.post,_that.replies,_that.sending);case ForumThreadError() when errorMessage != null:
+return errorMessage(_that.post,_that.error);case _:
   return null;
 
 }
@@ -545,47 +698,82 @@ return errorMessage(_that.error);case _:
 
 
 class ForumThreadLoading with DiagnosticableTreeMixin implements ForumThreadState {
-  const ForumThreadLoading();
+  const ForumThreadLoading(this.post);
   
 
+@override final  ForumPostEntity post;
 
-
+/// Create a copy of ForumThreadState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ForumThreadLoadingCopyWith<ForumThreadLoading> get copyWith => _$ForumThreadLoadingCopyWithImpl<ForumThreadLoading>(this, _$identity);
 
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ForumThreadState.loading'))
-    ;
+    ..add(DiagnosticsProperty('post', post));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadLoading);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadLoading&&(identical(other.post, post) || other.post == post));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,post);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ForumThreadState.loading()';
+  return 'ForumThreadState.loading(post: $post)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class $ForumThreadLoadingCopyWith<$Res> implements $ForumThreadStateCopyWith<$Res> {
+  factory $ForumThreadLoadingCopyWith(ForumThreadLoading value, $Res Function(ForumThreadLoading) _then) = _$ForumThreadLoadingCopyWithImpl;
+@override @useResult
+$Res call({
+ ForumPostEntity post
+});
 
 
+
+
+}
+/// @nodoc
+class _$ForumThreadLoadingCopyWithImpl<$Res>
+    implements $ForumThreadLoadingCopyWith<$Res> {
+  _$ForumThreadLoadingCopyWithImpl(this._self, this._then);
+
+  final ForumThreadLoading _self;
+  final $Res Function(ForumThreadLoading) _then;
+
+/// Create a copy of ForumThreadState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? post = null,}) {
+  return _then(ForumThreadLoading(
+null == post ? _self.post : post // ignore: cast_nullable_to_non_nullable
+as ForumPostEntity,
+  ));
+}
+
+
+}
 
 /// @nodoc
 
 
 class ForumThreadLoaded with DiagnosticableTreeMixin implements ForumThreadState {
-  const ForumThreadLoaded(final  List<ForumReplyEntity> replies, {this.sending = false}): _replies = replies;
+  const ForumThreadLoaded(this.post, final  List<ForumReplyEntity> replies, {this.sending = false}): _replies = replies;
   
 
+@override final  ForumPostEntity post;
  final  List<ForumReplyEntity> _replies;
  List<ForumReplyEntity> get replies {
   if (_replies is EqualUnmodifiableListView) return _replies;
@@ -597,7 +785,7 @@ class ForumThreadLoaded with DiagnosticableTreeMixin implements ForumThreadState
 
 /// Create a copy of ForumThreadState
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $ForumThreadLoadedCopyWith<ForumThreadLoaded> get copyWith => _$ForumThreadLoadedCopyWithImpl<ForumThreadLoaded>(this, _$identity);
 
@@ -606,21 +794,21 @@ $ForumThreadLoadedCopyWith<ForumThreadLoaded> get copyWith => _$ForumThreadLoade
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ForumThreadState.loaded'))
-    ..add(DiagnosticsProperty('replies', replies))..add(DiagnosticsProperty('sending', sending));
+    ..add(DiagnosticsProperty('post', post))..add(DiagnosticsProperty('replies', replies))..add(DiagnosticsProperty('sending', sending));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadLoaded&&const DeepCollectionEquality().equals(other._replies, _replies)&&(identical(other.sending, sending) || other.sending == sending));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadLoaded&&(identical(other.post, post) || other.post == post)&&const DeepCollectionEquality().equals(other._replies, _replies)&&(identical(other.sending, sending) || other.sending == sending));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_replies),sending);
+int get hashCode => Object.hash(runtimeType,post,const DeepCollectionEquality().hash(_replies),sending);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ForumThreadState.loaded(replies: $replies, sending: $sending)';
+  return 'ForumThreadState.loaded(post: $post, replies: $replies, sending: $sending)';
 }
 
 
@@ -629,9 +817,9 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 /// @nodoc
 abstract mixin class $ForumThreadLoadedCopyWith<$Res> implements $ForumThreadStateCopyWith<$Res> {
   factory $ForumThreadLoadedCopyWith(ForumThreadLoaded value, $Res Function(ForumThreadLoaded) _then) = _$ForumThreadLoadedCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- List<ForumReplyEntity> replies, bool sending
+ ForumPostEntity post, List<ForumReplyEntity> replies, bool sending
 });
 
 
@@ -648,9 +836,10 @@ class _$ForumThreadLoadedCopyWithImpl<$Res>
 
 /// Create a copy of ForumThreadState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? replies = null,Object? sending = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? post = null,Object? replies = null,Object? sending = null,}) {
   return _then(ForumThreadLoaded(
-null == replies ? _self._replies : replies // ignore: cast_nullable_to_non_nullable
+null == post ? _self.post : post // ignore: cast_nullable_to_non_nullable
+as ForumPostEntity,null == replies ? _self._replies : replies // ignore: cast_nullable_to_non_nullable
 as List<ForumReplyEntity>,sending: null == sending ? _self.sending : sending // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -663,14 +852,15 @@ as bool,
 
 
 class ForumThreadError with DiagnosticableTreeMixin implements ForumThreadState {
-  const ForumThreadError(this.error);
+  const ForumThreadError(this.post, this.error);
   
 
+@override final  ForumPostEntity post;
  final  String error;
 
 /// Create a copy of ForumThreadState
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $ForumThreadErrorCopyWith<ForumThreadError> get copyWith => _$ForumThreadErrorCopyWithImpl<ForumThreadError>(this, _$identity);
 
@@ -679,21 +869,21 @@ $ForumThreadErrorCopyWith<ForumThreadError> get copyWith => _$ForumThreadErrorCo
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ForumThreadState.errorMessage'))
-    ..add(DiagnosticsProperty('error', error));
+    ..add(DiagnosticsProperty('post', post))..add(DiagnosticsProperty('error', error));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadError&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumThreadError&&(identical(other.post, post) || other.post == post)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,error);
+int get hashCode => Object.hash(runtimeType,post,error);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ForumThreadState.errorMessage(error: $error)';
+  return 'ForumThreadState.errorMessage(post: $post, error: $error)';
 }
 
 
@@ -702,9 +892,9 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 /// @nodoc
 abstract mixin class $ForumThreadErrorCopyWith<$Res> implements $ForumThreadStateCopyWith<$Res> {
   factory $ForumThreadErrorCopyWith(ForumThreadError value, $Res Function(ForumThreadError) _then) = _$ForumThreadErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- String error
+ ForumPostEntity post, String error
 });
 
 
@@ -721,9 +911,10 @@ class _$ForumThreadErrorCopyWithImpl<$Res>
 
 /// Create a copy of ForumThreadState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? post = null,Object? error = null,}) {
   return _then(ForumThreadError(
-null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+null == post ? _self.post : post // ignore: cast_nullable_to_non_nullable
+as ForumPostEntity,null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

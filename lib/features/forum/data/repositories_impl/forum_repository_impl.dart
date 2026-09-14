@@ -18,8 +18,8 @@ class ForumRepositoryImpl implements ForumRepository {
   });
 
   @override
-  Future<List<ForumPostEntity>> getPosts({int limit = 50}) async {
-    final posts = await remoteDataSource.getPosts(limit: limit);
+  Future<List<ForumPostEntity>> getPosts({required String viewerUid, int limit = 50}) async {
+    final posts = await remoteDataSource.getPosts(viewerUid: viewerUid, limit: limit);
     if (posts.isEmpty) return posts;
 
     final profiles = await userProfileRepository
@@ -51,8 +51,8 @@ class ForumRepositoryImpl implements ForumRepository {
       );
 
   @override
-  Future<List<ForumReplyEntity>> getReplies(String postId) async {
-    final replies = await remoteDataSource.getReplies(postId);
+  Future<List<ForumReplyEntity>> getReplies(String postId, {required String viewerUid}) async {
+    final replies = await remoteDataSource.getReplies(postId, viewerUid: viewerUid);
     if (replies.isEmpty) return replies;
 
     final profiles = await userProfileRepository
@@ -86,6 +86,14 @@ class ForumRepositoryImpl implements ForumRepository {
         sharedRecipeId: sharedRecipeId,
         sharedRecipeTitle: sharedRecipeTitle,
       );
+
+  @override
+  Future<bool> togglePostLike(String postId, {required String viewerUid}) =>
+      remoteDataSource.togglePostLike(postId, viewerUid: viewerUid);
+
+  @override
+  Future<bool> toggleReplyLike(String postId, String replyId, {required String viewerUid}) =>
+      remoteDataSource.toggleReplyLike(postId, replyId, viewerUid: viewerUid);
 
   @override
   Future<void> deletePost(String postId) => remoteDataSource.deletePost(postId);

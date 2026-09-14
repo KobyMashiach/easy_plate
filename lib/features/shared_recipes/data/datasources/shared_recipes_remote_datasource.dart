@@ -98,6 +98,8 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
             .map((name) => DietaryPreference.values.where((d) => d.name == name).firstOrNull)
             .nonNulls
             .toList(),
+        allergens: Allergen.fromNames(data['allergens']),
+        mayContain: Allergen.fromNames(data['mayContain']),
         imageFileName: data['imageFileName'] as String?,
         imageStoragePath: data['imageStoragePath'] as String?,
         createdAt: createdAt,
@@ -122,6 +124,8 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
       ],
       'steps': recipe.steps,
       'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
+      'allergens': recipe.allergens.names,
+      'mayContain': recipe.mayContain.names,
       // The picture, as a Storage path plus the name to cache it under. The
       // feed used to show the author's avatar but never the dish.
       'imageFileName': recipe.imageFileName,
@@ -168,6 +172,8 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
       ],
       'steps': recipe.steps,
       'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
+      'allergens': recipe.allergens.names,
+      'mayContain': recipe.mayContain.names,
       'imageFileName': recipe.imageFileName,
       'imageStoragePath': recipe.imageStoragePath,
       'updatedAt': FieldValue.serverTimestamp(),

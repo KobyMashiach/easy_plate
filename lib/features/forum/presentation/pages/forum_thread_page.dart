@@ -10,6 +10,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../community/presentation/widgets/author_row.dart';
+import '../../../community/presentation/widgets/like_button.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../../domain/entities/forum_reply_entity.dart';
 import '../../../shared_recipes/domain/entities/shared_recipe_entity.dart';
@@ -25,7 +26,7 @@ class ForumThreadPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ForumThreadBloc.fromContext(context, post.id),
+      create: (context) => ForumThreadBloc.fromContext(context, post),
       child: ClayScaffold(
         appBar: ClayTopAppBar(
           title: t.community.forum,
@@ -40,6 +41,7 @@ class ForumThreadPage extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 ),
                 ForumThreadLoaded(
+                  post: final post,
                   replies: final replies,
                   sending: final sending,
                 ) =>
@@ -130,6 +132,8 @@ class _ThreadState extends State<_Thread> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = context.read<ForumThreadBloc>();
+
     return Column(
       children: [
         Expanded(
@@ -161,6 +165,13 @@ class _ThreadState extends State<_Thread> {
                       Text(widget.post.title, style: AppTextStyles.headlineMd),
                       const SizedBox(height: AppSpacing.xs),
                       Text(widget.post.body, style: AppTextStyles.bodyMd),
+                      const SizedBox(height: AppSpacing.sm),
+                      LikeButton(
+                        liked: widget.post.likedByMe,
+                        count: widget.post.likeCount,
+                        onPressed: () =>
+                            bloc.add(const ForumThreadEvent.togglePostLike()),
+                      ),
                     ],
                   ),
                 ),
@@ -204,6 +215,13 @@ class _ThreadState extends State<_Thread> {
                               ),
                             ),
                           ],
+                          const SizedBox(height: AppSpacing.xs),
+                          LikeButton(
+                            liked: reply.likedByMe,
+                            count: reply.likeCount,
+                            onPressed: () =>
+                                bloc.add(ForumThreadEvent.toggleReplyLike(reply.id)),
+                          ),
                         ],
                       ),
                     ),

@@ -16,7 +16,9 @@ import '../../../../core/monetization/quota_gates.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
+import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
@@ -44,6 +46,7 @@ String _channelLabel(RecipeIngestionChannel channel) => switch (channel) {
       RecipeIngestionChannel.webSearch => t.ingestion.webSearch,
       RecipeIngestionChannel.urlScrape => t.ingestion.urlScrape,
       RecipeIngestionChannel.socialVideo => t.ingestion.socialVideo,
+      RecipeIngestionChannel.aiRequest => t.ingestion.aiRequest,
       RecipeIngestionChannel.manual => t.ingestion.manual,
     };
 
@@ -52,6 +55,7 @@ IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
       RecipeIngestionChannel.webSearch => Icons.travel_explore_rounded,
       RecipeIngestionChannel.urlScrape => Icons.link_rounded,
       RecipeIngestionChannel.socialVideo => Icons.play_circle_rounded,
+      RecipeIngestionChannel.aiRequest => Icons.auto_awesome_rounded,
       RecipeIngestionChannel.manual => Icons.edit_note_rounded,
     };
 
@@ -76,13 +80,18 @@ class IngestionPage extends StatelessWidget {
             body: SafeArea(
               child: switch (state) {
                 IngestionIdle(channel: final channel) => _ChannelForm(channel: channel),
-                IngestionParsing() => Center(
+                IngestionParsing(channel: final channel) => Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const CircularProgressIndicator(),
                         const SizedBox(height: AppSpacing.gutter),
-                        Text(t.ingestion.parsing, style: AppTextStyles.bodyMd),
+                        Text(
+                          channel == RecipeIngestionChannel.aiRequest
+                              ? t.ingestion.generating
+                              : t.ingestion.parsing,
+                          style: AppTextStyles.bodyMd,
+                        ),
                       ],
                     ),
                   ),
@@ -154,6 +163,7 @@ class _ChannelFormState extends State<_ChannelForm> {
         RecipeIngestionChannel.webSearch => 'קובה סלק',
         RecipeIngestionChannel.urlScrape => 'https://...',
         RecipeIngestionChannel.socialVideo => 'https://www.tiktok.com/...',
+        RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestHint,
         // No text input on this channel; the editor is the form.
         RecipeIngestionChannel.manual => '',
       };
@@ -176,6 +186,8 @@ class _ChannelFormState extends State<_ChannelForm> {
         bloc.add(.parseUrl(value));
       case RecipeIngestionChannel.socialVideo:
         bloc.add(.parseSocialVideo(value));
+      case RecipeIngestionChannel.aiRequest:
+        bloc.add(.generateRecipe(value));
       case RecipeIngestionChannel.manual:
         break;
     }
@@ -187,7 +199,10 @@ class _ChannelFormState extends State<_ChannelForm> {
   Widget _parseButton() {
     if (!_isLinkExtraction(widget.channel) || MonetizationConfig.adFree) {
       return ClayButton(
-        label: t.ingestion.parse,
+        // A request is not analysed, it is written — the button says so.
+        label: widget.channel == RecipeIngestionChannel.aiRequest
+            ? t.ingestion.generate
+            : t.ingestion.parse,
         icon: Icons.auto_awesome_rounded,
         expanded: true,
         onPressed: _hasInput ? _submit : null,
@@ -315,7 +330,11 @@ class _ChannelFormState extends State<_ChannelForm> {
                 const SizedBox(height: AppSpacing.gutter),
                 TextField(
                   controller: _controller,
-                  maxLines: widget.channel == RecipeIngestionChannel.rawText ? 8 : 2,
+                  maxLines: switch (widget.channel) {
+                    RecipeIngestionChannel.rawText => 8,
+                    RecipeIngestionChannel.aiRequest => 4,
+                    _ => 2,
+                  },
                   style: AppTextStyles.bodyMd,
                   decoration: InputDecoration(hintText: _hint),
                 ),
@@ -408,6 +427,25 @@ class _ReviewRecipe extends StatelessWidget {
               ClayTag(label: t.ingestion.reviewTitle, icon: Icons.fact_check_rounded),
               const SizedBox(height: AppSpacing.sm),
               Text(recipe.title, style: AppTextStyles.headlineLgMobile),
+              // The tags the analysis settled on, up front so a wrong one is
+              // seen — and changed in the editor — before the recipe is saved.
+              if (recipe.dietaryTags.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.base,
+                  runSpacing: AppSpacing.base,
+                  children: recipe.dietaryTags.map((tag) {
+                    final (background, foreground) = dietaryColors(tag);
+                    return ClayTag(
+                      label: dietaryLabel(tag),
+                      icon: dietaryIcon(tag),
+                      background: background,
+                      foreground: foreground,
+                    );
+                  }).toList(),
+                ),
+              ],
+              AllergenNotice(allergens: recipe.allergens, mayContain: recipe.mayContain),
               const SizedBox(height: AppSpacing.md),
               ClayCard(
                 radius: AppRadius.md,
@@ -764,6 +802,8 @@ class _UnparsedView extends StatelessWidget {
         bloc.add(.parseSocialVideo(url));
       case RecipeIngestionChannel.urlScrape || RecipeIngestionChannel.webSearch when url != null:
         bloc.add(.parseUrl(url));
+      case RecipeIngestionChannel.aiRequest:
+        bloc.add(.generateRecipe(text));
       case _:
         bloc.add(.parseRawText(text));
     }

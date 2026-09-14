@@ -35,13 +35,15 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       collabId: fields[13] as String?,
       collabRole: fields[14] as String?,
       imageStoragePath: fields[15] as String?,
+      allergens: fields[16] == null ? [] : (fields[16] as List).cast<String>(),
+      mayContain: fields[17] == null ? [] : (fields[17] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeModel obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -73,7 +75,11 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       ..writeByte(14)
       ..write(obj.collabRole)
       ..writeByte(15)
-      ..write(obj.imageStoragePath);
+      ..write(obj.imageStoragePath)
+      ..writeByte(16)
+      ..write(obj.allergens)
+      ..writeByte(17)
+      ..write(obj.mayContain);
   }
 
   @override
@@ -114,6 +120,14 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   collabId: json['collabId'] as String?,
   collabRole: json['collabRole'] as String?,
   imageStoragePath: json['imageStoragePath'] as String?,
+  allergens:
+      (json['allergens'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
+  mayContain:
+      (json['mayContain'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -136,6 +150,8 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'collabId': instance.collabId,
       'collabRole': instance.collabRole,
       'imageStoragePath': instance.imageStoragePath,
+      'allergens': instance.allergens,
+      'mayContain': instance.mayContain,
     };
 
 const _$DietaryPreferenceEnumMap = {

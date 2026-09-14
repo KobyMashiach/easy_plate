@@ -21,10 +21,15 @@ import '../bloc/my_recipes_bloc.dart';
 ///   recipes can be added in one go, each tap toggling membership. Selection is
 ///   tracked here rather than read back from the caller's bloc, which isn't
 ///   visible from a modal route's context.
+///
+/// [where] narrows what is offered — sharing, for one, only lists the
+/// recipes this account wrote. Applied on top of the search and the dietary
+/// filters, which stay the user's.
 Future<RecipeEntity?> showRecipePickerSheet(
   BuildContext context, {
   Set<String> selectedIds = const {},
   void Function(RecipeEntity recipe, bool selected)? onToggle,
+  bool Function(RecipeEntity recipe)? where,
 }) {
   return showModalBottomSheet<RecipeEntity>(
     context: context,
@@ -45,7 +50,7 @@ Future<RecipeEntity?> showRecipePickerSheet(
                     dietaryFilters: final filters,
                   ) =>
                     _PickerBody(
-                      recipes: recipes,
+                      recipes: where == null ? recipes : recipes.where(where).toList(),
                       filters: filters,
                       initialSelectedIds: selectedIds,
                       onToggle: onToggle,

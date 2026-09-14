@@ -45,6 +45,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$profile$ar profile = _Translations$profile$ar._(_root);
 	@override late final _Translations$onboarding$ar onboarding = _Translations$onboarding$ar._(_root);
 	@override late final _Translations$dietary$ar dietary = _Translations$dietary$ar._(_root);
+	@override late final _Translations$allergens$ar allergens = _Translations$allergens$ar._(_root);
 	@override late final _Translations$weekday$ar weekday = _Translations$weekday$ar._(_root);
 	@override late final _Translations$settings$ar settings = _Translations$settings$ar._(_root);
 	@override late final _Translations$more$ar more = _Translations$more$ar._(_root);
@@ -213,6 +214,28 @@ class _Translations$dietary$ar extends Translations$dietary$he {
 	@override String get kosher => 'كوشير';
 	@override String get glutenFree => 'خالٍ من الغلوتين';
 	@override String get allergy => 'حساسية';
+}
+
+// Path: allergens
+class _Translations$allergens$ar extends Translations$allergens$he {
+	_Translations$allergens$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'مسببات الحساسية';
+	@override String get pick => 'تحديد مسببات الحساسية';
+	@override String get contains => 'يحتوي على';
+	@override String get mayContain => 'قد يحتوي على';
+	@override String get gluten => 'غلوتين';
+	@override String get milk => 'حليب';
+	@override String get eggs => 'بيض';
+	@override String get fish => 'سمك';
+	@override String get shellfish => 'مأكولات بحرية';
+	@override String get peanuts => 'فول سوداني';
+	@override String get treeNuts => 'مكسرات';
+	@override String get sesame => 'سمسم';
+	@override String get soy => 'صويا';
 }
 
 // Path: weekday
@@ -521,6 +544,8 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get webSearch => 'بحث في الإنترنت';
 	@override String get urlScrape => 'رابط موقع';
 	@override String get socialVideo => 'TikTok / Reels';
+	@override String get aiRequest => 'طلب وصفة';
+	@override String get aiRequestHint => 'صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه';
 	@override String get parse => 'تحليل الوصفة';
 	@override String get parsing => 'جارٍ تحليل الوصفة...';
 	@override String get parseError => 'لم نتمكّن من تحليل الوصفة';
@@ -547,6 +572,8 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get manual => 'كتابة يدوية';
 	@override String get manualHint => 'املؤوا الوصفة بأنفسكم بالتنسيق المنظّم — بدون AI وبدون انتظار.';
 	@override String get openBlankEditor => 'فتح محرّر فارغ';
+	@override String get generate => 'إنشاء وصفة';
+	@override String get generating => 'جارٍ كتابة الوصفة...';
 }
 
 // Path: mealPlanner
@@ -864,6 +891,19 @@ extension on TranslationsAr {
 			'dietary.kosher' => 'كوشير',
 			'dietary.glutenFree' => 'خالٍ من الغلوتين',
 			'dietary.allergy' => 'حساسية',
+			'allergens.title' => 'مسببات الحساسية',
+			'allergens.pick' => 'تحديد مسببات الحساسية',
+			'allergens.contains' => 'يحتوي على',
+			'allergens.mayContain' => 'قد يحتوي على',
+			'allergens.gluten' => 'غلوتين',
+			'allergens.milk' => 'حليب',
+			'allergens.eggs' => 'بيض',
+			'allergens.fish' => 'سمك',
+			'allergens.shellfish' => 'مأكولات بحرية',
+			'allergens.peanuts' => 'فول سوداني',
+			'allergens.treeNuts' => 'مكسرات',
+			'allergens.sesame' => 'سمسم',
+			'allergens.soy' => 'صويا',
 			'weekday.sunday' => 'الأحد',
 			'weekday.monday' => 'الاثنين',
 			'weekday.tuesday' => 'الثلاثاء',
@@ -1073,6 +1113,8 @@ extension on TranslationsAr {
 			'ingestion.webSearch' => 'بحث في الإنترنت',
 			'ingestion.urlScrape' => 'رابط موقع',
 			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.aiRequest' => 'طلب وصفة',
+			'ingestion.aiRequestHint' => 'صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه',
 			'ingestion.parse' => 'تحليل الوصفة',
 			'ingestion.parsing' => 'جارٍ تحليل الوصفة...',
 			'ingestion.parseError' => 'لم نتمكّن من تحليل الوصفة',
@@ -1099,6 +1141,8 @@ extension on TranslationsAr {
 			'ingestion.manual' => 'كتابة يدوية',
 			'ingestion.manualHint' => 'املؤوا الوصفة بأنفسكم بالتنسيق المنظّم — بدون AI وبدون انتظار.',
 			'ingestion.openBlankEditor' => 'فتح محرّر فارغ',
+			'ingestion.generate' => 'إنشاء وصفة',
+			'ingestion.generating' => 'جارٍ كتابة الوصفة...',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',

@@ -19,6 +19,11 @@ class ShareRecipeUseCase {
     required String authorName,
     String? authorPhotoUrl,
   }) async {
+    // The picker already hides these; the check here is what makes it a rule
+    // rather than a UI choice.
+    if (!recipe.isMine) {
+      throw StateError('Only recipes this account wrote can be shared');
+    }
     final ready = await recipes.readyForSharing(recipe);
     return repository.share(
       ready,

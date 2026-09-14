@@ -61,14 +61,15 @@ extension ForumEventPatterns on ForumEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _CreatePost value)?  createPost,TResult Function( _DeletePost value)?  deletePost,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _CreatePost value)?  createPost,TResult Function( _DeletePost value)?  deletePost,TResult Function( _ToggleLike value)?  toggleLike,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _Refresh() when refresh != null:
 return refresh(_that);case _CreatePost() when createPost != null:
 return createPost(_that);case _DeletePost() when deletePost != null:
-return deletePost(_that);case _:
+return deletePost(_that);case _ToggleLike() when toggleLike != null:
+return toggleLike(_that);case _:
   return orElse();
 
 }
@@ -86,14 +87,15 @@ return deletePost(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _CreatePost value)  createPost,required TResult Function( _DeletePost value)  deletePost,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _CreatePost value)  createPost,required TResult Function( _DeletePost value)  deletePost,required TResult Function( _ToggleLike value)  toggleLike,}){
 final _that = this;
 switch (_that) {
 case _Init():
 return init(_that);case _Refresh():
 return refresh(_that);case _CreatePost():
 return createPost(_that);case _DeletePost():
-return deletePost(_that);}
+return deletePost(_that);case _ToggleLike():
+return toggleLike(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -107,14 +109,15 @@ return deletePost(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _CreatePost value)?  createPost,TResult? Function( _DeletePost value)?  deletePost,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _CreatePost value)?  createPost,TResult? Function( _DeletePost value)?  deletePost,TResult? Function( _ToggleLike value)?  toggleLike,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _Refresh() when refresh != null:
 return refresh(_that);case _CreatePost() when createPost != null:
 return createPost(_that);case _DeletePost() when deletePost != null:
-return deletePost(_that);case _:
+return deletePost(_that);case _ToggleLike() when toggleLike != null:
+return toggleLike(_that);case _:
   return null;
 
 }
@@ -131,13 +134,14 @@ return deletePost(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String title,  String body)?  createPost,TResult Function( String postId)?  deletePost,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String title,  String body)?  createPost,TResult Function( String postId)?  deletePost,TResult Function( String postId)?  toggleLike,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
 return refresh(_that.done);case _CreatePost() when createPost != null:
 return createPost(_that.title,_that.body);case _DeletePost() when deletePost != null:
-return deletePost(_that.postId);case _:
+return deletePost(_that.postId);case _ToggleLike() when toggleLike != null:
+return toggleLike(_that.postId);case _:
   return orElse();
 
 }
@@ -155,13 +159,14 @@ return deletePost(_that.postId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String title,  String body)  createPost,required TResult Function( String postId)  deletePost,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String title,  String body)  createPost,required TResult Function( String postId)  deletePost,required TResult Function( String postId)  toggleLike,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Refresh():
 return refresh(_that.done);case _CreatePost():
 return createPost(_that.title,_that.body);case _DeletePost():
-return deletePost(_that.postId);}
+return deletePost(_that.postId);case _ToggleLike():
+return toggleLike(_that.postId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -175,13 +180,14 @@ return deletePost(_that.postId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String title,  String body)?  createPost,TResult? Function( String postId)?  deletePost,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String title,  String body)?  createPost,TResult? Function( String postId)?  deletePost,TResult? Function( String postId)?  toggleLike,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
 return refresh(_that.done);case _CreatePost() when createPost != null:
 return createPost(_that.title,_that.body);case _DeletePost() when deletePost != null:
-return deletePost(_that.postId);case _:
+return deletePost(_that.postId);case _ToggleLike() when toggleLike != null:
+return toggleLike(_that.postId);case _:
   return null;
 
 }
@@ -437,6 +443,78 @@ class __$DeletePostCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? postId = null,}) {
   return _then(_DeletePost(
+null == postId ? _self.postId : postId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ToggleLike with DiagnosticableTreeMixin implements ForumEvent {
+  const _ToggleLike(this.postId);
+  
+
+ final  String postId;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ToggleLikeCopyWith<_ToggleLike> get copyWith => __$ToggleLikeCopyWithImpl<_ToggleLike>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumEvent.toggleLike'))
+    ..add(DiagnosticsProperty('postId', postId));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ToggleLike&&(identical(other.postId, postId) || other.postId == postId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,postId);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumEvent.toggleLike(postId: $postId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ToggleLikeCopyWith<$Res> implements $ForumEventCopyWith<$Res> {
+  factory _$ToggleLikeCopyWith(_ToggleLike value, $Res Function(_ToggleLike) _then) = __$ToggleLikeCopyWithImpl;
+@useResult
+$Res call({
+ String postId
+});
+
+
+
+
+}
+/// @nodoc
+class __$ToggleLikeCopyWithImpl<$Res>
+    implements _$ToggleLikeCopyWith<$Res> {
+  __$ToggleLikeCopyWithImpl(this._self, this._then);
+
+  final _ToggleLike _self;
+  final $Res Function(_ToggleLike) _then;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? postId = null,}) {
+  return _then(_ToggleLike(
 null == postId ? _self.postId : postId // ignore: cast_nullable_to_non_nullable
 as String,
   ));

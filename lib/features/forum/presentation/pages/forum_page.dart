@@ -20,6 +20,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../community/presentation/widgets/author_row.dart';
+import '../../../community/presentation/widgets/like_button.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../bloc/forum_bloc.dart';
 
@@ -191,14 +192,22 @@ class _PostCard extends StatelessWidget {
     if (confirmed ?? false) bloc.add(ForumEvent.deletePost(post.id));
   }
 
+  /// Likes and replies given inside the thread come back to this row with
+  /// the reload on return; nothing here would otherwise notice them.
+  Future<void> _open(BuildContext context) async {
+    await context.pushNamed(Routing.forumThread, extra: post);
+    if (context.mounted) await refreshForum(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMine = AuthSessionService().user?.uid == post.authorUid;
+    final bloc = context.read<ForumBloc>();
 
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
-      onTap: () => context.pushNamed(Routing.forumThread, extra: post),
+      onTap: () => _open(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -227,6 +236,12 @@ class _PostCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
+              LikeButton(
+                liked: post.likedByMe,
+                count: post.likeCount,
+                onPressed: () => bloc.add(ForumEvent.toggleLike(post.id)),
+              ),
+              const SizedBox(width: AppSpacing.md),
               const Icon(Icons.mode_comment_outlined, size: 16, color: AppColors.tertiary),
               const SizedBox(width: AppSpacing.xs),
               Text(

@@ -114,6 +114,21 @@
     "glutenFree": "Gluten-free",
     "allergy": "Allergy"
   },
+  "allergens": {
+    "title": "Allergens",
+    "pick": "Mark allergens",
+    "contains": "Contains",
+    "mayContain": "May contain",
+    "gluten": "Gluten",
+    "milk": "Milk",
+    "eggs": "Eggs",
+    "fish": "Fish",
+    "shellfish": "Shellfish",
+    "peanuts": "Peanuts",
+    "treeNuts": "Tree nuts",
+    "sesame": "Sesame",
+    "soy": "Soy"
+  },
   "weekday": {
     "sunday": "Sunday",
     "monday": "Monday",
@@ -344,6 +359,8 @@
     "webSearch": "Search the web",
     "urlScrape": "Website link",
     "socialVideo": "TikTok / Reels",
+    "aiRequest": "Ask for a recipe",
+    "aiRequestHint": "Describe what you want to make. For example: semolina porridge for a one-year-old, with fruit",
     "parse": "Parse recipe",
     "parsing": "Parsing the recipe...",
     "parseError": "We couldn't parse the recipe",
@@ -369,7 +386,9 @@
     "untitledRecipe": "Untitled recipe",
     "manual": "Write by hand",
     "manualHint": "Fill the recipe in yourself, in the structured format — no AI, no waiting.",
-    "openBlankEditor": "Open a blank editor"
+    "openBlankEditor": "Open a blank editor",
+    "generate": "Create recipe",
+    "generating": "Writing your recipe..."
   },
   "mealPlanner": {
     "title": "Meal planning",

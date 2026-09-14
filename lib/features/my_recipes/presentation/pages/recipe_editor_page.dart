@@ -9,6 +9,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
@@ -87,6 +88,17 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   /// one.
   late final List<DietaryPreference> _topics = [...widget.recipe.dietaryTags];
 
+  /// The allergen detail under the `allergy` topic: what the recipe contains
+  /// and what it may carry traces of. Each list sits behind its own small
+  /// toggle so the card stays short for the recipes that need neither; a
+  /// recipe that arrives with them opens straight to them.
+  late final List<Allergen> _allergens = [...widget.recipe.allergens];
+  late final List<Allergen> _mayContain = [...widget.recipe.mayContain];
+  late bool _showAllergens = _allergens.isNotEmpty || _mayContain.isNotEmpty;
+  late bool _showMayContain = _mayContain.isNotEmpty;
+
+  bool get _hasAllergyTopic => _topics.contains(DietaryPreference.allergy);
+
   bool _busy = false;
   String? _titleError;
 
@@ -129,6 +141,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           .toList(),
       steps: _steps.map((c) => c.text.trim()).where((step) => step.isNotEmpty).toList(),
       dietaryTags: _topics,
+      // Allergens are a detail of the allergy topic: without it they are not
+      // saved, whatever the lists still hold.
+      allergens: _hasAllergyTopic ? _allergens : const [],
+      mayContain: _hasAllergyTopic ? _mayContain : const [],
       sourceChannel: base.sourceChannel,
       sourceUrl: base.sourceUrl,
       imageFileName: base.imageFileName,
@@ -358,16 +374,82 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     );
   }
 
+  void _toggleTopic(DietaryPreference topic) {
+    setState(() {
+      if (_topics.contains(topic)) {
+        _topics.remove(topic);
+        // Dropping the allergy topic is the statement "no allergens here";
+        // the detail under it goes with it rather than lingering unseen.
+        if (topic == DietaryPreference.allergy) {
+          _allergens.clear();
+          _mayContain.clear();
+          _showAllergens = false;
+          _showMayContain = false;
+        }
+      } else {
+        _topics.add(topic);
+      }
+    });
+  }
+
+  void _toggleIn(List<Allergen> list, Allergen allergen) {
+    setState(() => list.contains(allergen) ? list.remove(allergen) : list.add(allergen));
+  }
+
+  /// A small check plus label, tapped anywhere along the row. Opens the
+  /// allergen lists without the weight of a full card each.
+  Widget _toggleRow({required String label, required bool value, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          BouncyCheckbox(value: value, onChanged: (_) => onTap(), size: 20),
+          const SizedBox(width: AppSpacing.sm),
+          Text(label, style: AppTextStyles.labelMd),
+        ],
+      ),
+    );
+  }
+
   Widget _topicsCard() {
     return _card(
       title: t.editor.topics,
       children: [
-        DietaryChipSelector(
-          selected: _topics,
-          onToggle: (topic) => setState(() {
-            _topics.contains(topic) ? _topics.remove(topic) : _topics.add(topic);
-          }),
-        ),
+        DietaryChipSelector(selected: _topics, onToggle: _toggleTopic),
+        if (_hasAllergyTopic) ...[
+          const SizedBox(height: AppSpacing.md),
+          _toggleRow(
+            label: t.allergens.pick,
+            value: _showAllergens,
+            onTap: () => setState(() => _showAllergens = !_showAllergens),
+          ),
+          if (_showAllergens) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              t.allergens.contains,
+              style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+            ),
+            const SizedBox(height: AppSpacing.base),
+            AllergenChipSelector(
+              selected: _allergens,
+              onToggle: (a) => _toggleIn(_allergens, a),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _toggleRow(
+              label: t.allergens.mayContain,
+              value: _showMayContain,
+              onTap: () => setState(() => _showMayContain = !_showMayContain),
+            ),
+            if (_showMayContain) ...[
+              const SizedBox(height: AppSpacing.base),
+              AllergenChipSelector(
+                selected: _mayContain,
+                onToggle: (a) => _toggleIn(_mayContain, a),
+              ),
+            ],
+          ],
+        ],
       ],
     );
   }

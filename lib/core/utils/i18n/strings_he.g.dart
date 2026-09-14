@@ -49,6 +49,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$profile$he profile = Translations$profile$he.internal(_root);
 	late final Translations$onboarding$he onboarding = Translations$onboarding$he.internal(_root);
 	late final Translations$dietary$he dietary = Translations$dietary$he.internal(_root);
+	late final Translations$allergens$he allergens = Translations$allergens$he.internal(_root);
 	late final Translations$weekday$he weekday = Translations$weekday$he.internal(_root);
 	late final Translations$settings$he settings = Translations$settings$he.internal(_root);
 	late final Translations$more$he more = Translations$more$he.internal(_root);
@@ -425,6 +426,54 @@ class Translations$dietary$he {
 
 	/// he: 'אלרגיה'
 	String get allergy => 'אלרגיה';
+}
+
+// Path: allergens
+class Translations$allergens$he {
+	Translations$allergens$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'אלרגנים'
+	String get title => 'אלרגנים';
+
+	/// he: 'סימון אלרגנים'
+	String get pick => 'סימון אלרגנים';
+
+	/// he: 'מכיל'
+	String get contains => 'מכיל';
+
+	/// he: 'עלול להכיל'
+	String get mayContain => 'עלול להכיל';
+
+	/// he: 'גלוטן'
+	String get gluten => 'גלוטן';
+
+	/// he: 'חלב'
+	String get milk => 'חלב';
+
+	/// he: 'ביצים'
+	String get eggs => 'ביצים';
+
+	/// he: 'דגים'
+	String get fish => 'דגים';
+
+	/// he: 'פירות ים'
+	String get shellfish => 'פירות ים';
+
+	/// he: 'בוטנים'
+	String get peanuts => 'בוטנים';
+
+	/// he: 'אגוזים'
+	String get treeNuts => 'אגוזים';
+
+	/// he: 'שומשום'
+	String get sesame => 'שומשום';
+
+	/// he: 'סויה'
+	String get soy => 'סויה';
 }
 
 // Path: weekday
@@ -1152,6 +1201,12 @@ class Translations$ingestion$he {
 	/// he: 'TikTok / Reels'
 	String get socialVideo => 'TikTok / Reels';
 
+	/// he: 'בקשת מתכון'
+	String get aiRequest => 'בקשת מתכון';
+
+	/// he: 'תארו מה בא לכם להכין. לדוגמה: מתכון לדייסת סולת לתינוקת בת שנה עם פירות'
+	String get aiRequestHint => 'תארו מה בא לכם להכין. לדוגמה: מתכון לדייסת סולת לתינוקת בת שנה עם פירות';
+
 	/// he: 'נתח מתכון'
 	String get parse => 'נתח מתכון';
 
@@ -1229,6 +1284,12 @@ class Translations$ingestion$he {
 
 	/// he: 'פתיחת עורך ריק'
 	String get openBlankEditor => 'פתיחת עורך ריק';
+
+	/// he: 'יצירת מתכון'
+	String get generate => 'יצירת מתכון';
+
+	/// he: 'כותב לכם מתכון...'
+	String get generating => 'כותב לכם מתכון...';
 }
 
 // Path: mealPlanner
@@ -1806,6 +1867,19 @@ extension on Translations {
 			'dietary.kosher' => 'כשר',
 			'dietary.glutenFree' => 'ללא גלוטן',
 			'dietary.allergy' => 'אלרגיה',
+			'allergens.title' => 'אלרגנים',
+			'allergens.pick' => 'סימון אלרגנים',
+			'allergens.contains' => 'מכיל',
+			'allergens.mayContain' => 'עלול להכיל',
+			'allergens.gluten' => 'גלוטן',
+			'allergens.milk' => 'חלב',
+			'allergens.eggs' => 'ביצים',
+			'allergens.fish' => 'דגים',
+			'allergens.shellfish' => 'פירות ים',
+			'allergens.peanuts' => 'בוטנים',
+			'allergens.treeNuts' => 'אגוזים',
+			'allergens.sesame' => 'שומשום',
+			'allergens.soy' => 'סויה',
 			'weekday.sunday' => 'ראשון',
 			'weekday.monday' => 'שני',
 			'weekday.tuesday' => 'שלישי',
@@ -2015,6 +2089,8 @@ extension on Translations {
 			'ingestion.webSearch' => 'חיפוש באינטרנט',
 			'ingestion.urlScrape' => 'קישור לאתר',
 			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.aiRequest' => 'בקשת מתכון',
+			'ingestion.aiRequestHint' => 'תארו מה בא לכם להכין. לדוגמה: מתכון לדייסת סולת לתינוקת בת שנה עם פירות',
 			'ingestion.parse' => 'נתח מתכון',
 			'ingestion.parsing' => 'מנתח את המתכון...',
 			'ingestion.parseError' => 'לא הצלחנו לנתח את המתכון',
@@ -2041,6 +2117,8 @@ extension on Translations {
 			'ingestion.manual' => 'כתיבה ידנית',
 			'ingestion.manualHint' => 'מילוי המתכון בעצמכם בפורמט המובנה — ללא ניתוח AI וללא המתנה.',
 			'ingestion.openBlankEditor' => 'פתיחת עורך ריק',
+			'ingestion.generate' => 'יצירת מתכון',
+			'ingestion.generating' => 'כותב לכם מתכון...',
 			'mealPlanner.title' => 'תכנון ארוחות',
 			'mealPlanner.newPlan' => 'תפריט חדש',
 			'mealPlanner.planName' => 'שם התפריט',

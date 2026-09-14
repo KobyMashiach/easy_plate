@@ -12,6 +12,12 @@ class ForumReplyEntity {
   final String? sharedRecipeId;
   final String? sharedRecipeTitle;
 
+  final int likeCount;
+
+  /// Whether the signed-in user has liked this reply. Resolved per viewer, so
+  /// it is not part of the stored document.
+  final bool likedByMe;
+
   const ForumReplyEntity({
     required this.id,
     required this.body,
@@ -21,6 +27,8 @@ class ForumReplyEntity {
     this.authorPhotoUrl,
     this.sharedRecipeId,
     this.sharedRecipeTitle,
+    this.likeCount = 0,
+    this.likedByMe = false,
   });
 
   bool get hasRecipe => sharedRecipeId != null;
@@ -38,6 +46,24 @@ class ForumReplyEntity {
       createdAt: createdAt,
       sharedRecipeId: sharedRecipeId,
       sharedRecipeTitle: sharedRecipeTitle,
+      likeCount: likeCount,
+      likedByMe: likedByMe,
+    );
+  }
+
+  /// The same reply with this viewer's like flipped, counter included.
+  ForumReplyEntity withLikeToggled() {
+    return ForumReplyEntity(
+      id: id,
+      body: body,
+      authorUid: authorUid,
+      authorName: authorName,
+      authorPhotoUrl: authorPhotoUrl,
+      createdAt: createdAt,
+      sharedRecipeId: sharedRecipeId,
+      sharedRecipeTitle: sharedRecipeTitle,
+      likeCount: likeCount + (likedByMe ? -1 : 1),
+      likedByMe: !likedByMe,
     );
   }
 }

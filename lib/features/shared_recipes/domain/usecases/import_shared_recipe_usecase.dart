@@ -30,6 +30,8 @@ class ImportSharedRecipeUseCase {
       ingredients: source.ingredients,
       steps: source.steps,
       dietaryTags: source.dietaryTags,
+      allergens: source.allergens,
+      mayContain: source.mayContain,
       // Kept as the author's Storage path rather than copied into this
       // account's own folder: the feed post is a snapshot, and re-uploading
       // the same bytes per saver would pay for the picture again each time.
