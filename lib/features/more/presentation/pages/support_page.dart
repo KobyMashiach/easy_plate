@@ -7,6 +7,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// Two ways to reach a human. Both hand off to another app, so the only
 /// failure worth handling is "that app isn't installed".
@@ -26,12 +27,9 @@ class SupportPage extends StatelessWidget {
   }
 
   Future<void> _open(BuildContext context, Uri uri) async {
-    final messenger = ScaffoldMessenger.of(context);
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(t.more.supportUnavailable, style: AppTextStyles.bodyMd)),
-      );
+      if (context.mounted) AppDialog.error(message: t.more.supportUnavailable).show(context);
     }
   }
 

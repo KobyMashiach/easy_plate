@@ -16,6 +16,7 @@ import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repositor
 import '../../../recipe_ingestion/domain/usecases/refine_recipe_usecase.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// Structured editor for a recipe — the same shape the parser produces, so a
 /// freshly parsed recipe and a saved one are corrected through one screen.
@@ -193,7 +194,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       // A missing key is a setup problem, not a failed correction — saying so
       // beats a generic failure the user cannot act on.
       final unconfigured = e is AppException && e.type == AppErrorType.unauthorized;
-      if (mounted) _toast(unconfigured ? t.ingestion.notConfigured : t.editor.refineError);
+      if (mounted) _warn(unconfigured ? t.ingestion.notConfigured : t.editor.refineError);
       return null;
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -208,7 +209,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
 
     setState(() => _applyRefined(refined));
     // A correction that changed nothing must not claim it fixed something.
-    _toast(_sameText(before, refined) ? t.editor.noChanges : t.editor.spellingFixed);
+    _sameText(before, refined) ? _hint(t.editor.noChanges) : _toast(t.editor.spellingFixed);
   }
 
   bool _sameText(RecipeEntity a, RecipeEntity b) {
@@ -249,18 +250,21 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       if (!mounted) return;
       if (refined != null) {
         result = refined;
-        if (_timesChanged) _toast(t.editor.timesSynced);
+        if (_timesChanged) _hint(t.editor.timesSynced);
       }
     }
 
     if (mounted) Navigator.of(context).pop(result);
   }
 
-  void _toast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-    );
-  }
+  /// A word in passing, gone on its own.
+  void _toast(String message) => AppDialog.success(message: message).notify(context);
+  void _hint(String message) => AppDialog.info(message: message).notify(context);
+
+  /// A failed correction is not a failed save: the edits are kept and saved
+  /// as typed, so this floats by rather than standing in front of the pop
+  /// that follows it.
+  void _warn(String message) => AppDialog.warning(message: message).notify(context);
 
   @override
   Widget build(BuildContext context) {

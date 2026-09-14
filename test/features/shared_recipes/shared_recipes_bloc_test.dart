@@ -72,6 +72,11 @@ class _FakeRecipesRepository implements RecipesRepository {
   @override
   Future<RecipeEntity> readyForSharing(RecipeEntity recipe) async => recipe;
 
+  final changes = StreamController<List<RecipeEntity>>.broadcast();
+
+  @override
+  Stream<List<RecipeEntity>> watchRecipes() => changes.stream;
+
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -284,5 +289,29 @@ void main() {
 
     expect(shared.unshared, ['s1']);
     expect((bloc.state as SharedRecipesLoaded).recipes.map((r) => r.id), ['s2']);
+  });
+
+  group('saved mark', () {
+    test('follows the local recipes: a removal on the recipes tab unmarks the row', () async {
+      shared.feed = [buildShared(id: 's1')];
+      recipes.saved.add(RecipeEntity(
+        id: 'local',
+        title: 'שקשוקה',
+        ingredients: const [],
+        steps: const [],
+        savedFromSharedId: 's1',
+        createdAt: DateTime(2026, 1, 1),
+      ));
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+      expect((bloc.state as SharedRecipesLoaded).savedIds, {'s1'});
+
+      // The box reports the recipe gone; nothing here was reloaded.
+      recipes.changes.add(const []);
+      await Future<void>.delayed(Duration.zero);
+
+      expect((bloc.state as SharedRecipesLoaded).savedIds, isEmpty);
+      await bloc.close();
+    });
   });
 }

@@ -39,7 +39,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	TranslationsRu $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsRu(meta: meta ?? this.$meta);
 
 	// Translations
-	@override String get appName => 'EasyPlate';
+	@override String get appName => 'Easy Plate';
 	@override late final _Translations$common$ru common = _Translations$common$ru._(_root);
 	@override late final _Translations$auth$ru auth = _Translations$auth$ru._(_root);
 	@override late final _Translations$profile$ru profile = _Translations$profile$ru._(_root);
@@ -76,6 +76,7 @@ class _Translations$common$ru extends Translations$common$he {
 	// Translations
 	@override String get save => 'Сохранить';
 	@override String get cancel => 'Отмена';
+	@override String get ok => 'ОК';
 	@override String get next => 'Далее';
 	@override String get back => 'Назад';
 	@override String get done => 'Готово';
@@ -425,6 +426,9 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'Разделить на подготовку и готовку';
 	@override String get alreadySaved => 'Этот рецепт у вас уже есть';
+	@override String get savedTag => 'Сохранено';
+	@override String get removeSaved => 'Убрать из сохранённых';
+	@override String get removeSavedConfirm => 'Рецепт будет убран из сохранённых. Его можно снова сохранить из сообщества.';
 }
 
 // Path: sharing
@@ -786,9 +790,10 @@ class _Translations$premium$ru extends Translations$premium$he {
 extension on TranslationsRu {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'appName' => 'EasyPlate',
+			'appName' => 'Easy Plate',
 			'common.save' => 'Сохранить',
 			'common.cancel' => 'Отмена',
+			'common.ok' => 'ОК',
 			'common.next' => 'Далее',
 			'common.back' => 'Назад',
 			'common.done' => 'Готово',
@@ -1030,6 +1035,9 @@ extension on TranslationsRu {
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Разделить на подготовку и готовку',
 			'community.alreadySaved' => 'Этот рецепт у вас уже есть',
+			'community.savedTag' => 'Сохранено',
+			'community.removeSaved' => 'Убрать из сохранённых',
+			'community.removeSavedConfirm' => 'Рецепт будет убран из сохранённых. Его можно снова сохранить из сообщества.',
 			'sharing.title' => 'Поделиться рецептом',
 			'sharing.contactLabel' => 'Почта или телефон человека',
 			'sharing.contactHint' => 'name@example.com или 05…',

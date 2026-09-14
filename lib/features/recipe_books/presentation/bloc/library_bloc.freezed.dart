@@ -128,11 +128,11 @@ return renameBook(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String title)?  createBook,TResult Function( String id)?  deleteBook,TResult Function( String id,  String? fileName)?  setCoverImage,TResult Function( String id,  String title)?  renameBook,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String title,  String? id)?  createBook,TResult Function( String id)?  deleteBook,TResult Function( String id,  String? fileName)?  setCoverImage,TResult Function( String id,  String title)?  renameBook,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _CreateBook() when createBook != null:
-return createBook(_that.title);case _DeleteBook() when deleteBook != null:
+return createBook(_that.title,_that.id);case _DeleteBook() when deleteBook != null:
 return deleteBook(_that.id);case _SetCoverImage() when setCoverImage != null:
 return setCoverImage(_that.id,_that.fileName);case _RenameBook() when renameBook != null:
 return renameBook(_that.id,_that.title);case _:
@@ -153,11 +153,11 @@ return renameBook(_that.id,_that.title);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String title)  createBook,required TResult Function( String id)  deleteBook,required TResult Function( String id,  String? fileName)  setCoverImage,required TResult Function( String id,  String title)  renameBook,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String title,  String? id)  createBook,required TResult Function( String id)  deleteBook,required TResult Function( String id,  String? fileName)  setCoverImage,required TResult Function( String id,  String title)  renameBook,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _CreateBook():
-return createBook(_that.title);case _DeleteBook():
+return createBook(_that.title,_that.id);case _DeleteBook():
 return deleteBook(_that.id);case _SetCoverImage():
 return setCoverImage(_that.id,_that.fileName);case _RenameBook():
 return renameBook(_that.id,_that.title);}
@@ -174,11 +174,11 @@ return renameBook(_that.id,_that.title);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String title)?  createBook,TResult? Function( String id)?  deleteBook,TResult? Function( String id,  String? fileName)?  setCoverImage,TResult? Function( String id,  String title)?  renameBook,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String title,  String? id)?  createBook,TResult? Function( String id)?  deleteBook,TResult? Function( String id,  String? fileName)?  setCoverImage,TResult? Function( String id,  String title)?  renameBook,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _CreateBook() when createBook != null:
-return createBook(_that.title);case _DeleteBook() when deleteBook != null:
+return createBook(_that.title,_that.id);case _DeleteBook() when deleteBook != null:
 return deleteBook(_that.id);case _SetCoverImage() when setCoverImage != null:
 return setCoverImage(_that.id,_that.fileName);case _RenameBook() when renameBook != null:
 return renameBook(_that.id,_that.title);case _:
@@ -225,10 +225,11 @@ String toString() {
 
 
 class _CreateBook implements LibraryEvent {
-  const _CreateBook(this.title);
+  const _CreateBook(this.title, {this.id});
   
 
  final  String title;
+ final  String? id;
 
 /// Create a copy of LibraryEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -240,16 +241,16 @@ _$CreateBookCopyWith<_CreateBook> get copyWith => __$CreateBookCopyWithImpl<_Cre
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateBook&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateBook&&(identical(other.title, title) || other.title == title)&&(identical(other.id, id) || other.id == id));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,title);
+int get hashCode => Object.hash(runtimeType,title,id);
 
 @override
 String toString() {
-  return 'LibraryEvent.createBook(title: $title)';
+  return 'LibraryEvent.createBook(title: $title, id: $id)';
 }
 
 
@@ -260,7 +261,7 @@ abstract mixin class _$CreateBookCopyWith<$Res> implements $LibraryEventCopyWith
   factory _$CreateBookCopyWith(_CreateBook value, $Res Function(_CreateBook) _then) = __$CreateBookCopyWithImpl;
 @useResult
 $Res call({
- String title
+ String title, String? id
 });
 
 
@@ -277,10 +278,11 @@ class __$CreateBookCopyWithImpl<$Res>
 
 /// Create a copy of LibraryEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? title = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? title = null,Object? id = freezed,}) {
   return _then(_CreateBook(
 null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,
+as String,id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

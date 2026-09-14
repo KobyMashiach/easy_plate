@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/account_avatar_button.dart';
 import '../../../../core/widgets/notification_bell_button.dart';
@@ -40,26 +38,13 @@ class _CommunityPageState extends State<CommunityPage> {
                 AppSpacing.marginMobile,
                 0,
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _segment(
-                      label: t.community.sharedRecipes,
-                      icon: Icons.public_rounded,
-                      selected: _index == 0,
-                      onTap: () => setState(() => _index = 0),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: _segment(
-                      label: t.community.forum,
-                      icon: Icons.forum_rounded,
-                      selected: _index == 1,
-                      onTap: () => setState(() => _index = 1),
-                    ),
-                  ),
+              child: ClaySegmentedControl(
+                segments: [
+                  ClaySegment(label: t.community.sharedRecipes, icon: Icons.public_rounded),
+                  ClaySegment(label: t.community.forum, icon: Icons.forum_rounded),
                 ],
+                selectedIndex: _index,
+                onSelected: (index) => setState(() => _index = index),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -69,48 +54,6 @@ class _CommunityPageState extends State<CommunityPage> {
               child: IndexedStack(
                 index: _index,
                 children: const [SharedRecipesPage(), ForumPage()],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _segment({
-    required String label,
-    required IconData icon,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.gutter,
-        ),
-        decoration: ShapeDecoration(
-          color: selected ? AppColors.primaryFixed : AppColors.surfaceContainerLow,
-          shape: StadiumBorder(
-            side: BorderSide(color: selected ? AppColors.primary : AppColors.outlineVariant),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 16, color: selected ? AppColors.primary : AppColors.tertiary),
-            const SizedBox(width: AppSpacing.xs),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.labelMd.copyWith(
-                  color: selected ? AppColors.primary : AppColors.tertiary,
-                ),
               ),
             ),
           ],

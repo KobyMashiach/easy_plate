@@ -57,6 +57,26 @@ abstract class AppShadows {
     ),
   ];
 
+  /// `0px 4px 12px rgba(123, 97, 255, 0.10)` — the light lift under small
+  /// controls: bar buttons, the segmented control's pill, floating notices.
+  static final control = [
+    BoxShadow(
+      color: AppColors.lavenderGlow.withValues(alpha: 0.10),
+      blurRadius: 12,
+      offset: const Offset(0, 4),
+    ),
+  ];
+
+  /// `0px 16px 40px rgba(123, 97, 255, 0.18)` — a dialog floating over the
+  /// dimmed page.
+  static final dialog = [
+    BoxShadow(
+      color: AppColors.lavenderGlow.withValues(alpha: 0.18),
+      blurRadius: 40,
+      offset: const Offset(0, 16),
+    ),
+  ];
+
   /// The top-left highlight that fakes the beveled "inflated" clay edge.
   static const bevelHighlight = Color(0x99FFFFFF);
 

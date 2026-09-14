@@ -18,7 +18,9 @@ part 'library_bloc.freezed.dart';
 @freezed
 sealed class LibraryEvent with _$LibraryEvent {
   const factory LibraryEvent.init() = _Init;
-  const factory LibraryEvent.createBook(String title) = _CreateBook;
+  /// [id] lets the caller know the new book's id up front — the shelf opens
+  /// it as soon as it exists — instead of guessing which one it is.
+  const factory LibraryEvent.createBook(String title, {String? id}) = _CreateBook;
   const factory LibraryEvent.deleteBook(String id) = _DeleteBook;
   const factory LibraryEvent.setCoverImage(String id, String? fileName) = _SetCoverImage;
   const factory LibraryEvent.renameBook(String id, String title) = _RenameBook;
@@ -74,7 +76,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     return _emitBooks(emit, () {
       return saveBookUseCase(
         RecipeBookEntity(
-          id: _uuid.v4(),
+          id: event.id ?? _uuid.v4(),
           title: event.title,
           recipeRefs: const [],
           createdAt: DateTime.now(),

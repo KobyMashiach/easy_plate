@@ -23,7 +23,17 @@ class RecipeCard extends StatelessWidget {
   /// owned. Members of someone else's recipe do not get to invite others.
   final VoidCallback? onShare;
 
-  const RecipeCard({super.key, required this.recipe, required this.onTap, this.onShare});
+  /// Present for a copy saved from the community: takes it out of My Recipes.
+  /// The feed only ever adds; this is the one place a saved recipe leaves.
+  final VoidCallback? onRemove;
+
+  const RecipeCard({
+    super.key,
+    required this.recipe,
+    required this.onTap,
+    this.onShare,
+    this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +125,13 @@ class RecipeCard extends StatelessWidget {
               ],
             ),
           ),
+          if (onRemove case final remove?)
+            IconButton(
+              tooltip: t.community.removeSaved,
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.bookmark_remove_rounded, size: 20, color: AppColors.error),
+              onPressed: remove,
+            ),
         ],
       ),
     );

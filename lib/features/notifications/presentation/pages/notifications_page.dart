@@ -21,6 +21,7 @@ import '../../../recipe_sharing/domain/usecases/respond_to_share_invite_usecase.
 import '../../domain/entities/app_notification_entity.dart';
 import '../../domain/repositories/notifications_repository.dart';
 import '../../domain/usecases/mark_notification_read_usecase.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// The inbox. The list itself is live through [NotificationsService]; the
 /// pending invites are fetched here so a share can be answered in place.
@@ -85,15 +86,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
       await _loadPending();
     } catch (e) {
       debugPrint('Invite response failed: $e');
-      if (mounted) _toast(t.sharing.acceptFailed);
+      if (mounted) _fail(t.sharing.acceptFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  void _toast(String message) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-      );
+  /// A word in passing, gone on its own.
+  void _toast(String message) => AppDialog.success(message: message).notify(context);
+
+  /// Something to read before going on.
+  void _fail(String message) => AppDialog.error(message: message).show(context);
 
   @override
   Widget build(BuildContext context) {

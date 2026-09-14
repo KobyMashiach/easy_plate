@@ -119,11 +119,11 @@ class _SettingsBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(
+            padding: EdgeInsets.fromLTRB(
               AppSpacing.marginMobile,
               0,
               AppSpacing.marginMobile,
-              ClayNavDock.reservedHeight,
+              ClayNavDock.bottomPadding(context),
             ),
             itemCount: sections.length,
             separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),

@@ -41,8 +41,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	// Translations
 
-	/// he: 'איזי-פלייט'
-	String get appName => 'איזי-פלייט';
+	/// he: 'Easy Plate'
+	String get appName => 'Easy Plate';
 
 	late final Translations$common$he common = Translations$common$he.internal(_root);
 	late final Translations$auth$he auth = Translations$auth$he.internal(_root);
@@ -84,6 +84,9 @@ class Translations$common$he {
 
 	/// he: 'ביטול'
 	String get cancel => 'ביטול';
+
+	/// he: 'הבנתי'
+	String get ok => 'הבנתי';
 
 	/// he: 'הבא'
 	String get next => 'הבא';
@@ -915,6 +918,15 @@ class Translations$community$he {
 
 	/// he: 'המתכון כבר שמור אצלכם'
 	String get alreadySaved => 'המתכון כבר שמור אצלכם';
+
+	/// he: 'שמור אצלכם'
+	String get savedTag => 'שמור אצלכם';
+
+	/// he: 'הסרה מהמתכונים ששמרתי'
+	String get removeSaved => 'הסרה מהמתכונים ששמרתי';
+
+	/// he: 'המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.'
+	String get removeSavedConfirm => 'המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.';
 }
 
 // Path: sharing
@@ -1762,9 +1774,10 @@ class Translations$premium$he {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'appName' => 'איזי-פלייט',
+			'appName' => 'Easy Plate',
 			'common.save' => 'שמירה',
 			'common.cancel' => 'ביטול',
+			'common.ok' => 'הבנתי',
 			'common.next' => 'הבא',
 			'common.back' => 'חזרה',
 			'common.done' => 'סיום',
@@ -2006,6 +2019,9 @@ extension on Translations {
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'פיצול להכנה ובישול',
 			'community.alreadySaved' => 'המתכון כבר שמור אצלכם',
+			'community.savedTag' => 'שמור אצלכם',
+			'community.removeSaved' => 'הסרה מהמתכונים ששמרתי',
+			'community.removeSavedConfirm' => 'המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.',
 			'sharing.title' => 'שיתוף מתכון',
 			'sharing.contactLabel' => 'אימייל או טלפון של השותף/ה',
 			'sharing.contactHint' => 'name@example.com או 05…',

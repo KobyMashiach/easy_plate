@@ -1,8 +1,9 @@
 {
-  "appName": "EasyPlate",
+  "appName": "Easy Plate",
   "common": {
     "save": "Save",
     "cancel": "Cancel",
+    "ok": "OK",
     "next": "Next",
     "back": "Back",
     "done": "Done",
@@ -267,7 +268,10 @@
     "likesPlus": "$count+",
     "durationPlus": "$duration+",
     "splitTimes": "Split into prep and cook",
-    "alreadySaved": "You already have this recipe"
+    "alreadySaved": "You already have this recipe",
+    "savedTag": "Saved",
+    "removeSaved": "Remove from saved recipes",
+    "removeSavedConfirm": "The recipe will be removed from your saved recipes. You can save it again from the community."
   },
   "sharing": {
     "title": "Share recipe",

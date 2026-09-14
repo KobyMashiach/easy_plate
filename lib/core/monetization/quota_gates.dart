@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../ads/reward_gate_sheet.dart';
-import '../constants/app_text_styles.dart';
 import '../services/auth_session_service.dart';
 import '../utils/i18n/strings.g.dart';
 import 'daily_quota_policy.dart';
 import 'daily_usage_service.dart';
 import 'monetization_config.dart';
+import '../widgets/app_dialog.dart';
 
 /// The two places the daily quotas are enforced, as one call each.
 ///
@@ -93,9 +95,8 @@ abstract class QuotaGates {
     }
   }
 
+  /// A spent quota is a stop, not a passing word: it stays up until read.
   static void _notify(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-    );
+    unawaited(AppDialog.warning(message: message).show(context));
   }
 }

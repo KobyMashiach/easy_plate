@@ -34,6 +34,7 @@ import '../widgets/shared_feed_filter_sheet.dart';
 import '../widgets/shared_feed_query.dart';
 import '../widgets/shared_quota_banner.dart';
 import '../bloc/shared_recipes_bloc.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 class SharedRecipesPage extends StatelessWidget {
   const SharedRecipesPage({super.key});
@@ -46,11 +47,7 @@ class SharedRecipesPage extends StatelessWidget {
         builder: (context) => BlocConsumer<SharedRecipesBloc, SharedRecipesState>(
           listener: (context, state) {
             if (state is SharedRecipesLoaded && state.imported) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(t.community.savedToMyRecipes, style: AppTextStyles.bodyMd),
-                ),
-              );
+              AppDialog.success(message: t.community.savedToMyRecipes).notify(context);
             }
           },
           builder: (context, state) {
@@ -69,7 +66,7 @@ class SharedRecipesPage extends StatelessWidget {
                 },
                 PositionedDirectional(
                   end: AppSpacing.marginMobile,
-                  bottom: ClayNavDock.reservedHeight,
+                  bottom: ClayNavDock.bottomPadding(context),
                   child: FloatingActionButton(
                     heroTag: 'share-recipe',
                     backgroundColor: AppColors.primary,
@@ -242,16 +239,19 @@ class _FeedState extends State<_Feed> {
     return ListView.separated(
       // Always scrollable so a list too short to overflow can still be pulled.
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         AppSpacing.marginMobile,
         0,
         AppSpacing.marginMobile,
-        ClayNavDock.reservedHeight,
+        ClayNavDock.bottomPadding(context, withFab: true),
       ),
       itemCount: layout.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, position) => switch (layout.slotAt(position)) {
-        ContentSlot(index: final index) => _SharedCard(shared: visible[index]),
+        ContentSlot(index: final index) => _SharedCard(
+            shared: visible[index],
+            saved: widget.savedIds.contains(visible[index].id),
+          ),
         AdSlot(adIndex: final adIndex) => switch (_ads.slot(adIndex)) {
             final slot? => NativeAdCard(slot: slot),
             null => const SizedBox.shrink(),
@@ -370,14 +370,17 @@ class _FeedState extends State<_Feed> {
 class _SharedCard extends StatelessWidget {
   final SharedRecipeEntity shared;
 
-  const _SharedCard({required this.shared});
+  /// Already in My Recipes. Shown as a mark rather than a second save button;
+  /// removing it happens on the recipes tab, not here.
+  final bool saved;
+
+  const _SharedCard({required this.shared, required this.saved});
 
   /// Edits the *published* copy. Someone else's recipe is not editable here at
   /// all — importing it makes a local copy, and that copy is edited from My
   /// Recipes like any other.
   Future<void> _edit(BuildContext context) async {
     final bloc = context.read<SharedRecipesBloc>();
-    final messenger = ScaffoldMessenger.of(context);
     final edited = await context.pushNamed<RecipeEntity>(
       Routing.recipeEditor,
       extra: shared.recipe,
@@ -385,33 +388,19 @@ class _SharedCard extends StatelessWidget {
     if (edited == null) return;
 
     bloc.add(SharedRecipesEvent.updateShared(shared.id, edited));
-    messenger.showSnackBar(
-      SnackBar(content: Text(t.community.sharedUpdated, style: AppTextStyles.bodyMd)),
-    );
+    if (context.mounted) AppDialog.success(message: t.community.sharedUpdated).notify(context);
   }
 
   Future<void> _confirmUnshare(BuildContext context) async {
     final bloc = context.read<SharedRecipesBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.community.unshare, style: AppTextStyles.headlineMd),
-        content: Text(t.community.unshareConfirm, style: AppTextStyles.bodyMd),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(t.common.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              t.common.delete,
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await AppDialog.warning(
+      title: t.community.unshare,
+      message: t.community.unshareConfirm,
+      icon: Icons.delete_outline_rounded,
+      confirmLabel: t.common.delete,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
     if (confirmed ?? false) bloc.add(SharedRecipesEvent.unshare(shared.id));
   }
 
@@ -517,11 +506,19 @@ class _SharedCard extends StatelessWidget {
                 onPressed: () => bloc.add(SharedRecipesEvent.toggleLike(shared.id)),
               ),
               const Spacer(),
-              ClayButton(
-                label: t.community.saveToMyRecipes,
-                icon: Icons.bookmark_add_rounded,
-                onPressed: () => bloc.add(SharedRecipesEvent.importToMyRecipes(shared)),
-              ),
+              if (saved)
+                ClayTag(
+                  label: t.community.savedTag,
+                  icon: Icons.bookmark_added_rounded,
+                  background: AppColors.secondaryContainer,
+                  foreground: AppColors.onSecondaryContainer,
+                )
+              else
+                ClayButton(
+                  label: t.community.saveToMyRecipes,
+                  icon: Icons.bookmark_add_rounded,
+                  onPressed: () => bloc.add(SharedRecipesEvent.importToMyRecipes(shared)),
+                ),
             ],
           ),
         ],

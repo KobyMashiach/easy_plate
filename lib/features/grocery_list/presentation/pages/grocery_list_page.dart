@@ -30,18 +30,7 @@ class GroceryListPage extends StatelessWidget {
           appBar: ClayTopAppBar(
             title: t.appName,
             leading: const AccountAvatarButton(),
-            actions: [
-              const NotificationBellButton(),
-              IconButton(
-                icon: const Icon(Icons.autorenew_rounded, color: AppColors.primary),
-                onPressed: () =>
-                    context.read<GroceryListBloc>().add(const GroceryListEvent.regenerate()),
-              ),
-              IconButton(
-                icon: const Icon(Icons.add_rounded, color: AppColors.primary),
-                onPressed: () => showAddGroceryItemSheet(context),
-              ),
-            ],
+            actions: const [NotificationBellButton()],
           ),
           body: BlocBuilder<GroceryListBloc, GroceryListState>(
             builder: (context, state) {
@@ -75,14 +64,14 @@ class _ListBody extends StatelessWidget {
 
     if (list.items.isEmpty) {
       return ListView(
-        padding: const EdgeInsets.fromLTRB(
+        padding: EdgeInsets.fromLTRB(
           AppSpacing.marginMobile,
           AppSpacing.md,
           AppSpacing.marginMobile,
-          ClayNavDock.reservedHeight,
+          ClayNavDock.bottomPadding(context),
         ),
         children: [
-          ClayPageHeader(title: t.groceryList.title),
+          _header(context, bloc),
           const SizedBox(height: AppSpacing.lg),
           MealPlanFilterCard(list: list, plans: plans),
           const SizedBox(height: AppSpacing.lg),
@@ -104,14 +93,14 @@ class _ListBody extends StatelessWidget {
     final allChecked = unchecked.isEmpty;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         AppSpacing.marginMobile,
         AppSpacing.md,
         AppSpacing.marginMobile,
-        ClayNavDock.reservedHeight,
+        ClayNavDock.bottomPadding(context),
       ),
       children: [
-        ClayPageHeader(title: t.groceryList.title),
+        _header(context, bloc),
         const SizedBox(height: AppSpacing.lg),
         MealPlanFilterCard(list: list, plans: plans),
         const SizedBox(height: AppSpacing.gutter),
@@ -153,6 +142,33 @@ class _ListBody extends StatelessWidget {
       ],
     );
   }
+}
+
+/// The list's own controls sit with its title: a rebuild from the meal plans,
+/// and a line added by hand.
+Widget _header(BuildContext context, GroceryListBloc bloc) {
+  return ClayPageHeader(
+    title: t.groceryList.title,
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ClayIconButton(
+          icon: Icons.autorenew_rounded,
+          size: 48,
+          tooltip: t.groceryList.aggregated,
+          onTap: () => bloc.add(const GroceryListEvent.regenerate()),
+        ),
+        const SizedBox(width: AppSpacing.base),
+        ClayIconButton(
+          icon: Icons.add_rounded,
+          filled: true,
+          size: 48,
+          tooltip: t.groceryList.addItem,
+          onTap: () => showAddGroceryItemSheet(context),
+        ),
+      ],
+    ),
+  );
 }
 
 class _BulkAction extends StatelessWidget {

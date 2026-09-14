@@ -23,6 +23,7 @@ import '../../../community/presentation/widgets/author_row.dart';
 import '../../../community/presentation/widgets/like_button.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../bloc/forum_bloc.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 class ForumPage extends StatelessWidget {
   const ForumPage({super.key});
@@ -48,7 +49,7 @@ class ForumPage extends StatelessWidget {
             ),
             PositionedDirectional(
               end: AppSpacing.marginMobile,
-              bottom: ClayNavDock.reservedHeight,
+              bottom: ClayNavDock.bottomPadding(context),
               child: FloatingActionButton(
                 heroTag: 'forum-new-post',
                 backgroundColor: AppColors.primary,
@@ -134,11 +135,11 @@ class _PostListState extends State<_PostList> {
                   // Always scrollable so a list too short to overflow can
                   // still be pulled.
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     AppSpacing.marginMobile,
                     0,
                     AppSpacing.marginMobile,
-                    ClayNavDock.reservedHeight,
+                    ClayNavDock.bottomPadding(context, withFab: true),
                   ),
                   itemCount: layout.length,
                   separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
@@ -169,26 +170,14 @@ class _PostCard extends StatelessWidget {
 
   Future<void> _confirmDelete(BuildContext context) async {
     final bloc = context.read<ForumBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.community.deletePost, style: AppTextStyles.headlineMd),
-        content: Text(t.community.deletePostConfirm, style: AppTextStyles.bodyMd),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(t.common.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              t.common.delete,
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await AppDialog.warning(
+      title: t.community.deletePost,
+      message: t.community.deletePostConfirm,
+      icon: Icons.delete_outline_rounded,
+      confirmLabel: t.common.delete,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
     if (confirmed ?? false) bloc.add(ForumEvent.deletePost(post.id));
   }
 

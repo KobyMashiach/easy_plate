@@ -1,8 +1,9 @@
 {
-  "appName": "איזי-פלייט",
+  "appName": "Easy Plate",
   "common": {
     "save": "שמירה",
     "cancel": "ביטול",
+    "ok": "הבנתי",
     "next": "הבא",
     "back": "חזרה",
     "done": "סיום",
@@ -267,7 +268,10 @@
     "likesPlus": "$count+",
     "durationPlus": "$duration+",
     "splitTimes": "פיצול להכנה ובישול",
-    "alreadySaved": "המתכון כבר שמור אצלכם"
+    "alreadySaved": "המתכון כבר שמור אצלכם",
+    "savedTag": "שמור אצלכם",
+    "removeSaved": "הסרה מהמתכונים ששמרתי",
+    "removeSavedConfirm": "המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה."
   },
   "sharing": {
     "title": "שיתוף מתכון",

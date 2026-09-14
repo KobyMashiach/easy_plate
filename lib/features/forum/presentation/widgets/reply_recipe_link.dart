@@ -14,6 +14,7 @@ import '../../../shared_recipes/domain/repositories/shared_recipes_repository.da
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../shared_recipes/domain/usecases/get_shared_recipe_by_id_usecase.dart';
 import '../../../shared_recipes/domain/usecases/import_shared_recipe_usecase.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// The "[link to recipe]" chip inside a forum reply.
 ///
@@ -39,7 +40,6 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
   Future<void> _save() async {
     final repository = context.read<SharedRecipesRepository>();
     final recipes = context.read<RecipesRepository>();
-    final messenger = ScaffoldMessenger.of(context);
 
     setState(() => _saving = true);
     try {
@@ -48,25 +48,26 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
         viewerUid: AuthSessionService().user?.uid ?? '',
       );
       if (shared == null) {
-        messenger.showSnackBar(SnackBar(
-          content: Text(t.community.recipeUnavailable, style: AppTextStyles.bodyMd),
-        ));
+        if (mounted) {
+          AppDialog.warning(
+            message: t.community.recipeUnavailable,
+          ).notify(context);
+        }
         return;
       }
       final outcome = await ImportSharedRecipeUseCase(recipes)(shared);
-      messenger.showSnackBar(SnackBar(
-        content: Text(
-          outcome == ImportOutcome.saved
+      if (mounted) {
+        AppDialog.success(
+          message: outcome == ImportOutcome.saved
               ? t.community.savedToMyRecipes
               : t.community.alreadySaved,
-          style: AppTextStyles.bodyMd,
-        ),
-      ));
+        ).notify(context);
+      }
     } catch (e) {
       debugPrint('Saving linked recipe failed: $e');
-      messenger.showSnackBar(
-        SnackBar(content: Text(t.community.loadFailed, style: AppTextStyles.bodyMd)),
-      );
+      if (mounted) {
+        AppDialog.error(message: t.community.loadFailed).show(context);
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -74,7 +75,6 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
 
   Future<void> _open() async {
     final repository = context.read<SharedRecipesRepository>();
-    final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
 
     setState(() => _opening = true);
@@ -84,11 +84,11 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
         viewerUid: AuthSessionService().user?.uid ?? '',
       );
       if (shared == null) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(t.community.recipeUnavailable, style: AppTextStyles.bodyMd),
-          ),
-        );
+        if (mounted) {
+          AppDialog.warning(
+            message: t.community.recipeUnavailable,
+          ).notify(context);
+        }
         return;
       }
       // The same daily quota as the feed: a link in a reply is another door
@@ -106,9 +106,9 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
       );
     } catch (e) {
       debugPrint('Opening linked recipe failed: $e');
-      messenger.showSnackBar(
-        SnackBar(content: Text(t.community.loadFailed, style: AppTextStyles.bodyMd)),
-      );
+      if (mounted) {
+        AppDialog.error(message: t.community.loadFailed).show(context);
+      }
     } finally {
       if (mounted) setState(() => _opening = false);
     }
@@ -125,8 +125,15 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
           visualDensity: VisualDensity.compact,
           icon: _saving
               ? const SizedBox(
-                  width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Icon(Icons.bookmark_add_rounded, size: 20, color: AppColors.primary),
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(
+                  Icons.bookmark_add_rounded,
+                  size: 20,
+                  color: AppColors.primary,
+                ),
           onPressed: _saving || _opening ? null : _save,
         ),
       ],
@@ -156,7 +163,11 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              const Icon(Icons.link_rounded, size: 16, color: AppColors.primary),
+              const Icon(
+                Icons.link_rounded,
+                size: 16,
+                color: AppColors.primary,
+              ),
             const SizedBox(width: AppSpacing.xs),
             Flexible(
               child: Text(

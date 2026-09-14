@@ -11,6 +11,7 @@ import '../../../../core/monetization/purchases_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/paywall_offer.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// The one place EasyPlate sells anything: the premium subscription that
 /// switches off ads and the daily quotas.
@@ -71,7 +72,7 @@ class _PaywallPageState extends State<PaywallPage> {
       if (premium) _notify(t.premium.purchased);
     } catch (e) {
       debugPrint('Purchase failed: $e');
-      if (mounted) _notify(t.premium.purchaseFailed);
+      if (mounted) _fail(t.premium.purchaseFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -82,20 +83,18 @@ class _PaywallPageState extends State<PaywallPage> {
     try {
       final premium = await PurchasesService().restore();
       if (!mounted) return;
-      _notify(premium ? t.premium.restored : t.premium.nothingToRestore);
+      premium ? _notify(t.premium.restored) : _hint(t.premium.nothingToRestore);
     } catch (e) {
       debugPrint('Restore failed: $e');
-      if (mounted) _notify(t.premium.purchaseFailed);
+      if (mounted) _fail(t.premium.purchaseFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  void _notify(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-    );
-  }
+  void _notify(String message) => AppDialog.success(message: message).notify(context);
+  void _hint(String message) => AppDialog.info(message: message).notify(context);
+  void _fail(String message) => AppDialog.error(message: message).show(context);
 
   @override
   Widget build(BuildContext context) {

@@ -39,7 +39,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	TranslationsAr $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsAr(meta: meta ?? this.$meta);
 
 	// Translations
-	@override String get appName => 'إيزي بليت';
+	@override String get appName => 'Easy Plate';
 	@override late final _Translations$common$ar common = _Translations$common$ar._(_root);
 	@override late final _Translations$auth$ar auth = _Translations$auth$ar._(_root);
 	@override late final _Translations$profile$ar profile = _Translations$profile$ar._(_root);
@@ -76,6 +76,7 @@ class _Translations$common$ar extends Translations$common$he {
 	// Translations
 	@override String get save => 'حفظ';
 	@override String get cancel => 'إلغاء';
+	@override String get ok => 'حسناً';
 	@override String get next => 'التالي';
 	@override String get back => 'رجوع';
 	@override String get done => 'تم';
@@ -425,6 +426,9 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'الفصل بين التحضير والطهي';
 	@override String get alreadySaved => 'هذه الوصفة محفوظة لديكم بالفعل';
+	@override String get savedTag => 'محفوظة لديك';
+	@override String get removeSaved => 'إزالة من الوصفات المحفوظة';
+	@override String get removeSavedConfirm => 'ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع.';
 }
 
 // Path: sharing
@@ -786,9 +790,10 @@ class _Translations$premium$ar extends Translations$premium$he {
 extension on TranslationsAr {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'appName' => 'إيزي بليت',
+			'appName' => 'Easy Plate',
 			'common.save' => 'حفظ',
 			'common.cancel' => 'إلغاء',
+			'common.ok' => 'حسناً',
 			'common.next' => 'التالي',
 			'common.back' => 'رجوع',
 			'common.done' => 'تم',
@@ -1030,6 +1035,9 @@ extension on TranslationsAr {
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'الفصل بين التحضير والطهي',
 			'community.alreadySaved' => 'هذه الوصفة محفوظة لديكم بالفعل',
+			'community.savedTag' => 'محفوظة لديك',
+			'community.removeSaved' => 'إزالة من الوصفات المحفوظة',
+			'community.removeSavedConfirm' => 'ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع.',
 			'sharing.title' => 'مشاركة الوصفة',
 			'sharing.contactLabel' => 'بريد أو هاتف الشريك',
 			'sharing.contactHint' => 'name@example.com أو 05…',

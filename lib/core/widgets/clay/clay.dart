@@ -3,6 +3,8 @@ export 'clay_book_cover.dart';
 export 'clay_button.dart';
 export 'clay_card.dart';
 export 'clay_dashed_card.dart';
+export 'clay_icon_button.dart';
+export 'clay_segmented_control.dart';
 export 'clay_day_selector.dart';
 export 'clay_image.dart';
 export 'clay_inset.dart';

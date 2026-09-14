@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -15,6 +16,7 @@ import '../../../../core/widgets/image_source_sheet.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../bloc/library_bloc.dart';
 import '../widgets/book_cover_card.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 class LibraryPage extends StatelessWidget {
   const LibraryPage({super.key});
@@ -28,8 +30,6 @@ class LibraryPage extends StatelessWidget {
           appBar: ClayTopAppBar(
             title: t.appName,
             leading: const AccountAvatarButton(),
-            trailingIcon: Icons.add_rounded,
-            onTrailingTap: () => _showCreateBookDialog(context),
             actions: const [NotificationBellButton()],
           ),
           body: BlocBuilder<LibraryBloc, LibraryState>(
@@ -59,15 +59,22 @@ class LibraryPage extends StatelessWidget {
                               child: ClayPageHeader(
                                 title: t.books.myLibrary,
                                 subtitle: t.books.librarySubtitle,
+                                trailing: ClayIconButton(
+                                  icon: Icons.add_rounded,
+                                  filled: true,
+                                  size: 48,
+                                  tooltip: t.books.newBook,
+                                  onTap: () => _showCreateBookDialog(context),
+                                ),
                               ),
                             ),
                           ),
                           SliverPadding(
-                            padding: const EdgeInsets.fromLTRB(
+                            padding: EdgeInsets.fromLTRB(
                               AppSpacing.marginMobile,
                               0,
                               AppSpacing.marginMobile,
-                              ClayNavDock.reservedHeight,
+                              ClayNavDock.bottomPadding(context),
                             ),
                             sliver: SliverGrid.builder(
                               gridDelegate:
@@ -198,67 +205,42 @@ class LibraryPage extends StatelessWidget {
     );
   }
 
-  void _showRenameBookDialog(
+  Future<void> _showRenameBookDialog(
     BuildContext context,
     LibraryBloc bloc,
     RecipeBookEntity book,
-  ) {
-    final controller = TextEditingController(text: book.title);
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.books.renameBook),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(hintText: t.books.newBookTitle),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(t.common.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              final title = controller.text.trim();
-              if (title.isNotEmpty) bloc.add(.renameBook(book.id, title));
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text(t.common.save),
-          ),
-        ],
-      ),
+  ) async {
+    final title = await AppDialog.prompt(
+      context,
+      title: t.books.renameBook,
+      icon: Icons.drive_file_rename_outline_rounded,
+      hint: t.books.newBookTitle,
+      initial: book.title,
     );
+    if (title != null) bloc.add(.renameBook(book.id, title));
   }
 
-  void _showCreateBookDialog(BuildContext context) {
+  /// A new book opens straight away: naming it is the first step of filling
+  /// it, and the shelf is not where that happens. The push waits for the
+  /// shelf to carry the book, so the viewer never asks for one not yet saved.
+  Future<void> _showCreateBookDialog(BuildContext context) async {
     final bloc = context.read<LibraryBloc>();
-    final controller = TextEditingController();
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.books.newBook),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(hintText: t.books.newBookTitle),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(t.common.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                bloc.add(.createBook(controller.text.trim()));
-              }
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text(t.common.save),
-          ),
-        ],
-      ),
+    final title = await AppDialog.prompt(
+      context,
+      title: t.books.newBook,
+      icon: Icons.auto_stories_rounded,
+      hint: t.books.newBookTitle,
     );
+    if (title == null) return;
+
+    final id = const Uuid().v4();
+    bloc.add(.createBook(title, id: id));
+    await bloc.stream.firstWhere(
+      (state) => state is LibraryLoaded && state.books.any((b) => b.id == id),
+    );
+    if (!context.mounted) return;
+    await context.pushNamed(Routing.bookDetails, extra: id);
+    // Same reload as opening from the shelf: the cover may have changed inside.
+    bloc.add(const LibraryEvent.init());
   }
 }

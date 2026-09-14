@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
+import 'clay_icon_button.dart';
 
-/// The EasyPlate top app bar: a branded title flanked by two ghost icon
-/// buttons, on a flat background with no elevation.
+/// The EasyPlate top bar: round clay controls at either end and the title
+/// beside the leading one, on a white surface that runs up behind the status
+/// bar and ends in a hairline — so the bar reads as its own strip above the
+/// lavender page rather than as the first row of it.
+///
+/// The bar carries navigation and account controls only. A screen's own
+/// action belongs on its page header, next to the title it acts on.
 class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final IconData? leadingIcon;
@@ -17,8 +24,9 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// to render an image, which an IconData cannot.
   final Widget? leading;
 
-  /// Extra trailing widgets, for bars that carry more than one action. Shown
-  /// after [trailingIcon] when both are given.
+  /// Extra trailing widgets, for bars that carry more than one control. Shown
+  /// before [trailingIcon] when both are given, so the trailing icon keeps
+  /// the edge.
   final List<Widget> actions;
 
   const ClayTopAppBar({
@@ -33,52 +41,61 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize => const Size.fromHeight(68);
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: SizedBox(
-        height: preferredSize.height,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Row(
-            children: [
-              leading ?? _BarIcon(icon: leadingIcon, onTap: onLeadingTap),
-              Expanded(
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.headlineMd.copyWith(color: AppColors.primary),
+    final lead =
+        leading ??
+        (leadingIcon != null
+            ? ClayIconButton(icon: leadingIcon, onTap: onLeadingTap)
+            : null);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        border: const Border(
+          bottom: BorderSide(color: AppColors.surfaceContainerHighest),
+        ),
+        boxShadow: AppShadows.control,
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: preferredSize.height,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.marginMobile,
+            ),
+            child: Row(
+              children: [
+                if (lead != null) ...[
+                  lead,
+                  const SizedBox(width: AppSpacing.sm),
+                ],
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.headlineMd.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
-              ),
-              if (trailingIcon != null || actions.isEmpty)
-                _BarIcon(icon: trailingIcon, onTap: onTrailingTap),
-              ...actions,
-            ],
+                for (final action in actions) ...[
+                  const SizedBox(width: AppSpacing.base),
+                  action,
+                ],
+                if (trailingIcon != null) ...[
+                  const SizedBox(width: AppSpacing.base),
+                  ClayIconButton(icon: trailingIcon, onTap: onTrailingTap),
+                ],
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _BarIcon extends StatelessWidget {
-  final IconData? icon;
-  final VoidCallback? onTap;
-
-  const _BarIcon({this.icon, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    if (icon == null) return const SizedBox(width: AppSpacing.xl);
-    return IconButton(
-      onPressed: onTap,
-      icon: Icon(icon, color: AppColors.primary),
-      iconSize: 24,
     );
   }
 }

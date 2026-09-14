@@ -39,7 +39,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	TranslationsFr $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsFr(meta: meta ?? this.$meta);
 
 	// Translations
-	@override String get appName => 'EasyPlate';
+	@override String get appName => 'Easy Plate';
 	@override late final _Translations$common$fr common = _Translations$common$fr._(_root);
 	@override late final _Translations$auth$fr auth = _Translations$auth$fr._(_root);
 	@override late final _Translations$profile$fr profile = _Translations$profile$fr._(_root);
@@ -76,6 +76,7 @@ class _Translations$common$fr extends Translations$common$he {
 	// Translations
 	@override String get save => 'Enregistrer';
 	@override String get cancel => 'Annuler';
+	@override String get ok => 'OK';
 	@override String get next => 'Suivant';
 	@override String get back => 'Retour';
 	@override String get done => 'Terminé';
@@ -425,6 +426,9 @@ class _Translations$community$fr extends Translations$community$he {
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'Séparer préparation et cuisson';
 	@override String get alreadySaved => 'Vous avez déjà cette recette';
+	@override String get savedTag => 'Enregistrée';
+	@override String get removeSaved => 'Retirer des recettes enregistrées';
+	@override String get removeSavedConfirm => 'La recette sera retirée de vos recettes enregistrées. Vous pourrez la réenregistrer depuis la communauté.';
 }
 
 // Path: sharing
@@ -786,9 +790,10 @@ class _Translations$premium$fr extends Translations$premium$he {
 extension on TranslationsFr {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'appName' => 'EasyPlate',
+			'appName' => 'Easy Plate',
 			'common.save' => 'Enregistrer',
 			'common.cancel' => 'Annuler',
+			'common.ok' => 'OK',
 			'common.next' => 'Suivant',
 			'common.back' => 'Retour',
 			'common.done' => 'Terminé',
@@ -1030,6 +1035,9 @@ extension on TranslationsFr {
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Séparer préparation et cuisson',
 			'community.alreadySaved' => 'Vous avez déjà cette recette',
+			'community.savedTag' => 'Enregistrée',
+			'community.removeSaved' => 'Retirer des recettes enregistrées',
+			'community.removeSavedConfirm' => 'La recette sera retirée de vos recettes enregistrées. Vous pourrez la réenregistrer depuis la communauté.',
 			'sharing.title' => 'Partager la recette',
 			'sharing.contactLabel' => 'E-mail ou téléphone de la personne',
 			'sharing.contactHint' => 'nom@exemple.com ou 05…',

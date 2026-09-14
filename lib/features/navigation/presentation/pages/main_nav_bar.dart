@@ -45,7 +45,7 @@ class _MainNavBarState extends State<MainNavBar> {
     return Scaffold(
       backgroundColor: AppColors.background,
       // The dock floats above the content rather than displacing it, so pages
-      // reserve ClayNavDock.reservedHeight at the bottom of their scroll views.
+      // reserve ClayNavDock.bottomPadding at the bottom of their scroll views.
       body: Stack(
         children: [
           IndexedStack(index: _index, children: pages),

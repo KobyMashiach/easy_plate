@@ -39,7 +39,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	TranslationsEn $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsEn(meta: meta ?? this.$meta);
 
 	// Translations
-	@override String get appName => 'EasyPlate';
+	@override String get appName => 'Easy Plate';
 	@override late final _Translations$common$en common = _Translations$common$en._(_root);
 	@override late final _Translations$auth$en auth = _Translations$auth$en._(_root);
 	@override late final _Translations$profile$en profile = _Translations$profile$en._(_root);
@@ -76,6 +76,7 @@ class _Translations$common$en extends Translations$common$he {
 	// Translations
 	@override String get save => 'Save';
 	@override String get cancel => 'Cancel';
+	@override String get ok => 'OK';
 	@override String get next => 'Next';
 	@override String get back => 'Back';
 	@override String get done => 'Done';
@@ -425,6 +426,9 @@ class _Translations$community$en extends Translations$community$he {
 	@override String durationPlus({required Object duration}) => '${duration}+';
 	@override String get splitTimes => 'Split into prep and cook';
 	@override String get alreadySaved => 'You already have this recipe';
+	@override String get savedTag => 'Saved';
+	@override String get removeSaved => 'Remove from saved recipes';
+	@override String get removeSavedConfirm => 'The recipe will be removed from your saved recipes. You can save it again from the community.';
 }
 
 // Path: sharing
@@ -786,9 +790,10 @@ class _Translations$premium$en extends Translations$premium$he {
 extension on TranslationsEn {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'appName' => 'EasyPlate',
+			'appName' => 'Easy Plate',
 			'common.save' => 'Save',
 			'common.cancel' => 'Cancel',
+			'common.ok' => 'OK',
 			'common.next' => 'Next',
 			'common.back' => 'Back',
 			'common.done' => 'Done',
@@ -1030,6 +1035,9 @@ extension on TranslationsEn {
 			'community.durationPlus' => ({required Object duration}) => '${duration}+',
 			'community.splitTimes' => 'Split into prep and cook',
 			'community.alreadySaved' => 'You already have this recipe',
+			'community.savedTag' => 'Saved',
+			'community.removeSaved' => 'Remove from saved recipes',
+			'community.removeSavedConfirm' => 'The recipe will be removed from your saved recipes. You can save it again from the community.',
 			'sharing.title' => 'Share recipe',
 			'sharing.contactLabel' => 'Email or phone of the person',
 			'sharing.contactHint' => 'name@example.com or 05…',

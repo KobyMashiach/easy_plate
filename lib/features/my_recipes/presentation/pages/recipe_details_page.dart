@@ -31,6 +31,7 @@ import '../../../recipe_sharing/domain/usecases/sync_collab_recipe_usecase.dart'
 import '../../../../core/services/auth_session_service.dart';
 import '../../../recipe_ingestion/domain/usecases/generate_recipe_usecase.dart';
 import '../../../recipe_ingestion/domain/usecases/parse_raw_text_usecase.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// Route payload for [RecipeDetailsPage]. A bare entity was not enough once
 /// the same screen started opening community recipes: those must not expose
@@ -83,11 +84,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       if (mounted) setState(() => recipe = synced);
     } catch (e) {
       debugPrint('Shared recipe sync failed: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.sharing.syncFailed, style: AppTextStyles.bodyMd)),
-        );
-      }
+      if (mounted) AppDialog.warning(message: t.sharing.syncFailed).notify(context);
     }
   }
 
@@ -97,7 +94,6 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   Future<void> _analyzeNow() async {
     final ingestion = context.read<RecipeIngestionRepository>();
     final recipes = context.read<RecipesRepository>();
-    final messenger = ScaffoldMessenger.of(context);
 
     setState(() => _analyzing = true);
     try {
@@ -129,9 +125,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       if (mounted) setState(() => recipe = updated);
     } catch (e) {
       debugPrint('Deferred analysis failed: $e');
-      messenger.showSnackBar(
-        SnackBar(content: Text(t.recipe.analyzeFailed, style: AppTextStyles.bodyMd)),
-      );
+      if (mounted) AppDialog.error(message: t.recipe.analyzeFailed).show(context);
     } finally {
       if (mounted) setState(() => _analyzing = false);
     }

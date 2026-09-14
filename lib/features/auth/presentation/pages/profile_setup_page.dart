@@ -22,6 +22,7 @@ import '../../domain/usecases/link_google_usecase.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/apple_sign_in.dart';
 import '../widgets/link_credential_sheets.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// Runs once per account for whatever the provider did not give us, and again
 /// from the account menu as "my profile".
@@ -93,14 +94,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       if (!mounted) return;
       // Cancelling the account picker is a normal gesture, not a failure.
       if (e.type == AppErrorType.cancelled) return;
-      _toast(switch (e.message) {
+      _fail(switch (e.message) {
         'credential-already-in-use' => t.auth.googleAlreadyUsed,
         'provider-already-linked' => t.auth.googleAlreadyLinked,
         _ => t.auth.errorUnknown,
       });
     } catch (e) {
       debugPrint('Google link failed: $e');
-      if (mounted) _toast(t.auth.errorUnknown);
+      if (mounted) _fail(t.auth.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -118,14 +119,14 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       if (!mounted) return;
       // Dismissing Apple's sheet is a normal gesture, not a failure.
       if (e.type == AppErrorType.cancelled) return;
-      _toast(switch (e.message) {
+      _fail(switch (e.message) {
         'credential-already-in-use' => t.auth.appleAlreadyUsed,
         'provider-already-linked' => t.auth.appleAlreadyLinked,
         _ => t.auth.errorUnknown,
       });
     } catch (e) {
       debugPrint('Apple link failed: $e');
-      if (mounted) _toast(t.auth.errorUnknown);
+      if (mounted) _fail(t.auth.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -175,17 +176,18 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
       if (mounted && widget.isEditing) Navigator.of(context).maybePop();
     } catch (e) {
       debugPrint('Profile save failed: $e');
-      if (mounted) _toast(t.profile.saveFailed);
+      if (mounted) _fail(t.profile.saveFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  void _toast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-    );
-  }
+  /// A word in passing, gone on its own.
+  void _toast(String message) => AppDialog.success(message: message).notify(context);
+
+  /// Something to read before going on.
+  void _fail(String message) => AppDialog.error(message: message).show(context);
+
 
   @override
   Widget build(BuildContext context) {

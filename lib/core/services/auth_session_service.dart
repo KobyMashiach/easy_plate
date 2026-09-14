@@ -56,6 +56,15 @@ class AuthSessionService extends ChangeNotifier {
 
   bool _bound = false;
   AuthStage _stage = AuthStage.unknown;
+
+  /// The splash stays up at least this long after [bind], however fast the
+  /// first auth state lands — long enough for its entrance to play rather
+  /// than be cut off by the gate. A slow first load simply runs past it.
+  /// Zeroed by [resetForTest] so the service tests are not slowed by it.
+  Duration minimumSplash = const Duration(seconds: 3);
+  DateTime? _boundAt;
+  Timer? _splashHold;
+  AuthStage? _heldStage;
   AppUserEntity? _user;
   UserProfileEntity? _profile;
   bool _onboardingComplete = false;
@@ -84,6 +93,7 @@ class AuthSessionService extends ChangeNotifier {
   }) {
     if (_bound) return;
     _bound = true;
+    _boundAt = DateTime.now();
 
     _profiles = profiles;
     _preferences = preferences;
@@ -260,6 +270,11 @@ class AuthSessionService extends ChangeNotifier {
   void resetForTest() {
     _subscription?.cancel();
     _subscription = null;
+    _splashHold?.cancel();
+    _splashHold = null;
+    _heldStage = null;
+    _boundAt = null;
+    minimumSplash = Duration.zero;
     _bound = false;
     _stage = AuthStage.unknown;
     _user = null;
@@ -271,7 +286,27 @@ class AuthSessionService extends ChangeNotifier {
     _recipes = null;
   }
 
+  /// The first stage out of [AuthStage.unknown] waits out [minimumSplash];
+  /// whatever is asked for in the meantime replaces what is waiting, so the
+  /// gate always opens on the latest answer. Every later change is immediate.
   void _set(AuthStage stage) {
+    if (_stage == AuthStage.unknown && _boundAt != null) {
+      final remaining = minimumSplash - DateTime.now().difference(_boundAt!);
+      if (remaining > Duration.zero) {
+        _heldStage = stage;
+        _splashHold ??= Timer(remaining, () {
+          _splashHold = null;
+          final held = _heldStage;
+          _heldStage = null;
+          if (held != null) _apply(held);
+        });
+        return;
+      }
+    }
+    _apply(stage);
+  }
+
+  void _apply(AuthStage stage) {
     if (_stage == stage) return;
     _stage = stage;
     notifyListeners();
@@ -280,6 +315,7 @@ class AuthSessionService extends ChangeNotifier {
   @override
   void dispose() {
     _subscription?.cancel();
+    _splashHold?.cancel();
     super.dispose();
   }
 }

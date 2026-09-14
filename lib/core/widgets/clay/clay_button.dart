@@ -13,12 +13,17 @@ class ClayButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final bool expanded;
 
+  /// Error colours for an action that removes something — the confirm of a
+  /// delete dialog — so the button itself says what it is about to do.
+  final bool destructive;
+
   const ClayButton({
     super.key,
     required this.label,
     this.icon,
     this.onPressed,
     this.expanded = false,
+    this.destructive = false,
   });
 
   @override
@@ -32,6 +37,8 @@ class _ClayButtonState extends State<ClayButton> {
   Widget build(BuildContext context) {
     final enabled = widget.onPressed != null;
     final sunk = _pressed || !enabled;
+    final face = widget.destructive ? AppColors.error : AppColors.primary;
+    final slab = widget.destructive ? AppColors.onErrorContainer : AppColors.onPrimaryFixedVariant;
 
     return GestureDetector(
       onTap: widget.onPressed,
@@ -44,13 +51,10 @@ class _ClayButtonState extends State<ClayButton> {
         child: Stack(
           children: [
             // The extrusion slab, revealed under the face at rest.
-            const Positioned.fill(
+            Positioned.fill(
               top: AppShadows.buttonThickness,
               child: DecoratedBox(
-                decoration: ShapeDecoration(
-                  color: AppColors.onPrimaryFixedVariant,
-                  shape: StadiumBorder(),
-                ),
+                decoration: ShapeDecoration(color: slab, shape: const StadiumBorder()),
               ),
             ),
             AnimatedContainer(
@@ -63,9 +67,17 @@ class _ClayButtonState extends State<ClayButton> {
                 vertical: AppSpacing.gutter,
               ),
               decoration: ShapeDecoration(
-                color: enabled ? AppColors.primary : AppColors.outlineVariant,
+                color: enabled ? face : AppColors.outlineVariant,
                 shape: const StadiumBorder(),
-                shadows: sunk ? null : AppShadows.button,
+                shadows: sunk
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: face.withValues(alpha: 0.25),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
               ),
               child: Row(
                 mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,

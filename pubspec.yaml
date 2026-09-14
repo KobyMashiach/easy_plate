@@ -102,6 +102,7 @@ flutter:
 
   assets:
     - assets/i18n/
+    - assets/app_icon.png
 
   fonts:
     - family: Plus Jakarta Sans

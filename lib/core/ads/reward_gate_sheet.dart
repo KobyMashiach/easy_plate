@@ -7,6 +7,7 @@ import '../monetization/monetization_config.dart';
 import '../utils/i18n/strings.g.dart';
 import '../widgets/clay/clay.dart';
 import 'rewarded_ad_service.dart';
+import '../widgets/app_dialog.dart';
 
 /// Asks the user to watch a rewarded video, plays it, and says whether the
 /// unlock was earned.
@@ -47,9 +48,7 @@ Future<bool> showRewardGateSheet(
 }
 
 void _notify(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-  );
+  AppDialog.warning(message: message).notify(context);
 }
 
 class _RewardGateSheet extends StatefulWidget {

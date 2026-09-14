@@ -8,6 +8,7 @@ import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../bloc/auth_bloc.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// The signed-in account and the way out of it. Lives in settings because that
 /// is the only screen the gate lets a signed-in user reach it from.
@@ -16,26 +17,14 @@ class AccountCard extends StatelessWidget {
 
   Future<void> _confirmSignOut(BuildContext context) async {
     final bloc = context.read<AuthBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.auth.signOutTitle, style: AppTextStyles.headlineMd),
-        content: Text(t.auth.signOutBody, style: AppTextStyles.bodyMd),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(t.common.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(
-              t.auth.signOut,
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.error),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await AppDialog.warning(
+      title: t.auth.signOutTitle,
+      message: t.auth.signOutBody,
+      icon: Icons.logout_rounded,
+      confirmLabel: t.auth.signOut,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
 
     if (confirmed ?? false) bloc.add(const AuthEvent.signOut());
   }

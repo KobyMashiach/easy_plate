@@ -14,6 +14,7 @@ import '../../../../core/widgets/weekday_selector.dart';
 import '../../domain/entities/meal_plan_entity.dart';
 import '../bloc/meal_planner_bloc.dart';
 import '../widgets/meal_card.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 class MealPlannerPage extends StatelessWidget {
   const MealPlannerPage({super.key});
@@ -27,13 +28,7 @@ class MealPlannerPage extends StatelessWidget {
           appBar: ClayTopAppBar(
             title: t.appName,
             leading: const AccountAvatarButton(),
-            actions: [
-              const NotificationBellButton(),
-              IconButton(
-                icon: const Icon(Icons.playlist_add_rounded, color: AppColors.primary),
-                onPressed: () => _showCreatePlanDialog(context),
-              ),
-            ],
+            actions: const [NotificationBellButton()],
           ),
           body: BlocBuilder<MealPlannerBloc, MealPlannerState>(
             builder: (context, state) {
@@ -68,16 +63,18 @@ class MealPlannerPage extends StatelessWidget {
     );
   }
 
-  void _showCreatePlanDialog(BuildContext context) {
-    final bloc = context.read<MealPlannerBloc>();
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => _CreatePlanForm(
-        onSubmit: (name, template) => bloc.add(.createPlan(name, template)),
-      ),
-    );
-  }
+}
+
+/// Top level rather than a method: the board's header reaches it too.
+void _showCreatePlanDialog(BuildContext context) {
+  final bloc = context.read<MealPlannerBloc>();
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (sheetContext) => _CreatePlanForm(
+      onSubmit: (name, template) => bloc.add(.createPlan(name, template)),
+    ),
+  );
 }
 
 /// Name plus a starting template. The template only seeds meals across the
@@ -253,7 +250,7 @@ class _PlanBoardState extends State<_PlanBoard> {
     final days = ShoppingDay.values;
 
     return ListView(
-      padding: const EdgeInsets.only(bottom: ClayNavDock.reservedHeight),
+      padding: EdgeInsets.only(bottom: ClayNavDock.bottomPadding(context)),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.marginMobile),
@@ -261,7 +258,17 @@ class _PlanBoardState extends State<_PlanBoard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: AppSpacing.md),
-              ClayPageHeader(title: widget.plan.name, subtitle: t.mealPlanner.title),
+              ClayPageHeader(
+                title: widget.plan.name,
+                subtitle: t.mealPlanner.title,
+                trailing: ClayIconButton(
+                  icon: Icons.playlist_add_rounded,
+                  filled: true,
+                  size: 48,
+                  tooltip: t.mealPlanner.newPlan,
+                  onTap: () => _showCreatePlanDialog(context),
+                ),
+              ),
               if (widget.plans.length > 1) ...[
                 const SizedBox(height: AppSpacing.gutter),
                 Wrap(
@@ -334,33 +341,18 @@ class _PlanBoardState extends State<_PlanBoard> {
     );
   }
 
-  void _showAddMealDialog(BuildContext context, MealPlannerBloc bloc, int weekday) {
-    final controller = TextEditingController();
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(t.mealPlanner.addMeal),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(hintText: t.mealPlanner.mealName),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(t.common.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                bloc.add(.addMeal(weekday, controller.text.trim()));
-              }
-              Navigator.of(dialogContext).pop();
-            },
-            child: Text(t.common.add),
-          ),
-        ],
-      ),
+  Future<void> _showAddMealDialog(
+    BuildContext context,
+    MealPlannerBloc bloc,
+    int weekday,
+  ) async {
+    final name = await AppDialog.prompt(
+      context,
+      title: t.mealPlanner.addMeal,
+      icon: Icons.restaurant_rounded,
+      hint: t.mealPlanner.mealName,
+      confirmLabel: t.common.add,
     );
+    if (name != null) bloc.add(.addMeal(weekday, name));
   }
 }

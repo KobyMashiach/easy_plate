@@ -10,11 +10,16 @@ class ClayPageHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
 
-  const ClayPageHeader({super.key, required this.title, this.subtitle});
+  /// The screen's own primary action, sat on the title line — where it is
+  /// read together with what it acts on, rather than lost among the account
+  /// controls in the bar.
+  final Widget? trailing;
+
+  const ClayPageHeader({super.key, required this.title, this.subtitle, this.trailing});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final text = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: AppTextStyles.headlineLgMobile),
@@ -25,6 +30,16 @@ class ClayPageHeader extends StatelessWidget {
             style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
           ),
         ],
+      ],
+    );
+    if (trailing == null) return text;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: text),
+        const SizedBox(width: AppSpacing.sm),
+        Padding(padding: const EdgeInsets.only(top: AppSpacing.xs), child: trailing),
       ],
     );
   }

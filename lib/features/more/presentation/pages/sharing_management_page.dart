@@ -23,6 +23,7 @@ import '../../../recipe_sharing/domain/usecases/respond_to_share_invite_usecase.
 import '../../../settings/presentation/bloc/settings_bloc.dart';
 import '../../../user_profile/domain/entities/public_profile_entity.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// Everything this account shares or is shared: pending invites to answer,
 /// recipes it owns with their members, recipes it was let into, and the
@@ -108,7 +109,7 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
       await _load();
     } catch (e) {
       debugPrint('Invite response failed: $e');
-      if (mounted) _toast(t.sharing.acceptFailed);
+      if (mounted) _fail(t.sharing.acceptFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -123,15 +124,17 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
       await _load();
     } catch (e) {
       debugPrint('Member removal failed: $e');
-      if (mounted) _toast(t.sharing.failed);
+      if (mounted) _fail(t.sharing.failed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  void _toast(String message) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-      );
+  /// A word in passing, gone on its own.
+  void _toast(String message) => AppDialog.success(message: message).notify(context);
+
+  /// Something to read before going on.
+  void _fail(String message) => AppDialog.error(message: message).show(context);
 
   @override
   Widget build(BuildContext context) {

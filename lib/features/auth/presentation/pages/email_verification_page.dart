@@ -11,6 +11,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/refresh_email_verified_usecase.dart';
 import '../../domain/usecases/send_email_verification_usecase.dart';
 import '../bloc/auth_bloc.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 /// Held between signing up with a password and reaching the app, so an address
 /// nobody controls cannot become an account.
@@ -40,7 +41,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       if (mounted && !silent) _toast(t.auth.emailResent);
     } catch (e) {
       debugPrint('Email verification send failed: $e');
-      if (mounted && !silent) _toast(t.auth.errorUnknown);
+      if (mounted && !silent) _fail(t.auth.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -53,7 +54,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       final verified = await RefreshEmailVerifiedUseCase(repository)();
       if (!mounted) return;
       if (!verified) {
-        _toast(t.auth.stillNotVerified);
+        _warn(t.auth.stillNotVerified);
         return;
       }
       // The gate re-reads the account and moves on; the router follows.
@@ -61,17 +62,19 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       if (user != null) await AuthSessionService().refreshUser(user);
     } catch (e) {
       debugPrint('Verification check failed: $e');
-      if (mounted) _toast(t.auth.errorUnknown);
+      if (mounted) _fail(t.auth.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  void _toast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: AppTextStyles.bodyMd)),
-    );
-  }
+  /// A word in passing, gone on its own.
+  void _toast(String message) => AppDialog.success(message: message).notify(context);
+
+  /// Something to read before going on.
+  void _fail(String message) => AppDialog.error(message: message).show(context);
+
+  void _warn(String message) => AppDialog.warning(message: message).notify(context);
 
   @override
   Widget build(BuildContext context) {

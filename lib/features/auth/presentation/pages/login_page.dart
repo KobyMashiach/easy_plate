@@ -16,6 +16,7 @@ import '../bloc/auth_bloc.dart';
 import '../widgets/apple_sign_in.dart';
 import '../widgets/auth_error_text.dart';
 import 'phone_verification_page.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 enum _Method { email, phone }
 
@@ -115,13 +116,9 @@ class _LoginViewState extends State<_LoginView> {
               extra: PhoneVerificationArgs(verificationId: id, phoneNumber: phone),
             );
           case AuthPasswordResetSent():
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(t.auth.resetSent, style: AppTextStyles.bodyMd)),
-            );
+            AppDialog.success(message: t.auth.resetSent).notify(context);
           case AuthError(error: final error):
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(authErrorMessage(error), style: AppTextStyles.bodyMd)),
-            );
+            AppDialog.error(message: authErrorMessage(error)).show(context);
           default:
             break;
         }

@@ -35,6 +35,10 @@ sealed class SharedRecipesEvent with _$SharedRecipesEvent {
       _UpdateShared;
   const factory SharedRecipesEvent.unshare(String id) = _Unshare;
   const factory SharedRecipesEvent.importToMyRecipes(SharedRecipeEntity shared) = _Import;
+
+  /// The local recipes changed — a save from a forum link, a removal on the
+  /// recipes tab — so which feed entries count as saved has to be re-read.
+  const factory SharedRecipesEvent.savedChanged(Set<String> savedIds) = _SavedChanged;
 }
 
 @freezed
@@ -62,6 +66,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
 
   List<SharedRecipeEntity> _feed = [];
   Set<String> _savedIds = {};
+  StreamSubscription<List<RecipeEntity>>? _recipes;
 
   SharedRecipesBloc({
     required this.getSharedRecipesUseCase,
@@ -80,7 +85,21 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     on<_UpdateShared>(_updateShared);
     on<_Unshare>(_unshare);
     on<_Import>(_import);
+    on<_SavedChanged>(_savedChanged);
     add(const SharedRecipesEvent.init());
+    // The feed lives in an IndexedStack and is not rebuilt when the user
+    // comes back to it, so a recipe removed on the recipes tab would still
+    // read as saved here. Following the box keeps the two in step.
+    _recipes = recipesRepository.watchRecipes().listen(
+      (local) => add(.savedChanged(local.map((r) => r.savedFromSharedId).nonNulls.toSet())),
+      onError: (Object e) => debugPrint('Saved ids stream failed: $e'),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _recipes?.cancel();
+    return super.close();
   }
 
   factory SharedRecipesBloc.fromContext(BuildContext context) {
@@ -197,6 +216,13 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
 
   /// Delegates to the shared import so the feed and a forum reply's recipe
   /// link save exactly the same way — and neither makes a second copy.
+  void _savedChanged(_SavedChanged event, Emitter<SharedRecipesState> emit) {
+    if (setEquals(event.savedIds, _savedIds)) return;
+    _savedIds = event.savedIds;
+    final current = state;
+    if (current is SharedRecipesLoaded) emit(.loaded(_feed, savedIds: _savedIds));
+  }
+
   Future<void> _import(_Import event, Emitter<SharedRecipesState> emit) async {
     await ImportSharedRecipeUseCase(recipesRepository)(event.shared);
     await _refreshSavedIds();

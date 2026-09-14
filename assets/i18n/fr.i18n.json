@@ -1,8 +1,9 @@
 {
-  "appName": "EasyPlate",
+  "appName": "Easy Plate",
   "common": {
     "save": "Enregistrer",
     "cancel": "Annuler",
+    "ok": "OK",
     "next": "Suivant",
     "back": "Retour",
     "done": "Terminé",
@@ -267,7 +268,10 @@
     "likesPlus": "$count+",
     "durationPlus": "$duration+",
     "splitTimes": "Séparer préparation et cuisson",
-    "alreadySaved": "Vous avez déjà cette recette"
+    "alreadySaved": "Vous avez déjà cette recette",
+    "savedTag": "Enregistrée",
+    "removeSaved": "Retirer des recettes enregistrées",
+    "removeSavedConfirm": "La recette sera retirée de vos recettes enregistrées. Vous pourrez la réenregistrer depuis la communauté."
   },
   "sharing": {
     "title": "Partager la recette",

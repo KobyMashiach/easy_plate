@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
@@ -21,8 +22,27 @@ class ClayNavDock extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final List<ClayNavDestination> destinations;
 
-  /// Bottom padding a scrollable page needs so its last item clears the dock.
-  static const reservedHeight = 108.0;
+  /// The dock's own height (its padding, an icon and a label) plus its bottom
+  /// margin and a little air: what a page has to keep clear at the bottom
+  /// before the system's own inset is counted.
+  static const reservedHeight = 96.0;
+
+  /// A floating action button's height plus the gap that keeps it off the
+  /// last card, for pages that carry one above the dock.
+  static const fabClearance = 56.0 + AppSpacing.gutter;
+
+  /// Bottom padding for a page under the dock, so its last item scrolls all
+  /// the way out from under it. On Android the dock floats above the gesture
+  /// bar (see [MainNavBar]), so that inset is added; on iOS the dock's own
+  /// margin already covers the home indicator. [withFab] adds room for a
+  /// button floating above the dock, which would otherwise sit on the last
+  /// card once the list is scrolled to its end.
+  static double bottomPadding(BuildContext context, {bool withFab = false}) {
+    final inset = defaultTargetPlatform == TargetPlatform.android
+        ? MediaQuery.paddingOf(context).bottom
+        : 0.0;
+    return reservedHeight + inset + (withFab ? fabClearance : 0);
+  }
 
   const ClayNavDock({
     super.key,

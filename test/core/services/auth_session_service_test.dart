@@ -280,4 +280,37 @@ void main() {
     expect(profiles.reads - readsBefore, 1);
     expect(session.stage, AuthStage.ready);
   });
+
+  group('minimum splash', () {
+    test('the first stage waits out the minimum, and the latest one wins', () async {
+      session.minimumSplash = const Duration(milliseconds: 120);
+      final seen = <AuthStage>[];
+      session.addListener(() => seen.add(session.stage));
+
+      auth.emit(null);
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(session.stage, AuthStage.unknown);
+      expect(seen, isEmpty);
+
+      // Signed in before the hold ends: that, not the sign-out, is what the
+      // gate opens on — and only once.
+      profiles.profile = null;
+      auth.emit(_user);
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+
+      expect(seen, [AuthStage.needsProfile]);
+    });
+
+    test('later changes are immediate once the splash has been shown', () async {
+      session.minimumSplash = const Duration(milliseconds: 60);
+      auth.emit(null);
+      await Future<void>.delayed(const Duration(milliseconds: 90));
+      expect(session.stage, AuthStage.signedOut);
+
+      profiles.profile = null;
+      auth.emit(_user);
+      await Future<void>.delayed(Duration.zero);
+      expect(session.stage, AuthStage.needsProfile);
+    });
+  });
 }

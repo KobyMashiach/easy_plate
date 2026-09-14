@@ -9,6 +9,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_error_text.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
 class PhoneVerificationArgs {
   final String verificationId;
@@ -72,9 +73,7 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
           case AuthCodeSent(verificationId: final id):
             setState(() => _verificationId = id);
           case AuthError(error: final error):
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(authErrorMessage(error), style: AppTextStyles.bodyMd)),
-            );
+            AppDialog.error(message: authErrorMessage(error)).show(context);
           default:
             break;
         }

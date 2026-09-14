@@ -1,8 +1,9 @@
 {
-  "appName": "إيزي بليت",
+  "appName": "Easy Plate",
   "common": {
     "save": "حفظ",
     "cancel": "إلغاء",
+    "ok": "حسناً",
     "next": "التالي",
     "back": "رجوع",
     "done": "تم",
@@ -267,7 +268,10 @@
     "likesPlus": "$count+",
     "durationPlus": "$duration+",
     "splitTimes": "الفصل بين التحضير والطهي",
-    "alreadySaved": "هذه الوصفة محفوظة لديكم بالفعل"
+    "alreadySaved": "هذه الوصفة محفوظة لديكم بالفعل",
+    "savedTag": "محفوظة لديك",
+    "removeSaved": "إزالة من الوصفات المحفوظة",
+    "removeSavedConfirm": "ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع."
   },
   "sharing": {
     "title": "مشاركة الوصفة",
