@@ -778,6 +778,24 @@ class Translations$recipe$he {
 
 	/// he: 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר'
 	String get analyzeFailed => 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר';
+
+	/// he: 'המתכון משותף בקהילה'
+	String get communityUpdateTitle => 'המתכון משותף בקהילה';
+
+	/// he: 'לעדכן גם את העותק בקהילה, או רק אצלך?'
+	String get communityUpdateBody => 'לעדכן גם את העותק בקהילה, או רק אצלך?';
+
+	/// he: 'גם בקהילה'
+	String get communityUpdateBoth => 'גם בקהילה';
+
+	/// he: 'רק אצלי'
+	String get communityUpdateLocal => 'רק אצלי';
+
+	/// he: 'העותק בקהילה עודכן'
+	String get communityUpdated => 'העותק בקהילה עודכן';
+
+	/// he: 'המתכון כבר לא בקהילה, נשמר רק אצלך'
+	String get communityGone => 'המתכון כבר לא בקהילה, נשמר רק אצלך';
 }
 
 // Path: nutrition
@@ -892,6 +910,12 @@ class Translations$nutrition$he {
 
 	/// he: 'דאשבורד שבועי'
 	String get openDashboard => 'דאשבורד שבועי';
+
+	/// he: 'לכל המתכון'
+	String get perRecipe => 'לכל המתכון';
+
+	/// he: '$count מנות'
+	String perRecipeServings({required Object count}) => '${count} מנות';
 }
 
 // Path: community
@@ -1240,6 +1264,27 @@ class Translations$notifications$he {
 
 	/// he: 'ההזמנה כבר טופלה'
 	String get alreadyHandled => 'ההזמנה כבר טופלה';
+
+	/// he: '$name עדכן/ה את "$recipe"'
+	String recipeUpdated({required Object name, required Object recipe}) => '${name} עדכן/ה את "${recipe}"';
+
+	/// he: 'יש גרסה חדשה של מתכון ששמרת'
+	String get recipeUpdatedHint => 'יש גרסה חדשה של מתכון ששמרת';
+
+	/// he: 'רענון לגרסה החדשה'
+	String get refreshCopy => 'רענון לגרסה החדשה';
+
+	/// he: 'שמירת העותק שלי'
+	String get keepCopy => 'שמירת העותק שלי';
+
+	/// he: 'העותק שלך עודכן לגרסה החדשה'
+	String get refreshed => 'העותק שלך עודכן לגרסה החדשה';
+
+	/// he: 'העותק שלך נשאר כמו שהוא'
+	String get keptCopy => 'העותק שלך נשאר כמו שהוא';
+
+	/// he: 'המתכון כבר לא בקהילה'
+	String get recipeGone => 'המתכון כבר לא בקהילה';
 }
 
 // Path: editor
@@ -1960,6 +2005,21 @@ class Translations$receipt$he {
 
 	/// he: 'הבחירה נשמרה'
 	String get pricingSaved => 'הבחירה נשמרה';
+
+	/// he: 'שינוי שם החנות'
+	String get renameStore => 'שינוי שם החנות';
+
+	/// he: 'שם החנות'
+	String get storeName => 'שם החנות';
+
+	/// he: 'כל החנויות'
+	String get allStores => 'כל החנויות';
+
+	/// he: 'החל סינון'
+	String get applyFilters => 'החל סינון';
+
+	/// he: 'ניקוי'
+	String get clearFilters => 'ניקוי';
 }
 
 // Path: unit
@@ -2803,6 +2863,12 @@ extension on Translations {
 			'recipe.analyzeNow' => 'ניתוח באמצעות AI עכשיו',
 			'recipe.analyzing' => 'מנתח את המתכון...',
 			'recipe.analyzeFailed' => 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר',
+			'recipe.communityUpdateTitle' => 'המתכון משותף בקהילה',
+			'recipe.communityUpdateBody' => 'לעדכן גם את העותק בקהילה, או רק אצלך?',
+			'recipe.communityUpdateBoth' => 'גם בקהילה',
+			'recipe.communityUpdateLocal' => 'רק אצלי',
+			'recipe.communityUpdated' => 'העותק בקהילה עודכן',
+			'recipe.communityGone' => 'המתכון כבר לא בקהילה, נשמר רק אצלך',
 			'nutrition.title' => 'ערכים תזונתיים',
 			'nutrition.perServing' => 'למנה',
 			'nutrition.perServingHint' => 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.',
@@ -2838,6 +2904,8 @@ extension on Translations {
 			'nutrition.macroSplit' => 'חלוקת קלוריות',
 			'nutrition.kcalPerDay' => 'קק״ל ליום',
 			'nutrition.openDashboard' => 'דאשבורד שבועי',
+			'nutrition.perRecipe' => 'לכל המתכון',
+			'nutrition.perRecipeServings' => ({required Object count}) => '${count} מנות',
 			'community.title' => 'קהילה',
 			'community.forum' => 'פורום',
 			'community.sharedRecipes' => 'מתכונים משותפים',
@@ -2945,6 +3013,13 @@ extension on Translations {
 			'notifications.markAllRead' => 'סימון הכל כנקרא',
 			'notifications.openRecipe' => 'פתיחת המתכון',
 			'notifications.alreadyHandled' => 'ההזמנה כבר טופלה',
+			'notifications.recipeUpdated' => ({required Object name, required Object recipe}) => '${name} עדכן/ה את "${recipe}"',
+			'notifications.recipeUpdatedHint' => 'יש גרסה חדשה של מתכון ששמרת',
+			'notifications.refreshCopy' => 'רענון לגרסה החדשה',
+			'notifications.keepCopy' => 'שמירת העותק שלי',
+			'notifications.refreshed' => 'העותק שלך עודכן לגרסה החדשה',
+			'notifications.keptCopy' => 'העותק שלך נשאר כמו שהוא',
+			'notifications.recipeGone' => 'המתכון כבר לא בקהילה',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -3100,6 +3175,8 @@ extension on Translations {
 			'receipt.shareToggle' => 'שיתוף המחירים עם הקהילה',
 			'receipt.shareHint' => 'רק שמות מוצרים ומחירים. בלי החנות, התאריך או מי קנה.',
 			'receipt.save' => 'שמירת המחירים',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => '${count} מחירים נשמרו',
 			'receipt.savedShared' => ({required Object count}) => '${count} מחירים נשמרו ושותפו',
 			'receipt.nothingToSave' => 'אין מוצרים לשמירה',
@@ -3115,8 +3192,6 @@ extension on Translations {
 			'receipt.cameraGuide' => 'הכניסו את הקבלה למלבן',
 			'receipt.cameraHold' => 'החזיקו יציב…',
 			'receipt.cameraCaptured' => 'נקלט!',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraUnavailable' => 'אין גישה למצלמה',
 			'receipt.perUnit' => 'ליח׳',
 			'receipt.perKg' => 'לק״ג',
@@ -3172,6 +3247,11 @@ extension on Translations {
 			'receipt.history' => 'היסטוריית מחירים',
 			'receipt.noStore' => 'ללא חנות',
 			'receipt.pricingSaved' => 'הבחירה נשמרה',
+			'receipt.renameStore' => 'שינוי שם החנות',
+			'receipt.storeName' => 'שם החנות',
+			'receipt.allStores' => 'כל החנויות',
+			'receipt.applyFilters' => 'החל סינון',
+			'receipt.clearFilters' => 'ניקוי',
 			'unit.gram' => 'גרם',
 			'unit.kilogram' => 'ק"ג',
 			'unit.milliliter' => 'מ"ל',

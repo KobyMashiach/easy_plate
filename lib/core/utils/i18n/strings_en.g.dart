@@ -376,6 +376,12 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get analyzeNow => 'Analyse with AI now';
 	@override String get analyzing => 'Analysing the recipe...';
 	@override String get analyzeFailed => 'The analysis failed — you can try again later';
+	@override String get communityUpdateTitle => 'This recipe is shared';
+	@override String get communityUpdateBody => 'Update the community copy too, or only yours?';
+	@override String get communityUpdateBoth => 'Community too';
+	@override String get communityUpdateLocal => 'Only mine';
+	@override String get communityUpdated => 'The community copy was updated';
+	@override String get communityGone => 'The recipe is no longer in the community; saved only for you';
 }
 
 // Path: nutrition
@@ -420,6 +426,8 @@ class _Translations$nutrition$en extends Translations$nutrition$he {
 	@override String get macroSplit => 'Calorie split';
 	@override String get kcalPerDay => 'kcal per day';
 	@override String get openDashboard => 'Weekly dashboard';
+	@override String get perRecipe => 'Whole recipe';
+	@override String perRecipeServings({required Object count}) => '${count} servings';
 }
 
 // Path: community
@@ -554,6 +562,13 @@ class _Translations$notifications$en extends Translations$notifications$he {
 	@override String get markAllRead => 'Mark all as read';
 	@override String get openRecipe => 'Open recipe';
 	@override String get alreadyHandled => 'This invite was already handled';
+	@override String recipeUpdated({required Object name, required Object recipe}) => '${name} updated "${recipe}"';
+	@override String get recipeUpdatedHint => 'There is a new version of a recipe you saved';
+	@override String get refreshCopy => 'Refresh to new version';
+	@override String get keepCopy => 'Keep my copy';
+	@override String get refreshed => 'Your copy was updated to the new version';
+	@override String get keptCopy => 'Your copy stays as it is';
+	@override String get recipeGone => 'The recipe is no longer in the community';
 }
 
 // Path: editor
@@ -824,6 +839,11 @@ class _Translations$receipt$en extends Translations$receipt$he {
 	@override String get history => 'Price history';
 	@override String get noStore => 'No store';
 	@override String get pricingSaved => 'Choice saved';
+	@override String get renameStore => 'Rename store';
+	@override String get storeName => 'Store name';
+	@override String get allStores => 'All stores';
+	@override String get applyFilters => 'Apply';
+	@override String get clearFilters => 'Clear';
 }
 
 // Path: unit
@@ -1346,6 +1366,12 @@ extension on TranslationsEn {
 			'recipe.analyzeNow' => 'Analyse with AI now',
 			'recipe.analyzing' => 'Analysing the recipe...',
 			'recipe.analyzeFailed' => 'The analysis failed — you can try again later',
+			'recipe.communityUpdateTitle' => 'This recipe is shared',
+			'recipe.communityUpdateBody' => 'Update the community copy too, or only yours?',
+			'recipe.communityUpdateBoth' => 'Community too',
+			'recipe.communityUpdateLocal' => 'Only mine',
+			'recipe.communityUpdated' => 'The community copy was updated',
+			'recipe.communityGone' => 'The recipe is no longer in the community; saved only for you',
 			'nutrition.title' => 'Nutrition',
 			'nutrition.perServing' => 'per serving',
 			'nutrition.perServingHint' => 'All values are for one serving. Leave blank to drop the estimate.',
@@ -1381,6 +1407,8 @@ extension on TranslationsEn {
 			'nutrition.macroSplit' => 'Calorie split',
 			'nutrition.kcalPerDay' => 'kcal per day',
 			'nutrition.openDashboard' => 'Weekly dashboard',
+			'nutrition.perRecipe' => 'Whole recipe',
+			'nutrition.perRecipeServings' => ({required Object count}) => '${count} servings',
 			'community.title' => 'Community',
 			'community.forum' => 'Forum',
 			'community.sharedRecipes' => 'Shared recipes',
@@ -1488,6 +1516,13 @@ extension on TranslationsEn {
 			'notifications.markAllRead' => 'Mark all as read',
 			'notifications.openRecipe' => 'Open recipe',
 			'notifications.alreadyHandled' => 'This invite was already handled',
+			'notifications.recipeUpdated' => ({required Object name, required Object recipe}) => '${name} updated "${recipe}"',
+			'notifications.recipeUpdatedHint' => 'There is a new version of a recipe you saved',
+			'notifications.refreshCopy' => 'Refresh to new version',
+			'notifications.keepCopy' => 'Keep my copy',
+			'notifications.refreshed' => 'Your copy was updated to the new version',
+			'notifications.keptCopy' => 'Your copy stays as it is',
+			'notifications.recipeGone' => 'The recipe is no longer in the community',
 			'editor.title' => 'Edit recipe',
 			'editor.recipeTitle' => 'Recipe name',
 			'editor.titleHint' => 'For example: Jerusalem shakshuka',
@@ -1643,6 +1678,8 @@ extension on TranslationsEn {
 			'receipt.shareToggle' => 'Share prices with the community',
 			'receipt.shareHint' => 'Product names and prices only. Not the store, the date or who paid.',
 			'receipt.save' => 'Save prices',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => '${count} prices saved',
 			'receipt.savedShared' => ({required Object count}) => '${count} prices saved and shared',
 			'receipt.nothingToSave' => 'No products to save',
@@ -1658,8 +1695,6 @@ extension on TranslationsEn {
 			'receipt.cameraGuide' => 'Fit the receipt inside the frame',
 			'receipt.cameraHold' => 'Hold still…',
 			'receipt.cameraCaptured' => 'Captured!',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraUnavailable' => 'No camera access',
 			'receipt.perUnit' => 'per unit',
 			'receipt.perKg' => 'per kg',
@@ -1715,6 +1750,11 @@ extension on TranslationsEn {
 			'receipt.history' => 'Price history',
 			'receipt.noStore' => 'No store',
 			'receipt.pricingSaved' => 'Choice saved',
+			'receipt.renameStore' => 'Rename store',
+			'receipt.storeName' => 'Store name',
+			'receipt.allStores' => 'All stores',
+			'receipt.applyFilters' => 'Apply',
+			'receipt.clearFilters' => 'Clear',
 			'unit.gram' => 'g',
 			'unit.kilogram' => 'kg',
 			'unit.milliliter' => 'ml',

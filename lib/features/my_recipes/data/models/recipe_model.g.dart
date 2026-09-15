@@ -39,13 +39,14 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       mayContain: fields[17] == null ? [] : (fields[17] as List).cast<String>(),
       servings: (fields[18] as num?)?.toInt(),
       nutrition: fields[19] as NutritionModel?,
+      sharedRecipeId: fields[20] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeModel obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -85,7 +86,9 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       ..writeByte(18)
       ..write(obj.servings)
       ..writeByte(19)
-      ..write(obj.nutrition);
+      ..write(obj.nutrition)
+      ..writeByte(20)
+      ..write(obj.sharedRecipeId);
   }
 
   @override
@@ -138,6 +141,7 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   nutrition: json['nutrition'] == null
       ? null
       : NutritionModel.fromJson(json['nutrition'] as Map<String, dynamic>),
+  sharedRecipeId: json['sharedRecipeId'] as String?,
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -164,6 +168,7 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'mayContain': instance.mayContain,
       'servings': instance.servings,
       'nutrition': instance.nutrition?.toJson(),
+      'sharedRecipeId': instance.sharedRecipeId,
     };
 
 const _$DietaryPreferenceEnumMap = {

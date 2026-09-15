@@ -190,7 +190,11 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       sourceChannel: base.sourceChannel,
       sourceUrl: base.sourceUrl,
       imageFileName: base.imageFileName,
+      imageStoragePath: base.imageStoragePath,
       savedFromSharedId: base.savedFromSharedId,
+      collabId: base.collabId,
+      collabRole: base.collabRole,
+      sharedRecipeId: base.sharedRecipeId,
       // Whoever saves from here has structured the recipe themselves; the
       // template no longer waits on the model.
       pendingAnalysis: false,

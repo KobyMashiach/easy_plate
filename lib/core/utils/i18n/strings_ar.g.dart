@@ -376,6 +376,12 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get analyzeNow => 'التحليل عبر AI الآن';
 	@override String get analyzing => 'جارٍ تحليل الوصفة...';
 	@override String get analyzeFailed => 'فشل التحليل — يمكنكم المحاولة لاحقًا';
+	@override String get communityUpdateTitle => 'هذه الوصفة مشاركة';
+	@override String get communityUpdateBody => 'تحديث نسخة المجتمع أيضًا، أم نسختك فقط؟';
+	@override String get communityUpdateBoth => 'المجتمع أيضًا';
+	@override String get communityUpdateLocal => 'نسختي فقط';
+	@override String get communityUpdated => 'تم تحديث نسخة المجتمع';
+	@override String get communityGone => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط';
 }
 
 // Path: nutrition
@@ -420,6 +426,8 @@ class _Translations$nutrition$ar extends Translations$nutrition$he {
 	@override String get macroSplit => 'توزيع السعرات';
 	@override String get kcalPerDay => 'سعرة في اليوم';
 	@override String get openDashboard => 'اللوحة الأسبوعية';
+	@override String get perRecipe => 'الوصفة كاملة';
+	@override String perRecipeServings({required Object count}) => '${count} حصص';
 }
 
 // Path: community
@@ -554,6 +562,13 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String get markAllRead => 'تعليم الكل كمقروء';
 	@override String get openRecipe => 'فتح الوصفة';
 	@override String get alreadyHandled => 'تمت معالجة هذه الدعوة';
+	@override String recipeUpdated({required Object name, required Object recipe}) => '${name} حدّث/ت "${recipe}"';
+	@override String get recipeUpdatedHint => 'هناك نسخة جديدة من وصفة حفظتها';
+	@override String get refreshCopy => 'التحديث للنسخة الجديدة';
+	@override String get keepCopy => 'الاحتفاظ بنسختي';
+	@override String get refreshed => 'تم تحديث نسختك إلى الجديدة';
+	@override String get keptCopy => 'بقيت نسختك كما هي';
+	@override String get recipeGone => 'الوصفة لم تعد في المجتمع';
 }
 
 // Path: editor
@@ -824,6 +839,11 @@ class _Translations$receipt$ar extends Translations$receipt$he {
 	@override String get history => 'سجل الأسعار';
 	@override String get noStore => 'بدون متجر';
 	@override String get pricingSaved => 'تم حفظ الاختيار';
+	@override String get renameStore => 'تغيير اسم المتجر';
+	@override String get storeName => 'اسم المتجر';
+	@override String get allStores => 'كل المتاجر';
+	@override String get applyFilters => 'تطبيق';
+	@override String get clearFilters => 'مسح';
 }
 
 // Path: unit
@@ -1346,6 +1366,12 @@ extension on TranslationsAr {
 			'recipe.analyzeNow' => 'التحليل عبر AI الآن',
 			'recipe.analyzing' => 'جارٍ تحليل الوصفة...',
 			'recipe.analyzeFailed' => 'فشل التحليل — يمكنكم المحاولة لاحقًا',
+			'recipe.communityUpdateTitle' => 'هذه الوصفة مشاركة',
+			'recipe.communityUpdateBody' => 'تحديث نسخة المجتمع أيضًا، أم نسختك فقط؟',
+			'recipe.communityUpdateBoth' => 'المجتمع أيضًا',
+			'recipe.communityUpdateLocal' => 'نسختي فقط',
+			'recipe.communityUpdated' => 'تم تحديث نسخة المجتمع',
+			'recipe.communityGone' => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط',
 			'nutrition.title' => 'القيم الغذائية',
 			'nutrition.perServing' => 'للحصة',
 			'nutrition.perServingHint' => 'جميع القيم لحصة واحدة. اتركه فارغًا لإزالة التقدير.',
@@ -1381,6 +1407,8 @@ extension on TranslationsAr {
 			'nutrition.macroSplit' => 'توزيع السعرات',
 			'nutrition.kcalPerDay' => 'سعرة في اليوم',
 			'nutrition.openDashboard' => 'اللوحة الأسبوعية',
+			'nutrition.perRecipe' => 'الوصفة كاملة',
+			'nutrition.perRecipeServings' => ({required Object count}) => '${count} حصص',
 			'community.title' => 'المجتمع',
 			'community.forum' => 'المنتدى',
 			'community.sharedRecipes' => 'وصفات مشتركة',
@@ -1488,6 +1516,13 @@ extension on TranslationsAr {
 			'notifications.markAllRead' => 'تعليم الكل كمقروء',
 			'notifications.openRecipe' => 'فتح الوصفة',
 			'notifications.alreadyHandled' => 'تمت معالجة هذه الدعوة',
+			'notifications.recipeUpdated' => ({required Object name, required Object recipe}) => '${name} حدّث/ت "${recipe}"',
+			'notifications.recipeUpdatedHint' => 'هناك نسخة جديدة من وصفة حفظتها',
+			'notifications.refreshCopy' => 'التحديث للنسخة الجديدة',
+			'notifications.keepCopy' => 'الاحتفاظ بنسختي',
+			'notifications.refreshed' => 'تم تحديث نسختك إلى الجديدة',
+			'notifications.keptCopy' => 'بقيت نسختك كما هي',
+			'notifications.recipeGone' => 'الوصفة لم تعد في المجتمع',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -1643,6 +1678,8 @@ extension on TranslationsAr {
 			'receipt.shareToggle' => 'مشاركة الأسعار مع المجتمع',
 			'receipt.shareHint' => 'أسماء المنتجات والأسعار فقط. لا المتجر ولا التاريخ ولا من دفع.',
 			'receipt.save' => 'حفظ الأسعار',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => 'تم حفظ ${count} أسعار',
 			'receipt.savedShared' => ({required Object count}) => 'تم حفظ ومشاركة ${count} أسعار',
 			'receipt.nothingToSave' => 'لا منتجات للحفظ',
@@ -1658,8 +1695,6 @@ extension on TranslationsAr {
 			'receipt.cameraGuide' => 'ضع الإيصال داخل الإطار',
 			'receipt.cameraHold' => 'اثبت قليلًا…',
 			'receipt.cameraCaptured' => 'تم الالتقاط!',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraUnavailable' => 'لا يمكن الوصول إلى الكاميرا',
 			'receipt.perUnit' => 'للوحدة',
 			'receipt.perKg' => 'للكيلو',
@@ -1715,6 +1750,11 @@ extension on TranslationsAr {
 			'receipt.history' => 'سجل الأسعار',
 			'receipt.noStore' => 'بدون متجر',
 			'receipt.pricingSaved' => 'تم حفظ الاختيار',
+			'receipt.renameStore' => 'تغيير اسم المتجر',
+			'receipt.storeName' => 'اسم المتجر',
+			'receipt.allStores' => 'كل المتاجر',
+			'receipt.applyFilters' => 'تطبيق',
+			'receipt.clearFilters' => 'مسح',
 			'unit.gram' => 'غرام',
 			'unit.kilogram' => 'كغ',
 			'unit.milliliter' => 'مل',

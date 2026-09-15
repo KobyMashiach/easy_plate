@@ -376,6 +376,12 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get analyzeNow => 'Analyser avec l\'IA maintenant';
 	@override String get analyzing => 'Analyse de la recette...';
 	@override String get analyzeFailed => 'L\'analyse a échoué — réessayez plus tard';
+	@override String get communityUpdateTitle => 'Cette recette est partagée';
+	@override String get communityUpdateBody => 'Mettre à jour aussi la copie de la communauté, ou seulement la vôtre ?';
+	@override String get communityUpdateBoth => 'La communauté aussi';
+	@override String get communityUpdateLocal => 'Seulement la mienne';
+	@override String get communityUpdated => 'La copie de la communauté a été mise à jour';
+	@override String get communityGone => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement';
 }
 
 // Path: nutrition
@@ -420,6 +426,8 @@ class _Translations$nutrition$fr extends Translations$nutrition$he {
 	@override String get macroSplit => 'Répartition des calories';
 	@override String get kcalPerDay => 'kcal par jour';
 	@override String get openDashboard => 'Tableau hebdomadaire';
+	@override String get perRecipe => 'Toute la recette';
+	@override String perRecipeServings({required Object count}) => '${count} portions';
 }
 
 // Path: community
@@ -554,6 +562,13 @@ class _Translations$notifications$fr extends Translations$notifications$he {
 	@override String get markAllRead => 'Tout marquer comme lu';
 	@override String get openRecipe => 'Ouvrir la recette';
 	@override String get alreadyHandled => 'Cette invitation a déjà été traitée';
+	@override String recipeUpdated({required Object name, required Object recipe}) => '${name} a mis à jour « ${recipe} »';
+	@override String get recipeUpdatedHint => 'Une nouvelle version d’une recette enregistrée est disponible';
+	@override String get refreshCopy => 'Passer à la nouvelle version';
+	@override String get keepCopy => 'Garder ma copie';
+	@override String get refreshed => 'Votre copie a été mise à jour';
+	@override String get keptCopy => 'Votre copie reste telle quelle';
+	@override String get recipeGone => 'La recette n’est plus dans la communauté';
 }
 
 // Path: editor
@@ -824,6 +839,11 @@ class _Translations$receipt$fr extends Translations$receipt$he {
 	@override String get history => 'Historique des prix';
 	@override String get noStore => 'Sans magasin';
 	@override String get pricingSaved => 'Choix enregistré';
+	@override String get renameStore => 'Renommer le magasin';
+	@override String get storeName => 'Nom du magasin';
+	@override String get allStores => 'Tous les magasins';
+	@override String get applyFilters => 'Appliquer';
+	@override String get clearFilters => 'Effacer';
 }
 
 // Path: unit
@@ -1346,6 +1366,12 @@ extension on TranslationsFr {
 			'recipe.analyzeNow' => 'Analyser avec l\'IA maintenant',
 			'recipe.analyzing' => 'Analyse de la recette...',
 			'recipe.analyzeFailed' => 'L\'analyse a échoué — réessayez plus tard',
+			'recipe.communityUpdateTitle' => 'Cette recette est partagée',
+			'recipe.communityUpdateBody' => 'Mettre à jour aussi la copie de la communauté, ou seulement la vôtre ?',
+			'recipe.communityUpdateBoth' => 'La communauté aussi',
+			'recipe.communityUpdateLocal' => 'Seulement la mienne',
+			'recipe.communityUpdated' => 'La copie de la communauté a été mise à jour',
+			'recipe.communityGone' => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement',
 			'nutrition.title' => 'Valeurs nutritionnelles',
 			'nutrition.perServing' => 'par portion',
 			'nutrition.perServingHint' => 'Toutes les valeurs sont pour une portion. Laissez vide pour retirer l’estimation.',
@@ -1381,6 +1407,8 @@ extension on TranslationsFr {
 			'nutrition.macroSplit' => 'Répartition des calories',
 			'nutrition.kcalPerDay' => 'kcal par jour',
 			'nutrition.openDashboard' => 'Tableau hebdomadaire',
+			'nutrition.perRecipe' => 'Toute la recette',
+			'nutrition.perRecipeServings' => ({required Object count}) => '${count} portions',
 			'community.title' => 'Communauté',
 			'community.forum' => 'Forum',
 			'community.sharedRecipes' => 'Recettes partagées',
@@ -1488,6 +1516,13 @@ extension on TranslationsFr {
 			'notifications.markAllRead' => 'Tout marquer comme lu',
 			'notifications.openRecipe' => 'Ouvrir la recette',
 			'notifications.alreadyHandled' => 'Cette invitation a déjà été traitée',
+			'notifications.recipeUpdated' => ({required Object name, required Object recipe}) => '${name} a mis à jour « ${recipe} »',
+			'notifications.recipeUpdatedHint' => 'Une nouvelle version d’une recette enregistrée est disponible',
+			'notifications.refreshCopy' => 'Passer à la nouvelle version',
+			'notifications.keepCopy' => 'Garder ma copie',
+			'notifications.refreshed' => 'Votre copie a été mise à jour',
+			'notifications.keptCopy' => 'Votre copie reste telle quelle',
+			'notifications.recipeGone' => 'La recette n’est plus dans la communauté',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
@@ -1643,6 +1678,8 @@ extension on TranslationsFr {
 			'receipt.shareToggle' => 'Partager les prix avec la communauté',
 			'receipt.shareHint' => 'Noms de produits et prix seulement. Ni le magasin, ni la date, ni qui a payé.',
 			'receipt.save' => 'Enregistrer les prix',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => '${count} prix enregistrés',
 			'receipt.savedShared' => ({required Object count}) => '${count} prix enregistrés et partagés',
 			'receipt.nothingToSave' => 'Aucun produit à enregistrer',
@@ -1658,8 +1695,6 @@ extension on TranslationsFr {
 			'receipt.cameraGuide' => 'Placez le ticket dans le cadre',
 			'receipt.cameraHold' => 'Ne bougez plus…',
 			'receipt.cameraCaptured' => 'Capturé !',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraUnavailable' => 'Pas d’accès à la caméra',
 			'receipt.perUnit' => 'l’unité',
 			'receipt.perKg' => 'le kg',
@@ -1715,6 +1750,11 @@ extension on TranslationsFr {
 			'receipt.history' => 'Historique des prix',
 			'receipt.noStore' => 'Sans magasin',
 			'receipt.pricingSaved' => 'Choix enregistré',
+			'receipt.renameStore' => 'Renommer le magasin',
+			'receipt.storeName' => 'Nom du magasin',
+			'receipt.allStores' => 'Tous les magasins',
+			'receipt.applyFilters' => 'Appliquer',
+			'receipt.clearFilters' => 'Effacer',
 			'unit.gram' => 'g',
 			'unit.kilogram' => 'kg',
 			'unit.milliliter' => 'ml',

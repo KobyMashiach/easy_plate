@@ -29,6 +29,8 @@ import '../../domain/repositories/recipes_repository.dart';
 import '../../domain/usecases/save_recipe_usecase.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
+import '../../../shared_recipes/domain/usecases/update_shared_recipe_usecase.dart';
+import '../../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
 import '../../../recipe_sharing/domain/usecases/save_collab_recipe_usecase.dart';
 import '../../../recipe_sharing/domain/usecases/sync_collab_recipe_usecase.dart';
 import '../../../../core/services/auth_session_service.dart';
@@ -45,18 +47,32 @@ import '../../../../core/widgets/app_dialog.dart';
 class RecipeDetailsArgs {
   final RecipeEntity recipe;
 
-  /// True for recipes reached from the community. Only the author edits a
-  /// shared recipe, and only from the feed card — never from this screen.
+  /// True for recipes reached from the community that are not this
+  /// account's own.
   final bool readOnly;
 
-  const RecipeDetailsArgs({required this.recipe, this.readOnly = false});
+  /// Set when the screen shows this account's own community post: every
+  /// save then rewrites the post, photo included, and nothing local.
+  final String? sharedId;
+
+  const RecipeDetailsArgs({
+    required this.recipe,
+    this.readOnly = false,
+    this.sharedId,
+  });
 }
 
 class RecipeDetailsPage extends StatefulWidget {
   final RecipeEntity recipe;
   final bool readOnly;
+  final String? sharedId;
 
-  const RecipeDetailsPage({super.key, required this.recipe, this.readOnly = false});
+  const RecipeDetailsPage({
+    super.key,
+    required this.recipe,
+    this.readOnly = false,
+    this.sharedId,
+  });
 
   @override
   State<RecipeDetailsPage> createState() => _RecipeDetailsPageState();
@@ -89,7 +105,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       if (mounted) setState(() => recipe = synced);
     } catch (e) {
       debugPrint('Shared recipe sync failed: $e');
-      if (mounted) AppDialog.warning(message: t.sharing.syncFailed).notify(context);
+      if (mounted) {
+        AppDialog.warning(message: t.sharing.syncFailed).notify(context);
+      }
     }
   }
 
@@ -106,15 +124,18 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     final recipes = context.read<RecipesRepository>();
     setState(() => _estimating = true);
     try {
-      final updated = await EstimateNutritionUseCase(ingestion)(recipe)
-          .timeout(const Duration(seconds: 30));
+      final updated = await EstimateNutritionUseCase(ingestion)(
+        recipe,
+      ).timeout(const Duration(seconds: 30));
       await SaveRecipeUseCase(recipes)(updated);
       if (!mounted) return;
       setState(() => recipe = updated);
       AppDialog.success(message: t.nutrition.estimated).notify(context);
     } catch (e) {
       debugPrint('Nutrition estimate failed: $e');
-      if (mounted) AppDialog.error(message: t.nutrition.estimateFailed).show(context);
+      if (mounted) {
+        AppDialog.error(message: t.nutrition.estimateFailed).show(context);
+      }
     } finally {
       if (mounted) setState(() => _estimating = false);
     }
@@ -140,15 +161,25 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         ingredients: parsed.ingredients,
         steps: parsed.steps,
         // A topic the user already picked outranks the model's silence on it.
-        dietaryTags: parsed.dietaryTags.isNotEmpty ? parsed.dietaryTags : recipe.dietaryTags,
-        allergens: parsed.allergens.isNotEmpty ? parsed.allergens : recipe.allergens,
-        mayContain: parsed.mayContain.isNotEmpty ? parsed.mayContain : recipe.mayContain,
+        dietaryTags: parsed.dietaryTags.isNotEmpty
+            ? parsed.dietaryTags
+            : recipe.dietaryTags,
+        allergens: parsed.allergens.isNotEmpty
+            ? parsed.allergens
+            : recipe.allergens,
+        mayContain: parsed.mayContain.isNotEmpty
+            ? parsed.mayContain
+            : recipe.mayContain,
         servings: parsed.servings ?? recipe.servings,
         nutrition: parsed.nutrition ?? recipe.nutrition,
         sourceChannel: recipe.sourceChannel,
         sourceUrl: recipe.sourceUrl,
         imageFileName: recipe.imageFileName,
+        imageStoragePath: recipe.imageStoragePath,
         savedFromSharedId: recipe.savedFromSharedId,
+        collabId: recipe.collabId,
+        collabRole: recipe.collabRole,
+        sharedRecipeId: recipe.sharedRecipeId,
         pendingAnalysis: false,
         createdAt: recipe.createdAt,
       );
@@ -156,7 +187,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       if (mounted) setState(() => recipe = updated);
     } catch (e) {
       debugPrint('Deferred analysis failed: $e');
-      if (mounted) AppDialog.error(message: t.recipe.analyzeFailed).show(context);
+      if (mounted) {
+        AppDialog.error(message: t.recipe.analyzeFailed).show(context);
+      }
     } finally {
       if (mounted) setState(() => _analyzing = false);
     }
@@ -184,36 +217,79 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     // shared recipe carries, so swapping one here has to reach the shared
     // document too — otherwise the co-editors keep the picture that was
     // replaced, and only this device ever sees the new one.
-    final stored = await SaveCollabRecipeUseCase(
-      sharing: context.read<RecipeSharingRepository>(),
-      recipes: context.read<RecipesRepository>(),
-    )(updated, byUid: AuthSessionService().user?.uid ?? '');
+    final stored = await _persist(updated);
     // Drop the replaced file so removed photos don't accumulate on disk, and
     // the copy in Storage with it — nothing points at it any more, but it would
     // go on being billed.
     if (previous != null && previous != updated.imageFileName) {
       await ImageStorageService().delete(previous);
-      unawaited(RecipeImageStore().remove(previousRemote, uid: UserScope().uid));
+      unawaited(
+        RecipeImageStore().remove(previousRemote, uid: UserScope().uid),
+      );
     }
     if (mounted) setState(() => recipe = stored);
   }
 
   /// Photo changes stay on the image itself, so the bar action opens the
   /// structured editor. Saving here is immediate — the recipe already exists.
+  /// Where a change goes. A community post (opened from the feed as its
+  /// author) is rewritten in place. A local recipe is saved as always — and
+  /// when it was published, the author is asked whether the post should
+  /// follow, every time, since the two copies are theirs to keep apart.
+  Future<RecipeEntity> _persist(RecipeEntity updated) async {
+    final recipes = context.read<RecipesRepository>();
+    final postId = widget.sharedId;
+    if (postId != null) {
+      await UpdateSharedRecipeUseCase(
+        context.read<SharedRecipesRepository>(),
+        context.read<RecipesRepository>(),
+      )(postId, updated, persist: false);
+      return updated;
+    }
+
+    final stored = await SaveCollabRecipeUseCase(
+      sharing: context.read<RecipeSharingRepository>(),
+      recipes: context.read<RecipesRepository>(),
+    )(updated, byUid: AuthSessionService().user?.uid ?? '');
+
+    final published = stored.sharedRecipeId;
+    if (published == null || !mounted) return stored;
+    final also = await AppDialog.general(
+      title: t.recipe.communityUpdateTitle,
+      message: t.recipe.communityUpdateBody,
+      icon: Icons.groups_rounded,
+      confirmLabel: t.recipe.communityUpdateBoth,
+      cancelLabel: t.recipe.communityUpdateLocal,
+    ).show(context);
+    if (also != true || !mounted) return stored;
+    try {
+      await UpdateSharedRecipeUseCase(
+        context.read<SharedRecipesRepository>(),
+        context.read<RecipesRepository>(),
+      )(published, stored);
+      if (mounted) {
+        AppDialog.success(message: t.recipe.communityUpdated).notify(context);
+      }
+    } catch (e) {
+      debugPrint('Community update failed: $e');
+      // The post is gone (taken down elsewhere): forget the link.
+      final unlinked = stored.copyWith(clearSharedRecipeId: true);
+      await SaveRecipeUseCase(recipes)(unlinked);
+      if (mounted) {
+        AppDialog.info(message: t.recipe.communityGone).notify(context);
+      }
+      return unlinked;
+    }
+    return stored;
+  }
+
   Future<void> _edit() async {
-    final repository = context.read<RecipesRepository>();
     final edited = await context.pushNamed<RecipeEntity>(
       Routing.recipeEditor,
       extra: recipe,
     );
     if (edited == null || !mounted) return;
-
-    // Shared recipes write to the shared document first; the use case falls
-    // through to a plain local save for everything else.
-    final stored = await SaveCollabRecipeUseCase(
-      sharing: context.read<RecipeSharingRepository>(),
-      recipes: repository,
-    )(edited, byUid: AuthSessionService().user?.uid ?? '');
+    final stored = await _persist(edited);
     if (mounted) setState(() => recipe = stored);
   }
 
@@ -238,12 +314,13 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
           GestureDetector(
             // A tap opens the photo full size; a long press changes it. With
             // no photo yet there is nothing to open, so a tap adds one.
-            onTap: recipe.imageFileName != null || recipe.imageStoragePath != null
+            onTap:
+                recipe.imageFileName != null || recipe.imageStoragePath != null
                 ? () => showImageViewer(
-                      context,
-                      fileName: recipe.imageFileName,
-                      remotePath: recipe.imageStoragePath,
-                    )
+                    context,
+                    fileName: recipe.imageFileName,
+                    remotePath: recipe.imageStoragePath,
+                  )
                 : (_readOnly ? null : _changePhoto),
             onLongPress: _readOnly ? null : _changePhoto,
             behavior: HitTestBehavior.opaque,
@@ -261,7 +338,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                   ),
                   // A soft shade along the bottom edge so the chips on the
                   // photo stay legible whatever the dish looks like.
-                  if (recipe.imageFileName != null || recipe.imageStoragePath != null)
+                  if (recipe.imageFileName != null ||
+                      recipe.imageStoragePath != null)
                     Positioned.fill(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
@@ -269,7 +347,10 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                           gradient: LinearGradient(
                             begin: Alignment.center,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.45)],
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.45),
+                            ],
                           ),
                         ),
                       ),
@@ -289,31 +370,41 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                               CollabRole.viewer => t.sharing.viewerTag,
                             },
                           ),
-                        ...recipe.dietaryTags.take(2).map(
-                              (tag) => _GlassChip(icon: dietaryIcon(tag), label: dietaryLabel(tag)),
+                        ...recipe.dietaryTags
+                            .take(2)
+                            .map(
+                              (tag) => _GlassChip(
+                                icon: dietaryIcon(tag),
+                                label: dietaryLabel(tag),
+                              ),
                             ),
                       ],
                     ),
                   ),
                   if (!_readOnly)
-                  PositionedDirectional(
-                    end: AppSpacing.sm,
-                    bottom: AppSpacing.sm,
-                    child: Container(
-                      padding: const EdgeInsets.all(AppSpacing.base),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        recipe.imageFileName == null
-                            ? Icons.add_a_photo_rounded
-                            : Icons.edit_rounded,
-                        size: 20,
-                        color: AppColors.primary,
+                    PositionedDirectional(
+                      end: AppSpacing.sm,
+                      bottom: AppSpacing.sm,
+                      child: GestureDetector(
+                        // The pencil edits; the picture around it opens the viewer.
+                        onTap: _changePhoto,
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          padding: const EdgeInsets.all(AppSpacing.base),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceContainerLowest,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            recipe.imageFileName == null
+                                ? Icons.add_a_photo_rounded
+                                : Icons.edit_rounded,
+                            size: 20,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -379,7 +470,10 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
               }).toList(),
             ),
           ],
-          AllergenNotice(allergens: recipe.allergens, mayContain: recipe.mayContain),
+          AllergenNotice(
+            allergens: recipe.allergens,
+            mayContain: recipe.mayContain,
+          ),
           const SizedBox(height: AppSpacing.lg),
           NutritionFactsCard(
             nutrition: recipe.nutrition,
@@ -387,7 +481,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
             estimating: _estimating,
             // Only a recipe with ingredients can be estimated, and only by
             // someone allowed to change it.
-            onEstimate: _readOnly || recipe.ingredients.isEmpty ? null : _estimateNutrition,
+            onEstimate: _readOnly || recipe.ingredients.isEmpty
+                ? null
+                : _estimateNutrition,
           ),
           const SizedBox(height: AppSpacing.md),
           if (recipe.pendingAnalysis) ...[
@@ -400,14 +496,18 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.hourglass_top_rounded,
-                          size: 20, color: AppColors.onSecondaryContainer),
+                      Icon(
+                        Icons.hourglass_top_rounded,
+                        size: 20,
+                        color: AppColors.onSecondaryContainer,
+                      ),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
                           t.recipe.pendingAnalysis,
-                          style: AppTextStyles.bodyLg
-                              .copyWith(color: AppColors.onSecondaryContainer),
+                          style: AppTextStyles.bodyLg.copyWith(
+                            color: AppColors.onSecondaryContainer,
+                          ),
                         ),
                       ),
                     ],
@@ -415,12 +515,15 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     t.recipe.pendingAnalysisHint,
-                    style: AppTextStyles.labelMd
-                        .copyWith(color: AppColors.onSecondaryContainer),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onSecondaryContainer,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   ClayButton(
-                    label: _analyzing ? t.recipe.analyzing : t.recipe.analyzeNow,
+                    label: _analyzing
+                        ? t.recipe.analyzing
+                        : t.recipe.analyzeNow,
                     icon: Icons.auto_awesome_rounded,
                     expanded: true,
                     onPressed: _analyzing || _readOnly ? null : _analyzeNow,
@@ -440,7 +543,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                 const SizedBox(height: AppSpacing.sm),
                 ...recipe.ingredients.map(
                   (ingredient) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xs,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -473,37 +578,42 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClaySectionHeader(title: t.recipe.instructions, underline: true),
+                ClaySectionHeader(
+                  title: t.recipe.instructions,
+                  underline: true,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 ...recipe.steps.asMap().entries.map(
-                      (entry) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 28,
-                              height: 28,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryFixed,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text(
-                                '${entry.key + 1}',
-                                style: AppTextStyles.labelSm.copyWith(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Text(entry.value, style: AppTextStyles.bodyMd),
-                            ),
-                          ],
-                        ),
-                      ),
+                  (entry) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.base,
                     ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryFixed,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${entry.key + 1}',
+                            style: AppTextStyles.labelSm.copyWith(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(entry.value, style: AppTextStyles.bodyMd),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -512,11 +622,10 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     );
   }
 
-
-
   String _ingredientLine(RecipeIngredientEntity ingredient) {
-    final amount =
-        ingredient.isAmountMissing ? kMissingInfoPlaceholder : ingredient.amount.toString();
+    final amount = ingredient.isAmountMissing
+        ? kMissingInfoPlaceholder
+        : ingredient.amount.toString();
     final unit = measurementUnitLabel(ingredient.unit);
     return [amount, unit, ingredient.name].where((s) => s.isNotEmpty).join(' ');
   }
@@ -532,7 +641,10 @@ class _GlassChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs + 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs + 2,
+      ),
       decoration: ShapeDecoration(
         color: AppColors.surfaceContainerLowest.withValues(alpha: 0.88),
         shape: const StadiumBorder(),
@@ -542,7 +654,10 @@ class _GlassChip extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: AppColors.primary),
           const SizedBox(width: AppSpacing.xs),
-          Text(label, style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurface)),
+          Text(
+            label,
+            style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurface),
+          ),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 // Mirrors every in-app notification as a push. A client cannot send FCM to
 // another device (that needs the server key), so this is the one piece that
 // has to run server-side.
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -22,6 +22,9 @@ const bodyFor = (data, fromName) => {
   if (data.type === "shareInvite") {
     const role = data.role === "editor" ? "לעריכה" : "לצפייה";
     return `${fromName} שיתף/ה איתך את "${data.recipeTitle}" ${role}`;
+  }
+  if (data.type === "sharedRecipeUpdated") {
+    return `${fromName} עדכן/ה את "${data.recipeTitle}" — יש גרסה חדשה למתכון ששמרת`;
   }
   return "יש לך התראה חדשה";
 };
@@ -53,5 +56,54 @@ exports.pushOnNotification = onDocumentCreated(
       android: { priority: "high" },
       apns: { payload: { aps: { sound: "default" } } },
     });
+  },
+);
+
+// The fields of a post a saver would care about changing. Likes and the
+// like counter change all the time and are not an edit.
+const RECIPE_FIELDS = [
+  "title", "prepTimeMinutes", "cookTimeMinutes", "ingredients", "steps",
+  "dietaryTags", "allergens", "mayContain", "imageStoragePath", "servings", "nutrition",
+];
+
+function recipeChanged(before, after) {
+  return RECIPE_FIELDS.some((f) => JSON.stringify(before[f] ?? null) !== JSON.stringify(after[f] ?? null));
+}
+
+// The author edited a community post: everyone who saved a copy gets an
+// inbox item (and, through pushOnNotification, a push) offering to refresh
+// or keep their copy. The saved copies are found through a collection
+// group query on `savedFromSharedId` (see firestore.indexes.json).
+exports.onSharedRecipeUpdated = onDocumentUpdated(
+  "shared_recipes/{sharedId}",
+  async (event) => {
+    const before = event.data?.before.data();
+    const after = event.data?.after.data();
+    if (!before || !after || !recipeChanged(before, after)) return;
+
+    const sharedId = event.params.sharedId;
+    const db = admin.firestore();
+    const copies = await db.collectionGroup("recipes").where("savedFromSharedId", "==", sharedId).get();
+    const authorUid = String(after.authorUid || "");
+    const savers = new Set();
+    for (const doc of copies.docs) {
+      // users/{uid}/recipes/{id}
+      const uid = doc.ref.parent.parent?.id;
+      if (uid && uid !== authorUid) savers.add(uid);
+    }
+    if (savers.size === 0) return;
+
+    const batch = db.batch();
+    for (const uid of savers) {
+      batch.set(db.collection("notifications").doc(uid).collection("items").doc(), {
+        type: "sharedRecipeUpdated",
+        fromUid: authorUid,
+        sharedId,
+        recipeTitle: String(after.title || ""),
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
   },
 );

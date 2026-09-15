@@ -451,10 +451,18 @@ class _SharedCard extends StatelessWidget {
       authorUid: shared.authorUid,
     );
     if (!allowed || !context.mounted) return;
-    context.pushNamed(
+    final mine = shared.authorUid == AuthSessionService().user?.uid;
+    final bloc = context.read<SharedRecipesBloc>();
+    await context.pushNamed(
       Routing.recipeDetails,
-      extra: RecipeDetailsArgs(recipe: shared.recipe, readOnly: true),
+      extra: RecipeDetailsArgs(
+        recipe: shared.recipe,
+        readOnly: !mine,
+        sharedId: mine ? shared.id : null,
+      ),
     );
+    // The author may have rewritten the post from inside: reload the feed.
+    if (mine) bloc.add(const SharedRecipesEvent.init());
   }
 
   /// The badge that says what opening this card will cost — nothing for a

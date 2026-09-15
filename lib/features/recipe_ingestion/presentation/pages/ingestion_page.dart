@@ -17,7 +17,6 @@ import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/allergen_chip_selector.dart';
-import '../../../../core/widgets/landscape_hint.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
@@ -355,10 +354,6 @@ class _ChannelFormState extends State<_ChannelForm> {
               children: [
                 ClaySectionHeader(title: _channelLabel(widget.channel)),
                 const SizedBox(height: AppSpacing.gutter),
-                if (widget.channel == RecipeIngestionChannel.rawText) ...[
-                  const LandscapeHint(),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
                 TextField(
                   controller: _controller,
                   maxLines: switch (widget.channel) {

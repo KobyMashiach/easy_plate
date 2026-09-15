@@ -133,4 +133,6 @@ enum CollabRole { owner, editor, viewer }
 
 enum ShareInviteStatus { pending, accepted, declined }
 
-enum AppNotificationType { shareInvite }
+/// Notification kinds. Written by the app (an invite) or by a Cloud
+/// Function (a community post the user saved was edited by its author).
+enum AppNotificationType { shareInvite, sharedRecipeUpdated }

@@ -17,5 +17,8 @@ abstract class RecipesRepository {
   /// its photo was picked would go out with no image path, and the copy the
   /// other side keeps would stay pictureless for good. Returns the recipe
   /// unchanged when there is nothing to upload or the upload failed.
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe);
+  /// Uploads the photo if it has not been yet. With [persist] the local copy
+  /// is saved with the new path; false for a community post being edited,
+  /// which has no local copy to save (its id is the post's).
+  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true});
 }

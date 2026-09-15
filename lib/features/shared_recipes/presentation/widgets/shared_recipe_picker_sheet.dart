@@ -32,7 +32,8 @@ class _SharedRecipePickerSheet extends StatefulWidget {
   const _SharedRecipePickerSheet({required this.repository});
 
   @override
-  State<_SharedRecipePickerSheet> createState() => _SharedRecipePickerSheetState();
+  State<_SharedRecipePickerSheet> createState() =>
+      _SharedRecipePickerSheetState();
 }
 
 class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
@@ -58,12 +59,16 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClaySectionHeader(title: t.community.attachRecipe, underline: true),
+              ClaySectionHeader(
+                title: t.community.attachRecipe,
+                underline: true,
+              ),
               const SizedBox(height: AppSpacing.sm),
               TextField(
                 style: AppTextStyles.bodyMd,
                 decoration: InputDecoration(hintText: t.community.searchHint),
-                onChanged: (value) => setState(() => _query = value.trim().toLowerCase()),
+                onChanged: (value) =>
+                    setState(() => _query = value.trim().toLowerCase()),
               ),
               const SizedBox(height: AppSpacing.sm),
               Expanded(
@@ -75,10 +80,12 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                     }
                     final all = snapshot.data ?? const <SharedRecipeEntity>[];
                     final visible = all
-                        .where((r) =>
-                            _query.isEmpty ||
-                            r.recipe.title.toLowerCase().contains(_query) ||
-                            r.authorName.toLowerCase().contains(_query))
+                        .where(
+                          (r) =>
+                              _query.isEmpty ||
+                              r.recipe.title.toLowerCase().contains(_query) ||
+                              r.authorName.toLowerCase().contains(_query),
+                        )
                         .toList();
 
                     if (visible.isEmpty) {
@@ -93,7 +100,8 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                     return ListView.separated(
                       controller: scrollController,
                       itemCount: visible.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.sm),
                       itemBuilder: (context, index) {
                         final shared = visible[index];
                         return ClayCard(
@@ -102,8 +110,11 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                           onTap: () => Navigator.of(context).pop(shared),
                           child: Row(
                             children: [
-                              Icon(Icons.restaurant_menu_rounded,
-                                  size: 20, color: AppColors.primary),
+                              Icon(
+                                Icons.restaurant_menu_rounded,
+                                size: 20,
+                                color: AppColors.primary,
+                              ),
                               const SizedBox(width: AppSpacing.sm),
                               Expanded(
                                 child: Column(
@@ -115,9 +126,12 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      t.community.byAuthor(name: shared.authorName),
-                                      style: AppTextStyles.labelSm
-                                          .copyWith(color: AppColors.onSurfaceVariant),
+                                      t.community.byAuthor(
+                                        name: shared.authorName,
+                                      ),
+                                      style: AppTextStyles.labelSm.copyWith(
+                                        color: AppColors.onSurfaceVariant,
+                                      ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],

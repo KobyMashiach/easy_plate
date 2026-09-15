@@ -44,6 +44,8 @@ sealed class RecipeModel with _$RecipeModel {
     // older recipes decode as null and show as "not estimated yet".
     @HiveField(18) int? servings,
     @HiveField(19) NutritionModel? nutrition,
+    // The community post id, appended: older recipes decode as null.
+    @HiveField(20) String? sharedRecipeId,
   }) = _RecipeModel;
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
@@ -74,6 +76,7 @@ extension RecipeModelMapper on RecipeModel {
         collabRole: collabRole == null
             ? null
             : CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
+        sharedRecipeId: sharedRecipeId,
         createdAt: createdAt,
       );
 }
@@ -99,6 +102,7 @@ extension RecipeEntityMapper on RecipeEntity {
         pendingAnalysis: pendingAnalysis,
         collabId: collabId,
         collabRole: collabRole?.name,
+        sharedRecipeId: sharedRecipeId,
         createdAt: createdAt,
       );
 }

@@ -18,6 +18,8 @@ import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../../recipe_sharing/domain/usecases/get_share_invites_usecase.dart';
 import '../../../recipe_sharing/domain/usecases/respond_to_share_invite_usecase.dart';
+import '../../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
+import '../../../shared_recipes/domain/usecases/refresh_saved_copy_usecase.dart';
 import '../../domain/entities/app_notification_entity.dart';
 import '../../domain/repositories/notifications_repository.dart';
 import '../../domain/usecases/mark_notification_read_usecase.dart';
@@ -47,9 +49,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   Future<void> _loadPending() async {
     try {
-      final invites =
-          await GetShareInvitesUseCase(context.read<RecipeSharingRepository>()).incoming(_uid);
-      if (mounted) setState(() => _pending = {for (final i in invites) i.id: i});
+      final invites = await GetShareInvitesUseCase(
+        context.read<RecipeSharingRepository>(),
+      ).incoming(_uid);
+      if (mounted) {
+        setState(() => _pending = {for (final i in invites) i.id: i});
+      }
     } catch (e) {
       debugPrint('Pending invites load failed: $e');
     }
@@ -58,14 +63,19 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _markRead(AppNotificationEntity item) async {
     if (item.read) return;
     try {
-      await MarkNotificationReadUseCase(context.read<NotificationsRepository>())(_uid, item.id);
+      await MarkNotificationReadUseCase(
+        context.read<NotificationsRepository>(),
+      )(_uid, item.id);
     } catch (e) {
       debugPrint('Mark read failed: $e');
     }
   }
 
-  Future<void> _respond(AppNotificationEntity item, ShareInviteEntity invite,
-      {required bool accept}) async {
+  Future<void> _respond(
+    AppNotificationEntity item,
+    ShareInviteEntity invite, {
+    required bool accept,
+  }) async {
     final useCase = RespondToShareInviteUseCase(
       sharing: context.read<RecipeSharingRepository>(),
       recipes: context.read<RecipesRepository>(),
@@ -77,7 +87,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
         await _markRead(item);
         if (!mounted) return;
         _toast(t.sharing.accepted);
-        context.pushNamed(Routing.recipeDetails, extra: RecipeDetailsArgs(recipe: local));
+        context.pushNamed(
+          Routing.recipeDetails,
+          extra: RecipeDetailsArgs(recipe: local),
+        );
       } else {
         await useCase.decline(invite);
         await _markRead(item);
@@ -92,8 +105,44 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
+  /// The author changed a post this account saved: take the new version
+  /// (and show it), or keep the copy as it is.
+  Future<void> _refreshCopy(AppNotificationEntity item) async {
+    final sharedId = item.sharedId;
+    if (sharedId == null) return;
+    setState(() => _busy = true);
+    try {
+      final updated = await RefreshSavedCopyUseCase(
+        shared: context.read<SharedRecipesRepository>(),
+        recipes: context.read<RecipesRepository>(),
+      )(sharedId, viewerUid: _uid);
+      await _markRead(item);
+      if (!mounted) return;
+      if (updated == null) {
+        _fail(t.notifications.recipeGone);
+        return;
+      }
+      _toast(t.notifications.refreshed);
+      context.pushNamed(
+        Routing.recipeDetails,
+        extra: RecipeDetailsArgs(recipe: updated),
+      );
+    } catch (e) {
+      debugPrint('Refresh saved copy failed: $e');
+      if (mounted) _fail(t.common.error);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _keepCopy(AppNotificationEntity item) async {
+    await _markRead(item);
+    if (mounted) _toast(t.notifications.keptCopy);
+  }
+
   /// A word in passing, gone on its own.
-  void _toast(String message) => AppDialog.success(message: message).notify(context);
+  void _toast(String message) =>
+      AppDialog.success(message: message).notify(context);
 
   /// Something to read before going on.
   void _fail(String message) => AppDialog.error(message: message).show(context);
@@ -106,8 +155,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
         leadingIcon: Icons.arrow_back_rounded,
         onLeadingTap: () => Navigator.of(context).maybePop(),
         trailingIcon: Icons.done_all_rounded,
-        onTrailingTap: () =>
-            MarkNotificationReadUseCase(context.read<NotificationsRepository>()).all(_uid),
+        onTrailingTap: () => MarkNotificationReadUseCase(
+          context.read<NotificationsRepository>(),
+        ).all(_uid),
       ),
       body: ValueListenableBuilder<List<AppNotificationEntity>>(
         valueListenable: NotificationsService().items,
@@ -125,7 +175,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(AppSpacing.marginMobile),
                   itemCount: items.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) => _card(items[index]),
                 ),
         ),
@@ -134,6 +185,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Widget _card(AppNotificationEntity item) {
+    if (item.type == AppNotificationType.sharedRecipeUpdated) {
+      return _updatedCard(item);
+    }
     final invite = item.inviteId == null ? null : _pending[item.inviteId];
     final roleText = item.role == CollabRole.editor
         ? t.notifications.asEditor
@@ -155,7 +209,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
             style: AppTextStyles.bodyMd,
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(roleText, style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant)),
+          Text(
+            roleText,
+            style: AppTextStyles.labelSm.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
           if (invite != null)
             Row(
@@ -165,15 +224,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     label: t.sharing.accept,
                     icon: Icons.check_rounded,
                     expanded: true,
-                    onPressed: _busy ? null : () => _respond(item, invite, accept: true),
+                    onPressed: _busy
+                        ? null
+                        : () => _respond(item, invite, accept: true),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 TextButton(
-                  onPressed: _busy ? null : () => _respond(item, invite, accept: false),
+                  onPressed: _busy
+                      ? null
+                      : () => _respond(item, invite, accept: false),
                   child: Text(
                     t.sharing.decline,
-                    style: AppTextStyles.labelMd.copyWith(color: AppColors.error),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.error,
+                    ),
                   ),
                 ),
               ],
@@ -183,6 +248,61 @@ class _NotificationsPageState extends State<NotificationsPage> {
               t.notifications.alreadyHandled,
               style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+extension on _NotificationsPageState {
+  Widget _updatedCard(AppNotificationEntity item) {
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      color: item.read ? null : AppColors.primaryFixed,
+      onTap: () => _markRead(item),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t.notifications.recipeUpdated(
+              name: item.fromName ?? '',
+              recipe: item.recipeTitle ?? '',
+            ),
+            style: AppTextStyles.bodyMd,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            t.notifications.recipeUpdatedHint,
+            style: AppTextStyles.labelSm.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          if (!item.read) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                Expanded(
+                  child: ClayButton(
+                    label: t.notifications.refreshCopy,
+                    icon: Icons.sync_rounded,
+                    expanded: true,
+                    onPressed: _busy ? null : () => _refreshCopy(item),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                TextButton(
+                  onPressed: _busy ? null : () => _keepCopy(item),
+                  child: Text(
+                    t.notifications.keepCopy,
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

@@ -50,12 +50,12 @@ class _FakeSharedRepository implements SharedRecipesRepository {
       updated[id] = recipe;
 
   @override
-  Future<void> share(
+  Future<String> share(
     RecipeEntity recipe, {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
-  }) async {}
+  }) async => 'post-1';
 }
 
 class _FakeRecipesRepository implements RecipesRepository {
@@ -70,7 +70,7 @@ class _FakeRecipesRepository implements RecipesRepository {
   /// Nothing to upload in a test, which is also what the real repository
   /// returns for a recipe with no photo.
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe) async => recipe;
+  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async => recipe;
 
   final changes = StreamController<List<RecipeEntity>>.broadcast();
 

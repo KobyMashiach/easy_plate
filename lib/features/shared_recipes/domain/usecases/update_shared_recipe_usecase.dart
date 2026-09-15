@@ -11,8 +11,14 @@ class UpdateSharedRecipeUseCase {
 
   UpdateSharedRecipeUseCase(this.repository, this.recipes);
 
-  Future<void> call(String sharedRecipeId, RecipeEntity recipe) async {
-    final ready = await recipes.readyForSharing(recipe);
+  /// [persist] false when [recipe] *is* the post (edited from the feed or
+  /// the post's own details page) rather than a local recipe.
+  Future<void> call(
+    String sharedRecipeId,
+    RecipeEntity recipe, {
+    bool persist = true,
+  }) async {
+    final ready = await recipes.readyForSharing(recipe, persist: persist);
     return repository.updateShared(sharedRecipeId, ready);
   }
 }

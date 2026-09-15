@@ -221,7 +221,13 @@
     "pendingAnalysisHint": "Enregistrée en texte brut. Analysez-la maintenant ou modifiez-la à la main.",
     "analyzeNow": "Analyser avec l'IA maintenant",
     "analyzing": "Analyse de la recette...",
-    "analyzeFailed": "L'analyse a échoué — réessayez plus tard"
+    "analyzeFailed": "L'analyse a échoué — réessayez plus tard",
+    "communityUpdateTitle": "Cette recette est partagée",
+    "communityUpdateBody": "Mettre à jour aussi la copie de la communauté, ou seulement la vôtre ?",
+    "communityUpdateBoth": "La communauté aussi",
+    "communityUpdateLocal": "Seulement la mienne",
+    "communityUpdated": "La copie de la communauté a été mise à jour",
+    "communityGone": "La recette n’est plus dans la communauté ; enregistrée pour vous seulement"
   },
   "nutrition": {
     "title": "Valeurs nutritionnelles",
@@ -258,7 +264,9 @@
     "missingCount": "$count éléments sans valeurs nutritionnelles",
     "macroSplit": "Répartition des calories",
     "kcalPerDay": "kcal par jour",
-    "openDashboard": "Tableau hebdomadaire"
+    "openDashboard": "Tableau hebdomadaire",
+    "perRecipe": "Toute la recette",
+    "perRecipeServings": "$count portions"
   },
   "community": {
     "title": "Communauté",
@@ -371,7 +379,14 @@
     "asEditor": "en modification",
     "markAllRead": "Tout marquer comme lu",
     "openRecipe": "Ouvrir la recette",
-    "alreadyHandled": "Cette invitation a déjà été traitée"
+    "alreadyHandled": "Cette invitation a déjà été traitée",
+    "recipeUpdated": "$name a mis à jour « $recipe »",
+    "recipeUpdatedHint": "Une nouvelle version d’une recette enregistrée est disponible",
+    "refreshCopy": "Passer à la nouvelle version",
+    "keepCopy": "Garder ma copie",
+    "refreshed": "Votre copie a été mise à jour",
+    "keptCopy": "Votre copie reste telle quelle",
+    "recipeGone": "La recette n’est plus dans la communauté"
   },
   "editor": {
     "title": "Modifier la recette",
@@ -606,7 +621,12 @@
     "pricingActive": "Utilisé : $price",
     "history": "Historique des prix",
     "noStore": "Sans magasin",
-    "pricingSaved": "Choix enregistré"
+    "pricingSaved": "Choix enregistré",
+    "renameStore": "Renommer le magasin",
+    "storeName": "Nom du magasin",
+    "allStores": "Tous les magasins",
+    "applyFilters": "Appliquer",
+    "clearFilters": "Effacer"
   },
   "unit": {
     "gram": "g",

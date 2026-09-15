@@ -19,8 +19,9 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
   Stream<List<AppNotificationEntity>> watch(String uid) {
     return remoteDataSource.watch(uid).asyncMap((items) async {
       if (items.isEmpty) return items;
-      final profiles =
-          await userProfileRepository.getPublicProfiles(items.map((n) => n.fromUid).toSet());
+      final profiles = await userProfileRepository.getPublicProfiles(
+        items.map((n) => n.fromUid).toSet(),
+      );
       return [
         for (final item in items)
           if (profiles[item.fromUid] case final profile?)

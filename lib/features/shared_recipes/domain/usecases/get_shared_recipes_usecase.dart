@@ -5,6 +5,8 @@ class GetSharedRecipesUseCase {
   final SharedRecipesRepository repository;
   GetSharedRecipesUseCase(this.repository);
 
-  Future<List<SharedRecipeEntity>> call({required String viewerUid, int limit = 50}) =>
-      repository.getFeed(viewerUid: viewerUid, limit: limit);
+  Future<List<SharedRecipeEntity>> call({
+    required String viewerUid,
+    int limit = 50,
+  }) => repository.getFeed(viewerUid: viewerUid, limit: limit);
 }

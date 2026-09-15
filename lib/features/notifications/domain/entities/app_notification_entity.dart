@@ -11,6 +11,9 @@ class AppNotificationEntity {
   final String? collabId;
   final String? recipeTitle;
   final CollabRole? role;
+
+  /// The community post, for [AppNotificationType.sharedRecipeUpdated].
+  final String? sharedId;
   final bool read;
   final DateTime createdAt;
 
@@ -25,18 +28,20 @@ class AppNotificationEntity {
     this.collabId,
     this.recipeTitle,
     this.role,
+    this.sharedId,
   });
 
   AppNotificationEntity withFromName(String name) => AppNotificationEntity(
-        id: id,
-        type: type,
-        fromUid: fromUid,
-        fromName: name,
-        inviteId: inviteId,
-        collabId: collabId,
-        recipeTitle: recipeTitle,
-        role: role,
-        read: read,
-        createdAt: createdAt,
-      );
+    id: id,
+    type: type,
+    fromUid: fromUid,
+    fromName: name,
+    inviteId: inviteId,
+    collabId: collabId,
+    recipeTitle: recipeTitle,
+    role: role,
+    sharedId: sharedId,
+    read: read,
+    createdAt: createdAt,
+  );
 }

@@ -17,6 +17,9 @@ abstract class PriceBookRepository {
   Future<List<ReceiptEntity>> getReceipts();
   Future<void> saveReceipt(ReceiptEntity receipt);
 
+  /// Changes the store on a receipt and on every price read from it.
+  Future<void> renameReceiptStore(String receiptId, String? store);
+
   /// The receipt, and with [keepRecords] false every record that came from
   /// it; with it true the prices stay and only the receipt goes.
   Future<void> deleteReceipt(String id, {bool keepRecords = false});

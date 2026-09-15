@@ -57,8 +57,6 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
         : t.community.atLeastLikes(count: step);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -86,18 +84,25 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
                             label: _sortLabel(sort),
                             icon: _sortIcon(sort),
                             selected: _query.sort == sort,
-                            onTap: () => setState(() => _query = _query.copyWith(sort: sort)),
+                            onTap: () => setState(
+                              () => _query = _query.copyWith(sort: sort),
+                            ),
                           ),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    ClaySectionHeader(title: t.community.topics, underline: true),
+                    ClaySectionHeader(
+                      title: t.community.topics,
+                      underline: true,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     DietaryChipSelector(
                       selected: _query.topics,
                       onToggle: (topic) => setState(() {
                         final topics = [..._query.topics];
-                        topics.contains(topic) ? topics.remove(topic) : topics.add(topic);
+                        topics.contains(topic)
+                            ? topics.remove(topic)
+                            : topics.add(topic);
                         _query = _query.copyWith(topics: topics);
                       }),
                     ),
@@ -107,16 +112,18 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
                       steps: _likeSteps,
                       value: _query.minLikes,
                       labelFor: _likesLabel,
-                      onChanged: (step) =>
-                          setState(() => _query = _query.copyWith(minLikes: step)),
+                      onChanged: (step) => setState(
+                        () => _query = _query.copyWith(minLikes: step),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     // Split is a display choice over the same scale, so the
                     // toggle sits with the sliders it rearranges.
                     _SplitToggle(
                       value: _query.splitTimes,
-                      onChanged: (split) =>
-                          setState(() => _query = _query.copyWith(splitTimes: split)),
+                      onChanged: (split) => setState(
+                        () => _query = _query.copyWith(splitTimes: split),
+                      ),
                     ),
                     if (_query.splitTimes) ...[
                       _StepSlider<TimeBucket>(
@@ -124,16 +131,18 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
                         steps: TimeBucket.values,
                         value: _query.prepTime,
                         labelFor: _bucketLabel,
-                        onChanged: (bucket) =>
-                            setState(() => _query = _query.copyWith(prepTime: bucket)),
+                        onChanged: (bucket) => setState(
+                          () => _query = _query.copyWith(prepTime: bucket),
+                        ),
                       ),
                       _StepSlider<TimeBucket>(
                         title: t.recipe.cookTime,
                         steps: TimeBucket.values,
                         value: _query.cookTime,
                         labelFor: _bucketLabel,
-                        onChanged: (bucket) =>
-                            setState(() => _query = _query.copyWith(cookTime: bucket)),
+                        onChanged: (bucket) => setState(
+                          () => _query = _query.copyWith(cookTime: bucket),
+                        ),
                       ),
                     ] else
                       _StepSlider<TimeBucket>(
@@ -141,8 +150,9 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
                         steps: TimeBucket.values,
                         value: _query.totalTime,
                         labelFor: _bucketLabel,
-                        onChanged: (bucket) =>
-                            setState(() => _query = _query.copyWith(totalTime: bucket)),
+                        onChanged: (bucket) => setState(
+                          () => _query = _query.copyWith(totalTime: bucket),
+                        ),
                       ),
                     const SizedBox(height: AppSpacing.lg),
                   ],
@@ -157,7 +167,8 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
                         ClayButton(
                           label: t.community.clearFilters,
                           icon: Icons.filter_alt_off_rounded,
-                          onPressed: () => setState(() => _query = _query.cleared()),
+                          onPressed: () =>
+                              setState(() => _query = _query.cleared()),
                         ),
                         const SizedBox(width: AppSpacing.sm),
                       ],
@@ -181,16 +192,16 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
   }
 
   String _sortLabel(SharedFeedSort sort) => switch (sort) {
-        SharedFeedSort.newest => t.community.sortNewest,
-        SharedFeedSort.oldest => t.community.sortOldest,
-        SharedFeedSort.mostLiked => t.community.sortMostLiked,
-      };
+    SharedFeedSort.newest => t.community.sortNewest,
+    SharedFeedSort.oldest => t.community.sortOldest,
+    SharedFeedSort.mostLiked => t.community.sortMostLiked,
+  };
 
   IconData _sortIcon(SharedFeedSort sort) => switch (sort) {
-        SharedFeedSort.newest => Icons.schedule_rounded,
-        SharedFeedSort.oldest => Icons.history_rounded,
-        SharedFeedSort.mostLiked => Icons.favorite_rounded,
-      };
+    SharedFeedSort.newest => Icons.schedule_rounded,
+    SharedFeedSort.oldest => Icons.history_rounded,
+    SharedFeedSort.mostLiked => Icons.favorite_rounded,
+  };
 
   Widget _chip({
     required String label,
@@ -219,8 +230,11 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon,
-                  size: 14, color: selected ? AppColors.onPrimary : AppColors.tertiary),
+              Icon(
+                icon,
+                size: 14,
+                color: selected ? AppColors.onPrimary : AppColors.tertiary,
+              ),
               const SizedBox(width: AppSpacing.xs),
             ],
             Text(
@@ -287,8 +301,9 @@ class _StepSlider<T> extends StatelessWidget {
             activeTickMarkColor: AppColors.onPrimary,
             inactiveTickMarkColor: AppColors.outline,
             valueIndicatorColor: AppColors.primary,
-            valueIndicatorTextStyle:
-                AppTextStyles.labelSm.copyWith(color: AppColors.onPrimary),
+            valueIndicatorTextStyle: AppTextStyles.labelSm.copyWith(
+              color: AppColors.onPrimary,
+            ),
           ),
           child: Slider(
             value: _index.toDouble(),

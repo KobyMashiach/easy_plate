@@ -221,7 +221,13 @@
     "pendingAnalysisHint": "Сохранён как сырой текст. Проанализируйте сейчас или отредактируйте вручную.",
     "analyzeNow": "Проанализировать с AI",
     "analyzing": "Анализируем рецепт...",
-    "analyzeFailed": "Анализ не удался — попробуйте позже"
+    "analyzeFailed": "Анализ не удался — попробуйте позже",
+    "communityUpdateTitle": "Этот рецепт опубликован",
+    "communityUpdateBody": "Обновить и копию в сообществе, или только вашу?",
+    "communityUpdateBoth": "И в сообществе",
+    "communityUpdateLocal": "Только у меня",
+    "communityUpdated": "Копия в сообществе обновлена",
+    "communityGone": "Рецепта больше нет в сообществе; сохранено только у вас"
   },
   "nutrition": {
     "title": "Пищевая ценность",
@@ -258,7 +264,9 @@
     "missingCount": "$count позиций без пищевой ценности",
     "macroSplit": "Распределение калорий",
     "kcalPerDay": "ккал в день",
-    "openDashboard": "Недельная панель"
+    "openDashboard": "Недельная панель",
+    "perRecipe": "Весь рецепт",
+    "perRecipeServings": "порций: $count"
   },
   "community": {
     "title": "Сообщество",
@@ -371,7 +379,14 @@
     "asEditor": "для редактирования",
     "markAllRead": "Отметить все прочитанными",
     "openRecipe": "Открыть рецепт",
-    "alreadyHandled": "Приглашение уже обработано"
+    "alreadyHandled": "Приглашение уже обработано",
+    "recipeUpdated": "$name обновил(а) «$recipe»",
+    "recipeUpdatedHint": "Есть новая версия сохранённого вами рецепта",
+    "refreshCopy": "Обновить до новой версии",
+    "keepCopy": "Оставить мою копию",
+    "refreshed": "Ваша копия обновлена",
+    "keptCopy": "Ваша копия осталась без изменений",
+    "recipeGone": "Рецепта больше нет в сообществе"
   },
   "editor": {
     "title": "Редактирование рецепта",
@@ -606,7 +621,12 @@
     "pricingActive": "Используется: $price",
     "history": "История цен",
     "noStore": "Без магазина",
-    "pricingSaved": "Выбор сохранён"
+    "pricingSaved": "Выбор сохранён",
+    "renameStore": "Переименовать магазин",
+    "storeName": "Название магазина",
+    "allStores": "Все магазины",
+    "applyFilters": "Применить",
+    "clearFilters": "Сбросить"
   },
   "unit": {
     "gram": "г",

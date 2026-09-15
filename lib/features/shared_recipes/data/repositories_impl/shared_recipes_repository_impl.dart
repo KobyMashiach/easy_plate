@@ -23,8 +23,9 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
   ) async {
     if (recipes.isEmpty) return recipes;
 
-    final profiles = await userProfileRepository
-        .getPublicProfiles(recipes.map((r) => r.authorUid).toSet());
+    final profiles = await userProfileRepository.getPublicProfiles(
+      recipes.map((r) => r.authorUid).toSet(),
+    );
 
     return [
       for (final shared in recipes)
@@ -39,32 +40,37 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
   }
 
   @override
-  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50}) async {
+  Future<List<SharedRecipeEntity>> getFeed({
+    required String viewerUid,
+    int limit = 50,
+  }) async {
     return _withLiveAuthors(
       await remoteDataSource.getFeed(viewerUid: viewerUid, limit: limit),
     );
   }
 
   @override
-  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async {
+  Future<SharedRecipeEntity?> getById(
+    String id, {
+    required String viewerUid,
+  }) async {
     final shared = await remoteDataSource.getById(id, viewerUid: viewerUid);
     if (shared == null) return null;
     return (await _withLiveAuthors([shared])).single;
   }
 
   @override
-  Future<void> share(
+  Future<String> share(
     RecipeEntity recipe, {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
-  }) =>
-      remoteDataSource.share(
-        recipe,
-        authorUid: authorUid,
-        authorName: authorName,
-        authorPhotoUrl: authorPhotoUrl,
-      );
+  }) => remoteDataSource.share(
+    recipe,
+    authorUid: authorUid,
+    authorName: authorName,
+    authorPhotoUrl: authorPhotoUrl,
+  );
 
   @override
   Future<bool> toggleLike(String sharedRecipeId, {required String viewerUid}) =>
@@ -75,5 +81,6 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
       remoteDataSource.updateShared(sharedRecipeId, recipe);
 
   @override
-  Future<void> unshare(String sharedRecipeId) => remoteDataSource.unshare(sharedRecipeId);
+  Future<void> unshare(String sharedRecipeId) =>
+      remoteDataSource.unshare(sharedRecipeId);
 }

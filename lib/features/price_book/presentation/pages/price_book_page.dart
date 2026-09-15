@@ -45,8 +45,8 @@ class _PriceBookPageState extends State<PriceBookPage>
   _PriceSort _priceSort = _PriceSort.name;
   String _query = '';
   bool _loading = true;
-  bool _filtersOpen = false;
   String? _storeFilter;
+  String? _priceStoreFilter;
   int? _periodDays;
   PriceUnit? _unitFilter;
   bool? _manualFilter;
@@ -101,9 +101,15 @@ class _PriceBookPageState extends State<PriceBookPage>
   }
 
   /// One line per product: its most recent record.
+  List<String> get _recordStores =>
+      {for (final r in _records) ?r.store}.toList()..sort();
+
   List<PriceRecordEntity> get _latestPrices {
     final latest = <String, PriceRecordEntity>{};
-    for (final r in _records) {
+    // A store filter first, so "latest per product" means latest *there*.
+    for (final r in _records.where(
+      (r) => _priceStoreFilter == null || r.store == _priceStoreFilter,
+    )) {
       final key = '${r.normalizedName}|${r.unit.name}';
       if (!latest.containsKey(key) ||
           r.purchasedAt.isAfter(latest[key]!.purchasedAt)) {
@@ -162,6 +168,143 @@ class _PriceBookPageState extends State<PriceBookPage>
       await ImageStorageService().delete(f);
     }
     await _load();
+  }
+
+  /// The receipts' filters, in a sheet: store and period.
+  Future<void> _openReceiptFilters() async {
+    var store = _storeFilter;
+    var period = _periodDays;
+    final apply = await _showFilterSheet(
+      builder: (setSheetState) => [
+        _ChipRow<String?>(
+          values: [null, ..._stores],
+          selected: store,
+          label: (s) => s ?? t.receipt.allStores,
+          onSelect: (s) => setSheetState(() => store = s),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _ChipRow<int?>(
+          values: const [null, 30, 90],
+          selected: period,
+          label: (d) => switch (d) {
+            null => t.receipt.periodAll,
+            30 => t.receipt.period30,
+            _ => t.receipt.period90,
+          },
+          onSelect: (d) => setSheetState(() => period = d),
+        ),
+      ],
+      onClear: () {
+        store = null;
+        period = null;
+      },
+    );
+    if (apply) {
+      setState(() {
+        _storeFilter = store;
+        _periodDays = period;
+      });
+    }
+  }
+
+  /// The prices' filters: store, unit, source.
+  Future<void> _openPriceFilters() async {
+    var store = _priceStoreFilter;
+    var unit = _unitFilter;
+    var manual = _manualFilter;
+    final apply = await _showFilterSheet(
+      builder: (setSheetState) => [
+        _ChipRow<String?>(
+          values: [null, ..._recordStores],
+          selected: store,
+          label: (s) => s ?? t.receipt.allStores,
+          onSelect: (s) => setSheetState(() => store = s),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _ChipRow<PriceUnit?>(
+          values: const [null, ...PriceUnit.values],
+          selected: unit,
+          label: (u) => u == null ? t.receipt.filterAll : priceUnitLabel(u),
+          onSelect: (u) => setSheetState(() => unit = u),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _ChipRow<bool?>(
+          values: const [null, false, true],
+          selected: manual,
+          label: (m) => switch (m) {
+            null => t.receipt.filterAll,
+            false => t.receipt.sourceReceipt,
+            true => t.receipt.sourceManual,
+          },
+          onSelect: (m) => setSheetState(() => manual = m),
+        ),
+      ],
+      onClear: () {
+        store = null;
+        unit = null;
+        manual = null;
+      },
+    );
+    if (apply) {
+      setState(() {
+        _priceStoreFilter = store;
+        _unitFilter = unit;
+        _manualFilter = manual;
+      });
+    }
+  }
+
+  /// One sheet shape for both tabs. Resolves true when the user applied.
+  Future<bool> _showFilterSheet({
+    required List<Widget> Function(void Function(VoidCallback) setSheetState)
+    builder,
+    required VoidCallback onClear,
+  }) async {
+    final applied = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.marginMobile,
+              0,
+              AppSpacing.marginMobile,
+              AppSpacing.marginMobile,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.receipt.filter,
+                        style: AppTextStyles.headlineMd,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => setSheetState(onClear),
+                      child: Text(t.receipt.clearFilters),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.gutter),
+                ...builder(setSheetState),
+                const SizedBox(height: AppSpacing.md),
+                ClayButton(
+                  label: t.receipt.applyFilters,
+                  icon: Icons.check_rounded,
+                  expanded: true,
+                  onPressed: () => Navigator.of(sheetContext).pop(true),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    return applied == true;
   }
 
   Future<void> _deleteAll() async {
@@ -255,50 +398,24 @@ class _PriceBookPageState extends State<PriceBookPage>
               horizontal: AppSpacing.marginMobile,
             ),
             child: receiptsTab
-                ? Column(
+                ? Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _SortRow<_ReceiptSort>(
-                              values: _ReceiptSort.values,
-                              selected: _receiptSort,
-                              label: (s) => switch (s) {
-                                _ReceiptSort.date => t.receipt.sortDate,
-                                _ReceiptSort.store => t.receipt.sortStore,
-                                _ReceiptSort.total => t.receipt.sortTotal,
-                              },
-                              onSelect: (s) => setState(() => _receiptSort = s),
-                            ),
-                          ),
-                          _FilterButton(
-                            active: _storeFilter != null || _periodDays != null,
-                            open: _filtersOpen,
-                            onTap: () =>
-                                setState(() => _filtersOpen = !_filtersOpen),
-                          ),
-                        ],
-                      ),
-                      if (_filtersOpen) ...[
-                        const SizedBox(height: AppSpacing.base),
-                        _ChipRow<String?>(
-                          values: [null, ..._stores],
-                          selected: _storeFilter,
-                          label: (s) => s ?? t.receipt.filterAll,
-                          onSelect: (s) => setState(() => _storeFilter = s),
-                        ),
-                        const SizedBox(height: AppSpacing.base),
-                        _ChipRow<int?>(
-                          values: const [null, 30, 90],
-                          selected: _periodDays,
-                          label: (d) => switch (d) {
-                            null => t.receipt.periodAll,
-                            30 => t.receipt.period30,
-                            _ => t.receipt.period90,
+                      Expanded(
+                        child: _SortRow<_ReceiptSort>(
+                          values: _ReceiptSort.values,
+                          selected: _receiptSort,
+                          label: (s) => switch (s) {
+                            _ReceiptSort.date => t.receipt.sortDate,
+                            _ReceiptSort.store => t.receipt.sortStore,
+                            _ReceiptSort.total => t.receipt.sortTotal,
                           },
-                          onSelect: (d) => setState(() => _periodDays = d),
+                          onSelect: (s) => setState(() => _receiptSort = s),
                         ),
-                      ],
+                      ),
+                      _FilterButton(
+                        active: _storeFilter != null || _periodDays != null,
+                        onTap: _openReceiptFilters,
+                      ),
                     ],
                   )
                 : Column(
@@ -332,35 +449,13 @@ class _PriceBookPageState extends State<PriceBookPage>
                           ),
                           _FilterButton(
                             active:
-                                _unitFilter != null || _manualFilter != null,
-                            open: _filtersOpen,
-                            onTap: () =>
-                                setState(() => _filtersOpen = !_filtersOpen),
+                                _unitFilter != null ||
+                                _manualFilter != null ||
+                                _priceStoreFilter != null,
+                            onTap: _openPriceFilters,
                           ),
                         ],
                       ),
-                      if (_filtersOpen) ...[
-                        const SizedBox(height: AppSpacing.base),
-                        _ChipRow<PriceUnit?>(
-                          values: const [null, ...PriceUnit.values],
-                          selected: _unitFilter,
-                          label: (u) => u == null
-                              ? t.receipt.filterAll
-                              : priceUnitLabel(u),
-                          onSelect: (u) => setState(() => _unitFilter = u),
-                        ),
-                        const SizedBox(height: AppSpacing.base),
-                        _ChipRow<bool?>(
-                          values: const [null, false, true],
-                          selected: _manualFilter,
-                          label: (m) => switch (m) {
-                            null => t.receipt.filterAll,
-                            false => t.receipt.sourceReceipt,
-                            true => t.receipt.sourceManual,
-                          },
-                          onSelect: (m) => setState(() => _manualFilter = m),
-                        ),
-                      ],
                     ],
                   ),
           ),
@@ -593,14 +688,9 @@ class _SortRow<T> extends StatelessWidget {
 
 class _FilterButton extends StatelessWidget {
   final bool active;
-  final bool open;
   final VoidCallback onTap;
 
-  const _FilterButton({
-    required this.active,
-    required this.open,
-    required this.onTap,
-  });
+  const _FilterButton({required this.active, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -608,7 +698,7 @@ class _FilterButton extends StatelessWidget {
       tooltip: t.receipt.filter,
       visualDensity: VisualDensity.compact,
       style: IconButton.styleFrom(
-        backgroundColor: open || active
+        backgroundColor: active
             ? AppColors.primaryFixed
             : AppColors.surfaceContainerLow,
         foregroundColor: active ? AppColors.primary : AppColors.tertiary,
@@ -622,7 +712,7 @@ class _FilterButton extends StatelessWidget {
   }
 }
 
-/// A scrolling row of choice chips; the selected one is tinted.
+/// Choice chips that wrap; the selected one is tinted.
 class _ChipRow<T> extends StatelessWidget {
   final List<T> values;
   final T selected;
@@ -638,45 +728,42 @@ class _ChipRow<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (final v in values) ...[
-            GestureDetector(
-              onTap: () => onSelect(v),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xs + 2,
-                ),
-                decoration: ShapeDecoration(
-                  color: v == selected
-                      ? AppColors.primaryFixed
-                      : AppColors.surfaceContainerLow,
-                  shape: StadiumBorder(
-                    side: BorderSide(
-                      color: v == selected
-                          ? AppColors.primary
-                          : AppColors.outlineVariant,
-                    ),
-                  ),
-                ),
-                child: Text(
-                  label(v),
-                  style: AppTextStyles.labelSm.copyWith(
+    return Wrap(
+      spacing: AppSpacing.base,
+      runSpacing: AppSpacing.base,
+      children: [
+        for (final v in values)
+          GestureDetector(
+            onTap: () => onSelect(v),
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.base,
+              ),
+              decoration: ShapeDecoration(
+                color: v == selected
+                    ? AppColors.primaryFixed
+                    : AppColors.surfaceContainerLow,
+                shape: StadiumBorder(
+                  side: BorderSide(
                     color: v == selected
-                        ? AppColors.onPrimaryFixedVariant
-                        : AppColors.tertiary,
+                        ? AppColors.primary
+                        : AppColors.outlineVariant,
                   ),
                 ),
               ),
+              child: Text(
+                label(v),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: v == selected
+                      ? AppColors.onPrimaryFixedVariant
+                      : AppColors.tertiary,
+                ),
+              ),
             ),
-            const SizedBox(width: AppSpacing.base),
-          ],
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

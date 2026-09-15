@@ -376,6 +376,12 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get analyzeNow => 'Проанализировать с AI';
 	@override String get analyzing => 'Анализируем рецепт...';
 	@override String get analyzeFailed => 'Анализ не удался — попробуйте позже';
+	@override String get communityUpdateTitle => 'Этот рецепт опубликован';
+	@override String get communityUpdateBody => 'Обновить и копию в сообществе, или только вашу?';
+	@override String get communityUpdateBoth => 'И в сообществе';
+	@override String get communityUpdateLocal => 'Только у меня';
+	@override String get communityUpdated => 'Копия в сообществе обновлена';
+	@override String get communityGone => 'Рецепта больше нет в сообществе; сохранено только у вас';
 }
 
 // Path: nutrition
@@ -420,6 +426,8 @@ class _Translations$nutrition$ru extends Translations$nutrition$he {
 	@override String get macroSplit => 'Распределение калорий';
 	@override String get kcalPerDay => 'ккал в день';
 	@override String get openDashboard => 'Недельная панель';
+	@override String get perRecipe => 'Весь рецепт';
+	@override String perRecipeServings({required Object count}) => 'порций: ${count}';
 }
 
 // Path: community
@@ -554,6 +562,13 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String get markAllRead => 'Отметить все прочитанными';
 	@override String get openRecipe => 'Открыть рецепт';
 	@override String get alreadyHandled => 'Приглашение уже обработано';
+	@override String recipeUpdated({required Object name, required Object recipe}) => '${name} обновил(а) «${recipe}»';
+	@override String get recipeUpdatedHint => 'Есть новая версия сохранённого вами рецепта';
+	@override String get refreshCopy => 'Обновить до новой версии';
+	@override String get keepCopy => 'Оставить мою копию';
+	@override String get refreshed => 'Ваша копия обновлена';
+	@override String get keptCopy => 'Ваша копия осталась без изменений';
+	@override String get recipeGone => 'Рецепта больше нет в сообществе';
 }
 
 // Path: editor
@@ -824,6 +839,11 @@ class _Translations$receipt$ru extends Translations$receipt$he {
 	@override String get history => 'История цен';
 	@override String get noStore => 'Без магазина';
 	@override String get pricingSaved => 'Выбор сохранён';
+	@override String get renameStore => 'Переименовать магазин';
+	@override String get storeName => 'Название магазина';
+	@override String get allStores => 'Все магазины';
+	@override String get applyFilters => 'Применить';
+	@override String get clearFilters => 'Сбросить';
 }
 
 // Path: unit
@@ -1346,6 +1366,12 @@ extension on TranslationsRu {
 			'recipe.analyzeNow' => 'Проанализировать с AI',
 			'recipe.analyzing' => 'Анализируем рецепт...',
 			'recipe.analyzeFailed' => 'Анализ не удался — попробуйте позже',
+			'recipe.communityUpdateTitle' => 'Этот рецепт опубликован',
+			'recipe.communityUpdateBody' => 'Обновить и копию в сообществе, или только вашу?',
+			'recipe.communityUpdateBoth' => 'И в сообществе',
+			'recipe.communityUpdateLocal' => 'Только у меня',
+			'recipe.communityUpdated' => 'Копия в сообществе обновлена',
+			'recipe.communityGone' => 'Рецепта больше нет в сообществе; сохранено только у вас',
 			'nutrition.title' => 'Пищевая ценность',
 			'nutrition.perServing' => 'на порцию',
 			'nutrition.perServingHint' => 'Все значения указаны на одну порцию. Оставьте пустым, чтобы убрать оценку.',
@@ -1381,6 +1407,8 @@ extension on TranslationsRu {
 			'nutrition.macroSplit' => 'Распределение калорий',
 			'nutrition.kcalPerDay' => 'ккал в день',
 			'nutrition.openDashboard' => 'Недельная панель',
+			'nutrition.perRecipe' => 'Весь рецепт',
+			'nutrition.perRecipeServings' => ({required Object count}) => 'порций: ${count}',
 			'community.title' => 'Сообщество',
 			'community.forum' => 'Форум',
 			'community.sharedRecipes' => 'Общие рецепты',
@@ -1488,6 +1516,13 @@ extension on TranslationsRu {
 			'notifications.markAllRead' => 'Отметить все прочитанными',
 			'notifications.openRecipe' => 'Открыть рецепт',
 			'notifications.alreadyHandled' => 'Приглашение уже обработано',
+			'notifications.recipeUpdated' => ({required Object name, required Object recipe}) => '${name} обновил(а) «${recipe}»',
+			'notifications.recipeUpdatedHint' => 'Есть новая версия сохранённого вами рецепта',
+			'notifications.refreshCopy' => 'Обновить до новой версии',
+			'notifications.keepCopy' => 'Оставить мою копию',
+			'notifications.refreshed' => 'Ваша копия обновлена',
+			'notifications.keptCopy' => 'Ваша копия осталась без изменений',
+			'notifications.recipeGone' => 'Рецепта больше нет в сообществе',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -1643,6 +1678,8 @@ extension on TranslationsRu {
 			'receipt.shareToggle' => 'Поделиться ценами с сообществом',
 			'receipt.shareHint' => 'Только названия товаров и цены. Без магазина, даты и того, кто платил.',
 			'receipt.save' => 'Сохранить цены',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => 'Сохранено цен: ${count}',
 			'receipt.savedShared' => ({required Object count}) => 'Сохранено и отправлено цен: ${count}',
 			'receipt.nothingToSave' => 'Нет товаров для сохранения',
@@ -1658,8 +1695,6 @@ extension on TranslationsRu {
 			'receipt.cameraGuide' => 'Поместите чек в рамку',
 			'receipt.cameraHold' => 'Не двигайте…',
 			'receipt.cameraCaptured' => 'Снято!',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraUnavailable' => 'Нет доступа к камере',
 			'receipt.perUnit' => 'за шт.',
 			'receipt.perKg' => 'за кг',
@@ -1715,6 +1750,11 @@ extension on TranslationsRu {
 			'receipt.history' => 'История цен',
 			'receipt.noStore' => 'Без магазина',
 			'receipt.pricingSaved' => 'Выбор сохранён',
+			'receipt.renameStore' => 'Переименовать магазин',
+			'receipt.storeName' => 'Название магазина',
+			'receipt.allStores' => 'Все магазины',
+			'receipt.applyFilters' => 'Применить',
+			'receipt.clearFilters' => 'Сбросить',
 			'unit.gram' => 'г',
 			'unit.kilogram' => 'кг',
 			'unit.milliliter' => 'мл',

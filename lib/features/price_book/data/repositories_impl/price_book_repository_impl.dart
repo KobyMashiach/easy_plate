@@ -61,6 +61,25 @@ class PriceBookRepositoryImpl implements PriceBookRepository {
   }
 
   @override
+  Future<void> renameReceiptStore(String receiptId, String? store) async {
+    final receipts = await localDataSource.getReceipts();
+    final receipt = receipts.where((r) => r.id == receiptId).firstOrNull;
+    if (receipt != null) {
+      final updated = receipt.copyWith(store: store);
+      await localDataSource.putReceipt(updated);
+      unawaited(receiptsCloud?.push(updated));
+    }
+    final records = (await localDataSource.getAll())
+        .where((r) => r.receiptId == receiptId)
+        .toList();
+    final renamed = [for (final r in records) r.copyWith(store: store)];
+    await localDataSource.putAll(renamed);
+    for (final r in renamed) {
+      unawaited(cloud?.push(r));
+    }
+  }
+
+  @override
   Future<void> deleteReceipt(String id, {bool keepRecords = false}) async {
     if (!keepRecords) {
       final records = (await localDataSource.getAll())

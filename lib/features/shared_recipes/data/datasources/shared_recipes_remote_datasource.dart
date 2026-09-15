@@ -8,9 +8,12 @@ import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
 
 abstract class SharedRecipesRemoteDataSource {
-  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50});
+  Future<List<SharedRecipeEntity>> getFeed({
+    required String viewerUid,
+    int limit = 50,
+  });
   Future<SharedRecipeEntity?> getById(String id, {required String viewerUid});
-  Future<void> share(
+  Future<String> share(
     RecipeEntity recipe, {
     required String authorUid,
     required String authorName,
@@ -21,7 +24,8 @@ abstract class SharedRecipesRemoteDataSource {
   Future<void> unshare(String sharedRecipeId);
 }
 
-class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource {
+class SharedRecipesFirestoreDataSource
+    implements SharedRecipesRemoteDataSource {
   static const collection = 'shared_recipes';
   static const _likes = 'likes';
   static const _uuid = Uuid();
@@ -29,18 +33,27 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
   final FirebaseFirestore _firestore;
 
   SharedRecipesFirestoreDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  CollectionReference<Map<String, dynamic>> get _root => _firestore.collection(collection);
+  CollectionReference<Map<String, dynamic>> get _root =>
+      _firestore.collection(collection);
 
   @override
-  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50}) async {
-    final snapshot = await _root.orderBy('createdAt', descending: true).limit(limit).get();
+  Future<List<SharedRecipeEntity>> getFeed({
+    required String viewerUid,
+    int limit = 50,
+  }) async {
+    final snapshot = await _root
+        .orderBy('createdAt', descending: true)
+        .limit(limit)
+        .get();
 
     // One like lookup per row rather than a read of every like: the feed only
     // needs to know about this viewer.
     final liked = await Future.wait(
-      snapshot.docs.map((doc) => doc.reference.collection(_likes).doc(viewerUid).get()),
+      snapshot.docs.map(
+        (doc) => doc.reference.collection(_likes).doc(viewerUid).get(),
+      ),
     );
 
     return [
@@ -51,7 +64,10 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
 
   /// Null when the recipe has been unshared since the link to it was posted.
   @override
-  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async {
+  Future<SharedRecipeEntity?> getById(
+    String id, {
+    required String viewerUid,
+  }) async {
     final doc = await _root.doc(id).get();
     if (!doc.exists) return null;
     final liked = await doc.reference.collection(_likes).doc(viewerUid).get();
@@ -65,17 +81,20 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
     final data = doc.data() ?? const <String, dynamic>{};
     final ingredients = ((data['ingredients'] as List?) ?? const [])
         .whereType<Map<String, dynamic>>()
-        .map((raw) => RecipeIngredientEntity(
-              name: (raw['name'] as String?) ?? '',
-              amount: (raw['amount'] as num?)?.toDouble(),
-              unit: MeasurementUnit.values.firstWhere(
-                (u) => u.name == raw['unit'],
-                orElse: () => MeasurementUnit.unspecified,
-              ),
-            ))
+        .map(
+          (raw) => RecipeIngredientEntity(
+            name: (raw['name'] as String?) ?? '',
+            amount: (raw['amount'] as num?)?.toDouble(),
+            unit: MeasurementUnit.values.firstWhere(
+              (u) => u.name == raw['unit'],
+              orElse: () => MeasurementUnit.unspecified,
+            ),
+          ),
+        )
         .toList();
 
-    final createdAt = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+    final createdAt =
+        (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
 
     return SharedRecipeEntity(
       id: doc.id,
@@ -93,10 +112,16 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
         prepTimeMinutes: (data['prepTimeMinutes'] as num?)?.toInt(),
         cookTimeMinutes: (data['cookTimeMinutes'] as num?)?.toInt(),
         ingredients: ingredients,
-        steps: ((data['steps'] as List?) ?? const []).whereType<String>().toList(),
+        steps: ((data['steps'] as List?) ?? const [])
+            .whereType<String>()
+            .toList(),
         dietaryTags: ((data['dietaryTags'] as List?) ?? const [])
             .whereType<String>()
-            .map((name) => DietaryPreference.values.where((d) => d.name == name).firstOrNull)
+            .map(
+              (name) => DietaryPreference.values
+                  .where((d) => d.name == name)
+                  .firstOrNull,
+            )
             .nonNulls
             .toList(),
         allergens: Allergen.fromNames(data['allergens']),
@@ -111,13 +136,17 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
   }
 
   @override
-  Future<void> share(
+  Future<String> share(
     RecipeEntity recipe, {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
-  }) {
-    return _root.doc(_uuid.v4()).set({
+  }) async {
+    final id = _uuid.v4();
+    await _root.doc(id).set({
+      // Which local recipe this post came from, so the author's later edits
+      // can find it.
+      'sourceRecipeId': recipe.id,
       'title': recipe.title,
       'prepTimeMinutes': recipe.prepTimeMinutes,
       'cookTimeMinutes': recipe.cookTimeMinutes,
@@ -141,6 +170,7 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
       'likeCount': 0,
       'createdAt': Timestamp.now(),
     });
+    return id;
   }
 
   /// The per-user like document and the denormalised counter have to move

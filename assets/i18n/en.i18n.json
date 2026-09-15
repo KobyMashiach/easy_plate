@@ -221,7 +221,13 @@
     "pendingAnalysisHint": "Saved as raw text. Analyse it now or edit it by hand.",
     "analyzeNow": "Analyse with AI now",
     "analyzing": "Analysing the recipe...",
-    "analyzeFailed": "The analysis failed — you can try again later"
+    "analyzeFailed": "The analysis failed — you can try again later",
+    "communityUpdateTitle": "This recipe is shared",
+    "communityUpdateBody": "Update the community copy too, or only yours?",
+    "communityUpdateBoth": "Community too",
+    "communityUpdateLocal": "Only mine",
+    "communityUpdated": "The community copy was updated",
+    "communityGone": "The recipe is no longer in the community; saved only for you"
   },
   "nutrition": {
     "title": "Nutrition",
@@ -258,7 +264,9 @@
     "missingCount": "$count items without nutrition values",
     "macroSplit": "Calorie split",
     "kcalPerDay": "kcal per day",
-    "openDashboard": "Weekly dashboard"
+    "openDashboard": "Weekly dashboard",
+    "perRecipe": "Whole recipe",
+    "perRecipeServings": "$count servings"
   },
   "community": {
     "title": "Community",
@@ -371,7 +379,14 @@
     "asEditor": "to edit",
     "markAllRead": "Mark all as read",
     "openRecipe": "Open recipe",
-    "alreadyHandled": "This invite was already handled"
+    "alreadyHandled": "This invite was already handled",
+    "recipeUpdated": "$name updated \"$recipe\"",
+    "recipeUpdatedHint": "There is a new version of a recipe you saved",
+    "refreshCopy": "Refresh to new version",
+    "keepCopy": "Keep my copy",
+    "refreshed": "Your copy was updated to the new version",
+    "keptCopy": "Your copy stays as it is",
+    "recipeGone": "The recipe is no longer in the community"
   },
   "editor": {
     "title": "Edit recipe",
@@ -606,7 +621,12 @@
     "pricingActive": "In use: $price",
     "history": "Price history",
     "noStore": "No store",
-    "pricingSaved": "Choice saved"
+    "pricingSaved": "Choice saved",
+    "renameStore": "Rename store",
+    "storeName": "Store name",
+    "allStores": "All stores",
+    "applyFilters": "Apply",
+    "clearFilters": "Clear"
   },
   "unit": {
     "gram": "g",

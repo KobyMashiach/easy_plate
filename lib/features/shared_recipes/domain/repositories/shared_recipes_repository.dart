@@ -3,13 +3,17 @@ import '../entities/shared_recipe_entity.dart';
 
 abstract class SharedRecipesRepository {
   /// Newest first. [viewerUid] resolves each entry's `likedByMe`.
-  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50});
+  Future<List<SharedRecipeEntity>> getFeed({
+    required String viewerUid,
+    int limit = 50,
+  });
 
   /// Null when the recipe has been unshared — a forum reply can outlive the
   /// recipe it links to.
   Future<SharedRecipeEntity?> getById(String id, {required String viewerUid});
 
-  Future<void> share(
+  /// Publishes [recipe]; resolves with the new post's id.
+  Future<String> share(
     RecipeEntity recipe, {
     required String authorUid,
     required String authorName,

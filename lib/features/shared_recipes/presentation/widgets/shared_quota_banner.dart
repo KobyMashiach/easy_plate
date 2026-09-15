@@ -82,9 +82,15 @@ class _SharedQuotaBannerState extends State<SharedQuotaBanner> {
         final limits = MonetizationConfig.limits;
         final viewed = usage.sharedViewsToday;
         final free = DailyQuotaPolicy.remainingFreeSharedViews(viewed, limits);
-        final rewarded = DailyQuotaPolicy.remainingRewardedSharedViews(viewed, limits);
+        final rewarded = DailyQuotaPolicy.remainingRewardedSharedViews(
+          viewed,
+          limits,
+        );
 
-        final _Stage(:icon, :text, :background, :foreground) = _stageFor(free, rewarded);
+        final _Stage(:icon, :text, :background, :foreground) = _stageFor(
+          free,
+          rewarded,
+        );
 
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -93,7 +99,10 @@ class _SharedQuotaBannerState extends State<SharedQuotaBanner> {
               horizontal: AppSpacing.sm,
               vertical: AppSpacing.base,
             ),
-            decoration: ShapeDecoration(color: background, shape: const StadiumBorder()),
+            decoration: ShapeDecoration(
+              color: background,
+              shape: const StadiumBorder(),
+            ),
             child: Row(
               children: [
                 Icon(icon, size: 16, color: foreground),

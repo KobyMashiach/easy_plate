@@ -31,14 +31,19 @@ sealed class SharedRecipesEvent with _$SharedRecipesEvent {
   const factory SharedRecipesEvent.refresh(Completer<void> done) = _Refresh;
   const factory SharedRecipesEvent.share(RecipeEntity recipe) = _Share;
   const factory SharedRecipesEvent.toggleLike(String id) = _ToggleLike;
-  const factory SharedRecipesEvent.updateShared(String id, RecipeEntity recipe) =
-      _UpdateShared;
+  const factory SharedRecipesEvent.updateShared(
+    String id,
+    RecipeEntity recipe,
+  ) = _UpdateShared;
   const factory SharedRecipesEvent.unshare(String id) = _Unshare;
-  const factory SharedRecipesEvent.importToMyRecipes(SharedRecipeEntity shared) = _Import;
+  const factory SharedRecipesEvent.importToMyRecipes(
+    SharedRecipeEntity shared,
+  ) = _Import;
 
   /// The local recipes changed — a save from a forum link, a removal on the
   /// recipes tab — so which feed entries count as saved has to be re-read.
-  const factory SharedRecipesEvent.savedChanged(Set<String> savedIds) = _SavedChanged;
+  const factory SharedRecipesEvent.savedChanged(Set<String> savedIds) =
+      _SavedChanged;
 }
 
 @freezed
@@ -47,11 +52,13 @@ sealed class SharedRecipesState with _$SharedRecipesState {
   const factory SharedRecipesState.loaded(
     List<SharedRecipeEntity> recipes, {
     @Default(false) bool imported,
+
     /// Feed ids the user already has a local copy of, so the saved filter and
     /// the save button can reflect it.
     @Default(<String>{}) Set<String> savedIds,
   }) = SharedRecipesLoaded;
-  const factory SharedRecipesState.errorMessage(String error) = SharedRecipesError;
+  const factory SharedRecipesState.errorMessage(String error) =
+      SharedRecipesError;
 }
 
 class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
@@ -91,7 +98,9 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     // comes back to it, so a recipe removed on the recipes tab would still
     // read as saved here. Following the box keeps the two in step.
     _recipes = recipesRepository.watchRecipes().listen(
-      (local) => add(.savedChanged(local.map((r) => r.savedFromSharedId).nonNulls.toSet())),
+      (local) => add(
+        .savedChanged(local.map((r) => r.savedFromSharedId).nonNulls.toSet()),
+      ),
       onError: (Object e) => debugPrint('Saved ids stream failed: $e'),
     );
   }
@@ -108,7 +117,10 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
       shareRecipeUseCase: ShareRecipeUseCase(context.read(), context.read()),
       toggleLikeUseCase: ToggleSharedRecipeLikeUseCase(context.read()),
       unshareRecipeUseCase: UnshareRecipeUseCase(context.read()),
-      updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(context.read(), context.read()),
+      updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(
+        context.read(),
+        context.read(),
+      ),
       saveRecipeUseCase: SaveRecipeUseCase(context.read()),
       getRecipesUseCase: GetRecipesUseCase(context.read()),
       recipesRepository: context.read(),
@@ -140,7 +152,10 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     }
   }
 
-  Future<void> _refresh(_Refresh event, Emitter<SharedRecipesState> emit) async {
+  Future<void> _refresh(
+    _Refresh event,
+    Emitter<SharedRecipesState> emit,
+  ) async {
     try {
       await _init(const _Init(), emit);
     } finally {
@@ -151,12 +166,22 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
   Future<void> _share(_Share event, Emitter<SharedRecipesState> emit) async {
     final profile = AuthSessionService().profile;
     try {
-      await shareRecipeUseCase(
+      final postId = await shareRecipeUseCase(
         event.recipe,
         authorUid: _uid,
         authorName: profile?.fullName ?? '',
         authorPhotoUrl: profile?.photoUrl,
       );
+      // Remember the post on the local recipe, so a later edit there can
+      // offer to update the community copy too.
+      final local = (await recipesRepository.getRecipes())
+          .where((r) => r.id == event.recipe.id)
+          .firstOrNull;
+      if (local != null) {
+        await recipesRepository.saveRecipe(
+          local.copyWith(sharedRecipeId: postId),
+        );
+      }
       await _init(const _Init(), emit);
     } catch (e) {
       debugPrint('Share recipe error: $e');
@@ -166,7 +191,10 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
 
   /// The row flips before the write lands so the tap feels immediate, and is
   /// put back if the transaction fails.
-  Future<void> _toggleLike(_ToggleLike event, Emitter<SharedRecipesState> emit) async {
+  Future<void> _toggleLike(
+    _ToggleLike event,
+    Emitter<SharedRecipesState> emit,
+  ) async {
     final index = _feed.indexWhere((r) => r.id == event.id);
     if (index == -1) return;
 
@@ -189,7 +217,10 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
 
   /// The edited recipe replaces the row in place rather than reloading the
   /// feed, so the list does not jump while the user is looking at it.
-  Future<void> _updateShared(_UpdateShared event, Emitter<SharedRecipesState> emit) async {
+  Future<void> _updateShared(
+    _UpdateShared event,
+    Emitter<SharedRecipesState> emit,
+  ) async {
     final index = _feed.indexWhere((r) => r.id == event.id);
     if (index == -1) return;
 
@@ -203,9 +234,19 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     }
   }
 
-  Future<void> _unshare(_Unshare event, Emitter<SharedRecipesState> emit) async {
+  Future<void> _unshare(
+    _Unshare event,
+    Emitter<SharedRecipesState> emit,
+  ) async {
     try {
       await unshareRecipeUseCase(event.id);
+      for (final local in await recipesRepository.getRecipes()) {
+        if (local.sharedRecipeId == event.id) {
+          await recipesRepository.saveRecipe(
+            local.copyWith(clearSharedRecipeId: true),
+          );
+        }
+      }
       _feed = _feed.where((r) => r.id != event.id).toList();
       emit(.loaded(_feed, savedIds: _savedIds));
     } catch (e) {
@@ -220,7 +261,9 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     if (setEquals(event.savedIds, _savedIds)) return;
     _savedIds = event.savedIds;
     final current = state;
-    if (current is SharedRecipesLoaded) emit(.loaded(_feed, savedIds: _savedIds));
+    if (current is SharedRecipesLoaded) {
+      emit(.loaded(_feed, savedIds: _savedIds));
+    }
   }
 
   Future<void> _import(_Import event, Emitter<SharedRecipesState> emit) async {

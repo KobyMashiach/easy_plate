@@ -9,20 +9,25 @@ abstract class NotificationsRemoteDataSource {
   Future<void> markAllRead(String uid);
 }
 
-class NotificationsFirestoreDataSource implements NotificationsRemoteDataSource {
+class NotificationsFirestoreDataSource
+    implements NotificationsRemoteDataSource {
   static const collection = 'notifications';
 
   final FirebaseFirestore _firestore;
 
   NotificationsFirestoreDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> _items(String uid) =>
       _firestore.collection(collection).doc(uid).collection('items');
 
   @override
   Stream<List<AppNotificationEntity>> watch(String uid) {
-    return _items(uid).orderBy('createdAt', descending: true).limit(100).snapshots().map(
+    return _items(uid)
+        .orderBy('createdAt', descending: true)
+        .limit(100)
+        .snapshots()
+        .map(
           (snapshot) => snapshot.docs.map((doc) {
             final data = doc.data();
             return AppNotificationEntity(
@@ -35,9 +40,13 @@ class NotificationsFirestoreDataSource implements NotificationsRemoteDataSource 
               inviteId: data['inviteId'] as String?,
               collabId: data['collabId'] as String?,
               recipeTitle: data['recipeTitle'] as String?,
-              role: CollabRole.values.where((r) => r.name == data['role']).firstOrNull,
+              sharedId: data['sharedId'] as String?,
+              role: CollabRole.values
+                  .where((r) => r.name == data['role'])
+                  .firstOrNull,
               read: (data['read'] as bool?) ?? false,
-              createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              createdAt:
+                  (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
             );
           }).toList(),
         );

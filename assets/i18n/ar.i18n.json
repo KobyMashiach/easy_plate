@@ -221,7 +221,13 @@
     "pendingAnalysisHint": "محفوظة كنص خام. حلّلوها الآن أو عدّلوها يدويًا.",
     "analyzeNow": "التحليل عبر AI الآن",
     "analyzing": "جارٍ تحليل الوصفة...",
-    "analyzeFailed": "فشل التحليل — يمكنكم المحاولة لاحقًا"
+    "analyzeFailed": "فشل التحليل — يمكنكم المحاولة لاحقًا",
+    "communityUpdateTitle": "هذه الوصفة مشاركة",
+    "communityUpdateBody": "تحديث نسخة المجتمع أيضًا، أم نسختك فقط؟",
+    "communityUpdateBoth": "المجتمع أيضًا",
+    "communityUpdateLocal": "نسختي فقط",
+    "communityUpdated": "تم تحديث نسخة المجتمع",
+    "communityGone": "الوصفة لم تعد في المجتمع، حُفظت لك فقط"
   },
   "nutrition": {
     "title": "القيم الغذائية",
@@ -258,7 +264,9 @@
     "missingCount": "$count عناصر بدون قيم غذائية",
     "macroSplit": "توزيع السعرات",
     "kcalPerDay": "سعرة في اليوم",
-    "openDashboard": "اللوحة الأسبوعية"
+    "openDashboard": "اللوحة الأسبوعية",
+    "perRecipe": "الوصفة كاملة",
+    "perRecipeServings": "$count حصص"
   },
   "community": {
     "title": "المجتمع",
@@ -371,7 +379,14 @@
     "asEditor": "للتعديل",
     "markAllRead": "تعليم الكل كمقروء",
     "openRecipe": "فتح الوصفة",
-    "alreadyHandled": "تمت معالجة هذه الدعوة"
+    "alreadyHandled": "تمت معالجة هذه الدعوة",
+    "recipeUpdated": "$name حدّث/ت \"$recipe\"",
+    "recipeUpdatedHint": "هناك نسخة جديدة من وصفة حفظتها",
+    "refreshCopy": "التحديث للنسخة الجديدة",
+    "keepCopy": "الاحتفاظ بنسختي",
+    "refreshed": "تم تحديث نسختك إلى الجديدة",
+    "keptCopy": "بقيت نسختك كما هي",
+    "recipeGone": "الوصفة لم تعد في المجتمع"
   },
   "editor": {
     "title": "تعديل الوصفة",
@@ -606,7 +621,12 @@
     "pricingActive": "المستخدم: $price",
     "history": "سجل الأسعار",
     "noStore": "بدون متجر",
-    "pricingSaved": "تم حفظ الاختيار"
+    "pricingSaved": "تم حفظ الاختيار",
+    "renameStore": "تغيير اسم المتجر",
+    "storeName": "اسم المتجر",
+    "allStores": "كل المتاجر",
+    "applyFilters": "تطبيق",
+    "clearFilters": "مسح"
   },
   "unit": {
     "gram": "غرام",

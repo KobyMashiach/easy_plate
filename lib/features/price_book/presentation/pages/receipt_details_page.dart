@@ -10,6 +10,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/entities/price_record_entity.dart';
 import '../../domain/entities/receipt_entity.dart';
@@ -32,6 +33,25 @@ class ReceiptDetailsPage extends StatefulWidget {
 
 class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
   List<PriceRecordEntity> _lines = const [];
+  late String? _store = widget.receipt.store;
+
+  Future<void> _renameStore() async {
+    final name = await AppDialog.prompt(
+      context,
+      title: t.receipt.renameStore,
+      hint: t.receipt.storeName,
+      initial: _store,
+      icon: Icons.storefront_rounded,
+    );
+    if (name == null || !mounted) return;
+    await context.read<PriceBookRepository>().renameReceiptStore(
+      widget.receipt.id,
+      name,
+    );
+    if (!mounted) return;
+    setState(() => _store = name);
+    _load();
+  }
 
   @override
   void initState() {
@@ -83,9 +103,15 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
         ),
         children: [
           ClayPageHeader(
-            title: r.store ?? '—',
+            title: _store ?? '—',
             subtitle:
                 '${DateFormat.yMd().format(r.purchasedAt)} · ${priceLabel(r.total, currency: r.currency)}',
+            trailing: ClayIconButton(
+              icon: Icons.edit_rounded,
+              size: 44,
+              tooltip: t.receipt.renameStore,
+              onTap: _renameStore,
+            ),
           ),
           const SizedBox(height: AppSpacing.gutter),
           if (r.hasImages) ...[

@@ -221,7 +221,13 @@
     "pendingAnalysisHint": "המתכון נשמר כטקסט גולמי. אפשר לנתח אותו עכשיו או לערוך ידנית.",
     "analyzeNow": "ניתוח באמצעות AI עכשיו",
     "analyzing": "מנתח את המתכון...",
-    "analyzeFailed": "הניתוח נכשל, אפשר לנסות שוב מאוחר יותר"
+    "analyzeFailed": "הניתוח נכשל, אפשר לנסות שוב מאוחר יותר",
+    "communityUpdateTitle": "המתכון משותף בקהילה",
+    "communityUpdateBody": "לעדכן גם את העותק בקהילה, או רק אצלך?",
+    "communityUpdateBoth": "גם בקהילה",
+    "communityUpdateLocal": "רק אצלי",
+    "communityUpdated": "העותק בקהילה עודכן",
+    "communityGone": "המתכון כבר לא בקהילה, נשמר רק אצלך"
   },
   "nutrition": {
     "title": "ערכים תזונתיים",
@@ -258,7 +264,9 @@
     "missingCount": "$count פריטים בלי ערכים תזונתיים",
     "macroSplit": "חלוקת קלוריות",
     "kcalPerDay": "קק״ל ליום",
-    "openDashboard": "דאשבורד שבועי"
+    "openDashboard": "דאשבורד שבועי",
+    "perRecipe": "לכל המתכון",
+    "perRecipeServings": "$count מנות"
   },
   "community": {
     "title": "קהילה",
@@ -371,7 +379,14 @@
     "asEditor": "לעריכה",
     "markAllRead": "סימון הכל כנקרא",
     "openRecipe": "פתיחת המתכון",
-    "alreadyHandled": "ההזמנה כבר טופלה"
+    "alreadyHandled": "ההזמנה כבר טופלה",
+    "recipeUpdated": "$name עדכן/ה את \"$recipe\"",
+    "recipeUpdatedHint": "יש גרסה חדשה של מתכון ששמרת",
+    "refreshCopy": "רענון לגרסה החדשה",
+    "keepCopy": "שמירת העותק שלי",
+    "refreshed": "העותק שלך עודכן לגרסה החדשה",
+    "keptCopy": "העותק שלך נשאר כמו שהוא",
+    "recipeGone": "המתכון כבר לא בקהילה"
   },
   "editor": {
     "title": "עריכת מתכון",
@@ -606,7 +621,12 @@
     "pricingActive": "בשימוש: $price",
     "history": "היסטוריית מחירים",
     "noStore": "ללא חנות",
-    "pricingSaved": "הבחירה נשמרה"
+    "pricingSaved": "הבחירה נשמרה",
+    "renameStore": "שינוי שם החנות",
+    "storeName": "שם החנות",
+    "allStores": "כל החנויות",
+    "applyFilters": "החל סינון",
+    "clearFilters": "ניקוי"
   },
   "unit": {
     "gram": "גרם",

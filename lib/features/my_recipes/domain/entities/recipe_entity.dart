@@ -59,6 +59,11 @@ class RecipeEntity {
   /// This account's standing on the shared recipe. Null for a recipe that is
   /// not shared at all.
   final CollabRole? collabRole;
+
+  /// The community post this recipe was published as, so a later edit can
+  /// offer to update the post too. Null until it is shared, and again once
+  /// it is taken down.
+  final String? sharedRecipeId;
   final DateTime createdAt;
 
   const RecipeEntity({
@@ -82,6 +87,7 @@ class RecipeEntity {
     this.pendingAnalysis = false,
     this.collabId,
     this.collabRole,
+    this.sharedRecipeId,
   });
 
   bool get isShared => collabId != null;
@@ -120,6 +126,9 @@ class RecipeEntity {
     bool? pendingAnalysis,
     String? collabId,
     CollabRole? collabRole,
+    String? sharedRecipeId,
+    // Null means "unchanged"; taking a post down needs its own flag.
+    bool clearSharedRecipeId = false,
   }) {
     return RecipeEntity(
       id: id,
@@ -147,6 +156,7 @@ class RecipeEntity {
       pendingAnalysis: pendingAnalysis ?? this.pendingAnalysis,
       collabId: collabId ?? this.collabId,
       collabRole: collabRole ?? this.collabRole,
+      sharedRecipeId: clearSharedRecipeId ? null : (sharedRecipeId ?? this.sharedRecipeId),
       createdAt: createdAt,
     );
   }

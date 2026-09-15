@@ -83,13 +83,15 @@ class RecipesRepositoryImpl implements RecipesRepository {
   /// would be permanently pictureless — the upload finishing afterwards does
   /// not go back and fix what was already sent.
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe) async {
+  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async {
     final model = recipe.toModel();
     final uploaded = await _uploadImage(model);
     if (uploaded == null) return recipe;
 
-    await localDataSource.saveRecipe(uploaded);
-    unawaited(cloud?.push(uploaded) ?? Future.value());
+    if (persist) {
+      await localDataSource.saveRecipe(uploaded);
+      unawaited(cloud?.push(uploaded) ?? Future.value());
+    }
     return uploaded.toEntity();
   }
 

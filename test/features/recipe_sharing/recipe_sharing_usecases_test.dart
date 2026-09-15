@@ -106,7 +106,7 @@ class _FakeRecipes implements RecipesRepository {
   /// Nothing to upload in a test, which is also what the real repository
   /// returns for a recipe with no photo.
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe) async => recipe;
+  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async => recipe;
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();

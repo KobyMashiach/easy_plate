@@ -14,16 +14,17 @@ enum TimeBucket {
   upTo30,
   upTo60,
   upTo120,
-  over120;
+  over120
+  ;
 
   /// The boundary in minutes, or null for [any].
   int? get minutes => switch (this) {
-        TimeBucket.any => null,
-        TimeBucket.upTo30 => 30,
-        TimeBucket.upTo60 => 60,
-        TimeBucket.upTo120 => 120,
-        TimeBucket.over120 => 120,
-      };
+    TimeBucket.any => null,
+    TimeBucket.upTo30 => 30,
+    TimeBucket.upTo60 => 60,
+    TimeBucket.upTo120 => 120,
+    TimeBucket.over120 => 120,
+  };
 
   bool get isAny => this == TimeBucket.any;
 
@@ -117,7 +118,8 @@ class SharedFeedQuery {
 
   /// Drops every filter but keeps the scope and search the user can see on
   /// screen — clearing those without being asked would look like a bug.
-  SharedFeedQuery cleared() => SharedFeedQuery(search: search, scope: scope, sort: sort);
+  SharedFeedQuery cleared() =>
+      SharedFeedQuery(search: search, scope: scope, sort: sort);
 
   bool _matchesSearch(SharedRecipeEntity shared) {
     if (search.isEmpty) return true;
@@ -126,7 +128,11 @@ class SharedFeedQuery {
         shared.authorName.toLowerCase().contains(needle);
   }
 
-  bool _matchesScope(SharedRecipeEntity shared, String? viewerUid, Set<String> savedIds) {
+  bool _matchesScope(
+    SharedRecipeEntity shared,
+    String? viewerUid,
+    Set<String> savedIds,
+  ) {
     return switch (scope) {
       SharedFeedScope.all => true,
       SharedFeedScope.mine => shared.authorUid == viewerUid,
@@ -148,7 +154,9 @@ class SharedFeedQuery {
 
     // One stated half is enough for a total; only a recipe that states neither
     // counts as having no time at all.
-    final total = prep == null && cook == null ? null : (prep ?? 0) + (cook ?? 0);
+    final total = prep == null && cook == null
+        ? null
+        : (prep ?? 0) + (cook ?? 0);
     return totalTime.matches(total);
   }
 
@@ -158,12 +166,14 @@ class SharedFeedQuery {
     required Set<String> savedIds,
   }) {
     final result = recipes
-        .where((r) =>
-            _matchesScope(r, viewerUid, savedIds) &&
-            _matchesSearch(r) &&
-            _matchesTopics(r) &&
-            r.likeCount >= minLikes &&
-            _matchesTime(r))
+        .where(
+          (r) =>
+              _matchesScope(r, viewerUid, savedIds) &&
+              _matchesSearch(r) &&
+              _matchesTopics(r) &&
+              r.likeCount >= minLikes &&
+              _matchesTime(r),
+        )
         .toList();
 
     result.sort(switch (sort) {
@@ -172,9 +182,9 @@ class SharedFeedQuery {
       // Ties fall back to newest, so equally-liked recipes stay in a stable,
       // meaningful order instead of whatever the fetch happened to return.
       SharedFeedSort.mostLiked => (a, b) {
-          final byLikes = b.likeCount.compareTo(a.likeCount);
-          return byLikes != 0 ? byLikes : b.createdAt.compareTo(a.createdAt);
-        },
+        final byLikes = b.likeCount.compareTo(a.likeCount);
+        return byLikes != 0 ? byLikes : b.createdAt.compareTo(a.createdAt);
+      },
     });
 
     return result;

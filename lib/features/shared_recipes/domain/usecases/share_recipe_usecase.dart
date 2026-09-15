@@ -13,7 +13,8 @@ class ShareRecipeUseCase {
 
   ShareRecipeUseCase(this.repository, this.recipes);
 
-  Future<void> call(
+  /// Resolves with the post's id.
+  Future<String> call(
     RecipeEntity recipe, {
     required String authorUid,
     required String authorName,

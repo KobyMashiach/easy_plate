@@ -4,5 +4,6 @@ class UnshareRecipeUseCase {
   final SharedRecipesRepository repository;
   UnshareRecipeUseCase(this.repository);
 
-  Future<void> call(String sharedRecipeId) => repository.unshare(sharedRecipeId);
+  Future<void> call(String sharedRecipeId) =>
+      repository.unshare(sharedRecipeId);
 }
