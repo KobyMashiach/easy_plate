@@ -60,6 +60,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ingestion$ar ingestion = _Translations$ingestion$ar._(_root);
 	@override late final _Translations$mealPlanner$ar mealPlanner = _Translations$mealPlanner$ar._(_root);
 	@override late final _Translations$groceryList$ar groceryList = _Translations$groceryList$ar._(_root);
+	@override late final _Translations$receipt$ar receipt = _Translations$receipt$ar._(_root);
 	@override late final _Translations$unit$ar unit = _Translations$unit$ar._(_root);
 	@override late final _Translations$image$ar image = _Translations$image$ar._(_root);
 	@override late final _Translations$nav$ar nav = _Translations$nav$ar._(_root);
@@ -93,6 +94,9 @@ class _Translations$common$ar extends Translations$common$he {
 	@override String get or => 'أو';
 	@override String get missingInfo => '[معلومات ناقصة]';
 	@override String get networkError => 'لا يوجد اتصال بالإنترنت';
+	@override String get landscapeHint => 'يفضّل العمل بالوضع الأفقي';
+	@override String get rotateLandscape => 'تدوير';
+	@override String get rotatePortrait => 'العودة للوضع الرأسي';
 }
 
 // Path: auth
@@ -279,6 +283,8 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.';
 	@override String get sharedAccess => 'إدارة المشاركة';
 	@override String get noSharedAccess => 'لم تشارك أي كتب أو قوائم بعد';
+	@override String get communityPrices => 'متوسط أسعار المستخدمين';
+	@override String get communityPricesHint => 'عندما لا يكون لديك سعر خاص بمنتج، اعرض السعر الوسيط الذي شاركه الآخرون';
 }
 
 // Path: more
@@ -712,6 +718,114 @@ class _Translations$groceryList$ar extends Translations$groceryList$he {
 	@override String get selectAllPlans => 'كل القوائم';
 }
 
+// Path: receipt
+class _Translations$receipt$ar extends Translations$receipt$he {
+	_Translations$receipt$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'مسح إيصال';
+	@override String get subtitle => 'صوّر إيصالاً أو ارفع PDF، وتُحفظ الأسعار لقائمة التسوق';
+	@override String get camera => 'تصوير الإيصال';
+	@override String get cameraHint => 'إيصال طويل؟ التقط عدة صور وسندمجها';
+	@override String get gallery => 'اختيار من المعرض';
+	@override String get pdf => 'ملف PDF';
+	@override String get addPhoto => 'صورة أخرى';
+	@override String get scan => 'مسح';
+	@override String get scanning => 'جارٍ قراءة الإيصال…';
+	@override String pagesCount({required Object count}) => '${count} صور';
+	@override String get scanFailed => 'تعذّرت قراءة الإيصال. جرّب صورة أوضح أو PDF.';
+	@override String get reviewTitle => 'ما تم التقاطه';
+	@override String get reviewSubtitle => 'صحّح الأسماء والأسعار قبل الحفظ';
+	@override String get store => 'المتجر';
+	@override String get date => 'التاريخ';
+	@override String get receiptTotal => 'إجمالي الإيصال';
+	@override String get itemsTotal => 'إجمالي المنتجات الملتقطة';
+	@override String get captured => 'المنتجات الملتقطة';
+	@override String capturedCount({required Object count}) => '${count} منتجات';
+	@override String get unreadable => 'تعذّر الالتقاط';
+	@override String get unreadableHint => 'ملاحظات عن السطور التي تعذّرت قراءتها. يمكنك إضافتها يدويًا أدناه.';
+	@override String get addLine => 'إضافة منتج';
+	@override String get itemName => 'اسم المنتج';
+	@override String get price => 'سعر الوحدة';
+	@override String get quantity => 'الكمية';
+	@override String get removeLine => 'إزالة السطر';
+	@override String get shareToggle => 'مشاركة الأسعار مع المجتمع';
+	@override String get shareHint => 'أسماء المنتجات والأسعار فقط. لا المتجر ولا التاريخ ولا من دفع.';
+	@override String get save => 'حفظ الأسعار';
+	@override String saved({required Object count}) => 'تم حفظ ${count} أسعار';
+	@override String savedShared({required Object count}) => 'تم حفظ ومشاركة ${count} أسعار';
+	@override String get nothingToSave => 'لا منتجات للحفظ';
+	@override String get estimated => 'تقدير بناءً على بيانات سابقة';
+	@override String get estimatedTotal => 'التكلفة التقديرية';
+	@override String get noData => 'لا بيانات';
+	@override String get fromReceipt => 'من إيصالك';
+	@override String get fromCommunity => 'وسيط المستخدمين';
+	@override String unpriced({required Object count}) => '${count} عناصر بلا سعر';
+	@override String get priceBook => 'أسعاري';
+	@override String get priceBookEmpty => 'لم تُمسح أي إيصالات بعد. امسح الأول لترى تكلفة التسوق.';
+	@override String get deleteRecord => 'حذف السعر';
+	@override String get cameraGuide => 'ضع الإيصال داخل الإطار';
+	@override String get cameraHold => 'اثبت قليلًا…';
+	@override String get cameraCaptured => 'تم الالتقاط!';
+	@override String get cameraUnavailable => 'لا يمكن الوصول إلى الكاميرا';
+	@override String get perUnit => 'للوحدة';
+	@override String get perKg => 'للكيلو';
+	@override String get perLiter => 'لللتر';
+	@override String printedAs({required Object name}) => 'مطبوع: ${name}';
+	@override String get receipts => 'الإيصالات';
+	@override String get prices => 'الأسعار';
+	@override String get sortBy => 'ترتيب';
+	@override String get sortDate => 'التاريخ';
+	@override String get sortStore => 'المتجر';
+	@override String get sortTotal => 'المبلغ';
+	@override String get sortName => 'الاسم';
+	@override String get noReceipts => 'لا إيصالات محفوظة بعد';
+	@override String get noPrices => 'لا أسعار محفوظة بعد';
+	@override String get deleteReceipt => 'حذف الإيصال';
+	@override String get deleteReceiptBody => 'سيُحذف الإيصال وكل الأسعار المقروءة منه.';
+	@override String get addPrice => 'إضافة سعر';
+	@override String get addPriceHint => 'بدون إيصال: سعر دفعته أو تعرفه';
+	@override String get manualSource => 'أُدخل يدويًا';
+	@override String get lastPaid => 'آخر دفع';
+	@override String get priceSaved => 'تم حفظ السعر';
+	@override String itemsInReceipt({required Object count}) => '${count} منتجات';
+	@override String get search => 'بحث عن منتج';
+	@override String get viewImage => 'صورة الإيصال';
+	@override String get noImage => 'لم تُحفظ صورة لهذا الإيصال';
+	@override String get pdfFile => 'إيصال من ملف PDF';
+	@override String get filter => 'تصفية';
+	@override String get filterAll => 'الكل';
+	@override String get periodAll => 'كل الفترة';
+	@override String get period30 => '30 يومًا';
+	@override String get period90 => '90 يومًا';
+	@override String get sourceReceipt => 'من الإيصالات';
+	@override String get sourceManual => 'أُدخلت يدويًا';
+	@override String get deleteProduct => 'حذف المنتج';
+	@override String get deleteProductBody => 'ستُحذف كل الأسعار المحفوظة لهذا المنتج.';
+	@override String get pickFromPrices => 'اختيار من أسعاري';
+	@override String get pickerTitle => 'منتجاتي';
+	@override String existingPrice({required Object price}) => 'معروف مسبقًا: ${price}';
+	@override String get keepNew => 'السعر الجديد';
+	@override String get keepOld => 'السعر القديم';
+	@override String get keepAverage => 'المتوسط';
+	@override String get deleteReceiptOnly => 'حذف الإيصال فقط';
+	@override String get deleteReceiptOnlyHint => 'تبقى الأسعار المقروءة منه';
+	@override String get deleteReceiptAndPrices => 'حذف الإيصال وأسعاره';
+	@override String get deleteAll => 'حذف كل الأسعار';
+	@override String get deleteAllBody => 'ستُحذف كل الأسعار والإيصالات والاختيارات. لا يمكن التراجع.';
+	@override String get pricingTitle => 'أي سعر يُستخدم';
+	@override String get pricingLatest => 'الأحدث';
+	@override String get pricingAverage => 'متوسط الكل';
+	@override String get pricingStore => 'حسب المتجر';
+	@override String get pricingReceipts => 'إيصالات مختارة';
+	@override String pricingActive({required Object price}) => 'المستخدم: ${price}';
+	@override String get history => 'سجل الأسعار';
+	@override String get noStore => 'بدون متجر';
+	@override String get pricingSaved => 'تم حفظ الاختيار';
+}
+
 // Path: unit
 class _Translations$unit$ar extends Translations$unit$he {
 	_Translations$unit$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1049,6 +1163,9 @@ extension on TranslationsAr {
 			'common.or' => 'أو',
 			'common.missingInfo' => '[معلومات ناقصة]',
 			'common.networkError' => 'لا يوجد اتصال بالإنترنت',
+			'common.landscapeHint' => 'يفضّل العمل بالوضع الأفقي',
+			'common.rotateLandscape' => 'تدوير',
+			'common.rotatePortrait' => 'العودة للوضع الرأسي',
 			'auth.welcome' => 'أهلًا بكم في EasyPlate',
 			'auth.subtitle' => 'سجّلوا الدخول لحفظ وصفاتكم',
 			'auth.signIn' => 'تسجيل الدخول',
@@ -1172,6 +1289,8 @@ extension on TranslationsAr {
 			'settings.fastPageTurnHint' => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.',
 			'settings.sharedAccess' => 'إدارة المشاركة',
 			'settings.noSharedAccess' => 'لم تشارك أي كتب أو قوائم بعد',
+			'settings.communityPrices' => 'متوسط أسعار المستخدمين',
+			'settings.communityPricesHint' => 'عندما لا يكون لديك سعر خاص بمنتج، اعرض السعر الوسيط الذي شاركه الآخرون',
 			'more.title' => 'المزيد',
 			'more.settings' => 'الإعدادات',
 			'more.profile' => 'ملفي الشخصي',
@@ -1495,6 +1614,107 @@ extension on TranslationsAr {
 			'groceryList.selectPlansTitle' => 'أي القوائم تغذّي هذه اللائحة؟',
 			'groceryList.applySelection' => 'تحديث اللائحة',
 			'groceryList.selectAllPlans' => 'كل القوائم',
+			'receipt.title' => 'مسح إيصال',
+			'receipt.subtitle' => 'صوّر إيصالاً أو ارفع PDF، وتُحفظ الأسعار لقائمة التسوق',
+			'receipt.camera' => 'تصوير الإيصال',
+			'receipt.cameraHint' => 'إيصال طويل؟ التقط عدة صور وسندمجها',
+			'receipt.gallery' => 'اختيار من المعرض',
+			'receipt.pdf' => 'ملف PDF',
+			'receipt.addPhoto' => 'صورة أخرى',
+			'receipt.scan' => 'مسح',
+			'receipt.scanning' => 'جارٍ قراءة الإيصال…',
+			'receipt.pagesCount' => ({required Object count}) => '${count} صور',
+			'receipt.scanFailed' => 'تعذّرت قراءة الإيصال. جرّب صورة أوضح أو PDF.',
+			'receipt.reviewTitle' => 'ما تم التقاطه',
+			'receipt.reviewSubtitle' => 'صحّح الأسماء والأسعار قبل الحفظ',
+			'receipt.store' => 'المتجر',
+			'receipt.date' => 'التاريخ',
+			'receipt.receiptTotal' => 'إجمالي الإيصال',
+			'receipt.itemsTotal' => 'إجمالي المنتجات الملتقطة',
+			'receipt.captured' => 'المنتجات الملتقطة',
+			'receipt.capturedCount' => ({required Object count}) => '${count} منتجات',
+			'receipt.unreadable' => 'تعذّر الالتقاط',
+			'receipt.unreadableHint' => 'ملاحظات عن السطور التي تعذّرت قراءتها. يمكنك إضافتها يدويًا أدناه.',
+			'receipt.addLine' => 'إضافة منتج',
+			'receipt.itemName' => 'اسم المنتج',
+			'receipt.price' => 'سعر الوحدة',
+			'receipt.quantity' => 'الكمية',
+			'receipt.removeLine' => 'إزالة السطر',
+			'receipt.shareToggle' => 'مشاركة الأسعار مع المجتمع',
+			'receipt.shareHint' => 'أسماء المنتجات والأسعار فقط. لا المتجر ولا التاريخ ولا من دفع.',
+			'receipt.save' => 'حفظ الأسعار',
+			'receipt.saved' => ({required Object count}) => 'تم حفظ ${count} أسعار',
+			'receipt.savedShared' => ({required Object count}) => 'تم حفظ ومشاركة ${count} أسعار',
+			'receipt.nothingToSave' => 'لا منتجات للحفظ',
+			'receipt.estimated' => 'تقدير بناءً على بيانات سابقة',
+			'receipt.estimatedTotal' => 'التكلفة التقديرية',
+			'receipt.noData' => 'لا بيانات',
+			'receipt.fromReceipt' => 'من إيصالك',
+			'receipt.fromCommunity' => 'وسيط المستخدمين',
+			'receipt.unpriced' => ({required Object count}) => '${count} عناصر بلا سعر',
+			'receipt.priceBook' => 'أسعاري',
+			'receipt.priceBookEmpty' => 'لم تُمسح أي إيصالات بعد. امسح الأول لترى تكلفة التسوق.',
+			'receipt.deleteRecord' => 'حذف السعر',
+			'receipt.cameraGuide' => 'ضع الإيصال داخل الإطار',
+			'receipt.cameraHold' => 'اثبت قليلًا…',
+			'receipt.cameraCaptured' => 'تم الالتقاط!',
+			_ => null,
+		} ?? switch (path) {
+			'receipt.cameraUnavailable' => 'لا يمكن الوصول إلى الكاميرا',
+			'receipt.perUnit' => 'للوحدة',
+			'receipt.perKg' => 'للكيلو',
+			'receipt.perLiter' => 'لللتر',
+			'receipt.printedAs' => ({required Object name}) => 'مطبوع: ${name}',
+			'receipt.receipts' => 'الإيصالات',
+			'receipt.prices' => 'الأسعار',
+			'receipt.sortBy' => 'ترتيب',
+			'receipt.sortDate' => 'التاريخ',
+			'receipt.sortStore' => 'المتجر',
+			'receipt.sortTotal' => 'المبلغ',
+			'receipt.sortName' => 'الاسم',
+			'receipt.noReceipts' => 'لا إيصالات محفوظة بعد',
+			'receipt.noPrices' => 'لا أسعار محفوظة بعد',
+			'receipt.deleteReceipt' => 'حذف الإيصال',
+			'receipt.deleteReceiptBody' => 'سيُحذف الإيصال وكل الأسعار المقروءة منه.',
+			'receipt.addPrice' => 'إضافة سعر',
+			'receipt.addPriceHint' => 'بدون إيصال: سعر دفعته أو تعرفه',
+			'receipt.manualSource' => 'أُدخل يدويًا',
+			'receipt.lastPaid' => 'آخر دفع',
+			'receipt.priceSaved' => 'تم حفظ السعر',
+			'receipt.itemsInReceipt' => ({required Object count}) => '${count} منتجات',
+			'receipt.search' => 'بحث عن منتج',
+			'receipt.viewImage' => 'صورة الإيصال',
+			'receipt.noImage' => 'لم تُحفظ صورة لهذا الإيصال',
+			'receipt.pdfFile' => 'إيصال من ملف PDF',
+			'receipt.filter' => 'تصفية',
+			'receipt.filterAll' => 'الكل',
+			'receipt.periodAll' => 'كل الفترة',
+			'receipt.period30' => '30 يومًا',
+			'receipt.period90' => '90 يومًا',
+			'receipt.sourceReceipt' => 'من الإيصالات',
+			'receipt.sourceManual' => 'أُدخلت يدويًا',
+			'receipt.deleteProduct' => 'حذف المنتج',
+			'receipt.deleteProductBody' => 'ستُحذف كل الأسعار المحفوظة لهذا المنتج.',
+			'receipt.pickFromPrices' => 'اختيار من أسعاري',
+			'receipt.pickerTitle' => 'منتجاتي',
+			'receipt.existingPrice' => ({required Object price}) => 'معروف مسبقًا: ${price}',
+			'receipt.keepNew' => 'السعر الجديد',
+			'receipt.keepOld' => 'السعر القديم',
+			'receipt.keepAverage' => 'المتوسط',
+			'receipt.deleteReceiptOnly' => 'حذف الإيصال فقط',
+			'receipt.deleteReceiptOnlyHint' => 'تبقى الأسعار المقروءة منه',
+			'receipt.deleteReceiptAndPrices' => 'حذف الإيصال وأسعاره',
+			'receipt.deleteAll' => 'حذف كل الأسعار',
+			'receipt.deleteAllBody' => 'ستُحذف كل الأسعار والإيصالات والاختيارات. لا يمكن التراجع.',
+			'receipt.pricingTitle' => 'أي سعر يُستخدم',
+			'receipt.pricingLatest' => 'الأحدث',
+			'receipt.pricingAverage' => 'متوسط الكل',
+			'receipt.pricingStore' => 'حسب المتجر',
+			'receipt.pricingReceipts' => 'إيصالات مختارة',
+			'receipt.pricingActive' => ({required Object price}) => 'المستخدم: ${price}',
+			'receipt.history' => 'سجل الأسعار',
+			'receipt.noStore' => 'بدون متجر',
+			'receipt.pricingSaved' => 'تم حفظ الاختيار',
 			'unit.gram' => 'غرام',
 			'unit.kilogram' => 'كغ',
 			'unit.milliliter' => 'مل',
@@ -1544,8 +1764,6 @@ extension on TranslationsAr {
 			'ads.sharedQuotaReached' => 'وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!',
 			'ads.unlockRecipeTitle' => 'فتح وصفة مشتركة',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى ${count} لليوم)',
-			_ => null,
-		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'تبقّى لك ${remaining}/${total} استخراجات بالذكاء الاصطناعي لليوم',
 			'ads.aiQuotaReached' => 'وصلت إلى الحد اليومي لاستخراجات الذكاء الاصطناعي. سيُفتح غدًا!',
 			'ads.aiLockedHint' => 'الاستخراج من رابط يتطلب مشاهدة فيديو قصير',

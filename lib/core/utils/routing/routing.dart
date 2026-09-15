@@ -16,6 +16,10 @@ class Routing {
   static const ingestionReview = 'ingestion_review';
   static const mealPlanDetails = 'meal_plan_details';
   static const nutritionDashboard = 'nutrition_dashboard';
+  static const receiptReview = 'receipt_review';
+  static const priceBook = 'price_book';
+  static const receiptDetails = 'receipt_details';
+  static const receiptImages = 'receipt_images';
   static const groceryListDetails = 'grocery_list_details';
   static const settings = 'settings';
   static const accountMenu = 'account_menu';

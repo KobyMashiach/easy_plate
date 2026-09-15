@@ -44,6 +44,11 @@ class AppDialog extends StatelessWidget {
   /// Colours the confirm as a removal — for a delete, an unshare, a sign out.
   final bool destructive;
 
+  /// A dialog that cannot be left: no buttons, no tap outside, no back —
+  /// it shows a spinner and stays until the caller pops it. For work the
+  /// user must wait for and must not interrupt (a scan already paid for).
+  final bool blocking;
+
   /// Overrides the icon the kind would draw.
   final IconData? icon;
 
@@ -54,6 +59,7 @@ class AppDialog extends StatelessWidget {
     this.content,
     this.confirmLabel,
     this.cancelLabel,
+    this.blocking = false,
     this.destructive = false,
     this.icon,
   }) : assert(title != null || message != null, 'a popup says something');
@@ -94,6 +100,20 @@ class AppDialog extends StatelessWidget {
          confirmLabel: confirmLabel,
          cancelLabel: cancelLabel,
          icon: icon,
+       );
+
+  /// See [blocking]. Pop it with `Navigator.of(context, rootNavigator: true).pop()`.
+  const AppDialog.progress({
+    Key? key,
+    String? title,
+    String? message,
+    IconData? icon,
+  }) : this._(
+         kind: AppDialogKind.info,
+         title: title,
+         message: message,
+         icon: icon,
+         blocking: true,
        );
 
   const AppDialog.success({
@@ -172,7 +192,11 @@ class AppDialog extends StatelessWidget {
     final confirmed = await AppDialog.general(
       title: title,
       icon: icon,
-      content: _PromptField(initial: initial, hint: hint, onChanged: (value) => text = value),
+      content: _PromptField(
+        initial: initial,
+        hint: hint,
+        onChanged: (value) => text = value,
+      ),
       confirmLabel: confirmLabel ?? t.common.save,
       cancelLabel: cancelLabel ?? t.common.cancel,
     ).show(context);
@@ -188,7 +212,7 @@ class AppDialog extends StatelessWidget {
   Future<bool?> show(BuildContext context, {bool barrierDismissible = true}) {
     return showGeneralDialog<bool>(
       context: context,
-      barrierDismissible: barrierDismissible,
+      barrierDismissible: barrierDismissible && !blocking,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: AppColors.onSurface.withValues(alpha: 0.32),
       transitionDuration: const Duration(milliseconds: 260),
@@ -285,7 +309,11 @@ class _PromptField extends StatefulWidget {
   final String? hint;
   final ValueChanged<String> onChanged;
 
-  const _PromptField({required this.initial, required this.hint, required this.onChanged});
+  const _PromptField({
+    required this.initial,
+    required this.hint,
+    required this.onChanged,
+  });
 
   @override
   State<_PromptField> createState() => _PromptFieldState();
@@ -321,78 +349,92 @@ class _ModalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final navigator = Navigator.of(context);
 
-    return SafeArea(
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            // Keeps a text field in [content] above the keyboard.
-            MediaQuery.viewInsetsOf(context).bottom + AppSpacing.md,
-          ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 380),
-            child: Material(
-              type: MaterialType.transparency,
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border: Border.all(color: AppColors.surfaceContainerHighest),
-                  boxShadow: AppShadows.dialog,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(child: _Medallion(dialog: dialog, size: 64)),
-                      const SizedBox(height: AppSpacing.gutter),
-                      if (dialog.title case final title?)
-                        Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.headlineMd,
-                        ),
-                      if (dialog.message case final message?) ...[
-                        if (dialog.title != null)
-                          const SizedBox(height: AppSpacing.base),
-                        Text(
-                          message,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.bodyMd.copyWith(
-                            color: dialog.title == null
-                                ? AppColors.onSurface
-                                : AppColors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                      if (dialog.content case final content?) ...[
+    return PopScope(
+      canPop: !dialog.blocking,
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              // Keeps a text field in [content] above the keyboard.
+              MediaQuery.viewInsetsOf(context).bottom + AppSpacing.md,
+            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 380),
+              child: Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(
+                      color: AppColors.surfaceContainerHighest,
+                    ),
+                    boxShadow: AppShadows.dialog,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Center(child: _Medallion(dialog: dialog, size: 64)),
                         const SizedBox(height: AppSpacing.gutter),
-                        content,
-                      ],
-                      const SizedBox(height: AppSpacing.md),
-                      ClayButton(
-                        label: dialog.confirmLabel ?? t.common.ok,
-                        expanded: true,
-                        destructive: dialog.destructive,
-                        onPressed: () => navigator.pop(true),
-                      ),
-                      if (dialog.cancelLabel case final cancel?) ...[
-                        const SizedBox(height: AppSpacing.base),
-                        TextButton(
-                          onPressed: () => navigator.pop(false),
-                          child: Text(
-                            cancel,
-                            style: AppTextStyles.labelMd.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                        if (dialog.title case final title?)
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.headlineMd,
+                          ),
+                        if (dialog.message case final message?) ...[
+                          if (dialog.title != null)
+                            const SizedBox(height: AppSpacing.base),
+                          Text(
+                            message,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.bodyMd.copyWith(
+                              color: dialog.title == null
+                                  ? AppColors.onSurface
+                                  : AppColors.onSurfaceVariant,
                             ),
                           ),
-                        ),
+                        ],
+                        if (dialog.content case final content?) ...[
+                          const SizedBox(height: AppSpacing.gutter),
+                          content,
+                        ],
+                        const SizedBox(height: AppSpacing.md),
+                        if (dialog.blocking)
+                          const Center(
+                            child: SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(strokeWidth: 3),
+                            ),
+                          )
+                        else
+                          ClayButton(
+                            label: dialog.confirmLabel ?? t.common.ok,
+                            expanded: true,
+                            destructive: dialog.destructive,
+                            onPressed: () => navigator.pop(true),
+                          ),
+                        if (!dialog.blocking && dialog.cancelLabel != null) ...[
+                          const SizedBox(height: AppSpacing.base),
+                          TextButton(
+                            onPressed: () => navigator.pop(false),
+                            child: Text(
+                              dialog.cancelLabel!,
+                              style: AppTextStyles.labelMd.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

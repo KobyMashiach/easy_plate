@@ -31,7 +31,9 @@ const ALLOWED_PATH = "/v1beta/interactions";
 
 // Requests larger than this are refused before they reach Google. The app's
 // biggest body is a pasted recipe plus a schema, which is nowhere near this.
-const MAX_BODY_BYTES = 512 * 1024;
+// Receipt scans send photos and PDFs inline (a few MB each); recipes are a
+// few KB. Cloud Functions itself stops at 32 MB.
+const MAX_BODY_BYTES = 16 * 1024 * 1024;
 
 // Calls per user per UTC day. This is the whole point of owning the proxy: an
 // authenticated user can still burn money in a loop, and only the server can

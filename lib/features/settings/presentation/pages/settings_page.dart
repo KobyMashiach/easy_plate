@@ -90,6 +90,12 @@ class _SettingsBody extends StatelessWidget {
         onChanged: (enabled) => bloc.add(.toggleFastPageTurn(enabled)),
       ),
       _SettingsToggle(
+        title: t.settings.communityPrices,
+        description: t.settings.communityPricesHint,
+        value: preferences.communityPricesEnabled,
+        onChanged: (enabled) => bloc.add(.toggleCommunityPrices(enabled)),
+      ),
+      _SettingsToggle(
         title: t.settings.soundEffects,
         value: preferences.soundEffectsEnabled,
         onChanged: (enabled) => bloc.add(.toggleSoundEffects(enabled)),

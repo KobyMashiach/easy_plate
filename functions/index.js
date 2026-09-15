@@ -13,6 +13,8 @@ exports.revenueCatWebhook = require("./revenueCatWebhook").revenueCatWebhook;
 // A recipe out of a TikTok / Instagram / YouTube / Facebook video: the video
 // itself goes to the model, not just the page around it.
 exports.socialRecipe = require("./socialRecipe").socialRecipe;
+// Community price averages, fed by receipts users chose to share.
+exports.priceStats = require("./priceStats").priceStats;
 
 // The recipient's locale is not known here; Hebrew is the app's primary
 // language, and the in-app inbox is localised properly once they open it.

@@ -70,6 +70,9 @@ dependencies:
   # Imported directly by main.dart for the Material delegates.
   flutter_localizations:
     sdk: flutter
+  provider: ^6.1.2
+  file_picker: ^13.0.0
+  camera: ^0.12.0+2
 
 dev_dependencies:
   flutter_test:

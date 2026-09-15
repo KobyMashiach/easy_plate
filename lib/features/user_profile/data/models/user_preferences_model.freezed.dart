@@ -17,7 +17,7 @@ mixin _$UserPreferencesModel {
 
 @HiveField(0) ShoppingDay get shoppingDay;@HiveField(1) List<DietaryPreference> get dietaryPreferences;@HiveField(2) bool get soundEffectsEnabled;@HiveField(3) bool get onboardingComplete;@HiveField(4) AppLanguage get language;@HiveField(5) bool get fastPageTurnEnabled;// Appended: preferences stored before the tour existed decode as false,
 // which correctly reads as "not seen yet".
-@HiveField(6) bool get walkthroughSeen;
+@HiveField(6) bool get walkthroughSeen;@HiveField(7) bool get communityPricesEnabled;
 /// Create a copy of UserPreferencesModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +30,16 @@ $UserPreferencesModelCopyWith<UserPreferencesModel> get copyWith => _$UserPrefer
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserPreferencesModel&&(identical(other.shoppingDay, shoppingDay) || other.shoppingDay == shoppingDay)&&const DeepCollectionEquality().equals(other.dietaryPreferences, dietaryPreferences)&&(identical(other.soundEffectsEnabled, soundEffectsEnabled) || other.soundEffectsEnabled == soundEffectsEnabled)&&(identical(other.onboardingComplete, onboardingComplete) || other.onboardingComplete == onboardingComplete)&&(identical(other.language, language) || other.language == language)&&(identical(other.fastPageTurnEnabled, fastPageTurnEnabled) || other.fastPageTurnEnabled == fastPageTurnEnabled)&&(identical(other.walkthroughSeen, walkthroughSeen) || other.walkthroughSeen == walkthroughSeen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserPreferencesModel&&(identical(other.shoppingDay, shoppingDay) || other.shoppingDay == shoppingDay)&&const DeepCollectionEquality().equals(other.dietaryPreferences, dietaryPreferences)&&(identical(other.soundEffectsEnabled, soundEffectsEnabled) || other.soundEffectsEnabled == soundEffectsEnabled)&&(identical(other.onboardingComplete, onboardingComplete) || other.onboardingComplete == onboardingComplete)&&(identical(other.language, language) || other.language == language)&&(identical(other.fastPageTurnEnabled, fastPageTurnEnabled) || other.fastPageTurnEnabled == fastPageTurnEnabled)&&(identical(other.walkthroughSeen, walkthroughSeen) || other.walkthroughSeen == walkthroughSeen)&&(identical(other.communityPricesEnabled, communityPricesEnabled) || other.communityPricesEnabled == communityPricesEnabled));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,shoppingDay,const DeepCollectionEquality().hash(dietaryPreferences),soundEffectsEnabled,onboardingComplete,language,fastPageTurnEnabled,walkthroughSeen);
+int get hashCode => Object.hash(runtimeType,shoppingDay,const DeepCollectionEquality().hash(dietaryPreferences),soundEffectsEnabled,onboardingComplete,language,fastPageTurnEnabled,walkthroughSeen,communityPricesEnabled);
 
 @override
 String toString() {
-  return 'UserPreferencesModel(shoppingDay: $shoppingDay, dietaryPreferences: $dietaryPreferences, soundEffectsEnabled: $soundEffectsEnabled, onboardingComplete: $onboardingComplete, language: $language, fastPageTurnEnabled: $fastPageTurnEnabled, walkthroughSeen: $walkthroughSeen)';
+  return 'UserPreferencesModel(shoppingDay: $shoppingDay, dietaryPreferences: $dietaryPreferences, soundEffectsEnabled: $soundEffectsEnabled, onboardingComplete: $onboardingComplete, language: $language, fastPageTurnEnabled: $fastPageTurnEnabled, walkthroughSeen: $walkthroughSeen, communityPricesEnabled: $communityPricesEnabled)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $UserPreferencesModelCopyWith<$Res>  {
   factory $UserPreferencesModelCopyWith(UserPreferencesModel value, $Res Function(UserPreferencesModel) _then) = _$UserPreferencesModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) ShoppingDay shoppingDay,@HiveField(1) List<DietaryPreference> dietaryPreferences,@HiveField(2) bool soundEffectsEnabled,@HiveField(3) bool onboardingComplete,@HiveField(4) AppLanguage language,@HiveField(5) bool fastPageTurnEnabled,@HiveField(6) bool walkthroughSeen
+@HiveField(0) ShoppingDay shoppingDay,@HiveField(1) List<DietaryPreference> dietaryPreferences,@HiveField(2) bool soundEffectsEnabled,@HiveField(3) bool onboardingComplete,@HiveField(4) AppLanguage language,@HiveField(5) bool fastPageTurnEnabled,@HiveField(6) bool walkthroughSeen,@HiveField(7) bool communityPricesEnabled
 });
 
 
@@ -67,7 +67,7 @@ class _$UserPreferencesModelCopyWithImpl<$Res>
 
 /// Create a copy of UserPreferencesModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? shoppingDay = null,Object? dietaryPreferences = null,Object? soundEffectsEnabled = null,Object? onboardingComplete = null,Object? language = null,Object? fastPageTurnEnabled = null,Object? walkthroughSeen = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? shoppingDay = null,Object? dietaryPreferences = null,Object? soundEffectsEnabled = null,Object? onboardingComplete = null,Object? language = null,Object? fastPageTurnEnabled = null,Object? walkthroughSeen = null,Object? communityPricesEnabled = null,}) {
   return _then(_self.copyWith(
 shoppingDay: null == shoppingDay ? _self.shoppingDay : shoppingDay // ignore: cast_nullable_to_non_nullable
 as ShoppingDay,dietaryPreferences: null == dietaryPreferences ? _self.dietaryPreferences : dietaryPreferences // ignore: cast_nullable_to_non_nullable
@@ -76,6 +76,7 @@ as bool,onboardingComplete: null == onboardingComplete ? _self.onboardingComplet
 as bool,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
 as AppLanguage,fastPageTurnEnabled: null == fastPageTurnEnabled ? _self.fastPageTurnEnabled : fastPageTurnEnabled // ignore: cast_nullable_to_non_nullable
 as bool,walkthroughSeen: null == walkthroughSeen ? _self.walkthroughSeen : walkthroughSeen // ignore: cast_nullable_to_non_nullable
+as bool,communityPricesEnabled: null == communityPricesEnabled ? _self.communityPricesEnabled : communityPricesEnabled // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  ShoppingDay shoppingDay, @HiveField(1)  List<DietaryPreference> dietaryPreferences, @HiveField(2)  bool soundEffectsEnabled, @HiveField(3)  bool onboardingComplete, @HiveField(4)  AppLanguage language, @HiveField(5)  bool fastPageTurnEnabled, @HiveField(6)  bool walkthroughSeen)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  ShoppingDay shoppingDay, @HiveField(1)  List<DietaryPreference> dietaryPreferences, @HiveField(2)  bool soundEffectsEnabled, @HiveField(3)  bool onboardingComplete, @HiveField(4)  AppLanguage language, @HiveField(5)  bool fastPageTurnEnabled, @HiveField(6)  bool walkthroughSeen, @HiveField(7)  bool communityPricesEnabled)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserPreferencesModel() when $default != null:
-return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEnabled,_that.onboardingComplete,_that.language,_that.fastPageTurnEnabled,_that.walkthroughSeen);case _:
+return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEnabled,_that.onboardingComplete,_that.language,_that.fastPageTurnEnabled,_that.walkthroughSeen,_that.communityPricesEnabled);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEna
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  ShoppingDay shoppingDay, @HiveField(1)  List<DietaryPreference> dietaryPreferences, @HiveField(2)  bool soundEffectsEnabled, @HiveField(3)  bool onboardingComplete, @HiveField(4)  AppLanguage language, @HiveField(5)  bool fastPageTurnEnabled, @HiveField(6)  bool walkthroughSeen)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  ShoppingDay shoppingDay, @HiveField(1)  List<DietaryPreference> dietaryPreferences, @HiveField(2)  bool soundEffectsEnabled, @HiveField(3)  bool onboardingComplete, @HiveField(4)  AppLanguage language, @HiveField(5)  bool fastPageTurnEnabled, @HiveField(6)  bool walkthroughSeen, @HiveField(7)  bool communityPricesEnabled)  $default,) {final _that = this;
 switch (_that) {
 case _UserPreferencesModel():
-return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEnabled,_that.onboardingComplete,_that.language,_that.fastPageTurnEnabled,_that.walkthroughSeen);}
+return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEnabled,_that.onboardingComplete,_that.language,_that.fastPageTurnEnabled,_that.walkthroughSeen,_that.communityPricesEnabled);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -196,10 +197,10 @@ return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEna
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  ShoppingDay shoppingDay, @HiveField(1)  List<DietaryPreference> dietaryPreferences, @HiveField(2)  bool soundEffectsEnabled, @HiveField(3)  bool onboardingComplete, @HiveField(4)  AppLanguage language, @HiveField(5)  bool fastPageTurnEnabled, @HiveField(6)  bool walkthroughSeen)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  ShoppingDay shoppingDay, @HiveField(1)  List<DietaryPreference> dietaryPreferences, @HiveField(2)  bool soundEffectsEnabled, @HiveField(3)  bool onboardingComplete, @HiveField(4)  AppLanguage language, @HiveField(5)  bool fastPageTurnEnabled, @HiveField(6)  bool walkthroughSeen, @HiveField(7)  bool communityPricesEnabled)?  $default,) {final _that = this;
 switch (_that) {
 case _UserPreferencesModel() when $default != null:
-return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEnabled,_that.onboardingComplete,_that.language,_that.fastPageTurnEnabled,_that.walkthroughSeen);case _:
+return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEnabled,_that.onboardingComplete,_that.language,_that.fastPageTurnEnabled,_that.walkthroughSeen,_that.communityPricesEnabled);case _:
   return null;
 
 }
@@ -211,7 +212,7 @@ return $default(_that.shoppingDay,_that.dietaryPreferences,_that.soundEffectsEna
 @JsonSerializable()
 
 class _UserPreferencesModel implements UserPreferencesModel {
-  const _UserPreferencesModel({@HiveField(0) required this.shoppingDay, @HiveField(1) required final  List<DietaryPreference> dietaryPreferences, @HiveField(2) this.soundEffectsEnabled = true, @HiveField(3) this.onboardingComplete = false, @HiveField(4) this.language = AppLanguage.hebrew, @HiveField(5) this.fastPageTurnEnabled = true, @HiveField(6) this.walkthroughSeen = false}): _dietaryPreferences = dietaryPreferences;
+  const _UserPreferencesModel({@HiveField(0) required this.shoppingDay, @HiveField(1) required final  List<DietaryPreference> dietaryPreferences, @HiveField(2) this.soundEffectsEnabled = true, @HiveField(3) this.onboardingComplete = false, @HiveField(4) this.language = AppLanguage.hebrew, @HiveField(5) this.fastPageTurnEnabled = true, @HiveField(6) this.walkthroughSeen = false, @HiveField(7) this.communityPricesEnabled = false}): _dietaryPreferences = dietaryPreferences;
   factory _UserPreferencesModel.fromJson(Map<String, dynamic> json) => _$UserPreferencesModelFromJson(json);
 
 @override@HiveField(0) final  ShoppingDay shoppingDay;
@@ -229,6 +230,7 @@ class _UserPreferencesModel implements UserPreferencesModel {
 // Appended: preferences stored before the tour existed decode as false,
 // which correctly reads as "not seen yet".
 @override@JsonKey()@HiveField(6) final  bool walkthroughSeen;
+@override@JsonKey()@HiveField(7) final  bool communityPricesEnabled;
 
 /// Create a copy of UserPreferencesModel
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserPreferencesModel&&(identical(other.shoppingDay, shoppingDay) || other.shoppingDay == shoppingDay)&&const DeepCollectionEquality().equals(other._dietaryPreferences, _dietaryPreferences)&&(identical(other.soundEffectsEnabled, soundEffectsEnabled) || other.soundEffectsEnabled == soundEffectsEnabled)&&(identical(other.onboardingComplete, onboardingComplete) || other.onboardingComplete == onboardingComplete)&&(identical(other.language, language) || other.language == language)&&(identical(other.fastPageTurnEnabled, fastPageTurnEnabled) || other.fastPageTurnEnabled == fastPageTurnEnabled)&&(identical(other.walkthroughSeen, walkthroughSeen) || other.walkthroughSeen == walkthroughSeen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserPreferencesModel&&(identical(other.shoppingDay, shoppingDay) || other.shoppingDay == shoppingDay)&&const DeepCollectionEquality().equals(other._dietaryPreferences, _dietaryPreferences)&&(identical(other.soundEffectsEnabled, soundEffectsEnabled) || other.soundEffectsEnabled == soundEffectsEnabled)&&(identical(other.onboardingComplete, onboardingComplete) || other.onboardingComplete == onboardingComplete)&&(identical(other.language, language) || other.language == language)&&(identical(other.fastPageTurnEnabled, fastPageTurnEnabled) || other.fastPageTurnEnabled == fastPageTurnEnabled)&&(identical(other.walkthroughSeen, walkthroughSeen) || other.walkthroughSeen == walkthroughSeen)&&(identical(other.communityPricesEnabled, communityPricesEnabled) || other.communityPricesEnabled == communityPricesEnabled));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,shoppingDay,const DeepCollectionEquality().hash(_dietaryPreferences),soundEffectsEnabled,onboardingComplete,language,fastPageTurnEnabled,walkthroughSeen);
+int get hashCode => Object.hash(runtimeType,shoppingDay,const DeepCollectionEquality().hash(_dietaryPreferences),soundEffectsEnabled,onboardingComplete,language,fastPageTurnEnabled,walkthroughSeen,communityPricesEnabled);
 
 @override
 String toString() {
-  return 'UserPreferencesModel(shoppingDay: $shoppingDay, dietaryPreferences: $dietaryPreferences, soundEffectsEnabled: $soundEffectsEnabled, onboardingComplete: $onboardingComplete, language: $language, fastPageTurnEnabled: $fastPageTurnEnabled, walkthroughSeen: $walkthroughSeen)';
+  return 'UserPreferencesModel(shoppingDay: $shoppingDay, dietaryPreferences: $dietaryPreferences, soundEffectsEnabled: $soundEffectsEnabled, onboardingComplete: $onboardingComplete, language: $language, fastPageTurnEnabled: $fastPageTurnEnabled, walkthroughSeen: $walkthroughSeen, communityPricesEnabled: $communityPricesEnabled)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$UserPreferencesModelCopyWith<$Res> implements $UserPrefer
   factory _$UserPreferencesModelCopyWith(_UserPreferencesModel value, $Res Function(_UserPreferencesModel) _then) = __$UserPreferencesModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) ShoppingDay shoppingDay,@HiveField(1) List<DietaryPreference> dietaryPreferences,@HiveField(2) bool soundEffectsEnabled,@HiveField(3) bool onboardingComplete,@HiveField(4) AppLanguage language,@HiveField(5) bool fastPageTurnEnabled,@HiveField(6) bool walkthroughSeen
+@HiveField(0) ShoppingDay shoppingDay,@HiveField(1) List<DietaryPreference> dietaryPreferences,@HiveField(2) bool soundEffectsEnabled,@HiveField(3) bool onboardingComplete,@HiveField(4) AppLanguage language,@HiveField(5) bool fastPageTurnEnabled,@HiveField(6) bool walkthroughSeen,@HiveField(7) bool communityPricesEnabled
 });
 
 
@@ -280,7 +282,7 @@ class __$UserPreferencesModelCopyWithImpl<$Res>
 
 /// Create a copy of UserPreferencesModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? shoppingDay = null,Object? dietaryPreferences = null,Object? soundEffectsEnabled = null,Object? onboardingComplete = null,Object? language = null,Object? fastPageTurnEnabled = null,Object? walkthroughSeen = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? shoppingDay = null,Object? dietaryPreferences = null,Object? soundEffectsEnabled = null,Object? onboardingComplete = null,Object? language = null,Object? fastPageTurnEnabled = null,Object? walkthroughSeen = null,Object? communityPricesEnabled = null,}) {
   return _then(_UserPreferencesModel(
 shoppingDay: null == shoppingDay ? _self.shoppingDay : shoppingDay // ignore: cast_nullable_to_non_nullable
 as ShoppingDay,dietaryPreferences: null == dietaryPreferences ? _self._dietaryPreferences : dietaryPreferences // ignore: cast_nullable_to_non_nullable
@@ -289,6 +291,7 @@ as bool,onboardingComplete: null == onboardingComplete ? _self.onboardingComplet
 as bool,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
 as AppLanguage,fastPageTurnEnabled: null == fastPageTurnEnabled ? _self.fastPageTurnEnabled : fastPageTurnEnabled // ignore: cast_nullable_to_non_nullable
 as bool,walkthroughSeen: null == walkthroughSeen ? _self.walkthroughSeen : walkthroughSeen // ignore: cast_nullable_to_non_nullable
+as bool,communityPricesEnabled: null == communityPricesEnabled ? _self.communityPricesEnabled : communityPricesEnabled // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

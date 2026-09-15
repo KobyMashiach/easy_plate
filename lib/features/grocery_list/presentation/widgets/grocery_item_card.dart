@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -10,6 +9,10 @@ import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_item_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
 import 'item_breakdown_sheet.dart';
+import 'package:provider/provider.dart';
+import '../../../price_book/presentation/price_book_service.dart';
+import '../../../price_book/presentation/widgets/price_widgets.dart';
+import '../../../price_book/presentation/widgets/add_price_dialog.dart';
 
 /// One aggregated grocery line: a pressable clay card with a book spine, a
 /// bouncy checkbox, and an accordion revealing which recipe contributed what.
@@ -91,6 +94,36 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
                             ),
                           ),
                       ],
+                    ),
+                  ),
+                  // What this line is likely to cost, from past receipts.
+                  Consumer<PriceBookService>(
+                    builder: (context, prices, _) => Padding(
+                      padding: const EdgeInsetsDirectional.only(end: AppSpacing.base),
+                      child: Builder(builder: (context) {
+                        final estimate = prices.estimateFor(item);
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                          // A tap records a price by hand — the way in
+                          // without a receipt, and the way to correct one.
+                          onTap: () async {
+                            final saved = await showAddPriceDialog(
+                              context,
+                              name: item.name,
+                              price: estimate.unitPrice,
+                              unit: estimate.unit,
+                            );
+                            if (saved) await prices.load();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(AppSpacing.xs),
+                            child: PriceChip(
+                              estimate: estimate,
+                              multiplier: PriceBookService.multiplierFor(item, estimate),
+                            ),
+                          ),
+                        );
+                      }),
                     ),
                   ),
                   BouncyCheckbox(

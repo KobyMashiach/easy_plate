@@ -60,6 +60,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ingestion$fr ingestion = _Translations$ingestion$fr._(_root);
 	@override late final _Translations$mealPlanner$fr mealPlanner = _Translations$mealPlanner$fr._(_root);
 	@override late final _Translations$groceryList$fr groceryList = _Translations$groceryList$fr._(_root);
+	@override late final _Translations$receipt$fr receipt = _Translations$receipt$fr._(_root);
 	@override late final _Translations$unit$fr unit = _Translations$unit$fr._(_root);
 	@override late final _Translations$image$fr image = _Translations$image$fr._(_root);
 	@override late final _Translations$nav$fr nav = _Translations$nav$fr._(_root);
@@ -93,6 +94,9 @@ class _Translations$common$fr extends Translations$common$he {
 	@override String get or => 'ou';
 	@override String get missingInfo => '[information manquante]';
 	@override String get networkError => 'Pas de connexion Internet';
+	@override String get landscapeHint => 'Plus pratique en mode paysage';
+	@override String get rotateLandscape => 'Pivoter';
+	@override String get rotatePortrait => 'Retour en portrait';
 }
 
 // Path: auth
@@ -279,6 +283,8 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.';
 	@override String get sharedAccess => 'Gérer le partage';
 	@override String get noSharedAccess => 'Vous n\'avez encore partagé aucun livre ni aucune liste';
+	@override String get communityPrices => 'Prix moyens de la communauté';
+	@override String get communityPricesHint => 'Quand vous n’avez pas votre propre prix pour un produit, afficher le prix médian partagé par les autres';
 }
 
 // Path: more
@@ -712,6 +718,114 @@ class _Translations$groceryList$fr extends Translations$groceryList$he {
 	@override String get selectAllPlans => 'Tous les menus';
 }
 
+// Path: receipt
+class _Translations$receipt$fr extends Translations$receipt$he {
+	_Translations$receipt$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Scanner un ticket';
+	@override String get subtitle => 'Photographiez un ticket ou importez un PDF, les prix sont gardés pour votre liste de courses';
+	@override String get camera => 'Photographier le ticket';
+	@override String get cameraHint => 'Ticket long ? Prenez plusieurs photos, nous les fusionnons';
+	@override String get gallery => 'Choisir dans la galerie';
+	@override String get pdf => 'Fichier PDF';
+	@override String get addPhoto => 'Autre photo';
+	@override String get scan => 'Scanner';
+	@override String get scanning => 'Lecture du ticket…';
+	@override String pagesCount({required Object count}) => '${count} photos';
+	@override String get scanFailed => 'Impossible de lire le ticket. Essayez une photo plus nette ou un PDF.';
+	@override String get reviewTitle => 'Ce qui a été lu';
+	@override String get reviewSubtitle => 'Corrigez les noms et les prix avant d’enregistrer';
+	@override String get store => 'Magasin';
+	@override String get date => 'Date';
+	@override String get receiptTotal => 'Total du ticket';
+	@override String get itemsTotal => 'Total des produits lus';
+	@override String get captured => 'Produits lus';
+	@override String capturedCount({required Object count}) => '${count} produits';
+	@override String get unreadable => 'Non lu';
+	@override String get unreadableHint => 'Notes sur les lignes illisibles. Ajoutez-les à la main ci-dessous si besoin.';
+	@override String get addLine => 'Ajouter un produit';
+	@override String get itemName => 'Nom du produit';
+	@override String get price => 'Prix unitaire';
+	@override String get quantity => 'Quantité';
+	@override String get removeLine => 'Supprimer la ligne';
+	@override String get shareToggle => 'Partager les prix avec la communauté';
+	@override String get shareHint => 'Noms de produits et prix seulement. Ni le magasin, ni la date, ni qui a payé.';
+	@override String get save => 'Enregistrer les prix';
+	@override String saved({required Object count}) => '${count} prix enregistrés';
+	@override String savedShared({required Object count}) => '${count} prix enregistrés et partagés';
+	@override String get nothingToSave => 'Aucun produit à enregistrer';
+	@override String get estimated => 'Estimation d’après vos données';
+	@override String get estimatedTotal => 'Coût estimé';
+	@override String get noData => 'Pas de données';
+	@override String get fromReceipt => 'De votre ticket';
+	@override String get fromCommunity => 'Médiane de la communauté';
+	@override String unpriced({required Object count}) => '${count} articles sans prix';
+	@override String get priceBook => 'Mes prix';
+	@override String get priceBookEmpty => 'Aucun ticket scanné pour l’instant. Scannez le premier pour voir ce que coûtent les courses.';
+	@override String get deleteRecord => 'Supprimer le prix';
+	@override String get cameraGuide => 'Placez le ticket dans le cadre';
+	@override String get cameraHold => 'Ne bougez plus…';
+	@override String get cameraCaptured => 'Capturé !';
+	@override String get cameraUnavailable => 'Pas d’accès à la caméra';
+	@override String get perUnit => 'l’unité';
+	@override String get perKg => 'le kg';
+	@override String get perLiter => 'le litre';
+	@override String printedAs({required Object name}) => 'Imprimé : ${name}';
+	@override String get receipts => 'Tickets';
+	@override String get prices => 'Prix';
+	@override String get sortBy => 'Trier';
+	@override String get sortDate => 'Date';
+	@override String get sortStore => 'Magasin';
+	@override String get sortTotal => 'Montant';
+	@override String get sortName => 'Nom';
+	@override String get noReceipts => 'Aucun ticket enregistré';
+	@override String get noPrices => 'Aucun prix enregistré';
+	@override String get deleteReceipt => 'Supprimer le ticket';
+	@override String get deleteReceiptBody => 'Le ticket et tous les prix lus dessus seront supprimés.';
+	@override String get addPrice => 'Ajouter un prix';
+	@override String get addPriceHint => 'Sans ticket : un prix payé ou connu';
+	@override String get manualSource => 'Saisi à la main';
+	@override String get lastPaid => 'Dernier prix payé';
+	@override String get priceSaved => 'Prix enregistré';
+	@override String itemsInReceipt({required Object count}) => '${count} produits';
+	@override String get search => 'Rechercher un produit';
+	@override String get viewImage => 'Image du ticket';
+	@override String get noImage => 'Aucune image gardée pour ce ticket';
+	@override String get pdfFile => 'Ticket issu d’un PDF';
+	@override String get filter => 'Filtrer';
+	@override String get filterAll => 'Tout';
+	@override String get periodAll => 'Toute la période';
+	@override String get period30 => '30 jours';
+	@override String get period90 => '90 jours';
+	@override String get sourceReceipt => 'Des tickets';
+	@override String get sourceManual => 'Saisis à la main';
+	@override String get deleteProduct => 'Supprimer le produit';
+	@override String get deleteProductBody => 'Tous les prix enregistrés pour ce produit seront supprimés.';
+	@override String get pickFromPrices => 'Choisir dans mes prix';
+	@override String get pickerTitle => 'Mes produits';
+	@override String existingPrice({required Object price}) => 'Déjà connu : ${price}';
+	@override String get keepNew => 'Nouveau prix';
+	@override String get keepOld => 'Ancien prix';
+	@override String get keepAverage => 'Moyenne';
+	@override String get deleteReceiptOnly => 'Supprimer le ticket seulement';
+	@override String get deleteReceiptOnlyHint => 'Les prix lus dessus restent';
+	@override String get deleteReceiptAndPrices => 'Supprimer le ticket et ses prix';
+	@override String get deleteAll => 'Supprimer tous les prix';
+	@override String get deleteAllBody => 'Tous les prix, tickets et choix seront supprimés. Irréversible.';
+	@override String get pricingTitle => 'Quel prix utiliser';
+	@override String get pricingLatest => 'Le dernier';
+	@override String get pricingAverage => 'Moyenne de tous';
+	@override String get pricingStore => 'Par magasin';
+	@override String get pricingReceipts => 'Tickets choisis';
+	@override String pricingActive({required Object price}) => 'Utilisé : ${price}';
+	@override String get history => 'Historique des prix';
+	@override String get noStore => 'Sans magasin';
+	@override String get pricingSaved => 'Choix enregistré';
+}
+
 // Path: unit
 class _Translations$unit$fr extends Translations$unit$he {
 	_Translations$unit$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1049,6 +1163,9 @@ extension on TranslationsFr {
 			'common.or' => 'ou',
 			'common.missingInfo' => '[information manquante]',
 			'common.networkError' => 'Pas de connexion Internet',
+			'common.landscapeHint' => 'Plus pratique en mode paysage',
+			'common.rotateLandscape' => 'Pivoter',
+			'common.rotatePortrait' => 'Retour en portrait',
 			'auth.welcome' => 'Bienvenue sur EasyPlate',
 			'auth.subtitle' => 'Connectez-vous pour garder vos recettes',
 			'auth.signIn' => 'Se connecter',
@@ -1172,6 +1289,8 @@ extension on TranslationsFr {
 			'settings.fastPageTurnHint' => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.',
 			'settings.sharedAccess' => 'Gérer le partage',
 			'settings.noSharedAccess' => 'Vous n\'avez encore partagé aucun livre ni aucune liste',
+			'settings.communityPrices' => 'Prix moyens de la communauté',
+			'settings.communityPricesHint' => 'Quand vous n’avez pas votre propre prix pour un produit, afficher le prix médian partagé par les autres',
 			'more.title' => 'Plus',
 			'more.settings' => 'Paramètres',
 			'more.profile' => 'Mon profil',
@@ -1495,6 +1614,107 @@ extension on TranslationsFr {
 			'groceryList.selectPlansTitle' => 'Quels menus alimentent cette liste ?',
 			'groceryList.applySelection' => 'Mettre à jour',
 			'groceryList.selectAllPlans' => 'Tous les menus',
+			'receipt.title' => 'Scanner un ticket',
+			'receipt.subtitle' => 'Photographiez un ticket ou importez un PDF, les prix sont gardés pour votre liste de courses',
+			'receipt.camera' => 'Photographier le ticket',
+			'receipt.cameraHint' => 'Ticket long ? Prenez plusieurs photos, nous les fusionnons',
+			'receipt.gallery' => 'Choisir dans la galerie',
+			'receipt.pdf' => 'Fichier PDF',
+			'receipt.addPhoto' => 'Autre photo',
+			'receipt.scan' => 'Scanner',
+			'receipt.scanning' => 'Lecture du ticket…',
+			'receipt.pagesCount' => ({required Object count}) => '${count} photos',
+			'receipt.scanFailed' => 'Impossible de lire le ticket. Essayez une photo plus nette ou un PDF.',
+			'receipt.reviewTitle' => 'Ce qui a été lu',
+			'receipt.reviewSubtitle' => 'Corrigez les noms et les prix avant d’enregistrer',
+			'receipt.store' => 'Magasin',
+			'receipt.date' => 'Date',
+			'receipt.receiptTotal' => 'Total du ticket',
+			'receipt.itemsTotal' => 'Total des produits lus',
+			'receipt.captured' => 'Produits lus',
+			'receipt.capturedCount' => ({required Object count}) => '${count} produits',
+			'receipt.unreadable' => 'Non lu',
+			'receipt.unreadableHint' => 'Notes sur les lignes illisibles. Ajoutez-les à la main ci-dessous si besoin.',
+			'receipt.addLine' => 'Ajouter un produit',
+			'receipt.itemName' => 'Nom du produit',
+			'receipt.price' => 'Prix unitaire',
+			'receipt.quantity' => 'Quantité',
+			'receipt.removeLine' => 'Supprimer la ligne',
+			'receipt.shareToggle' => 'Partager les prix avec la communauté',
+			'receipt.shareHint' => 'Noms de produits et prix seulement. Ni le magasin, ni la date, ni qui a payé.',
+			'receipt.save' => 'Enregistrer les prix',
+			'receipt.saved' => ({required Object count}) => '${count} prix enregistrés',
+			'receipt.savedShared' => ({required Object count}) => '${count} prix enregistrés et partagés',
+			'receipt.nothingToSave' => 'Aucun produit à enregistrer',
+			'receipt.estimated' => 'Estimation d’après vos données',
+			'receipt.estimatedTotal' => 'Coût estimé',
+			'receipt.noData' => 'Pas de données',
+			'receipt.fromReceipt' => 'De votre ticket',
+			'receipt.fromCommunity' => 'Médiane de la communauté',
+			'receipt.unpriced' => ({required Object count}) => '${count} articles sans prix',
+			'receipt.priceBook' => 'Mes prix',
+			'receipt.priceBookEmpty' => 'Aucun ticket scanné pour l’instant. Scannez le premier pour voir ce que coûtent les courses.',
+			'receipt.deleteRecord' => 'Supprimer le prix',
+			'receipt.cameraGuide' => 'Placez le ticket dans le cadre',
+			'receipt.cameraHold' => 'Ne bougez plus…',
+			'receipt.cameraCaptured' => 'Capturé !',
+			_ => null,
+		} ?? switch (path) {
+			'receipt.cameraUnavailable' => 'Pas d’accès à la caméra',
+			'receipt.perUnit' => 'l’unité',
+			'receipt.perKg' => 'le kg',
+			'receipt.perLiter' => 'le litre',
+			'receipt.printedAs' => ({required Object name}) => 'Imprimé : ${name}',
+			'receipt.receipts' => 'Tickets',
+			'receipt.prices' => 'Prix',
+			'receipt.sortBy' => 'Trier',
+			'receipt.sortDate' => 'Date',
+			'receipt.sortStore' => 'Magasin',
+			'receipt.sortTotal' => 'Montant',
+			'receipt.sortName' => 'Nom',
+			'receipt.noReceipts' => 'Aucun ticket enregistré',
+			'receipt.noPrices' => 'Aucun prix enregistré',
+			'receipt.deleteReceipt' => 'Supprimer le ticket',
+			'receipt.deleteReceiptBody' => 'Le ticket et tous les prix lus dessus seront supprimés.',
+			'receipt.addPrice' => 'Ajouter un prix',
+			'receipt.addPriceHint' => 'Sans ticket : un prix payé ou connu',
+			'receipt.manualSource' => 'Saisi à la main',
+			'receipt.lastPaid' => 'Dernier prix payé',
+			'receipt.priceSaved' => 'Prix enregistré',
+			'receipt.itemsInReceipt' => ({required Object count}) => '${count} produits',
+			'receipt.search' => 'Rechercher un produit',
+			'receipt.viewImage' => 'Image du ticket',
+			'receipt.noImage' => 'Aucune image gardée pour ce ticket',
+			'receipt.pdfFile' => 'Ticket issu d’un PDF',
+			'receipt.filter' => 'Filtrer',
+			'receipt.filterAll' => 'Tout',
+			'receipt.periodAll' => 'Toute la période',
+			'receipt.period30' => '30 jours',
+			'receipt.period90' => '90 jours',
+			'receipt.sourceReceipt' => 'Des tickets',
+			'receipt.sourceManual' => 'Saisis à la main',
+			'receipt.deleteProduct' => 'Supprimer le produit',
+			'receipt.deleteProductBody' => 'Tous les prix enregistrés pour ce produit seront supprimés.',
+			'receipt.pickFromPrices' => 'Choisir dans mes prix',
+			'receipt.pickerTitle' => 'Mes produits',
+			'receipt.existingPrice' => ({required Object price}) => 'Déjà connu : ${price}',
+			'receipt.keepNew' => 'Nouveau prix',
+			'receipt.keepOld' => 'Ancien prix',
+			'receipt.keepAverage' => 'Moyenne',
+			'receipt.deleteReceiptOnly' => 'Supprimer le ticket seulement',
+			'receipt.deleteReceiptOnlyHint' => 'Les prix lus dessus restent',
+			'receipt.deleteReceiptAndPrices' => 'Supprimer le ticket et ses prix',
+			'receipt.deleteAll' => 'Supprimer tous les prix',
+			'receipt.deleteAllBody' => 'Tous les prix, tickets et choix seront supprimés. Irréversible.',
+			'receipt.pricingTitle' => 'Quel prix utiliser',
+			'receipt.pricingLatest' => 'Le dernier',
+			'receipt.pricingAverage' => 'Moyenne de tous',
+			'receipt.pricingStore' => 'Par magasin',
+			'receipt.pricingReceipts' => 'Tickets choisis',
+			'receipt.pricingActive' => ({required Object price}) => 'Utilisé : ${price}',
+			'receipt.history' => 'Historique des prix',
+			'receipt.noStore' => 'Sans magasin',
+			'receipt.pricingSaved' => 'Choix enregistré',
 			'unit.gram' => 'g',
 			'unit.kilogram' => 'kg',
 			'unit.milliliter' => 'ml',
@@ -1544,8 +1764,6 @@ extension on TranslationsFr {
 			'ads.sharedQuotaReached' => 'Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !',
 			'ads.unlockRecipeTitle' => 'Débloquer une recette partagée',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Regardez une courte vidéo pour débloquer cette recette (${count} restantes aujourd\'hui)',
-			_ => null,
-		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'Il vous reste ${remaining}/${total} extractions IA aujourd\'hui',
 			'ads.aiQuotaReached' => 'Vous avez atteint la limite quotidienne d\'extractions IA. Elle rouvre demain !',
 			'ads.aiLockedHint' => 'L\'extraction depuis un lien nécessite de regarder une courte vidéo',

@@ -26,13 +26,14 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
           : fields[4] as AppLanguage,
       fastPageTurnEnabled: fields[5] == null ? true : fields[5] as bool,
       walkthroughSeen: fields[6] == null ? false : fields[6] as bool,
+      communityPricesEnabled: fields[7] == null ? false : fields[7] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -46,7 +47,9 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(5)
       ..write(obj.fastPageTurnEnabled)
       ..writeByte(6)
-      ..write(obj.walkthroughSeen);
+      ..write(obj.walkthroughSeen)
+      ..writeByte(7)
+      ..write(obj.communityPricesEnabled);
   }
 
   @override
@@ -78,6 +81,7 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
       AppLanguage.hebrew,
   fastPageTurnEnabled: json['fastPageTurnEnabled'] as bool? ?? true,
   walkthroughSeen: json['walkthroughSeen'] as bool? ?? false,
+  communityPricesEnabled: json['communityPricesEnabled'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -92,6 +96,7 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'language': _$AppLanguageEnumMap[instance.language]!,
   'fastPageTurnEnabled': instance.fastPageTurnEnabled,
   'walkthroughSeen': instance.walkthroughSeen,
+  'communityPricesEnabled': instance.communityPricesEnabled,
 };
 
 const _$ShoppingDayEnumMap = {

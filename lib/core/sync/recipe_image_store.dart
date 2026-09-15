@@ -45,7 +45,8 @@ class RecipeImageStore {
 
   /// Photos are namespaced by their owner so one account cannot overwrite
   /// another's, which is also what the storage rule matches on.
-  static String pathFor(String uid, String fileName) => '$folder/$uid/$fileName';
+  static String pathFor(String uid, String fileName) =>
+      '$folder/$uid/$fileName';
 
   /// Uploads the local file behind [fileName] and returns its Storage path, or
   /// null when there is nothing on disk to send or the upload failed.

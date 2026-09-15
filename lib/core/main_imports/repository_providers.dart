@@ -43,6 +43,10 @@ import '../../features/user_profile/domain/repositories/user_preferences_reposit
 import '../../features/feedback/data/datasources/feedback_remote_datasource.dart';
 import '../../features/feedback/data/repositories_impl/feedback_repository_impl.dart';
 import '../../features/feedback/domain/repositories/feedback_repository.dart';
+import '../../features/price_book/data/datasources/community_prices_remote_datasource.dart';
+import '../../features/price_book/data/datasources/price_records_local_datasource.dart';
+import '../../features/price_book/data/repositories_impl/price_book_repository_impl.dart';
+import '../../features/price_book/domain/repositories/price_book_repository.dart';
 
 /// Data sources first, then the repositories that read them — order matters,
 /// `create:` resolves earlier entries with `context.read`.
@@ -139,6 +143,21 @@ List<SingleChildWidget> buildRepositoryProviders() {
       create: (context) => GroceryListsRepositoryImpl(
         localDataSource: context.read(),
         cloud: CloudSyncService().groceryLists,
+      ),
+    ),
+    RepositoryProvider<PriceRecordsLocalDataSource>(
+      create: (_) => PriceRecordsLocalDataSource(),
+    ),
+    RepositoryProvider<CommunityPricesRemoteDataSource>(
+      create: (_) => CommunityPricesRemoteDataSource(),
+    ),
+    RepositoryProvider<PriceBookRepository>(
+      create: (context) => PriceBookRepositoryImpl(
+        localDataSource: context.read(),
+        remoteDataSource: context.read(),
+        cloud: CloudSyncService().priceRecords,
+        receiptsCloud: CloudSyncService().receipts,
+        pricingCloud: CloudSyncService().productPricing,
       ),
     ),
     RepositoryProvider<RecipeIngestionRepository>(

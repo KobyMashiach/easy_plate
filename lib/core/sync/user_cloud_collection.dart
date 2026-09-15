@@ -56,7 +56,10 @@ class UserCloudCollection<T> implements CloudMirror {
   CollectionReference<Map<String, dynamic>>? _ref() {
     final uid = UserScope().uid;
     if (uid == null) return null;
-    return _firestore.collection(usersCollection).doc(uid).collection(collection);
+    return _firestore
+        .collection(usersCollection)
+        .doc(uid)
+        .collection(collection);
   }
 
   /// Sends one record up.

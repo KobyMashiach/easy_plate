@@ -25,6 +25,7 @@ sealed class SettingsEvent with _$SettingsEvent {
   const factory SettingsEvent.toggleSoundEffects(bool enabled) = _ToggleSoundEffects;
   const factory SettingsEvent.changeLanguage(AppLanguage language) = _ChangeLanguage;
   const factory SettingsEvent.toggleFastPageTurn(bool enabled) = _ToggleFastPageTurn;
+  const factory SettingsEvent.toggleCommunityPrices(bool enabled) = _ToggleCommunityPrices;
 }
 
 @freezed
@@ -56,6 +57,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<_ToggleSoundEffects>(_toggleSoundEffects);
     on<_ChangeLanguage>(_changeLanguage);
     on<_ToggleFastPageTurn>(_toggleFastPageTurn);
+    on<_ToggleCommunityPrices>(_toggleCommunityPrices);
     add(const SettingsEvent.init());
   }
 
@@ -135,6 +137,18 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final current = state;
     if (current is! SettingsLoaded) return;
     final updated = current.preferences.copyWith(fastPageTurnEnabled: event.enabled);
+    await saveUserPreferencesUseCase(updated);
+    emit(.loaded(
+      updated,
+      sharedBooksCount: current.sharedBooksCount,
+      sharedListsCount: current.sharedListsCount,
+    ));
+  }
+
+  Future<void> _toggleCommunityPrices(_ToggleCommunityPrices event, Emitter<SettingsState> emit) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    final updated = current.preferences.copyWith(communityPricesEnabled: event.enabled);
     await saveUserPreferencesUseCase(updated);
     emit(.loaded(
       updated,

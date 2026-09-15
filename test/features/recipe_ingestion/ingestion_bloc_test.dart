@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'dart:async';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
+import 'package:easy_plate/features/price_book/domain/entities/receipt_scan_entity.dart';
+import 'package:easy_plate/features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart' show ReceiptPage;
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repository.dart';
 import 'package:easy_plate/features/my_recipes/domain/usecases/save_recipe_usecase.dart';
@@ -66,6 +68,8 @@ class _FakeIngestion implements RecipeIngestionRepository {
   Future<RecipeEntity> estimateNutrition(RecipeEntity r) => throw UnimplementedError();
   @override
   Future<Uint8List> generateImage(String prompt) => throw UnimplementedError();
+  @override
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) => throw UnimplementedError();
 }
 
 class _FakeRecipes implements RecipesRepository {

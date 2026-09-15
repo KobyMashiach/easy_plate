@@ -4,6 +4,8 @@
          behind purchases_flutter merges it in as well, but declaring it
          here keeps that requirement visible. -->
     <uses-permission android:name="com.android.vending.BILLING" />
+    <!-- The receipt scanner drives the camera itself (auto-capture); the system camera app needs none. -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:label="Easy Plate"
         android:name="${applicationName}"

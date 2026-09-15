@@ -64,6 +64,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$ingestion$he ingestion = Translations$ingestion$he.internal(_root);
 	late final Translations$mealPlanner$he mealPlanner = Translations$mealPlanner$he.internal(_root);
 	late final Translations$groceryList$he groceryList = Translations$groceryList$he.internal(_root);
+	late final Translations$receipt$he receipt = Translations$receipt$he.internal(_root);
 	late final Translations$unit$he unit = Translations$unit$he.internal(_root);
 	late final Translations$image$he image = Translations$image$he.internal(_root);
 	late final Translations$nav$he nav = Translations$nav$he.internal(_root);
@@ -129,6 +130,15 @@ class Translations$common$he {
 
 	/// he: 'אין חיבור לאינטרנט'
 	String get networkError => 'אין חיבור לאינטרנט';
+
+	/// he: 'מומלץ לעבוד עם מסך לרוחב'
+	String get landscapeHint => 'מומלץ לעבוד עם מסך לרוחב';
+
+	/// he: 'סובב לרוחב'
+	String get rotateLandscape => 'סובב לרוחב';
+
+	/// he: 'חזרה לאורך'
+	String get rotatePortrait => 'חזרה לאורך';
 }
 
 // Path: auth
@@ -561,6 +571,12 @@ class Translations$settings$he {
 
 	/// he: 'עדיין לא שיתפתם ספרים או רשימות'
 	String get noSharedAccess => 'עדיין לא שיתפתם ספרים או רשימות';
+
+	/// he: 'מחירים לפי ממוצע המשתמשים'
+	String get communityPrices => 'מחירים לפי ממוצע המשתמשים';
+
+	/// he: 'כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו'
+	String get communityPricesHint => 'כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו';
 }
 
 // Path: more
@@ -1640,6 +1656,312 @@ class Translations$groceryList$he {
 	String get selectAllPlans => 'כל התפריטים';
 }
 
+// Path: receipt
+class Translations$receipt$he {
+	Translations$receipt$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'סריקת קבלה'
+	String get title => 'סריקת קבלה';
+
+	/// he: 'צלמו קבלה או העלו PDF, והמחירים יישמרו לרשימת הקניות'
+	String get subtitle => 'צלמו קבלה או העלו PDF, והמחירים יישמרו לרשימת הקניות';
+
+	/// he: 'צילום קבלה'
+	String get camera => 'צילום קבלה';
+
+	/// he: 'קבלה ארוכה? צלמו כמה תמונות, נאחד אותן'
+	String get cameraHint => 'קבלה ארוכה? צלמו כמה תמונות, נאחד אותן';
+
+	/// he: 'בחירה מהגלריה'
+	String get gallery => 'בחירה מהגלריה';
+
+	/// he: 'קובץ PDF'
+	String get pdf => 'קובץ PDF';
+
+	/// he: 'תמונה נוספת'
+	String get addPhoto => 'תמונה נוספת';
+
+	/// he: 'סרוק'
+	String get scan => 'סרוק';
+
+	/// he: 'קורא את הקבלה…'
+	String get scanning => 'קורא את הקבלה…';
+
+	/// he: '$count תמונות'
+	String pagesCount({required Object count}) => '${count} תמונות';
+
+	/// he: 'לא הצלחנו לקרוא את הקבלה. נסו תמונה חדה יותר או PDF.'
+	String get scanFailed => 'לא הצלחנו לקרוא את הקבלה. נסו תמונה חדה יותר או PDF.';
+
+	/// he: 'מה נקלט'
+	String get reviewTitle => 'מה נקלט';
+
+	/// he: 'אפשר לתקן שמות ומחירים לפני השמירה'
+	String get reviewSubtitle => 'אפשר לתקן שמות ומחירים לפני השמירה';
+
+	/// he: 'חנות'
+	String get store => 'חנות';
+
+	/// he: 'תאריך'
+	String get date => 'תאריך';
+
+	/// he: 'סה״כ בקבלה'
+	String get receiptTotal => 'סה״כ בקבלה';
+
+	/// he: 'סה״כ מוצרים שנקלטו'
+	String get itemsTotal => 'סה״כ מוצרים שנקלטו';
+
+	/// he: 'מוצרים שנקלטו'
+	String get captured => 'מוצרים שנקלטו';
+
+	/// he: '$count מוצרים'
+	String capturedCount({required Object count}) => '${count} מוצרים';
+
+	/// he: 'לא הצלחנו לקלוט'
+	String get unreadable => 'לא הצלחנו לקלוט';
+
+	/// he: 'הערות על שורות שלא הצלחנו לקרוא. אפשר להוסיף אותן ידנית למטה.'
+	String get unreadableHint => 'הערות על שורות שלא הצלחנו לקרוא. אפשר להוסיף אותן ידנית למטה.';
+
+	/// he: 'הוספת מוצר'
+	String get addLine => 'הוספת מוצר';
+
+	/// he: 'שם המוצר'
+	String get itemName => 'שם המוצר';
+
+	/// he: 'מחיר ליחידה'
+	String get price => 'מחיר ליחידה';
+
+	/// he: 'כמות'
+	String get quantity => 'כמות';
+
+	/// he: 'הסרת שורה'
+	String get removeLine => 'הסרת שורה';
+
+	/// he: 'שיתוף המחירים עם הקהילה'
+	String get shareToggle => 'שיתוף המחירים עם הקהילה';
+
+	/// he: 'רק שמות מוצרים ומחירים. בלי החנות, התאריך או מי קנה.'
+	String get shareHint => 'רק שמות מוצרים ומחירים. בלי החנות, התאריך או מי קנה.';
+
+	/// he: 'שמירת המחירים'
+	String get save => 'שמירת המחירים';
+
+	/// he: '$count מחירים נשמרו'
+	String saved({required Object count}) => '${count} מחירים נשמרו';
+
+	/// he: '$count מחירים נשמרו ושותפו'
+	String savedShared({required Object count}) => '${count} מחירים נשמרו ושותפו';
+
+	/// he: 'אין מוצרים לשמירה'
+	String get nothingToSave => 'אין מוצרים לשמירה';
+
+	/// he: 'משוער לפי נתוני עבר'
+	String get estimated => 'משוער לפי נתוני עבר';
+
+	/// he: 'עלות משוערת'
+	String get estimatedTotal => 'עלות משוערת';
+
+	/// he: 'אין נתונים'
+	String get noData => 'אין נתונים';
+
+	/// he: 'מהקבלה שלך'
+	String get fromReceipt => 'מהקבלה שלך';
+
+	/// he: 'ממוצע המשתמשים'
+	String get fromCommunity => 'ממוצע המשתמשים';
+
+	/// he: '$count פריטים בלי מחיר'
+	String unpriced({required Object count}) => '${count} פריטים בלי מחיר';
+
+	/// he: 'המחירים שלי'
+	String get priceBook => 'המחירים שלי';
+
+	/// he: 'עוד לא נסרקו קבלות. סרקו את הראשונה כדי לראות כמה עולה הקנייה.'
+	String get priceBookEmpty => 'עוד לא נסרקו קבלות. סרקו את הראשונה כדי לראות כמה עולה הקנייה.';
+
+	/// he: 'מחיקת מחיר'
+	String get deleteRecord => 'מחיקת מחיר';
+
+	/// he: 'הכניסו את הקבלה למלבן'
+	String get cameraGuide => 'הכניסו את הקבלה למלבן';
+
+	/// he: 'החזיקו יציב…'
+	String get cameraHold => 'החזיקו יציב…';
+
+	/// he: 'נקלט!'
+	String get cameraCaptured => 'נקלט!';
+
+	/// he: 'אין גישה למצלמה'
+	String get cameraUnavailable => 'אין גישה למצלמה';
+
+	/// he: 'ליח׳'
+	String get perUnit => 'ליח׳';
+
+	/// he: 'לק״ג'
+	String get perKg => 'לק״ג';
+
+	/// he: 'לליטר'
+	String get perLiter => 'לליטר';
+
+	/// he: 'מודפס: $name'
+	String printedAs({required Object name}) => 'מודפס: ${name}';
+
+	/// he: 'קבלות'
+	String get receipts => 'קבלות';
+
+	/// he: 'מחירים'
+	String get prices => 'מחירים';
+
+	/// he: 'מיון'
+	String get sortBy => 'מיון';
+
+	/// he: 'תאריך'
+	String get sortDate => 'תאריך';
+
+	/// he: 'חנות'
+	String get sortStore => 'חנות';
+
+	/// he: 'סכום'
+	String get sortTotal => 'סכום';
+
+	/// he: 'שם'
+	String get sortName => 'שם';
+
+	/// he: 'עוד אין קבלות שמורות'
+	String get noReceipts => 'עוד אין קבלות שמורות';
+
+	/// he: 'עוד אין מחירים שמורים'
+	String get noPrices => 'עוד אין מחירים שמורים';
+
+	/// he: 'מחיקת הקבלה'
+	String get deleteReceipt => 'מחיקת הקבלה';
+
+	/// he: 'הקבלה וכל המחירים שנקלטו ממנה יימחקו.'
+	String get deleteReceiptBody => 'הקבלה וכל המחירים שנקלטו ממנה יימחקו.';
+
+	/// he: 'הוספת מחיר'
+	String get addPrice => 'הוספת מחיר';
+
+	/// he: 'בלי קבלה: מחיר ששילמתם או שאתם יודעים'
+	String get addPriceHint => 'בלי קבלה: מחיר ששילמתם או שאתם יודעים';
+
+	/// he: 'הוזן ידנית'
+	String get manualSource => 'הוזן ידנית';
+
+	/// he: 'שולם לאחרונה'
+	String get lastPaid => 'שולם לאחרונה';
+
+	/// he: 'המחיר נשמר'
+	String get priceSaved => 'המחיר נשמר';
+
+	/// he: '$count מוצרים'
+	String itemsInReceipt({required Object count}) => '${count} מוצרים';
+
+	/// he: 'חיפוש מוצר'
+	String get search => 'חיפוש מוצר';
+
+	/// he: 'תמונת הקבלה'
+	String get viewImage => 'תמונת הקבלה';
+
+	/// he: 'לא נשמרה תמונה לקבלה הזו'
+	String get noImage => 'לא נשמרה תמונה לקבלה הזו';
+
+	/// he: 'קבלה מקובץ PDF'
+	String get pdfFile => 'קבלה מקובץ PDF';
+
+	/// he: 'סינון'
+	String get filter => 'סינון';
+
+	/// he: 'הכל'
+	String get filterAll => 'הכל';
+
+	/// he: 'כל התקופה'
+	String get periodAll => 'כל התקופה';
+
+	/// he: '30 יום'
+	String get period30 => '30 יום';
+
+	/// he: '90 יום'
+	String get period90 => '90 יום';
+
+	/// he: 'מקבלות'
+	String get sourceReceipt => 'מקבלות';
+
+	/// he: 'הוזנו ידנית'
+	String get sourceManual => 'הוזנו ידנית';
+
+	/// he: 'מחיקת המוצר'
+	String get deleteProduct => 'מחיקת המוצר';
+
+	/// he: 'כל המחירים שנשמרו למוצר הזה יימחקו.'
+	String get deleteProductBody => 'כל המחירים שנשמרו למוצר הזה יימחקו.';
+
+	/// he: 'בחירה מהמחירים שלי'
+	String get pickFromPrices => 'בחירה מהמחירים שלי';
+
+	/// he: 'המוצרים שלי'
+	String get pickerTitle => 'המוצרים שלי';
+
+	/// he: 'כבר קיים: $price'
+	String existingPrice({required Object price}) => 'כבר קיים: ${price}';
+
+	/// he: 'המחיר החדש'
+	String get keepNew => 'המחיר החדש';
+
+	/// he: 'המחיר הישן'
+	String get keepOld => 'המחיר הישן';
+
+	/// he: 'ממוצע'
+	String get keepAverage => 'ממוצע';
+
+	/// he: 'מחיקת הקבלה בלבד'
+	String get deleteReceiptOnly => 'מחיקת הקבלה בלבד';
+
+	/// he: 'המחירים שנקלטו ממנה נשארים'
+	String get deleteReceiptOnlyHint => 'המחירים שנקלטו ממנה נשארים';
+
+	/// he: 'מחיקת הקבלה והמחירים שלה'
+	String get deleteReceiptAndPrices => 'מחיקת הקבלה והמחירים שלה';
+
+	/// he: 'מחיקת כל המחירים'
+	String get deleteAll => 'מחיקת כל המחירים';
+
+	/// he: 'כל המחירים, הקבלות והבחירות יימחקו. אי אפשר לבטל.'
+	String get deleteAllBody => 'כל המחירים, הקבלות והבחירות יימחקו. אי אפשר לבטל.';
+
+	/// he: 'איזה מחיר להשתמש בו'
+	String get pricingTitle => 'איזה מחיר להשתמש בו';
+
+	/// he: 'האחרון'
+	String get pricingLatest => 'האחרון';
+
+	/// he: 'ממוצע של הכל'
+	String get pricingAverage => 'ממוצע של הכל';
+
+	/// he: 'לפי סופר'
+	String get pricingStore => 'לפי סופר';
+
+	/// he: 'קבלות נבחרות'
+	String get pricingReceipts => 'קבלות נבחרות';
+
+	/// he: 'בשימוש: $price'
+	String pricingActive({required Object price}) => 'בשימוש: ${price}';
+
+	/// he: 'היסטוריית מחירים'
+	String get history => 'היסטוריית מחירים';
+
+	/// he: 'ללא חנות'
+	String get noStore => 'ללא חנות';
+
+	/// he: 'הבחירה נשמרה'
+	String get pricingSaved => 'הבחירה נשמרה';
+}
+
 // Path: unit
 class Translations$unit$he {
 	Translations$unit$he.internal(this._root);
@@ -2298,6 +2620,9 @@ extension on Translations {
 			'common.or' => 'או',
 			'common.missingInfo' => '[חסר מידע]',
 			'common.networkError' => 'אין חיבור לאינטרנט',
+			'common.landscapeHint' => 'מומלץ לעבוד עם מסך לרוחב',
+			'common.rotateLandscape' => 'סובב לרוחב',
+			'common.rotatePortrait' => 'חזרה לאורך',
 			'auth.welcome' => 'ברוכים הבאים ל-EasyPlate',
 			'auth.subtitle' => 'התחברו כדי לשמור את המתכונים שלכם',
 			'auth.signIn' => 'התחברות',
@@ -2421,6 +2746,8 @@ extension on Translations {
 			'settings.fastPageTurnHint' => 'קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.',
 			'settings.sharedAccess' => 'ניהול שיתופים',
 			'settings.noSharedAccess' => 'עדיין לא שיתפתם ספרים או רשימות',
+			'settings.communityPrices' => 'מחירים לפי ממוצע המשתמשים',
+			'settings.communityPricesHint' => 'כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו',
 			'more.title' => 'עוד',
 			'more.settings' => 'הגדרות',
 			'more.profile' => 'פרופיל אישי',
@@ -2744,6 +3071,107 @@ extension on Translations {
 			'groceryList.selectPlansTitle' => 'אילו תפריטים ייכנסו לרשימה?',
 			'groceryList.applySelection' => 'עדכון הרשימה',
 			'groceryList.selectAllPlans' => 'כל התפריטים',
+			'receipt.title' => 'סריקת קבלה',
+			'receipt.subtitle' => 'צלמו קבלה או העלו PDF, והמחירים יישמרו לרשימת הקניות',
+			'receipt.camera' => 'צילום קבלה',
+			'receipt.cameraHint' => 'קבלה ארוכה? צלמו כמה תמונות, נאחד אותן',
+			'receipt.gallery' => 'בחירה מהגלריה',
+			'receipt.pdf' => 'קובץ PDF',
+			'receipt.addPhoto' => 'תמונה נוספת',
+			'receipt.scan' => 'סרוק',
+			'receipt.scanning' => 'קורא את הקבלה…',
+			'receipt.pagesCount' => ({required Object count}) => '${count} תמונות',
+			'receipt.scanFailed' => 'לא הצלחנו לקרוא את הקבלה. נסו תמונה חדה יותר או PDF.',
+			'receipt.reviewTitle' => 'מה נקלט',
+			'receipt.reviewSubtitle' => 'אפשר לתקן שמות ומחירים לפני השמירה',
+			'receipt.store' => 'חנות',
+			'receipt.date' => 'תאריך',
+			'receipt.receiptTotal' => 'סה״כ בקבלה',
+			'receipt.itemsTotal' => 'סה״כ מוצרים שנקלטו',
+			'receipt.captured' => 'מוצרים שנקלטו',
+			'receipt.capturedCount' => ({required Object count}) => '${count} מוצרים',
+			'receipt.unreadable' => 'לא הצלחנו לקלוט',
+			'receipt.unreadableHint' => 'הערות על שורות שלא הצלחנו לקרוא. אפשר להוסיף אותן ידנית למטה.',
+			'receipt.addLine' => 'הוספת מוצר',
+			'receipt.itemName' => 'שם המוצר',
+			'receipt.price' => 'מחיר ליחידה',
+			'receipt.quantity' => 'כמות',
+			'receipt.removeLine' => 'הסרת שורה',
+			'receipt.shareToggle' => 'שיתוף המחירים עם הקהילה',
+			'receipt.shareHint' => 'רק שמות מוצרים ומחירים. בלי החנות, התאריך או מי קנה.',
+			'receipt.save' => 'שמירת המחירים',
+			'receipt.saved' => ({required Object count}) => '${count} מחירים נשמרו',
+			'receipt.savedShared' => ({required Object count}) => '${count} מחירים נשמרו ושותפו',
+			'receipt.nothingToSave' => 'אין מוצרים לשמירה',
+			'receipt.estimated' => 'משוער לפי נתוני עבר',
+			'receipt.estimatedTotal' => 'עלות משוערת',
+			'receipt.noData' => 'אין נתונים',
+			'receipt.fromReceipt' => 'מהקבלה שלך',
+			'receipt.fromCommunity' => 'ממוצע המשתמשים',
+			'receipt.unpriced' => ({required Object count}) => '${count} פריטים בלי מחיר',
+			'receipt.priceBook' => 'המחירים שלי',
+			'receipt.priceBookEmpty' => 'עוד לא נסרקו קבלות. סרקו את הראשונה כדי לראות כמה עולה הקנייה.',
+			'receipt.deleteRecord' => 'מחיקת מחיר',
+			'receipt.cameraGuide' => 'הכניסו את הקבלה למלבן',
+			'receipt.cameraHold' => 'החזיקו יציב…',
+			'receipt.cameraCaptured' => 'נקלט!',
+			_ => null,
+		} ?? switch (path) {
+			'receipt.cameraUnavailable' => 'אין גישה למצלמה',
+			'receipt.perUnit' => 'ליח׳',
+			'receipt.perKg' => 'לק״ג',
+			'receipt.perLiter' => 'לליטר',
+			'receipt.printedAs' => ({required Object name}) => 'מודפס: ${name}',
+			'receipt.receipts' => 'קבלות',
+			'receipt.prices' => 'מחירים',
+			'receipt.sortBy' => 'מיון',
+			'receipt.sortDate' => 'תאריך',
+			'receipt.sortStore' => 'חנות',
+			'receipt.sortTotal' => 'סכום',
+			'receipt.sortName' => 'שם',
+			'receipt.noReceipts' => 'עוד אין קבלות שמורות',
+			'receipt.noPrices' => 'עוד אין מחירים שמורים',
+			'receipt.deleteReceipt' => 'מחיקת הקבלה',
+			'receipt.deleteReceiptBody' => 'הקבלה וכל המחירים שנקלטו ממנה יימחקו.',
+			'receipt.addPrice' => 'הוספת מחיר',
+			'receipt.addPriceHint' => 'בלי קבלה: מחיר ששילמתם או שאתם יודעים',
+			'receipt.manualSource' => 'הוזן ידנית',
+			'receipt.lastPaid' => 'שולם לאחרונה',
+			'receipt.priceSaved' => 'המחיר נשמר',
+			'receipt.itemsInReceipt' => ({required Object count}) => '${count} מוצרים',
+			'receipt.search' => 'חיפוש מוצר',
+			'receipt.viewImage' => 'תמונת הקבלה',
+			'receipt.noImage' => 'לא נשמרה תמונה לקבלה הזו',
+			'receipt.pdfFile' => 'קבלה מקובץ PDF',
+			'receipt.filter' => 'סינון',
+			'receipt.filterAll' => 'הכל',
+			'receipt.periodAll' => 'כל התקופה',
+			'receipt.period30' => '30 יום',
+			'receipt.period90' => '90 יום',
+			'receipt.sourceReceipt' => 'מקבלות',
+			'receipt.sourceManual' => 'הוזנו ידנית',
+			'receipt.deleteProduct' => 'מחיקת המוצר',
+			'receipt.deleteProductBody' => 'כל המחירים שנשמרו למוצר הזה יימחקו.',
+			'receipt.pickFromPrices' => 'בחירה מהמחירים שלי',
+			'receipt.pickerTitle' => 'המוצרים שלי',
+			'receipt.existingPrice' => ({required Object price}) => 'כבר קיים: ${price}',
+			'receipt.keepNew' => 'המחיר החדש',
+			'receipt.keepOld' => 'המחיר הישן',
+			'receipt.keepAverage' => 'ממוצע',
+			'receipt.deleteReceiptOnly' => 'מחיקת הקבלה בלבד',
+			'receipt.deleteReceiptOnlyHint' => 'המחירים שנקלטו ממנה נשארים',
+			'receipt.deleteReceiptAndPrices' => 'מחיקת הקבלה והמחירים שלה',
+			'receipt.deleteAll' => 'מחיקת כל המחירים',
+			'receipt.deleteAllBody' => 'כל המחירים, הקבלות והבחירות יימחקו. אי אפשר לבטל.',
+			'receipt.pricingTitle' => 'איזה מחיר להשתמש בו',
+			'receipt.pricingLatest' => 'האחרון',
+			'receipt.pricingAverage' => 'ממוצע של הכל',
+			'receipt.pricingStore' => 'לפי סופר',
+			'receipt.pricingReceipts' => 'קבלות נבחרות',
+			'receipt.pricingActive' => ({required Object price}) => 'בשימוש: ${price}',
+			'receipt.history' => 'היסטוריית מחירים',
+			'receipt.noStore' => 'ללא חנות',
+			'receipt.pricingSaved' => 'הבחירה נשמרה',
 			'unit.gram' => 'גרם',
 			'unit.kilogram' => 'ק"ג',
 			'unit.milliliter' => 'מ"ל',
@@ -2793,8 +3221,6 @@ extension on Translations {
 			'ads.sharedQuotaReached' => 'הגעת למכסה היומית של מתכונים משותפים. המכסה תתאפס מחר!',
 			'ads.unlockRecipeTitle' => 'פתיחת מתכון משותף',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'צפה בסרטון קצר כדי לפתוח מתכון זה (נשארו עוד ${count} להיום)',
-			_ => null,
-		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'נשארו לך ${remaining}/${total} חילוצי AI להיום',
 			'ads.aiQuotaReached' => 'הגעת למכסה היומית של חילוצי AI. האפשרות תיפתח מחר!',
 			'ads.aiLockedHint' => 'חילוץ מקישור דורש צפייה בסרטון קצר',

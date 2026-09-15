@@ -16,6 +16,11 @@ class UserPreferencesEntity {
   /// not replay the tour.
   final bool walkthroughSeen;
 
+  /// When a grocery line has no price of the user's own, fall back to what
+  /// other people paid. Off by default: an estimate from strangers' receipts
+  /// is something to opt into.
+  final bool communityPricesEnabled;
+
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
@@ -24,6 +29,7 @@ class UserPreferencesEntity {
     this.fastPageTurnEnabled = true,
     this.onboardingComplete = false,
     this.walkthroughSeen = false,
+    this.communityPricesEnabled = false,
   });
 
   UserPreferencesEntity copyWith({
@@ -34,6 +40,7 @@ class UserPreferencesEntity {
     bool? fastPageTurnEnabled,
     bool? onboardingComplete,
     bool? walkthroughSeen,
+    bool? communityPricesEnabled,
   }) {
     return UserPreferencesEntity(
       shoppingDay: shoppingDay ?? this.shoppingDay,
@@ -43,6 +50,7 @@ class UserPreferencesEntity {
       fastPageTurnEnabled: fastPageTurnEnabled ?? this.fastPageTurnEnabled,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       walkthroughSeen: walkthroughSeen ?? this.walkthroughSeen,
+      communityPricesEnabled: communityPricesEnabled ?? this.communityPricesEnabled,
     );
   }
 }

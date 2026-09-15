@@ -23,6 +23,7 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     // Appended: preferences stored before the tour existed decode as false,
     // which correctly reads as "not seen yet".
     @HiveField(6) @Default(false) bool walkthroughSeen,
+    @HiveField(7) @Default(false) bool communityPricesEnabled,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -38,6 +39,7 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
         fastPageTurnEnabled: fastPageTurnEnabled,
         onboardingComplete: onboardingComplete,
         walkthroughSeen: walkthroughSeen,
+        communityPricesEnabled: communityPricesEnabled,
       );
 }
 
@@ -50,5 +52,6 @@ extension UserPreferencesEntityMapper on UserPreferencesEntity {
         fastPageTurnEnabled: fastPageTurnEnabled,
         onboardingComplete: onboardingComplete,
         walkthroughSeen: walkthroughSeen,
+        communityPricesEnabled: communityPricesEnabled,
       );
 }

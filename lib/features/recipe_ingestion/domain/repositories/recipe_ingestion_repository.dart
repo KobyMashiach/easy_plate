@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../price_book/domain/entities/receipt_scan_entity.dart';
+import '../../data/datasources/recipe_ai_datasource.dart' show ReceiptPage;
 import '../entities/original_recipe_page_entity.dart';
 import '../entities/web_search_result_entity.dart';
 
@@ -30,4 +32,7 @@ abstract class RecipeIngestionRepository {
 
   /// A generated picture for [prompt], as JPEG bytes.
   Future<Uint8List> generateImage(String prompt);
+
+  /// Products and prices read off a receipt (photos or a PDF).
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages);
 }

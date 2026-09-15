@@ -3,6 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../../features/meal_planner/presentation/pages/nutrition_dashboard_page.dart';
+import '../../../features/price_book/presentation/pages/receipt_review_page.dart';
+import '../../../features/price_book/presentation/pages/price_book_page.dart';
+import '../../../features/price_book/presentation/pages/receipt_details_page.dart';
+import '../../../features/price_book/domain/entities/receipt_entity.dart';
+import '../../../features/price_book/presentation/pages/receipt_images_page.dart';
 import '../../../features/auth/presentation/pages/phone_gate_page.dart';
 import '../../../features/auth/presentation/pages/phone_verification_page.dart';
 import '../../../features/auth/presentation/pages/profile_setup_page.dart';
@@ -49,14 +54,17 @@ String? gateRedirect({required AuthStage stage, required String location}) {
     // Nothing left to gate; the gate's own screens must not stay reachable.
     // `phoneVerify` is listed separately because it is pushed with arguments
     // rather than being a stage's entry point, so it is not in the map.
-    return _stageEntryPoint.values.contains(location) || location == Routing.phoneVerify
+    return _stageEntryPoint.values.contains(location) ||
+            location == Routing.phoneVerify
         ? Routing.home
         : null;
   }
 
   // The SMS code screen belongs to the signed-out stage: the user is mid
   // sign-in and must not be bounced back to the login form.
-  if (stage == AuthStage.signedOut && location == Routing.phoneVerify) return null;
+  if (stage == AuthStage.signedOut && location == Routing.phoneVerify) {
+    return null;
+  }
 
   final destination = _stageEntryPoint[stage]!;
   return location == destination ? null : destination;
@@ -121,26 +129,57 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.bookDetails,
             name: Routing.bookDetails,
-            builder: (context, state) => BookViewerPage(bookId: state.extra as String),
+            builder: (context, state) =>
+                BookViewerPage(bookId: state.extra as String),
           ),
           GoRoute(
             path: Routing.recipeDetails,
             name: Routing.recipeDetails,
             builder: (context, state) {
               final args = state.extra as RecipeDetailsArgs;
-              return RecipeDetailsPage(recipe: args.recipe, readOnly: args.readOnly);
+              return RecipeDetailsPage(
+                recipe: args.recipe,
+                readOnly: args.readOnly,
+              );
+            },
+          ),
+          GoRoute(
+            path: Routing.priceBook,
+            name: Routing.priceBook,
+            builder: (context, state) => const PriceBookPage(),
+          ),
+          GoRoute(
+            path: Routing.receiptImages,
+            name: Routing.receiptImages,
+            builder: (context, state) =>
+                ReceiptImagesPage(receipt: state.extra as ReceiptEntity),
+          ),
+          GoRoute(
+            path: Routing.receiptDetails,
+            name: Routing.receiptDetails,
+            builder: (context, state) =>
+                ReceiptDetailsPage(receipt: state.extra as ReceiptEntity),
+          ),
+          GoRoute(
+            path: Routing.receiptReview,
+            name: Routing.receiptReview,
+            builder: (context, state) {
+              final args = state.extra as ReceiptReviewArgs;
+              return ReceiptReviewPage(scan: args.scan, pages: args.pages);
             },
           ),
           GoRoute(
             path: Routing.nutritionDashboard,
             name: Routing.nutritionDashboard,
-            builder: (context, state) =>
-                NutritionDashboardPage(args: state.extra as NutritionDashboardArgs),
+            builder: (context, state) => NutritionDashboardPage(
+              args: state.extra as NutritionDashboardArgs,
+            ),
           ),
           GoRoute(
             path: Routing.recipeEditor,
             name: Routing.recipeEditor,
-            builder: (context, state) => RecipeEditorPage(recipe: state.extra as RecipeEntity),
+            builder: (context, state) =>
+                RecipeEditorPage(recipe: state.extra as RecipeEntity),
           ),
           GoRoute(
             path: Routing.accountMenu,
@@ -155,7 +194,8 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.profileEdit,
             name: Routing.profileEdit,
-            builder: (context, state) => const ProfileSetupPage(isEditing: true),
+            builder: (context, state) =>
+                const ProfileSetupPage(isEditing: true),
           ),
           GoRoute(
             path: Routing.notifications,

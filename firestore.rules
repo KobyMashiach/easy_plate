@@ -33,6 +33,13 @@ service cloud.firestore {
     // console) and only ever read by the app. Kept out of /users/{uid} on
     // purpose: that document is owner-writable, and an entitlement the owner
     // can grant themselves is not one.
+    // Community price aggregates, one document per product name. Written
+    // only by the priceStats function; any signed-in user may read.
+    match /price_stats/{key} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
     match /entitlements/{uid} {
       allow read: if signedIn() && request.auth.uid == uid;
       allow write: if false;

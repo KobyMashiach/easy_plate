@@ -34,6 +34,9 @@ abstract class ApiConfig {
   /// The video function, deployed beside the proxy under its own name. Only
   /// meaningful behind the proxy: against Google directly there is no server
   /// to fetch a video, and the social channel falls back to reading the page.
+  /// The community price aggregates function, beside the proxy as well.
+  static String get priceStatsUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/priceStats');
+
   static String get socialRecipeUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/socialRecipe');
 
   static const model = String.fromEnvironment(

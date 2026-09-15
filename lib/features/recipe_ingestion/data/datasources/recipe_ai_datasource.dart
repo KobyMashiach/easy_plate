@@ -9,6 +9,8 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/ai_auth_header.dart';
 import '../../../../core/network/http_calls.dart';
 import '../../../my_recipes/domain/entities/nutrition_entity.dart';
+import '../../../price_book/domain/entities/price_unit.dart';
+import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
@@ -24,6 +26,20 @@ abstract class RecipeAiDataSource {
 
   /// A picture for [prompt], as JPEG bytes.
   Future<Uint8List> generateImage(String prompt);
+
+  /// The products and prices on a receipt, from one or more photos of it
+  /// or a PDF. Several photos are parts of the same receipt.
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages);
+}
+
+/// One page handed to the receipt scanner: a photo or a PDF, as bytes.
+class ReceiptPage {
+  final Uint8List bytes;
+  final String mimeType;
+
+  const ReceiptPage({required this.bytes, required this.mimeType});
+
+  bool get isPdf => mimeType == 'application/pdf';
 }
 
 /// Calls the Gemini Interactions API over raw HTTP (there is no official Google
@@ -296,7 +312,7 @@ $_dietaryTagRules
   };
 
   Map<String, dynamic> _body({
-    required String input,
+    required Object input,
     required Map<String, dynamic> schema,
     String systemInstruction = _systemPrompt,
     List<Map<String, dynamic>> tools = const [],
@@ -477,6 +493,145 @@ $_dietaryTagRules
   static int? _servingsFrom(Object? raw) {
     final n = (raw as num?)?.toInt();
     return n == null || n < 1 ? null : n;
+  }
+
+  static const _receiptSchema = {
+    'type': 'object',
+    'properties': {
+      'store': {'type': 'string', 'description': 'Store or chain name as printed. Omit if absent'},
+      'date': {'type': 'string', 'description': 'Purchase date as YYYY-MM-DD. Omit if absent'},
+      'currency': {'type': 'string', 'description': 'ISO 4217 code, e.g. ILS. Default ILS'},
+      'total': {'type': 'number', 'description': 'The receipt total as printed. Omit if absent'},
+      'items': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'name': {
+              'type': 'string',
+              'description':
+                  'The GENERIC product, 1-3 words, as a shopper would write it on a list: "אנטריקוט", "חלב 3%", "עגבניות". Drop brand, cut, freshness, packaging, size and codes',
+            },
+            'printed_name': {
+              'type': 'string',
+              'description': 'The line exactly as printed on the receipt',
+            },
+            'unit': {
+              'type': 'string',
+              'enum': ['unit', 'kg', 'liter'],
+              'description':
+                  'What unit_price is per: "kg" for weighed lines (shown as ק"ג / קג / KG), "liter" for volume-priced lines, else "unit"',
+            },
+            'quantity': {
+              'type': 'number',
+              'description':
+                  'How many of that unit: 0.85 for 0.850 ק"ג, 3 for three packages. 1 when not shown',
+            },
+            'unit_price': {
+              'type': 'number',
+              'description': 'Price per one unit, after any discount line that applies to this item',
+            },
+            'line_total': {
+              'type': 'number',
+              'description': 'The amount paid for the line as printed, after discounts',
+            },
+          },
+          'required': ['name', 'printed_name', 'unit', 'quantity', 'unit_price', 'line_total'],
+        },
+      },
+      'unreadable': {
+        'type': 'array',
+        'items': {'type': 'string'},
+        'description':
+            'Short notes, in Hebrew, about product lines that could NOT be read — where they are and why, e.g. "מתחת לבצל מיובש: שורה מטושטשת". Never list deposits, credits, totals or discounts here',
+      },
+    },
+    'required': ['items', 'unreadable'],
+  };
+
+  static const _receiptSystemPrompt = '''
+אתה קורא קבלות מסופרמרקטים בישראל בדיוק מלא. המשתמש מצלם קבלה — לפעמים בכמה תמונות חופפות — או שולח PDF.
+
+איך קבלה ישראלית בנויה:
+- כל שורת מוצר: שם המוצר, ולידו כמות × מחיר ליחידה = סכום השורה. לעיתים הכמות והמחיר ליחידה בשורה נפרדת מתחת לשם.
+- מוצר שקול: "0.850 ק"ג × 119.00" — אז unit="kg", quantity=0.85, unit_price=119.00, line_total=101.15.
+- מוצר ביחידות: "3 × 5.90" — unit="unit", quantity=3, unit_price=5.90, line_total=17.70. בלי כמות מודפסת: quantity=1 ו-unit_price שווה לסכום השורה.
+- שורת הנחה ("הנחה", "מבצע", מספר שלילי) מתייחסת למוצר שמעליה: הפחת אותה מסכום השורה של אותו מוצר וחשב unit_price מחדש. אל תרשום את ההנחה כמוצר.
+- שורות סה"כ, מע"מ, עודף, מזומן, אשראי, קופון, מועדון, ברקוד — אינן מוצרים. השמט אותן לגמרי.
+- גם פיקדון בקבוק, זיכוי אריזה, החזר פיקדון, שקית/שקיות, דמי משלוח — אינם מוצרים. השמט אותם לגמרי, לא ב-items ולא ב-unreadable.
+
+כללי דיוק:
+- קרא מספרים בדיוק כפי שהם מודפסים, עם הנקודה העשרונית במקום הנכון. 119.00 ולא 11900 ולא 1190.
+- בדוק את עצמך: סכום כל line_total צריך להתקרב ל-total המודפס. אם יש פער גדול, חזור וקרא שוב את השורות.
+- name הוא שם המוצר הכללי כפי שאדם יכתוב ברשימת קניות: "אנטריקוט" ולא "אנטריקוט ח. טרי מיושן"; "חלב 3%" ולא "חלב תנובה 3% 1 ליטר"; "עגבניות" ולא "עגבניה שרי מגש". printed_name הוא השורה כפי שהודפסה.
+- כשיש כמה תמונות של אותה קבלה: אחד אותן, מוצר שמופיע בשתי תמונות בגלל חפיפה נספר פעם אחת.
+- שורת מוצר שלא ניתן לקרוא בביטחון: אל תנחש. רשום ב-unreadable הערה קצרה — איפה השורה ומה הבעיה ("מתחת לבצל מיובש: מטושטש"). זו הערה למשתמש, לא מוצר.
+החזר JSON בלבד.''';
+
+  /// Reads a receipt from photos or a PDF. Overlapping photos are merged by
+  /// the model (the prompt says so); the caller only concatenates.
+  @override
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) async {
+    if (pages.isEmpty) return ReceiptScanEntity.empty;
+    final blocks = <Map<String, dynamic>>[
+      for (final page in pages)
+        {
+          'type': page.isPdf ? 'document' : 'image',
+          'mime_type': page.mimeType,
+          'data': base64Encode(page.bytes),
+        },
+      {
+        'type': 'text',
+        'text': pages.length > 1
+            ? 'אלה ${pages.length} תמונות של אותה קבלה, אולי חופפות. חלץ את המוצרים והמחירים.'
+            : 'חלץ את המוצרים והמחירים מהקבלה.',
+      },
+    ];
+    final data = await _callStructured(
+      _body(
+        input: blocks,
+        schema: _receiptSchema,
+        systemInstruction: _receiptSystemPrompt,
+        // Unlike a recipe, a receipt is arithmetic: the model checks its
+        // reading against the printed total, and that needs room to think.
+        thinkingLevel: 'high',
+      ),
+    );
+    return _receiptFrom(data);
+  }
+
+  static ReceiptScanEntity _receiptFrom(Map<String, dynamic> data) {
+    final items = <ReceiptLineEntity>[];
+    for (final raw in (data['items'] as List?) ?? const []) {
+      if (raw is! Map) continue;
+      final name = (raw['name'] as String?)?.trim() ?? '';
+      final printed = (raw['printed_name'] as String?)?.trim();
+      var price = (raw['unit_price'] as num?)?.toDouble();
+      var quantity = (raw['quantity'] as num?)?.toDouble() ?? 1;
+      final lineTotal = (raw['line_total'] as num?)?.toDouble();
+      // A missing unit price is recoverable from the line total.
+      if ((price == null || price <= 0) && lineTotal != null && lineTotal > 0) {
+        price = quantity > 0 ? lineTotal / quantity : lineTotal;
+      }
+      if (name.isEmpty || price == null || price <= 0) continue;
+      if (quantity <= 0) quantity = 1;
+      items.add(ReceiptLineEntity(
+        name: name,
+        printedName: printed == null || printed.isEmpty ? name : printed,
+        quantity: quantity,
+        unitPrice: price,
+        unit: PriceUnit.fromName(raw['unit'] as String?),
+      ));
+    }
+    final date = data['date'] is String ? DateTime.tryParse(data['date'] as String) : null;
+    return ReceiptScanEntity(
+      store: (data['store'] as String?)?.trim(),
+      purchasedAt: date,
+      currency: (data['currency'] as String?)?.trim().toUpperCase() ?? 'ILS',
+      total: (data['total'] as num?)?.toDouble(),
+      items: items,
+      unreadable: ((data['unreadable'] as List?) ?? const []).whereType<String>().toList(),
+    );
   }
 
   /// One picture from the image model. The Interactions API takes the image

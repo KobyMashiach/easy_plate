@@ -14,6 +14,9 @@ import 'package:easy_plate/features/meal_planner/data/models/meal_plan_model.dar
 import 'package:easy_plate/features/my_recipes/data/models/nutrition_model.dart';
 import 'package:easy_plate/features/my_recipes/data/models/recipe_ingredient_model.dart';
 import 'package:easy_plate/features/my_recipes/data/models/recipe_model.dart';
+import 'package:easy_plate/features/price_book/data/models/price_record_model.dart';
+import 'package:easy_plate/features/price_book/data/models/product_pricing_model.dart';
+import 'package:easy_plate/features/price_book/data/models/receipt_model.dart';
 import 'package:easy_plate/features/recipe_books/data/models/book_recipe_ref_model.dart';
 import 'package:easy_plate/features/recipe_books/data/models/recipe_book_model.dart';
 import 'package:easy_plate/features/user_profile/data/models/user_preferences_model.dart';
@@ -33,6 +36,9 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(MealPlanModelAdapter());
     registerAdapter(MeasurementUnitAdapter());
     registerAdapter(NutritionModelAdapter());
+    registerAdapter(PriceRecordModelAdapter());
+    registerAdapter(ProductPricingModelAdapter());
+    registerAdapter(ReceiptModelAdapter());
     registerAdapter(RecipeBookModelAdapter());
     registerAdapter(RecipeIngredientModelAdapter());
     registerAdapter(RecipeModelAdapter());
@@ -56,6 +62,9 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(MealPlanModelAdapter());
     registerAdapter(MeasurementUnitAdapter());
     registerAdapter(NutritionModelAdapter());
+    registerAdapter(PriceRecordModelAdapter());
+    registerAdapter(ProductPricingModelAdapter());
+    registerAdapter(ReceiptModelAdapter());
     registerAdapter(RecipeBookModelAdapter());
     registerAdapter(RecipeIngredientModelAdapter());
     registerAdapter(RecipeModelAdapter());

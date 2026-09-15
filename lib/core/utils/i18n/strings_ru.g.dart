@@ -60,6 +60,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ingestion$ru ingestion = _Translations$ingestion$ru._(_root);
 	@override late final _Translations$mealPlanner$ru mealPlanner = _Translations$mealPlanner$ru._(_root);
 	@override late final _Translations$groceryList$ru groceryList = _Translations$groceryList$ru._(_root);
+	@override late final _Translations$receipt$ru receipt = _Translations$receipt$ru._(_root);
 	@override late final _Translations$unit$ru unit = _Translations$unit$ru._(_root);
 	@override late final _Translations$image$ru image = _Translations$image$ru._(_root);
 	@override late final _Translations$nav$ru nav = _Translations$nav$ru._(_root);
@@ -93,6 +94,9 @@ class _Translations$common$ru extends Translations$common$he {
 	@override String get or => 'или';
 	@override String get missingInfo => '[нет данных]';
 	@override String get networkError => 'Нет подключения к интернету';
+	@override String get landscapeHint => 'Удобнее в горизонтальном режиме';
+	@override String get rotateLandscape => 'Повернуть';
+	@override String get rotatePortrait => 'Вернуть портрет';
 }
 
 // Path: auth
@@ -279,6 +283,8 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.';
 	@override String get sharedAccess => 'Управление доступом';
 	@override String get noSharedAccess => 'Вы ещё не делились книгами или списками';
+	@override String get communityPrices => 'Средние цены сообщества';
+	@override String get communityPricesHint => 'Если у вас нет своей цены на товар, показывать медианную цену, которой поделились другие';
 }
 
 // Path: more
@@ -712,6 +718,114 @@ class _Translations$groceryList$ru extends Translations$groceryList$he {
 	@override String get selectAllPlans => 'Все меню';
 }
 
+// Path: receipt
+class _Translations$receipt$ru extends Translations$receipt$he {
+	_Translations$receipt$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Сканировать чек';
+	@override String get subtitle => 'Сфотографируйте чек или загрузите PDF, и цены сохранятся для списка покупок';
+	@override String get camera => 'Сфотографировать чек';
+	@override String get cameraHint => 'Длинный чек? Сделайте несколько фото, мы их объединим';
+	@override String get gallery => 'Выбрать из галереи';
+	@override String get pdf => 'Файл PDF';
+	@override String get addPhoto => 'Ещё фото';
+	@override String get scan => 'Сканировать';
+	@override String get scanning => 'Читаем чек…';
+	@override String pagesCount({required Object count}) => '${count} фото';
+	@override String get scanFailed => 'Не удалось прочитать чек. Попробуйте более чёткое фото или PDF.';
+	@override String get reviewTitle => 'Что распознано';
+	@override String get reviewSubtitle => 'Исправьте названия и цены перед сохранением';
+	@override String get store => 'Магазин';
+	@override String get date => 'Дата';
+	@override String get receiptTotal => 'Итого по чеку';
+	@override String get itemsTotal => 'Итого распознанных товаров';
+	@override String get captured => 'Распознанные товары';
+	@override String capturedCount({required Object count}) => '${count} товаров';
+	@override String get unreadable => 'Не удалось распознать';
+	@override String get unreadableHint => 'Заметки о строках, которые не удалось прочитать. При необходимости добавьте их вручную ниже.';
+	@override String get addLine => 'Добавить товар';
+	@override String get itemName => 'Название товара';
+	@override String get price => 'Цена за единицу';
+	@override String get quantity => 'Количество';
+	@override String get removeLine => 'Удалить строку';
+	@override String get shareToggle => 'Поделиться ценами с сообществом';
+	@override String get shareHint => 'Только названия товаров и цены. Без магазина, даты и того, кто платил.';
+	@override String get save => 'Сохранить цены';
+	@override String saved({required Object count}) => 'Сохранено цен: ${count}';
+	@override String savedShared({required Object count}) => 'Сохранено и отправлено цен: ${count}';
+	@override String get nothingToSave => 'Нет товаров для сохранения';
+	@override String get estimated => 'Оценка по прошлым данным';
+	@override String get estimatedTotal => 'Ориентировочная стоимость';
+	@override String get noData => 'Нет данных';
+	@override String get fromReceipt => 'Из вашего чека';
+	@override String get fromCommunity => 'Медиана сообщества';
+	@override String unpriced({required Object count}) => 'Без цены: ${count}';
+	@override String get priceBook => 'Мои цены';
+	@override String get priceBookEmpty => 'Чеки ещё не сканировались. Отсканируйте первый, чтобы узнать стоимость покупок.';
+	@override String get deleteRecord => 'Удалить цену';
+	@override String get cameraGuide => 'Поместите чек в рамку';
+	@override String get cameraHold => 'Не двигайте…';
+	@override String get cameraCaptured => 'Снято!';
+	@override String get cameraUnavailable => 'Нет доступа к камере';
+	@override String get perUnit => 'за шт.';
+	@override String get perKg => 'за кг';
+	@override String get perLiter => 'за литр';
+	@override String printedAs({required Object name}) => 'Напечатано: ${name}';
+	@override String get receipts => 'Чеки';
+	@override String get prices => 'Цены';
+	@override String get sortBy => 'Сортировка';
+	@override String get sortDate => 'Дата';
+	@override String get sortStore => 'Магазин';
+	@override String get sortTotal => 'Сумма';
+	@override String get sortName => 'Название';
+	@override String get noReceipts => 'Сохранённых чеков пока нет';
+	@override String get noPrices => 'Сохранённых цен пока нет';
+	@override String get deleteReceipt => 'Удалить чек';
+	@override String get deleteReceiptBody => 'Чек и все цены из него будут удалены.';
+	@override String get addPrice => 'Добавить цену';
+	@override String get addPriceHint => 'Без чека: цена, которую вы заплатили или знаете';
+	@override String get manualSource => 'Введено вручную';
+	@override String get lastPaid => 'Последняя цена';
+	@override String get priceSaved => 'Цена сохранена';
+	@override String itemsInReceipt({required Object count}) => 'Товаров: ${count}';
+	@override String get search => 'Поиск товара';
+	@override String get viewImage => 'Фото чека';
+	@override String get noImage => 'Для этого чека фото не сохранено';
+	@override String get pdfFile => 'Чек из PDF-файла';
+	@override String get filter => 'Фильтр';
+	@override String get filterAll => 'Все';
+	@override String get periodAll => 'За всё время';
+	@override String get period30 => '30 дней';
+	@override String get period90 => '90 дней';
+	@override String get sourceReceipt => 'Из чеков';
+	@override String get sourceManual => 'Введены вручную';
+	@override String get deleteProduct => 'Удалить товар';
+	@override String get deleteProductBody => 'Все сохранённые цены этого товара будут удалены.';
+	@override String get pickFromPrices => 'Выбрать из моих цен';
+	@override String get pickerTitle => 'Мои товары';
+	@override String existingPrice({required Object price}) => 'Уже известно: ${price}';
+	@override String get keepNew => 'Новая цена';
+	@override String get keepOld => 'Старая цена';
+	@override String get keepAverage => 'Среднее';
+	@override String get deleteReceiptOnly => 'Удалить только чек';
+	@override String get deleteReceiptOnlyHint => 'Цены из него останутся';
+	@override String get deleteReceiptAndPrices => 'Удалить чек и его цены';
+	@override String get deleteAll => 'Удалить все цены';
+	@override String get deleteAllBody => 'Все цены, чеки и настройки будут удалены. Отменить нельзя.';
+	@override String get pricingTitle => 'Какую цену использовать';
+	@override String get pricingLatest => 'Последняя';
+	@override String get pricingAverage => 'Среднее по всем';
+	@override String get pricingStore => 'По магазину';
+	@override String get pricingReceipts => 'Выбранные чеки';
+	@override String pricingActive({required Object price}) => 'Используется: ${price}';
+	@override String get history => 'История цен';
+	@override String get noStore => 'Без магазина';
+	@override String get pricingSaved => 'Выбор сохранён';
+}
+
 // Path: unit
 class _Translations$unit$ru extends Translations$unit$he {
 	_Translations$unit$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1049,6 +1163,9 @@ extension on TranslationsRu {
 			'common.or' => 'или',
 			'common.missingInfo' => '[нет данных]',
 			'common.networkError' => 'Нет подключения к интернету',
+			'common.landscapeHint' => 'Удобнее в горизонтальном режиме',
+			'common.rotateLandscape' => 'Повернуть',
+			'common.rotatePortrait' => 'Вернуть портрет',
 			'auth.welcome' => 'Добро пожаловать в EasyPlate',
 			'auth.subtitle' => 'Войдите, чтобы сохранять рецепты',
 			'auth.signIn' => 'Вход',
@@ -1172,6 +1289,8 @@ extension on TranslationsRu {
 			'settings.fastPageTurnHint' => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.',
 			'settings.sharedAccess' => 'Управление доступом',
 			'settings.noSharedAccess' => 'Вы ещё не делились книгами или списками',
+			'settings.communityPrices' => 'Средние цены сообщества',
+			'settings.communityPricesHint' => 'Если у вас нет своей цены на товар, показывать медианную цену, которой поделились другие',
 			'more.title' => 'Ещё',
 			'more.settings' => 'Настройки',
 			'more.profile' => 'Мой профиль',
@@ -1495,6 +1614,107 @@ extension on TranslationsRu {
 			'groceryList.selectPlansTitle' => 'Какие меню входят в список?',
 			'groceryList.applySelection' => 'Обновить список',
 			'groceryList.selectAllPlans' => 'Все меню',
+			'receipt.title' => 'Сканировать чек',
+			'receipt.subtitle' => 'Сфотографируйте чек или загрузите PDF, и цены сохранятся для списка покупок',
+			'receipt.camera' => 'Сфотографировать чек',
+			'receipt.cameraHint' => 'Длинный чек? Сделайте несколько фото, мы их объединим',
+			'receipt.gallery' => 'Выбрать из галереи',
+			'receipt.pdf' => 'Файл PDF',
+			'receipt.addPhoto' => 'Ещё фото',
+			'receipt.scan' => 'Сканировать',
+			'receipt.scanning' => 'Читаем чек…',
+			'receipt.pagesCount' => ({required Object count}) => '${count} фото',
+			'receipt.scanFailed' => 'Не удалось прочитать чек. Попробуйте более чёткое фото или PDF.',
+			'receipt.reviewTitle' => 'Что распознано',
+			'receipt.reviewSubtitle' => 'Исправьте названия и цены перед сохранением',
+			'receipt.store' => 'Магазин',
+			'receipt.date' => 'Дата',
+			'receipt.receiptTotal' => 'Итого по чеку',
+			'receipt.itemsTotal' => 'Итого распознанных товаров',
+			'receipt.captured' => 'Распознанные товары',
+			'receipt.capturedCount' => ({required Object count}) => '${count} товаров',
+			'receipt.unreadable' => 'Не удалось распознать',
+			'receipt.unreadableHint' => 'Заметки о строках, которые не удалось прочитать. При необходимости добавьте их вручную ниже.',
+			'receipt.addLine' => 'Добавить товар',
+			'receipt.itemName' => 'Название товара',
+			'receipt.price' => 'Цена за единицу',
+			'receipt.quantity' => 'Количество',
+			'receipt.removeLine' => 'Удалить строку',
+			'receipt.shareToggle' => 'Поделиться ценами с сообществом',
+			'receipt.shareHint' => 'Только названия товаров и цены. Без магазина, даты и того, кто платил.',
+			'receipt.save' => 'Сохранить цены',
+			'receipt.saved' => ({required Object count}) => 'Сохранено цен: ${count}',
+			'receipt.savedShared' => ({required Object count}) => 'Сохранено и отправлено цен: ${count}',
+			'receipt.nothingToSave' => 'Нет товаров для сохранения',
+			'receipt.estimated' => 'Оценка по прошлым данным',
+			'receipt.estimatedTotal' => 'Ориентировочная стоимость',
+			'receipt.noData' => 'Нет данных',
+			'receipt.fromReceipt' => 'Из вашего чека',
+			'receipt.fromCommunity' => 'Медиана сообщества',
+			'receipt.unpriced' => ({required Object count}) => 'Без цены: ${count}',
+			'receipt.priceBook' => 'Мои цены',
+			'receipt.priceBookEmpty' => 'Чеки ещё не сканировались. Отсканируйте первый, чтобы узнать стоимость покупок.',
+			'receipt.deleteRecord' => 'Удалить цену',
+			'receipt.cameraGuide' => 'Поместите чек в рамку',
+			'receipt.cameraHold' => 'Не двигайте…',
+			'receipt.cameraCaptured' => 'Снято!',
+			_ => null,
+		} ?? switch (path) {
+			'receipt.cameraUnavailable' => 'Нет доступа к камере',
+			'receipt.perUnit' => 'за шт.',
+			'receipt.perKg' => 'за кг',
+			'receipt.perLiter' => 'за литр',
+			'receipt.printedAs' => ({required Object name}) => 'Напечатано: ${name}',
+			'receipt.receipts' => 'Чеки',
+			'receipt.prices' => 'Цены',
+			'receipt.sortBy' => 'Сортировка',
+			'receipt.sortDate' => 'Дата',
+			'receipt.sortStore' => 'Магазин',
+			'receipt.sortTotal' => 'Сумма',
+			'receipt.sortName' => 'Название',
+			'receipt.noReceipts' => 'Сохранённых чеков пока нет',
+			'receipt.noPrices' => 'Сохранённых цен пока нет',
+			'receipt.deleteReceipt' => 'Удалить чек',
+			'receipt.deleteReceiptBody' => 'Чек и все цены из него будут удалены.',
+			'receipt.addPrice' => 'Добавить цену',
+			'receipt.addPriceHint' => 'Без чека: цена, которую вы заплатили или знаете',
+			'receipt.manualSource' => 'Введено вручную',
+			'receipt.lastPaid' => 'Последняя цена',
+			'receipt.priceSaved' => 'Цена сохранена',
+			'receipt.itemsInReceipt' => ({required Object count}) => 'Товаров: ${count}',
+			'receipt.search' => 'Поиск товара',
+			'receipt.viewImage' => 'Фото чека',
+			'receipt.noImage' => 'Для этого чека фото не сохранено',
+			'receipt.pdfFile' => 'Чек из PDF-файла',
+			'receipt.filter' => 'Фильтр',
+			'receipt.filterAll' => 'Все',
+			'receipt.periodAll' => 'За всё время',
+			'receipt.period30' => '30 дней',
+			'receipt.period90' => '90 дней',
+			'receipt.sourceReceipt' => 'Из чеков',
+			'receipt.sourceManual' => 'Введены вручную',
+			'receipt.deleteProduct' => 'Удалить товар',
+			'receipt.deleteProductBody' => 'Все сохранённые цены этого товара будут удалены.',
+			'receipt.pickFromPrices' => 'Выбрать из моих цен',
+			'receipt.pickerTitle' => 'Мои товары',
+			'receipt.existingPrice' => ({required Object price}) => 'Уже известно: ${price}',
+			'receipt.keepNew' => 'Новая цена',
+			'receipt.keepOld' => 'Старая цена',
+			'receipt.keepAverage' => 'Среднее',
+			'receipt.deleteReceiptOnly' => 'Удалить только чек',
+			'receipt.deleteReceiptOnlyHint' => 'Цены из него останутся',
+			'receipt.deleteReceiptAndPrices' => 'Удалить чек и его цены',
+			'receipt.deleteAll' => 'Удалить все цены',
+			'receipt.deleteAllBody' => 'Все цены, чеки и настройки будут удалены. Отменить нельзя.',
+			'receipt.pricingTitle' => 'Какую цену использовать',
+			'receipt.pricingLatest' => 'Последняя',
+			'receipt.pricingAverage' => 'Среднее по всем',
+			'receipt.pricingStore' => 'По магазину',
+			'receipt.pricingReceipts' => 'Выбранные чеки',
+			'receipt.pricingActive' => ({required Object price}) => 'Используется: ${price}',
+			'receipt.history' => 'История цен',
+			'receipt.noStore' => 'Без магазина',
+			'receipt.pricingSaved' => 'Выбор сохранён',
 			'unit.gram' => 'г',
 			'unit.kilogram' => 'кг',
 			'unit.milliliter' => 'мл',
@@ -1544,8 +1764,6 @@ extension on TranslationsRu {
 			'ads.sharedQuotaReached' => 'Вы достигли дневного лимита общих рецептов. Завтра он обнулится!',
 			'ads.unlockRecipeTitle' => 'Открыть общий рецепт',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Посмотрите короткое видео, чтобы открыть этот рецепт (осталось на сегодня: ${count})',
-			_ => null,
-		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'На сегодня осталось ИИ-извлечений: ${remaining}/${total}',
 			'ads.aiQuotaReached' => 'Вы достигли дневного лимита ИИ-извлечений. Завтра снова откроется!',
 			'ads.aiLockedHint' => 'Для извлечения по ссылке нужно посмотреть короткое видео',

@@ -221,7 +221,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Take photos of your recipes and book covers.</string>
+	<string>Take photos of your recipes, book covers and receipts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose photos for your recipes and book covers.</string>
 	<key>UIApplicationSceneManifest</key>

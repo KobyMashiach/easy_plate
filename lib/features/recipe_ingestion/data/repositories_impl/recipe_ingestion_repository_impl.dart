@@ -5,6 +5,7 @@ import '../../../../core/constants/api_config.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../dev/fake_recipes.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/repositories/recipe_ingestion_repository.dart';
@@ -94,4 +95,7 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
 
   @override
   Future<Uint8List> generateImage(String prompt) => aiDataSource.generateImage(prompt);
+
+  @override
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) => aiDataSource.scanReceipt(pages);
 }

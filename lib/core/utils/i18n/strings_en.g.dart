@@ -60,6 +60,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ingestion$en ingestion = _Translations$ingestion$en._(_root);
 	@override late final _Translations$mealPlanner$en mealPlanner = _Translations$mealPlanner$en._(_root);
 	@override late final _Translations$groceryList$en groceryList = _Translations$groceryList$en._(_root);
+	@override late final _Translations$receipt$en receipt = _Translations$receipt$en._(_root);
 	@override late final _Translations$unit$en unit = _Translations$unit$en._(_root);
 	@override late final _Translations$image$en image = _Translations$image$en._(_root);
 	@override late final _Translations$nav$en nav = _Translations$nav$en._(_root);
@@ -93,6 +94,9 @@ class _Translations$common$en extends Translations$common$he {
 	@override String get or => 'or';
 	@override String get missingInfo => '[missing info]';
 	@override String get networkError => 'No internet connection';
+	@override String get landscapeHint => 'Works better in landscape';
+	@override String get rotateLandscape => 'Rotate';
+	@override String get rotatePortrait => 'Back to portrait';
 }
 
 // Path: auth
@@ -279,6 +283,8 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get fastPageTurnHint => 'Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.';
 	@override String get sharedAccess => 'Manage sharing';
 	@override String get noSharedAccess => 'You haven\'t shared any books or lists yet';
+	@override String get communityPrices => 'Community price averages';
+	@override String get communityPricesHint => 'When you have no price of your own for a product, show the median price other people shared';
 }
 
 // Path: more
@@ -712,6 +718,114 @@ class _Translations$groceryList$en extends Translations$groceryList$he {
 	@override String get selectAllPlans => 'All menus';
 }
 
+// Path: receipt
+class _Translations$receipt$en extends Translations$receipt$he {
+	_Translations$receipt$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Scan a receipt';
+	@override String get subtitle => 'Photograph a receipt or upload a PDF, and the prices are kept for your grocery list';
+	@override String get camera => 'Photograph receipt';
+	@override String get cameraHint => 'Long receipt? Take several photos, we merge them';
+	@override String get gallery => 'Pick from gallery';
+	@override String get pdf => 'PDF file';
+	@override String get addPhoto => 'Another photo';
+	@override String get scan => 'Scan';
+	@override String get scanning => 'Reading the receipt…';
+	@override String pagesCount({required Object count}) => '${count} photos';
+	@override String get scanFailed => 'We could not read the receipt. Try a sharper photo or a PDF.';
+	@override String get reviewTitle => 'What was captured';
+	@override String get reviewSubtitle => 'Fix names and prices before saving';
+	@override String get store => 'Store';
+	@override String get date => 'Date';
+	@override String get receiptTotal => 'Receipt total';
+	@override String get itemsTotal => 'Captured items total';
+	@override String get captured => 'Captured products';
+	@override String capturedCount({required Object count}) => '${count} products';
+	@override String get unreadable => 'Could not capture';
+	@override String get unreadableHint => 'Notes on lines we could not read. Add them by hand below if needed.';
+	@override String get addLine => 'Add product';
+	@override String get itemName => 'Product name';
+	@override String get price => 'Unit price';
+	@override String get quantity => 'Quantity';
+	@override String get removeLine => 'Remove line';
+	@override String get shareToggle => 'Share prices with the community';
+	@override String get shareHint => 'Product names and prices only. Not the store, the date or who paid.';
+	@override String get save => 'Save prices';
+	@override String saved({required Object count}) => '${count} prices saved';
+	@override String savedShared({required Object count}) => '${count} prices saved and shared';
+	@override String get nothingToSave => 'No products to save';
+	@override String get estimated => 'Estimated from past data';
+	@override String get estimatedTotal => 'Estimated cost';
+	@override String get noData => 'No data';
+	@override String get fromReceipt => 'From your receipt';
+	@override String get fromCommunity => 'Community median';
+	@override String unpriced({required Object count}) => '${count} items without a price';
+	@override String get priceBook => 'My prices';
+	@override String get priceBookEmpty => 'No receipts scanned yet. Scan the first to see what shopping costs.';
+	@override String get deleteRecord => 'Delete price';
+	@override String get cameraGuide => 'Fit the receipt inside the frame';
+	@override String get cameraHold => 'Hold still…';
+	@override String get cameraCaptured => 'Captured!';
+	@override String get cameraUnavailable => 'No camera access';
+	@override String get perUnit => 'per unit';
+	@override String get perKg => 'per kg';
+	@override String get perLiter => 'per litre';
+	@override String printedAs({required Object name}) => 'Printed: ${name}';
+	@override String get receipts => 'Receipts';
+	@override String get prices => 'Prices';
+	@override String get sortBy => 'Sort';
+	@override String get sortDate => 'Date';
+	@override String get sortStore => 'Store';
+	@override String get sortTotal => 'Total';
+	@override String get sortName => 'Name';
+	@override String get noReceipts => 'No receipts saved yet';
+	@override String get noPrices => 'No prices saved yet';
+	@override String get deleteReceipt => 'Delete receipt';
+	@override String get deleteReceiptBody => 'The receipt and every price read from it will be deleted.';
+	@override String get addPrice => 'Add price';
+	@override String get addPriceHint => 'Without a receipt: a price you paid or know';
+	@override String get manualSource => 'Entered by hand';
+	@override String get lastPaid => 'Last paid';
+	@override String get priceSaved => 'Price saved';
+	@override String itemsInReceipt({required Object count}) => '${count} products';
+	@override String get search => 'Search product';
+	@override String get viewImage => 'Receipt image';
+	@override String get noImage => 'No image was kept for this receipt';
+	@override String get pdfFile => 'Receipt from a PDF file';
+	@override String get filter => 'Filter';
+	@override String get filterAll => 'All';
+	@override String get periodAll => 'All time';
+	@override String get period30 => '30 days';
+	@override String get period90 => '90 days';
+	@override String get sourceReceipt => 'From receipts';
+	@override String get sourceManual => 'Entered by hand';
+	@override String get deleteProduct => 'Delete product';
+	@override String get deleteProductBody => 'Every price saved for this product will be deleted.';
+	@override String get pickFromPrices => 'Pick from my prices';
+	@override String get pickerTitle => 'My products';
+	@override String existingPrice({required Object price}) => 'Already known: ${price}';
+	@override String get keepNew => 'New price';
+	@override String get keepOld => 'Old price';
+	@override String get keepAverage => 'Average';
+	@override String get deleteReceiptOnly => 'Delete receipt only';
+	@override String get deleteReceiptOnlyHint => 'The prices read from it stay';
+	@override String get deleteReceiptAndPrices => 'Delete receipt and its prices';
+	@override String get deleteAll => 'Delete all prices';
+	@override String get deleteAllBody => 'Every price, receipt and choice will be deleted. This cannot be undone.';
+	@override String get pricingTitle => 'Which price to use';
+	@override String get pricingLatest => 'Latest';
+	@override String get pricingAverage => 'Average of all';
+	@override String get pricingStore => 'By store';
+	@override String get pricingReceipts => 'Chosen receipts';
+	@override String pricingActive({required Object price}) => 'In use: ${price}';
+	@override String get history => 'Price history';
+	@override String get noStore => 'No store';
+	@override String get pricingSaved => 'Choice saved';
+}
+
 // Path: unit
 class _Translations$unit$en extends Translations$unit$he {
 	_Translations$unit$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1049,6 +1163,9 @@ extension on TranslationsEn {
 			'common.or' => 'or',
 			'common.missingInfo' => '[missing info]',
 			'common.networkError' => 'No internet connection',
+			'common.landscapeHint' => 'Works better in landscape',
+			'common.rotateLandscape' => 'Rotate',
+			'common.rotatePortrait' => 'Back to portrait',
 			'auth.welcome' => 'Welcome to EasyPlate',
 			'auth.subtitle' => 'Sign in to keep your recipes',
 			'auth.signIn' => 'Sign in',
@@ -1172,6 +1289,8 @@ extension on TranslationsEn {
 			'settings.fastPageTurnHint' => 'Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.',
 			'settings.sharedAccess' => 'Manage sharing',
 			'settings.noSharedAccess' => 'You haven\'t shared any books or lists yet',
+			'settings.communityPrices' => 'Community price averages',
+			'settings.communityPricesHint' => 'When you have no price of your own for a product, show the median price other people shared',
 			'more.title' => 'More',
 			'more.settings' => 'Settings',
 			'more.profile' => 'My profile',
@@ -1495,6 +1614,107 @@ extension on TranslationsEn {
 			'groceryList.selectPlansTitle' => 'Which menus feed this list?',
 			'groceryList.applySelection' => 'Update list',
 			'groceryList.selectAllPlans' => 'All menus',
+			'receipt.title' => 'Scan a receipt',
+			'receipt.subtitle' => 'Photograph a receipt or upload a PDF, and the prices are kept for your grocery list',
+			'receipt.camera' => 'Photograph receipt',
+			'receipt.cameraHint' => 'Long receipt? Take several photos, we merge them',
+			'receipt.gallery' => 'Pick from gallery',
+			'receipt.pdf' => 'PDF file',
+			'receipt.addPhoto' => 'Another photo',
+			'receipt.scan' => 'Scan',
+			'receipt.scanning' => 'Reading the receipt…',
+			'receipt.pagesCount' => ({required Object count}) => '${count} photos',
+			'receipt.scanFailed' => 'We could not read the receipt. Try a sharper photo or a PDF.',
+			'receipt.reviewTitle' => 'What was captured',
+			'receipt.reviewSubtitle' => 'Fix names and prices before saving',
+			'receipt.store' => 'Store',
+			'receipt.date' => 'Date',
+			'receipt.receiptTotal' => 'Receipt total',
+			'receipt.itemsTotal' => 'Captured items total',
+			'receipt.captured' => 'Captured products',
+			'receipt.capturedCount' => ({required Object count}) => '${count} products',
+			'receipt.unreadable' => 'Could not capture',
+			'receipt.unreadableHint' => 'Notes on lines we could not read. Add them by hand below if needed.',
+			'receipt.addLine' => 'Add product',
+			'receipt.itemName' => 'Product name',
+			'receipt.price' => 'Unit price',
+			'receipt.quantity' => 'Quantity',
+			'receipt.removeLine' => 'Remove line',
+			'receipt.shareToggle' => 'Share prices with the community',
+			'receipt.shareHint' => 'Product names and prices only. Not the store, the date or who paid.',
+			'receipt.save' => 'Save prices',
+			'receipt.saved' => ({required Object count}) => '${count} prices saved',
+			'receipt.savedShared' => ({required Object count}) => '${count} prices saved and shared',
+			'receipt.nothingToSave' => 'No products to save',
+			'receipt.estimated' => 'Estimated from past data',
+			'receipt.estimatedTotal' => 'Estimated cost',
+			'receipt.noData' => 'No data',
+			'receipt.fromReceipt' => 'From your receipt',
+			'receipt.fromCommunity' => 'Community median',
+			'receipt.unpriced' => ({required Object count}) => '${count} items without a price',
+			'receipt.priceBook' => 'My prices',
+			'receipt.priceBookEmpty' => 'No receipts scanned yet. Scan the first to see what shopping costs.',
+			'receipt.deleteRecord' => 'Delete price',
+			'receipt.cameraGuide' => 'Fit the receipt inside the frame',
+			'receipt.cameraHold' => 'Hold still…',
+			'receipt.cameraCaptured' => 'Captured!',
+			_ => null,
+		} ?? switch (path) {
+			'receipt.cameraUnavailable' => 'No camera access',
+			'receipt.perUnit' => 'per unit',
+			'receipt.perKg' => 'per kg',
+			'receipt.perLiter' => 'per litre',
+			'receipt.printedAs' => ({required Object name}) => 'Printed: ${name}',
+			'receipt.receipts' => 'Receipts',
+			'receipt.prices' => 'Prices',
+			'receipt.sortBy' => 'Sort',
+			'receipt.sortDate' => 'Date',
+			'receipt.sortStore' => 'Store',
+			'receipt.sortTotal' => 'Total',
+			'receipt.sortName' => 'Name',
+			'receipt.noReceipts' => 'No receipts saved yet',
+			'receipt.noPrices' => 'No prices saved yet',
+			'receipt.deleteReceipt' => 'Delete receipt',
+			'receipt.deleteReceiptBody' => 'The receipt and every price read from it will be deleted.',
+			'receipt.addPrice' => 'Add price',
+			'receipt.addPriceHint' => 'Without a receipt: a price you paid or know',
+			'receipt.manualSource' => 'Entered by hand',
+			'receipt.lastPaid' => 'Last paid',
+			'receipt.priceSaved' => 'Price saved',
+			'receipt.itemsInReceipt' => ({required Object count}) => '${count} products',
+			'receipt.search' => 'Search product',
+			'receipt.viewImage' => 'Receipt image',
+			'receipt.noImage' => 'No image was kept for this receipt',
+			'receipt.pdfFile' => 'Receipt from a PDF file',
+			'receipt.filter' => 'Filter',
+			'receipt.filterAll' => 'All',
+			'receipt.periodAll' => 'All time',
+			'receipt.period30' => '30 days',
+			'receipt.period90' => '90 days',
+			'receipt.sourceReceipt' => 'From receipts',
+			'receipt.sourceManual' => 'Entered by hand',
+			'receipt.deleteProduct' => 'Delete product',
+			'receipt.deleteProductBody' => 'Every price saved for this product will be deleted.',
+			'receipt.pickFromPrices' => 'Pick from my prices',
+			'receipt.pickerTitle' => 'My products',
+			'receipt.existingPrice' => ({required Object price}) => 'Already known: ${price}',
+			'receipt.keepNew' => 'New price',
+			'receipt.keepOld' => 'Old price',
+			'receipt.keepAverage' => 'Average',
+			'receipt.deleteReceiptOnly' => 'Delete receipt only',
+			'receipt.deleteReceiptOnlyHint' => 'The prices read from it stay',
+			'receipt.deleteReceiptAndPrices' => 'Delete receipt and its prices',
+			'receipt.deleteAll' => 'Delete all prices',
+			'receipt.deleteAllBody' => 'Every price, receipt and choice will be deleted. This cannot be undone.',
+			'receipt.pricingTitle' => 'Which price to use',
+			'receipt.pricingLatest' => 'Latest',
+			'receipt.pricingAverage' => 'Average of all',
+			'receipt.pricingStore' => 'By store',
+			'receipt.pricingReceipts' => 'Chosen receipts',
+			'receipt.pricingActive' => ({required Object price}) => 'In use: ${price}',
+			'receipt.history' => 'Price history',
+			'receipt.noStore' => 'No store',
+			'receipt.pricingSaved' => 'Choice saved',
 			'unit.gram' => 'g',
 			'unit.kilogram' => 'kg',
 			'unit.milliliter' => 'ml',
@@ -1544,8 +1764,6 @@ extension on TranslationsEn {
 			'ads.sharedQuotaReached' => 'You\'ve reached today\'s limit of shared recipes. It resets tomorrow!',
 			'ads.unlockRecipeTitle' => 'Unlock a shared recipe',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Watch a short video to unlock this recipe (${count} left today)',
-			_ => null,
-		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => '${remaining}/${total} AI extractions left today',
 			'ads.aiQuotaReached' => 'You\'ve reached today\'s limit of AI extractions. It reopens tomorrow!',
 			'ads.aiLockedHint' => 'Extracting from a link requires watching a short video',

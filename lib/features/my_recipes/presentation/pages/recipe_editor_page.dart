@@ -18,6 +18,7 @@ import '../../domain/entities/nutrition_entity.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/widgets/landscape_hint.dart';
 
 /// Structured editor for a recipe — the same shape the parser produces, so a
 /// freshly parsed recipe and a saved one are corrected through one screen.
@@ -325,6 +326,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                   child: ListView(
                     padding: const EdgeInsets.all(AppSpacing.marginMobile),
                     children: [
+                      const LandscapeHint(),
+                      const SizedBox(height: AppSpacing.md),
                       _titleCard(),
                       const SizedBox(height: AppSpacing.md),
                       _timesCard(),

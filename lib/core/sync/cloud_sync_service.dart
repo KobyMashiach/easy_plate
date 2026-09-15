@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 import '../../features/grocery_list/data/models/grocery_list_model.dart';
+import '../../features/price_book/data/models/price_record_model.dart';
+import '../../features/price_book/data/models/product_pricing_model.dart';
+import '../../features/price_book/data/models/receipt_model.dart';
 import '../../features/meal_planner/data/models/meal_plan_model.dart';
 import '../../features/my_recipes/data/models/recipe_model.dart';
 import '../../features/recipe_books/data/models/recipe_book_model.dart';
@@ -21,13 +24,14 @@ class CloudSyncService {
   /// Preferences are a single record, so they get a collection with one fixed
   /// id rather than a shape of their own — the shopping day then travels the
   /// same path as everything else.
-  late final UserCloudCollection<UserPreferencesModel> preferences = UserCloudCollection(
-    boxName: UserPreferencesModel.hiveKey,
-    collection: 'preferences',
-    idOf: (_) => UserPreferencesModel.storageKey,
-    toJson: (model) => model.toJson(),
-    fromJson: UserPreferencesModel.fromJson,
-  );
+  late final UserCloudCollection<UserPreferencesModel> preferences =
+      UserCloudCollection(
+        boxName: UserPreferencesModel.hiveKey,
+        collection: 'preferences',
+        idOf: (_) => UserPreferencesModel.storageKey,
+        toJson: (model) => model.toJson(),
+        fromJson: UserPreferencesModel.fromJson,
+      );
 
   late final UserCloudCollection<RecipeModel> recipes = UserCloudCollection(
     boxName: RecipeModel.hiveKey,
@@ -53,27 +57,65 @@ class CloudSyncService {
     fromJson: MealPlanModel.fromJson,
   );
 
-  late final UserCloudCollection<GroceryListModel> groceryLists = UserCloudCollection(
-    boxName: GroceryListModel.hiveKey,
-    collection: 'grocery_lists',
-    idOf: (model) => model.id,
-    toJson: (model) => model.toJson(),
-    fromJson: GroceryListModel.fromJson,
-  );
+  late final UserCloudCollection<GroceryListModel> groceryLists =
+      UserCloudCollection(
+        boxName: GroceryListModel.hiveKey,
+        collection: 'grocery_lists',
+        idOf: (model) => model.id,
+        toJson: (model) => model.toJson(),
+        fromJson: GroceryListModel.fromJson,
+      );
 
   /// The day's quota spend, one record like the preferences. Mirrored so a
   /// second device — or a reinstall — continues today's count instead of
   /// starting a fresh one.
-  late final UserCloudCollection<DailyUsageModel> dailyUsage = UserCloudCollection(
-    boxName: DailyUsageModel.hiveKey,
-    collection: 'usage',
-    idOf: (_) => DailyUsageModel.storageKey,
+  late final UserCloudCollection<DailyUsageModel> dailyUsage =
+      UserCloudCollection(
+        boxName: DailyUsageModel.hiveKey,
+        collection: 'usage',
+        idOf: (_) => DailyUsageModel.storageKey,
+        toJson: (model) => model.toJson(),
+        fromJson: DailyUsageModel.fromJson,
+      );
+
+  /// The personal price book, one record per receipt line.
+  late final UserCloudCollection<PriceRecordModel> priceRecords =
+      UserCloudCollection(
+        boxName: PriceRecordModel.hiveKey,
+        collection: 'price_records',
+        idOf: (model) => model.id,
+        toJson: (model) => model.toJson(),
+        fromJson: PriceRecordModel.fromJson,
+      );
+
+  late final UserCloudCollection<ReceiptModel> receipts = UserCloudCollection(
+    boxName: ReceiptModel.hiveKey,
+    collection: 'receipts',
+    idOf: (model) => model.id,
     toJson: (model) => model.toJson(),
-    fromJson: DailyUsageModel.fromJson,
+    fromJson: ReceiptModel.fromJson,
   );
 
-  List<CloudMirror> get _mirrors =>
-      [preferences, recipes, books, mealPlans, groceryLists, dailyUsage];
+  late final UserCloudCollection<ProductPricingModel> productPricing =
+      UserCloudCollection(
+        boxName: ProductPricingModel.hiveKey,
+        collection: 'product_pricing',
+        idOf: (model) => model.key,
+        toJson: (model) => model.toJson(),
+        fromJson: ProductPricingModel.fromJson,
+      );
+
+  List<CloudMirror> get _mirrors => [
+    preferences,
+    recipes,
+    books,
+    mealPlans,
+    groceryLists,
+    dailyUsage,
+    priceRecords,
+    receipts,
+    productPricing,
+  ];
 
   /// The account already hydrated in this session, so the repeated auth events
   /// that follow a credential link or an email confirmation do not re-read the
@@ -87,11 +129,16 @@ class CloudSyncService {
   /// back through onboarding is exactly the bug this fixes. Capped so a network
   /// that hangs rather than fails leaves the user on the splash for a few
   /// seconds and then in the app, working off whatever is local.
-  Future<void> hydrate(String uid, {Duration timeout = const Duration(seconds: 12)}) async {
+  Future<void> hydrate(
+    String uid, {
+    Duration timeout = const Duration(seconds: 12),
+  }) async {
     if (_hydratedUid == uid) return;
 
     try {
-      await Future.wait(_mirrors.map((mirror) => mirror.hydrate())).timeout(timeout);
+      await Future.wait(
+        _mirrors.map((mirror) => mirror.hydrate()),
+      ).timeout(timeout);
       // Only on a clean pass: a timeout leaves some mirrors unread, and the
       // next auth event should get another go at them.
       _hydratedUid = uid;

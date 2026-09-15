@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_enums.dart';
@@ -19,6 +21,13 @@ import '../widgets/meal_plan_filter_card.dart';
 import '../widgets/grocery_section.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/utils/routing/routing.dart';
+import '../../../price_book/presentation/scan_receipt_flow.dart';
+import '../../../price_book/presentation/widgets/product_picker_sheet.dart';
+import '../../../price_book/domain/entities/price_unit.dart';
+import '../../../price_book/presentation/price_book_service.dart';
+import '../../../price_book/presentation/widgets/price_widgets.dart';
+import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -27,33 +36,57 @@ class GroceryListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => GroceryListBloc.fromContext(context),
-      child: Builder(
-        builder: (context) => ClayScaffold(
-          appBar: ClayTopAppBar(
-            title: t.appName,
-            leading: const AccountAvatarButton(),
-            actions: const [NotificationBellButton()],
-          ),
-          body: BlocBuilder<GroceryListBloc, GroceryListState>(
-            builder: (context, state) {
-              return switch (state) {
-                GroceryListLoading() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                GroceryListLoaded(list: final list, plans: final plans) =>
-                  _ListBody(list: list, plans: plans),
-                GroceryListError(error: final error) => ErrorRetryView(
-                  error: error,
-                  onRetry: () => context.read<GroceryListBloc>().add(
-                    const GroceryListEvent.init(),
+      child: ChangeNotifierProvider(
+        // The price book beside the list: loaded once, asked on every line.
+        create: (context) {
+          final service = PriceBookService(repository: context.read());
+          GetUserPreferencesUseCase(context.read())()
+              .then((prefs) {
+                service.communityEnabled = prefs.communityPricesEnabled;
+                service.load();
+              })
+              .catchError((Object _) {
+                service.load();
+              });
+          return service;
+        },
+        child: Builder(
+          builder: (context) => ClayScaffold(
+            appBar: ClayTopAppBar(
+              title: t.appName,
+              leading: const AccountAvatarButton(),
+              actions: const [NotificationBellButton()],
+            ),
+            body: BlocBuilder<GroceryListBloc, GroceryListState>(
+              builder: (context, state) {
+                return switch (state) {
+                  GroceryListLoading() => const Center(
+                    child: CircularProgressIndicator(),
                   ),
-                ),
-              };
-            },
+                  GroceryListLoaded(list: final list, plans: final plans) =>
+                    _ListBody(list: list, plans: plans),
+                  GroceryListError(error: final error) => ErrorRetryView(
+                    error: error,
+                    onRetry: () => context.read<GroceryListBloc>().add(
+                      const GroceryListEvent.init(),
+                    ),
+                  ),
+                };
+              },
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+/// Scans a receipt and, when prices were saved, refreshes the estimates.
+Future<void> scanReceipt(BuildContext context) async {
+  final service = context.read<PriceBookService>();
+  final saved = await scanReceiptFlow(context);
+  if (saved != null && saved > 0) {
+    await service.load();
   }
 }
 
@@ -150,6 +183,14 @@ class _ListBody extends StatelessWidget {
           // Collected lines are done with — kept out of the way by default.
           initiallyExpanded: false,
         ),
+        const SizedBox(height: AppSpacing.lg),
+        // What the shop will cost, as far as past receipts can tell.
+        Consumer<PriceBookService>(
+          builder: (context, prices, _) => GroceryCostCard(
+            summary: prices.summarize(unchecked),
+            onScanReceipt: () => scanReceipt(context),
+          ),
+        ),
       ],
     );
   }
@@ -163,6 +204,17 @@ Widget _header(BuildContext context, GroceryListBloc bloc) {
     trailing: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        ClayIconButton(
+          icon: Icons.receipt_long_rounded,
+          size: 48,
+          tooltip: t.receipt.priceBook,
+          onTap: () async {
+            final service = context.read<PriceBookService>();
+            await context.pushNamed(Routing.priceBook);
+            await service.load();
+          },
+        ),
+        const SizedBox(width: AppSpacing.base),
         WalkthroughTarget(
           id: WalkthroughIds.groceriesRegenerate,
           child: ClayIconButton(
@@ -300,6 +352,26 @@ class _AddItemFormState extends State<_AddItemForm> {
           children: [
             Text(t.groceryList.addItem, style: AppTextStyles.headlineMd),
             const SizedBox(height: AppSpacing.gutter),
+            // Start from a product the receipts already know: its name, and
+            // the unit its price is per, so the estimate lines up.
+            ClayButton(
+              label: t.receipt.pickFromPrices,
+              icon: Icons.sell_rounded,
+              expanded: true,
+              onPressed: () async {
+                final picked = await showProductPickerSheet(context);
+                if (picked == null || !mounted) return;
+                setState(() {
+                  _nameController.text = picked.name;
+                  _unit = switch (picked.unit) {
+                    PriceUnit.kg => MeasurementUnit.kilogram,
+                    PriceUnit.liter => MeasurementUnit.liter,
+                    PriceUnit.unit => MeasurementUnit.unit,
+                  };
+                });
+              },
+            ),
+            const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _nameController,
               autofocus: true,
