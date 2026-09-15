@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/legal_links.dart';
 import '../../../../core/monetization/entitlement_service.dart';
+import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/monetization/purchases_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -78,6 +79,11 @@ class _PaywallPageState extends State<PaywallPage> {
     }
   }
 
+  Future<void> _manage() async {
+    final opened = await PurchasesService().openSubscriptionManagement();
+    if (!opened && mounted) _hint(t.premium.unavailable);
+  }
+
   Future<void> _restore() async {
     setState(() => _busy = true);
     try {
@@ -101,12 +107,14 @@ class _PaywallPageState extends State<PaywallPage> {
     return PaywallView(
       offers: _offers,
       selectedId: _selectedId,
+      aiPerDay: MonetizationConfig.limits.premiumAiExtractions,
       isPremium: _entitlement.isPremium,
       loading: _loading,
       busy: _busy,
       onSelect: (id) => setState(() => _selectedId = id),
       onPurchase: _purchase,
       onRestore: _restore,
+      onManage: _manage,
       onBack: () => Navigator.of(context).maybePop(),
     );
   }
@@ -118,24 +126,34 @@ class _PaywallPageState extends State<PaywallPage> {
 class PaywallView extends StatelessWidget {
   final List<PaywallOffer> offers;
   final String? selectedId;
+
+  /// The premium AI allowance quoted in the benefits list — a Remote Config
+  /// value, passed in so the screen stays renderable without Firebase.
+  final int aiPerDay;
   final bool isPremium;
   final bool loading;
   final bool busy;
   final ValueChanged<String> onSelect;
   final VoidCallback onPurchase;
   final VoidCallback onRestore;
+
+  /// "Cancel subscription" on the active card: opens the store's management
+  /// page, where cancelling only stops the renewal.
+  final VoidCallback onManage;
   final VoidCallback onBack;
 
   const PaywallView({
     super.key,
     required this.offers,
     required this.selectedId,
+    required this.aiPerDay,
     required this.isPremium,
     required this.loading,
     required this.busy,
     required this.onSelect,
     required this.onPurchase,
     required this.onRestore,
+    required this.onManage,
     required this.onBack,
   });
 
@@ -175,11 +193,11 @@ class PaywallView extends StatelessWidget {
               child: Container(
                 width: 88,
                 height: 88,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.primaryFixed,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.workspace_premium_rounded, size: 48, color: AppColors.primary),
+                child: Icon(Icons.workspace_premium_rounded, size: 48, color: AppColors.primary),
               ),
             ),
             const SizedBox(height: AppSpacing.gutter),
@@ -200,13 +218,13 @@ class PaywallView extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
                   _Benefit(icon: Icons.menu_book_rounded, label: t.premium.benefitShared),
                   const SizedBox(height: AppSpacing.sm),
-                  _Benefit(icon: Icons.auto_awesome_rounded, label: t.premium.benefitAi),
+                  _Benefit(icon: Icons.auto_awesome_rounded, label: t.premium.benefitAi(count: aiPerDay)),
                 ],
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             if (isPremium)
-              _ActiveCard()
+              _ActiveCard(onCancel: busy ? null : onManage)
             else if (loading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
@@ -284,7 +302,7 @@ class _Benefit extends StatelessWidget {
         Container(
           width: 36,
           height: 36,
-          decoration: const BoxDecoration(color: AppColors.secondaryFixed, shape: BoxShape.circle),
+          decoration: BoxDecoration(color: AppColors.secondaryFixed, shape: BoxShape.circle),
           child: Icon(icon, size: 20, color: AppColors.onSecondaryFixedVariant),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -345,6 +363,10 @@ class _OfferCard extends StatelessWidget {
 }
 
 class _ActiveCard extends StatelessWidget {
+  final VoidCallback? onCancel;
+
+  const _ActiveCard({required this.onCancel});
+
   @override
   Widget build(BuildContext context) {
     return ClayCard(
@@ -353,14 +375,38 @@ class _ActiveCard extends StatelessWidget {
       color: AppColors.secondaryFixed,
       child: Column(
         children: [
-          const Icon(Icons.verified_rounded, size: 40, color: AppColors.onSecondaryFixedVariant),
+          Icon(Icons.verified_rounded, size: 40, color: AppColors.onSecondaryFixedVariant),
           const SizedBox(height: AppSpacing.base),
-          Text(t.premium.activeTitle, textAlign: TextAlign.center, style: AppTextStyles.headlineMd),
+          // The card is a *fixed* mint in both themes, so its ink is the
+          // fixed ink too — the default onSurface goes light in dark mode.
+          Text(
+            t.premium.activeTitle,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.headlineMd.copyWith(color: AppColors.onSecondaryFixed),
+          ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             t.premium.activeBody,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSecondaryFixedVariant),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ClayButton(
+            label: t.premium.cancel,
+            icon: Icons.cancel_outlined,
+            expanded: true,
+            onPressed: onCancel,
+          ),
+          const SizedBox(height: AppSpacing.base),
+          // Says up front what cancelling does: renewal off, paid time kept,
+          // nothing refunded — so nobody presses it expecting money back.
+          Text(
+            t.premium.cancelNote,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.labelSm.copyWith(
+              color: AppColors.onSecondaryFixedVariant,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

@@ -21,6 +21,8 @@ import 'core/services/firebase_service.dart';
 import 'core/services/image_storage_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
+import 'core/theme/theme_controller.dart';
+import 'core/theme/theme_switcher.dart';
 import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
 import 'core/utils/routing/app_router.dart';
@@ -44,6 +46,8 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Hive.initFlutter();
+  // Before the first frame, so the splash is already in the chosen theme.
+  await ThemeController().init();
   await AdaptersController.registerAdapters();
   // Caches the images directory so ClayImage can resolve paths synchronously
   // while building.
@@ -136,6 +140,11 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
   }
 
   @override
+  void didChangePlatformBrightness() {
+    ThemeController().onPlatformBrightnessChanged();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Remote Config keeps its last activated values on disk, so coming back to
     // a session that started before a console change would otherwise run on
@@ -156,17 +165,26 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
     // Reading the locale through TranslationProvider rebuilds the whole app
     // when the language changes, and lets Flutter derive text direction from
     // the locale — Hebrew and Arabic get RTL, the rest LTR.
-    return MaterialApp.router(
-      title: 'EasyPlate',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: _router,
-      locale: TranslationProvider.of(context).flutterLocale,
-      supportedLocales: AppLocaleUtils.supportedLocales,
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      // Above the router, so a forced update outlives whatever route the user
-      // is on — including one a notification tap pushed.
-      builder: (context, child) => UpdateGate(child: child ?? const SizedBox.shrink()),
+    // Rebuilt when the theme flips: the ThemeData is re-read from the palette
+    // the controller just swapped in, and every widget below re-reads its
+    // AppColors with it.
+    return ListenableBuilder(
+      listenable: ThemeController(),
+      builder: (context, _) => MaterialApp.router(
+        title: 'EasyPlate',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.current,
+        routerConfig: _router,
+        locale: TranslationProvider.of(context).flutterLocale,
+        supportedLocales: AppLocaleUtils.supportedLocales,
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        // Above the router, so a forced update outlives whatever route the
+        // user is on — including one a notification tap pushed — and so the
+        // theme switch can freeze the whole screen, dialogs included.
+        builder: (context, child) => ThemeSwitcher(
+          child: UpdateGate(child: child ?? const SizedBox.shrink()),
+        ),
+      ),
     );
   }
 }

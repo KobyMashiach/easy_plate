@@ -12,7 +12,8 @@ class ClayBookCover extends StatefulWidget {
   final String title;
   final String eyebrow;
   final String meta;
-  final Color spineColor;
+  /// Null reads as the primary colour of the current theme.
+  final Color? spineColor;
   final IconData icon;
   final String? imageFileName;
 
@@ -27,7 +28,7 @@ class ClayBookCover extends StatefulWidget {
     required this.eyebrow,
     required this.meta,
     required this.onTap,
-    this.spineColor = AppColors.primary,
+    this.spineColor,
     this.icon = Icons.menu_book_rounded,
     this.imageFileName,
     this.imageRemotePath,
@@ -39,6 +40,8 @@ class ClayBookCover extends StatefulWidget {
 }
 
 class _ClayBookCoverState extends State<ClayBookCover> {
+  Color get _spine => widget.spineColor ?? AppColors.primary;
+
   bool _pressed = false;
 
   @override
@@ -70,7 +73,7 @@ class _ClayBookCoverState extends State<ClayBookCover> {
             borderRadius: radius,
             child: Row(
               children: [
-                Container(width: 12, color: widget.spineColor),
+                Container(width: 12, color: _spine),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +85,7 @@ class _ClayBookCoverState extends State<ClayBookCover> {
                           fallbackIcon: widget.icon,
                           fallbackIconSize: 56,
                           radius: 0,
-                          tint: widget.spineColor.withValues(alpha: 0.12),
+                          tint: _spine.withValues(alpha: 0.12),
                         ),
                       ),
                       Padding(
@@ -93,7 +96,7 @@ class _ClayBookCoverState extends State<ClayBookCover> {
                           children: [
                             Text(
                               widget.eyebrow,
-                              style: AppTextStyles.labelSm.copyWith(color: widget.spineColor),
+                              style: AppTextStyles.labelSm.copyWith(color: _spine),
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
@@ -108,7 +111,7 @@ class _ClayBookCoverState extends State<ClayBookCover> {
                             const SizedBox(height: AppSpacing.xs),
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.menu_book_rounded,
                                   size: 16,
                                   color: AppColors.outline,

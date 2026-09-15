@@ -35,9 +35,9 @@ class _BookViewerBody extends StatelessWidget {
     return BlocBuilder<BookViewerBloc, BookViewerState>(
       builder: (context, state) {
         return switch (state) {
-          BookViewerLoading() => const Scaffold(
+          BookViewerLoading() => Scaffold(
             backgroundColor: AppColors.surfaceContainerLow,
-            body: Center(child: CircularProgressIndicator()),
+            body: const Center(child: CircularProgressIndicator()),
           ),
           BookViewerNotFound() => ClayScaffold(
             appBar: ClayTopAppBar(

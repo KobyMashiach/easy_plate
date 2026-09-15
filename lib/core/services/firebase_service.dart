@@ -61,6 +61,9 @@ class FirebaseService {
     quotaSharedFreeKey: 3,
     quotaSharedRewardedKey: 3,
     quotaAiRewardedKey: 2,
+    // Premium's own ceiling on AI extractions: no video, but every call is
+    // paid for, so it is a bigger number rather than none.
+    quotaAiPremiumKey: 10,
   };
 
   static const adsEnabledKey = 'ads_enabled';
@@ -69,6 +72,7 @@ class FirebaseService {
   static const quotaSharedFreeKey = 'quota_shared_free';
   static const quotaSharedRewardedKey = 'quota_shared_rewarded';
   static const quotaAiRewardedKey = 'quota_ai_rewarded';
+  static const quotaAiPremiumKey = 'quota_ai_premium';
 
   static const isProdKey = 'isProd';
 

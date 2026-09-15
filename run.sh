@@ -13,6 +13,13 @@ function androidRun() {
   flutter run --release $DEFINES
 }
 
+# Debug build: the only kind RevenueCat's Test Store key runs in — a release
+# build shows "Wrong API Key" and closes. Use this while testing purchases.
+function androidRunDebug() {
+  echo "Run (Debug) Android"
+  flutter run $DEFINES
+}
+
 function androidBuildApk() {
   echo "Build (Dev) Android"
   flutter build apk --release $DEFINES
@@ -38,6 +45,11 @@ function androidLogs() {
 function iosRun() {
   echo "Run iOS"
   flutter run --release $DEFINES
+}
+
+function iosRunDebug() {
+  echo "Run (Debug) iOS"
+  flutter run $DEFINES
 }
 
 function iosBuildIpa() {
@@ -126,6 +138,7 @@ function menu() {
   echo "📱 ANDROID"
   echo "--------------------------------------"
   echo "01. Run"
+  echo "04. Run (Debug, for Test Store purchases)"
   echo "02. Build APK"
   echo "03. Build App Bundle"
   echo "09. Android Clean"
@@ -133,6 +146,7 @@ function menu() {
   echo "🍎 iOS"
   echo "--------------------------------------"
   echo "11. Run"
+  echo "14. Run (Debug, for Test Store purchases)"
   echo "12. Build IPA"
   echo "17. Open iOS Runner in Xcode"
   echo "19. Clean & Build iOS"
@@ -159,9 +173,11 @@ function menu() {
     1|01) androidRun ;;
     2|02) androidBuildApk ;;
     3|03) androidBuildAab ;;
+    4|04) androidRunDebug ;;
     9|09) androidClean ;;
 
     11) iosRun ;;
+    14) iosRunDebug ;;
     12) iosBuildIpa ;;
     17) openBuilderIos ;;
     19) cleanAndBuildIos ;;

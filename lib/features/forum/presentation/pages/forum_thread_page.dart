@@ -252,7 +252,7 @@ class _ThreadState extends State<_Thread> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close_rounded,
                         size: 18,
                         color: AppColors.tertiary,
@@ -267,7 +267,7 @@ class _ThreadState extends State<_Thread> {
                 children: [
                   IconButton(
                     tooltip: t.community.attachRecipe,
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.attach_file_rounded,
                       color: AppColors.primary,
                     ),
@@ -294,7 +294,7 @@ class _ThreadState extends State<_Thread> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.send_rounded,
                             color: AppColors.primary,
                           ),

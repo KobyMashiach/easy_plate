@@ -268,6 +268,10 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get dietaryPreferences => 'Préférences alimentaires';
 	@override String get shoppingDay => 'Jour de courses';
 	@override String get language => 'Langue';
+	@override String get appearance => 'Apparence';
+	@override String get themeSystem => 'Système';
+	@override String get themeLight => 'Clair';
+	@override String get themeDark => 'Sombre';
 	@override String get soundEffects => 'Effets sonores (tourner les pages)';
 	@override String get fastPageTurn => 'Feuilletage rapide';
 	@override String get fastPageTurnHint => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.';
@@ -760,7 +764,7 @@ class _Translations$premium$fr extends Translations$premium$he {
 	@override String get subtitle => 'Tout ce qu\'EasyPlate sait faire, sans attendre demain.';
 	@override String get benefitNoAds => 'Aucune publicité dans les fils de la communauté';
 	@override String get benefitShared => 'Recettes partagées sans limite quotidienne';
-	@override String get benefitAi => 'Extraction de recettes par IA depuis n\'importe quel lien, illimitée';
+	@override String benefitAi({required Object count}) => 'Extraction de recettes par IA depuis n’importe quel lien, jusqu’à ${count} par jour';
 	@override String get periodWeekly => 'Hebdomadaire';
 	@override String get periodMonthly => 'Mensuel';
 	@override String get periodTwoMonth => 'Tous les 2 mois';
@@ -776,6 +780,9 @@ class _Translations$premium$fr extends Translations$premium$he {
 	@override String get nothingToRestore => 'Aucun achat à restaurer';
 	@override String get activeTitle => 'Premium actif';
 	@override String get activeBody => 'Merci ! Les publicités et les limites quotidiennes sont désactivées sur ce compte.';
+	@override String get manage => 'Gérer l’abonnement';
+	@override String get cancel => 'Annuler l’abonnement';
+	@override String get cancelNote => 'L’annulation désactive le renouvellement automatique. Premium reste actif jusqu’à la fin de la période déjà payée. Aucun remboursement.';
 	@override String get unavailable => 'Les abonnements ne sont pas disponibles pour le moment. Réessayez plus tard.';
 	@override String get purchaseFailed => 'L\'achat n\'a pas abouti';
 	@override String get purchased => 'Bienvenue dans Premium !';
@@ -1090,6 +1097,10 @@ extension on TranslationsFr {
 			'settings.dietaryPreferences' => 'Préférences alimentaires',
 			'settings.shoppingDay' => 'Jour de courses',
 			'settings.language' => 'Langue',
+			'settings.appearance' => 'Apparence',
+			'settings.themeSystem' => 'Système',
+			'settings.themeLight' => 'Clair',
+			'settings.themeDark' => 'Sombre',
 			'settings.soundEffects' => 'Effets sonores (tourner les pages)',
 			'settings.fastPageTurn' => 'Feuilletage rapide',
 			'settings.fastPageTurnHint' => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.',
@@ -1429,7 +1440,7 @@ extension on TranslationsFr {
 			'premium.subtitle' => 'Tout ce qu\'EasyPlate sait faire, sans attendre demain.',
 			'premium.benefitNoAds' => 'Aucune publicité dans les fils de la communauté',
 			'premium.benefitShared' => 'Recettes partagées sans limite quotidienne',
-			'premium.benefitAi' => 'Extraction de recettes par IA depuis n\'importe quel lien, illimitée',
+			'premium.benefitAi' => ({required Object count}) => 'Extraction de recettes par IA depuis n’importe quel lien, jusqu’à ${count} par jour',
 			'premium.periodWeekly' => 'Hebdomadaire',
 			'premium.periodMonthly' => 'Mensuel',
 			'premium.periodTwoMonth' => 'Tous les 2 mois',
@@ -1445,6 +1456,9 @@ extension on TranslationsFr {
 			'premium.nothingToRestore' => 'Aucun achat à restaurer',
 			'premium.activeTitle' => 'Premium actif',
 			'premium.activeBody' => 'Merci ! Les publicités et les limites quotidiennes sont désactivées sur ce compte.',
+			'premium.manage' => 'Gérer l’abonnement',
+			'premium.cancel' => 'Annuler l’abonnement',
+			'premium.cancelNote' => 'L’annulation désactive le renouvellement automatique. Premium reste actif jusqu’à la fin de la période déjà payée. Aucun remboursement.',
 			'premium.unavailable' => 'Les abonnements ne sont pas disponibles pour le moment. Réessayez plus tard.',
 			'premium.purchaseFailed' => 'L\'achat n\'a pas abouti',
 			'premium.purchased' => 'Bienvenue dans Premium !',
@@ -1465,6 +1479,8 @@ extension on TranslationsFr {
 			'walkthrough.bookTitle' => 'Guide EasyPlate',
 			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Un guide seulement : rien n\'est enregistré.',
 			'walkthrough.contents' => 'Sommaire',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'Chapitre ${number}',
 			'walkthrough.backToContents' => 'Retour au sommaire',
 			'walkthrough.stepsTitle' => 'Les étapes',
@@ -1472,8 +1488,6 @@ extension on TranslationsFr {
 			'walkthrough.welcomeBody' => 'Parcourons ensemble les actions principales. Passez n\'importe quelle étape, ou fermez et relancez depuis l\'écran d\'assistance.',
 			'walkthrough.topics.addRecipe.title' => 'Ajouter une recette',
 			'walkthrough.topics.addRecipe.summary' => 'Importez une recette de n\'importe quelle source ; l\'IA la range dans un format unique : ingrédients, quantités, étapes et étiquettes.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.addRecipe.s1' => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.',
 			'walkthrough.topics.addRecipe.s2' => 'Choisissez une source : texte collé, recherche web, lien d\'un site, vidéo TikTok/Reels, demande libre à l\'IA, ou saisie manuelle. Après l\'analyse, vous vérifiez, modifiez et enregistrez.',
 			'walkthrough.topics.myRecipes.title' => 'Mes recettes et enregistrées',

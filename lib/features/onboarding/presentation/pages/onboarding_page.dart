@@ -63,11 +63,11 @@ class _OnboardingForm extends StatelessWidget {
           child: Container(
             width: 120,
             height: 120,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.primaryFixed,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.restaurant_menu_rounded,
               size: 60,
               color: AppColors.primary,

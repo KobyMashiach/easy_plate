@@ -283,7 +283,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             actionLabel: t.auth.addEmailPassword,
             onAction: _linkEmail,
           ),
-          const Divider(color: AppColors.outlineVariant),
+          Divider(color: AppColors.outlineVariant),
           _identityRow(
             icon: Icons.phone_iphone_rounded,
             label: t.auth.phoneNumber,
@@ -294,7 +294,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             actionLabel: t.auth.linkPhone,
             onAction: _linkPhone,
           ),
-          const Divider(color: AppColors.outlineVariant),
+          Divider(color: AppColors.outlineVariant),
           _identityRow(
             icon: Icons.g_mobiledata_rounded,
             label: 'Google',
@@ -307,7 +307,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           // Absent on Android, where there is no native sheet to present and
           // no guideline asking for one.
           if (appleSignInAvailable) ...[
-            const Divider(color: AppColors.outlineVariant),
+            Divider(color: AppColors.outlineVariant),
             _identityRow(
               icon: Icons.apple_rounded,
               label: 'Apple',
@@ -368,7 +368,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
               padding: const EdgeInsets.only(left: AppSpacing.xs),
               child: Row(
                 children: [
-                  const Icon(Icons.verified_rounded, size: 16, color: AppColors.primary),
+                  Icon(Icons.verified_rounded, size: 16, color: AppColors.primary),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     t.auth.verified,

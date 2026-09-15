@@ -129,7 +129,7 @@ class RecipeCard extends StatelessWidget {
             IconButton(
               tooltip: t.community.removeSaved,
               visualDensity: VisualDensity.compact,
-              icon: const Icon(Icons.bookmark_remove_rounded, size: 20, color: AppColors.error),
+              icon: Icon(Icons.bookmark_remove_rounded, size: 20, color: AppColors.error),
               onPressed: remove,
             ),
         ],

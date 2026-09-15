@@ -95,7 +95,7 @@ class _AvatarFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
+    return ColoredBox(
       color: AppColors.primaryFixed,
       child: Icon(Icons.person_rounded, color: AppColors.primary),
     );

@@ -12,17 +12,27 @@ class QuotaLimits {
   /// AI link extractions per day, every one of them behind a rewarded video.
   final int rewardedAiExtractions;
 
+  /// AI link extractions per day for a premium account: no video, but not
+  /// unlimited either — every one of them is a paid model call.
+  final int premiumAiExtractions;
+
   const QuotaLimits({
     required this.freeSharedViews,
     required this.rewardedSharedViews,
     required this.rewardedAiExtractions,
+    required this.premiumAiExtractions,
   });
 
   static const defaults = QuotaLimits(
     freeSharedViews: 3,
     rewardedSharedViews: 3,
     rewardedAiExtractions: 2,
+    premiumAiExtractions: 10,
   );
+
+  /// The day's AI extraction allowance for this kind of account.
+  int aiExtractionsFor({required bool premium}) =>
+      premium ? premiumAiExtractions : rewardedAiExtractions;
 
   int get totalSharedViews => freeSharedViews + rewardedSharedViews;
 }
@@ -58,16 +68,17 @@ abstract class DailyQuotaPolicy {
     return GateVerdict.blocked;
   }
 
-  /// Extracting a recipe from a link with the model. Every extraction, the
-  /// first included, costs a video; past the daily count it is refused.
+  /// Extracting a recipe from a link with the model. For a free account
+  /// every extraction, the first included, costs a video; premium extracts
+  /// without one. Past the day's count either is refused: premium buys a
+  /// bigger allowance, not a bottomless one.
   static GateVerdict aiExtraction({
     required int usedToday,
     required bool premium,
     QuotaLimits limits = QuotaLimits.defaults,
   }) {
-    if (premium) return GateVerdict.free;
-    if (usedToday < limits.rewardedAiExtractions) return GateVerdict.rewarded;
-    return GateVerdict.blocked;
+    if (usedToday >= limits.aiExtractionsFor(premium: premium)) return GateVerdict.blocked;
+    return premium ? GateVerdict.free : GateVerdict.rewarded;
   }
 
   static int remainingFreeSharedViews(int viewedToday, QuotaLimits limits) =>
@@ -77,8 +88,12 @@ abstract class DailyQuotaPolicy {
   static int remainingRewardedSharedViews(int viewedToday, QuotaLimits limits) =>
       _clamp(limits.totalSharedViews - _max(viewedToday, limits.freeSharedViews));
 
-  static int remainingAiExtractions(int usedToday, QuotaLimits limits) =>
-      _clamp(limits.rewardedAiExtractions - usedToday);
+  static int remainingAiExtractions(
+    int usedToday,
+    QuotaLimits limits, {
+    bool premium = false,
+  }) =>
+      _clamp(limits.aiExtractionsFor(premium: premium) - usedToday);
 
   static int _clamp(int n) => n < 0 ? 0 : n;
   static int _max(int a, int b) => a > b ? a : b;

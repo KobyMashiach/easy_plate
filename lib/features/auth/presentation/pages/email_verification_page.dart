@@ -95,7 +95,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
               padding: const EdgeInsets.all(AppSpacing.marginMobile),
               children: [
                 const SizedBox(height: AppSpacing.lg),
-                const Icon(Icons.mark_email_unread_rounded, size: 64, color: AppColors.primary),
+                Icon(Icons.mark_email_unread_rounded, size: 64, color: AppColors.primary),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   t.auth.verifyEmailBody(email: email),

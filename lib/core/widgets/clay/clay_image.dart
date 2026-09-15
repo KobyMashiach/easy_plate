@@ -25,7 +25,8 @@ class ClayImage extends StatefulWidget {
   final double radius;
   final double? fallbackIconSize;
   final BoxFit fit;
-  final Color tint;
+  /// Null reads as the theme's primaryFixed.
+  final Color? tint;
 
   const ClayImage({
     super.key,
@@ -35,7 +36,7 @@ class ClayImage extends StatefulWidget {
     this.radius = AppRadius.std,
     this.fallbackIconSize,
     this.fit = BoxFit.cover,
-    this.tint = AppColors.primaryFixed,
+    this.tint,
   });
 
   @override
@@ -80,7 +81,7 @@ class _ClayImageState extends State<ClayImage> {
 
   Widget _fallback(BorderRadius borderRadius) {
     return DecoratedBox(
-      decoration: BoxDecoration(color: widget.tint, borderRadius: borderRadius),
+      decoration: BoxDecoration(color: widget.tint ?? AppColors.primaryFixed, borderRadius: borderRadius),
       child: Center(
         child: Icon(
           widget.fallbackIcon,

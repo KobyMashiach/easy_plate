@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/purchases_config.dart';
 import 'entitlement_service.dart';
@@ -122,6 +124,47 @@ class PurchasesService {
     final info = await Purchases.restorePurchases();
     _onCustomerInfo(info);
     return hasPremium(info);
+  }
+
+  /// The "cancel subscription" button. Opens the store's own subscription
+  /// page for this account, where cancelling means auto-renew off: the
+  /// subscription runs to the end of the period already paid for, and the
+  /// webhook's CANCELLATION event keeps `premium` until EXPIRATION. No
+  /// refund is offered from here, by design — a refund is the store's call.
+  /// Falls back to the Customer Center when the store gave no URL (Test
+  /// Store, or a purchase made on the other platform). Returns false when
+  /// neither could be shown.
+  Future<bool> openSubscriptionManagement() async {
+    if (!_configured) return false;
+    try {
+      final url = (await Purchases.getCustomerInfo()).managementURL;
+      if (url != null && url.isNotEmpty) {
+        return launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Subscription management URL failed: $e');
+    }
+    return openCustomerCenter();
+  }
+
+  /// Opens RevenueCat's Customer Center: cancel, change plan, ask for a
+  /// refund, restore — the "manage subscription" screen both stores expect
+  /// an app to offer somewhere. Returns false when there is no SDK to open
+  /// it with, so the caller can say so instead of showing nothing.
+  Future<bool> openCustomerCenter() async {
+    if (!_configured) return false;
+    try {
+      await RevenueCatUI.presentCustomerCenter(
+        onRestoreCompleted: _onCustomerInfo,
+      );
+      // Anything decided inside (a cancellation, a plan change) reaches the
+      // account through the listener; re-reading here just closes the gap.
+      _onCustomerInfo(await Purchases.getCustomerInfo());
+      return true;
+    } catch (e) {
+      debugPrint('Customer Center failed: $e');
+      return false;
+    }
   }
 
   void _onCustomerInfo(CustomerInfo info) => EntitlementService().setFromStore(hasPremium(info));

@@ -40,12 +40,14 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
     return ListenableBuilder(
       listenable: _sources,
       builder: (context, _) {
-        if (MonetizationConfig.adFree) return const SizedBox.shrink();
+        if (!MonetizationConfig.aiGated) return const SizedBox.shrink();
 
         final limits = MonetizationConfig.limits;
+        final premium = MonetizationConfig.isPremium;
         final remaining = DailyQuotaPolicy.remainingAiExtractions(
           DailyUsageService().aiExtractionsToday,
           limits,
+          premium: premium,
         );
         final blocked = remaining == 0;
         final foreground = blocked ? AppColors.onSurfaceVariant : AppColors.primary;
@@ -64,7 +66,11 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
             child: Row(
               children: [
                 Icon(
-                  blocked ? Icons.lock_outline_rounded : Icons.play_circle_outline_rounded,
+                  blocked
+                      ? Icons.lock_outline_rounded
+                      : premium
+                          ? Icons.auto_awesome_rounded
+                          : Icons.play_circle_outline_rounded,
                   size: 16,
                   color: foreground,
                 ),
@@ -78,11 +84,12 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
                             ? t.ads.aiQuotaReached
                             : t.ads.aiQuotaLeft(
                                 remaining: remaining,
-                                total: limits.rewardedAiExtractions,
+                                total: limits.aiExtractionsFor(premium: premium),
                               ),
                         style: AppTextStyles.labelSm.copyWith(color: foreground),
                       ),
-                      if (!blocked)
+                      // The video hint is a free-account thing.
+                      if (!blocked && !premium)
                         Text(
                           t.ads.aiLockedHint,
                           style: AppTextStyles.labelSm.copyWith(

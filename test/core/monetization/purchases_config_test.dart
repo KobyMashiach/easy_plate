@@ -15,6 +15,6 @@ void main() {
   test('the entitlement id is the one the webhook writes for', () {
     // Changing this means changing functions/revenueCatWebhook.js and the
     // RevenueCat dashboard together.
-    expect(PurchasesConfig.premiumEntitlementId, 'premium');
+    expect(PurchasesConfig.premiumEntitlementId, 'easy_plate_ai_pro');
   });
 }

@@ -68,7 +68,13 @@ class ClayNavDock extends StatelessWidget {
           child: DecoratedBox(
             decoration: ShapeDecoration(
               color: AppColors.navDock.withValues(alpha: 0.9),
-              shape: const StadiumBorder(),
+              // On a dark page the dock is only a shade lighter than what is
+              // behind it, so a faint rim is what separates the two.
+              shape: StadiumBorder(
+                side: AppColors.isDark
+                    ? BorderSide(color: Colors.white.withValues(alpha: 0.10))
+                    : BorderSide.none,
+              ),
               shadows: AppShadows.dock,
             ),
             child: Padding(
@@ -113,9 +119,14 @@ class _DockItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = AppColors.isDark;
+    // The dock is dark glass in both themes, so its ink is always the light
+    // theme's: mint for the active tab, lavender-grey for the rest. Reading
+    // the current palette here made the dark theme paint dark-green on
+    // dark-grey, and the whole bar vanished into the page.
     final color = isActive
-        ? AppColors.secondaryFixed
-        : AppColors.surfaceVariant.withValues(alpha: 0.6);
+        ? AppPalette.light.secondaryFixed
+        : AppPalette.light.surfaceVariant.withValues(alpha: isDarkTheme ? 0.75 : 0.6);
 
     return Expanded(
       child: WalkthroughTarget(

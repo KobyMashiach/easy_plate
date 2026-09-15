@@ -18,11 +18,11 @@ class ClayProgressBar extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           // Hollow groove: shaded at the top lip, opening up toward the bottom.
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [AppColors.surfaceContainerHighest, AppColors.surfaceContainer],
-            stops: [0, 0.5],
+            stops: const [0, 0.5],
           ),
           borderRadius: BorderRadius.circular(AppRadius.full),
         ),
@@ -37,7 +37,7 @@ class ClayProgressBar extends StatelessWidget {
                 curve: Curves.easeOut,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppRadius.full),
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [AppColors.primaryContainer, AppColors.primary],
                   ),
                 ),

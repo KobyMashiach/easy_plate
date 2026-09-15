@@ -19,7 +19,7 @@ abstract class PurchasesConfig {
   static const _apiKeyIos = String.fromEnvironment('REVENUECAT_API_KEY_IOS');
 
   /// The single entitlement EasyPlate sells: no ads, no daily quotas.
-  static const premiumEntitlementId = 'premium';
+  static const premiumEntitlementId = 'easy_plate_ai_pro';
 
   static bool get _isIos => !kIsWeb && Platform.isIOS;
 

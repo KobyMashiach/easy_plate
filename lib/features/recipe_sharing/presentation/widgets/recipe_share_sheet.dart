@@ -190,7 +190,7 @@ class _RecipeShareSheetState extends State<_RecipeShareSheet> {
               ],
             ),
           ),
-          if (selected) const Icon(Icons.check_circle_rounded, color: AppColors.primary),
+          if (selected) Icon(Icons.check_circle_rounded, color: AppColors.primary),
         ],
       ),
     );

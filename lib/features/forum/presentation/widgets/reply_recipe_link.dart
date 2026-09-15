@@ -129,7 +129,7 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Icon(
+              : Icon(
                   Icons.bookmark_add_rounded,
                   size: 20,
                   color: AppColors.primary,
@@ -149,9 +149,9 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
           horizontal: AppSpacing.sm,
           vertical: AppSpacing.base,
         ),
-        decoration: const ShapeDecoration(
+        decoration: ShapeDecoration(
           color: AppColors.primaryFixed,
-          shape: StadiumBorder(),
+          shape: const StadiumBorder(),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -163,7 +163,7 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              const Icon(
+              Icon(
                 Icons.link_rounded,
                 size: 16,
                 color: AppColors.primary,

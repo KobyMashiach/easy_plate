@@ -24,8 +24,17 @@ abstract class MonetizationConfig {
         freeSharedViews: _remote.remoteInt(FirebaseService.quotaSharedFreeKey),
         rewardedSharedViews: _remote.remoteInt(FirebaseService.quotaSharedRewardedKey),
         rewardedAiExtractions: _remote.remoteInt(FirebaseService.quotaAiRewardedKey),
+        premiumAiExtractions: _remote.remoteInt(FirebaseService.quotaAiPremiumKey),
       );
 
-  /// True when this account sees no ads and no quotas: premium, or ads off.
-  static bool get adFree => !adsEnabled || EntitlementService().isPremium;
+  static bool get isPremium => EntitlementService().isPremium;
+
+  /// True when this account sees no ads and no *shared-recipe* quota: premium,
+  /// or ads off. The AI quota is the exception — premium still has one, a
+  /// larger one — so the AI gate asks [aiGated] instead.
+  static bool get adFree => !adsEnabled || isPremium;
+
+  /// Whether AI extractions are counted at all. The kill switch turns every
+  /// quota off; premium only changes which allowance applies.
+  static bool get aiGated => adsEnabled;
 }

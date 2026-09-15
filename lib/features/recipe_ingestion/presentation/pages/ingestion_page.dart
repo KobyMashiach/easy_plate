@@ -205,10 +205,11 @@ class _ChannelFormState extends State<_ChannelForm> {
   }
 
   /// What the analyse button says on a link channel: the plain label while
-  /// the account is ad-free, "watch a video and parse" while extractions
-  /// remain, and a disabled "locked for today" once they are spent.
+  /// nothing is counted, "watch a video and parse" while a free account has
+  /// extractions left, and a disabled "locked for today" once the day's
+  /// allowance — free or premium — is spent.
   Widget _parseButton() {
-    if (!_isLinkExtraction(widget.channel) || MonetizationConfig.adFree) {
+    if (!_isLinkExtraction(widget.channel) || !MonetizationConfig.aiGated) {
       return ClayButton(
         // A request is not analysed, it is written — the button says so.
         label: widget.channel == RecipeIngestionChannel.aiRequest
@@ -221,7 +222,7 @@ class _ChannelFormState extends State<_ChannelForm> {
     }
     final verdict = DailyQuotaPolicy.aiExtraction(
       usedToday: DailyUsageService().aiExtractionsToday,
-      premium: false,
+      premium: MonetizationConfig.isPremium,
       limits: MonetizationConfig.limits,
     );
     return switch (verdict) {
@@ -509,8 +510,8 @@ class _ReviewRecipe extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(top: 7),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 7),
                               child: Icon(
                                 Icons.circle,
                                 size: 6,
@@ -552,7 +553,7 @@ class _ReviewRecipe extends StatelessWidget {
                               width: 26,
                               height: 26,
                               alignment: Alignment.center,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: AppColors.primaryFixed,
                                 shape: BoxShape.circle,
                               ),
@@ -627,11 +628,11 @@ class _ErrorView extends StatelessWidget {
               Container(
                 width: 64,
                 height: 64,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.errorContainer,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.error_outline_rounded,
                   size: 32,
                   color: AppColors.onErrorContainer,
@@ -748,7 +749,7 @@ class _OpenOption extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
+          Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
         ],
       ),
     );

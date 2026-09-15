@@ -83,11 +83,11 @@ class _RewardGateSheetState extends State<_RewardGateSheet> {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.primaryFixed,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.play_circle_rounded,
                 size: 40,
                 color: AppColors.primary,

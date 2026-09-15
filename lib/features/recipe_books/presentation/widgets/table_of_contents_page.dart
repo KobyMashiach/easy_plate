@@ -65,7 +65,7 @@ class TableOfContentsPage extends StatelessWidget {
                       bottom: AppSpacing.base,
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.base),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: AppColors.surfaceContainerLowest,
                           shape: BoxShape.circle,
                         ),
@@ -87,7 +87,7 @@ class TableOfContentsPage extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Container(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(color: AppColors.primaryFixed, width: 2),
               ),

@@ -61,30 +61,36 @@ abstract class QuotaGates {
     }
   }
 
-  /// Extracting a recipe from a link with the model.
+  /// Extracting a recipe from a link with the model. Premium skips the video
+  /// but still spends from its own, larger, daily allowance.
   static Future<bool> extractWithAi(BuildContext context) async {
-    if (MonetizationConfig.adFree) return true;
+    if (!MonetizationConfig.aiGated) return true;
 
     final usage = DailyUsageService();
     await usage.ensureLoaded();
     if (!context.mounted) return false;
 
     final limits = MonetizationConfig.limits;
+    final premium = MonetizationConfig.isPremium;
     final verdict = DailyQuotaPolicy.aiExtraction(
       usedToday: usage.aiExtractionsToday,
-      premium: false,
+      premium: premium,
       limits: limits,
     );
 
     switch (verdict) {
       case GateVerdict.free:
+        await usage.recordAiExtraction();
         return true;
       case GateVerdict.blocked:
         _notify(context, t.ads.aiQuotaReached);
         return false;
       case GateVerdict.rewarded:
-        final remaining =
-            DailyQuotaPolicy.remainingAiExtractions(usage.aiExtractionsToday, limits);
+        final remaining = DailyQuotaPolicy.remainingAiExtractions(
+          usage.aiExtractionsToday,
+          limits,
+          premium: premium,
+        );
         final unlocked = await showRewardGateSheet(
           context,
           title: t.ads.unlockAiTitle,

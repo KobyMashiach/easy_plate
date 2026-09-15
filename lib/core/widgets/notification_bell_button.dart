@@ -24,7 +24,7 @@ class NotificationBellButton extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              const Icon(
+              Icon(
                 Icons.notifications_rounded,
                 size: 22,
                 color: AppColors.primary,

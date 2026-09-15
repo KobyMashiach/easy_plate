@@ -7,9 +7,12 @@ import '../constants/app_text_styles.dart';
 /// Material theme built entirely from the Stitch design tokens. Widgets should
 /// read from this theme (or the `AppColors`/`AppTextStyles`/`AppSpacing`
 /// tokens) rather than declaring their own colours or sizes.
+///
+/// Built from whatever palette `AppColors` currently exposes, so [current]
+/// must be re-read (not cached) after `ThemeController` switches.
 abstract class AppTheme {
-  static const _colorScheme = ColorScheme(
-    brightness: Brightness.light,
+  static ColorScheme get _colorScheme => ColorScheme(
+    brightness: AppColors.palette.brightness,
     primary: AppColors.primary,
     onPrimary: AppColors.onPrimary,
     primaryContainer: AppColors.primaryContainer,
@@ -56,7 +59,7 @@ abstract class AppTheme {
     surfaceTint: AppColors.surfaceTint,
   );
 
-  static final _textTheme = TextTheme(
+  static TextTheme get _textTheme => TextTheme(
     displayLarge: AppTextStyles.displayLg,
     displayMedium: AppTextStyles.headlineLg,
     displaySmall: AppTextStyles.headlineLgMobile,
@@ -74,7 +77,7 @@ abstract class AppTheme {
     labelSmall: AppTextStyles.labelSm,
   );
 
-  static ThemeData get light {
+  static ThemeData get current {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: _colorScheme,
@@ -100,7 +103,7 @@ abstract class AppTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.std),
-          side: const BorderSide(color: AppColors.surfaceVariant),
+          side: BorderSide(color: AppColors.surfaceVariant),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -132,7 +135,7 @@ abstract class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           textStyle: AppTextStyles.labelMd,
-          side: const BorderSide(color: AppColors.outlineVariant),
+          side: BorderSide(color: AppColors.outlineVariant),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,
@@ -147,12 +150,12 @@ abstract class AppTheme {
           shape: const StadiumBorder(),
         ),
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
         elevation: 0,
         highlightElevation: 0,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceContainerLow,
@@ -160,7 +163,7 @@ abstract class AppTheme {
         checkmarkColor: AppColors.primary,
         labelStyle: AppTextStyles.labelMd,
         secondaryLabelStyle: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
-        side: const BorderSide(color: AppColors.outlineVariant),
+        side: BorderSide(color: AppColors.outlineVariant),
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
@@ -178,15 +181,15 @@ abstract class AppTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.std),
-          borderSide: const BorderSide(color: AppColors.outlineVariant),
+          borderSide: BorderSide(color: AppColors.outlineVariant),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.std),
-          borderSide: const BorderSide(color: AppColors.outlineVariant),
+          borderSide: BorderSide(color: AppColors.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.std),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
       dialogTheme: DialogThemeData(
@@ -196,12 +199,12 @@ abstract class AppTheme {
         contentTextStyle: AppTextStyles.bodyMd,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(
+      bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: AppColors.surfaceContainerLowest,
         surfaceTintColor: Colors.transparent,
         showDragHandle: true,
         dragHandleColor: AppColors.outlineVariant,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
         ),
       ),
@@ -217,8 +220,8 @@ abstract class AppTheme {
               : AppColors.surfaceContainerHighest,
         ),
       ),
-      dividerTheme: const DividerThemeData(color: AppColors.surfaceVariant, space: 1),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
+      dividerTheme: DividerThemeData(color: AppColors.surfaceVariant, space: 1),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.primary,
         linearTrackColor: AppColors.surfaceContainer,
       ),

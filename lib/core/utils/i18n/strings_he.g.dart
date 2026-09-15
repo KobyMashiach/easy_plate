@@ -531,6 +531,18 @@ class Translations$settings$he {
 	/// he: 'שפה'
 	String get language => 'שפה';
 
+	/// he: 'מראה'
+	String get appearance => 'מראה';
+
+	/// he: 'לפי המכשיר'
+	String get themeSystem => 'לפי המכשיר';
+
+	/// he: 'בהיר'
+	String get themeLight => 'בהיר';
+
+	/// he: 'כהה'
+	String get themeDark => 'כהה';
+
 	/// he: 'אפקטי קול (דפדוף עמודים)'
 	String get soundEffects => 'אפקטי קול (דפדוף עמודים)';
 
@@ -1701,8 +1713,8 @@ class Translations$premium$he {
 	/// he: 'מתכונים משותפים ללא הגבלה יומית'
 	String get benefitShared => 'מתכונים משותפים ללא הגבלה יומית';
 
-	/// he: 'חילוץ מתכונים עם AI מכל קישור, ללא הגבלה'
-	String get benefitAi => 'חילוץ מתכונים עם AI מכל קישור, ללא הגבלה';
+	/// he: 'חילוץ מתכונים עם AI מכל קישור, עד $count ביום'
+	String benefitAi({required Object count}) => 'חילוץ מתכונים עם AI מכל קישור, עד ${count} ביום';
 
 	/// he: 'שבועי'
 	String get periodWeekly => 'שבועי';
@@ -1748,6 +1760,15 @@ class Translations$premium$he {
 
 	/// he: 'תודה! המודעות והמכסות היומיות כבויות בחשבון הזה.'
 	String get activeBody => 'תודה! המודעות והמכסות היומיות כבויות בחשבון הזה.';
+
+	/// he: 'ניהול המנוי'
+	String get manage => 'ניהול המנוי';
+
+	/// he: 'ביטול המנוי'
+	String get cancel => 'ביטול המנוי';
+
+	/// he: 'הביטול מפסיק את החידוש האוטומטי. הפרימיום נשאר פעיל עד סוף התקופה ששולמה, ללא החזר כספי.'
+	String get cancelNote => 'הביטול מפסיק את החידוש האוטומטי. הפרימיום נשאר פעיל עד סוף התקופה ששולמה, ללא החזר כספי.';
 
 	/// he: 'המנוי אינו זמין כרגע. נסו שוב מאוחר יותר.'
 	String get unavailable => 'המנוי אינו זמין כרגע. נסו שוב מאוחר יותר.';
@@ -2215,6 +2236,10 @@ extension on Translations {
 			'settings.dietaryPreferences' => 'העדפות תזונתיות',
 			'settings.shoppingDay' => 'יום קניות',
 			'settings.language' => 'שפה',
+			'settings.appearance' => 'מראה',
+			'settings.themeSystem' => 'לפי המכשיר',
+			'settings.themeLight' => 'בהיר',
+			'settings.themeDark' => 'כהה',
 			'settings.soundEffects' => 'אפקטי קול (דפדוף עמודים)',
 			'settings.fastPageTurn' => 'מעבר מהיר בספר',
 			'settings.fastPageTurnHint' => 'קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.',
@@ -2554,7 +2579,7 @@ extension on Translations {
 			'premium.subtitle' => 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.',
 			'premium.benefitNoAds' => 'בלי מודעות בפידים של הקהילה',
 			'premium.benefitShared' => 'מתכונים משותפים ללא הגבלה יומית',
-			'premium.benefitAi' => 'חילוץ מתכונים עם AI מכל קישור, ללא הגבלה',
+			'premium.benefitAi' => ({required Object count}) => 'חילוץ מתכונים עם AI מכל קישור, עד ${count} ביום',
 			'premium.periodWeekly' => 'שבועי',
 			'premium.periodMonthly' => 'חודשי',
 			'premium.periodTwoMonth' => 'דו-חודשי',
@@ -2570,6 +2595,9 @@ extension on Translations {
 			'premium.nothingToRestore' => 'לא נמצאו רכישות לשחזור',
 			'premium.activeTitle' => 'פרימיום פעיל',
 			'premium.activeBody' => 'תודה! המודעות והמכסות היומיות כבויות בחשבון הזה.',
+			'premium.manage' => 'ניהול המנוי',
+			'premium.cancel' => 'ביטול המנוי',
+			'premium.cancelNote' => 'הביטול מפסיק את החידוש האוטומטי. הפרימיום נשאר פעיל עד סוף התקופה ששולמה, ללא החזר כספי.',
 			'premium.unavailable' => 'המנוי אינו זמין כרגע. נסו שוב מאוחר יותר.',
 			'premium.purchaseFailed' => 'הרכישה לא הושלמה',
 			'premium.purchased' => 'ברוכים הבאים לפרימיום!',
@@ -2590,6 +2618,8 @@ extension on Translations {
 			'walkthrough.bookTitle' => 'מדריך EasyPlate',
 			'walkthrough.bookSubtitle' => 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. זהו מדריך בלבד: שום דבר לא נשמר.',
 			'walkthrough.contents' => 'תוכן עניינים',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'פרק ${number}',
 			'walkthrough.backToContents' => 'לתוכן העניינים',
 			'walkthrough.stepsTitle' => 'השלבים',
@@ -2597,8 +2627,6 @@ extension on Translations {
 			'walkthrough.welcomeBody' => 'נעבור יחד על הפעולות העיקריות. אפשר לדלג על כל שלב, או לסגור ולהפעיל שוב ממסך התמיכה.',
 			'walkthrough.topics.addRecipe.title' => 'הוספת מתכון',
 			'walkthrough.topics.addRecipe.summary' => 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים ותגיות.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.addRecipe.s1' => 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.',
 			'walkthrough.topics.addRecipe.s2' => 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון TikTok/Reels, בקשה חופשית מ-AI, או כתיבה ידנית. אחרי הניתוח בודקים, עורכים ושומרים.',
 			'walkthrough.topics.myRecipes.title' => 'המתכונים שלי ושמורים',

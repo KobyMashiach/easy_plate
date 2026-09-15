@@ -37,7 +37,7 @@ class _GrocerySectionState extends State<GrocerySection> {
           behavior: HitTestBehavior.opaque,
           child: Container(
             padding: const EdgeInsets.only(bottom: AppSpacing.base),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(bottom: BorderSide(color: AppColors.surfaceVariant)),
             ),
             child: Row(
@@ -45,7 +45,7 @@ class _GrocerySectionState extends State<GrocerySection> {
                 AnimatedRotation(
                   turns: _expanded ? 0.25 : 0,
                   duration: const Duration(milliseconds: 300),
-                  child: const Icon(
+                  child: Icon(
                     Icons.chevron_right_rounded,
                     color: AppColors.primary,
                   ),
@@ -59,9 +59,9 @@ class _GrocerySectionState extends State<GrocerySection> {
                     horizontal: AppSpacing.sm,
                     vertical: AppSpacing.xs,
                   ),
-                  decoration: const ShapeDecoration(
+                  decoration: ShapeDecoration(
                     color: AppColors.primaryFixed,
-                    shape: StadiumBorder(),
+                    shape: const StadiumBorder(),
                   ),
                   child: Text(
                     '${widget.items.length}',

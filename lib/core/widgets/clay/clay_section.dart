@@ -72,7 +72,7 @@ class ClaySectionHeader extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.only(bottom: AppSpacing.base),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.surfaceVariant)),
       ),
       child: row,
@@ -104,7 +104,7 @@ class ClayEmptyState extends StatelessWidget {
             Container(
               width: 96,
               height: 96,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.primaryFixed,
                 shape: BoxShape.circle,
               ),

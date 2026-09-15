@@ -46,7 +46,7 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
         ),
         alignment: AlignmentDirectional.centerEnd,
         padding: const EdgeInsetsDirectional.only(end: AppSpacing.marginMobile),
-        child: const Icon(Icons.delete_rounded, color: AppColors.onErrorContainer),
+        child: Icon(Icons.delete_rounded, color: AppColors.onErrorContainer),
       ),
       child: ClayCard(
         padding: EdgeInsets.zero,
@@ -62,7 +62,7 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
                     AnimatedRotation(
                       turns: _expanded ? 0.25 : 0,
                       duration: const Duration(milliseconds: 300),
-                      child: const Icon(
+                      child: Icon(
                         Icons.chevron_right_rounded,
                         color: AppColors.outline,
                       ),

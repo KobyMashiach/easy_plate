@@ -8,19 +8,22 @@ import '../../constants/app_text_styles.dart';
 class ClayTag extends StatelessWidget {
   final String label;
   final IconData? icon;
-  final Color background;
-  final Color foreground;
+  /// Null reads as the theme's primaryFixed / primary.
+  final Color? background;
+  final Color? foreground;
 
   const ClayTag({
     super.key,
     required this.label,
     this.icon,
-    this.background = AppColors.primaryFixed,
-    this.foreground = AppColors.primary,
+    this.background,
+    this.foreground,
   });
 
   @override
   Widget build(BuildContext context) {
+    final background = this.background ?? AppColors.primaryFixed;
+    final foreground = this.foreground ?? AppColors.primary;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.base,

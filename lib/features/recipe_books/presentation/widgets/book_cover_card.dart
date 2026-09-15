@@ -7,7 +7,7 @@ import '../../domain/entities/recipe_book_entity.dart';
 
 /// Spine colours cycle so a shelf of books reads as distinct objects, the way
 /// the Stitch library carousel alternates primary / secondary / tertiary.
-const _spineColors = [AppColors.primary, AppColors.secondary, AppColors.tertiary];
+List<Color> get _spineColors => [AppColors.primary, AppColors.secondary, AppColors.tertiary];
 
 class BookCoverCard extends StatelessWidget {
   final RecipeBookEntity book;

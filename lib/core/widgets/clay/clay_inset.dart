@@ -28,14 +28,14 @@ class ClayInset extends StatelessWidget {
         // reads as pressed into the page. A rounded box requires a uniform
         // border, so the recess comes from the gradient rather than per-side
         // border colours.
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
             AppColors.surfaceContainerHighest,
             AppColors.surfaceContainerLow,
           ],
-          stops: [0, 0.45],
+          stops: const [0, 0.45],
         ),
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: AppColors.surfaceContainerHighest),

@@ -1,10 +1,12 @@
 package com.KHEasyDev.easy_plate
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
 
-class MainActivity : FlutterActivity() {
+// FlutterFragmentActivity rather than FlutterActivity: RevenueCat's paywall and
+// Customer Center are fragments and refuse to show from a plain activity.
+class MainActivity : FlutterFragmentActivity() {
     /** Must match `AdsConfig.nativeFactoryId` on the Dart side. */
     private val nativeAdFactoryId = "easyPlateCard"
 

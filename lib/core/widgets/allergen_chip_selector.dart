@@ -94,8 +94,8 @@ class AllergenNotice extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 2),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
             child: Icon(Icons.warning_amber_rounded, size: 16, color: AppColors.onErrorContainer),
           ),
           const SizedBox(width: AppSpacing.xs),

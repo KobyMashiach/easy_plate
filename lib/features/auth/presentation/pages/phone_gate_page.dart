@@ -136,7 +136,7 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
               padding: const EdgeInsets.all(AppSpacing.marginMobile),
               children: [
                 const SizedBox(height: AppSpacing.lg),
-                const Icon(Icons.phone_iphone_rounded, size: 64, color: AppColors.primary),
+                Icon(Icons.phone_iphone_rounded, size: 64, color: AppColors.primary),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   awaitingCode

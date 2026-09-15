@@ -106,7 +106,7 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
                             width: 32,
                             height: 32,
                             alignment: Alignment.center,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: AppColors.primaryFixed,
                               shape: BoxShape.circle,
                             ),
@@ -128,8 +128,8 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
                           ),
                           ReorderableDragStartListener(
                             index: index,
-                            child: const Padding(
-                              padding: EdgeInsets.all(AppSpacing.xs),
+                            child: Padding(
+                              padding: const EdgeInsets.all(AppSpacing.xs),
                               child: Icon(
                                 Icons.drag_handle_rounded,
                                 color: AppColors.outline,

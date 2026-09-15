@@ -102,7 +102,7 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                           onTap: () => Navigator.of(context).pop(shared),
                           child: Row(
                             children: [
-                              const Icon(Icons.restaurant_menu_rounded,
+                              Icon(Icons.restaurant_menu_rounded,
                                   size: 20, color: AppColors.primary),
                               const SizedBox(width: AppSpacing.sm),
                               Expanded(

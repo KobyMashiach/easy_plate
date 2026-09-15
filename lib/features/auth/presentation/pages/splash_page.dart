@@ -89,12 +89,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                         opacity: _tileFade.value * (0.55 - 0.3 * t),
                         child: Transform.scale(
                           scale: 0.8 + 0.25 * t,
-                          child: const DecoratedBox(
+                          child: DecoratedBox(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppColors.primaryFixed,
                             ),
-                            child: SizedBox.expand(),
+                            child: const SizedBox.expand(),
                           ),
                         ),
                       );

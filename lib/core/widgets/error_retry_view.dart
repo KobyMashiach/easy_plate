@@ -26,11 +26,11 @@ class ErrorRetryView extends StatelessWidget {
               Container(
                 width: 64,
                 height: 64,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.errorContainer,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.error_outline_rounded,
                   size: 32,
                   color: AppColors.onErrorContainer,

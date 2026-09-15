@@ -83,7 +83,7 @@ class SharedRecipesPage extends StatelessWidget {
                           heroTag: 'share-recipe',
                           backgroundColor: AppColors.primary,
                           onPressed: () => _pickAndShare(context),
-                          child: const Icon(
+                          child: Icon(
                             Icons.ios_share_rounded,
                             color: AppColors.onPrimary,
                           ),
@@ -287,7 +287,7 @@ class _FeedState extends State<_Feed> {
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
       child: Row(
         children: [
-          const Icon(Icons.search_rounded, color: AppColors.outline),
+          Icon(Icons.search_rounded, color: AppColors.outline),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: TextField(
@@ -314,7 +314,7 @@ class _FeedState extends State<_Feed> {
                 _search.clear();
                 _query = _query.copyWith(search: '');
               }),
-              child: const Icon(Icons.close_rounded, color: AppColors.outline),
+              child: Icon(Icons.close_rounded, color: AppColors.outline),
             ),
         ],
       ),
@@ -337,13 +337,13 @@ class _FeedState extends State<_Feed> {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.gutter),
-            decoration: const ShapeDecoration(
+            decoration: ShapeDecoration(
               color: AppColors.surfaceContainerLow,
               shape: StadiumBorder(
                 side: BorderSide(color: AppColors.outlineVariant),
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.tune_rounded,
               size: 20,
               color: AppColors.tertiary,
@@ -499,7 +499,7 @@ class _SharedCard extends StatelessWidget {
                     children: [
                       IconButton(
                         tooltip: t.community.editShared,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.edit_rounded,
                           size: 20,
                           color: AppColors.primary,
@@ -508,7 +508,7 @@ class _SharedCard extends StatelessWidget {
                       ),
                       IconButton(
                         tooltip: t.community.unshare,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.delete_outline_rounded,
                           size: 20,
                           color: AppColors.error,

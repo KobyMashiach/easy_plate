@@ -268,6 +268,10 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get dietaryPreferences => 'التفضيلات الغذائية';
 	@override String get shoppingDay => 'يوم التسوّق';
 	@override String get language => 'اللغة';
+	@override String get appearance => 'المظهر';
+	@override String get themeSystem => 'حسب الجهاز';
+	@override String get themeLight => 'فاتح';
+	@override String get themeDark => 'داكن';
 	@override String get soundEffects => 'المؤثرات الصوتية (تقليب الصفحات)';
 	@override String get fastPageTurn => 'تصفّح سريع في الكتاب';
 	@override String get fastPageTurnHint => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.';
@@ -760,7 +764,7 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get subtitle => 'كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.';
 	@override String get benefitNoAds => 'بلا إعلانات في خلاصات المجتمع';
 	@override String get benefitShared => 'وصفات مشتركة بلا حدّ يومي';
-	@override String get benefitAi => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، بلا حدود';
+	@override String benefitAi({required Object count}) => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، حتى ${count} في اليوم';
 	@override String get periodWeekly => 'أسبوعي';
 	@override String get periodMonthly => 'شهري';
 	@override String get periodTwoMonth => 'كل شهرين';
@@ -776,6 +780,9 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get nothingToRestore => 'لا توجد مشتريات لاستعادتها';
 	@override String get activeTitle => 'بريميوم مفعّل';
 	@override String get activeBody => 'شكرًا! الإعلانات والحدود اليومية متوقفة في هذا الحساب.';
+	@override String get manage => 'إدارة الاشتراك';
+	@override String get cancel => 'إلغاء الاشتراك';
+	@override String get cancelNote => 'الإلغاء يوقف التجديد التلقائي. يبقى الاشتراك المميز فعالاً حتى نهاية الفترة المدفوعة. لا يوجد استرداد للمبلغ.';
 	@override String get unavailable => 'الاشتراكات غير متاحة حاليًا. حاول مرة أخرى لاحقًا.';
 	@override String get purchaseFailed => 'لم تكتمل عملية الشراء';
 	@override String get purchased => 'مرحبًا بك في بريميوم!';
@@ -1090,6 +1097,10 @@ extension on TranslationsAr {
 			'settings.dietaryPreferences' => 'التفضيلات الغذائية',
 			'settings.shoppingDay' => 'يوم التسوّق',
 			'settings.language' => 'اللغة',
+			'settings.appearance' => 'المظهر',
+			'settings.themeSystem' => 'حسب الجهاز',
+			'settings.themeLight' => 'فاتح',
+			'settings.themeDark' => 'داكن',
 			'settings.soundEffects' => 'المؤثرات الصوتية (تقليب الصفحات)',
 			'settings.fastPageTurn' => 'تصفّح سريع في الكتاب',
 			'settings.fastPageTurnHint' => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.',
@@ -1429,7 +1440,7 @@ extension on TranslationsAr {
 			'premium.subtitle' => 'كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.',
 			'premium.benefitNoAds' => 'بلا إعلانات في خلاصات المجتمع',
 			'premium.benefitShared' => 'وصفات مشتركة بلا حدّ يومي',
-			'premium.benefitAi' => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، بلا حدود',
+			'premium.benefitAi' => ({required Object count}) => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، حتى ${count} في اليوم',
 			'premium.periodWeekly' => 'أسبوعي',
 			'premium.periodMonthly' => 'شهري',
 			'premium.periodTwoMonth' => 'كل شهرين',
@@ -1445,6 +1456,9 @@ extension on TranslationsAr {
 			'premium.nothingToRestore' => 'لا توجد مشتريات لاستعادتها',
 			'premium.activeTitle' => 'بريميوم مفعّل',
 			'premium.activeBody' => 'شكرًا! الإعلانات والحدود اليومية متوقفة في هذا الحساب.',
+			'premium.manage' => 'إدارة الاشتراك',
+			'premium.cancel' => 'إلغاء الاشتراك',
+			'premium.cancelNote' => 'الإلغاء يوقف التجديد التلقائي. يبقى الاشتراك المميز فعالاً حتى نهاية الفترة المدفوعة. لا يوجد استرداد للمبلغ.',
 			'premium.unavailable' => 'الاشتراكات غير متاحة حاليًا. حاول مرة أخرى لاحقًا.',
 			'premium.purchaseFailed' => 'لم تكتمل عملية الشراء',
 			'premium.purchased' => 'مرحبًا بك في بريميوم!',
@@ -1465,6 +1479,8 @@ extension on TranslationsAr {
 			'walkthrough.bookTitle' => 'دليل EasyPlate',
 			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. هذا دليل فقط: لا يُحفظ أي شيء.',
 			'walkthrough.contents' => 'المحتويات',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'الفصل ${number}',
 			'walkthrough.backToContents' => 'العودة إلى المحتويات',
 			'walkthrough.stepsTitle' => 'الخطوات',
@@ -1472,8 +1488,6 @@ extension on TranslationsAr {
 			'walkthrough.welcomeBody' => 'سنستعرض معاً الوظائف الأساسية. يمكنك تخطي أي خطوة، أو الإغلاق وإعادة التشغيل من شاشة الدعم.',
 			'walkthrough.topics.addRecipe.title' => 'إضافة وصفة',
 			'walkthrough.topics.addRecipe.summary' => 'أضف وصفة من أي مصدر ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.addRecipe.s1' => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.',
 			'walkthrough.topics.addRecipe.s2' => 'اختر المصدر: نص ملصق، بحث في الإنترنت، رابط موقع، فيديو TikTok/Reels، طلب حر من الذكاء الاصطناعي، أو كتابة يدوية. بعد التحليل تراجع وتعدّل وتحفظ.',
 			'walkthrough.topics.myRecipes.title' => 'وصفاتي والمحفوظة',

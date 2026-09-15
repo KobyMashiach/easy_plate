@@ -43,7 +43,7 @@ class LanguageSelector extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (isSelected) ...[
-                  const Icon(Icons.check_rounded, size: 16, color: AppColors.onPrimary),
+                  Icon(Icons.check_rounded, size: 16, color: AppColors.onPrimary),
                   const SizedBox(width: AppSpacing.xs),
                 ],
                 Text(

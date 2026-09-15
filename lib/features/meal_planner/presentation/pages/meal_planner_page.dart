@@ -213,7 +213,7 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
                         ),
                       ),
                       if (isSelected)
-                        const Icon(
+                        Icon(
                           Icons.check_circle_rounded,
                           color: AppColors.onPrimaryContainer,
                         ),

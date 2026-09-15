@@ -162,7 +162,7 @@ class _RecipesBodyState extends State<_RecipesBody> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.search_rounded,
                         color: AppColors.outline,
                       ),

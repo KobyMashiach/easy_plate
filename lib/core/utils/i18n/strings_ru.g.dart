@@ -268,6 +268,10 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get dietaryPreferences => 'Пищевые предпочтения';
 	@override String get shoppingDay => 'День покупок';
 	@override String get language => 'Язык';
+	@override String get appearance => 'Оформление';
+	@override String get themeSystem => 'Как в системе';
+	@override String get themeLight => 'Светлая';
+	@override String get themeDark => 'Тёмная';
 	@override String get soundEffects => 'Звуковые эффекты (перелистывание страниц)';
 	@override String get fastPageTurn => 'Быстрое перелистывание';
 	@override String get fastPageTurnHint => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.';
@@ -760,7 +764,7 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get subtitle => 'Всё, что умеет EasyPlate, не дожидаясь завтра.';
 	@override String get benefitNoAds => 'Без рекламы в лентах сообщества';
 	@override String get benefitShared => 'Общие рецепты без дневного лимита';
-	@override String get benefitAi => 'Извлечение рецептов с помощью ИИ из любой ссылки, без ограничений';
+	@override String benefitAi({required Object count}) => 'Извлечение рецептов с помощью ИИ из любой ссылки, до ${count} в день';
 	@override String get periodWeekly => 'Еженедельно';
 	@override String get periodMonthly => 'Ежемесячно';
 	@override String get periodTwoMonth => 'Раз в 2 месяца';
@@ -776,6 +780,9 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get nothingToRestore => 'Покупок для восстановления не найдено';
 	@override String get activeTitle => 'Premium активен';
 	@override String get activeBody => 'Спасибо! Реклама и дневные лимиты отключены для этого аккаунта.';
+	@override String get manage => 'Управление подпиской';
+	@override String get cancel => 'Отменить подписку';
+	@override String get cancelNote => 'Отмена отключает автопродление. Премиум остаётся активным до конца уже оплаченного периода. Возврат средств не производится.';
 	@override String get unavailable => 'Подписки сейчас недоступны. Попробуйте позже.';
 	@override String get purchaseFailed => 'Покупка не завершена';
 	@override String get purchased => 'Добро пожаловать в Premium!';
@@ -1090,6 +1097,10 @@ extension on TranslationsRu {
 			'settings.dietaryPreferences' => 'Пищевые предпочтения',
 			'settings.shoppingDay' => 'День покупок',
 			'settings.language' => 'Язык',
+			'settings.appearance' => 'Оформление',
+			'settings.themeSystem' => 'Как в системе',
+			'settings.themeLight' => 'Светлая',
+			'settings.themeDark' => 'Тёмная',
 			'settings.soundEffects' => 'Звуковые эффекты (перелистывание страниц)',
 			'settings.fastPageTurn' => 'Быстрое перелистывание',
 			'settings.fastPageTurnHint' => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.',
@@ -1429,7 +1440,7 @@ extension on TranslationsRu {
 			'premium.subtitle' => 'Всё, что умеет EasyPlate, не дожидаясь завтра.',
 			'premium.benefitNoAds' => 'Без рекламы в лентах сообщества',
 			'premium.benefitShared' => 'Общие рецепты без дневного лимита',
-			'premium.benefitAi' => 'Извлечение рецептов с помощью ИИ из любой ссылки, без ограничений',
+			'premium.benefitAi' => ({required Object count}) => 'Извлечение рецептов с помощью ИИ из любой ссылки, до ${count} в день',
 			'premium.periodWeekly' => 'Еженедельно',
 			'premium.periodMonthly' => 'Ежемесячно',
 			'premium.periodTwoMonth' => 'Раз в 2 месяца',
@@ -1445,6 +1456,9 @@ extension on TranslationsRu {
 			'premium.nothingToRestore' => 'Покупок для восстановления не найдено',
 			'premium.activeTitle' => 'Premium активен',
 			'premium.activeBody' => 'Спасибо! Реклама и дневные лимиты отключены для этого аккаунта.',
+			'premium.manage' => 'Управление подпиской',
+			'premium.cancel' => 'Отменить подписку',
+			'premium.cancelNote' => 'Отмена отключает автопродление. Премиум остаётся активным до конца уже оплаченного периода. Возврат средств не производится.',
 			'premium.unavailable' => 'Подписки сейчас недоступны. Попробуйте позже.',
 			'premium.purchaseFailed' => 'Покупка не завершена',
 			'premium.purchased' => 'Добро пожаловать в Premium!',
@@ -1465,6 +1479,8 @@ extension on TranslationsRu {
 			'walkthrough.bookTitle' => 'Справочник EasyPlate',
 			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Это только справочник: ничего не сохраняется.',
 			'walkthrough.contents' => 'Оглавление',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'Глава ${number}',
 			'walkthrough.backToContents' => 'К оглавлению',
 			'walkthrough.stepsTitle' => 'Шаги',
@@ -1472,8 +1488,6 @@ extension on TranslationsRu {
 			'walkthrough.welcomeBody' => 'Пройдём вместе по основным действиям. Любой шаг можно пропустить, а обучение закрыть и запустить снова с экрана поддержки.',
 			'walkthrough.topics.addRecipe.title' => 'Добавить рецепт',
 			'walkthrough.topics.addRecipe.summary' => 'Добавьте рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги и теги.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.addRecipe.s1' => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.',
 			'walkthrough.topics.addRecipe.s2' => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео TikTok/Reels, свободный запрос к ИИ или ввод вручную. После разбора проверьте, отредактируйте и сохраните.',
 			'walkthrough.topics.myRecipes.title' => 'Мои и сохранённые рецепты',

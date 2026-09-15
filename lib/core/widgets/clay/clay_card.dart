@@ -16,7 +16,8 @@ class ClayCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final bool showSpine;
-  final Color spineColor;
+  /// Null reads as the theme's primaryFixed.
+  final Color? spineColor;
   final bool isActive;
   final Color? color;
 
@@ -28,7 +29,7 @@ class ClayCard extends StatefulWidget {
     this.onTap,
     this.onLongPress,
     this.showSpine = false,
-    this.spineColor = AppColors.primaryFixed,
+    this.spineColor,
     this.isActive = false,
     this.color,
   });
@@ -73,7 +74,9 @@ class _ClayCardState extends State<ClayCard> {
                       begin: Alignment.topLeft,
                       end: Alignment.center,
                       colors: [
-                        AppShadows.bevelHighlight.withValues(alpha: widget.isActive ? 0.2 : 0.5),
+                        AppShadows.bevelHighlight.withValues(
+                          alpha: (widget.isActive ? 0.2 : 0.5) * AppShadows.bevelStrength,
+                        ),
                         // Fade to transparent *white*: fading to
                         // Colors.transparent (transparent black) would tint
                         // the midpoint grey.
@@ -88,7 +91,7 @@ class _ClayCardState extends State<ClayCard> {
                   start: 0,
                   top: 0,
                   bottom: 0,
-                  child: _ClaySpine(color: widget.spineColor),
+                  child: _ClaySpine(color: widget.spineColor ?? AppColors.primaryFixed),
                 ),
               Padding(
                 padding: widget.padding.add(

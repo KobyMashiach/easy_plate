@@ -269,7 +269,7 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
                     _roleTag(entry.value),
                     IconButton(
                       tooltip: t.sharing.remove,
-                      icon: const Icon(Icons.person_remove_rounded, size: 20, color: AppColors.error),
+                      icon: Icon(Icons.person_remove_rounded, size: 20, color: AppColors.error),
                       onPressed: _busy ? null : () => _removeMember(collab, entry.key, leaving: false),
                     ),
                   ],
@@ -303,7 +303,7 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
             _roleTag(collab.roleOf(_uid)),
             IconButton(
               tooltip: t.sharing.leave,
-              icon: const Icon(Icons.logout_rounded, size: 20, color: AppColors.error),
+              icon: Icon(Icons.logout_rounded, size: 20, color: AppColors.error),
               onPressed: _busy ? null : () => _removeMember(collab, _uid, leaving: true),
             ),
           ],

@@ -137,7 +137,7 @@ class _ContentsPage extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Container(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(color: AppColors.primaryFixed, width: 2),
               ),
@@ -281,7 +281,7 @@ class _ChapterPage extends StatelessWidget {
                           width: 26,
                           height: 26,
                           alignment: Alignment.center,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.primaryFixed,
                             shape: BoxShape.circle,
                           ),

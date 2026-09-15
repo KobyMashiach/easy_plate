@@ -133,7 +133,7 @@ class _PickerBodyState extends State<_PickerBody> {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
             child: Row(
               children: [
-                const Icon(Icons.search_rounded, color: AppColors.outline),
+                Icon(Icons.search_rounded, color: AppColors.outline),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: TextField(

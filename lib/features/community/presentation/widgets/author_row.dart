@@ -71,7 +71,7 @@ class _Fallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
+    return ColoredBox(
       color: AppColors.primaryFixed,
       child: Icon(Icons.person_rounded, size: 18, color: AppColors.primary),
     );

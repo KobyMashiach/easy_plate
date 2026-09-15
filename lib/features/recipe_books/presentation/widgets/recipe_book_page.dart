@@ -95,8 +95,8 @@ class RecipeBookPage extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 7),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 7),
                             child: Icon(Icons.circle, size: 6, color: AppColors.primary),
                           ),
                           const SizedBox(width: AppSpacing.sm),
@@ -118,7 +118,7 @@ class RecipeBookPage extends StatelessWidget {
                                 width: 26,
                                 height: 26,
                                 alignment: Alignment.center,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: AppColors.primaryFixed,
                                   shape: BoxShape.circle,
                                 ),
@@ -165,7 +165,7 @@ class BookPageHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: AppSpacing.base),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.primaryFixed, width: 2)),
       ),
       child: Text(

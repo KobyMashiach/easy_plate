@@ -344,7 +344,7 @@ class _LoginViewState extends State<_LoginView> {
   Widget _divider() {
     return Row(
       children: [
-        const Expanded(child: Divider(color: AppColors.outlineVariant)),
+        Expanded(child: Divider(color: AppColors.outlineVariant)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           child: Text(
@@ -352,7 +352,7 @@ class _LoginViewState extends State<_LoginView> {
             style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
           ),
         ),
-        const Expanded(child: Divider(color: AppColors.outlineVariant)),
+        Expanded(child: Divider(color: AppColors.outlineVariant)),
       ],
     );
   }
@@ -415,13 +415,13 @@ class _LanguageButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.language_rounded, size: 18, color: AppColors.primary),
+            Icon(Icons.language_rounded, size: 18, color: AppColors.primary),
             const SizedBox(width: AppSpacing.xs),
             Text(
               _current.label,
               style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
             ),
-            const Icon(Icons.keyboard_arrow_down_rounded,
+            Icon(Icons.keyboard_arrow_down_rounded,
                 size: 18, color: AppColors.primary),
           ],
         ),

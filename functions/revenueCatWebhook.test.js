@@ -16,7 +16,7 @@ const event = (overrides) => ({
   type: "INITIAL_PURCHASE",
   app_user_id: UID,
   aliases: [UID],
-  entitlement_ids: ["premium"],
+  entitlement_ids: ["easy_plate_ai_pro"],
   product_id: "premium_monthly",
   store: "PLAY_STORE",
   environment: "PRODUCTION",

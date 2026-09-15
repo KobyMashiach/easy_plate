@@ -52,7 +52,7 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
             behavior: HitTestBehavior.opaque,
             child: Row(
               children: [
-                const Icon(Icons.filter_list_rounded, size: 20, color: AppColors.primary),
+                Icon(Icons.filter_list_rounded, size: 20, color: AppColors.primary),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
@@ -74,7 +74,7 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
                 AnimatedRotation(
                   turns: _expanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 200),
-                  child: const Icon(
+                  child: Icon(
                     Icons.keyboard_arrow_down_rounded,
                     color: AppColors.tertiary,
                   ),
@@ -201,7 +201,7 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
               }),
               emphasised: true,
             ),
-            const Divider(color: AppColors.outlineVariant),
+            Divider(color: AppColors.outlineVariant),
             Flexible(
               child: ListView(
                 shrinkWrap: true,

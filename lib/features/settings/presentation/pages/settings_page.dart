@@ -9,6 +9,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/language_selector.dart';
+import '../../../../core/widgets/theme_mode_selector.dart';
 import '../../../../core/widgets/weekday_selector.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
@@ -100,6 +101,11 @@ class _SettingsBody extends StatelessWidget {
           onSelect: (language) => bloc.add(.changeLanguage(language)),
         ),
       ),
+      // Device-wide, not part of the account's preferences: see ThemeController.
+      const _SettingsCard(
+        title: null,
+        child: ThemeModeSelector(),
+      ),
     ];
 
     return Column(
@@ -189,7 +195,9 @@ class _SettingsToggle extends StatelessWidget {
 /// Pill list of the shipped UI languages, each shown in its own script so the
 /// choice is readable whatever the current locale.
 class _SettingsCard extends StatelessWidget {
-  final String title;
+  /// Null reads the appearance heading — the one card whose title is not a
+  /// build-time string, because the selector's own label set lives with it.
+  final String? title;
   final Widget child;
 
   const _SettingsCard({required this.title, required this.child});
@@ -202,7 +210,7 @@ class _SettingsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClaySectionHeader(title: title),
+          ClaySectionHeader(title: title ?? t.settings.appearance),
           const SizedBox(height: AppSpacing.gutter),
           child,
         ],

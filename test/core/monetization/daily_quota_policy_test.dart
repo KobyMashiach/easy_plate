@@ -60,14 +60,19 @@ void main() {
       expect(verdict(2), GateVerdict.blocked);
     });
 
-    test('premium extracts freely', () {
-      expect(verdict(50, premium: true), GateVerdict.free);
+    test('premium extracts without a video, up to its own allowance', () {
+      expect(verdict(0, premium: true), GateVerdict.free);
+      expect(verdict(9, premium: true), GateVerdict.free);
+      expect(verdict(10, premium: true), GateVerdict.blocked);
+      expect(verdict(50, premium: true), GateVerdict.blocked);
     });
 
     test('remaining never goes negative', () {
       expect(DailyQuotaPolicy.remainingAiExtractions(0, limits), 2);
       expect(DailyQuotaPolicy.remainingAiExtractions(2, limits), 0);
       expect(DailyQuotaPolicy.remainingAiExtractions(7, limits), 0);
+      expect(DailyQuotaPolicy.remainingAiExtractions(3, limits, premium: true), 7);
+      expect(DailyQuotaPolicy.remainingAiExtractions(12, limits, premium: true), 0);
     });
   });
 
@@ -76,6 +81,7 @@ void main() {
       freeSharedViews: 10,
       rewardedSharedViews: 0,
       rewardedAiExtractions: 0,
+      premiumAiExtractions: 0,
     );
     expect(
       DailyQuotaPolicy.sharedRecipe(
@@ -99,6 +105,11 @@ void main() {
     expect(
       DailyQuotaPolicy.aiExtraction(usedToday: 0, premium: false, limits: generous),
       GateVerdict.blocked,
+    );
+    expect(
+      DailyQuotaPolicy.aiExtraction(usedToday: 0, premium: true, limits: generous),
+      GateVerdict.blocked,
+      reason: 'premium has its own console-tuned ceiling',
     );
   });
 }

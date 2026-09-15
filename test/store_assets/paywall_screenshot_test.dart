@@ -24,9 +24,9 @@ import 'package:flutter_test/flutter_test.dart';
 const _enabled = bool.fromEnvironment('STORE_SCREENSHOTS');
 const _outDir = 'store_assets/app_store';
 
+// One plan only: premium, monthly. The price is the one set in the stores.
 const _offers = [
-  PaywallOffer(id: 'monthly', priceString: '₪14.90', period: PaywallPeriod.monthly),
-  PaywallOffer(id: 'annual', priceString: '₪99.90', period: PaywallPeriod.annual),
+  PaywallOffer(id: 'monthly', priceString: '₪20.00', period: PaywallPeriod.monthly),
 ];
 
 /// Sizes Apple lists for the in-app purchase review screenshot.
@@ -96,7 +96,7 @@ void main() {
             TranslationProvider(
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
-                theme: AppTheme.light,
+                theme: AppTheme.current,
                 locale: locale.flutterLocale,
                 supportedLocales: AppLocaleUtils.supportedLocales,
                 localizationsDelegates: GlobalMaterialLocalizations.delegates,
@@ -104,13 +104,15 @@ void main() {
                   key: key,
                   child: PaywallView(
                     offers: _offers,
-                    selectedId: 'annual',
+                    selectedId: 'monthly',
+                    aiPerDay: 10,
                     isPremium: false,
                     loading: false,
                     busy: false,
                     onSelect: (_) {},
                     onPurchase: () {},
                     onRestore: () {},
+                    onManage: () {},
                     onBack: () {},
                   ),
                 ),

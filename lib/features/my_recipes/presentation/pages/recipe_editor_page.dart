@@ -535,7 +535,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           ),
           IconButton(
             tooltip: t.editor.removeIngredient,
-            icon: const Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
+            icon: Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
             onPressed: () => setState(() => _ingredients.removeAt(index).dispose()),
           ),
         ],
@@ -602,7 +602,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
               height: 26,
               margin: const EdgeInsets.only(top: AppSpacing.sm),
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.primaryFixed,
                 shape: BoxShape.circle,
               ),
@@ -637,7 +637,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           ),
           IconButton(
             tooltip: t.editor.removeStep,
-            icon: const Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
+            icon: Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
             onPressed: () => setState(() => _steps.removeAt(index).dispose()),
           ),
         ],
@@ -709,7 +709,7 @@ class _SaveOptionsSheet extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
+          Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
         ],
       ),
     );

@@ -168,7 +168,7 @@ class LibraryPage extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    const Icon(Icons.image_rounded, color: AppColors.primary),
+                    Icon(Icons.image_rounded, color: AppColors.primary),
                     const SizedBox(width: AppSpacing.sm),
                     Text(t.books.coverImage, style: AppTextStyles.bodyMd),
                   ],
@@ -184,7 +184,7 @@ class LibraryPage extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.drive_file_rename_outline_rounded,
                       color: AppColors.primary,
                     ),
@@ -203,7 +203,7 @@ class LibraryPage extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.delete_outline_rounded,
                       color: AppColors.error,
                     ),

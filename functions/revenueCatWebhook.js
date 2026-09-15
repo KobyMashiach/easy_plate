@@ -17,7 +17,7 @@ const webhookAuth = defineSecret("REVENUECAT_WEBHOOK_AUTH");
 
 // Must match PurchasesConfig.premiumEntitlementId in the app and the
 // entitlement identifier in the RevenueCat dashboard.
-const PREMIUM_ENTITLEMENT = "premium";
+const PREMIUM_ENTITLEMENT = "easy_plate_ai_pro";
 
 // Event types after which the account is *not* premium. Everything else that
 // names the entitlement (INITIAL_PURCHASE, RENEWAL, PRODUCT_CHANGE,

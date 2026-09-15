@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/monetization/entitlement_service.dart';
+import '../../../../core/monetization/purchases_service.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -19,6 +20,13 @@ import '../../../../core/services/admin_access.dart';
 /// Reached from the avatar in every main screen's app bar.
 class AccountMenuPage extends StatelessWidget {
   const AccountMenuPage({super.key});
+
+  Future<void> _openCustomerCenter(BuildContext context) async {
+    final opened = await PurchasesService().openSubscriptionManagement();
+    if (!opened && context.mounted) {
+      AppDialog.info(message: t.premium.unavailable).notify(context);
+    }
+  }
 
   Future<void> _confirmSignOut(BuildContext context) async {
     final bloc = context.read<AuthBloc>();
@@ -93,11 +101,29 @@ class AccountMenuPage extends StatelessWidget {
                 // rather than a second sales pitch.
                 ListenableBuilder(
                   listenable: EntitlementService(),
-                  builder: (context, _) => _MenuRow(
-                    icon: Icons.workspace_premium_rounded,
-                    label: EntitlementService().isPremium ? t.premium.activeTitle : t.premium.title,
-                    onTap: () => context.pushNamed(Routing.premium),
-                  ),
+                  builder: (context, _) {
+                    final premium = EntitlementService().isPremium;
+                    return Column(
+                      children: [
+                        _MenuRow(
+                          icon: Icons.workspace_premium_rounded,
+                          label: premium ? t.premium.activeTitle : t.premium.title,
+                          onTap: () => context.pushNamed(Routing.premium),
+                        ),
+                        // Subscribers get the store's own management screen
+                        // (cancel, change plan, refund) — Apple and Google both
+                        // want it reachable from inside the app.
+                        if (premium) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          _MenuRow(
+                            icon: Icons.manage_accounts_rounded,
+                            label: t.premium.manage,
+                            onTap: () => _openCustomerCenter(context),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _MenuRow(
@@ -181,7 +207,7 @@ class _MenuRow extends StatelessWidget {
           Icon(icon, size: 22, color: AppColors.primary),
           const SizedBox(width: AppSpacing.sm),
           Expanded(child: Text(label, style: AppTextStyles.bodyLg)),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
+          Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
         ],
       ),
     );
@@ -199,14 +225,14 @@ class _DevBadge extends StatelessWidget {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.base,
         ),
-        decoration: const ShapeDecoration(
+        decoration: ShapeDecoration(
           color: AppColors.errorContainer,
-          shape: StadiumBorder(),
+          shape: const StadiumBorder(),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.construction_rounded,
+            Icon(Icons.construction_rounded,
                 size: 16, color: AppColors.onErrorContainer),
             const SizedBox(width: AppSpacing.xs),
             Text(

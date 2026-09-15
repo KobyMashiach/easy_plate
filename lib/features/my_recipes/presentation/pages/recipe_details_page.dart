@@ -224,7 +224,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                     bottom: AppSpacing.sm,
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.base),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.surfaceContainerLowest,
                         shape: BoxShape.circle,
                       ),
@@ -292,7 +292,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.hourglass_top_rounded,
+                      Icon(Icons.hourglass_top_rounded,
                           size: 20, color: AppColors.onSecondaryContainer),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
@@ -336,8 +336,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 6),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
                           child: Icon(
                             Icons.circle,
                             size: 6,
@@ -377,7 +377,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                               width: 28,
                               height: 28,
                               alignment: Alignment.center,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: AppColors.primaryFixed,
                                 shape: BoxShape.circle,
                               ),

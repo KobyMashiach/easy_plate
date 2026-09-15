@@ -228,7 +228,7 @@ class _OpenBookShellState extends State<OpenBookShell> implements BookNavigator 
       body: DecoratedBox(
         // Soft lavender environment so the book reads as an object resting
         // on a surface, per the Stitch index screen.
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

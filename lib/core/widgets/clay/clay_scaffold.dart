@@ -54,7 +54,7 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest,
-        border: const Border(
+        border: Border(
           bottom: BorderSide(color: AppColors.surfaceContainerHighest),
         ),
         boxShadow: AppShadows.control,

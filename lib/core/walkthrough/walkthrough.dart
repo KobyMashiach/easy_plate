@@ -249,7 +249,7 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
                 IconButton(
                   tooltip: t.walkthrough.close,
                   visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.close_rounded, size: 20, color: AppColors.tertiary),
+                  icon: Icon(Icons.close_rounded, size: 20, color: AppColors.tertiary),
                   onPressed: () => widget.onDone(false),
                 ),
               ],
@@ -264,7 +264,7 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
               const SizedBox(height: AppSpacing.base),
               Row(
                 children: [
-                  const Icon(Icons.touch_app_rounded, size: 16, color: AppColors.primary),
+                  Icon(Icons.touch_app_rounded, size: 16, color: AppColors.primary),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(

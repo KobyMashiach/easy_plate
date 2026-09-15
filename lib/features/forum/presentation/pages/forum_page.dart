@@ -54,7 +54,7 @@ class ForumPage extends StatelessWidget {
                 heroTag: 'forum-new-post',
                 backgroundColor: AppColors.primary,
                 onPressed: () => _openComposer(context),
-                child: const Icon(Icons.edit_rounded, color: AppColors.onPrimary),
+                child: Icon(Icons.edit_rounded, color: AppColors.onPrimary),
               ),
             ),
           ],
@@ -207,7 +207,7 @@ class _PostCard extends StatelessWidget {
             trailing: isMine
                 ? IconButton(
                     tooltip: t.community.deletePost,
-                    icon: const Icon(Icons.delete_outline_rounded,
+                    icon: Icon(Icons.delete_outline_rounded,
                         size: 20, color: AppColors.error),
                     onPressed: () => _confirmDelete(context),
                   )
@@ -231,7 +231,7 @@ class _PostCard extends StatelessWidget {
                 onPressed: () => bloc.add(ForumEvent.toggleLike(post.id)),
               ),
               const SizedBox(width: AppSpacing.md),
-              const Icon(Icons.mode_comment_outlined, size: 16, color: AppColors.tertiary),
+              Icon(Icons.mode_comment_outlined, size: 16, color: AppColors.tertiary),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 _replyLabel,

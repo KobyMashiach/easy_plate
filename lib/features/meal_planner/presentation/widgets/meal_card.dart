@@ -99,8 +99,8 @@ class MealCard extends StatelessWidget {
                       GestureDetector(
                         onTap: () => bloc.add(.removeItem(meal.id, item.id)),
                         behavior: HitTestBehavior.opaque,
-                        child: const Padding(
-                          padding: EdgeInsets.all(AppSpacing.xs),
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xs),
                           child: Icon(
                             Icons.close_rounded,
                             size: 16,
