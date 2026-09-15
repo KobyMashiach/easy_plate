@@ -24,6 +24,10 @@ sealed class RecipeBookModel with _$RecipeBookModel {
     @HiveField(6) String? coverImageStoragePath,
     // The spine colour by name, appended: older books decode as null.
     @HiveField(7) String? spine,
+    // Cross-account sharing, appended: the shared document and this
+    // account's role in it. Null for a book that was never shared.
+    @HiveField(8) String? collabId,
+    @HiveField(9) String? collabRole,
   }) = _RecipeBookModel;
 
   factory RecipeBookModel.fromJson(Map<String, dynamic> json) => _$RecipeBookModelFromJson(json);
@@ -38,6 +42,8 @@ extension RecipeBookModelMapper on RecipeBookModel {
         coverImageFileName: coverImageFileName,
         coverImageStoragePath: coverImageStoragePath,
         spine: BookSpine.fromName(spine),
+        collabId: collabId,
+        collabRole: CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
         createdAt: createdAt,
       );
 }
@@ -51,6 +57,8 @@ extension RecipeBookEntityMapper on RecipeBookEntity {
         coverImageFileName: coverImageFileName,
         coverImageStoragePath: coverImageStoragePath,
         spine: spine?.name,
+        collabId: collabId,
+        collabRole: collabRole?.name,
         createdAt: createdAt,
       );
 }

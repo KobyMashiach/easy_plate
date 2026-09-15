@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/sync/recipe_image_store.dart';
+import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../domain/entities/book_spine.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../../domain/usecases/delete_book_usecase.dart';
@@ -39,12 +40,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   final GetBooksUseCase getBooksUseCase;
   final SaveBookUseCase saveBookUseCase;
   final DeleteBookUseCase deleteBookUseCase;
+
+  /// Carries a change to a shared book across accounts. Null in tests.
+  final ContainerSharingService? sharing;
   static const _uuid = Uuid();
 
   LibraryBloc({
     required this.getBooksUseCase,
     required this.saveBookUseCase,
     required this.deleteBookUseCase,
+    this.sharing,
   }) : super(const LibraryState.loading()) {
     on<_Init>(_init);
     on<_CreateBook>(_createBook);
@@ -60,7 +65,17 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       getBooksUseCase: GetBooksUseCase(context.read()),
       saveBookUseCase: SaveBookUseCase(context.read()),
       deleteBookUseCase: DeleteBookUseCase(context.read()),
+      sharing: context.read(),
     );
+  }
+
+  /// Saves, then — for a shared book — publishes. A read-only copy is left
+  /// alone: the screen hides the actions, and this is the backstop.
+  Future<void> _saveAndPublish(RecipeBookEntity book) async {
+    if (!book.canEdit) return;
+    await saveBookUseCase(book);
+    final uid = UserScope().uid;
+    if (book.isShared && uid != null) await sharing?.books.publish(book, uid: uid);
   }
 
   Future<void> _emitBooks(Emitter<LibraryState> emit, [Future<void> Function()? action]) async {
@@ -89,8 +104,15 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     });
   }
 
+  /// The owner takes the shared document down with it; a member only leaves.
   Future<void> _deleteBook(_DeleteBook event, Emitter<LibraryState> emit) {
-    return _emitBooks(emit, () => deleteBookUseCase(event.id));
+    return _emitBooks(emit, () async {
+      final current = state;
+      final book = current is LibraryLoaded ? current.books.where((b) => b.id == event.id).firstOrNull : null;
+      final uid = UserScope().uid;
+      if (book != null && book.isShared && uid != null) await sharing?.books.retire(book, uid: uid);
+      await deleteBookUseCase(event.id);
+    });
   }
 
   Future<void> _renameBook(_RenameBook event, Emitter<LibraryState> emit) {
@@ -99,7 +121,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       if (current is! LibraryLoaded) return;
       final book = current.books.where((b) => b.id == event.id).firstOrNull;
       if (book == null) return;
-      await saveBookUseCase(book.copyWith(title: event.title));
+      await _saveAndPublish(book.copyWith(title: event.title));
     });
   }
 
@@ -109,7 +131,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       if (current is! LibraryLoaded) return;
       final book = current.books.where((b) => b.id == event.id).firstOrNull;
       if (book == null) return;
-      await saveBookUseCase(book.copyWith(spine: event.spine));
+      await _saveAndPublish(book.copyWith(spine: event.spine));
     });
   }
 
@@ -120,21 +142,29 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       final current = state;
       if (current is! LibraryLoaded) return;
       final book = current.books.where((b) => b.id == event.id).firstOrNull;
-      if (book == null) return;
+      if (book == null || !book.canEdit) return;
 
       final previous = book.coverImageFileName;
       if (previous != null && previous != event.fileName) {
         await ImageStorageService().delete(previous);
-        unawaited(
-          RecipeImageStore().remove(book.coverImageStoragePath, uid: UserScope().uid),
-        );
+        // A shared book's members still point at the uploaded cover; it stays.
+        if (!book.isShared) {
+          unawaited(
+            RecipeImageStore().remove(book.coverImageStoragePath, uid: UserScope().uid),
+          );
+        }
       }
-      await saveBookUseCase(
-        book.copyWith(
-          coverImageFileName: event.fileName,
-          removeCoverImage: event.fileName == null,
-        ),
+      final updated = book.copyWith(
+        coverImageFileName: event.fileName,
+        removeCoverImage: event.fileName == null,
       );
+      await saveBookUseCase(updated);
+      final uid = UserScope().uid;
+      if (book.isShared && uid != null) {
+        // The cover has to travel before the document says where it is.
+        final stored = await getBooksUseCase().then((all) => all.where((b) => b.id == book.id).firstOrNull);
+        await sharing?.books.publish(stored ?? updated, uid: uid);
+      }
     });
   }
 }

@@ -21,6 +21,9 @@ class UserPreferencesEntity {
   /// is something to opt into.
   final bool communityPricesEnabled;
 
+  /// Which shopping-day reminders to send. See [ShoppingReminderSlot].
+  final List<ShoppingReminderSlot> shoppingReminderSlots;
+
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
@@ -30,6 +33,7 @@ class UserPreferencesEntity {
     this.onboardingComplete = false,
     this.walkthroughSeen = false,
     this.communityPricesEnabled = false,
+    this.shoppingReminderSlots = ShoppingReminderSlot.defaults,
   });
 
   UserPreferencesEntity copyWith({
@@ -41,6 +45,7 @@ class UserPreferencesEntity {
     bool? onboardingComplete,
     bool? walkthroughSeen,
     bool? communityPricesEnabled,
+    List<ShoppingReminderSlot>? shoppingReminderSlots,
   }) {
     return UserPreferencesEntity(
       shoppingDay: shoppingDay ?? this.shoppingDay,
@@ -51,6 +56,7 @@ class UserPreferencesEntity {
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       walkthroughSeen: walkthroughSeen ?? this.walkthroughSeen,
       communityPricesEnabled: communityPricesEnabled ?? this.communityPricesEnabled,
+      shoppingReminderSlots: shoppingReminderSlots ?? this.shoppingReminderSlots,
     );
   }
 }

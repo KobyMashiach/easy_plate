@@ -577,6 +577,24 @@ class Translations$settings$he {
 
 	/// he: 'כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו'
 	String get communityPricesHint => 'כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו';
+
+	/// he: 'תזכורות ליום הקניות'
+	String get shoppingReminders => 'תזכורות ליום הקניות';
+
+	/// he: 'ההתראות נשלחות מהמכשיר, לפי יום הקניות שנבחר'
+	String get shoppingRemindersHint => 'ההתראות נשלחות מהמכשיר, לפי יום הקניות שנבחר';
+
+	/// he: 'יומיים לפני (ערב)'
+	String get reminderTwoDaysBefore => 'יומיים לפני (ערב)';
+
+	/// he: 'יום לפני (ערב)'
+	String get reminderDayBefore => 'יום לפני (ערב)';
+
+	/// he: 'ביום הקניות (בוקר)'
+	String get reminderSameDayMorning => 'ביום הקניות (בוקר)';
+
+	/// he: 'ביום הקניות (אחה״צ)'
+	String get reminderSameDayAfternoon => 'ביום הקניות (אחה״צ)';
 }
 
 // Path: more
@@ -1148,8 +1166,8 @@ class Translations$sharing$he {
 	/// he: 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.'
 	String get notFound => 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.';
 
-	/// he: 'אי אפשר לשתף מתכון עם עצמכם'
-	String get self => 'אי אפשר לשתף מתכון עם עצמכם';
+	/// he: 'אי אפשר לשתף עם עצמכם'
+	String get self => 'אי אפשר לשתף עם עצמכם';
 
 	/// he: 'השיתוף נכשל, נסו שוב'
 	String get failed => 'השיתוף נכשל, נסו שוב';
@@ -1160,17 +1178,17 @@ class Translations$sharing$he {
 	/// he: 'אין הזמנות ממתינות'
 	String get noPendingInvites => 'אין הזמנות ממתינות';
 
-	/// he: 'מתכונים ששיתפתי'
-	String get sharedByMe => 'מתכונים ששיתפתי';
+	/// he: 'מה ששיתפתי'
+	String get sharedByMe => 'מה ששיתפתי';
 
-	/// he: 'מתכונים ששותפו איתי'
-	String get sharedWithMe => 'מתכונים ששותפו איתי';
+	/// he: 'מה ששותף איתי'
+	String get sharedWithMe => 'מה ששותף איתי';
 
-	/// he: 'עדיין לא שיתפתם מתכונים'
-	String get nothingSharedByMe => 'עדיין לא שיתפתם מתכונים';
+	/// he: 'עדיין לא שיתפתם כלום'
+	String get nothingSharedByMe => 'עדיין לא שיתפתם כלום';
 
-	/// he: 'עדיין לא שותפו איתכם מתכונים'
-	String get nothingSharedWithMe => 'עדיין לא שותפו איתכם מתכונים';
+	/// he: 'עדיין לא שותף איתכם כלום'
+	String get nothingSharedWithMe => 'עדיין לא שותף איתכם כלום';
 
 	/// he: 'אישור'
 	String get accept => 'אישור';
@@ -1231,6 +1249,36 @@ class Translations$sharing$he {
 
 	/// he: 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.'
 	String get directoryUnavailable => 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.';
+
+	/// he: 'שיתוף ספר'
+	String get shareBook => 'שיתוף ספר';
+
+	/// he: 'שיתוף תפריט'
+	String get sharePlan => 'שיתוף תפריט';
+
+	/// he: 'הספר נוסף לספרייה שלכם'
+	String get acceptedBook => 'הספר נוסף לספרייה שלכם';
+
+	/// he: 'התפריט נוסף לתפריטים שלכם'
+	String get acceptedPlan => 'התפריט נוסף לתפריטים שלכם';
+
+	/// he: 'הספר שותף איתכם לצפייה בלבד'
+	String get viewerCannotEditBook => 'הספר שותף איתכם לצפייה בלבד';
+
+	/// he: 'התפריט שותף איתכם לצפייה בלבד'
+	String get viewerCannotEditPlan => 'התפריט שותף איתכם לצפייה בלבד';
+
+	/// he: 'מתכון'
+	String get kindRecipe => 'מתכון';
+
+	/// he: 'ספר'
+	String get kindBook => 'ספר';
+
+	/// he: 'תפריט'
+	String get kindPlan => 'תפריט';
+
+	/// he: 'המתכונים שבפנים ישותפו יחד איתו'
+	String get recipesTravel => 'המתכונים שבפנים ישותפו יחד איתו';
 }
 
 // Path: notifications
@@ -1294,6 +1342,12 @@ class Translations$notifications$he {
 
 	/// he: 'פתיחת ההתראות'
 	String get openInbox => 'פתיחת ההתראות';
+
+	/// he: '$name שיתף/ה איתך את הספר "$recipe"'
+	String sharedBook({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את הספר "${recipe}"';
+
+	/// he: '$name שיתף/ה איתך את התפריט "$recipe"'
+	String sharedPlan({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את התפריט "${recipe}"';
 }
 
 // Path: editor
@@ -2817,6 +2871,12 @@ extension on Translations {
 			'settings.noSharedAccess' => 'עדיין לא שיתפתם ספרים או רשימות',
 			'settings.communityPrices' => 'מחירים לפי ממוצע המשתמשים',
 			'settings.communityPricesHint' => 'כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו',
+			'settings.shoppingReminders' => 'תזכורות ליום הקניות',
+			'settings.shoppingRemindersHint' => 'ההתראות נשלחות מהמכשיר, לפי יום הקניות שנבחר',
+			'settings.reminderTwoDaysBefore' => 'יומיים לפני (ערב)',
+			'settings.reminderDayBefore' => 'יום לפני (ערב)',
+			'settings.reminderSameDayMorning' => 'ביום הקניות (בוקר)',
+			'settings.reminderSameDayAfternoon' => 'ביום הקניות (אחה״צ)',
 			'more.title' => 'עוד',
 			'more.settings' => 'הגדרות',
 			'more.profile' => 'פרופיל אישי',
@@ -2986,14 +3046,14 @@ extension on Translations {
 			'sharing.sent' => 'ההזמנה נשלחה',
 			'sharing.invalidContact' => 'יש להזין אימייל או מספר טלפון תקינים',
 			'sharing.notFound' => 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.',
-			'sharing.self' => 'אי אפשר לשתף מתכון עם עצמכם',
+			'sharing.self' => 'אי אפשר לשתף עם עצמכם',
 			'sharing.failed' => 'השיתוף נכשל, נסו שוב',
 			'sharing.pendingInvites' => 'הזמנות ממתינות',
 			'sharing.noPendingInvites' => 'אין הזמנות ממתינות',
-			'sharing.sharedByMe' => 'מתכונים ששיתפתי',
-			'sharing.sharedWithMe' => 'מתכונים ששותפו איתי',
-			'sharing.nothingSharedByMe' => 'עדיין לא שיתפתם מתכונים',
-			'sharing.nothingSharedWithMe' => 'עדיין לא שותפו איתכם מתכונים',
+			'sharing.sharedByMe' => 'מה ששיתפתי',
+			'sharing.sharedWithMe' => 'מה ששותף איתי',
+			'sharing.nothingSharedByMe' => 'עדיין לא שיתפתם כלום',
+			'sharing.nothingSharedWithMe' => 'עדיין לא שותף איתכם כלום',
 			'sharing.accept' => 'אישור',
 			'sharing.decline' => 'ביטול',
 			'sharing.accepted' => 'המתכון נוסף למתכונים שלכם',
@@ -3014,6 +3074,16 @@ extension on Translations {
 			'sharing.viewerCannotEdit' => 'המתכון שותף איתכם לצפייה בלבד',
 			'sharing.shareAction' => 'שיתוף',
 			'sharing.directoryUnavailable' => 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.',
+			'sharing.shareBook' => 'שיתוף ספר',
+			'sharing.sharePlan' => 'שיתוף תפריט',
+			'sharing.acceptedBook' => 'הספר נוסף לספרייה שלכם',
+			'sharing.acceptedPlan' => 'התפריט נוסף לתפריטים שלכם',
+			'sharing.viewerCannotEditBook' => 'הספר שותף איתכם לצפייה בלבד',
+			'sharing.viewerCannotEditPlan' => 'התפריט שותף איתכם לצפייה בלבד',
+			'sharing.kindRecipe' => 'מתכון',
+			'sharing.kindBook' => 'ספר',
+			'sharing.kindPlan' => 'תפריט',
+			'sharing.recipesTravel' => 'המתכונים שבפנים ישותפו יחד איתו',
 			'notifications.title' => 'התראות',
 			'notifications.empty' => 'אין התראות',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את "${recipe}"',
@@ -3032,6 +3102,8 @@ extension on Translations {
 			'notifications.deleteAll' => 'מחיקת כל ההתראות',
 			'notifications.deleteAllBody' => 'כל ההתראות יימחקו.',
 			'notifications.openInbox' => 'פתיחת ההתראות',
+			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את הספר "${recipe}"',
+			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את התפריט "${recipe}"',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -3166,6 +3238,8 @@ extension on Translations {
 			'receipt.pdf' => 'קובץ PDF',
 			'receipt.addPhoto' => 'תמונה נוספת',
 			'receipt.scan' => 'סרוק',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.scanning' => 'קורא את הקבלה…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} תמונות',
 			'receipt.scanFailed' => 'לא הצלחנו לקרוא את הקבלה. נסו תמונה חדה יותר או PDF.',
@@ -3184,8 +3258,6 @@ extension on Translations {
 			'receipt.price' => 'מחיר ליחידה',
 			'receipt.quantity' => 'כמות',
 			'receipt.removeLine' => 'הסרת שורה',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.shareToggle' => 'שיתוף המחירים עם הקהילה',
 			'receipt.shareHint' => 'רק שמות מוצרים ומחירים. בלי החנות, התאריך או מי קנה.',
 			'receipt.save' => 'שמירת המחירים',

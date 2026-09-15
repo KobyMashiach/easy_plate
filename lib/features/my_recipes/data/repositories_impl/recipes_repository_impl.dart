@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 import '../../../../core/hive/user_scope.dart';
@@ -21,7 +22,11 @@ class RecipesRepositoryImpl implements RecipesRepository {
   /// without this it stayed on the one device that took it.
   final RecipeImageStore? images;
 
-  RecipesRepositoryImpl({required this.localDataSource, this.cloud, this.images});
+  RecipesRepositoryImpl({
+    required this.localDataSource,
+    this.cloud,
+    this.images,
+  });
 
   @override
   Future<List<RecipeEntity>> getRecipes() async {
@@ -30,8 +35,9 @@ class RecipesRepositoryImpl implements RecipesRepository {
   }
 
   @override
-  Stream<List<RecipeEntity>> watchRecipes() =>
-      localDataSource.watchRecipes().map((models) => models.map((m) => m.toEntity()).toList());
+  Stream<List<RecipeEntity>> watchRecipes() => localDataSource
+      .watchRecipes()
+      .map((models) => models.map((m) => m.toEntity()).toList());
 
   @override
   Future<RecipeEntity?> getRecipeById(String id) async {
@@ -67,10 +73,21 @@ class RecipesRepositoryImpl implements RecipesRepository {
     final store = images;
     final fileName = model.imageFileName;
     final uid = UserScope().uid;
-    if (store == null || fileName == null || uid == null) return null;
+    if (store == null || fileName == null || uid == null) {
+      debugPrint(
+        'Photo upload skipped for ${model.id}: '
+        '${store == null
+            ? 'no store'
+            : fileName == null
+            ? 'no photo'
+            : 'no uid'}',
+      );
+      return null;
+    }
     if (model.imageStoragePath != null) return null;
 
     final path = await store.upload(fileName, uid: uid);
+    debugPrint('Photo upload for ${model.id}: ${path ?? 'FAILED'}');
     return path == null ? null : model.copyWith(imageStoragePath: path);
   }
 
@@ -83,7 +100,10 @@ class RecipesRepositoryImpl implements RecipesRepository {
   /// would be permanently pictureless — the upload finishing afterwards does
   /// not go back and fix what was already sent.
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async {
+  Future<RecipeEntity> readyForSharing(
+    RecipeEntity recipe, {
+    bool persist = true,
+  }) async {
     final model = recipe.toModel();
     final uploaded = await _uploadImage(model);
     if (uploaded == null) return recipe;
@@ -104,7 +124,8 @@ class RecipesRepositoryImpl implements RecipesRepository {
     await localDataSource.deleteRecipe(id);
     unawaited(cloud?.remove(id) ?? Future.value());
     unawaited(
-      images?.remove(doomed?.imageStoragePath, uid: UserScope().uid) ?? Future.value(),
+      images?.remove(doomed?.imageStoragePath, uid: UserScope().uid) ??
+          Future.value(),
     );
   }
 }

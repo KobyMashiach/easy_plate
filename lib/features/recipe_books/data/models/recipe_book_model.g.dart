@@ -27,13 +27,15 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
       coverImageFileName: fields[5] as String?,
       coverImageStoragePath: fields[6] as String?,
       spine: fields[7] as String?,
+      collabId: fields[8] as String?,
+      collabRole: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeBookModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -49,7 +51,11 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
       ..writeByte(6)
       ..write(obj.coverImageStoragePath)
       ..writeByte(7)
-      ..write(obj.spine);
+      ..write(obj.spine)
+      ..writeByte(8)
+      ..write(obj.collabId)
+      ..writeByte(9)
+      ..write(obj.collabRole);
   }
 
   @override
@@ -83,6 +89,8 @@ _RecipeBookModel _$RecipeBookModelFromJson(Map<String, dynamic> json) =>
       coverImageFileName: json['coverImageFileName'] as String?,
       coverImageStoragePath: json['coverImageStoragePath'] as String?,
       spine: json['spine'] as String?,
+      collabId: json['collabId'] as String?,
+      collabRole: json['collabRole'] as String?,
     );
 
 Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
@@ -95,4 +103,6 @@ Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
       'coverImageFileName': instance.coverImageFileName,
       'coverImageStoragePath': instance.coverImageStoragePath,
       'spine': instance.spine,
+      'collabId': instance.collabId,
+      'collabRole': instance.collabRole,
     };

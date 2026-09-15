@@ -12,6 +12,7 @@ import '../../features/notifications/domain/repositories/notifications_repositor
 import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
 import '../../features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../features/recipe_sharing/domain/usecases/refresh_collab_recipes_usecase.dart';
+import '../../features/collab_containers/domain/container_sharing_service.dart';
 import '../hive/user_scope.dart';
 import '../monetization/daily_usage_service.dart';
 import '../monetization/entitlement_service.dart';
@@ -54,6 +55,7 @@ class AuthSessionService extends ChangeNotifier {
   NotificationsRepository? _notifications;
   RecipeSharingRepository? _sharing;
   RecipesRepository? _recipes;
+  ContainerSharingService? _containers;
   StreamSubscription<AppUserEntity?>? _subscription;
 
   bool _bound = false;
@@ -91,6 +93,7 @@ class AuthSessionService extends ChangeNotifier {
     NotificationsRepository? notifications,
     RecipeSharingRepository? sharing,
     RecipesRepository? recipes,
+    ContainerSharingService? containers,
     Future<void> Function(UserPreferencesEntity preferences)?
     onPreferencesLoaded,
   }) {
@@ -103,6 +106,7 @@ class AuthSessionService extends ChangeNotifier {
     _notifications = notifications;
     _sharing = sharing;
     _recipes = recipes;
+    _containers = containers;
     this.onPreferencesLoaded = onPreferencesLoaded;
     _subscription = auth.authStateChanges().listen(_onAuthChanged);
   }
@@ -256,6 +260,9 @@ class AuthSessionService extends ChangeNotifier {
       await RefreshCollabRecipesUseCase(sharing: _sharing!, recipes: _recipes!)(
         uid: uid,
       );
+      // Books and plans after the recipes they point at, so a plan's items
+      // resolve against copies that are already current.
+      await _containers?.refreshAll(uid: uid);
     } catch (e) {
       // Offline, or the rules refused a query. The caches stay as they are and
       // the next resume tries again.
@@ -289,6 +296,7 @@ class AuthSessionService extends ChangeNotifier {
     _notifications = null;
     _sharing = null;
     _recipes = null;
+    _containers = null;
   }
 
   /// The first stage out of [AuthStage.unknown] waits out [minimumSplash];

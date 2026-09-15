@@ -93,6 +93,7 @@ Future<void> main() async {
               // active, and on which uid.
               sharing: context.read(),
               recipes: context.read(),
+              containers: context.read(),
               onPreferencesLoaded: _applyPreferences,
             );
             return const EasyPlateApp();
@@ -113,6 +114,7 @@ Future<void> _applyPreferences(UserPreferencesEntity preferences) async {
   if (preferences.onboardingComplete) {
     await ShoppingReminderService().scheduleForShoppingDay(
       preferences.shoppingDay,
+      slots: preferences.shoppingReminderSlots,
     );
   }
 }
@@ -134,8 +136,8 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     WidgetsBinding.instance.addObserver(this);
     // A tapped push lands on the inbox — whether the app was already running
     // or was launched by the tap.
-    FirebaseService().onNotificationOpened = () =>
-        _router.pushNamed(Routing.notifications);
+    FirebaseService().onNotificationOpened = _openInbox;
+    AuthSessionService().addListener(_onSessionChanged);
     FirebaseService().deliverPendingNotificationTap();
     // A push while the app is open becomes the app's own popup, with a way
     // into the inbox — the system tray stays quiet.
@@ -145,8 +147,32 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   @override
   void dispose() {
     ForegroundPushService().latest.removeListener(_onForegroundPush);
+    AuthSessionService().removeListener(_onSessionChanged);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  /// A tap on a push arriving before the session is ready — the app was
+  /// closed — is held until it is, then lands on the inbox on top of the
+  /// home screen the gate has just shown.
+  bool _inboxPending = false;
+
+  void _openInbox() {
+    if (AuthSessionService().stage == AuthStage.ready) {
+      _router.pushNamed(Routing.notifications);
+    } else {
+      _inboxPending = true;
+    }
+  }
+
+  void _onSessionChanged() {
+    if (!_inboxPending || AuthSessionService().stage != AuthStage.ready) return;
+    _inboxPending = false;
+    // A beat later than the gate's own redirect to /home, so the inbox is
+    // pushed over it rather than replaced by it.
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _router.pushNamed(Routing.notifications);
+    });
   }
 
   Future<void> _onForegroundPush() async {

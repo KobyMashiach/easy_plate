@@ -285,6 +285,12 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get noSharedAccess => 'Вы ещё не делились книгами или списками';
 	@override String get communityPrices => 'Средние цены сообщества';
 	@override String get communityPricesHint => 'Если у вас нет своей цены на товар, показывать медианную цену, которой поделились другие';
+	@override String get shoppingReminders => 'Напоминания о дне покупок';
+	@override String get shoppingRemindersHint => 'Отправляются устройством по выбранному дню покупок';
+	@override String get reminderTwoDaysBefore => 'За два дня (вечером)';
+	@override String get reminderDayBefore => 'За день (вечером)';
+	@override String get reminderSameDayMorning => 'В день покупок (утром)';
+	@override String get reminderSameDayAfternoon => 'В день покупок (днём)';
 }
 
 // Path: more
@@ -517,14 +523,14 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get sent => 'Приглашение отправлено';
 	@override String get invalidContact => 'Введите корректную почту или телефон';
 	@override String get notFound => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.';
-	@override String get self => 'Нельзя поделиться рецептом с самим собой';
+	@override String get self => 'Нельзя поделиться с самим собой';
 	@override String get failed => 'Не удалось поделиться, попробуйте снова';
 	@override String get pendingInvites => 'Ожидающие приглашения';
 	@override String get noPendingInvites => 'Нет ожидающих приглашений';
-	@override String get sharedByMe => 'Рецепты, которыми я поделился';
-	@override String get sharedWithMe => 'Рецепты, которыми поделились со мной';
-	@override String get nothingSharedByMe => 'Вы ещё ничем не делились';
-	@override String get nothingSharedWithMe => 'С вами ещё не делились рецептами';
+	@override String get sharedByMe => 'Чем я поделился';
+	@override String get sharedWithMe => 'Чем поделились со мной';
+	@override String get nothingSharedByMe => 'Вы ещё ничем не поделились';
+	@override String get nothingSharedWithMe => 'С вами ещё ничем не поделились';
 	@override String get accept => 'Принять';
 	@override String get decline => 'Отклонить';
 	@override String get accepted => 'Рецепт добавлен к вашим';
@@ -545,6 +551,16 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get viewerCannotEdit => 'Рецепт доступен вам только для просмотра';
 	@override String get shareAction => 'Поделиться';
 	@override String get directoryUnavailable => 'Общий доступ ещё не настроен на сервере. Выйдите и войдите снова; если не помогает — нужно развернуть правила Firestore.';
+	@override String get shareBook => 'Поделиться книгой';
+	@override String get sharePlan => 'Поделиться меню';
+	@override String get acceptedBook => 'Книга добавлена в вашу библиотеку';
+	@override String get acceptedPlan => 'Меню добавлено в ваши меню';
+	@override String get viewerCannotEditBook => 'Эта книга доступна вам только для просмотра';
+	@override String get viewerCannotEditPlan => 'Это меню доступно вам только для просмотра';
+	@override String get kindRecipe => 'Рецепт';
+	@override String get kindBook => 'Книга';
+	@override String get kindPlan => 'Меню';
+	@override String get recipesTravel => 'Рецепты внутри будут переданы вместе с ним';
 }
 
 // Path: notifications
@@ -572,6 +588,8 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String get deleteAll => 'Удалить все уведомления';
 	@override String get deleteAllBody => 'Все уведомления будут удалены.';
 	@override String get openInbox => 'Открыть уведомления';
+	@override String sharedBook({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами книгой «${recipe}»';
+	@override String sharedPlan({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами меню «${recipe}»';
 }
 
 // Path: editor
@@ -1314,6 +1332,12 @@ extension on TranslationsRu {
 			'settings.noSharedAccess' => 'Вы ещё не делились книгами или списками',
 			'settings.communityPrices' => 'Средние цены сообщества',
 			'settings.communityPricesHint' => 'Если у вас нет своей цены на товар, показывать медианную цену, которой поделились другие',
+			'settings.shoppingReminders' => 'Напоминания о дне покупок',
+			'settings.shoppingRemindersHint' => 'Отправляются устройством по выбранному дню покупок',
+			'settings.reminderTwoDaysBefore' => 'За два дня (вечером)',
+			'settings.reminderDayBefore' => 'За день (вечером)',
+			'settings.reminderSameDayMorning' => 'В день покупок (утром)',
+			'settings.reminderSameDayAfternoon' => 'В день покупок (днём)',
 			'more.title' => 'Ещё',
 			'more.settings' => 'Настройки',
 			'more.profile' => 'Мой профиль',
@@ -1483,14 +1507,14 @@ extension on TranslationsRu {
 			'sharing.sent' => 'Приглашение отправлено',
 			'sharing.invalidContact' => 'Введите корректную почту или телефон',
 			'sharing.notFound' => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.',
-			'sharing.self' => 'Нельзя поделиться рецептом с самим собой',
+			'sharing.self' => 'Нельзя поделиться с самим собой',
 			'sharing.failed' => 'Не удалось поделиться, попробуйте снова',
 			'sharing.pendingInvites' => 'Ожидающие приглашения',
 			'sharing.noPendingInvites' => 'Нет ожидающих приглашений',
-			'sharing.sharedByMe' => 'Рецепты, которыми я поделился',
-			'sharing.sharedWithMe' => 'Рецепты, которыми поделились со мной',
-			'sharing.nothingSharedByMe' => 'Вы ещё ничем не делились',
-			'sharing.nothingSharedWithMe' => 'С вами ещё не делились рецептами',
+			'sharing.sharedByMe' => 'Чем я поделился',
+			'sharing.sharedWithMe' => 'Чем поделились со мной',
+			'sharing.nothingSharedByMe' => 'Вы ещё ничем не поделились',
+			'sharing.nothingSharedWithMe' => 'С вами ещё ничем не поделились',
 			'sharing.accept' => 'Принять',
 			'sharing.decline' => 'Отклонить',
 			'sharing.accepted' => 'Рецепт добавлен к вашим',
@@ -1511,6 +1535,16 @@ extension on TranslationsRu {
 			'sharing.viewerCannotEdit' => 'Рецепт доступен вам только для просмотра',
 			'sharing.shareAction' => 'Поделиться',
 			'sharing.directoryUnavailable' => 'Общий доступ ещё не настроен на сервере. Выйдите и войдите снова; если не помогает — нужно развернуть правила Firestore.',
+			'sharing.shareBook' => 'Поделиться книгой',
+			'sharing.sharePlan' => 'Поделиться меню',
+			'sharing.acceptedBook' => 'Книга добавлена в вашу библиотеку',
+			'sharing.acceptedPlan' => 'Меню добавлено в ваши меню',
+			'sharing.viewerCannotEditBook' => 'Эта книга доступна вам только для просмотра',
+			'sharing.viewerCannotEditPlan' => 'Это меню доступно вам только для просмотра',
+			'sharing.kindRecipe' => 'Рецепт',
+			'sharing.kindBook' => 'Книга',
+			'sharing.kindPlan' => 'Меню',
+			'sharing.recipesTravel' => 'Рецепты внутри будут переданы вместе с ним',
 			'notifications.title' => 'Уведомления',
 			'notifications.empty' => 'Уведомлений нет',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»',
@@ -1529,6 +1563,8 @@ extension on TranslationsRu {
 			'notifications.deleteAll' => 'Удалить все уведомления',
 			'notifications.deleteAllBody' => 'Все уведомления будут удалены.',
 			'notifications.openInbox' => 'Открыть уведомления',
+			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами книгой «${recipe}»',
+			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами меню «${recipe}»',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -1663,6 +1699,8 @@ extension on TranslationsRu {
 			'receipt.pdf' => 'Файл PDF',
 			'receipt.addPhoto' => 'Ещё фото',
 			'receipt.scan' => 'Сканировать',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.scanning' => 'Читаем чек…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} фото',
 			'receipt.scanFailed' => 'Не удалось прочитать чек. Попробуйте более чёткое фото или PDF.',
@@ -1681,8 +1719,6 @@ extension on TranslationsRu {
 			'receipt.price' => 'Цена за единицу',
 			'receipt.quantity' => 'Количество',
 			'receipt.removeLine' => 'Удалить строку',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.shareToggle' => 'Поделиться ценами с сообществом',
 			'receipt.shareHint' => 'Только названия товаров и цены. Без магазина, даты и того, кто платил.',
 			'receipt.save' => 'Сохранить цены',

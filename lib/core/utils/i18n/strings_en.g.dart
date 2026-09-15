@@ -285,6 +285,12 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get noSharedAccess => 'You haven\'t shared any books or lists yet';
 	@override String get communityPrices => 'Community price averages';
 	@override String get communityPricesHint => 'When you have no price of your own for a product, show the median price other people shared';
+	@override String get shoppingReminders => 'Shopping day reminders';
+	@override String get shoppingRemindersHint => 'Sent by the device, around the shopping day you picked';
+	@override String get reminderTwoDaysBefore => 'Two days before (evening)';
+	@override String get reminderDayBefore => 'Day before (evening)';
+	@override String get reminderSameDayMorning => 'Shopping day (morning)';
+	@override String get reminderSameDayAfternoon => 'Shopping day (afternoon)';
 }
 
 // Path: more
@@ -517,14 +523,14 @@ class _Translations$sharing$en extends Translations$sharing$he {
 	@override String get sent => 'Invite sent';
 	@override String get invalidContact => 'Enter a valid email or phone number';
 	@override String get notFound => 'No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.';
-	@override String get self => 'You cannot share a recipe with yourself';
+	@override String get self => 'You can\'t share with yourself';
 	@override String get failed => 'Sharing failed, try again';
 	@override String get pendingInvites => 'Pending invites';
 	@override String get noPendingInvites => 'No pending invites';
-	@override String get sharedByMe => 'Recipes I shared';
-	@override String get sharedWithMe => 'Recipes shared with me';
-	@override String get nothingSharedByMe => 'You have not shared any recipes yet';
-	@override String get nothingSharedWithMe => 'No recipes have been shared with you yet';
+	@override String get sharedByMe => 'Shared by me';
+	@override String get sharedWithMe => 'Shared with me';
+	@override String get nothingSharedByMe => 'You haven\'t shared anything yet';
+	@override String get nothingSharedWithMe => 'Nothing has been shared with you yet';
 	@override String get accept => 'Accept';
 	@override String get decline => 'Decline';
 	@override String get accepted => 'The recipe was added to your recipes';
@@ -545,6 +551,16 @@ class _Translations$sharing$en extends Translations$sharing$he {
 	@override String get viewerCannotEdit => 'This recipe is shared with you view-only';
 	@override String get shareAction => 'Share';
 	@override String get directoryUnavailable => 'Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying.';
+	@override String get shareBook => 'Share book';
+	@override String get sharePlan => 'Share plan';
+	@override String get acceptedBook => 'The book was added to your library';
+	@override String get acceptedPlan => 'The plan was added to your plans';
+	@override String get viewerCannotEditBook => 'This book was shared with you as view only';
+	@override String get viewerCannotEditPlan => 'This plan was shared with you as view only';
+	@override String get kindRecipe => 'Recipe';
+	@override String get kindBook => 'Book';
+	@override String get kindPlan => 'Plan';
+	@override String get recipesTravel => 'The recipes inside are shared along with it';
 }
 
 // Path: notifications
@@ -572,6 +588,8 @@ class _Translations$notifications$en extends Translations$notifications$he {
 	@override String get deleteAll => 'Delete all notifications';
 	@override String get deleteAllBody => 'Every notification will be deleted.';
 	@override String get openInbox => 'Open notifications';
+	@override String sharedBook({required Object name, required Object recipe}) => '${name} shared the book "${recipe}" with you';
+	@override String sharedPlan({required Object name, required Object recipe}) => '${name} shared the plan "${recipe}" with you';
 }
 
 // Path: editor
@@ -1314,6 +1332,12 @@ extension on TranslationsEn {
 			'settings.noSharedAccess' => 'You haven\'t shared any books or lists yet',
 			'settings.communityPrices' => 'Community price averages',
 			'settings.communityPricesHint' => 'When you have no price of your own for a product, show the median price other people shared',
+			'settings.shoppingReminders' => 'Shopping day reminders',
+			'settings.shoppingRemindersHint' => 'Sent by the device, around the shopping day you picked',
+			'settings.reminderTwoDaysBefore' => 'Two days before (evening)',
+			'settings.reminderDayBefore' => 'Day before (evening)',
+			'settings.reminderSameDayMorning' => 'Shopping day (morning)',
+			'settings.reminderSameDayAfternoon' => 'Shopping day (afternoon)',
 			'more.title' => 'More',
 			'more.settings' => 'Settings',
 			'more.profile' => 'My profile',
@@ -1483,14 +1507,14 @@ extension on TranslationsEn {
 			'sharing.sent' => 'Invite sent',
 			'sharing.invalidContact' => 'Enter a valid email or phone number',
 			'sharing.notFound' => 'No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.',
-			'sharing.self' => 'You cannot share a recipe with yourself',
+			'sharing.self' => 'You can\'t share with yourself',
 			'sharing.failed' => 'Sharing failed, try again',
 			'sharing.pendingInvites' => 'Pending invites',
 			'sharing.noPendingInvites' => 'No pending invites',
-			'sharing.sharedByMe' => 'Recipes I shared',
-			'sharing.sharedWithMe' => 'Recipes shared with me',
-			'sharing.nothingSharedByMe' => 'You have not shared any recipes yet',
-			'sharing.nothingSharedWithMe' => 'No recipes have been shared with you yet',
+			'sharing.sharedByMe' => 'Shared by me',
+			'sharing.sharedWithMe' => 'Shared with me',
+			'sharing.nothingSharedByMe' => 'You haven\'t shared anything yet',
+			'sharing.nothingSharedWithMe' => 'Nothing has been shared with you yet',
 			'sharing.accept' => 'Accept',
 			'sharing.decline' => 'Decline',
 			'sharing.accepted' => 'The recipe was added to your recipes',
@@ -1511,6 +1535,16 @@ extension on TranslationsEn {
 			'sharing.viewerCannotEdit' => 'This recipe is shared with you view-only',
 			'sharing.shareAction' => 'Share',
 			'sharing.directoryUnavailable' => 'Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying.',
+			'sharing.shareBook' => 'Share book',
+			'sharing.sharePlan' => 'Share plan',
+			'sharing.acceptedBook' => 'The book was added to your library',
+			'sharing.acceptedPlan' => 'The plan was added to your plans',
+			'sharing.viewerCannotEditBook' => 'This book was shared with you as view only',
+			'sharing.viewerCannotEditPlan' => 'This plan was shared with you as view only',
+			'sharing.kindRecipe' => 'Recipe',
+			'sharing.kindBook' => 'Book',
+			'sharing.kindPlan' => 'Plan',
+			'sharing.recipesTravel' => 'The recipes inside are shared along with it',
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'No notifications',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} shared "${recipe}" with you',
@@ -1529,6 +1563,8 @@ extension on TranslationsEn {
 			'notifications.deleteAll' => 'Delete all notifications',
 			'notifications.deleteAllBody' => 'Every notification will be deleted.',
 			'notifications.openInbox' => 'Open notifications',
+			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} shared the book "${recipe}" with you',
+			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} shared the plan "${recipe}" with you',
 			'editor.title' => 'Edit recipe',
 			'editor.recipeTitle' => 'Recipe name',
 			'editor.titleHint' => 'For example: Jerusalem shakshuka',
@@ -1663,6 +1699,8 @@ extension on TranslationsEn {
 			'receipt.pdf' => 'PDF file',
 			'receipt.addPhoto' => 'Another photo',
 			'receipt.scan' => 'Scan',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.scanning' => 'Reading the receipt…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} photos',
 			'receipt.scanFailed' => 'We could not read the receipt. Try a sharper photo or a PDF.',
@@ -1681,8 +1719,6 @@ extension on TranslationsEn {
 			'receipt.price' => 'Unit price',
 			'receipt.quantity' => 'Quantity',
 			'receipt.removeLine' => 'Remove line',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.shareToggle' => 'Share prices with the community',
 			'receipt.shareHint' => 'Product names and prices only. Not the store, the date or who paid.',
 			'receipt.save' => 'Save prices',

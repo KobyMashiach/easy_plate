@@ -11,7 +11,10 @@ import '../../../../core/services/notifications_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/navigation/main_tabs.dart';
 import '../../../../core/widgets/refreshable_empty_state.dart';
+import '../../../collab_containers/domain/container_sharing_service.dart';
+import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
@@ -80,19 +83,42 @@ class _NotificationsPageState extends State<NotificationsPage> {
       sharing: context.read<RecipeSharingRepository>(),
       recipes: context.read<RecipesRepository>(),
     );
+    final containers = context.read<ContainerSharingService>();
     setState(() => _busy = true);
     try {
       if (accept) {
-        final local = await useCase.accept(invite);
-        await _markRead(item);
-        if (!mounted) return;
-        _toast(t.sharing.accepted);
-        context.pushNamed(
-          Routing.recipeDetails,
-          extra: RecipeDetailsArgs(recipe: local),
-        );
+        switch (invite.kind) {
+          case CollabKind.recipe:
+            final local = await useCase.accept(invite);
+            await _markRead(item);
+            if (!mounted) return;
+            _toast(t.sharing.accepted);
+            context.pushNamed(
+              Routing.recipeDetails,
+              extra: RecipeDetailsArgs(recipe: local),
+            );
+          case CollabKind.book:
+            final book = await containers.accept(invite, uid: _uid) as RecipeBookEntity;
+            await _markRead(item);
+            if (!mounted) return;
+            _toast(t.sharing.acceptedBook);
+            context.pushNamed(Routing.bookDetails, extra: book.id);
+          case CollabKind.mealPlan:
+            await containers.accept(invite, uid: _uid);
+            await _markRead(item);
+            if (!mounted) return;
+            _toast(t.sharing.acceptedPlan);
+            // The planner is a tab, not a route: leave the inbox and land
+            // on it.
+            Navigator.of(context).maybePop();
+            MainTabs.index.value = MainTabs.mealPlan;
+        }
       } else {
-        await useCase.decline(invite);
+        if (invite.kind == CollabKind.recipe) {
+          await useCase.decline(invite);
+        } else {
+          await containers.decline(invite);
+        }
         await _markRead(item);
         if (mounted) _toast(t.sharing.declined);
       }
@@ -260,10 +286,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            t.notifications.sharedRecipe(
-              name: item.fromName ?? '',
-              recipe: item.recipeTitle ?? '',
-            ),
+            switch (item.kind) {
+              CollabKind.book => t.notifications.sharedBook(
+                  name: item.fromName ?? '',
+                  recipe: item.recipeTitle ?? '',
+                ),
+              CollabKind.mealPlan => t.notifications.sharedPlan(
+                  name: item.fromName ?? '',
+                  recipe: item.recipeTitle ?? '',
+                ),
+              CollabKind.recipe => t.notifications.sharedRecipe(
+                  name: item.fromName ?? '',
+                  recipe: item.recipeTitle ?? '',
+                ),
+            },
             style: AppTextStyles.bodyMd,
           ),
           const SizedBox(height: AppSpacing.xs),

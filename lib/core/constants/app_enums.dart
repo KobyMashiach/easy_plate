@@ -131,7 +131,34 @@ extension AllergenNames on List<Allergen> {
 /// manages members; an invite only ever grants viewer or editor.
 enum CollabRole { owner, editor, viewer }
 
+/// What a shared document or an invite is about. A recipe has its own
+/// collection; books and meal plans share one, told apart by this.
+enum CollabKind {
+  recipe,
+  book,
+  mealPlan;
+
+  static CollabKind fromName(String? name) =>
+      CollabKind.values.where((k) => k.name == name).firstOrNull ?? CollabKind.recipe;
+}
+
 enum ShareInviteStatus { pending, accepted, declined }
+
+/// When to remind about the shopping day. Stored by name in the
+/// preferences; the default is the two that are useful without nagging.
+enum ShoppingReminderSlot {
+  twoDaysBefore,
+  dayBefore,
+  sameDayMorning,
+  sameDayAfternoon;
+
+  static const defaults = [ShoppingReminderSlot.dayBefore, ShoppingReminderSlot.sameDayMorning];
+
+  static List<ShoppingReminderSlot> fromNames(Iterable<String> names) => [
+        for (final slot in ShoppingReminderSlot.values)
+          if (names.contains(slot.name)) slot,
+      ];
+}
 
 /// Notification kinds. Written by the app (an invite) or by a Cloud
 /// Function (a community post the user saved was edited by its author).

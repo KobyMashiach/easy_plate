@@ -7,6 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/sync/recipe_image_store.dart';
+import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../domain/entities/book_recipe_ref_entity.dart';
@@ -39,10 +40,15 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
   final SaveBookUseCase saveBookUseCase;
   final RecipesRepository recipesRepository;
 
+  /// Refreshes a shared book on open and carries edits to it across
+  /// accounts. Null in tests.
+  final ContainerSharingService? sharing;
+
   BookViewerBloc({
     required this.getBookByIdUseCase,
     required this.saveBookUseCase,
     required this.recipesRepository,
+    this.sharing,
   }) : super(const BookViewerState.loading()) {
     on<_Init>(_init);
     on<_AddRecipe>(_addRecipe);
@@ -56,7 +62,14 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
       getBookByIdUseCase: GetBookByIdUseCase(context.read<RecipeBooksRepository>()),
       saveBookUseCase: SaveBookUseCase(context.read<RecipeBooksRepository>()),
       recipesRepository: context.read(),
+      sharing: context.read(),
     );
+  }
+
+  Future<void> _saveAndPublish(RecipeBookEntity book) async {
+    await saveBookUseCase(book);
+    final uid = UserScope().uid;
+    if (book.isShared && uid != null) await sharing?.books.publish(book, uid: uid);
   }
 
   Future<void> _loadAndEmit(RecipeBookEntity book, Emitter<BookViewerState> emit) async {
@@ -69,10 +82,21 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
   }
 
   Future<void> _init(_Init event, Emitter<BookViewerState> emit) async {
-    final book = await getBookByIdUseCase(event.bookId);
-    if (book == null) {
+    final stored = await getBookByIdUseCase(event.bookId);
+    if (stored == null) {
       emit(const BookViewerState.notFound());
       return;
+    }
+    var book = stored;
+    // A shared book is refreshed from its document on open, the way a shared
+    // recipe is; offline, the cached copy is shown as it is.
+    final uid = UserScope().uid;
+    if (book.isShared && uid != null && sharing != null) {
+      try {
+        book = await sharing!.books.sync(book, uid: uid);
+      } catch (e) {
+        debugPrint('Shared book refresh failed: $e');
+      }
     }
     await _loadAndEmit(book, emit);
   }
@@ -80,6 +104,7 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
   Future<void> _addRecipe(_AddRecipe event, Emitter<BookViewerState> emit) async {
     final current = state;
     if (current is! BookViewerLoaded) return;
+    if (!current.book.canEdit) return;
     if (current.book.recipeRefs.any((r) => r.recipeId == event.recipeId)) return;
     final nextOrder = current.book.recipeRefs.length;
     final updatedBook = current.book.copyWith(
@@ -88,7 +113,7 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
         BookRecipeRefEntity(recipeId: event.recipeId, order: nextOrder),
       ],
     );
-    await saveBookUseCase(updatedBook);
+    await _saveAndPublish(updatedBook);
     await _loadAndEmit(updatedBook, emit);
   }
 
@@ -99,6 +124,7 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
     final current = state;
     if (current is! BookViewerLoaded) return;
 
+    if (!current.book.canEdit) return;
     final refs = [...current.book.orderedRefs];
     if (event.oldIndex < 0 || event.oldIndex >= refs.length) return;
     final newIndex = event.newIndex.clamp(0, refs.length - 1);
@@ -112,7 +138,7 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
           BookRecipeRefEntity(recipeId: refs[i].recipeId, order: i),
       ],
     );
-    await saveBookUseCase(updatedBook);
+    await _saveAndPublish(updatedBook);
     await _loadAndEmit(updatedBook, emit);
   }
 
@@ -122,28 +148,40 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
     final current = state;
     if (current is! BookViewerLoaded) return;
 
+    if (!current.book.canEdit) return;
+
     final previous = current.book.coverImageFileName;
     // Read before the copyWith clears it, so the replaced upload can go too.
     final previousRemote = current.book.coverImageStoragePath;
-    final updatedBook = current.book.copyWith(
+    var updatedBook = current.book.copyWith(
       coverImageFileName: event.fileName,
       removeCoverImage: event.fileName == null,
     );
     await saveBookUseCase(updatedBook);
     if (previous != null && previous != event.fileName) {
       await ImageStorageService().delete(previous);
-      unawaited(RecipeImageStore().remove(previousRemote, uid: UserScope().uid));
+      // A shared book's members still point at the uploaded cover; it stays.
+      if (!current.book.isShared) {
+        unawaited(RecipeImageStore().remove(previousRemote, uid: UserScope().uid));
+      }
+    }
+    final uid = UserScope().uid;
+    if (updatedBook.isShared && uid != null) {
+      // The cover has to travel before the document says where it is; the
+      // repository uploads it after the save, so re-read for the path.
+      updatedBook = await getBookByIdUseCase(updatedBook.id) ?? updatedBook;
+      await sharing?.books.publish(updatedBook, uid: uid);
     }
     await _loadAndEmit(updatedBook, emit);
   }
 
   Future<void> _removeRecipe(_RemoveRecipe event, Emitter<BookViewerState> emit) async {
     final current = state;
-    if (current is! BookViewerLoaded) return;
+    if (current is! BookViewerLoaded || !current.book.canEdit) return;
     final updatedBook = current.book.copyWith(
       recipeRefs: current.book.recipeRefs.where((r) => r.recipeId != event.recipeId).toList(),
     );
-    await saveBookUseCase(updatedBook);
+    await _saveAndPublish(updatedBook);
     await _loadAndEmit(updatedBook, emit);
   }
 }

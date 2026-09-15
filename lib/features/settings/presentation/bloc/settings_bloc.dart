@@ -19,13 +19,22 @@ part 'settings_bloc.freezed.dart';
 @freezed
 sealed class SettingsEvent with _$SettingsEvent {
   const factory SettingsEvent.init() = _Init;
-  const factory SettingsEvent.updateShoppingDay(ShoppingDay day) = _UpdateShoppingDay;
-  const factory SettingsEvent.toggleDietaryPreference(DietaryPreference preference) =
-      _ToggleDietaryPreference;
-  const factory SettingsEvent.toggleSoundEffects(bool enabled) = _ToggleSoundEffects;
-  const factory SettingsEvent.changeLanguage(AppLanguage language) = _ChangeLanguage;
-  const factory SettingsEvent.toggleFastPageTurn(bool enabled) = _ToggleFastPageTurn;
-  const factory SettingsEvent.toggleCommunityPrices(bool enabled) = _ToggleCommunityPrices;
+  const factory SettingsEvent.updateShoppingDay(ShoppingDay day) =
+      _UpdateShoppingDay;
+  const factory SettingsEvent.toggleDietaryPreference(
+    DietaryPreference preference,
+  ) = _ToggleDietaryPreference;
+  const factory SettingsEvent.toggleSoundEffects(bool enabled) =
+      _ToggleSoundEffects;
+  const factory SettingsEvent.changeLanguage(AppLanguage language) =
+      _ChangeLanguage;
+  const factory SettingsEvent.toggleFastPageTurn(bool enabled) =
+      _ToggleFastPageTurn;
+  const factory SettingsEvent.toggleCommunityPrices(bool enabled) =
+      _ToggleCommunityPrices;
+  const factory SettingsEvent.setShoppingReminders(
+    List<ShoppingReminderSlot> slots,
+  ) = _SetShoppingReminders;
 }
 
 @freezed
@@ -58,6 +67,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<_ChangeLanguage>(_changeLanguage);
     on<_ToggleFastPageTurn>(_toggleFastPageTurn);
     on<_ToggleCommunityPrices>(_toggleCommunityPrices);
+    on<_SetShoppingReminders>(_setShoppingReminders);
     add(const SettingsEvent.init());
   }
 
@@ -75,28 +85,39 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       final preferences = await getUserPreferencesUseCase();
       final books = await recipeBooksRepository.getBooks();
       final lists = await groceryListsRepository.getLists();
-      emit(.loaded(
-        preferences,
-        sharedBooksCount: books.where((b) => b.collaborators.isNotEmpty).length,
-        sharedListsCount: lists.where((l) => l.collaborators.isNotEmpty).length,
-      ));
+      emit(
+        .loaded(
+          preferences,
+          sharedBooksCount: books
+              .where((b) => b.collaborators.isNotEmpty)
+              .length,
+          sharedListsCount: lists
+              .where((l) => l.collaborators.isNotEmpty)
+              .length,
+        ),
+      );
     } catch (e) {
       debugPrint('Settings error: $e');
       emit(.errorMessage(e.toString()));
     }
   }
 
-  Future<void> _updateShoppingDay(_UpdateShoppingDay event, Emitter<SettingsState> emit) async {
+  Future<void> _updateShoppingDay(
+    _UpdateShoppingDay event,
+    Emitter<SettingsState> emit,
+  ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
     final updated = current.preferences.copyWith(shoppingDay: event.day);
     await saveUserPreferencesUseCase(updated);
     await ShoppingReminderService().scheduleForShoppingDay(event.day);
-    emit(.loaded(
-      updated,
-      sharedBooksCount: current.sharedBooksCount,
-      sharedListsCount: current.sharedListsCount,
-    ));
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
   }
 
   Future<void> _toggleDietaryPreference(
@@ -109,63 +130,112 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     preferences.contains(event.preference)
         ? preferences.remove(event.preference)
         : preferences.add(event.preference);
-    final updated = current.preferences.copyWith(dietaryPreferences: preferences);
+    final updated = current.preferences.copyWith(
+      dietaryPreferences: preferences,
+    );
     await saveUserPreferencesUseCase(updated);
-    emit(.loaded(
-      updated,
-      sharedBooksCount: current.sharedBooksCount,
-      sharedListsCount: current.sharedListsCount,
-    ));
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
   }
 
   /// Persists the choice and switches the live locale, so every screen using
   /// `t` re-renders in the new language without a restart.
-  Future<void> _changeLanguage(_ChangeLanguage event, Emitter<SettingsState> emit) async {
+  Future<void> _changeLanguage(
+    _ChangeLanguage event,
+    Emitter<SettingsState> emit,
+  ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
     final updated = current.preferences.copyWith(language: event.language);
     await saveUserPreferencesUseCase(updated);
     await LocaleSettings.setLocale(event.language.locale);
-    emit(.loaded(
-      updated,
-      sharedBooksCount: current.sharedBooksCount,
-      sharedListsCount: current.sharedListsCount,
-    ));
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
   }
 
-  Future<void> _toggleFastPageTurn(_ToggleFastPageTurn event, Emitter<SettingsState> emit) async {
+  Future<void> _toggleFastPageTurn(
+    _ToggleFastPageTurn event,
+    Emitter<SettingsState> emit,
+  ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(fastPageTurnEnabled: event.enabled);
+    final updated = current.preferences.copyWith(
+      fastPageTurnEnabled: event.enabled,
+    );
     await saveUserPreferencesUseCase(updated);
-    emit(.loaded(
-      updated,
-      sharedBooksCount: current.sharedBooksCount,
-      sharedListsCount: current.sharedListsCount,
-    ));
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
   }
 
-  Future<void> _toggleCommunityPrices(_ToggleCommunityPrices event, Emitter<SettingsState> emit) async {
+  Future<void> _setShoppingReminders(
+    _SetShoppingReminders event,
+    Emitter<SettingsState> emit,
+  ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(communityPricesEnabled: event.enabled);
+    final updated = current.preferences.copyWith(
+      shoppingReminderSlots: event.slots,
+    );
     await saveUserPreferencesUseCase(updated);
-    emit(.loaded(
-      updated,
-      sharedBooksCount: current.sharedBooksCount,
-      sharedListsCount: current.sharedListsCount,
-    ));
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
   }
 
-  Future<void> _toggleSoundEffects(_ToggleSoundEffects event, Emitter<SettingsState> emit) async {
+  Future<void> _toggleCommunityPrices(
+    _ToggleCommunityPrices event,
+    Emitter<SettingsState> emit,
+  ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(soundEffectsEnabled: event.enabled);
+    final updated = current.preferences.copyWith(
+      communityPricesEnabled: event.enabled,
+    );
     await saveUserPreferencesUseCase(updated);
-    emit(.loaded(
-      updated,
-      sharedBooksCount: current.sharedBooksCount,
-      sharedListsCount: current.sharedListsCount,
-    ));
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
+  }
+
+  Future<void> _toggleSoundEffects(
+    _ToggleSoundEffects event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    final updated = current.preferences.copyWith(
+      soundEffectsEnabled: event.enabled,
+    );
+    await saveUserPreferencesUseCase(updated);
+    emit(
+      .loaded(
+        updated,
+        sharedBooksCount: current.sharedBooksCount,
+        sharedListsCount: current.sharedListsCount,
+      ),
+    );
   }
 }

@@ -18,7 +18,15 @@ class MealCard extends StatelessWidget {
   final MealEntity meal;
   final Map<String, String> recipeTitles;
 
-  const MealCard({super.key, required this.meal, required this.recipeTitles});
+  /// A plan shared with this account for viewing: no removing, no adding.
+  final bool readOnly;
+
+  const MealCard({
+    super.key,
+    required this.meal,
+    required this.recipeTitles,
+    this.readOnly = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +43,7 @@ class MealCard extends StatelessWidget {
               Expanded(
                 child: ClayTag(label: meal.name, icon: Icons.restaurant_rounded),
               ),
+              if (!readOnly)
               IconButton(
                 icon: const Icon(Icons.delete_outline_rounded, size: 20),
                 color: AppColors.outline,
@@ -59,7 +68,7 @@ class MealCard extends StatelessWidget {
                 child: GestureDetector(
                   // Quick entries stay editable so products can be added after
                   // the fact; recipe-backed items own their ingredients.
-                  onTap: item.recipeId != null
+                  onTap: item.recipeId != null || readOnly
                       ? null
                       : () => _editQuickEntry(context, bloc, item),
                   behavior: HitTestBehavior.opaque,
@@ -96,6 +105,7 @@ class MealCard extends StatelessWidget {
                           ],
                         ),
                       ),
+                      if (!readOnly)
                       GestureDetector(
                         onTap: () => bloc.add(.removeItem(meal.id, item.id)),
                         behavior: HitTestBehavior.opaque,
@@ -112,6 +122,7 @@ class MealCard extends StatelessWidget {
                   ),
                 ),
               ),
+          if (!readOnly) ...[
           const Divider(height: AppSpacing.md),
           Row(
             children: [
@@ -134,6 +145,7 @@ class MealCard extends StatelessWidget {
               ),
             ],
           ),
+          ],
         ],
       ),
     );

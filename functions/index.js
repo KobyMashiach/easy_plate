@@ -22,7 +22,9 @@ exports.priceStats = require("./priceStats").priceStats;
 const bodyFor = (data, fromName) => {
   if (data.type === "shareInvite") {
     const role = data.role === "editor" ? "לעריכה" : "לצפייה";
-    return `${fromName} שיתף/ה איתך את "${data.recipeTitle}" ${role}`;
+    // `recipeTitle` holds whatever was shared: a recipe, a book or a plan.
+    const what = data.kind === "book" ? "את הספר" : data.kind === "mealPlan" ? "את התפריט" : "את";
+    return `${fromName} שיתף/ה איתך ${what} "${data.recipeTitle}" ${role}`;
   }
   if (data.type === "sharedRecipeUpdated") {
     return `${fromName} עדכן/ה את "${data.recipeTitle}" — יש גרסה חדשה למתכון ששמרת`;
@@ -54,6 +56,7 @@ exports.pushOnNotification = onDocumentCreated(
         type: String(data.type || ""),
         inviteId: String(data.inviteId || ""),
         collabId: String(data.collabId || ""),
+        kind: String(data.kind || ""),
       },
       android: { priority: "high" },
       apns: { payload: { aps: { sound: "default" } } },
@@ -72,11 +75,20 @@ exports.pushOnNotification = onDocumentCreated(
 // like counter change all the time and are not an edit.
 const RECIPE_FIELDS = [
   "title", "prepTimeMinutes", "cookTimeMinutes", "ingredients", "steps",
-  "dietaryTags", "allergens", "mayContain", "imageStoragePath", "servings", "nutrition",
+  "dietaryTags", "allergens", "mayContain", "imageFileName", "imageStoragePath",
+  "servings", "nutrition",
 ];
 
+// The fields that differ between two versions of a post — empty when only
+// likes or metadata moved.
+function changedFields(before, after) {
+  return RECIPE_FIELDS.filter(
+    (f) => JSON.stringify(before[f] ?? null) !== JSON.stringify(after[f] ?? null),
+  );
+}
+
 function recipeChanged(before, after) {
-  return RECIPE_FIELDS.some((f) => JSON.stringify(before[f] ?? null) !== JSON.stringify(after[f] ?? null));
+  return changedFields(before, after).length > 0;
 }
 
 // The author edited a community post: everyone who saved a copy gets an
@@ -88,9 +100,13 @@ exports.onSharedRecipeUpdated = onDocumentUpdated(
   async (event) => {
     const before = event.data?.before.data();
     const after = event.data?.after.data();
-    if (!before || !after || !recipeChanged(before, after)) return;
-
     const sharedId = event.params.sharedId;
+    const changed = before && after ? changedFields(before, after) : [];
+    if (changed.length === 0) {
+      logger.info("post touched, nothing to tell", { sharedId });
+      return;
+    }
+
     const db = admin.firestore();
     const copies = await db.collectionGroup("recipes").where("savedFromSharedId", "==", sharedId).get();
     const authorUid = String(after.authorUid || "");
@@ -100,6 +116,7 @@ exports.onSharedRecipeUpdated = onDocumentUpdated(
       const uid = doc.ref.parent.parent?.id;
       if (uid && uid !== authorUid) savers.add(uid);
     }
+    logger.info("post edited", { sharedId, changed, copies: copies.size, savers: savers.size });
     if (savers.size === 0) return;
 
     const batch = db.batch();

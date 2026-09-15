@@ -200,6 +200,47 @@ service cloud.firestore {
             && request.resource.data.members.diff(resource.data.members).removedKeys().hasOnly([request.auth.uid]));
     }
 
+    // A book or meal plan shared between accounts. Same roster, same invite
+    // flow and same rules as a shared recipe; the body points at shared
+    // recipes by their collab ids rather than carrying them.
+    match /collab_containers/{collabId} {
+      function isOwner() {
+        return signedIn() && resource.data.ownerUid == request.auth.uid;
+      }
+      function isMember() {
+        return signedIn() && request.auth.uid in resource.data.memberUids;
+      }
+      function isEditor() {
+        return isMember() && resource.data.members[request.auth.uid] == 'editor';
+      }
+      function changedOnly(keys) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+      }
+      function myInvite() {
+        return get(/databases/$(database)/documents/share_invites/$(collabId + '_' + request.auth.uid)).data;
+      }
+
+      allow read: if isOwner() || isMember();
+      allow create: if signedIn()
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.kind in ['book', 'mealPlan'];
+      allow delete: if isOwner();
+      allow update: if
+        (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid)
+        || (isEditor()
+            && request.resource.data.ownerUid == resource.data.ownerUid
+            && request.resource.data.members == resource.data.members
+            && request.resource.data.memberUids == resource.data.memberUids)
+        || (signedIn()
+            && changedOnly(['members', 'memberUids', 'updatedAt'])
+            && request.resource.data.members.diff(resource.data.members).addedKeys().hasOnly([request.auth.uid])
+            && myInvite().status == 'accepted'
+            && request.resource.data.members[request.auth.uid] == myInvite().role)
+        || (isMember()
+            && changedOnly(['members', 'memberUids', 'updatedAt'])
+            && request.resource.data.members.diff(resource.data.members).removedKeys().hasOnly([request.auth.uid]));
+    }
+
     match /share_invites/{inviteId} {
       allow read: if signedIn()
                   && (resource.data.ownerUid == request.auth.uid

@@ -6,7 +6,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/hive/user_scope.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
@@ -61,6 +63,10 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   final SaveMealPlanUseCase saveMealPlanUseCase;
   final DeleteMealPlanUseCase deleteMealPlanUseCase;
   final RecipesRepository recipesRepository;
+
+  /// Refreshes a shared plan when it is opened and carries edits to it
+  /// across accounts. Null in tests.
+  final ContainerSharingService? sharing;
   static const _uuid = Uuid();
 
   MealPlannerBloc({
@@ -68,6 +74,7 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     required this.saveMealPlanUseCase,
     required this.deleteMealPlanUseCase,
     required this.recipesRepository,
+    this.sharing,
   }) : super(const MealPlannerState.loading()) {
     on<_Init>(_init);
     on<_CreatePlan>(_createPlan);
@@ -88,6 +95,7 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       saveMealPlanUseCase: SaveMealPlanUseCase(context.read()),
       deleteMealPlanUseCase: DeleteMealPlanUseCase(context.read()),
       recipesRepository: context.read(),
+      sharing: context.read(),
     );
   }
 
@@ -96,12 +104,27 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     return {for (final recipe in recipes) recipe.id: recipe};
   }
 
-  Future<void> _reload(Emitter<MealPlannerState> emit, {String? selectedPlanId}) async {
+  /// [syncShared] refreshes the selected plan from its shared document
+  /// first — on open and on switching plans, not on every edit.
+  Future<void> _reload(
+    Emitter<MealPlannerState> emit, {
+    String? selectedPlanId,
+    bool syncShared = false,
+  }) async {
     try {
-      final plans = await getMealPlansUseCase();
+      var plans = await getMealPlansUseCase();
       final selectedId = selectedPlanId ??
           (state is MealPlannerLoaded ? (state as MealPlannerLoaded).selectedPlan?.id : null);
-      final selected = plans.where((p) => p.id == selectedId).firstOrNull ?? plans.firstOrNull;
+      var selected = plans.where((p) => p.id == selectedId).firstOrNull ?? plans.firstOrNull;
+      final uid = UserScope().uid;
+      if (syncShared && selected != null && selected.isShared && uid != null && sharing != null) {
+        try {
+          selected = await sharing!.plans.sync(selected, uid: uid);
+          plans = await getMealPlansUseCase();
+        } catch (e) {
+          debugPrint('Shared plan refresh failed: $e');
+        }
+      }
       final recipes = await _recipes();
       emit(.loaded(
         plans,
@@ -121,12 +144,22 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   ) async {
     final current = state;
     if (current is! MealPlannerLoaded || current.selectedPlan == null) return;
+    // A read-only shared plan: the board hides the actions, this is the backstop.
+    if (!current.selectedPlan!.canEdit) return;
     final updated = transform(current.selectedPlan!);
     await saveMealPlanUseCase(updated);
+    final uid = UserScope().uid;
+    if (updated.isShared && uid != null) {
+      try {
+        await sharing?.plans.publish(updated, uid: uid);
+      } catch (e) {
+        debugPrint('Shared plan publish failed: $e');
+      }
+    }
     await _reload(emit, selectedPlanId: updated.id);
   }
 
-  Future<void> _init(_Init event, Emitter<MealPlannerState> emit) => _reload(emit);
+  Future<void> _init(_Init event, Emitter<MealPlannerState> emit) => _reload(emit, syncShared: true);
 
   /// Meal names for a template, in the order they're eaten.
   List<String> _templateMeals(MealPlanTemplate template) => switch (template) {
@@ -174,9 +207,14 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   }
 
   Future<void> _selectPlan(_SelectPlan event, Emitter<MealPlannerState> emit) =>
-      _reload(emit, selectedPlanId: event.planId);
+      _reload(emit, selectedPlanId: event.planId, syncShared: true);
 
+  /// The owner takes the shared document down with it; a member only leaves.
   Future<void> _deletePlan(_DeletePlan event, Emitter<MealPlannerState> emit) async {
+    final current = state;
+    final plan = current is MealPlannerLoaded ? current.plans.where((p) => p.id == event.planId).firstOrNull : null;
+    final uid = UserScope().uid;
+    if (plan != null && plan.isShared && uid != null) await sharing?.plans.retire(plan, uid: uid);
     await deleteMealPlanUseCase(event.planId);
     await _reload(emit);
   }

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
@@ -53,6 +55,9 @@ class SaveCollabRecipeUseCase {
       await sharing.writeCollab(collabId, ready, byUid: byUid).timeout(remoteWriteTimeout);
     } on TimeoutException {
       // Queued, not refused. Fall through to the local save.
+    } catch (e) {
+      debugPrint('Shared recipe write refused for $collabId: $e');
+      rethrow;
     }
     await recipes.saveRecipe(ready);
     return ready;

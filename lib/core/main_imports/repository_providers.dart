@@ -1,4 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../features/collab_containers/data/datasources/collab_containers_remote_datasource.dart';
+import '../../features/collab_containers/data/repositories_impl/collab_containers_repository_impl.dart';
+import '../../features/collab_containers/domain/container_sharing_service.dart';
+import '../../features/collab_containers/domain/repositories/collab_containers_repository.dart';
 import 'package:provider/single_child_widget.dart';
 
 import '../sync/cloud_sync_service.dart';
@@ -104,6 +109,9 @@ List<SingleChildWidget> buildRepositoryProviders() {
     RepositoryProvider<RecipeSharingRepository>(
       create: (context) => RecipeSharingRepositoryImpl(remoteDataSource: context.read()),
     ),
+    RepositoryProvider<CollabContainersRepository>(
+      create: (_) => CollabContainersRepositoryImpl(remote: CollabContainersFirestoreDataSource()),
+    ),
     RepositoryProvider<NotificationsRepository>(
       create: (context) => NotificationsRepositoryImpl(
         remoteDataSource: context.read(),
@@ -137,6 +145,18 @@ List<SingleChildWidget> buildRepositoryProviders() {
       create: (context) => MealPlansRepositoryImpl(
         localDataSource: context.read(),
         cloud: CloudSyncService().mealPlans,
+      ),
+    ),
+    // Shared books and plans. After the books and plans repositories: it
+    // writes into both when a shared copy arrives.
+    RepositoryProvider<ContainerSharingService>(
+      create: (context) => ContainerSharingService(
+        containers: context.read(),
+        sharing: context.read(),
+        recipes: context.read(),
+        profiles: context.read(),
+        booksRepository: context.read(),
+        plansRepository: context.read(),
       ),
     ),
     RepositoryProvider<GroceryListsRepository>(

@@ -23,6 +23,7 @@ import 'nutrition_dashboard_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../collab_containers/presentation/widgets/container_share_sheets.dart';
 
 class MealPlannerPage extends StatelessWidget {
   const MealPlannerPage({super.key});
@@ -274,114 +275,167 @@ class _PlanBoardState extends State<_PlanBoard> {
     final days = ShoppingDay.values;
     final nutrition = PlanNutrition.of(widget.plan, widget.recipes);
 
-    return ListView(
-      padding: EdgeInsets.only(bottom: ClayNavDock.bottomPadding(context)),
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.marginMobile,
+    // The plan's name floats away as the board scrolls and returns on the
+    // first scroll back up; the actions stay in their corner throughout.
+    return ClayFloatingHeaderView(
+      title: widget.plan.name,
+      subtitle: t.mealPlanner.title,
+      bottomGap: 0,
+      trailingWidth: widget.plan.isMine ? 48 * 2 + AppSpacing.base : 48,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Only the owner hands a plan on; a member cannot share it further.
+          if (widget.plan.isMine) ...[
+            ClayIconButton(
+              icon: Icons.person_add_alt_1_rounded,
+              size: 48,
+              tooltip: t.sharing.sharePlan,
+              onTap: () async {
+                final sent = await showPlanShareSheet(context, widget.plan);
+                if (sent == true && context.mounted) {
+                  AppDialog.success(message: t.sharing.sent).notify(context);
+                  // The share tags the plan with its collab id.
+                  bloc.add(.selectPlan(widget.plan.id));
+                }
+              },
+            ),
+            const SizedBox(width: AppSpacing.base),
+          ],
+          WalkthroughTarget(
+            id: WalkthroughIds.mealPlanAdd,
+            child: ClayIconButton(
+              icon: Icons.playlist_add_rounded,
+              filled: true,
+              size: 48,
+              tooltip: t.mealPlanner.newPlan,
+              onTap: () => _showCreatePlanDialog(context),
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: ClayNavDock.bottomPadding(context)),
+          sliver: SliverList.list(
             children: [
-              const SizedBox(height: AppSpacing.md),
-              ClayPageHeader(
-                title: widget.plan.name,
-                subtitle: t.mealPlanner.title,
-                trailing: WalkthroughTarget(
-                  id: WalkthroughIds.mealPlanAdd,
-                  child: ClayIconButton(
-                    icon: Icons.playlist_add_rounded,
-                    filled: true,
-                    size: 48,
-                    tooltip: t.mealPlanner.newPlan,
-                    onTap: () => _showCreatePlanDialog(context),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.marginMobile,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.plan.isShared) ...[
+                      const SizedBox(height: AppSpacing.base),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: ClayTag(
+                          label: switch (widget.plan.collabRole) {
+                            CollabRole.owner => t.sharing.ownerTag,
+                            CollabRole.editor => t.sharing.editorTag,
+                            _ => t.sharing.viewerTag,
+                          },
+                          icon: Icons.group_rounded,
+                          background: AppColors.secondaryContainer,
+                          foreground: AppColors.onSecondaryContainer,
+                        ),
+                      ),
+                    ],
+                    if (widget.plans.length > 1) ...[
+                      const SizedBox(height: AppSpacing.gutter),
+                      Wrap(
+                        spacing: AppSpacing.base,
+                        runSpacing: AppSpacing.base,
+                        children: widget.plans.map((p) {
+                          final isSelected = p.id == widget.plan.id;
+                          return GestureDetector(
+                            onTap: () => bloc.add(.selectPlan(p.id)),
+                            behavior: HitTestBehavior.opaque,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.gutter,
+                                vertical: AppSpacing.base,
+                              ),
+                              decoration: ShapeDecoration(
+                                color: isSelected
+                                    ? AppColors.primaryFixed
+                                    : AppColors.surfaceContainerLow,
+                                shape: StadiumBorder(
+                                  side: BorderSide(
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : AppColors.outlineVariant,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                p.name,
+                                style: AppTextStyles.labelMd.copyWith(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.tertiary,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
+                ),
+              ),
+              ClayDaySelector(
+                labels: [for (final day in days) weekdayLabel(day)],
+                counts: [
+                  for (var i = 0; i < days.length; i++)
+                    widget.plan.mealsForWeekday(i).length,
+                ],
+                selectedIndex: _weekday,
+                onSelected: (index) => setState(() => _weekday = index),
+              ),
+              const SizedBox(height: AppSpacing.gutter),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.marginMobile,
+                ),
+                child: DayNutritionCard(
+                  day: nutrition.day(_weekday),
+                  onOpenDashboard: () => context.pushNamed(
+                    Routing.nutritionDashboard,
+                    extra: NutritionDashboardArgs(
+                      plan: widget.plan,
+                      recipes: widget.recipes,
+                    ),
                   ),
                 ),
               ),
-              if (widget.plans.length > 1) ...[
-                const SizedBox(height: AppSpacing.gutter),
-                Wrap(
-                  spacing: AppSpacing.base,
-                  runSpacing: AppSpacing.base,
-                  children: widget.plans.map((p) {
-                    final isSelected = p.id == widget.plan.id;
-                    return GestureDetector(
-                      onTap: () => bloc.add(.selectPlan(p.id)),
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.gutter,
-                          vertical: AppSpacing.base,
-                        ),
-                        decoration: ShapeDecoration(
-                          color: isSelected
-                              ? AppColors.primaryFixed
-                              : AppColors.surfaceContainerLow,
-                          shape: StadiumBorder(
-                            side: BorderSide(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.outlineVariant,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          p.name,
-                          style: AppTextStyles.labelMd.copyWith(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.tertiary,
-                          ),
+              const SizedBox(height: AppSpacing.gutter),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.marginMobile,
+                ),
+                child: Column(
+                  children: [
+                    for (final meal in meals)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                        child: MealCard(
+                          meal: meal,
+                          recipeTitles: widget.recipeTitles,
+                          readOnly: !widget.plan.canEdit,
                         ),
                       ),
-                    );
-                  }).toList(),
+                    if (widget.plan.canEdit)
+                      ClayDashedCard(
+                        label: t.mealPlanner.addMeal,
+                        description: t.mealPlanner.addMealHint,
+                        onTap: () =>
+                            _showAddMealDialog(context, bloc, _weekday),
+                      ),
+                  ],
                 ),
-              ],
-              const SizedBox(height: AppSpacing.lg),
-            ],
-          ),
-        ),
-        ClayDaySelector(
-          labels: [for (final day in days) weekdayLabel(day)],
-          counts: [
-            for (var i = 0; i < days.length; i++)
-              widget.plan.mealsForWeekday(i).length,
-          ],
-          selectedIndex: _weekday,
-          onSelected: (index) => setState(() => _weekday = index),
-        ),
-        const SizedBox(height: AppSpacing.gutter),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.marginMobile),
-          child: DayNutritionCard(
-            day: nutrition.day(_weekday),
-            onOpenDashboard: () => context.pushNamed(
-              Routing.nutritionDashboard,
-              extra: NutritionDashboardArgs(plan: widget.plan, recipes: widget.recipes),
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.gutter),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.marginMobile,
-          ),
-          child: Column(
-            children: [
-              for (final meal in meals)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: MealCard(
-                    meal: meal,
-                    recipeTitles: widget.recipeTitles,
-                  ),
-                ),
-              ClayDashedCard(
-                label: t.mealPlanner.addMeal,
-                description: t.mealPlanner.addMealHint,
-                onTap: () => _showAddMealDialog(context, bloc, _weekday),
               ),
             ],
           ),

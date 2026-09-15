@@ -60,7 +60,7 @@ class _BookViewerBody extends StatelessWidget {
                 bookTitle: book.title,
                 coverImageFileName: book.coverImageFileName,
                 coverImageRemotePath: book.coverImageStoragePath,
-                onTapCover: () async {
+                onTapCover: !book.canEdit ? null : () async {
                   final bloc = context.read<BookViewerBloc>();
                   final result = await showImageSourceSheet(
                     context,
@@ -88,6 +88,7 @@ class _BookViewerBody extends StatelessWidget {
                 label: t.books.tableOfContents,
                 onTap: () => bookNav.goTo(0),
               ),
+              if (book.canEdit)
               QuickJumpAction(
                 icon: Icons.add_rounded,
                 label: t.recipe.addToBook,
@@ -115,8 +116,9 @@ class _BookViewerBody extends StatelessWidget {
                   final index = await showQuickNavSheet(
                     context,
                     recipes,
+                    // A read-only copy ignores a drag; the bloc refuses too.
                     onReorder: (oldIndex, newIndex) =>
-                        bloc.add(.reorderRecipes(oldIndex, newIndex)),
+                        book.canEdit ? bloc.add(.reorderRecipes(oldIndex, newIndex)) : null,
                   );
                   if (index != null) await bookNav.goTo(index + 1);
                 },

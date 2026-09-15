@@ -55,7 +55,10 @@ class RecipeImageStore {
   /// rather than recording a path that resolves to nothing.
   Future<String?> upload(String fileName, {required String uid}) async {
     final local = ImageStorageService().pathFor(fileName);
-    if (local == null) return null;
+    if (local == null) {
+      debugPrint('Recipe image upload skipped: no local file for $fileName');
+      return null;
+    }
 
     final path = pathFor(uid, fileName);
     try {

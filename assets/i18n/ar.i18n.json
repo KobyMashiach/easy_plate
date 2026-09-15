@@ -158,7 +158,13 @@
     "sharedAccess": "إدارة المشاركة",
     "noSharedAccess": "لم تشارك أي كتب أو قوائم بعد",
     "communityPrices": "متوسط أسعار المستخدمين",
-    "communityPricesHint": "عندما لا يكون لديك سعر خاص بمنتج، اعرض السعر الوسيط الذي شاركه الآخرون"
+    "communityPricesHint": "عندما لا يكون لديك سعر خاص بمنتج، اعرض السعر الوسيط الذي شاركه الآخرون",
+    "shoppingReminders": "تذكيرات يوم التسوق",
+    "shoppingRemindersHint": "تُرسل من الجهاز حسب يوم التسوق المختار",
+    "reminderTwoDaysBefore": "قبل يومين (مساءً)",
+    "reminderDayBefore": "قبل يوم (مساءً)",
+    "reminderSameDayMorning": "يوم التسوق (صباحًا)",
+    "reminderSameDayAfternoon": "يوم التسوق (بعد الظهر)"
   },
   "more": {
     "title": "المزيد",
@@ -342,14 +348,14 @@
     "sent": "تم إرسال الدعوة",
     "invalidContact": "أدخلوا بريدًا أو رقم هاتف صالحًا",
     "notFound": "لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.",
-    "self": "لا يمكن مشاركة وصفة مع نفسك",
+    "self": "لا يمكنك المشاركة مع نفسك",
     "failed": "فشلت المشاركة، حاولوا مجددًا",
     "pendingInvites": "دعوات معلّقة",
     "noPendingInvites": "لا توجد دعوات معلّقة",
-    "sharedByMe": "وصفات شاركتها",
-    "sharedWithMe": "وصفات شُوركت معي",
-    "nothingSharedByMe": "لم تشاركوا وصفات بعد",
-    "nothingSharedWithMe": "لم تُشارك معكم وصفات بعد",
+    "sharedByMe": "ما شاركته",
+    "sharedWithMe": "ما تمت مشاركته معي",
+    "nothingSharedByMe": "لم تشارك أي شيء بعد",
+    "nothingSharedWithMe": "لم تتم مشاركة أي شيء معك بعد",
     "accept": "قبول",
     "decline": "رفض",
     "accepted": "أُضيفت الوصفة إلى وصفاتكم",
@@ -369,7 +375,17 @@
     "syncFailed": "تعذّر تحديث الوصفة المشتركة، تُعرض النسخة المحفوظة",
     "viewerCannotEdit": "هذه الوصفة مشتركة معكم للعرض فقط",
     "shareAction": "مشاركة",
-    "directoryUnavailable": "المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore."
+    "directoryUnavailable": "المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.",
+    "shareBook": "مشاركة الكتاب",
+    "sharePlan": "مشاركة الخطة",
+    "acceptedBook": "تمت إضافة الكتاب إلى مكتبتك",
+    "acceptedPlan": "تمت إضافة الخطة إلى خططك",
+    "viewerCannotEditBook": "تمت مشاركة هذا الكتاب معك للعرض فقط",
+    "viewerCannotEditPlan": "تمت مشاركة هذه الخطة معك للعرض فقط",
+    "kindRecipe": "وصفة",
+    "kindBook": "كتاب",
+    "kindPlan": "خطة",
+    "recipesTravel": "ستتم مشاركة الوصفات الموجودة بداخله معه"
   },
   "notifications": {
     "title": "الإشعارات",
@@ -389,7 +405,9 @@
     "recipeGone": "الوصفة لم تعد في المجتمع",
     "deleteAll": "حذف كل الإشعارات",
     "deleteAllBody": "ستُحذف كل الإشعارات.",
-    "openInbox": "فتح الإشعارات"
+    "openInbox": "فتح الإشعارات",
+    "sharedBook": "$name شارك/ت معك الكتاب \"$recipe\"",
+    "sharedPlan": "$name شارك/ت معك الخطة \"$recipe\""
   },
   "editor": {
     "title": "تعديل الوصفة",

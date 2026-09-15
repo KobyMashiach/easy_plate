@@ -158,7 +158,13 @@
     "sharedAccess": "Gérer le partage",
     "noSharedAccess": "Vous n'avez encore partagé aucun livre ni aucune liste",
     "communityPrices": "Prix moyens de la communauté",
-    "communityPricesHint": "Quand vous n’avez pas votre propre prix pour un produit, afficher le prix médian partagé par les autres"
+    "communityPricesHint": "Quand vous n’avez pas votre propre prix pour un produit, afficher le prix médian partagé par les autres",
+    "shoppingReminders": "Rappels du jour des courses",
+    "shoppingRemindersHint": "Envoyés par l’appareil, selon le jour des courses choisi",
+    "reminderTwoDaysBefore": "Deux jours avant (soir)",
+    "reminderDayBefore": "La veille (soir)",
+    "reminderSameDayMorning": "Le jour même (matin)",
+    "reminderSameDayAfternoon": "Le jour même (après-midi)"
   },
   "more": {
     "title": "Plus",
@@ -342,14 +348,14 @@
     "sent": "Invitation envoyée",
     "invalidContact": "Saisissez un e-mail ou un téléphone valide",
     "notFound": "Aucun compte ne correspond. Vérifiez que l'e-mail ou le téléphone est lié à son compte et qu'il/elle a ouvert l'application récemment.",
-    "self": "Impossible de partager une recette avec vous-même",
+    "self": "Impossible de partager avec vous-même",
     "failed": "Le partage a échoué, réessayez",
     "pendingInvites": "Invitations en attente",
     "noPendingInvites": "Aucune invitation en attente",
-    "sharedByMe": "Recettes partagées par moi",
-    "sharedWithMe": "Recettes partagées avec moi",
+    "sharedByMe": "Partagé par moi",
+    "sharedWithMe": "Partagé avec moi",
     "nothingSharedByMe": "Vous n'avez encore rien partagé",
-    "nothingSharedWithMe": "Aucune recette ne vous a été partagée",
+    "nothingSharedWithMe": "Rien n'a encore été partagé avec vous",
     "accept": "Accepter",
     "decline": "Refuser",
     "accepted": "La recette a été ajoutée à vos recettes",
@@ -369,7 +375,17 @@
     "syncFailed": "Impossible d'actualiser la recette partagée, version enregistrée affichée",
     "viewerCannotEdit": "Cette recette vous est partagée en lecture seule",
     "shareAction": "Partager",
-    "directoryUnavailable": "Le partage n'est pas encore configuré côté serveur. Déconnectez-vous puis reconnectez-vous ; si cela persiste, les règles Firestore doivent être déployées."
+    "directoryUnavailable": "Le partage n'est pas encore configuré côté serveur. Déconnectez-vous puis reconnectez-vous ; si cela persiste, les règles Firestore doivent être déployées.",
+    "shareBook": "Partager le livre",
+    "sharePlan": "Partager le menu",
+    "acceptedBook": "Le livre a été ajouté à votre bibliothèque",
+    "acceptedPlan": "Le menu a été ajouté à vos menus",
+    "viewerCannotEditBook": "Ce livre est partagé avec vous en lecture seule",
+    "viewerCannotEditPlan": "Ce menu est partagé avec vous en lecture seule",
+    "kindRecipe": "Recette",
+    "kindBook": "Livre",
+    "kindPlan": "Menu",
+    "recipesTravel": "Les recettes qu’il contient sont partagées avec lui"
   },
   "notifications": {
     "title": "Notifications",
@@ -389,7 +405,9 @@
     "recipeGone": "La recette n’est plus dans la communauté",
     "deleteAll": "Supprimer toutes les notifications",
     "deleteAllBody": "Toutes les notifications seront supprimées.",
-    "openInbox": "Ouvrir les notifications"
+    "openInbox": "Ouvrir les notifications",
+    "sharedBook": "$name a partagé le livre « $recipe » avec vous",
+    "sharedPlan": "$name a partagé le menu « $recipe » avec vous"
   },
   "editor": {
     "title": "Modifier la recette",

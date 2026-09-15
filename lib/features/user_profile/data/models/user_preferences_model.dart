@@ -24,6 +24,8 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     // which correctly reads as "not seen yet".
     @HiveField(6) @Default(false) bool walkthroughSeen,
     @HiveField(7) @Default(false) bool communityPricesEnabled,
+    // Slot names; null (older records) reads as the defaults.
+    @HiveField(8) List<String>? shoppingReminderSlots,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -40,6 +42,9 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
         onboardingComplete: onboardingComplete,
         walkthroughSeen: walkthroughSeen,
         communityPricesEnabled: communityPricesEnabled,
+        shoppingReminderSlots: shoppingReminderSlots == null
+            ? ShoppingReminderSlot.defaults
+            : ShoppingReminderSlot.fromNames(shoppingReminderSlots!),
       );
 }
 
@@ -53,5 +58,6 @@ extension UserPreferencesEntityMapper on UserPreferencesEntity {
         onboardingComplete: onboardingComplete,
         walkthroughSeen: walkthroughSeen,
         communityPricesEnabled: communityPricesEnabled,
+        shoppingReminderSlots: [for (final s in shoppingReminderSlots) s.name],
       );
 }

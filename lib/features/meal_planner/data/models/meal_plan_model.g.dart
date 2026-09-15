@@ -21,13 +21,15 @@ class MealPlanModelAdapter extends TypeAdapter<MealPlanModel> {
       name: fields[1] as String,
       meals: (fields[2] as List).cast<MealModel>(),
       createdAt: fields[3] as DateTime,
+      collabId: fields[4] as String?,
+      collabRole: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, MealPlanModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +37,11 @@ class MealPlanModelAdapter extends TypeAdapter<MealPlanModel> {
       ..writeByte(2)
       ..write(obj.meals)
       ..writeByte(3)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(4)
+      ..write(obj.collabId)
+      ..writeByte(5)
+      ..write(obj.collabRole);
   }
 
   @override
@@ -61,6 +67,8 @@ _MealPlanModel _$MealPlanModelFromJson(Map<String, dynamic> json) =>
           .map((e) => MealModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
+      collabId: json['collabId'] as String?,
+      collabRole: json['collabRole'] as String?,
     );
 
 Map<String, dynamic> _$MealPlanModelToJson(_MealPlanModel instance) =>
@@ -69,4 +77,6 @@ Map<String, dynamic> _$MealPlanModelToJson(_MealPlanModel instance) =>
       'name': instance.name,
       'meals': instance.meals.map((e) => e.toJson()).toList(),
       'createdAt': instance.createdAt.toIso8601String(),
+      'collabId': instance.collabId,
+      'collabRole': instance.collabRole,
     };

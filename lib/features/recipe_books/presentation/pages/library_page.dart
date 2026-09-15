@@ -14,6 +14,8 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/image_source_sheet.dart';
 import '../../../../core/widgets/ai_cover_prompt_sheet.dart';
+import '../../../../core/constants/app_enums.dart';
+import '../../../collab_containers/presentation/widgets/container_share_sheets.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../widgets/spine_color_picker.dart';
 import '../../domain/entities/book_spine.dart';
@@ -54,33 +56,21 @@ class LibraryPage extends StatelessWidget {
                             onPressed: () => _showCreateBookDialog(context),
                           ),
                         )
-                      : CustomScrollView(
-                          slivers: [
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(
-                                AppSpacing.marginMobile,
-                                AppSpacing.md,
-                                AppSpacing.marginMobile,
-                                AppSpacing.lg,
-                              ),
-                              sliver: SliverToBoxAdapter(
-                                child: ClayPageHeader(
-                                  title: t.books.myLibrary,
-                                  subtitle: t.books.librarySubtitle,
-                                  trailing: WalkthroughTarget(
-                                    id: WalkthroughIds.libraryAdd,
-                                    child: ClayIconButton(
-                                      icon: Icons.add_rounded,
-                                      filled: true,
-                                      size: 48,
-                                      tooltip: t.books.newBook,
-                                      onTap: () =>
-                                          _showCreateBookDialog(context),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                      : ClayFloatingHeaderView(
+                          title: t.books.myLibrary,
+                          subtitle: t.books.librarySubtitle,
+                          bottomGap: AppSpacing.lg,
+                          trailing: WalkthroughTarget(
+                            id: WalkthroughIds.libraryAdd,
+                            child: ClayIconButton(
+                              icon: Icons.add_rounded,
+                              filled: true,
+                              size: 48,
+                              tooltip: t.books.newBook,
+                              onTap: () => _showCreateBookDialog(context),
                             ),
+                          ),
+                          slivers: [
                             SliverPadding(
                               padding: EdgeInsets.fromLTRB(
                                 AppSpacing.marginMobile,
@@ -144,108 +134,166 @@ class LibraryPage extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.marginMobile,
-            0,
-            AppSpacing.marginMobile,
-            AppSpacing.marginMobile,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(book.title, style: AppTextStyles.headlineMd),
-              const SizedBox(height: AppSpacing.gutter),
-              ClayCard(
-                radius: AppRadius.md,
-                padding: const EdgeInsets.all(AppSpacing.gutter),
-                onTap: () async {
-                  Navigator.of(sheetContext).pop();
-                  final result = await showImageSourceSheet(
-                    context,
-                    hasImage: book.coverImageFileName != null,
-                    aiPromptPicker: (ctx) => showCoverPromptSheet(ctx, bookTitle: book.title),
-                  );
-                  if (result == null) return;
-                  bloc.add(.setCoverImage(book.id, result.fileName));
-                },
-                child: Row(
-                  children: [
-                    Icon(Icons.image_rounded, color: AppColors.primary),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(t.books.coverImage, style: AppTextStyles.bodyMd),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.base),
-              ClayCard(
-                radius: AppRadius.md,
-                padding: const EdgeInsets.all(AppSpacing.gutter),
-                onTap: () async {
-                  Navigator.of(sheetContext).pop();
-                  final spine = await _pickSpine(context, current: book.spine);
-                  if (spine != null) bloc.add(.setSpine(book.id, spine));
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: book.spine == null ? AppColors.primary : bookSpineColor(book.spine!),
-                        shape: BoxShape.circle,
-                      ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.marginMobile,
+              0,
+              AppSpacing.marginMobile,
+              AppSpacing.marginMobile,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(book.title, style: AppTextStyles.headlineMd),
+                if (book.isShared) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  ClayTag(
+                    label: switch (book.collabRole) {
+                      CollabRole.owner => t.sharing.ownerTag,
+                      CollabRole.editor => t.sharing.editorTag,
+                      _ => t.sharing.viewerTag,
+                    },
+                    icon: Icons.group_rounded,
+                    background: AppColors.secondaryContainer,
+                    foreground: AppColors.onSecondaryContainer,
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.gutter),
+                // Only the owner hands a book on; a member cannot share it further.
+                if (book.isMine) ...[
+                  ClayCard(
+                    radius: AppRadius.md,
+                    padding: const EdgeInsets.all(AppSpacing.gutter),
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      final sent = await showBookShareSheet(context, book);
+                      if (sent == true && context.mounted) {
+                        AppDialog.success(
+                          message: t.sharing.sent,
+                        ).notify(context);
+                        // The share tags the book with its collab id.
+                        bloc.add(const LibraryEvent.init());
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person_add_alt_1_rounded,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(t.books.share, style: AppTextStyles.bodyMd),
+                      ],
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(t.books.spineColor, style: AppTextStyles.bodyMd),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.base),
-              ClayCard(
-                radius: AppRadius.md,
-                padding: const EdgeInsets.all(AppSpacing.gutter),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  _showRenameBookDialog(context, bloc, book);
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.drive_file_rename_outline_rounded,
-                      color: AppColors.primary,
+                  ),
+                  const SizedBox(height: AppSpacing.base),
+                ],
+                // A read-only copy: nothing below changes it.
+                if (book.canEdit) ...[
+                  ClayCard(
+                    radius: AppRadius.md,
+                    padding: const EdgeInsets.all(AppSpacing.gutter),
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      final result = await showImageSourceSheet(
+                        context,
+                        hasImage: book.coverImageFileName != null,
+                        aiPromptPicker: (ctx) =>
+                            showCoverPromptSheet(ctx, bookTitle: book.title),
+                      );
+                      if (result == null) return;
+                      bloc.add(.setCoverImage(book.id, result.fileName));
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.image_rounded, color: AppColors.primary),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(t.books.coverImage, style: AppTextStyles.bodyMd),
+                      ],
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(t.books.renameBook, style: AppTextStyles.bodyMd),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.base),
-              ClayCard(
-                radius: AppRadius.md,
-                padding: const EdgeInsets.all(AppSpacing.gutter),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  bloc.add(.deleteBook(book.id));
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.delete_outline_rounded,
-                      color: AppColors.error,
+                  ),
+                  const SizedBox(height: AppSpacing.base),
+                  ClayCard(
+                    radius: AppRadius.md,
+                    padding: const EdgeInsets.all(AppSpacing.gutter),
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      final spine = await _pickSpine(
+                        context,
+                        current: book.spine,
+                      );
+                      if (spine != null) bloc.add(.setSpine(book.id, spine));
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: book.spine == null
+                                ? AppColors.primary
+                                : bookSpineColor(book.spine!),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(t.books.spineColor, style: AppTextStyles.bodyMd),
+                      ],
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      t.common.delete,
-                      style: AppTextStyles.bodyMd.copyWith(
+                  ),
+                  const SizedBox(height: AppSpacing.base),
+                  ClayCard(
+                    radius: AppRadius.md,
+                    padding: const EdgeInsets.all(AppSpacing.gutter),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _showRenameBookDialog(context, bloc, book);
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.drive_file_rename_outline_rounded,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(t.books.renameBook, style: AppTextStyles.bodyMd),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.base),
+                ],
+                ClayCard(
+                  radius: AppRadius.md,
+                  padding: const EdgeInsets.all(AppSpacing.gutter),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    bloc.add(.deleteBook(book.id));
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        book.isShared && !book.isMine
+                            ? Icons.logout_rounded
+                            : Icons.delete_outline_rounded,
                         color: AppColors.error,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        // A member does not delete a shared book; they leave it.
+                        book.isShared && !book.isMine
+                            ? t.sharing.leave
+                            : t.common.delete,
+                        style: AppTextStyles.bodyMd.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -254,7 +302,10 @@ class LibraryPage extends StatelessWidget {
 
   /// The ten swatches in a dialog. Null when dismissed without confirming;
   /// confirming with nothing new picked returns [current].
-  Future<BookSpine?> _pickSpine(BuildContext context, {required BookSpine? current}) async {
+  Future<BookSpine?> _pickSpine(
+    BuildContext context, {
+    required BookSpine? current,
+  }) async {
     var picked = current;
     final confirmed = await AppDialog.general(
       title: t.books.spineColor,

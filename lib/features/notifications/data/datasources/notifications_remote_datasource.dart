@@ -43,6 +43,7 @@ class NotificationsFirestoreDataSource
               collabId: data['collabId'] as String?,
               recipeTitle: data['recipeTitle'] as String?,
               sharedId: data['sharedId'] as String?,
+              kind: CollabKind.fromName(data['kind'] as String?),
               role: CollabRole.values
                   .where((r) => r.name == data['role'])
                   .firstOrNull,

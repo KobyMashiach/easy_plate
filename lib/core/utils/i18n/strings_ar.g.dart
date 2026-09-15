@@ -285,6 +285,12 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get noSharedAccess => 'لم تشارك أي كتب أو قوائم بعد';
 	@override String get communityPrices => 'متوسط أسعار المستخدمين';
 	@override String get communityPricesHint => 'عندما لا يكون لديك سعر خاص بمنتج، اعرض السعر الوسيط الذي شاركه الآخرون';
+	@override String get shoppingReminders => 'تذكيرات يوم التسوق';
+	@override String get shoppingRemindersHint => 'تُرسل من الجهاز حسب يوم التسوق المختار';
+	@override String get reminderTwoDaysBefore => 'قبل يومين (مساءً)';
+	@override String get reminderDayBefore => 'قبل يوم (مساءً)';
+	@override String get reminderSameDayMorning => 'يوم التسوق (صباحًا)';
+	@override String get reminderSameDayAfternoon => 'يوم التسوق (بعد الظهر)';
 }
 
 // Path: more
@@ -517,14 +523,14 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get sent => 'تم إرسال الدعوة';
 	@override String get invalidContact => 'أدخلوا بريدًا أو رقم هاتف صالحًا';
 	@override String get notFound => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.';
-	@override String get self => 'لا يمكن مشاركة وصفة مع نفسك';
+	@override String get self => 'لا يمكنك المشاركة مع نفسك';
 	@override String get failed => 'فشلت المشاركة، حاولوا مجددًا';
 	@override String get pendingInvites => 'دعوات معلّقة';
 	@override String get noPendingInvites => 'لا توجد دعوات معلّقة';
-	@override String get sharedByMe => 'وصفات شاركتها';
-	@override String get sharedWithMe => 'وصفات شُوركت معي';
-	@override String get nothingSharedByMe => 'لم تشاركوا وصفات بعد';
-	@override String get nothingSharedWithMe => 'لم تُشارك معكم وصفات بعد';
+	@override String get sharedByMe => 'ما شاركته';
+	@override String get sharedWithMe => 'ما تمت مشاركته معي';
+	@override String get nothingSharedByMe => 'لم تشارك أي شيء بعد';
+	@override String get nothingSharedWithMe => 'لم تتم مشاركة أي شيء معك بعد';
 	@override String get accept => 'قبول';
 	@override String get decline => 'رفض';
 	@override String get accepted => 'أُضيفت الوصفة إلى وصفاتكم';
@@ -545,6 +551,16 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get viewerCannotEdit => 'هذه الوصفة مشتركة معكم للعرض فقط';
 	@override String get shareAction => 'مشاركة';
 	@override String get directoryUnavailable => 'المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.';
+	@override String get shareBook => 'مشاركة الكتاب';
+	@override String get sharePlan => 'مشاركة الخطة';
+	@override String get acceptedBook => 'تمت إضافة الكتاب إلى مكتبتك';
+	@override String get acceptedPlan => 'تمت إضافة الخطة إلى خططك';
+	@override String get viewerCannotEditBook => 'تمت مشاركة هذا الكتاب معك للعرض فقط';
+	@override String get viewerCannotEditPlan => 'تمت مشاركة هذه الخطة معك للعرض فقط';
+	@override String get kindRecipe => 'وصفة';
+	@override String get kindBook => 'كتاب';
+	@override String get kindPlan => 'خطة';
+	@override String get recipesTravel => 'ستتم مشاركة الوصفات الموجودة بداخله معه';
 }
 
 // Path: notifications
@@ -572,6 +588,8 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String get deleteAll => 'حذف كل الإشعارات';
 	@override String get deleteAllBody => 'ستُحذف كل الإشعارات.';
 	@override String get openInbox => 'فتح الإشعارات';
+	@override String sharedBook({required Object name, required Object recipe}) => '${name} شارك/ت معك الكتاب "${recipe}"';
+	@override String sharedPlan({required Object name, required Object recipe}) => '${name} شارك/ت معك الخطة "${recipe}"';
 }
 
 // Path: editor
@@ -1314,6 +1332,12 @@ extension on TranslationsAr {
 			'settings.noSharedAccess' => 'لم تشارك أي كتب أو قوائم بعد',
 			'settings.communityPrices' => 'متوسط أسعار المستخدمين',
 			'settings.communityPricesHint' => 'عندما لا يكون لديك سعر خاص بمنتج، اعرض السعر الوسيط الذي شاركه الآخرون',
+			'settings.shoppingReminders' => 'تذكيرات يوم التسوق',
+			'settings.shoppingRemindersHint' => 'تُرسل من الجهاز حسب يوم التسوق المختار',
+			'settings.reminderTwoDaysBefore' => 'قبل يومين (مساءً)',
+			'settings.reminderDayBefore' => 'قبل يوم (مساءً)',
+			'settings.reminderSameDayMorning' => 'يوم التسوق (صباحًا)',
+			'settings.reminderSameDayAfternoon' => 'يوم التسوق (بعد الظهر)',
 			'more.title' => 'المزيد',
 			'more.settings' => 'الإعدادات',
 			'more.profile' => 'ملفي الشخصي',
@@ -1483,14 +1507,14 @@ extension on TranslationsAr {
 			'sharing.sent' => 'تم إرسال الدعوة',
 			'sharing.invalidContact' => 'أدخلوا بريدًا أو رقم هاتف صالحًا',
 			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.',
-			'sharing.self' => 'لا يمكن مشاركة وصفة مع نفسك',
+			'sharing.self' => 'لا يمكنك المشاركة مع نفسك',
 			'sharing.failed' => 'فشلت المشاركة، حاولوا مجددًا',
 			'sharing.pendingInvites' => 'دعوات معلّقة',
 			'sharing.noPendingInvites' => 'لا توجد دعوات معلّقة',
-			'sharing.sharedByMe' => 'وصفات شاركتها',
-			'sharing.sharedWithMe' => 'وصفات شُوركت معي',
-			'sharing.nothingSharedByMe' => 'لم تشاركوا وصفات بعد',
-			'sharing.nothingSharedWithMe' => 'لم تُشارك معكم وصفات بعد',
+			'sharing.sharedByMe' => 'ما شاركته',
+			'sharing.sharedWithMe' => 'ما تمت مشاركته معي',
+			'sharing.nothingSharedByMe' => 'لم تشارك أي شيء بعد',
+			'sharing.nothingSharedWithMe' => 'لم تتم مشاركة أي شيء معك بعد',
 			'sharing.accept' => 'قبول',
 			'sharing.decline' => 'رفض',
 			'sharing.accepted' => 'أُضيفت الوصفة إلى وصفاتكم',
@@ -1511,6 +1535,16 @@ extension on TranslationsAr {
 			'sharing.viewerCannotEdit' => 'هذه الوصفة مشتركة معكم للعرض فقط',
 			'sharing.shareAction' => 'مشاركة',
 			'sharing.directoryUnavailable' => 'المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.',
+			'sharing.shareBook' => 'مشاركة الكتاب',
+			'sharing.sharePlan' => 'مشاركة الخطة',
+			'sharing.acceptedBook' => 'تمت إضافة الكتاب إلى مكتبتك',
+			'sharing.acceptedPlan' => 'تمت إضافة الخطة إلى خططك',
+			'sharing.viewerCannotEditBook' => 'تمت مشاركة هذا الكتاب معك للعرض فقط',
+			'sharing.viewerCannotEditPlan' => 'تمت مشاركة هذه الخطة معك للعرض فقط',
+			'sharing.kindRecipe' => 'وصفة',
+			'sharing.kindBook' => 'كتاب',
+			'sharing.kindPlan' => 'خطة',
+			'sharing.recipesTravel' => 'ستتم مشاركة الوصفات الموجودة بداخله معه',
 			'notifications.title' => 'الإشعارات',
 			'notifications.empty' => 'لا توجد إشعارات',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"',
@@ -1529,6 +1563,8 @@ extension on TranslationsAr {
 			'notifications.deleteAll' => 'حذف كل الإشعارات',
 			'notifications.deleteAllBody' => 'ستُحذف كل الإشعارات.',
 			'notifications.openInbox' => 'فتح الإشعارات',
+			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك الكتاب "${recipe}"',
+			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك الخطة "${recipe}"',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -1663,6 +1699,8 @@ extension on TranslationsAr {
 			'receipt.pdf' => 'ملف PDF',
 			'receipt.addPhoto' => 'صورة أخرى',
 			'receipt.scan' => 'مسح',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.scanning' => 'جارٍ قراءة الإيصال…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} صور',
 			'receipt.scanFailed' => 'تعذّرت قراءة الإيصال. جرّب صورة أوضح أو PDF.',
@@ -1681,8 +1719,6 @@ extension on TranslationsAr {
 			'receipt.price' => 'سعر الوحدة',
 			'receipt.quantity' => 'الكمية',
 			'receipt.removeLine' => 'إزالة السطر',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.shareToggle' => 'مشاركة الأسعار مع المجتمع',
 			'receipt.shareHint' => 'أسماء المنتجات والأسعار فقط. لا المتجر ولا التاريخ ولا من دفع.',
 			'receipt.save' => 'حفظ الأسعار',

@@ -27,13 +27,14 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       fastPageTurnEnabled: fields[5] == null ? true : fields[5] as bool,
       walkthroughSeen: fields[6] == null ? false : fields[6] as bool,
       communityPricesEnabled: fields[7] == null ? false : fields[7] as bool,
+      shoppingReminderSlots: (fields[8] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -49,7 +50,9 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(6)
       ..write(obj.walkthroughSeen)
       ..writeByte(7)
-      ..write(obj.communityPricesEnabled);
+      ..write(obj.communityPricesEnabled)
+      ..writeByte(8)
+      ..write(obj.shoppingReminderSlots);
   }
 
   @override
@@ -82,6 +85,9 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
   fastPageTurnEnabled: json['fastPageTurnEnabled'] as bool? ?? true,
   walkthroughSeen: json['walkthroughSeen'] as bool? ?? false,
   communityPricesEnabled: json['communityPricesEnabled'] as bool? ?? false,
+  shoppingReminderSlots: (json['shoppingReminderSlots'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -97,6 +103,7 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'fastPageTurnEnabled': instance.fastPageTurnEnabled,
   'walkthroughSeen': instance.walkthroughSeen,
   'communityPricesEnabled': instance.communityPricesEnabled,
+  'shoppingReminderSlots': instance.shoppingReminderSlots,
 };
 
 const _$ShoppingDayEnumMap = {

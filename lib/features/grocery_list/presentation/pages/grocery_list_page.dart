@@ -101,16 +101,10 @@ class _ListBody extends StatelessWidget {
     final bloc = context.read<GroceryListBloc>();
 
     if (list.items.isEmpty) {
-      return ListView(
-        padding: EdgeInsets.fromLTRB(
-          AppSpacing.marginMobile,
-          AppSpacing.md,
-          AppSpacing.marginMobile,
-          ClayNavDock.bottomPadding(context),
-        ),
+      return _scroll(
+        context,
+        bloc,
         children: [
-          _header(context, bloc),
-          const SizedBox(height: AppSpacing.lg),
           MealPlanFilterCard(list: list, plans: plans),
           const SizedBox(height: AppSpacing.lg),
           ClayEmptyState(
@@ -130,16 +124,10 @@ class _ListBody extends StatelessWidget {
     final checked = list.items.where((i) => i.isChecked).toList();
     final allChecked = unchecked.isEmpty;
 
-    return ListView(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.marginMobile,
-        AppSpacing.md,
-        AppSpacing.marginMobile,
-        ClayNavDock.bottomPadding(context),
-      ),
+    return _scroll(
+      context,
+      bloc,
       children: [
-        _header(context, bloc),
-        const SizedBox(height: AppSpacing.lg),
         MealPlanFilterCard(list: list, plans: plans),
         const SizedBox(height: AppSpacing.gutter),
         GroceryProgressCard(
@@ -196,47 +184,71 @@ class _ListBody extends StatelessWidget {
   }
 }
 
+/// The title floats away as the list scrolls and returns on the first
+/// scroll back up; the three actions stay in their corner throughout.
+Widget _scroll(
+  BuildContext context,
+  GroceryListBloc bloc, {
+  required List<Widget> children,
+}) {
+  return ClayFloatingHeaderView(
+    title: t.groceryList.title,
+    trailing: _actions(context, bloc),
+    // Three buttons and the gaps between them.
+    trailingWidth: 48 * 3 + AppSpacing.base * 2,
+    bottomGap: AppSpacing.lg,
+    slivers: [
+      SliverPadding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.marginMobile,
+          0,
+          AppSpacing.marginMobile,
+          ClayNavDock.bottomPadding(context),
+        ),
+        sliver: SliverList.list(children: children),
+      ),
+    ],
+  );
+}
+
 /// The list's own controls sit with its title: a rebuild from the meal plans,
 /// and a line added by hand.
-Widget _header(BuildContext context, GroceryListBloc bloc) {
-  return ClayPageHeader(
-    title: t.groceryList.title,
-    trailing: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ClayIconButton(
-          icon: Icons.receipt_long_rounded,
+Widget _actions(BuildContext context, GroceryListBloc bloc) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      ClayIconButton(
+        icon: Icons.receipt_long_rounded,
+        size: 48,
+        tooltip: t.receipt.priceBook,
+        onTap: () async {
+          final service = context.read<PriceBookService>();
+          await context.pushNamed(Routing.priceBook);
+          await service.load();
+        },
+      ),
+      const SizedBox(width: AppSpacing.base),
+      WalkthroughTarget(
+        id: WalkthroughIds.groceriesRegenerate,
+        child: ClayIconButton(
+          icon: Icons.autorenew_rounded,
           size: 48,
-          tooltip: t.receipt.priceBook,
-          onTap: () async {
-            final service = context.read<PriceBookService>();
-            await context.pushNamed(Routing.priceBook);
-            await service.load();
-          },
+          tooltip: t.groceryList.aggregated,
+          onTap: () => bloc.add(const GroceryListEvent.regenerate()),
         ),
-        const SizedBox(width: AppSpacing.base),
-        WalkthroughTarget(
-          id: WalkthroughIds.groceriesRegenerate,
-          child: ClayIconButton(
-            icon: Icons.autorenew_rounded,
-            size: 48,
-            tooltip: t.groceryList.aggregated,
-            onTap: () => bloc.add(const GroceryListEvent.regenerate()),
-          ),
+      ),
+      const SizedBox(width: AppSpacing.base),
+      WalkthroughTarget(
+        id: WalkthroughIds.groceriesAdd,
+        child: ClayIconButton(
+          icon: Icons.add_rounded,
+          filled: true,
+          size: 48,
+          tooltip: t.groceryList.addItem,
+          onTap: () => showAddGroceryItemSheet(context),
         ),
-        const SizedBox(width: AppSpacing.base),
-        WalkthroughTarget(
-          id: WalkthroughIds.groceriesAdd,
-          child: ClayIconButton(
-            icon: Icons.add_rounded,
-            filled: true,
-            size: 48,
-            tooltip: t.groceryList.addItem,
-            onTap: () => showAddGroceryItemSheet(context),
-          ),
-        ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 

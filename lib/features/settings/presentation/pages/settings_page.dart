@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -30,7 +31,9 @@ class SettingsPage extends StatelessWidget {
         body: BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, state) {
             return switch (state) {
-              SettingsLoading() => const Center(child: CircularProgressIndicator()),
+              SettingsLoading() => const Center(
+                child: CircularProgressIndicator(),
+              ),
               SettingsLoaded(
                 preferences: final preferences,
                 sharedBooksCount: final sharedBooks,
@@ -43,7 +46,9 @@ class SettingsPage extends StatelessWidget {
                 ),
               SettingsError(error: final error) => ErrorRetryView(
                 error: error,
-                onRetry: () => context.read<SettingsBloc>().add(const SettingsEvent.init()),
+                onRetry: () => context.read<SettingsBloc>().add(
+                  const SettingsEvent.init(),
+                ),
               ),
             };
           },
@@ -74,6 +79,13 @@ class _SettingsBody extends StatelessWidget {
         child: WeekdaySelector(
           selected: preferences.shoppingDay,
           onSelect: (day) => bloc.add(.updateShoppingDay(day)),
+        ),
+      ),
+      _SettingsCard(
+        title: t.settings.shoppingReminders,
+        child: _ReminderSlotPicker(
+          selected: preferences.shoppingReminderSlots,
+          onChanged: (slots) => bloc.add(.setShoppingReminders(slots)),
         ),
       ),
       _SettingsCard(
@@ -184,7 +196,9 @@ class _SettingsToggle extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     description!,
-                    style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.outline,
+                    ),
                   ),
                 ],
               ],
@@ -220,6 +234,105 @@ class _SettingsCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.gutter),
           child,
         ],
+      ),
+    );
+  }
+}
+
+/// Which reminders to get before the shopping day: four fixed moments,
+/// any mix of them. None is allowed — some people want no nagging.
+class _ReminderSlotPicker extends StatelessWidget {
+  final List<ShoppingReminderSlot> selected;
+  final ValueChanged<List<ShoppingReminderSlot>> onChanged;
+
+  const _ReminderSlotPicker({required this.selected, required this.onChanged});
+
+  static String _label(ShoppingReminderSlot slot) => switch (slot) {
+    ShoppingReminderSlot.twoDaysBefore => t.settings.reminderTwoDaysBefore,
+    ShoppingReminderSlot.dayBefore => t.settings.reminderDayBefore,
+    ShoppingReminderSlot.sameDayMorning => t.settings.reminderSameDayMorning,
+    ShoppingReminderSlot.sameDayAfternoon =>
+      t.settings.reminderSameDayAfternoon,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: AppSpacing.base,
+          runSpacing: AppSpacing.base,
+          children: [
+            for (final slot in ShoppingReminderSlot.values)
+              _SlotChip(
+                label: _label(slot),
+                isOn: selected.contains(slot),
+                onTap: () => onChanged([
+                  for (final s in ShoppingReminderSlot.values)
+                    if (s == slot
+                        ? !selected.contains(slot)
+                        : selected.contains(s))
+                      s,
+                ]),
+              ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.base),
+        Text(
+          t.settings.shoppingRemindersHint,
+          style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+        ),
+      ],
+    );
+  }
+}
+
+class _SlotChip extends StatelessWidget {
+  final String label;
+  final bool isOn;
+  final VoidCallback onTap;
+
+  const _SlotChip({
+    required this.label,
+    required this.isOn,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ink = isOn ? AppColors.onPrimary : AppColors.tertiary;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.base,
+        ),
+        decoration: ShapeDecoration(
+          color: isOn ? AppColors.primary : AppColors.surfaceContainerLow,
+          shape: StadiumBorder(
+            side: BorderSide(
+              color: isOn ? AppColors.primary : AppColors.outlineVariant,
+            ),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isOn
+                  ? Icons.notifications_active_rounded
+                  : Icons.notifications_none_rounded,
+              size: 16,
+              color: ink,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Text(label, style: AppTextStyles.labelMd.copyWith(color: ink)),
+          ],
+        ),
       ),
     );
   }

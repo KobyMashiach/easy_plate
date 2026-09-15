@@ -102,175 +102,187 @@ class _RecipesBodyState extends State<_RecipesBody> {
         .where((r) => r.isSavedFromCommunity == _savedTab)
         .toList();
 
-    return ListView(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.marginMobile,
-        AppSpacing.md,
-        AppSpacing.marginMobile,
-        ClayNavDock.bottomPadding(context),
+    // The title floats away as the list scrolls and returns on the first
+    // scroll back up; the sparkle stays in its corner throughout.
+    return ClayFloatingHeaderView(
+      title: t.books.myRecipes,
+      subtitle: t.books.recipesSubtitle,
+      // The sparkle rather than a plus: adding a recipe here means the
+      // model reads it in, and the same icon marks every AI action in
+      // the app.
+      trailing: WalkthroughTarget(
+        id: WalkthroughIds.recipesAdd,
+        child: ClayIconButton(
+          icon: Icons.auto_awesome_rounded,
+          filled: true,
+          size: 48,
+          tooltip: t.ingestion.title,
+          onTap: () async {
+            await context.pushNamed(Routing.ingestion);
+            if (context.mounted) bloc.add(const MyRecipesEvent.init());
+          },
+        ),
       ),
-      children: [
-        ClayPageHeader(
-          title: t.books.myRecipes,
-          subtitle: t.books.recipesSubtitle,
-          // The sparkle rather than a plus: adding a recipe here means the
-          // model reads it in, and the same icon marks every AI action in
-          // the app.
-          trailing: WalkthroughTarget(
-            id: WalkthroughIds.recipesAdd,
-            child: ClayIconButton(
-              icon: Icons.auto_awesome_rounded,
-              filled: true,
-              size: 48,
-              tooltip: t.ingestion.title,
-              onTap: () async {
-                await context.pushNamed(Routing.ingestion);
-                if (context.mounted) bloc.add(const MyRecipesEvent.init());
-              },
-            ),
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.marginMobile,
+            0,
+            AppSpacing.marginMobile,
+            ClayNavDock.bottomPadding(context),
           ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        // The switch between what was written and what was saved is the
-        // page's main division, so it stands on its own right under the
-        // title; the search and the topic chips, which only narrow the list,
-        // sit together in one card below it.
-        WalkthroughTarget(
-          id: WalkthroughIds.recipesSegments,
-          child: ClaySegmentedControl(
-            segments: [
-              ClaySegment(label: t.recipe.mine, icon: Icons.edit_note_rounded),
-              ClaySegment(label: t.recipe.saved, icon: Icons.bookmark_rounded),
-            ],
-            selectedIndex: _savedTab ? 1 : 0,
-            onSelected: (index) => setState(() => _savedTab = index == 1),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        WalkthroughTarget(
-          id: WalkthroughIds.recipesFilters,
-          child: ClayCard(
-            radius: AppRadius.md,
-            padding: const EdgeInsets.all(AppSpacing.gutter),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Recessed search pill, per the Stitch library screen.
-                ClayInset(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                  ),
-                  child: Row(
+          sliver: SliverList.list(
+            children: [
+              // The switch between what was written and what was saved is the
+              // page's main division, so it stands on its own right under the
+              // title; the search and the topic chips, which only narrow the list,
+              // sit together in one card below it.
+              WalkthroughTarget(
+                id: WalkthroughIds.recipesSegments,
+                child: ClaySegmentedControl(
+                  segments: [
+                    ClaySegment(
+                      label: t.recipe.mine,
+                      icon: Icons.edit_note_rounded,
+                    ),
+                    ClaySegment(
+                      label: t.recipe.saved,
+                      icon: Icons.bookmark_rounded,
+                    ),
+                  ],
+                  selectedIndex: _savedTab ? 1 : 0,
+                  onSelected: (index) => setState(() => _savedTab = index == 1),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              WalkthroughTarget(
+                id: WalkthroughIds.recipesFilters,
+                child: ClayCard(
+                  radius: AppRadius.md,
+                  padding: const EdgeInsets.all(AppSpacing.gutter),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.search_rounded,
-                        color: AppColors.outline,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: TextField(
-                          style: AppTextStyles.bodyMd,
-                          decoration: InputDecoration(
-                            hintText: t.common.search,
-                            filled: false,
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: AppSpacing.gutter,
-                            ),
-                          ),
-                          onChanged: (value) => bloc.add(.search(value)),
+                      // Recessed search pill, per the Stitch library screen.
+                      ClayInset(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.gutter,
                         ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.search_rounded,
+                              color: AppColors.outline,
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: TextField(
+                                style: AppTextStyles.bodyMd,
+                                decoration: InputDecoration(
+                                  hintText: t.common.search,
+                                  filled: false,
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: AppSpacing.gutter,
+                                  ),
+                                ),
+                                onChanged: (value) => bloc.add(.search(value)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.gutter),
+                      Text(
+                        t.editor.topics,
+                        style: AppTextStyles.labelSm.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.base),
+                      DietaryChipSelector(
+                        selected: filters,
+                        onToggle: (pref) {
+                          final updated = [...filters];
+                          updated.contains(pref)
+                              ? updated.remove(pref)
+                              : updated.add(pref);
+                          bloc.add(.filterByDietary(updated));
+                        },
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.gutter),
-                Text(
-                  t.editor.topics,
-                  style: AppTextStyles.labelSm.copyWith(
-                    color: AppColors.onSurfaceVariant,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              if (recipes.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.lg),
+                  child: ClayEmptyState(
+                    icon: _savedTab
+                        ? Icons.bookmark_border_rounded
+                        : Icons.restaurant_menu_rounded,
+                    message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
+                    action: _savedTab
+                        ? null
+                        : ClayButton(
+                            label: t.ingestion.title,
+                            icon: Icons.add_rounded,
+                            onPressed: () =>
+                                context.pushNamed(Routing.ingestion),
+                          ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.base),
-                DietaryChipSelector(
-                  selected: filters,
-                  onToggle: (pref) {
-                    final updated = [...filters];
-                    updated.contains(pref)
-                        ? updated.remove(pref)
-                        : updated.add(pref);
-                    bloc.add(.filterByDietary(updated));
+                )
+              else
+                // Two photo cards to a row, like a cookbook's picture index.
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: AppSpacing.sm,
+                    crossAxisSpacing: AppSpacing.sm,
+                    mainAxisExtent: RecipeCard.height,
+                  ),
+                  itemCount: recipes.length,
+                  itemBuilder: (context, index) {
+                    final recipe = recipes[index];
+                    return RecipeCard(
+                      recipe: recipe,
+                      // No reload on return: the list is driven by the box, so an
+                      // edit made on the details page arrives on its own.
+                      onTap: () => context.pushNamed(
+                        Routing.recipeDetails,
+                        extra: RecipeDetailsArgs(recipe: recipe),
+                      ),
+                      // Long-press to share. Only for recipes this account wrote —
+                      // a member of someone else's recipe cannot invite others, and
+                      // a copy saved from the community is not this account's to
+                      // pass on.
+                      onRemove: recipe.isSavedFromCommunity
+                          ? () => _confirmRemove(context, bloc, recipe)
+                          : null,
+                      onShare: recipe.isMine
+                          ? () async {
+                              final sent = await showRecipeShareSheet(
+                                context,
+                                recipe,
+                              );
+                              if (sent == true && context.mounted) {
+                                AppDialog.success(
+                                  message: t.sharing.sent,
+                                ).notify(context);
+                              }
+                            }
+                          : null,
+                    );
                   },
                 ),
-              ],
-            ),
+            ],
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        if (recipes.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.lg),
-            child: ClayEmptyState(
-              icon: _savedTab
-                  ? Icons.bookmark_border_rounded
-                  : Icons.restaurant_menu_rounded,
-              message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
-              action: _savedTab
-                  ? null
-                  : ClayButton(
-                      label: t.ingestion.title,
-                      icon: Icons.add_rounded,
-                      onPressed: () => context.pushNamed(Routing.ingestion),
-                    ),
-            ),
-          )
-        else
-          // Two photo cards to a row, like a cookbook's picture index.
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppSpacing.sm,
-              crossAxisSpacing: AppSpacing.sm,
-              mainAxisExtent: RecipeCard.height,
-            ),
-            itemCount: recipes.length,
-            itemBuilder: (context, index) {
-              final recipe = recipes[index];
-              return RecipeCard(
-                recipe: recipe,
-                // No reload on return: the list is driven by the box, so an
-                // edit made on the details page arrives on its own.
-                onTap: () => context.pushNamed(
-                  Routing.recipeDetails,
-                  extra: RecipeDetailsArgs(recipe: recipe),
-                ),
-                // Long-press to share. Only for recipes this account wrote —
-                // a member of someone else's recipe cannot invite others, and
-                // a copy saved from the community is not this account's to
-                // pass on.
-                onRemove: recipe.isSavedFromCommunity
-                    ? () => _confirmRemove(context, bloc, recipe)
-                    : null,
-                onShare: recipe.isMine
-                    ? () async {
-                        final sent = await showRecipeShareSheet(
-                          context,
-                          recipe,
-                        );
-                        if (sent == true && context.mounted) {
-                          AppDialog.success(
-                            message: t.sharing.sent,
-                          ).notify(context);
-                        }
-                      }
-                    : null,
-              );
-            },
-          ),
       ],
     );
   }

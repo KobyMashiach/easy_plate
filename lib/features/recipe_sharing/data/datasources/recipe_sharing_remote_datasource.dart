@@ -186,6 +186,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
         orElse: () => ShareInviteStatus.pending,
       ),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      kind: CollabKind.fromName(data['kind'] as String?),
+      via: data['via'] as String?,
     );
   }
 
@@ -196,7 +198,9 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
         .where('targetUid', isEqualTo: uid)
         .where('status', isEqualTo: ShareInviteStatus.pending.name)
         .get();
-    return snapshot.docs.map(_inviteFrom).toList()
+    // A recipe invited as part of a book or plan is answered with the
+    // container, so it is not offered on its own.
+    return snapshot.docs.map(_inviteFrom).where((i) => i.via == null).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 

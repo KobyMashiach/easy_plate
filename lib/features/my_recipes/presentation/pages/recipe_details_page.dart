@@ -217,15 +217,34 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     // shared recipe carries, so swapping one here has to reach the shared
     // document too — otherwise the co-editors keep the picture that was
     // replaced, and only this device ever sees the new one.
-    final stored = await _persist(updated);
+    final RecipeEntity stored;
+    try {
+      stored = await _persist(updated);
+    } catch (e) {
+      // A refused shared write used to vanish here: the picture was uploaded,
+      // nothing recorded it, and the screen went on showing the old one.
+      debugPrint('Photo change failed for ${recipe.id}: $e');
+      if (mounted) AppDialog.error(message: '${t.common.error}\n$e').show(context);
+      return;
+    }
     // Drop the replaced file so removed photos don't accumulate on disk, and
     // the copy in Storage with it — nothing points at it any more, but it would
     // go on being billed.
-    if (previous != null && previous != updated.imageFileName) {
+    // In post mode the previous file name is the author's own local recipe
+    // photo, which must stay on this device.
+    if (widget.sharedId == null &&
+        previous != null &&
+        previous != updated.imageFileName) {
       await ImageStorageService().delete(previous);
-      unawaited(
-        RecipeImageStore().remove(previousRemote, uid: UserScope().uid),
-      );
+      // The old upload stays when the recipe is published: every saved copy
+      // in the community points at that path until its owner refreshes.
+      final published =
+          widget.sharedId != null || stored.sharedRecipeId != null;
+      if (!published) {
+        unawaited(
+          RecipeImageStore().remove(previousRemote, uid: UserScope().uid),
+        );
+      }
     }
     if (mounted) setState(() => recipe = stored);
   }
@@ -240,10 +259,17 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     final recipes = context.read<RecipesRepository>();
     final postId = widget.sharedId;
     if (postId != null) {
-      await UpdateSharedRecipeUseCase(
-        context.read<SharedRecipesRepository>(),
-        context.read<RecipesRepository>(),
-      )(postId, updated, persist: false);
+      try {
+        await UpdateSharedRecipeUseCase(
+          context.read<SharedRecipesRepository>(),
+          recipes,
+        )(postId, updated, persist: false);
+      } catch (e) {
+        debugPrint('Post update failed: $e');
+        if (mounted) {
+          AppDialog.error(message: '${t.common.error}\n$e').show(context);
+        }
+      }
       return updated;
     }
 
@@ -252,7 +278,18 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       recipes: context.read<RecipesRepository>(),
     )(updated, byUid: AuthSessionService().user?.uid ?? '');
 
-    final published = stored.sharedRecipeId;
+    // Recipes published before the link existed carry no post id. Their
+    // post is found by title among this account's own posts, and the link
+    // is written so the next save skips the lookup.
+    var published = stored.sharedRecipeId;
+    if (published == null && stored.isMine) {
+      published = await _findMyPost(stored);
+      if (published != null) {
+        await SaveRecipeUseCase(recipes)(
+          stored.copyWith(sharedRecipeId: published),
+        );
+      }
+    }
     if (published == null || !mounted) return stored;
     final also = await AppDialog.general(
       title: t.recipe.communityUpdateTitle,
@@ -281,6 +318,28 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       return unlinked;
     }
     return stored;
+  }
+
+  /// The community post this account published from [recipe], by title —
+  /// for recipes that predate the stored link. Null when there is none or
+  /// the title is ambiguous.
+  Future<String?> _findMyPost(RecipeEntity recipe) async {
+    final uid = AuthSessionService().user?.uid;
+    if (uid == null) return null;
+    try {
+      final feed = await context.read<SharedRecipesRepository>().getFeed(
+        viewerUid: uid,
+        limit: 200,
+      );
+      final title = recipe.title.trim();
+      final mine = feed
+          .where((p) => p.authorUid == uid && p.recipe.title.trim() == title)
+          .toList();
+      return mine.length == 1 ? mine.single.id : null;
+    } catch (e) {
+      debugPrint('Post lookup failed: $e');
+      return null;
+    }
   }
 
   Future<void> _edit() async {

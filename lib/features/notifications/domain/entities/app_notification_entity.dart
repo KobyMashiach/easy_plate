@@ -12,6 +12,9 @@ class AppNotificationEntity {
   final String? recipeTitle;
   final CollabRole? role;
 
+  /// What a share invite is for; older items carry none and are recipes.
+  final CollabKind kind;
+
   /// The community post, for [AppNotificationType.sharedRecipeUpdated].
   final String? sharedId;
   final bool read;
@@ -28,6 +31,7 @@ class AppNotificationEntity {
     this.collabId,
     this.recipeTitle,
     this.role,
+    this.kind = CollabKind.recipe,
     this.sharedId,
   });
 
@@ -40,6 +44,7 @@ class AppNotificationEntity {
     collabId: collabId,
     recipeTitle: recipeTitle,
     role: role,
+    kind: kind,
     sharedId: sharedId,
     read: read,
     createdAt: createdAt,

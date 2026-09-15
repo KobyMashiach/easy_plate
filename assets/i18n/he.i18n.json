@@ -158,7 +158,13 @@
     "sharedAccess": "ניהול שיתופים",
     "noSharedAccess": "עדיין לא שיתפתם ספרים או רשימות",
     "communityPrices": "מחירים לפי ממוצע המשתמשים",
-    "communityPricesHint": "כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו"
+    "communityPricesHint": "כשאין לך מחיר משלך למוצר, הצג את המחיר החציוני שאנשים אחרים שיתפו",
+    "shoppingReminders": "תזכורות ליום הקניות",
+    "shoppingRemindersHint": "ההתראות נשלחות מהמכשיר, לפי יום הקניות שנבחר",
+    "reminderTwoDaysBefore": "יומיים לפני (ערב)",
+    "reminderDayBefore": "יום לפני (ערב)",
+    "reminderSameDayMorning": "ביום הקניות (בוקר)",
+    "reminderSameDayAfternoon": "ביום הקניות (אחה״צ)"
   },
   "more": {
     "title": "עוד",
@@ -342,14 +348,14 @@
     "sent": "ההזמנה נשלחה",
     "invalidContact": "יש להזין אימייל או מספר טלפון תקינים",
     "notFound": "לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.",
-    "self": "אי אפשר לשתף מתכון עם עצמכם",
+    "self": "אי אפשר לשתף עם עצמכם",
     "failed": "השיתוף נכשל, נסו שוב",
     "pendingInvites": "הזמנות ממתינות",
     "noPendingInvites": "אין הזמנות ממתינות",
-    "sharedByMe": "מתכונים ששיתפתי",
-    "sharedWithMe": "מתכונים ששותפו איתי",
-    "nothingSharedByMe": "עדיין לא שיתפתם מתכונים",
-    "nothingSharedWithMe": "עדיין לא שותפו איתכם מתכונים",
+    "sharedByMe": "מה ששיתפתי",
+    "sharedWithMe": "מה ששותף איתי",
+    "nothingSharedByMe": "עדיין לא שיתפתם כלום",
+    "nothingSharedWithMe": "עדיין לא שותף איתכם כלום",
     "accept": "אישור",
     "decline": "ביטול",
     "accepted": "המתכון נוסף למתכונים שלכם",
@@ -369,7 +375,17 @@
     "syncFailed": "לא הצלחנו לרענן את המתכון המשותף, מוצגת הגרסה השמורה",
     "viewerCannotEdit": "המתכון שותף איתכם לצפייה בלבד",
     "shareAction": "שיתוף",
-    "directoryUnavailable": "השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore."
+    "directoryUnavailable": "השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.",
+    "shareBook": "שיתוף ספר",
+    "sharePlan": "שיתוף תפריט",
+    "acceptedBook": "הספר נוסף לספרייה שלכם",
+    "acceptedPlan": "התפריט נוסף לתפריטים שלכם",
+    "viewerCannotEditBook": "הספר שותף איתכם לצפייה בלבד",
+    "viewerCannotEditPlan": "התפריט שותף איתכם לצפייה בלבד",
+    "kindRecipe": "מתכון",
+    "kindBook": "ספר",
+    "kindPlan": "תפריט",
+    "recipesTravel": "המתכונים שבפנים ישותפו יחד איתו"
   },
   "notifications": {
     "title": "התראות",
@@ -389,7 +405,9 @@
     "recipeGone": "המתכון כבר לא בקהילה",
     "deleteAll": "מחיקת כל ההתראות",
     "deleteAllBody": "כל ההתראות יימחקו.",
-    "openInbox": "פתיחת ההתראות"
+    "openInbox": "פתיחת ההתראות",
+    "sharedBook": "$name שיתף/ה איתך את הספר \"$recipe\"",
+    "sharedPlan": "$name שיתף/ה איתך את התפריט \"$recipe\""
   },
   "editor": {
     "title": "עריכת מתכון",

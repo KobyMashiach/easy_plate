@@ -1,7 +1,9 @@
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/app_enums.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
+import '../entities/collab_recipe_entity.dart';
 import '../entities/share_invite_entity.dart';
 import '../repositories/recipe_sharing_repository.dart';
 
@@ -17,7 +19,15 @@ class RespondToShareInviteUseCase {
 
   Future<RecipeEntity> accept(ShareInviteEntity invite) async {
     final collab = await sharing.acceptInvite(invite);
-    final local = RecipeEntity(
+    final local = localCopy(collab, role: invite.role);
+    await recipes.saveRecipe(local);
+    return local;
+  }
+
+  /// This account's cache of [collab], under a fresh id. Shared with the
+  /// book and plan flows, which let a member into every recipe inside.
+  static RecipeEntity localCopy(CollabRecipeEntity collab, {required CollabRole role}) {
+    return RecipeEntity(
       id: _uuid.v4(),
       title: collab.recipe.title,
       prepTimeMinutes: collab.recipe.prepTimeMinutes,
@@ -32,12 +42,12 @@ class RespondToShareInviteUseCase {
       // after that.
       imageFileName: collab.recipe.imageFileName,
       imageStoragePath: collab.recipe.imageStoragePath,
+      servings: collab.recipe.servings,
+      nutrition: collab.recipe.nutrition,
       collabId: collab.id,
-      collabRole: invite.role,
+      collabRole: role,
       createdAt: DateTime.now(),
     );
-    await recipes.saveRecipe(local);
-    return local;
   }
 
   Future<void> decline(ShareInviteEntity invite) => sharing.declineInvite(invite);
