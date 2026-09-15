@@ -63,7 +63,7 @@ function utcDay() {
 const CACHE_COLLECTION = "ai_url_cache";
 const SOURCE_URL_HEADER = "x-easyplate-source-url";
 const SOURCE_KIND_HEADER = "x-easyplate-source-kind";
-const CACHE_KINDS = new Set(["url", "social"]);
+const CACHE_KINDS = new Set(["url", "social", "video"]);
 
 // Half a year. Recipes are edited rarely; the odd stale one is the price of
 // never paying twice for the same page.
@@ -408,6 +408,15 @@ exports.aiProxy = onRequest(
 // Exported for the unit test. The transaction body is the part worth pinning:
 // a mistake here either gives away unlimited AI or locks everyone out.
 exports.internals = {
+  // Shared with socialRecipe.js, which is the same proxy for one more kind
+  // of source: same caller check, same daily allowance, same URL cache.
+  verifyCaller,
+  claimQuotaSlot,
+  refundQuotaSlot,
+  readCache,
+  writeCache,
+  countHit,
+  GOOGLE_ORIGIN,
   decideQuota,
   utcDay,
   dailyLimitForUser,

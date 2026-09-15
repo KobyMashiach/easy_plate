@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../my_recipes/domain/entities/nutrition_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/collab_recipe_entity.dart';
@@ -58,6 +59,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
         // account's copy of a shared recipe was permanently blank.
         'imageFileName': recipe.imageFileName,
         'imageStoragePath': recipe.imageStoragePath,
+        'servings': recipe.servings,
+        'nutrition': recipe.nutrition?.toJson(),
       };
 
   RecipeEntity _recipeFrom(String id, Map<String, dynamic> data, DateTime createdAt) {
@@ -87,6 +90,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
       mayContain: Allergen.fromNames(data['mayContain']),
       imageFileName: data['imageFileName'] as String?,
       imageStoragePath: data['imageStoragePath'] as String?,
+      servings: (data['servings'] as num?)?.toInt(),
+      nutrition: NutritionEntity.fromJson(data['nutrition']),
       createdAt: createdAt,
     );
   }

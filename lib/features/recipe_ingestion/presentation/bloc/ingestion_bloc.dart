@@ -7,6 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/usecases/save_recipe_usecase.dart';
@@ -99,6 +100,10 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   /// as a timeout, which is what made the feature feel broken rather than slow.
   final Duration analysisTimeout;
 
+  /// A video is fetched and watched before it is read: two to three times
+  /// the budget of a text extraction.
+  static const socialTimeout = Duration(seconds: 150);
+
   IngestionBloc({
     this.analysisTimeout = const Duration(seconds: 45),
     required this.parseRawTextUseCase,
@@ -155,7 +160,8 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   }) async {
     emit(.parsing(_channel));
     try {
-      final recipe = await parse(await _preferences).timeout(analysisTimeout);
+      final timeout = _channel == RecipeIngestionChannel.socialVideo ? socialTimeout : analysisTimeout;
+      final recipe = await parse(await _preferences).timeout(timeout);
       emit(.review(_channel, recipe));
     } on TimeoutException {
       debugPrint('Ingestion timed out after $analysisTimeout');
@@ -180,10 +186,28 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       debugPrint('Fallback text unavailable: $e');
     }
     if (text == null || text.trim().isEmpty) {
-      emit(.errorMessage(_channel, (error ?? 'timeout').toString()));
+      emit(.errorMessage(_channel, _describe(error)));
       return;
     }
     emit(.unparsed(_channel, text, sourceUrl: sourceUrl, timedOut: timedOut));
+  }
+
+  /// A sentence the user can act on, for the failures that have one. The
+  /// rest keep their raw text — it is what a bug report needs.
+  String _describe(Object? error) {
+    if (error is AppException) {
+      switch (error.type) {
+        case AppErrorType.unreadableSource:
+          return t.ingestion.socialUnreadable;
+        case AppErrorType.quotaExceeded:
+          return t.ads.aiQuotaReached;
+        case AppErrorType.networkError:
+          return t.common.networkError;
+        default:
+          break;
+      }
+    }
+    return (error ?? t.ingestion.analysisTimedOut).toString();
   }
 
   RecipeEntity _template(String text, String? sourceUrl) => buildTemplateRecipe(

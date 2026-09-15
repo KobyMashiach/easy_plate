@@ -3,6 +3,7 @@ import 'package:hive_ce/hive.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/recipe_entity.dart';
+import 'nutrition_model.dart';
 import 'recipe_ingredient_model.dart';
 
 part 'recipe_model.freezed.dart';
@@ -39,6 +40,10 @@ sealed class RecipeModel with _$RecipeModel {
     // these existed decode as null, which the adapter reads as empty.
     @HiveField(16) @Default([]) List<String> allergens,
     @HiveField(17) @Default([]) List<String> mayContain,
+    // Servings and per-serving nutrition, appended like everything above:
+    // older recipes decode as null and show as "not estimated yet".
+    @HiveField(18) int? servings,
+    @HiveField(19) NutritionModel? nutrition,
   }) = _RecipeModel;
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
@@ -53,6 +58,8 @@ extension RecipeModelMapper on RecipeModel {
         ingredients: ingredients.map((i) => i.toEntity()).toList(),
         steps: steps,
         dietaryTags: dietaryTags,
+        servings: servings,
+        nutrition: nutrition?.toEntity(),
         allergens: Allergen.fromNames(allergens),
         mayContain: Allergen.fromNames(mayContain),
         sourceChannel: sourceChannel == null
@@ -80,6 +87,8 @@ extension RecipeEntityMapper on RecipeEntity {
         ingredients: ingredients.map((i) => i.toModel()).toList(),
         steps: steps,
         dietaryTags: dietaryTags,
+        servings: servings,
+        nutrition: nutrition?.toModel(),
         allergens: allergens.names,
         mayContain: mayContain.names,
         sourceChannel: sourceChannel?.name,

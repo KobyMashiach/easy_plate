@@ -8,6 +8,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/ai_auth_header.dart';
 import '../../../../core/network/http_calls.dart';
+import '../../../my_recipes/domain/entities/nutrition_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
@@ -19,6 +20,10 @@ abstract class RecipeAiDataSource {
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences);
   Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences);
   Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged});
+  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe);
+
+  /// A picture for [prompt], as JPEG bytes.
+  Future<Uint8List> generateImage(String prompt);
 }
 
 /// Calls the Gemini Interactions API over raw HTTP (there is no official Google
@@ -31,6 +36,13 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
 
   GeminiRecipeAiDataSource({HttpCalls? httpCalls})
       : httpCalls = httpCalls ?? _defaultHttpCalls();
+
+  /// The video function shares the proxy's auth, so the same header provider
+  /// signs it; built on first use so tests that never touch it pay nothing.
+  late final HttpCalls _socialCalls = HttpCalls(
+    baseUrl: ApiConfig.socialRecipeUrl,
+    headerProvider: aiProxyAuthHeader,
+  );
 
   /// Two transports behind one interface. Against our proxy the credential is
   /// the signed-in user, resolved per request because ID tokens expire. Against
@@ -77,6 +89,7 @@ gluten (חיטה, קמח, לחם, פסטה, קוסקוס, סולת, בורגול
 המר כמויות ליחידות מטריות כאשר המקור מציין יחידה ברורה.
 שמור על סדר השלבים כפי שהוא במקור.
 $_dietaryTagRules
+יוצא מן הכלל אחד: את מספר המנות ואת הערכים התזונתיים למנה (קלוריות, חלבון, פחמימות, שומן) עליך תמיד להעריך לפי המצרכים והכמויות, גם כשהמקור לא מציין אותם. אלה הערכות סבירות, לא המצאות.
 החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
 
   /// Optional fields are deliberately left out of `required` rather than typed
@@ -150,10 +163,51 @@ $_dietaryTagRules
         'description':
             'Allergens the source explicitly warns may be present as traces. Empty unless stated',
       },
+      'servings': _servingsSchema,
+      'nutrition': _nutritionSchema,
     },
     // The tags and allergens are required so the model always rules on them —
-    // an empty list is an answer, a missing key would be silence.
-    'required': ['title', 'ingredients', 'steps', 'dietary_tags', 'allergens', 'may_contain'],
+    // an empty list is an answer, a missing key would be silence. Servings
+    // and nutrition are required for the same reason: estimated, never blank.
+    'required': [
+      'title',
+      'ingredients',
+      'steps',
+      'dietary_tags',
+      'allergens',
+      'may_contain',
+      'servings',
+      'nutrition',
+    ],
+  };
+
+  static const _servingsSchema = {
+    'type': 'integer',
+    'minimum': 1,
+    'description':
+        'How many servings the recipe yields. Use the stated yield; otherwise estimate from the ingredient amounts',
+  };
+
+  /// Per-serving nutrition, always estimated: a recipe with no numbers on it
+  /// is one the planner cannot add up.
+  static const _nutritionSchema = {
+    'type': 'object',
+    'description':
+        'Estimated nutrition for ONE serving, derived from the ingredient amounts divided by servings. Estimate from typical values when amounts are missing',
+    'properties': {
+      'calories': {'type': 'integer', 'description': 'kcal per serving'},
+      'protein_g': {'type': 'number', 'description': 'grams of protein per serving'},
+      'carbs_g': {'type': 'number', 'description': 'grams of carbohydrate per serving'},
+      'fat_g': {'type': 'number', 'description': 'grams of fat per serving'},
+    },
+    'required': ['calories', 'protein_g', 'carbs_g', 'fat_g'],
+  };
+
+  /// What [estimateNutrition] asks for: only the two fields it fills.
+  static const _estimateSchema = {
+    'type': 'object',
+    'properties': {'servings': _servingsSchema, 'nutrition': _nutritionSchema},
+    'required': ['servings', 'nutrition'],
   };
 
   // Mirrors Allergen by name.
@@ -195,6 +249,7 @@ $_dietaryTagRules
 אתה שף ומפתח מתכונים. המשתמש מתאר מנה שהוא רוצה להכין, ואתה כותב לו מתכון מלא ומעשי.
 כתוב את המתכון בשפה שבה נכתבה הבקשה.
 המתכון חייב להיות שלם: כותרת קצרה, זמן הכנה וזמן בישול בדקות, רשימת מצרכים עם כמות ויחידת מידה לכל מצרך, ושלבי הכנה ברורים לפי הסדר.
+ציין תמיד את מספר המנות שהמתכון מניב, ואת הערכים התזונתיים למנה אחת — קלוריות, חלבון, פחמימות ושומן בגרמים — מחושבים מהמצרכים והכמויות שכתבת חלקי מספר המנות. אם הבקשה מציינת כמות סועדים, זה מספר המנות.
 השתמש ביחידות מטריות (גרם, מ"ל, כפית, כף, כוס, יחידה).
 התאם את המתכון לכל דרישה שבבקשה — גיל, אלרגיות, העדפות תזונתיות, כמות סועדים, זמן — ולהעדפות התזונתיות של המשתמש אם צוינו. אם הבקשה מזכירה תינוק או ילד קטן, הקפד על התאמה בטיחותית לגיל (ללא דבש מתחת לגיל שנה, ללא מלח או סוכר מוספים לתינוקות, מרקם מתאים).
 $_dietaryTagRules
@@ -309,6 +364,50 @@ $_dietaryTagRules
     Map<String, dynamic> body, {
     Map<String, String>? headers,
   }) async {
+    return _decodeRecipe(await _callRaw(body, headers: headers));
+  }
+
+  Future<Map<String, dynamic>> _postSocial(Map<String, dynamic> body) async {
+    _assertConfigured();
+    try {
+      final response = await _socialCalls.post('', data: body);
+      final data = response?.data;
+      if (data is! Map<String, dynamic>) throw const AppException(AppErrorType.parsingFailed);
+      return data;
+    } on AppException catch (e) {
+      // The function's own refusals travel as 422 with a SOCIAL_* status.
+      if (e.message.contains('SOCIAL_UNREADABLE') || e.message.contains('SOCIAL_EMPTY')) {
+        throw AppException(AppErrorType.unreadableSource, message: e.message);
+      }
+      rethrow;
+    }
+  }
+
+  /// The JSON object inside an interaction's text.
+  Map<String, dynamic> _decodeRecipe(Map<String, dynamic> data) {
+    final text = _extractText(data);
+    final start = text.indexOf('{');
+    final end = text.lastIndexOf('}');
+    if (start == -1 || end <= start) {
+      debugPrint('Gemini returned no JSON object: $text');
+      throw const AppException(
+        AppErrorType.parsingFailed,
+        message: 'No recipe returned by the model',
+      );
+    }
+    try {
+      return jsonDecode(text.substring(start, end + 1)) as Map<String, dynamic>;
+    } on FormatException catch (e) {
+      debugPrint('Gemini JSON decode failed: $e');
+      throw AppException(AppErrorType.parsingFailed, message: e.message);
+    }
+  }
+
+  /// The interaction as Google returned it, after the capacity retries.
+  Future<Map<String, dynamic>> _callRaw(
+    Map<String, dynamic> body, {
+    Map<String, String>? headers,
+  }) async {
     _assertConfigured();
 
     Map<String, dynamic>? data;
@@ -332,24 +431,7 @@ $_dietaryTagRules
       }
     }
     if (data == null) throw const AppException(AppErrorType.parsingFailed);
-
-    final text = _extractText(data);
-    final start = text.indexOf('{');
-    final end = text.lastIndexOf('}');
-    if (start == -1 || end <= start) {
-      debugPrint('Gemini returned no JSON object: $text');
-      throw const AppException(
-        AppErrorType.parsingFailed,
-        message: 'No recipe returned by the model',
-      );
-    }
-
-    try {
-      return jsonDecode(text.substring(start, end + 1)) as Map<String, dynamic>;
-    } on FormatException catch (e) {
-      debugPrint('Gemini JSON decode failed: $e');
-      throw AppException(AppErrorType.parsingFailed, message: e.message);
-    }
+    return data;
   }
 
   RecipeEntity _toEntity(
@@ -384,9 +466,76 @@ $_dietaryTagRules
       ),
       allergens: allergens,
       mayContain: Allergen.fromNames(input['may_contain']),
+      servings: _servingsFrom(input['servings']),
+      nutrition: nutritionFromModel(input['nutrition']),
       sourceChannel: channel,
       sourceUrl: sourceUrl,
       createdAt: DateTime.now(),
+    );
+  }
+
+  static int? _servingsFrom(Object? raw) {
+    final n = (raw as num?)?.toInt();
+    return n == null || n < 1 ? null : n;
+  }
+
+  /// One picture from the image model. The Interactions API takes the image
+  /// request as a `response_format` of type `image` and answers with an
+  /// `image` content block carrying base64 — same envelope as text, so the
+  /// same proxy, quota and auth apply. (No `delivery` field: the API rejects
+  /// it, inline is what it does.)
+  @override
+  Future<Uint8List> generateImage(String prompt) async {
+    final data = await _callRaw({
+      'model': ApiConfig.imageModel,
+      'input': prompt,
+      'response_format': {
+        'type': 'image',
+        'aspect_ratio': '4:3',
+        'image_size': '1K',
+        'mime_type': 'image/jpeg',
+      },
+    });
+    for (final step in (data['steps'] as List?) ?? const []) {
+      if (step is! Map) continue;
+      for (final block in (step['content'] as List?) ?? const []) {
+        if (block is Map && block['type'] == 'image' && block['data'] is String) {
+          return base64Decode(block['data'] as String);
+        }
+      }
+    }
+    debugPrint('Gemini returned no image block: ${jsonEncode(data).substring(0, 300)}');
+    throw const AppException(AppErrorType.parsingFailed, message: 'No image returned');
+  }
+
+  /// Fills in servings and per-serving nutrition for a recipe that has none —
+  /// everything written before nutrition existed, and anything typed by hand.
+  /// The rest of the recipe is untouched.
+  @override
+  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) async {
+    final payload = jsonEncode({
+      'title': recipe.title,
+      'servings': recipe.servings,
+      'ingredients': [
+        for (final i in recipe.ingredients)
+          {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
+      ],
+      'steps': recipe.steps,
+    });
+    final data = await _callStructured(
+      _body(
+        input: 'הערך את מספר המנות ואת הערכים התזונתיים למנה אחת של המתכון הבא. '
+            'אם מספר המנות נתון, השתמש בו.\n\n$payload',
+        schema: _estimateSchema,
+      ),
+    );
+    final nutrition = nutritionFromModel(data['nutrition']);
+    if (nutrition == null) {
+      throw const AppException(AppErrorType.parsingFailed, message: 'No nutrition returned');
+    }
+    return recipe.copyWith(
+      servings: recipe.servings ?? _servingsFrom(data['servings']),
+      nutrition: nutrition,
     );
   }
 
@@ -422,11 +571,34 @@ $_dietaryTagRules
     return _toEntity(input, channel: RecipeIngestionChannel.urlScrape, sourceUrl: url);
   }
 
-  /// Tier 1 of the social pipeline: title, caption and visible page text.
+  /// The video itself, when there is a server to fetch it: the social
+  /// function downloads it and hands Gemini the frames, the audio and the
+  /// caption together. Against Google directly (no proxy) it degrades to
+  /// reading the page, which the short-form platforms mostly refuse.
+  ///
+  /// The function answers in the Interactions envelope, so the same reader
+  /// applies; its typed 422s become [AppErrorType.unreadableSource], which
+  /// the ingestion screen turns into "we could not read this video".
   /// Tier 2 (audio transcription + on-screen OCR) needs a video-processing
   /// service that this client does not have access to.
   @override
   Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) async {
+    if (ApiConfig.usesProxy) {
+      final data = await _postSocial({
+        'url': url,
+        'model': ApiConfig.model,
+        'system_instruction': _systemPrompt,
+        'prompt': 'שלוף את המתכון מהסרטון הבא: מהטקסט שמופיע על המסך, ממה שנאמר, ממה שנעשה, ומהכיתוב. '
+            'אם הכמויות לא נאמרות אך נראות, הערך אותן. אם אין מתכון בסרטון, החזר רשימות ריקות.'
+            '${_dietaryHint(preferences)}',
+        'schema': _recipeSchema,
+      });
+      return _toEntity(
+        _decodeRecipe(data),
+        channel: RecipeIngestionChannel.socialVideo,
+        sourceUrl: url,
+      );
+    }
     final input = await _callStructured(
       _body(
         input:
@@ -525,6 +697,22 @@ $_dietaryTagRules
       steps: steps.length == recipe.steps.length ? steps : recipe.steps,
     );
   }
+}
+
+/// The model's `nutrition` object as an entity, or null when it is missing
+/// or unusable. Negative numbers are the model misreading a unit, and are
+/// clamped rather than failing the whole recipe over one figure.
+NutritionEntity? nutritionFromModel(Object? raw) {
+  if (raw is! Map) return null;
+  final calories = (raw['calories'] as num?)?.toInt();
+  if (calories == null) return null;
+  double grams(String key) => ((raw[key] as num?)?.toDouble() ?? 0).clamp(0, double.infinity);
+  return NutritionEntity(
+    calories: calories < 0 ? 0 : calories,
+    proteinGrams: grams('protein_g'),
+    carbsGrams: grams('carbs_g'),
+    fatGrams: grams('fat_g'),
+  );
 }
 
 /// The model's `dietary_tags` as enum values, in the app's own order and

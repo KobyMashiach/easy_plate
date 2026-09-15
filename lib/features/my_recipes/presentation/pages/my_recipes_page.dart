@@ -227,10 +227,20 @@ class _RecipesBodyState extends State<_RecipesBody> {
             ),
           )
         else
-          for (final recipe in recipes)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: RecipeCard(
+          // Two photo cards to a row, like a cookbook's picture index.
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: AppSpacing.sm,
+              crossAxisSpacing: AppSpacing.sm,
+              mainAxisExtent: RecipeCard.height,
+            ),
+            itemCount: recipes.length,
+            itemBuilder: (context, index) {
+              final recipe = recipes[index];
+              return RecipeCard(
                 recipe: recipe,
                 // No reload on return: the list is driven by the box, so an
                 // edit made on the details page arrives on its own.
@@ -258,8 +268,9 @@ class _RecipesBodyState extends State<_RecipesBody> {
                         }
                       }
                     : null,
-              ),
-            ),
+              );
+            },
+          ),
       ],
     );
   }

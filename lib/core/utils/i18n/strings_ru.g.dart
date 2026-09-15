@@ -52,6 +52,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
 	@override late final _Translations$recipe$ru recipe = _Translations$recipe$ru._(_root);
+	@override late final _Translations$nutrition$ru nutrition = _Translations$nutrition$ru._(_root);
 	@override late final _Translations$community$ru community = _Translations$community$ru._(_root);
 	@override late final _Translations$sharing$ru sharing = _Translations$sharing$ru._(_root);
 	@override late final _Translations$notifications$ru notifications = _Translations$notifications$ru._(_root);
@@ -91,6 +92,7 @@ class _Translations$common$ru extends Translations$common$he {
 	@override String get error => 'Произошла ошибка';
 	@override String get or => 'или';
 	@override String get missingInfo => '[нет данных]';
+	@override String get networkError => 'Нет подключения к интернету';
 }
 
 // Path: auth
@@ -337,6 +339,7 @@ class _Translations$books$ru extends Translations$books$he {
 	@override String get coverImage => 'Обложка';
 	@override String get bookOptions => 'Параметры книги';
 	@override String get renameBook => 'Переименовать книгу';
+	@override String get spineColor => 'Цвет корешка';
 }
 
 // Path: recipe
@@ -367,6 +370,50 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get analyzeNow => 'Проанализировать с AI';
 	@override String get analyzing => 'Анализируем рецепт...';
 	@override String get analyzeFailed => 'Анализ не удался — попробуйте позже';
+}
+
+// Path: nutrition
+class _Translations$nutrition$ru extends Translations$nutrition$he {
+	_Translations$nutrition$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Пищевая ценность';
+	@override String get perServing => 'на порцию';
+	@override String get perServingHint => 'Все значения указаны на одну порцию. Оставьте пустым, чтобы убрать оценку.';
+	@override String get servings => 'порций';
+	@override String servingsCount({required Object count}) => '${count} порций';
+	@override String get calories => 'Калории';
+	@override String get kcal => 'ккал';
+	@override String get protein => 'Белки';
+	@override String get carbs => 'Углеводы';
+	@override String get fat => 'Жиры';
+	@override String get gramsShort => 'г';
+	@override String get estimate => 'Оценить с помощью ИИ';
+	@override String get estimating => 'Оцениваем пищевую ценность…';
+	@override String get estimateFailed => 'Оценка не удалась, попробуйте ещё раз';
+	@override String get none => 'Для этого рецепта ещё нет пищевой ценности';
+	@override String get noneHint => 'ИИ может оценить калории, белки, углеводы и жиры по списку ингредиентов';
+	@override String get estimated => 'Пищевая ценность обновлена';
+	@override String get editorServings => 'Количество порций';
+	@override String get editorCalories => 'Калорий на порцию';
+	@override String get editorProtein => 'Белки (г)';
+	@override String get editorCarbs => 'Углеводы (г)';
+	@override String get editorFat => 'Жиры (г)';
+	@override String get dashboard => 'Панель питания';
+	@override String get weekly => 'На этой неделе';
+	@override String get today => 'Сегодня';
+	@override String get dayTotal => 'Итого за день';
+	@override String get weekTotal => 'Итого за неделю';
+	@override String get dailyAverage => 'В среднем на запланированный день';
+	@override String get perMeal => 'По приёмам пищи';
+	@override String get perDay => 'По дням';
+	@override String get noPlanned => 'Пока нет запланированных блюд с рецептами';
+	@override String missingCount({required Object count}) => '${count} позиций без пищевой ценности';
+	@override String get macroSplit => 'Распределение калорий';
+	@override String get kcalPerDay => 'ккал в день';
+	@override String get openDashboard => 'Недельная панель';
 }
 
 // Path: community
@@ -553,7 +600,9 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get pasteHint => 'Вставьте сюда рецепт из WhatsApp или любого другого источника';
 	@override String get webSearch => 'Поиск в интернете';
 	@override String get urlScrape => 'Ссылка на сайт';
-	@override String get socialVideo => 'TikTok / Reels';
+	@override String get socialVideo => 'Видео: TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideoHint => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook';
+	@override String get socialUnreadable => 'Не удалось прочитать это видео. Возможно, аккаунт закрыт или платформа заблокировала запрос. Скопируйте описание и вставьте его как текст.';
 	@override String get aiRequest => 'Запросить рецепт';
 	@override String get aiRequestHint => 'Опишите, что хотите приготовить. Например: манная каша для годовалого ребёнка с фруктами';
 	@override String get parse => 'Разобрать рецепт';
@@ -694,6 +743,22 @@ class _Translations$image$ru extends Translations$image$he {
 	@override String get gallery => 'Выбрать из галереи';
 	@override String get camera => 'Сделать фото';
 	@override String get remove => 'Удалить фото';
+	@override String get generate => 'Создать с помощью ИИ';
+	@override String get generating => 'Создаём изображение… это займёт несколько секунд';
+	@override String get generateFailed => 'Не удалось создать изображение, попробуйте ещё раз';
+	@override String get coverTitle => 'Какую обложку создать?';
+	@override String get coverHint => 'Выберите категорию, напишите что-нибудь или и то и другое';
+	@override String get coverFreeText => 'Свободный текст, например: бургеры';
+	@override String get coverRequired => 'Выберите категорию или напишите что-нибудь';
+	@override String get coverGenerate => 'Создать обложку';
+	@override String get themeKids => 'Детское';
+	@override String get themeHealthy => 'Здоровое';
+	@override String get themeIndulgent => 'Вкусное и сытное';
+	@override String get themeSweets => 'Сладкое и выпечка';
+	@override String get themeMeat => 'Мясо и гриль';
+	@override String get themeVegan => 'Веганское';
+	@override String get themeHolidays => 'Праздники';
+	@override String get themeQuick => 'Быстро и просто';
 }
 
 // Path: nav
@@ -983,6 +1048,7 @@ extension on TranslationsRu {
 			'common.error' => 'Произошла ошибка',
 			'common.or' => 'или',
 			'common.missingInfo' => '[нет данных]',
+			'common.networkError' => 'Нет подключения к интернету',
 			'auth.welcome' => 'Добро пожаловать в EasyPlate',
 			'auth.subtitle' => 'Войдите, чтобы сохранять рецепты',
 			'auth.signIn' => 'Вход',
@@ -1139,6 +1205,7 @@ extension on TranslationsRu {
 			'books.coverImage' => 'Обложка',
 			'books.bookOptions' => 'Параметры книги',
 			'books.renameBook' => 'Переименовать книгу',
+			'books.spineColor' => 'Цвет корешка',
 			'recipe.prepTime' => 'Время подготовки',
 			'recipe.cookTime' => 'Время приготовления',
 			'recipe.ingredients' => 'Ингредиенты',
@@ -1160,6 +1227,41 @@ extension on TranslationsRu {
 			'recipe.analyzeNow' => 'Проанализировать с AI',
 			'recipe.analyzing' => 'Анализируем рецепт...',
 			'recipe.analyzeFailed' => 'Анализ не удался — попробуйте позже',
+			'nutrition.title' => 'Пищевая ценность',
+			'nutrition.perServing' => 'на порцию',
+			'nutrition.perServingHint' => 'Все значения указаны на одну порцию. Оставьте пустым, чтобы убрать оценку.',
+			'nutrition.servings' => 'порций',
+			'nutrition.servingsCount' => ({required Object count}) => '${count} порций',
+			'nutrition.calories' => 'Калории',
+			'nutrition.kcal' => 'ккал',
+			'nutrition.protein' => 'Белки',
+			'nutrition.carbs' => 'Углеводы',
+			'nutrition.fat' => 'Жиры',
+			'nutrition.gramsShort' => 'г',
+			'nutrition.estimate' => 'Оценить с помощью ИИ',
+			'nutrition.estimating' => 'Оцениваем пищевую ценность…',
+			'nutrition.estimateFailed' => 'Оценка не удалась, попробуйте ещё раз',
+			'nutrition.none' => 'Для этого рецепта ещё нет пищевой ценности',
+			'nutrition.noneHint' => 'ИИ может оценить калории, белки, углеводы и жиры по списку ингредиентов',
+			'nutrition.estimated' => 'Пищевая ценность обновлена',
+			'nutrition.editorServings' => 'Количество порций',
+			'nutrition.editorCalories' => 'Калорий на порцию',
+			'nutrition.editorProtein' => 'Белки (г)',
+			'nutrition.editorCarbs' => 'Углеводы (г)',
+			'nutrition.editorFat' => 'Жиры (г)',
+			'nutrition.dashboard' => 'Панель питания',
+			'nutrition.weekly' => 'На этой неделе',
+			'nutrition.today' => 'Сегодня',
+			'nutrition.dayTotal' => 'Итого за день',
+			'nutrition.weekTotal' => 'Итого за неделю',
+			'nutrition.dailyAverage' => 'В среднем на запланированный день',
+			'nutrition.perMeal' => 'По приёмам пищи',
+			'nutrition.perDay' => 'По дням',
+			'nutrition.noPlanned' => 'Пока нет запланированных блюд с рецептами',
+			'nutrition.missingCount' => ({required Object count}) => '${count} позиций без пищевой ценности',
+			'nutrition.macroSplit' => 'Распределение калорий',
+			'nutrition.kcalPerDay' => 'ккал в день',
+			'nutrition.openDashboard' => 'Недельная панель',
 			'community.title' => 'Сообщество',
 			'community.forum' => 'Форум',
 			'community.sharedRecipes' => 'Общие рецепты',
@@ -1301,7 +1403,9 @@ extension on TranslationsRu {
 			'ingestion.pasteHint' => 'Вставьте сюда рецепт из WhatsApp или любого другого источника',
 			'ingestion.webSearch' => 'Поиск в интернете',
 			'ingestion.urlScrape' => 'Ссылка на сайт',
-			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.socialVideo' => 'Видео: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideoHint' => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook',
+			'ingestion.socialUnreadable' => 'Не удалось прочитать это видео. Возможно, аккаунт закрыт или платформа заблокировала запрос. Скопируйте описание и вставьте его как текст.',
 			'ingestion.aiRequest' => 'Запросить рецепт',
 			'ingestion.aiRequestHint' => 'Опишите, что хотите приготовить. Например: манная каша для годовалого ребёнка с фруктами',
 			'ingestion.parse' => 'Разобрать рецепт',
@@ -1406,6 +1510,22 @@ extension on TranslationsRu {
 			'image.gallery' => 'Выбрать из галереи',
 			'image.camera' => 'Сделать фото',
 			'image.remove' => 'Удалить фото',
+			'image.generate' => 'Создать с помощью ИИ',
+			'image.generating' => 'Создаём изображение… это займёт несколько секунд',
+			'image.generateFailed' => 'Не удалось создать изображение, попробуйте ещё раз',
+			'image.coverTitle' => 'Какую обложку создать?',
+			'image.coverHint' => 'Выберите категорию, напишите что-нибудь или и то и другое',
+			'image.coverFreeText' => 'Свободный текст, например: бургеры',
+			'image.coverRequired' => 'Выберите категорию или напишите что-нибудь',
+			'image.coverGenerate' => 'Создать обложку',
+			'image.themeKids' => 'Детское',
+			'image.themeHealthy' => 'Здоровое',
+			'image.themeIndulgent' => 'Вкусное и сытное',
+			'image.themeSweets' => 'Сладкое и выпечка',
+			'image.themeMeat' => 'Мясо и гриль',
+			'image.themeVegan' => 'Веганское',
+			'image.themeHolidays' => 'Праздники',
+			'image.themeQuick' => 'Быстро и просто',
 			'nav.library' => 'Книги',
 			'nav.recipes' => 'Рецепты',
 			'nav.mealPlan' => 'Меню',
@@ -1424,6 +1544,8 @@ extension on TranslationsRu {
 			'ads.sharedQuotaReached' => 'Вы достигли дневного лимита общих рецептов. Завтра он обнулится!',
 			'ads.unlockRecipeTitle' => 'Открыть общий рецепт',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Посмотрите короткое видео, чтобы открыть этот рецепт (осталось на сегодня: ${count})',
+			_ => null,
+		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'На сегодня осталось ИИ-извлечений: ${remaining}/${total}',
 			'ads.aiQuotaReached' => 'Вы достигли дневного лимита ИИ-извлечений. Завтра снова откроется!',
 			'ads.aiLockedHint' => 'Для извлечения по ссылке нужно посмотреть короткое видео',
@@ -1479,8 +1601,6 @@ extension on TranslationsRu {
 			'walkthrough.bookTitle' => 'Справочник EasyPlate',
 			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Это только справочник: ничего не сохраняется.',
 			'walkthrough.contents' => 'Оглавление',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'Глава ${number}',
 			'walkthrough.backToContents' => 'К оглавлению',
 			'walkthrough.stepsTitle' => 'Шаги',

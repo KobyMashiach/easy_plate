@@ -3,6 +3,7 @@ import 'dart:ui' show PointMode;
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/image_viewer_page.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -21,7 +22,9 @@ class TableOfContentsPage extends StatelessWidget {
   final List<RecipeEntity> recipes;
   final ValueChanged<int> onSelectRecipe;
 
-  /// Opens the cover-photo picker. Null hides the edit affordance.
+  /// Opens the cover-photo picker. Null hides the edit affordance. Reached
+  /// by a long press once a cover exists (a tap then opens the picture), and
+  /// by a plain tap while there is none.
   final VoidCallback? onTapCover;
 
   const TableOfContentsPage({
@@ -44,7 +47,14 @@ class TableOfContentsPage extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           GestureDetector(
-            onTap: onTapCover,
+            onTap: coverImageFileName != null || coverImageRemotePath != null
+                ? () => showImageViewer(
+                      context,
+                      fileName: coverImageFileName,
+                      remotePath: coverImageRemotePath,
+                    )
+                : onTapCover,
+            onLongPress: onTapCover,
             behavior: HitTestBehavior.opaque,
             child: SizedBox(
               width: double.infinity,

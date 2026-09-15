@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../domain/entities/meal_entity.dart';
@@ -49,6 +50,8 @@ sealed class MealPlannerState with _$MealPlannerState {
     List<MealPlanEntity> plans, {
     MealPlanEntity? selectedPlan,
     @Default({}) Map<String, String> recipeTitles,
+    // The recipes behind the plan's items, for the nutrition roll-ups.
+    @Default({}) Map<String, RecipeEntity> recipes,
   }) = MealPlannerLoaded;
   const factory MealPlannerState.errorMessage(String error) = MealPlannerError;
 }
@@ -88,9 +91,9 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     );
   }
 
-  Future<Map<String, String>> _recipeTitles() async {
+  Future<Map<String, RecipeEntity>> _recipes() async {
     final recipes = await recipesRepository.getRecipes();
-    return {for (final recipe in recipes) recipe.id: recipe.title};
+    return {for (final recipe in recipes) recipe.id: recipe};
   }
 
   Future<void> _reload(Emitter<MealPlannerState> emit, {String? selectedPlanId}) async {
@@ -99,7 +102,13 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       final selectedId = selectedPlanId ??
           (state is MealPlannerLoaded ? (state as MealPlannerLoaded).selectedPlan?.id : null);
       final selected = plans.where((p) => p.id == selectedId).firstOrNull ?? plans.firstOrNull;
-      emit(.loaded(plans, selectedPlan: selected, recipeTitles: await _recipeTitles()));
+      final recipes = await _recipes();
+      emit(.loaded(
+        plans,
+        selectedPlan: selected,
+        recipeTitles: {for (final r in recipes.values) r.id: r.title},
+        recipes: recipes,
+      ));
     } catch (e) {
       debugPrint('Meal planner error: $e');
       emit(.errorMessage(e.toString()));

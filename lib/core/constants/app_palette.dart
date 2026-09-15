@@ -69,6 +69,11 @@ class AppPalette {
   final Color infoContainer;
   final Color onInfoContainer;
 
+  /// The one warm colour in an otherwise cool palette, reserved for data:
+  /// the fat macro and highlighted figures in the nutrition views.
+  final Color warmAccent;
+  final Color onWarmAccent;
+
   const AppPalette({
     required this.brightness,
     required this.background,
@@ -124,6 +129,8 @@ class AppPalette {
     required this.navDock,
     required this.infoContainer,
     required this.onInfoContainer,
+    required this.warmAccent,
+    required this.onWarmAccent,
   });
 
   static const light = AppPalette(
@@ -181,6 +188,8 @@ class AppPalette {
     navDock: Color(0xFF1E1E24),
     infoContainer: Color(0xFFD0E4FF),
     onInfoContainer: Color(0xFF001D36),
+    warmAccent: Color(0xFFF2A93B),
+    onWarmAccent: Color(0xFF3B2600),
   );
 
   static const dark = AppPalette(
@@ -238,5 +247,7 @@ class AppPalette {
     navDock: Color(0xFF3E3C44),
     infoContainer: Color(0xFF00497D),
     onInfoContainer: Color(0xFFD1E4FF),
+    warmAccent: Color(0xFFFFC46B),
+    onWarmAccent: Color(0xFF3B2600),
   );
 }

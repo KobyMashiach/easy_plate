@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'dart:async';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
@@ -60,6 +62,10 @@ class _FakeIngestion implements RecipeIngestionRepository {
   @override
   Future<RecipeEntity> refineRecipe(RecipeEntity r, {required bool timesChanged}) =>
       throw UnimplementedError();
+  @override
+  Future<RecipeEntity> estimateNutrition(RecipeEntity r) => throw UnimplementedError();
+  @override
+  Future<Uint8List> generateImage(String prompt) => throw UnimplementedError();
 }
 
 class _FakeRecipes implements RecipesRepository {

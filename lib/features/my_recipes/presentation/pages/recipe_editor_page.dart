@@ -14,6 +14,7 @@ import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_ingestion/domain/usecases/refine_recipe_usecase.dart';
+import '../../domain/entities/nutrition_entity.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../../../../core/widgets/app_dialog.dart';
@@ -71,6 +72,24 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   late final TextEditingController _cook =
       TextEditingController(text: widget.recipe.cookTimeMinutes?.toString() ?? '');
 
+  // Servings and the per-serving figures, editable like the times: the model
+  // estimates them, the cook corrects them.
+  late final TextEditingController _servings =
+      TextEditingController(text: widget.recipe.servings?.toString() ?? '');
+  late final TextEditingController _calories =
+      TextEditingController(text: widget.recipe.nutrition?.calories.toString() ?? '');
+  late final TextEditingController _protein =
+      TextEditingController(text: _grams(widget.recipe.nutrition?.proteinGrams));
+  late final TextEditingController _carbs =
+      TextEditingController(text: _grams(widget.recipe.nutrition?.carbsGrams));
+  late final TextEditingController _fat =
+      TextEditingController(text: _grams(widget.recipe.nutrition?.fatGrams));
+
+  static String _grams(double? value) {
+    if (value == null) return '';
+    return value == value.roundToDouble() ? value.round().toString() : value.toStringAsFixed(1);
+  }
+
   late final List<_IngredientRow> _ingredients = [
     for (final ingredient in widget.recipe.ingredients)
       _IngredientRow(
@@ -108,6 +127,9 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     _title.dispose();
     _prep.dispose();
     _cook.dispose();
+    for (final c in [_servings, _calories, _protein, _carbs, _fat]) {
+      c.dispose();
+    }
     for (final row in _ingredients) {
       row.dispose();
     }
@@ -118,6 +140,22 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   }
 
   int? _minutes(TextEditingController controller) => int.tryParse(controller.text.trim());
+
+  double _gramsOf(TextEditingController c) =>
+      double.tryParse(c.text.trim().replaceAll(',', '.')) ?? 0;
+
+  /// Null unless calories were given: the grams alone are not a nutrition
+  /// entry, and a blank calories field is the way to clear one.
+  NutritionEntity? _collectNutrition() {
+    final calories = int.tryParse(_calories.text.trim());
+    if (calories == null) return null;
+    return NutritionEntity(
+      calories: calories,
+      proteinGrams: _gramsOf(_protein),
+      carbsGrams: _gramsOf(_carbs),
+      fatGrams: _gramsOf(_fat),
+    );
+  }
 
   bool get _timesChanged =>
       _minutes(_prep) != widget.recipe.prepTimeMinutes ||
@@ -142,6 +180,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           .toList(),
       steps: _steps.map((c) => c.text.trim()).where((step) => step.isNotEmpty).toList(),
       dietaryTags: _topics,
+      servings: _minutes(_servings),
+      nutrition: _collectNutrition(),
       // Allergens are a detail of the allergy topic: without it they are not
       // saved, whatever the lists still hold.
       allergens: _hasAllergyTopic ? _allergens : const [],
@@ -289,6 +329,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                       const SizedBox(height: AppSpacing.md),
                       _timesCard(),
                       const SizedBox(height: AppSpacing.md),
+                      _nutritionCard(),
+                      const SizedBox(height: AppSpacing.md),
                       _topicsCard(),
                       const SizedBox(height: AppSpacing.md),
                       _ingredientsCard(),
@@ -413,6 +455,46 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           Text(label, style: AppTextStyles.labelMd),
         ],
       ),
+    );
+  }
+
+  Widget _nutritionCard() {
+    return _card(
+      title: t.nutrition.title,
+      children: [
+        _minutesField(_servings, t.nutrition.editorServings),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            Expanded(child: _minutesField(_calories, t.nutrition.editorCalories)),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(child: _gramsField(_protein, t.nutrition.editorProtein)),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            Expanded(child: _gramsField(_carbs, t.nutrition.editorCarbs)),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(child: _gramsField(_fat, t.nutrition.editorFat)),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.base),
+        Text(
+          t.nutrition.perServingHint,
+          style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+        ),
+      ],
+    );
+  }
+
+  Widget _gramsField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+      style: AppTextStyles.bodyMd,
+      decoration: InputDecoration(labelText: label),
     );
   }
 

@@ -31,9 +31,21 @@ abstract class ApiConfig {
 
   static const interactionsPath = '/v1beta/interactions';
 
+  /// The video function, deployed beside the proxy under its own name. Only
+  /// meaningful behind the proxy: against Google directly there is no server
+  /// to fetch a video, and the social channel falls back to reading the page.
+  static String get socialRecipeUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/socialRecipe');
+
   static const model = String.fromEnvironment(
     'GEMINI_MODEL',
     defaultValue: 'gemini-3.8-flash',
+  );
+
+  /// The image model behind "create a picture with AI". A separate define so
+  /// a renamed image tier can be switched without a release.
+  static const imageModel = String.fromEnvironment(
+    'GEMINI_IMAGE_MODEL',
+    defaultValue: 'gemini-3.1-flash-image',
   );
 
   /// Web search only returns titles and links — no reasoning to speak of — so

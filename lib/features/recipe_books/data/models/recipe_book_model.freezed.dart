@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecipeBookModel {
 
-@HiveField(0) String get id;@HiveField(1) String get title;@HiveField(2) List<BookRecipeRefModel> get recipeRefs;@HiveField(3) Map<String, String> get collaborators;@HiveField(4) DateTime get createdAt;@HiveField(5) String? get coverImageFileName;@HiveField(6) String? get coverImageStoragePath;
+@HiveField(0) String get id;@HiveField(1) String get title;@HiveField(2) List<BookRecipeRefModel> get recipeRefs;@HiveField(3) Map<String, String> get collaborators;@HiveField(4) DateTime get createdAt;@HiveField(5) String? get coverImageFileName;@HiveField(6) String? get coverImageStoragePath;// The spine colour by name, appended: older books decode as null.
+@HiveField(7) String? get spine;
 /// Create a copy of RecipeBookModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $RecipeBookModelCopyWith<RecipeBookModel> get copyWith => _$RecipeBookModelCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeBookModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.recipeRefs, recipeRefs)&&const DeepCollectionEquality().equals(other.collaborators, collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.coverImageFileName, coverImageFileName) || other.coverImageFileName == coverImageFileName)&&(identical(other.coverImageStoragePath, coverImageStoragePath) || other.coverImageStoragePath == coverImageStoragePath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeBookModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.recipeRefs, recipeRefs)&&const DeepCollectionEquality().equals(other.collaborators, collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.coverImageFileName, coverImageFileName) || other.coverImageFileName == coverImageFileName)&&(identical(other.coverImageStoragePath, coverImageStoragePath) || other.coverImageStoragePath == coverImageStoragePath)&&(identical(other.spine, spine) || other.spine == spine));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,const DeepCollectionEquality().hash(recipeRefs),const DeepCollectionEquality().hash(collaborators),createdAt,coverImageFileName,coverImageStoragePath);
+int get hashCode => Object.hash(runtimeType,id,title,const DeepCollectionEquality().hash(recipeRefs),const DeepCollectionEquality().hash(collaborators),createdAt,coverImageFileName,coverImageStoragePath,spine);
 
 @override
 String toString() {
-  return 'RecipeBookModel(id: $id, title: $title, recipeRefs: $recipeRefs, collaborators: $collaborators, createdAt: $createdAt, coverImageFileName: $coverImageFileName, coverImageStoragePath: $coverImageStoragePath)';
+  return 'RecipeBookModel(id: $id, title: $title, recipeRefs: $recipeRefs, collaborators: $collaborators, createdAt: $createdAt, coverImageFileName: $coverImageFileName, coverImageStoragePath: $coverImageStoragePath, spine: $spine)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $RecipeBookModelCopyWith<$Res>  {
   factory $RecipeBookModelCopyWith(RecipeBookModel value, $Res Function(RecipeBookModel) _then) = _$RecipeBookModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath
+@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath,@HiveField(7) String? spine
 });
 
 
@@ -65,7 +66,7 @@ class _$RecipeBookModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeBookModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? recipeRefs = null,Object? collaborators = null,Object? createdAt = null,Object? coverImageFileName = freezed,Object? coverImageStoragePath = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? recipeRefs = null,Object? collaborators = null,Object? createdAt = null,Object? coverImageFileName = freezed,Object? coverImageStoragePath = freezed,Object? spine = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -74,6 +75,7 @@ as List<BookRecipeRefModel>,collaborators: null == collaborators ? _self.collabo
 as Map<String, String>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,coverImageFileName: freezed == coverImageFileName ? _self.coverImageFileName : coverImageFileName // ignore: cast_nullable_to_non_nullable
 as String?,coverImageStoragePath: freezed == coverImageStoragePath ? _self.coverImageStoragePath : coverImageStoragePath // ignore: cast_nullable_to_non_nullable
+as String?,spine: freezed == spine ? _self.spine : spine // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -156,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeBookModel() when $default != null:
-return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath);case _:
+return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath,_that.spine);case _:
   return orElse();
 
 }
@@ -177,10 +179,10 @@ return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeBookModel():
-return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath);}
+return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath,_that.spine);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -194,10 +196,10 @@ return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeBookModel() when $default != null:
-return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath);case _:
+return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath,_that.spine);case _:
   return null;
 
 }
@@ -209,7 +211,7 @@ return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.
 @JsonSerializable()
 
 class _RecipeBookModel implements RecipeBookModel {
-  const _RecipeBookModel({@HiveField(0) required this.id, @HiveField(1) required this.title, @HiveField(2) required final  List<BookRecipeRefModel> recipeRefs, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4) required this.createdAt, @HiveField(5) this.coverImageFileName, @HiveField(6) this.coverImageStoragePath}): _recipeRefs = recipeRefs,_collaborators = collaborators;
+  const _RecipeBookModel({@HiveField(0) required this.id, @HiveField(1) required this.title, @HiveField(2) required final  List<BookRecipeRefModel> recipeRefs, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4) required this.createdAt, @HiveField(5) this.coverImageFileName, @HiveField(6) this.coverImageStoragePath, @HiveField(7) this.spine}): _recipeRefs = recipeRefs,_collaborators = collaborators;
   factory _RecipeBookModel.fromJson(Map<String, dynamic> json) => _$RecipeBookModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -231,6 +233,8 @@ class _RecipeBookModel implements RecipeBookModel {
 @override@HiveField(4) final  DateTime createdAt;
 @override@HiveField(5) final  String? coverImageFileName;
 @override@HiveField(6) final  String? coverImageStoragePath;
+// The spine colour by name, appended: older books decode as null.
+@override@HiveField(7) final  String? spine;
 
 /// Create a copy of RecipeBookModel
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeBookModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._recipeRefs, _recipeRefs)&&const DeepCollectionEquality().equals(other._collaborators, _collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.coverImageFileName, coverImageFileName) || other.coverImageFileName == coverImageFileName)&&(identical(other.coverImageStoragePath, coverImageStoragePath) || other.coverImageStoragePath == coverImageStoragePath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeBookModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._recipeRefs, _recipeRefs)&&const DeepCollectionEquality().equals(other._collaborators, _collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.coverImageFileName, coverImageFileName) || other.coverImageFileName == coverImageFileName)&&(identical(other.coverImageStoragePath, coverImageStoragePath) || other.coverImageStoragePath == coverImageStoragePath)&&(identical(other.spine, spine) || other.spine == spine));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,const DeepCollectionEquality().hash(_recipeRefs),const DeepCollectionEquality().hash(_collaborators),createdAt,coverImageFileName,coverImageStoragePath);
+int get hashCode => Object.hash(runtimeType,id,title,const DeepCollectionEquality().hash(_recipeRefs),const DeepCollectionEquality().hash(_collaborators),createdAt,coverImageFileName,coverImageStoragePath,spine);
 
 @override
 String toString() {
-  return 'RecipeBookModel(id: $id, title: $title, recipeRefs: $recipeRefs, collaborators: $collaborators, createdAt: $createdAt, coverImageFileName: $coverImageFileName, coverImageStoragePath: $coverImageStoragePath)';
+  return 'RecipeBookModel(id: $id, title: $title, recipeRefs: $recipeRefs, collaborators: $collaborators, createdAt: $createdAt, coverImageFileName: $coverImageFileName, coverImageStoragePath: $coverImageStoragePath, spine: $spine)';
 }
 
 
@@ -265,7 +269,7 @@ abstract mixin class _$RecipeBookModelCopyWith<$Res> implements $RecipeBookModel
   factory _$RecipeBookModelCopyWith(_RecipeBookModel value, $Res Function(_RecipeBookModel) _then) = __$RecipeBookModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath
+@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath,@HiveField(7) String? spine
 });
 
 
@@ -282,7 +286,7 @@ class __$RecipeBookModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeBookModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? recipeRefs = null,Object? collaborators = null,Object? createdAt = null,Object? coverImageFileName = freezed,Object? coverImageStoragePath = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? recipeRefs = null,Object? collaborators = null,Object? createdAt = null,Object? coverImageFileName = freezed,Object? coverImageStoragePath = freezed,Object? spine = freezed,}) {
   return _then(_RecipeBookModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -291,6 +295,7 @@ as List<BookRecipeRefModel>,collaborators: null == collaborators ? _self._collab
 as Map<String, String>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,coverImageFileName: freezed == coverImageFileName ? _self.coverImageFileName : coverImageFileName // ignore: cast_nullable_to_non_nullable
 as String?,coverImageStoragePath: freezed == coverImageStoragePath ? _self.coverImageStoragePath : coverImageStoragePath // ignore: cast_nullable_to_non_nullable
+as String?,spine: freezed == spine ? _self.spine : spine // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

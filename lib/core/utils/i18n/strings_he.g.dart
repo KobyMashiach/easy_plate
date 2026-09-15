@@ -56,6 +56,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$language$he language = Translations$language$he.internal(_root);
 	late final Translations$books$he books = Translations$books$he.internal(_root);
 	late final Translations$recipe$he recipe = Translations$recipe$he.internal(_root);
+	late final Translations$nutrition$he nutrition = Translations$nutrition$he.internal(_root);
 	late final Translations$community$he community = Translations$community$he.internal(_root);
 	late final Translations$sharing$he sharing = Translations$sharing$he.internal(_root);
 	late final Translations$notifications$he notifications = Translations$notifications$he.internal(_root);
@@ -125,6 +126,9 @@ class Translations$common$he {
 
 	/// he: '[חסר מידע]'
 	String get missingInfo => '[חסר מידע]';
+
+	/// he: 'אין חיבור לאינטרנט'
+	String get networkError => 'אין חיבור לאינטרנט';
 }
 
 // Path: auth
@@ -683,6 +687,9 @@ class Translations$books$he {
 
 	/// he: 'עריכת שם הספר'
 	String get renameBook => 'עריכת שם הספר';
+
+	/// he: 'צבע הפס'
+	String get spineColor => 'צבע הפס';
 }
 
 // Path: recipe
@@ -755,6 +762,120 @@ class Translations$recipe$he {
 
 	/// he: 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר'
 	String get analyzeFailed => 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר';
+}
+
+// Path: nutrition
+class Translations$nutrition$he {
+	Translations$nutrition$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ערכים תזונתיים'
+	String get title => 'ערכים תזונתיים';
+
+	/// he: 'למנה'
+	String get perServing => 'למנה';
+
+	/// he: 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.'
+	String get perServingHint => 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.';
+
+	/// he: 'מנות'
+	String get servings => 'מנות';
+
+	/// he: '$count מנות'
+	String servingsCount({required Object count}) => '${count} מנות';
+
+	/// he: 'קלוריות'
+	String get calories => 'קלוריות';
+
+	/// he: 'קק״ל'
+	String get kcal => 'קק״ל';
+
+	/// he: 'חלבון'
+	String get protein => 'חלבון';
+
+	/// he: 'פחמימות'
+	String get carbs => 'פחמימות';
+
+	/// he: 'שומן'
+	String get fat => 'שומן';
+
+	/// he: 'ג׳'
+	String get gramsShort => 'ג׳';
+
+	/// he: 'הערכה עם AI'
+	String get estimate => 'הערכה עם AI';
+
+	/// he: 'מעריך ערכים תזונתיים…'
+	String get estimating => 'מעריך ערכים תזונתיים…';
+
+	/// he: 'ההערכה לא הצליחה, נסו שוב'
+	String get estimateFailed => 'ההערכה לא הצליחה, נסו שוב';
+
+	/// he: 'עוד אין ערכים תזונתיים למתכון הזה'
+	String get none => 'עוד אין ערכים תזונתיים למתכון הזה';
+
+	/// he: 'ה-AI יכול להעריך קלוריות, חלבון, פחמימות ושומן מרשימת המצרכים'
+	String get noneHint => 'ה-AI יכול להעריך קלוריות, חלבון, פחמימות ושומן מרשימת המצרכים';
+
+	/// he: 'הערכים התזונתיים עודכנו'
+	String get estimated => 'הערכים התזונתיים עודכנו';
+
+	/// he: 'מספר מנות'
+	String get editorServings => 'מספר מנות';
+
+	/// he: 'קלוריות למנה'
+	String get editorCalories => 'קלוריות למנה';
+
+	/// he: 'חלבון (גרם)'
+	String get editorProtein => 'חלבון (גרם)';
+
+	/// he: 'פחמימות (גרם)'
+	String get editorCarbs => 'פחמימות (גרם)';
+
+	/// he: 'שומן (גרם)'
+	String get editorFat => 'שומן (גרם)';
+
+	/// he: 'דאשבורד תזונה'
+	String get dashboard => 'דאשבורד תזונה';
+
+	/// he: 'השבוע'
+	String get weekly => 'השבוע';
+
+	/// he: 'היום'
+	String get today => 'היום';
+
+	/// he: 'סה״כ ליום'
+	String get dayTotal => 'סה״כ ליום';
+
+	/// he: 'סה״כ לשבוע'
+	String get weekTotal => 'סה״כ לשבוע';
+
+	/// he: 'ממוצע ליום מתוכנן'
+	String get dailyAverage => 'ממוצע ליום מתוכנן';
+
+	/// he: 'לפי ארוחה'
+	String get perMeal => 'לפי ארוחה';
+
+	/// he: 'לפי יום'
+	String get perDay => 'לפי יום';
+
+	/// he: 'עוד לא תוכננו ארוחות עם מתכונים'
+	String get noPlanned => 'עוד לא תוכננו ארוחות עם מתכונים';
+
+	/// he: '$count פריטים בלי ערכים תזונתיים'
+	String missingCount({required Object count}) => '${count} פריטים בלי ערכים תזונתיים';
+
+	/// he: 'חלוקת קלוריות'
+	String get macroSplit => 'חלוקת קלוריות';
+
+	/// he: 'קק״ל ליום'
+	String get kcalPerDay => 'קק״ל ליום';
+
+	/// he: 'דאשבורד שבועי'
+	String get openDashboard => 'דאשבורד שבועי';
 }
 
 // Path: community
@@ -1224,8 +1345,14 @@ class Translations$ingestion$he {
 	/// he: 'קישור לאתר'
 	String get urlScrape => 'קישור לאתר';
 
-	/// he: 'TikTok / Reels'
-	String get socialVideo => 'TikTok / Reels';
+	/// he: 'סרטון: TikTok / Instagram / YouTube / Facebook'
+	String get socialVideo => 'סרטון: TikTok / Instagram / YouTube / Facebook';
+
+	/// he: 'הדביקו קישור לסרטון מטיקטוק, אינסטגרם, יוטיוב או פייסבוק'
+	String get socialVideoHint => 'הדביקו קישור לסרטון מטיקטוק, אינסטגרם, יוטיוב או פייסבוק';
+
+	/// he: 'לא הצלחנו לקרוא את הסרטון. ייתכן שהחשבון פרטי או שהפלטפורמה חסמה את הגישה. אפשר להעתיק את הטקסט מתיאור הסרטון ולהדביק אותו כטקסט.'
+	String get socialUnreadable => 'לא הצלחנו לקרוא את הסרטון. ייתכן שהחשבון פרטי או שהפלטפורמה חסמה את הגישה. אפשר להעתיק את הטקסט מתיאור הסרטון ולהדביק אותו כטקסט.';
 
 	/// he: 'בקשת מתכון'
 	String get aiRequest => 'בקשת מתכון';
@@ -1574,6 +1701,54 @@ class Translations$image$he {
 
 	/// he: 'הסרת התמונה'
 	String get remove => 'הסרת התמונה';
+
+	/// he: 'צור תמונה ב-AI'
+	String get generate => 'צור תמונה ב-AI';
+
+	/// he: 'יוצר תמונה… זה לוקח כמה שניות'
+	String get generating => 'יוצר תמונה… זה לוקח כמה שניות';
+
+	/// he: 'יצירת התמונה נכשלה, נסו שוב'
+	String get generateFailed => 'יצירת התמונה נכשלה, נסו שוב';
+
+	/// he: 'איזו כריכה ליצור?'
+	String get coverTitle => 'איזו כריכה ליצור?';
+
+	/// he: 'בחרו קטגוריה, כתבו משהו, או שניהם'
+	String get coverHint => 'בחרו קטגוריה, כתבו משהו, או שניהם';
+
+	/// he: 'טקסט חופשי, למשל: המבורגר'
+	String get coverFreeText => 'טקסט חופשי, למשל: המבורגר';
+
+	/// he: 'צריך לבחור קטגוריה או לכתוב משהו'
+	String get coverRequired => 'צריך לבחור קטגוריה או לכתוב משהו';
+
+	/// he: 'צור כריכה'
+	String get coverGenerate => 'צור כריכה';
+
+	/// he: 'ילדים'
+	String get themeKids => 'ילדים';
+
+	/// he: 'בריא'
+	String get themeHealthy => 'בריא';
+
+	/// he: 'שחיתות'
+	String get themeIndulgent => 'שחיתות';
+
+	/// he: 'מתוקים ואפייה'
+	String get themeSweets => 'מתוקים ואפייה';
+
+	/// he: 'בשרים וגריל'
+	String get themeMeat => 'בשרים וגריל';
+
+	/// he: 'טבעוני'
+	String get themeVegan => 'טבעוני';
+
+	/// he: 'חגים'
+	String get themeHolidays => 'חגים';
+
+	/// he: 'מהיר ופשוט'
+	String get themeQuick => 'מהיר ופשוט';
 }
 
 // Path: nav
@@ -2122,6 +2297,7 @@ extension on Translations {
 			'common.error' => 'אירעה שגיאה',
 			'common.or' => 'או',
 			'common.missingInfo' => '[חסר מידע]',
+			'common.networkError' => 'אין חיבור לאינטרנט',
 			'auth.welcome' => 'ברוכים הבאים ל-EasyPlate',
 			'auth.subtitle' => 'התחברו כדי לשמור את המתכונים שלכם',
 			'auth.signIn' => 'התחברות',
@@ -2278,6 +2454,7 @@ extension on Translations {
 			'books.coverImage' => 'תמונת כריכה',
 			'books.bookOptions' => 'אפשרויות ספר',
 			'books.renameBook' => 'עריכת שם הספר',
+			'books.spineColor' => 'צבע הפס',
 			'recipe.prepTime' => 'זמן הכנה',
 			'recipe.cookTime' => 'זמן בישול',
 			'recipe.ingredients' => 'מצרכים',
@@ -2299,6 +2476,41 @@ extension on Translations {
 			'recipe.analyzeNow' => 'ניתוח באמצעות AI עכשיו',
 			'recipe.analyzing' => 'מנתח את המתכון...',
 			'recipe.analyzeFailed' => 'הניתוח נכשל, אפשר לנסות שוב מאוחר יותר',
+			'nutrition.title' => 'ערכים תזונתיים',
+			'nutrition.perServing' => 'למנה',
+			'nutrition.perServingHint' => 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.',
+			'nutrition.servings' => 'מנות',
+			'nutrition.servingsCount' => ({required Object count}) => '${count} מנות',
+			'nutrition.calories' => 'קלוריות',
+			'nutrition.kcal' => 'קק״ל',
+			'nutrition.protein' => 'חלבון',
+			'nutrition.carbs' => 'פחמימות',
+			'nutrition.fat' => 'שומן',
+			'nutrition.gramsShort' => 'ג׳',
+			'nutrition.estimate' => 'הערכה עם AI',
+			'nutrition.estimating' => 'מעריך ערכים תזונתיים…',
+			'nutrition.estimateFailed' => 'ההערכה לא הצליחה, נסו שוב',
+			'nutrition.none' => 'עוד אין ערכים תזונתיים למתכון הזה',
+			'nutrition.noneHint' => 'ה-AI יכול להעריך קלוריות, חלבון, פחמימות ושומן מרשימת המצרכים',
+			'nutrition.estimated' => 'הערכים התזונתיים עודכנו',
+			'nutrition.editorServings' => 'מספר מנות',
+			'nutrition.editorCalories' => 'קלוריות למנה',
+			'nutrition.editorProtein' => 'חלבון (גרם)',
+			'nutrition.editorCarbs' => 'פחמימות (גרם)',
+			'nutrition.editorFat' => 'שומן (גרם)',
+			'nutrition.dashboard' => 'דאשבורד תזונה',
+			'nutrition.weekly' => 'השבוע',
+			'nutrition.today' => 'היום',
+			'nutrition.dayTotal' => 'סה״כ ליום',
+			'nutrition.weekTotal' => 'סה״כ לשבוע',
+			'nutrition.dailyAverage' => 'ממוצע ליום מתוכנן',
+			'nutrition.perMeal' => 'לפי ארוחה',
+			'nutrition.perDay' => 'לפי יום',
+			'nutrition.noPlanned' => 'עוד לא תוכננו ארוחות עם מתכונים',
+			'nutrition.missingCount' => ({required Object count}) => '${count} פריטים בלי ערכים תזונתיים',
+			'nutrition.macroSplit' => 'חלוקת קלוריות',
+			'nutrition.kcalPerDay' => 'קק״ל ליום',
+			'nutrition.openDashboard' => 'דאשבורד שבועי',
 			'community.title' => 'קהילה',
 			'community.forum' => 'פורום',
 			'community.sharedRecipes' => 'מתכונים משותפים',
@@ -2440,7 +2652,9 @@ extension on Translations {
 			'ingestion.pasteHint' => 'הדביקו כאן מתכון מוואטסאפ או מכל מקור אחר',
 			'ingestion.webSearch' => 'חיפוש באינטרנט',
 			'ingestion.urlScrape' => 'קישור לאתר',
-			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.socialVideo' => 'סרטון: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideoHint' => 'הדביקו קישור לסרטון מטיקטוק, אינסטגרם, יוטיוב או פייסבוק',
+			'ingestion.socialUnreadable' => 'לא הצלחנו לקרוא את הסרטון. ייתכן שהחשבון פרטי או שהפלטפורמה חסמה את הגישה. אפשר להעתיק את הטקסט מתיאור הסרטון ולהדביק אותו כטקסט.',
 			'ingestion.aiRequest' => 'בקשת מתכון',
 			'ingestion.aiRequestHint' => 'תארו מה בא לכם להכין. לדוגמה: מתכון לדייסת סולת לתינוקת בת שנה עם פירות',
 			'ingestion.parse' => 'נתח מתכון',
@@ -2545,6 +2759,22 @@ extension on Translations {
 			'image.gallery' => 'בחירה מהגלריה',
 			'image.camera' => 'צילום תמונה',
 			'image.remove' => 'הסרת התמונה',
+			'image.generate' => 'צור תמונה ב-AI',
+			'image.generating' => 'יוצר תמונה… זה לוקח כמה שניות',
+			'image.generateFailed' => 'יצירת התמונה נכשלה, נסו שוב',
+			'image.coverTitle' => 'איזו כריכה ליצור?',
+			'image.coverHint' => 'בחרו קטגוריה, כתבו משהו, או שניהם',
+			'image.coverFreeText' => 'טקסט חופשי, למשל: המבורגר',
+			'image.coverRequired' => 'צריך לבחור קטגוריה או לכתוב משהו',
+			'image.coverGenerate' => 'צור כריכה',
+			'image.themeKids' => 'ילדים',
+			'image.themeHealthy' => 'בריא',
+			'image.themeIndulgent' => 'שחיתות',
+			'image.themeSweets' => 'מתוקים ואפייה',
+			'image.themeMeat' => 'בשרים וגריל',
+			'image.themeVegan' => 'טבעוני',
+			'image.themeHolidays' => 'חגים',
+			'image.themeQuick' => 'מהיר ופשוט',
 			'nav.library' => 'ספרייה',
 			'nav.recipes' => 'מתכונים',
 			'nav.mealPlan' => 'תפריטים',
@@ -2563,6 +2793,8 @@ extension on Translations {
 			'ads.sharedQuotaReached' => 'הגעת למכסה היומית של מתכונים משותפים. המכסה תתאפס מחר!',
 			'ads.unlockRecipeTitle' => 'פתיחת מתכון משותף',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'צפה בסרטון קצר כדי לפתוח מתכון זה (נשארו עוד ${count} להיום)',
+			_ => null,
+		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'נשארו לך ${remaining}/${total} חילוצי AI להיום',
 			'ads.aiQuotaReached' => 'הגעת למכסה היומית של חילוצי AI. האפשרות תיפתח מחר!',
 			'ads.aiLockedHint' => 'חילוץ מקישור דורש צפייה בסרטון קצר',
@@ -2618,8 +2850,6 @@ extension on Translations {
 			'walkthrough.bookTitle' => 'מדריך EasyPlate',
 			'walkthrough.bookSubtitle' => 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. זהו מדריך בלבד: שום דבר לא נשמר.',
 			'walkthrough.contents' => 'תוכן עניינים',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'פרק ${number}',
 			'walkthrough.backToContents' => 'לתוכן העניינים',
 			'walkthrough.stepsTitle' => 'השלבים',

@@ -52,6 +52,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$fr language = _Translations$language$fr._(_root);
 	@override late final _Translations$books$fr books = _Translations$books$fr._(_root);
 	@override late final _Translations$recipe$fr recipe = _Translations$recipe$fr._(_root);
+	@override late final _Translations$nutrition$fr nutrition = _Translations$nutrition$fr._(_root);
 	@override late final _Translations$community$fr community = _Translations$community$fr._(_root);
 	@override late final _Translations$sharing$fr sharing = _Translations$sharing$fr._(_root);
 	@override late final _Translations$notifications$fr notifications = _Translations$notifications$fr._(_root);
@@ -91,6 +92,7 @@ class _Translations$common$fr extends Translations$common$he {
 	@override String get error => 'Une erreur est survenue';
 	@override String get or => 'ou';
 	@override String get missingInfo => '[information manquante]';
+	@override String get networkError => 'Pas de connexion Internet';
 }
 
 // Path: auth
@@ -337,6 +339,7 @@ class _Translations$books$fr extends Translations$books$he {
 	@override String get coverImage => 'Photo de couverture';
 	@override String get bookOptions => 'Options du livre';
 	@override String get renameBook => 'Renommer le livre';
+	@override String get spineColor => 'Couleur de la tranche';
 }
 
 // Path: recipe
@@ -367,6 +370,50 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get analyzeNow => 'Analyser avec l\'IA maintenant';
 	@override String get analyzing => 'Analyse de la recette...';
 	@override String get analyzeFailed => 'L\'analyse a échoué — réessayez plus tard';
+}
+
+// Path: nutrition
+class _Translations$nutrition$fr extends Translations$nutrition$he {
+	_Translations$nutrition$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Valeurs nutritionnelles';
+	@override String get perServing => 'par portion';
+	@override String get perServingHint => 'Toutes les valeurs sont pour une portion. Laissez vide pour retirer l’estimation.';
+	@override String get servings => 'portions';
+	@override String servingsCount({required Object count}) => '${count} portions';
+	@override String get calories => 'Calories';
+	@override String get kcal => 'kcal';
+	@override String get protein => 'Protéines';
+	@override String get carbs => 'Glucides';
+	@override String get fat => 'Lipides';
+	@override String get gramsShort => 'g';
+	@override String get estimate => 'Estimer avec l’IA';
+	@override String get estimating => 'Estimation en cours…';
+	@override String get estimateFailed => 'L’estimation a échoué, réessayez';
+	@override String get none => 'Pas encore de valeurs nutritionnelles pour cette recette';
+	@override String get noneHint => 'L’IA peut estimer calories, protéines, glucides et lipides à partir des ingrédients';
+	@override String get estimated => 'Valeurs nutritionnelles mises à jour';
+	@override String get editorServings => 'Nombre de portions';
+	@override String get editorCalories => 'Calories par portion';
+	@override String get editorProtein => 'Protéines (g)';
+	@override String get editorCarbs => 'Glucides (g)';
+	@override String get editorFat => 'Lipides (g)';
+	@override String get dashboard => 'Tableau nutrition';
+	@override String get weekly => 'Cette semaine';
+	@override String get today => 'Aujourd’hui';
+	@override String get dayTotal => 'Total du jour';
+	@override String get weekTotal => 'Total de la semaine';
+	@override String get dailyAverage => 'Moyenne par jour planifié';
+	@override String get perMeal => 'Par repas';
+	@override String get perDay => 'Par jour';
+	@override String get noPlanned => 'Aucun repas avec recette planifié pour l’instant';
+	@override String missingCount({required Object count}) => '${count} éléments sans valeurs nutritionnelles';
+	@override String get macroSplit => 'Répartition des calories';
+	@override String get kcalPerDay => 'kcal par jour';
+	@override String get openDashboard => 'Tableau hebdomadaire';
 }
 
 // Path: community
@@ -553,7 +600,9 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get pasteHint => 'Collez ici une recette venant de WhatsApp ou de toute autre source';
 	@override String get webSearch => 'Rechercher sur le web';
 	@override String get urlScrape => 'Lien vers un site';
-	@override String get socialVideo => 'TikTok / Reels';
+	@override String get socialVideo => 'Vidéo : TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideoHint => 'Collez un lien vers une vidéo TikTok, Instagram, YouTube ou Facebook';
+	@override String get socialUnreadable => 'Impossible de lire cette vidéo. Le compte est peut-être privé, ou la plateforme a bloqué la requête. Vous pouvez copier la description et la coller comme texte.';
 	@override String get aiRequest => 'Demander une recette';
 	@override String get aiRequestHint => 'Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits';
 	@override String get parse => 'Analyser la recette';
@@ -694,6 +743,22 @@ class _Translations$image$fr extends Translations$image$he {
 	@override String get gallery => 'Choisir dans la galerie';
 	@override String get camera => 'Prendre une photo';
 	@override String get remove => 'Supprimer la photo';
+	@override String get generate => 'Créer avec l’IA';
+	@override String get generating => 'Création de l’image… cela prend quelques secondes';
+	@override String get generateFailed => 'La création de l’image a échoué, réessayez';
+	@override String get coverTitle => 'Quelle couverture créer ?';
+	@override String get coverHint => 'Choisissez une catégorie, écrivez quelque chose, ou les deux';
+	@override String get coverFreeText => 'Texte libre, ex. : burgers';
+	@override String get coverRequired => 'Choisissez une catégorie ou écrivez quelque chose';
+	@override String get coverGenerate => 'Créer la couverture';
+	@override String get themeKids => 'Enfants';
+	@override String get themeHealthy => 'Sain';
+	@override String get themeIndulgent => 'Gourmand';
+	@override String get themeSweets => 'Desserts et pâtisserie';
+	@override String get themeMeat => 'Viandes et grill';
+	@override String get themeVegan => 'Végan';
+	@override String get themeHolidays => 'Fêtes';
+	@override String get themeQuick => 'Rapide et simple';
 }
 
 // Path: nav
@@ -983,6 +1048,7 @@ extension on TranslationsFr {
 			'common.error' => 'Une erreur est survenue',
 			'common.or' => 'ou',
 			'common.missingInfo' => '[information manquante]',
+			'common.networkError' => 'Pas de connexion Internet',
 			'auth.welcome' => 'Bienvenue sur EasyPlate',
 			'auth.subtitle' => 'Connectez-vous pour garder vos recettes',
 			'auth.signIn' => 'Se connecter',
@@ -1139,6 +1205,7 @@ extension on TranslationsFr {
 			'books.coverImage' => 'Photo de couverture',
 			'books.bookOptions' => 'Options du livre',
 			'books.renameBook' => 'Renommer le livre',
+			'books.spineColor' => 'Couleur de la tranche',
 			'recipe.prepTime' => 'Temps de préparation',
 			'recipe.cookTime' => 'Temps de cuisson',
 			'recipe.ingredients' => 'Ingrédients',
@@ -1160,6 +1227,41 @@ extension on TranslationsFr {
 			'recipe.analyzeNow' => 'Analyser avec l\'IA maintenant',
 			'recipe.analyzing' => 'Analyse de la recette...',
 			'recipe.analyzeFailed' => 'L\'analyse a échoué — réessayez plus tard',
+			'nutrition.title' => 'Valeurs nutritionnelles',
+			'nutrition.perServing' => 'par portion',
+			'nutrition.perServingHint' => 'Toutes les valeurs sont pour une portion. Laissez vide pour retirer l’estimation.',
+			'nutrition.servings' => 'portions',
+			'nutrition.servingsCount' => ({required Object count}) => '${count} portions',
+			'nutrition.calories' => 'Calories',
+			'nutrition.kcal' => 'kcal',
+			'nutrition.protein' => 'Protéines',
+			'nutrition.carbs' => 'Glucides',
+			'nutrition.fat' => 'Lipides',
+			'nutrition.gramsShort' => 'g',
+			'nutrition.estimate' => 'Estimer avec l’IA',
+			'nutrition.estimating' => 'Estimation en cours…',
+			'nutrition.estimateFailed' => 'L’estimation a échoué, réessayez',
+			'nutrition.none' => 'Pas encore de valeurs nutritionnelles pour cette recette',
+			'nutrition.noneHint' => 'L’IA peut estimer calories, protéines, glucides et lipides à partir des ingrédients',
+			'nutrition.estimated' => 'Valeurs nutritionnelles mises à jour',
+			'nutrition.editorServings' => 'Nombre de portions',
+			'nutrition.editorCalories' => 'Calories par portion',
+			'nutrition.editorProtein' => 'Protéines (g)',
+			'nutrition.editorCarbs' => 'Glucides (g)',
+			'nutrition.editorFat' => 'Lipides (g)',
+			'nutrition.dashboard' => 'Tableau nutrition',
+			'nutrition.weekly' => 'Cette semaine',
+			'nutrition.today' => 'Aujourd’hui',
+			'nutrition.dayTotal' => 'Total du jour',
+			'nutrition.weekTotal' => 'Total de la semaine',
+			'nutrition.dailyAverage' => 'Moyenne par jour planifié',
+			'nutrition.perMeal' => 'Par repas',
+			'nutrition.perDay' => 'Par jour',
+			'nutrition.noPlanned' => 'Aucun repas avec recette planifié pour l’instant',
+			'nutrition.missingCount' => ({required Object count}) => '${count} éléments sans valeurs nutritionnelles',
+			'nutrition.macroSplit' => 'Répartition des calories',
+			'nutrition.kcalPerDay' => 'kcal par jour',
+			'nutrition.openDashboard' => 'Tableau hebdomadaire',
 			'community.title' => 'Communauté',
 			'community.forum' => 'Forum',
 			'community.sharedRecipes' => 'Recettes partagées',
@@ -1301,7 +1403,9 @@ extension on TranslationsFr {
 			'ingestion.pasteHint' => 'Collez ici une recette venant de WhatsApp ou de toute autre source',
 			'ingestion.webSearch' => 'Rechercher sur le web',
 			'ingestion.urlScrape' => 'Lien vers un site',
-			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.socialVideo' => 'Vidéo : TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideoHint' => 'Collez un lien vers une vidéo TikTok, Instagram, YouTube ou Facebook',
+			'ingestion.socialUnreadable' => 'Impossible de lire cette vidéo. Le compte est peut-être privé, ou la plateforme a bloqué la requête. Vous pouvez copier la description et la coller comme texte.',
 			'ingestion.aiRequest' => 'Demander une recette',
 			'ingestion.aiRequestHint' => 'Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits',
 			'ingestion.parse' => 'Analyser la recette',
@@ -1406,6 +1510,22 @@ extension on TranslationsFr {
 			'image.gallery' => 'Choisir dans la galerie',
 			'image.camera' => 'Prendre une photo',
 			'image.remove' => 'Supprimer la photo',
+			'image.generate' => 'Créer avec l’IA',
+			'image.generating' => 'Création de l’image… cela prend quelques secondes',
+			'image.generateFailed' => 'La création de l’image a échoué, réessayez',
+			'image.coverTitle' => 'Quelle couverture créer ?',
+			'image.coverHint' => 'Choisissez une catégorie, écrivez quelque chose, ou les deux',
+			'image.coverFreeText' => 'Texte libre, ex. : burgers',
+			'image.coverRequired' => 'Choisissez une catégorie ou écrivez quelque chose',
+			'image.coverGenerate' => 'Créer la couverture',
+			'image.themeKids' => 'Enfants',
+			'image.themeHealthy' => 'Sain',
+			'image.themeIndulgent' => 'Gourmand',
+			'image.themeSweets' => 'Desserts et pâtisserie',
+			'image.themeMeat' => 'Viandes et grill',
+			'image.themeVegan' => 'Végan',
+			'image.themeHolidays' => 'Fêtes',
+			'image.themeQuick' => 'Rapide et simple',
 			'nav.library' => 'Livres',
 			'nav.recipes' => 'Recettes',
 			'nav.mealPlan' => 'Repas',
@@ -1424,6 +1544,8 @@ extension on TranslationsFr {
 			'ads.sharedQuotaReached' => 'Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !',
 			'ads.unlockRecipeTitle' => 'Débloquer une recette partagée',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Regardez une courte vidéo pour débloquer cette recette (${count} restantes aujourd\'hui)',
+			_ => null,
+		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'Il vous reste ${remaining}/${total} extractions IA aujourd\'hui',
 			'ads.aiQuotaReached' => 'Vous avez atteint la limite quotidienne d\'extractions IA. Elle rouvre demain !',
 			'ads.aiLockedHint' => 'L\'extraction depuis un lien nécessite de regarder une courte vidéo',
@@ -1479,8 +1601,6 @@ extension on TranslationsFr {
 			'walkthrough.bookTitle' => 'Guide EasyPlate',
 			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Un guide seulement : rien n\'est enregistré.',
 			'walkthrough.contents' => 'Sommaire',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'Chapitre ${number}',
 			'walkthrough.backToContents' => 'Retour au sommaire',
 			'walkthrough.stepsTitle' => 'Les étapes',

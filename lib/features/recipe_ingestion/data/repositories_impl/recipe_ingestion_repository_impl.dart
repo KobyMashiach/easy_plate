@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/api_config.dart';
@@ -86,4 +87,11 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
   Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) {
     return aiDataSource.refineRecipe(recipe, timesChanged: timesChanged);
   }
+
+  @override
+  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) =>
+      aiDataSource.estimateNutrition(recipe);
+
+  @override
+  Future<Uint8List> generateImage(String prompt) => aiDataSource.generateImage(prompt);
 }

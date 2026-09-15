@@ -173,7 +173,7 @@ class _ChannelFormState extends State<_ChannelForm> {
     RecipeIngestionChannel.rawText => t.ingestion.pasteHint,
     RecipeIngestionChannel.webSearch => 'קובה סלק',
     RecipeIngestionChannel.urlScrape => 'https://...',
-    RecipeIngestionChannel.socialVideo => 'https://www.tiktok.com/...',
+    RecipeIngestionChannel.socialVideo => t.ingestion.socialVideoHint,
     RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestHint,
     // No text input on this channel; the editor is the form.
     RecipeIngestionChannel.manual => '',

@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../domain/entities/book_spine.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import 'book_recipe_ref_model.dart';
 
@@ -21,6 +22,8 @@ sealed class RecipeBookModel with _$RecipeBookModel {
     @HiveField(4) required DateTime createdAt,
     @HiveField(5) String? coverImageFileName,
     @HiveField(6) String? coverImageStoragePath,
+    // The spine colour by name, appended: older books decode as null.
+    @HiveField(7) String? spine,
   }) = _RecipeBookModel;
 
   factory RecipeBookModel.fromJson(Map<String, dynamic> json) => _$RecipeBookModelFromJson(json);
@@ -34,6 +37,7 @@ extension RecipeBookModelMapper on RecipeBookModel {
         collaborators: collaborators.map((k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v))),
         coverImageFileName: coverImageFileName,
         coverImageStoragePath: coverImageStoragePath,
+        spine: BookSpine.fromName(spine),
         createdAt: createdAt,
       );
 }
@@ -46,6 +50,7 @@ extension RecipeBookEntityMapper on RecipeBookEntity {
         collaborators: collaborators.map((k, v) => MapEntry(k, v.name)),
         coverImageFileName: coverImageFileName,
         coverImageStoragePath: coverImageStoragePath,
+        spine: spine?.name,
         createdAt: createdAt,
       );
 }

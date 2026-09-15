@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../my_recipes/domain/entities/nutrition_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
@@ -102,6 +103,8 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
         mayContain: Allergen.fromNames(data['mayContain']),
         imageFileName: data['imageFileName'] as String?,
         imageStoragePath: data['imageStoragePath'] as String?,
+        servings: (data['servings'] as num?)?.toInt(),
+        nutrition: NutritionEntity.fromJson(data['nutrition']),
         createdAt: createdAt,
       ),
     );
@@ -130,6 +133,8 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
       // feed used to show the author's avatar but never the dish.
       'imageFileName': recipe.imageFileName,
       'imageStoragePath': recipe.imageStoragePath,
+      'servings': recipe.servings,
+      'nutrition': recipe.nutrition?.toJson(),
       'authorUid': authorUid,
       'authorName': authorName,
       'authorPhotoUrl': authorPhotoUrl,
@@ -176,6 +181,8 @@ class SharedRecipesFirestoreDataSource implements SharedRecipesRemoteDataSource 
       'mayContain': recipe.mayContain.names,
       'imageFileName': recipe.imageFileName,
       'imageStoragePath': recipe.imageStoragePath,
+      'servings': recipe.servings,
+      'nutrition': recipe.nutrition?.toJson(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }

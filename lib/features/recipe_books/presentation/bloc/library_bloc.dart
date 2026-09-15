@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/sync/recipe_image_store.dart';
+import '../../domain/entities/book_spine.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../../domain/usecases/delete_book_usecase.dart';
 import '../../domain/usecases/get_books_usecase.dart';
@@ -20,10 +21,11 @@ sealed class LibraryEvent with _$LibraryEvent {
   const factory LibraryEvent.init() = _Init;
   /// [id] lets the caller know the new book's id up front — the shelf opens
   /// it as soon as it exists — instead of guessing which one it is.
-  const factory LibraryEvent.createBook(String title, {String? id}) = _CreateBook;
+  const factory LibraryEvent.createBook(String title, {String? id, BookSpine? spine}) = _CreateBook;
   const factory LibraryEvent.deleteBook(String id) = _DeleteBook;
   const factory LibraryEvent.setCoverImage(String id, String? fileName) = _SetCoverImage;
   const factory LibraryEvent.renameBook(String id, String title) = _RenameBook;
+  const factory LibraryEvent.setSpine(String id, BookSpine spine) = _SetSpine;
 }
 
 @freezed
@@ -49,6 +51,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     on<_DeleteBook>(_deleteBook);
     on<_SetCoverImage>(_setCoverImage);
     on<_RenameBook>(_renameBook);
+    on<_SetSpine>(_setSpine);
     add(const LibraryEvent.init());
   }
 
@@ -79,6 +82,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
           id: event.id ?? _uuid.v4(),
           title: event.title,
           recipeRefs: const [],
+          spine: event.spine,
           createdAt: DateTime.now(),
         ),
       );
@@ -96,6 +100,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       final book = current.books.where((b) => b.id == event.id).firstOrNull;
       if (book == null) return;
       await saveBookUseCase(book.copyWith(title: event.title));
+    });
+  }
+
+  Future<void> _setSpine(_SetSpine event, Emitter<LibraryState> emit) {
+    return _emitBooks(emit, () async {
+      final current = state;
+      if (current is! LibraryLoaded) return;
+      final book = current.books.where((b) => b.id == event.id).firstOrNull;
+      if (book == null) return;
+      await saveBookUseCase(book.copyWith(spine: event.spine));
     });
   }
 

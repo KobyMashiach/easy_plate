@@ -10,6 +10,9 @@ admin.initializeApp();
 exports.aiProxy = require("./aiProxy").aiProxy;
 // RevenueCat's subscription events, written onto entitlements/{uid}.
 exports.revenueCatWebhook = require("./revenueCatWebhook").revenueCatWebhook;
+// A recipe out of a TikTok / Instagram / YouTube / Facebook video: the video
+// itself goes to the model, not just the page around it.
+exports.socialRecipe = require("./socialRecipe").socialRecipe;
 
 // The recipient's locale is not known here; Hebrew is the app's primary
 // language, and the in-app inbox is localised properly once they open it.

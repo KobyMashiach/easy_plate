@@ -52,6 +52,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
 	@override late final _Translations$recipe$ar recipe = _Translations$recipe$ar._(_root);
+	@override late final _Translations$nutrition$ar nutrition = _Translations$nutrition$ar._(_root);
 	@override late final _Translations$community$ar community = _Translations$community$ar._(_root);
 	@override late final _Translations$sharing$ar sharing = _Translations$sharing$ar._(_root);
 	@override late final _Translations$notifications$ar notifications = _Translations$notifications$ar._(_root);
@@ -91,6 +92,7 @@ class _Translations$common$ar extends Translations$common$he {
 	@override String get error => 'حدث خطأ ما';
 	@override String get or => 'أو';
 	@override String get missingInfo => '[معلومات ناقصة]';
+	@override String get networkError => 'لا يوجد اتصال بالإنترنت';
 }
 
 // Path: auth
@@ -337,6 +339,7 @@ class _Translations$books$ar extends Translations$books$he {
 	@override String get coverImage => 'صورة الغلاف';
 	@override String get bookOptions => 'خيارات الكتاب';
 	@override String get renameBook => 'تعديل اسم الكتاب';
+	@override String get spineColor => 'لون الكعب';
 }
 
 // Path: recipe
@@ -367,6 +370,50 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get analyzeNow => 'التحليل عبر AI الآن';
 	@override String get analyzing => 'جارٍ تحليل الوصفة...';
 	@override String get analyzeFailed => 'فشل التحليل — يمكنكم المحاولة لاحقًا';
+}
+
+// Path: nutrition
+class _Translations$nutrition$ar extends Translations$nutrition$he {
+	_Translations$nutrition$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'القيم الغذائية';
+	@override String get perServing => 'للحصة';
+	@override String get perServingHint => 'جميع القيم لحصة واحدة. اتركه فارغًا لإزالة التقدير.';
+	@override String get servings => 'حصص';
+	@override String servingsCount({required Object count}) => '${count} حصص';
+	@override String get calories => 'سعرات حرارية';
+	@override String get kcal => 'سعرة';
+	@override String get protein => 'بروتين';
+	@override String get carbs => 'كربوهيدرات';
+	@override String get fat => 'دهون';
+	@override String get gramsShort => 'غ';
+	@override String get estimate => 'تقدير بالذكاء الاصطناعي';
+	@override String get estimating => 'جارٍ تقدير القيم الغذائية…';
+	@override String get estimateFailed => 'فشل التقدير، حاول مرة أخرى';
+	@override String get none => 'لا توجد قيم غذائية لهذه الوصفة بعد';
+	@override String get noneHint => 'يمكن للذكاء الاصطناعي تقدير السعرات والبروتين والكربوهيدرات والدهون من قائمة المكونات';
+	@override String get estimated => 'تم تحديث القيم الغذائية';
+	@override String get editorServings => 'عدد الحصص';
+	@override String get editorCalories => 'سعرات لكل حصة';
+	@override String get editorProtein => 'بروتين (غ)';
+	@override String get editorCarbs => 'كربوهيدرات (غ)';
+	@override String get editorFat => 'دهون (غ)';
+	@override String get dashboard => 'لوحة التغذية';
+	@override String get weekly => 'هذا الأسبوع';
+	@override String get today => 'اليوم';
+	@override String get dayTotal => 'إجمالي اليوم';
+	@override String get weekTotal => 'إجمالي الأسبوع';
+	@override String get dailyAverage => 'المتوسط لكل يوم مخطط';
+	@override String get perMeal => 'حسب الوجبة';
+	@override String get perDay => 'حسب اليوم';
+	@override String get noPlanned => 'لم يتم التخطيط لوجبات بوصفات بعد';
+	@override String missingCount({required Object count}) => '${count} عناصر بدون قيم غذائية';
+	@override String get macroSplit => 'توزيع السعرات';
+	@override String get kcalPerDay => 'سعرة في اليوم';
+	@override String get openDashboard => 'اللوحة الأسبوعية';
 }
 
 // Path: community
@@ -553,7 +600,9 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get pasteHint => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر';
 	@override String get webSearch => 'بحث في الإنترنت';
 	@override String get urlScrape => 'رابط موقع';
-	@override String get socialVideo => 'TikTok / Reels';
+	@override String get socialVideo => 'فيديو: TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideoHint => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك';
+	@override String get socialUnreadable => 'تعذّرت قراءة هذا الفيديو. قد يكون الحساب خاصًا أو حظرت المنصة الطلب. يمكنك نسخ الوصف ولصقه كنص.';
 	@override String get aiRequest => 'طلب وصفة';
 	@override String get aiRequestHint => 'صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه';
 	@override String get parse => 'تحليل الوصفة';
@@ -694,6 +743,22 @@ class _Translations$image$ar extends Translations$image$he {
 	@override String get gallery => 'اختيار من المعرض';
 	@override String get camera => 'التقاط صورة';
 	@override String get remove => 'إزالة الصورة';
+	@override String get generate => 'إنشاء صورة بالذكاء الاصطناعي';
+	@override String get generating => 'جارٍ إنشاء الصورة… يستغرق ذلك بضع ثوانٍ';
+	@override String get generateFailed => 'فشل إنشاء الصورة، حاول مرة أخرى';
+	@override String get coverTitle => 'أي غلاف تريد إنشاءه؟';
+	@override String get coverHint => 'اختر فئة أو اكتب شيئًا أو كليهما';
+	@override String get coverFreeText => 'نص حر، مثلًا: برغر';
+	@override String get coverRequired => 'اختر فئة أو اكتب شيئًا';
+	@override String get coverGenerate => 'إنشاء الغلاف';
+	@override String get themeKids => 'أطفال';
+	@override String get themeHealthy => 'صحي';
+	@override String get themeIndulgent => 'دسم ولذيذ';
+	@override String get themeSweets => 'حلويات ومخبوزات';
+	@override String get themeMeat => 'لحوم ومشاوي';
+	@override String get themeVegan => 'نباتي';
+	@override String get themeHolidays => 'أعياد';
+	@override String get themeQuick => 'سريع وبسيط';
 }
 
 // Path: nav
@@ -983,6 +1048,7 @@ extension on TranslationsAr {
 			'common.error' => 'حدث خطأ ما',
 			'common.or' => 'أو',
 			'common.missingInfo' => '[معلومات ناقصة]',
+			'common.networkError' => 'لا يوجد اتصال بالإنترنت',
 			'auth.welcome' => 'أهلًا بكم في EasyPlate',
 			'auth.subtitle' => 'سجّلوا الدخول لحفظ وصفاتكم',
 			'auth.signIn' => 'تسجيل الدخول',
@@ -1139,6 +1205,7 @@ extension on TranslationsAr {
 			'books.coverImage' => 'صورة الغلاف',
 			'books.bookOptions' => 'خيارات الكتاب',
 			'books.renameBook' => 'تعديل اسم الكتاب',
+			'books.spineColor' => 'لون الكعب',
 			'recipe.prepTime' => 'وقت التحضير',
 			'recipe.cookTime' => 'وقت الطهي',
 			'recipe.ingredients' => 'المكوّنات',
@@ -1160,6 +1227,41 @@ extension on TranslationsAr {
 			'recipe.analyzeNow' => 'التحليل عبر AI الآن',
 			'recipe.analyzing' => 'جارٍ تحليل الوصفة...',
 			'recipe.analyzeFailed' => 'فشل التحليل — يمكنكم المحاولة لاحقًا',
+			'nutrition.title' => 'القيم الغذائية',
+			'nutrition.perServing' => 'للحصة',
+			'nutrition.perServingHint' => 'جميع القيم لحصة واحدة. اتركه فارغًا لإزالة التقدير.',
+			'nutrition.servings' => 'حصص',
+			'nutrition.servingsCount' => ({required Object count}) => '${count} حصص',
+			'nutrition.calories' => 'سعرات حرارية',
+			'nutrition.kcal' => 'سعرة',
+			'nutrition.protein' => 'بروتين',
+			'nutrition.carbs' => 'كربوهيدرات',
+			'nutrition.fat' => 'دهون',
+			'nutrition.gramsShort' => 'غ',
+			'nutrition.estimate' => 'تقدير بالذكاء الاصطناعي',
+			'nutrition.estimating' => 'جارٍ تقدير القيم الغذائية…',
+			'nutrition.estimateFailed' => 'فشل التقدير، حاول مرة أخرى',
+			'nutrition.none' => 'لا توجد قيم غذائية لهذه الوصفة بعد',
+			'nutrition.noneHint' => 'يمكن للذكاء الاصطناعي تقدير السعرات والبروتين والكربوهيدرات والدهون من قائمة المكونات',
+			'nutrition.estimated' => 'تم تحديث القيم الغذائية',
+			'nutrition.editorServings' => 'عدد الحصص',
+			'nutrition.editorCalories' => 'سعرات لكل حصة',
+			'nutrition.editorProtein' => 'بروتين (غ)',
+			'nutrition.editorCarbs' => 'كربوهيدرات (غ)',
+			'nutrition.editorFat' => 'دهون (غ)',
+			'nutrition.dashboard' => 'لوحة التغذية',
+			'nutrition.weekly' => 'هذا الأسبوع',
+			'nutrition.today' => 'اليوم',
+			'nutrition.dayTotal' => 'إجمالي اليوم',
+			'nutrition.weekTotal' => 'إجمالي الأسبوع',
+			'nutrition.dailyAverage' => 'المتوسط لكل يوم مخطط',
+			'nutrition.perMeal' => 'حسب الوجبة',
+			'nutrition.perDay' => 'حسب اليوم',
+			'nutrition.noPlanned' => 'لم يتم التخطيط لوجبات بوصفات بعد',
+			'nutrition.missingCount' => ({required Object count}) => '${count} عناصر بدون قيم غذائية',
+			'nutrition.macroSplit' => 'توزيع السعرات',
+			'nutrition.kcalPerDay' => 'سعرة في اليوم',
+			'nutrition.openDashboard' => 'اللوحة الأسبوعية',
 			'community.title' => 'المجتمع',
 			'community.forum' => 'المنتدى',
 			'community.sharedRecipes' => 'وصفات مشتركة',
@@ -1301,7 +1403,9 @@ extension on TranslationsAr {
 			'ingestion.pasteHint' => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر',
 			'ingestion.webSearch' => 'بحث في الإنترنت',
 			'ingestion.urlScrape' => 'رابط موقع',
-			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.socialVideo' => 'فيديو: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideoHint' => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك',
+			'ingestion.socialUnreadable' => 'تعذّرت قراءة هذا الفيديو. قد يكون الحساب خاصًا أو حظرت المنصة الطلب. يمكنك نسخ الوصف ولصقه كنص.',
 			'ingestion.aiRequest' => 'طلب وصفة',
 			'ingestion.aiRequestHint' => 'صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه',
 			'ingestion.parse' => 'تحليل الوصفة',
@@ -1406,6 +1510,22 @@ extension on TranslationsAr {
 			'image.gallery' => 'اختيار من المعرض',
 			'image.camera' => 'التقاط صورة',
 			'image.remove' => 'إزالة الصورة',
+			'image.generate' => 'إنشاء صورة بالذكاء الاصطناعي',
+			'image.generating' => 'جارٍ إنشاء الصورة… يستغرق ذلك بضع ثوانٍ',
+			'image.generateFailed' => 'فشل إنشاء الصورة، حاول مرة أخرى',
+			'image.coverTitle' => 'أي غلاف تريد إنشاءه؟',
+			'image.coverHint' => 'اختر فئة أو اكتب شيئًا أو كليهما',
+			'image.coverFreeText' => 'نص حر، مثلًا: برغر',
+			'image.coverRequired' => 'اختر فئة أو اكتب شيئًا',
+			'image.coverGenerate' => 'إنشاء الغلاف',
+			'image.themeKids' => 'أطفال',
+			'image.themeHealthy' => 'صحي',
+			'image.themeIndulgent' => 'دسم ولذيذ',
+			'image.themeSweets' => 'حلويات ومخبوزات',
+			'image.themeMeat' => 'لحوم ومشاوي',
+			'image.themeVegan' => 'نباتي',
+			'image.themeHolidays' => 'أعياد',
+			'image.themeQuick' => 'سريع وبسيط',
 			'nav.library' => 'المكتبة',
 			'nav.recipes' => 'الوصفات',
 			'nav.mealPlan' => 'الوجبات',
@@ -1424,6 +1544,8 @@ extension on TranslationsAr {
 			'ads.sharedQuotaReached' => 'وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!',
 			'ads.unlockRecipeTitle' => 'فتح وصفة مشتركة',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى ${count} لليوم)',
+			_ => null,
+		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => 'تبقّى لك ${remaining}/${total} استخراجات بالذكاء الاصطناعي لليوم',
 			'ads.aiQuotaReached' => 'وصلت إلى الحد اليومي لاستخراجات الذكاء الاصطناعي. سيُفتح غدًا!',
 			'ads.aiLockedHint' => 'الاستخراج من رابط يتطلب مشاهدة فيديو قصير',
@@ -1479,8 +1601,6 @@ extension on TranslationsAr {
 			'walkthrough.bookTitle' => 'دليل EasyPlate',
 			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. هذا دليل فقط: لا يُحفظ أي شيء.',
 			'walkthrough.contents' => 'المحتويات',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'الفصل ${number}',
 			'walkthrough.backToContents' => 'العودة إلى المحتويات',
 			'walkthrough.stepsTitle' => 'الخطوات',

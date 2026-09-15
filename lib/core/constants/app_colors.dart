@@ -74,6 +74,8 @@ abstract class AppColors {
   static Color get navDock => _palette.navDock;
   static Color get infoContainer => _palette.infoContainer;
   static Color get onInfoContainer => _palette.onInfoContainer;
+  static Color get warmAccent => _palette.warmAccent;
+  static Color get onWarmAccent => _palette.onWarmAccent;
 
   /// Tag colours per dietary preference, keyed by [DietaryPreference.name].
   /// Pairs are (container, onContainer) drawn from the palette above.

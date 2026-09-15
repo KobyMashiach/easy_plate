@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_ingredient_entity.dart';
@@ -17,6 +19,12 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
 
   /// Stands in for the model's rewrite of the free-text fields.
   RecipeEntity Function(RecipeEntity)? onRefine;
+
+  @override
+  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) async => recipe;
+
+  @override
+  Future<Uint8List> generateImage(String prompt) => throw UnimplementedError();
 
   @override
   Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) async {
@@ -68,7 +76,10 @@ RecipeEntity buildRecipe() => RecipeEntity(
 const _title = 0;
 const _prep = 1;
 const _cook = 2;
-const _firstStep = 5;
+// The nutrition card sits between the times and the ingredients: servings,
+// calories, protein, carbs, fat — five fields that shift everything after.
+const _nutritionFields = 5;
+const _firstStep = 5 + _nutritionFields;
 
 void main() {
   late _FakeIngestionRepository repository;

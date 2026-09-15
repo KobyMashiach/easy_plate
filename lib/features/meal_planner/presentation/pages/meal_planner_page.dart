@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_enums.dart';
@@ -14,6 +15,11 @@ import '../../../../core/widgets/weekday_selector.dart';
 import '../../domain/entities/meal_plan_entity.dart';
 import '../bloc/meal_planner_bloc.dart';
 import '../widgets/meal_card.dart';
+import '../widgets/day_nutrition_card.dart';
+import '../../domain/nutrition_summary.dart';
+import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../../core/utils/routing/routing.dart';
+import 'nutrition_dashboard_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
@@ -42,6 +48,7 @@ class MealPlannerPage extends StatelessWidget {
                   plans: final plans,
                   selectedPlan: final selected,
                   recipeTitles: final titles,
+                  recipes: final recipes,
                 ) =>
                   selected == null
                       ? ClayEmptyState(
@@ -57,6 +64,7 @@ class MealPlannerPage extends StatelessWidget {
                           plans: plans,
                           plan: selected,
                           recipeTitles: titles,
+                          recipes: recipes,
                         ),
                 MealPlannerError(error: final error) => ErrorRetryView(
                   error: error,
@@ -243,11 +251,13 @@ class _PlanBoard extends StatefulWidget {
   final List<MealPlanEntity> plans;
   final MealPlanEntity plan;
   final Map<String, String> recipeTitles;
+  final Map<String, RecipeEntity> recipes;
 
   const _PlanBoard({
     required this.plans,
     required this.plan,
     required this.recipeTitles,
+    required this.recipes,
   });
 
   @override
@@ -262,6 +272,7 @@ class _PlanBoardState extends State<_PlanBoard> {
     final bloc = context.read<MealPlannerBloc>();
     final meals = widget.plan.mealsForWeekday(_weekday);
     final days = ShoppingDay.values;
+    final nutrition = PlanNutrition.of(widget.plan, widget.recipes);
 
     return ListView(
       padding: EdgeInsets.only(bottom: ClayNavDock.bottomPadding(context)),
@@ -341,7 +352,18 @@ class _PlanBoardState extends State<_PlanBoard> {
           selectedIndex: _weekday,
           onSelected: (index) => setState(() => _weekday = index),
         ),
-        const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: AppSpacing.gutter),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.marginMobile),
+          child: DayNutritionCard(
+            day: nutrition.day(_weekday),
+            onOpenDashboard: () => context.pushNamed(
+              Routing.nutritionDashboard,
+              extra: NutritionDashboardArgs(plan: widget.plan, recipes: widget.recipes),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.gutter),
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.marginMobile,

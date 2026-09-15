@@ -1,4 +1,5 @@
 import '../../../../core/constants/app_enums.dart';
+import 'nutrition_entity.dart';
 import 'recipe_ingredient_entity.dart';
 
 class RecipeEntity {
@@ -9,6 +10,14 @@ class RecipeEntity {
   final List<RecipeIngredientEntity> ingredients;
   final List<String> steps;
   final List<DietaryPreference> dietaryTags;
+
+  /// How many servings the recipe makes. Null when nobody has said — the
+  /// nutrition below is still per serving, whatever that serving is.
+  final int? servings;
+
+  /// Estimated nutrition of one serving. Null until the model or the user
+  /// has filled it in.
+  final NutritionEntity? nutrition;
 
   /// Which allergens the ingredients actually contain, and which the recipe
   /// may carry traces of. Both only mean something under the `allergy` tag:
@@ -61,6 +70,8 @@ class RecipeEntity {
     this.prepTimeMinutes,
     this.cookTimeMinutes,
     this.dietaryTags = const [],
+    this.servings,
+    this.nutrition,
     this.allergens = const [],
     this.mayContain = const [],
     this.sourceChannel,
@@ -98,6 +109,8 @@ class RecipeEntity {
     List<RecipeIngredientEntity>? ingredients,
     List<String>? steps,
     List<DietaryPreference>? dietaryTags,
+    int? servings,
+    NutritionEntity? nutrition,
     List<Allergen>? allergens,
     List<Allergen>? mayContain,
     String? imageFileName,
@@ -116,6 +129,8 @@ class RecipeEntity {
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
       dietaryTags: dietaryTags ?? this.dietaryTags,
+      servings: servings ?? this.servings,
+      nutrition: nutrition ?? this.nutrition,
       allergens: allergens ?? this.allergens,
       mayContain: mayContain ?? this.mayContain,
       sourceChannel: sourceChannel,

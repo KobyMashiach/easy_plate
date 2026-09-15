@@ -13,7 +13,10 @@ import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/image_source_sheet.dart';
+import '../../../../core/widgets/ai_cover_prompt_sheet.dart';
 import '../../domain/entities/recipe_book_entity.dart';
+import '../widgets/spine_color_picker.dart';
+import '../../domain/entities/book_spine.dart';
 import '../bloc/library_bloc.dart';
 import '../widgets/book_cover_card.dart';
 import '../../../../core/widgets/app_dialog.dart';
@@ -162,6 +165,7 @@ class LibraryPage extends StatelessWidget {
                   final result = await showImageSourceSheet(
                     context,
                     hasImage: book.coverImageFileName != null,
+                    aiPromptPicker: (ctx) => showCoverPromptSheet(ctx, bookTitle: book.title),
                   );
                   if (result == null) return;
                   bloc.add(.setCoverImage(book.id, result.fileName));
@@ -171,6 +175,30 @@ class LibraryPage extends StatelessWidget {
                     Icon(Icons.image_rounded, color: AppColors.primary),
                     const SizedBox(width: AppSpacing.sm),
                     Text(t.books.coverImage, style: AppTextStyles.bodyMd),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.base),
+              ClayCard(
+                radius: AppRadius.md,
+                padding: const EdgeInsets.all(AppSpacing.gutter),
+                onTap: () async {
+                  Navigator.of(sheetContext).pop();
+                  final spine = await _pickSpine(context, current: book.spine);
+                  if (spine != null) bloc.add(.setSpine(book.id, spine));
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: book.spine == null ? AppColors.primary : bookSpineColor(book.spine!),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(t.books.spineColor, style: AppTextStyles.bodyMd),
                   ],
                 ),
               ),
@@ -224,6 +252,25 @@ class LibraryPage extends StatelessWidget {
     );
   }
 
+  /// The ten swatches in a dialog. Null when dismissed without confirming;
+  /// confirming with nothing new picked returns [current].
+  Future<BookSpine?> _pickSpine(BuildContext context, {required BookSpine? current}) async {
+    var picked = current;
+    final confirmed = await AppDialog.general(
+      title: t.books.spineColor,
+      icon: Icons.palette_rounded,
+      content: StatefulBuilder(
+        builder: (context, setState) => SpineColorPicker(
+          selected: picked,
+          onSelect: (spine) => setState(() => picked = spine),
+        ),
+      ),
+      confirmLabel: t.common.save,
+      cancelLabel: t.common.cancel,
+    ).show(context);
+    return confirmed == true ? picked : null;
+  }
+
   Future<void> _showRenameBookDialog(
     BuildContext context,
     LibraryBloc bloc,
@@ -250,10 +297,14 @@ class LibraryPage extends StatelessWidget {
       icon: Icons.auto_stories_rounded,
       hint: t.books.newBookTitle,
     );
-    if (title == null) return;
+    if (title == null || !context.mounted) return;
+    // The spine is chosen right after the name: it is what tells the books
+    // apart on the shelf before any cover exists.
+    final spine = await _pickSpine(context, current: null);
+    if (!context.mounted) return;
 
     final id = const Uuid().v4();
-    bloc.add(.createBook(title, id: id));
+    bloc.add(.createBook(title, id: id, spine: spine));
     await bloc.stream.firstWhere(
       (state) => state is LibraryLoaded && state.books.any((b) => b.id == id),
     );

@@ -1,5 +1,6 @@
 import '../../../../core/constants/app_enums.dart';
 import 'book_recipe_ref_entity.dart';
+import 'book_spine.dart';
 
 class RecipeBookEntity {
   final String id;
@@ -14,6 +15,9 @@ class RecipeBookEntity {
   /// `RecipeEntity.imageStoragePath` exists: the file name alone is meaningless
   /// on any device but the one that picked the photo.
   final String? coverImageStoragePath;
+
+  /// The spine colour the owner picked; null until they do.
+  final BookSpine? spine;
   final DateTime createdAt;
 
   const RecipeBookEntity({
@@ -24,6 +28,7 @@ class RecipeBookEntity {
     this.collaborators = const {},
     this.coverImageFileName,
     this.coverImageStoragePath,
+    this.spine,
   });
 
   List<BookRecipeRefEntity> get orderedRefs => [...recipeRefs]..sort((a, b) => a.order.compareTo(b.order));
@@ -36,6 +41,7 @@ class RecipeBookEntity {
     // A null `coverImageFileName` means "unchanged", so clearing needs a flag.
     bool removeCoverImage = false,
     String? coverImageStoragePath,
+    BookSpine? spine,
   }) {
     return RecipeBookEntity(
       id: id,
@@ -49,6 +55,7 @@ class RecipeBookEntity {
           ? null
           : (coverImageStoragePath ??
               (coverImageFileName != null ? null : this.coverImageStoragePath)),
+      spine: spine ?? this.spine,
       createdAt: createdAt,
     );
   }

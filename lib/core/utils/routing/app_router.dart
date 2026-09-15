@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../features/auth/presentation/pages/login_page.dart';
+import '../../../features/meal_planner/presentation/pages/nutrition_dashboard_page.dart';
 import '../../../features/auth/presentation/pages/phone_gate_page.dart';
 import '../../../features/auth/presentation/pages/phone_verification_page.dart';
 import '../../../features/auth/presentation/pages/profile_setup_page.dart';
@@ -129,6 +130,12 @@ GoRouter buildRouter() {
               final args = state.extra as RecipeDetailsArgs;
               return RecipeDetailsPage(recipe: args.recipe, readOnly: args.readOnly);
             },
+          ),
+          GoRoute(
+            path: Routing.nutritionDashboard,
+            name: Routing.nutritionDashboard,
+            builder: (context, state) =>
+                NutritionDashboardPage(args: state.extra as NutritionDashboardArgs),
           ),
           GoRoute(
             path: Routing.recipeEditor,

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../entities/original_recipe_page_entity.dart';
@@ -22,4 +24,10 @@ abstract class RecipeIngestionRepository {
   /// when [timesChanged] — a rewrite of any time stated inside the steps so it
   /// agrees with the prep and cook times the user just set.
   Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged});
+
+  /// Servings and per-serving nutrition for a recipe that has none.
+  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe);
+
+  /// A generated picture for [prompt], as JPEG bytes.
+  Future<Uint8List> generateImage(String prompt);
 }

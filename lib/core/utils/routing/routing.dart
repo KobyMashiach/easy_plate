@@ -15,6 +15,7 @@ class Routing {
   static const ingestion = 'ingestion';
   static const ingestionReview = 'ingestion_review';
   static const mealPlanDetails = 'meal_plan_details';
+  static const nutritionDashboard = 'nutrition_dashboard';
   static const groceryListDetails = 'grocery_list_details';
   static const settings = 'settings';
   static const accountMenu = 'account_menu';

@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/image_source_sheet.dart';
+import '../../../../core/widgets/ai_cover_prompt_sheet.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../bloc/book_viewer_bloc.dart';
 import '../widgets/open_book_shell.dart';
@@ -64,6 +65,7 @@ class _BookViewerBody extends StatelessWidget {
                   final result = await showImageSourceSheet(
                     context,
                     hasImage: book.coverImageFileName != null,
+                    aiPromptPicker: (ctx) => showCoverPromptSheet(ctx, bookTitle: book.title),
                   );
                   if (result == null) return;
                   bloc.add(.setCoverImage(result.fileName));

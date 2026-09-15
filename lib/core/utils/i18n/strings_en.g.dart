@@ -52,6 +52,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$en language = _Translations$language$en._(_root);
 	@override late final _Translations$books$en books = _Translations$books$en._(_root);
 	@override late final _Translations$recipe$en recipe = _Translations$recipe$en._(_root);
+	@override late final _Translations$nutrition$en nutrition = _Translations$nutrition$en._(_root);
 	@override late final _Translations$community$en community = _Translations$community$en._(_root);
 	@override late final _Translations$sharing$en sharing = _Translations$sharing$en._(_root);
 	@override late final _Translations$notifications$en notifications = _Translations$notifications$en._(_root);
@@ -91,6 +92,7 @@ class _Translations$common$en extends Translations$common$he {
 	@override String get error => 'Something went wrong';
 	@override String get or => 'or';
 	@override String get missingInfo => '[missing info]';
+	@override String get networkError => 'No internet connection';
 }
 
 // Path: auth
@@ -337,6 +339,7 @@ class _Translations$books$en extends Translations$books$he {
 	@override String get coverImage => 'Cover photo';
 	@override String get bookOptions => 'Book options';
 	@override String get renameBook => 'Rename book';
+	@override String get spineColor => 'Spine colour';
 }
 
 // Path: recipe
@@ -367,6 +370,50 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get analyzeNow => 'Analyse with AI now';
 	@override String get analyzing => 'Analysing the recipe...';
 	@override String get analyzeFailed => 'The analysis failed — you can try again later';
+}
+
+// Path: nutrition
+class _Translations$nutrition$en extends Translations$nutrition$he {
+	_Translations$nutrition$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Nutrition';
+	@override String get perServing => 'per serving';
+	@override String get perServingHint => 'All values are for one serving. Leave blank to drop the estimate.';
+	@override String get servings => 'servings';
+	@override String servingsCount({required Object count}) => '${count} servings';
+	@override String get calories => 'Calories';
+	@override String get kcal => 'kcal';
+	@override String get protein => 'Protein';
+	@override String get carbs => 'Carbs';
+	@override String get fat => 'Fat';
+	@override String get gramsShort => 'g';
+	@override String get estimate => 'Estimate with AI';
+	@override String get estimating => 'Estimating nutrition…';
+	@override String get estimateFailed => 'The estimate failed, please try again';
+	@override String get none => 'No nutrition values for this recipe yet';
+	@override String get noneHint => 'AI can estimate calories, protein, carbs and fat from the ingredient list';
+	@override String get estimated => 'Nutrition values updated';
+	@override String get editorServings => 'Servings';
+	@override String get editorCalories => 'Calories per serving';
+	@override String get editorProtein => 'Protein (g)';
+	@override String get editorCarbs => 'Carbs (g)';
+	@override String get editorFat => 'Fat (g)';
+	@override String get dashboard => 'Nutrition dashboard';
+	@override String get weekly => 'This week';
+	@override String get today => 'Today';
+	@override String get dayTotal => 'Day total';
+	@override String get weekTotal => 'Week total';
+	@override String get dailyAverage => 'Average per planned day';
+	@override String get perMeal => 'By meal';
+	@override String get perDay => 'By day';
+	@override String get noPlanned => 'No meals with recipes planned yet';
+	@override String missingCount({required Object count}) => '${count} items without nutrition values';
+	@override String get macroSplit => 'Calorie split';
+	@override String get kcalPerDay => 'kcal per day';
+	@override String get openDashboard => 'Weekly dashboard';
 }
 
 // Path: community
@@ -553,7 +600,9 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get pasteHint => 'Paste a recipe here from WhatsApp or any other source';
 	@override String get webSearch => 'Search the web';
 	@override String get urlScrape => 'Website link';
-	@override String get socialVideo => 'TikTok / Reels';
+	@override String get socialVideo => 'Video: TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideoHint => 'Paste a link to a TikTok, Instagram, YouTube or Facebook video';
+	@override String get socialUnreadable => 'We could not read this video. The account may be private, or the platform blocked the request. You can copy the caption and paste it as text.';
 	@override String get aiRequest => 'Ask for a recipe';
 	@override String get aiRequestHint => 'Describe what you want to make. For example: semolina porridge for a one-year-old, with fruit';
 	@override String get parse => 'Parse recipe';
@@ -694,6 +743,22 @@ class _Translations$image$en extends Translations$image$he {
 	@override String get gallery => 'Choose from gallery';
 	@override String get camera => 'Take a photo';
 	@override String get remove => 'Remove photo';
+	@override String get generate => 'Create with AI';
+	@override String get generating => 'Creating a picture… this takes a few seconds';
+	@override String get generateFailed => 'Creating the picture failed, please try again';
+	@override String get coverTitle => 'What cover to create?';
+	@override String get coverHint => 'Pick a category, write something, or both';
+	@override String get coverFreeText => 'Free text, e.g. burgers';
+	@override String get coverRequired => 'Pick a category or write something';
+	@override String get coverGenerate => 'Create cover';
+	@override String get themeKids => 'Kids';
+	@override String get themeHealthy => 'Healthy';
+	@override String get themeIndulgent => 'Indulgent';
+	@override String get themeSweets => 'Sweets & baking';
+	@override String get themeMeat => 'Meat & grill';
+	@override String get themeVegan => 'Vegan';
+	@override String get themeHolidays => 'Holidays';
+	@override String get themeQuick => 'Quick & simple';
 }
 
 // Path: nav
@@ -983,6 +1048,7 @@ extension on TranslationsEn {
 			'common.error' => 'Something went wrong',
 			'common.or' => 'or',
 			'common.missingInfo' => '[missing info]',
+			'common.networkError' => 'No internet connection',
 			'auth.welcome' => 'Welcome to EasyPlate',
 			'auth.subtitle' => 'Sign in to keep your recipes',
 			'auth.signIn' => 'Sign in',
@@ -1139,6 +1205,7 @@ extension on TranslationsEn {
 			'books.coverImage' => 'Cover photo',
 			'books.bookOptions' => 'Book options',
 			'books.renameBook' => 'Rename book',
+			'books.spineColor' => 'Spine colour',
 			'recipe.prepTime' => 'Prep time',
 			'recipe.cookTime' => 'Cook time',
 			'recipe.ingredients' => 'Ingredients',
@@ -1160,6 +1227,41 @@ extension on TranslationsEn {
 			'recipe.analyzeNow' => 'Analyse with AI now',
 			'recipe.analyzing' => 'Analysing the recipe...',
 			'recipe.analyzeFailed' => 'The analysis failed — you can try again later',
+			'nutrition.title' => 'Nutrition',
+			'nutrition.perServing' => 'per serving',
+			'nutrition.perServingHint' => 'All values are for one serving. Leave blank to drop the estimate.',
+			'nutrition.servings' => 'servings',
+			'nutrition.servingsCount' => ({required Object count}) => '${count} servings',
+			'nutrition.calories' => 'Calories',
+			'nutrition.kcal' => 'kcal',
+			'nutrition.protein' => 'Protein',
+			'nutrition.carbs' => 'Carbs',
+			'nutrition.fat' => 'Fat',
+			'nutrition.gramsShort' => 'g',
+			'nutrition.estimate' => 'Estimate with AI',
+			'nutrition.estimating' => 'Estimating nutrition…',
+			'nutrition.estimateFailed' => 'The estimate failed, please try again',
+			'nutrition.none' => 'No nutrition values for this recipe yet',
+			'nutrition.noneHint' => 'AI can estimate calories, protein, carbs and fat from the ingredient list',
+			'nutrition.estimated' => 'Nutrition values updated',
+			'nutrition.editorServings' => 'Servings',
+			'nutrition.editorCalories' => 'Calories per serving',
+			'nutrition.editorProtein' => 'Protein (g)',
+			'nutrition.editorCarbs' => 'Carbs (g)',
+			'nutrition.editorFat' => 'Fat (g)',
+			'nutrition.dashboard' => 'Nutrition dashboard',
+			'nutrition.weekly' => 'This week',
+			'nutrition.today' => 'Today',
+			'nutrition.dayTotal' => 'Day total',
+			'nutrition.weekTotal' => 'Week total',
+			'nutrition.dailyAverage' => 'Average per planned day',
+			'nutrition.perMeal' => 'By meal',
+			'nutrition.perDay' => 'By day',
+			'nutrition.noPlanned' => 'No meals with recipes planned yet',
+			'nutrition.missingCount' => ({required Object count}) => '${count} items without nutrition values',
+			'nutrition.macroSplit' => 'Calorie split',
+			'nutrition.kcalPerDay' => 'kcal per day',
+			'nutrition.openDashboard' => 'Weekly dashboard',
 			'community.title' => 'Community',
 			'community.forum' => 'Forum',
 			'community.sharedRecipes' => 'Shared recipes',
@@ -1301,7 +1403,9 @@ extension on TranslationsEn {
 			'ingestion.pasteHint' => 'Paste a recipe here from WhatsApp or any other source',
 			'ingestion.webSearch' => 'Search the web',
 			'ingestion.urlScrape' => 'Website link',
-			'ingestion.socialVideo' => 'TikTok / Reels',
+			'ingestion.socialVideo' => 'Video: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideoHint' => 'Paste a link to a TikTok, Instagram, YouTube or Facebook video',
+			'ingestion.socialUnreadable' => 'We could not read this video. The account may be private, or the platform blocked the request. You can copy the caption and paste it as text.',
 			'ingestion.aiRequest' => 'Ask for a recipe',
 			'ingestion.aiRequestHint' => 'Describe what you want to make. For example: semolina porridge for a one-year-old, with fruit',
 			'ingestion.parse' => 'Parse recipe',
@@ -1406,6 +1510,22 @@ extension on TranslationsEn {
 			'image.gallery' => 'Choose from gallery',
 			'image.camera' => 'Take a photo',
 			'image.remove' => 'Remove photo',
+			'image.generate' => 'Create with AI',
+			'image.generating' => 'Creating a picture… this takes a few seconds',
+			'image.generateFailed' => 'Creating the picture failed, please try again',
+			'image.coverTitle' => 'What cover to create?',
+			'image.coverHint' => 'Pick a category, write something, or both',
+			'image.coverFreeText' => 'Free text, e.g. burgers',
+			'image.coverRequired' => 'Pick a category or write something',
+			'image.coverGenerate' => 'Create cover',
+			'image.themeKids' => 'Kids',
+			'image.themeHealthy' => 'Healthy',
+			'image.themeIndulgent' => 'Indulgent',
+			'image.themeSweets' => 'Sweets & baking',
+			'image.themeMeat' => 'Meat & grill',
+			'image.themeVegan' => 'Vegan',
+			'image.themeHolidays' => 'Holidays',
+			'image.themeQuick' => 'Quick & simple',
 			'nav.library' => 'Library',
 			'nav.recipes' => 'Recipes',
 			'nav.mealPlan' => 'Meals',
@@ -1424,6 +1544,8 @@ extension on TranslationsEn {
 			'ads.sharedQuotaReached' => 'You\'ve reached today\'s limit of shared recipes. It resets tomorrow!',
 			'ads.unlockRecipeTitle' => 'Unlock a shared recipe',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Watch a short video to unlock this recipe (${count} left today)',
+			_ => null,
+		} ?? switch (path) {
 			'ads.aiQuotaLeft' => ({required Object remaining, required Object total}) => '${remaining}/${total} AI extractions left today',
 			'ads.aiQuotaReached' => 'You\'ve reached today\'s limit of AI extractions. It reopens tomorrow!',
 			'ads.aiLockedHint' => 'Extracting from a link requires watching a short video',
@@ -1479,8 +1601,6 @@ extension on TranslationsEn {
 			'walkthrough.bookTitle' => 'EasyPlate guide',
 			'walkthrough.bookSubtitle' => 'Everything the app can do, chapter by chapter. A guide only: nothing is saved.',
 			'walkthrough.contents' => 'Contents',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.chapter' => ({required Object number}) => 'Chapter ${number}',
 			'walkthrough.backToContents' => 'Back to contents',
 			'walkthrough.stepsTitle' => 'Steps',
