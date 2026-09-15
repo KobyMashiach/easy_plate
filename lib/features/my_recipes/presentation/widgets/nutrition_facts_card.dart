@@ -174,23 +174,7 @@ class _NutritionFactsCardState extends State<NutritionFactsCard> {
               ),
             ],
           ] else ...[
-            Row(
-              children: [
-                MacroRing(nutrition: n, size: 120, thickness: 12),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (final macro in Macro.values) ...[
-                        MacroBar(macro: macro, nutrition: n),
-                        if (macro != Macro.values.last)
-                          const SizedBox(height: AppSpacing.sm),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            MacroRingWithBars(nutrition: n, ringSize: 120, thickness: 12),
             if (onEstimate != null) ...[
               const SizedBox(height: AppSpacing.sm),
               Align(

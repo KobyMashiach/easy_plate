@@ -18,6 +18,7 @@ import 'core/services/auth_session_service.dart';
 import 'core/services/connectivity_service.dart';
 import 'core/services/device_locale_store.dart';
 import 'core/services/firebase_service.dart';
+import 'core/services/foreground_push_service.dart';
 import 'core/services/image_storage_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
@@ -27,6 +28,7 @@ import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
 import 'core/utils/routing/app_router.dart';
 import 'core/utils/routing/routing.dart';
+import 'core/widgets/app_dialog.dart';
 import 'core/widgets/update_gate.dart';
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 
@@ -109,7 +111,9 @@ Future<void> _applyPreferences(UserPreferencesEntity preferences) async {
   // Only after onboarding — asking for notification permission before the user
   // has picked a shopping day has nothing to schedule and no context to explain.
   if (preferences.onboardingComplete) {
-    await ShoppingReminderService().scheduleForShoppingDay(preferences.shoppingDay);
+    await ShoppingReminderService().scheduleForShoppingDay(
+      preferences.shoppingDay,
+    );
   }
 }
 
@@ -120,7 +124,8 @@ class EasyPlateApp extends StatefulWidget {
   State<EasyPlateApp> createState() => _EasyPlateAppState();
 }
 
-class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver {
+class _EasyPlateAppState extends State<EasyPlateApp>
+    with WidgetsBindingObserver {
   late final _router = buildRouter();
 
   @override
@@ -129,14 +134,33 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
     WidgetsBinding.instance.addObserver(this);
     // A tapped push lands on the inbox — whether the app was already running
     // or was launched by the tap.
-    FirebaseService().onNotificationOpened = () => _router.pushNamed(Routing.notifications);
+    FirebaseService().onNotificationOpened = () =>
+        _router.pushNamed(Routing.notifications);
     FirebaseService().deliverPendingNotificationTap();
+    // A push while the app is open becomes the app's own popup, with a way
+    // into the inbox — the system tray stays quiet.
+    ForegroundPushService().latest.addListener(_onForegroundPush);
   }
 
   @override
   void dispose() {
+    ForegroundPushService().latest.removeListener(_onForegroundPush);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  Future<void> _onForegroundPush() async {
+    final push = ForegroundPushService().latest.value;
+    final context = _router.routerDelegate.navigatorKey.currentContext;
+    if (push == null || context == null) return;
+    final open = await AppDialog.info(
+      title: push.title.isEmpty ? null : push.title,
+      message: push.body,
+      icon: Icons.notifications_active_rounded,
+      confirmLabel: t.notifications.openInbox,
+      cancelLabel: t.common.cancel,
+    ).show(context);
+    if (open == true) _router.pushNamed(Routing.notifications);
   }
 
   @override
@@ -181,8 +205,14 @@ class _EasyPlateAppState extends State<EasyPlateApp> with WidgetsBindingObserver
         // Above the router, so a forced update outlives whatever route the
         // user is on — including one a notification tap pushed — and so the
         // theme switch can freeze the whole screen, dialogs included.
-        builder: (context, child) => ThemeSwitcher(
-          child: UpdateGate(child: child ?? const SizedBox.shrink()),
+        builder: (context, child) => MediaQuery.withClampedTextScaling(
+          // A phone set to a very large system font would break the tight
+          // rows (nutrition, prices); text still scales, just not past
+          // what the layouts were drawn for.
+          maxScaleFactor: 1.2,
+          child: ThemeSwitcher(
+            child: UpdateGate(child: child ?? const SizedBox.shrink()),
+          ),
         ),
       ),
     );

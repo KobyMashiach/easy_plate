@@ -38,4 +38,11 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
 
   @override
   Future<void> markAllRead(String uid) => remoteDataSource.markAllRead(uid);
+
+  @override
+  Future<void> delete(String uid, String notificationId) =>
+      remoteDataSource.delete(uid, notificationId);
+
+  @override
+  Future<void> deleteAll(String uid) => remoteDataSource.deleteAll(uid);
 }

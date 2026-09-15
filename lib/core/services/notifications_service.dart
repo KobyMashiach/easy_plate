@@ -9,7 +9,8 @@ import '../../features/notifications/domain/repositories/notifications_repositor
 /// the bell on every screen shares one subscription instead of each opening
 /// its own Firestore listener.
 class NotificationsService {
-  static final NotificationsService _instance = NotificationsService._internal();
+  static final NotificationsService _instance =
+      NotificationsService._internal();
   factory NotificationsService() => _instance;
   NotificationsService._internal();
 

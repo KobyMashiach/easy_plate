@@ -7,6 +7,11 @@ import 'package:easy_plate/features/notifications/domain/repositories/notificati
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeNotifications implements NotificationsRepository {
+  @override
+  Future<void> delete(String uid, String notificationId) async {}
+  @override
+  Future<void> deleteAll(String uid) async {}
+
   final controller = StreamController<List<AppNotificationEntity>>.broadcast();
   int watches = 0;
 

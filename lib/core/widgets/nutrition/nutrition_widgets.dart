@@ -14,31 +14,54 @@ import '../../../features/my_recipes/domain/entities/nutrition_entity.dart';
 enum Macro {
   protein,
   carbs,
-  fat;
+  fat
+  ;
 
   Color get color => switch (this) {
-        Macro.protein => AppColors.secondary,
-        Macro.carbs => AppColors.tertiary,
-        Macro.fat => AppColors.warmAccent,
-      };
+    Macro.protein => AppColors.secondary,
+    Macro.carbs => AppColors.tertiary,
+    Macro.fat => AppColors.warmAccent,
+  };
 
   String get label => switch (this) {
-        Macro.protein => t.nutrition.protein,
-        Macro.carbs => t.nutrition.carbs,
-        Macro.fat => t.nutrition.fat,
-      };
+    Macro.protein => t.nutrition.protein,
+    Macro.carbs => t.nutrition.carbs,
+    Macro.fat => t.nutrition.fat,
+  };
 
   double gramsOf(NutritionEntity n) => switch (this) {
-        Macro.protein => n.proteinGrams,
-        Macro.carbs => n.carbsGrams,
-        Macro.fat => n.fatGrams,
-      };
+    Macro.protein => n.proteinGrams,
+    Macro.carbs => n.carbsGrams,
+    Macro.fat => n.fatGrams,
+  };
 
   double shareOf(NutritionEntity n) => switch (this) {
-        Macro.protein => n.macroShares.protein,
-        Macro.carbs => n.macroShares.carbs,
-        Macro.fat => n.macroShares.fat,
-      };
+    Macro.protein => n.macroShares.protein,
+    Macro.carbs => n.macroShares.carbs,
+    Macro.fat => n.macroShares.fat,
+  };
+}
+
+/// Text that shrinks to the room it has instead of wrapping or clipping:
+/// one line, scaled down only when needed. For the tight rows in the
+/// nutrition views, where a narrow phone would otherwise break a label.
+class FitText extends StatelessWidget {
+  final String text;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+
+  const FitText(this.text, {super.key, this.style, this.textAlign});
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: textAlign == TextAlign.end
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
+      child: Text(text, maxLines: 1, style: style, textAlign: textAlign),
+    );
+  }
 }
 
 /// "42 ג׳" — whole grams, since a decimal on an estimate is false precision.
@@ -79,7 +102,10 @@ class StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final accent = color ?? AppColors.primary;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.base),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.base,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(AppRadius.std),
@@ -91,33 +117,40 @@ class StatTile extends StatelessWidget {
           Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, size: 18, color: accent),
           ),
           const SizedBox(height: AppSpacing.base),
-          Text.rich(
-            TextSpan(
-              text: value,
-              style: AppTextStyles.bodyLg.copyWith(
-                fontWeight: FontWeight.w800,
-                fontVariations: const [FontVariation('wght', 800)],
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text.rich(
+              TextSpan(
+                text: value,
+                style: AppTextStyles.bodyLg.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontVariations: const [FontVariation('wght', 800)],
+                ),
+                children: [
+                  if (unit != null)
+                    TextSpan(
+                      text: ' $unit',
+                      style: AppTextStyles.labelSm.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                ],
               ),
-              children: [
-                if (unit != null)
-                  TextSpan(
-                    text: ' $unit',
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
-                  ),
-              ],
+              maxLines: 1,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-          Text(
+          FitText(
             caption,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.labelSm.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -144,24 +177,37 @@ class MacroBar extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: macro.color, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: macro.color,
+                shape: BoxShape.circle,
+              ),
             ),
             const SizedBox(width: AppSpacing.base),
-            Expanded(child: Text(macro.label, style: AppTextStyles.labelMd)),
-            Text(
-              gramsLabel(macro.gramsOf(nutrition)),
-              style: AppTextStyles.labelMd.copyWith(
-                fontWeight: FontWeight.w800,
-                fontVariations: const [FontVariation('wght', 800)],
+            Expanded(
+              flex: 3,
+              child: FitText(macro.label, style: AppTextStyles.labelMd),
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Flexible(
+              flex: 2,
+              child: FitText(
+                gramsLabel(macro.gramsOf(nutrition)),
+                textAlign: TextAlign.end,
+                style: AppTextStyles.labelMd.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontVariations: const [FontVariation('wght', 800)],
+                ),
               ),
             ),
             const SizedBox(width: AppSpacing.base),
             SizedBox(
-              width: 36,
-              child: Text(
+              width: 34,
+              child: FitText(
                 '${(share * 100).round()}%',
                 textAlign: TextAlign.end,
-                style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelSm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -173,7 +219,9 @@ class MacroBar extends StatelessWidget {
             height: 10,
             child: Stack(
               children: [
-                Positioned.fill(child: ColoredBox(color: AppColors.surfaceContainerHigh)),
+                Positioned.fill(
+                  child: ColoredBox(color: AppColors.surfaceContainerHigh),
+                ),
                 AnimatedFractionallySizedBox(
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeOutCubic,
@@ -225,7 +273,9 @@ class MacroRing extends StatelessWidget {
         curve: Curves.easeOutCubic,
         builder: (context, progress, child) => CustomPaint(
           painter: _RingPainter(
-            shares: [for (final m in Macro.values) (m.color, m.shareOf(nutrition))],
+            shares: [
+              for (final m in Macro.values) (m.color, m.shareOf(nutrition)),
+            ],
             track: AppColors.surfaceContainerHigh,
             thickness: thickness,
             progress: progress,
@@ -233,7 +283,8 @@ class MacroRing extends StatelessWidget {
           child: child,
         ),
         child: Center(
-          child: center ??
+          child:
+              center ??
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -246,7 +297,9 @@ class MacroRing extends StatelessWidget {
                   ),
                   Text(
                     t.nutrition.kcal,
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -289,7 +342,13 @@ class _RingPainter extends CustomPainter {
       if (sweep <= 0) continue;
       final trimmed = sweep > gap * 2 ? sweep - gap : sweep;
       final offset = sweep > gap * 2 ? gap / 2 : 0.0;
-      canvas.drawArc(arcRect, start + offset, trimmed, false, paint..color = color);
+      canvas.drawArc(
+        arcRect,
+        start + offset,
+        trimmed,
+        false,
+        paint..color = color,
+      );
       start += sweep;
     }
   }
@@ -319,23 +378,75 @@ class MacroLegend extends StatelessWidget {
                 Container(
                   width: 10,
                   height: 10,
-                  decoration: BoxDecoration(color: macro.color, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                    color: macro.color,
+                    shape: BoxShape.circle,
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.base),
-                Text(macro.label, style: AppTextStyles.labelMd),
+                Flexible(
+                  child: FitText(macro.label, style: AppTextStyles.labelMd),
+                ),
                 const SizedBox(width: AppSpacing.base),
-                Text(
-                  gramsLabel(macro.gramsOf(nutrition)),
-                  style: AppTextStyles.labelMd.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                    fontWeight: FontWeight.w800,
-                    fontVariations: const [FontVariation('wght', 800)],
+                Flexible(
+                  child: FitText(
+                    gramsLabel(macro.gramsOf(nutrition)),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                      fontWeight: FontWeight.w800,
+                      fontVariations: const [FontVariation('wght', 800)],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
       ],
+    );
+  }
+}
+
+/// A ring with the three macro bars, always side by side. On a narrow
+/// card the ring gives up some size and the bars' text scales down, so the
+/// layout is the same on every phone — only smaller where it has to be.
+class MacroRingWithBars extends StatelessWidget {
+  final NutritionEntity nutrition;
+  final double ringSize;
+  final double thickness;
+
+  const MacroRingWithBars({
+    super.key,
+    required this.nutrition,
+    this.ringSize = 120,
+    this.thickness = 12,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // The ring takes at most a third of the row; below that the bars
+        // would have no room for their figures.
+        final ring = math.min(ringSize, constraints.maxWidth * 0.34);
+        final stroke = thickness * (ring / ringSize);
+        return Row(
+          children: [
+            MacroRing(nutrition: nutrition, size: ring, thickness: stroke),
+            const SizedBox(width: AppSpacing.gutter),
+            Expanded(
+              child: Column(
+                children: [
+                  for (final macro in Macro.values) ...[
+                    MacroBar(macro: macro, nutrition: nutrition),
+                    if (macro != Macro.values.last)
+                      const SizedBox(height: AppSpacing.sm),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

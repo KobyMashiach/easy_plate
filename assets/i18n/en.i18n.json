@@ -386,7 +386,10 @@
     "keepCopy": "Keep my copy",
     "refreshed": "Your copy was updated to the new version",
     "keptCopy": "Your copy stays as it is",
-    "recipeGone": "The recipe is no longer in the community"
+    "recipeGone": "The recipe is no longer in the community",
+    "deleteAll": "Delete all notifications",
+    "deleteAllBody": "Every notification will be deleted.",
+    "openInbox": "Open notifications"
   },
   "editor": {
     "title": "Edit recipe",

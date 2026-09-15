@@ -386,7 +386,10 @@
     "keepCopy": "Garder ma copie",
     "refreshed": "Votre copie a été mise à jour",
     "keptCopy": "Votre copie reste telle quelle",
-    "recipeGone": "La recette n’est plus dans la communauté"
+    "recipeGone": "La recette n’est plus dans la communauté",
+    "deleteAll": "Supprimer toutes les notifications",
+    "deleteAllBody": "Toutes les notifications seront supprimées.",
+    "openInbox": "Ouvrir les notifications"
   },
   "editor": {
     "title": "Modifier la recette",

@@ -49,7 +49,8 @@ class AppUpdateService {
   String? _skipped;
 
   /// The version being offered, for the prompt's own copy.
-  String get latestVersion => FirebaseService().remoteString(FirebaseService.latestVersionKey);
+  String get latestVersion =>
+      FirebaseService().remoteString(FirebaseService.latestVersionKey);
 
   /// Reads the running version and starts tracking the console. Safe to call
   /// before Firebase has finished starting: the first evaluation then uses the
@@ -86,7 +87,9 @@ class AppUpdateService {
     required String latest,
     String? skipped,
   }) {
-    if ((compareVersions(current, minimum) ?? 0) < 0) return UpdateRequirement.forced;
+    if ((compareVersions(current, minimum) ?? 0) < 0) {
+      return UpdateRequirement.forced;
+    }
 
     final behindStore = (compareVersions(current, latest) ?? 0) < 0;
     if (behindStore && compareVersions(skipped ?? '', latest) != 0) {
@@ -109,7 +112,11 @@ class AppUpdateService {
     final right = _segments(b);
     if (left.isEmpty || right.isEmpty) return null;
 
-    for (var i = 0; i < (left.length > right.length ? left.length : right.length); i++) {
+    for (
+      var i = 0;
+      i < (left.length > right.length ? left.length : right.length);
+      i++
+    ) {
       final l = i < left.length ? left[i] : 0;
       final r = i < right.length ? right[i] : 0;
       if (l != r) return l < r ? -1 : 1;
@@ -151,7 +158,9 @@ class AppUpdateService {
       return 'https://play.google.com/store/apps/details?id=$androidPackageName';
     }
     if (Platform.isIOS) {
-      final id = FirebaseService().remoteString(FirebaseService.iosAppStoreIdKey);
+      final id = FirebaseService().remoteString(
+        FirebaseService.iosAppStoreIdKey,
+      );
       return id.isEmpty ? null : 'https://apps.apple.com/app/id$id';
     }
     return null;

@@ -9,7 +9,8 @@ import '../constants/app_enums.dart';
 /// two days before (1), one day before (1), and the shopping day itself (2 —
 /// morning and afternoon — prompting the user to finalize the menu).
 class ShoppingReminderService {
-  static final ShoppingReminderService _instance = ShoppingReminderService._internal();
+  static final ShoppingReminderService _instance =
+      ShoppingReminderService._internal();
   factory ShoppingReminderService() => _instance;
   ShoppingReminderService._internal();
 
@@ -45,13 +46,31 @@ class ShoppingReminderService {
     await _plugin.cancelAll();
 
     // Dart weekdays run Mon=1..Sun=7; ShoppingDay runs Sunday-first.
-    final targetWeekday = shoppingDay.index == 0 ? DateTime.sunday : shoppingDay.index;
+    final targetWeekday = shoppingDay.index == 0
+        ? DateTime.sunday
+        : shoppingDay.index;
 
     final schedule = <({int daysBefore, int hour, String body})>[
-      (daysBefore: 2, hour: 18, body: 'יום הקניות מתקרב — כדאי להתחיל לתכנן את התפריט'),
-      (daysBefore: 1, hour: 18, body: 'מחר יום הקניות — בדקו שהתפריט שלכם מעודכן'),
-      (daysBefore: 0, hour: 9, body: 'היום יום הקניות — סיימו את התפריט כדי לקבל רשימה מדויקת'),
-      (daysBefore: 0, hour: 16, body: 'תזכורת אחרונה לפני הקניות — רשימת הקניות מחכה לכם'),
+      (
+        daysBefore: 2,
+        hour: 18,
+        body: 'יום הקניות מתקרב — כדאי להתחיל לתכנן את התפריט',
+      ),
+      (
+        daysBefore: 1,
+        hour: 18,
+        body: 'מחר יום הקניות — בדקו שהתפריט שלכם מעודכן',
+      ),
+      (
+        daysBefore: 0,
+        hour: 9,
+        body: 'היום יום הקניות — סיימו את התפריט כדי לקבל רשימה מדויקת',
+      ),
+      (
+        daysBefore: 0,
+        hour: 16,
+        body: 'תזכורת אחרונה לפני הקניות — רשימת הקניות מחכה לכם',
+      ),
     ];
 
     for (var i = 0; i < schedule.length; i++) {
@@ -61,7 +80,11 @@ class ShoppingReminderService {
           id: i,
           title: 'EasyPlate',
           body: entry.body,
-          scheduledDate: _nextInstance(targetWeekday, entry.daysBefore, entry.hour),
+          scheduledDate: _nextInstance(
+            targetWeekday,
+            entry.daysBefore,
+            entry.hour,
+          ),
           notificationDetails: _details,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,

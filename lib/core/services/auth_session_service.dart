@@ -26,9 +26,11 @@ import 'firebase_service.dart';
 enum AuthStage {
   unknown,
   signedOut,
+
   /// Signed in, but the account carries no verified phone number. Every account
   /// must, so this holds Google and email arrivals until they prove one.
   needsPhone,
+
   /// Signed in with a password the user chose, but the address behind it
   /// has not been confirmed yet.
   needsEmailVerification,
@@ -89,7 +91,8 @@ class AuthSessionService extends ChangeNotifier {
     NotificationsRepository? notifications,
     RecipeSharingRepository? sharing,
     RecipesRepository? recipes,
-    Future<void> Function(UserPreferencesEntity preferences)? onPreferencesLoaded,
+    Future<void> Function(UserPreferencesEntity preferences)?
+    onPreferencesLoaded,
   }) {
     if (_bound) return;
     _bound = true;
@@ -250,7 +253,9 @@ class AuthSessionService extends ChangeNotifier {
     final uid = _user?.uid;
     if (uid == null || _sharing == null || _recipes == null) return;
     try {
-      await RefreshCollabRecipesUseCase(sharing: _sharing!, recipes: _recipes!)(uid: uid);
+      await RefreshCollabRecipesUseCase(sharing: _sharing!, recipes: _recipes!)(
+        uid: uid,
+      );
     } catch (e) {
       // Offline, or the rules refused a query. The caches stay as they are and
       // the next resume tries again.

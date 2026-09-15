@@ -4,6 +4,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+
+import 'foreground_push_service.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 
@@ -91,7 +93,9 @@ class FirebaseService {
   /// restart, so a screen that read the flag once would keep showing a stale
   /// answer after the console changed. Widgets listen and re-render when a
   /// refresh lands.
-  final isProdListenable = ValueNotifier<bool>(remoteDefaults[isProdKey]! as bool);
+  final isProdListenable = ValueNotifier<bool>(
+    remoteDefaults[isProdKey]! as bool,
+  );
 
   bool get isProd => isProdListenable.value;
 
@@ -208,8 +212,16 @@ class FirebaseService {
 
   void _wireMessaging() {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    // iOS draws nothing for a foreground push unless told to.
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint('Foreground FCM message: ${message.notification?.title}');
+      // The system draws nothing for a foreground message; we do.
+      ForegroundPushService().show(message);
     });
     FirebaseMessaging.onMessageOpenedApp.listen((_) => _notifyTap());
   }
@@ -240,12 +252,16 @@ class FirebaseService {
   Future<void> _initRemoteConfig() async {
     try {
       final config = FirebaseRemoteConfig.instance;
-      await config.setConfigSettings(RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 10),
-        // A release build must not hammer the backend; debug wants each run to
-        // see the latest values.
-        minimumFetchInterval: kDebugMode ? Duration.zero : const Duration(hours: 1),
-      ));
+      await config.setConfigSettings(
+        RemoteConfigSettings(
+          fetchTimeout: const Duration(seconds: 10),
+          // A release build must not hammer the backend; debug wants each run to
+          // see the latest values.
+          minimumFetchInterval: kDebugMode
+              ? Duration.zero
+              : const Duration(hours: 1),
+        ),
+      );
       await config.setDefaults(remoteDefaults);
       await config.fetchAndActivate();
       _publishFlags(config);
@@ -261,11 +277,28 @@ class FirebaseService {
     try {
       final messaging = FirebaseMessaging.instance;
       final settings = await messaging.requestPermission();
-      if (settings.authorizationStatus == AuthorizationStatus.denied) return null;
-      return await messaging.getToken();
+      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        return null;
+      }
+      final token = await messaging.getToken();
+      // Printed on purpose: the token is what a test push from the Firebase
+      // console needs, and copying it off a log is the quickest way to it.
+      debugPrint('FCM TOKEN: $token');
+      return token;
     } catch (e) {
       debugPrint('Push registration failed: $e');
       return null;
+    }
+  }
+
+  /// Prints the device's current FCM token. Called whenever the main screen
+  /// is reached after sign-in, so it is always in the latest log.
+  Future<void> logPushToken() async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      debugPrint('FCM TOKEN: $token');
+    } catch (e) {
+      debugPrint('FCM TOKEN unavailable: $e');
     }
   }
 

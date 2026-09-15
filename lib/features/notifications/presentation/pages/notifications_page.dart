@@ -140,6 +140,30 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (mounted) _toast(t.notifications.keptCopy);
   }
 
+  Future<void> _delete(AppNotificationEntity item) async {
+    try {
+      await context.read<NotificationsRepository>().delete(_uid, item.id);
+    } catch (e) {
+      debugPrint('Delete notification failed: $e');
+    }
+  }
+
+  Future<void> _deleteAll() async {
+    final ok = await AppDialog.warning(
+      title: t.notifications.deleteAll,
+      message: t.notifications.deleteAllBody,
+      confirmLabel: t.common.delete,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
+    if (ok != true || !mounted) return;
+    try {
+      await context.read<NotificationsRepository>().deleteAll(_uid);
+    } catch (e) {
+      debugPrint('Delete all notifications failed: $e');
+    }
+  }
+
   /// A word in passing, gone on its own.
   void _toast(String message) =>
       AppDialog.success(message: message).notify(context);
@@ -154,10 +178,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
         title: t.notifications.title,
         leadingIcon: Icons.arrow_back_rounded,
         onLeadingTap: () => Navigator.of(context).maybePop(),
-        trailingIcon: Icons.done_all_rounded,
-        onTrailingTap: () => MarkNotificationReadUseCase(
-          context.read<NotificationsRepository>(),
-        ).all(_uid),
+        trailingIcon: Icons.delete_sweep_rounded,
+        onTrailingTap: _deleteAll,
       ),
       body: ValueListenableBuilder<List<AppNotificationEntity>>(
         valueListenable: NotificationsService().items,
@@ -174,10 +196,46 @@ class _NotificationsPageState extends State<NotificationsPage> {
               : ListView.separated(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                  itemCount: items.length,
+                  // The first row is the "mark all read" action; the rest
+                  // are the items, each swipeable away.
+                  itemCount: items.length + 1,
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: AppSpacing.sm),
-                  itemBuilder: (context, index) => _card(items[index]),
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: TextButton.icon(
+                          onPressed: () => MarkNotificationReadUseCase(
+                            context.read<NotificationsRepository>(),
+                          ).all(_uid),
+                          icon: const Icon(Icons.done_all_rounded, size: 18),
+                          label: Text(t.notifications.markAllRead),
+                        ),
+                      );
+                    }
+                    final item = items[index - 1];
+                    return Dismissible(
+                      key: ValueKey(item.id),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) => _delete(item),
+                      background: Container(
+                        alignment: AlignmentDirectional.centerEnd,
+                        padding: const EdgeInsetsDirectional.only(
+                          end: AppSpacing.md,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.errorContainer,
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                        child: Icon(
+                          Icons.delete_rounded,
+                          color: AppColors.onErrorContainer,
+                        ),
+                      ),
+                      child: _card(item),
+                    );
+                  },
                 ),
         ),
       ),
@@ -280,27 +338,25 @@ extension on _NotificationsPageState {
           ),
           if (!item.read) ...[
             const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: ClayButton(
-                    label: t.notifications.refreshCopy,
-                    icon: Icons.sync_rounded,
-                    expanded: true,
-                    onPressed: _busy ? null : () => _refreshCopy(item),
+            // Stacked, not side by side: the two labels together are wider
+            // than a phone card.
+            ClayButton(
+              label: t.notifications.refreshCopy,
+              icon: Icons.sync_rounded,
+              expanded: true,
+              onPressed: _busy ? null : () => _refreshCopy(item),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Center(
+              child: TextButton(
+                onPressed: _busy ? null : () => _keepCopy(item),
+                child: Text(
+                  t.notifications.keepCopy,
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                TextButton(
-                  onPressed: _busy ? null : () => _keepCopy(item),
-                  child: Text(
-                    t.notifications.keepCopy,
-                    style: AppTextStyles.labelMd.copyWith(
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ],

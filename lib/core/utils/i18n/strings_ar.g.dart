@@ -569,6 +569,9 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String get refreshed => 'تم تحديث نسختك إلى الجديدة';
 	@override String get keptCopy => 'بقيت نسختك كما هي';
 	@override String get recipeGone => 'الوصفة لم تعد في المجتمع';
+	@override String get deleteAll => 'حذف كل الإشعارات';
+	@override String get deleteAllBody => 'ستُحذف كل الإشعارات.';
+	@override String get openInbox => 'فتح الإشعارات';
 }
 
 // Path: editor
@@ -1523,6 +1526,9 @@ extension on TranslationsAr {
 			'notifications.refreshed' => 'تم تحديث نسختك إلى الجديدة',
 			'notifications.keptCopy' => 'بقيت نسختك كما هي',
 			'notifications.recipeGone' => 'الوصفة لم تعد في المجتمع',
+			'notifications.deleteAll' => 'حذف كل الإشعارات',
+			'notifications.deleteAllBody' => 'ستُحذف كل الإشعارات.',
+			'notifications.openInbox' => 'فتح الإشعارات',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -1675,11 +1681,11 @@ extension on TranslationsAr {
 			'receipt.price' => 'سعر الوحدة',
 			'receipt.quantity' => 'الكمية',
 			'receipt.removeLine' => 'إزالة السطر',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.shareToggle' => 'مشاركة الأسعار مع المجتمع',
 			'receipt.shareHint' => 'أسماء المنتجات والأسعار فقط. لا المتجر ولا التاريخ ولا من دفع.',
 			'receipt.save' => 'حفظ الأسعار',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => 'تم حفظ ${count} أسعار',
 			'receipt.savedShared' => ({required Object count}) => 'تم حفظ ومشاركة ${count} أسعار',
 			'receipt.nothingToSave' => 'لا منتجات للحفظ',

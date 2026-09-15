@@ -569,6 +569,9 @@ class _Translations$notifications$en extends Translations$notifications$he {
 	@override String get refreshed => 'Your copy was updated to the new version';
 	@override String get keptCopy => 'Your copy stays as it is';
 	@override String get recipeGone => 'The recipe is no longer in the community';
+	@override String get deleteAll => 'Delete all notifications';
+	@override String get deleteAllBody => 'Every notification will be deleted.';
+	@override String get openInbox => 'Open notifications';
 }
 
 // Path: editor
@@ -1523,6 +1526,9 @@ extension on TranslationsEn {
 			'notifications.refreshed' => 'Your copy was updated to the new version',
 			'notifications.keptCopy' => 'Your copy stays as it is',
 			'notifications.recipeGone' => 'The recipe is no longer in the community',
+			'notifications.deleteAll' => 'Delete all notifications',
+			'notifications.deleteAllBody' => 'Every notification will be deleted.',
+			'notifications.openInbox' => 'Open notifications',
 			'editor.title' => 'Edit recipe',
 			'editor.recipeTitle' => 'Recipe name',
 			'editor.titleHint' => 'For example: Jerusalem shakshuka',
@@ -1675,11 +1681,11 @@ extension on TranslationsEn {
 			'receipt.price' => 'Unit price',
 			'receipt.quantity' => 'Quantity',
 			'receipt.removeLine' => 'Remove line',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.shareToggle' => 'Share prices with the community',
 			'receipt.shareHint' => 'Product names and prices only. Not the store, the date or who paid.',
 			'receipt.save' => 'Save prices',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => '${count} prices saved',
 			'receipt.savedShared' => ({required Object count}) => '${count} prices saved and shared',
 			'receipt.nothingToSave' => 'No products to save',

@@ -55,7 +55,9 @@ class ImageStorageService {
       );
       if (picked == null) return null;
 
-      final extension = picked.name.contains('.') ? picked.name.split('.').last : 'jpg';
+      final extension = picked.name.contains('.')
+          ? picked.name.split('.').last
+          : 'jpg';
       final fileName = '${_uuid.v4()}.$extension';
       await File(picked.path).copy('${_directory!.path}/$fileName');
       return fileName;

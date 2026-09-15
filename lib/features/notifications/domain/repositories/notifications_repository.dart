@@ -5,4 +5,6 @@ abstract class NotificationsRepository {
   Stream<List<AppNotificationEntity>> watch(String uid);
   Future<void> markRead(String uid, String notificationId);
   Future<void> markAllRead(String uid);
+  Future<void> delete(String uid, String notificationId);
+  Future<void> deleteAll(String uid);
 }

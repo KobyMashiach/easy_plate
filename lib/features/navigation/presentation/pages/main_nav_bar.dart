@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/services/firebase_service.dart';
 import '../../../../core/navigation/main_tabs.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -32,6 +33,9 @@ class _MainNavBarState extends State<MainNavBar> {
   @override
   void initState() {
     super.initState();
+    // The main screen is where a signed-in session lands: the token goes
+    // to the log each time, so a test push always has a fresh one to use.
+    FirebaseService().logPushToken();
     MainTabs.index.addListener(_onTabChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _offerFirstRunTour());
   }

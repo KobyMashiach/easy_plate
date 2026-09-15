@@ -1285,6 +1285,15 @@ class Translations$notifications$he {
 
 	/// he: 'המתכון כבר לא בקהילה'
 	String get recipeGone => 'המתכון כבר לא בקהילה';
+
+	/// he: 'מחיקת כל ההתראות'
+	String get deleteAll => 'מחיקת כל ההתראות';
+
+	/// he: 'כל ההתראות יימחקו.'
+	String get deleteAllBody => 'כל ההתראות יימחקו.';
+
+	/// he: 'פתיחת ההתראות'
+	String get openInbox => 'פתיחת ההתראות';
 }
 
 // Path: editor
@@ -3020,6 +3029,9 @@ extension on Translations {
 			'notifications.refreshed' => 'העותק שלך עודכן לגרסה החדשה',
 			'notifications.keptCopy' => 'העותק שלך נשאר כמו שהוא',
 			'notifications.recipeGone' => 'המתכון כבר לא בקהילה',
+			'notifications.deleteAll' => 'מחיקת כל ההתראות',
+			'notifications.deleteAllBody' => 'כל ההתראות יימחקו.',
+			'notifications.openInbox' => 'פתיחת ההתראות',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -3172,11 +3184,11 @@ extension on Translations {
 			'receipt.price' => 'מחיר ליחידה',
 			'receipt.quantity' => 'כמות',
 			'receipt.removeLine' => 'הסרת שורה',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.shareToggle' => 'שיתוף המחירים עם הקהילה',
 			'receipt.shareHint' => 'רק שמות מוצרים ומחירים. בלי החנות, התאריך או מי קנה.',
 			'receipt.save' => 'שמירת המחירים',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => '${count} מחירים נשמרו',
 			'receipt.savedShared' => ({required Object count}) => '${count} מחירים נשמרו ושותפו',
 			'receipt.nothingToSave' => 'אין מוצרים לשמירה',

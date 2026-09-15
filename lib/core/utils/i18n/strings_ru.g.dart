@@ -569,6 +569,9 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String get refreshed => 'Ваша копия обновлена';
 	@override String get keptCopy => 'Ваша копия осталась без изменений';
 	@override String get recipeGone => 'Рецепта больше нет в сообществе';
+	@override String get deleteAll => 'Удалить все уведомления';
+	@override String get deleteAllBody => 'Все уведомления будут удалены.';
+	@override String get openInbox => 'Открыть уведомления';
 }
 
 // Path: editor
@@ -1523,6 +1526,9 @@ extension on TranslationsRu {
 			'notifications.refreshed' => 'Ваша копия обновлена',
 			'notifications.keptCopy' => 'Ваша копия осталась без изменений',
 			'notifications.recipeGone' => 'Рецепта больше нет в сообществе',
+			'notifications.deleteAll' => 'Удалить все уведомления',
+			'notifications.deleteAllBody' => 'Все уведомления будут удалены.',
+			'notifications.openInbox' => 'Открыть уведомления',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -1675,11 +1681,11 @@ extension on TranslationsRu {
 			'receipt.price' => 'Цена за единицу',
 			'receipt.quantity' => 'Количество',
 			'receipt.removeLine' => 'Удалить строку',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.shareToggle' => 'Поделиться ценами с сообществом',
 			'receipt.shareHint' => 'Только названия товаров и цены. Без магазина, даты и того, кто платил.',
 			'receipt.save' => 'Сохранить цены',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => 'Сохранено цен: ${count}',
 			'receipt.savedShared' => ({required Object count}) => 'Сохранено и отправлено цен: ${count}',
 			'receipt.nothingToSave' => 'Нет товаров для сохранения',

@@ -569,6 +569,9 @@ class _Translations$notifications$fr extends Translations$notifications$he {
 	@override String get refreshed => 'Votre copie a été mise à jour';
 	@override String get keptCopy => 'Votre copie reste telle quelle';
 	@override String get recipeGone => 'La recette n’est plus dans la communauté';
+	@override String get deleteAll => 'Supprimer toutes les notifications';
+	@override String get deleteAllBody => 'Toutes les notifications seront supprimées.';
+	@override String get openInbox => 'Ouvrir les notifications';
 }
 
 // Path: editor
@@ -1523,6 +1526,9 @@ extension on TranslationsFr {
 			'notifications.refreshed' => 'Votre copie a été mise à jour',
 			'notifications.keptCopy' => 'Votre copie reste telle quelle',
 			'notifications.recipeGone' => 'La recette n’est plus dans la communauté',
+			'notifications.deleteAll' => 'Supprimer toutes les notifications',
+			'notifications.deleteAllBody' => 'Toutes les notifications seront supprimées.',
+			'notifications.openInbox' => 'Ouvrir les notifications',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
@@ -1675,11 +1681,11 @@ extension on TranslationsFr {
 			'receipt.price' => 'Prix unitaire',
 			'receipt.quantity' => 'Quantité',
 			'receipt.removeLine' => 'Supprimer la ligne',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.shareToggle' => 'Partager les prix avec la communauté',
 			'receipt.shareHint' => 'Noms de produits et prix seulement. Ni le magasin, ni la date, ni qui a payé.',
 			'receipt.save' => 'Enregistrer les prix',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.saved' => ({required Object count}) => '${count} prix enregistrés',
 			'receipt.savedShared' => ({required Object count}) => '${count} prix enregistrés et partagés',
 			'receipt.nothingToSave' => 'Aucun produit à enregistrer',

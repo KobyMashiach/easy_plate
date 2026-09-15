@@ -3,6 +3,7 @@
 // has to run server-side.
 const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
+const { logger } = require("firebase-functions");
 
 admin.initializeApp();
 
@@ -45,7 +46,8 @@ exports.pushOnNotification = onDocumentCreated(
     if (!token) return;
 
     const fromName = from.get("fullName") || "מישהו";
-    await admin.messaging().send({
+    try {
+      await admin.messaging().send({
       token,
       notification: { title: "EasyPlate", body: bodyFor(data, fromName) },
       data: {
@@ -55,7 +57,14 @@ exports.pushOnNotification = onDocumentCreated(
       },
       android: { priority: "high" },
       apns: { payload: { aps: { sound: "default" } } },
-    });
+      });
+      logger.info("push sent", { uid: event.params.uid, type: String(data.type || "") });
+    } catch (err) {
+      // A stale token is the common case: the user reinstalled and the
+      // profile still holds the old one. Logged, not thrown — the inbox
+      // item exists either way.
+      logger.warn("push failed", { uid: event.params.uid, reason: err.message });
+    }
   },
 );
 

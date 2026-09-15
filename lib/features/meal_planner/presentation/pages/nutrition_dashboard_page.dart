@@ -53,10 +53,16 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
           AppSpacing.xl,
         ),
         children: [
-          ClayPageHeader(title: widget.args.plan.name, subtitle: t.nutrition.weekly),
+          ClayPageHeader(
+            title: widget.args.plan.name,
+            subtitle: t.nutrition.weekly,
+          ),
           const SizedBox(height: AppSpacing.gutter),
           if (!week.hasData)
-            ClayEmptyState(icon: Icons.insights_rounded, message: t.nutrition.noPlanned)
+            ClayEmptyState(
+              icon: Icons.insights_rounded,
+              message: t.nutrition.noPlanned,
+            )
           else ...[
             // The two numbers that matter, side by side.
             Row(
@@ -97,12 +103,17 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
                       week: week,
                       labels: [for (final d in days) weekdayLabel(d)],
                       selected: _selectedDay,
-                      onSelect: (i) => setState(() => _selectedDay = _selectedDay == i ? null : i),
+                      onSelect: (i) => setState(
+                        () => _selectedDay = _selectedDay == i ? null : i,
+                      ),
                     ),
                   ),
                   if (selected != null) ...[
                     const SizedBox(height: AppSpacing.gutter),
-                    _DayLine(day: selected, label: weekdayLabel(days[selected.weekday])),
+                    _DayLine(
+                      day: selected,
+                      label: weekdayLabel(days[selected.weekday]),
+                    ),
                   ],
                 ],
               ),
@@ -116,26 +127,17 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
                 children: [
                   ClaySectionHeader(title: t.nutrition.macroSplit),
                   const SizedBox(height: AppSpacing.gutter),
-                  Row(
-                    children: [
-                      MacroRing(nutrition: week.dailyAverage, size: 128, thickness: 14),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            for (final macro in Macro.values) ...[
-                              MacroBar(macro: macro, nutrition: week.dailyAverage),
-                              if (macro != Macro.values.last) const SizedBox(height: AppSpacing.sm),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
+                  MacroRingWithBars(
+                    nutrition: week.dailyAverage,
+                    ringSize: 128,
+                    thickness: 14,
                   ),
                   const SizedBox(height: AppSpacing.base),
                   Text(
                     t.nutrition.dailyAverage,
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -154,15 +156,18 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
                       for (final meal in day.meals)
                         if (meal.countedItems > 0)
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs,
+                            ),
                             child: Row(
                               children: [
                                 SizedBox(
                                   width: 44,
                                   child: Text(
                                     weekdayLabel(days[day.weekday]),
-                                    style: AppTextStyles.labelSm
-                                        .copyWith(color: AppColors.onSurfaceVariant),
+                                    style: AppTextStyles.labelSm.copyWith(
+                                      color: AppColors.onSurfaceVariant,
+                                    ),
                                   ),
                                 ),
                                 Expanded(
@@ -177,7 +182,9 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
                                   '${kcalNumber(meal.total.calories)} ${t.nutrition.kcal}',
                                   style: AppTextStyles.labelMd.copyWith(
                                     fontWeight: FontWeight.w800,
-                                    fontVariations: const [FontVariation('wght', 800)],
+                                    fontVariations: const [
+                                      FontVariation('wght', 800),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -190,12 +197,18 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
               const SizedBox(height: AppSpacing.sm),
               Row(
                 children: [
-                  Icon(Icons.info_outline_rounded, size: 14, color: AppColors.outline),
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 14,
+                    color: AppColors.outline,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
                       t.nutrition.missingCount(count: week.missingItems),
-                      style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
+                      style: AppTextStyles.labelSm.copyWith(
+                        color: AppColors.outline,
+                      ),
                     ),
                   ),
                 ],
@@ -232,14 +245,18 @@ class _HeroFigure extends StatelessWidget {
       decoration: BoxDecoration(
         color: filled ? color : AppColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: filled ? null : Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+        border: filled
+            ? null
+            : Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             caption,
-            style: AppTextStyles.labelSm.copyWith(color: ink.withValues(alpha: 0.8)),
+            style: AppTextStyles.labelSm.copyWith(
+              color: ink.withValues(alpha: 0.8),
+            ),
           ),
           const SizedBox(height: AppSpacing.base),
           Text(
@@ -250,7 +267,12 @@ class _HeroFigure extends StatelessWidget {
               fontVariations: const [FontVariation('wght', 800)],
             ),
           ),
-          Text(unit, style: AppTextStyles.labelMd.copyWith(color: ink.withValues(alpha: 0.8))),
+          Text(
+            unit,
+            style: AppTextStyles.labelMd.copyWith(
+              color: ink.withValues(alpha: 0.8),
+            ),
+          ),
         ],
       ),
     );
@@ -338,7 +360,9 @@ class _DayBar extends StatelessWidget {
               child: AnimatedFractionallySizedBox(
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutCubic,
-                heightFactor: day.hasData ? heightFactor.clamp(0.06, 1.0) : 0.06,
+                heightFactor: day.hasData
+                    ? heightFactor.clamp(0.06, 1.0)
+                    : 0.06,
                 widthFactor: 1,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -412,24 +436,33 @@ class _DayLine extends StatelessWidget {
           if (!day.hasData)
             Text(
               t.nutrition.noPlanned,
-              style: AppTextStyles.labelSm.copyWith(color: AppColors.onPrimaryFixedVariant),
+              style: AppTextStyles.labelSm.copyWith(
+                color: AppColors.onPrimaryFixedVariant,
+              ),
             )
           else ...[
             Text(
               '${kcalNumber(day.total.calories)} ${t.nutrition.kcal}',
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.onPrimaryFixed),
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onPrimaryFixed,
+              ),
             ),
             const SizedBox(width: AppSpacing.sm),
             for (final macro in Macro.values) ...[
               Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(color: macro.color, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: macro.color,
+                  shape: BoxShape.circle,
+                ),
               ),
               const SizedBox(width: 3),
               Text(
                 gramsLabel(macro.gramsOf(day.total)),
-                style: AppTextStyles.labelSm.copyWith(color: AppColors.onPrimaryFixedVariant),
+                style: AppTextStyles.labelSm.copyWith(
+                  color: AppColors.onPrimaryFixedVariant,
+                ),
               ),
               const SizedBox(width: AppSpacing.base),
             ],

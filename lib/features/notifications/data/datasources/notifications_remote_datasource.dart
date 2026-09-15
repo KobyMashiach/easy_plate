@@ -7,6 +7,8 @@ abstract class NotificationsRemoteDataSource {
   Stream<List<AppNotificationEntity>> watch(String uid);
   Future<void> markRead(String uid, String notificationId);
   Future<void> markAllRead(String uid);
+  Future<void> delete(String uid, String notificationId);
+  Future<void> deleteAll(String uid);
 }
 
 class NotificationsFirestoreDataSource
@@ -63,6 +65,21 @@ class NotificationsFirestoreDataSource
     final batch = _firestore.batch();
     for (final doc in unread.docs) {
       batch.update(doc.reference, {'read': true});
+    }
+    await batch.commit();
+  }
+
+  @override
+  Future<void> delete(String uid, String notificationId) =>
+      _items(uid).doc(notificationId).delete();
+
+  @override
+  Future<void> deleteAll(String uid) async {
+    final all = await _items(uid).get();
+    if (all.docs.isEmpty) return;
+    final batch = _firestore.batch();
+    for (final doc in all.docs) {
+      batch.delete(doc.reference);
     }
     await batch.commit();
   }
