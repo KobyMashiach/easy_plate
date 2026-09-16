@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -280,7 +281,7 @@ class FirebaseService {
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
         return null;
       }
-      final token = await messaging.getToken();
+      final token = await _fetchToken(messaging);
       // Printed on purpose: the token is what a test push from the Firebase
       // console needs, and copying it off a log is the quickest way to it.
       debugPrint('FCM TOKEN: $token');
@@ -295,11 +296,24 @@ class FirebaseService {
   /// is reached after sign-in, so it is always in the latest log.
   Future<void> logPushToken() async {
     try {
-      final token = await FirebaseMessaging.instance.getToken();
+      final token = await _fetchToken(FirebaseMessaging.instance);
       debugPrint('FCM TOKEN: $token');
     } catch (e) {
       debugPrint('FCM TOKEN unavailable: $e');
     }
+  }
+
+  /// On iOS `getToken` throws until the APNs token has arrived, and that
+  /// lands asynchronously a moment after permission is granted. Wait for it
+  /// (briefly) before asking FCM, instead of racing it.
+  Future<String?> _fetchToken(FirebaseMessaging messaging) async {
+    if (!kIsWeb && Platform.isIOS) {
+      for (var attempt = 0; attempt < 10; attempt++) {
+        if (await messaging.getAPNSToken() != null) break;
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+      }
+    }
+    return messaging.getToken();
   }
 
   /// Tolerant of Firebase not being up: this runs from the auth session on an

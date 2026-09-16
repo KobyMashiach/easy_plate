@@ -19,6 +19,13 @@ const webhookAuth = defineSecret("REVENUECAT_WEBHOOK_AUTH");
 // entitlement identifier in the RevenueCat dashboard.
 const PREMIUM_ENTITLEMENT = "easy_plate_ai_pro";
 
+// Every event, verbatim in the fields that matter, for the administrator's
+// subscriptions screen: who paid, under which id, and whether the entitlement
+// was on the receipt. Written whatever `decide` makes of the event, so a
+// purchase the mapping ignored (a product not attached to the entitlement,
+// an anonymous receipt) is still there to be seen and fixed.
+const EVENTS_COLLECTION = "purchase_events";
+
 // Event types after which the account is *not* premium. Everything else that
 // names the entitlement (INITIAL_PURCHASE, RENEWAL, PRODUCT_CHANGE,
 // UNCANCELLATION, NON_RENEWING_PURCHASE, BILLING_ISSUE during grace,
@@ -92,6 +99,33 @@ function decide(event, now = Date.now()) {
   ];
 }
 
+// The audit row for one event. Pure, like `decide`.
+function eventRecord(event, now = Date.now()) {
+  if (!event || typeof event !== "object" || event.type === "TEST") return null;
+  const at = Number(event.event_timestamp_ms) || now;
+  const expiresMs = Number(event.expiration_at_ms);
+  const price = Number(event.price_in_purchased_currency);
+  return {
+    id: String(event.id || `${event.type || "event"}-${at}`),
+    data: {
+      type: String(event.type || ""),
+      appUserId: String(event.app_user_id || ""),
+      aliases: (event.aliases || []).map(String),
+      uid: uidFor(event),
+      productId: String(event.product_id || ""),
+      store: String(event.store || ""),
+      entitlementIds: Array.isArray(event.entitlement_ids) ? event.entitlement_ids.map(String) : [],
+      grantsPremium: Array.isArray(event.entitlement_ids) && event.entitlement_ids.includes(PREMIUM_ENTITLEMENT),
+      environment: String(event.environment || ""),
+      periodType: String(event.period_type || ""),
+      eventAt: new Date(at),
+      expiresAt: Number.isFinite(expiresMs) && expiresMs > 0 ? new Date(expiresMs) : null,
+      price: Number.isFinite(price) ? price : null,
+      currency: String(event.currency || ""),
+    },
+  };
+}
+
 function authorized(header, secret) {
   if (typeof header !== "string" || !secret) return false;
   // RevenueCat sends the header verbatim; accept it with or without a
@@ -111,6 +145,9 @@ async function apply(db, { uid, data }) {
     const snap = await tx.get(ref);
     const seenAt = snap.exists ? Number(snap.get("lastEventAt")) || 0 : 0;
     if (seenAt > data.lastEventAt) return;
+    // The administrator set this account by hand; the store's verdict waits
+    // until they release it (see the admin subscriptions screen).
+    if (snap.exists && snap.get("adminLock") === true) return;
     tx.set(
       ref,
       {
@@ -151,6 +188,20 @@ exports.revenueCatWebhook = onRequest(
     try {
       const writes = decide(event);
       const db = admin.firestore();
+      const record = eventRecord(event);
+      if (record) {
+        await db.collection(EVENTS_COLLECTION).doc(record.id).set(
+          {
+            ...record.data,
+            eventAt: admin.firestore.Timestamp.fromDate(record.data.eventAt),
+            expiresAt: record.data.expiresAt
+              ? admin.firestore.Timestamp.fromDate(record.data.expiresAt)
+              : null,
+            receivedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
       for (const write of writes) await apply(db, write);
       res.status(200).json({ ok: true, writes: writes.length });
     } catch (e) {
@@ -162,4 +213,4 @@ exports.revenueCatWebhook = onRequest(
   },
 );
 
-exports.internals = { decide, authorized, uidFor, PREMIUM_ENTITLEMENT };
+exports.internals = { decide, eventRecord, authorized, uidFor, PREMIUM_ENTITLEMENT };

@@ -11,9 +11,9 @@ import 'entitlement_service.dart';
 
 /// The RevenueCat side of premium.
 ///
-/// RevenueCat is configured once at startup and told which Firebase account
-/// is signed in, so a subscription bought on one phone follows the account to
-/// the next. Its `app_user_id` is always the Firebase uid — that is what the
+/// RevenueCat is configured on the first sign-in, with that Firebase account
+/// as its `app_user_id`, so a subscription bought on one phone follows the
+/// account to the next. The id is always the Firebase uid — that is what the
 /// webhook writes `entitlements/{uid}` under, and an anonymous RevenueCat id
 /// would land the purchase on a document nobody reads.
 ///
@@ -33,36 +33,48 @@ class PurchasesService {
 
   bool get isConfigured => _configured;
 
-  /// Configures the SDK. Safe to call without a key or off-platform (tests,
-  /// desktop): it logs and does nothing, and every later call is a no-op.
-  ///
-  /// If a uid arrived before this finished (auth usually resolves faster than
-  /// the native SDK starts), it is applied at the end rather than lost.
+  /// Nothing to configure yet: the SDK starts with the first [logIn], so it
+  /// is never up under an anonymous id. Configured early, it synced the
+  /// device's Play receipt before the account was known and posted it under
+  /// a `$RCAnonymousID`, where no `entitlements/{uid}` document could follow.
   Future<void> init() async {
-    if (_configured || !PurchasesConfig.enabled) {
-      if (!PurchasesConfig.enabled) debugPrint('Purchases disabled: no RevenueCat key for this platform');
-      return;
-    }
-    try {
-      await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.error);
-      await Purchases.configure(
-        PurchasesConfiguration(PurchasesConfig.apiKey)..appUserID = _uid,
-      );
-      Purchases.addCustomerInfoUpdateListener(_onCustomerInfo);
-      _configured = true;
-      if (_uid != null) await _identify(_uid!);
-    } catch (e) {
-      debugPrint('Purchases init failed: $e');
+    if (!PurchasesConfig.enabled) {
+      debugPrint('Purchases disabled: no RevenueCat key for this platform');
     }
   }
 
-  /// Ties the SDK to the signed-in account. Idempotent for the same uid, so
-  /// the auth stream re-emitting the same user costs nothing.
+  Future<void>? _configuring;
+
+  /// Ties the SDK to the signed-in account, configuring it on the first
+  /// call. Idempotent for the same uid, so the auth stream re-emitting the
+  /// same user costs nothing.
   Future<void> logIn(String uid) async {
     if (_uid == uid) return;
     _uid = uid;
-    if (!_configured) return;
+    if (!PurchasesConfig.enabled) return;
+    if (!_configured) {
+      await (_configuring ??= _configure(uid));
+      // Another account may have signed in while the SDK came up.
+      if (_configured && _uid != null && _uid != uid) await _identify(_uid!);
+      return;
+    }
     await _identify(uid);
+  }
+
+  Future<void> _configure(String uid) async {
+    try {
+      await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.error);
+      await Purchases.configure(
+        PurchasesConfiguration(PurchasesConfig.apiKey)..appUserID = uid,
+      );
+      Purchases.addCustomerInfoUpdateListener(_onCustomerInfo);
+      _configured = true;
+      _onCustomerInfo(await Purchases.getCustomerInfo());
+    } catch (e) {
+      debugPrint('Purchases init failed: $e');
+    } finally {
+      _configuring = null;
+    }
   }
 
   /// Detaches the account on sign-out. RevenueCat then mints a fresh anonymous
@@ -72,9 +84,10 @@ class PurchasesService {
     _uid = null;
     if (!_configured) return;
     try {
+      // Already anonymous (a sign-out right after a failed sign-in) throws.
+      if (await Purchases.isAnonymous) return;
       await Purchases.logOut();
     } catch (e) {
-      // Already anonymous, or offline — nothing to detach either way.
       debugPrint('Purchases logOut skipped: $e');
     }
   }
@@ -110,7 +123,8 @@ class PurchasesService {
       _onCustomerInfo(result.customerInfo);
       return hasPremium(result.customerInfo);
     } on PlatformException catch (e) {
-      if (PurchasesErrorHelper.getErrorCode(e) == PurchasesErrorCode.purchaseCancelledError) {
+      if (PurchasesErrorHelper.getErrorCode(e) ==
+          PurchasesErrorCode.purchaseCancelledError) {
         return false;
       }
       rethrow;
@@ -167,8 +181,9 @@ class PurchasesService {
     }
   }
 
-  void _onCustomerInfo(CustomerInfo info) => EntitlementService().setFromStore(hasPremium(info));
+  void _onCustomerInfo(CustomerInfo info) =>
+      EntitlementService().setFromStore(hasPremium(info));
 
-  static bool hasPremium(CustomerInfo info) =>
-      info.entitlements.active.containsKey(PurchasesConfig.premiumEntitlementId);
+  static bool hasPremium(CustomerInfo info) => info.entitlements.active
+      .containsKey(PurchasesConfig.premiumEntitlementId);
 }

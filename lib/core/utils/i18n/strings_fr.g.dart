@@ -69,6 +69,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$premium$fr premium = _Translations$premium$fr._(_root);
 	@override late final _Translations$walkthrough$fr walkthrough = _Translations$walkthrough$fr._(_root);
 	@override late final _Translations$feedback$fr feedback = _Translations$feedback$fr._(_root);
+	@override late final _Translations$adminBilling$fr adminBilling = _Translations$adminBilling$fr._(_root);
 }
 
 // Path: common
@@ -1070,6 +1071,44 @@ class _Translations$feedback$fr extends Translations$feedback$he {
 	@override String get notAllowed => 'Cet écran est réservé à l\'administrateur';
 }
 
+// Path: adminBilling
+class _Translations$adminBilling$fr extends Translations$adminBilling$he {
+	_Translations$adminBilling$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Abonnements';
+	@override String get all => 'Tous';
+	@override String get paying => 'Payants';
+	@override String get problems => 'Problèmes';
+	@override String get searchHint => 'Rechercher par nom, e-mail, téléphone ou uid';
+	@override String get none => 'Aucun compte à afficher';
+	@override String get premium => 'Premium';
+	@override String get free => 'Gratuit';
+	@override String untilDate({required Object date}) => 'Jusqu\'au ${date}';
+	@override String get adminLocked => 'Défini par l\'admin';
+	@override String get viaRevenueCat => 'Via RevenueCat';
+	@override String get sandbox => 'Sandbox';
+	@override String lastEvent({required Object type, required Object date}) => '${type} · ${date}';
+	@override String product({required Object id}) => 'Produit : ${id}';
+	@override String eventsCount({required Object count}) => '${count} événements';
+	@override String get grant => 'Accorder premium';
+	@override String get revoke => 'Retirer premium';
+	@override String get release => 'Rendre à RevenueCat';
+	@override String get releaseHint => 'Défini à la main : le prochain événement RevenueCat est ignoré jusqu\'à la libération.';
+	@override String get granted => 'Premium accordé';
+	@override String get revoked => 'Premium retiré';
+	@override String get released => 'De nouveau géré par RevenueCat';
+	@override String revokeConfirm({required Object name}) => 'Retirer premium à ${name} ?';
+	@override String get problemPaidNotPremium => 'A payé, mais le compte n\'est pas premium';
+	@override String get problemNoEntitlement => 'Un achat est arrivé sans l\'entitlement (produit non rattaché dans RevenueCat)';
+	@override String get orphanTitle => 'Achats sans compte';
+	@override String get orphanBody => 'Reçus arrivés sous un identifiant RevenueCat anonyme, sans utilisateur à débloquer';
+	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problèmes · ${total} comptes';
+	@override String get noEntitlementTag => 'Sans entitlement';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1957,6 +1996,35 @@ extension on TranslationsFr {
 			'feedback.none' => 'Aucun message pour l\'instant',
 			'feedback.version' => ({required Object version}) => 'Version ${version}',
 			'feedback.notAllowed' => 'Cet écran est réservé à l\'administrateur',
+			'adminBilling.title' => 'Abonnements',
+			'adminBilling.all' => 'Tous',
+			'adminBilling.paying' => 'Payants',
+			'adminBilling.problems' => 'Problèmes',
+			'adminBilling.searchHint' => 'Rechercher par nom, e-mail, téléphone ou uid',
+			'adminBilling.none' => 'Aucun compte à afficher',
+			'adminBilling.premium' => 'Premium',
+			'adminBilling.free' => 'Gratuit',
+			'adminBilling.untilDate' => ({required Object date}) => 'Jusqu\'au ${date}',
+			'adminBilling.adminLocked' => 'Défini par l\'admin',
+			'adminBilling.viaRevenueCat' => 'Via RevenueCat',
+			'adminBilling.sandbox' => 'Sandbox',
+			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			'adminBilling.product' => ({required Object id}) => 'Produit : ${id}',
+			'adminBilling.eventsCount' => ({required Object count}) => '${count} événements',
+			'adminBilling.grant' => 'Accorder premium',
+			'adminBilling.revoke' => 'Retirer premium',
+			'adminBilling.release' => 'Rendre à RevenueCat',
+			'adminBilling.releaseHint' => 'Défini à la main : le prochain événement RevenueCat est ignoré jusqu\'à la libération.',
+			'adminBilling.granted' => 'Premium accordé',
+			'adminBilling.revoked' => 'Premium retiré',
+			'adminBilling.released' => 'De nouveau géré par RevenueCat',
+			'adminBilling.revokeConfirm' => ({required Object name}) => 'Retirer premium à ${name} ?',
+			'adminBilling.problemPaidNotPremium' => 'A payé, mais le compte n\'est pas premium',
+			'adminBilling.problemNoEntitlement' => 'Un achat est arrivé sans l\'entitlement (produit non rattaché dans RevenueCat)',
+			'adminBilling.orphanTitle' => 'Achats sans compte',
+			'adminBilling.orphanBody' => 'Reçus arrivés sous un identifiant RevenueCat anonyme, sans utilisateur à débloquer',
+			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problèmes · ${total} comptes',
+			'adminBilling.noEntitlementTag' => 'Sans entitlement',
 			_ => null,
 		};
 	}

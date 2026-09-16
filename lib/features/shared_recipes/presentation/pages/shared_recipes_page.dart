@@ -109,7 +109,9 @@ Future<void> _pickAndShare(BuildContext context) async {
     context,
     where: (recipe) => recipe.isMine,
   );
-  if (picked != null) bloc.add(SharedRecipesEvent.share(picked));
+  if (picked == null || !context.mounted) return;
+  // Upload, publish, and a feed refetch: the card stays up for all of it.
+  await AppDialog.busyEvent(context, bloc, SharedRecipesEvent.share(picked));
 }
 
 class _Feed extends StatefulWidget {
@@ -420,9 +422,13 @@ class _SharedCard extends StatelessWidget {
       Routing.recipeEditor,
       extra: shared.recipe,
     );
-    if (edited == null) return;
+    if (edited == null || !context.mounted) return;
 
-    bloc.add(SharedRecipesEvent.updateShared(shared.id, edited));
+    await AppDialog.busyEvent(
+      context,
+      bloc,
+      SharedRecipesEvent.updateShared(shared.id, edited),
+    );
     if (context.mounted) {
       AppDialog.success(message: t.community.sharedUpdated).notify(context);
     }
@@ -438,7 +444,12 @@ class _SharedCard extends StatelessWidget {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (confirmed ?? false) bloc.add(SharedRecipesEvent.unshare(shared.id));
+    if (!(confirmed ?? false) || !context.mounted) return;
+    await AppDialog.busyEvent(
+      context,
+      bloc,
+      SharedRecipesEvent.unshare(shared.id),
+    );
   }
 
   /// Through the daily quota first. Read-only for everyone, the author
@@ -580,8 +591,11 @@ class _SharedCard extends StatelessWidget {
                 ClayButton(
                   label: t.community.saveToMyRecipes,
                   icon: Icons.bookmark_add_rounded,
-                  onPressed: () =>
-                      bloc.add(SharedRecipesEvent.importToMyRecipes(shared)),
+                  onPressed: () => AppDialog.busyEvent(
+                    context,
+                    bloc,
+                    SharedRecipesEvent.importToMyRecipes(shared),
+                  ),
                 ),
             ],
           ),

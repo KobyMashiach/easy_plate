@@ -69,6 +69,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$premium$ru premium = _Translations$premium$ru._(_root);
 	@override late final _Translations$walkthrough$ru walkthrough = _Translations$walkthrough$ru._(_root);
 	@override late final _Translations$feedback$ru feedback = _Translations$feedback$ru._(_root);
+	@override late final _Translations$adminBilling$ru adminBilling = _Translations$adminBilling$ru._(_root);
 }
 
 // Path: common
@@ -1070,6 +1071,44 @@ class _Translations$feedback$ru extends Translations$feedback$he {
 	@override String get notAllowed => 'Этот экран только для администратора';
 }
 
+// Path: adminBilling
+class _Translations$adminBilling$ru extends Translations$adminBilling$he {
+	_Translations$adminBilling$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Подписки';
+	@override String get all => 'Все';
+	@override String get paying => 'Платят';
+	@override String get problems => 'Проблемы';
+	@override String get searchHint => 'Поиск по имени, почте, телефону или uid';
+	@override String get none => 'Нет аккаунтов для показа';
+	@override String get premium => 'Премиум';
+	@override String get free => 'Бесплатно';
+	@override String untilDate({required Object date}) => 'До ${date}';
+	@override String get adminLocked => 'Задано админом';
+	@override String get viaRevenueCat => 'Из RevenueCat';
+	@override String get sandbox => 'Sandbox';
+	@override String lastEvent({required Object type, required Object date}) => '${type} · ${date}';
+	@override String product({required Object id}) => 'Продукт: ${id}';
+	@override String eventsCount({required Object count}) => '${count} событий';
+	@override String get grant => 'Дать премиум';
+	@override String get revoke => 'Снять премиум';
+	@override String get release => 'Вернуть RevenueCat';
+	@override String get releaseHint => 'Задано вручную: следующее событие RevenueCat игнорируется до снятия блокировки.';
+	@override String get granted => 'Премиум выдан';
+	@override String get revoked => 'Премиум снят';
+	@override String get released => 'Снова под управлением RevenueCat';
+	@override String revokeConfirm({required Object name}) => 'Снять премиум у ${name}?';
+	@override String get problemPaidNotPremium => 'Оплатил, но аккаунт не премиум';
+	@override String get problemNoEntitlement => 'Покупка пришла без entitlement (продукт не привязан в RevenueCat)';
+	@override String get orphanTitle => 'Покупки без аккаунта';
+	@override String get orphanBody => 'Чеки, пришедшие под анонимным id RevenueCat, без пользователя для разблокировки';
+	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} премиум · ${problems} проблем · ${total} аккаунтов';
+	@override String get noEntitlementTag => 'Без entitlement';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1957,6 +1996,35 @@ extension on TranslationsRu {
 			'feedback.none' => 'Обращений пока нет',
 			'feedback.version' => ({required Object version}) => 'Версия ${version}',
 			'feedback.notAllowed' => 'Этот экран только для администратора',
+			'adminBilling.title' => 'Подписки',
+			'adminBilling.all' => 'Все',
+			'adminBilling.paying' => 'Платят',
+			'adminBilling.problems' => 'Проблемы',
+			'adminBilling.searchHint' => 'Поиск по имени, почте, телефону или uid',
+			'adminBilling.none' => 'Нет аккаунтов для показа',
+			'adminBilling.premium' => 'Премиум',
+			'adminBilling.free' => 'Бесплатно',
+			'adminBilling.untilDate' => ({required Object date}) => 'До ${date}',
+			'adminBilling.adminLocked' => 'Задано админом',
+			'adminBilling.viaRevenueCat' => 'Из RevenueCat',
+			'adminBilling.sandbox' => 'Sandbox',
+			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			'adminBilling.product' => ({required Object id}) => 'Продукт: ${id}',
+			'adminBilling.eventsCount' => ({required Object count}) => '${count} событий',
+			'adminBilling.grant' => 'Дать премиум',
+			'adminBilling.revoke' => 'Снять премиум',
+			'adminBilling.release' => 'Вернуть RevenueCat',
+			'adminBilling.releaseHint' => 'Задано вручную: следующее событие RevenueCat игнорируется до снятия блокировки.',
+			'adminBilling.granted' => 'Премиум выдан',
+			'adminBilling.revoked' => 'Премиум снят',
+			'adminBilling.released' => 'Снова под управлением RevenueCat',
+			'adminBilling.revokeConfirm' => ({required Object name}) => 'Снять премиум у ${name}?',
+			'adminBilling.problemPaidNotPremium' => 'Оплатил, но аккаунт не премиум',
+			'adminBilling.problemNoEntitlement' => 'Покупка пришла без entitlement (продукт не привязан в RevenueCat)',
+			'adminBilling.orphanTitle' => 'Покупки без аккаунта',
+			'adminBilling.orphanBody' => 'Чеки, пришедшие под анонимным id RevenueCat, без пользователя для разблокировки',
+			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} премиум · ${problems} проблем · ${total} аккаунтов',
+			'adminBilling.noEntitlementTag' => 'Без entitlement',
 			_ => null,
 		};
 	}

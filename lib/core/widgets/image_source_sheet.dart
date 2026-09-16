@@ -10,6 +10,7 @@ import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 import '../services/image_storage_service.dart';
 import '../utils/i18n/strings.g.dart';
+import 'app_dialog.dart';
 import 'clay/clay.dart';
 
 /// Outcome of the photo sheet: a newly stored file name, or an explicit removal.
@@ -36,7 +37,10 @@ Future<ImagePickResult?> showImageSourceSheet(
   String? aiPrompt,
   Future<String?> Function(BuildContext context)? aiPromptPicker,
 }) {
-  assert(aiPrompt == null || aiPromptPicker == null, 'one way to get a prompt, not two');
+  assert(
+    aiPrompt == null || aiPromptPicker == null,
+    'one way to get a prompt, not two',
+  );
   return showModalBottomSheet<ImagePickResult>(
     context: context,
     builder: (sheetContext) => _ImageSourceSheet(
@@ -70,7 +74,12 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
   bool _failed = false;
 
   Future<void> _pick(ImageSource source) async {
-    final fileName = await ImageStorageService().pickAndStore(source);
+    // The picker's own UI covers the wait for it; the copy to disk after it
+    // returns is ours to show.
+    final fileName = await AppDialog.busy(
+      context,
+      () => ImageStorageService().pickAndStore(source),
+    );
     if (!mounted) return;
     Navigator.of(
       context,

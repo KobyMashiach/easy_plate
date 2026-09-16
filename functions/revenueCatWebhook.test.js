@@ -6,7 +6,7 @@ process.env.GCLOUD_PROJECT = process.env.GCLOUD_PROJECT || "easy-plate";
 process.env.FIREBASE_CONFIG =
   process.env.FIREBASE_CONFIG || JSON.stringify({ projectId: "easy-plate" });
 
-const { decide, authorized, uidFor } = require("./revenueCatWebhook").internals;
+const { decide, eventRecord, authorized, uidFor } = require("./revenueCatWebhook").internals;
 
 const UID = "AbCdEfGhIjKlMnOpQrStUvWxYz12";
 const NOW = 1_800_000_000_000;
@@ -87,4 +87,16 @@ test("the authorization header must match the secret exactly", () => {
   assert.equal(authorized("", "s3cret"), false);
   assert.equal(authorized(undefined, "s3cret"), false);
   assert.equal(authorized("s3cret", ""), false);
+});
+
+test("every event is recorded, with whether it carried the entitlement", () => {
+  const r = eventRecord(event({ entitlement_ids: [] , price_in_purchased_currency: 20, currency: "ILS" }));
+  assert.equal(r.id, "evt-1");
+  assert.equal(r.data.uid, UID);
+  assert.equal(r.data.grantsPremium, false);
+  assert.equal(r.data.price, 20);
+  assert.equal(r.data.currency, "ILS");
+  assert.equal(eventRecord(event({ type: "TEST" })), null);
+  const anon = eventRecord(event({ app_user_id: "$RCAnonymousID:1", aliases: [] }));
+  assert.equal(anon.data.uid, null);
 });

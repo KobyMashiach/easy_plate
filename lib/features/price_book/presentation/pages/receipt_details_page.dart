@@ -44,9 +44,12 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
       icon: Icons.storefront_rounded,
     );
     if (name == null || !mounted) return;
-    await context.read<PriceBookRepository>().renameReceiptStore(
-      widget.receipt.id,
-      name,
+    await AppDialog.busy(
+      context,
+      () => context.read<PriceBookRepository>().renameReceiptStore(
+        widget.receipt.id,
+        name,
+      ),
     );
     if (!mounted) return;
     setState(() => _store = name);
@@ -73,13 +76,15 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
   Future<void> _delete() async {
     final keepRecords = await showDeleteReceiptSheet(context);
     if (keepRecords == null || !mounted) return;
-    await context.read<PriceBookRepository>().deleteReceipt(
-      widget.receipt.id,
-      keepRecords: keepRecords,
-    );
-    for (final f in widget.receipt.imageFileNames) {
-      await ImageStorageService().delete(f);
-    }
+    await AppDialog.busy(context, () async {
+      await context.read<PriceBookRepository>().deleteReceipt(
+        widget.receipt.id,
+        keepRecords: keepRecords,
+      );
+      for (final f in widget.receipt.imageFileNames) {
+        await ImageStorageService().delete(f);
+      }
+    });
     if (mounted) Navigator.of(context).pop();
   }
 

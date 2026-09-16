@@ -31,4 +31,5 @@ class Routing {
   static const forumThread = 'forum_thread';
   static const tutorial = 'tutorial';
   static const adminFeedback = 'admin_feedback';
+  static const adminBilling = 'admin_billing';
 }

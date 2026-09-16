@@ -73,6 +73,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$premium$he premium = Translations$premium$he.internal(_root);
 	late final Translations$walkthrough$he walkthrough = Translations$walkthrough$he.internal(_root);
 	late final Translations$feedback$he feedback = Translations$feedback$he.internal(_root);
+	late final Translations$adminBilling$he adminBilling = Translations$adminBilling$he.internal(_root);
 }
 
 // Path: common
@@ -2549,6 +2550,102 @@ class Translations$feedback$he {
 	String get notAllowed => 'המסך הזה זמין למנהל בלבד';
 }
 
+// Path: adminBilling
+class Translations$adminBilling$he {
+	Translations$adminBilling$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'מנויים'
+	String get title => 'מנויים';
+
+	/// he: 'הכל'
+	String get all => 'הכל';
+
+	/// he: 'משלמים'
+	String get paying => 'משלמים';
+
+	/// he: 'בעיות'
+	String get problems => 'בעיות';
+
+	/// he: 'חיפוש לפי שם, מייל, טלפון או uid'
+	String get searchHint => 'חיפוש לפי שם, מייל, טלפון או uid';
+
+	/// he: 'אין חשבונות להצגה'
+	String get none => 'אין חשבונות להצגה';
+
+	/// he: 'פרימיום'
+	String get premium => 'פרימיום';
+
+	/// he: 'חינמי'
+	String get free => 'חינמי';
+
+	/// he: 'עד $date'
+	String untilDate({required Object date}) => 'עד ${date}';
+
+	/// he: 'הוגדר ידנית'
+	String get adminLocked => 'הוגדר ידנית';
+
+	/// he: 'מ-RevenueCat'
+	String get viaRevenueCat => 'מ-RevenueCat';
+
+	/// he: 'Sandbox'
+	String get sandbox => 'Sandbox';
+
+	/// he: '$type · $date'
+	String lastEvent({required Object type, required Object date}) => '${type} · ${date}';
+
+	/// he: 'מוצר: $id'
+	String product({required Object id}) => 'מוצר: ${id}';
+
+	/// he: '$count אירועים'
+	String eventsCount({required Object count}) => '${count} אירועים';
+
+	/// he: 'תן פרימיום'
+	String get grant => 'תן פרימיום';
+
+	/// he: 'בטל פרימיום'
+	String get revoke => 'בטל פרימיום';
+
+	/// he: 'החזר ל-RevenueCat'
+	String get release => 'החזר ל-RevenueCat';
+
+	/// he: 'הוגדר ידנית: האירוע הבא מ-RevenueCat לא ישנה את החשבון עד השחרור.'
+	String get releaseHint => 'הוגדר ידנית: האירוע הבא מ-RevenueCat לא ישנה את החשבון עד השחרור.';
+
+	/// he: 'ניתן פרימיום'
+	String get granted => 'ניתן פרימיום';
+
+	/// he: 'הפרימיום בוטל'
+	String get revoked => 'הפרימיום בוטל';
+
+	/// he: 'החשבון חזר לשליטת RevenueCat'
+	String get released => 'החשבון חזר לשליטת RevenueCat';
+
+	/// he: 'לבטל את הפרימיום של $name?'
+	String revokeConfirm({required Object name}) => 'לבטל את הפרימיום של ${name}?';
+
+	/// he: 'שילם, אבל החשבון לא פרימיום'
+	String get problemPaidNotPremium => 'שילם, אבל החשבון לא פרימיום';
+
+	/// he: 'הגיעה רכישה בלי ה-entitlement (המוצר לא מחובר ב-RevenueCat)'
+	String get problemNoEntitlement => 'הגיעה רכישה בלי ה-entitlement (המוצר לא מחובר ב-RevenueCat)';
+
+	/// he: 'רכישות בלי חשבון'
+	String get orphanTitle => 'רכישות בלי חשבון';
+
+	/// he: 'קבלות שהגיעו תחת מזהה אנונימי של RevenueCat, בלי משתמש לפתוח לו'
+	String get orphanBody => 'קבלות שהגיעו תחת מזהה אנונימי של RevenueCat, בלי משתמש לפתוח לו';
+
+	/// he: '$premium פרימיום · $problems בעיות · $total חשבונות'
+	String summary({required Object premium, required Object problems, required Object total}) => '${premium} פרימיום · ${problems} בעיות · ${total} חשבונות';
+
+	/// he: 'בלי entitlement'
+	String get noEntitlementTag => 'בלי entitlement';
+}
+
 // Path: walkthrough.topics
 class Translations$walkthrough$topics$he {
 	Translations$walkthrough$topics$he.internal(this._root);
@@ -3496,6 +3593,35 @@ extension on Translations {
 			'feedback.none' => 'אין פניות עדיין',
 			'feedback.version' => ({required Object version}) => 'גרסה ${version}',
 			'feedback.notAllowed' => 'המסך הזה זמין למנהל בלבד',
+			'adminBilling.title' => 'מנויים',
+			'adminBilling.all' => 'הכל',
+			'adminBilling.paying' => 'משלמים',
+			'adminBilling.problems' => 'בעיות',
+			'adminBilling.searchHint' => 'חיפוש לפי שם, מייל, טלפון או uid',
+			'adminBilling.none' => 'אין חשבונות להצגה',
+			'adminBilling.premium' => 'פרימיום',
+			'adminBilling.free' => 'חינמי',
+			'adminBilling.untilDate' => ({required Object date}) => 'עד ${date}',
+			'adminBilling.adminLocked' => 'הוגדר ידנית',
+			'adminBilling.viaRevenueCat' => 'מ-RevenueCat',
+			'adminBilling.sandbox' => 'Sandbox',
+			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			'adminBilling.product' => ({required Object id}) => 'מוצר: ${id}',
+			'adminBilling.eventsCount' => ({required Object count}) => '${count} אירועים',
+			'adminBilling.grant' => 'תן פרימיום',
+			'adminBilling.revoke' => 'בטל פרימיום',
+			'adminBilling.release' => 'החזר ל-RevenueCat',
+			'adminBilling.releaseHint' => 'הוגדר ידנית: האירוע הבא מ-RevenueCat לא ישנה את החשבון עד השחרור.',
+			'adminBilling.granted' => 'ניתן פרימיום',
+			'adminBilling.revoked' => 'הפרימיום בוטל',
+			'adminBilling.released' => 'החשבון חזר לשליטת RevenueCat',
+			'adminBilling.revokeConfirm' => ({required Object name}) => 'לבטל את הפרימיום של ${name}?',
+			'adminBilling.problemPaidNotPremium' => 'שילם, אבל החשבון לא פרימיום',
+			'adminBilling.problemNoEntitlement' => 'הגיעה רכישה בלי ה-entitlement (המוצר לא מחובר ב-RevenueCat)',
+			'adminBilling.orphanTitle' => 'רכישות בלי חשבון',
+			'adminBilling.orphanBody' => 'קבלות שהגיעו תחת מזהה אנונימי של RevenueCat, בלי משתמש לפתוח לו',
+			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} פרימיום · ${problems} בעיות · ${total} חשבונות',
+			'adminBilling.noEntitlementTag' => 'בלי entitlement',
 			_ => null,
 		};
 	}

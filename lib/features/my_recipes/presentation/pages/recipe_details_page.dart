@@ -224,7 +224,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       // A refused shared write used to vanish here: the picture was uploaded,
       // nothing recorded it, and the screen went on showing the old one.
       debugPrint('Photo change failed for ${recipe.id}: $e');
-      if (mounted) AppDialog.error(message: '${t.common.error}\n$e').show(context);
+      if (mounted) {
+        AppDialog.error(message: '${t.common.error}\n$e').show(context);
+      }
       return;
     }
     // Drop the replaced file so removed photos don't accumulate on disk, and
@@ -260,10 +262,13 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     final postId = widget.sharedId;
     if (postId != null) {
       try {
-        await UpdateSharedRecipeUseCase(
-          context.read<SharedRecipesRepository>(),
-          recipes,
-        )(postId, updated, persist: false);
+        await AppDialog.busy(
+          context,
+          () => UpdateSharedRecipeUseCase(
+            context.read<SharedRecipesRepository>(),
+            recipes,
+          )(postId, updated, persist: false),
+        );
       } catch (e) {
         debugPrint('Post update failed: $e');
         if (mounted) {
@@ -273,23 +278,28 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       return updated;
     }
 
-    final stored = await SaveCollabRecipeUseCase(
-      sharing: context.read<RecipeSharingRepository>(),
-      recipes: context.read<RecipesRepository>(),
-    )(updated, byUid: AuthSessionService().user?.uid ?? '');
+    // Upload, write, and possibly a feed lookup: behind the busy card, so
+    // the page never sits with the old photo and no sign of work.
+    final (stored, published) = await AppDialog.busy(context, () async {
+      final stored = await SaveCollabRecipeUseCase(
+        sharing: context.read<RecipeSharingRepository>(),
+        recipes: context.read<RecipesRepository>(),
+      )(updated, byUid: AuthSessionService().user?.uid ?? '');
 
-    // Recipes published before the link existed carry no post id. Their
-    // post is found by title among this account's own posts, and the link
-    // is written so the next save skips the lookup.
-    var published = stored.sharedRecipeId;
-    if (published == null && stored.isMine) {
-      published = await _findMyPost(stored);
-      if (published != null) {
-        await SaveRecipeUseCase(recipes)(
-          stored.copyWith(sharedRecipeId: published),
-        );
+      // Recipes published before the link existed carry no post id. Their
+      // post is found by title among this account's own posts, and the link
+      // is written so the next save skips the lookup.
+      var published = stored.sharedRecipeId;
+      if (published == null && stored.isMine) {
+        published = await _findMyPost(stored);
+        if (published != null) {
+          await SaveRecipeUseCase(recipes)(
+            stored.copyWith(sharedRecipeId: published),
+          );
+        }
       }
-    }
+      return (stored, published);
+    });
     if (published == null || !mounted) return stored;
     final also = await AppDialog.general(
       title: t.recipe.communityUpdateTitle,
@@ -300,10 +310,13 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     ).show(context);
     if (also != true || !mounted) return stored;
     try {
-      await UpdateSharedRecipeUseCase(
-        context.read<SharedRecipesRepository>(),
-        context.read<RecipesRepository>(),
-      )(published, stored);
+      await AppDialog.busy(
+        context,
+        () => UpdateSharedRecipeUseCase(
+          context.read<SharedRecipesRepository>(),
+          context.read<RecipesRepository>(),
+        )(published, stored),
+      );
       if (mounted) {
         AppDialog.success(message: t.recipe.communityUpdated).notify(context);
       }

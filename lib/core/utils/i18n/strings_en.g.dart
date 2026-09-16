@@ -69,6 +69,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$premium$en premium = _Translations$premium$en._(_root);
 	@override late final _Translations$walkthrough$en walkthrough = _Translations$walkthrough$en._(_root);
 	@override late final _Translations$feedback$en feedback = _Translations$feedback$en._(_root);
+	@override late final _Translations$adminBilling$en adminBilling = _Translations$adminBilling$en._(_root);
 }
 
 // Path: common
@@ -1070,6 +1071,44 @@ class _Translations$feedback$en extends Translations$feedback$he {
 	@override String get notAllowed => 'This screen is for the administrator only';
 }
 
+// Path: adminBilling
+class _Translations$adminBilling$en extends Translations$adminBilling$he {
+	_Translations$adminBilling$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Subscriptions';
+	@override String get all => 'All';
+	@override String get paying => 'Paying';
+	@override String get problems => 'Problems';
+	@override String get searchHint => 'Search by name, email, phone or uid';
+	@override String get none => 'No accounts to show';
+	@override String get premium => 'Premium';
+	@override String get free => 'Free';
+	@override String untilDate({required Object date}) => 'Until ${date}';
+	@override String get adminLocked => 'Set by admin';
+	@override String get viaRevenueCat => 'From RevenueCat';
+	@override String get sandbox => 'Sandbox';
+	@override String lastEvent({required Object type, required Object date}) => '${type} · ${date}';
+	@override String product({required Object id}) => 'Product: ${id}';
+	@override String eventsCount({required Object count}) => '${count} events';
+	@override String get grant => 'Grant premium';
+	@override String get revoke => 'Revoke premium';
+	@override String get release => 'Return to RevenueCat';
+	@override String get releaseHint => 'Set by hand: RevenueCat\'s next event is ignored until released.';
+	@override String get granted => 'Premium granted';
+	@override String get revoked => 'Premium revoked';
+	@override String get released => 'Back under RevenueCat';
+	@override String revokeConfirm({required Object name}) => 'Revoke premium for ${name}?';
+	@override String get problemPaidNotPremium => 'Paid, but the account is not premium';
+	@override String get problemNoEntitlement => 'A purchase arrived without the entitlement (product not attached in RevenueCat)';
+	@override String get orphanTitle => 'Purchases without an account';
+	@override String get orphanBody => 'Receipts that arrived under an anonymous RevenueCat id, with no user to unlock';
+	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problems · ${total} accounts';
+	@override String get noEntitlementTag => 'No entitlement';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$en extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1957,6 +1996,35 @@ extension on TranslationsEn {
 			'feedback.none' => 'No messages yet',
 			'feedback.version' => ({required Object version}) => 'Version ${version}',
 			'feedback.notAllowed' => 'This screen is for the administrator only',
+			'adminBilling.title' => 'Subscriptions',
+			'adminBilling.all' => 'All',
+			'adminBilling.paying' => 'Paying',
+			'adminBilling.problems' => 'Problems',
+			'adminBilling.searchHint' => 'Search by name, email, phone or uid',
+			'adminBilling.none' => 'No accounts to show',
+			'adminBilling.premium' => 'Premium',
+			'adminBilling.free' => 'Free',
+			'adminBilling.untilDate' => ({required Object date}) => 'Until ${date}',
+			'adminBilling.adminLocked' => 'Set by admin',
+			'adminBilling.viaRevenueCat' => 'From RevenueCat',
+			'adminBilling.sandbox' => 'Sandbox',
+			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			'adminBilling.product' => ({required Object id}) => 'Product: ${id}',
+			'adminBilling.eventsCount' => ({required Object count}) => '${count} events',
+			'adminBilling.grant' => 'Grant premium',
+			'adminBilling.revoke' => 'Revoke premium',
+			'adminBilling.release' => 'Return to RevenueCat',
+			'adminBilling.releaseHint' => 'Set by hand: RevenueCat\'s next event is ignored until released.',
+			'adminBilling.granted' => 'Premium granted',
+			'adminBilling.revoked' => 'Premium revoked',
+			'adminBilling.released' => 'Back under RevenueCat',
+			'adminBilling.revokeConfirm' => ({required Object name}) => 'Revoke premium for ${name}?',
+			'adminBilling.problemPaidNotPremium' => 'Paid, but the account is not premium',
+			'adminBilling.problemNoEntitlement' => 'A purchase arrived without the entitlement (product not attached in RevenueCat)',
+			'adminBilling.orphanTitle' => 'Purchases without an account',
+			'adminBilling.orphanBody' => 'Receipts that arrived under an anonymous RevenueCat id, with no user to unlock',
+			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problems · ${total} accounts',
+			'adminBilling.noEntitlementTag' => 'No entitlement',
 			_ => null,
 		};
 	}

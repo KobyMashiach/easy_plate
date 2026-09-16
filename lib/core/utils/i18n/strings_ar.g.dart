@@ -69,6 +69,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$premium$ar premium = _Translations$premium$ar._(_root);
 	@override late final _Translations$walkthrough$ar walkthrough = _Translations$walkthrough$ar._(_root);
 	@override late final _Translations$feedback$ar feedback = _Translations$feedback$ar._(_root);
+	@override late final _Translations$adminBilling$ar adminBilling = _Translations$adminBilling$ar._(_root);
 }
 
 // Path: common
@@ -1070,6 +1071,44 @@ class _Translations$feedback$ar extends Translations$feedback$he {
 	@override String get notAllowed => 'هذه الشاشة للمدير فقط';
 }
 
+// Path: adminBilling
+class _Translations$adminBilling$ar extends Translations$adminBilling$he {
+	_Translations$adminBilling$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'الاشتراكات';
+	@override String get all => 'الكل';
+	@override String get paying => 'يدفعون';
+	@override String get problems => 'مشاكل';
+	@override String get searchHint => 'بحث بالاسم أو البريد أو الهاتف أو uid';
+	@override String get none => 'لا حسابات للعرض';
+	@override String get premium => 'بريميوم';
+	@override String get free => 'مجاني';
+	@override String untilDate({required Object date}) => 'حتى ${date}';
+	@override String get adminLocked => 'محدد يدويًا';
+	@override String get viaRevenueCat => 'من RevenueCat';
+	@override String get sandbox => 'Sandbox';
+	@override String lastEvent({required Object type, required Object date}) => '${type} · ${date}';
+	@override String product({required Object id}) => 'المنتج: ${id}';
+	@override String eventsCount({required Object count}) => '${count} أحداث';
+	@override String get grant => 'منح بريميوم';
+	@override String get revoke => 'إلغاء بريميوم';
+	@override String get release => 'إعادة إلى RevenueCat';
+	@override String get releaseHint => 'محدد يدويًا: يتم تجاهل الحدث التالي من RevenueCat حتى الإفراج.';
+	@override String get granted => 'تم منح بريميوم';
+	@override String get revoked => 'تم إلغاء بريميوم';
+	@override String get released => 'عاد الحساب إلى RevenueCat';
+	@override String revokeConfirm({required Object name}) => 'إلغاء بريميوم لـ ${name}؟';
+	@override String get problemPaidNotPremium => 'دفع، لكن الحساب ليس بريميوم';
+	@override String get problemNoEntitlement => 'وصلت عملية شراء بدون الـ entitlement (المنتج غير مرتبط في RevenueCat)';
+	@override String get orphanTitle => 'مشتريات بدون حساب';
+	@override String get orphanBody => 'إيصالات وصلت تحت معرّف مجهول في RevenueCat، بدون مستخدم لفتحه';
+	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} بريميوم · ${problems} مشاكل · ${total} حسابات';
+	@override String get noEntitlementTag => 'بدون entitlement';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1957,6 +1996,35 @@ extension on TranslationsAr {
 			'feedback.none' => 'لا توجد رسائل بعد',
 			'feedback.version' => ({required Object version}) => 'الإصدار ${version}',
 			'feedback.notAllowed' => 'هذه الشاشة للمدير فقط',
+			'adminBilling.title' => 'الاشتراكات',
+			'adminBilling.all' => 'الكل',
+			'adminBilling.paying' => 'يدفعون',
+			'adminBilling.problems' => 'مشاكل',
+			'adminBilling.searchHint' => 'بحث بالاسم أو البريد أو الهاتف أو uid',
+			'adminBilling.none' => 'لا حسابات للعرض',
+			'adminBilling.premium' => 'بريميوم',
+			'adminBilling.free' => 'مجاني',
+			'adminBilling.untilDate' => ({required Object date}) => 'حتى ${date}',
+			'adminBilling.adminLocked' => 'محدد يدويًا',
+			'adminBilling.viaRevenueCat' => 'من RevenueCat',
+			'adminBilling.sandbox' => 'Sandbox',
+			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			'adminBilling.product' => ({required Object id}) => 'المنتج: ${id}',
+			'adminBilling.eventsCount' => ({required Object count}) => '${count} أحداث',
+			'adminBilling.grant' => 'منح بريميوم',
+			'adminBilling.revoke' => 'إلغاء بريميوم',
+			'adminBilling.release' => 'إعادة إلى RevenueCat',
+			'adminBilling.releaseHint' => 'محدد يدويًا: يتم تجاهل الحدث التالي من RevenueCat حتى الإفراج.',
+			'adminBilling.granted' => 'تم منح بريميوم',
+			'adminBilling.revoked' => 'تم إلغاء بريميوم',
+			'adminBilling.released' => 'عاد الحساب إلى RevenueCat',
+			'adminBilling.revokeConfirm' => ({required Object name}) => 'إلغاء بريميوم لـ ${name}؟',
+			'adminBilling.problemPaidNotPremium' => 'دفع، لكن الحساب ليس بريميوم',
+			'adminBilling.problemNoEntitlement' => 'وصلت عملية شراء بدون الـ entitlement (المنتج غير مرتبط في RevenueCat)',
+			'adminBilling.orphanTitle' => 'مشتريات بدون حساب',
+			'adminBilling.orphanBody' => 'إيصالات وصلت تحت معرّف مجهول في RevenueCat، بدون مستخدم لفتحه',
+			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} بريميوم · ${problems} مشاكل · ${total} حسابات',
+			'adminBilling.noEntitlementTag' => 'بدون entitlement',
 			_ => null,
 		};
 	}

@@ -32,6 +32,7 @@ import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
 import 'routing.dart';
 import '../../../features/more/presentation/pages/tutorial_book_page.dart';
+import '../../../features/admin_billing/presentation/pages/admin_billing_page.dart';
 import '../../../features/feedback/presentation/pages/admin_feedback_page.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
@@ -237,6 +238,11 @@ GoRouter buildRouter() {
             path: Routing.adminFeedback,
             name: Routing.adminFeedback,
             builder: (context, state) => const AdminFeedbackPage(),
+          ),
+          GoRoute(
+            path: Routing.adminBilling,
+            name: Routing.adminBilling,
+            builder: (context, state) => const AdminBillingPage(),
           ),
         ],
       ),

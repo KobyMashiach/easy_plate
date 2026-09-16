@@ -203,8 +203,12 @@ class LibraryPage extends StatelessWidget {
                         aiPromptPicker: (ctx) =>
                             showCoverPromptSheet(ctx, bookTitle: book.title),
                       );
-                      if (result == null) return;
-                      bloc.add(.setCoverImage(book.id, result.fileName));
+                      if (result == null || !context.mounted) return;
+                      await AppDialog.busyEvent(
+                        context,
+                        bloc,
+                        LibraryEvent.setCoverImage(book.id, result.fileName),
+                      );
                     },
                     child: Row(
                       children: [
@@ -334,7 +338,12 @@ class LibraryPage extends StatelessWidget {
       hint: t.books.newBookTitle,
       initial: book.title,
     );
-    if (title != null) bloc.add(.renameBook(book.id, title));
+    if (title == null || !context.mounted) return;
+    await AppDialog.busyEvent(
+      context,
+      bloc,
+      LibraryEvent.renameBook(book.id, title),
+    );
   }
 
   /// A new book opens straight away: naming it is the first step of filling
@@ -355,10 +364,13 @@ class LibraryPage extends StatelessWidget {
     if (!context.mounted) return;
 
     final id = const Uuid().v4();
-    bloc.add(.createBook(title, id: id, spine: spine));
-    await bloc.stream.firstWhere(
-      (state) => state is LibraryLoaded && state.books.any((b) => b.id == id),
-    );
+    await AppDialog.busy(context, () {
+      final landed = bloc.stream.firstWhere(
+        (state) => state is LibraryLoaded && state.books.any((b) => b.id == id),
+      );
+      bloc.add(.createBook(title, id: id, spine: spine));
+      return landed;
+    });
     if (!context.mounted) return;
     await context.pushNamed(Routing.bookDetails, extra: id);
     // Same reload as opening from the shelf: the cover may have changed inside.

@@ -105,11 +105,13 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (ok != true) return;
-    for (final r in _records) {
-      await DeletePriceRecordUseCase(widget.repository)(r.id);
-    }
-    await widget.repository.deletePricing(_key);
+    if (ok != true || !mounted) return;
+    await AppDialog.busy(context, () async {
+      for (final r in _records) {
+        await DeletePriceRecordUseCase(widget.repository)(r.id);
+      }
+      await widget.repository.deletePricing(_key);
+    });
     if (mounted) Navigator.of(context).pop(true);
   }
 

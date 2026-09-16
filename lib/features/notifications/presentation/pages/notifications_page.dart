@@ -98,7 +98,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
               extra: RecipeDetailsArgs(recipe: local),
             );
           case CollabKind.book:
-            final book = await containers.accept(invite, uid: _uid) as RecipeBookEntity;
+            final book =
+                await containers.accept(invite, uid: _uid) as RecipeBookEntity;
             await _markRead(item);
             if (!mounted) return;
             _toast(t.sharing.acceptedBook);
@@ -184,7 +185,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     ).show(context);
     if (ok != true || !mounted) return;
     try {
-      await context.read<NotificationsRepository>().deleteAll(_uid);
+      await AppDialog.busy(
+        context,
+        () => context.read<NotificationsRepository>().deleteAll(_uid),
+      );
     } catch (e) {
       debugPrint('Delete all notifications failed: $e');
     }
@@ -288,17 +292,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
           Text(
             switch (item.kind) {
               CollabKind.book => t.notifications.sharedBook(
-                  name: item.fromName ?? '',
-                  recipe: item.recipeTitle ?? '',
-                ),
+                name: item.fromName ?? '',
+                recipe: item.recipeTitle ?? '',
+              ),
               CollabKind.mealPlan => t.notifications.sharedPlan(
-                  name: item.fromName ?? '',
-                  recipe: item.recipeTitle ?? '',
-                ),
+                name: item.fromName ?? '',
+                recipe: item.recipeTitle ?? '',
+              ),
               CollabKind.recipe => t.notifications.sharedRecipe(
-                  name: item.fromName ?? '',
-                  recipe: item.recipeTitle ?? '',
-                ),
+                name: item.fromName ?? '',
+                recipe: item.recipeTitle ?? '',
+              ),
             },
             style: AppTextStyles.bodyMd,
           ),

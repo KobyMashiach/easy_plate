@@ -49,7 +49,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     text: _session.profile?.fullName ?? _session.user?.displayName ?? '',
   );
 
-  late String? _photoUrl = _session.profile?.photoUrl ?? _session.user?.photoUrl;
+  late String? _photoUrl =
+      _session.profile?.photoUrl ?? _session.user?.photoUrl;
   String? _photoFileName;
   bool _busy = false;
   String? _nameError;
@@ -61,7 +62,10 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _pickPhoto() async {
-    final result = await showImageSourceSheet(context, hasImage: _photoFileName != null);
+    final result = await showImageSourceSheet(
+      context,
+      hasImage: _photoFileName != null,
+    );
     if (result == null || !mounted) return;
     setState(() {
       _photoFileName = result.removed ? null : result.fileName;
@@ -140,7 +144,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   /// `Provider<AuthBloc> not found` from this very line.
   Future<void> _refreshIdentity() async {
     final user = context.read<AuthRepository>().currentUser;
-    if (user != null) await _session.refreshUser(user);
+    if (user != null) {
+      await AppDialog.busy(context, () => _session.refreshUser(user));
+    }
     if (mounted) setState(() {});
   }
 
@@ -183,11 +189,11 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   /// A word in passing, gone on its own.
-  void _toast(String message) => AppDialog.success(message: message).notify(context);
+  void _toast(String message) =>
+      AppDialog.success(message: message).notify(context);
 
   /// Something to read before going on.
   void _fail(String message) => AppDialog.error(message: message).show(context);
-
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +204,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           appBar: ClayTopAppBar(
             title: widget.isEditing ? t.more.profile : t.profile.setupTitle,
             leadingIcon: widget.isEditing ? Icons.arrow_back_rounded : null,
-            onLeadingTap: widget.isEditing ? () => Navigator.of(context).maybePop() : null,
+            onLeadingTap: widget.isEditing
+                ? () => Navigator.of(context).maybePop()
+                : null,
             // The only way out for someone who signed in with the wrong account
             // before their profile exists.
             trailingIcon: widget.isEditing ? null : Icons.logout_rounded,
@@ -217,8 +225,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                         Text(
                           t.profile.setupSubtitle,
                           textAlign: TextAlign.center,
-                          style: AppTextStyles.bodyMd
-                              .copyWith(color: AppColors.onSurfaceVariant),
+                          style: AppTextStyles.bodyMd.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
                       ],
@@ -238,7 +247,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                             errorText: _nameError,
                           ),
                           onChanged: (_) {
-                            if (_nameError != null) setState(() => _nameError = null);
+                            if (_nameError != null) {
+                              setState(() => _nameError = null);
+                            }
                           },
                         ),
                       ),
@@ -344,7 +355,9 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
               children: [
                 Text(
                   label,
-                  style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
                 Text(
                   value ?? '—',
@@ -368,11 +381,17 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
               padding: const EdgeInsets.only(left: AppSpacing.xs),
               child: Row(
                 children: [
-                  Icon(Icons.verified_rounded, size: 16, color: AppColors.primary),
+                  Icon(
+                    Icons.verified_rounded,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     t.auth.verified,
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.primary),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
                 ],
               ),

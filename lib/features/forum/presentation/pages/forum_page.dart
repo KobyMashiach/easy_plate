@@ -38,12 +38,15 @@ class ForumPage extends StatelessWidget {
             BlocBuilder<ForumBloc, ForumState>(
               builder: (context, state) {
                 return switch (state) {
-                  ForumLoading() => const Center(child: CircularProgressIndicator()),
+                  ForumLoading() => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                   ForumLoaded(posts: final posts) => _PostList(posts: posts),
                   ForumError(error: final error) => ErrorRetryView(
-                      error: error,
-                      onRetry: () => context.read<ForumBloc>().add(const ForumEvent.init()),
-                    ),
+                    error: error,
+                    onRetry: () =>
+                        context.read<ForumBloc>().add(const ForumEvent.init()),
+                  ),
                 };
               },
             ),
@@ -75,7 +78,12 @@ Future<void> _openComposer(BuildContext context) async {
     ),
     builder: (_) => const _PostComposer(),
   );
-  if (result != null) bloc.add(ForumEvent.createPost(result.title, result.body));
+  if (result == null || !context.mounted) return;
+  await AppDialog.busyEvent(
+    context,
+    bloc,
+    ForumEvent.createPost(result.title, result.body),
+  );
 }
 
 /// Dispatches a reload and hands the indicator a future that completes when the
@@ -119,7 +127,10 @@ class _PostListState extends State<_PostList> {
       color: AppColors.primary,
       child: posts.isEmpty
           ? RefreshableEmptyState(
-              child: ClayEmptyState(icon: Icons.forum_rounded, message: t.community.noPosts),
+              child: ClayEmptyState(
+                icon: Icons.forum_rounded,
+                message: t.community.noPosts,
+              ),
             )
           : ListenableBuilder(
               listenable: _adSources,
@@ -128,8 +139,9 @@ class _PostListState extends State<_PostList> {
                 // ads at all.
                 final layout = FeedAdLayout(
                   itemCount: posts.length,
-                  interval:
-                      MonetizationConfig.adFree ? 0 : MonetizationConfig.feedAdInterval,
+                  interval: MonetizationConfig.adFree
+                      ? 0
+                      : MonetizationConfig.feedAdInterval,
                 );
                 return ListView.separated(
                   // Always scrollable so a list too short to overflow can
@@ -142,14 +154,20 @@ class _PostListState extends State<_PostList> {
                     ClayNavDock.bottomPadding(context, withFab: true),
                   ),
                   itemCount: layout.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                  itemBuilder: (context, position) => switch (layout.slotAt(position)) {
-                    ContentSlot(index: final index) => _PostCard(post: posts[index]),
-                    AdSlot(adIndex: final adIndex) => switch (_ads.slot(adIndex)) {
-                        final slot? => NativeAdCard(slot: slot),
-                        null => const SizedBox.shrink(),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, position) =>
+                      switch (layout.slotAt(position)) {
+                        ContentSlot(index: final index) => _PostCard(
+                          post: posts[index],
+                        ),
+                        AdSlot(adIndex: final adIndex) => switch (_ads.slot(
+                          adIndex,
+                        )) {
+                          final slot? => NativeAdCard(slot: slot),
+                          null => const SizedBox.shrink(),
+                        },
                       },
-                  },
                 );
               },
             ),
@@ -163,10 +181,10 @@ class _PostCard extends StatelessWidget {
   const _PostCard({required this.post});
 
   String get _replyLabel => switch (post.replyCount) {
-        0 => t.community.noReplies,
-        1 => t.community.oneReply,
-        _ => t.community.replies(count: post.replyCount),
-      };
+    0 => t.community.noReplies,
+    1 => t.community.oneReply,
+    _ => t.community.replies(count: post.replyCount),
+  };
 
   Future<void> _confirmDelete(BuildContext context) async {
     final bloc = context.read<ForumBloc>();
@@ -178,7 +196,8 @@ class _PostCard extends StatelessWidget {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (confirmed ?? false) bloc.add(ForumEvent.deletePost(post.id));
+    if (!(confirmed ?? false) || !context.mounted) return;
+    await AppDialog.busyEvent(context, bloc, ForumEvent.deletePost(post.id));
   }
 
   /// Likes and replies given inside the thread come back to this row with
@@ -207,8 +226,11 @@ class _PostCard extends StatelessWidget {
             trailing: isMine
                 ? IconButton(
                     tooltip: t.community.deletePost,
-                    icon: Icon(Icons.delete_outline_rounded,
-                        size: 20, color: AppColors.error),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 20,
+                      color: AppColors.error,
+                    ),
                     onPressed: () => _confirmDelete(context),
                   )
                 : null,
@@ -220,7 +242,9 @@ class _PostCard extends StatelessWidget {
             post.body,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.bodyMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Row(
@@ -231,11 +255,17 @@ class _PostCard extends StatelessWidget {
                 onPressed: () => bloc.add(ForumEvent.toggleLike(post.id)),
               ),
               const SizedBox(width: AppSpacing.md),
-              Icon(Icons.mode_comment_outlined, size: 16, color: AppColors.tertiary),
+              Icon(
+                Icons.mode_comment_outlined,
+                size: 16,
+                color: AppColors.tertiary,
+              ),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 _replyLabel,
-                style: AppTextStyles.labelSm.copyWith(color: AppColors.tertiary),
+                style: AppTextStyles.labelSm.copyWith(
+                  color: AppColors.tertiary,
+                ),
               ),
             ],
           ),

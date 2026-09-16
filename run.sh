@@ -13,8 +13,8 @@ function androidRun() {
   flutter run --release $DEFINES
 }
 
-# Debug build: the only kind RevenueCat's Test Store key runs in — a release
-# build shows "Wrong API Key" and closes. Use this while testing purchases.
+# Debug build with the dart defines. (While the RevenueCat Test Store key was
+# in use this was the only kind it ran in; the store keys run anywhere.)
 function androidRunDebug() {
   echo "Run (Debug) Android"
   flutter run $DEFINES

@@ -8,6 +8,9 @@ import 'package:provider/single_child_widget.dart';
 
 import '../sync/cloud_sync_service.dart';
 import '../sync/recipe_image_store.dart';
+import '../../features/admin_billing/data/datasources/admin_billing_remote_datasource.dart';
+import '../../features/admin_billing/data/repositories_impl/admin_billing_repository_impl.dart';
+import '../../features/admin_billing/domain/repositories/admin_billing_repository.dart';
 import '../../features/auth/data/datasources/firebase_auth_datasource.dart';
 import '../../features/auth/data/repositories_impl/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -64,33 +67,56 @@ List<SingleChildWidget> buildRepositoryProviders() {
     RepositoryProvider<UserProfileRemoteDataSource>(
       create: (_) => UserProfileFirestoreDataSource(),
     ),
-    RepositoryProvider<ForumRemoteDataSource>(create: (_) => ForumFirestoreDataSource()),
+    RepositoryProvider<ForumRemoteDataSource>(
+      create: (_) => ForumFirestoreDataSource(),
+    ),
     RepositoryProvider<SharedRecipesRemoteDataSource>(
       create: (_) => SharedRecipesFirestoreDataSource(),
     ),
-    RepositoryProvider<RecipesLocalDataSource>(create: (_) => RecipesLocalDataSourceImpl()),
-    RepositoryProvider<RecipeBooksLocalDataSource>(create: (_) => RecipeBooksLocalDataSourceImpl()),
-    RepositoryProvider<MealPlansLocalDataSource>(create: (_) => MealPlansLocalDataSourceImpl()),
+    RepositoryProvider<RecipesLocalDataSource>(
+      create: (_) => RecipesLocalDataSourceImpl(),
+    ),
+    RepositoryProvider<RecipeBooksLocalDataSource>(
+      create: (_) => RecipeBooksLocalDataSourceImpl(),
+    ),
+    RepositoryProvider<MealPlansLocalDataSource>(
+      create: (_) => MealPlansLocalDataSourceImpl(),
+    ),
     RepositoryProvider<GroceryListsLocalDataSource>(
       create: (_) => GroceryListsLocalDataSourceImpl(),
     ),
-    RepositoryProvider<RecipeAiDataSource>(create: (_) => GeminiRecipeAiDataSource()),
-    RepositoryProvider<WebPageDataSource>(create: (_) => WebPageDataSourceImpl()),
+    RepositoryProvider<RecipeAiDataSource>(
+      create: (_) => GeminiRecipeAiDataSource(),
+    ),
+    RepositoryProvider<WebPageDataSource>(
+      create: (_) => WebPageDataSourceImpl(),
+    ),
     RepositoryProvider<RecipeSharingRemoteDataSource>(
       create: (_) => RecipeSharingFirestoreDataSource(),
     ),
     RepositoryProvider<NotificationsRemoteDataSource>(
       create: (_) => NotificationsFirestoreDataSource(),
     ),
-    RepositoryProvider<FeedbackRemoteDataSource>(create: (_) => FeedbackFirestoreDataSource()),
+    RepositoryProvider<AdminBillingRemoteDataSource>(
+      create: (_) => AdminBillingFirestoreDataSource(),
+    ),
+    RepositoryProvider<AdminBillingRepository>(
+      create: (context) =>
+          AdminBillingRepositoryImpl(remoteDataSource: context.read()),
+    ),
+    RepositoryProvider<FeedbackRemoteDataSource>(
+      create: (_) => FeedbackFirestoreDataSource(),
+    ),
     RepositoryProvider<FeedbackRepository>(
-      create: (context) => FeedbackRepositoryImpl(remoteDataSource: context.read()),
+      create: (context) =>
+          FeedbackRepositoryImpl(remoteDataSource: context.read()),
     ),
     RepositoryProvider<AuthRepository>(
       create: (context) => AuthRepositoryImpl(dataSource: context.read()),
     ),
     RepositoryProvider<UserProfileRepository>(
-      create: (context) => UserProfileRepositoryImpl(remoteDataSource: context.read()),
+      create: (context) =>
+          UserProfileRepositoryImpl(remoteDataSource: context.read()),
     ),
     // After UserProfileRepository: both resolve author names through it, and
     // `create:` resolves earlier entries only.
@@ -107,10 +133,13 @@ List<SingleChildWidget> buildRepositoryProviders() {
       ),
     ),
     RepositoryProvider<RecipeSharingRepository>(
-      create: (context) => RecipeSharingRepositoryImpl(remoteDataSource: context.read()),
+      create: (context) =>
+          RecipeSharingRepositoryImpl(remoteDataSource: context.read()),
     ),
     RepositoryProvider<CollabContainersRepository>(
-      create: (_) => CollabContainersRepositoryImpl(remote: CollabContainersFirestoreDataSource()),
+      create: (_) => CollabContainersRepositoryImpl(
+        remote: CollabContainersFirestoreDataSource(),
+      ),
     ),
     RepositoryProvider<NotificationsRepository>(
       create: (context) => NotificationsRepositoryImpl(

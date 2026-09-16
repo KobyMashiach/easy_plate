@@ -91,7 +91,12 @@ class _RecipesBodyState extends State<_RecipesBody> {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (confirmed ?? false) bloc.add(MyRecipesEvent.deleteRecipe(recipe.id));
+    if (!(confirmed ?? false) || !context.mounted) return;
+    await AppDialog.busyEvent(
+      context,
+      bloc,
+      MyRecipesEvent.deleteRecipe(recipe.id),
+    );
   }
 
   @override

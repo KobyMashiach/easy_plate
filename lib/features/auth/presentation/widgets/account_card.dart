@@ -26,7 +26,17 @@ class AccountCard extends StatelessWidget {
       destructive: true,
     ).show(context);
 
-    if (confirmed ?? false) bloc.add(const AuthEvent.signOut());
+    if (!(confirmed ?? false) || !context.mounted) return;
+    // Signing out clears Firebase, Google/Apple and the local scope; the bloc
+    // reports through its stream, and the card stays up until it has.
+    await AppDialog.busy(context, () {
+      bloc.add(const AuthEvent.signOut());
+      return bloc.stream.firstWhere(
+        (state) => state is! AuthLoading,
+        // The gate's redirect disposes this page, and its bloc, mid-way.
+        orElse: () => const AuthState.idle(),
+      );
+    });
   }
 
   @override
@@ -68,8 +78,13 @@ class AccountCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      profile?.email ?? profile?.phoneNumber ?? user?.email ?? '',
-                      style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                      profile?.email ??
+                          profile?.phoneNumber ??
+                          user?.email ??
+                          '',
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

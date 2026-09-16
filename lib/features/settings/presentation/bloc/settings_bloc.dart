@@ -102,6 +102,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     }
   }
 
+  // Every change below shows at once and is persisted after: a switch that
+  // waits for the cloud write before moving reads as a tap that never landed.
   Future<void> _updateShoppingDay(
     _UpdateShoppingDay event,
     Emitter<SettingsState> emit,
@@ -109,8 +111,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final current = state;
     if (current is! SettingsLoaded) return;
     final updated = current.preferences.copyWith(shoppingDay: event.day);
-    await saveUserPreferencesUseCase(updated);
-    await ShoppingReminderService().scheduleForShoppingDay(event.day);
     emit(
       .loaded(
         updated,
@@ -118,6 +118,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await saveUserPreferencesUseCase(updated);
+    await ShoppingReminderService().scheduleForShoppingDay(event.day);
   }
 
   Future<void> _toggleDietaryPreference(
@@ -133,7 +135,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final updated = current.preferences.copyWith(
       dietaryPreferences: preferences,
     );
-    await saveUserPreferencesUseCase(updated);
     emit(
       .loaded(
         updated,
@@ -141,6 +142,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await saveUserPreferencesUseCase(updated);
   }
 
   /// Persists the choice and switches the live locale, so every screen using
@@ -152,8 +154,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final current = state;
     if (current is! SettingsLoaded) return;
     final updated = current.preferences.copyWith(language: event.language);
-    await saveUserPreferencesUseCase(updated);
-    await LocaleSettings.setLocale(event.language.locale);
     emit(
       .loaded(
         updated,
@@ -161,6 +161,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await LocaleSettings.setLocale(event.language.locale);
+    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _toggleFastPageTurn(
@@ -172,7 +174,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final updated = current.preferences.copyWith(
       fastPageTurnEnabled: event.enabled,
     );
-    await saveUserPreferencesUseCase(updated);
     emit(
       .loaded(
         updated,
@@ -180,6 +181,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _setShoppingReminders(
@@ -191,7 +193,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final updated = current.preferences.copyWith(
       shoppingReminderSlots: event.slots,
     );
-    await saveUserPreferencesUseCase(updated);
     emit(
       .loaded(
         updated,
@@ -199,6 +200,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _toggleCommunityPrices(
@@ -210,7 +212,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final updated = current.preferences.copyWith(
       communityPricesEnabled: event.enabled,
     );
-    await saveUserPreferencesUseCase(updated);
     emit(
       .loaded(
         updated,
@@ -218,6 +219,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _toggleSoundEffects(
@@ -229,7 +231,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final updated = current.preferences.copyWith(
       soundEffectsEnabled: event.enabled,
     );
-    await saveUserPreferencesUseCase(updated);
     emit(
       .loaded(
         updated,
@@ -237,5 +238,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         sharedListsCount: current.sharedListsCount,
       ),
     );
+    await saveUserPreferencesUseCase(updated);
   }
 }

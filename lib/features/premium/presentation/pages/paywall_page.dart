@@ -80,7 +80,10 @@ class _PaywallPageState extends State<PaywallPage> {
   }
 
   Future<void> _manage() async {
-    final opened = await PurchasesService().openSubscriptionManagement();
+    final opened = await AppDialog.busy(
+      context,
+      PurchasesService().openSubscriptionManagement,
+    );
     if (!opened && mounted) _hint(t.premium.unavailable);
   }
 
@@ -98,8 +101,10 @@ class _PaywallPageState extends State<PaywallPage> {
     }
   }
 
-  void _notify(String message) => AppDialog.success(message: message).notify(context);
-  void _hint(String message) => AppDialog.info(message: message).notify(context);
+  void _notify(String message) =>
+      AppDialog.success(message: message).notify(context);
+  void _hint(String message) =>
+      AppDialog.info(message: message).notify(context);
   void _fail(String message) => AppDialog.error(message: message).show(context);
 
   @override
@@ -165,15 +170,15 @@ class PaywallView extends StatelessWidget {
   }
 
   String _periodLabel(PaywallPeriod period) => switch (period) {
-        PaywallPeriod.weekly => t.premium.periodWeekly,
-        PaywallPeriod.monthly => t.premium.periodMonthly,
-        PaywallPeriod.twoMonth => t.premium.periodTwoMonth,
-        PaywallPeriod.threeMonth => t.premium.periodThreeMonth,
-        PaywallPeriod.sixMonth => t.premium.periodSixMonth,
-        PaywallPeriod.annual => t.premium.periodAnnual,
-        PaywallPeriod.lifetime => t.premium.periodLifetime,
-        PaywallPeriod.other => '',
-      };
+    PaywallPeriod.weekly => t.premium.periodWeekly,
+    PaywallPeriod.monthly => t.premium.periodMonthly,
+    PaywallPeriod.twoMonth => t.premium.periodTwoMonth,
+    PaywallPeriod.threeMonth => t.premium.periodThreeMonth,
+    PaywallPeriod.sixMonth => t.premium.periodSixMonth,
+    PaywallPeriod.annual => t.premium.periodAnnual,
+    PaywallPeriod.lifetime => t.premium.periodLifetime,
+    PaywallPeriod.other => '',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -197,16 +202,26 @@ class PaywallView extends StatelessWidget {
                   color: AppColors.primaryFixed,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.workspace_premium_rounded, size: 48, color: AppColors.primary),
+                child: Icon(
+                  Icons.workspace_premium_rounded,
+                  size: 48,
+                  color: AppColors.primary,
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.gutter),
-            Text(t.premium.headline, textAlign: TextAlign.center, style: AppTextStyles.headlineMd),
+            Text(
+              t.premium.headline,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.headlineMd,
+            ),
             const SizedBox(height: AppSpacing.base),
             Text(
               t.premium.subtitle,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             ClayCard(
@@ -214,11 +229,20 @@ class PaywallView extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.gutter),
               child: Column(
                 children: [
-                  _Benefit(icon: Icons.block_rounded, label: t.premium.benefitNoAds),
+                  _Benefit(
+                    icon: Icons.block_rounded,
+                    label: t.premium.benefitNoAds,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
-                  _Benefit(icon: Icons.menu_book_rounded, label: t.premium.benefitShared),
+                  _Benefit(
+                    icon: Icons.menu_book_rounded,
+                    label: t.premium.benefitShared,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
-                  _Benefit(icon: Icons.auto_awesome_rounded, label: t.premium.benefitAi(count: aiPerDay)),
+                  _Benefit(
+                    icon: Icons.auto_awesome_rounded,
+                    label: t.premium.benefitAi(count: aiPerDay),
+                  ),
                 ],
               ),
             ),
@@ -234,7 +258,9 @@ class PaywallView extends StatelessWidget {
               Text(
                 t.premium.unavailable,
                 textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.bodyMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               )
             else ...[
               for (final offer in offers) ...[
@@ -242,7 +268,9 @@ class PaywallView extends StatelessWidget {
                   offer: offer,
                   periodLabel: _periodLabel(offer.period),
                   selected: offer.id == selectedId,
-                  highlighted: offer.id == PaywallOffer.defaultSelection(offers) && offers.length > 1,
+                  highlighted:
+                      offer.id == PaywallOffer.defaultSelection(offers) &&
+                      offers.length > 1,
                   onTap: busy ? null : () => onSelect(offer.id),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -252,8 +280,8 @@ class PaywallView extends StatelessWidget {
                 label: selected == null
                     ? ''
                     : selected.isLifetime
-                        ? t.premium.buyFor(price: selected.priceString)
-                        : t.premium.subscribeFor(price: selected.priceString),
+                    ? t.premium.buyFor(price: selected.priceString)
+                    : t.premium.subscribeFor(price: selected.priceString),
                 icon: Icons.lock_open_rounded,
                 expanded: true,
                 onPressed: busy || selected == null ? null : onPurchase,
@@ -274,9 +302,19 @@ class PaywallView extends StatelessWidget {
               spacing: AppSpacing.gutter,
               runSpacing: AppSpacing.xs,
               children: [
-                if (!isPremium) _LinkText(label: t.premium.restore, onTap: busy ? null : onRestore),
-                _LinkText(label: t.premium.terms, onTap: () => _open(LegalLinks.terms)),
-                _LinkText(label: t.premium.privacy, onTap: () => _open(LegalLinks.privacy)),
+                if (!isPremium)
+                  _LinkText(
+                    label: t.premium.restore,
+                    onTap: busy ? null : onRestore,
+                  ),
+                _LinkText(
+                  label: t.premium.terms,
+                  onTap: () => _open(LegalLinks.terms),
+                ),
+                _LinkText(
+                  label: t.premium.privacy,
+                  onTap: () => _open(LegalLinks.privacy),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -286,7 +324,8 @@ class PaywallView extends StatelessWidget {
     );
   }
 
-  Future<void> _open(Uri uri) => launchUrl(uri, mode: LaunchMode.externalApplication);
+  Future<void> _open(Uri uri) =>
+      launchUrl(uri, mode: LaunchMode.externalApplication);
 }
 
 class _Benefit extends StatelessWidget {
@@ -302,7 +341,10 @@ class _Benefit extends StatelessWidget {
         Container(
           width: 36,
           height: 36,
-          decoration: BoxDecoration(color: AppColors.secondaryFixed, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: AppColors.secondaryFixed,
+            shape: BoxShape.circle,
+          ),
           child: Icon(icon, size: 20, color: AppColors.onSecondaryFixedVariant),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -331,14 +373,19 @@ class _OfferCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClayCard(
       radius: AppRadius.md,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.gutter,
+        vertical: AppSpacing.sm,
+      ),
       onTap: onTap,
       isActive: selected,
       color: selected ? AppColors.primaryFixed : null,
       child: Row(
         children: [
           Icon(
-            selected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+            selected
+                ? Icons.radio_button_checked_rounded
+                : Icons.radio_button_off_rounded,
             color: selected ? AppColors.primary : AppColors.outline,
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -350,12 +397,17 @@ class _OfferCard extends StatelessWidget {
                 if (highlighted)
                   Text(
                     t.premium.bestValue,
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.secondary),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.secondary,
+                    ),
                   ),
               ],
             ),
           ),
-          Text(offer.priceString, style: AppTextStyles.bodyLg.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            offer.priceString,
+            style: AppTextStyles.bodyLg.copyWith(fontWeight: FontWeight.w700),
+          ),
         ],
       ),
     );
@@ -375,20 +427,28 @@ class _ActiveCard extends StatelessWidget {
       color: AppColors.secondaryFixed,
       child: Column(
         children: [
-          Icon(Icons.verified_rounded, size: 40, color: AppColors.onSecondaryFixedVariant),
+          Icon(
+            Icons.verified_rounded,
+            size: 40,
+            color: AppColors.onSecondaryFixedVariant,
+          ),
           const SizedBox(height: AppSpacing.base),
           // The card is a *fixed* mint in both themes, so its ink is the
           // fixed ink too — the default onSurface goes light in dark mode.
           Text(
             t.premium.activeTitle,
             textAlign: TextAlign.center,
-            style: AppTextStyles.headlineMd.copyWith(color: AppColors.onSecondaryFixed),
+            style: AppTextStyles.headlineMd.copyWith(
+              color: AppColors.onSecondaryFixed,
+            ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             t.premium.activeBody,
             textAlign: TextAlign.center,
-            style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSecondaryFixedVariant),
+            style: AppTextStyles.bodyMd.copyWith(
+              color: AppColors.onSecondaryFixedVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           ClayButton(
@@ -426,7 +486,10 @@ class _LinkText extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.sm),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: AppSpacing.xs),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs,
+          vertical: AppSpacing.xs,
+        ),
         child: Text(
           label,
           style: AppTextStyles.labelMd.copyWith(

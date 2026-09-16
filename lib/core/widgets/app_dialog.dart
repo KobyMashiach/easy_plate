@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/app_shadows.dart';
@@ -210,8 +211,76 @@ class AppDialog extends StatelessWidget {
   /// Modal. Resolves true on confirm, false on cancel, null when dismissed by
   /// tapping outside or going back.
   Future<bool?> show(BuildContext context, {bool barrierDismissible = true}) {
-    return showGeneralDialog<bool>(
-      context: context,
+    return Navigator.of(
+      context,
+      rootNavigator: true,
+    ).push(_route(context, barrierDismissible: barrierDismissible));
+  }
+
+  /// Runs [work] behind a blocking progress card, so a tap that waits on the
+  /// network — a photo upload, a sign-out, a save — never looks stuck. The
+  /// card leaves when the work does, and the result or error passes through.
+  ///
+  /// The card is held for a moment even when the work is instant: a flash of
+  /// a spinner reads as a glitch, a short beat reads as "done".
+  static Future<T> busy<T>(
+    BuildContext context,
+    Future<T> Function() work, {
+    String? message,
+  }) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final route = AppDialog.progress(
+      message: message ?? t.common.loading,
+    )._route(context, barrierDismissible: false);
+    unawaited(navigator.push(route));
+    final started = DateTime.now();
+    try {
+      return await work();
+    } finally {
+      final left = _busyFloor - DateTime.now().difference(started);
+      if (left > Duration.zero) await Future<void>.delayed(left);
+      // Removed by identity, not by popping the top: the work may have
+      // pushed a page of its own above the card, and that page stays.
+      if (route.isCurrent) {
+        navigator.pop();
+      } else if (route.isActive) {
+        navigator.removeRoute(route);
+      }
+      // A route the router already swept away (a sign-out redirect) is
+      // neither current nor active, and needs nothing.
+    }
+  }
+
+  /// [busy] for work a bloc does: dispatches [event] and holds the card
+  /// until the bloc's next state. Only for handlers that emit on every path
+  /// they can take from a state the page shows — one that returned silently
+  /// would leave the card up until the timeout lets go.
+  static Future<void> busyEvent<E, S>(
+    BuildContext context,
+    Bloc<E, S> bloc,
+    E event, {
+    String? message,
+  }) {
+    return busy(context, () {
+      // Subscribed before the add: the handler runs on a later microtask,
+      // but nothing about that is promised.
+      final next = bloc.stream.first
+          .timeout(_busyEventTimeout, onTimeout: () => bloc.state)
+          // A closed bloc (its page left) ends the stream without a state.
+          .then<void>((_) {}, onError: (_) {});
+      bloc.add(event);
+      return next;
+    }, message: message);
+  }
+
+  static const _busyFloor = Duration(milliseconds: 350);
+  static const _busyEventTimeout = Duration(seconds: 30);
+
+  RawDialogRoute<bool> _route(
+    BuildContext context, {
+    required bool barrierDismissible,
+  }) {
+    return RawDialogRoute<bool>(
       barrierDismissible: barrierDismissible && !blocking,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: AppColors.onSurface.withValues(alpha: 0.32),

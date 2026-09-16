@@ -146,7 +146,7 @@ class _PriceBookPageState extends State<PriceBookPage>
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (ok != true) return;
+    if (ok != true || !mounted) return;
     final doomed = _records
         .where(
           (r) =>
@@ -154,20 +154,24 @@ class _PriceBookPageState extends State<PriceBookPage>
               r.unit == product.unit,
         )
         .toList();
-    for (final r in doomed) {
-      await DeletePriceRecordUseCase(_repository)(r.id);
-    }
-    await _load();
+    await AppDialog.busy(context, () async {
+      for (final r in doomed) {
+        await DeletePriceRecordUseCase(_repository)(r.id);
+      }
+      await _load();
+    });
   }
 
   Future<void> _deleteReceipt(ReceiptEntity receipt) async {
     final keepRecords = await showDeleteReceiptSheet(context);
-    if (keepRecords == null) return;
-    await _repository.deleteReceipt(receipt.id, keepRecords: keepRecords);
-    for (final f in receipt.imageFileNames) {
-      await ImageStorageService().delete(f);
-    }
-    await _load();
+    if (keepRecords == null || !mounted) return;
+    await AppDialog.busy(context, () async {
+      await _repository.deleteReceipt(receipt.id, keepRecords: keepRecords);
+      for (final f in receipt.imageFileNames) {
+        await ImageStorageService().delete(f);
+      }
+      await _load();
+    });
   }
 
   /// The receipts' filters, in a sheet: store and period.
@@ -315,9 +319,11 @@ class _PriceBookPageState extends State<PriceBookPage>
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (ok != true) return;
-    await _repository.deleteAllRecords();
-    await _load();
+    if (ok != true || !mounted) return;
+    await AppDialog.busy(context, () async {
+      await _repository.deleteAllRecords();
+      await _load();
+    });
   }
 
   @override

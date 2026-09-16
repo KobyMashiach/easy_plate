@@ -22,7 +22,10 @@ class AccountMenuPage extends StatelessWidget {
   const AccountMenuPage({super.key});
 
   Future<void> _openCustomerCenter(BuildContext context) async {
-    final opened = await PurchasesService().openSubscriptionManagement();
+    final opened = await AppDialog.busy(
+      context,
+      PurchasesService().openSubscriptionManagement,
+    );
     if (!opened && context.mounted) {
       AppDialog.info(message: t.premium.unavailable).notify(context);
     }
@@ -38,7 +41,17 @@ class AccountMenuPage extends StatelessWidget {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (confirmed ?? false) bloc.add(const AuthEvent.signOut());
+    if (!(confirmed ?? false) || !context.mounted) return;
+    // Signing out clears Firebase, Google/Apple and the local scope; the bloc
+    // reports through its stream, and the card stays up until it has.
+    await AppDialog.busy(context, () {
+      bloc.add(const AuthEvent.signOut());
+      return bloc.stream.firstWhere(
+        (state) => state is! AuthLoading,
+        // The gate's redirect disposes this page, and its bloc, mid-way.
+        orElse: () => const AuthState.idle(),
+      );
+    });
   }
 
   @override
@@ -85,8 +98,9 @@ class AccountMenuPage extends StatelessWidget {
                                   session.user?.email ??
                                   session.user?.phoneNumber ??
                                   '',
-                              style: AppTextStyles.labelMd
-                                  .copyWith(color: AppColors.onSurfaceVariant),
+                              style: AppTextStyles.labelMd.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
@@ -107,7 +121,9 @@ class AccountMenuPage extends StatelessWidget {
                       children: [
                         _MenuRow(
                           icon: Icons.workspace_premium_rounded,
-                          label: premium ? t.premium.activeTitle : t.premium.title,
+                          label: premium
+                              ? t.premium.activeTitle
+                              : t.premium.title,
                           onTap: () => context.pushNamed(Routing.premium),
                         ),
                         // Subscribers get the store's own management screen
@@ -159,6 +175,12 @@ class AccountMenuPage extends StatelessWidget {
                     label: t.feedback.admin,
                     onTap: () => context.pushNamed(Routing.adminFeedback),
                   ),
+                  const SizedBox(height: AppSpacing.sm),
+                  _MenuRow(
+                    icon: Icons.workspace_premium_rounded,
+                    label: t.adminBilling.title,
+                    onTap: () => context.pushNamed(Routing.adminBilling),
+                  ),
                 ],
                 const SizedBox(height: AppSpacing.xl),
                 // Non-production builds are marked so a tester can tell at a
@@ -194,7 +216,11 @@ class _MenuRow extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _MenuRow({required this.icon, required this.label, required this.onTap});
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -232,8 +258,11 @@ class _DevBadge extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.construction_rounded,
-                size: 16, color: AppColors.onErrorContainer),
+            Icon(
+              Icons.construction_rounded,
+              size: 16,
+              color: AppColors.onErrorContainer,
+            ),
             const SizedBox(width: AppSpacing.xs),
             Text(
               'DEV',
