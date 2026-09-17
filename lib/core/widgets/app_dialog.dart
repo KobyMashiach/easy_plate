@@ -9,6 +9,8 @@ import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 import '../utils/i18n/strings.g.dart';
 import 'clay/clay_button.dart';
+import '../walkthrough/app_walkthroughs.dart';
+import '../walkthrough/walkthrough.dart';
 
 /// What a popup is about. Decides the medallion's icon and colours; the
 /// wording is the caller's.
@@ -399,12 +401,17 @@ class _PromptFieldState extends State<_PromptField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      autofocus: true,
-      style: AppTextStyles.bodyMd,
-      decoration: InputDecoration(hintText: widget.hint),
-      onChanged: widget.onChanged,
+    // During a tour the field comes filled in, so the keyboard waits for a
+    // tap on it rather than rising over the tour's own card.
+    return WalkthroughTarget(
+      id: WalkthroughIds.dialogField,
+      child: TextField(
+        controller: _controller,
+        autofocus: !Walkthrough.isActive,
+        style: AppTextStyles.bodyMd,
+        decoration: InputDecoration(hintText: widget.hint),
+        onChanged: widget.onChanged,
+      ),
     );
   }
 }
@@ -484,11 +491,14 @@ class _ModalCard extends StatelessWidget {
                             ),
                           )
                         else
-                          ClayButton(
-                            label: dialog.confirmLabel ?? t.common.ok,
-                            expanded: true,
-                            destructive: dialog.destructive,
-                            onPressed: () => navigator.pop(true),
+                          WalkthroughTarget(
+                            id: WalkthroughIds.dialogConfirm,
+                            child: ClayButton(
+                              label: dialog.confirmLabel ?? t.common.ok,
+                              expanded: true,
+                              destructive: dialog.destructive,
+                              onPressed: () => navigator.pop(true),
+                            ),
                           ),
                         if (!dialog.blocking && dialog.cancelLabel != null) ...[
                           const SizedBox(height: AppSpacing.base),

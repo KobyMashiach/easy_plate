@@ -16,6 +16,8 @@ import '../../../../core/widgets/profile_avatar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/services/admin_access.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
 
 /// Reached from the avatar in every main screen's app bar.
 class AccountMenuPage extends StatelessWidget {
@@ -119,12 +121,15 @@ class AccountMenuPage extends StatelessWidget {
                     final premium = EntitlementService().isPremium;
                     return Column(
                       children: [
-                        _MenuRow(
-                          icon: Icons.workspace_premium_rounded,
-                          label: premium
-                              ? t.premium.activeTitle
-                              : t.premium.title,
-                          onTap: () => context.pushNamed(Routing.premium),
+                        WalkthroughTarget(
+                          id: WalkthroughIds.accountPremium,
+                          child: _MenuRow(
+                            icon: Icons.workspace_premium_rounded,
+                            label: premium
+                                ? t.premium.activeTitle
+                                : t.premium.title,
+                            onTap: () => context.pushNamed(Routing.premium),
+                          ),
                         ),
                         // Subscribers get the store's own management screen
                         // (cancel, change plan, refund) — Apple and Google both
@@ -142,16 +147,22 @@ class AccountMenuPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _MenuRow(
-                  icon: Icons.group_rounded,
-                  label: t.settings.sharedAccess,
-                  onTap: () => context.pushNamed(Routing.sharing),
+                WalkthroughTarget(
+                  id: WalkthroughIds.accountSharing,
+                  child: _MenuRow(
+                    icon: Icons.group_rounded,
+                    label: t.settings.sharedAccess,
+                    onTap: () => context.pushNamed(Routing.sharing),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _MenuRow(
-                  icon: Icons.tune_rounded,
-                  label: t.more.settings,
-                  onTap: () => context.pushNamed(Routing.settings),
+                WalkthroughTarget(
+                  id: WalkthroughIds.accountSettings,
+                  child: _MenuRow(
+                    icon: Icons.tune_rounded,
+                    label: t.more.settings,
+                    onTap: () => context.pushNamed(Routing.settings),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _MenuRow(

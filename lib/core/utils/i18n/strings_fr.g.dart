@@ -1031,14 +1031,15 @@ class _Translations$walkthrough$fr extends Translations$walkthrough$he {
 	@override String stepOf({required Object current, required Object total}) => 'Étape ${current} sur ${total}';
 	@override String get tapHint => 'Touchez la zone en surbrillance ou « Suivant »';
 	@override String get bookTitle => 'Guide EasyPlate';
-	@override String get bookSubtitle => 'Tout ce que l\'application sait faire, chapitre par chapitre. Un guide seulement : rien n\'est enregistré.';
+	@override String get bookSubtitle => 'Tout ce que l\'application sait faire, chapitre par chapitre. Les exemples de ce livre ne sont jamais enregistrés ; la visite en direct fait les vraies actions, avec les champs déjà remplis.';
 	@override String get contents => 'Sommaire';
 	@override String chapter({required Object number}) => 'Chapitre ${number}';
 	@override String get backToContents => 'Retour au sommaire';
 	@override String get stepsTitle => 'Les étapes';
 	@override String get welcomeTitle => 'Bienvenue sur EasyPlate';
-	@override String get welcomeBody => 'Parcourons ensemble les actions principales. Passez n\'importe quelle étape, ou fermez et relancez depuis l\'écran d\'assistance.';
+	@override String get welcomeBody => 'Parcourons ensemble les actions principales et faisons-les vraiment : les champs sont déjà remplis pour vous. Sautez une étape, ou fermez et recommencez depuis l\'écran d\'assistance.';
 	@override late final _Translations$walkthrough$topics$fr topics = _Translations$walkthrough$topics$fr._(_root);
+	@override late final _Translations$walkthrough$demo$fr demo = _Translations$walkthrough$demo$fr._(_root);
 	@override String get demoRecipes => 'Recettes d\'exemple';
 	@override String get demoRecipesHint => 'Voici à quoi ressemblent les recettes dans l\'application. Touchez-en une pour voir sa page complète : temps, thèmes, allergènes, ingrédients et étapes.';
 	@override String get demoBooks => 'Livres d\'exemple';
@@ -1125,6 +1126,20 @@ class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$account$fr account = _Translations$walkthrough$topics$account$fr._(_root);
 }
 
+// Path: walkthrough.demo
+class _Translations$walkthrough$demo$fr extends Translations$walkthrough$demo$he {
+	_Translations$walkthrough$demo$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get bookTitle => 'Tutoriel';
+	@override String get planName => 'Plan tutoriel';
+	@override String get mealName => 'Dîner';
+	@override String get groceryItem => 'Tomates';
+	@override String get recipeText => 'Chakchouka de Jérusalem\n\nIngrédients :\n400 g de tomates concassées\n4 œufs\n1 oignon\n2 c. à s. d\'huile d\'olive\n1 c. à c. de paprika doux\nUne pincée de sel\n\nPréparation :\n1. Chauffer l\'huile d\'olive dans une poêle et faire dorer l\'oignon.\n2. Ajouter les tomates et le paprika, laisser mijoter 10 minutes.\n3. Casser les œufs dans la sauce, couvrir et cuire jusqu\'à ce que le blanc prenne.';
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$fr extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1133,9 +1148,10 @@ class _Translations$walkthrough$topics$addRecipe$fr extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Ajouter une recette';
-	@override String get summary => 'Importez une recette de n\'importe quelle source ; l\'IA la range dans un format unique : ingrédients, quantités, étapes et étiquettes.';
+	@override String get summary => 'Importez une recette de n\'importe quelle source et l\'IA la met dans un format unique : ingrédients, quantités, étapes, tags, portions et nutrition.';
 	@override String get s1 => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.';
-	@override String get s2 => 'Choisissez une source : texte collé, recherche web, lien d\'un site, vidéo TikTok/Reels, demande libre à l\'IA, ou saisie manuelle. Après l\'analyse, vous vérifiez, modifiez et enregistrez.';
+	@override String get s2 => 'Choisissez une source : texte collé, recherche web, lien de site, vidéo TikTok, Instagram, YouTube ou Facebook, demande libre à l\'IA, ou saisie à la main.';
+	@override String get s3 => 'Une recette d\'exemple est remplie ici, comme si vous l\'aviez collée. Le bouton en dessous l\'envoie à l\'IA, qui renvoie une recette rangée à relire, modifier et enregistrer. L\'analyse prend jusqu\'à une demi-minute : gardez-la pour après la visite.';
 }
 
 // Path: walkthrough.topics.myRecipes
@@ -1148,7 +1164,7 @@ class _Translations$walkthrough$topics$myRecipes$fr extends Translations$walkthr
 	@override String get title => 'Mes recettes et enregistrées';
 	@override String get summary => 'Les recettes que vous avez écrites et celles enregistrées depuis la communauté, avec recherche et filtres par thème.';
 	@override String get s1 => 'Passez ici des recettes que vous avez écrites à celles enregistrées depuis la communauté.';
-	@override String get s2 => 'Recherche par nom et filtre par thème : viande, lait, végétarien, végan, casher, sans gluten et allergie.';
+	@override String get s2 => 'Recherche par nom, et filtre par thème : viande, lait, végétarien, végan, casher, sans gluten et allergie. Chaque recette signale aussi ses allergènes.';
 }
 
 // Path: walkthrough.topics.library
@@ -1159,9 +1175,13 @@ class _Translations$walkthrough$topics$library$fr extends Translations$walkthrou
 
 	// Translations
 	@override String get title => 'Livres de recettes';
-	@override String get summary => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner.';
+	@override String get summary => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner, et partagez un livre entier avec un autre compte.';
 	@override String get s1 => 'Touchez « Bibliothèque » pour passer aux livres.';
-	@override String get s2 => 'Créez ici un nouveau livre. À l\'intérieur, ajoutez des recettes, tournez les pages et changez la couverture.';
+	@override String get s2 => 'Touchez le plus pour créer un nouveau livre.';
+	@override String get s3 => 'Le nom du livre est déjà rempli : « Tutoriel ». Touchez le champ pour le changer, puis continuez.';
+	@override String get s4 => 'Touchez « Enregistrer » pour créer le livre.';
+	@override String get s5 => 'Choisissez une couleur de dos, qui distingue les livres sur l\'étagère, et touchez « Enregistrer ». Le livre s\'ouvre aussitôt.';
+	@override String get s6 => 'Voici le livre que vous avez créé. Ajoutez-y des recettes d\'ici ; à l\'intérieur, tournez les pages et sautez depuis le sommaire. Un appui long sur un livre de l\'étagère ouvre partage, couverture, renommage et suppression.';
 }
 
 // Path: walkthrough.topics.mealPlan
@@ -1171,10 +1191,15 @@ class _Translations$walkthrough$topics$mealPlan$fr extends Translations$walkthro
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Menu de la semaine';
-	@override String get summary => 'Un plan de repas pour toute la semaine qui alimente la liste de courses.';
+	@override String get title => 'Menu de la semaine et nutrition';
+	@override String get summary => 'Un plan pour toute la semaine avec un résumé nutritionnel par jour, qui alimente la liste de courses.';
 	@override String get s1 => 'Touchez « Repas » pour planifier la semaine.';
-	@override String get s2 => 'Créez un plan hebdomadaire et placez des recettes sur chaque jour et chaque repas.';
+	@override String get s2 => 'Touchez ici pour créer un plan hebdomadaire.';
+	@override String get s3 => 'Le nom du plan est déjà rempli. En dessous, choisissez un modèle : libre, trois repas par jour ou six.';
+	@override String get s4 => 'Touchez « Enregistrer » pour créer le plan.';
+	@override String get s5 => 'Placez des recettes dans les repas de chaque jour. La carte nutrition additionne calories, protéines, glucides et lipides selon les portions. Touchez le graphique pour ouvrir le tableau de bord de la semaine.';
+	@override String get s6 => 'Le tableau de bord : moyenne quotidienne, total de la semaine, une barre par jour et la répartition des macros. Les valeurs sont estimées par l\'IA pour chaque recette, par portion.';
+	@override String get s7 => 'Le bouton de partage envoie le plan à un autre compte, en éditeur ou en lecteur. Une modification d\'un côté arrive chez tout le monde.';
 }
 
 // Path: walkthrough.topics.groceries
@@ -1184,11 +1209,15 @@ class _Translations$walkthrough$topics$groceries$fr extends Translations$walkthr
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Liste de courses';
-	@override String get summary => 'Une liste construite depuis le menu, avec ce qui est déjà pris coché.';
+	@override String get title => 'Liste de courses et prix';
+	@override String get summary => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché et une estimation du coût d\'après vos tickets.';
 	@override String get s1 => 'Touchez « Courses ».';
-	@override String get s2 => 'Actualiser reconstruit la liste à partir de toutes les recettes du menu de la semaine.';
-	@override String get s3 => 'Et ici vous ajoutez un article libre à la main.';
+	@override String get s2 => 'Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.';
+	@override String get s3 => 'Touchez le plus pour ajouter un article à la main.';
+	@override String get s4 => 'Le nom de l\'article est déjà rempli. Choisissez une quantité et une unité, ou partez d\'un produit que vos tickets connaissent déjà.';
+	@override String get s5 => 'Touchez « Ajouter » et l\'article rejoint la liste.';
+	@override String get s6 => 'Touchez ici pour ouvrir le carnet de prix.';
+	@override String get s7 => 'Scannez un ticket et le prix de chaque produit est conservé. La liste de courses reçoit alors une estimation du coût, et les prix médians de la communauté complètent ce que vous n\'avez pas encore acheté.';
 }
 
 // Path: walkthrough.topics.community
@@ -1199,10 +1228,10 @@ class _Translations$walkthrough$topics$community$fr extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Communauté';
-	@override String get summary => 'Les recettes partagées par tous, et un forum de questions-réponses.';
+	@override String get summary => 'Les recettes partagées par tous, et un forum de questions et réponses.';
 	@override String get s1 => 'Touchez « Communauté ».';
-	@override String get s2 => 'Recettes partagées et forum. Aimez, enregistrez une recette chez vous, et joignez une recette à une réponse du forum.';
-	@override String get s3 => 'Le bouton de partage publie une de vos recettes dans la communauté.';
+	@override String get s2 => 'Recettes partagées et forum. Aimez une recette, un fil ou une réponse, enregistrez une recette chez vous, et joignez une recette à une réponse du forum.';
+	@override String get s3 => 'Le bouton de partage publie l\'une de vos recettes dans la communauté.';
 }
 
 // Path: walkthrough.topics.account
@@ -1212,10 +1241,14 @@ class _Translations$walkthrough$topics$account$fr extends Translations$walkthrou
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Compte et notifications';
-	@override String get summary => 'Les notifications d\'invitations de partage, et le compte avec premium, réglages et assistance.';
-	@override String get s1 => 'Notifications : invitations à partager des recettes et mises à jour.';
-	@override String get s2 => 'Le compte : premium, partage entre comptes, réglages, profil et assistance. C\'est aussi là que ce guide se relance.';
+	@override String get title => 'Compte, premium et réglages';
+	@override String get summary => 'Notifications d\'invitations au partage, et le compte avec premium, accès partagé, réglages et mode d\'affichage.';
+	@override String get s1 => 'Notifications : invitations à partager des livres et des plans, et mises à jour.';
+	@override String get s2 => 'Touchez la photo pour ouvrir votre compte.';
+	@override String get s3 => 'Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.';
+	@override String get s4 => 'Accès partagé : qui partage des livres et des plans avec vous, et ce que vous avez partagé.';
+	@override String get s5 => 'Touchez « Réglages ».';
+	@override String get s6 => 'Mode d\'affichage : clair, sombre ou selon l\'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l\'écran d\'assistance du compte.';
 }
 
 /// The flat map containing all translations for locale <fr>.
@@ -1938,43 +1971,66 @@ extension on TranslationsFr {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Étape ${current} sur ${total}',
 			'walkthrough.tapHint' => 'Touchez la zone en surbrillance ou « Suivant »',
 			'walkthrough.bookTitle' => 'Guide EasyPlate',
-			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Un guide seulement : rien n\'est enregistré.',
+			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Les exemples de ce livre ne sont jamais enregistrés ; la visite en direct fait les vraies actions, avec les champs déjà remplis.',
 			'walkthrough.contents' => 'Sommaire',
 			'walkthrough.chapter' => ({required Object number}) => 'Chapitre ${number}',
 			'walkthrough.backToContents' => 'Retour au sommaire',
 			'walkthrough.stepsTitle' => 'Les étapes',
 			'walkthrough.welcomeTitle' => 'Bienvenue sur EasyPlate',
-			'walkthrough.welcomeBody' => 'Parcourons ensemble les actions principales. Passez n\'importe quelle étape, ou fermez et relancez depuis l\'écran d\'assistance.',
+			'walkthrough.welcomeBody' => 'Parcourons ensemble les actions principales et faisons-les vraiment : les champs sont déjà remplis pour vous. Sautez une étape, ou fermez et recommencez depuis l\'écran d\'assistance.',
 			'walkthrough.topics.addRecipe.title' => 'Ajouter une recette',
-			'walkthrough.topics.addRecipe.summary' => 'Importez une recette de n\'importe quelle source ; l\'IA la range dans un format unique : ingrédients, quantités, étapes et étiquettes.',
+			'walkthrough.topics.addRecipe.summary' => 'Importez une recette de n\'importe quelle source et l\'IA la met dans un format unique : ingrédients, quantités, étapes, tags, portions et nutrition.',
 			'walkthrough.topics.addRecipe.s1' => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.',
-			'walkthrough.topics.addRecipe.s2' => 'Choisissez une source : texte collé, recherche web, lien d\'un site, vidéo TikTok/Reels, demande libre à l\'IA, ou saisie manuelle. Après l\'analyse, vous vérifiez, modifiez et enregistrez.',
+			'walkthrough.topics.addRecipe.s2' => 'Choisissez une source : texte collé, recherche web, lien de site, vidéo TikTok, Instagram, YouTube ou Facebook, demande libre à l\'IA, ou saisie à la main.',
+			'walkthrough.topics.addRecipe.s3' => 'Une recette d\'exemple est remplie ici, comme si vous l\'aviez collée. Le bouton en dessous l\'envoie à l\'IA, qui renvoie une recette rangée à relire, modifier et enregistrer. L\'analyse prend jusqu\'à une demi-minute : gardez-la pour après la visite.',
 			'walkthrough.topics.myRecipes.title' => 'Mes recettes et enregistrées',
 			'walkthrough.topics.myRecipes.summary' => 'Les recettes que vous avez écrites et celles enregistrées depuis la communauté, avec recherche et filtres par thème.',
 			'walkthrough.topics.myRecipes.s1' => 'Passez ici des recettes que vous avez écrites à celles enregistrées depuis la communauté.',
-			'walkthrough.topics.myRecipes.s2' => 'Recherche par nom et filtre par thème : viande, lait, végétarien, végan, casher, sans gluten et allergie.',
+			'walkthrough.topics.myRecipes.s2' => 'Recherche par nom, et filtre par thème : viande, lait, végétarien, végan, casher, sans gluten et allergie. Chaque recette signale aussi ses allergènes.',
 			'walkthrough.topics.library.title' => 'Livres de recettes',
-			'walkthrough.topics.library.summary' => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner.',
+			'walkthrough.topics.library.summary' => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner, et partagez un livre entier avec un autre compte.',
 			'walkthrough.topics.library.s1' => 'Touchez « Bibliothèque » pour passer aux livres.',
-			'walkthrough.topics.library.s2' => 'Créez ici un nouveau livre. À l\'intérieur, ajoutez des recettes, tournez les pages et changez la couverture.',
-			'walkthrough.topics.mealPlan.title' => 'Menu de la semaine',
-			'walkthrough.topics.mealPlan.summary' => 'Un plan de repas pour toute la semaine qui alimente la liste de courses.',
+			'walkthrough.topics.library.s2' => 'Touchez le plus pour créer un nouveau livre.',
+			'walkthrough.topics.library.s3' => 'Le nom du livre est déjà rempli : « Tutoriel ». Touchez le champ pour le changer, puis continuez.',
+			'walkthrough.topics.library.s4' => 'Touchez « Enregistrer » pour créer le livre.',
+			'walkthrough.topics.library.s5' => 'Choisissez une couleur de dos, qui distingue les livres sur l\'étagère, et touchez « Enregistrer ». Le livre s\'ouvre aussitôt.',
+			'walkthrough.topics.library.s6' => 'Voici le livre que vous avez créé. Ajoutez-y des recettes d\'ici ; à l\'intérieur, tournez les pages et sautez depuis le sommaire. Un appui long sur un livre de l\'étagère ouvre partage, couverture, renommage et suppression.',
+			'walkthrough.topics.mealPlan.title' => 'Menu de la semaine et nutrition',
+			'walkthrough.topics.mealPlan.summary' => 'Un plan pour toute la semaine avec un résumé nutritionnel par jour, qui alimente la liste de courses.',
 			'walkthrough.topics.mealPlan.s1' => 'Touchez « Repas » pour planifier la semaine.',
-			'walkthrough.topics.mealPlan.s2' => 'Créez un plan hebdomadaire et placez des recettes sur chaque jour et chaque repas.',
-			'walkthrough.topics.groceries.title' => 'Liste de courses',
-			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le menu, avec ce qui est déjà pris coché.',
+			'walkthrough.topics.mealPlan.s2' => 'Touchez ici pour créer un plan hebdomadaire.',
+			'walkthrough.topics.mealPlan.s3' => 'Le nom du plan est déjà rempli. En dessous, choisissez un modèle : libre, trois repas par jour ou six.',
+			'walkthrough.topics.mealPlan.s4' => 'Touchez « Enregistrer » pour créer le plan.',
+			'walkthrough.topics.mealPlan.s5' => 'Placez des recettes dans les repas de chaque jour. La carte nutrition additionne calories, protéines, glucides et lipides selon les portions. Touchez le graphique pour ouvrir le tableau de bord de la semaine.',
+			'walkthrough.topics.mealPlan.s6' => 'Le tableau de bord : moyenne quotidienne, total de la semaine, une barre par jour et la répartition des macros. Les valeurs sont estimées par l\'IA pour chaque recette, par portion.',
+			'walkthrough.topics.mealPlan.s7' => 'Le bouton de partage envoie le plan à un autre compte, en éditeur ou en lecteur. Une modification d\'un côté arrive chez tout le monde.',
+			'walkthrough.topics.groceries.title' => 'Liste de courses et prix',
+			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché et une estimation du coût d\'après vos tickets.',
 			'walkthrough.topics.groceries.s1' => 'Touchez « Courses ».',
-			'walkthrough.topics.groceries.s2' => 'Actualiser reconstruit la liste à partir de toutes les recettes du menu de la semaine.',
-			'walkthrough.topics.groceries.s3' => 'Et ici vous ajoutez un article libre à la main.',
+			'walkthrough.topics.groceries.s2' => 'Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.',
+			'walkthrough.topics.groceries.s3' => 'Touchez le plus pour ajouter un article à la main.',
+			'walkthrough.topics.groceries.s4' => 'Le nom de l\'article est déjà rempli. Choisissez une quantité et une unité, ou partez d\'un produit que vos tickets connaissent déjà.',
+			'walkthrough.topics.groceries.s5' => 'Touchez « Ajouter » et l\'article rejoint la liste.',
+			'walkthrough.topics.groceries.s6' => 'Touchez ici pour ouvrir le carnet de prix.',
+			'walkthrough.topics.groceries.s7' => 'Scannez un ticket et le prix de chaque produit est conservé. La liste de courses reçoit alors une estimation du coût, et les prix médians de la communauté complètent ce que vous n\'avez pas encore acheté.',
 			'walkthrough.topics.community.title' => 'Communauté',
-			'walkthrough.topics.community.summary' => 'Les recettes partagées par tous, et un forum de questions-réponses.',
+			'walkthrough.topics.community.summary' => 'Les recettes partagées par tous, et un forum de questions et réponses.',
 			'walkthrough.topics.community.s1' => 'Touchez « Communauté ».',
-			'walkthrough.topics.community.s2' => 'Recettes partagées et forum. Aimez, enregistrez une recette chez vous, et joignez une recette à une réponse du forum.',
-			'walkthrough.topics.community.s3' => 'Le bouton de partage publie une de vos recettes dans la communauté.',
-			'walkthrough.topics.account.title' => 'Compte et notifications',
-			'walkthrough.topics.account.summary' => 'Les notifications d\'invitations de partage, et le compte avec premium, réglages et assistance.',
-			'walkthrough.topics.account.s1' => 'Notifications : invitations à partager des recettes et mises à jour.',
-			'walkthrough.topics.account.s2' => 'Le compte : premium, partage entre comptes, réglages, profil et assistance. C\'est aussi là que ce guide se relance.',
+			'walkthrough.topics.community.s2' => 'Recettes partagées et forum. Aimez une recette, un fil ou une réponse, enregistrez une recette chez vous, et joignez une recette à une réponse du forum.',
+			'walkthrough.topics.community.s3' => 'Le bouton de partage publie l\'une de vos recettes dans la communauté.',
+			'walkthrough.topics.account.title' => 'Compte, premium et réglages',
+			'walkthrough.topics.account.summary' => 'Notifications d\'invitations au partage, et le compte avec premium, accès partagé, réglages et mode d\'affichage.',
+			'walkthrough.topics.account.s1' => 'Notifications : invitations à partager des livres et des plans, et mises à jour.',
+			'walkthrough.topics.account.s2' => 'Touchez la photo pour ouvrir votre compte.',
+			'walkthrough.topics.account.s3' => 'Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.',
+			'walkthrough.topics.account.s4' => 'Accès partagé : qui partage des livres et des plans avec vous, et ce que vous avez partagé.',
+			'walkthrough.topics.account.s5' => 'Touchez « Réglages ».',
+			'walkthrough.topics.account.s6' => 'Mode d\'affichage : clair, sombre ou selon l\'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l\'écran d\'assistance du compte.',
+			'walkthrough.demo.bookTitle' => 'Tutoriel',
+			'walkthrough.demo.planName' => 'Plan tutoriel',
+			'walkthrough.demo.mealName' => 'Dîner',
+			'walkthrough.demo.groceryItem' => 'Tomates',
+			'walkthrough.demo.recipeText' => 'Chakchouka de Jérusalem\n\nIngrédients :\n400 g de tomates concassées\n4 œufs\n1 oignon\n2 c. à s. d\'huile d\'olive\n1 c. à c. de paprika doux\nUne pincée de sel\n\nPréparation :\n1. Chauffer l\'huile d\'olive dans une poêle et faire dorer l\'oignon.\n2. Ajouter les tomates et le paprika, laisser mijoter 10 minutes.\n3. Casser les œufs dans la sauce, couvrir et cuire jusqu\'à ce que le blanc prenne.',
 			'walkthrough.demoRecipes' => 'Recettes d\'exemple',
 			'walkthrough.demoRecipesHint' => 'Voici à quoi ressemblent les recettes dans l\'application. Touchez-en une pour voir sa page complète : temps, thèmes, allergènes, ingrédients et étapes.',
 			'walkthrough.demoBooks' => 'Livres d\'exemple',

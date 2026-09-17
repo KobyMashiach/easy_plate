@@ -6,13 +6,22 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
 
 class QuickJumpAction {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
 
-  const QuickJumpAction({required this.icon, required this.label, required this.onTap});
+  /// The id the guided tour points at this action under, if it does.
+  final String? walkthroughId;
+
+  const QuickJumpAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.walkthroughId,
+  });
 }
 
 /// Frosted capsule floating over the open book, holding the reader's jump
@@ -68,7 +77,7 @@ class _CapsuleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final button = GestureDetector(
       onTap: action.onTap,
       behavior: HitTestBehavior.opaque,
       child: Column(
@@ -83,5 +92,7 @@ class _CapsuleButton extends StatelessWidget {
         ],
       ),
     );
+    final id = action.walkthroughId;
+    return id == null ? button : WalkthroughTarget(id: id, child: button);
   }
 }

@@ -19,6 +19,14 @@ class WalkthroughStep {
   /// target that is only being pointed at, where "next" is the way on.
   final bool advanceOnTap;
 
+  /// The step lives wherever the previous one left the app: inside the
+  /// dialog or sheet that step opened, or on a page it pushed with data the
+  /// tour cannot supply itself. The tour then neither switches tab nor
+  /// pops or pushes anything, and when the target never turns up — the step
+  /// before it was skipped, or its dialog closed — the step is passed over
+  /// on its own rather than left pointing at nothing.
+  final bool stay;
+
   const WalkthroughStep({
     required this.title,
     required this.body,
@@ -26,6 +34,7 @@ class WalkthroughStep {
     this.tab,
     this.route,
     this.advanceOnTap = true,
+    this.stay = false,
   });
 }
 

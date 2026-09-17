@@ -19,9 +19,35 @@ abstract class WalkthroughIds {
   static const groceriesAdd = 'groceries.add';
   static const communitySegments = 'community.segments';
   static const communityShare = 'community.share';
+  static const ingestionInput = 'ingestion.input';
+  static const bookAddRecipe = 'book.addRecipe';
+  static const mealPlanName = 'mealPlan.name';
+  static const mealPlanSave = 'mealPlan.save';
+  static const mealPlanShare = 'mealPlan.share';
+  static const mealPlanDashboard = 'mealPlan.dashboard';
+  static const nutritionOverview = 'nutrition.overview';
+  static const groceriesItemName = 'groceries.itemName';
+  static const groceriesItemSave = 'groceries.itemSave';
+  static const groceriesPriceBook = 'groceries.priceBook';
+  static const priceBookScan = 'priceBook.scan';
+  static const accountPremium = 'account.premium';
+  static const accountSharing = 'account.sharing';
+  static const accountSettings = 'account.settings';
+  static const settingsTheme = 'settings.theme';
+
+  /// The text field and the confirm button of the app's prompt dialog: one
+  /// pair of ids for every prompt, since only one dialog is ever up.
+  static const dialogField = 'dialog.field';
+  static const dialogConfirm = 'dialog.confirm';
 }
 
 /// The guide's chapters. Built on each call so the text follows the locale.
+///
+/// A chapter that makes something — a book, a plan, a grocery line — walks
+/// the reader through the real form: the tap that opens it, the field that
+/// arrives filled in, the button that saves. Those inner steps are "stay"
+/// steps: they live in the dialog the tap opened, and fall away on their own
+/// when the tap was skipped.
 List<WalkthroughTopic> appWalkthroughTopics() {
   final w = t.walkthrough.topics;
   return [
@@ -40,6 +66,14 @@ List<WalkthroughTopic> appWalkthroughTopics() {
           title: w.addRecipe.title,
           body: w.addRecipe.s2,
           targetId: WalkthroughIds.ingestionChannels,
+          route: Routing.ingestion,
+          advanceOnTap: false,
+        ),
+        // The pasted-text box, filled with a sample while the tour runs.
+        WalkthroughStep(
+          title: w.addRecipe.title,
+          body: w.addRecipe.s3,
+          targetId: WalkthroughIds.ingestionInput,
           route: Routing.ingestion,
           advanceOnTap: false,
         ),
@@ -80,6 +114,33 @@ List<WalkthroughTopic> appWalkthroughTopics() {
           body: w.library.s2,
           targetId: WalkthroughIds.libraryAdd,
           tab: MainTabs.library,
+        ),
+        // Inside the name prompt: the field comes filled in, then "save".
+        WalkthroughStep(
+          title: w.library.title,
+          body: w.library.s3,
+          targetId: WalkthroughIds.dialogField,
+          stay: true,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.library.title,
+          body: w.library.s4,
+          targetId: WalkthroughIds.dialogConfirm,
+          stay: true,
+        ),
+        // The spine picker that follows the name; saving opens the book.
+        WalkthroughStep(
+          title: w.library.title,
+          body: w.library.s5,
+          targetId: WalkthroughIds.dialogConfirm,
+          stay: true,
+        ),
+        WalkthroughStep(
+          title: w.library.title,
+          body: w.library.s6,
+          targetId: WalkthroughIds.bookAddRecipe,
+          stay: true,
           advanceOnTap: false,
         ),
       ],
@@ -98,6 +159,41 @@ List<WalkthroughTopic> appWalkthroughTopics() {
           title: w.mealPlan.title,
           body: w.mealPlan.s2,
           targetId: WalkthroughIds.mealPlanAdd,
+          tab: MainTabs.mealPlan,
+        ),
+        // Inside the new-plan sheet: the name comes filled in, then "save".
+        WalkthroughStep(
+          title: w.mealPlan.title,
+          body: w.mealPlan.s3,
+          targetId: WalkthroughIds.mealPlanName,
+          stay: true,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.mealPlan.title,
+          body: w.mealPlan.s4,
+          targetId: WalkthroughIds.mealPlanSave,
+          stay: true,
+        ),
+        // The day's nutrition card is on the board of the selected plan;
+        // its button opens the dashboard, which needs the plan as data.
+        WalkthroughStep(
+          title: w.mealPlan.title,
+          body: w.mealPlan.s5,
+          targetId: WalkthroughIds.mealPlanDashboard,
+          tab: MainTabs.mealPlan,
+        ),
+        WalkthroughStep(
+          title: w.mealPlan.title,
+          body: w.mealPlan.s6,
+          targetId: WalkthroughIds.nutritionOverview,
+          stay: true,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.mealPlan.title,
+          body: w.mealPlan.s7,
+          targetId: WalkthroughIds.mealPlanShare,
           tab: MainTabs.mealPlan,
           advanceOnTap: false,
         ),
@@ -125,6 +221,32 @@ List<WalkthroughTopic> appWalkthroughTopics() {
           body: w.groceries.s3,
           targetId: WalkthroughIds.groceriesAdd,
           tab: MainTabs.groceries,
+        ),
+        // Inside the add-item sheet: the name comes filled in, then "add".
+        WalkthroughStep(
+          title: w.groceries.title,
+          body: w.groceries.s4,
+          targetId: WalkthroughIds.groceriesItemName,
+          stay: true,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.groceries.title,
+          body: w.groceries.s5,
+          targetId: WalkthroughIds.groceriesItemSave,
+          stay: true,
+        ),
+        WalkthroughStep(
+          title: w.groceries.title,
+          body: w.groceries.s6,
+          targetId: WalkthroughIds.groceriesPriceBook,
+          tab: MainTabs.groceries,
+        ),
+        WalkthroughStep(
+          title: w.groceries.title,
+          body: w.groceries.s7,
+          targetId: WalkthroughIds.priceBookScan,
+          route: Routing.priceBook,
           advanceOnTap: false,
         ),
       ],
@@ -170,6 +292,32 @@ List<WalkthroughTopic> appWalkthroughTopics() {
           title: w.account.title,
           body: w.account.s2,
           targetId: WalkthroughIds.barAvatar,
+        ),
+        WalkthroughStep(
+          title: w.account.title,
+          body: w.account.s3,
+          targetId: WalkthroughIds.accountPremium,
+          route: Routing.accountMenu,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.account.title,
+          body: w.account.s4,
+          targetId: WalkthroughIds.accountSharing,
+          route: Routing.accountMenu,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.account.title,
+          body: w.account.s5,
+          targetId: WalkthroughIds.accountSettings,
+          route: Routing.accountMenu,
+        ),
+        WalkthroughStep(
+          title: w.account.title,
+          body: w.account.s6,
+          targetId: WalkthroughIds.settingsTheme,
+          route: Routing.settings,
           advanceOnTap: false,
         ),
       ],

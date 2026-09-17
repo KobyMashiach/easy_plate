@@ -28,6 +28,12 @@ abstract class Walkthrough {
 
   static bool get isActive => _entry != null;
 
+  /// A sample value for a text field while a tour is running, so the reader
+  /// sees a form already filled in and can carry on without the keyboard —
+  /// the field stays editable for anyone who wants their own text. Null
+  /// outside a tour, where the field starts empty as usual.
+  static String? prefill(String sample) => isActive ? sample : null;
+
   /// [onDone] gets true when the last step was passed, false when the tour
   /// was closed early.
   static void start(
@@ -84,6 +90,21 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
   Timer? _poll;
   bool _advancing = false;
 
+  /// How many polls the current step has gone without its target, and
+  /// whether it has shown up at all: a "stay" step whose target never
+  /// appears is passed over. Counted in polls rather than wall-clock time,
+  /// so the wait follows the same clock the tour is driven by.
+  int _pollsWaiting = 0;
+  bool _targetSeen = false;
+
+  static const _pollInterval = Duration(milliseconds: 80);
+
+  /// How long a "stay" step waits for its target before giving up on it. A
+  /// dialog is laid out within a frame or two, but a page that follows a
+  /// save — the new book opening — waits on the write and the busy card
+  /// first, so the margin is generous.
+  static const _stayGrace = Duration(milliseconds: 2500);
+
   late final AnimationController _pulse = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1400),
@@ -99,7 +120,7 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     WidgetsBinding.instance.addPostFrameCallback((_) => _enter(0));
     // The target moves — a route slides in, a list scrolls, the keyboard
     // opens — so its rectangle is re-read continuously rather than once.
-    _poll = Timer.periodic(const Duration(milliseconds: 80), _track);
+    _poll = Timer.periodic(_pollInterval, _track);
     // A global route rather than a widget over the window: anything placed
     // there would take the tap away from the control it is meant to reach.
     GestureBinding.instance.pointerRouter.addGlobalRoute(_onPointer);
@@ -119,13 +140,32 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
       _index = index;
       _target = null;
       _advancing = false;
+      _pollsWaiting = 0;
+      _targetSeen = false;
     });
     _ensurePlace(_step);
+  }
+
+  /// The next step that can stand on its own — one that is not tied to
+  /// whatever the skipped step would have opened — or the end of the tour.
+  void _passOver() {
+    var next = _index + 1;
+    while (next < widget.steps.length && widget.steps[next].stay) {
+      next++;
+    }
+    if (next >= widget.steps.length) {
+      widget.onDone(true);
+    } else {
+      _enter(next);
+    }
   }
 
   /// Brings the app to where the step's target lives: the right tab, and the
   /// right route on top of the shell.
   void _ensurePlace(WalkthroughStep step) {
+    // The step's target is in a dialog, a sheet or a page the previous step
+    // opened: moving anywhere would close the very thing it points at.
+    if (step.stay) return;
     if (step.tab case final tab?) MainTabs.index.value = tab;
     final router = widget.router;
     if (router == null) return;
@@ -148,7 +188,12 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     if (!mounted) return;
     final id = _step.targetId;
     final rect = id == null ? null : WalkthroughTargets.rectOf(id);
+    if (rect != null) _targetSeen = true;
     if (rect != _target) setState(() => _target = rect);
+    if (_step.stay && id != null && !_targetSeen) {
+      _pollsWaiting++;
+      if (_pollInterval * _pollsWaiting > _stayGrace) _passOver();
+    }
   }
 
   void _onPointer(PointerEvent event) {
@@ -174,6 +219,7 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
+    final insets = MediaQuery.viewInsetsOf(context);
     final hole = _step.targetId == null ? null : _target?.inflate(AppSpacing.base);
     final isLast = _index == widget.steps.length - 1;
 
@@ -192,7 +238,7 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
         // Everything but the window is blocked. Four slabs rather than one
         // sheet with a gap, so the window itself has nothing in it at all.
         for (final slab in _slabsAround(hole, size)) _Slab(rect: slab),
-        _card(size, padding, hole, isLast),
+        _card(size, padding, insets, hole, isLast),
       ],
     );
   }
@@ -208,19 +254,26 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     ].where((r) => !r.isEmpty).toList();
   }
 
-  Widget _card(Size size, EdgeInsets padding, Rect? hole, bool isLast) {
+  Widget _card(Size size, EdgeInsets padding, EdgeInsets insets, Rect? hole, bool isLast) {
     const cardHeight = 250.0;
     final width = (size.width - 2 * AppSpacing.gutter).clamp(0.0, 420.0);
     final left = (size.width - width) / 2;
+    // The keyboard, when a highlighted field has opened it, takes the bottom
+    // of the screen: the card is placed in what is left above it.
+    final floor = size.height - insets.bottom;
 
     double? top;
     double? bottom;
     if (hole == null) {
-      top = (size.height - cardHeight) / 2;
-    } else if (size.height - hole.bottom - padding.bottom >= cardHeight + AppSpacing.md) {
+      top = (floor - cardHeight) / 2;
+    } else if (floor - hole.bottom - padding.bottom >= cardHeight + AppSpacing.md) {
       top = hole.bottom + AppSpacing.md;
-    } else {
+    } else if (hole.top - padding.top >= cardHeight + AppSpacing.md) {
       bottom = size.height - hole.top + AppSpacing.md;
+    } else {
+      // Nothing fits above or below: the card sits over the bottom edge of
+      // what is visible, where a tall target overlaps it least.
+      bottom = insets.bottom + AppSpacing.md;
     }
 
     final card = Material(

@@ -144,12 +144,19 @@ class _ChannelForm extends StatefulWidget {
 }
 
 class _ChannelFormState extends State<_ChannelForm> {
-  final _controller = TextEditingController();
+  // The tour opens on the pasted-text channel with a sample recipe already
+  // in the box, so the reader sees what the model is given without typing.
+  // The form is the same widget on every channel, so the text carries over.
+  late final _controller = TextEditingController(
+    text: widget.channel == RecipeIngestionChannel.rawText
+        ? Walkthrough.prefill(t.walkthrough.demo.recipeText)
+        : null,
+  );
 
   /// Drives the button's enabled state. A tap on an empty form used to fall
   /// through [_submit]'s guard and do nothing, which reads as a broken button
   /// rather than a missing input.
-  bool _hasInput = false;
+  late bool _hasInput = _controller.text.trim().isNotEmpty;
 
   @override
   void initState() {
@@ -354,15 +361,18 @@ class _ChannelFormState extends State<_ChannelForm> {
               children: [
                 ClaySectionHeader(title: _channelLabel(widget.channel)),
                 const SizedBox(height: AppSpacing.gutter),
-                TextField(
-                  controller: _controller,
-                  maxLines: switch (widget.channel) {
-                    RecipeIngestionChannel.rawText => 8,
-                    RecipeIngestionChannel.aiRequest => 4,
-                    _ => 2,
-                  },
-                  style: AppTextStyles.bodyMd,
-                  decoration: InputDecoration(hintText: _hint),
+                WalkthroughTarget(
+                  id: WalkthroughIds.ingestionInput,
+                  child: TextField(
+                    controller: _controller,
+                    maxLines: switch (widget.channel) {
+                      RecipeIngestionChannel.rawText => 8,
+                      RecipeIngestionChannel.aiRequest => 4,
+                      _ => 2,
+                    },
+                    style: AppTextStyles.bodyMd,
+                    decoration: InputDecoration(hintText: _hint),
+                  ),
                 ),
               ],
             ),

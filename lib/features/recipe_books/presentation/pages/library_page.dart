@@ -50,10 +50,13 @@ class LibraryPage extends StatelessWidget {
                       ? ClayEmptyState(
                           icon: Icons.auto_stories_rounded,
                           message: t.books.emptyLibrary,
-                          action: ClayButton(
-                            label: t.books.newBook,
-                            icon: Icons.add_rounded,
-                            onPressed: () => _showCreateBookDialog(context),
+                          action: WalkthroughTarget(
+                            id: WalkthroughIds.libraryAdd,
+                            child: ClayButton(
+                              label: t.books.newBook,
+                              icon: Icons.add_rounded,
+                              onPressed: () => _showCreateBookDialog(context),
+                            ),
                           ),
                         )
                       : ClayFloatingHeaderView(
@@ -356,6 +359,8 @@ class LibraryPage extends StatelessWidget {
       title: t.books.newBook,
       icon: Icons.auto_stories_rounded,
       hint: t.books.newBookTitle,
+      // The tour brings a name along, so the book can be made without typing.
+      initial: Walkthrough.prefill(t.walkthrough.demo.bookTitle),
     );
     if (title == null || !context.mounted) return;
     // The spine is chosen right after the name: it is what tells the books

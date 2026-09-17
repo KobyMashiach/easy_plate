@@ -7,6 +7,8 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/nutrition/nutrition_widgets.dart';
 import '../../domain/nutrition_summary.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
 
 /// The selected day's plate, added up: a macro ring with the calories in it,
 /// the grams beside it, and the way into the week's dashboard.
@@ -27,12 +29,15 @@ class DayNutritionCard extends StatelessWidget {
           Row(
             children: [
               Expanded(child: ClaySectionHeader(title: t.nutrition.dayTotal)),
-              ClayIconButton(
-                icon: Icons.insights_rounded,
-                filled: true,
-                size: 40,
-                tooltip: t.nutrition.openDashboard,
-                onTap: onOpenDashboard,
+              WalkthroughTarget(
+                id: WalkthroughIds.mealPlanDashboard,
+                child: ClayIconButton(
+                  icon: Icons.insights_rounded,
+                  filled: true,
+                  size: 40,
+                  tooltip: t.nutrition.openDashboard,
+                  onTap: onOpenDashboard,
+                ),
               ),
             ],
           ),

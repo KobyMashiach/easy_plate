@@ -217,15 +217,18 @@ Widget _actions(BuildContext context, GroceryListBloc bloc) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      ClayIconButton(
-        icon: Icons.receipt_long_rounded,
-        size: 48,
-        tooltip: t.receipt.priceBook,
-        onTap: () async {
-          final service = context.read<PriceBookService>();
-          await context.pushNamed(Routing.priceBook);
-          await service.load();
-        },
+      WalkthroughTarget(
+        id: WalkthroughIds.groceriesPriceBook,
+        child: ClayIconButton(
+          icon: Icons.receipt_long_rounded,
+          size: 48,
+          tooltip: t.receipt.priceBook,
+          onTap: () async {
+            final service = context.read<PriceBookService>();
+            await context.pushNamed(Routing.priceBook);
+            await service.load();
+          },
+        ),
       ),
       const SizedBox(width: AppSpacing.base),
       WalkthroughTarget(
@@ -325,7 +328,10 @@ class _AddItemForm extends StatefulWidget {
 }
 
 class _AddItemFormState extends State<_AddItemForm> {
-  final _nameController = TextEditingController();
+  // The tour brings a name along, so the line can be added without typing.
+  final _nameController = TextEditingController(
+    text: Walkthrough.prefill(t.walkthrough.demo.groceryItem),
+  );
   final _amountController = TextEditingController(text: '1');
   MeasurementUnit _unit = MeasurementUnit.unit;
 
@@ -384,13 +390,17 @@ class _AddItemFormState extends State<_AddItemForm> {
               },
             ),
             const SizedBox(height: AppSpacing.sm),
-            TextField(
-              controller: _nameController,
-              autofocus: true,
-              style: AppTextStyles.bodyMd,
-              decoration: InputDecoration(labelText: t.groceryList.itemName),
-              onChanged: (_) => setState(() {}),
-              onSubmitted: (_) => _submit(),
+            WalkthroughTarget(
+              id: WalkthroughIds.groceriesItemName,
+              child: TextField(
+                controller: _nameController,
+                // Filled in by the tour: the keyboard then waits for a tap.
+                autofocus: !Walkthrough.isActive,
+                style: AppTextStyles.bodyMd,
+                decoration: InputDecoration(labelText: t.groceryList.itemName),
+                onChanged: (_) => setState(() {}),
+                onSubmitted: (_) => _submit(),
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
             TextField(
@@ -443,11 +453,14 @@ class _AddItemFormState extends State<_AddItemForm> {
               }).toList(),
             ),
             const SizedBox(height: AppSpacing.lg),
-            ClayButton(
-              label: t.common.add,
-              icon: Icons.add_rounded,
-              expanded: true,
-              onPressed: _canSubmit ? _submit : null,
+            WalkthroughTarget(
+              id: WalkthroughIds.groceriesItemSave,
+              child: ClayButton(
+                label: t.common.add,
+                icon: Icons.add_rounded,
+                expanded: true,
+                onPressed: _canSubmit ? _submit : null,
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],

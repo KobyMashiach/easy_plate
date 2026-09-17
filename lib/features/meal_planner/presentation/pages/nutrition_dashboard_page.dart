@@ -11,6 +11,8 @@ import '../../../../core/widgets/weekday_selector.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../domain/entities/meal_plan_entity.dart';
 import '../../domain/nutrition_summary.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
 
 class NutritionDashboardArgs {
   final MealPlanEntity plan;
@@ -58,35 +60,42 @@ class _NutritionDashboardPageState extends State<NutritionDashboardPage> {
             subtitle: t.nutrition.weekly,
           ),
           const SizedBox(height: AppSpacing.gutter),
+          // Both carry the tour's id: whichever is built is what it points at.
           if (!week.hasData)
-            ClayEmptyState(
-              icon: Icons.insights_rounded,
-              message: t.nutrition.noPlanned,
+            WalkthroughTarget(
+              id: WalkthroughIds.nutritionOverview,
+              child: ClayEmptyState(
+                icon: Icons.insights_rounded,
+                message: t.nutrition.noPlanned,
+              ),
             )
           else ...[
             // The two numbers that matter, side by side.
-            Row(
-              children: [
-                Expanded(
-                  child: _HeroFigure(
-                    caption: t.nutrition.dailyAverage,
-                    value: kcalNumber(week.dailyAverage.calories),
-                    unit: t.nutrition.kcalPerDay,
-                    color: AppColors.primary,
-                    filled: true,
+            WalkthroughTarget(
+              id: WalkthroughIds.nutritionOverview,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _HeroFigure(
+                      caption: t.nutrition.dailyAverage,
+                      value: kcalNumber(week.dailyAverage.calories),
+                      unit: t.nutrition.kcalPerDay,
+                      color: AppColors.primary,
+                      filled: true,
+                    ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: _HeroFigure(
-                    caption: t.nutrition.weekTotal,
-                    value: kcalNumber(week.weekTotal.calories),
-                    unit: t.nutrition.kcal,
-                    color: AppColors.warmAccent,
-                    filled: false,
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _HeroFigure(
+                      caption: t.nutrition.weekTotal,
+                      value: kcalNumber(week.weekTotal.calories),
+                      unit: t.nutrition.kcal,
+                      color: AppColors.warmAccent,
+                      filled: false,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: AppSpacing.gutter),
             ClayCard(

@@ -14,6 +14,8 @@ import '../../../../core/widgets/theme_mode_selector.dart';
 import '../../../../core/widgets/weekday_selector.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -120,9 +122,12 @@ class _SettingsBody extends StatelessWidget {
         ),
       ),
       // Device-wide, not part of the account's preferences: see ThemeController.
-      const _SettingsCard(
-        title: null,
-        child: ThemeModeSelector(),
+      const WalkthroughTarget(
+        id: WalkthroughIds.settingsTheme,
+        child: _SettingsCard(
+          title: null,
+          child: ThemeModeSelector(),
+        ),
       ),
     ];
 

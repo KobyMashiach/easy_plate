@@ -1031,14 +1031,15 @@ class _Translations$walkthrough$ar extends Translations$walkthrough$he {
 	@override String stepOf({required Object current, required Object total}) => 'الخطوة ${current} من ${total}';
 	@override String get tapHint => 'اضغط على المنطقة المميّزة أو على "التالي"';
 	@override String get bookTitle => 'دليل EasyPlate';
-	@override String get bookSubtitle => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. هذا دليل فقط: لا يُحفظ أي شيء.';
+	@override String get bookSubtitle => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. الأمثلة في هذا الكتاب لا تُحفظ؛ الجولة الحيّة تنفّذ الإجراءات فعلاً، والحقول معبّأة مسبقاً.';
 	@override String get contents => 'المحتويات';
 	@override String chapter({required Object number}) => 'الفصل ${number}';
 	@override String get backToContents => 'العودة إلى المحتويات';
 	@override String get stepsTitle => 'الخطوات';
 	@override String get welcomeTitle => 'مرحباً بك في EasyPlate';
-	@override String get welcomeBody => 'سنستعرض معاً الوظائف الأساسية. يمكنك تخطي أي خطوة، أو الإغلاق وإعادة التشغيل من شاشة الدعم.';
+	@override String get welcomeBody => 'سنمرّ معاً على الإجراءات الرئيسية وننفّذها فعلاً: الحقول معبّأة لكم مسبقاً. يمكنكم تخطّي أي خطوة، أو الإغلاق والبدء من جديد من شاشة الدعم.';
 	@override late final _Translations$walkthrough$topics$ar topics = _Translations$walkthrough$topics$ar._(_root);
+	@override late final _Translations$walkthrough$demo$ar demo = _Translations$walkthrough$demo$ar._(_root);
 	@override String get demoRecipes => 'وصفات نموذجية';
 	@override String get demoRecipesHint => 'هكذا تبدو الوصفات في التطبيق. اضغط على وصفة لرؤية صفحتها الكاملة: الأوقات، المواضيع، مسببات الحساسية، المكونات والخطوات.';
 	@override String get demoBooks => 'كتب نموذجية';
@@ -1125,6 +1126,20 @@ class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$account$ar account = _Translations$walkthrough$topics$account$ar._(_root);
 }
 
+// Path: walkthrough.demo
+class _Translations$walkthrough$demo$ar extends Translations$walkthrough$demo$he {
+	_Translations$walkthrough$demo$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get bookTitle => 'دليل';
+	@override String get planName => 'خطة الدليل';
+	@override String get mealName => 'عشاء';
+	@override String get groceryItem => 'طماطم';
+	@override String get recipeText => 'شكشوكة مقدسية\n\nالمكوّنات:\n400 غرام طماطم مهروسة\n4 بيضات\nبصلة واحدة\nملعقتا طعام زيت زيتون\nملعقة صغيرة بابريكا حلوة\nرشّة ملح\n\nالطريقة:\n1. سخّن زيت الزيتون في مقلاة وقلّب البصل حتى يذهبّ.\n2. أضف الطماطم والبابريكا واطبخ 10 دقائق على نار هادئة.\n3. اكسر البيض فوق الصلصة، غطِّ المقلاة واطبخ حتى يتماسك البياض.';
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$ar extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1133,9 +1148,10 @@ class _Translations$walkthrough$topics$addRecipe$ar extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'إضافة وصفة';
-	@override String get summary => 'أضف وصفة من أي مصدر ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم.';
+	@override String get summary => 'أدخل وصفة من أي مصدر، ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم وحصص وقيم غذائية.';
 	@override String get s1 => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.';
-	@override String get s2 => 'اختر المصدر: نص ملصق، بحث في الإنترنت، رابط موقع، فيديو TikTok/Reels، طلب حر من الذكاء الاصطناعي، أو كتابة يدوية. بعد التحليل تراجع وتعدّل وتحفظ.';
+	@override String get s2 => 'اختر مصدراً: نص ملصق، بحث على الإنترنت، رابط موقع، فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك، طلب حرّ من الذكاء الاصطناعي، أو كتابة يدوية.';
+	@override String get s3 => 'عبّأنا هنا وصفة نموذجية كما لو أنك لصقتها. الزر في الأسفل يرسلها إلى الذكاء الاصطناعي الذي يعيدها مرتّبة للمراجعة والتعديل والحفظ. يستغرق التحليل حتى نصف دقيقة، فاتركه إلى ما بعد الجولة.';
 }
 
 // Path: walkthrough.topics.myRecipes
@@ -1146,9 +1162,9 @@ class _Translations$walkthrough$topics$myRecipes$ar extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'وصفاتي والمحفوظة';
-	@override String get summary => 'الوصفات التي كتبتها وتلك التي حفظتها من المجتمع، مع بحث وتصفية حسب الموضوع.';
-	@override String get s1 => 'هنا تنتقل بين الوصفات التي كتبتها والوصفات التي حفظتها من المجتمع.';
-	@override String get s2 => 'بحث بالاسم، وتصفية حسب الموضوع: لحوم، ألبان، نباتي، نباتي صرف، حلال/كوشر، خالٍ من الغلوتين وحساسية.';
+	@override String get summary => 'الوصفات التي كتبتها والتي حفظتها من المجتمع، مع بحث وتصفية حسب الموضوع.';
+	@override String get s1 => 'انتقل هنا بين الوصفات التي كتبتها والوصفات التي حفظتها من المجتمع.';
+	@override String get s2 => 'ابحث بالاسم وصفِّ حسب الموضوع: لحوم، ألبان، نباتي، نباتي صرف، كوشر، خالٍ من الغلوتين وحساسية. كل وصفة تحدّد أيضاً مسبّبات الحساسية فيها.';
 }
 
 // Path: walkthrough.topics.library
@@ -1159,9 +1175,13 @@ class _Translations$walkthrough$topics$library$ar extends Translations$walkthrou
 
 	// Translations
 	@override String get title => 'كتب الوصفات';
-	@override String get summary => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات.';
+	@override String get summary => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات، وشارك كتاباً كاملاً مع حساب آخر.';
 	@override String get s1 => 'اضغط على "المكتبة" للانتقال إلى الكتب.';
-	@override String get s2 => 'هنا تنشئ كتاباً جديداً. داخله تضيف وصفات وتقلّب الصفحات وتغيّر الغلاف.';
+	@override String get s2 => 'اضغط على زر الزائد لإنشاء كتاب جديد.';
+	@override String get s3 => 'اسم الكتاب معبّأ مسبقاً: "دليل". اضغط على الحقل لتغييره، ثم تابع.';
+	@override String get s4 => 'اضغط "حفظ" لإنشاء الكتاب.';
+	@override String get s5 => 'اختر لون الكعب الذي يميّز الكتب على الرف، واضغط "حفظ". يُفتح الكتاب فوراً.';
+	@override String get s6 => 'هذا هو الكتاب الذي أنشأته. من هنا تضيف إليه وصفات، وداخله تقلّب الصفحات وتقفز من الفهرس. الضغط المطوّل على كتاب في الرف يفتح المشاركة والغلاف وإعادة التسمية والحذف.';
 }
 
 // Path: walkthrough.topics.mealPlan
@@ -1171,10 +1191,15 @@ class _Translations$walkthrough$topics$mealPlan$ar extends Translations$walkthro
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'خطة الأسبوع';
-	@override String get summary => 'خطة وجبات للأسبوع كله تغذّي قائمة التسوق.';
+	@override String get title => 'الخطة الأسبوعية والتغذية';
+	@override String get summary => 'خطة وجبات للأسبوع كله مع ملخّص غذائي لكل يوم، تغذّي قائمة التسوّق.';
 	@override String get s1 => 'اضغط على "الوجبات" لتخطيط الأسبوع.';
-	@override String get s2 => 'أنشئ خطة أسبوعية وضع الوصفات في كل يوم ووجبة.';
+	@override String get s2 => 'اضغط هنا لإنشاء خطة أسبوعية.';
+	@override String get s3 => 'اسم الخطة معبّأ مسبقاً. في الأسفل اختر قالباً: حرّ، ثلاث وجبات يومياً أو ست.';
+	@override String get s4 => 'اضغط "حفظ" لإنشاء الخطة.';
+	@override String get s5 => 'ضع الوصفات في وجبات كل يوم. تجمع بطاقة التغذية السعرات والبروتين والكربوهيدرات والدهون حسب الحصص. اضغط على الرسم لفتح لوحة الأسبوع.';
+	@override String get s6 => 'اللوحة: المتوسط اليومي، مجموع الأسبوع، عمود لكل يوم وتوزيع المغذّيات الكبرى. تُقدَّر القيم بالذكاء الاصطناعي لكل وصفة، لكل حصة.';
+	@override String get s7 => 'زر المشاركة يرسل الخطة إلى حساب آخر، كمحرّر أو كمشاهد. أي تعديل من طرف يصل إلى الجميع.';
 }
 
 // Path: walkthrough.topics.groceries
@@ -1184,11 +1209,15 @@ class _Translations$walkthrough$topics$groceries$ar extends Translations$walkthr
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'قائمة التسوق';
-	@override String get summary => 'قائمة مبنية من الخطة، مع تعليم ما تم شراؤه.';
-	@override String get s1 => 'اضغط على "التسوق".';
+	@override String get title => 'قائمة التسوّق والأسعار';
+	@override String get summary => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك.';
+	@override String get s1 => 'اضغط على "التسوّق".';
 	@override String get s2 => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.';
-	@override String get s3 => 'وهنا تضيف عنصراً حراً يدوياً.';
+	@override String get s3 => 'اضغط على زر الزائد لإضافة عنصر يدوياً.';
+	@override String get s4 => 'اسم العنصر معبّأ مسبقاً. اختر كمية ووحدة، أو ابدأ من منتج تعرفه إيصالاتك أصلاً.';
+	@override String get s5 => 'اضغط "إضافة" ويدخل العنصر إلى القائمة.';
+	@override String get s6 => 'اضغط هنا لفتح دفتر الأسعار.';
+	@override String get s7 => 'امسح إيصالاً ويُحفظ سعر كل منتج. من هنا تحصل قائمة التسوّق على تقدير للتكلفة، وتكمل أسعار المجتمع الوسيطة ما لم تشترِه بعد.';
 }
 
 // Path: walkthrough.topics.community
@@ -1201,8 +1230,8 @@ class _Translations$walkthrough$topics$community$ar extends Translations$walkthr
 	@override String get title => 'المجتمع';
 	@override String get summary => 'وصفات يشاركها الجميع، ومنتدى للأسئلة والأجوبة.';
 	@override String get s1 => 'اضغط على "المجتمع".';
-	@override String get s2 => 'وصفات مشتركة ومنتدى. أعجب، احفظ وصفة لديك، وأرفق وصفة بردّ في المنتدى.';
-	@override String get s3 => 'زر المشاركة ينشر وصفة من وصفاتك للمجتمع.';
+	@override String get s2 => 'وصفات مشتركة ومنتدى. أعجب بوصفة أو موضوع أو ردّ، احفظ وصفة عندك، وأرفق وصفة بردّ في المنتدى.';
+	@override String get s3 => 'زر المشاركة ينشر وصفة من وصفاتك إلى المجتمع.';
 }
 
 // Path: walkthrough.topics.account
@@ -1212,10 +1241,14 @@ class _Translations$walkthrough$topics$account$ar extends Translations$walkthrou
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'الحساب والإشعارات';
-	@override String get summary => 'إشعارات دعوات المشاركة، والحساب مع الاشتراك المميز والإعدادات والدعم.';
-	@override String get s1 => 'الإشعارات: دعوات لمشاركة الوصفات وتحديثات.';
-	@override String get s2 => 'الحساب: الاشتراك المميز، المشاركة بين الحسابات، الإعدادات، الملف الشخصي والدعم. ومن هناك يمكن تشغيل هذا الدليل مجدداً.';
+	@override String get title => 'الحساب والاشتراك والإعدادات';
+	@override String get summary => 'إشعارات بدعوات المشاركة، والحساب مع الاشتراك المميّز والوصول المشترك والإعدادات ووضع العرض.';
+	@override String get s1 => 'الإشعارات: دعوات لمشاركة الكتب والخطط، وتحديثات.';
+	@override String get s2 => 'اضغط على الصورة لفتح حسابك.';
+	@override String get s3 => 'الاشتراك المميّز: تحليلات ذكاء اصطناعي بلا حدّ يومي وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.';
+	@override String get s4 => 'الوصول المشترك: من يشارك معك الكتب والخطط، وما شاركته أنت.';
+	@override String get s5 => 'اضغط على "الإعدادات".';
+	@override String get s6 => 'وضع العرض: فاتح أو داكن أو حسب الجهاز. في الإعدادات أيضاً اللغة والتفضيلات الغذائية ومسبّبات الحساسية. يمكن تشغيل هذا الدليل مجدداً من شاشة الدعم في الحساب.';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -1938,43 +1971,66 @@ extension on TranslationsAr {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'الخطوة ${current} من ${total}',
 			'walkthrough.tapHint' => 'اضغط على المنطقة المميّزة أو على "التالي"',
 			'walkthrough.bookTitle' => 'دليل EasyPlate',
-			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. هذا دليل فقط: لا يُحفظ أي شيء.',
+			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. الأمثلة في هذا الكتاب لا تُحفظ؛ الجولة الحيّة تنفّذ الإجراءات فعلاً، والحقول معبّأة مسبقاً.',
 			'walkthrough.contents' => 'المحتويات',
 			'walkthrough.chapter' => ({required Object number}) => 'الفصل ${number}',
 			'walkthrough.backToContents' => 'العودة إلى المحتويات',
 			'walkthrough.stepsTitle' => 'الخطوات',
 			'walkthrough.welcomeTitle' => 'مرحباً بك في EasyPlate',
-			'walkthrough.welcomeBody' => 'سنستعرض معاً الوظائف الأساسية. يمكنك تخطي أي خطوة، أو الإغلاق وإعادة التشغيل من شاشة الدعم.',
+			'walkthrough.welcomeBody' => 'سنمرّ معاً على الإجراءات الرئيسية وننفّذها فعلاً: الحقول معبّأة لكم مسبقاً. يمكنكم تخطّي أي خطوة، أو الإغلاق والبدء من جديد من شاشة الدعم.',
 			'walkthrough.topics.addRecipe.title' => 'إضافة وصفة',
-			'walkthrough.topics.addRecipe.summary' => 'أضف وصفة من أي مصدر ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم.',
+			'walkthrough.topics.addRecipe.summary' => 'أدخل وصفة من أي مصدر، ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم وحصص وقيم غذائية.',
 			'walkthrough.topics.addRecipe.s1' => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.',
-			'walkthrough.topics.addRecipe.s2' => 'اختر المصدر: نص ملصق، بحث في الإنترنت، رابط موقع، فيديو TikTok/Reels، طلب حر من الذكاء الاصطناعي، أو كتابة يدوية. بعد التحليل تراجع وتعدّل وتحفظ.',
+			'walkthrough.topics.addRecipe.s2' => 'اختر مصدراً: نص ملصق، بحث على الإنترنت، رابط موقع، فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك، طلب حرّ من الذكاء الاصطناعي، أو كتابة يدوية.',
+			'walkthrough.topics.addRecipe.s3' => 'عبّأنا هنا وصفة نموذجية كما لو أنك لصقتها. الزر في الأسفل يرسلها إلى الذكاء الاصطناعي الذي يعيدها مرتّبة للمراجعة والتعديل والحفظ. يستغرق التحليل حتى نصف دقيقة، فاتركه إلى ما بعد الجولة.',
 			'walkthrough.topics.myRecipes.title' => 'وصفاتي والمحفوظة',
-			'walkthrough.topics.myRecipes.summary' => 'الوصفات التي كتبتها وتلك التي حفظتها من المجتمع، مع بحث وتصفية حسب الموضوع.',
-			'walkthrough.topics.myRecipes.s1' => 'هنا تنتقل بين الوصفات التي كتبتها والوصفات التي حفظتها من المجتمع.',
-			'walkthrough.topics.myRecipes.s2' => 'بحث بالاسم، وتصفية حسب الموضوع: لحوم، ألبان، نباتي، نباتي صرف، حلال/كوشر، خالٍ من الغلوتين وحساسية.',
+			'walkthrough.topics.myRecipes.summary' => 'الوصفات التي كتبتها والتي حفظتها من المجتمع، مع بحث وتصفية حسب الموضوع.',
+			'walkthrough.topics.myRecipes.s1' => 'انتقل هنا بين الوصفات التي كتبتها والوصفات التي حفظتها من المجتمع.',
+			'walkthrough.topics.myRecipes.s2' => 'ابحث بالاسم وصفِّ حسب الموضوع: لحوم، ألبان، نباتي، نباتي صرف، كوشر، خالٍ من الغلوتين وحساسية. كل وصفة تحدّد أيضاً مسبّبات الحساسية فيها.',
 			'walkthrough.topics.library.title' => 'كتب الوصفات',
-			'walkthrough.topics.library.summary' => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات.',
+			'walkthrough.topics.library.summary' => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات، وشارك كتاباً كاملاً مع حساب آخر.',
 			'walkthrough.topics.library.s1' => 'اضغط على "المكتبة" للانتقال إلى الكتب.',
-			'walkthrough.topics.library.s2' => 'هنا تنشئ كتاباً جديداً. داخله تضيف وصفات وتقلّب الصفحات وتغيّر الغلاف.',
-			'walkthrough.topics.mealPlan.title' => 'خطة الأسبوع',
-			'walkthrough.topics.mealPlan.summary' => 'خطة وجبات للأسبوع كله تغذّي قائمة التسوق.',
+			'walkthrough.topics.library.s2' => 'اضغط على زر الزائد لإنشاء كتاب جديد.',
+			'walkthrough.topics.library.s3' => 'اسم الكتاب معبّأ مسبقاً: "دليل". اضغط على الحقل لتغييره، ثم تابع.',
+			'walkthrough.topics.library.s4' => 'اضغط "حفظ" لإنشاء الكتاب.',
+			'walkthrough.topics.library.s5' => 'اختر لون الكعب الذي يميّز الكتب على الرف، واضغط "حفظ". يُفتح الكتاب فوراً.',
+			'walkthrough.topics.library.s6' => 'هذا هو الكتاب الذي أنشأته. من هنا تضيف إليه وصفات، وداخله تقلّب الصفحات وتقفز من الفهرس. الضغط المطوّل على كتاب في الرف يفتح المشاركة والغلاف وإعادة التسمية والحذف.',
+			'walkthrough.topics.mealPlan.title' => 'الخطة الأسبوعية والتغذية',
+			'walkthrough.topics.mealPlan.summary' => 'خطة وجبات للأسبوع كله مع ملخّص غذائي لكل يوم، تغذّي قائمة التسوّق.',
 			'walkthrough.topics.mealPlan.s1' => 'اضغط على "الوجبات" لتخطيط الأسبوع.',
-			'walkthrough.topics.mealPlan.s2' => 'أنشئ خطة أسبوعية وضع الوصفات في كل يوم ووجبة.',
-			'walkthrough.topics.groceries.title' => 'قائمة التسوق',
-			'walkthrough.topics.groceries.summary' => 'قائمة مبنية من الخطة، مع تعليم ما تم شراؤه.',
-			'walkthrough.topics.groceries.s1' => 'اضغط على "التسوق".',
+			'walkthrough.topics.mealPlan.s2' => 'اضغط هنا لإنشاء خطة أسبوعية.',
+			'walkthrough.topics.mealPlan.s3' => 'اسم الخطة معبّأ مسبقاً. في الأسفل اختر قالباً: حرّ، ثلاث وجبات يومياً أو ست.',
+			'walkthrough.topics.mealPlan.s4' => 'اضغط "حفظ" لإنشاء الخطة.',
+			'walkthrough.topics.mealPlan.s5' => 'ضع الوصفات في وجبات كل يوم. تجمع بطاقة التغذية السعرات والبروتين والكربوهيدرات والدهون حسب الحصص. اضغط على الرسم لفتح لوحة الأسبوع.',
+			'walkthrough.topics.mealPlan.s6' => 'اللوحة: المتوسط اليومي، مجموع الأسبوع، عمود لكل يوم وتوزيع المغذّيات الكبرى. تُقدَّر القيم بالذكاء الاصطناعي لكل وصفة، لكل حصة.',
+			'walkthrough.topics.mealPlan.s7' => 'زر المشاركة يرسل الخطة إلى حساب آخر، كمحرّر أو كمشاهد. أي تعديل من طرف يصل إلى الجميع.',
+			'walkthrough.topics.groceries.title' => 'قائمة التسوّق والأسعار',
+			'walkthrough.topics.groceries.summary' => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك.',
+			'walkthrough.topics.groceries.s1' => 'اضغط على "التسوّق".',
 			'walkthrough.topics.groceries.s2' => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.',
-			'walkthrough.topics.groceries.s3' => 'وهنا تضيف عنصراً حراً يدوياً.',
+			'walkthrough.topics.groceries.s3' => 'اضغط على زر الزائد لإضافة عنصر يدوياً.',
+			'walkthrough.topics.groceries.s4' => 'اسم العنصر معبّأ مسبقاً. اختر كمية ووحدة، أو ابدأ من منتج تعرفه إيصالاتك أصلاً.',
+			'walkthrough.topics.groceries.s5' => 'اضغط "إضافة" ويدخل العنصر إلى القائمة.',
+			'walkthrough.topics.groceries.s6' => 'اضغط هنا لفتح دفتر الأسعار.',
+			'walkthrough.topics.groceries.s7' => 'امسح إيصالاً ويُحفظ سعر كل منتج. من هنا تحصل قائمة التسوّق على تقدير للتكلفة، وتكمل أسعار المجتمع الوسيطة ما لم تشترِه بعد.',
 			'walkthrough.topics.community.title' => 'المجتمع',
 			'walkthrough.topics.community.summary' => 'وصفات يشاركها الجميع، ومنتدى للأسئلة والأجوبة.',
 			'walkthrough.topics.community.s1' => 'اضغط على "المجتمع".',
-			'walkthrough.topics.community.s2' => 'وصفات مشتركة ومنتدى. أعجب، احفظ وصفة لديك، وأرفق وصفة بردّ في المنتدى.',
-			'walkthrough.topics.community.s3' => 'زر المشاركة ينشر وصفة من وصفاتك للمجتمع.',
-			'walkthrough.topics.account.title' => 'الحساب والإشعارات',
-			'walkthrough.topics.account.summary' => 'إشعارات دعوات المشاركة، والحساب مع الاشتراك المميز والإعدادات والدعم.',
-			'walkthrough.topics.account.s1' => 'الإشعارات: دعوات لمشاركة الوصفات وتحديثات.',
-			'walkthrough.topics.account.s2' => 'الحساب: الاشتراك المميز، المشاركة بين الحسابات، الإعدادات، الملف الشخصي والدعم. ومن هناك يمكن تشغيل هذا الدليل مجدداً.',
+			'walkthrough.topics.community.s2' => 'وصفات مشتركة ومنتدى. أعجب بوصفة أو موضوع أو ردّ، احفظ وصفة عندك، وأرفق وصفة بردّ في المنتدى.',
+			'walkthrough.topics.community.s3' => 'زر المشاركة ينشر وصفة من وصفاتك إلى المجتمع.',
+			'walkthrough.topics.account.title' => 'الحساب والاشتراك والإعدادات',
+			'walkthrough.topics.account.summary' => 'إشعارات بدعوات المشاركة، والحساب مع الاشتراك المميّز والوصول المشترك والإعدادات ووضع العرض.',
+			'walkthrough.topics.account.s1' => 'الإشعارات: دعوات لمشاركة الكتب والخطط، وتحديثات.',
+			'walkthrough.topics.account.s2' => 'اضغط على الصورة لفتح حسابك.',
+			'walkthrough.topics.account.s3' => 'الاشتراك المميّز: تحليلات ذكاء اصطناعي بلا حدّ يومي وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.',
+			'walkthrough.topics.account.s4' => 'الوصول المشترك: من يشارك معك الكتب والخطط، وما شاركته أنت.',
+			'walkthrough.topics.account.s5' => 'اضغط على "الإعدادات".',
+			'walkthrough.topics.account.s6' => 'وضع العرض: فاتح أو داكن أو حسب الجهاز. في الإعدادات أيضاً اللغة والتفضيلات الغذائية ومسبّبات الحساسية. يمكن تشغيل هذا الدليل مجدداً من شاشة الدعم في الحساب.',
+			'walkthrough.demo.bookTitle' => 'دليل',
+			'walkthrough.demo.planName' => 'خطة الدليل',
+			'walkthrough.demo.mealName' => 'عشاء',
+			'walkthrough.demo.groceryItem' => 'طماطم',
+			'walkthrough.demo.recipeText' => 'شكشوكة مقدسية\n\nالمكوّنات:\n400 غرام طماطم مهروسة\n4 بيضات\nبصلة واحدة\nملعقتا طعام زيت زيتون\nملعقة صغيرة بابريكا حلوة\nرشّة ملح\n\nالطريقة:\n1. سخّن زيت الزيتون في مقلاة وقلّب البصل حتى يذهبّ.\n2. أضف الطماطم والبابريكا واطبخ 10 دقائق على نار هادئة.\n3. اكسر البيض فوق الصلصة، غطِّ المقلاة واطبخ حتى يتماسك البياض.',
 			'walkthrough.demoRecipes' => 'وصفات نموذجية',
 			'walkthrough.demoRecipesHint' => 'هكذا تبدو الوصفات في التطبيق. اضغط على وصفة لرؤية صفحتها الكاملة: الأوقات، المواضيع، مسببات الحساسية، المكونات والخطوات.',
 			'walkthrough.demoBooks' => 'كتب نموذجية',

@@ -1031,14 +1031,15 @@ class _Translations$walkthrough$ru extends Translations$walkthrough$he {
 	@override String stepOf({required Object current, required Object total}) => 'Шаг ${current} из ${total}';
 	@override String get tapHint => 'Нажмите на выделенную область или «Далее»';
 	@override String get bookTitle => 'Справочник EasyPlate';
-	@override String get bookSubtitle => 'Всё, что умеет приложение, глава за главой. Это только справочник: ничего не сохраняется.';
+	@override String get bookSubtitle => 'Всё, что умеет приложение, глава за главой. Примеры в этой книге не сохраняются; живой тур выполняет настоящие действия, а поля уже заполнены.';
 	@override String get contents => 'Оглавление';
 	@override String chapter({required Object number}) => 'Глава ${number}';
 	@override String get backToContents => 'К оглавлению';
 	@override String get stepsTitle => 'Шаги';
 	@override String get welcomeTitle => 'Добро пожаловать в EasyPlate';
-	@override String get welcomeBody => 'Пройдём вместе по основным действиям. Любой шаг можно пропустить, а обучение закрыть и запустить снова с экрана поддержки.';
+	@override String get welcomeBody => 'Пройдём вместе по основным действиям и выполним их по-настоящему: поля уже заполнены за вас. Любой шаг можно пропустить, или закрыть тур и запустить его снова с экрана поддержки.';
 	@override late final _Translations$walkthrough$topics$ru topics = _Translations$walkthrough$topics$ru._(_root);
+	@override late final _Translations$walkthrough$demo$ru demo = _Translations$walkthrough$demo$ru._(_root);
 	@override String get demoRecipes => 'Примеры рецептов';
 	@override String get demoRecipesHint => 'Так выглядят рецепты в приложении. Нажмите на рецепт, чтобы увидеть его страницу целиком: время, темы, аллергены, ингредиенты и шаги.';
 	@override String get demoBooks => 'Примеры книг';
@@ -1125,6 +1126,20 @@ class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$account$ru account = _Translations$walkthrough$topics$account$ru._(_root);
 }
 
+// Path: walkthrough.demo
+class _Translations$walkthrough$demo$ru extends Translations$walkthrough$demo$he {
+	_Translations$walkthrough$demo$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get bookTitle => 'Обучение';
+	@override String get planName => 'Учебный план';
+	@override String get mealName => 'Ужин';
+	@override String get groceryItem => 'Помидоры';
+	@override String get recipeText => 'Иерусалимская шакшука\n\nИнгредиенты:\n400 г протёртых томатов\n4 яйца\n1 луковица\n2 ст. л. оливкового масла\n1 ч. л. сладкой паприки\nЩепотка соли\n\nПриготовление:\n1. Разогреть оливковое масло на сковороде и обжарить лук до золотистого цвета.\n2. Добавить томаты и паприку, тушить 10 минут на слабом огне.\n3. Разбить яйца в соус, накрыть крышкой и готовить, пока белок не схватится.';
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$ru extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1133,9 +1148,10 @@ class _Translations$walkthrough$topics$addRecipe$ru extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Добавить рецепт';
-	@override String get summary => 'Добавьте рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги и теги.';
+	@override String get summary => 'Загрузите рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги, теги, порции и питательная ценность.';
 	@override String get s1 => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.';
-	@override String get s2 => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео TikTok/Reels, свободный запрос к ИИ или ввод вручную. После разбора проверьте, отредактируйте и сохраните.';
+	@override String get s2 => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео из TikTok, Instagram, YouTube или Facebook, свободный запрос к ИИ или ввод вручную.';
+	@override String get s3 => 'Здесь уже заполнен рецепт-пример, как если бы вы его вставили. Кнопка ниже отправляет его ИИ, который возвращает аккуратный рецепт для проверки, правки и сохранения. Разбор занимает до полминуты, так что оставьте его на после тура.';
 }
 
 // Path: walkthrough.topics.myRecipes
@@ -1146,9 +1162,9 @@ class _Translations$walkthrough$topics$myRecipes$ru extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Мои и сохранённые рецепты';
-	@override String get summary => 'Рецепты, которые вы написали, и сохранённые из сообщества, с поиском и фильтрами по темам.';
-	@override String get s1 => 'Здесь переключаются между написанными вами рецептами и сохранёнными из сообщества.';
-	@override String get s2 => 'Поиск по названию и фильтр по темам: мясное, молочное, вегетарианское, веганское, кошерное, без глютена и аллергены.';
+	@override String get summary => 'Рецепты, которые вы написали, и те, что сохранили из сообщества, с поиском и фильтрами по темам.';
+	@override String get s1 => 'Здесь переключаются между рецептами, которые вы написали, и сохранёнными из сообщества.';
+	@override String get s2 => 'Поиск по названию и фильтр по темам: мясное, молочное, вегетарианское, веганское, кошерное, без глютена и аллергия. В каждом рецепте отмечены и его аллергены.';
 }
 
 // Path: walkthrough.topics.library
@@ -1159,9 +1175,13 @@ class _Translations$walkthrough$topics$library$ru extends Translations$walkthrou
 
 	// Translations
 	@override String get title => 'Книги рецептов';
-	@override String get summary => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием.';
+	@override String get summary => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием, и делитесь целой книгой с другим аккаунтом.';
 	@override String get s1 => 'Нажмите «Библиотека», чтобы перейти к книгам.';
-	@override String get s2 => 'Здесь создают новую книгу. Внутри добавляют рецепты, листают страницы и меняют обложку.';
+	@override String get s2 => 'Нажмите плюс, чтобы создать новую книгу.';
+	@override String get s3 => 'Название книги уже заполнено: «Обучение». Нажмите на поле, чтобы изменить его, и продолжайте.';
+	@override String get s4 => 'Нажмите «Сохранить», чтобы создать книгу.';
+	@override String get s5 => 'Выберите цвет корешка, по которому книги различаются на полке, и нажмите «Сохранить». Книга сразу откроется.';
+	@override String get s6 => 'Это созданная вами книга. Отсюда в неё добавляют рецепты; внутри листают страницы и переходят из оглавления. Долгое нажатие на книгу на полке открывает общий доступ, обложку, переименование и удаление.';
 }
 
 // Path: walkthrough.topics.mealPlan
@@ -1171,10 +1191,15 @@ class _Translations$walkthrough$topics$mealPlan$ru extends Translations$walkthro
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Меню на неделю';
-	@override String get summary => 'План приёмов пищи на всю неделю, из которого строится список покупок.';
+	@override String get title => 'Меню на неделю и питание';
+	@override String get summary => 'План на всю неделю со сводкой питательности по дням, из которого строится список покупок.';
 	@override String get s1 => 'Нажмите «Меню», чтобы спланировать неделю.';
-	@override String get s2 => 'Создайте недельный план и расставьте рецепты по дням и приёмам пищи.';
+	@override String get s2 => 'Нажмите здесь, чтобы создать недельный план.';
+	@override String get s3 => 'Название плана уже заполнено. Ниже выберите шаблон: свободный, три приёма пищи в день или шесть.';
+	@override String get s4 => 'Нажмите «Сохранить», чтобы создать план.';
+	@override String get s5 => 'Расставьте рецепты по приёмам пищи каждого дня. Карточка питания суммирует калории, белки, углеводы и жиры по порциям. Нажмите на график, чтобы открыть недельную панель.';
+	@override String get s6 => 'Панель: среднее за день, итог за неделю, столбец на каждый день и распределение макронутриентов. Значения оценивает ИИ для каждого рецепта, на порцию.';
+	@override String get s7 => 'Кнопка «Поделиться» отправляет план другому аккаунту как редактору или зрителю. Правка с одной стороны доходит до всех.';
 }
 
 // Path: walkthrough.topics.groceries
@@ -1184,11 +1209,15 @@ class _Translations$walkthrough$topics$groceries$ru extends Translations$walkthr
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Список покупок';
-	@override String get summary => 'Список, собранный из меню, с отметками о том, что уже куплено.';
+	@override String get title => 'Список покупок и цены';
+	@override String get summary => 'Список, построенный из плана, с отметкой уже собранного и оценкой стоимости по вашим чекам.';
 	@override String get s1 => 'Нажмите «Покупки».';
-	@override String get s2 => 'Обновление заново собирает список из всех рецептов недельного меню.';
-	@override String get s3 => 'А здесь добавляют произвольный пункт вручную.';
+	@override String get s2 => 'Обновление заново собирает список из всех рецептов недельного плана.';
+	@override String get s3 => 'Нажмите плюс, чтобы добавить пункт вручную.';
+	@override String get s4 => 'Название пункта уже заполнено. Выберите количество и единицу, или начните с товара, который уже знают ваши чеки.';
+	@override String get s5 => 'Нажмите «Добавить», и пункт попадёт в список.';
+	@override String get s6 => 'Нажмите здесь, чтобы открыть книгу цен.';
+	@override String get s7 => 'Отсканируйте чек, и цена каждого товара сохранится. Список покупок получит оценку стоимости, а медианные цены сообщества дополнят то, что вы ещё не покупали.';
 }
 
 // Path: walkthrough.topics.community
@@ -1201,8 +1230,8 @@ class _Translations$walkthrough$topics$community$ru extends Translations$walkthr
 	@override String get title => 'Сообщество';
 	@override String get summary => 'Рецепты, которыми делятся все, и форум вопросов и ответов.';
 	@override String get s1 => 'Нажмите «Сообщество».';
-	@override String get s2 => 'Общие рецепты и форум. Ставьте лайки, сохраняйте рецепты себе и прикрепляйте рецепт к ответу на форуме.';
-	@override String get s3 => 'Кнопка «поделиться» публикует ваш рецепт в сообществе.';
+	@override String get s2 => 'Общие рецепты и форум. Ставьте лайк рецепту, теме или ответу, сохраняйте рецепт себе и прикрепляйте рецепт к ответу на форуме.';
+	@override String get s3 => 'Кнопка «Поделиться» публикует один из ваших рецептов в сообществе.';
 }
 
 // Path: walkthrough.topics.account
@@ -1212,10 +1241,14 @@ class _Translations$walkthrough$topics$account$ru extends Translations$walkthrou
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Аккаунт и уведомления';
-	@override String get summary => 'Уведомления о приглашениях поделиться и аккаунт с премиумом, настройками и поддержкой.';
-	@override String get s1 => 'Уведомления: приглашения поделиться рецептами и обновления.';
-	@override String get s2 => 'Аккаунт: премиум, обмен между аккаунтами, настройки, профиль и поддержка. Оттуда же можно запустить это обучение снова.';
+	@override String get title => 'Аккаунт, премиум и настройки';
+	@override String get summary => 'Уведомления о приглашениях к общему доступу, и аккаунт с премиумом, общим доступом, настройками и режимом отображения.';
+	@override String get s1 => 'Уведомления: приглашения к общим книгам и планам, и обновления.';
+	@override String get s2 => 'Нажмите на фото, чтобы открыть аккаунт.';
+	@override String get s3 => 'Премиум: разборы ИИ без дневного лимита и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.';
+	@override String get s4 => 'Общий доступ: кто делится с вами книгами и планами, и чем поделились вы.';
+	@override String get s5 => 'Нажмите «Настройки».';
+	@override String get s6 => 'Режим отображения: светлый, тёмный или как на устройстве. В настройках также язык, пищевые предпочтения и аллергены. Это руководство можно запустить снова с экрана поддержки в аккаунте.';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -1938,43 +1971,66 @@ extension on TranslationsRu {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Шаг ${current} из ${total}',
 			'walkthrough.tapHint' => 'Нажмите на выделенную область или «Далее»',
 			'walkthrough.bookTitle' => 'Справочник EasyPlate',
-			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Это только справочник: ничего не сохраняется.',
+			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Примеры в этой книге не сохраняются; живой тур выполняет настоящие действия, а поля уже заполнены.',
 			'walkthrough.contents' => 'Оглавление',
 			'walkthrough.chapter' => ({required Object number}) => 'Глава ${number}',
 			'walkthrough.backToContents' => 'К оглавлению',
 			'walkthrough.stepsTitle' => 'Шаги',
 			'walkthrough.welcomeTitle' => 'Добро пожаловать в EasyPlate',
-			'walkthrough.welcomeBody' => 'Пройдём вместе по основным действиям. Любой шаг можно пропустить, а обучение закрыть и запустить снова с экрана поддержки.',
+			'walkthrough.welcomeBody' => 'Пройдём вместе по основным действиям и выполним их по-настоящему: поля уже заполнены за вас. Любой шаг можно пропустить, или закрыть тур и запустить его снова с экрана поддержки.',
 			'walkthrough.topics.addRecipe.title' => 'Добавить рецепт',
-			'walkthrough.topics.addRecipe.summary' => 'Добавьте рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги и теги.',
+			'walkthrough.topics.addRecipe.summary' => 'Загрузите рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги, теги, порции и питательная ценность.',
 			'walkthrough.topics.addRecipe.s1' => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.',
-			'walkthrough.topics.addRecipe.s2' => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео TikTok/Reels, свободный запрос к ИИ или ввод вручную. После разбора проверьте, отредактируйте и сохраните.',
+			'walkthrough.topics.addRecipe.s2' => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео из TikTok, Instagram, YouTube или Facebook, свободный запрос к ИИ или ввод вручную.',
+			'walkthrough.topics.addRecipe.s3' => 'Здесь уже заполнен рецепт-пример, как если бы вы его вставили. Кнопка ниже отправляет его ИИ, который возвращает аккуратный рецепт для проверки, правки и сохранения. Разбор занимает до полминуты, так что оставьте его на после тура.',
 			'walkthrough.topics.myRecipes.title' => 'Мои и сохранённые рецепты',
-			'walkthrough.topics.myRecipes.summary' => 'Рецепты, которые вы написали, и сохранённые из сообщества, с поиском и фильтрами по темам.',
-			'walkthrough.topics.myRecipes.s1' => 'Здесь переключаются между написанными вами рецептами и сохранёнными из сообщества.',
-			'walkthrough.topics.myRecipes.s2' => 'Поиск по названию и фильтр по темам: мясное, молочное, вегетарианское, веганское, кошерное, без глютена и аллергены.',
+			'walkthrough.topics.myRecipes.summary' => 'Рецепты, которые вы написали, и те, что сохранили из сообщества, с поиском и фильтрами по темам.',
+			'walkthrough.topics.myRecipes.s1' => 'Здесь переключаются между рецептами, которые вы написали, и сохранёнными из сообщества.',
+			'walkthrough.topics.myRecipes.s2' => 'Поиск по названию и фильтр по темам: мясное, молочное, вегетарианское, веганское, кошерное, без глютена и аллергия. В каждом рецепте отмечены и его аллергены.',
 			'walkthrough.topics.library.title' => 'Книги рецептов',
-			'walkthrough.topics.library.summary' => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием.',
+			'walkthrough.topics.library.summary' => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием, и делитесь целой книгой с другим аккаунтом.',
 			'walkthrough.topics.library.s1' => 'Нажмите «Библиотека», чтобы перейти к книгам.',
-			'walkthrough.topics.library.s2' => 'Здесь создают новую книгу. Внутри добавляют рецепты, листают страницы и меняют обложку.',
-			'walkthrough.topics.mealPlan.title' => 'Меню на неделю',
-			'walkthrough.topics.mealPlan.summary' => 'План приёмов пищи на всю неделю, из которого строится список покупок.',
+			'walkthrough.topics.library.s2' => 'Нажмите плюс, чтобы создать новую книгу.',
+			'walkthrough.topics.library.s3' => 'Название книги уже заполнено: «Обучение». Нажмите на поле, чтобы изменить его, и продолжайте.',
+			'walkthrough.topics.library.s4' => 'Нажмите «Сохранить», чтобы создать книгу.',
+			'walkthrough.topics.library.s5' => 'Выберите цвет корешка, по которому книги различаются на полке, и нажмите «Сохранить». Книга сразу откроется.',
+			'walkthrough.topics.library.s6' => 'Это созданная вами книга. Отсюда в неё добавляют рецепты; внутри листают страницы и переходят из оглавления. Долгое нажатие на книгу на полке открывает общий доступ, обложку, переименование и удаление.',
+			'walkthrough.topics.mealPlan.title' => 'Меню на неделю и питание',
+			'walkthrough.topics.mealPlan.summary' => 'План на всю неделю со сводкой питательности по дням, из которого строится список покупок.',
 			'walkthrough.topics.mealPlan.s1' => 'Нажмите «Меню», чтобы спланировать неделю.',
-			'walkthrough.topics.mealPlan.s2' => 'Создайте недельный план и расставьте рецепты по дням и приёмам пищи.',
-			'walkthrough.topics.groceries.title' => 'Список покупок',
-			'walkthrough.topics.groceries.summary' => 'Список, собранный из меню, с отметками о том, что уже куплено.',
+			'walkthrough.topics.mealPlan.s2' => 'Нажмите здесь, чтобы создать недельный план.',
+			'walkthrough.topics.mealPlan.s3' => 'Название плана уже заполнено. Ниже выберите шаблон: свободный, три приёма пищи в день или шесть.',
+			'walkthrough.topics.mealPlan.s4' => 'Нажмите «Сохранить», чтобы создать план.',
+			'walkthrough.topics.mealPlan.s5' => 'Расставьте рецепты по приёмам пищи каждого дня. Карточка питания суммирует калории, белки, углеводы и жиры по порциям. Нажмите на график, чтобы открыть недельную панель.',
+			'walkthrough.topics.mealPlan.s6' => 'Панель: среднее за день, итог за неделю, столбец на каждый день и распределение макронутриентов. Значения оценивает ИИ для каждого рецепта, на порцию.',
+			'walkthrough.topics.mealPlan.s7' => 'Кнопка «Поделиться» отправляет план другому аккаунту как редактору или зрителю. Правка с одной стороны доходит до всех.',
+			'walkthrough.topics.groceries.title' => 'Список покупок и цены',
+			'walkthrough.topics.groceries.summary' => 'Список, построенный из плана, с отметкой уже собранного и оценкой стоимости по вашим чекам.',
 			'walkthrough.topics.groceries.s1' => 'Нажмите «Покупки».',
-			'walkthrough.topics.groceries.s2' => 'Обновление заново собирает список из всех рецептов недельного меню.',
-			'walkthrough.topics.groceries.s3' => 'А здесь добавляют произвольный пункт вручную.',
+			'walkthrough.topics.groceries.s2' => 'Обновление заново собирает список из всех рецептов недельного плана.',
+			'walkthrough.topics.groceries.s3' => 'Нажмите плюс, чтобы добавить пункт вручную.',
+			'walkthrough.topics.groceries.s4' => 'Название пункта уже заполнено. Выберите количество и единицу, или начните с товара, который уже знают ваши чеки.',
+			'walkthrough.topics.groceries.s5' => 'Нажмите «Добавить», и пункт попадёт в список.',
+			'walkthrough.topics.groceries.s6' => 'Нажмите здесь, чтобы открыть книгу цен.',
+			'walkthrough.topics.groceries.s7' => 'Отсканируйте чек, и цена каждого товара сохранится. Список покупок получит оценку стоимости, а медианные цены сообщества дополнят то, что вы ещё не покупали.',
 			'walkthrough.topics.community.title' => 'Сообщество',
 			'walkthrough.topics.community.summary' => 'Рецепты, которыми делятся все, и форум вопросов и ответов.',
 			'walkthrough.topics.community.s1' => 'Нажмите «Сообщество».',
-			'walkthrough.topics.community.s2' => 'Общие рецепты и форум. Ставьте лайки, сохраняйте рецепты себе и прикрепляйте рецепт к ответу на форуме.',
-			'walkthrough.topics.community.s3' => 'Кнопка «поделиться» публикует ваш рецепт в сообществе.',
-			'walkthrough.topics.account.title' => 'Аккаунт и уведомления',
-			'walkthrough.topics.account.summary' => 'Уведомления о приглашениях поделиться и аккаунт с премиумом, настройками и поддержкой.',
-			'walkthrough.topics.account.s1' => 'Уведомления: приглашения поделиться рецептами и обновления.',
-			'walkthrough.topics.account.s2' => 'Аккаунт: премиум, обмен между аккаунтами, настройки, профиль и поддержка. Оттуда же можно запустить это обучение снова.',
+			'walkthrough.topics.community.s2' => 'Общие рецепты и форум. Ставьте лайк рецепту, теме или ответу, сохраняйте рецепт себе и прикрепляйте рецепт к ответу на форуме.',
+			'walkthrough.topics.community.s3' => 'Кнопка «Поделиться» публикует один из ваших рецептов в сообществе.',
+			'walkthrough.topics.account.title' => 'Аккаунт, премиум и настройки',
+			'walkthrough.topics.account.summary' => 'Уведомления о приглашениях к общему доступу, и аккаунт с премиумом, общим доступом, настройками и режимом отображения.',
+			'walkthrough.topics.account.s1' => 'Уведомления: приглашения к общим книгам и планам, и обновления.',
+			'walkthrough.topics.account.s2' => 'Нажмите на фото, чтобы открыть аккаунт.',
+			'walkthrough.topics.account.s3' => 'Премиум: разборы ИИ без дневного лимита и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.',
+			'walkthrough.topics.account.s4' => 'Общий доступ: кто делится с вами книгами и планами, и чем поделились вы.',
+			'walkthrough.topics.account.s5' => 'Нажмите «Настройки».',
+			'walkthrough.topics.account.s6' => 'Режим отображения: светлый, тёмный или как на устройстве. В настройках также язык, пищевые предпочтения и аллергены. Это руководство можно запустить снова с экрана поддержки в аккаунте.',
+			'walkthrough.demo.bookTitle' => 'Обучение',
+			'walkthrough.demo.planName' => 'Учебный план',
+			'walkthrough.demo.mealName' => 'Ужин',
+			'walkthrough.demo.groceryItem' => 'Помидоры',
+			'walkthrough.demo.recipeText' => 'Иерусалимская шакшука\n\nИнгредиенты:\n400 г протёртых томатов\n4 яйца\n1 луковица\n2 ст. л. оливкового масла\n1 ч. л. сладкой паприки\nЩепотка соли\n\nПриготовление:\n1. Разогреть оливковое масло на сковороде и обжарить лук до золотистого цвета.\n2. Добавить томаты и паприку, тушить 10 минут на слабом огне.\n3. Разбить яйца в соус, накрыть крышкой и готовить, пока белок не схватится.',
 			'walkthrough.demoRecipes' => 'Примеры рецептов',
 			'walkthrough.demoRecipesHint' => 'Так выглядят рецепты в приложении. Нажмите на рецепт, чтобы увидеть его страницу целиком: время, темы, аллергены, ингредиенты и шаги.',
 			'walkthrough.demoBooks' => 'Примеры книг',

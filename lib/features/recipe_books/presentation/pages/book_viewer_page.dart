@@ -14,6 +14,7 @@ import '../widgets/quick_jump_capsule.dart';
 import '../widgets/quick_nav_sheet.dart';
 import '../widgets/recipe_book_page.dart';
 import '../widgets/table_of_contents_page.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 class BookViewerPage extends StatelessWidget {
   final String bookId;
@@ -107,6 +108,7 @@ class _BookViewerBody extends StatelessWidget {
                   QuickJumpAction(
                     icon: Icons.add_rounded,
                     label: t.recipe.addToBook,
+                    walkthroughId: WalkthroughIds.bookAddRecipe,
                     onTap: () {
                       // Multi-select: the sheet stays open so several recipes can
                       // be added in one visit, and tapping an already-added

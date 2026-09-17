@@ -1031,14 +1031,15 @@ class _Translations$walkthrough$en extends Translations$walkthrough$he {
 	@override String stepOf({required Object current, required Object total}) => 'Step ${current} of ${total}';
 	@override String get tapHint => 'Tap the highlighted area, or "Next"';
 	@override String get bookTitle => 'EasyPlate guide';
-	@override String get bookSubtitle => 'Everything the app can do, chapter by chapter. A guide only: nothing is saved.';
+	@override String get bookSubtitle => 'Everything the app can do, chapter by chapter. The samples in this book are never saved; the live tour does the real actions, with the fields already filled in.';
 	@override String get contents => 'Contents';
 	@override String chapter({required Object number}) => 'Chapter ${number}';
 	@override String get backToContents => 'Back to contents';
 	@override String get stepsTitle => 'Steps';
 	@override String get welcomeTitle => 'Welcome to EasyPlate';
-	@override String get welcomeBody => 'Let\'s walk through the main actions together. Skip any step, or close and start again from the support screen.';
+	@override String get welcomeBody => 'Let\'s walk through the main actions together and really do them: the fields are already filled in for you. Skip any step, or close and start again from the support screen.';
 	@override late final _Translations$walkthrough$topics$en topics = _Translations$walkthrough$topics$en._(_root);
+	@override late final _Translations$walkthrough$demo$en demo = _Translations$walkthrough$demo$en._(_root);
 	@override String get demoRecipes => 'Sample recipes';
 	@override String get demoRecipesHint => 'This is what recipes look like in the app. Tap one to see its full page: times, topics, allergens, ingredients and steps.';
 	@override String get demoBooks => 'Sample books';
@@ -1125,6 +1126,20 @@ class _Translations$walkthrough$topics$en extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$account$en account = _Translations$walkthrough$topics$account$en._(_root);
 }
 
+// Path: walkthrough.demo
+class _Translations$walkthrough$demo$en extends Translations$walkthrough$demo$he {
+	_Translations$walkthrough$demo$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get bookTitle => 'Tutorial';
+	@override String get planName => 'Tutorial plan';
+	@override String get mealName => 'Dinner';
+	@override String get groceryItem => 'Tomatoes';
+	@override String get recipeText => 'Jerusalem shakshuka\n\nIngredients:\n400 g crushed tomatoes\n4 eggs\n1 onion\n2 tbsp olive oil\n1 tsp sweet paprika\nA pinch of salt\n\nMethod:\n1. Heat the olive oil in a pan and fry the onion until golden.\n2. Add the tomatoes and paprika and simmer for 10 minutes.\n3. Crack the eggs into the sauce, cover, and cook until the whites set.';
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$en extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1133,9 +1148,10 @@ class _Translations$walkthrough$topics$addRecipe$en extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Add a recipe';
-	@override String get summary => 'Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps and tags.';
+	@override String get summary => 'Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps, tags, servings and nutrition.';
 	@override String get s1 => 'Tap the sparkle button next to the title to add a recipe.';
-	@override String get s2 => 'Pick a source: pasted text, a web search, a website link, a TikTok/Reels video, a free request to the AI, or writing by hand. After the analysis you review, edit and save.';
+	@override String get s2 => 'Pick a source: pasted text, a web search, a website link, a video from TikTok, Instagram, YouTube or Facebook, a free request to the AI, or writing by hand.';
+	@override String get s3 => 'A sample recipe is filled in here, just as you would paste one. The button below sends it to the AI, which returns a tidy recipe to review, edit and save. The analysis takes up to half a minute, so leave it for after the tour.';
 }
 
 // Path: walkthrough.topics.myRecipes
@@ -1148,7 +1164,7 @@ class _Translations$walkthrough$topics$myRecipes$en extends Translations$walkthr
 	@override String get title => 'My recipes and saved';
 	@override String get summary => 'The recipes you wrote and the ones you saved from the community, with search and topic filters.';
 	@override String get s1 => 'Switch here between recipes you wrote and recipes you saved from the community.';
-	@override String get s2 => 'Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy.';
+	@override String get s2 => 'Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy. Every recipe also marks the allergens in it.';
 }
 
 // Path: walkthrough.topics.library
@@ -1159,9 +1175,13 @@ class _Translations$walkthrough$topics$library$en extends Translations$walkthrou
 
 	// Translations
 	@override String get title => 'Recipe books';
-	@override String get summary => 'Arrange recipes into books with a table of contents, a cover and page turning.';
+	@override String get summary => 'Arrange recipes into books with a table of contents, a cover and page turning, and share a whole book with another account.';
 	@override String get s1 => 'Tap "Library" to go to your books.';
-	@override String get s2 => 'Create a new book here. Inside it you add recipes, turn pages and change the cover.';
+	@override String get s2 => 'Tap the plus to create a new book.';
+	@override String get s3 => 'The book\'s name is already filled in: "Tutorial". Tap the field to change it, then carry on.';
+	@override String get s4 => 'Tap "Save" to create the book.';
+	@override String get s5 => 'Pick a spine colour, which tells the books apart on the shelf, and tap "Save". The book opens straight away.';
+	@override String get s6 => 'This is the book you made. Add recipes to it from here; inside, turn the pages and jump from the contents. A long press on a book on the shelf opens sharing, cover, rename and delete.';
 }
 
 // Path: walkthrough.topics.mealPlan
@@ -1171,10 +1191,15 @@ class _Translations$walkthrough$topics$mealPlan$en extends Translations$walkthro
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Weekly meal plan';
-	@override String get summary => 'A plan for the whole week that feeds the grocery list.';
+	@override String get title => 'Weekly plan and nutrition';
+	@override String get summary => 'A plan for the whole week with a nutrition summary for each day, which feeds the grocery list.';
 	@override String get s1 => 'Tap "Meals" to plan the week.';
-	@override String get s2 => 'Create a weekly plan and place recipes on each day and meal.';
+	@override String get s2 => 'Tap here to create a weekly plan.';
+	@override String get s3 => 'The plan\'s name is already filled in. Below, pick a template: free, three meals a day or six.';
+	@override String get s4 => 'Tap "Save" to create the plan.';
+	@override String get s5 => 'Place recipes on each day\'s meals. The nutrition card adds up calories, protein, carbs and fat by servings. Tap the chart to open the weekly dashboard.';
+	@override String get s6 => 'The dashboard: daily average, weekly total, a bar per day and the macro split. The values are estimated by the AI for every recipe, per serving.';
+	@override String get s7 => 'The share button sends the plan to another account, as an editor or a viewer. An edit on one side reaches everyone.';
 }
 
 // Path: walkthrough.topics.groceries
@@ -1184,11 +1209,15 @@ class _Translations$walkthrough$topics$groceries$en extends Translations$walkthr
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Grocery list';
-	@override String get summary => 'A list built from the plan, with what has already been picked up ticked off.';
+	@override String get title => 'Grocery list and prices';
+	@override String get summary => 'A list built from the plan, with what has been picked up ticked off and a cost estimate from your receipts.';
 	@override String get s1 => 'Tap "Groceries".';
 	@override String get s2 => 'Refresh rebuilds the list from every recipe in the weekly plan.';
-	@override String get s3 => 'And here you add a free item by hand.';
+	@override String get s3 => 'Tap the plus to add an item by hand.';
+	@override String get s4 => 'The item\'s name is already filled in. Pick an amount and a unit, or start from a product your receipts already know.';
+	@override String get s5 => 'Tap "Add" and the item joins the list.';
+	@override String get s6 => 'Tap here to open the price book.';
+	@override String get s7 => 'Scan a receipt and the price of every product is kept. From there the grocery list gets a cost estimate, and community median prices fill in what you have not bought yet.';
 }
 
 // Path: walkthrough.topics.community
@@ -1201,7 +1230,7 @@ class _Translations$walkthrough$topics$community$en extends Translations$walkthr
 	@override String get title => 'Community';
 	@override String get summary => 'Recipes shared by everyone, and a forum for questions and answers.';
 	@override String get s1 => 'Tap "Community".';
-	@override String get s2 => 'Shared recipes and the forum. Like, save a recipe to your own, and attach a recipe to a forum reply.';
+	@override String get s2 => 'Shared recipes and the forum. Like a recipe, a thread or a reply, save a recipe to your own, and attach a recipe to a forum reply.';
 	@override String get s3 => 'The share button publishes one of your own recipes to the community.';
 }
 
@@ -1212,10 +1241,14 @@ class _Translations$walkthrough$topics$account$en extends Translations$walkthrou
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Account and notifications';
-	@override String get summary => 'Notifications about share invites, and the account with premium, settings and support.';
-	@override String get s1 => 'Notifications: invitations to share recipes, and updates.';
-	@override String get s2 => 'The account: premium, sharing between accounts, settings, profile and support. That is also where this guide can be started again.';
+	@override String get title => 'Account, premium and settings';
+	@override String get summary => 'Notifications about share invites, and the account with premium, shared access, settings and the display mode.';
+	@override String get s1 => 'Notifications: invitations to share books and plans, and updates.';
+	@override String get s2 => 'Tap the picture to open your account.';
+	@override String get s3 => 'Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.';
+	@override String get s4 => 'Shared access: who shares books and plans with you, and what you have shared.';
+	@override String get s5 => 'Tap "Settings".';
+	@override String get s6 => 'Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1938,43 +1971,66 @@ extension on TranslationsEn {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Step ${current} of ${total}',
 			'walkthrough.tapHint' => 'Tap the highlighted area, or "Next"',
 			'walkthrough.bookTitle' => 'EasyPlate guide',
-			'walkthrough.bookSubtitle' => 'Everything the app can do, chapter by chapter. A guide only: nothing is saved.',
+			'walkthrough.bookSubtitle' => 'Everything the app can do, chapter by chapter. The samples in this book are never saved; the live tour does the real actions, with the fields already filled in.',
 			'walkthrough.contents' => 'Contents',
 			'walkthrough.chapter' => ({required Object number}) => 'Chapter ${number}',
 			'walkthrough.backToContents' => 'Back to contents',
 			'walkthrough.stepsTitle' => 'Steps',
 			'walkthrough.welcomeTitle' => 'Welcome to EasyPlate',
-			'walkthrough.welcomeBody' => 'Let\'s walk through the main actions together. Skip any step, or close and start again from the support screen.',
+			'walkthrough.welcomeBody' => 'Let\'s walk through the main actions together and really do them: the fields are already filled in for you. Skip any step, or close and start again from the support screen.',
 			'walkthrough.topics.addRecipe.title' => 'Add a recipe',
-			'walkthrough.topics.addRecipe.summary' => 'Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps and tags.',
+			'walkthrough.topics.addRecipe.summary' => 'Bring a recipe in from any source and the AI arranges it into one format: ingredients, amounts, steps, tags, servings and nutrition.',
 			'walkthrough.topics.addRecipe.s1' => 'Tap the sparkle button next to the title to add a recipe.',
-			'walkthrough.topics.addRecipe.s2' => 'Pick a source: pasted text, a web search, a website link, a TikTok/Reels video, a free request to the AI, or writing by hand. After the analysis you review, edit and save.',
+			'walkthrough.topics.addRecipe.s2' => 'Pick a source: pasted text, a web search, a website link, a video from TikTok, Instagram, YouTube or Facebook, a free request to the AI, or writing by hand.',
+			'walkthrough.topics.addRecipe.s3' => 'A sample recipe is filled in here, just as you would paste one. The button below sends it to the AI, which returns a tidy recipe to review, edit and save. The analysis takes up to half a minute, so leave it for after the tour.',
 			'walkthrough.topics.myRecipes.title' => 'My recipes and saved',
 			'walkthrough.topics.myRecipes.summary' => 'The recipes you wrote and the ones you saved from the community, with search and topic filters.',
 			'walkthrough.topics.myRecipes.s1' => 'Switch here between recipes you wrote and recipes you saved from the community.',
-			'walkthrough.topics.myRecipes.s2' => 'Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy.',
+			'walkthrough.topics.myRecipes.s2' => 'Search by name, and filter by topic: meat, dairy, vegetarian, vegan, kosher, gluten-free and allergy. Every recipe also marks the allergens in it.',
 			'walkthrough.topics.library.title' => 'Recipe books',
-			'walkthrough.topics.library.summary' => 'Arrange recipes into books with a table of contents, a cover and page turning.',
+			'walkthrough.topics.library.summary' => 'Arrange recipes into books with a table of contents, a cover and page turning, and share a whole book with another account.',
 			'walkthrough.topics.library.s1' => 'Tap "Library" to go to your books.',
-			'walkthrough.topics.library.s2' => 'Create a new book here. Inside it you add recipes, turn pages and change the cover.',
-			'walkthrough.topics.mealPlan.title' => 'Weekly meal plan',
-			'walkthrough.topics.mealPlan.summary' => 'A plan for the whole week that feeds the grocery list.',
+			'walkthrough.topics.library.s2' => 'Tap the plus to create a new book.',
+			'walkthrough.topics.library.s3' => 'The book\'s name is already filled in: "Tutorial". Tap the field to change it, then carry on.',
+			'walkthrough.topics.library.s4' => 'Tap "Save" to create the book.',
+			'walkthrough.topics.library.s5' => 'Pick a spine colour, which tells the books apart on the shelf, and tap "Save". The book opens straight away.',
+			'walkthrough.topics.library.s6' => 'This is the book you made. Add recipes to it from here; inside, turn the pages and jump from the contents. A long press on a book on the shelf opens sharing, cover, rename and delete.',
+			'walkthrough.topics.mealPlan.title' => 'Weekly plan and nutrition',
+			'walkthrough.topics.mealPlan.summary' => 'A plan for the whole week with a nutrition summary for each day, which feeds the grocery list.',
 			'walkthrough.topics.mealPlan.s1' => 'Tap "Meals" to plan the week.',
-			'walkthrough.topics.mealPlan.s2' => 'Create a weekly plan and place recipes on each day and meal.',
-			'walkthrough.topics.groceries.title' => 'Grocery list',
-			'walkthrough.topics.groceries.summary' => 'A list built from the plan, with what has already been picked up ticked off.',
+			'walkthrough.topics.mealPlan.s2' => 'Tap here to create a weekly plan.',
+			'walkthrough.topics.mealPlan.s3' => 'The plan\'s name is already filled in. Below, pick a template: free, three meals a day or six.',
+			'walkthrough.topics.mealPlan.s4' => 'Tap "Save" to create the plan.',
+			'walkthrough.topics.mealPlan.s5' => 'Place recipes on each day\'s meals. The nutrition card adds up calories, protein, carbs and fat by servings. Tap the chart to open the weekly dashboard.',
+			'walkthrough.topics.mealPlan.s6' => 'The dashboard: daily average, weekly total, a bar per day and the macro split. The values are estimated by the AI for every recipe, per serving.',
+			'walkthrough.topics.mealPlan.s7' => 'The share button sends the plan to another account, as an editor or a viewer. An edit on one side reaches everyone.',
+			'walkthrough.topics.groceries.title' => 'Grocery list and prices',
+			'walkthrough.topics.groceries.summary' => 'A list built from the plan, with what has been picked up ticked off and a cost estimate from your receipts.',
 			'walkthrough.topics.groceries.s1' => 'Tap "Groceries".',
 			'walkthrough.topics.groceries.s2' => 'Refresh rebuilds the list from every recipe in the weekly plan.',
-			'walkthrough.topics.groceries.s3' => 'And here you add a free item by hand.',
+			'walkthrough.topics.groceries.s3' => 'Tap the plus to add an item by hand.',
+			'walkthrough.topics.groceries.s4' => 'The item\'s name is already filled in. Pick an amount and a unit, or start from a product your receipts already know.',
+			'walkthrough.topics.groceries.s5' => 'Tap "Add" and the item joins the list.',
+			'walkthrough.topics.groceries.s6' => 'Tap here to open the price book.',
+			'walkthrough.topics.groceries.s7' => 'Scan a receipt and the price of every product is kept. From there the grocery list gets a cost estimate, and community median prices fill in what you have not bought yet.',
 			'walkthrough.topics.community.title' => 'Community',
 			'walkthrough.topics.community.summary' => 'Recipes shared by everyone, and a forum for questions and answers.',
 			'walkthrough.topics.community.s1' => 'Tap "Community".',
-			'walkthrough.topics.community.s2' => 'Shared recipes and the forum. Like, save a recipe to your own, and attach a recipe to a forum reply.',
+			'walkthrough.topics.community.s2' => 'Shared recipes and the forum. Like a recipe, a thread or a reply, save a recipe to your own, and attach a recipe to a forum reply.',
 			'walkthrough.topics.community.s3' => 'The share button publishes one of your own recipes to the community.',
-			'walkthrough.topics.account.title' => 'Account and notifications',
-			'walkthrough.topics.account.summary' => 'Notifications about share invites, and the account with premium, settings and support.',
-			'walkthrough.topics.account.s1' => 'Notifications: invitations to share recipes, and updates.',
-			'walkthrough.topics.account.s2' => 'The account: premium, sharing between accounts, settings, profile and support. That is also where this guide can be started again.',
+			'walkthrough.topics.account.title' => 'Account, premium and settings',
+			'walkthrough.topics.account.summary' => 'Notifications about share invites, and the account with premium, shared access, settings and the display mode.',
+			'walkthrough.topics.account.s1' => 'Notifications: invitations to share books and plans, and updates.',
+			'walkthrough.topics.account.s2' => 'Tap the picture to open your account.',
+			'walkthrough.topics.account.s3' => 'Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.',
+			'walkthrough.topics.account.s4' => 'Shared access: who shares books and plans with you, and what you have shared.',
+			'walkthrough.topics.account.s5' => 'Tap "Settings".',
+			'walkthrough.topics.account.s6' => 'Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.',
+			'walkthrough.demo.bookTitle' => 'Tutorial',
+			'walkthrough.demo.planName' => 'Tutorial plan',
+			'walkthrough.demo.mealName' => 'Dinner',
+			'walkthrough.demo.groceryItem' => 'Tomatoes',
+			'walkthrough.demo.recipeText' => 'Jerusalem shakshuka\n\nIngredients:\n400 g crushed tomatoes\n4 eggs\n1 onion\n2 tbsp olive oil\n1 tsp sweet paprika\nA pinch of salt\n\nMethod:\n1. Heat the olive oil in a pan and fry the onion until golden.\n2. Add the tomatoes and paprika and simmer for 10 minutes.\n3. Crack the eggs into the sauce, cover, and cook until the whites set.',
 			'walkthrough.demoRecipes' => 'Sample recipes',
 			'walkthrough.demoRecipesHint' => 'This is what recipes look like in the app. Tap one to see its full page: times, topics, allergens, ingredients and steps.',
 			'walkthrough.demoBooks' => 'Sample books',

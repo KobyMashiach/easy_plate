@@ -55,10 +55,13 @@ class MealPlannerPage extends StatelessWidget {
                       ? ClayEmptyState(
                           icon: Icons.calendar_month_rounded,
                           message: t.mealPlanner.noPlans,
-                          action: ClayButton(
-                            label: t.mealPlanner.newPlan,
-                            icon: Icons.add_rounded,
-                            onPressed: () => _showCreatePlanDialog(context),
+                          action: WalkthroughTarget(
+                            id: WalkthroughIds.mealPlanAdd,
+                            child: ClayButton(
+                              label: t.mealPlanner.newPlan,
+                              icon: Icons.add_rounded,
+                              onPressed: () => _showCreatePlanDialog(context),
+                            ),
                           ),
                         )
                       : _PlanBoard(
@@ -106,7 +109,10 @@ class _CreatePlanForm extends StatefulWidget {
 }
 
 class _CreatePlanFormState extends State<_CreatePlanForm> {
-  final _nameController = TextEditingController();
+  // The tour brings a name along, so the plan can be made without typing.
+  final _nameController = TextEditingController(
+    text: Walkthrough.prefill(t.walkthrough.demo.planName),
+  );
   MealPlanTemplate _template = MealPlanTemplate.threeMeals;
 
   @override
@@ -162,16 +168,20 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
           children: [
             Text(t.mealPlanner.newPlan, style: AppTextStyles.headlineMd),
             const SizedBox(height: AppSpacing.gutter),
-            TextField(
-              controller: _nameController,
-              autofocus: true,
-              style: AppTextStyles.bodyMd,
-              decoration: InputDecoration(
-                labelText: t.mealPlanner.planName,
-                helperText: _canSubmit ? null : t.mealPlanner.nameRequired,
+            WalkthroughTarget(
+              id: WalkthroughIds.mealPlanName,
+              child: TextField(
+                controller: _nameController,
+                // Filled in by the tour: the keyboard then waits for a tap.
+                autofocus: !Walkthrough.isActive,
+                style: AppTextStyles.bodyMd,
+                decoration: InputDecoration(
+                  labelText: t.mealPlanner.planName,
+                  helperText: _canSubmit ? null : t.mealPlanner.nameRequired,
+                ),
+                onChanged: (_) => setState(() {}),
+                onSubmitted: (_) => _submit(),
               ),
-              onChanged: (_) => setState(() {}),
-              onSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(t.mealPlanner.template, style: AppTextStyles.labelMd),
@@ -232,11 +242,14 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
               );
             }),
             const SizedBox(height: AppSpacing.gutter),
-            ClayButton(
-              label: t.common.save,
-              icon: Icons.check_rounded,
-              expanded: true,
-              onPressed: _canSubmit ? _submit : null,
+            WalkthroughTarget(
+              id: WalkthroughIds.mealPlanSave,
+              child: ClayButton(
+                label: t.common.save,
+                icon: Icons.check_rounded,
+                expanded: true,
+                onPressed: _canSubmit ? _submit : null,
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],
@@ -287,18 +300,21 @@ class _PlanBoardState extends State<_PlanBoard> {
         children: [
           // Only the owner hands a plan on; a member cannot share it further.
           if (widget.plan.isMine) ...[
-            ClayIconButton(
-              icon: Icons.person_add_alt_1_rounded,
-              size: 48,
-              tooltip: t.sharing.sharePlan,
-              onTap: () async {
-                final sent = await showPlanShareSheet(context, widget.plan);
-                if (sent == true && context.mounted) {
-                  AppDialog.success(message: t.sharing.sent).notify(context);
-                  // The share tags the plan with its collab id.
-                  bloc.add(.selectPlan(widget.plan.id));
-                }
-              },
+            WalkthroughTarget(
+              id: WalkthroughIds.mealPlanShare,
+              child: ClayIconButton(
+                icon: Icons.person_add_alt_1_rounded,
+                size: 48,
+                tooltip: t.sharing.sharePlan,
+                onTap: () async {
+                  final sent = await showPlanShareSheet(context, widget.plan);
+                  if (sent == true && context.mounted) {
+                    AppDialog.success(message: t.sharing.sent).notify(context);
+                    // The share tags the plan with its collab id.
+                    bloc.add(.selectPlan(widget.plan.id));
+                  }
+                },
+              ),
             ),
             const SizedBox(width: AppSpacing.base),
           ],
@@ -454,6 +470,7 @@ class _PlanBoardState extends State<_PlanBoard> {
       title: t.mealPlanner.addMeal,
       icon: Icons.restaurant_rounded,
       hint: t.mealPlanner.mealName,
+      initial: Walkthrough.prefill(t.walkthrough.demo.mealName),
       confirmLabel: t.common.add,
     );
     if (name != null) bloc.add(.addMeal(weekday, name));
