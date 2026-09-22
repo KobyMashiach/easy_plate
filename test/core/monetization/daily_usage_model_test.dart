@@ -19,10 +19,13 @@ void main() {
     expect(next.aiExtractions, 0);
   });
 
-  test('an earlier day — the clock wound back — does not hand out a fresh allowance', () {
-    expect(spent.forDay('2026-09-08'), same(spent));
-    expect(spent.forDay('2025-12-31'), same(spent));
-  });
+  test(
+    'an earlier day — the clock wound back — does not hand out a fresh allowance',
+    () {
+      expect(spent.forDay('2026-09-08'), same(spent));
+      expect(spent.forDay('2025-12-31'), same(spent));
+    },
+  );
 
   test('round-trips through json for the cloud mirror', () {
     final json = spent.toJson();

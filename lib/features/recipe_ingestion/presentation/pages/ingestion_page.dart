@@ -505,7 +505,7 @@ class _ReviewRecipe extends StatelessWidget {
                     ...recipe.ingredients.map((ingredient) {
                       final amount = ingredient.isAmountMissing
                           ? kMissingInfoPlaceholder
-                          : ingredient.amount.toString();
+                          : ingredient.displayAmount;
                       final unit = measurementUnitLabel(ingredient.unit);
                       final line = [
                         amount,

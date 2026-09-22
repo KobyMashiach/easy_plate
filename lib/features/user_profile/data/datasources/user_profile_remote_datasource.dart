@@ -13,6 +13,8 @@ abstract class UserProfileRemoteDataSource {
   Future<void> saveProfile(UserProfileEntity profile);
   Future<String> uploadPhoto(String uid, File file);
   Future<void> savePushToken(String uid, String token);
+  Future<void> touchDevice(String uid, {required String platform, String? appVersion});
+  Future<String?> blockMessage(String uid);
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids);
   Future<void> publishPublicProfile(UserProfileEntity profile);
   Future<String?> findUidByContact(String contact);
@@ -184,5 +186,31 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   @override
   Future<void> savePushToken(String uid, String token) {
     return _doc(uid).set({'pushToken': token}, SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) {
+    return _doc(uid).set({
+      'platform': platform,
+      'appVersion': ?appVersion,
+      'lastSeenAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  /// Written by the adminUsers function alone; the owner may only read it.
+  static const accountStatusCollection = 'account_status';
+
+  @override
+  Future<String?> blockMessage(String uid) async {
+    try {
+      final doc = await _firestore.collection(accountStatusCollection).doc(uid).get();
+      final data = doc.data();
+      if (data == null || data['disabled'] != true) return null;
+      return (data['message'] as String?) ?? '';
+    } catch (e) {
+      // Offline, or a rules refusal: an unreadable status is not a block.
+      debugPrint('Account status read failed: $e');
+      return null;
+    }
   }
 }

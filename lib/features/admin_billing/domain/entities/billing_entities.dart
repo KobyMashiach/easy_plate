@@ -67,6 +67,10 @@ class BillingAccountEntity {
   final bool premium;
   final DateTime? premiumUntil;
 
+  /// A grant dated ahead: [premium] is still false, [grantPending] true.
+  final DateTime? premiumFrom;
+  final bool grantPending;
+
   /// `revenuecat`, `admin`, or blank when there is no document yet.
   final String source;
 
@@ -78,6 +82,18 @@ class BillingAccountEntity {
   final String productId;
   final String store;
   final List<PurchaseEventEntity> events;
+
+  /// Switched off by the administrator, with the reason shown to them.
+  final bool disabled;
+  final String blockMessage;
+
+  /// Where the account was last seen: `ios`, `android`, or blank for an
+  /// account that has not signed in since this was recorded.
+  final String platform;
+  final String appVersion;
+  final DateTime? lastSeenAt;
+  final DateTime? createdAt;
+  final bool hasPushToken;
 
   const BillingAccountEntity({
     required this.uid,
@@ -93,6 +109,15 @@ class BillingAccountEntity {
     required this.productId,
     required this.store,
     required this.events,
+    this.premiumFrom,
+    this.grantPending = false,
+    this.disabled = false,
+    this.blockMessage = '',
+    this.platform = '',
+    this.appVersion = '',
+    this.lastSeenAt,
+    this.createdAt,
+    this.hasPushToken = false,
   });
 
   bool get hasEvents => events.isNotEmpty;
@@ -129,5 +154,18 @@ class AdminBillingSnapshot {
   const AdminBillingSnapshot({
     required this.accounts,
     required this.orphanEvents,
+  });
+}
+
+/// What a broadcast reached, as the function reported it.
+class BroadcastResult {
+  final int items;
+  final int sent;
+  final int failed;
+
+  const BroadcastResult({
+    required this.items,
+    required this.sent,
+    required this.failed,
   });
 }

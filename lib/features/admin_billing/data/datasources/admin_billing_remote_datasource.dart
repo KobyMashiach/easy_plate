@@ -4,7 +4,12 @@ import '../../domain/entities/billing_entities.dart';
 
 abstract class AdminBillingRemoteDataSource {
   Future<AdminBillingSnapshot> load();
-  Future<void> setPremium(String uid, bool premium);
+  Future<void> setPremium(
+    String uid,
+    bool premium, {
+    DateTime? from,
+    DateTime? until,
+  });
   Future<void> releaseLock(String uid);
 }
 
@@ -14,6 +19,7 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
   static const usersCollection = 'users';
   static const entitlementsCollection = 'entitlements';
   static const eventsCollection = 'purchase_events';
+  static const statusCollection = 'account_status';
 
   final FirebaseFirestore _firestore;
 
@@ -30,10 +36,12 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
           .orderBy('eventAt', descending: true)
           .limit(1000)
           .get(),
+      _firestore.collection(statusCollection).limit(2000).get(),
     ]);
     final users = results[0].docs;
     final entitlements = {for (final d in results[1].docs) d.id: d.data()};
     final events = results[2].docs.map(_toEvent).toList();
+    final statuses = {for (final d in results[3].docs) d.id: d.data()};
 
     final byUid = <String, List<PurchaseEventEntity>>{};
     final orphans = <PurchaseEventEntity>[];
@@ -62,6 +70,7 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
           profiles[uid],
           entitlements[uid],
           byUid[uid] ?? const [],
+          statuses[uid],
           now,
         ),
     ];
@@ -90,10 +99,18 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
   }
 
   @override
-  Future<void> setPremium(String uid, bool premium) {
+  Future<void> setPremium(
+    String uid,
+    bool premium, {
+    DateTime? from,
+    DateTime? until,
+  }) {
     return _firestore.collection(entitlementsCollection).doc(uid).set({
       'premium': premium,
-      'premiumUntil': null,
+      'premiumFrom': premium && from != null ? Timestamp.fromDate(from) : null,
+      'premiumUntil': premium && until != null
+          ? Timestamp.fromDate(until)
+          : null,
       'adminLock': true,
       'source': 'admin',
       'updatedAt': FieldValue.serverTimestamp(),
@@ -113,11 +130,14 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
     Map<String, dynamic>? profile,
     Map<String, dynamic>? entitlement,
     List<PurchaseEventEntity> events,
+    Map<String, dynamic>? status,
     DateTime now,
   ) {
     final until = (entitlement?['premiumUntil'] as Timestamp?)?.toDate();
+    final from = (entitlement?['premiumFrom'] as Timestamp?)?.toDate();
     final premium =
         entitlement?['premium'] == true &&
+        (from == null || !from.isAfter(now)) &&
         (until == null || until.isAfter(now));
     final lastEventAt = entitlement?['lastEventAt'];
     return BillingAccountEntity(
@@ -129,6 +149,9 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
       phone: profile?['phoneNumber'] as String?,
       premium: premium,
       premiumUntil: until,
+      premiumFrom: from,
+      grantPending:
+          entitlement?['premium'] == true && from != null && from.isAfter(now),
       source: (entitlement?['source'] as String?) ?? '',
       adminLock: entitlement?['adminLock'] == true,
       lastEventType: (entitlement?['lastEventType'] as String?) ?? '',
@@ -140,6 +163,13 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
       productId: (entitlement?['productId'] as String?) ?? '',
       store: (entitlement?['store'] as String?) ?? '',
       events: events,
+      disabled: status?['disabled'] == true,
+      blockMessage: (status?['message'] as String?) ?? '',
+      platform: (profile?['platform'] as String?) ?? '',
+      appVersion: (profile?['appVersion'] as String?) ?? '',
+      lastSeenAt: (profile?['lastSeenAt'] as Timestamp?)?.toDate(),
+      createdAt: (profile?['createdAt'] as Timestamp?)?.toDate(),
+      hasPushToken: (profile?['pushToken'] as String?)?.isNotEmpty == true,
     );
   }
 

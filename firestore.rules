@@ -53,10 +53,10 @@ service cloud.firestore {
     match /entitlements/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if isAdmin()
-                    && request.resource.data.keys().hasOnly(['premium', 'premiumUntil', 'adminLock', 'source', 'updatedAt']);
+                    && request.resource.data.keys().hasOnly(['premium', 'premiumFrom', 'premiumUntil', 'adminLock', 'source', 'updatedAt']);
       allow update: if isAdmin()
                     && request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['premium', 'premiumUntil', 'adminLock', 'source', 'updatedAt']);
+                         .hasOnly(['premium', 'premiumFrom', 'premiumUntil', 'adminLock', 'source', 'updatedAt']);
       allow delete: if false;
     }
 
@@ -301,7 +301,50 @@ service cloud.firestore {
                     && request.resource.data.message.size() > 0
                     && request.resource.data.message.size() <= 4000;
       allow read: if isAdmin();
-      allow update, delete: if false;
+      // The administrator marks a message read (and unread again), answers
+      // it and removes it; the message itself and who wrote it never change.
+      allow update: if isAdmin()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['read', 'readAt', 'replies', 'repliedAt']);
+      allow delete: if isAdmin();
+    }
+
+    // The AI bill: one row per model call, per-day totals and per-user
+    // totals, all written by the Cloud Functions for the administrator's
+    // dashboard. `ai_usage/{uid}` also carries the daily quota counter, which
+    // is the proxy's business alone — nobody but the administrator reads it.
+    match /ai_calls/{callId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /ai_daily/{day} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /ai_usage/{uid} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Extracted links remembered by the proxy. The administrator reads the
+    // counters to see what the cache saved; nobody else has a reason to.
+    match /ai_url_cache/{key} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Whether the administrator switched an account off, and what to tell
+    // it. Written by the adminUsers function alone; the account reads its
+    // own on sign-in and is held on the blocked screen if it says so.
+    match /account_status/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if false;
+    }
+
+    // The dashboard's own settings — the token price table and the exchange
+    // rate. The administrator's alone, both ways.
+    match /admin_config/{name} {
+      allow read, write: if isAdmin();
     }
 
     // Nothing else is reachable until it has a rule of its own.

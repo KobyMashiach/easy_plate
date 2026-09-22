@@ -5,13 +5,16 @@ void main() {
   const limits = QuotaLimits.defaults;
 
   group('shared recipes', () {
-    GateVerdict verdict(int viewed, {bool seen = false, bool premium = false}) =>
-        DailyQuotaPolicy.sharedRecipe(
-          viewedToday: viewed,
-          alreadyViewed: seen,
-          premium: premium,
-          limits: limits,
-        );
+    GateVerdict verdict(
+      int viewed, {
+      bool seen = false,
+      bool premium = false,
+    }) => DailyQuotaPolicy.sharedRecipe(
+      viewedToday: viewed,
+      alreadyViewed: seen,
+      premium: premium,
+      limits: limits,
+    );
 
     test('the first three of the day are free', () {
       expect(verdict(0), GateVerdict.free);
@@ -28,9 +31,12 @@ void main() {
       expect(verdict(40), GateVerdict.blocked);
     });
 
-    test('a recipe already opened today is free again, even past the limit', () {
-      expect(verdict(6, seen: true), GateVerdict.free);
-    });
+    test(
+      'a recipe already opened today is free again, even past the limit',
+      () {
+        expect(verdict(6, seen: true), GateVerdict.free);
+      },
+    );
 
     test('premium sees no gate at all', () {
       expect(verdict(99, premium: true), GateVerdict.free);
@@ -49,7 +55,11 @@ void main() {
 
   group('AI extraction', () {
     GateVerdict verdict(int used, {bool premium = false}) =>
-        DailyQuotaPolicy.aiExtraction(usedToday: used, premium: premium, limits: limits);
+        DailyQuotaPolicy.aiExtraction(
+          usedToday: used,
+          premium: premium,
+          limits: limits,
+        );
 
     test('every extraction costs a video, the first included', () {
       expect(verdict(0), GateVerdict.rewarded);
@@ -71,8 +81,14 @@ void main() {
       expect(DailyQuotaPolicy.remainingAiExtractions(0, limits), 2);
       expect(DailyQuotaPolicy.remainingAiExtractions(2, limits), 0);
       expect(DailyQuotaPolicy.remainingAiExtractions(7, limits), 0);
-      expect(DailyQuotaPolicy.remainingAiExtractions(3, limits, premium: true), 7);
-      expect(DailyQuotaPolicy.remainingAiExtractions(12, limits, premium: true), 0);
+      expect(
+        DailyQuotaPolicy.remainingAiExtractions(3, limits, premium: true),
+        7,
+      );
+      expect(
+        DailyQuotaPolicy.remainingAiExtractions(12, limits, premium: true),
+        0,
+      );
     });
   });
 
@@ -103,11 +119,19 @@ void main() {
       reason: 'no rewarded tier when the console sets it to zero',
     );
     expect(
-      DailyQuotaPolicy.aiExtraction(usedToday: 0, premium: false, limits: generous),
+      DailyQuotaPolicy.aiExtraction(
+        usedToday: 0,
+        premium: false,
+        limits: generous,
+      ),
       GateVerdict.blocked,
     );
     expect(
-      DailyQuotaPolicy.aiExtraction(usedToday: 0, premium: true, limits: generous),
+      DailyQuotaPolicy.aiExtraction(
+        usedToday: 0,
+        premium: true,
+        limits: generous,
+      ),
       GateVerdict.blocked,
       reason: 'premium has its own console-tuned ceiling',
     );

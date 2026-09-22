@@ -74,6 +74,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$walkthrough$he walkthrough = Translations$walkthrough$he.internal(_root);
 	late final Translations$feedback$he feedback = Translations$feedback$he.internal(_root);
 	late final Translations$adminBilling$he adminBilling = Translations$adminBilling$he.internal(_root);
+	late final Translations$adminDashboard$he adminDashboard = Translations$adminDashboard$he.internal(_root);
 }
 
 // Path: common
@@ -341,6 +342,12 @@ class Translations$auth$he {
 
 	/// he: 'כבר מקושר חשבון Apple'
 	String get appleAlreadyLinked => 'כבר מקושר חשבון Apple';
+
+	/// he: 'החשבון נחסם'
+	String get blockedTitle => 'החשבון נחסם';
+
+	/// he: 'החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.'
+	String get blockedBody => 'החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.';
 }
 
 // Path: profile
@@ -1349,6 +1356,15 @@ class Translations$notifications$he {
 
 	/// he: '$name שיתף/ה איתך את התפריט "$recipe"'
 	String sharedPlan({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את התפריט "${recipe}"';
+
+	/// he: 'תשובה מצוות EasyPlate לפנייה שלך'
+	String get adminReply => 'תשובה מצוות EasyPlate לפנייה שלך';
+
+	/// he: 'הפנייה שלך: "$excerpt"'
+	String adminReplyQuote({required Object excerpt}) => 'הפנייה שלך: "${excerpt}"';
+
+	/// he: 'הודעה מ-EasyPlate'
+	String get adminMessage => 'הודעה מ-EasyPlate';
 }
 
 // Path: editor
@@ -2408,6 +2424,75 @@ class Translations$premium$he {
 
 	/// he: 'מדיניות פרטיות'
 	String get privacy => 'מדיניות פרטיות';
+
+	/// he: 'מתחילים ב-$price'
+	String startFor({required Object price}) => 'מתחילים ב-${price}';
+
+	/// he: 'מתחילים בחינם'
+	String get startFree => 'מתחילים בחינם';
+
+	/// he: 'חינם'
+	String get free => 'חינם';
+
+	/// he: '(one) {ליום הראשון} (other) {ל-$n הימים הראשונים}'
+	String introDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n,
+		one: 'ליום הראשון',
+		other: 'ל-${n} הימים הראשונים',
+	);
+
+	/// he: '(one) {לשבוע הראשון} (other) {ל-$n השבועות הראשונים}'
+	String introWeeks({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n,
+		one: 'לשבוע הראשון',
+		other: 'ל-${n} השבועות הראשונים',
+	);
+
+	/// he: '(one) {לחודש הראשון} (other) {ל-$n החודשים הראשונים}'
+	String introMonths({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n,
+		one: 'לחודש הראשון',
+		other: 'ל-${n} החודשים הראשונים',
+	);
+
+	/// he: '(one) {לשנה הראשונה} (other) {ל-$n השנים הראשונות}'
+	String introYears({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n,
+		one: 'לשנה הראשונה',
+		other: 'ל-${n} השנים הראשונות',
+	);
+
+	/// he: '$price $span, ולאחר מכן $then. המחיר מתעדכן אוטומטית.'
+	String introPaidTerms({required Object price, required Object span, required Object then}) => '${price} ${span}, ולאחר מכן ${then}. המחיר מתעדכן אוטומטית.';
+
+	/// he: 'חינם $span, ולאחר מכן $then. החיוב מתחיל אוטומטית.'
+	String introFreeTerms({required Object span, required Object then}) => 'חינם ${span}, ולאחר מכן ${then}. החיוב מתחיל אוטומטית.';
+
+	/// he: 'יש לי קוד קופון'
+	String get redeem => 'יש לי קוד קופון';
+
+	/// he: 'קוד קופון'
+	String get redeemTitle => 'קוד קופון';
+
+	/// he: 'הקלידו את הקוד שקיבלתם'
+	String get redeemHint => 'הקלידו את הקוד שקיבלתם';
+
+	/// he: 'מימוש בחנות'
+	String get redeemConfirm => 'מימוש בחנות';
+
+	/// he: 'לשבוע'
+	String get perWeekly => 'לשבוע';
+
+	/// he: 'לחודש'
+	String get perMonthly => 'לחודש';
+
+	/// he: 'לחודשיים'
+	String get perTwoMonth => 'לחודשיים';
+
+	/// he: 'ל-3 חודשים'
+	String get perThreeMonth => 'ל-3 חודשים';
+
+	/// he: 'ל-6 חודשים'
+	String get perSixMonth => 'ל-6 חודשים';
+
+	/// he: 'לשנה'
+	String get perAnnual => 'לשנה';
 }
 
 // Path: walkthrough
@@ -2645,6 +2730,459 @@ class Translations$adminBilling$he {
 
 	/// he: 'בלי entitlement'
 	String get noEntitlementTag => 'בלי entitlement';
+}
+
+// Path: adminDashboard
+class Translations$adminDashboard$he {
+	Translations$adminDashboard$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'לוח בקרה'
+	String get title => 'לוח בקרה';
+
+	/// he: 'דשבורד'
+	String get tabDashboard => 'דשבורד';
+
+	/// he: 'מנויים'
+	String get tabSubscriptions => 'מנויים';
+
+	/// he: 'ניהול פניות'
+	String get tabTickets => 'ניהול פניות';
+
+	/// he: 'היום'
+	String get rangeToday => 'היום';
+
+	/// he: '30 יום'
+	String get rangeMonth => '30 יום';
+
+	/// he: 'הכל'
+	String get rangeAll => 'הכל';
+
+	/// he: 'עלות AI'
+	String get aiCost => 'עלות AI';
+
+	/// he: 'טוקנים × מחירון'
+	String get aiCostHint => 'טוקנים × מחירון';
+
+	/// he: 'הכנסות'
+	String get revenue => 'הכנסות';
+
+	/// he: 'אין תשלומים בטווח'
+	String get revenueNone => 'אין תשלומים בטווח';
+
+	/// he: '$count תשלומי sandbox לא נספרו'
+	String sandboxNote({required Object count}) => '${count} תשלומי sandbox לא נספרו';
+
+	/// he: '$count תשלומים'
+	String paymentsCount({required Object count}) => '${count} תשלומים';
+
+	/// he: 'קריאות AI'
+	String get aiCalls => 'קריאות AI';
+
+	/// he: '$count מהמטמון (חינם)'
+	String cacheSaved({required Object count}) => '${count} מהמטמון (חינם)';
+
+	/// he: '$count שגיאות'
+	String errorsCount({required Object count}) => '${count} שגיאות';
+
+	/// he: 'טוקנים'
+	String get tokens => 'טוקנים';
+
+	/// he: 'קלט $input · פלט $output'
+	String tokensHint({required Object input, required Object output}) => 'קלט ${input} · פלט ${output}';
+
+	/// he: 'משתמשים סה"כ'
+	String get usersTotal => 'משתמשים סה"כ';
+
+	/// he: '$count חדשים בטווח'
+	String newUsers({required Object count}) => '${count} חדשים בטווח';
+
+	/// he: '$count חסומים'
+	String disabledCount({required Object count}) => '${count} חסומים';
+
+	/// he: 'משלמים'
+	String get premiumUsers => 'משלמים';
+
+	/// he: '$count חינמיים'
+	String freeCount({required Object count}) => '${count} חינמיים';
+
+	/// he: 'חינמיים'
+	String get freeUsers => 'חינמיים';
+
+	/// he: 'משתמשי AI פעילים'
+	String get activeUsers => 'משתמשי AI פעילים';
+
+	/// he: 'עלות למשתמש פעיל'
+	String get costPerUser => 'עלות למשתמש פעיל';
+
+	/// he: 'פניות'
+	String get tickets => 'פניות';
+
+	/// he: '$count חדשות'
+	String unreadCount({required Object count}) => '${count} חדשות';
+
+	/// he: 'עלות AI לפי יום'
+	String get chartCost => 'עלות AI לפי יום';
+
+	/// he: 'קריאות AI לפי יום'
+	String get chartCalls => 'קריאות AI לפי יום';
+
+	/// he: 'הרשמות לפי יום'
+	String get chartSignups => 'הרשמות לפי יום';
+
+	/// he: 'משתמשים לפי פלטפורמה'
+	String get chartPlatform => 'משתמשים לפי פלטפורמה';
+
+	/// he: 'חינמי מול משלם'
+	String get chartPlan => 'חינמי מול משלם';
+
+	/// he: 'קריאות לפי פיצ'ר'
+	String get chartKinds => 'קריאות לפי פיצ\'ר';
+
+	/// he: 'עלות לפי מודל'
+	String get chartModels => 'עלות לפי מודל';
+
+	/// he: 'גרסאות אפליקציה'
+	String get chartVersions => 'גרסאות אפליקציה';
+
+	/// he: 'iOS'
+	String get platformIos => 'iOS';
+
+	/// he: 'Android'
+	String get platformAndroid => 'Android';
+
+	/// he: 'לא ידוע'
+	String get platformUnknown => 'לא ידוע';
+
+	/// he: 'אין שימוש ב-AI בטווח הזה'
+	String get noAiUsage => 'אין שימוש ב-AI בטווח הזה';
+
+	/// he: 'לא במחירון'
+	String get unknownModel => 'לא במחירון';
+
+	/// he: 'עלות לפי משתמש'
+	String get usersCost => 'עלות לפי משתמש';
+
+	/// he: '$count משתמשים'
+	String usersCount({required Object count}) => '${count} משתמשים';
+
+	/// he: 'חיפוש לפי שם, מייל או uid'
+	String get searchUser => 'חיפוש לפי שם, מייל או uid';
+
+	/// he: 'הצגת כל $count המשתמשים'
+	String showAll({required Object count}) => 'הצגת כל ${count} המשתמשים';
+
+	/// he: '$count קריאות'
+	String callsCount({required Object count}) => '${count} קריאות';
+
+	/// he: 'תוכן וקהילה'
+	String get content => 'תוכן וקהילה';
+
+	/// he: 'מתכונים משותפים'
+	String get sharedRecipes => 'מתכונים משותפים';
+
+	/// he: 'שרשורי פורום'
+	String get forumPosts => 'שרשורי פורום';
+
+	/// he: 'מכשירים עם התראות'
+	String get withPush => 'מכשירים עם התראות';
+
+	/// he: 'קישורים במטמון'
+	String get cacheEntries => 'קישורים במטמון';
+
+	/// he: 'פגיעות מטמון (קריאות שנחסכו)'
+	String get cacheHits => 'פגיעות מטמון (קריאות שנחסכו)';
+
+	/// he: 'הגדרות מרחוק'
+	String get config => 'הגדרות מרחוק';
+
+	/// he: 'סביבה'
+	String get environment => 'סביבה';
+
+	/// he: 'Production'
+	String get prod => 'Production';
+
+	/// he: 'Dev'
+	String get dev => 'Dev';
+
+	/// he: 'מודעות'
+	String get adsEnabled => 'מודעות';
+
+	/// he: 'פתיחה כשאין מודעה'
+	String get adsFailOpen => 'פתיחה כשאין מודעה';
+
+	/// he: 'פעיל'
+	String get on => 'פעיל';
+
+	/// he: 'כבוי'
+	String get off => 'כבוי';
+
+	/// he: 'מרווח מודעות בפיד'
+	String get feedInterval => 'מרווח מודעות בפיד';
+
+	/// he: 'צפיות חינם ביום'
+	String get quotaSharedFree => 'צפיות חינם ביום';
+
+	/// he: 'צפיות בווידאו ביום'
+	String get quotaSharedRewarded => 'צפיות בווידאו ביום';
+
+	/// he: 'AI בווידאו ביום'
+	String get quotaAiRewarded => 'AI בווידאו ביום';
+
+	/// he: 'AI לפרימיום ביום'
+	String get quotaAiPremium => 'AI לפרימיום ביום';
+
+	/// he: 'גרסה מינימלית'
+	String get minVersion => 'גרסה מינימלית';
+
+	/// he: 'גרסה אחרונה'
+	String get latestVersion => 'גרסה אחרונה';
+
+	/// he: 'הבנייה הזו'
+	String get thisBuild => 'הבנייה הזו';
+
+	/// he: 'מחירון טוקנים'
+	String get pricing => 'מחירון טוקנים';
+
+	/// he: 'דולר למיליון טוקנים. מחירי ברירת המחדל הם הערכה — כדאי לעדכן לפי המחירון של Google.'
+	String get pricingHint => 'דולר למיליון טוקנים. מחירי ברירת המחדל הם הערכה — כדאי לעדכן לפי המחירון של Google.';
+
+	/// he: 'עריכת מחירון'
+	String get editPricing => 'עריכת מחירון';
+
+	/// he: 'קלט'
+	String get priceInput => 'קלט';
+
+	/// he: 'פלט'
+	String get priceOutput => 'פלט';
+
+	/// he: 'קלט מהמטמון'
+	String get priceCached => 'קלט מהמטמון';
+
+	/// he: 'שער דולר/שקל'
+	String get usdToIls => 'שער דולר/שקל';
+
+	/// he: 'המחירון נשמר'
+	String get pricingSaved => 'המחירון נשמר';
+
+	/// he: 'עודכן $date'
+	String loadedAt({required Object date}) => 'עודכן ${date}';
+
+	/// he: 'טקסט'
+	String get kindText => 'טקסט';
+
+	/// he: 'קישור'
+	String get kindUrl => 'קישור';
+
+	/// he: 'רשת חברתית'
+	String get kindSocial => 'רשת חברתית';
+
+	/// he: 'וידאו (שרת)'
+	String get kindSocialVideo => 'וידאו (שרת)';
+
+	/// he: 'וידאו'
+	String get kindVideo => 'וידאו';
+
+	/// he: 'חיפוש'
+	String get kindSearch => 'חיפוש';
+
+	/// he: 'תמונה'
+	String get kindImage => 'תמונה';
+
+	/// he: 'קבלה'
+	String get kindReceipt => 'קבלה';
+
+	/// he: 'תזונה'
+	String get kindNutrition => 'תזונה';
+
+	/// he: 'ליטוש'
+	String get kindRefine => 'ליטוש';
+
+	/// he: 'יצירה'
+	String get kindGenerate => 'יצירה';
+
+	/// he: 'כל הזמן'
+	String get allTime => 'כל הזמן';
+
+	/// he: 'קריאות אחרונות'
+	String get recentCalls => 'קריאות אחרונות';
+
+	/// he: 'אין קריאות'
+	String get noCalls => 'אין קריאות';
+
+	/// he: 'מטמון'
+	String get cacheHit => 'מטמון';
+
+	/// he: 'תקין'
+	String get statusOk => 'תקין';
+
+	/// he: 'כותרת (לא חובה)'
+	String get pushTitle => 'כותרת (לא חובה)';
+
+	/// he: 'תוכן ההודעה'
+	String get pushBody => 'תוכן ההודעה';
+
+	/// he: 'שליחה'
+	String get send => 'שליחה';
+
+	/// he: 'חסומים'
+	String get blocked => 'חסומים';
+
+	/// he: 'חסימת חשבון'
+	String get disable => 'חסימת חשבון';
+
+	/// he: 'ביטול חסימה'
+	String get enable => 'ביטול חסימה';
+
+	/// he: 'מה המשתמש יראה כשינסה להתחבר'
+	String get blockMessageHint => 'מה המשתמש יראה כשינסה להתחבר';
+
+	/// he: 'החשבון נחסם'
+	String get disabledDone => 'החשבון נחסם';
+
+	/// he: 'החסימה הוסרה'
+	String get enabledDone => 'החסימה הוסרה';
+
+	/// he: 'מחיקת חשבון'
+	String get deleteAccount => 'מחיקת חשבון';
+
+	/// he: 'למחוק את $name לצמיתות? המשתמש, המתכונים, הספרים והתפריטים שלו יימחקו ואי אפשר לשחזר.'
+	String deleteAccountConfirm({required Object name}) => 'למחוק את ${name} לצמיתות? המשתמש, המתכונים, הספרים והתפריטים שלו יימחקו ואי אפשר לשחזר.';
+
+	/// he: 'החשבון נמחק'
+	String get deleted => 'החשבון נמחק';
+
+	/// he: 'שליחת התראה'
+	String get sendPush => 'שליחת התראה';
+
+	/// he: 'למכשיר הזה אין טוקן דחיפה — ההודעה תופיע רק במסך ההתראות'
+	String get noPush => 'למכשיר הזה אין טוקן דחיפה — ההודעה תופיע רק במסך ההתראות';
+
+	/// he: 'ההתראה נשלחה'
+	String get pushSent => 'ההתראה נשלחה';
+
+	/// he: 'התראה לכל המשתמשים'
+	String get sendPushAll => 'התראה לכל המשתמשים';
+
+	/// he: 'לשלוח את ההודעה לכל $count המשתמשים?'
+	String broadcastConfirm({required Object count}) => 'לשלוח את ההודעה לכל ${count} המשתמשים?';
+
+	/// he: 'נכתב ל-$items תיבות · $sent דחיפות הצליחו · $failed נכשלו'
+	String broadcastDone({required Object items, required Object sent, required Object failed}) => 'נכתב ל-${items} תיבות · ${sent} דחיפות הצליחו · ${failed} נכשלו';
+
+	/// he: '$platform · v$version'
+	String platformTag({required Object platform, required Object version}) => '${platform} · v${version}';
+
+	/// he: 'נראה לאחרונה $date'
+	String lastSeen({required Object date}) => 'נראה לאחרונה ${date}';
+
+	/// he: 'סיבת החסימה: $message'
+	String disabledSince({required Object message}) => 'סיבת החסימה: ${message}';
+
+	/// he: 'חדשות'
+	String get unread => 'חדשות';
+
+	/// he: 'קראתי הכל'
+	String get markAllRead => 'קראתי הכל';
+
+	/// he: 'כל הפניות סומנו כנקראו'
+	String get allRead => 'כל הפניות סומנו כנקראו';
+
+	/// he: 'אין פניות חדשות'
+	String get noUnread => 'אין פניות חדשות';
+
+	/// he: 'מחיקת פנייה'
+	String get deleteTicket => 'מחיקת פנייה';
+
+	/// he: 'למחוק את הפנייה של $name?'
+	String deleteTicketConfirm({required Object name}) => 'למחוק את הפנייה של ${name}?';
+
+	/// he: 'הפנייה נמחקה'
+	String get ticketDeleted => 'הפנייה נמחקה';
+
+	/// he: 'תגובה'
+	String get reply => 'תגובה';
+
+	/// he: 'התשובה תגיע למשתמש במסך ההתראות (וכדחיפה לטלפון)'
+	String get replyHint => 'התשובה תגיע למשתמש במסך ההתראות (וכדחיפה לטלפון)';
+
+	/// he: 'התשובה נשלחה'
+	String get replySent => 'התשובה נשלחה';
+
+	/// he: 'התשובה שלך · $date'
+	String yourReply({required Object date}) => 'התשובה שלך · ${date}';
+
+	/// he: 'סימון כנקרא'
+	String get markRead => 'סימון כנקרא';
+
+	/// he: 'סימון כלא נקרא'
+	String get markUnread => 'סימון כלא נקרא';
+
+	/// he: 'סנכרון מחירים מ-Google'
+	String get pricingSync => 'סנכרון מחירים מ-Google';
+
+	/// he: '$count מודלים עודכנו מהמחירון של Google Cloud Billing'
+	String pricingSynced({required Object count}) => '${count} מודלים עודכנו מהמחירון של Google Cloud Billing';
+
+	/// he: 'הסנכרון נכשל: $reason'
+	String pricingSyncFailed({required Object reason}) => 'הסנכרון נכשל: ${reason}';
+
+	/// he: 'מקור: Google Cloud Billing (מחירי מחירון אמיתיים) · $date'
+	String pricingSourceCatalog({required Object date}) => 'מקור: Google Cloud Billing (מחירי מחירון אמיתיים) · ${date}';
+
+	/// he: 'מקור: הוזן ידנית · $date'
+	String pricingSourceManual({required Object date}) => 'מקור: הוזן ידנית · ${date}';
+
+	/// he: 'הערכה בלבד — לחצו על סנכרון כדי למשוך את המחירים האמיתיים מ-Google'
+	String get pricingSourceDefaults => 'הערכה בלבד — לחצו על סנכרון כדי למשוך את המחירים האמיתיים מ-Google';
+
+	/// he: 'חיפוש Google בהארקה (דולר ל-1,000 שאילתות)'
+	String get searchPrice => 'חיפוש Google בהארקה (דולר ל-1,000 שאילתות)';
+
+	/// he: '$rate · מתעדכן אוטומטית פעם בשבוע · $date'
+	String rateLine({required Object rate, required Object date}) => '${rate} · מתעדכן אוטומטית פעם בשבוע · ${date}';
+
+	/// he: '$count חיפושים'
+	String searchesCount({required Object count}) => '${count} חיפושים';
+
+	/// he: 'בחירה'
+	String get rangeCustom => 'בחירה';
+
+	/// he: '$from – $to · לחיצה לשינוי'
+	String customRange({required Object from, required Object to}) => '${from} – ${to} · לחיצה לשינוי';
+
+	/// he: 'פלט תמונה'
+	String get priceImageOutput => 'פלט תמונה';
+
+	/// he: 'הנתונים נאספים מ-$date. חיובים קודמים בגוגל אינם רשומים כאן.'
+	String dataSince({required Object date}) => 'הנתונים נאספים מ-${date}. חיובים קודמים בגוגל אינם רשומים כאן.';
+
+	/// he: 'פרימיום ל-$name — לכמה זמן?'
+	String grantTitle({required Object name}) => 'פרימיום ל-${name} — לכמה זמן?';
+
+	/// he: 'לתמיד (עד שאבטל)'
+	String get grantForever => 'לתמיד (עד שאבטל)';
+
+	/// he: 'שבוע'
+	String get grantWeek => 'שבוע';
+
+	/// he: 'חודש'
+	String get grantMonth => 'חודש';
+
+	/// he: 'שנה'
+	String get grantYear => 'שנה';
+
+	/// he: 'טווח תאריכים מדויק'
+	String get grantRange => 'טווח תאריכים מדויק';
+
+	/// he: 'ניתן פרימיום עד $date'
+	String grantedUntil({required Object date}) => 'ניתן פרימיום עד ${date}';
+
+	/// he: 'מתחיל ב-$date'
+	String grantStarts({required Object date}) => 'מתחיל ב-${date}';
 }
 
 // Path: walkthrough.topics
@@ -2986,6 +3524,8 @@ extension on Translations {
 			'auth.appleLinked' => 'מקושר',
 			'auth.appleAlreadyUsed' => 'חשבון Apple הזה כבר משויך למשתמש אחר',
 			'auth.appleAlreadyLinked' => 'כבר מקושר חשבון Apple',
+			'auth.blockedTitle' => 'החשבון נחסם',
+			'auth.blockedBody' => 'החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',
@@ -3280,6 +3820,9 @@ extension on Translations {
 			'notifications.openInbox' => 'פתיחת ההתראות',
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את הספר "${recipe}"',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את התפריט "${recipe}"',
+			'notifications.adminReply' => 'תשובה מצוות EasyPlate לפנייה שלך',
+			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'הפנייה שלך: "${excerpt}"',
+			'notifications.adminMessage' => 'הודעה מ-EasyPlate',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -3409,13 +3952,13 @@ extension on Translations {
 			'receipt.title' => 'סריקת קבלה',
 			'receipt.subtitle' => 'צלמו קבלה או העלו PDF, והמחירים יישמרו לרשימת הקניות',
 			'receipt.camera' => 'צילום קבלה',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.cameraHint' => 'קבלה ארוכה? צלמו כמה תמונות, נאחד אותן',
 			'receipt.gallery' => 'בחירה מהגלריה',
 			'receipt.pdf' => 'קובץ PDF',
 			'receipt.addPhoto' => 'תמונה נוספת',
 			'receipt.scan' => 'סרוק',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.scanning' => 'קורא את הקבלה…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} תמונות',
 			'receipt.scanFailed' => 'לא הצלחנו לקרוא את הקבלה. נסו תמונה חדה יותר או PDF.',
@@ -3602,6 +4145,25 @@ extension on Translations {
 			'premium.legal' => 'המנוי מתחדש אוטומטית בסוף כל תקופה, אלא אם בוטל לפחות 24 שעות לפני סיומה. החיוב מתבצע דרך חשבון החנות שלך, וניתן לנהל או לבטל אותו בהגדרות החנות.',
 			'premium.terms' => 'תנאי שימוש',
 			'premium.privacy' => 'מדיניות פרטיות',
+			'premium.startFor' => ({required Object price}) => 'מתחילים ב-${price}',
+			'premium.startFree' => 'מתחילים בחינם',
+			'premium.free' => 'חינם',
+			'premium.introDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'ליום הראשון', other: 'ל-${n} הימים הראשונים', ), 
+			'premium.introWeeks' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'לשבוע הראשון', other: 'ל-${n} השבועות הראשונים', ), 
+			'premium.introMonths' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'לחודש הראשון', other: 'ל-${n} החודשים הראשונים', ), 
+			'premium.introYears' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'לשנה הראשונה', other: 'ל-${n} השנים הראשונות', ), 
+			'premium.introPaidTerms' => ({required Object price, required Object span, required Object then}) => '${price} ${span}, ולאחר מכן ${then}. המחיר מתעדכן אוטומטית.',
+			'premium.introFreeTerms' => ({required Object span, required Object then}) => 'חינם ${span}, ולאחר מכן ${then}. החיוב מתחיל אוטומטית.',
+			'premium.redeem' => 'יש לי קוד קופון',
+			'premium.redeemTitle' => 'קוד קופון',
+			'premium.redeemHint' => 'הקלידו את הקוד שקיבלתם',
+			'premium.redeemConfirm' => 'מימוש בחנות',
+			'premium.perWeekly' => 'לשבוע',
+			'premium.perMonthly' => 'לחודש',
+			'premium.perTwoMonth' => 'לחודשיים',
+			'premium.perThreeMonth' => 'ל-3 חודשים',
+			'premium.perSixMonth' => 'ל-6 חודשים',
+			'premium.perAnnual' => 'לשנה',
 			'walkthrough.title' => 'הדרכה',
 			'walkthrough.start' => 'הפעל הדרכה',
 			'walkthrough.startHint' => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד',
@@ -3724,6 +4286,154 @@ extension on Translations {
 			'adminBilling.orphanBody' => 'קבלות שהגיעו תחת מזהה אנונימי של RevenueCat, בלי משתמש לפתוח לו',
 			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} פרימיום · ${problems} בעיות · ${total} חשבונות',
 			'adminBilling.noEntitlementTag' => 'בלי entitlement',
+			'adminDashboard.title' => 'לוח בקרה',
+			'adminDashboard.tabDashboard' => 'דשבורד',
+			'adminDashboard.tabSubscriptions' => 'מנויים',
+			'adminDashboard.tabTickets' => 'ניהול פניות',
+			'adminDashboard.rangeToday' => 'היום',
+			'adminDashboard.rangeMonth' => '30 יום',
+			'adminDashboard.rangeAll' => 'הכל',
+			'adminDashboard.aiCost' => 'עלות AI',
+			'adminDashboard.aiCostHint' => 'טוקנים × מחירון',
+			'adminDashboard.revenue' => 'הכנסות',
+			'adminDashboard.revenueNone' => 'אין תשלומים בטווח',
+			'adminDashboard.sandboxNote' => ({required Object count}) => '${count} תשלומי sandbox לא נספרו',
+			'adminDashboard.paymentsCount' => ({required Object count}) => '${count} תשלומים',
+			'adminDashboard.aiCalls' => 'קריאות AI',
+			'adminDashboard.cacheSaved' => ({required Object count}) => '${count} מהמטמון (חינם)',
+			'adminDashboard.errorsCount' => ({required Object count}) => '${count} שגיאות',
+			'adminDashboard.tokens' => 'טוקנים',
+			'adminDashboard.tokensHint' => ({required Object input, required Object output}) => 'קלט ${input} · פלט ${output}',
+			'adminDashboard.usersTotal' => 'משתמשים סה"כ',
+			'adminDashboard.newUsers' => ({required Object count}) => '${count} חדשים בטווח',
+			'adminDashboard.disabledCount' => ({required Object count}) => '${count} חסומים',
+			'adminDashboard.premiumUsers' => 'משלמים',
+			'adminDashboard.freeCount' => ({required Object count}) => '${count} חינמיים',
+			'adminDashboard.freeUsers' => 'חינמיים',
+			'adminDashboard.activeUsers' => 'משתמשי AI פעילים',
+			'adminDashboard.costPerUser' => 'עלות למשתמש פעיל',
+			'adminDashboard.tickets' => 'פניות',
+			'adminDashboard.unreadCount' => ({required Object count}) => '${count} חדשות',
+			'adminDashboard.chartCost' => 'עלות AI לפי יום',
+			'adminDashboard.chartCalls' => 'קריאות AI לפי יום',
+			'adminDashboard.chartSignups' => 'הרשמות לפי יום',
+			'adminDashboard.chartPlatform' => 'משתמשים לפי פלטפורמה',
+			'adminDashboard.chartPlan' => 'חינמי מול משלם',
+			'adminDashboard.chartKinds' => 'קריאות לפי פיצ\'ר',
+			'adminDashboard.chartModels' => 'עלות לפי מודל',
+			'adminDashboard.chartVersions' => 'גרסאות אפליקציה',
+			'adminDashboard.platformIos' => 'iOS',
+			'adminDashboard.platformAndroid' => 'Android',
+			'adminDashboard.platformUnknown' => 'לא ידוע',
+			'adminDashboard.noAiUsage' => 'אין שימוש ב-AI בטווח הזה',
+			'adminDashboard.unknownModel' => 'לא במחירון',
+			'adminDashboard.usersCost' => 'עלות לפי משתמש',
+			'adminDashboard.usersCount' => ({required Object count}) => '${count} משתמשים',
+			'adminDashboard.searchUser' => 'חיפוש לפי שם, מייל או uid',
+			'adminDashboard.showAll' => ({required Object count}) => 'הצגת כל ${count} המשתמשים',
+			'adminDashboard.callsCount' => ({required Object count}) => '${count} קריאות',
+			'adminDashboard.content' => 'תוכן וקהילה',
+			'adminDashboard.sharedRecipes' => 'מתכונים משותפים',
+			'adminDashboard.forumPosts' => 'שרשורי פורום',
+			'adminDashboard.withPush' => 'מכשירים עם התראות',
+			'adminDashboard.cacheEntries' => 'קישורים במטמון',
+			'adminDashboard.cacheHits' => 'פגיעות מטמון (קריאות שנחסכו)',
+			'adminDashboard.config' => 'הגדרות מרחוק',
+			'adminDashboard.environment' => 'סביבה',
+			'adminDashboard.prod' => 'Production',
+			'adminDashboard.dev' => 'Dev',
+			'adminDashboard.adsEnabled' => 'מודעות',
+			'adminDashboard.adsFailOpen' => 'פתיחה כשאין מודעה',
+			'adminDashboard.on' => 'פעיל',
+			'adminDashboard.off' => 'כבוי',
+			'adminDashboard.feedInterval' => 'מרווח מודעות בפיד',
+			'adminDashboard.quotaSharedFree' => 'צפיות חינם ביום',
+			'adminDashboard.quotaSharedRewarded' => 'צפיות בווידאו ביום',
+			'adminDashboard.quotaAiRewarded' => 'AI בווידאו ביום',
+			'adminDashboard.quotaAiPremium' => 'AI לפרימיום ביום',
+			'adminDashboard.minVersion' => 'גרסה מינימלית',
+			'adminDashboard.latestVersion' => 'גרסה אחרונה',
+			'adminDashboard.thisBuild' => 'הבנייה הזו',
+			'adminDashboard.pricing' => 'מחירון טוקנים',
+			'adminDashboard.pricingHint' => 'דולר למיליון טוקנים. מחירי ברירת המחדל הם הערכה — כדאי לעדכן לפי המחירון של Google.',
+			'adminDashboard.editPricing' => 'עריכת מחירון',
+			'adminDashboard.priceInput' => 'קלט',
+			'adminDashboard.priceOutput' => 'פלט',
+			'adminDashboard.priceCached' => 'קלט מהמטמון',
+			'adminDashboard.usdToIls' => 'שער דולר/שקל',
+			'adminDashboard.pricingSaved' => 'המחירון נשמר',
+			'adminDashboard.loadedAt' => ({required Object date}) => 'עודכן ${date}',
+			'adminDashboard.kindText' => 'טקסט',
+			'adminDashboard.kindUrl' => 'קישור',
+			'adminDashboard.kindSocial' => 'רשת חברתית',
+			'adminDashboard.kindSocialVideo' => 'וידאו (שרת)',
+			'adminDashboard.kindVideo' => 'וידאו',
+			'adminDashboard.kindSearch' => 'חיפוש',
+			'adminDashboard.kindImage' => 'תמונה',
+			'adminDashboard.kindReceipt' => 'קבלה',
+			'adminDashboard.kindNutrition' => 'תזונה',
+			'adminDashboard.kindRefine' => 'ליטוש',
+			'adminDashboard.kindGenerate' => 'יצירה',
+			'adminDashboard.allTime' => 'כל הזמן',
+			'adminDashboard.recentCalls' => 'קריאות אחרונות',
+			'adminDashboard.noCalls' => 'אין קריאות',
+			'adminDashboard.cacheHit' => 'מטמון',
+			'adminDashboard.statusOk' => 'תקין',
+			'adminDashboard.pushTitle' => 'כותרת (לא חובה)',
+			'adminDashboard.pushBody' => 'תוכן ההודעה',
+			'adminDashboard.send' => 'שליחה',
+			'adminDashboard.blocked' => 'חסומים',
+			'adminDashboard.disable' => 'חסימת חשבון',
+			'adminDashboard.enable' => 'ביטול חסימה',
+			'adminDashboard.blockMessageHint' => 'מה המשתמש יראה כשינסה להתחבר',
+			'adminDashboard.disabledDone' => 'החשבון נחסם',
+			'adminDashboard.enabledDone' => 'החסימה הוסרה',
+			'adminDashboard.deleteAccount' => 'מחיקת חשבון',
+			'adminDashboard.deleteAccountConfirm' => ({required Object name}) => 'למחוק את ${name} לצמיתות? המשתמש, המתכונים, הספרים והתפריטים שלו יימחקו ואי אפשר לשחזר.',
+			'adminDashboard.deleted' => 'החשבון נמחק',
+			'adminDashboard.sendPush' => 'שליחת התראה',
+			'adminDashboard.noPush' => 'למכשיר הזה אין טוקן דחיפה — ההודעה תופיע רק במסך ההתראות',
+			'adminDashboard.pushSent' => 'ההתראה נשלחה',
+			'adminDashboard.sendPushAll' => 'התראה לכל המשתמשים',
+			'adminDashboard.broadcastConfirm' => ({required Object count}) => 'לשלוח את ההודעה לכל ${count} המשתמשים?',
+			'adminDashboard.broadcastDone' => ({required Object items, required Object sent, required Object failed}) => 'נכתב ל-${items} תיבות · ${sent} דחיפות הצליחו · ${failed} נכשלו',
+			'adminDashboard.platformTag' => ({required Object platform, required Object version}) => '${platform} · v${version}',
+			'adminDashboard.lastSeen' => ({required Object date}) => 'נראה לאחרונה ${date}',
+			'adminDashboard.disabledSince' => ({required Object message}) => 'סיבת החסימה: ${message}',
+			'adminDashboard.unread' => 'חדשות',
+			'adminDashboard.markAllRead' => 'קראתי הכל',
+			'adminDashboard.allRead' => 'כל הפניות סומנו כנקראו',
+			'adminDashboard.noUnread' => 'אין פניות חדשות',
+			'adminDashboard.deleteTicket' => 'מחיקת פנייה',
+			'adminDashboard.deleteTicketConfirm' => ({required Object name}) => 'למחוק את הפנייה של ${name}?',
+			'adminDashboard.ticketDeleted' => 'הפנייה נמחקה',
+			'adminDashboard.reply' => 'תגובה',
+			'adminDashboard.replyHint' => 'התשובה תגיע למשתמש במסך ההתראות (וכדחיפה לטלפון)',
+			'adminDashboard.replySent' => 'התשובה נשלחה',
+			'adminDashboard.yourReply' => ({required Object date}) => 'התשובה שלך · ${date}',
+			'adminDashboard.markRead' => 'סימון כנקרא',
+			'adminDashboard.markUnread' => 'סימון כלא נקרא',
+			'adminDashboard.pricingSync' => 'סנכרון מחירים מ-Google',
+			'adminDashboard.pricingSynced' => ({required Object count}) => '${count} מודלים עודכנו מהמחירון של Google Cloud Billing',
+			'adminDashboard.pricingSyncFailed' => ({required Object reason}) => 'הסנכרון נכשל: ${reason}',
+			'adminDashboard.pricingSourceCatalog' => ({required Object date}) => 'מקור: Google Cloud Billing (מחירי מחירון אמיתיים) · ${date}',
+			'adminDashboard.pricingSourceManual' => ({required Object date}) => 'מקור: הוזן ידנית · ${date}',
+			'adminDashboard.pricingSourceDefaults' => 'הערכה בלבד — לחצו על סנכרון כדי למשוך את המחירים האמיתיים מ-Google',
+			'adminDashboard.searchPrice' => 'חיפוש Google בהארקה (דולר ל-1,000 שאילתות)',
+			'adminDashboard.rateLine' => ({required Object rate, required Object date}) => '${rate} · מתעדכן אוטומטית פעם בשבוע · ${date}',
+			'adminDashboard.searchesCount' => ({required Object count}) => '${count} חיפושים',
+			'adminDashboard.rangeCustom' => 'בחירה',
+			'adminDashboard.customRange' => ({required Object from, required Object to}) => '${from} – ${to} · לחיצה לשינוי',
+			'adminDashboard.priceImageOutput' => 'פלט תמונה',
+			'adminDashboard.dataSince' => ({required Object date}) => 'הנתונים נאספים מ-${date}. חיובים קודמים בגוגל אינם רשומים כאן.',
+			'adminDashboard.grantTitle' => ({required Object name}) => 'פרימיום ל-${name} — לכמה זמן?',
+			'adminDashboard.grantForever' => 'לתמיד (עד שאבטל)',
+			'adminDashboard.grantWeek' => 'שבוע',
+			'adminDashboard.grantMonth' => 'חודש',
+			'adminDashboard.grantYear' => 'שנה',
+			'adminDashboard.grantRange' => 'טווח תאריכים מדויק',
+			'adminDashboard.grantedUntil' => ({required Object date}) => 'ניתן פרימיום עד ${date}',
+			'adminDashboard.grantStarts' => ({required Object date}) => 'מתחיל ב-${date}',
 			_ => null,
 		};
 	}

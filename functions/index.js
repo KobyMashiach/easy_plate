@@ -17,6 +17,30 @@ exports.socialRecipe = require("./socialRecipe").socialRecipe;
 // Community price averages, fed by receipts users chose to share.
 exports.priceStats = require("./priceStats").priceStats;
 
+// The administrator's account actions: block, delete, push to one or all.
+exports.adminUsers = require("./adminUsers").adminUsers;
+
+// Once a week: the shekel rate and Google's token prices, so the dashboard's
+// cost figure never depends on a number somebody typed. Each half is on its
+// own so a missing Cloud Billing API does not stop the rate.
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+const pricingCatalog = require("./pricingCatalog");
+exports.weeklyPricing = onSchedule(
+  { schedule: "every monday 06:00", timeZone: "Asia/Jerusalem", region: "europe-west1", retryCount: 1 },
+  async () => {
+    try {
+      await pricingCatalog.syncRate();
+    } catch (err) {
+      logger.warn("weekly rate sync failed", { reason: err.message });
+    }
+    try {
+      await pricingCatalog.syncPricing();
+    } catch (err) {
+      logger.warn("weekly catalog sync failed", { reason: err.message });
+    }
+  },
+);
+
 // The recipient's locale is not known here; Hebrew is the app's primary
 // language, and the in-app inbox is localised properly once they open it.
 const bodyFor = (data, fromName) => {
@@ -29,6 +53,15 @@ const bodyFor = (data, fromName) => {
   if (data.type === "sharedRecipeUpdated") {
     return `${fromName} עדכן/ה את "${data.recipeTitle}" — יש גרסה חדשה למתכון ששמרת`;
   }
+  if (data.type === "adminMessage") {
+    const title = String(data.title || "").trim();
+    const message = String(data.message || "").trim();
+    return title && message ? `${title}: ${message.slice(0, 180)}` : message || title || "הודעה מ-EasyPlate";
+  }
+  if (data.type === "adminReply") {
+    const message = String(data.message || "").trim();
+    return message ? `תשובה לפנייה שלך: ${message.slice(0, 180)}` : "יש תשובה לפנייה שלך";
+  }
   return "יש לך התראה חדשה";
 };
 
@@ -37,6 +70,9 @@ exports.pushOnNotification = onDocumentCreated(
   async (event) => {
     const data = event.data?.data();
     if (!data) return;
+    // A broadcast writes one item per inbox and sends the push itself, in
+    // one multicast; pushing again here would ring every phone twice.
+    if (data.silent === true) return;
 
     const db = admin.firestore();
     const [user, from] = await Promise.all([

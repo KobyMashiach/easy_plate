@@ -1,4 +1,5 @@
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/utils/amount_format.dart';
 
 class RecipeIngredientEntity {
   final String name;
@@ -12,4 +13,7 @@ class RecipeIngredientEntity {
   });
 
   bool get isAmountMissing => amount == null;
+
+  /// The amount as a cook reads it; see [formatAmount].
+  String get displayAmount => formatAmount(amount);
 }

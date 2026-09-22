@@ -7,6 +7,7 @@ class Routing {
   static const register = '/register';
   static const onboarding = '/onboarding';
   static const home = '/home';
+  static const blocked = '/blocked';
 
   // relative child routes (nested under /home)
   static const bookDetails = 'book_details';
@@ -30,6 +31,5 @@ class Routing {
   static const profileEdit = 'profile_edit';
   static const forumThread = 'forum_thread';
   static const tutorial = 'tutorial';
-  static const adminFeedback = 'admin_feedback';
-  static const adminBilling = 'admin_billing';
+  static const adminDashboard = 'admin_dashboard';
 }

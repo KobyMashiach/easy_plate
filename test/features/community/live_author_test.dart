@@ -14,6 +14,12 @@ import 'package:easy_plate/features/user_profile/domain/repositories/user_profil
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeProfiles implements UserProfileRepository {
+  @override
+  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) async {}
+
+  @override
+  Future<String?> blockMessage(String uid) async => null;
+
   Map<String, PublicProfileEntity> public = {};
   Set<String>? lastRequested;
 

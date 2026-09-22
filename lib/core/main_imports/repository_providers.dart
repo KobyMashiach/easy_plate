@@ -9,6 +9,11 @@ import 'package:provider/single_child_widget.dart';
 import '../sync/cloud_sync_service.dart';
 import '../sync/recipe_image_store.dart';
 import '../../features/admin_billing/data/datasources/admin_billing_remote_datasource.dart';
+import '../../features/admin_billing/data/datasources/admin_users_remote_datasource.dart';
+import '../../features/admin_dashboard/data/datasources/admin_dashboard_remote_datasource.dart';
+import '../../features/admin_dashboard/data/datasources/pricing_sync_remote_datasource.dart';
+import '../../features/admin_dashboard/data/repositories_impl/admin_dashboard_repository_impl.dart';
+import '../../features/admin_dashboard/domain/repositories/admin_dashboard_repository.dart';
 import '../../features/admin_billing/data/repositories_impl/admin_billing_repository_impl.dart';
 import '../../features/admin_billing/domain/repositories/admin_billing_repository.dart';
 import '../../features/auth/data/datasources/firebase_auth_datasource.dart';
@@ -100,9 +105,23 @@ List<SingleChildWidget> buildRepositoryProviders() {
     RepositoryProvider<AdminBillingRemoteDataSource>(
       create: (_) => AdminBillingFirestoreDataSource(),
     ),
+    RepositoryProvider<AdminUsersRemoteDataSource>(
+      create: (_) => AdminUsersHttpDataSource(),
+    ),
     RepositoryProvider<AdminBillingRepository>(
-      create: (context) =>
-          AdminBillingRepositoryImpl(remoteDataSource: context.read()),
+      create: (context) => AdminBillingRepositoryImpl(
+        remoteDataSource: context.read(),
+        usersDataSource: context.read(),
+      ),
+    ),
+    RepositoryProvider<AdminDashboardRemoteDataSource>(
+      create: (_) => AdminDashboardFirestoreDataSource(),
+    ),
+    RepositoryProvider<AdminDashboardRepository>(
+      create: (context) => AdminDashboardRepositoryImpl(
+        remoteDataSource: context.read(),
+        pricingSync: PricingSyncHttpDataSource(),
+      ),
     ),
     RepositoryProvider<FeedbackRemoteDataSource>(
       create: (_) => FeedbackFirestoreDataSource(),

@@ -26,6 +26,7 @@ const YTDlpWrap = require("yt-dlp-wrap").default;
 const proxy = require("./aiProxy").internals;
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
+const aiUsage = require("./aiUsage");
 
 // Past this the video is not sent; the caption alone is used. A recipe reel
 // is 30–90 seconds; a ten-minute video is a cooking show, and its bytes
@@ -221,7 +222,7 @@ async function askGemini({ model, systemInstruction, prompt, schema, video, yout
     .map((p) => p.text || "")
     .join("");
   if (!answer.trim()) throw new Error("gemini returned no text");
-  return answer;
+  return { answer, usage: aiUsage.extractUsage(data) };
 }
 
 function callModel(model, body) {
@@ -311,10 +312,24 @@ exports.socialRecipe = onRequest(
 
     const started = Date.now();
     let mode = "video";
+    // Tokens were spent the moment the model answered, whether or not a
+    // recipe came out of it — so the record is written on every exit below
+    // once `usage` is known.
+    let usage = null;
+    const record = (status) =>
+      void aiUsage.recordCall({
+        uid,
+        fn: "socialRecipe",
+        model,
+        kind: aiUsage.kindOf({ headers: req.headers, body: req.body, fn: "socialRecipe" }),
+        status,
+        ms: Date.now() - started,
+        usage,
+      });
     try {
       let answer;
       if (platform === "youtube") {
-        answer = await askGemini({ model, systemInstruction, prompt, schema, youtubeUrl: url });
+        ({ answer, usage } = await askGemini({ model, systemInstruction, prompt, schema, youtubeUrl: url }));
       } else {
         let info = null;
         let video = null;
@@ -340,22 +355,25 @@ exports.socialRecipe = onRequest(
             );
           }
         }
-        answer = await askGemini({ model, systemInstruction, prompt, schema, video, caption });
+        ({ answer, usage } = await askGemini({ model, systemInstruction, prompt, schema, video, caption }));
       }
 
       if (!isUsableRecipe(answer)) {
         await proxy.refundQuotaSlot(uid);
+        record(422);
         return refuse(res, 422, "SOCIAL_EMPTY", "No recipe could be read from this video");
       }
 
       const body = envelope(answer, { mode, platform });
       if (cacheEntry) await proxy.writeCache(cacheEntry, body, "application/json", model);
+      record(200);
       logger.info("social recipe", { uid, platform, mode, ms: Date.now() - started });
       return res.status(200).set("Content-Type", "application/json").send(body);
     } catch (err) {
       logger.error("social recipe failed", { platform, mode, reason: err.message });
       await proxy.refundQuotaSlot(uid);
       const status = err.status === 429 ? 429 : 502;
+      record(status);
       return refuse(res, status, "UPSTREAM", err.message);
     }
   },

@@ -1,0 +1,102 @@
+{
+  "_comment": "The 30-second TikTok ad, beat by beat. 'shot' names a file in store_assets/raw/<locale>/ (without .png); 'text' is what appears on screen, one or two lines; 'sub' is a smaller line under them, for naming what the voiceover has no room to say; 'say' is the voiceover line that starts at this beat, or null when the previous line runs on. Edit this file and re-run make_ad.py.",
+  "locale": "he",
+  "fps": 30,
+  "duration": 30.0,
+  "beats": [
+    {
+      "at": 0.0,
+      "shot": "01_recipes",
+      "text": [
+        "כל המתכונים שלך",
+        "במקום אחד"
+      ],
+      "say": "כל המתכונים שלך, סוף סוף במקום אחד."
+    },
+    {
+      "at": 3.0,
+      "shot": "03_ai_import",
+      "text": [
+        "מסרטון או קישור",
+        "ישר למתכון"
+      ],
+      "say": "מדביקים קישור או סרטון מטיקטוק, והמתכון מחולץ לבד."
+    },
+    {
+      "at": 7.2,
+      "shot": "02_recipe_details",
+      "text": [
+        "תמונה, זמנים",
+        "מנות וקלוריות"
+      ],
+      "say": "כל מתכון עם תמונה, זמנים, מנות וערכים תזונתיים."
+    },
+    {
+      "at": 11.0,
+      "shot": "04_library",
+      "text": [
+        "ספרי מתכונים",
+        "משלך"
+      ],
+      "say": "מסדרים הכול בספרי מתכונים אמיתיים, שמדפדפים כמו פעם."
+    },
+    {
+      "at": 13.6,
+      "shot": "05_book_flip",
+      "text": [
+        "מדפדפים",
+        "כמו פעם"
+      ],
+      "say": null
+    },
+    {
+      "at": 16.4,
+      "shot": "06_meal_plan",
+      "text": [
+        "מתכננים",
+        "את כל השבוע"
+      ],
+      "say": "מתכננים את השבוע ורואים את התזונה בגרף אחד."
+    },
+    {
+      "at": 19.2,
+      "shot": "07_nutrition",
+      "text": [
+        "והתזונה",
+        "בגרף אחד"
+      ],
+      "say": null
+    },
+    {
+      "at": 21.4,
+      "shot": "08_grocery",
+      "text": [
+        "רשימת קניות",
+        "שנבנית לבד"
+      ],
+      "say": "רשימת הקניות נבנית לבד, עם הערכת מחיר וסריקת קבלות."
+    },
+    {
+      "at": 25.2,
+      "shot": "09_community",
+      "text": [
+        "משתפים",
+        "ומגלים בקהילה"
+      ],
+      "say": "משתפים עם המשפחה ומגלים מתכונים בקהילה."
+    },
+    {
+      "at": 27.8,
+      "shot": null,
+      "text": [
+        "Easy Plate",
+        "להורדה עכשיו"
+      ],
+      "say": "איזי פלייט. להורדה עכשיו.",
+      "sub": [
+        "אלרגיות וכשרות · מצב לילה · חמש שפות",
+        "עובד גם בלי אינטרנט · שיתוף ספרים ותפריטים · פורום"
+      ]
+    }
+  ]
+}

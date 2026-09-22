@@ -697,7 +697,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   String _ingredientLine(RecipeIngredientEntity ingredient) {
     final amount = ingredient.isAmountMissing
         ? kMissingInfoPlaceholder
-        : ingredient.amount.toString();
+        : ingredient.displayAmount;
     final unit = measurementUnitLabel(ingredient.unit);
     return [amount, unit, ingredient.name].where((s) => s.isNotEmpty).join(' ');
   }

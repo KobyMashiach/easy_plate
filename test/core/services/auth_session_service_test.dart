@@ -29,6 +29,12 @@ class _FakeAuthRepository implements AuthRepository {
 }
 
 class _FakeProfileRepository implements UserProfileRepository {
+  @override
+  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) async {}
+
+  @override
+  Future<String?> blockMessage(String uid) async => null;
+
   UserProfileEntity? profile;
   Object? failWith;
   int reads = 0;

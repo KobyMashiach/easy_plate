@@ -113,6 +113,12 @@ class _FakeRecipes implements RecipesRepository {
 }
 
 class _FakeProfiles implements UserProfileRepository {
+  @override
+  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) async {}
+
+  @override
+  Future<String?> blockMessage(String uid) async => null;
+
   final directory = <String, String>{};
   @override
   Future<String?> findUidByContact(String contact) async => directory[contact];

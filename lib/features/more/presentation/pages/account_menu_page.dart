@@ -6,7 +6,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/monetization/entitlement_service.dart';
-import '../../../../core/monetization/purchases_service.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -16,22 +15,14 @@ import '../../../../core/widgets/profile_avatar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/services/admin_access.dart';
+import '../../../../core/services/admin_inbox_service.dart';
+import '../../../../core/widgets/count_badge.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 
 /// Reached from the avatar in every main screen's app bar.
 class AccountMenuPage extends StatelessWidget {
   const AccountMenuPage({super.key});
-
-  Future<void> _openCustomerCenter(BuildContext context) async {
-    final opened = await AppDialog.busy(
-      context,
-      PurchasesService().openSubscriptionManagement,
-    );
-    if (!opened && context.mounted) {
-      AppDialog.info(message: t.premium.unavailable).notify(context);
-    }
-  }
 
   Future<void> _confirmSignOut(BuildContext context) async {
     final bloc = context.read<AuthBloc>();
@@ -131,17 +122,6 @@ class AccountMenuPage extends StatelessWidget {
                             onTap: () => context.pushNamed(Routing.premium),
                           ),
                         ),
-                        // Subscribers get the store's own management screen
-                        // (cancel, change plan, refund) — Apple and Google both
-                        // want it reachable from inside the app.
-                        if (premium) ...[
-                          const SizedBox(height: AppSpacing.sm),
-                          _MenuRow(
-                            icon: Icons.manage_accounts_rounded,
-                            label: t.premium.manage,
-                            onTap: () => _openCustomerCenter(context),
-                          ),
-                        ],
                       ],
                     );
                   },
@@ -181,16 +161,14 @@ class AccountMenuPage extends StatelessWidget {
                 // hiding the row is a courtesy, not the protection.
                 if (AdminAccess.isAdmin) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  _MenuRow(
-                    icon: Icons.admin_panel_settings_rounded,
-                    label: t.feedback.admin,
-                    onTap: () => context.pushNamed(Routing.adminFeedback),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _MenuRow(
-                    icon: Icons.workspace_premium_rounded,
-                    label: t.adminBilling.title,
-                    onTap: () => context.pushNamed(Routing.adminBilling),
+                  ValueListenableBuilder<int>(
+                    valueListenable: AdminInboxService().unreadCount,
+                    builder: (context, unread, _) => _MenuRow(
+                      icon: Icons.admin_panel_settings_rounded,
+                      label: t.adminDashboard.title,
+                      badge: unread,
+                      onTap: () => context.pushNamed(Routing.adminDashboard),
+                    ),
                   ),
                 ],
                 const SizedBox(height: AppSpacing.xl),
@@ -227,10 +205,14 @@ class _MenuRow extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
+  /// Things waiting behind the row, drawn on its icon. Zero draws nothing.
+  final int badge;
+
   const _MenuRow({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.badge = 0,
   });
 
   @override
@@ -241,7 +223,10 @@ class _MenuRow extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, size: 22, color: AppColors.primary),
+          BadgedBox(
+            count: badge,
+            child: Icon(icon, size: 22, color: AppColors.primary),
+          ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(child: Text(label, style: AppTextStyles.bodyLg)),
           Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),

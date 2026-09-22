@@ -10,6 +10,7 @@ const { defineSecret, defineInt } = require("firebase-functions/params");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
 const crypto = require("node:crypto");
+const aiUsage = require("./aiUsage");
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
@@ -247,11 +248,17 @@ async function claimQuotaSlot(uid, limit) {
 
     if (!decision.allowed) return decision;
 
-    tx.set(ref, {
-      day,
-      count: decision.used,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    // Merged: the same document carries the all-time token totals written
+    // by aiUsage, and a plain set here would wipe them every day.
+    tx.set(
+      ref,
+      {
+        day,
+        count: decision.used,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
     return decision;
   });
 }
@@ -330,6 +337,16 @@ exports.aiProxy = onRequest(
       const cached = await readCache(cacheEntry);
       if (cached) {
         countHit(cacheEntry);
+        void aiUsage.recordCall({
+          uid,
+          fn: "aiProxy",
+          model: req.body?.model,
+          kind: aiUsage.kindOf({ headers: req.headers, body: req.body }),
+          status: 200,
+          ms: 0,
+          usage: null,
+          cacheHit: true,
+        });
         logger.info("url cache hit", { uid, kind: cacheEntry.kind, key: cacheEntry.key });
         return res
           .status(200)
@@ -362,6 +379,7 @@ exports.aiProxy = onRequest(
       });
     }
 
+    const started = Date.now();
     try {
       const upstream = await fetch(`${GOOGLE_ORIGIN}${ALLOWED_PATH}`, {
         method: "POST",
@@ -379,6 +397,17 @@ exports.aiProxy = onRequest(
       }
 
       const contentType = upstream.headers.get("content-type") || "application/json";
+
+      // The bill, for the dashboard. Not awaited: the answer goes out first.
+      void aiUsage.recordCall({
+        uid,
+        fn: "aiProxy",
+        model: req.body?.model,
+        kind: aiUsage.kindOf({ headers: req.headers, body: req.body }),
+        status: upstream.status,
+        ms: Date.now() - started,
+        usage: upstream.status === 200 ? aiUsage.extractUsage(aiUsage.safeJson(text)) : null,
+      });
 
       // Remembered only when the answer holds a recipe; a 200 that says
       // "nothing here" is not worth serving to the next person.

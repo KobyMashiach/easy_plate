@@ -88,6 +88,7 @@ Future<void> main() async {
               profiles: context.read(),
               preferences: context.read(),
               notifications: context.read(),
+              feedback: context.read(),
               // Both only for the shared-recipe refresh below; the session
               // needs them because it is what knows when an account becomes
               // active, and on which uid.

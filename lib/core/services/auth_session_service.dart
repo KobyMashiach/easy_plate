@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../features/auth/domain/entities/app_user_entity.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -9,6 +10,9 @@ import '../../features/user_profile/domain/repositories/user_profile_repository.
 import '../../features/user_profile/domain/entities/user_preferences_entity.dart';
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
 import '../../features/notifications/domain/repositories/notifications_repository.dart';
+import '../../features/feedback/domain/repositories/feedback_repository.dart';
+import 'admin_access.dart';
+import 'admin_inbox_service.dart';
 import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
 import '../../features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../features/recipe_sharing/domain/usecases/refresh_collab_recipes_usecase.dart';
@@ -38,6 +42,10 @@ enum AuthStage {
   needsProfile,
   needsOnboarding,
   ready,
+
+  /// Switched off by the administrator. Held on the blocked screen with the
+  /// reason until they sign out; nothing else in the app is reachable.
+  blocked,
 }
 
 /// Single source of truth for the auth gate, and the router's refresh signal.
@@ -53,6 +61,7 @@ class AuthSessionService extends ChangeNotifier {
   UserProfileRepository? _profiles;
   UserPreferencesRepository? _preferences;
   NotificationsRepository? _notifications;
+  FeedbackRepository? _feedback;
   RecipeSharingRepository? _sharing;
   RecipesRepository? _recipes;
   ContainerSharingService? _containers;
@@ -91,6 +100,7 @@ class AuthSessionService extends ChangeNotifier {
     required UserProfileRepository profiles,
     required UserPreferencesRepository preferences,
     NotificationsRepository? notifications,
+    FeedbackRepository? feedback,
     RecipeSharingRepository? sharing,
     RecipesRepository? recipes,
     ContainerSharingService? containers,
@@ -104,6 +114,7 @@ class AuthSessionService extends ChangeNotifier {
     _profiles = profiles;
     _preferences = preferences;
     _notifications = notifications;
+    _feedback = feedback;
     _sharing = sharing;
     _recipes = recipes;
     _containers = containers;
@@ -118,6 +129,8 @@ class AuthSessionService extends ChangeNotifier {
       _profile = null;
       _onboardingComplete = false;
       NotificationsService().unbind();
+      AdminInboxService().unbind();
+      _blockMessage = null;
       // Neither may outlive the account: a premium flag would carry into the
       // next sign-in, and a quota count would be charged to the wrong person.
       EntitlementService().clear();
@@ -197,6 +210,14 @@ class AuthSessionService extends ChangeNotifier {
       debugPrint('Profile lookup failed: $e');
     }
 
+    // An account the administrator switched off is held on one screen with
+    // the reason, whatever else it has finished.
+    if (await _profiles!.blockMessage(user.uid) case final message?) {
+      _blockMessage = message;
+      _set(AuthStage.blocked);
+      return;
+    }
+
     if (_profile == null || !_profile!.isComplete) {
       _set(AuthStage.needsProfile);
       return;
@@ -204,9 +225,16 @@ class AuthSessionService extends ChangeNotifier {
 
     _set(_onboardingComplete ? AuthStage.ready : AuthStage.needsOnboarding);
     unawaited(_registerPush(user.uid));
+    unawaited(_touchDevice(user.uid));
     unawaited(_publishPublicProfile());
     if (_notifications case final repository?) {
       NotificationsService().bind(user.uid, repository);
+    }
+    // The support inbox, for the one account allowed to read it. Checked
+    // here rather than in the service so a non-admin never opens a listener
+    // the rules would only refuse.
+    if (_feedback case final repository? when AdminAccess.isAdmin) {
+      AdminInboxService().bind(repository);
     }
   }
 
@@ -221,6 +249,33 @@ class AuthSessionService extends ChangeNotifier {
       await _profiles!.publishPublicProfile(profile);
     } catch (e) {
       debugPrint('Public profile publish failed: $e');
+    }
+  }
+
+  /// The reason shown on the blocked screen, while [stage] is
+  /// [AuthStage.blocked]; blank when the administrator gave none.
+  String? _blockMessage;
+  String? get blockMessage => _blockMessage;
+
+  /// Which platform and build this account was last seen on, for the
+  /// administrator's dashboard. Best effort, never awaited.
+  Future<void> _touchDevice(String uid) async {
+    String? version;
+    try {
+      version = (await PackageInfo.fromPlatform()).version;
+    } catch (_) {}
+    try {
+      await _profiles!.touchDevice(
+        uid,
+        platform: switch (defaultTargetPlatform) {
+          TargetPlatform.iOS => 'ios',
+          TargetPlatform.android => 'android',
+          final other => other.name,
+        },
+        appVersion: version,
+      );
+    } catch (e) {
+      debugPrint('Device touch failed: $e');
     }
   }
 
@@ -294,6 +349,7 @@ class AuthSessionService extends ChangeNotifier {
     _onboardingComplete = false;
     onPreferencesLoaded = null;
     _notifications = null;
+    _feedback = null;
     _sharing = null;
     _recipes = null;
     _containers = null;

@@ -24,13 +24,33 @@ import 'package:flutter_test/flutter_test.dart';
 const _enabled = bool.fromEnvironment('STORE_SCREENSHOTS');
 const _outDir = 'store_assets/app_store';
 
-// One plan only: premium, monthly. The price is the one set in the stores.
+// One plan only: premium, monthly, with the opening deal a new subscriber
+// gets — ₪10 for the first month, then the regular ₪20 — exactly as set in
+// the stores, so the reviewer sees the terms sentence the offer requires.
 const _offers = [
-  PaywallOffer(id: 'monthly', priceString: '₪20.00', period: PaywallPeriod.monthly),
+  PaywallOffer(
+    id: 'monthly',
+    priceString: '₪20.00',
+    period: PaywallPeriod.monthly,
+    intro: PaywallIntro(
+      priceString: '₪10.00',
+      isFree: false,
+      count: 1,
+      unit: PaywallIntroUnit.month,
+    ),
+  ),
 ];
 
-/// Sizes Apple lists for the in-app purchase review screenshot.
-const _sizes = [(640, 920), (1080, 1920)];
+/// Sizes Apple lists for the in-app purchase review screenshot, plus one
+/// listing raw: the phone's height less the status bar the composer trims
+/// off a device capture, so every frame in the set comes out the same size.
+const _sizes = [(640, 920), (1080, 1920), (1080, 2266)];
+
+/// Where a render belongs: the listing pipeline, or Apple's review slot.
+String _pathFor(int width, int height, AppLocale locale) =>
+    height == 2266
+        ? 'store_assets/raw/${locale.languageCode}/10_premium.png'
+        : '$_outDir/premium_${locale.languageCode}_${width}x$height.png';
 
 Future<void> _loadFonts() async {
   // Tests otherwise render every glyph in the Ahem test font.
@@ -85,7 +105,7 @@ void main() {
         (tester) async {
           // Logical size at 2x for the phone-sized output, 1x for the
           // small one, so text and spacing look like a phone in both.
-          final ratio = width >= 1080 ? 2.0 : 1.0;
+          final ratio = height == 2266 ? 2.6 : (width >= 1080 ? 2.0 : 1.0);
           tester.view.physicalSize = Size(width.toDouble(), height.toDouble());
           tester.view.devicePixelRatio = ratio;
           addTearDown(tester.view.reset);
@@ -113,6 +133,7 @@ void main() {
                     onPurchase: () {},
                     onRestore: () {},
                     onManage: () {},
+                    onRedeem: () {},
                     onBack: () {},
                   ),
                 ),
@@ -127,7 +148,7 @@ void main() {
             final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
             expect(image.width, width);
             expect(image.height, height);
-            final file = File('$_outDir/premium_${locale.languageCode}_${width}x$height.png');
+            final file = File(_pathFor(width, height, locale));
             await file.create(recursive: true);
             await file.writeAsBytes(bytes!.buffer.asUint8List());
           });

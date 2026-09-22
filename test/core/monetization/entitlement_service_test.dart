@@ -10,6 +10,38 @@ void main() {
     expect(EntitlementService.resolvePremium({}, now), isFalse);
   });
 
+  test('a grant dated ahead is not premium until it starts', () {
+    final data = {
+      'premium': true,
+      'premiumFrom': Timestamp.fromDate(DateTime(2026, 10, 1)),
+      'premiumUntil': Timestamp.fromDate(DateTime(2026, 10, 8)),
+    };
+    expect(EntitlementService.resolvePremium(data, now), isFalse);
+    expect(
+      EntitlementService.resolvePremium(data, DateTime(2026, 10, 3)),
+      isTrue,
+    );
+    expect(
+      EntitlementService.resolvePremium(data, DateTime(2026, 10, 9)),
+      isFalse,
+    );
+  });
+
+  test('the next flip is the start, then the end, then nothing', () {
+    final data = {
+      'premium': true,
+      'premiumFrom': Timestamp.fromDate(DateTime(2026, 10, 1)),
+      'premiumUntil': Timestamp.fromDate(DateTime(2026, 10, 8)),
+    };
+    expect(EntitlementService.nextChange(data, now), DateTime(2026, 10, 1));
+    expect(
+      EntitlementService.nextChange(data, DateTime(2026, 10, 3)),
+      DateTime(2026, 10, 8),
+    );
+    expect(EntitlementService.nextChange(data, DateTime(2026, 10, 9)), isNull);
+    expect(EntitlementService.nextChange({'premium': true}, now), isNull);
+  });
+
   test('premium: true with no expiry is premium', () {
     expect(EntitlementService.resolvePremium({'premium': true}, now), isTrue);
   });
@@ -24,7 +56,10 @@ void main() {
     );
     expect(
       EntitlementService.resolvePremium(
-        {'premium': true, 'premiumUntil': Timestamp.fromDate(DateTime(2026, 1))},
+        {
+          'premium': true,
+          'premiumUntil': Timestamp.fromDate(DateTime(2026, 1)),
+        },
         now,
       ),
       isFalse,
@@ -32,7 +67,10 @@ void main() {
   });
 
   test('a truthy-looking string is not premium', () {
-    expect(EntitlementService.resolvePremium({'premium': 'true'}, now), isFalse);
+    expect(
+      EntitlementService.resolvePremium({'premium': 'true'}, now),
+      isFalse,
+    );
   });
 
   test('the service notifies when the flag changes and clear() drops it', () {

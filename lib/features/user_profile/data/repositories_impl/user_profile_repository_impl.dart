@@ -24,6 +24,13 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       remoteDataSource.savePushToken(uid, token);
 
   @override
+  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) =>
+      remoteDataSource.touchDevice(uid, platform: platform, appVersion: appVersion);
+
+  @override
+  Future<String?> blockMessage(String uid) => remoteDataSource.blockMessage(uid);
+
+  @override
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) =>
       remoteDataSource.getPublicProfiles(uids);
 

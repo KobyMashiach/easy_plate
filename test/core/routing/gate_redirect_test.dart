@@ -107,6 +107,30 @@ void main() {
     });
   });
 
+  group('blocked', () {
+    test('is held on the blocked screen wherever it tries to go', () {
+      expect(
+        gateRedirect(stage: AuthStage.blocked, location: Routing.home),
+        Routing.blocked,
+      );
+      expect(
+        gateRedirect(stage: AuthStage.blocked, location: Routing.login),
+        Routing.blocked,
+      );
+      expect(
+        gateRedirect(stage: AuthStage.blocked, location: Routing.blocked),
+        isNull,
+      );
+    });
+
+    test('a ready account cannot reach the blocked screen', () {
+      expect(
+        gateRedirect(stage: AuthStage.ready, location: Routing.blocked),
+        Routing.home,
+      );
+    });
+  });
+
   group('needsOnboarding', () {
     test('routes to onboarding, not back to registration', () {
       expect(

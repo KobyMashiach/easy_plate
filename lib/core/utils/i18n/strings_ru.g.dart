@@ -70,6 +70,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$walkthrough$ru walkthrough = _Translations$walkthrough$ru._(_root);
 	@override late final _Translations$feedback$ru feedback = _Translations$feedback$ru._(_root);
 	@override late final _Translations$adminBilling$ru adminBilling = _Translations$adminBilling$ru._(_root);
+	@override late final _Translations$adminDashboard$ru adminDashboard = _Translations$adminDashboard$ru._(_root);
 }
 
 // Path: common
@@ -171,6 +172,8 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get appleLinked => 'Привязан';
 	@override String get appleAlreadyUsed => 'Этот аккаунт Apple уже принадлежит другому пользователю';
 	@override String get appleAlreadyLinked => 'Аккаунт Apple уже привязан';
+	@override String get blockedTitle => 'Аккаунт заблокирован';
+	@override String get blockedBody => 'Этот аккаунт заблокирован администратором приложения. За подробностями напишите нам с экрана поддержки.';
 }
 
 // Path: profile
@@ -591,6 +594,9 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String get openInbox => 'Открыть уведомления';
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами книгой «${recipe}»';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами меню «${recipe}»';
+	@override String get adminReply => 'Ответ команды EasyPlate на ваше обращение';
+	@override String adminReplyQuote({required Object excerpt}) => 'Ваше обращение: "${excerpt}"';
+	@override String get adminMessage => 'Сообщение от EasyPlate';
 }
 
 // Path: editor
@@ -1010,6 +1016,37 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get legal => 'Подписка продлевается автоматически в конце каждого периода, если не отменить её минимум за 24 часа до окончания. Оплата списывается с аккаунта магазина; управлять подпиской или отменить её можно в настройках магазина.';
 	@override String get terms => 'Условия использования';
 	@override String get privacy => 'Политика конфиденциальности';
+	@override String startFor({required Object price}) => 'Начать за ${price}';
+	@override String get startFree => 'Начать бесплатно';
+	@override String get free => 'Бесплатно';
+	@override String introDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'в первый день',
+		other: 'первые ${n} дн.',
+	);
+	@override String introWeeks({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'в первую неделю',
+		other: 'первые ${n} нед.',
+	);
+	@override String introMonths({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'в первый месяц',
+		other: 'первые ${n} мес.',
+	);
+	@override String introYears({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'в первый год',
+		other: 'первые ${n} г.',
+	);
+	@override String introPaidTerms({required Object price, required Object span, required Object then}) => '${price} ${span}, затем ${then}. Цена изменится автоматически.';
+	@override String introFreeTerms({required Object span, required Object then}) => 'Бесплатно ${span}, затем ${then}. Списание начнётся автоматически.';
+	@override String get redeem => 'У меня есть промокод';
+	@override String get redeemTitle => 'Промокод';
+	@override String get redeemHint => 'Введите полученный код';
+	@override String get redeemConfirm => 'Активировать в магазине';
+	@override String get perWeekly => 'в неделю';
+	@override String get perMonthly => 'в месяц';
+	@override String get perTwoMonth => 'раз в 2 месяца';
+	@override String get perThreeMonth => 'раз в 3 месяца';
+	@override String get perSixMonth => 'раз в 6 месяцев';
+	@override String get perAnnual => 'в год';
 }
 
 // Path: walkthrough
@@ -1108,6 +1145,163 @@ class _Translations$adminBilling$ru extends Translations$adminBilling$he {
 	@override String get orphanBody => 'Чеки, пришедшие под анонимным id RevenueCat, без пользователя для разблокировки';
 	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} премиум · ${problems} проблем · ${total} аккаунтов';
 	@override String get noEntitlementTag => 'Без entitlement';
+}
+
+// Path: adminDashboard
+class _Translations$adminDashboard$ru extends Translations$adminDashboard$he {
+	_Translations$adminDashboard$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Панель управления';
+	@override String get tabDashboard => 'Обзор';
+	@override String get tabSubscriptions => 'Подписки';
+	@override String get tabTickets => 'Обращения';
+	@override String get rangeToday => 'Сегодня';
+	@override String get rangeMonth => '30 дней';
+	@override String get rangeAll => 'Всё';
+	@override String get aiCost => 'Стоимость ИИ';
+	@override String get aiCostHint => 'токены × прайс';
+	@override String get revenue => 'Доход';
+	@override String get revenueNone => 'Платежей за период нет';
+	@override String sandboxNote({required Object count}) => '${count} sandbox-платежей не учтено';
+	@override String paymentsCount({required Object count}) => '${count} платежей';
+	@override String get aiCalls => 'Запросы ИИ';
+	@override String cacheSaved({required Object count}) => '${count} из кэша (бесплатно)';
+	@override String errorsCount({required Object count}) => '${count} ошибок';
+	@override String get tokens => 'Токены';
+	@override String tokensHint({required Object input, required Object output}) => 'вход ${input} · выход ${output}';
+	@override String get usersTotal => 'Всего пользователей';
+	@override String newUsers({required Object count}) => '${count} новых';
+	@override String disabledCount({required Object count}) => '${count} заблокировано';
+	@override String get premiumUsers => 'Платящие';
+	@override String freeCount({required Object count}) => '${count} бесплатных';
+	@override String get freeUsers => 'Бесплатные';
+	@override String get activeUsers => 'Активные пользователи ИИ';
+	@override String get costPerUser => 'Стоимость на активного';
+	@override String get tickets => 'Обращения';
+	@override String unreadCount({required Object count}) => '${count} новых';
+	@override String get chartCost => 'Стоимость ИИ по дням';
+	@override String get chartCalls => 'Запросы ИИ по дням';
+	@override String get chartSignups => 'Регистрации по дням';
+	@override String get chartPlatform => 'Пользователи по платформам';
+	@override String get chartPlan => 'Бесплатные и платящие';
+	@override String get chartKinds => 'Запросы по функциям';
+	@override String get chartModels => 'Стоимость по моделям';
+	@override String get chartVersions => 'Версии приложения';
+	@override String get platformIos => 'iOS';
+	@override String get platformAndroid => 'Android';
+	@override String get platformUnknown => 'Неизвестно';
+	@override String get noAiUsage => 'За этот период ИИ не использовался';
+	@override String get unknownModel => 'нет в прайсе';
+	@override String get usersCost => 'Стоимость по пользователям';
+	@override String usersCount({required Object count}) => '${count} пользователей';
+	@override String get searchUser => 'Поиск по имени, почте или uid';
+	@override String showAll({required Object count}) => 'Показать всех (${count})';
+	@override String callsCount({required Object count}) => '${count} запросов';
+	@override String get content => 'Контент и сообщество';
+	@override String get sharedRecipes => 'Общие рецепты';
+	@override String get forumPosts => 'Темы форума';
+	@override String get withPush => 'Устройств с push';
+	@override String get cacheEntries => 'Ссылок в кэше';
+	@override String get cacheHits => 'Попаданий в кэш (сэкономлено запросов)';
+	@override String get config => 'Удалённые настройки';
+	@override String get environment => 'Среда';
+	@override String get prod => 'Production';
+	@override String get dev => 'Dev';
+	@override String get adsEnabled => 'Реклама';
+	@override String get adsFailOpen => 'Открывать без рекламы';
+	@override String get on => 'Вкл';
+	@override String get off => 'Выкл';
+	@override String get feedInterval => 'Интервал рекламы в ленте';
+	@override String get quotaSharedFree => 'Бесплатных просмотров в день';
+	@override String get quotaSharedRewarded => 'Просмотров за видео в день';
+	@override String get quotaAiRewarded => 'ИИ за видео в день';
+	@override String get quotaAiPremium => 'ИИ для премиум в день';
+	@override String get minVersion => 'Минимальная версия';
+	@override String get latestVersion => 'Последняя версия';
+	@override String get thisBuild => 'Эта сборка';
+	@override String get pricing => 'Прайс на токены';
+	@override String get pricingHint => 'Доллары США за миллион токенов. Значения по умолчанию — оценка, обновите их по прайсу Google.';
+	@override String get editPricing => 'Изменить прайс';
+	@override String get priceInput => 'Вход';
+	@override String get priceOutput => 'Выход';
+	@override String get priceCached => 'Вход из кэша';
+	@override String get usdToIls => 'Курс USD/ILS';
+	@override String get pricingSaved => 'Прайс сохранён';
+	@override String loadedAt({required Object date}) => 'Обновлено ${date}';
+	@override String get kindText => 'Текст';
+	@override String get kindUrl => 'Ссылка';
+	@override String get kindSocial => 'Соцсеть';
+	@override String get kindSocialVideo => 'Видео (сервер)';
+	@override String get kindVideo => 'Видео';
+	@override String get kindSearch => 'Поиск';
+	@override String get kindImage => 'Изображение';
+	@override String get kindReceipt => 'Чек';
+	@override String get kindNutrition => 'Питание';
+	@override String get kindRefine => 'Правка';
+	@override String get kindGenerate => 'Генерация';
+	@override String get allTime => 'за всё время';
+	@override String get recentCalls => 'Последние запросы';
+	@override String get noCalls => 'Запросов нет';
+	@override String get cacheHit => 'кэш';
+	@override String get statusOk => 'ок';
+	@override String get pushTitle => 'Заголовок (необязательно)';
+	@override String get pushBody => 'Текст сообщения';
+	@override String get send => 'Отправить';
+	@override String get blocked => 'Заблокированные';
+	@override String get disable => 'Заблокировать аккаунт';
+	@override String get enable => 'Разблокировать';
+	@override String get blockMessageHint => 'Что увидит пользователь при попытке войти';
+	@override String get disabledDone => 'Аккаунт заблокирован';
+	@override String get enabledDone => 'Блокировка снята';
+	@override String get deleteAccount => 'Удалить аккаунт';
+	@override String deleteAccountConfirm({required Object name}) => 'Удалить ${name} навсегда? Пользователь, его рецепты, книги и меню будут удалены без возможности восстановления.';
+	@override String get deleted => 'Аккаунт удалён';
+	@override String get sendPush => 'Отправить уведомление';
+	@override String get noPush => 'У этого устройства нет push-токена — сообщение появится только на экране уведомлений';
+	@override String get pushSent => 'Уведомление отправлено';
+	@override String get sendPushAll => 'Уведомить всех';
+	@override String broadcastConfirm({required Object count}) => 'Отправить сообщение всем пользователям (${count})?';
+	@override String broadcastDone({required Object items, required Object sent, required Object failed}) => 'Записано в ${items} ящиков · ${sent} push доставлено · ${failed} не удалось';
+	@override String platformTag({required Object platform, required Object version}) => '${platform} · v${version}';
+	@override String lastSeen({required Object date}) => 'Был(а) ${date}';
+	@override String disabledSince({required Object message}) => 'Причина блокировки: ${message}';
+	@override String get unread => 'Новые';
+	@override String get markAllRead => 'Прочитал всё';
+	@override String get allRead => 'Все обращения отмечены прочитанными';
+	@override String get noUnread => 'Новых обращений нет';
+	@override String get deleteTicket => 'Удалить обращение';
+	@override String deleteTicketConfirm({required Object name}) => 'Удалить обращение от ${name}?';
+	@override String get ticketDeleted => 'Обращение удалено';
+	@override String get reply => 'Ответить';
+	@override String get replyHint => 'Ответ придёт пользователю в уведомления (и push на телефон)';
+	@override String get replySent => 'Ответ отправлен';
+	@override String yourReply({required Object date}) => 'Ваш ответ · ${date}';
+	@override String get markRead => 'Отметить прочитанным';
+	@override String get markUnread => 'Отметить непрочитанным';
+	@override String get pricingSync => 'Синхронизировать цены из Google';
+	@override String pricingSynced({required Object count}) => '${count} моделей обновлено из каталога Google Cloud Billing';
+	@override String pricingSyncFailed({required Object reason}) => 'Синхронизация не удалась: ${reason}';
+	@override String pricingSourceCatalog({required Object date}) => 'Источник: Google Cloud Billing (реальный прайс) · ${date}';
+	@override String pricingSourceManual({required Object date}) => 'Источник: введено вручную · ${date}';
+	@override String get pricingSourceDefaults => 'Только оценка — нажмите синхронизацию, чтобы получить реальные цены Google';
+	@override String get searchPrice => 'Google Search grounding (\$ за 1 000 запросов)';
+	@override String rateLine({required Object rate, required Object date}) => '${rate} · обновляется раз в неделю · ${date}';
+	@override String searchesCount({required Object count}) => '${count} поисков';
+	@override String get rangeCustom => 'Выбрать';
+	@override String customRange({required Object from, required Object to}) => '${from} – ${to} · нажмите, чтобы изменить';
+	@override String get priceImageOutput => 'Вывод изображений';
+	@override String dataSince({required Object date}) => 'Данные собираются с ${date}. Более ранние списания Google здесь не учтены.';
+	@override String grantTitle({required Object name}) => 'Премиум для ${name} — на сколько?';
+	@override String get grantForever => 'Навсегда (пока не отменю)';
+	@override String get grantWeek => 'Неделя';
+	@override String get grantMonth => 'Месяц';
+	@override String get grantYear => 'Год';
+	@override String get grantRange => 'Точный диапазон дат';
+	@override String grantedUntil({required Object date}) => 'Премиум выдан до ${date}';
+	@override String grantStarts({required Object date}) => 'Начнётся ${date}';
 }
 
 // Path: walkthrough.topics
@@ -1343,6 +1537,8 @@ extension on TranslationsRu {
 			'auth.appleLinked' => 'Привязан',
 			'auth.appleAlreadyUsed' => 'Этот аккаунт Apple уже принадлежит другому пользователю',
 			'auth.appleAlreadyLinked' => 'Аккаунт Apple уже привязан',
+			'auth.blockedTitle' => 'Аккаунт заблокирован',
+			'auth.blockedBody' => 'Этот аккаунт заблокирован администратором приложения. За подробностями напишите нам с экрана поддержки.',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',
@@ -1637,6 +1833,9 @@ extension on TranslationsRu {
 			'notifications.openInbox' => 'Открыть уведомления',
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами книгой «${recipe}»',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами меню «${recipe}»',
+			'notifications.adminReply' => 'Ответ команды EasyPlate на ваше обращение',
+			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Ваше обращение: "${excerpt}"',
+			'notifications.adminMessage' => 'Сообщение от EasyPlate',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -1766,13 +1965,13 @@ extension on TranslationsRu {
 			'receipt.title' => 'Сканировать чек',
 			'receipt.subtitle' => 'Сфотографируйте чек или загрузите PDF, и цены сохранятся для списка покупок',
 			'receipt.camera' => 'Сфотографировать чек',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.cameraHint' => 'Длинный чек? Сделайте несколько фото, мы их объединим',
 			'receipt.gallery' => 'Выбрать из галереи',
 			'receipt.pdf' => 'Файл PDF',
 			'receipt.addPhoto' => 'Ещё фото',
 			'receipt.scan' => 'Сканировать',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.scanning' => 'Читаем чек…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} фото',
 			'receipt.scanFailed' => 'Не удалось прочитать чек. Попробуйте более чёткое фото или PDF.',
@@ -1959,6 +2158,25 @@ extension on TranslationsRu {
 			'premium.legal' => 'Подписка продлевается автоматически в конце каждого периода, если не отменить её минимум за 24 часа до окончания. Оплата списывается с аккаунта магазина; управлять подпиской или отменить её можно в настройках магазина.',
 			'premium.terms' => 'Условия использования',
 			'premium.privacy' => 'Политика конфиденциальности',
+			'premium.startFor' => ({required Object price}) => 'Начать за ${price}',
+			'premium.startFree' => 'Начать бесплатно',
+			'premium.free' => 'Бесплатно',
+			'premium.introDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'в первый день', other: 'первые ${n} дн.', ), 
+			'premium.introWeeks' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'в первую неделю', other: 'первые ${n} нед.', ), 
+			'premium.introMonths' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'в первый месяц', other: 'первые ${n} мес.', ), 
+			'premium.introYears' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'в первый год', other: 'первые ${n} г.', ), 
+			'premium.introPaidTerms' => ({required Object price, required Object span, required Object then}) => '${price} ${span}, затем ${then}. Цена изменится автоматически.',
+			'premium.introFreeTerms' => ({required Object span, required Object then}) => 'Бесплатно ${span}, затем ${then}. Списание начнётся автоматически.',
+			'premium.redeem' => 'У меня есть промокод',
+			'premium.redeemTitle' => 'Промокод',
+			'premium.redeemHint' => 'Введите полученный код',
+			'premium.redeemConfirm' => 'Активировать в магазине',
+			'premium.perWeekly' => 'в неделю',
+			'premium.perMonthly' => 'в месяц',
+			'premium.perTwoMonth' => 'раз в 2 месяца',
+			'premium.perThreeMonth' => 'раз в 3 месяца',
+			'premium.perSixMonth' => 'раз в 6 месяцев',
+			'premium.perAnnual' => 'в год',
 			'walkthrough.title' => 'Обучение',
 			'walkthrough.start' => 'Запустить обучение',
 			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
@@ -2081,6 +2299,154 @@ extension on TranslationsRu {
 			'adminBilling.orphanBody' => 'Чеки, пришедшие под анонимным id RevenueCat, без пользователя для разблокировки',
 			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} премиум · ${problems} проблем · ${total} аккаунтов',
 			'adminBilling.noEntitlementTag' => 'Без entitlement',
+			'adminDashboard.title' => 'Панель управления',
+			'adminDashboard.tabDashboard' => 'Обзор',
+			'adminDashboard.tabSubscriptions' => 'Подписки',
+			'adminDashboard.tabTickets' => 'Обращения',
+			'adminDashboard.rangeToday' => 'Сегодня',
+			'adminDashboard.rangeMonth' => '30 дней',
+			'adminDashboard.rangeAll' => 'Всё',
+			'adminDashboard.aiCost' => 'Стоимость ИИ',
+			'adminDashboard.aiCostHint' => 'токены × прайс',
+			'adminDashboard.revenue' => 'Доход',
+			'adminDashboard.revenueNone' => 'Платежей за период нет',
+			'adminDashboard.sandboxNote' => ({required Object count}) => '${count} sandbox-платежей не учтено',
+			'adminDashboard.paymentsCount' => ({required Object count}) => '${count} платежей',
+			'adminDashboard.aiCalls' => 'Запросы ИИ',
+			'adminDashboard.cacheSaved' => ({required Object count}) => '${count} из кэша (бесплатно)',
+			'adminDashboard.errorsCount' => ({required Object count}) => '${count} ошибок',
+			'adminDashboard.tokens' => 'Токены',
+			'adminDashboard.tokensHint' => ({required Object input, required Object output}) => 'вход ${input} · выход ${output}',
+			'adminDashboard.usersTotal' => 'Всего пользователей',
+			'adminDashboard.newUsers' => ({required Object count}) => '${count} новых',
+			'adminDashboard.disabledCount' => ({required Object count}) => '${count} заблокировано',
+			'adminDashboard.premiumUsers' => 'Платящие',
+			'adminDashboard.freeCount' => ({required Object count}) => '${count} бесплатных',
+			'adminDashboard.freeUsers' => 'Бесплатные',
+			'adminDashboard.activeUsers' => 'Активные пользователи ИИ',
+			'adminDashboard.costPerUser' => 'Стоимость на активного',
+			'adminDashboard.tickets' => 'Обращения',
+			'adminDashboard.unreadCount' => ({required Object count}) => '${count} новых',
+			'adminDashboard.chartCost' => 'Стоимость ИИ по дням',
+			'adminDashboard.chartCalls' => 'Запросы ИИ по дням',
+			'adminDashboard.chartSignups' => 'Регистрации по дням',
+			'adminDashboard.chartPlatform' => 'Пользователи по платформам',
+			'adminDashboard.chartPlan' => 'Бесплатные и платящие',
+			'adminDashboard.chartKinds' => 'Запросы по функциям',
+			'adminDashboard.chartModels' => 'Стоимость по моделям',
+			'adminDashboard.chartVersions' => 'Версии приложения',
+			'adminDashboard.platformIos' => 'iOS',
+			'adminDashboard.platformAndroid' => 'Android',
+			'adminDashboard.platformUnknown' => 'Неизвестно',
+			'adminDashboard.noAiUsage' => 'За этот период ИИ не использовался',
+			'adminDashboard.unknownModel' => 'нет в прайсе',
+			'adminDashboard.usersCost' => 'Стоимость по пользователям',
+			'adminDashboard.usersCount' => ({required Object count}) => '${count} пользователей',
+			'adminDashboard.searchUser' => 'Поиск по имени, почте или uid',
+			'adminDashboard.showAll' => ({required Object count}) => 'Показать всех (${count})',
+			'adminDashboard.callsCount' => ({required Object count}) => '${count} запросов',
+			'adminDashboard.content' => 'Контент и сообщество',
+			'adminDashboard.sharedRecipes' => 'Общие рецепты',
+			'adminDashboard.forumPosts' => 'Темы форума',
+			'adminDashboard.withPush' => 'Устройств с push',
+			'adminDashboard.cacheEntries' => 'Ссылок в кэше',
+			'adminDashboard.cacheHits' => 'Попаданий в кэш (сэкономлено запросов)',
+			'adminDashboard.config' => 'Удалённые настройки',
+			'adminDashboard.environment' => 'Среда',
+			'adminDashboard.prod' => 'Production',
+			'adminDashboard.dev' => 'Dev',
+			'adminDashboard.adsEnabled' => 'Реклама',
+			'adminDashboard.adsFailOpen' => 'Открывать без рекламы',
+			'adminDashboard.on' => 'Вкл',
+			'adminDashboard.off' => 'Выкл',
+			'adminDashboard.feedInterval' => 'Интервал рекламы в ленте',
+			'adminDashboard.quotaSharedFree' => 'Бесплатных просмотров в день',
+			'adminDashboard.quotaSharedRewarded' => 'Просмотров за видео в день',
+			'adminDashboard.quotaAiRewarded' => 'ИИ за видео в день',
+			'adminDashboard.quotaAiPremium' => 'ИИ для премиум в день',
+			'adminDashboard.minVersion' => 'Минимальная версия',
+			'adminDashboard.latestVersion' => 'Последняя версия',
+			'adminDashboard.thisBuild' => 'Эта сборка',
+			'adminDashboard.pricing' => 'Прайс на токены',
+			'adminDashboard.pricingHint' => 'Доллары США за миллион токенов. Значения по умолчанию — оценка, обновите их по прайсу Google.',
+			'adminDashboard.editPricing' => 'Изменить прайс',
+			'adminDashboard.priceInput' => 'Вход',
+			'adminDashboard.priceOutput' => 'Выход',
+			'adminDashboard.priceCached' => 'Вход из кэша',
+			'adminDashboard.usdToIls' => 'Курс USD/ILS',
+			'adminDashboard.pricingSaved' => 'Прайс сохранён',
+			'adminDashboard.loadedAt' => ({required Object date}) => 'Обновлено ${date}',
+			'adminDashboard.kindText' => 'Текст',
+			'adminDashboard.kindUrl' => 'Ссылка',
+			'adminDashboard.kindSocial' => 'Соцсеть',
+			'adminDashboard.kindSocialVideo' => 'Видео (сервер)',
+			'adminDashboard.kindVideo' => 'Видео',
+			'adminDashboard.kindSearch' => 'Поиск',
+			'adminDashboard.kindImage' => 'Изображение',
+			'adminDashboard.kindReceipt' => 'Чек',
+			'adminDashboard.kindNutrition' => 'Питание',
+			'adminDashboard.kindRefine' => 'Правка',
+			'adminDashboard.kindGenerate' => 'Генерация',
+			'adminDashboard.allTime' => 'за всё время',
+			'adminDashboard.recentCalls' => 'Последние запросы',
+			'adminDashboard.noCalls' => 'Запросов нет',
+			'adminDashboard.cacheHit' => 'кэш',
+			'adminDashboard.statusOk' => 'ок',
+			'adminDashboard.pushTitle' => 'Заголовок (необязательно)',
+			'adminDashboard.pushBody' => 'Текст сообщения',
+			'adminDashboard.send' => 'Отправить',
+			'adminDashboard.blocked' => 'Заблокированные',
+			'adminDashboard.disable' => 'Заблокировать аккаунт',
+			'adminDashboard.enable' => 'Разблокировать',
+			'adminDashboard.blockMessageHint' => 'Что увидит пользователь при попытке войти',
+			'adminDashboard.disabledDone' => 'Аккаунт заблокирован',
+			'adminDashboard.enabledDone' => 'Блокировка снята',
+			'adminDashboard.deleteAccount' => 'Удалить аккаунт',
+			'adminDashboard.deleteAccountConfirm' => ({required Object name}) => 'Удалить ${name} навсегда? Пользователь, его рецепты, книги и меню будут удалены без возможности восстановления.',
+			'adminDashboard.deleted' => 'Аккаунт удалён',
+			'adminDashboard.sendPush' => 'Отправить уведомление',
+			'adminDashboard.noPush' => 'У этого устройства нет push-токена — сообщение появится только на экране уведомлений',
+			'adminDashboard.pushSent' => 'Уведомление отправлено',
+			'adminDashboard.sendPushAll' => 'Уведомить всех',
+			'adminDashboard.broadcastConfirm' => ({required Object count}) => 'Отправить сообщение всем пользователям (${count})?',
+			'adminDashboard.broadcastDone' => ({required Object items, required Object sent, required Object failed}) => 'Записано в ${items} ящиков · ${sent} push доставлено · ${failed} не удалось',
+			'adminDashboard.platformTag' => ({required Object platform, required Object version}) => '${platform} · v${version}',
+			'adminDashboard.lastSeen' => ({required Object date}) => 'Был(а) ${date}',
+			'adminDashboard.disabledSince' => ({required Object message}) => 'Причина блокировки: ${message}',
+			'adminDashboard.unread' => 'Новые',
+			'adminDashboard.markAllRead' => 'Прочитал всё',
+			'adminDashboard.allRead' => 'Все обращения отмечены прочитанными',
+			'adminDashboard.noUnread' => 'Новых обращений нет',
+			'adminDashboard.deleteTicket' => 'Удалить обращение',
+			'adminDashboard.deleteTicketConfirm' => ({required Object name}) => 'Удалить обращение от ${name}?',
+			'adminDashboard.ticketDeleted' => 'Обращение удалено',
+			'adminDashboard.reply' => 'Ответить',
+			'adminDashboard.replyHint' => 'Ответ придёт пользователю в уведомления (и push на телефон)',
+			'adminDashboard.replySent' => 'Ответ отправлен',
+			'adminDashboard.yourReply' => ({required Object date}) => 'Ваш ответ · ${date}',
+			'adminDashboard.markRead' => 'Отметить прочитанным',
+			'adminDashboard.markUnread' => 'Отметить непрочитанным',
+			'adminDashboard.pricingSync' => 'Синхронизировать цены из Google',
+			'adminDashboard.pricingSynced' => ({required Object count}) => '${count} моделей обновлено из каталога Google Cloud Billing',
+			'adminDashboard.pricingSyncFailed' => ({required Object reason}) => 'Синхронизация не удалась: ${reason}',
+			'adminDashboard.pricingSourceCatalog' => ({required Object date}) => 'Источник: Google Cloud Billing (реальный прайс) · ${date}',
+			'adminDashboard.pricingSourceManual' => ({required Object date}) => 'Источник: введено вручную · ${date}',
+			'adminDashboard.pricingSourceDefaults' => 'Только оценка — нажмите синхронизацию, чтобы получить реальные цены Google',
+			'adminDashboard.searchPrice' => 'Google Search grounding (\$ за 1 000 запросов)',
+			'adminDashboard.rateLine' => ({required Object rate, required Object date}) => '${rate} · обновляется раз в неделю · ${date}',
+			'adminDashboard.searchesCount' => ({required Object count}) => '${count} поисков',
+			'adminDashboard.rangeCustom' => 'Выбрать',
+			'adminDashboard.customRange' => ({required Object from, required Object to}) => '${from} – ${to} · нажмите, чтобы изменить',
+			'adminDashboard.priceImageOutput' => 'Вывод изображений',
+			'adminDashboard.dataSince' => ({required Object date}) => 'Данные собираются с ${date}. Более ранние списания Google здесь не учтены.',
+			'adminDashboard.grantTitle' => ({required Object name}) => 'Премиум для ${name} — на сколько?',
+			'adminDashboard.grantForever' => 'Навсегда (пока не отменю)',
+			'adminDashboard.grantWeek' => 'Неделя',
+			'adminDashboard.grantMonth' => 'Месяц',
+			'adminDashboard.grantYear' => 'Год',
+			'adminDashboard.grantRange' => 'Точный диапазон дат',
+			'adminDashboard.grantedUntil' => ({required Object date}) => 'Премиум выдан до ${date}',
+			'adminDashboard.grantStarts' => ({required Object date}) => 'Начнётся ${date}',
 			_ => null,
 		};
 	}

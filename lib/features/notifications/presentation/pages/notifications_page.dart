@@ -276,6 +276,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (item.type == AppNotificationType.sharedRecipeUpdated) {
       return _updatedCard(item);
     }
+    if (item.type == AppNotificationType.adminReply ||
+        item.type == AppNotificationType.adminMessage) {
+      return _adminCard(item);
+    }
     final invite = item.inviteId == null ? null : _pending[item.inviteId];
     final roleText = item.role == CollabRole.editor
         ? t.notifications.asEditor
@@ -353,6 +357,50 @@ class _NotificationsPageState extends State<NotificationsPage> {
 }
 
 extension on _NotificationsPageState {
+  /// A word from the administrator: the answer to a support message (with
+  /// the message it answers quoted) or an announcement to everyone.
+  Widget _adminCard(AppNotificationEntity item) {
+    final isReply = item.type == AppNotificationType.adminReply;
+    final title = isReply
+        ? t.notifications.adminReply
+        : (item.title?.trim().isNotEmpty == true
+            ? item.title!.trim()
+            : t.notifications.adminMessage);
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      color: item.read ? null : AppColors.primaryFixed,
+      onTap: () => _markRead(item),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isReply ? Icons.support_agent_rounded : Icons.campaign_rounded,
+                size: 18,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: AppSpacing.base),
+              Expanded(child: Text(title, style: AppTextStyles.bodyMd)),
+            ],
+          ),
+          if (isReply && item.feedbackExcerpt != null) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              t.notifications.adminReplyQuote(excerpt: item.feedbackExcerpt!),
+              style: AppTextStyles.labelSm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.sm),
+          SelectableText(item.message ?? '', style: AppTextStyles.bodyMd),
+        ],
+      ),
+    );
+  }
+
   Widget _updatedCard(AppNotificationEntity item) {
     return ClayCard(
       radius: AppRadius.md,

@@ -85,7 +85,7 @@ class RecipeBookPage extends StatelessWidget {
                   ...recipe.ingredients.map((ingredient) {
                     final amount = ingredient.isAmountMissing
                         ? kMissingInfoPlaceholder
-                        : ingredient.amount.toString();
+                        : ingredient.displayAmount;
                     final unit = measurementUnitLabel(ingredient.unit);
                     final line =
                         [amount, unit, ingredient.name].where((s) => s.isNotEmpty).join(' ');

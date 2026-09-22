@@ -1,0 +1,155 @@
+{
+  "_comment": "One entry per raw screenshot, matched by the file name without its extension (store_assets/raw/<locale>/<name>.png). Two lines each: the first in white, the second in the accent yellow, both outlined. 'bg' is the top and bottom colour of the background gradient. 'crop_top' trims that many pixels off a device capture's status bar. The numbers set the carousel order; Google Play takes at most eight of them.",
+  "shots": {
+    "01_recipes": {
+      "he": [
+        "כל המתכונים שלך",
+        "במקום אחד"
+      ],
+      "en": [
+        "All your recipes",
+        "in one place"
+      ],
+      "bg": [
+        "#5B3FD9",
+        "#A48BFF"
+      ],
+      "crop_top": 74
+    },
+    "02_recipe_details": {
+      "he": [
+        "כל מתכון במבט אחד",
+        "זמנים מנות וקלוריות"
+      ],
+      "en": [
+        "Every recipe at a glance",
+        "times, servings, calories"
+      ],
+      "bg": [
+        "#D9822B",
+        "#FFD08A"
+      ],
+      "crop_top": 74
+    },
+    "03_ai_import": {
+      "he": [
+        "מכל סרטון או קישור",
+        "המתכון מחולץ לבד"
+      ],
+      "en": [
+        "From any video or link",
+        "AI extracts the recipe"
+      ],
+      "bg": [
+        "#0E9E86",
+        "#67EFD3"
+      ],
+      "crop_top": 74
+    },
+    "04_library": {
+      "he": [
+        "הספרייה שלך",
+        "ספרי מתכונים אישיים"
+      ],
+      "en": [
+        "Your own library",
+        "Personal recipe books"
+      ],
+      "bg": [
+        "#2F5BC4",
+        "#8FC0FF"
+      ],
+      "crop_top": 74
+    },
+    "05_book_flip": {
+      "he": [
+        "ספר מתכונים אמיתי",
+        "מדפדפים כמו פעם"
+      ],
+      "en": [
+        "A real recipe book",
+        "Flip through the pages"
+      ],
+      "bg": [
+        "#D9437E",
+        "#FFA6C6"
+      ],
+      "crop_top": 74
+    },
+    "06_meal_plan": {
+      "he": [
+        "מתכננים את השבוע",
+        "ארוחה אחר ארוחה"
+      ],
+      "en": [
+        "Plan your week",
+        "meal by meal"
+      ],
+      "bg": [
+        "#2E9E4F",
+        "#8CE0A6"
+      ],
+      "crop_top": 74
+    },
+    "07_nutrition": {
+      "he": [
+        "התזונה של השבוע",
+        "בגרף אחד"
+      ],
+      "en": [
+        "Your week's nutrition",
+        "in one chart"
+      ],
+      "bg": [
+        "#4733B0",
+        "#9B86FF"
+      ],
+      "crop_top": 74
+    },
+    "08_grocery": {
+      "he": [
+        "רשימת קניות חכמה",
+        "נבנית מהתפריט"
+      ],
+      "en": [
+        "A smart grocery list",
+        "built from your plan"
+      ],
+      "bg": [
+        "#D9822B",
+        "#FFD08A"
+      ],
+      "crop_top": 74
+    },
+    "09_community": {
+      "he": [
+        "קהילה של בשלנים",
+        "משתפים ומגלים"
+      ],
+      "en": [
+        "A community of cooks",
+        "share and discover"
+      ],
+      "bg": [
+        "#6B2FD0",
+        "#B78BFF"
+      ],
+      "crop_top": 0
+    },
+    "10_premium": {
+      "he": [
+        "בלי מודעות בלי מכסות",
+        "למשתמשי PRO"
+      ],
+      "en": [
+        "No ads, no limits",
+        "for PRO members"
+      ],
+      "bg": [
+        "#5B3FD9",
+        "#A48BFF"
+      ],
+      "crop_top": 0
+    }
+  }
+}

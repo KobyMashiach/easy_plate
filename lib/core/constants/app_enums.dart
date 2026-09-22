@@ -160,6 +160,7 @@ enum ShoppingReminderSlot {
       ];
 }
 
-/// Notification kinds. Written by the app (an invite) or by a Cloud
-/// Function (a community post the user saved was edited by its author).
-enum AppNotificationType { shareInvite, sharedRecipeUpdated }
+/// Notification kinds. Written by the app (an invite, or the administrator's
+/// answer to a support message) or by a Cloud Function (a community post the
+/// user saved was edited by its author).
+enum AppNotificationType { shareInvite, sharedRecipeUpdated, adminReply, adminMessage }

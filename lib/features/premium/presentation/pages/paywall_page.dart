@@ -28,7 +28,7 @@ class PaywallPage extends StatefulWidget {
   State<PaywallPage> createState() => _PaywallPageState();
 }
 
-class _PaywallPageState extends State<PaywallPage> {
+class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   final _entitlement = EntitlementService();
   Map<String, Package> _packages = const {};
   List<PaywallOffer> _offers = const [];
@@ -36,17 +36,51 @@ class _PaywallPageState extends State<PaywallPage> {
   bool _loading = true;
   bool _busy = false;
 
+  /// Set when the store's redeem screen was opened: the purchase it makes
+  /// happens outside the app, so the receipts are re-read on the way back.
+  bool _awaitingRedeem = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _entitlement.addListener(_onEntitlement);
     _load();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _entitlement.removeListener(_onEntitlement);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _awaitingRedeem) {
+      _awaitingRedeem = false;
+      _restore();
+    }
+  }
+
+  Future<void> _redeem() async {
+    String? code;
+    if (Theme.of(context).platform != TargetPlatform.iOS) {
+      code = await AppDialog.prompt(
+        context,
+        title: t.premium.redeemTitle,
+        hint: t.premium.redeemHint,
+        icon: Icons.confirmation_number_rounded,
+        confirmLabel: t.premium.redeemConfirm,
+      );
+      if (code == null || !mounted) return;
+    }
+    _awaitingRedeem = true;
+    final opened = await PurchasesService().redeemCode(code: code);
+    if (!opened) {
+      _awaitingRedeem = false;
+      if (mounted) _hint(t.premium.unavailable);
+    }
   }
 
   void _onEntitlement() => setState(() {});
@@ -55,9 +89,21 @@ class _PaywallPageState extends State<PaywallPage> {
     final offering = await PurchasesService().currentOffering();
     if (!mounted) return;
     final packages = offering?.availablePackages ?? const <Package>[];
+    var offers = packages.map(PaywallOffer.fromPackage).toList();
+    // An opening price is shown only to an account that can still take it.
+    if (offers.any((o) => o.intro != null)) {
+      final ineligible = await PurchasesService().introIneligible(
+        offers.where((o) => o.intro != null).map((o) => o.productId),
+      );
+      offers = [
+        for (final o in offers)
+          ineligible.contains(o.productId) ? o.withoutIntro() : o,
+      ];
+    }
+    if (!mounted) return;
     setState(() {
       _packages = {for (final p in packages) p.identifier: p};
-      _offers = packages.map(PaywallOffer.fromPackage).toList();
+      _offers = offers;
       _selectedId = PaywallOffer.defaultSelection(_offers);
       _loading = false;
     });
@@ -120,6 +166,7 @@ class _PaywallPageState extends State<PaywallPage> {
       onPurchase: _purchase,
       onRestore: _restore,
       onManage: _manage,
+      onRedeem: _redeem,
       onBack: () => Navigator.of(context).maybePop(),
     );
   }
@@ -145,6 +192,10 @@ class PaywallView extends StatelessWidget {
   /// "Cancel subscription" on the active card: opens the store's management
   /// page, where cancelling only stops the renewal.
   final VoidCallback onManage;
+
+  /// "I have a coupon code": the store's own redemption screen. Null hides
+  /// the link.
+  final VoidCallback? onRedeem;
   final VoidCallback onBack;
 
   const PaywallView({
@@ -159,6 +210,7 @@ class PaywallView extends StatelessWidget {
     required this.onPurchase,
     required this.onRestore,
     required this.onManage,
+    this.onRedeem,
     required this.onBack,
   });
 
@@ -179,6 +231,45 @@ class PaywallView extends StatelessWidget {
     PaywallPeriod.lifetime => t.premium.periodLifetime,
     PaywallPeriod.other => '',
   };
+
+  /// "per month", for the sentence that says what the price becomes.
+  String _perLabel(PaywallPeriod period) => switch (period) {
+    PaywallPeriod.weekly => t.premium.perWeekly,
+    PaywallPeriod.monthly => t.premium.perMonthly,
+    PaywallPeriod.twoMonth => t.premium.perTwoMonth,
+    PaywallPeriod.threeMonth => t.premium.perThreeMonth,
+    PaywallPeriod.sixMonth => t.premium.perSixMonth,
+    PaywallPeriod.annual => t.premium.perAnnual,
+    PaywallPeriod.lifetime || PaywallPeriod.other => '',
+  };
+
+  /// The card's short line: the opening price and how long it holds. The
+  /// full terms sit under the button.
+  String _introShort(PaywallIntro intro) => intro.isFree
+      ? '${t.premium.free} ${_introSpan(intro)}'
+      : '${intro.priceString} ${_introSpan(intro)}';
+
+  String _introSpan(PaywallIntro intro) => switch (intro.unit) {
+    PaywallIntroUnit.day => t.premium.introDays(n: intro.count),
+    PaywallIntroUnit.week => t.premium.introWeeks(n: intro.count),
+    PaywallIntroUnit.month => t.premium.introMonths(n: intro.count),
+    PaywallIntroUnit.year => t.premium.introYears(n: intro.count),
+  };
+
+  /// The whole deal in one sentence — what is paid now, for how long, and
+  /// what the store charges after. Both stores require it next to the
+  /// button (App Store 3.1.2, Play subscriptions policy).
+  String _introTerms(PaywallOffer offer) {
+    final intro = offer.intro!;
+    final then = '${offer.priceString} ${_perLabel(offer.period)}'.trim();
+    return intro.isFree
+        ? t.premium.introFreeTerms(span: _introSpan(intro), then: then)
+        : t.premium.introPaidTerms(
+            price: intro.priceString,
+            span: _introSpan(intro),
+            then: then,
+          );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -271,6 +362,9 @@ class PaywallView extends StatelessWidget {
                   highlighted:
                       offer.id == PaywallOffer.defaultSelection(offers) &&
                       offers.length > 1,
+                  introTerms: offer.intro == null
+                      ? null
+                      : _introShort(offer.intro!),
                   onTap: busy ? null : () => onSelect(offer.id),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -281,11 +375,25 @@ class PaywallView extends StatelessWidget {
                     ? ''
                     : selected.isLifetime
                     ? t.premium.buyFor(price: selected.priceString)
-                    : t.premium.subscribeFor(price: selected.priceString),
+                    : selected.intro == null
+                    ? t.premium.subscribeFor(price: selected.priceString)
+                    : selected.intro!.isFree
+                    ? t.premium.startFree
+                    : t.premium.startFor(price: selected.intro!.priceString),
                 icon: Icons.lock_open_rounded,
                 expanded: true,
                 onPressed: busy || selected == null ? null : onPurchase,
               ),
+              if (selected?.intro != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  _introTerms(selected!),
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: AppColors.onSurface,
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.md),
               Text(
                 t.premium.legal,
@@ -306,6 +414,11 @@ class PaywallView extends StatelessWidget {
                   _LinkText(
                     label: t.premium.restore,
                     onTap: busy ? null : onRestore,
+                  ),
+                if (!isPremium && onRedeem != null)
+                  _LinkText(
+                    label: t.premium.redeem,
+                    onTap: busy ? null : onRedeem,
                   ),
                 _LinkText(
                   label: t.premium.terms,
@@ -359,6 +472,9 @@ class _OfferCard extends StatelessWidget {
   final String periodLabel;
   final bool selected;
   final bool highlighted;
+
+  /// The opening deal spelled out, when the account can take one.
+  final String? introTerms;
   final VoidCallback? onTap;
 
   const _OfferCard({
@@ -367,6 +483,7 @@ class _OfferCard extends StatelessWidget {
     required this.selected,
     required this.highlighted,
     required this.onTap,
+    this.introTerms,
   });
 
   @override
@@ -401,13 +518,41 @@ class _OfferCard extends StatelessWidget {
                       color: AppColors.secondary,
                     ),
                   ),
+                if (introTerms case final terms?)
+                  Text(
+                    terms,
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.secondary,
+                    ),
+                  ),
               ],
             ),
           ),
-          Text(
-            offer.priceString,
-            style: AppTextStyles.bodyLg.copyWith(fontWeight: FontWeight.w700),
-          ),
+          const SizedBox(width: AppSpacing.sm),
+          if (offer.intro case final intro?)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  intro.isFree ? t.premium.free : intro.priceString,
+                  style: AppTextStyles.bodyLg.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  offer.priceString,
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+              ],
+            )
+          else
+            Text(
+              offer.priceString,
+              style: AppTextStyles.bodyLg.copyWith(fontWeight: FontWeight.w700),
+            ),
         ],
       ),
     );

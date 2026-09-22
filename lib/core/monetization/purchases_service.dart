@@ -113,6 +113,53 @@ class PurchasesService {
     }
   }
 
+  /// The products whose opening deal this account may NOT take. Apple
+  /// answers per product; Google Play answers "unknown" because it already
+  /// leaves an offer the account is not eligible for out of the product, so
+  /// only a clear "ineligible" hides the deal.
+  Future<Set<String>> introIneligible(Iterable<String> productIds) async {
+    final ids = productIds.where((id) => id.isNotEmpty).toList();
+    if (!_configured || ids.isEmpty) return const {};
+    try {
+      final result = await Purchases.checkTrialOrIntroductoryPriceEligibility(
+        ids,
+      );
+      return {
+        for (final entry in result.entries)
+          if (entry.value.status ==
+                  IntroEligibilityStatus.introEligibilityStatusIneligible ||
+              entry.value.status ==
+                  IntroEligibilityStatus
+                      .introEligibilityStatusNoIntroOfferExists)
+            entry.key,
+      };
+    } catch (e) {
+      debugPrint('Intro eligibility check failed: $e');
+      return const {};
+    }
+  }
+
+  /// Opens the store's own screen for a promo / offer code. On iOS that is
+  /// Apple's redemption sheet; on Android the Play Store's redeem page with
+  /// [code] filled in. The purchase it produces reaches this account through
+  /// [restore], which the paywall runs when the app comes back.
+  Future<bool> redeemCode({String? code}) async {
+    try {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        if (!_configured) return false;
+        await Purchases.presentCodeRedemptionSheet();
+        return true;
+      }
+      final uri = Uri.https('play.google.com', '/redeem', {
+        if (code != null && code.isNotEmpty) 'code': code,
+      });
+      return launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('Code redemption failed: $e');
+      return false;
+    }
+  }
+
   /// Buys [package]. Returns true when the account holds premium afterwards.
   /// A cancelled purchase sheet is not an error and reads as false; anything
   /// else is rethrown so the paywall can say what went wrong.

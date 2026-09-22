@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/amount_format.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -53,10 +54,7 @@ class _IngredientRow {
 
   /// Whole numbers lose the trailing `.0` so the field reads like the user
   /// would have typed it.
-  static String _formatAmount(double? value) {
-    if (value == null) return '';
-    return value == value.roundToDouble() ? value.round().toString() : value.toString();
-  }
+  static String _formatAmount(double? value) => formatAmount(value);
 
   RecipeIngredientEntity toEntity() => RecipeIngredientEntity(
         name: name.text.trim(),

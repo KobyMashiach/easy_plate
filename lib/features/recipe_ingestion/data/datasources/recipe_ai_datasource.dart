@@ -378,10 +378,16 @@ $_dietaryTagRules
   /// surfacing the error to the user.
   Future<Map<String, dynamic>> _callStructured(
     Map<String, dynamic> body, {
+    required String feature,
     Map<String, String>? headers,
   }) async {
-    return _decodeRecipe(await _callRaw(body, headers: headers));
+    return _decodeRecipe(await _callRaw(body, feature: feature, headers: headers));
   }
+
+  /// Names the feature a call belongs to, for the administrator's cost
+  /// breakdown. The proxy records it next to the token counts; Google
+  /// ignores it when talked to directly.
+  static const featureHeader = 'x-easyplate-feature';
 
   Future<Map<String, dynamic>> _postSocial(Map<String, dynamic> body) async {
     _assertConfigured();
@@ -422,9 +428,11 @@ $_dietaryTagRules
   /// The interaction as Google returned it, after the capacity retries.
   Future<Map<String, dynamic>> _callRaw(
     Map<String, dynamic> body, {
+    required String feature,
     Map<String, String>? headers,
   }) async {
     _assertConfigured();
+    headers = {featureHeader: feature, ...?headers};
 
     Map<String, dynamic>? data;
     for (var attempt = 0; ; attempt++) {
@@ -588,6 +596,7 @@ $_dietaryTagRules
       },
     ];
     final data = await _callStructured(
+      feature: 'receipt',
       _body(
         input: blocks,
         schema: _receiptSchema,
@@ -650,7 +659,7 @@ $_dietaryTagRules
         'image_size': '1K',
         'mime_type': 'image/jpeg',
       },
-    });
+    }, feature: 'image');
     for (final step in (data['steps'] as List?) ?? const []) {
       if (step is! Map) continue;
       for (final block in (step['content'] as List?) ?? const []) {
@@ -678,6 +687,7 @@ $_dietaryTagRules
       'steps': recipe.steps,
     });
     final data = await _callStructured(
+      feature: 'nutrition',
       _body(
         input: 'הערך את מספר המנות ואת הערכים התזונתיים למנה אחת של המתכון הבא. '
             'אם מספר המנות נתון, השתמש בו.\n\n$payload',
@@ -702,6 +712,7 @@ $_dietaryTagRules
   @override
   Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> preferences) async {
     final input = await _callStructured(
+      feature: 'text',
       _body(
         input: 'נתח את המתכון הבא לפורמט מובנה:\n\n$text',
         schema: _recipeSchema,
@@ -713,6 +724,7 @@ $_dietaryTagRules
   @override
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences) async {
     final input = await _callStructured(
+      feature: 'url',
       _body(
         input:
             'שלוף את המתכון מהכתובת הבאה והחזר אותו בפורמט מובנה. התעלם מפרסומות ותוכן שאינו חלק מהמתכון.\n$url',
@@ -755,6 +767,7 @@ $_dietaryTagRules
       );
     }
     final input = await _callStructured(
+      feature: 'social',
       _body(
         input:
             'שלוף את המתכון מהכותרת, מהתיאור ומהתגובות בעמוד הסרטון הבא. אם אין מספיק מידע למתכון מלא, החזר את מה שקיים בלבד.\n$url',
@@ -773,6 +786,7 @@ $_dietaryTagRules
   @override
   Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) async {
     final input = await _callStructured(
+      feature: 'generate',
       _body(
         input: 'כתוב מתכון מלא לפי הבקשה הבאה:\n\n$request${_dietaryHint(preferences)}',
         schema: _recipeSchema,
@@ -788,6 +802,7 @@ $_dietaryTagRules
     List<DietaryPreference> preferences,
   ) async {
     final data = await _callStructured(
+      feature: 'search',
       _body(
         input: 'חפש 3 עד 5 מתכונים באינטרנט עבור: $query.${_dietaryHint(preferences)}',
         schema: _searchResultsSchema,
@@ -824,6 +839,7 @@ $_dietaryTagRules
         : 'תקן שגיאות כתיב ודקדוק בלבד.';
 
     final data = await _callStructured(
+      feature: 'refine',
       _body(
         input: '$instruction\n\n$payload',
         schema: _refineSchema,

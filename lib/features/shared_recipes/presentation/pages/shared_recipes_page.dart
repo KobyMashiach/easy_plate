@@ -413,6 +413,8 @@ class _SharedCard extends StatelessWidget {
 
   const _SharedCard({required this.shared, required this.saved});
 
+  static const _thumbSize = 64.0;
+
   /// Edits the *published* copy. Someone else's recipe is not editable here at
   /// all — importing it makes a local copy, and that copy is edited from My
   /// Recipes like any other.
@@ -494,6 +496,29 @@ class _SharedCard extends StatelessWidget {
     };
   }
 
+  /// The dish photo as a small rounded square at the end of the title row —
+  /// the far side from the name, which keeps reading from the start edge.
+  /// Nothing at all for a post without one: an empty placeholder would only
+  /// add a grey box to a feed that is mostly text.
+  Widget? _thumb(RecipeEntity recipe) {
+    if (recipe.imageFileName == null && recipe.imageStoragePath == null) {
+      return null;
+    }
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
+      child: SizedBox(
+        width: _thumbSize,
+        height: _thumbSize,
+        child: ClayImage(
+          fileName: recipe.imageFileName,
+          remotePath: recipe.imageStoragePath,
+          radius: AppRadius.std,
+          fallbackIconSize: 22,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<SharedRecipesBloc>();
@@ -540,35 +565,55 @@ class _SharedCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text(recipe.title, style: AppTextStyles.bodyLg)),
-              if (badge != null) ...[
-                const SizedBox(width: AppSpacing.base),
-                Icon(badge, size: 18, color: AppColors.tertiary),
-              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            recipe.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.bodyLg,
+                          ),
+                        ),
+                        if (badge != null) ...[
+                          const SizedBox(width: AppSpacing.base),
+                          Icon(badge, size: 18, color: AppColors.tertiary),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      recipe.ingredients
+                          .take(4)
+                          .map((i) {
+                            final unit = measurementUnitLabel(i.unit);
+                            final amount = i.isAmountMissing
+                                ? kMissingInfoPlaceholder
+                                : i.displayAmount;
+                            return [
+                              amount,
+                              unit,
+                              i.name,
+                            ].where((s) => s.isNotEmpty).join(' ');
+                          })
+                          .join(' · '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ?_thumb(recipe),
             ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            recipe.ingredients
-                .take(4)
-                .map((i) {
-                  final unit = measurementUnitLabel(i.unit);
-                  final amount = i.isAmountMissing
-                      ? kMissingInfoPlaceholder
-                      : '${i.amount}';
-                  return [
-                    amount,
-                    unit,
-                    i.name,
-                  ].where((s) => s.isNotEmpty).join(' ');
-                })
-                .join(' · '),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.labelMd.copyWith(
-              color: AppColors.onSurfaceVariant,
-            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Row(

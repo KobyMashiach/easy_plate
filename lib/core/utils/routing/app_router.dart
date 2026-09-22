@@ -32,8 +32,8 @@ import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
 import 'routing.dart';
 import '../../../features/more/presentation/pages/tutorial_book_page.dart';
-import '../../../features/admin_billing/presentation/pages/admin_billing_page.dart';
-import '../../../features/feedback/presentation/pages/admin_feedback_page.dart';
+import '../../../features/admin_dashboard/presentation/pages/admin_dashboard_page.dart';
+import '../../../features/auth/presentation/pages/blocked_page.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
 /// whatever the current [AuthStage] demands.
@@ -44,6 +44,7 @@ const _stageEntryPoint = {
   AuthStage.needsEmailVerification: Routing.verifyEmail,
   AuthStage.needsProfile: Routing.register,
   AuthStage.needsOnboarding: Routing.onboarding,
+  AuthStage.blocked: Routing.blocked,
 };
 
 /// The gate's whole decision, as a pure function so it can be exercised
@@ -95,6 +96,11 @@ GoRouter buildRouter() {
         path: Routing.login,
         name: Routing.login,
         builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: Routing.blocked,
+        name: Routing.blocked,
+        builder: (context, state) => const BlockedPage(),
       ),
       GoRoute(
         path: Routing.phoneVerify,
@@ -235,14 +241,12 @@ GoRouter buildRouter() {
             builder: (context, state) => const TutorialBookPage(),
           ),
           GoRoute(
-            path: Routing.adminFeedback,
-            name: Routing.adminFeedback,
-            builder: (context, state) => const AdminFeedbackPage(),
-          ),
-          GoRoute(
-            path: Routing.adminBilling,
-            name: Routing.adminBilling,
-            builder: (context, state) => const AdminBillingPage(),
+            path: Routing.adminDashboard,
+            name: Routing.adminDashboard,
+            // `extra` picks the opening tab, by AdminDashboardTab index.
+            builder: (context, state) => AdminDashboardPage(
+              initialTab: state.extra is int ? state.extra as int : 0,
+            ),
           ),
         ],
       ),

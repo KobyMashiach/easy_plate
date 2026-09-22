@@ -7,7 +7,10 @@ void main() {
   test('before any sync the device clock is used', () {
     final clock = TrustedClock();
     expect(clock.isSynced, isFalse);
-    expect(clock.now().difference(DateTime.now()).abs(), lessThan(const Duration(seconds: 1)));
+    expect(
+      clock.now().difference(DateTime.now()).abs(),
+      lessThan(const Duration(seconds: 1)),
+    );
   });
 
   test('after a sync the server moment wins over the device clock', () {
@@ -16,7 +19,10 @@ void main() {
     clock.adopt(serverUtc);
 
     expect(clock.isSynced, isTrue);
-    expect(clock.now().toUtc().difference(serverUtc), lessThan(const Duration(seconds: 1)));
+    expect(
+      clock.now().toUtc().difference(serverUtc),
+      lessThan(const Duration(seconds: 1)),
+    );
   });
 
   test('a failed sync leaves the previous anchor in place', () async {
@@ -26,7 +32,10 @@ void main() {
 
     await clock.sync(fetch: () async => null);
 
-    expect(clock.now().toUtc().difference(serverUtc), lessThan(const Duration(seconds: 1)));
+    expect(
+      clock.now().toUtc().difference(serverUtc),
+      lessThan(const Duration(seconds: 1)),
+    );
   });
 
   test('sync adopts what the fetch returns', () async {

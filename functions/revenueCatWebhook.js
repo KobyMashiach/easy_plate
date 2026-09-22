@@ -139,6 +139,11 @@ function authorized(header, secret) {
 // Applies one write unless a newer event already landed on the document —
 // RevenueCat retries and can deliver out of order, and a stale EXPIRATION
 // must not undo a fresh RENEWAL.
+/// Whether an administrator's dated grant is over, so its lock lapsed too.
+function lockExpired(premiumUntil, nowMs) {
+  return !!premiumUntil && typeof premiumUntil.toMillis === "function" && premiumUntil.toMillis() <= nowMs;
+}
+
 async function apply(db, { uid, data }) {
   const ref = db.collection("entitlements").doc(uid);
   await db.runTransaction(async (tx) => {
@@ -147,11 +152,15 @@ async function apply(db, { uid, data }) {
     if (seenAt > data.lastEventAt) return;
     // The administrator set this account by hand; the store's verdict waits
     // until they release it (see the admin subscriptions screen).
-    if (snap.exists && snap.get("adminLock") === true) return;
+    // A dated grant that has run out no longer holds the lock: a gifted
+    // week must not stop a later real purchase from unlocking.
+    if (snap.exists && snap.get("adminLock") === true && !lockExpired(snap.get("premiumUntil"), Date.now())) return;
     tx.set(
       ref,
       {
         ...data,
+        premiumFrom: null,
+        adminLock: false,
         premiumUntil: data.premiumUntil
           ? admin.firestore.Timestamp.fromDate(data.premiumUntil)
           : null,
@@ -213,4 +222,4 @@ exports.revenueCatWebhook = onRequest(
   },
 );
 
-exports.internals = { decide, eventRecord, authorized, uidFor, PREMIUM_ENTITLEMENT };
+exports.internals = { lockExpired, decide, eventRecord, authorized, uidFor, PREMIUM_ENTITLEMENT };

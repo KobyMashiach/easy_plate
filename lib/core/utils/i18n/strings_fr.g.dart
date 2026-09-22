@@ -70,6 +70,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$walkthrough$fr walkthrough = _Translations$walkthrough$fr._(_root);
 	@override late final _Translations$feedback$fr feedback = _Translations$feedback$fr._(_root);
 	@override late final _Translations$adminBilling$fr adminBilling = _Translations$adminBilling$fr._(_root);
+	@override late final _Translations$adminDashboard$fr adminDashboard = _Translations$adminDashboard$fr._(_root);
 }
 
 // Path: common
@@ -171,6 +172,8 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get appleLinked => 'Lié';
 	@override String get appleAlreadyUsed => 'Ce compte Apple appartient déjà à un autre utilisateur';
 	@override String get appleAlreadyLinked => 'Un compte Apple est déjà lié';
+	@override String get blockedTitle => 'Compte bloqué';
+	@override String get blockedBody => 'Ce compte a été bloqué par l\'administrateur de l\'application. Contactez-nous depuis l\'écran d\'assistance.';
 }
 
 // Path: profile
@@ -591,6 +594,9 @@ class _Translations$notifications$fr extends Translations$notifications$he {
 	@override String get openInbox => 'Ouvrir les notifications';
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} a partagé le livre « ${recipe} » avec vous';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} a partagé le menu « ${recipe} » avec vous';
+	@override String get adminReply => 'Réponse de l\'équipe EasyPlate à votre message';
+	@override String adminReplyQuote({required Object excerpt}) => 'Votre message : "${excerpt}"';
+	@override String get adminMessage => 'Un message d\'EasyPlate';
 }
 
 // Path: editor
@@ -1010,6 +1016,37 @@ class _Translations$premium$fr extends Translations$premium$he {
 	@override String get legal => 'L\'abonnement se renouvelle automatiquement à la fin de chaque période, sauf annulation au moins 24 heures avant son terme. Le paiement est prélevé sur votre compte de la boutique et peut être géré ou annulé dans ses réglages.';
 	@override String get terms => 'Conditions d\'utilisation';
 	@override String get privacy => 'Politique de confidentialité';
+	@override String startFor({required Object price}) => 'Commencer à ${price}';
+	@override String get startFree => 'Commencer gratuitement';
+	@override String get free => 'Gratuit';
+	@override String introDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		one: 'le premier jour',
+		other: 'les ${n} premiers jours',
+	);
+	@override String introWeeks({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		one: 'la première semaine',
+		other: 'les ${n} premières semaines',
+	);
+	@override String introMonths({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		one: 'le premier mois',
+		other: 'les ${n} premiers mois',
+	);
+	@override String introYears({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		one: 'la première année',
+		other: 'les ${n} premières années',
+	);
+	@override String introPaidTerms({required Object price, required Object span, required Object then}) => '${price} ${span}, puis ${then}. Le prix change automatiquement.';
+	@override String introFreeTerms({required Object span, required Object then}) => 'Gratuit ${span}, puis ${then}. La facturation démarre automatiquement.';
+	@override String get redeem => 'J\'ai un code promo';
+	@override String get redeemTitle => 'Code promo';
+	@override String get redeemHint => 'Saisissez le code reçu';
+	@override String get redeemConfirm => 'Utiliser dans la boutique';
+	@override String get perWeekly => 'par semaine';
+	@override String get perMonthly => 'par mois';
+	@override String get perTwoMonth => 'tous les 2 mois';
+	@override String get perThreeMonth => 'tous les 3 mois';
+	@override String get perSixMonth => 'tous les 6 mois';
+	@override String get perAnnual => 'par an';
 }
 
 // Path: walkthrough
@@ -1108,6 +1145,163 @@ class _Translations$adminBilling$fr extends Translations$adminBilling$he {
 	@override String get orphanBody => 'Reçus arrivés sous un identifiant RevenueCat anonyme, sans utilisateur à débloquer';
 	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problèmes · ${total} comptes';
 	@override String get noEntitlementTag => 'Sans entitlement';
+}
+
+// Path: adminDashboard
+class _Translations$adminDashboard$fr extends Translations$adminDashboard$he {
+	_Translations$adminDashboard$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Tableau de bord';
+	@override String get tabDashboard => 'Tableau';
+	@override String get tabSubscriptions => 'Abonnements';
+	@override String get tabTickets => 'Messages';
+	@override String get rangeToday => 'Aujourd\'hui';
+	@override String get rangeMonth => '30 jours';
+	@override String get rangeAll => 'Tout';
+	@override String get aiCost => 'Coût IA';
+	@override String get aiCostHint => 'jetons × tarifs';
+	@override String get revenue => 'Revenus';
+	@override String get revenueNone => 'Aucun paiement sur la période';
+	@override String sandboxNote({required Object count}) => '${count} paiements sandbox non comptés';
+	@override String paymentsCount({required Object count}) => '${count} paiements';
+	@override String get aiCalls => 'Appels IA';
+	@override String cacheSaved({required Object count}) => '${count} depuis le cache (gratuit)';
+	@override String errorsCount({required Object count}) => '${count} erreurs';
+	@override String get tokens => 'Jetons';
+	@override String tokensHint({required Object input, required Object output}) => 'entrée ${input} · sortie ${output}';
+	@override String get usersTotal => 'Utilisateurs';
+	@override String newUsers({required Object count}) => '${count} nouveaux';
+	@override String disabledCount({required Object count}) => '${count} bloqués';
+	@override String get premiumUsers => 'Payants';
+	@override String freeCount({required Object count}) => '${count} gratuits';
+	@override String get freeUsers => 'Gratuits';
+	@override String get activeUsers => 'Utilisateurs IA actifs';
+	@override String get costPerUser => 'Coût par utilisateur actif';
+	@override String get tickets => 'Messages';
+	@override String unreadCount({required Object count}) => '${count} nouveaux';
+	@override String get chartCost => 'Coût IA par jour';
+	@override String get chartCalls => 'Appels IA par jour';
+	@override String get chartSignups => 'Inscriptions par jour';
+	@override String get chartPlatform => 'Utilisateurs par plateforme';
+	@override String get chartPlan => 'Gratuit vs payant';
+	@override String get chartKinds => 'Appels par fonction';
+	@override String get chartModels => 'Coût par modèle';
+	@override String get chartVersions => 'Versions de l\'application';
+	@override String get platformIos => 'iOS';
+	@override String get platformAndroid => 'Android';
+	@override String get platformUnknown => 'Inconnu';
+	@override String get noAiUsage => 'Aucune utilisation IA sur cette période';
+	@override String get unknownModel => 'absent des tarifs';
+	@override String get usersCost => 'Coût par utilisateur';
+	@override String usersCount({required Object count}) => '${count} utilisateurs';
+	@override String get searchUser => 'Rechercher par nom, e-mail ou uid';
+	@override String showAll({required Object count}) => 'Afficher les ${count} utilisateurs';
+	@override String callsCount({required Object count}) => '${count} appels';
+	@override String get content => 'Contenu et communauté';
+	@override String get sharedRecipes => 'Recettes partagées';
+	@override String get forumPosts => 'Fils du forum';
+	@override String get withPush => 'Appareils avec notifications';
+	@override String get cacheEntries => 'Liens en cache';
+	@override String get cacheHits => 'Hits du cache (appels économisés)';
+	@override String get config => 'Configuration à distance';
+	@override String get environment => 'Environnement';
+	@override String get prod => 'Production';
+	@override String get dev => 'Dev';
+	@override String get adsEnabled => 'Publicités';
+	@override String get adsFailOpen => 'Ouvrir sans publicité';
+	@override String get on => 'Actif';
+	@override String get off => 'Inactif';
+	@override String get feedInterval => 'Intervalle des pubs';
+	@override String get quotaSharedFree => 'Vues gratuites par jour';
+	@override String get quotaSharedRewarded => 'Vues vidéo par jour';
+	@override String get quotaAiRewarded => 'IA vidéo par jour';
+	@override String get quotaAiPremium => 'IA premium par jour';
+	@override String get minVersion => 'Version minimale';
+	@override String get latestVersion => 'Dernière version';
+	@override String get thisBuild => 'Cette version';
+	@override String get pricing => 'Tarifs des jetons';
+	@override String get pricingHint => 'Dollars US par million de jetons. Les valeurs par défaut sont une estimation — à mettre à jour d\'après les tarifs de Google.';
+	@override String get editPricing => 'Modifier les tarifs';
+	@override String get priceInput => 'Entrée';
+	@override String get priceOutput => 'Sortie';
+	@override String get priceCached => 'Entrée en cache';
+	@override String get usdToIls => 'Taux USD/ILS';
+	@override String get pricingSaved => 'Tarifs enregistrés';
+	@override String loadedAt({required Object date}) => 'Mis à jour ${date}';
+	@override String get kindText => 'Texte';
+	@override String get kindUrl => 'Lien';
+	@override String get kindSocial => 'Réseau social';
+	@override String get kindSocialVideo => 'Vidéo (serveur)';
+	@override String get kindVideo => 'Vidéo';
+	@override String get kindSearch => 'Recherche';
+	@override String get kindImage => 'Image';
+	@override String get kindReceipt => 'Ticket de caisse';
+	@override String get kindNutrition => 'Nutrition';
+	@override String get kindRefine => 'Correction';
+	@override String get kindGenerate => 'Génération';
+	@override String get allTime => 'depuis toujours';
+	@override String get recentCalls => 'Derniers appels';
+	@override String get noCalls => 'Aucun appel';
+	@override String get cacheHit => 'cache';
+	@override String get statusOk => 'ok';
+	@override String get pushTitle => 'Titre (facultatif)';
+	@override String get pushBody => 'Message';
+	@override String get send => 'Envoyer';
+	@override String get blocked => 'Bloqués';
+	@override String get disable => 'Bloquer le compte';
+	@override String get enable => 'Débloquer';
+	@override String get blockMessageHint => 'Ce que l\'utilisateur verra en essayant de se connecter';
+	@override String get disabledDone => 'Compte bloqué';
+	@override String get enabledDone => 'Blocage levé';
+	@override String get deleteAccount => 'Supprimer le compte';
+	@override String deleteAccountConfirm({required Object name}) => 'Supprimer ${name} définitivement ? L\'utilisateur, ses recettes, livres et menus seront effacés sans retour possible.';
+	@override String get deleted => 'Compte supprimé';
+	@override String get sendPush => 'Envoyer une notification';
+	@override String get noPush => 'Cet appareil n\'a pas de jeton push — le message n\'apparaîtra que dans l\'écran des notifications';
+	@override String get pushSent => 'Notification envoyée';
+	@override String get sendPushAll => 'Notifier tous les utilisateurs';
+	@override String broadcastConfirm({required Object count}) => 'Envoyer ce message aux ${count} utilisateurs ?';
+	@override String broadcastDone({required Object items, required Object sent, required Object failed}) => 'Écrit dans ${items} boîtes · ${sent} envois réussis · ${failed} échoués';
+	@override String platformTag({required Object platform, required Object version}) => '${platform} · v${version}';
+	@override String lastSeen({required Object date}) => 'Vu le ${date}';
+	@override String disabledSince({required Object message}) => 'Motif du blocage : ${message}';
+	@override String get unread => 'Nouveaux';
+	@override String get markAllRead => 'Tout lu';
+	@override String get allRead => 'Tous les messages sont marqués lus';
+	@override String get noUnread => 'Aucun nouveau message';
+	@override String get deleteTicket => 'Supprimer le message';
+	@override String deleteTicketConfirm({required Object name}) => 'Supprimer le message de ${name} ?';
+	@override String get ticketDeleted => 'Message supprimé';
+	@override String get reply => 'Répondre';
+	@override String get replyHint => 'La réponse arrive dans les notifications de l\'utilisateur (et en push)';
+	@override String get replySent => 'Réponse envoyée';
+	@override String yourReply({required Object date}) => 'Votre réponse · ${date}';
+	@override String get markRead => 'Marquer comme lu';
+	@override String get markUnread => 'Marquer comme non lu';
+	@override String get pricingSync => 'Synchroniser les prix depuis Google';
+	@override String pricingSynced({required Object count}) => '${count} modèles mis à jour depuis le catalogue Google Cloud Billing';
+	@override String pricingSyncFailed({required Object reason}) => 'Échec de la synchronisation : ${reason}';
+	@override String pricingSourceCatalog({required Object date}) => 'Source : Google Cloud Billing (tarifs réels) · ${date}';
+	@override String pricingSourceManual({required Object date}) => 'Source : saisi à la main · ${date}';
+	@override String get pricingSourceDefaults => 'Estimation seulement — synchronisez pour récupérer les tarifs réels de Google';
+	@override String get searchPrice => 'Recherche Google (grounding, \$ pour 1 000 requêtes)';
+	@override String rateLine({required Object rate, required Object date}) => '${rate} · actualisé chaque semaine · ${date}';
+	@override String searchesCount({required Object count}) => '${count} recherches';
+	@override String get rangeCustom => 'Choisir';
+	@override String customRange({required Object from, required Object to}) => '${from} – ${to} · toucher pour changer';
+	@override String get priceImageOutput => 'Sortie image';
+	@override String dataSince({required Object date}) => 'Données collectées depuis le ${date}. Les frais Google antérieurs n\'y figurent pas.';
+	@override String grantTitle({required Object name}) => 'Premium pour ${name} — pour combien de temps ?';
+	@override String get grantForever => 'Pour toujours (jusqu\'à révocation)';
+	@override String get grantWeek => 'Une semaine';
+	@override String get grantMonth => 'Un mois';
+	@override String get grantYear => 'Un an';
+	@override String get grantRange => 'Dates exactes';
+	@override String grantedUntil({required Object date}) => 'Premium accordé jusqu\'au ${date}';
+	@override String grantStarts({required Object date}) => 'Commence le ${date}';
 }
 
 // Path: walkthrough.topics
@@ -1343,6 +1537,8 @@ extension on TranslationsFr {
 			'auth.appleLinked' => 'Lié',
 			'auth.appleAlreadyUsed' => 'Ce compte Apple appartient déjà à un autre utilisateur',
 			'auth.appleAlreadyLinked' => 'Un compte Apple est déjà lié',
+			'auth.blockedTitle' => 'Compte bloqué',
+			'auth.blockedBody' => 'Ce compte a été bloqué par l\'administrateur de l\'application. Contactez-nous depuis l\'écran d\'assistance.',
 			'profile.setupTitle' => 'Encore quelques détails',
 			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
 			'profile.fullName' => 'Nom complet',
@@ -1637,6 +1833,9 @@ extension on TranslationsFr {
 			'notifications.openInbox' => 'Ouvrir les notifications',
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} a partagé le livre « ${recipe} » avec vous',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} a partagé le menu « ${recipe} » avec vous',
+			'notifications.adminReply' => 'Réponse de l\'équipe EasyPlate à votre message',
+			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Votre message : "${excerpt}"',
+			'notifications.adminMessage' => 'Un message d\'EasyPlate',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
@@ -1766,13 +1965,13 @@ extension on TranslationsFr {
 			'receipt.title' => 'Scanner un ticket',
 			'receipt.subtitle' => 'Photographiez un ticket ou importez un PDF, les prix sont gardés pour votre liste de courses',
 			'receipt.camera' => 'Photographier le ticket',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.cameraHint' => 'Ticket long ? Prenez plusieurs photos, nous les fusionnons',
 			'receipt.gallery' => 'Choisir dans la galerie',
 			'receipt.pdf' => 'Fichier PDF',
 			'receipt.addPhoto' => 'Autre photo',
 			'receipt.scan' => 'Scanner',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.scanning' => 'Lecture du ticket…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} photos',
 			'receipt.scanFailed' => 'Impossible de lire le ticket. Essayez une photo plus nette ou un PDF.',
@@ -1959,6 +2158,25 @@ extension on TranslationsFr {
 			'premium.legal' => 'L\'abonnement se renouvelle automatiquement à la fin de chaque période, sauf annulation au moins 24 heures avant son terme. Le paiement est prélevé sur votre compte de la boutique et peut être géré ou annulé dans ses réglages.',
 			'premium.terms' => 'Conditions d\'utilisation',
 			'premium.privacy' => 'Politique de confidentialité',
+			'premium.startFor' => ({required Object price}) => 'Commencer à ${price}',
+			'premium.startFree' => 'Commencer gratuitement',
+			'premium.free' => 'Gratuit',
+			'premium.introDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: 'le premier jour', other: 'les ${n} premiers jours', ), 
+			'premium.introWeeks' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: 'la première semaine', other: 'les ${n} premières semaines', ), 
+			'premium.introMonths' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: 'le premier mois', other: 'les ${n} premiers mois', ), 
+			'premium.introYears' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: 'la première année', other: 'les ${n} premières années', ), 
+			'premium.introPaidTerms' => ({required Object price, required Object span, required Object then}) => '${price} ${span}, puis ${then}. Le prix change automatiquement.',
+			'premium.introFreeTerms' => ({required Object span, required Object then}) => 'Gratuit ${span}, puis ${then}. La facturation démarre automatiquement.',
+			'premium.redeem' => 'J\'ai un code promo',
+			'premium.redeemTitle' => 'Code promo',
+			'premium.redeemHint' => 'Saisissez le code reçu',
+			'premium.redeemConfirm' => 'Utiliser dans la boutique',
+			'premium.perWeekly' => 'par semaine',
+			'premium.perMonthly' => 'par mois',
+			'premium.perTwoMonth' => 'tous les 2 mois',
+			'premium.perThreeMonth' => 'tous les 3 mois',
+			'premium.perSixMonth' => 'tous les 6 mois',
+			'premium.perAnnual' => 'par an',
 			'walkthrough.title' => 'Guide',
 			'walkthrough.start' => 'Lancer le guide',
 			'walkthrough.startHint' => 'Une visite guidée de toutes les fonctions de l\'application, pas à pas',
@@ -2081,6 +2299,154 @@ extension on TranslationsFr {
 			'adminBilling.orphanBody' => 'Reçus arrivés sous un identifiant RevenueCat anonyme, sans utilisateur à débloquer',
 			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problèmes · ${total} comptes',
 			'adminBilling.noEntitlementTag' => 'Sans entitlement',
+			'adminDashboard.title' => 'Tableau de bord',
+			'adminDashboard.tabDashboard' => 'Tableau',
+			'adminDashboard.tabSubscriptions' => 'Abonnements',
+			'adminDashboard.tabTickets' => 'Messages',
+			'adminDashboard.rangeToday' => 'Aujourd\'hui',
+			'adminDashboard.rangeMonth' => '30 jours',
+			'adminDashboard.rangeAll' => 'Tout',
+			'adminDashboard.aiCost' => 'Coût IA',
+			'adminDashboard.aiCostHint' => 'jetons × tarifs',
+			'adminDashboard.revenue' => 'Revenus',
+			'adminDashboard.revenueNone' => 'Aucun paiement sur la période',
+			'adminDashboard.sandboxNote' => ({required Object count}) => '${count} paiements sandbox non comptés',
+			'adminDashboard.paymentsCount' => ({required Object count}) => '${count} paiements',
+			'adminDashboard.aiCalls' => 'Appels IA',
+			'adminDashboard.cacheSaved' => ({required Object count}) => '${count} depuis le cache (gratuit)',
+			'adminDashboard.errorsCount' => ({required Object count}) => '${count} erreurs',
+			'adminDashboard.tokens' => 'Jetons',
+			'adminDashboard.tokensHint' => ({required Object input, required Object output}) => 'entrée ${input} · sortie ${output}',
+			'adminDashboard.usersTotal' => 'Utilisateurs',
+			'adminDashboard.newUsers' => ({required Object count}) => '${count} nouveaux',
+			'adminDashboard.disabledCount' => ({required Object count}) => '${count} bloqués',
+			'adminDashboard.premiumUsers' => 'Payants',
+			'adminDashboard.freeCount' => ({required Object count}) => '${count} gratuits',
+			'adminDashboard.freeUsers' => 'Gratuits',
+			'adminDashboard.activeUsers' => 'Utilisateurs IA actifs',
+			'adminDashboard.costPerUser' => 'Coût par utilisateur actif',
+			'adminDashboard.tickets' => 'Messages',
+			'adminDashboard.unreadCount' => ({required Object count}) => '${count} nouveaux',
+			'adminDashboard.chartCost' => 'Coût IA par jour',
+			'adminDashboard.chartCalls' => 'Appels IA par jour',
+			'adminDashboard.chartSignups' => 'Inscriptions par jour',
+			'adminDashboard.chartPlatform' => 'Utilisateurs par plateforme',
+			'adminDashboard.chartPlan' => 'Gratuit vs payant',
+			'adminDashboard.chartKinds' => 'Appels par fonction',
+			'adminDashboard.chartModels' => 'Coût par modèle',
+			'adminDashboard.chartVersions' => 'Versions de l\'application',
+			'adminDashboard.platformIos' => 'iOS',
+			'adminDashboard.platformAndroid' => 'Android',
+			'adminDashboard.platformUnknown' => 'Inconnu',
+			'adminDashboard.noAiUsage' => 'Aucune utilisation IA sur cette période',
+			'adminDashboard.unknownModel' => 'absent des tarifs',
+			'adminDashboard.usersCost' => 'Coût par utilisateur',
+			'adminDashboard.usersCount' => ({required Object count}) => '${count} utilisateurs',
+			'adminDashboard.searchUser' => 'Rechercher par nom, e-mail ou uid',
+			'adminDashboard.showAll' => ({required Object count}) => 'Afficher les ${count} utilisateurs',
+			'adminDashboard.callsCount' => ({required Object count}) => '${count} appels',
+			'adminDashboard.content' => 'Contenu et communauté',
+			'adminDashboard.sharedRecipes' => 'Recettes partagées',
+			'adminDashboard.forumPosts' => 'Fils du forum',
+			'adminDashboard.withPush' => 'Appareils avec notifications',
+			'adminDashboard.cacheEntries' => 'Liens en cache',
+			'adminDashboard.cacheHits' => 'Hits du cache (appels économisés)',
+			'adminDashboard.config' => 'Configuration à distance',
+			'adminDashboard.environment' => 'Environnement',
+			'adminDashboard.prod' => 'Production',
+			'adminDashboard.dev' => 'Dev',
+			'adminDashboard.adsEnabled' => 'Publicités',
+			'adminDashboard.adsFailOpen' => 'Ouvrir sans publicité',
+			'adminDashboard.on' => 'Actif',
+			'adminDashboard.off' => 'Inactif',
+			'adminDashboard.feedInterval' => 'Intervalle des pubs',
+			'adminDashboard.quotaSharedFree' => 'Vues gratuites par jour',
+			'adminDashboard.quotaSharedRewarded' => 'Vues vidéo par jour',
+			'adminDashboard.quotaAiRewarded' => 'IA vidéo par jour',
+			'adminDashboard.quotaAiPremium' => 'IA premium par jour',
+			'adminDashboard.minVersion' => 'Version minimale',
+			'adminDashboard.latestVersion' => 'Dernière version',
+			'adminDashboard.thisBuild' => 'Cette version',
+			'adminDashboard.pricing' => 'Tarifs des jetons',
+			'adminDashboard.pricingHint' => 'Dollars US par million de jetons. Les valeurs par défaut sont une estimation — à mettre à jour d\'après les tarifs de Google.',
+			'adminDashboard.editPricing' => 'Modifier les tarifs',
+			'adminDashboard.priceInput' => 'Entrée',
+			'adminDashboard.priceOutput' => 'Sortie',
+			'adminDashboard.priceCached' => 'Entrée en cache',
+			'adminDashboard.usdToIls' => 'Taux USD/ILS',
+			'adminDashboard.pricingSaved' => 'Tarifs enregistrés',
+			'adminDashboard.loadedAt' => ({required Object date}) => 'Mis à jour ${date}',
+			'adminDashboard.kindText' => 'Texte',
+			'adminDashboard.kindUrl' => 'Lien',
+			'adminDashboard.kindSocial' => 'Réseau social',
+			'adminDashboard.kindSocialVideo' => 'Vidéo (serveur)',
+			'adminDashboard.kindVideo' => 'Vidéo',
+			'adminDashboard.kindSearch' => 'Recherche',
+			'adminDashboard.kindImage' => 'Image',
+			'adminDashboard.kindReceipt' => 'Ticket de caisse',
+			'adminDashboard.kindNutrition' => 'Nutrition',
+			'adminDashboard.kindRefine' => 'Correction',
+			'adminDashboard.kindGenerate' => 'Génération',
+			'adminDashboard.allTime' => 'depuis toujours',
+			'adminDashboard.recentCalls' => 'Derniers appels',
+			'adminDashboard.noCalls' => 'Aucun appel',
+			'adminDashboard.cacheHit' => 'cache',
+			'adminDashboard.statusOk' => 'ok',
+			'adminDashboard.pushTitle' => 'Titre (facultatif)',
+			'adminDashboard.pushBody' => 'Message',
+			'adminDashboard.send' => 'Envoyer',
+			'adminDashboard.blocked' => 'Bloqués',
+			'adminDashboard.disable' => 'Bloquer le compte',
+			'adminDashboard.enable' => 'Débloquer',
+			'adminDashboard.blockMessageHint' => 'Ce que l\'utilisateur verra en essayant de se connecter',
+			'adminDashboard.disabledDone' => 'Compte bloqué',
+			'adminDashboard.enabledDone' => 'Blocage levé',
+			'adminDashboard.deleteAccount' => 'Supprimer le compte',
+			'adminDashboard.deleteAccountConfirm' => ({required Object name}) => 'Supprimer ${name} définitivement ? L\'utilisateur, ses recettes, livres et menus seront effacés sans retour possible.',
+			'adminDashboard.deleted' => 'Compte supprimé',
+			'adminDashboard.sendPush' => 'Envoyer une notification',
+			'adminDashboard.noPush' => 'Cet appareil n\'a pas de jeton push — le message n\'apparaîtra que dans l\'écran des notifications',
+			'adminDashboard.pushSent' => 'Notification envoyée',
+			'adminDashboard.sendPushAll' => 'Notifier tous les utilisateurs',
+			'adminDashboard.broadcastConfirm' => ({required Object count}) => 'Envoyer ce message aux ${count} utilisateurs ?',
+			'adminDashboard.broadcastDone' => ({required Object items, required Object sent, required Object failed}) => 'Écrit dans ${items} boîtes · ${sent} envois réussis · ${failed} échoués',
+			'adminDashboard.platformTag' => ({required Object platform, required Object version}) => '${platform} · v${version}',
+			'adminDashboard.lastSeen' => ({required Object date}) => 'Vu le ${date}',
+			'adminDashboard.disabledSince' => ({required Object message}) => 'Motif du blocage : ${message}',
+			'adminDashboard.unread' => 'Nouveaux',
+			'adminDashboard.markAllRead' => 'Tout lu',
+			'adminDashboard.allRead' => 'Tous les messages sont marqués lus',
+			'adminDashboard.noUnread' => 'Aucun nouveau message',
+			'adminDashboard.deleteTicket' => 'Supprimer le message',
+			'adminDashboard.deleteTicketConfirm' => ({required Object name}) => 'Supprimer le message de ${name} ?',
+			'adminDashboard.ticketDeleted' => 'Message supprimé',
+			'adminDashboard.reply' => 'Répondre',
+			'adminDashboard.replyHint' => 'La réponse arrive dans les notifications de l\'utilisateur (et en push)',
+			'adminDashboard.replySent' => 'Réponse envoyée',
+			'adminDashboard.yourReply' => ({required Object date}) => 'Votre réponse · ${date}',
+			'adminDashboard.markRead' => 'Marquer comme lu',
+			'adminDashboard.markUnread' => 'Marquer comme non lu',
+			'adminDashboard.pricingSync' => 'Synchroniser les prix depuis Google',
+			'adminDashboard.pricingSynced' => ({required Object count}) => '${count} modèles mis à jour depuis le catalogue Google Cloud Billing',
+			'adminDashboard.pricingSyncFailed' => ({required Object reason}) => 'Échec de la synchronisation : ${reason}',
+			'adminDashboard.pricingSourceCatalog' => ({required Object date}) => 'Source : Google Cloud Billing (tarifs réels) · ${date}',
+			'adminDashboard.pricingSourceManual' => ({required Object date}) => 'Source : saisi à la main · ${date}',
+			'adminDashboard.pricingSourceDefaults' => 'Estimation seulement — synchronisez pour récupérer les tarifs réels de Google',
+			'adminDashboard.searchPrice' => 'Recherche Google (grounding, \$ pour 1 000 requêtes)',
+			'adminDashboard.rateLine' => ({required Object rate, required Object date}) => '${rate} · actualisé chaque semaine · ${date}',
+			'adminDashboard.searchesCount' => ({required Object count}) => '${count} recherches',
+			'adminDashboard.rangeCustom' => 'Choisir',
+			'adminDashboard.customRange' => ({required Object from, required Object to}) => '${from} – ${to} · toucher pour changer',
+			'adminDashboard.priceImageOutput' => 'Sortie image',
+			'adminDashboard.dataSince' => ({required Object date}) => 'Données collectées depuis le ${date}. Les frais Google antérieurs n\'y figurent pas.',
+			'adminDashboard.grantTitle' => ({required Object name}) => 'Premium pour ${name} — pour combien de temps ?',
+			'adminDashboard.grantForever' => 'Pour toujours (jusqu\'à révocation)',
+			'adminDashboard.grantWeek' => 'Une semaine',
+			'adminDashboard.grantMonth' => 'Un mois',
+			'adminDashboard.grantYear' => 'Un an',
+			'adminDashboard.grantRange' => 'Dates exactes',
+			'adminDashboard.grantedUntil' => ({required Object date}) => 'Premium accordé jusqu\'au ${date}',
+			'adminDashboard.grantStarts' => ({required Object date}) => 'Commence le ${date}',
 			_ => null,
 		};
 	}

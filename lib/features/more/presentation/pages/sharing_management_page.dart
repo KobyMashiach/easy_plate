@@ -14,6 +14,7 @@ import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/navigation/main_tabs.dart';
 import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../../collab_containers/domain/entities/collab_container_entity.dart';
+import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
@@ -48,6 +49,8 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
   Map<String, PublicProfileEntity> _people = const {};
   bool _loading = true;
   bool _busy = false;
+
+  static const _thumbSize = 52.0;
 
   String get _uid => AuthSessionService().user?.uid ?? '';
 
@@ -300,6 +303,29 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
     ],
   );
 
+  /// The dish photo as a small rounded square at the end of a recipe row —
+  /// the far side from the title, which keeps the start edge for reading.
+  /// Nothing at all for a recipe without one: an empty placeholder would only
+  /// add a grey box to a list that is mostly names.
+  Widget? _thumb(RecipeEntity recipe) {
+    if (recipe.imageFileName == null && recipe.imageStoragePath == null) {
+      return null;
+    }
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
+      child: SizedBox(
+        width: _thumbSize,
+        height: _thumbSize,
+        child: ClayImage(
+          fileName: recipe.imageFileName,
+          remotePath: recipe.imageStoragePath,
+          radius: AppRadius.std,
+          fallbackIconSize: 20,
+        ),
+      ),
+    );
+  }
+
   Widget _ownedContainerCard(CollabContainerEntity container) {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -457,7 +483,19 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(collab.recipe.title, style: AppTextStyles.bodyLg),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    collab.recipe.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodyLg,
+                  ),
+                ),
+                ?_thumb(collab.recipe),
+              ],
+            ),
             const SizedBox(height: AppSpacing.sm),
             if (collab.members.isEmpty)
               Text(
@@ -510,7 +548,12 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(collab.recipe.title, style: AppTextStyles.bodyLg),
+                  Text(
+                    collab.recipe.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodyLg,
+                  ),
                   Text(
                     t.sharing.invitedBy(name: _nameOf(collab.ownerUid)),
                     style: AppTextStyles.labelMd.copyWith(
@@ -520,6 +563,7 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
                 ],
               ),
             ),
+            ?_thumb(collab.recipe),
             _roleTag(collab.roleOf(_uid)),
             IconButton(
               tooltip: t.sharing.leave,

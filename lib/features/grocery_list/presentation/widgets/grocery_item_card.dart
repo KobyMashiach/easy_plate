@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/amount_format.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -35,7 +36,7 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
     final unit = measurementUnitLabel(item.unit);
     // Ad-hoc lines carry a manual source too, so they show a quantity and open
     // the same breakdown sheet as recipe-derived ones.
-    final amountLabel = '${item.totalAmount} $unit'.trim();
+    final amountLabel = '${formatAmount(item.totalAmount)} $unit'.trim();
     final hasSources = item.sources.isNotEmpty;
 
     return Dismissible(
@@ -184,7 +185,7 @@ class _SourceBreakdown extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${source.amount} $unit'.trim(),
+                    '${formatAmount(source.amount)} $unit'.trim(),
                     style: AppTextStyles.labelMd.copyWith(
                       color: AppColors.onSurfaceVariant,
                     ),

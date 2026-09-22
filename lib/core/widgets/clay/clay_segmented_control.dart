@@ -4,12 +4,17 @@ import '../../constants/app_colors.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
+import '../count_badge.dart';
 
 class ClaySegment {
   final String label;
   final IconData icon;
 
-  const ClaySegment({required this.label, required this.icon});
+  /// A count drawn on the icon's corner, for a tab with things waiting in
+  /// it. Zero draws nothing.
+  final int badge;
+
+  const ClaySegment({required this.label, required this.icon, this.badge = 0});
 }
 
 /// Two or three choices on one recessed track, with a white clay pill that
@@ -104,22 +109,34 @@ class _SegmentLabel extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 200),
-              style: AppTextStyles.labelMd.copyWith(color: color),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(segment.icon, size: 18, color: color),
-                  const SizedBox(width: AppSpacing.xs),
-                  Flexible(
-                    child: Text(
-                      segment.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+            // Flexible so the inner row is bounded and its label can
+            // ellipsise: four segments on a narrow phone otherwise overflow.
+            Flexible(
+              child: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                style: AppTextStyles.labelMd.copyWith(color: color),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BadgedBox(
+                      count: segment.badge,
+                      top: -7,
+                      end: -9,
+                      ringColor: selected
+                          ? AppColors.surfaceContainerLowest
+                          : AppColors.surfaceContainer,
+                      child: Icon(segment.icon, size: 18, color: color),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: AppSpacing.xs),
+                    Flexible(
+                      child: Text(
+                        segment.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

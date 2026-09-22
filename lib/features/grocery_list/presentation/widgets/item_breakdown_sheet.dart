@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/amount_format.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -150,7 +151,7 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
             const SizedBox(height: AppSpacing.base),
             ..._sources.asMap().entries.map((entry) {
               final controller = TextEditingController(
-                text: entry.value.amount.toString(),
+                text: formatAmount(entry.value.amount),
               );
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),

@@ -70,6 +70,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$walkthrough$ar walkthrough = _Translations$walkthrough$ar._(_root);
 	@override late final _Translations$feedback$ar feedback = _Translations$feedback$ar._(_root);
 	@override late final _Translations$adminBilling$ar adminBilling = _Translations$adminBilling$ar._(_root);
+	@override late final _Translations$adminDashboard$ar adminDashboard = _Translations$adminDashboard$ar._(_root);
 }
 
 // Path: common
@@ -171,6 +172,8 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get appleLinked => 'مرتبط';
 	@override String get appleAlreadyUsed => 'حساب Apple هذا مرتبط بمستخدم آخر';
 	@override String get appleAlreadyLinked => 'تم ربط حساب Apple بالفعل';
+	@override String get blockedTitle => 'تم حظر الحساب';
+	@override String get blockedBody => 'تم حظر هذا الحساب من قِبل مدير التطبيق. للتفاصيل تواصل معنا من شاشة الدعم.';
 }
 
 // Path: profile
@@ -591,6 +594,9 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String get openInbox => 'فتح الإشعارات';
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} شارك/ت معك الكتاب "${recipe}"';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} شارك/ت معك الخطة "${recipe}"';
+	@override String get adminReply => 'رد من فريق EasyPlate على رسالتك';
+	@override String adminReplyQuote({required Object excerpt}) => 'رسالتك: "${excerpt}"';
+	@override String get adminMessage => 'رسالة من EasyPlate';
 }
 
 // Path: editor
@@ -1010,6 +1016,37 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get legal => 'يتجدد الاشتراك تلقائيًا في نهاية كل فترة ما لم يتم إلغاؤه قبل 24 ساعة على الأقل من انتهائها. يتم الدفع عبر حساب المتجر الخاص بك، ويمكن إدارته أو إلغاؤه من إعدادات المتجر.';
 	@override String get terms => 'شروط الاستخدام';
 	@override String get privacy => 'سياسة الخصوصية';
+	@override String startFor({required Object price}) => 'ابدأ بـ ${price}';
+	@override String get startFree => 'ابدأ مجانًا';
+	@override String get free => 'مجانًا';
+	@override String introDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		one: 'لليوم الأول',
+		other: 'لأول ${n} أيام',
+	);
+	@override String introWeeks({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		one: 'للأسبوع الأول',
+		other: 'لأول ${n} أسابيع',
+	);
+	@override String introMonths({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		one: 'للشهر الأول',
+		other: 'لأول ${n} أشهر',
+	);
+	@override String introYears({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		one: 'للسنة الأولى',
+		other: 'لأول ${n} سنوات',
+	);
+	@override String introPaidTerms({required Object price, required Object span, required Object then}) => '${price} ${span}، ثم ${then}. يتغيّر السعر تلقائيًا.';
+	@override String introFreeTerms({required Object span, required Object then}) => 'مجانًا ${span}، ثم ${then}. يبدأ الدفع تلقائيًا.';
+	@override String get redeem => 'لديّ رمز قسيمة';
+	@override String get redeemTitle => 'رمز القسيمة';
+	@override String get redeemHint => 'اكتب الرمز الذي استلمته';
+	@override String get redeemConfirm => 'الاستخدام في المتجر';
+	@override String get perWeekly => 'في الأسبوع';
+	@override String get perMonthly => 'في الشهر';
+	@override String get perTwoMonth => 'كل شهرين';
+	@override String get perThreeMonth => 'كل 3 أشهر';
+	@override String get perSixMonth => 'كل 6 أشهر';
+	@override String get perAnnual => 'في السنة';
 }
 
 // Path: walkthrough
@@ -1108,6 +1145,163 @@ class _Translations$adminBilling$ar extends Translations$adminBilling$he {
 	@override String get orphanBody => 'إيصالات وصلت تحت معرّف مجهول في RevenueCat، بدون مستخدم لفتحه';
 	@override String summary({required Object premium, required Object problems, required Object total}) => '${premium} بريميوم · ${problems} مشاكل · ${total} حسابات';
 	@override String get noEntitlementTag => 'بدون entitlement';
+}
+
+// Path: adminDashboard
+class _Translations$adminDashboard$ar extends Translations$adminDashboard$he {
+	_Translations$adminDashboard$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'لوحة التحكم';
+	@override String get tabDashboard => 'لوحة';
+	@override String get tabSubscriptions => 'الاشتراكات';
+	@override String get tabTickets => 'الرسائل';
+	@override String get rangeToday => 'اليوم';
+	@override String get rangeMonth => '30 يومًا';
+	@override String get rangeAll => 'الكل';
+	@override String get aiCost => 'تكلفة الذكاء الاصطناعي';
+	@override String get aiCostHint => 'الرموز × قائمة الأسعار';
+	@override String get revenue => 'الإيرادات';
+	@override String get revenueNone => 'لا مدفوعات في هذه الفترة';
+	@override String sandboxNote({required Object count}) => '${count} مدفوعات sandbox لم تُحتسب';
+	@override String paymentsCount({required Object count}) => '${count} مدفوعات';
+	@override String get aiCalls => 'طلبات الذكاء الاصطناعي';
+	@override String cacheSaved({required Object count}) => '${count} من الذاكرة المؤقتة (مجانًا)';
+	@override String errorsCount({required Object count}) => '${count} أخطاء';
+	@override String get tokens => 'الرموز';
+	@override String tokensHint({required Object input, required Object output}) => 'إدخال ${input} · إخراج ${output}';
+	@override String get usersTotal => 'إجمالي المستخدمين';
+	@override String newUsers({required Object count}) => '${count} جدد';
+	@override String disabledCount({required Object count}) => '${count} محظورون';
+	@override String get premiumUsers => 'مدفوع';
+	@override String freeCount({required Object count}) => '${count} مجاني';
+	@override String get freeUsers => 'مجاني';
+	@override String get activeUsers => 'مستخدمو الذكاء الاصطناعي النشطون';
+	@override String get costPerUser => 'التكلفة لكل مستخدم نشط';
+	@override String get tickets => 'الرسائل';
+	@override String unreadCount({required Object count}) => '${count} جديدة';
+	@override String get chartCost => 'تكلفة الذكاء الاصطناعي يوميًا';
+	@override String get chartCalls => 'الطلبات يوميًا';
+	@override String get chartSignups => 'التسجيلات يوميًا';
+	@override String get chartPlatform => 'المستخدمون حسب المنصة';
+	@override String get chartPlan => 'مجاني مقابل مدفوع';
+	@override String get chartKinds => 'الطلبات حسب الميزة';
+	@override String get chartModels => 'التكلفة حسب النموذج';
+	@override String get chartVersions => 'إصدارات التطبيق';
+	@override String get platformIos => 'iOS';
+	@override String get platformAndroid => 'Android';
+	@override String get platformUnknown => 'غير معروف';
+	@override String get noAiUsage => 'لا استخدام للذكاء الاصطناعي في هذه الفترة';
+	@override String get unknownModel => 'ليس في قائمة الأسعار';
+	@override String get usersCost => 'التكلفة حسب المستخدم';
+	@override String usersCount({required Object count}) => '${count} مستخدمين';
+	@override String get searchUser => 'بحث بالاسم أو البريد أو uid';
+	@override String showAll({required Object count}) => 'عرض كل ${count} المستخدمين';
+	@override String callsCount({required Object count}) => '${count} طلبات';
+	@override String get content => 'المحتوى والمجتمع';
+	@override String get sharedRecipes => 'وصفات مشتركة';
+	@override String get forumPosts => 'مواضيع المنتدى';
+	@override String get withPush => 'أجهزة مع إشعارات';
+	@override String get cacheEntries => 'روابط محفوظة';
+	@override String get cacheHits => 'إصابات الذاكرة (طلبات موفّرة)';
+	@override String get config => 'الإعدادات عن بُعد';
+	@override String get environment => 'البيئة';
+	@override String get prod => 'Production';
+	@override String get dev => 'Dev';
+	@override String get adsEnabled => 'الإعلانات';
+	@override String get adsFailOpen => 'فتح بدون إعلان';
+	@override String get on => 'مفعّل';
+	@override String get off => 'معطّل';
+	@override String get feedInterval => 'فاصل إعلانات الخلاصة';
+	@override String get quotaSharedFree => 'مشاهدات مجانية يوميًا';
+	@override String get quotaSharedRewarded => 'مشاهدات بالفيديو يوميًا';
+	@override String get quotaAiRewarded => 'ذكاء اصطناعي بالفيديو يوميًا';
+	@override String get quotaAiPremium => 'ذكاء اصطناعي للمميز يوميًا';
+	@override String get minVersion => 'الحد الأدنى للإصدار';
+	@override String get latestVersion => 'أحدث إصدار';
+	@override String get thisBuild => 'هذا الإصدار';
+	@override String get pricing => 'قائمة أسعار الرموز';
+	@override String get pricingHint => 'دولار أمريكي لكل مليون رمز. القيم الافتراضية تقديرية — حدّثها من قائمة أسعار Google.';
+	@override String get editPricing => 'تعديل الأسعار';
+	@override String get priceInput => 'إدخال';
+	@override String get priceOutput => 'إخراج';
+	@override String get priceCached => 'إدخال مخزّن';
+	@override String get usdToIls => 'سعر الدولار/الشيكل';
+	@override String get pricingSaved => 'تم حفظ الأسعار';
+	@override String loadedAt({required Object date}) => 'تم التحديث ${date}';
+	@override String get kindText => 'نص';
+	@override String get kindUrl => 'رابط';
+	@override String get kindSocial => 'شبكة اجتماعية';
+	@override String get kindSocialVideo => 'فيديو (خادم)';
+	@override String get kindVideo => 'فيديو';
+	@override String get kindSearch => 'بحث';
+	@override String get kindImage => 'صورة';
+	@override String get kindReceipt => 'فاتورة';
+	@override String get kindNutrition => 'تغذية';
+	@override String get kindRefine => 'تحسين';
+	@override String get kindGenerate => 'توليد';
+	@override String get allTime => 'كل الوقت';
+	@override String get recentCalls => 'آخر الطلبات';
+	@override String get noCalls => 'لا طلبات';
+	@override String get cacheHit => 'ذاكرة';
+	@override String get statusOk => 'سليم';
+	@override String get pushTitle => 'العنوان (اختياري)';
+	@override String get pushBody => 'نص الرسالة';
+	@override String get send => 'إرسال';
+	@override String get blocked => 'محظورون';
+	@override String get disable => 'حظر الحساب';
+	@override String get enable => 'إلغاء الحظر';
+	@override String get blockMessageHint => 'ما سيراه المستخدم عند محاولة الدخول';
+	@override String get disabledDone => 'تم حظر الحساب';
+	@override String get enabledDone => 'تم إلغاء الحظر';
+	@override String get deleteAccount => 'حذف الحساب';
+	@override String deleteAccountConfirm({required Object name}) => 'حذف ${name} نهائيًا؟ سيُحذف المستخدم ووصفاته وكتبه وقوائمه ولا يمكن الاسترجاع.';
+	@override String get deleted => 'تم حذف الحساب';
+	@override String get sendPush => 'إرسال إشعار';
+	@override String get noPush => 'لا يوجد رمز إشعارات لهذا الجهاز — ستظهر الرسالة في شاشة الإشعارات فقط';
+	@override String get pushSent => 'تم إرسال الإشعار';
+	@override String get sendPushAll => 'إشعار لجميع المستخدمين';
+	@override String broadcastConfirm({required Object count}) => 'إرسال الرسالة إلى جميع المستخدمين (${count})؟';
+	@override String broadcastDone({required Object items, required Object sent, required Object failed}) => 'كُتبت في ${items} صندوقًا · ${sent} إشعارات نجحت · ${failed} فشلت';
+	@override String platformTag({required Object platform, required Object version}) => '${platform} · v${version}';
+	@override String lastSeen({required Object date}) => 'آخر ظهور ${date}';
+	@override String disabledSince({required Object message}) => 'سبب الحظر: ${message}';
+	@override String get unread => 'جديدة';
+	@override String get markAllRead => 'قرأت الكل';
+	@override String get allRead => 'تم تعليم كل الرسائل كمقروءة';
+	@override String get noUnread => 'لا رسائل جديدة';
+	@override String get deleteTicket => 'حذف الرسالة';
+	@override String deleteTicketConfirm({required Object name}) => 'حذف رسالة ${name}؟';
+	@override String get ticketDeleted => 'تم حذف الرسالة';
+	@override String get reply => 'رد';
+	@override String get replyHint => 'سيصل الرد إلى إشعارات المستخدم (وكإشعار على الهاتف)';
+	@override String get replySent => 'تم إرسال الرد';
+	@override String yourReply({required Object date}) => 'ردك · ${date}';
+	@override String get markRead => 'تعليم كمقروء';
+	@override String get markUnread => 'تعليم كغير مقروء';
+	@override String get pricingSync => 'مزامنة الأسعار من Google';
+	@override String pricingSynced({required Object count}) => 'تم تحديث ${count} نماذج من كتالوج Google Cloud Billing';
+	@override String pricingSyncFailed({required Object reason}) => 'فشلت المزامنة: ${reason}';
+	@override String pricingSourceCatalog({required Object date}) => 'المصدر: Google Cloud Billing (أسعار حقيقية) · ${date}';
+	@override String pricingSourceManual({required Object date}) => 'المصدر: أُدخل يدويًا · ${date}';
+	@override String get pricingSourceDefaults => 'تقدير فقط — اضغط مزامنة لجلب الأسعار الحقيقية من Google';
+	@override String get searchPrice => 'بحث Google (دولار لكل 1000 استعلام)';
+	@override String rateLine({required Object rate, required Object date}) => '${rate} · يتحدّث أسبوعيًا · ${date}';
+	@override String searchesCount({required Object count}) => '${count} عمليات بحث';
+	@override String get rangeCustom => 'اختيار';
+	@override String customRange({required Object from, required Object to}) => '${from} – ${to} · اضغط للتغيير';
+	@override String get priceImageOutput => 'إخراج صورة';
+	@override String dataSince({required Object date}) => 'تُجمع البيانات منذ ${date}. رسوم Google السابقة غير مسجّلة هنا.';
+	@override String grantTitle({required Object name}) => 'اشتراك مميز لـ ${name} — لكم من الوقت؟';
+	@override String get grantForever => 'دائمًا (حتى أُلغيه)';
+	@override String get grantWeek => 'أسبوع';
+	@override String get grantMonth => 'شهر';
+	@override String get grantYear => 'سنة';
+	@override String get grantRange => 'نطاق تواريخ محدد';
+	@override String grantedUntil({required Object date}) => 'مُنح الاشتراك حتى ${date}';
+	@override String grantStarts({required Object date}) => 'يبدأ في ${date}';
 }
 
 // Path: walkthrough.topics
@@ -1343,6 +1537,8 @@ extension on TranslationsAr {
 			'auth.appleLinked' => 'مرتبط',
 			'auth.appleAlreadyUsed' => 'حساب Apple هذا مرتبط بمستخدم آخر',
 			'auth.appleAlreadyLinked' => 'تم ربط حساب Apple بالفعل',
+			'auth.blockedTitle' => 'تم حظر الحساب',
+			'auth.blockedBody' => 'تم حظر هذا الحساب من قِبل مدير التطبيق. للتفاصيل تواصل معنا من شاشة الدعم.',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',
@@ -1637,6 +1833,9 @@ extension on TranslationsAr {
 			'notifications.openInbox' => 'فتح الإشعارات',
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك الكتاب "${recipe}"',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك الخطة "${recipe}"',
+			'notifications.adminReply' => 'رد من فريق EasyPlate على رسالتك',
+			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'رسالتك: "${excerpt}"',
+			'notifications.adminMessage' => 'رسالة من EasyPlate',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -1766,13 +1965,13 @@ extension on TranslationsAr {
 			'receipt.title' => 'مسح إيصال',
 			'receipt.subtitle' => 'صوّر إيصالاً أو ارفع PDF، وتُحفظ الأسعار لقائمة التسوق',
 			'receipt.camera' => 'تصوير الإيصال',
+			_ => null,
+		} ?? switch (path) {
 			'receipt.cameraHint' => 'إيصال طويل؟ التقط عدة صور وسندمجها',
 			'receipt.gallery' => 'اختيار من المعرض',
 			'receipt.pdf' => 'ملف PDF',
 			'receipt.addPhoto' => 'صورة أخرى',
 			'receipt.scan' => 'مسح',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.scanning' => 'جارٍ قراءة الإيصال…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} صور',
 			'receipt.scanFailed' => 'تعذّرت قراءة الإيصال. جرّب صورة أوضح أو PDF.',
@@ -1959,6 +2158,25 @@ extension on TranslationsAr {
 			'premium.legal' => 'يتجدد الاشتراك تلقائيًا في نهاية كل فترة ما لم يتم إلغاؤه قبل 24 ساعة على الأقل من انتهائها. يتم الدفع عبر حساب المتجر الخاص بك، ويمكن إدارته أو إلغاؤه من إعدادات المتجر.',
 			'premium.terms' => 'شروط الاستخدام',
 			'premium.privacy' => 'سياسة الخصوصية',
+			'premium.startFor' => ({required Object price}) => 'ابدأ بـ ${price}',
+			'premium.startFree' => 'ابدأ مجانًا',
+			'premium.free' => 'مجانًا',
+			'premium.introDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, one: 'لليوم الأول', other: 'لأول ${n} أيام', ), 
+			'premium.introWeeks' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, one: 'للأسبوع الأول', other: 'لأول ${n} أسابيع', ), 
+			'premium.introMonths' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, one: 'للشهر الأول', other: 'لأول ${n} أشهر', ), 
+			'premium.introYears' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, one: 'للسنة الأولى', other: 'لأول ${n} سنوات', ), 
+			'premium.introPaidTerms' => ({required Object price, required Object span, required Object then}) => '${price} ${span}، ثم ${then}. يتغيّر السعر تلقائيًا.',
+			'premium.introFreeTerms' => ({required Object span, required Object then}) => 'مجانًا ${span}، ثم ${then}. يبدأ الدفع تلقائيًا.',
+			'premium.redeem' => 'لديّ رمز قسيمة',
+			'premium.redeemTitle' => 'رمز القسيمة',
+			'premium.redeemHint' => 'اكتب الرمز الذي استلمته',
+			'premium.redeemConfirm' => 'الاستخدام في المتجر',
+			'premium.perWeekly' => 'في الأسبوع',
+			'premium.perMonthly' => 'في الشهر',
+			'premium.perTwoMonth' => 'كل شهرين',
+			'premium.perThreeMonth' => 'كل 3 أشهر',
+			'premium.perSixMonth' => 'كل 6 أشهر',
+			'premium.perAnnual' => 'في السنة',
 			'walkthrough.title' => 'الدليل',
 			'walkthrough.start' => 'تشغيل الدليل',
 			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
@@ -2081,6 +2299,154 @@ extension on TranslationsAr {
 			'adminBilling.orphanBody' => 'إيصالات وصلت تحت معرّف مجهول في RevenueCat، بدون مستخدم لفتحه',
 			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} بريميوم · ${problems} مشاكل · ${total} حسابات',
 			'adminBilling.noEntitlementTag' => 'بدون entitlement',
+			'adminDashboard.title' => 'لوحة التحكم',
+			'adminDashboard.tabDashboard' => 'لوحة',
+			'adminDashboard.tabSubscriptions' => 'الاشتراكات',
+			'adminDashboard.tabTickets' => 'الرسائل',
+			'adminDashboard.rangeToday' => 'اليوم',
+			'adminDashboard.rangeMonth' => '30 يومًا',
+			'adminDashboard.rangeAll' => 'الكل',
+			'adminDashboard.aiCost' => 'تكلفة الذكاء الاصطناعي',
+			'adminDashboard.aiCostHint' => 'الرموز × قائمة الأسعار',
+			'adminDashboard.revenue' => 'الإيرادات',
+			'adminDashboard.revenueNone' => 'لا مدفوعات في هذه الفترة',
+			'adminDashboard.sandboxNote' => ({required Object count}) => '${count} مدفوعات sandbox لم تُحتسب',
+			'adminDashboard.paymentsCount' => ({required Object count}) => '${count} مدفوعات',
+			'adminDashboard.aiCalls' => 'طلبات الذكاء الاصطناعي',
+			'adminDashboard.cacheSaved' => ({required Object count}) => '${count} من الذاكرة المؤقتة (مجانًا)',
+			'adminDashboard.errorsCount' => ({required Object count}) => '${count} أخطاء',
+			'adminDashboard.tokens' => 'الرموز',
+			'adminDashboard.tokensHint' => ({required Object input, required Object output}) => 'إدخال ${input} · إخراج ${output}',
+			'adminDashboard.usersTotal' => 'إجمالي المستخدمين',
+			'adminDashboard.newUsers' => ({required Object count}) => '${count} جدد',
+			'adminDashboard.disabledCount' => ({required Object count}) => '${count} محظورون',
+			'adminDashboard.premiumUsers' => 'مدفوع',
+			'adminDashboard.freeCount' => ({required Object count}) => '${count} مجاني',
+			'adminDashboard.freeUsers' => 'مجاني',
+			'adminDashboard.activeUsers' => 'مستخدمو الذكاء الاصطناعي النشطون',
+			'adminDashboard.costPerUser' => 'التكلفة لكل مستخدم نشط',
+			'adminDashboard.tickets' => 'الرسائل',
+			'adminDashboard.unreadCount' => ({required Object count}) => '${count} جديدة',
+			'adminDashboard.chartCost' => 'تكلفة الذكاء الاصطناعي يوميًا',
+			'adminDashboard.chartCalls' => 'الطلبات يوميًا',
+			'adminDashboard.chartSignups' => 'التسجيلات يوميًا',
+			'adminDashboard.chartPlatform' => 'المستخدمون حسب المنصة',
+			'adminDashboard.chartPlan' => 'مجاني مقابل مدفوع',
+			'adminDashboard.chartKinds' => 'الطلبات حسب الميزة',
+			'adminDashboard.chartModels' => 'التكلفة حسب النموذج',
+			'adminDashboard.chartVersions' => 'إصدارات التطبيق',
+			'adminDashboard.platformIos' => 'iOS',
+			'adminDashboard.platformAndroid' => 'Android',
+			'adminDashboard.platformUnknown' => 'غير معروف',
+			'adminDashboard.noAiUsage' => 'لا استخدام للذكاء الاصطناعي في هذه الفترة',
+			'adminDashboard.unknownModel' => 'ليس في قائمة الأسعار',
+			'adminDashboard.usersCost' => 'التكلفة حسب المستخدم',
+			'adminDashboard.usersCount' => ({required Object count}) => '${count} مستخدمين',
+			'adminDashboard.searchUser' => 'بحث بالاسم أو البريد أو uid',
+			'adminDashboard.showAll' => ({required Object count}) => 'عرض كل ${count} المستخدمين',
+			'adminDashboard.callsCount' => ({required Object count}) => '${count} طلبات',
+			'adminDashboard.content' => 'المحتوى والمجتمع',
+			'adminDashboard.sharedRecipes' => 'وصفات مشتركة',
+			'adminDashboard.forumPosts' => 'مواضيع المنتدى',
+			'adminDashboard.withPush' => 'أجهزة مع إشعارات',
+			'adminDashboard.cacheEntries' => 'روابط محفوظة',
+			'adminDashboard.cacheHits' => 'إصابات الذاكرة (طلبات موفّرة)',
+			'adminDashboard.config' => 'الإعدادات عن بُعد',
+			'adminDashboard.environment' => 'البيئة',
+			'adminDashboard.prod' => 'Production',
+			'adminDashboard.dev' => 'Dev',
+			'adminDashboard.adsEnabled' => 'الإعلانات',
+			'adminDashboard.adsFailOpen' => 'فتح بدون إعلان',
+			'adminDashboard.on' => 'مفعّل',
+			'adminDashboard.off' => 'معطّل',
+			'adminDashboard.feedInterval' => 'فاصل إعلانات الخلاصة',
+			'adminDashboard.quotaSharedFree' => 'مشاهدات مجانية يوميًا',
+			'adminDashboard.quotaSharedRewarded' => 'مشاهدات بالفيديو يوميًا',
+			'adminDashboard.quotaAiRewarded' => 'ذكاء اصطناعي بالفيديو يوميًا',
+			'adminDashboard.quotaAiPremium' => 'ذكاء اصطناعي للمميز يوميًا',
+			'adminDashboard.minVersion' => 'الحد الأدنى للإصدار',
+			'adminDashboard.latestVersion' => 'أحدث إصدار',
+			'adminDashboard.thisBuild' => 'هذا الإصدار',
+			'adminDashboard.pricing' => 'قائمة أسعار الرموز',
+			'adminDashboard.pricingHint' => 'دولار أمريكي لكل مليون رمز. القيم الافتراضية تقديرية — حدّثها من قائمة أسعار Google.',
+			'adminDashboard.editPricing' => 'تعديل الأسعار',
+			'adminDashboard.priceInput' => 'إدخال',
+			'adminDashboard.priceOutput' => 'إخراج',
+			'adminDashboard.priceCached' => 'إدخال مخزّن',
+			'adminDashboard.usdToIls' => 'سعر الدولار/الشيكل',
+			'adminDashboard.pricingSaved' => 'تم حفظ الأسعار',
+			'adminDashboard.loadedAt' => ({required Object date}) => 'تم التحديث ${date}',
+			'adminDashboard.kindText' => 'نص',
+			'adminDashboard.kindUrl' => 'رابط',
+			'adminDashboard.kindSocial' => 'شبكة اجتماعية',
+			'adminDashboard.kindSocialVideo' => 'فيديو (خادم)',
+			'adminDashboard.kindVideo' => 'فيديو',
+			'adminDashboard.kindSearch' => 'بحث',
+			'adminDashboard.kindImage' => 'صورة',
+			'adminDashboard.kindReceipt' => 'فاتورة',
+			'adminDashboard.kindNutrition' => 'تغذية',
+			'adminDashboard.kindRefine' => 'تحسين',
+			'adminDashboard.kindGenerate' => 'توليد',
+			'adminDashboard.allTime' => 'كل الوقت',
+			'adminDashboard.recentCalls' => 'آخر الطلبات',
+			'adminDashboard.noCalls' => 'لا طلبات',
+			'adminDashboard.cacheHit' => 'ذاكرة',
+			'adminDashboard.statusOk' => 'سليم',
+			'adminDashboard.pushTitle' => 'العنوان (اختياري)',
+			'adminDashboard.pushBody' => 'نص الرسالة',
+			'adminDashboard.send' => 'إرسال',
+			'adminDashboard.blocked' => 'محظورون',
+			'adminDashboard.disable' => 'حظر الحساب',
+			'adminDashboard.enable' => 'إلغاء الحظر',
+			'adminDashboard.blockMessageHint' => 'ما سيراه المستخدم عند محاولة الدخول',
+			'adminDashboard.disabledDone' => 'تم حظر الحساب',
+			'adminDashboard.enabledDone' => 'تم إلغاء الحظر',
+			'adminDashboard.deleteAccount' => 'حذف الحساب',
+			'adminDashboard.deleteAccountConfirm' => ({required Object name}) => 'حذف ${name} نهائيًا؟ سيُحذف المستخدم ووصفاته وكتبه وقوائمه ولا يمكن الاسترجاع.',
+			'adminDashboard.deleted' => 'تم حذف الحساب',
+			'adminDashboard.sendPush' => 'إرسال إشعار',
+			'adminDashboard.noPush' => 'لا يوجد رمز إشعارات لهذا الجهاز — ستظهر الرسالة في شاشة الإشعارات فقط',
+			'adminDashboard.pushSent' => 'تم إرسال الإشعار',
+			'adminDashboard.sendPushAll' => 'إشعار لجميع المستخدمين',
+			'adminDashboard.broadcastConfirm' => ({required Object count}) => 'إرسال الرسالة إلى جميع المستخدمين (${count})؟',
+			'adminDashboard.broadcastDone' => ({required Object items, required Object sent, required Object failed}) => 'كُتبت في ${items} صندوقًا · ${sent} إشعارات نجحت · ${failed} فشلت',
+			'adminDashboard.platformTag' => ({required Object platform, required Object version}) => '${platform} · v${version}',
+			'adminDashboard.lastSeen' => ({required Object date}) => 'آخر ظهور ${date}',
+			'adminDashboard.disabledSince' => ({required Object message}) => 'سبب الحظر: ${message}',
+			'adminDashboard.unread' => 'جديدة',
+			'adminDashboard.markAllRead' => 'قرأت الكل',
+			'adminDashboard.allRead' => 'تم تعليم كل الرسائل كمقروءة',
+			'adminDashboard.noUnread' => 'لا رسائل جديدة',
+			'adminDashboard.deleteTicket' => 'حذف الرسالة',
+			'adminDashboard.deleteTicketConfirm' => ({required Object name}) => 'حذف رسالة ${name}؟',
+			'adminDashboard.ticketDeleted' => 'تم حذف الرسالة',
+			'adminDashboard.reply' => 'رد',
+			'adminDashboard.replyHint' => 'سيصل الرد إلى إشعارات المستخدم (وكإشعار على الهاتف)',
+			'adminDashboard.replySent' => 'تم إرسال الرد',
+			'adminDashboard.yourReply' => ({required Object date}) => 'ردك · ${date}',
+			'adminDashboard.markRead' => 'تعليم كمقروء',
+			'adminDashboard.markUnread' => 'تعليم كغير مقروء',
+			'adminDashboard.pricingSync' => 'مزامنة الأسعار من Google',
+			'adminDashboard.pricingSynced' => ({required Object count}) => 'تم تحديث ${count} نماذج من كتالوج Google Cloud Billing',
+			'adminDashboard.pricingSyncFailed' => ({required Object reason}) => 'فشلت المزامنة: ${reason}',
+			'adminDashboard.pricingSourceCatalog' => ({required Object date}) => 'المصدر: Google Cloud Billing (أسعار حقيقية) · ${date}',
+			'adminDashboard.pricingSourceManual' => ({required Object date}) => 'المصدر: أُدخل يدويًا · ${date}',
+			'adminDashboard.pricingSourceDefaults' => 'تقدير فقط — اضغط مزامنة لجلب الأسعار الحقيقية من Google',
+			'adminDashboard.searchPrice' => 'بحث Google (دولار لكل 1000 استعلام)',
+			'adminDashboard.rateLine' => ({required Object rate, required Object date}) => '${rate} · يتحدّث أسبوعيًا · ${date}',
+			'adminDashboard.searchesCount' => ({required Object count}) => '${count} عمليات بحث',
+			'adminDashboard.rangeCustom' => 'اختيار',
+			'adminDashboard.customRange' => ({required Object from, required Object to}) => '${from} – ${to} · اضغط للتغيير',
+			'adminDashboard.priceImageOutput' => 'إخراج صورة',
+			'adminDashboard.dataSince' => ({required Object date}) => 'تُجمع البيانات منذ ${date}. رسوم Google السابقة غير مسجّلة هنا.',
+			'adminDashboard.grantTitle' => ({required Object name}) => 'اشتراك مميز لـ ${name} — لكم من الوقت؟',
+			'adminDashboard.grantForever' => 'دائمًا (حتى أُلغيه)',
+			'adminDashboard.grantWeek' => 'أسبوع',
+			'adminDashboard.grantMonth' => 'شهر',
+			'adminDashboard.grantYear' => 'سنة',
+			'adminDashboard.grantRange' => 'نطاق تواريخ محدد',
+			'adminDashboard.grantedUntil' => ({required Object date}) => 'مُنح الاشتراك حتى ${date}',
+			'adminDashboard.grantStarts' => ({required Object date}) => 'يبدأ في ${date}',
 			_ => null,
 		};
 	}

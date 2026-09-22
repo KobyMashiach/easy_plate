@@ -39,6 +39,9 @@ abstract class ApiConfig {
 
   static String get socialRecipeUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/socialRecipe');
 
+  /// The administrator's account actions (block, delete, push), same deploy.
+  static String get adminUsersUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/adminUsers');
+
   static const model = String.fromEnvironment(
     'GEMINI_MODEL',
     defaultValue: 'gemini-3.8-flash',

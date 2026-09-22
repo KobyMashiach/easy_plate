@@ -17,6 +17,13 @@ class AppNotificationEntity {
 
   /// The community post, for [AppNotificationType.sharedRecipeUpdated].
   final String? sharedId;
+
+  /// The administrator's words, for [AppNotificationType.adminReply] (with
+  /// the opening of the message it answers) and
+  /// [AppNotificationType.adminMessage] (with its [title]).
+  final String? message;
+  final String? feedbackExcerpt;
+  final String? title;
   final bool read;
   final DateTime createdAt;
 
@@ -33,6 +40,9 @@ class AppNotificationEntity {
     this.role,
     this.kind = CollabKind.recipe,
     this.sharedId,
+    this.message,
+    this.feedbackExcerpt,
+    this.title,
   });
 
   AppNotificationEntity withFromName(String name) => AppNotificationEntity(
@@ -46,6 +56,9 @@ class AppNotificationEntity {
     role: role,
     kind: kind,
     sharedId: sharedId,
+    message: message,
+    feedbackExcerpt: feedbackExcerpt,
+    title: title,
     read: read,
     createdAt: createdAt,
   );
