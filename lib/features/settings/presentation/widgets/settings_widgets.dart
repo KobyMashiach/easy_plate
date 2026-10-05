@@ -6,6 +6,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// The rows the settings, preferences and notification screens are built
 /// from, so the three read as one place.
@@ -282,7 +283,8 @@ class _SlotChip extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppMotion.quick,
+        curve: AppMotion.easeOut,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
           vertical: AppSpacing.base,

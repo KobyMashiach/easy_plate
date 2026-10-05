@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../domain/entities/book_spine.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// The ten spine colours. The first three follow the theme's own accents;
 /// the rest are fixed mid-saturation tones that read on the lavender shelf
@@ -43,7 +44,8 @@ class SpineColorPicker extends StatelessWidget {
             onTap: () => onSelect(spine),
             behavior: HitTestBehavior.opaque,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
+              duration: AppMotion.quick,
+              curve: AppMotion.easeOut,
               width: 44,
               height: 44,
               decoration: BoxDecoration(

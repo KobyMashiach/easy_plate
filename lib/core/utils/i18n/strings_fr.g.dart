@@ -751,6 +751,16 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get openBlankEditor => 'Ouvrir un éditeur vide';
 	@override String get generate => 'Créer la recette';
 	@override String get generating => 'Rédaction de votre recette...';
+	@override String get file => 'Enregistrement / PDF';
+	@override String get fileHint => 'Choisissez un fichier audio où quelqu’un lit la recette, un message vocal ou un PDF de recette. Vous pouvez aussi partager un tel fichier directement vers Easy Plate depuis n’importe quelle application.';
+	@override String get chooseFile => 'Choisir un fichier';
+	@override String get replaceFile => 'Autre fichier';
+	@override String get fileTooLarge => 'Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.';
+	@override String get fileUnsupported => 'Seuls les fichiers audio et les PDF peuvent être analysés.';
+	@override String sharedIn({required Object app}) => 'Depuis ${app}';
+	@override String get addFile => 'Ajouter un fichier';
+	@override String filesAsOne({required Object count}) => '${count} fichiers — analysés ensemble comme une seule recette, dans l’ordre';
+	@override String get shareMoreHint => 'Vous pouvez revenir dans WhatsApp et partager un autre enregistrement : il rejoindra la liste ici.';
 }
 
 // Path: mealPlanner
@@ -2054,9 +2064,21 @@ extension on TranslationsFr {
 			'ingestion.openBlankEditor' => 'Ouvrir un éditeur vide',
 			'ingestion.generate' => 'Créer la recette',
 			'ingestion.generating' => 'Rédaction de votre recette...',
+			'ingestion.file' => 'Enregistrement / PDF',
+			'ingestion.fileHint' => 'Choisissez un fichier audio où quelqu’un lit la recette, un message vocal ou un PDF de recette. Vous pouvez aussi partager un tel fichier directement vers Easy Plate depuis n’importe quelle application.',
+			'ingestion.chooseFile' => 'Choisir un fichier',
+			'ingestion.replaceFile' => 'Autre fichier',
+			'ingestion.fileTooLarge' => 'Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.',
+			'ingestion.fileUnsupported' => 'Seuls les fichiers audio et les PDF peuvent être analysés.',
+			'ingestion.sharedIn' => ({required Object app}) => 'Depuis ${app}',
+			'ingestion.addFile' => 'Ajouter un fichier',
+			'ingestion.filesAsOne' => ({required Object count}) => '${count} fichiers — analysés ensemble comme une seule recette, dans l’ordre',
+			'ingestion.shareMoreHint' => 'Vous pouvez revenir dans WhatsApp et partager un autre enregistrement : il rejoindra la liste ici.',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'Ajouter un repas',
 			'mealPlanner.mealName' => 'Nom du repas',
 			'mealPlanner.addItem' => 'Ajouter un élément',
@@ -2067,8 +2089,6 @@ extension on TranslationsFr {
 			'mealPlanner.breakfast' => 'Petit-déjeuner',
 			'mealPlanner.lunch' => 'Déjeuner',
 			'mealPlanner.dinner' => 'Dîner',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'Collation du matin',
 			'mealPlanner.afternoonSnack' => 'Collation de l\'après-midi',
 			'mealPlanner.eveningSnack' => 'Collation du soir',
@@ -2571,6 +2591,8 @@ extension on TranslationsFr {
 			'adminDashboard.kindNutrition' => 'Nutrition',
 			'adminDashboard.kindRefine' => 'Correction',
 			'adminDashboard.kindGenerate' => 'Génération',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.allTime' => 'depuis toujours',
 			'adminDashboard.recentCalls' => 'Derniers appels',
 			'adminDashboard.noCalls' => 'Aucun appel',
@@ -2581,8 +2603,6 @@ extension on TranslationsFr {
 			'adminDashboard.send' => 'Envoyer',
 			'adminDashboard.blocked' => 'Bloqués',
 			'adminDashboard.disable' => 'Bloquer le compte',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.enable' => 'Débloquer',
 			'adminDashboard.blockMessageHint' => 'Ce que l\'utilisateur verra en essayant de se connecter',
 			'adminDashboard.disabledDone' => 'Compte bloqué',

@@ -751,6 +751,16 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get openBlankEditor => 'Открыть пустой редактор';
 	@override String get generate => 'Создать рецепт';
 	@override String get generating => 'Пишем ваш рецепт...';
+	@override String get file => 'Запись / PDF';
+	@override String get fileHint => 'Выберите аудиофайл, где кто-то читает рецепт, голосовое сообщение или PDF с рецептом. Такой файл можно также отправить в Easy Plate прямо из любого приложения.';
+	@override String get chooseFile => 'Выбрать файл';
+	@override String get replaceFile => 'Другой файл';
+	@override String get fileTooLarge => 'Файлы слишком большие. Общий предел — 10 МБ, около десяти минут записи.';
+	@override String get fileUnsupported => 'Анализировать можно только аудиофайлы и PDF.';
+	@override String sharedIn({required Object app}) => 'Из ${app}';
+	@override String get addFile => 'Добавить файл';
+	@override String filesAsOne({required Object count}) => '${count} файлов — будут проанализированы вместе как один рецепт, по порядку';
+	@override String get shareMoreHint => 'Можно вернуться в WhatsApp и поделиться ещё одной записью — она добавится к списку здесь.';
 }
 
 // Path: mealPlanner
@@ -2054,9 +2064,21 @@ extension on TranslationsRu {
 			'ingestion.openBlankEditor' => 'Открыть пустой редактор',
 			'ingestion.generate' => 'Создать рецепт',
 			'ingestion.generating' => 'Пишем ваш рецепт...',
+			'ingestion.file' => 'Запись / PDF',
+			'ingestion.fileHint' => 'Выберите аудиофайл, где кто-то читает рецепт, голосовое сообщение или PDF с рецептом. Такой файл можно также отправить в Easy Plate прямо из любого приложения.',
+			'ingestion.chooseFile' => 'Выбрать файл',
+			'ingestion.replaceFile' => 'Другой файл',
+			'ingestion.fileTooLarge' => 'Файлы слишком большие. Общий предел — 10 МБ, около десяти минут записи.',
+			'ingestion.fileUnsupported' => 'Анализировать можно только аудиофайлы и PDF.',
+			'ingestion.sharedIn' => ({required Object app}) => 'Из ${app}',
+			'ingestion.addFile' => 'Добавить файл',
+			'ingestion.filesAsOne' => ({required Object count}) => '${count} файлов — будут проанализированы вместе как один рецепт, по порядку',
+			'ingestion.shareMoreHint' => 'Можно вернуться в WhatsApp и поделиться ещё одной записью — она добавится к списку здесь.',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'Добавить приём пищи',
 			'mealPlanner.mealName' => 'Название приёма пищи',
 			'mealPlanner.addItem' => 'Добавить позицию',
@@ -2067,8 +2089,6 @@ extension on TranslationsRu {
 			'mealPlanner.breakfast' => 'Завтрак',
 			'mealPlanner.lunch' => 'Обед',
 			'mealPlanner.dinner' => 'Ужин',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'Утренний перекус',
 			'mealPlanner.afternoonSnack' => 'Дневной перекус',
 			'mealPlanner.eveningSnack' => 'Вечерний перекус',
@@ -2571,6 +2591,8 @@ extension on TranslationsRu {
 			'adminDashboard.kindNutrition' => 'Питание',
 			'adminDashboard.kindRefine' => 'Правка',
 			'adminDashboard.kindGenerate' => 'Генерация',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.allTime' => 'за всё время',
 			'adminDashboard.recentCalls' => 'Последние запросы',
 			'adminDashboard.noCalls' => 'Запросов нет',
@@ -2581,8 +2603,6 @@ extension on TranslationsRu {
 			'adminDashboard.send' => 'Отправить',
 			'adminDashboard.blocked' => 'Заблокированные',
 			'adminDashboard.disable' => 'Заблокировать аккаунт',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.enable' => 'Разблокировать',
 			'adminDashboard.blockMessageHint' => 'Что увидит пользователь при попытке войти',
 			'adminDashboard.disabledDone' => 'Аккаунт заблокирован',

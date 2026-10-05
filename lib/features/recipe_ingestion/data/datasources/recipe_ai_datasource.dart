@@ -13,6 +13,7 @@ import '../../../price_book/domain/entities/price_unit.dart';
 import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
+import '../../domain/entities/ingestion_file.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 
 abstract class RecipeAiDataSource {
@@ -28,6 +29,11 @@ abstract class RecipeAiDataSource {
     String url,
     List<DietaryPreference> preferences,
   );
+  Future<RecipeEntity> parseFromFiles(
+    List<IngestionFile> files,
+    List<DietaryPreference> preferences,
+  );
+
   Future<RecipeEntity> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,
@@ -817,6 +823,47 @@ $_dietaryTagRules
       ),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.rawText);
+  }
+
+  /// The files go to the model inline, the way a receipt does: audio as
+  /// `audio` blocks, a PDF as a `document`. The prompt names what they are
+  /// — the parts of one recipe, in order — so a recording is transcribed and
+  /// then read as a recipe, not described, and three voice notes are one
+  /// dictation rather than three dishes.
+  @override
+  Future<RecipeEntity> parseFromFiles(
+    List<IngestionFile> files,
+    List<DietaryPreference> preferences,
+  ) async {
+    if (files.isEmpty) throw const AppException(AppErrorType.parsingFailed);
+    final hasAudio = files.any((f) => f.isAudio);
+    final hasPdf = files.any((f) => f.isPdf);
+    final what = hasAudio && hasPdf
+        ? 'ההקלטות והמסמכים המצורפים'
+        : hasAudio
+        ? 'ההקלטות המצורפות'
+        : 'המסמכים המצורפים';
+    final prompt = files.length == 1
+        ? (files.single.isPdf
+              ? 'קרא את המסמך המצורף וחלץ ממנו את המתכון לפורמט מובנה. אם יש בו כמה מתכונים, חלץ את הראשון.'
+              : 'ההקלטה המצורפת היא מתכון שמישהו מקריא או מספר. תמלל אותה לעצמך, וחלץ ממנה את המתכון לפורמט מובנה — שם, מצרכים עם כמויות, ושלבי הכנה בסדר שנאמרו.')
+        : '$what (${files.length}) הם חלקים של מתכון אחד, לפי הסדר שבו הם מופיעים — למשל הודעה קולית שנשלחה בכמה קטעים. התייחס אליהם כהקלטה אחת רצופה: תמלל לעצמך את כולם ברצף, וחלץ מתכון אחד לפורמט מובנה — שם, מצרכים עם כמויות, ושלבי הכנה בסדר שנאמרו. אל תחזיר כמה מתכונים.';
+    final input = await _callStructured(
+      feature: 'file',
+      _body(
+        input: [
+          for (final file in files)
+            {
+              'type': file.isPdf ? 'document' : 'audio',
+              'mime_type': file.mimeType,
+              'data': base64Encode(file.bytes),
+            },
+          {'type': 'text', 'text': prompt},
+        ],
+        schema: _recipeSchema,
+      ),
+    );
+    return _toEntity(input, channel: RecipeIngestionChannel.file);
   }
 
   @override

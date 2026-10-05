@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../constants/app_motion.dart';
 import 'theme_controller.dart';
 
 /// The Telegram-style theme switch: the new theme spreads out as a circle
@@ -63,7 +64,9 @@ class ThemeSwitcherState extends State<ThemeSwitcher>
   /// there is nothing to animate and the choice is just stored.
   Future<void> switchTo(AppThemeMode mode, {required Offset origin}) async {
     final controller = ThemeController();
+    // A full-screen reveal is exactly what reduced motion asks to be spared.
     if (_progress.isAnimating ||
+        MediaQuery.disableAnimationsOf(context) ||
         controller.resolvesDark(mode) == controller.isDark) {
       await controller.setMode(mode);
       return;
@@ -125,7 +128,7 @@ class ThemeSwitcherState extends State<ThemeSwitcher>
                 painter: _RevealPainter(
                   image: _snapshot!,
                   origin: _origin,
-                  progress: Curves.easeInOutCubic.transform(_progress.value),
+                  progress: AppMotion.easeInOut.transform(_progress.value),
                 ),
               ),
             ),

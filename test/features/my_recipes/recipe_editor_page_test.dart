@@ -9,6 +9,7 @@ import 'package:easy_plate/features/my_recipes/domain/entities/recipe_ingredient
 import 'package:easy_plate/features/my_recipes/presentation/pages/recipe_editor_page.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/original_recipe_page_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_result_entity.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/entities/ingestion_file.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,6 +60,12 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
   Future<RecipeEntity> parseFromUrl(
     String url,
     List<DietaryPreference> preferences,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<RecipeEntity> parseFromFiles(
+    List<IngestionFile> files,
+    List<DietaryPreference> p,
   ) => throw UnimplementedError();
 
   @override

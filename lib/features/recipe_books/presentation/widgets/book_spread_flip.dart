@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_motion.dart';
 import 'book_page_surface.dart';
 
 /// Drives a [BookSpreadFlip] from outside: the capsule's jumps, a contents
@@ -114,7 +115,9 @@ class _BookSpreadFlipState extends State<BookSpreadFlip>
       _forward = forward;
     });
     _turn.value = 0;
-    await _turn.forward();
+    // The controller alone is linear; a leaf tapped over lifts fast and
+    // settles as it lands, like one turned by hand.
+    await _turn.animateTo(1, curve: AppMotion.easeOut);
     if (mounted) _land();
   }
 
@@ -177,11 +180,17 @@ class _BookSpreadFlipState extends State<BookSpreadFlip>
     final fling = _forwardDelta(details.primaryVelocity ?? 0);
     final commits =
         _turn.value > 0.5 || (_forward ? fling > 300 : fling < -300);
+    // The leaf finishes at the finger's own pace: only the distance left
+    // is animated, and a hard flick shortens it further, so there is no
+    // seam where the drag ends and the animation takes over.
+    final remaining = commits ? 1 - _turn.value : _turn.value;
+    final speed = (fling.abs() / _halfWidth).clamp(1.0, 3.0);
+    final duration = widget.duration * (remaining / speed);
     if (commits) {
-      await _turn.forward();
+      await _turn.animateTo(1, duration: duration, curve: AppMotion.easeOut);
       if (mounted) _land();
     } else {
-      await _turn.reverse();
+      await _turn.animateBack(0, duration: duration, curve: AppMotion.easeOut);
       if (mounted) setState(() => _turning = false);
     }
   }

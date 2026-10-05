@@ -9,6 +9,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../paper_detector.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// A viewfinder with one job: a tall frame across the screen, and the shot
 /// is taken by itself the moment a receipt sits still inside it. No button
@@ -267,7 +268,7 @@ class _ReceiptCameraPageState extends State<ReceiptCameraPage>
               bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
               child: Center(
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppMotion.quick,
                   child: Container(
                     key: ValueKey(hint),
                     padding: const EdgeInsets.symmetric(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 
@@ -51,20 +52,27 @@ class _ClayCardState extends State<ClayCard> {
             ? AppColors.primaryContainer
             : AppColors.surfaceContainerLowest);
 
+    // Continuous corners — the curvature eases into the straight edge the
+    // way an iOS card's does, with no visible point where the arc begins —
+    // and a hairline edge rather than a full pixel.
+    final shape = RoundedSuperellipseBorder(
+      borderRadius: radius,
+      side: widget.isActive
+          ? BorderSide.none
+          : BorderSide(color: AppColors.surfaceContainerHighest, width: 0.5),
+    );
+
     final card = AnimatedScale(
       scale: _pressed ? 0.98 : 1,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      duration: AppMotion.press,
+      curve: AppMotion.easeOut,
       child: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: ShapeDecoration(
           color: background,
-          borderRadius: radius,
-          border: widget.isActive
-              ? null
-              : Border.all(color: AppColors.surfaceContainerHighest),
-          boxShadow: widget.isActive ? AppShadows.active : AppShadows.card,
+          shape: shape,
+          shadows: widget.isActive ? AppShadows.active : AppShadows.card,
         ),
-        child: ClipRRect(
+        child: ClipRSuperellipse(
           borderRadius: radius,
           child: Stack(
             children: [
@@ -72,8 +80,8 @@ class _ClayCardState extends State<ClayCard> {
               // Flutter's BoxShadow cannot express.
               Positioned.fill(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: radius,
+                  decoration: ShapeDecoration(
+                    shape: RoundedSuperellipseBorder(borderRadius: radius),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.center,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_spacing.dart';
 
 /// Hollow, fully-rounded track with a gradient fill — the "recessed groove"
@@ -40,8 +41,8 @@ class ClayProgressBar extends StatelessWidget {
             child: FractionallySizedBox(
               widthFactor: value.clamp(0.0, 1.0),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
+                duration: AppMotion.standard,
+                curve: AppMotion.easeOut,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppRadius.full),
                   gradient: LinearGradient(

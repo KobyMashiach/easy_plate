@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
 import '../../walkthrough/walkthrough_targets.dart';
@@ -258,7 +260,14 @@ class _RimPainter extends CustomPainter {
 }
 
 /// The tabs, with the active one's glass lozenge sliding beneath them.
-class _Items extends StatelessWidget {
+///
+/// Tapped, the lozenge glides to the tab with no overshoot: a tab bar is
+/// touched tens of times a day, and the motion only has to say where the
+/// selection went. Dragged, it stays under the finger the whole way, the
+/// ink under it lighting up as it passes, and on release it is thrown on
+/// by the finger's own momentum and settles on the nearest tab with the
+/// small overshoot that momentum earns.
+class _Items extends StatefulWidget {
   final List<ClayNavDestination> destinations;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
@@ -272,52 +281,145 @@ class _Items extends StatelessWidget {
   });
 
   @override
+  State<_Items> createState() => _ItemsState();
+}
+
+class _ItemsState extends State<_Items> {
+  /// The lozenge's start edge while a finger is dragging it, in the row's
+  /// own directional coordinates. Null when it is resting on a tab.
+  double? _dragStart;
+
+  /// The tab the lozenge is over mid-drag — what the ink follows.
+  int? _hovered;
+
+  /// True from a drag's release until the lozenge lands, so that one glide
+  /// gets the momentum curve and a plain tap does not.
+  bool _fromDrag = false;
+
+  double _slot = 1;
+  double _width = 1;
+
+  bool get _rtl => Directionality.of(context) == TextDirection.rtl;
+
+  int _indexAt(double start) =>
+      ((start + _slot / 2) ~/ _slot).clamp(0, widget.destinations.length - 1);
+
+  void _onDragStart(DragStartDetails _) {
+    setState(() {
+      _dragStart = _slot * widget.selectedIndex;
+      _hovered = widget.selectedIndex;
+      _fromDrag = false;
+    });
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    final start = _dragStart;
+    if (start == null) return;
+    // In Hebrew and Arabic the row runs the other way, so a finger moving
+    // right moves the lozenge toward a smaller `start`.
+    final delta = _rtl ? -details.delta.dx : details.delta.dx;
+    final next = (start + delta).clamp(0.0, _width - _slot);
+    final over = _indexAt(next);
+    // The tick of a picker wheel: one per tab the lozenge crosses.
+    if (over != _hovered) HapticFeedback.selectionClick();
+    setState(() {
+      _dragStart = next;
+      _hovered = over;
+    });
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    final start = _dragStart;
+    if (start == null) return;
+    // Land where the throw was going, not where the finger let go.
+    final velocity = _rtl
+        ? -details.velocity.pixelsPerSecond.dx
+        : details.velocity.pixelsPerSecond.dx;
+    final projected = start + AppMotion.project(velocity);
+    final target = _indexAt(projected.clamp(0.0, _width - _slot));
+    setState(() {
+      _dragStart = null;
+      _hovered = null;
+      _fromDrag = true;
+    });
+    if (target != widget.selectedIndex) widget.onSelected(target);
+  }
+
+  void _onDragCancel() {
+    if (_dragStart == null) return;
+    setState(() {
+      _dragStart = null;
+      _hovered = null;
+      _fromDrag = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final destinations = widget.destinations;
+    final glass = widget.glass;
+    final dragging = _dragStart != null;
+    final active = _hovered ?? widget.selectedIndex;
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        final slot = constraints.maxWidth / destinations.length;
-        return Stack(
-          children: [
-            // Positioned by `start`, so the lozenge lands under the right
-            // tab in Hebrew and Arabic, where the row runs the other way.
-            AnimatedPositionedDirectional(
-              duration: const Duration(milliseconds: 380),
-              curve: Curves.easeOutBack,
-              start: slot * selectedIndex,
-              top: 0,
-              bottom: 0,
-              width: slot,
-              child: DecoratedBox(
-                decoration: ShapeDecoration(
-                  color: glass.pill,
-                  shape: StadiumBorder(
-                    side: BorderSide(color: glass.pillRim, width: 0.6),
-                  ),
-                  shadows: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+        _width = constraints.maxWidth;
+        _slot = _width / destinations.length;
+        return GestureDetector(
+          onHorizontalDragStart: _onDragStart,
+          onHorizontalDragUpdate: _onDragUpdate,
+          onHorizontalDragEnd: _onDragEnd,
+          onHorizontalDragCancel: _onDragCancel,
+          behavior: HitTestBehavior.translucent,
+          child: Stack(
+            children: [
+              // Positioned by `start`, so the lozenge lands under the right
+              // tab in Hebrew and Arabic, where the row runs the other way.
+              AnimatedPositionedDirectional(
+                // Glued to the finger while dragging; otherwise a glide.
+                duration: dragging
+                    ? Duration.zero
+                    : AppMotion.move(context, AppMotion.standard),
+                curve: _fromDrag ? AppMotion.settle : AppMotion.easeOut,
+                onEnd: () {
+                  if (_fromDrag && mounted) setState(() => _fromDrag = false);
+                },
+                start: _dragStart ?? _slot * widget.selectedIndex,
+                top: 0,
+                bottom: 0,
+                width: _slot,
+                child: DecoratedBox(
+                  decoration: ShapeDecoration(
+                    color: glass.pill,
+                    shape: StadiumBorder(
+                      side: BorderSide(color: glass.pillRim, width: 0.6),
                     ),
-                  ],
+                    shadows: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Row(
-              children: [
-                for (var i = 0; i < destinations.length; i++)
-                  _DockItem(
-                    // Registered by position, which is what a tour step
-                    // names — the labels change with the locale.
-                    targetId: 'nav.$i',
-                    destination: destinations[i],
-                    isActive: i == selectedIndex,
-                    onTap: () => onSelected(i),
-                    glass: glass,
-                  ),
-              ],
-            ),
-          ],
+              Row(
+                children: [
+                  for (var i = 0; i < destinations.length; i++)
+                    _DockItem(
+                      // Registered by position, which is what a tour step
+                      // names — the labels change with the locale.
+                      targetId: 'nav.$i',
+                      destination: destinations[i],
+                      isActive: i == active,
+                      onTap: () => widget.onSelected(i),
+                      glass: glass,
+                    ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -355,8 +457,8 @@ class _DockItem extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: AnimatedScale(
               scale: isActive ? 1.04 : 1,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
+              duration: AppMotion.move(context, AppMotion.standard),
+              curve: AppMotion.easeOut,
               child: Padding(
                 // Room above and below inside the lozenge, and between
                 // neighbouring labels so they ellipsize into a gap.
@@ -365,33 +467,33 @@ class _DockItem extends StatelessWidget {
                   vertical: AppSpacing.base,
                 ),
                 child: ExcludeSemantics(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: Icon(
-                          destination.icon,
-                          key: ValueKey(isActive),
-                          size: 22,
-                          color: color,
+                  // One tween over both the icon and the label: the ink
+                  // changes colour in place rather than cross-fading two
+                  // copies of the same glyph over each other.
+                  child: TweenAnimationBuilder<Color?>(
+                    tween: ColorTween(end: color),
+                    duration: AppMotion.fade(context, AppMotion.quick),
+                    curve: AppMotion.easeOut,
+                    builder: (context, ink, _) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(destination.icon, size: 22, color: ink),
+                        const SizedBox(height: 2),
+                        Text(
+                          destination.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.labelSm.copyWith(
+                            color: ink,
+                            fontSize: 10.5,
+                            fontWeight: isActive
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        destination.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.labelSm.copyWith(
-                          color: color,
-                          fontSize: 10.5,
-                          fontWeight: isActive
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

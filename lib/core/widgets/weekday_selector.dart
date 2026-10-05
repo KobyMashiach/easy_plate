@@ -5,6 +5,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_enums.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
+import '../constants/app_motion.dart';
 
 String weekdayLabel(ShoppingDay day) => switch (day) {
   ShoppingDay.sunday => t.weekday.sunday,
@@ -39,7 +40,8 @@ class WeekdaySelector extends StatelessWidget {
           onTap: () => onSelect(day),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.quick,
+            curve: AppMotion.easeOut,
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.gutter,
               vertical: AppSpacing.base,

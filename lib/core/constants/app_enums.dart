@@ -51,6 +51,8 @@ enum AccessRole {
 ///
 /// [aiRequest] is the one channel with no source to read from: the user
 /// describes the dish they want and the model writes the recipe.
+/// [file] is a recording or a PDF the model listens to or reads: a voice
+/// note of a recipe, a scanned cookbook page, shared in from another app.
 enum RecipeIngestionChannel {
   rawText,
   webSearch,
@@ -58,6 +60,7 @@ enum RecipeIngestionChannel {
   socialVideo,
   aiRequest,
   manual,
+  file,
 }
 
 /// Starting shape for a new meal plan. Not persisted — it only decides which

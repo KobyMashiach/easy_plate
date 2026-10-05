@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/amount_format.dart';
@@ -14,6 +15,7 @@ import 'package:provider/provider.dart';
 import '../../../price_book/presentation/price_book_service.dart';
 import '../../../price_book/presentation/widgets/price_widgets.dart';
 import '../../../price_book/presentation/widgets/add_price_dialog.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// One aggregated grocery line: a pressable clay card with a book spine, a
 /// bouncy checkbox, and an accordion revealing which recipe contributed what.
@@ -42,7 +44,10 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
     return Dismissible(
       key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
-      onDismissed: (_) => bloc.add(.removeItem(item.id)),
+      onDismissed: (_) {
+        HapticFeedback.mediumImpact();
+        bloc.add(.removeItem(item.id));
+      },
       background: Container(
         decoration: BoxDecoration(
           color: AppColors.errorContainer,
@@ -65,7 +70,8 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
                   if (hasSources)
                     AnimatedRotation(
                       turns: _expanded ? 0.25 : 0,
-                      duration: const Duration(milliseconds: 300),
+                      duration: AppMotion.standard,
+                      curve: AppMotion.easeOut,
                       child: Icon(
                         Icons.chevron_right_rounded,
                         color: AppColors.outline,
@@ -144,8 +150,8 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
               ),
             ),
             AnimatedCrossFade(
-              duration: const Duration(milliseconds: 300),
-              sizeCurve: Curves.easeOut,
+              duration: AppMotion.standard,
+              sizeCurve: AppMotion.easeOut,
               crossFadeState: _expanded
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,

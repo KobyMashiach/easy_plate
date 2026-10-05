@@ -6,6 +6,7 @@ import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 import '../utils/i18n/strings.g.dart';
 import 'clay/clay.dart';
+import '../constants/app_motion.dart';
 
 /// Asks what kind of cover to draw for a book: a mood from the chips, a
 /// subject in free text, or both. Returns the finished prompt, or null when
@@ -179,7 +180,8 @@ class _ThemeChip extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppMotion.quick,
+        curve: AppMotion.easeOut,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.gutter,
           vertical: AppSpacing.base,

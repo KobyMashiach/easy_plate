@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
@@ -63,8 +64,8 @@ class _ClayButtonState extends State<ClayButton> {
               ),
             ),
             AnimatedContainer(
-              duration: const Duration(milliseconds: 120),
-              curve: Curves.easeOut,
+              duration: AppMotion.press,
+              curve: AppMotion.easeOut,
               margin: EdgeInsets.only(
                 top: sunk ? AppShadows.buttonThickness : 0,
               ),

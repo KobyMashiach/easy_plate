@@ -5,6 +5,7 @@ import '../constants/app_enums.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 import '../utils/i18n/app_language_mapper.dart';
+import '../constants/app_motion.dart';
 
 /// The language chips, shared by settings and the pre-sign-in screens so both
 /// offer the same list in the same shape.
@@ -30,7 +31,8 @@ class LanguageSelector extends StatelessWidget {
           onTap: () => onSelect(language),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.quick,
+            curve: AppMotion.easeOut,
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.gutter,
               vertical: AppSpacing.base,

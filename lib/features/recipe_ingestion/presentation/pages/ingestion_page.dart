@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +24,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../domain/entities/ingestion_file.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
@@ -28,12 +32,17 @@ import '../bloc/ingestion_bloc.dart';
 import '../widgets/ai_quota_indicator.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/constants/app_motion.dart';
+import '../../../../core/services/share_intent_service.dart';
+import '../../../../core/widgets/app_dialog.dart';
 
-/// The channels whose analysis is an AI call on a link — the ones behind the
-/// daily quota. Pasted text and a hand-written recipe are not.
+/// The channels whose analysis is a heavy AI call — a link fetched, a video
+/// watched, a recording listened to — the ones behind the daily quota.
+/// Pasted text and a hand-written recipe are not.
 bool _isLinkExtraction(RecipeIngestionChannel channel) =>
     channel == RecipeIngestionChannel.urlScrape ||
-    channel == RecipeIngestionChannel.socialVideo;
+    channel == RecipeIngestionChannel.socialVideo ||
+    channel == RecipeIngestionChannel.file;
 
 /// Starts a link extraction once the quota gate has let it through. Every
 /// path that hands a URL to the model goes through here, so the gate can never
@@ -51,6 +60,7 @@ String _channelLabel(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.socialVideo => t.ingestion.socialVideo,
   RecipeIngestionChannel.aiRequest => t.ingestion.aiRequest,
   RecipeIngestionChannel.manual => t.ingestion.manual,
+  RecipeIngestionChannel.file => t.ingestion.file,
 };
 
 IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
@@ -60,15 +70,23 @@ IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.socialVideo => Icons.play_circle_rounded,
   RecipeIngestionChannel.aiRequest => Icons.auto_awesome_rounded,
   RecipeIngestionChannel.manual => Icons.edit_note_rounded,
+  RecipeIngestionChannel.file => Icons.mic_rounded,
 };
 
 class IngestionPage extends StatelessWidget {
-  const IngestionPage({super.key});
+  /// What the screen opens on when something was shared in — a channel, a
+  /// text, a file. Null opens on the default channel, empty.
+  final IngestionLaunch? launch;
+
+  const IngestionPage({super.key, this.launch});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => IngestionBloc.fromContext(context),
+      create: (context) => IngestionBloc.fromContext(
+        context,
+        initialChannel: launch?.channel ?? RecipeIngestionChannel.rawText,
+      ),
       child: BlocConsumer<IngestionBloc, IngestionState>(
         listener: (context, state) {
           if (state is IngestionSaved) Navigator.of(context).pop();
@@ -84,6 +102,12 @@ class IngestionPage extends StatelessWidget {
               child: switch (state) {
                 IngestionIdle(channel: final channel) => _ChannelForm(
                   channel: channel,
+                  // Only the channel it was shared to starts filled in; a
+                  // switch to another channel starts that one empty.
+                  initialText: launch?.channel == channel ? launch?.text : null,
+                  initialFiles: launch?.channel == channel
+                      ? launch?.files ?? const []
+                      : const [],
                 ),
                 IngestionParsing(channel: final channel) => Center(
                   child: Column(
@@ -136,8 +160,14 @@ class IngestionPage extends StatelessWidget {
 
 class _ChannelForm extends StatefulWidget {
   final RecipeIngestionChannel channel;
+  final String? initialText;
+  final List<IngestionFile> initialFiles;
 
-  const _ChannelForm({required this.channel});
+  const _ChannelForm({
+    required this.channel,
+    this.initialText,
+    this.initialFiles = const [],
+  });
 
   @override
   State<_ChannelForm> createState() => _ChannelFormState();
@@ -148,10 +178,17 @@ class _ChannelFormState extends State<_ChannelForm> {
   // in the box, so the reader sees what the model is given without typing.
   // The form is the same widget on every channel, so the text carries over.
   late final _controller = TextEditingController(
-    text: widget.channel == RecipeIngestionChannel.rawText
-        ? Walkthrough.prefill(t.walkthrough.demo.recipeText)
-        : null,
+    text:
+        widget.initialText ??
+        (widget.channel == RecipeIngestionChannel.rawText
+            ? Walkthrough.prefill(t.walkthrough.demo.recipeText)
+            : null),
   );
+
+  /// The recordings and PDFs chosen — or shared in — for the file channel,
+  /// in the order they arrived: together they are one recipe.
+  late final List<IngestionFile> _files = [...widget.initialFiles];
+  bool _picking = false;
 
   /// Drives the button's enabled state. A tap on an empty form used to fall
   /// through [_submit]'s guard and do nothing, which reads as a broken button
@@ -162,6 +199,35 @@ class _ChannelFormState extends State<_ChannelForm> {
   void initState() {
     super.initState();
     _controller.addListener(_syncHasInput);
+    // While this form is up, a share from another app lands here rather
+    // than opening a second screen: the user went back to WhatsApp for the
+    // next voice note of the same recipe.
+    ShareIntentService().formOpened();
+    ShareIntentService().latest.addListener(_onShared);
+  }
+
+  void _onShared() {
+    final service = ShareIntentService();
+    final launch = service.latest.value;
+    if (launch == null || !mounted) return;
+    service.clear();
+    final bloc = context.read<IngestionBloc>();
+    if (launch.files.isNotEmpty) {
+      if (IngestionFile.tooLarge([..._files, ...launch.files])) {
+        AppDialog.warning(message: t.ingestion.fileTooLarge).notify(context);
+        return;
+      }
+      setState(() => _files.addAll(launch.files));
+      if (widget.channel != RecipeIngestionChannel.file) {
+        bloc.add(const .selectChannel(RecipeIngestionChannel.file));
+      }
+      return;
+    }
+    if (launch.text case final text?) {
+      _controller.text = text;
+      final channel = launch.channel ?? RecipeIngestionChannel.rawText;
+      if (widget.channel != channel) bloc.add(.selectChannel(channel));
+    }
   }
 
   void _syncHasInput() {
@@ -171,6 +237,8 @@ class _ChannelFormState extends State<_ChannelForm> {
 
   @override
   void dispose() {
+    ShareIntentService().latest.removeListener(_onShared);
+    ShareIntentService().formClosed();
     _controller.removeListener(_syncHasInput);
     _controller.dispose();
     super.dispose();
@@ -182,8 +250,9 @@ class _ChannelFormState extends State<_ChannelForm> {
     RecipeIngestionChannel.urlScrape => 'https://...',
     RecipeIngestionChannel.socialVideo => t.ingestion.socialVideoHint,
     RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestHint,
-    // No text input on this channel; the editor is the form.
-    RecipeIngestionChannel.manual => '',
+    // No text input on these channels: the editor, or a picked file, is
+    // the form.
+    RecipeIngestionChannel.manual || RecipeIngestionChannel.file => '',
   };
 
   Future<void> _submit() async {
@@ -207,8 +276,114 @@ class _ChannelFormState extends State<_ChannelForm> {
       case RecipeIngestionChannel.aiRequest:
         bloc.add(.generateRecipe(value));
       case RecipeIngestionChannel.manual:
+      case RecipeIngestionChannel.file:
+        // Submitted from their own controls.
         break;
     }
+  }
+
+  /// Opens the system picker on the formats the model reads, several at a
+  /// time. Each file is read at once, so the share-sheet copy and a picked
+  /// file take the same path from here on.
+  Future<void> _pickFiles() async {
+    setState(() => _picking = true);
+    try {
+      final picked = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: IngestionFile.pickerExtensions,
+      );
+      if (!mounted) return;
+      final added = <IngestionFile>[];
+      var unsupported = false;
+      for (final entry in picked) {
+        final path = entry.path;
+        if (path == null) continue;
+        final name = path.split(Platform.pathSeparator).last;
+        final mimeType = IngestionFile.mimeTypeFor(name);
+        if (mimeType == null) {
+          unsupported = true;
+          continue;
+        }
+        final bytes = await File(path).readAsBytes();
+        added.add(IngestionFile(name: name, bytes: bytes, mimeType: mimeType));
+      }
+      if (!mounted) return;
+      if (unsupported) {
+        AppDialog.warning(message: t.ingestion.fileUnsupported).notify(context);
+      }
+      if (added.isEmpty) return;
+      if (IngestionFile.tooLarge([..._files, ...added])) {
+        AppDialog.warning(message: t.ingestion.fileTooLarge).notify(context);
+        return;
+      }
+      setState(() => _files.addAll(added));
+    } finally {
+      if (mounted) setState(() => _picking = false);
+    }
+  }
+
+  Future<void> _submitFiles() async {
+    if (_files.isEmpty) return;
+    final bloc = context.read<IngestionBloc>();
+    if (!await QuotaGates.extractWithAi(context)) return;
+    bloc.add(.parseFiles(List.of(_files)));
+  }
+
+  /// The chosen files as rows — what each is, how big, a way to drop it —
+  /// and a note that together they are read as one recipe.
+  Widget _fileCard() {
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClaySectionHeader(title: t.ingestion.file),
+          const SizedBox(height: AppSpacing.gutter),
+          Text(
+            t.ingestion.fileHint,
+            style: AppTextStyles.bodyMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          for (final (index, file) in _files.indexed) ...[
+            const SizedBox(height: AppSpacing.sm),
+            _FileRow(
+              file: file,
+              // The order is the order the parts are read in.
+              ordinal: _files.length > 1 ? index + 1 : null,
+              onRemove: () => setState(() => _files.removeAt(index)),
+            ),
+          ],
+          if (_files.length > 1) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              t.ingestion.filesAsOne(count: _files.length),
+              style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+            ),
+          ],
+          if (_files.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              t.ingestion.shareMoreHint,
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.gutter),
+          ClayButton(
+            label: _files.isEmpty
+                ? t.ingestion.chooseFile
+                : t.ingestion.addFile,
+            icon: _files.isEmpty
+                ? Icons.folder_open_rounded
+                : Icons.add_rounded,
+            onPressed: _picking ? null : _pickFiles,
+          ),
+        ],
+      ),
+    );
   }
 
   /// What the analyse button says on a link channel: the plain label while
@@ -216,6 +391,9 @@ class _ChannelFormState extends State<_ChannelForm> {
   /// extractions left, and a disabled "locked for today" once the day's
   /// allowance — free or premium — is spent.
   Widget _parseButton() {
+    final isFile = widget.channel == RecipeIngestionChannel.file;
+    final ready = isFile ? _files.isNotEmpty : _hasInput;
+    final submit = isFile ? _submitFiles : _submit;
     if (!_isLinkExtraction(widget.channel) || !MonetizationConfig.aiGated) {
       return ClayButton(
         // A request is not analysed, it is written — the button says so.
@@ -224,7 +402,7 @@ class _ChannelFormState extends State<_ChannelForm> {
             : t.ingestion.parse,
         icon: Icons.auto_awesome_rounded,
         expanded: true,
-        onPressed: _hasInput ? _submit : null,
+        onPressed: ready ? submit : null,
       );
     }
     final verdict = DailyQuotaPolicy.aiExtraction(
@@ -242,13 +420,13 @@ class _ChannelFormState extends State<_ChannelForm> {
         label: t.ads.parseWithVideo,
         icon: Icons.play_circle_rounded,
         expanded: true,
-        onPressed: _hasInput ? _submit : null,
+        onPressed: ready ? submit : null,
       ),
       GateVerdict.free => ClayButton(
         label: t.ingestion.parse,
         icon: Icons.auto_awesome_rounded,
         expanded: true,
-        onPressed: _hasInput ? _submit : null,
+        onPressed: ready ? submit : null,
       ),
     };
   }
@@ -283,7 +461,8 @@ class _ChannelFormState extends State<_ChannelForm> {
                     context.read<IngestionBloc>().add(.selectChannel(channel)),
                 behavior: HitTestBehavior.opaque,
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppMotion.quick,
+                  curve: AppMotion.easeOut,
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.sm,
                     vertical: AppSpacing.base,
@@ -353,30 +532,33 @@ class _ChannelFormState extends State<_ChannelForm> {
             onPressed: _openBlankEditor,
           ),
         ] else ...[
-          ClayCard(
-            radius: AppRadius.md,
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClaySectionHeader(title: _channelLabel(widget.channel)),
-                const SizedBox(height: AppSpacing.gutter),
-                WalkthroughTarget(
-                  id: WalkthroughIds.ingestionInput,
-                  child: TextField(
-                    controller: _controller,
-                    maxLines: switch (widget.channel) {
-                      RecipeIngestionChannel.rawText => 8,
-                      RecipeIngestionChannel.aiRequest => 4,
-                      _ => 2,
-                    },
-                    style: AppTextStyles.bodyMd,
-                    decoration: InputDecoration(hintText: _hint),
+          if (widget.channel == RecipeIngestionChannel.file)
+            _fileCard()
+          else
+            ClayCard(
+              radius: AppRadius.md,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClaySectionHeader(title: _channelLabel(widget.channel)),
+                  const SizedBox(height: AppSpacing.gutter),
+                  WalkthroughTarget(
+                    id: WalkthroughIds.ingestionInput,
+                    child: TextField(
+                      controller: _controller,
+                      maxLines: switch (widget.channel) {
+                        RecipeIngestionChannel.rawText => 8,
+                        RecipeIngestionChannel.aiRequest => 4,
+                        _ => 2,
+                      },
+                      style: AppTextStyles.bodyMd,
+                      decoration: InputDecoration(hintText: _hint),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           const SizedBox(height: AppSpacing.lg),
           if (_isLinkExtraction(widget.channel)) const AiQuotaIndicator(),
           ListenableBuilder(
@@ -388,6 +570,81 @@ class _ChannelFormState extends State<_ChannelForm> {
             builder: (context, _) => _parseButton(),
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// One file on the list: its kind, name, size, and an x to drop it.
+class _FileRow extends StatelessWidget {
+  final IngestionFile file;
+  final int? ordinal;
+  final VoidCallback onRemove;
+
+  const _FileRow({
+    required this.file,
+    required this.ordinal,
+    required this.onRemove,
+  });
+
+  static String _sizeLabel(int bytes) {
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).round()} KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.primaryFixed,
+            shape: BoxShape.circle,
+          ),
+          child: ordinal != null
+              ? Text(
+                  '$ordinal',
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: AppColors.primary,
+                  ),
+                )
+              : Icon(
+                  file.isPdf
+                      ? Icons.picture_as_pdf_rounded
+                      : Icons.graphic_eq_rounded,
+                  color: AppColors.primary,
+                ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                file.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.bodyMd,
+              ),
+              Text(
+                '${file.isPdf ? 'PDF' : t.ingestion.file.split(' ').first} · '
+                '${_sizeLabel(file.bytes.length)}',
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        ClayIconButton(
+          icon: Icons.close_rounded,
+          size: 32,
+          tooltip: t.common.delete,
+          onTap: onRemove,
+        ),
       ],
     );
   }

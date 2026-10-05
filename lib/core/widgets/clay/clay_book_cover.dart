@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
@@ -62,8 +63,8 @@ class _ClayBookCoverState extends State<ClayBookCover> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedScale(
         scale: _pressed ? 0.98 : 1,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+        duration: AppMotion.press,
+        curve: AppMotion.easeOut,
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.surfaceContainerLowest,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
@@ -49,8 +50,8 @@ class ClaySegmentedControl extends StatelessWidget {
           return Stack(
             children: [
               AnimatedPositionedDirectional(
-                duration: const Duration(milliseconds: 260),
-                curve: Curves.easeOutCubic,
+                duration: AppMotion.move(context, AppMotion.standard),
+                curve: AppMotion.easeOut,
                 start: width * selectedIndex,
                 top: 0,
                 bottom: 0,
@@ -113,7 +114,8 @@ class _SegmentLabel extends StatelessWidget {
             // ellipsise: four segments on a narrow phone otherwise overflow.
             Flexible(
               child: AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
+                duration: AppMotion.fade(context, AppMotion.quick),
+                curve: AppMotion.easeOut,
                 style: AppTextStyles.labelMd.copyWith(color: color),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

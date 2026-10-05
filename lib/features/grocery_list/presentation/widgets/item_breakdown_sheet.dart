@@ -9,6 +9,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_item_entity.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// Drill-down for one line: which recipe contributed how much, with per-source
 /// adjustment and removal, a unit picker, and a free buffer amount.
@@ -137,7 +138,8 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                   },
                   behavior: HitTestBehavior.opaque,
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: AppMotion.quick,
+                    curve: AppMotion.easeOut,
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.sm,
                       vertical: AppSpacing.base,

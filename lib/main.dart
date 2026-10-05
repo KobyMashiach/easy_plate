@@ -19,6 +19,7 @@ import 'core/services/connectivity_service.dart';
 import 'core/services/device_locale_store.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/foreground_push_service.dart';
+import 'core/services/share_intent_service.dart';
 import 'core/services/image_storage_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
@@ -157,10 +158,15 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // A push while the app is open becomes the app's own popup, with a way
     // into the inbox — the system tray stays quiet.
     ForegroundPushService().latest.addListener(_onForegroundPush);
+    // A recording, a PDF or a link shared in from another app opens the
+    // ingestion screen on it.
+    ShareIntentService().latest.addListener(_onShared);
+    ShareIntentService().bind();
   }
 
   @override
   void dispose() {
+    ShareIntentService().latest.removeListener(_onShared);
     ForegroundPushService().latest.removeListener(_onForegroundPush);
     AuthSessionService().removeListener(_onSessionChanged);
     WidgetsBinding.instance.removeObserver(this);
@@ -181,16 +187,37 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   }
 
   void _onSessionChanged() {
+    if (AuthSessionService().stage != AuthStage.ready) return;
     final pending = _pendingPush;
-    if (pending == null || AuthSessionService().stage != AuthStage.ready) {
+    if (pending != null) {
+      _pendingPush = null;
+      // A beat later than the gate's own redirect to /home, so the target is
+      // pushed over it rather than replaced by it.
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) _navigateForPush(pending);
+      });
+    }
+    if (ShareIntentService().latest.value != null) {
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) _onShared();
+      });
+    }
+  }
+
+  /// A share lands on the ingestion screen, prefilled, as soon as there is
+  /// a signed-in session to receive it; before that it waits in the service
+  /// and [_onSessionChanged] delivers it.
+  void _onShared() {
+    final service = ShareIntentService();
+    final launch = service.latest.value;
+    if (launch == null || AuthSessionService().stage != AuthStage.ready) {
       return;
     }
-    _pendingPush = null;
-    // A beat later than the gate's own redirect to /home, so the target is
-    // pushed over it rather than replaced by it.
-    Future.delayed(const Duration(milliseconds: 400), () {
-      if (mounted) _navigateForPush(pending);
-    });
+    // A form already on screen takes the share into itself: the user went
+    // back to WhatsApp for one more voice note, not for a new recipe.
+    if (service.hasOpenForm) return;
+    service.clear();
+    _router.pushNamed(Routing.ingestion, extra: launch);
   }
 
   /// Where a push's payload points: a forum reply opens its thread on the
@@ -301,6 +328,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         title: 'EasyPlate',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.current,
+        scrollBehavior: const AppScrollBehavior(),
         routerConfig: _router,
         locale: TranslationProvider.of(context).flutterLocale,
         supportedLocales: AppLocaleUtils.supportedLocales,

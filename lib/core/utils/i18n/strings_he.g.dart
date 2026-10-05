@@ -1751,6 +1751,36 @@ class Translations$ingestion$he {
 
 	/// he: 'כותב לכם מתכון...'
 	String get generating => 'כותב לכם מתכון...';
+
+	/// he: 'הקלטה / PDF'
+	String get file => 'הקלטה / PDF';
+
+	/// he: 'בחרו קובץ אודיו שבו מישהו מקריא את המתכון, הודעה קולית, או PDF של מתכון. אפשר גם לשתף קובץ כזה ישירות מכל אפליקציה אל Easy Plate.'
+	String get fileHint => 'בחרו קובץ אודיו שבו מישהו מקריא את המתכון, הודעה קולית, או PDF של מתכון. אפשר גם לשתף קובץ כזה ישירות מכל אפליקציה אל Easy Plate.';
+
+	/// he: 'בחירת קובץ'
+	String get chooseFile => 'בחירת קובץ';
+
+	/// he: 'קובץ אחר'
+	String get replaceFile => 'קובץ אחר';
+
+	/// he: 'הקבצים גדולים מדי. הגבול הכולל הוא 10MB — כעשר דקות של הקלטה.'
+	String get fileTooLarge => 'הקבצים גדולים מדי. הגבול הכולל הוא 10MB — כעשר דקות של הקלטה.';
+
+	/// he: 'אפשר לנתח רק קובצי אודיו ו‑PDF.'
+	String get fileUnsupported => 'אפשר לנתח רק קובצי אודיו ו‑PDF.';
+
+	/// he: 'הגיע מ‑$app'
+	String sharedIn({required Object app}) => 'הגיע מ‑${app}';
+
+	/// he: 'הוספת קובץ'
+	String get addFile => 'הוספת קובץ';
+
+	/// he: '$count קבצים — ינותחו יחד כמתכון אחד, לפי הסדר'
+	String filesAsOne({required Object count}) => '${count} קבצים — ינותחו יחד כמתכון אחד, לפי הסדר';
+
+	/// he: 'אפשר לחזור לוואטסאפ ולשתף עוד הקלטה — היא תצטרף לרשימה כאן.'
+	String get shareMoreHint => 'אפשר לחזור לוואטסאפ ולשתף עוד הקלטה — היא תצטרף לרשימה כאן.';
 }
 
 // Path: mealPlanner
@@ -4205,9 +4235,21 @@ extension on Translations {
 			'ingestion.openBlankEditor' => 'פתיחת עורך ריק',
 			'ingestion.generate' => 'יצירת מתכון',
 			'ingestion.generating' => 'כותב לכם מתכון...',
+			'ingestion.file' => 'הקלטה / PDF',
+			'ingestion.fileHint' => 'בחרו קובץ אודיו שבו מישהו מקריא את המתכון, הודעה קולית, או PDF של מתכון. אפשר גם לשתף קובץ כזה ישירות מכל אפליקציה אל Easy Plate.',
+			'ingestion.chooseFile' => 'בחירת קובץ',
+			'ingestion.replaceFile' => 'קובץ אחר',
+			'ingestion.fileTooLarge' => 'הקבצים גדולים מדי. הגבול הכולל הוא 10MB — כעשר דקות של הקלטה.',
+			'ingestion.fileUnsupported' => 'אפשר לנתח רק קובצי אודיו ו‑PDF.',
+			'ingestion.sharedIn' => ({required Object app}) => 'הגיע מ‑${app}',
+			'ingestion.addFile' => 'הוספת קובץ',
+			'ingestion.filesAsOne' => ({required Object count}) => '${count} קבצים — ינותחו יחד כמתכון אחד, לפי הסדר',
+			'ingestion.shareMoreHint' => 'אפשר לחזור לוואטסאפ ולשתף עוד הקלטה — היא תצטרף לרשימה כאן.',
 			'mealPlanner.title' => 'תכנון ארוחות',
 			'mealPlanner.newPlan' => 'תפריט חדש',
 			'mealPlanner.planName' => 'שם התפריט',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'הוספת ארוחה',
 			'mealPlanner.mealName' => 'שם הארוחה',
 			'mealPlanner.addItem' => 'הוספת פריט',
@@ -4218,8 +4260,6 @@ extension on Translations {
 			'mealPlanner.breakfast' => 'בוקר',
 			'mealPlanner.lunch' => 'צהריים',
 			'mealPlanner.dinner' => 'ערב',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'ביניים בוקר',
 			'mealPlanner.afternoonSnack' => 'ביניים צהריים',
 			'mealPlanner.eveningSnack' => 'ביניים ערב',
@@ -4722,6 +4762,8 @@ extension on Translations {
 			'adminDashboard.kindNutrition' => 'תזונה',
 			'adminDashboard.kindRefine' => 'ליטוש',
 			'adminDashboard.kindGenerate' => 'יצירה',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.allTime' => 'כל הזמן',
 			'adminDashboard.recentCalls' => 'קריאות אחרונות',
 			'adminDashboard.noCalls' => 'אין קריאות',
@@ -4732,8 +4774,6 @@ extension on Translations {
 			'adminDashboard.send' => 'שליחה',
 			'adminDashboard.blocked' => 'חסומים',
 			'adminDashboard.disable' => 'חסימת חשבון',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.enable' => 'ביטול חסימה',
 			'adminDashboard.blockMessageHint' => 'מה המשתמש יראה כשינסה להתחבר',
 			'adminDashboard.disabledDone' => 'החשבון נחסם',

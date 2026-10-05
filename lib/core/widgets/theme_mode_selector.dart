@@ -6,6 +6,7 @@ import '../constants/app_text_styles.dart';
 import '../theme/theme_controller.dart';
 import '../theme/theme_switcher.dart';
 import '../utils/i18n/strings.g.dart';
+import '../constants/app_motion.dart';
 
 /// System / light / dark, as pills like the language chips. A tap hands its
 /// position to [ThemeSwitcher], which is where the circle starts growing.
@@ -42,7 +43,8 @@ class ThemeModeSelector extends StatelessWidget {
               ).switchTo(mode, origin: details.globalPosition),
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                duration: AppMotion.quick,
+                curve: AppMotion.easeOut,
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.gutter,
                   vertical: AppSpacing.base,

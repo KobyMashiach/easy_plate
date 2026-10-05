@@ -9,6 +9,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// Which menus feed the aggregation: a drawer that reads "all menus" until the
 /// shopper narrows it, and the button that opens the picker.
@@ -84,7 +85,8 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
                 ),
                 AnimatedRotation(
                   turns: _expanded ? 0.5 : 0,
-                  duration: const Duration(milliseconds: 200),
+                  duration: AppMotion.quick,
+                  curve: AppMotion.easeOut,
                   child: Icon(
                     Icons.keyboard_arrow_down_rounded,
                     color: AppColors.tertiary,
@@ -94,7 +96,8 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
             ),
           ),
           AnimatedCrossFade(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.quick,
+            sizeCurve: AppMotion.easeOut,
             crossFadeState: _expanded
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,

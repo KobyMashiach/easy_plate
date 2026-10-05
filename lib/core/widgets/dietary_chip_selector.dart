@@ -5,6 +5,7 @@ import '../constants/app_colors.dart';
 import '../constants/app_enums.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
+import '../constants/app_motion.dart';
 
 String dietaryLabel(DietaryPreference preference) => switch (preference) {
   DietaryPreference.meat => t.dietary.meat,
@@ -56,7 +57,8 @@ class DietaryChipSelector extends StatelessWidget {
           onTap: () => onToggle(preference),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.quick,
+            curve: AppMotion.easeOut,
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.sm,
               vertical: AppSpacing.base,

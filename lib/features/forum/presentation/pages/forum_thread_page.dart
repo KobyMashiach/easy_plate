@@ -19,6 +19,7 @@ import '../../../shared_recipes/domain/entities/shared_recipe_entity.dart';
 import '../../../shared_recipes/presentation/widgets/shared_recipe_picker_sheet.dart';
 import '../bloc/forum_thread_bloc.dart';
 import '../widgets/reply_recipe_link.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// One thread: the opening post, its replies (live), and the composer.
 ///
@@ -345,7 +346,8 @@ class _ReplyCard extends StatelessWidget {
     return AnimatedOpacity(
       // Drawn ahead of the server's answer: faded a touch until it lands.
       opacity: reply.pending ? 0.6 : 1,
-      duration: const Duration(milliseconds: 200),
+      duration: AppMotion.quick,
+      curve: AppMotion.easeOut,
       child: ClayCard(
         radius: AppRadius.md,
         padding: const EdgeInsets.all(AppSpacing.md),

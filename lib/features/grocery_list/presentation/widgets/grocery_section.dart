@@ -5,6 +5,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../domain/entities/grocery_item_entity.dart';
 import 'grocery_item_card.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// Collapsible group of grocery lines — one for what's still to collect, one
 /// for what's already in the basket.
@@ -46,7 +47,8 @@ class _GrocerySectionState extends State<GrocerySection> {
               children: [
                 AnimatedRotation(
                   turns: _expanded ? 0.25 : 0,
-                  duration: const Duration(milliseconds: 300),
+                  duration: AppMotion.standard,
+                  curve: AppMotion.easeOut,
                   child: Icon(
                     Icons.chevron_right_rounded,
                     color: AppColors.primary,
@@ -77,8 +79,8 @@ class _GrocerySectionState extends State<GrocerySection> {
           ),
         ),
         AnimatedCrossFade(
-          duration: const Duration(milliseconds: 300),
-          sizeCurve: Curves.easeOut,
+          duration: AppMotion.standard,
+          sizeCurve: AppMotion.easeOut,
           crossFadeState: _expanded
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,

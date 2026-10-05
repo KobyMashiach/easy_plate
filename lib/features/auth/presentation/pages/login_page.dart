@@ -17,6 +17,7 @@ import '../widgets/apple_sign_in.dart';
 import '../widgets/auth_error_text.dart';
 import 'phone_verification_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/constants/app_motion.dart';
 
 enum _Method { email, phone }
 
@@ -128,7 +129,10 @@ class _LoginViewState extends State<_LoginView> {
         }
       },
       builder: (context, state) {
-        final busy = state is AuthLoading;
+        // Still busy once signed in: the session is hydrating the account
+        // (boxes, cloud copy, profile) before the gate moves on, and a form
+        // that goes quiet in between reads as a tap that did nothing.
+        final busy = state is AuthLoading || state is AuthAuthenticated;
         return ClayScaffold(
           body: SafeArea(
             child: ListView(
@@ -236,7 +240,8 @@ class _LoginViewState extends State<_LoginView> {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppMotion.quick,
+        curve: AppMotion.easeOut,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
           vertical: AppSpacing.gutter,

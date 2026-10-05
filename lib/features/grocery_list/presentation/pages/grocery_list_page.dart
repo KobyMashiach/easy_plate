@@ -29,6 +29,7 @@ import '../../../price_book/domain/entities/price_unit.dart';
 import '../../../price_book/presentation/price_book_service.dart';
 import '../../../price_book/presentation/widgets/price_widgets.dart';
 import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
+import '../../../../core/constants/app_motion.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -475,7 +476,8 @@ class _AddItemFormState extends State<_AddItemForm> {
                   onTap: () => setState(() => _unit = unit),
                   behavior: HitTestBehavior.opaque,
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: AppMotion.quick,
+                    curve: AppMotion.easeOut,
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.sm,
                       vertical: AppSpacing.base,

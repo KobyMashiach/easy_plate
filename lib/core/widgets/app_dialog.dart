@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../constants/app_colors.dart';
+import '../constants/app_motion.dart';
 import '../constants/app_shadows.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
@@ -282,29 +284,55 @@ class AppDialog extends StatelessWidget {
     BuildContext context, {
     required bool barrierDismissible,
   }) {
-    return RawDialogRoute<bool>(
+    final reduced = AppMotion.reduced(context);
+    return _ClayDialogRoute(
       barrierDismissible: barrierDismissible && !blocking,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: AppColors.onSurface.withValues(alpha: 0.32),
-      transitionDuration: const Duration(milliseconds: 260),
+      transitionDuration: AppMotion.fade(context, AppMotion.emphasized),
+      // Leaving is quicker than arriving: the answer was given, the card
+      // is not asked to be watched on its way out.
+      reverseTransitionDuration: AppMotion.fade(context, AppMotion.exit),
       pageBuilder: (dialogContext, _, _) => _ModalCard(dialog: this),
       // Settles in from slightly small and below, the way a clay surface
-      // would land, rather than Material's fade.
+      // would land — and lands without a bounce: nothing threw it, so
+      // there is no momentum for one. Reduced motion keeps the fade only.
       transitionBuilder: (_, animation, _, child) {
+        if (reduced) return FadeTransition(opacity: animation, child: child);
         // A drive, not a CurvedAnimation: this builder runs on every tick
         // of the transition, and a CurvedAnimation registers itself on the
         // route's animation each time and is never disposed.
-        final curved = animation.drive(CurveTween(curve: Curves.easeOutBack));
-        return FadeTransition(
-          opacity: animation,
-          child: ScaleTransition(
-            scale: Tween(begin: 0.92, end: 1.0).animate(curved),
-            child: SlideTransition(
-              position: Tween(
-                begin: const Offset(0, 0.04),
-                end: Offset.zero,
-              ).animate(curved),
-              child: child,
+        //
+        // Going out, the curve is flipped, so the exit also starts fast
+        // and settles — ease-out in the direction it travels.
+        final curve = animation.status == AnimationStatus.reverse
+            ? AppMotion.easeOut.flipped
+            : AppMotion.easeOut;
+        final curved = animation.drive(CurveTween(curve: curve));
+        // The page behind recedes into frosted glass as the card arrives,
+        // the blur growing with it — a material materialising, not a
+        // plain dim. It sits in the page's own layer, so it covers the
+        // barrier and whatever is under it.
+        return AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) => BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 14 * animation.value,
+              sigmaY: 14 * animation.value,
+            ),
+            child: child,
+          ),
+          child: FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween(begin: 0.94, end: 1.0).animate(curved),
+              child: SlideTransition(
+                position: Tween(
+                  begin: const Offset(0, 0.04),
+                  end: Offset.zero,
+                ).animate(curved),
+                child: child,
+              ),
             ),
           ),
         );
@@ -443,13 +471,16 @@ class _ModalCard extends StatelessWidget {
                 type: MaterialType.transparency,
                 child: Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(
+                  decoration: ShapeDecoration(
                     color: AppColors.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                    border: Border.all(
-                      color: AppColors.surfaceContainerHighest,
+                    shape: RoundedSuperellipseBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      side: BorderSide(
+                        color: AppColors.surfaceContainerHighest,
+                        width: 0.5,
+                      ),
                     ),
-                    boxShadow: AppShadows.dialog,
+                    shadows: AppShadows.dialog,
                   ),
                   child: SingleChildScrollView(
                     child: Column(
@@ -572,16 +603,20 @@ class _Notice extends StatefulWidget {
 class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 380),
-    reverseDuration: const Duration(milliseconds: 220),
+    duration: AppMotion.emphasized,
+    reverseDuration: AppMotion.exit,
   );
 
   /// Built once: a CurvedAnimation listens to its parent, so one per build
   /// piled listeners onto the controller for as long as the notice lived.
+  ///
+  /// No overshoot on the way in — a notice arrives, it was not thrown. The
+  /// reverse curve is the flipped one, so the exit also leaves fast and
+  /// settles, read in its own direction.
   late final CurvedAnimation _entrance = CurvedAnimation(
     parent: _controller,
-    curve: Curves.easeOutBack,
-    reverseCurve: Curves.easeIn,
+    curve: AppMotion.easeOut,
+    reverseCurve: AppMotion.easeOut.flipped,
   );
   Timer? _timer;
 
@@ -628,7 +663,9 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
             opacity: _controller,
             child: SlideTransition(
               position: Tween(
-                begin: const Offset(0, -0.6),
+                begin: AppMotion.reduced(context)
+                    ? Offset.zero
+                    : const Offset(0, -0.6),
                 end: Offset.zero,
               ).animate(entrance),
               child: Dismissible(
@@ -648,13 +685,16 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
                           AppSpacing.gutter,
                           AppSpacing.sm,
                         ),
-                        decoration: BoxDecoration(
+                        decoration: ShapeDecoration(
                           color: AppColors.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                          border: Border.all(
-                            color: AppColors.surfaceContainerHighest,
+                          shape: RoundedSuperellipseBorder(
+                            borderRadius: BorderRadius.circular(AppRadius.md),
+                            side: BorderSide(
+                              color: AppColors.surfaceContainerHighest,
+                              width: 0.5,
+                            ),
                           ),
-                          boxShadow: AppShadows.dock,
+                          shadows: AppShadows.dock,
                         ),
                         child: Row(
                           children: [
@@ -692,4 +732,21 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
       ),
     );
   }
+}
+
+/// [RawDialogRoute] with its own exit timing: the base class leaves at the
+/// speed it arrived, and the card should go quicker than it came.
+class _ClayDialogRoute extends RawDialogRoute<bool> {
+  _ClayDialogRoute({
+    required super.pageBuilder,
+    required super.barrierDismissible,
+    super.barrierLabel,
+    super.barrierColor,
+    super.transitionDuration,
+    super.transitionBuilder,
+    required this.reverseTransitionDuration,
+  });
+
+  @override
+  final Duration reverseTransitionDuration;
 }

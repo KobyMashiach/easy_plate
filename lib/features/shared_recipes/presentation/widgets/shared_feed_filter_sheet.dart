@@ -8,6 +8,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import 'shared_feed_query.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// Returns the edited query, or null if the sheet was dismissed.
 Future<SharedFeedQuery?> showSharedFeedFilterSheet(
@@ -213,7 +214,8 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppMotion.quick,
+        curve: AppMotion.easeOut,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.gutter,
           vertical: AppSpacing.base,

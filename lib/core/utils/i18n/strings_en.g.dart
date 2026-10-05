@@ -751,6 +751,16 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get openBlankEditor => 'Open a blank editor';
 	@override String get generate => 'Create recipe';
 	@override String get generating => 'Writing your recipe...';
+	@override String get file => 'Recording / PDF';
+	@override String get fileHint => 'Pick an audio file of someone reading the recipe out, a voice note, or a recipe PDF. You can also share such a file straight into Easy Plate from any app.';
+	@override String get chooseFile => 'Choose a file';
+	@override String get replaceFile => 'Another file';
+	@override String get fileTooLarge => 'The files are too large. The total limit is 10MB, about ten minutes of recording.';
+	@override String get fileUnsupported => 'Only audio files and PDFs can be analysed.';
+	@override String sharedIn({required Object app}) => 'From ${app}';
+	@override String get addFile => 'Add a file';
+	@override String filesAsOne({required Object count}) => '${count} files — analysed together as one recipe, in order';
+	@override String get shareMoreHint => 'You can go back to WhatsApp and share another recording — it will join the list here.';
 }
 
 // Path: mealPlanner
@@ -2054,9 +2064,21 @@ extension on TranslationsEn {
 			'ingestion.openBlankEditor' => 'Open a blank editor',
 			'ingestion.generate' => 'Create recipe',
 			'ingestion.generating' => 'Writing your recipe...',
+			'ingestion.file' => 'Recording / PDF',
+			'ingestion.fileHint' => 'Pick an audio file of someone reading the recipe out, a voice note, or a recipe PDF. You can also share such a file straight into Easy Plate from any app.',
+			'ingestion.chooseFile' => 'Choose a file',
+			'ingestion.replaceFile' => 'Another file',
+			'ingestion.fileTooLarge' => 'The files are too large. The total limit is 10MB, about ten minutes of recording.',
+			'ingestion.fileUnsupported' => 'Only audio files and PDFs can be analysed.',
+			'ingestion.sharedIn' => ({required Object app}) => 'From ${app}',
+			'ingestion.addFile' => 'Add a file',
+			'ingestion.filesAsOne' => ({required Object count}) => '${count} files — analysed together as one recipe, in order',
+			'ingestion.shareMoreHint' => 'You can go back to WhatsApp and share another recording — it will join the list here.',
 			'mealPlanner.title' => 'Meal planning',
 			'mealPlanner.newPlan' => 'New plan',
 			'mealPlanner.planName' => 'Plan name',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'Add a meal',
 			'mealPlanner.mealName' => 'Meal name',
 			'mealPlanner.addItem' => 'Add an item',
@@ -2067,8 +2089,6 @@ extension on TranslationsEn {
 			'mealPlanner.breakfast' => 'Breakfast',
 			'mealPlanner.lunch' => 'Lunch',
 			'mealPlanner.dinner' => 'Dinner',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'Morning snack',
 			'mealPlanner.afternoonSnack' => 'Afternoon snack',
 			'mealPlanner.eveningSnack' => 'Evening snack',
@@ -2571,6 +2591,8 @@ extension on TranslationsEn {
 			'adminDashboard.kindNutrition' => 'Nutrition',
 			'adminDashboard.kindRefine' => 'Refine',
 			'adminDashboard.kindGenerate' => 'Generate',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.allTime' => 'all time',
 			'adminDashboard.recentCalls' => 'Recent calls',
 			'adminDashboard.noCalls' => 'No calls',
@@ -2581,8 +2603,6 @@ extension on TranslationsEn {
 			'adminDashboard.send' => 'Send',
 			'adminDashboard.blocked' => 'Blocked',
 			'adminDashboard.disable' => 'Block account',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.enable' => 'Unblock',
 			'adminDashboard.blockMessageHint' => 'What the user sees when they try to sign in',
 			'adminDashboard.disabledDone' => 'Account blocked',

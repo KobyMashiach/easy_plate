@@ -751,6 +751,16 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get openBlankEditor => 'فتح محرّر فارغ';
 	@override String get generate => 'إنشاء وصفة';
 	@override String get generating => 'جارٍ كتابة الوصفة...';
+	@override String get file => 'تسجيل / PDF';
+	@override String get fileHint => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة، أو رسالة صوتية، أو ملف PDF لوصفة. يمكنك أيضًا مشاركة مثل هذا الملف مباشرةً إلى Easy Plate من أي تطبيق.';
+	@override String get chooseFile => 'اختيار ملف';
+	@override String get replaceFile => 'ملف آخر';
+	@override String get fileTooLarge => 'الملفات كبيرة جدًا. الحد الإجمالي هو 10MB، نحو عشر دقائق من التسجيل.';
+	@override String get fileUnsupported => 'يمكن تحليل ملفات الصوت وملفات PDF فقط.';
+	@override String sharedIn({required Object app}) => 'من ${app}';
+	@override String get addFile => 'إضافة ملف';
+	@override String filesAsOne({required Object count}) => '${count} ملفات — تُحلَّل معًا كوصفة واحدة، بالترتيب';
+	@override String get shareMoreHint => 'يمكنك العودة إلى واتساب ومشاركة تسجيل آخر — سينضم إلى القائمة هنا.';
 }
 
 // Path: mealPlanner
@@ -2054,9 +2064,21 @@ extension on TranslationsAr {
 			'ingestion.openBlankEditor' => 'فتح محرّر فارغ',
 			'ingestion.generate' => 'إنشاء وصفة',
 			'ingestion.generating' => 'جارٍ كتابة الوصفة...',
+			'ingestion.file' => 'تسجيل / PDF',
+			'ingestion.fileHint' => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة، أو رسالة صوتية، أو ملف PDF لوصفة. يمكنك أيضًا مشاركة مثل هذا الملف مباشرةً إلى Easy Plate من أي تطبيق.',
+			'ingestion.chooseFile' => 'اختيار ملف',
+			'ingestion.replaceFile' => 'ملف آخر',
+			'ingestion.fileTooLarge' => 'الملفات كبيرة جدًا. الحد الإجمالي هو 10MB، نحو عشر دقائق من التسجيل.',
+			'ingestion.fileUnsupported' => 'يمكن تحليل ملفات الصوت وملفات PDF فقط.',
+			'ingestion.sharedIn' => ({required Object app}) => 'من ${app}',
+			'ingestion.addFile' => 'إضافة ملف',
+			'ingestion.filesAsOne' => ({required Object count}) => '${count} ملفات — تُحلَّل معًا كوصفة واحدة، بالترتيب',
+			'ingestion.shareMoreHint' => 'يمكنك العودة إلى واتساب ومشاركة تسجيل آخر — سينضم إلى القائمة هنا.',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'إضافة وجبة',
 			'mealPlanner.mealName' => 'اسم الوجبة',
 			'mealPlanner.addItem' => 'إضافة عنصر',
@@ -2067,8 +2089,6 @@ extension on TranslationsAr {
 			'mealPlanner.breakfast' => 'فطور',
 			'mealPlanner.lunch' => 'غداء',
 			'mealPlanner.dinner' => 'عشاء',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'وجبة خفيفة صباحية',
 			'mealPlanner.afternoonSnack' => 'وجبة خفيفة بعد الظهر',
 			'mealPlanner.eveningSnack' => 'وجبة خفيفة مسائية',
@@ -2571,6 +2591,8 @@ extension on TranslationsAr {
 			'adminDashboard.kindNutrition' => 'تغذية',
 			'adminDashboard.kindRefine' => 'تحسين',
 			'adminDashboard.kindGenerate' => 'توليد',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.allTime' => 'كل الوقت',
 			'adminDashboard.recentCalls' => 'آخر الطلبات',
 			'adminDashboard.noCalls' => 'لا طلبات',
@@ -2581,8 +2603,6 @@ extension on TranslationsAr {
 			'adminDashboard.send' => 'إرسال',
 			'adminDashboard.blocked' => 'محظورون',
 			'adminDashboard.disable' => 'حظر الحساب',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.enable' => 'إلغاء الحظر',
 			'adminDashboard.blockMessageHint' => 'ما سيراه المستخدم عند محاولة الدخول',
 			'adminDashboard.disabledDone' => 'تم حظر الحساب',

@@ -1574,6 +1574,8 @@ PODS:
     - PurchasesHybridCommon (= 18.37.0)
     - RevenueCatUI (= 5.88.0)
   - RecaptchaInterop (101.0.0)
+  - receive_sharing_intent (1.8.1):
+    - Flutter
   - RevenueCat (5.88.0)
   - RevenueCatUI (5.88.0):
     - RevenueCat (= 5.88.0)
@@ -1603,6 +1605,7 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - purchases_ui_flutter (from `.symlinks/plugins/purchases_ui_flutter/ios`)
+  - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
@@ -1691,6 +1694,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/purchases_flutter/ios"
   purchases_ui_flutter:
     :path: ".symlinks/plugins/purchases_ui_flutter/ios"
+  receive_sharing_intent:
+    :path: ".symlinks/plugins/receive_sharing_intent/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   webview_flutter_wkwebview:
@@ -1757,11 +1762,12 @@ SPEC CHECKSUMS:
   PurchasesHybridCommon: 2e72564d3393d480ca126d4d057737435dd7ccba
   PurchasesHybridCommonUI: b9e63653fa3abb753b702e0a9b074fbf452b0cbb
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
+  receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
   RevenueCat: 96e12da1f3de201c65f337ff661506ac28ee1514
   RevenueCatUI: 86e2209d13c41893a4e24da4e26370d4bd9f8b93
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
 
-PODFILE CHECKSUM: bfb1817789c4553b8632ae468afa84d945df4ac0
+PODFILE CHECKSUM: 190934823daebffc51e840f6fb25092dc1faf001
 
 COCOAPODS: 1.16.2

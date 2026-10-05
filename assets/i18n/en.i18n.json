@@ -536,7 +536,17 @@
     "manualHint": "Fill the recipe in yourself, in the structured format — no AI, no waiting.",
     "openBlankEditor": "Open a blank editor",
     "generate": "Create recipe",
-    "generating": "Writing your recipe..."
+    "generating": "Writing your recipe...",
+    "file": "Recording / PDF",
+    "fileHint": "Pick an audio file of someone reading the recipe out, a voice note, or a recipe PDF. You can also share such a file straight into Easy Plate from any app.",
+    "chooseFile": "Choose a file",
+    "replaceFile": "Another file",
+    "fileTooLarge": "The files are too large. The total limit is 10MB, about ten minutes of recording.",
+    "fileUnsupported": "Only audio files and PDFs can be analysed.",
+    "sharedIn": "From $app",
+    "addFile": "Add a file",
+    "filesAsOne": "$count files — analysed together as one recipe, in order",
+    "shareMoreHint": "You can go back to WhatsApp and share another recording — it will join the list here."
   },
   "mealPlanner": {
     "title": "Meal planning",

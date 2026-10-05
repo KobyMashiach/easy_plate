@@ -86,7 +86,10 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
         // this screen on its own.
       },
       builder: (context, state) {
-        final busy = state is AuthLoading;
+        // Still busy once signed in: the session is hydrating the account
+        // (boxes, cloud copy, profile) before the gate moves on, and a form
+        // that goes quiet in between reads as a tap that did nothing.
+        final busy = state is AuthLoading || state is AuthAuthenticated;
         return ClayScaffold(
           appBar: ClayTopAppBar(
             title: t.auth.signIn,

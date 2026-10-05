@@ -5,6 +5,7 @@ import '../constants/app_enums.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 import '../utils/i18n/strings.g.dart';
+import '../constants/app_motion.dart';
 
 String allergenLabel(Allergen allergen) => switch (allergen) {
   Allergen.gluten => t.allergens.gluten,
@@ -41,7 +42,8 @@ class AllergenChipSelector extends StatelessWidget {
           onTap: () => onToggle(allergen),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.quick,
+            curve: AppMotion.easeOut,
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.sm,
               vertical: AppSpacing.base,

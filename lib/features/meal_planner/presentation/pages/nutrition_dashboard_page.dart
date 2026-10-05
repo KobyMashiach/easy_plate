@@ -13,6 +13,7 @@ import '../../domain/entities/meal_plan_entity.dart';
 import '../../domain/nutrition_summary.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/constants/app_motion.dart';
 
 class NutritionDashboardArgs {
   final MealPlanEntity plan;
@@ -362,7 +363,7 @@ class _DayBar extends StatelessWidget {
         const SizedBox(height: AppSpacing.xs),
         Expanded(
           child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.quick,
             opacity: dimmed ? 0.4 : 1,
             child: Align(
               alignment: Alignment.bottomCenter,

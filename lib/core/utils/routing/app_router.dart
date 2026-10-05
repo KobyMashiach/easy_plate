@@ -27,6 +27,7 @@ import '../../../features/navigation/presentation/pages/main_nav_bar.dart';
 import '../../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../../features/recipe_books/presentation/pages/book_viewer_page.dart';
+import '../../../features/recipe_ingestion/domain/entities/ingestion_file.dart';
 import '../../../features/recipe_ingestion/presentation/pages/ingestion_page.dart';
 import '../../../features/settings/presentation/pages/notification_settings_page.dart';
 import '../../../features/settings/presentation/pages/preferences_page.dart';
@@ -256,7 +257,8 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.ingestion,
             name: Routing.ingestion,
-            builder: (context, state) => const IngestionPage(),
+            builder: (context, state) =>
+                IngestionPage(launch: state.extra as IngestionLaunch?),
           ),
           GoRoute(
             path: Routing.tutorial,

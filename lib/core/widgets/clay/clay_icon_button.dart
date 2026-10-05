@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../../constants/app_motion.dart';
 import '../../constants/app_shadows.dart';
 
 /// A round clay control for a single icon: the bar buttons, the actions on a
@@ -44,8 +45,8 @@ class _ClayIconButtonState extends State<ClayIconButton> {
 
     Widget button = AnimatedScale(
       scale: _pressed ? 0.92 : 1,
-      duration: const Duration(milliseconds: 150),
-      curve: Curves.easeOut,
+      duration: AppMotion.press,
+      curve: AppMotion.easeOut,
       child: Container(
         width: widget.size,
         height: widget.size,

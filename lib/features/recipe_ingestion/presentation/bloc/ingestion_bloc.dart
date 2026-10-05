@@ -18,6 +18,8 @@ import '../../domain/usecases/build_template_recipe.dart';
 import '../../domain/usecases/fetch_original_recipe_page_usecase.dart';
 import '../../domain/usecases/generate_recipe_usecase.dart';
 import '../../domain/usecases/parse_raw_text_usecase.dart';
+import '../../domain/entities/ingestion_file.dart';
+import '../../domain/usecases/parse_recipe_from_file_usecase.dart';
 import '../../domain/usecases/parse_recipe_from_social_video_usecase.dart';
 import '../../domain/usecases/parse_recipe_from_url_usecase.dart';
 import '../../domain/usecases/search_web_recipes_usecase.dart';
@@ -33,6 +35,10 @@ sealed class IngestionEvent with _$IngestionEvent {
   const factory IngestionEvent.parseUrl(String url) = _ParseUrl;
   const factory IngestionEvent.viewOriginal(String url) = _ViewOriginal;
   const factory IngestionEvent.parseSocialVideo(String url) = _ParseSocialVideo;
+
+  /// Recordings and PDFs that together are one recipe, for the model to read.
+  const factory IngestionEvent.parseFiles(List<IngestionFile> files) =
+      _ParseFiles;
 
   /// Asks the model to write a recipe from a description of the dish.
   const factory IngestionEvent.generateRecipe(String request) = _GenerateRecipe;
@@ -94,11 +100,12 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   final ParseRecipeFromUrlUseCase parseRecipeFromUrlUseCase;
   final FetchOriginalRecipePageUseCase fetchOriginalRecipePageUseCase;
   final ParseRecipeFromSocialVideoUseCase parseRecipeFromSocialVideoUseCase;
+  final ParseRecipeFromFileUseCase parseRecipeFromFileUseCase;
   final GenerateRecipeUseCase generateRecipeUseCase;
   final SaveRecipeUseCase saveRecipeUseCase;
   final GetUserPreferencesUseCase getUserPreferencesUseCase;
 
-  RecipeIngestionChannel _channel = RecipeIngestionChannel.rawText;
+  RecipeIngestionChannel _channel;
   static const _uuid = Uuid();
 
   /// How long an analysis may run before the raw text is offered instead.
@@ -116,21 +123,25 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
 
   IngestionBloc({
     this.analysisTimeout = const Duration(seconds: 45),
+    RecipeIngestionChannel initialChannel = RecipeIngestionChannel.rawText,
     required this.parseRawTextUseCase,
     required this.searchWebRecipesUseCase,
     required this.parseRecipeFromUrlUseCase,
     required this.fetchOriginalRecipePageUseCase,
     required this.parseRecipeFromSocialVideoUseCase,
+    required this.parseRecipeFromFileUseCase,
     required this.generateRecipeUseCase,
     required this.saveRecipeUseCase,
     required this.getUserPreferencesUseCase,
-  }) : super(const IngestionState.idle(RecipeIngestionChannel.rawText)) {
+  }) : _channel = initialChannel,
+       super(IngestionState.idle(initialChannel)) {
     on<_SelectChannel>(_selectChannel);
     on<_ParseRawText>(_parseRawText);
     on<_SearchWeb>(_searchWeb);
     on<_ParseUrl>(_parseUrl);
     on<_ViewOriginal>(_viewOriginal);
     on<_ParseSocialVideo>(_parseSocialVideo);
+    on<_ParseFiles>(_parseFiles);
     on<_GenerateRecipe>(_generateRecipe);
     on<_UpdateRecipe>(_updateRecipe);
     on<_SaveRecipe>(_saveRecipe);
@@ -138,8 +149,13 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     on<_EditManually>(_editManually);
   }
 
-  factory IngestionBloc.fromContext(BuildContext context) {
+  factory IngestionBloc.fromContext(
+    BuildContext context, {
+    RecipeIngestionChannel initialChannel = RecipeIngestionChannel.rawText,
+  }) {
     return IngestionBloc(
+      initialChannel: initialChannel,
+      parseRecipeFromFileUseCase: ParseRecipeFromFileUseCase(context.read()),
       parseRawTextUseCase: ParseRawTextUseCase(context.read()),
       searchWebRecipesUseCase: SearchWebRecipesUseCase(context.read()),
       parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(context.read()),
@@ -316,6 +332,16 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
           parseRecipeFromSocialVideoUseCase(event.url, preferences: prefs),
       fallbackText: () => _pageText(event.url),
       sourceUrl: event.url,
+    );
+  }
+
+  /// A recording or a PDF has no text to fall back on: a failure is an
+  /// error with a retry, not a template.
+  Future<void> _parseFiles(_ParseFiles event, Emitter<IngestionState> emit) {
+    return _runParse(
+      emit,
+      (prefs) => parseRecipeFromFileUseCase(event.files, preferences: prefs),
+      fallbackText: () async => null,
     );
   }
 

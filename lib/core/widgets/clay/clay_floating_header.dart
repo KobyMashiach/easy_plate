@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
@@ -136,21 +138,32 @@ class _FloatingHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    // Opaque: when the header floats back over the list, the rows must not
-    // show through it.
-    return ColoredBox(
-      color: background,
-      child: Padding(
-        padding: EdgeInsetsDirectional.only(
-          start: AppSpacing.marginMobile,
-          end: AppSpacing.marginMobile + endInset,
-          top: AppSpacing.md,
-          bottom: bottomGap,
+    // Frosted glass, as an iOS navigation bar becomes once content scrolls
+    // under it: the rows show through blurred and lifted, which is what
+    // tells the eye the header is floating over the list rather than
+    // cutting it off. Clipped so the blur stays inside the header's bounds.
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: ColoredBox(
+          color: background.withValues(alpha: 0.78),
+          child: _content(),
         ),
-        child: Align(
-          alignment: AlignmentDirectional.topStart,
-          child: ClayPageHeader(title: title, subtitle: subtitle),
-        ),
+      ),
+    );
+  }
+
+  Widget _content() {
+    return Padding(
+      padding: EdgeInsetsDirectional.only(
+        start: AppSpacing.marginMobile,
+        end: AppSpacing.marginMobile + endInset,
+        top: AppSpacing.md,
+        bottom: bottomGap,
+      ),
+      child: Align(
+        alignment: AlignmentDirectional.topStart,
+        child: ClayPageHeader(title: title, subtitle: subtitle),
       ),
     );
   }

@@ -24,6 +24,7 @@ import '../../../community/presentation/widgets/like_button.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../bloc/forum_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// The forum tab. Live: the bloc holds a Firestore listener on the thread
 /// window, so a reply or a new thread from anyone shows without a pull.
@@ -197,7 +198,7 @@ class _IncomingPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
+      duration: AppMotion.quick,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
         child: SlideTransition(

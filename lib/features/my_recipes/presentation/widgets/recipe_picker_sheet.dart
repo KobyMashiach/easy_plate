@@ -11,6 +11,7 @@ import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../bloc/my_recipes_bloc.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// Shared picker for "choose a recipe from My Recipes".
 ///
@@ -197,7 +198,8 @@ class _PickerBodyState extends State<_PickerBody> {
                         ),
                       ),
                       AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
+                        duration: AppMotion.quick,
+                        curve: AppMotion.easeOut,
                         width: 28,
                         height: 28,
                         decoration: BoxDecoration(

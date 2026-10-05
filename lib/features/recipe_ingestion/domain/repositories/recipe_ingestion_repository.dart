@@ -4,6 +4,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../data/datasources/recipe_ai_datasource.dart' show ReceiptPage;
+import '../entities/ingestion_file.dart';
 import '../entities/original_recipe_page_entity.dart';
 import '../entities/web_search_result_entity.dart';
 
@@ -20,6 +21,14 @@ abstract class RecipeIngestionRepository {
     String url,
     List<DietaryPreference> preferences,
   );
+
+  /// Recordings and PDFs that together make one recipe, read by the model
+  /// directly, in order.
+  Future<RecipeEntity> parseFromFiles(
+    List<IngestionFile> files,
+    List<DietaryPreference> preferences,
+  );
+
   Future<RecipeEntity> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,

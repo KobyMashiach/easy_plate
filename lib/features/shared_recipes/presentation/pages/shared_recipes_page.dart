@@ -37,6 +37,7 @@ import '../bloc/shared_recipes_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/constants/app_motion.dart';
 
 class SharedRecipesPage extends StatelessWidget {
   const SharedRecipesPage({super.key});
@@ -378,7 +379,8 @@ class _FeedState extends State<_Feed> {
       onTap: () => setState(() => _query = _query.copyWith(scope: value)),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppMotion.quick,
+        curve: AppMotion.easeOut,
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
         decoration: ShapeDecoration(
           color: selected

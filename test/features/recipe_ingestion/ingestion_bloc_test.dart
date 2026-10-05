@@ -11,10 +11,12 @@ import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repos
 import 'package:easy_plate/features/my_recipes/domain/usecases/save_recipe_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/original_recipe_page_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_result_entity.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/entities/ingestion_file.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/fetch_original_recipe_page_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/generate_recipe_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_raw_text_usecase.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_file_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_social_video_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_url_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/search_web_recipes_usecase.dart';
@@ -45,6 +47,12 @@ class _FakeIngestion implements RecipeIngestionRepository {
   @override
   Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> p) =>
       onParse!(url);
+
+  @override
+  Future<RecipeEntity> parseFromFiles(
+    List<IngestionFile> files,
+    List<DietaryPreference> p,
+  ) => onParse!(files.map((f) => f.name).join(','));
 
   @override
   Future<RecipeEntity> parseFromSocialVideo(
@@ -119,6 +127,7 @@ void main() {
     parseRawTextUseCase: ParseRawTextUseCase(ingestion),
     searchWebRecipesUseCase: SearchWebRecipesUseCase(ingestion),
     parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(ingestion),
+    parseRecipeFromFileUseCase: ParseRecipeFromFileUseCase(ingestion),
     parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(
       ingestion,
     ),

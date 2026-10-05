@@ -7,6 +7,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/nutrition/nutrition_widgets.dart';
 import '../../domain/entities/nutrition_entity.dart';
+import '../../../../core/constants/app_motion.dart';
 
 /// The per-serving nutrition of a recipe: the ring, the three macro bars, and
 /// — before anything has been estimated — the button that asks the model.
@@ -84,7 +85,8 @@ class _NutritionFactsCardState extends State<NutritionFactsCard> {
                       onTap: () => setState(() => _wholeRecipe = whole),
                       behavior: HitTestBehavior.opaque,
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
+                        duration: AppMotion.quick,
+                        curve: AppMotion.easeOut,
                         padding: const EdgeInsets.symmetric(
                           vertical: AppSpacing.base,
                         ),

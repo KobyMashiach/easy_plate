@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
@@ -86,6 +87,20 @@ abstract class AppTheme {
       fontFamilyFallback: AppTextStyles.fontFamilyFallback,
       scaffoldBackgroundColor: AppColors.background,
       splashFactory: InkSparkle.splashFactory,
+      // Pages slide in from the end edge and leave the way they came, on
+      // every platform: a path that is symmetric and, under a finger, can
+      // be grabbed and reversed mid-flight. iOS keeps its own route, with
+      // the back-swipe at the leading edge; Android gets the same slide
+      // without that edge strip, which would otherwise take the first
+      // swipe of a book page for itself. Material's zoom fades a page in
+      // from nowhere and gives nothing to hold.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: _SlidePageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
 
     return base.copyWith(
@@ -103,9 +118,9 @@ abstract class AppTheme {
         color: AppColors.surfaceContainerLowest,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
+        shape: RoundedSuperellipseBorder(
           borderRadius: BorderRadius.circular(AppRadius.std),
-          side: BorderSide(color: AppColors.surfaceVariant),
+          side: BorderSide(color: AppColors.surfaceVariant, width: 0.5),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -203,8 +218,8 @@ abstract class AppTheme {
         surfaceTintColor: Colors.transparent,
         titleTextStyle: AppTextStyles.headlineMd,
         contentTextStyle: AppTextStyles.bodyMd,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
+        shape: const RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.md)),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
@@ -212,7 +227,8 @@ abstract class AppTheme {
         surfaceTintColor: Colors.transparent,
         showDragHandle: true,
         dragHandleColor: AppColors.outlineVariant,
-        shape: const RoundedRectangleBorder(
+        // The iOS sheet: a generous continuous radius on the top corners.
+        shape: const RoundedSuperellipseBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(AppRadius.lg),
           ),
@@ -244,4 +260,48 @@ abstract class AppTheme {
       ),
     );
   }
+}
+
+/// The iOS push — the new page slides in from the end edge over the old one,
+/// which drifts a third of the way out and dims — with no pop gesture, for
+/// the platform whose system already owns the screen edge.
+class _SlidePageTransitionsBuilder extends PageTransitionsBuilder {
+  const _SlidePageTransitionsBuilder();
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 400);
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return CupertinoPageTransition(
+      primaryRouteAnimation: animation,
+      secondaryRouteAnimation: secondaryAnimation,
+      linearTransition: false,
+      child: child,
+    );
+  }
+}
+
+/// Scrolling that rubber-bands at both ends on every platform, the way iOS
+/// does: a soft boundary reads as "there is nothing more here", a hard stop
+/// reads as frozen. No glow or stretch indicator — the bounce is the signal.
+class AppScrollBehavior extends MaterialScrollBehavior {
+  const AppScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics());
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) => child;
 }
