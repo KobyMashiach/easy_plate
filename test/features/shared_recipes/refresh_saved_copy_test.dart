@@ -9,7 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 class _Shared implements SharedRecipesRepository {
   SharedRecipeEntity? post;
   @override
-  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async => post;
+  Future<SharedRecipeEntity?> getById(
+    String id, {
+    required String viewerUid,
+  }) async => post;
   @override
   noSuchMethod(Invocation i) => throw UnimplementedError('${i.memberName}');
 }
@@ -21,7 +24,10 @@ class _Recipes implements RecipesRepository {
   @override
   Future<List<RecipeEntity>> getRecipes() async => stored;
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async => saved = recipe;
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async => saved = recipe;
   @override
   noSuchMethod(Invocation i) => throw UnimplementedError('${i.memberName}');
 }
@@ -42,7 +48,12 @@ void main() {
     steps: const ['א', 'ב'],
     createdAt: DateTime(2026, 2, 1),
     servings: 4,
-    nutrition: const NutritionEntity(calories: 300, proteinGrams: 1, carbsGrams: 2, fatGrams: 3),
+    nutrition: const NutritionEntity(
+      calories: 300,
+      proteinGrams: 1,
+      carbsGrams: 2,
+      fatGrams: 3,
+    ),
   );
 
   test('the copy takes the new content but keeps its own identity', () async {
@@ -58,7 +69,10 @@ void main() {
         likedByMe: false,
       );
     final recipes = _Recipes([local]);
-    final result = await RefreshSavedCopyUseCase(shared: shared, recipes: recipes)('post-1', viewerUid: 'me');
+    final result = await RefreshSavedCopyUseCase(
+      shared: shared,
+      recipes: recipes,
+    )('post-1', viewerUid: 'me');
     expect(result, isNotNull);
     expect(recipes.saved!.id, 'local-1');
     expect(recipes.saved!.title, 'חדש');
@@ -70,7 +84,10 @@ void main() {
 
   test('a post that is gone leaves the copy alone', () async {
     final recipes = _Recipes([local]);
-    final result = await RefreshSavedCopyUseCase(shared: _Shared(), recipes: recipes)('post-1', viewerUid: 'me');
+    final result = await RefreshSavedCopyUseCase(
+      shared: _Shared(),
+      recipes: recipes,
+    )('post-1', viewerUid: 'me');
     expect(result, isNull);
     expect(recipes.saved, isNull);
   });

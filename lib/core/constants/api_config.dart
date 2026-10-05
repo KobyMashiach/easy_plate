@@ -13,7 +13,8 @@
 abstract class ApiConfig {
   /// Google's own endpoint. Anything else in [aiBaseUrl] is taken to be our
   /// proxy, which is what flips the authentication scheme below.
-  static const googleDirectBaseUrl = 'https://generativelanguage.googleapis.com';
+  static const googleDirectBaseUrl =
+      'https://generativelanguage.googleapis.com';
 
   static const geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
 
@@ -35,12 +36,19 @@ abstract class ApiConfig {
   /// meaningful behind the proxy: against Google directly there is no server
   /// to fetch a video, and the social channel falls back to reading the page.
   /// The community price aggregates function, beside the proxy as well.
-  static String get priceStatsUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/priceStats');
+  static String get priceStatsUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/priceStats');
 
-  static String get socialRecipeUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/socialRecipe');
+  static String get socialRecipeUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/socialRecipe');
+
+  /// Translating the account's own content, same deploy.
+  static String get translateContentUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/translateContent');
 
   /// The administrator's account actions (block, delete, push), same deploy.
-  static String get adminUsersUrl => aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/adminUsers');
+  static String get adminUsersUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/adminUsers');
 
   static const model = String.fromEnvironment(
     'GEMINI_MODEL',

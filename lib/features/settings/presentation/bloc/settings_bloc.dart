@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/shopping_reminder_service.dart';
 import '../../../../core/utils/i18n/app_language_mapper.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -15,6 +16,44 @@ import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart'
 import '../../../user_profile/domain/usecases/save_user_preferences_usecase.dart';
 
 part 'settings_bloc.freezed.dart';
+
+/// The switches on the notification settings screen, one per preference
+/// flag. An enum rather than an event each so the screen is a list of rows
+/// over one handler, and a new switch is one line here and one there.
+enum NotificationSetting {
+  push,
+  repliesOnMyPosts,
+  repliesOnThreads,
+  shareInvites,
+  sharedRecipeUpdates,
+  adminReplies,
+  announcements,
+  foregroundPopups
+  ;
+
+  bool of(UserPreferencesEntity p) => switch (this) {
+    push => p.pushEnabled,
+    repliesOnMyPosts => p.notifyRepliesOnMyPosts,
+    repliesOnThreads => p.notifyRepliesOnThreads,
+    shareInvites => p.notifyShareInvites,
+    sharedRecipeUpdates => p.notifySharedRecipeUpdates,
+    adminReplies => p.notifyAdminReplies,
+    announcements => p.notifyAnnouncements,
+    foregroundPopups => p.foregroundPopupsEnabled,
+  };
+
+  UserPreferencesEntity apply(UserPreferencesEntity p, bool value) =>
+      switch (this) {
+        push => p.copyWith(pushEnabled: value),
+        repliesOnMyPosts => p.copyWith(notifyRepliesOnMyPosts: value),
+        repliesOnThreads => p.copyWith(notifyRepliesOnThreads: value),
+        shareInvites => p.copyWith(notifyShareInvites: value),
+        sharedRecipeUpdates => p.copyWith(notifySharedRecipeUpdates: value),
+        adminReplies => p.copyWith(notifyAdminReplies: value),
+        announcements => p.copyWith(notifyAnnouncements: value),
+        foregroundPopups => p.copyWith(foregroundPopupsEnabled: value),
+      };
+}
 
 @freezed
 sealed class SettingsEvent with _$SettingsEvent {
@@ -35,6 +74,10 @@ sealed class SettingsEvent with _$SettingsEvent {
   const factory SettingsEvent.setShoppingReminders(
     List<ShoppingReminderSlot> slots,
   ) = _SetShoppingReminders;
+  const factory SettingsEvent.setNotification(
+    NotificationSetting setting,
+    bool enabled,
+  ) = _SetNotification;
 }
 
 @freezed
@@ -48,6 +91,8 @@ sealed class SettingsState with _$SettingsState {
   const factory SettingsState.errorMessage(String error) = SettingsError;
 }
 
+/// Shared by the settings, preferences and notification screens: they are
+/// three views over the one preferences record.
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final GetUserPreferencesUseCase getUserPreferencesUseCase;
   final SaveUserPreferencesUseCase saveUserPreferencesUseCase;
@@ -68,6 +113,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<_ToggleFastPageTurn>(_toggleFastPageTurn);
     on<_ToggleCommunityPrices>(_toggleCommunityPrices);
     on<_SetShoppingReminders>(_setShoppingReminders);
+    on<_SetNotification>(_setNotification);
     add(const SettingsEvent.init());
   }
 
@@ -102,15 +148,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     }
   }
 
-  // Every change below shows at once and is persisted after: a switch that
-  // waits for the cloud write before moving reads as a tap that never landed.
-  Future<void> _updateShoppingDay(
-    _UpdateShoppingDay event,
+  /// Every change shows at once and is persisted after: a switch that waits
+  /// for the cloud write before moving reads as a tap that never landed.
+  ///
+  /// The session is told afterwards so everything that reads the current
+  /// preferences elsewhere — the grocery tab's price fallback, the popup
+  /// gate for pushes — sees the new value without a restart.
+  Future<void> _commit(
+    SettingsLoaded current,
+    UserPreferencesEntity updated,
     Emitter<SettingsState> emit,
   ) async {
-    final current = state;
-    if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(shoppingDay: event.day);
     emit(
       .loaded(
         updated,
@@ -119,7 +167,23 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       ),
     );
     await saveUserPreferencesUseCase(updated);
-    await ShoppingReminderService().scheduleForShoppingDay(event.day);
+    AuthSessionService().publishPreferences(updated);
+  }
+
+  Future<void> _updateShoppingDay(
+    _UpdateShoppingDay event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    final updated = current.preferences.copyWith(shoppingDay: event.day);
+    await _commit(current, updated, emit);
+    // With the slots the account chose, not the defaults: a reminder set
+    // to "day before only" must stay that way when the day moves.
+    await ShoppingReminderService().scheduleForShoppingDay(
+      updated.shoppingDay,
+      slots: updated.shoppingReminderSlots,
+    );
   }
 
   Future<void> _toggleDietaryPreference(
@@ -132,17 +196,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     preferences.contains(event.preference)
         ? preferences.remove(event.preference)
         : preferences.add(event.preference);
-    final updated = current.preferences.copyWith(
-      dietaryPreferences: preferences,
+    await _commit(
+      current,
+      current.preferences.copyWith(dietaryPreferences: preferences),
+      emit,
     );
-    emit(
-      .loaded(
-        updated,
-        sharedBooksCount: current.sharedBooksCount,
-        sharedListsCount: current.sharedListsCount,
-      ),
-    );
-    await saveUserPreferencesUseCase(updated);
   }
 
   /// Persists the choice and switches the live locale, so every screen using
@@ -163,6 +221,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     );
     await LocaleSettings.setLocale(event.language.locale);
     await saveUserPreferencesUseCase(updated);
+    AuthSessionService().publishPreferences(updated);
   }
 
   Future<void> _toggleFastPageTurn(
@@ -171,17 +230,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(
-      fastPageTurnEnabled: event.enabled,
+    await _commit(
+      current,
+      current.preferences.copyWith(fastPageTurnEnabled: event.enabled),
+      emit,
     );
-    emit(
-      .loaded(
-        updated,
-        sharedBooksCount: current.sharedBooksCount,
-        sharedListsCount: current.sharedListsCount,
-      ),
-    );
-    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _setShoppingReminders(
@@ -193,14 +246,13 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final updated = current.preferences.copyWith(
       shoppingReminderSlots: event.slots,
     );
-    emit(
-      .loaded(
-        updated,
-        sharedBooksCount: current.sharedBooksCount,
-        sharedListsCount: current.sharedListsCount,
-      ),
+    await _commit(current, updated, emit);
+    // Rescheduled at once. Before, the old reminders kept firing until the
+    // next launch re-read the preferences.
+    await ShoppingReminderService().scheduleForShoppingDay(
+      updated.shoppingDay,
+      slots: updated.shoppingReminderSlots,
     );
-    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _toggleCommunityPrices(
@@ -209,17 +261,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(
-      communityPricesEnabled: event.enabled,
+    await _commit(
+      current,
+      current.preferences.copyWith(communityPricesEnabled: event.enabled),
+      emit,
     );
-    emit(
-      .loaded(
-        updated,
-        sharedBooksCount: current.sharedBooksCount,
-        sharedListsCount: current.sharedListsCount,
-      ),
-    );
-    await saveUserPreferencesUseCase(updated);
   }
 
   Future<void> _toggleSoundEffects(
@@ -228,16 +274,23 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(
-      soundEffectsEnabled: event.enabled,
+    await _commit(
+      current,
+      current.preferences.copyWith(soundEffectsEnabled: event.enabled),
+      emit,
     );
-    emit(
-      .loaded(
-        updated,
-        sharedBooksCount: current.sharedBooksCount,
-        sharedListsCount: current.sharedListsCount,
-      ),
+  }
+
+  Future<void> _setNotification(
+    _SetNotification event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    await _commit(
+      current,
+      event.setting.apply(current.preferences, event.enabled),
+      emit,
     );
-    await saveUserPreferencesUseCase(updated);
   }
 }

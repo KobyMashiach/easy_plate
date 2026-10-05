@@ -1,5 +1,6 @@
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
+import '../../../../core/translation/translated_merge.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../repositories/recipe_sharing_repository.dart';
 import 'sync_collab_recipe_usecase.dart';
@@ -17,12 +18,17 @@ class RefreshCollabRecipesUseCase {
   final RecipeSharingRepository sharing;
   final RecipesRepository recipes;
 
-  const RefreshCollabRecipesUseCase({required this.sharing, required this.recipes});
+  const RefreshCollabRecipesUseCase({
+    required this.sharing,
+    required this.recipes,
+  });
 
   /// Returns how many local copies were actually rewritten, so a caller can
   /// tell "nothing changed" from "nothing was shared".
   Future<int> call({required String uid}) async {
-    final cached = (await recipes.getRecipes()).where((recipe) => recipe.isShared).toList();
+    final cached = (await recipes.getRecipes())
+        .where((recipe) => recipe.isShared)
+        .toList();
     // Two queries, both billed, for an account that shares nothing. Most do.
     if (cached.isEmpty) return 0;
 
@@ -30,7 +36,9 @@ class RefreshCollabRecipesUseCase {
       sharing.collabsOwnedBy(uid),
       sharing.collabsSharedWith(uid),
     ]);
-    final byId = {for (final collab in fetched.expand((list) => list)) collab.id: collab};
+    final byId = {
+      for (final collab in fetched.expand((list) => list)) collab.id: collab,
+    };
 
     var rewritten = 0;
     for (final recipe in cached) {
@@ -43,12 +51,21 @@ class RefreshCollabRecipesUseCase {
       // read in SyncCollabRecipeUseCase can tell the two apart; this cannot.
       if (collab == null) continue;
 
-      final merged = SyncCollabRecipeUseCase.merged(recipe, collab, uid: uid);
+      // The shared document holds the author's words; when this account reads
+      // the recipe translated, those words must not pour back over it.
+      final kept = keepTranslation(
+        recipe,
+        SyncCollabRecipeUseCase.merged(recipe, collab, uid: uid),
+      );
+      final mergedRecipe = kept.recipe;
       // Saving unconditionally would push all of them through the cloud mirror
       // on every resume, for recipes nobody touched.
-      if (!differs(recipe, merged)) continue;
+      if (!differs(recipe, mergedRecipe)) continue;
 
-      await recipes.saveRecipe(merged);
+      await recipes.saveRecipe(
+        mergedRecipe,
+        stampLanguage: !kept.keptTranslation,
+      );
       rewritten++;
     }
     return rewritten;
@@ -86,7 +103,9 @@ class RefreshCollabRecipesUseCase {
   ) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
-      if (a[i].name != b[i].name || a[i].amount != b[i].amount || a[i].unit != b[i].unit) {
+      if (a[i].name != b[i].name ||
+          a[i].amount != b[i].amount ||
+          a[i].unit != b[i].unit) {
         return false;
       }
     }

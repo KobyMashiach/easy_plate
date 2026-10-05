@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
 import '../../walkthrough/walkthrough_targets.dart';
@@ -16,8 +15,13 @@ class ClayNavDestination {
   const ClayNavDestination({required this.icon, required this.label});
 }
 
-/// Capsule-shaped dark glass bar floating above the content, with a 20px
-/// backdrop blur. The active destination scales up and switches to mint.
+/// The tab bar, in the manner of iOS 26's Liquid Glass: a translucent
+/// capsule floating over the content, the page blurred and a touch more
+/// saturated through it, a specular rim catching the light along its edge,
+/// and a lozenge of brighter glass that slides under the active tab.
+///
+/// It follows the theme, as the system bar does: clear light glass with
+/// dark ink on the light theme, smoked glass with light ink on the dark one.
 class ClayNavDock extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
@@ -54,6 +58,9 @@ class ClayNavDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final glass = _GlassTone.of(AppColors.isDark);
+    const shape = StadiumBorder();
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.marginMobile,
@@ -61,45 +68,258 @@ class ClayNavDock extends StatelessWidget {
         AppSpacing.marginMobile,
         AppSpacing.md,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: DecoratedBox(
-            decoration: ShapeDecoration(
-              color: AppColors.navDock.withValues(alpha: 0.9),
-              // On a dark page the dock is only a shade lighter than what is
-              // behind it, so a faint rim is what separates the two.
-              shape: StadiumBorder(
-                side: AppColors.isDark
-                    ? BorderSide(color: Colors.white.withValues(alpha: 0.10))
-                    : BorderSide.none,
+      // Its own layer: the blur is redrawn as the page scrolls under it,
+      // and nothing else on screen needs to repaint with it.
+      child: RepaintBoundary(
+        child: DecoratedBox(
+          // The shadow sits outside the clip, so the glass seems to float.
+          decoration: ShapeDecoration(shape: shape, shadows: glass.shadows),
+          child: ClipPath(
+            clipper: const ShapeBorderClipper(shape: shape),
+            child: BackdropFilter(
+              // Blur first, then lift the colour a little: the glass reads
+              // as glass because what is behind it stays vivid, not grey.
+              filter: ImageFilter.compose(
+                outer: ColorFilter.matrix(_saturation(1.6)),
+                inner: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
               ),
-              shadows: AppShadows.dock,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.sm,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  for (var i = 0; i < destinations.length; i++)
-                    _DockItem(
-                      // Registered by position, which is what a tour step
-                      // names — the labels change with the locale.
-                      targetId: 'nav.$i',
-                      destination: destinations[i],
-                      isActive: i == selectedIndex,
-                      onTap: () => onSelected(i),
+              child: CustomPaint(
+                // The rim and the sheen go over the fill and under the ink.
+                foregroundPainter: _RimPainter(glass),
+                child: DecoratedBox(
+                  decoration: ShapeDecoration(
+                    shape: shape,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [glass.fillTop, glass.fillBottom],
                     ),
-                ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.xs + 2),
+                    child: _Items(
+                      destinations: destinations,
+                      selectedIndex: selectedIndex,
+                      onSelected: onSelected,
+                      glass: glass,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// A colour matrix that scales saturation by [s] (1 leaves it as is).
+  static List<double> _saturation(double s) {
+    const r = 0.2126, g = 0.7152, b = 0.0722;
+    final i = 1 - s;
+    return [
+      i * r + s,
+      i * g,
+      i * b,
+      0,
+      0,
+      i * r,
+      i * g + s,
+      i * b,
+      0,
+      0,
+      i * r,
+      i * g,
+      i * b + s,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ];
+  }
+}
+
+/// The colours of the glass for one theme.
+class _GlassTone {
+  final Color fillTop;
+  final Color fillBottom;
+  final Color rimBright;
+  final Color rimFaint;
+  final Color sheen;
+  final Color pill;
+  final Color pillRim;
+  final Color activeInk;
+  final Color inactiveInk;
+  final List<BoxShadow> shadows;
+
+  const _GlassTone({
+    required this.fillTop,
+    required this.fillBottom,
+    required this.rimBright,
+    required this.rimFaint,
+    required this.sheen,
+    required this.pill,
+    required this.pillRim,
+    required this.activeInk,
+    required this.inactiveInk,
+    required this.shadows,
+  });
+
+  factory _GlassTone.of(bool dark) {
+    if (dark) {
+      return _GlassTone(
+        fillTop: const Color(0xFF2C2C2E).withValues(alpha: 0.58),
+        fillBottom: const Color(0xFF1C1C1E).withValues(alpha: 0.46),
+        rimBright: Colors.white.withValues(alpha: 0.32),
+        rimFaint: Colors.white.withValues(alpha: 0.06),
+        sheen: Colors.white.withValues(alpha: 0.07),
+        pill: Colors.white.withValues(alpha: 0.13),
+        pillRim: Colors.white.withValues(alpha: 0.18),
+        activeInk: AppColors.primary,
+        inactiveInk: Colors.white.withValues(alpha: 0.78),
+        shadows: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.45),
+            blurRadius: 30,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      );
+    }
+    return _GlassTone(
+      fillTop: Colors.white.withValues(alpha: 0.66),
+      fillBottom: Colors.white.withValues(alpha: 0.46),
+      rimBright: Colors.white.withValues(alpha: 0.95),
+      rimFaint: Colors.white.withValues(alpha: 0.25),
+      sheen: Colors.white.withValues(alpha: 0.35),
+      pill: Colors.white.withValues(alpha: 0.72),
+      pillRim: Colors.white,
+      activeInk: AppColors.primary,
+      inactiveInk: const Color(0xFF1C1C1E).withValues(alpha: 0.72),
+      shadows: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.12),
+          blurRadius: 30,
+          offset: const Offset(0, 10),
+        ),
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.05),
+          blurRadius: 4,
+          offset: const Offset(0, 1),
+        ),
+      ],
+    );
+  }
+}
+
+/// The light the glass catches: a rim brightest along the top edge and
+/// fading round the sides, and a soft sheen over the upper half.
+class _RimPainter extends CustomPainter {
+  final _GlassTone glass;
+
+  const _RimPainter(this.glass);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final radius = Radius.circular(size.height / 2);
+
+    final sheenRect = Rect.fromLTWH(0, 0, size.width, size.height * 0.55);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect, radius),
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [glass.sheen, glass.sheen.withValues(alpha: 0)],
+        ).createShader(sheenRect),
+    );
+
+    const stroke = 1.0;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect.deflate(stroke / 2), radius),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [glass.rimBright, glass.rimFaint, glass.rimBright],
+          stops: const [0, 0.55, 1],
+        ).createShader(rect),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_RimPainter old) => old.glass != glass;
+}
+
+/// The tabs, with the active one's glass lozenge sliding beneath them.
+class _Items extends StatelessWidget {
+  final List<ClayNavDestination> destinations;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+  final _GlassTone glass;
+
+  const _Items({
+    required this.destinations,
+    required this.selectedIndex,
+    required this.onSelected,
+    required this.glass,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final slot = constraints.maxWidth / destinations.length;
+        return Stack(
+          children: [
+            // Positioned by `start`, so the lozenge lands under the right
+            // tab in Hebrew and Arabic, where the row runs the other way.
+            AnimatedPositionedDirectional(
+              duration: const Duration(milliseconds: 380),
+              curve: Curves.easeOutBack,
+              start: slot * selectedIndex,
+              top: 0,
+              bottom: 0,
+              width: slot,
+              child: DecoratedBox(
+                decoration: ShapeDecoration(
+                  color: glass.pill,
+                  shape: StadiumBorder(
+                    side: BorderSide(color: glass.pillRim, width: 0.6),
+                  ),
+                  shadows: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                for (var i = 0; i < destinations.length; i++)
+                  _DockItem(
+                    // Registered by position, which is what a tour step
+                    // names — the labels change with the locale.
+                    targetId: 'nav.$i',
+                    destination: destinations[i],
+                    isActive: i == selectedIndex,
+                    onTap: () => onSelected(i),
+                    glass: glass,
+                  ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -109,55 +329,71 @@ class _DockItem extends StatelessWidget {
   final ClayNavDestination destination;
   final bool isActive;
   final VoidCallback onTap;
+  final _GlassTone glass;
 
   const _DockItem({
     required this.targetId,
     required this.destination,
     required this.isActive,
     required this.onTap,
+    required this.glass,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = AppColors.isDark;
-    // The dock is dark glass in both themes, so its ink is always the light
-    // theme's: mint for the active tab, lavender-grey for the rest. Reading
-    // the current palette here made the dark theme paint dark-green on
-    // dark-grey, and the whole bar vanished into the page.
-    final color = isActive
-        ? AppPalette.light.secondaryFixed
-        : AppPalette.light.surfaceVariant.withValues(alpha: isDarkTheme ? 0.75 : 0.6);
+    final color = isActive ? glass.activeInk : glass.inactiveInk;
 
     return Expanded(
       child: WalkthroughTarget(
         id: targetId,
-        child: GestureDetector(
-          onTap: onTap,
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedScale(
-            scale: isActive ? 1.1 : 1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            child: Padding(
-              // Horizontal breathing room so neighbouring labels ellipsize into
-              // a gap instead of running together.
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(destination.icon, size: 22, color: color),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    destination.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.labelSm.copyWith(
-                      color: color,
-                      fontSize: 11,
-                    ),
+        child: Semantics(
+          selected: isActive,
+          button: true,
+          label: destination.label,
+          child: GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedScale(
+              scale: isActive ? 1.04 : 1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              child: Padding(
+                // Room above and below inside the lozenge, and between
+                // neighbouring labels so they ellipsize into a gap.
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xs,
+                  vertical: AppSpacing.base,
+                ),
+                child: ExcludeSemantics(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: Icon(
+                          destination.icon,
+                          key: ValueKey(isActive),
+                          size: 22,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        destination.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.labelSm.copyWith(
+                          color: color,
+                          fontSize: 10.5,
+                          fontWeight: isActive
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

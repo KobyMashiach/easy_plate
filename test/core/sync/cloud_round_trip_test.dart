@@ -22,7 +22,9 @@ void main() {
   /// an enum, a DateTime, a nested model — has to have been flattened by the
   /// codec before it is written, or the SDK rejects the document at runtime.
   void expectFirestoreSafe(Object? value, String path) {
-    if (value == null || value is String || value is num || value is bool) return;
+    if (value == null || value is String || value is num || value is bool) {
+      return;
+    }
     if (value is List) {
       for (var i = 0; i < value.length; i++) {
         expectFirestoreSafe(value[i], '$path[$i]');
@@ -46,13 +48,20 @@ void main() {
       prepTimeMinutes: 10,
       cookTimeMinutes: 25,
       ingredients: const [
-        RecipeIngredientModel(name: 'עגבניות', amount: 500, unit: MeasurementUnit.gram),
+        RecipeIngredientModel(
+          name: 'עגבניות',
+          amount: 500,
+          unit: MeasurementUnit.gram,
+        ),
         // An ingredient the source gave no amount for: the omitted field is how
         // the model says "not stated", and it has to stay omitted.
         RecipeIngredientModel(name: 'מלח', unit: MeasurementUnit.pinch),
       ],
       steps: const ['לחתוך', 'לטגן'],
-      dietaryTags: const [DietaryPreference.vegetarian, DietaryPreference.kosher],
+      dietaryTags: const [
+        DietaryPreference.vegetarian,
+        DietaryPreference.kosher,
+      ],
       sourceChannel: 'urlScrape',
       sourceUrl: 'https://example.com/shakshuka',
       createdAt: DateTime.utc(2026, 9, 7, 12, 30),
@@ -91,25 +100,31 @@ void main() {
     expect(restored.recipeRefs.map((r) => r.recipeId), ['r2', 'r1']);
   });
 
-  test('preferences survive, which is what stops a second sign-in re-asking', () {
-    const preferences = UserPreferencesModel(
-      shoppingDay: ShoppingDay.thursday,
-      dietaryPreferences: [DietaryPreference.vegan, DietaryPreference.glutenFree],
-      soundEffectsEnabled: false,
-      onboardingComplete: true,
-      language: AppLanguage.english,
-      fastPageTurnEnabled: false,
-    );
+  test(
+    'preferences survive, which is what stops a second sign-in re-asking',
+    () {
+      const preferences = UserPreferencesModel(
+        shoppingDay: ShoppingDay.thursday,
+        dietaryPreferences: [
+          DietaryPreference.vegan,
+          DietaryPreference.glutenFree,
+        ],
+        soundEffectsEnabled: false,
+        onboardingComplete: true,
+        language: AppLanguage.english,
+        fastPageTurnEnabled: false,
+      );
 
-    final json = preferences.toJson();
-    expectFirestoreSafe(json, 'preferences');
+      final json = preferences.toJson();
+      expectFirestoreSafe(json, 'preferences');
 
-    final restored = UserPreferencesModel.fromJson(json);
-    expect(restored, preferences);
-    // The two the user actually notices missing.
-    expect(restored.shoppingDay, ShoppingDay.thursday);
-    expect(restored.onboardingComplete, isTrue);
-  });
+      final restored = UserPreferencesModel.fromJson(json);
+      expect(restored, preferences);
+      // The two the user actually notices missing.
+      expect(restored.shoppingDay, ShoppingDay.thursday);
+      expect(restored.onboardingComplete, isTrue);
+    },
+  );
 
   test('a meal plan keeps its nested meals and their ingredients', () {
     final plan = MealPlanModel(
@@ -126,7 +141,11 @@ void main() {
               id: 'i1',
               recipeId: 'r1',
               ingredients: [
-                RecipeIngredientModel(name: 'אורז', amount: 1.5, unit: MeasurementUnit.cup),
+                RecipeIngredientModel(
+                  name: 'אורז',
+                  amount: 1.5,
+                  unit: MeasurementUnit.cup,
+                ),
               ],
             ),
             MealItemModel(id: 'i2', freeText: 'סלט'),
@@ -150,7 +169,9 @@ void main() {
           id: 'gi1',
           name: 'חלב',
           unit: MeasurementUnit.liter,
-          sources: [GroceryItemSourceModel(recipeId: 'r1', label: 'שקשוקה', amount: 2)],
+          sources: [
+            GroceryItemSourceModel(recipeId: 'r1', label: 'שקשוקה', amount: 2),
+          ],
           category: 'מוצרי חלב',
         ),
         GroceryItemModel(

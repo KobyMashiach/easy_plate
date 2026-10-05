@@ -7,6 +7,8 @@ import '../../features/collab_containers/domain/repositories/collab_containers_r
 import 'package:provider/single_child_widget.dart';
 
 import '../sync/cloud_sync_service.dart';
+import '../translation/content_translation_datasource.dart';
+import '../translation/content_translation_service.dart';
 import '../sync/recipe_image_store.dart';
 import '../../features/admin_billing/data/datasources/admin_billing_remote_datasource.dart';
 import '../../features/admin_billing/data/datasources/admin_users_remote_datasource.dart';
@@ -226,6 +228,17 @@ List<SingleChildWidget> buildRepositoryProviders() {
         cloud: CloudSyncService().priceRecords,
         receiptsCloud: CloudSyncService().receipts,
         pricingCloud: CloudSyncService().productPricing,
+      ),
+    ),
+    // After the four content repositories: it rewrites their records when
+    // the app language changes.
+    RepositoryProvider<ContentTranslationService>(
+      create: (context) => ContentTranslationService(
+        remote: ContentTranslationRemoteDataSource(),
+        recipes: context.read(),
+        books: context.read(),
+        plans: context.read(),
+        lists: context.read(),
       ),
     ),
     RepositoryProvider<RecipeIngestionRepository>(

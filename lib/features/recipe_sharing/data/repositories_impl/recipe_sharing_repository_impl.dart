@@ -12,7 +12,10 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
   RecipeSharingRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<String> ensureCollab(RecipeEntity recipe, {required String ownerUid}) async {
+  Future<String> ensureCollab(
+    RecipeEntity recipe, {
+    required String ownerUid,
+  }) async {
     if (recipe.collabId case final existing?) return existing;
     return remoteDataSource.createCollab(recipe, ownerUid: ownerUid);
   }
@@ -24,14 +27,13 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
     required String ownerUid,
     required String targetUid,
     required CollabRole role,
-  }) =>
-      remoteDataSource.invite(
-        collabId: collabId,
-        recipeTitle: recipeTitle,
-        ownerUid: ownerUid,
-        targetUid: targetUid,
-        role: role,
-      );
+  }) => remoteDataSource.invite(
+    collabId: collabId,
+    recipeTitle: recipeTitle,
+    ownerUid: ownerUid,
+    targetUid: targetUid,
+    role: role,
+  );
 
   @override
   Future<List<ShareInviteEntity>> incomingInvites(String uid) =>
@@ -42,16 +44,27 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
       remoteDataSource.outgoingInvites(ownerUid);
 
   @override
-  Future<CollabRecipeEntity?> getCollab(String collabId) => remoteDataSource.getCollab(collabId);
+  Future<CollabRecipeEntity?> getCollab(String collabId) =>
+      remoteDataSource.getCollab(collabId);
 
   @override
   Future<CollabRecipeEntity> acceptInvite(ShareInviteEntity invite) async {
-    await remoteDataSource.setInviteStatus(invite.id, ShareInviteStatus.accepted);
-    await remoteDataSource.joinCollab(invite.collabId, uid: invite.targetUid, role: invite.role);
+    await remoteDataSource.setInviteStatus(
+      invite.id,
+      ShareInviteStatus.accepted,
+    );
+    await remoteDataSource.joinCollab(
+      invite.collabId,
+      uid: invite.targetUid,
+      role: invite.role,
+    );
     final collab = await remoteDataSource.getCollab(invite.collabId);
     if (collab == null) {
       // The owner deleted the recipe between sending and accepting.
-      throw const AppException(AppErrorType.notFound, message: 'collab-missing');
+      throw const AppException(
+        AppErrorType.notFound,
+        message: 'collab-missing',
+      );
     }
     return collab;
   }
@@ -61,8 +74,11 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
       remoteDataSource.setInviteStatus(invite.id, ShareInviteStatus.declined);
 
   @override
-  Future<void> writeCollab(String collabId, RecipeEntity recipe, {required String byUid}) =>
-      remoteDataSource.writeCollab(collabId, recipe, byUid: byUid);
+  Future<void> writeCollab(
+    String collabId,
+    RecipeEntity recipe, {
+    required String byUid,
+  }) => remoteDataSource.writeCollab(collabId, recipe, byUid: byUid);
 
   @override
   Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid) =>

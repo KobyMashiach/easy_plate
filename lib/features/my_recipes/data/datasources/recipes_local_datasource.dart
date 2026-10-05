@@ -1,3 +1,4 @@
+import '../../../../core/hive/box_stream.dart';
 import '../../../../core/hive/user_scope.dart';
 
 import '../models/recipe_model.dart';
@@ -23,11 +24,8 @@ class RecipesLocalDataSourceImpl implements RecipesLocalDataSource {
   }
 
   @override
-  Stream<List<RecipeModel>> watchRecipes() async* {
-    final box = await UserScope().open<RecipeModel>(RecipeModel.hiveKey);
-    yield box.values.toList();
-    yield* box.watch().map((_) => box.values.toList());
-  }
+  Stream<List<RecipeModel>> watchRecipes() =>
+      watchBoxValues(() => UserScope().open<RecipeModel>(RecipeModel.hiveKey));
 
   @override
   Future<RecipeModel?> getRecipeById(String id) async {

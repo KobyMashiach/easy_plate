@@ -38,21 +38,29 @@ class SaveCollabRecipeUseCase {
   /// Returns the recipe as it was actually stored: [readyForSharing] fills in
   /// the photo's Storage path, and a caller holding the pre-upload entity
   /// would hand it back on the next save and upload the same picture again.
-  Future<RecipeEntity> call(RecipeEntity recipe, {required String byUid}) async {
+  Future<RecipeEntity> call(
+    RecipeEntity recipe, {
+    required String byUid,
+  }) async {
     final collabId = recipe.collabId;
     if (collabId == null) {
       await recipes.saveRecipe(recipe);
       return recipe;
     }
     if (recipe.collabRole == CollabRole.viewer) {
-      throw const AppException(AppErrorType.unauthorized, message: 'viewer-cannot-edit');
+      throw const AppException(
+        AppErrorType.unauthorized,
+        message: 'viewer-cannot-edit',
+      );
     }
     // A photo added or replaced in the editor has to be uploaded before the
     // shared document is written, or the co-editors get a recipe pointing at a
     // picture that was never sent.
     final ready = await recipes.readyForSharing(recipe);
     try {
-      await sharing.writeCollab(collabId, ready, byUid: byUid).timeout(remoteWriteTimeout);
+      await sharing
+          .writeCollab(collabId, ready, byUid: byUid)
+          .timeout(remoteWriteTimeout);
     } on TimeoutException {
       // Queued, not refused. Fall through to the local save.
     } catch (e) {

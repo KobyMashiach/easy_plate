@@ -17,9 +17,12 @@ part 'my_recipes_bloc.freezed.dart';
 sealed class MyRecipesEvent with _$MyRecipesEvent {
   const factory MyRecipesEvent.init() = _Init;
   const factory MyRecipesEvent.search(String query) = _Search;
-  const factory MyRecipesEvent.filterByDietary(List<DietaryPreference> preferences) = _FilterByDietary;
+  const factory MyRecipesEvent.filterByDietary(
+    List<DietaryPreference> preferences,
+  ) = _FilterByDietary;
   const factory MyRecipesEvent.deleteRecipe(String id) = _DeleteRecipe;
-  const factory MyRecipesEvent.recipesUpdated(List<RecipeEntity> recipes) = _RecipesUpdated;
+  const factory MyRecipesEvent.recipesUpdated(List<RecipeEntity> recipes) =
+      _RecipesUpdated;
 }
 
 @freezed
@@ -68,10 +71,17 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
     );
   }
 
-  List<RecipeEntity> _applyFilters(String query, List<DietaryPreference> filters) {
+  List<RecipeEntity> _applyFilters(
+    String query,
+    List<DietaryPreference> filters,
+  ) {
     return _allRecipes.where((recipe) {
-      final matchesQuery = query.isEmpty || recipe.title.toLowerCase().contains(query.toLowerCase());
-      final matchesDietary = filters.isEmpty || filters.every((f) => recipe.dietaryTags.contains(f));
+      final matchesQuery =
+          query.isEmpty ||
+          recipe.title.toLowerCase().contains(query.toLowerCase());
+      final matchesDietary =
+          filters.isEmpty ||
+          filters.every((f) => recipe.dietaryTags.contains(f));
       return matchesQuery && matchesDietary;
     }).toList();
   }
@@ -84,12 +94,23 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
 
   /// Re-applies whatever query and filters are on screen, so a background save
   /// cannot silently widen the visible list.
-  Future<void> _recipesUpdated(_RecipesUpdated event, Emitter<MyRecipesState> emit) async {
+  Future<void> _recipesUpdated(
+    _RecipesUpdated event,
+    Emitter<MyRecipesState> emit,
+  ) async {
     _allRecipes = event.recipes;
     final current = state;
     final query = current is MyRecipesLoaded ? current.query : '';
-    final filters = current is MyRecipesLoaded ? current.dietaryFilters : <DietaryPreference>[];
-    emit(.loaded(_applyFilters(query, filters), query: query, dietaryFilters: filters));
+    final filters = current is MyRecipesLoaded
+        ? current.dietaryFilters
+        : <DietaryPreference>[];
+    emit(
+      .loaded(
+        _applyFilters(query, filters),
+        query: query,
+        dietaryFilters: filters,
+      ),
+    );
   }
 
   Future<void> _init(_Init event, Emitter<MyRecipesState> emit) async {
@@ -105,32 +126,44 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
   Future<void> _search(_Search event, Emitter<MyRecipesState> emit) async {
     final current = state;
     if (current is! MyRecipesLoaded) return;
-    emit(.loaded(
-      _applyFilters(event.query, current.dietaryFilters),
-      query: event.query,
-      dietaryFilters: current.dietaryFilters,
-    ));
+    emit(
+      .loaded(
+        _applyFilters(event.query, current.dietaryFilters),
+        query: event.query,
+        dietaryFilters: current.dietaryFilters,
+      ),
+    );
   }
 
-  Future<void> _filterByDietary(_FilterByDietary event, Emitter<MyRecipesState> emit) async {
+  Future<void> _filterByDietary(
+    _FilterByDietary event,
+    Emitter<MyRecipesState> emit,
+  ) async {
     final current = state;
     if (current is! MyRecipesLoaded) return;
-    emit(.loaded(
-      _applyFilters(current.query, event.preferences),
-      query: current.query,
-      dietaryFilters: event.preferences,
-    ));
+    emit(
+      .loaded(
+        _applyFilters(current.query, event.preferences),
+        query: current.query,
+        dietaryFilters: event.preferences,
+      ),
+    );
   }
 
-  Future<void> _deleteRecipe(_DeleteRecipe event, Emitter<MyRecipesState> emit) async {
+  Future<void> _deleteRecipe(
+    _DeleteRecipe event,
+    Emitter<MyRecipesState> emit,
+  ) async {
     await deleteRecipeUseCase(event.id);
     _allRecipes = _allRecipes.where((r) => r.id != event.id).toList();
     final current = state;
     if (current is! MyRecipesLoaded) return;
-    emit(.loaded(
-      _applyFilters(current.query, current.dietaryFilters),
-      query: current.query,
-      dietaryFilters: current.dietaryFilters,
-    ));
+    emit(
+      .loaded(
+        _applyFilters(current.query, current.dietaryFilters),
+        query: current.query,
+        dietaryFilters: current.dietaryFilters,
+      ),
+    );
   }
 }

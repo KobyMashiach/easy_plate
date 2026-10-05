@@ -2,13 +2,22 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
 /// What the in-app popup shows for a push that arrived while the app was
-/// open.
+/// open, and where a tap on it should go.
 class PushBanner {
   final String id;
   final String title;
   final String body;
 
-  const PushBanner({required this.id, required this.title, required this.body});
+  /// The push's data payload — `type`, and for a forum reply `postId` and
+  /// `replyId` — so the popup's "open" lands where the tray tap would.
+  final Map<String, String> data;
+
+  const PushBanner({
+    required this.id,
+    required this.title,
+    required this.body,
+    this.data = const {},
+  });
 }
 
 /// A push that lands while the app is open. The system draws nothing for
@@ -30,6 +39,10 @@ class ForegroundPushService {
       id: message.messageId ?? DateTime.now().microsecondsSinceEpoch.toString(),
       title: notification.title ?? '',
       body: notification.body ?? '',
+      data: {
+        for (final entry in message.data.entries)
+          entry.key: entry.value.toString(),
+      },
     );
   }
 }

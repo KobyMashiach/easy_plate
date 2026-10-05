@@ -17,7 +17,8 @@ class BookSpreadController {
   /// resolved at once, at the back of the book or while a turn is in flight.
   Future<void> next() => _state?._animateTurn(forward: true) ?? Future.value();
 
-  Future<void> previous() => _state?._animateTurn(forward: false) ?? Future.value();
+  Future<void> previous() =>
+      _state?._animateTurn(forward: false) ?? Future.value();
 
   /// Opens the book straight at [spread], with no turn.
   void jumpTo(int spread) => _state?._jumpTo(spread);
@@ -59,7 +60,8 @@ class BookSpreadFlip extends StatefulWidget {
   State<BookSpreadFlip> createState() => _BookSpreadFlipState();
 }
 
-class _BookSpreadFlipState extends State<BookSpreadFlip> with SingleTickerProviderStateMixin {
+class _BookSpreadFlipState extends State<BookSpreadFlip>
+    with SingleTickerProviderStateMixin {
   late int _spread = widget.initialSpread.clamp(0, _spreadCount - 1);
 
   /// 0 is the leaf flat where it started, 1 flat where it lands.
@@ -173,7 +175,8 @@ class _BookSpreadFlipState extends State<BookSpreadFlip> with SingleTickerProvid
     _dragging = false;
     if (!_turning) return;
     final fling = _forwardDelta(details.primaryVelocity ?? 0);
-    final commits = _turn.value > 0.5 || (_forward ? fling > 300 : fling < -300);
+    final commits =
+        _turn.value > 0.5 || (_forward ? fling > 300 : fling < -300);
     if (commits) {
       await _turn.forward();
       if (mounted) _land();

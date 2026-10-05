@@ -7,16 +7,16 @@ import '../constants/app_text_styles.dart';
 import '../utils/i18n/strings.g.dart';
 
 String allergenLabel(Allergen allergen) => switch (allergen) {
-      Allergen.gluten => t.allergens.gluten,
-      Allergen.milk => t.allergens.milk,
-      Allergen.eggs => t.allergens.eggs,
-      Allergen.fish => t.allergens.fish,
-      Allergen.shellfish => t.allergens.shellfish,
-      Allergen.peanuts => t.allergens.peanuts,
-      Allergen.treeNuts => t.allergens.treeNuts,
-      Allergen.sesame => t.allergens.sesame,
-      Allergen.soy => t.allergens.soy,
-    };
+  Allergen.gluten => t.allergens.gluten,
+  Allergen.milk => t.allergens.milk,
+  Allergen.eggs => t.allergens.eggs,
+  Allergen.fish => t.allergens.fish,
+  Allergen.shellfish => t.allergens.shellfish,
+  Allergen.peanuts => t.allergens.peanuts,
+  Allergen.treeNuts => t.allergens.treeNuts,
+  Allergen.sesame => t.allergens.sesame,
+  Allergen.soy => t.allergens.soy,
+};
 
 /// Pill-shaped allergen picker, one pill per [Allergen]. Same shape as the
 /// dietary chips it sits under, in the error colours a warning wears.
@@ -24,7 +24,11 @@ class AllergenChipSelector extends StatelessWidget {
   final List<Allergen> selected;
   final ValueChanged<Allergen> onToggle;
 
-  const AllergenChipSelector({super.key, required this.selected, required this.onToggle});
+  const AllergenChipSelector({
+    super.key,
+    required this.selected,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +47,23 @@ class AllergenChipSelector extends StatelessWidget {
               vertical: AppSpacing.base,
             ),
             decoration: ShapeDecoration(
-              color: isSelected ? AppColors.errorContainer : AppColors.surfaceContainerLow,
+              color: isSelected
+                  ? AppColors.errorContainer
+                  : AppColors.surfaceContainerLow,
               shape: StadiumBorder(
                 side: BorderSide(
-                  color: isSelected ? AppColors.errorContainer : AppColors.outlineVariant,
+                  color: isSelected
+                      ? AppColors.errorContainer
+                      : AppColors.outlineVariant,
                 ),
               ),
             ),
             child: Text(
               allergenLabel(allergen),
               style: AppTextStyles.labelMd.copyWith(
-                color: isSelected ? AppColors.onErrorContainer : AppColors.tertiary,
+                color: isSelected
+                    ? AppColors.onErrorContainer
+                    : AppColors.tertiary,
               ),
             ),
           ),
@@ -70,7 +80,11 @@ class AllergenNotice extends StatelessWidget {
   final List<Allergen> allergens;
   final List<Allergen> mayContain;
 
-  const AllergenNotice({super.key, required this.allergens, required this.mayContain});
+  const AllergenNotice({
+    super.key,
+    required this.allergens,
+    required this.mayContain,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +110,19 @@ class AllergenNotice extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(Icons.warning_amber_rounded, size: 16, color: AppColors.onErrorContainer),
+            child: Icon(
+              Icons.warning_amber_rounded,
+              size: 16,
+              color: AppColors.onErrorContainer,
+            ),
           ),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
               '$label: ${items.map(allergenLabel).join(', ')}',
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ),
         ],

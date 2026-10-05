@@ -14,6 +14,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/navigation/main_tabs.dart';
 import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../collab_containers/domain/container_sharing_service.dart';
+import '../../../forum/presentation/open_forum_thread.dart';
 import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
@@ -233,15 +234,26 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      return Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: TextButton.icon(
-                          onPressed: () => MarkNotificationReadUseCase(
-                            context.read<NotificationsRepository>(),
-                          ).all(_uid),
-                          icon: const Icon(Icons.done_all_rounded, size: 18),
-                          label: Text(t.notifications.markAllRead),
-                        ),
+                      return Row(
+                        children: [
+                          // The switches for what reaches this inbox, one
+                          // tap away from it.
+                          TextButton.icon(
+                            onPressed: () => context.pushNamed(
+                              Routing.notificationSettings,
+                            ),
+                            icon: const Icon(Icons.tune_rounded, size: 18),
+                            label: Text(t.notifications.settings),
+                          ),
+                          const Spacer(),
+                          TextButton.icon(
+                            onPressed: () => MarkNotificationReadUseCase(
+                              context.read<NotificationsRepository>(),
+                            ).all(_uid),
+                            icon: const Icon(Icons.done_all_rounded, size: 18),
+                            label: Text(t.notifications.markAllRead),
+                          ),
+                        ],
                       );
                     }
                     final item = items[index - 1];
@@ -275,6 +287,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget _card(AppNotificationEntity item) {
     if (item.type == AppNotificationType.sharedRecipeUpdated) {
       return _updatedCard(item);
+    }
+    if (item.type == AppNotificationType.forumReply) {
+      return _forumReplyCard(item);
     }
     if (item.type == AppNotificationType.adminReply ||
         item.type == AppNotificationType.adminMessage) {
@@ -357,6 +372,72 @@ class _NotificationsPageState extends State<NotificationsPage> {
 }
 
 extension on _NotificationsPageState {
+  /// Someone replied in a thread of this account's, or one it joined. A tap
+  /// opens the thread on that reply; the row is marked read on the way.
+  Widget _forumReplyCard(AppNotificationEntity item) {
+    final post = item.postTitle ?? '';
+    final name = item.fromName ?? '';
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      color: item.read ? null : AppColors.primaryFixed,
+      onTap: () => _openThread(item),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.forum_rounded, size: 18, color: AppColors.primary),
+              const SizedBox(width: AppSpacing.base),
+              Expanded(
+                child: Text(
+                  item.onMyPost
+                      ? t.notifications.forumReplyOnMyPost(
+                          name: name,
+                          post: post,
+                        )
+                      : t.notifications.forumReplyOnThread(
+                          name: name,
+                          post: post,
+                        ),
+                  style: AppTextStyles.bodyMd,
+                ),
+              ),
+            ],
+          ),
+          if (item.excerpt case final excerpt? when excerpt.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              excerpt,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.sm),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton.icon(
+              onPressed: _busy ? null : () => _openThread(item),
+              icon: const Icon(Icons.open_in_new_rounded, size: 16),
+              label: Text(t.notifications.openThread),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openThread(AppNotificationEntity item) async {
+    final postId = item.postId;
+    if (postId == null || postId.isEmpty) return;
+    await _markRead(item);
+    if (!mounted) return;
+    await openForumThread(context, postId: postId, replyId: item.replyId);
+  }
+
   /// A word from the administrator: the answer to a support message (with
   /// the message it answers quoted) or an announcement to everyone.
   Widget _adminCard(AppNotificationEntity item) {
@@ -364,8 +445,8 @@ extension on _NotificationsPageState {
     final title = isReply
         ? t.notifications.adminReply
         : (item.title?.trim().isNotEmpty == true
-            ? item.title!.trim()
-            : t.notifications.adminMessage);
+              ? item.title!.trim()
+              : t.notifications.adminMessage);
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),

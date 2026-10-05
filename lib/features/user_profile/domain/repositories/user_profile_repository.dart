@@ -16,7 +16,11 @@ abstract class UserProfileRepository {
 
   /// Records which platform and build the account is on, and when it was
   /// last seen — the dashboard's device split.
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion});
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  });
 
   /// The administrator's block notice for this account: the message (blank
   /// when none was given) if the account is switched off, null when it is

@@ -43,9 +43,12 @@ class _IngredientRow {
   final TextEditingController amount;
   MeasurementUnit unit;
 
-  _IngredientRow({required String name, required double? amount, required this.unit})
-      : name = TextEditingController(text: name),
-        amount = TextEditingController(text: _formatAmount(amount));
+  _IngredientRow({
+    required String name,
+    required double? amount,
+    required this.unit,
+  }) : name = TextEditingController(text: name),
+       amount = TextEditingController(text: _formatAmount(amount));
 
   void dispose() {
     name.dispose();
@@ -57,36 +60,46 @@ class _IngredientRow {
   static String _formatAmount(double? value) => formatAmount(value);
 
   RecipeIngredientEntity toEntity() => RecipeIngredientEntity(
-        name: name.text.trim(),
-        amount: double.tryParse(amount.text.trim().replaceAll(',', '.')),
-        unit: unit,
-      );
+    name: name.text.trim(),
+    amount: double.tryParse(amount.text.trim().replaceAll(',', '.')),
+    unit: unit,
+  );
 }
 
 class _RecipeEditorPageState extends State<RecipeEditorPage> {
-  late final TextEditingController _title =
-      TextEditingController(text: widget.recipe.title);
-  late final TextEditingController _prep =
-      TextEditingController(text: widget.recipe.prepTimeMinutes?.toString() ?? '');
-  late final TextEditingController _cook =
-      TextEditingController(text: widget.recipe.cookTimeMinutes?.toString() ?? '');
+  late final TextEditingController _title = TextEditingController(
+    text: widget.recipe.title,
+  );
+  late final TextEditingController _prep = TextEditingController(
+    text: widget.recipe.prepTimeMinutes?.toString() ?? '',
+  );
+  late final TextEditingController _cook = TextEditingController(
+    text: widget.recipe.cookTimeMinutes?.toString() ?? '',
+  );
 
   // Servings and the per-serving figures, editable like the times: the model
   // estimates them, the cook corrects them.
-  late final TextEditingController _servings =
-      TextEditingController(text: widget.recipe.servings?.toString() ?? '');
-  late final TextEditingController _calories =
-      TextEditingController(text: widget.recipe.nutrition?.calories.toString() ?? '');
-  late final TextEditingController _protein =
-      TextEditingController(text: _grams(widget.recipe.nutrition?.proteinGrams));
-  late final TextEditingController _carbs =
-      TextEditingController(text: _grams(widget.recipe.nutrition?.carbsGrams));
-  late final TextEditingController _fat =
-      TextEditingController(text: _grams(widget.recipe.nutrition?.fatGrams));
+  late final TextEditingController _servings = TextEditingController(
+    text: widget.recipe.servings?.toString() ?? '',
+  );
+  late final TextEditingController _calories = TextEditingController(
+    text: widget.recipe.nutrition?.calories.toString() ?? '',
+  );
+  late final TextEditingController _protein = TextEditingController(
+    text: _grams(widget.recipe.nutrition?.proteinGrams),
+  );
+  late final TextEditingController _carbs = TextEditingController(
+    text: _grams(widget.recipe.nutrition?.carbsGrams),
+  );
+  late final TextEditingController _fat = TextEditingController(
+    text: _grams(widget.recipe.nutrition?.fatGrams),
+  );
 
   static String _grams(double? value) {
     if (value == null) return '';
-    return value == value.roundToDouble() ? value.round().toString() : value.toStringAsFixed(1);
+    return value == value.roundToDouble()
+        ? value.round().toString()
+        : value.toStringAsFixed(1);
   }
 
   late final List<_IngredientRow> _ingredients = [
@@ -138,7 +151,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     super.dispose();
   }
 
-  int? _minutes(TextEditingController controller) => int.tryParse(controller.text.trim());
+  int? _minutes(TextEditingController controller) =>
+      int.tryParse(controller.text.trim());
 
   double _gramsOf(TextEditingController c) =>
       double.tryParse(c.text.trim().replaceAll(',', '.')) ?? 0;
@@ -177,7 +191,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           .map((row) => row.toEntity())
           .where((ingredient) => ingredient.name.isNotEmpty)
           .toList(),
-      steps: _steps.map((c) => c.text.trim()).where((step) => step.isNotEmpty).toList(),
+      steps: _steps
+          .map((c) => c.text.trim())
+          .where((step) => step.isNotEmpty)
+          .toList(),
       dietaryTags: _topics,
       servings: _minutes(_servings),
       nutrition: _collectNutrition(),
@@ -215,9 +232,14 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   void _applyRefined(RecipeEntity refined) {
     _title.text = refined.title;
 
-    final filledIngredients =
-        _ingredients.where((row) => row.name.text.trim().isNotEmpty).toList();
-    for (var i = 0; i < filledIngredients.length && i < refined.ingredients.length; i++) {
+    final filledIngredients = _ingredients
+        .where((row) => row.name.text.trim().isNotEmpty)
+        .toList();
+    for (
+      var i = 0;
+      i < filledIngredients.length && i < refined.ingredients.length;
+      i++
+    ) {
       filledIngredients[i].name.text = refined.ingredients[i].name;
     }
 
@@ -228,7 +250,9 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   }
 
   Future<RecipeEntity?> _refine({required bool timesChanged}) async {
-    final useCase = RefineRecipeUseCase(context.read<RecipeIngestionRepository>());
+    final useCase = RefineRecipeUseCase(
+      context.read<RecipeIngestionRepository>(),
+    );
     setState(() => _busy = true);
     try {
       return await useCase(_collect(), timesChanged: timesChanged);
@@ -236,8 +260,11 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       debugPrint('Refine error: $e');
       // A missing key is a setup problem, not a failed correction — saying so
       // beats a generic failure the user cannot act on.
-      final unconfigured = e is AppException && e.type == AppErrorType.unauthorized;
-      if (mounted) _warn(unconfigured ? t.ingestion.notConfigured : t.editor.refineError);
+      final unconfigured =
+          e is AppException && e.type == AppErrorType.unauthorized;
+      if (mounted) {
+        _warn(unconfigured ? t.ingestion.notConfigured : t.editor.refineError);
+      }
       return null;
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -252,12 +279,15 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
 
     setState(() => _applyRefined(refined));
     // A correction that changed nothing must not claim it fixed something.
-    _sameText(before, refined) ? _hint(t.editor.noChanges) : _toast(t.editor.spellingFixed);
+    _sameText(before, refined)
+        ? _hint(t.editor.noChanges)
+        : _toast(t.editor.spellingFixed);
   }
 
   bool _sameText(RecipeEntity a, RecipeEntity b) {
     if (a.title != b.title) return false;
-    if (a.steps.length != b.steps.length || a.ingredients.length != b.ingredients.length) {
+    if (a.steps.length != b.steps.length ||
+        a.ingredients.length != b.ingredients.length) {
       return false;
     }
     for (var i = 0; i < a.steps.length; i++) {
@@ -301,13 +331,16 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   }
 
   /// A word in passing, gone on its own.
-  void _toast(String message) => AppDialog.success(message: message).notify(context);
-  void _hint(String message) => AppDialog.info(message: message).notify(context);
+  void _toast(String message) =>
+      AppDialog.success(message: message).notify(context);
+  void _hint(String message) =>
+      AppDialog.info(message: message).notify(context);
 
   /// A failed correction is not a failed save: the edits are kept and saved
   /// as typed, so this floats by rather than standing in front of the pop
   /// that follows it.
-  void _warn(String message) => AppDialog.warning(message: message).notify(context);
+  void _warn(String message) =>
+      AppDialog.warning(message: message).notify(context);
 
   @override
   Widget build(BuildContext context) {
@@ -444,12 +477,19 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   }
 
   void _toggleIn(List<Allergen> list, Allergen allergen) {
-    setState(() => list.contains(allergen) ? list.remove(allergen) : list.add(allergen));
+    setState(
+      () =>
+          list.contains(allergen) ? list.remove(allergen) : list.add(allergen),
+    );
   }
 
   /// A small check plus label, tapped anywhere along the row. Opens the
   /// allergen lists without the weight of a full card each.
-  Widget _toggleRow({required String label, required bool value, required VoidCallback onTap}) {
+  Widget _toggleRow({
+    required String label,
+    required bool value,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -471,7 +511,9 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
         const SizedBox(height: AppSpacing.sm),
         Row(
           children: [
-            Expanded(child: _minutesField(_calories, t.nutrition.editorCalories)),
+            Expanded(
+              child: _minutesField(_calories, t.nutrition.editorCalories),
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(child: _gramsField(_protein, t.nutrition.editorProtein)),
           ],
@@ -519,7 +561,9 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
             const SizedBox(height: AppSpacing.sm),
             Text(
               t.allergens.contains,
-              style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.labelSm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.base),
             AllergenChipSelector(
@@ -566,7 +610,11 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           icon: Icons.add_rounded,
           onPressed: () => setState(() {
             _ingredients.add(
-              _IngredientRow(name: '', amount: null, unit: MeasurementUnit.unspecified),
+              _IngredientRow(
+                name: '',
+                amount: null,
+                unit: MeasurementUnit.unspecified,
+              ),
             );
           }),
         ),
@@ -585,7 +633,9 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
             width: 64,
             child: TextField(
               controller: row.amount,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(hintText: t.editor.amount),
             ),
@@ -599,13 +649,15 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(hintText: t.editor.unit),
               items: MeasurementUnit.values
-                  .map((unit) => DropdownMenuItem(
-                        value: unit,
-                        child: Text(
-                          measurementUnitPickerLabel(unit),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ))
+                  .map(
+                    (unit) => DropdownMenuItem(
+                      value: unit,
+                      child: Text(
+                        measurementUnitPickerLabel(unit),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  )
                   .toList(),
               onChanged: (unit) {
                 if (unit != null) setState(() => row.unit = unit);
@@ -622,8 +674,12 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           ),
           IconButton(
             tooltip: t.editor.removeIngredient,
-            icon: Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
-            onPressed: () => setState(() => _ingredients.removeAt(index).dispose()),
+            icon: Icon(
+              Icons.remove_circle_outline_rounded,
+              color: AppColors.error,
+            ),
+            onPressed: () =>
+                setState(() => _ingredients.removeAt(index).dispose()),
           ),
         ],
       ),
@@ -713,7 +769,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           ReorderableDragStartListener(
             index: index,
             child: Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.sm, left: AppSpacing.xs),
+              padding: const EdgeInsets.only(
+                top: AppSpacing.sm,
+                left: AppSpacing.xs,
+              ),
               child: Icon(
                 Icons.drag_handle_rounded,
                 size: 20,
@@ -724,7 +783,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           ),
           IconButton(
             tooltip: t.editor.removeStep,
-            icon: Icon(Icons.remove_circle_outline_rounded, color: AppColors.error),
+            icon: Icon(
+              Icons.remove_circle_outline_rounded,
+              color: AppColors.error,
+            ),
             onPressed: () => setState(() => _steps.removeAt(index).dispose()),
           ),
         ],
@@ -749,7 +811,10 @@ class _SaveOptionsSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClaySectionHeader(title: t.editor.saveOptionsTitle, underline: true),
+            ClaySectionHeader(
+              title: t.editor.saveOptionsTitle,
+              underline: true,
+            ),
             const SizedBox(height: AppSpacing.md),
             _option(
               icon: Icons.save_rounded,
@@ -791,7 +856,9 @@ class _SaveOptionsSheet extends StatelessWidget {
                 Text(title, style: AppTextStyles.bodyLg),
                 Text(
                   hint,
-                  style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

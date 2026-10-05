@@ -25,6 +25,7 @@ class ClayImage extends StatefulWidget {
   final double radius;
   final double? fallbackIconSize;
   final BoxFit fit;
+
   /// Null reads as the theme's primaryFixed.
   final Color? tint;
 
@@ -55,7 +56,8 @@ class _ClayImageState extends State<ClayImage> {
   @override
   void didUpdateWidget(ClayImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.fileName != widget.fileName || oldWidget.remotePath != widget.remotePath) {
+    if (oldWidget.fileName != widget.fileName ||
+        oldWidget.remotePath != widget.remotePath) {
       _resolve();
     }
   }
@@ -81,7 +83,10 @@ class _ClayImageState extends State<ClayImage> {
 
   Widget _fallback(BorderRadius borderRadius) {
     return DecoratedBox(
-      decoration: BoxDecoration(color: widget.tint ?? AppColors.primaryFixed, borderRadius: borderRadius),
+      decoration: BoxDecoration(
+        color: widget.tint ?? AppColors.primaryFixed,
+        borderRadius: borderRadius,
+      ),
       child: Center(
         child: Icon(
           widget.fallbackIcon,
@@ -99,15 +104,28 @@ class _ClayImageState extends State<ClayImage> {
 
     if (path == null) return _fallback(borderRadius);
 
+    // Photos are stored up to 1600px wide; a card thumbnail is a tenth of
+    // that. Decoding at the drawn width keeps a grid of them to a fraction
+    // of the memory, and a fraction of the decode time per scroll.
+    final ratio = MediaQuery.devicePixelRatioOf(context);
     return ClipRRect(
       borderRadius: borderRadius,
-      child: Image.file(
-        File(path),
-        fit: widget.fit,
-        width: double.infinity,
-        height: double.infinity,
-        // A file can vanish between the existsSync check and the decode.
-        errorBuilder: (context, error, stack) => _fallback(borderRadius),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final cacheWidth = width.isFinite && width > 0
+              ? (width * ratio).ceil()
+              : null;
+          return Image.file(
+            File(path),
+            fit: widget.fit,
+            width: double.infinity,
+            height: double.infinity,
+            cacheWidth: cacheWidth,
+            // A file can vanish between the existence check and the decode.
+            errorBuilder: (context, error, stack) => _fallback(borderRadius),
+          );
+        },
       ),
     );
   }

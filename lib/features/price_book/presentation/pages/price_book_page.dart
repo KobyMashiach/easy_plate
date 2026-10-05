@@ -53,11 +53,15 @@ class _PriceBookPageState extends State<PriceBookPage>
   PriceUnit? _unitFilter;
   bool? _manualFilter;
 
-  PriceBookRepository get _repository => context.read<PriceBookRepository>();
+  /// Read once, while the page is surely mounted: the getter this used to
+  /// be reached for `context` after awaits, which throws once the page is
+  /// gone.
+  late final PriceBookRepository _repository;
 
   @override
   void initState() {
     super.initState();
+    _repository = context.read<PriceBookRepository>();
     _tabs.addListener(() => setState(() {}));
     _load();
   }
@@ -205,7 +209,7 @@ class _PriceBookPageState extends State<PriceBookPage>
         period = null;
       },
     );
-    if (apply) {
+    if (apply && mounted) {
       setState(() {
         _storeFilter = store;
         _periodDays = period;
@@ -251,7 +255,7 @@ class _PriceBookPageState extends State<PriceBookPage>
         manual = null;
       },
     );
-    if (apply) {
+    if (apply && mounted) {
       setState(() {
         _priceStoreFilter = store;
         _unitFilter = unit;

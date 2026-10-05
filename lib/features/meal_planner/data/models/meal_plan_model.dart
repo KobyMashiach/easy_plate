@@ -22,29 +22,40 @@ sealed class MealPlanModel with _$MealPlanModel {
     // account's role in it. Null for a plan that was never shared.
     @HiveField(4) String? collabId,
     @HiveField(5) String? collabRole,
+
+    /// The language the name and the meal names are written in.
+    @HiveField(6) String? contentLang,
+
+    /// See [RecipeModel.contentVersion].
+    @HiveField(7) @Default(0) int contentVersion,
   }) = _MealPlanModel;
 
-  factory MealPlanModel.fromJson(Map<String, dynamic> json) => _$MealPlanModelFromJson(json);
+  factory MealPlanModel.fromJson(Map<String, dynamic> json) =>
+      _$MealPlanModelFromJson(json);
 }
 
 extension MealPlanModelMapper on MealPlanModel {
   MealPlanEntity toEntity() => MealPlanEntity(
-        id: id,
-        name: name,
-        meals: meals.map((m) => m.toEntity()).toList(),
-        createdAt: createdAt,
-        collabId: collabId,
-        collabRole: CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
-      );
+    id: id,
+    name: name,
+    meals: meals.map((m) => m.toEntity()).toList(),
+    createdAt: createdAt,
+    collabId: collabId,
+    collabRole: CollabRole.values
+        .where((r) => r.name == collabRole)
+        .firstOrNull,
+    contentLang: contentLang,
+  );
 }
 
 extension MealPlanEntityMapper on MealPlanEntity {
   MealPlanModel toModel() => MealPlanModel(
-        id: id,
-        name: name,
-        meals: meals.map((m) => m.toModel()).toList(),
-        createdAt: createdAt,
-        collabId: collabId,
-        collabRole: collabRole?.name,
-      );
+    id: id,
+    name: name,
+    meals: meals.map((m) => m.toModel()).toList(),
+    createdAt: createdAt,
+    collabId: collabId,
+    collabRole: collabRole?.name,
+    contentLang: contentLang,
+  );
 }

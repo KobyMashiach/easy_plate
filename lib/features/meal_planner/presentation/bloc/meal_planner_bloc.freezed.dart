@@ -55,7 +55,7 @@ extension MealPlannerEventPatterns on MealPlannerEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _CreatePlan value)?  createPlan,TResult Function( _SelectPlan value)?  selectPlan,TResult Function( _DeletePlan value)?  deletePlan,TResult Function( _AddMeal value)?  addMeal,TResult Function( _RemoveMeal value)?  removeMeal,TResult Function( _AddRecipeItem value)?  addRecipeItem,TResult Function( _AddFreeTextItem value)?  addFreeTextItem,TResult Function( _UpdateFreeTextItem value)?  updateFreeTextItem,TResult Function( _RemoveItem value)?  removeItem,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _CreatePlan value)?  createPlan,TResult Function( _SelectPlan value)?  selectPlan,TResult Function( _DeletePlan value)?  deletePlan,TResult Function( _AddMeal value)?  addMeal,TResult Function( _RemoveMeal value)?  removeMeal,TResult Function( _AddRecipeItem value)?  addRecipeItem,TResult Function( _AddFreeTextItem value)?  addFreeTextItem,TResult Function( _UpdateFreeTextItem value)?  updateFreeTextItem,TResult Function( _RemoveItem value)?  removeItem,TResult Function( _PlansChanged value)?  plansChanged,TResult Function( _RecipesChanged value)?  recipesChanged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -68,7 +68,9 @@ return removeMeal(_that);case _AddRecipeItem() when addRecipeItem != null:
 return addRecipeItem(_that);case _AddFreeTextItem() when addFreeTextItem != null:
 return addFreeTextItem(_that);case _UpdateFreeTextItem() when updateFreeTextItem != null:
 return updateFreeTextItem(_that);case _RemoveItem() when removeItem != null:
-return removeItem(_that);case _:
+return removeItem(_that);case _PlansChanged() when plansChanged != null:
+return plansChanged(_that);case _RecipesChanged() when recipesChanged != null:
+return recipesChanged(_that);case _:
   return orElse();
 
 }
@@ -86,7 +88,7 @@ return removeItem(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _CreatePlan value)  createPlan,required TResult Function( _SelectPlan value)  selectPlan,required TResult Function( _DeletePlan value)  deletePlan,required TResult Function( _AddMeal value)  addMeal,required TResult Function( _RemoveMeal value)  removeMeal,required TResult Function( _AddRecipeItem value)  addRecipeItem,required TResult Function( _AddFreeTextItem value)  addFreeTextItem,required TResult Function( _UpdateFreeTextItem value)  updateFreeTextItem,required TResult Function( _RemoveItem value)  removeItem,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _CreatePlan value)  createPlan,required TResult Function( _SelectPlan value)  selectPlan,required TResult Function( _DeletePlan value)  deletePlan,required TResult Function( _AddMeal value)  addMeal,required TResult Function( _RemoveMeal value)  removeMeal,required TResult Function( _AddRecipeItem value)  addRecipeItem,required TResult Function( _AddFreeTextItem value)  addFreeTextItem,required TResult Function( _UpdateFreeTextItem value)  updateFreeTextItem,required TResult Function( _RemoveItem value)  removeItem,required TResult Function( _PlansChanged value)  plansChanged,required TResult Function( _RecipesChanged value)  recipesChanged,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -99,7 +101,9 @@ return removeMeal(_that);case _AddRecipeItem():
 return addRecipeItem(_that);case _AddFreeTextItem():
 return addFreeTextItem(_that);case _UpdateFreeTextItem():
 return updateFreeTextItem(_that);case _RemoveItem():
-return removeItem(_that);}
+return removeItem(_that);case _PlansChanged():
+return plansChanged(_that);case _RecipesChanged():
+return recipesChanged(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -113,7 +117,7 @@ return removeItem(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _CreatePlan value)?  createPlan,TResult? Function( _SelectPlan value)?  selectPlan,TResult? Function( _DeletePlan value)?  deletePlan,TResult? Function( _AddMeal value)?  addMeal,TResult? Function( _RemoveMeal value)?  removeMeal,TResult? Function( _AddRecipeItem value)?  addRecipeItem,TResult? Function( _AddFreeTextItem value)?  addFreeTextItem,TResult? Function( _UpdateFreeTextItem value)?  updateFreeTextItem,TResult? Function( _RemoveItem value)?  removeItem,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _CreatePlan value)?  createPlan,TResult? Function( _SelectPlan value)?  selectPlan,TResult? Function( _DeletePlan value)?  deletePlan,TResult? Function( _AddMeal value)?  addMeal,TResult? Function( _RemoveMeal value)?  removeMeal,TResult? Function( _AddRecipeItem value)?  addRecipeItem,TResult? Function( _AddFreeTextItem value)?  addFreeTextItem,TResult? Function( _UpdateFreeTextItem value)?  updateFreeTextItem,TResult? Function( _RemoveItem value)?  removeItem,TResult? Function( _PlansChanged value)?  plansChanged,TResult? Function( _RecipesChanged value)?  recipesChanged,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -126,7 +130,9 @@ return removeMeal(_that);case _AddRecipeItem() when addRecipeItem != null:
 return addRecipeItem(_that);case _AddFreeTextItem() when addFreeTextItem != null:
 return addFreeTextItem(_that);case _UpdateFreeTextItem() when updateFreeTextItem != null:
 return updateFreeTextItem(_that);case _RemoveItem() when removeItem != null:
-return removeItem(_that);case _:
+return removeItem(_that);case _PlansChanged() when plansChanged != null:
+return plansChanged(_that);case _RecipesChanged() when recipesChanged != null:
+return recipesChanged(_that);case _:
   return null;
 
 }
@@ -143,7 +149,7 @@ return removeItem(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String name,  MealPlanTemplate template)?  createPlan,TResult Function( String planId)?  selectPlan,TResult Function( String planId)?  deletePlan,TResult Function( int weekday,  String name)?  addMeal,TResult Function( String mealId)?  removeMeal,TResult Function( String mealId,  String recipeId)?  addRecipeItem,TResult Function( String mealId,  String text,  List<RecipeIngredientEntity> ingredients)?  addFreeTextItem,TResult Function( String mealId,  String itemId,  String text,  List<RecipeIngredientEntity> ingredients)?  updateFreeTextItem,TResult Function( String mealId,  String itemId)?  removeItem,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String name,  MealPlanTemplate template)?  createPlan,TResult Function( String planId)?  selectPlan,TResult Function( String planId)?  deletePlan,TResult Function( int weekday,  String name)?  addMeal,TResult Function( String mealId)?  removeMeal,TResult Function( String mealId,  String recipeId)?  addRecipeItem,TResult Function( String mealId,  String text,  List<RecipeIngredientEntity> ingredients)?  addFreeTextItem,TResult Function( String mealId,  String itemId,  String text,  List<RecipeIngredientEntity> ingredients)?  updateFreeTextItem,TResult Function( String mealId,  String itemId)?  removeItem,TResult Function( List<MealPlanEntity> plans)?  plansChanged,TResult Function( List<RecipeEntity> recipes)?  recipesChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _CreatePlan() when createPlan != null:
@@ -155,7 +161,9 @@ return removeMeal(_that.mealId);case _AddRecipeItem() when addRecipeItem != null
 return addRecipeItem(_that.mealId,_that.recipeId);case _AddFreeTextItem() when addFreeTextItem != null:
 return addFreeTextItem(_that.mealId,_that.text,_that.ingredients);case _UpdateFreeTextItem() when updateFreeTextItem != null:
 return updateFreeTextItem(_that.mealId,_that.itemId,_that.text,_that.ingredients);case _RemoveItem() when removeItem != null:
-return removeItem(_that.mealId,_that.itemId);case _:
+return removeItem(_that.mealId,_that.itemId);case _PlansChanged() when plansChanged != null:
+return plansChanged(_that.plans);case _RecipesChanged() when recipesChanged != null:
+return recipesChanged(_that.recipes);case _:
   return orElse();
 
 }
@@ -173,7 +181,7 @@ return removeItem(_that.mealId,_that.itemId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String name,  MealPlanTemplate template)  createPlan,required TResult Function( String planId)  selectPlan,required TResult Function( String planId)  deletePlan,required TResult Function( int weekday,  String name)  addMeal,required TResult Function( String mealId)  removeMeal,required TResult Function( String mealId,  String recipeId)  addRecipeItem,required TResult Function( String mealId,  String text,  List<RecipeIngredientEntity> ingredients)  addFreeTextItem,required TResult Function( String mealId,  String itemId,  String text,  List<RecipeIngredientEntity> ingredients)  updateFreeTextItem,required TResult Function( String mealId,  String itemId)  removeItem,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String name,  MealPlanTemplate template)  createPlan,required TResult Function( String planId)  selectPlan,required TResult Function( String planId)  deletePlan,required TResult Function( int weekday,  String name)  addMeal,required TResult Function( String mealId)  removeMeal,required TResult Function( String mealId,  String recipeId)  addRecipeItem,required TResult Function( String mealId,  String text,  List<RecipeIngredientEntity> ingredients)  addFreeTextItem,required TResult Function( String mealId,  String itemId,  String text,  List<RecipeIngredientEntity> ingredients)  updateFreeTextItem,required TResult Function( String mealId,  String itemId)  removeItem,required TResult Function( List<MealPlanEntity> plans)  plansChanged,required TResult Function( List<RecipeEntity> recipes)  recipesChanged,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _CreatePlan():
@@ -185,7 +193,9 @@ return removeMeal(_that.mealId);case _AddRecipeItem():
 return addRecipeItem(_that.mealId,_that.recipeId);case _AddFreeTextItem():
 return addFreeTextItem(_that.mealId,_that.text,_that.ingredients);case _UpdateFreeTextItem():
 return updateFreeTextItem(_that.mealId,_that.itemId,_that.text,_that.ingredients);case _RemoveItem():
-return removeItem(_that.mealId,_that.itemId);}
+return removeItem(_that.mealId,_that.itemId);case _PlansChanged():
+return plansChanged(_that.plans);case _RecipesChanged():
+return recipesChanged(_that.recipes);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -199,7 +209,7 @@ return removeItem(_that.mealId,_that.itemId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String name,  MealPlanTemplate template)?  createPlan,TResult? Function( String planId)?  selectPlan,TResult? Function( String planId)?  deletePlan,TResult? Function( int weekday,  String name)?  addMeal,TResult? Function( String mealId)?  removeMeal,TResult? Function( String mealId,  String recipeId)?  addRecipeItem,TResult? Function( String mealId,  String text,  List<RecipeIngredientEntity> ingredients)?  addFreeTextItem,TResult? Function( String mealId,  String itemId,  String text,  List<RecipeIngredientEntity> ingredients)?  updateFreeTextItem,TResult? Function( String mealId,  String itemId)?  removeItem,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String name,  MealPlanTemplate template)?  createPlan,TResult? Function( String planId)?  selectPlan,TResult? Function( String planId)?  deletePlan,TResult? Function( int weekday,  String name)?  addMeal,TResult? Function( String mealId)?  removeMeal,TResult? Function( String mealId,  String recipeId)?  addRecipeItem,TResult? Function( String mealId,  String text,  List<RecipeIngredientEntity> ingredients)?  addFreeTextItem,TResult? Function( String mealId,  String itemId,  String text,  List<RecipeIngredientEntity> ingredients)?  updateFreeTextItem,TResult? Function( String mealId,  String itemId)?  removeItem,TResult? Function( List<MealPlanEntity> plans)?  plansChanged,TResult? Function( List<RecipeEntity> recipes)?  recipesChanged,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _CreatePlan() when createPlan != null:
@@ -211,7 +221,9 @@ return removeMeal(_that.mealId);case _AddRecipeItem() when addRecipeItem != null
 return addRecipeItem(_that.mealId,_that.recipeId);case _AddFreeTextItem() when addFreeTextItem != null:
 return addFreeTextItem(_that.mealId,_that.text,_that.ingredients);case _UpdateFreeTextItem() when updateFreeTextItem != null:
 return updateFreeTextItem(_that.mealId,_that.itemId,_that.text,_that.ingredients);case _RemoveItem() when removeItem != null:
-return removeItem(_that.mealId,_that.itemId);case _:
+return removeItem(_that.mealId,_that.itemId);case _PlansChanged() when plansChanged != null:
+return plansChanged(_that.plans);case _RecipesChanged() when recipesChanged != null:
+return recipesChanged(_that.recipes);case _:
   return null;
 
 }
@@ -869,6 +881,150 @@ class __$RemoveItemCopyWithImpl<$Res>
 null == mealId ? _self.mealId : mealId // ignore: cast_nullable_to_non_nullable
 as String,null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _PlansChanged implements MealPlannerEvent {
+  const _PlansChanged(final  List<MealPlanEntity> plans): _plans = plans;
+  
+
+ final  List<MealPlanEntity> _plans;
+ List<MealPlanEntity> get plans {
+  if (_plans is EqualUnmodifiableListView) return _plans;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_plans);
+}
+
+
+/// Create a copy of MealPlannerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PlansChangedCopyWith<_PlansChanged> get copyWith => __$PlansChangedCopyWithImpl<_PlansChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PlansChanged&&const DeepCollectionEquality().equals(other._plans, _plans));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_plans));
+
+@override
+String toString() {
+  return 'MealPlannerEvent.plansChanged(plans: $plans)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PlansChangedCopyWith<$Res> implements $MealPlannerEventCopyWith<$Res> {
+  factory _$PlansChangedCopyWith(_PlansChanged value, $Res Function(_PlansChanged) _then) = __$PlansChangedCopyWithImpl;
+@useResult
+$Res call({
+ List<MealPlanEntity> plans
+});
+
+
+
+
+}
+/// @nodoc
+class __$PlansChangedCopyWithImpl<$Res>
+    implements _$PlansChangedCopyWith<$Res> {
+  __$PlansChangedCopyWithImpl(this._self, this._then);
+
+  final _PlansChanged _self;
+  final $Res Function(_PlansChanged) _then;
+
+/// Create a copy of MealPlannerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? plans = null,}) {
+  return _then(_PlansChanged(
+null == plans ? _self._plans : plans // ignore: cast_nullable_to_non_nullable
+as List<MealPlanEntity>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _RecipesChanged implements MealPlannerEvent {
+  const _RecipesChanged(final  List<RecipeEntity> recipes): _recipes = recipes;
+  
+
+ final  List<RecipeEntity> _recipes;
+ List<RecipeEntity> get recipes {
+  if (_recipes is EqualUnmodifiableListView) return _recipes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_recipes);
+}
+
+
+/// Create a copy of MealPlannerEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RecipesChangedCopyWith<_RecipesChanged> get copyWith => __$RecipesChangedCopyWithImpl<_RecipesChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipesChanged&&const DeepCollectionEquality().equals(other._recipes, _recipes));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes));
+
+@override
+String toString() {
+  return 'MealPlannerEvent.recipesChanged(recipes: $recipes)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RecipesChangedCopyWith<$Res> implements $MealPlannerEventCopyWith<$Res> {
+  factory _$RecipesChangedCopyWith(_RecipesChanged value, $Res Function(_RecipesChanged) _then) = __$RecipesChangedCopyWithImpl;
+@useResult
+$Res call({
+ List<RecipeEntity> recipes
+});
+
+
+
+
+}
+/// @nodoc
+class __$RecipesChangedCopyWithImpl<$Res>
+    implements _$RecipesChangedCopyWith<$Res> {
+  __$RecipesChangedCopyWithImpl(this._self, this._then);
+
+  final _RecipesChanged _self;
+  final $Res Function(_RecipesChanged) _then;
+
+/// Create a copy of MealPlannerEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? recipes = null,}) {
+  return _then(_RecipesChanged(
+null == recipes ? _self._recipes : recipes // ignore: cast_nullable_to_non_nullable
+as List<RecipeEntity>,
   ));
 }
 

@@ -2,12 +2,14 @@ import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/core/utils/json_ld_recipe.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-String page(String json) => '<html><head><script type="application/ld+json">$json</script></head></html>';
+String page(String json) =>
+    '<html><head><script type="application/ld+json">$json</script></head></html>';
 
 void main() {
   group('parseJsonLdRecipe', () {
     test('reads a plain Recipe object', () {
-      final recipe = parseJsonLdRecipe(page('''{
+      final recipe = parseJsonLdRecipe(
+        page('''{
         "@context": "https://schema.org", "@type": "Recipe",
         "name": "שקשוקה", "prepTime": "PT10M", "cookTime": "PT20M",
         "recipeIngredient": ["4 ביצים", "400 גרם עגבניות מרוסקות"],
@@ -15,7 +17,8 @@ void main() {
           {"@type": "HowToStep", "text": "מטגנים בצל."},
           {"@type": "HowToStep", "text": "מוסיפים עגבניות."}
         ]
-      }'''));
+      }'''),
+      );
 
       expect(recipe, isNotNull);
       expect(recipe!.title, 'שקשוקה');
@@ -26,26 +29,31 @@ void main() {
     });
 
     test('finds the recipe inside a @graph wrapper', () {
-      final recipe = parseJsonLdRecipe(page('''{
+      final recipe = parseJsonLdRecipe(
+        page('''{
         "@context": "https://schema.org",
         "@graph": [
           {"@type": "WebSite", "name": "אתר"},
           {"@type": "Recipe", "name": "קובה", "recipeIngredient": ["סולת"], "recipeInstructions": "לשים."}
         ]
-      }'''));
+      }'''),
+      );
       expect(recipe?.title, 'קובה');
     });
 
     test('accepts @type given as a list', () {
-      final recipe = parseJsonLdRecipe(page('''{
+      final recipe = parseJsonLdRecipe(
+        page('''{
         "@type": ["Recipe", "NewsArticle"], "name": "סלט",
         "recipeIngredient": ["מלפפון"], "recipeInstructions": "חותכים."
-      }'''));
+      }'''),
+      );
       expect(recipe?.title, 'סלט');
     });
 
     test('flattens HowToSection groups into one ordered list', () {
-      final recipe = parseJsonLdRecipe(page('''{
+      final recipe = parseJsonLdRecipe(
+        page('''{
         "@type": "Recipe", "name": "עוגה", "recipeIngredient": ["קמח"],
         "recipeInstructions": [
           {"@type": "HowToSection", "name": "בצק", "itemListElement": [
@@ -56,41 +64,62 @@ void main() {
             {"@type": "HowToStep", "text": "אופים."}
           ]}
         ]
-      }'''));
+      }'''),
+      );
       expect(recipe?.steps, ['מערבבים.', 'לשים.', 'אופים.']);
     });
 
-    test('splits a single instruction string on line breaks and strips tags', () {
-      final recipe = parseJsonLdRecipe(page('''{
+    test(
+      'splits a single instruction string on line breaks and strips tags',
+      () {
+        final recipe = parseJsonLdRecipe(
+          page('''{
         "@type": "Recipe", "name": "מרק", "recipeIngredient": ["מים"],
         "recipeInstructions": "<p>מרתיחים מים.</p><p>מוסיפים &amp; מערבבים.</p>"
-      }'''));
-      expect(recipe?.steps, ['מרתיחים מים.', 'מוסיפים & מערבבים.']);
-    });
+      }'''),
+        );
+        expect(recipe?.steps, ['מרתיחים מים.', 'מוסיפים & מערבבים.']);
+      },
+    );
 
     test('maps schema.org diets to the app\'s chips, once each', () {
-      final recipe = parseJsonLdRecipe(page('''{
+      final recipe = parseJsonLdRecipe(
+        page('''{
         "@type": "Recipe", "name": "טופו", "recipeIngredient": ["טופו"],
         "recipeInstructions": "מטגנים.",
         "suitableForDiet": ["https://schema.org/VeganDiet", "https://schema.org/GlutenFreeDiet",
                             "https://schema.org/VeganDiet", "https://schema.org/LowFatDiet"]
-      }'''));
-      expect(recipe?.diets, unorderedEquals([DietaryPreference.vegan, DietaryPreference.glutenFree]));
+      }'''),
+      );
+      expect(
+        recipe?.diets,
+        unorderedEquals([
+          DietaryPreference.vegan,
+          DietaryPreference.glutenFree,
+        ]),
+      );
     });
 
     test('a broken block does not hide a good one after it', () {
-      final html = '<script type="application/ld+json">{not json</script>'
+      final html =
+          '<script type="application/ld+json">{not json</script>'
           '${page('{"@type":"Recipe","name":"תקין","recipeIngredient":["x"],"recipeInstructions":"y"}')}';
       expect(parseJsonLdRecipe(html)?.title, 'תקין');
     });
 
     test('a stub with neither ingredients nor steps is not a recipe', () {
       // The model does better with the page than we would with an empty shell.
-      expect(parseJsonLdRecipe(page('{"@type":"Recipe","name":"רק כותרת"}')), isNull);
+      expect(
+        parseJsonLdRecipe(page('{"@type":"Recipe","name":"רק כותרת"}')),
+        isNull,
+      );
     });
 
     test('a page with no JSON-LD is null, not an error', () {
-      expect(parseJsonLdRecipe('<html><body><p>סתם עמוד</p></body></html>'), isNull);
+      expect(
+        parseJsonLdRecipe('<html><body><p>סתם עמוד</p></body></html>'),
+        isNull,
+      );
     });
   });
 
@@ -141,22 +170,34 @@ void main() {
 
     test('English units', () {
       expect(parseIngredientLine('200 g butter').unit, MeasurementUnit.gram);
-      expect(parseIngredientLine('2 tbsp olive oil').unit, MeasurementUnit.tablespoon);
+      expect(
+        parseIngredientLine('2 tbsp olive oil').unit,
+        MeasurementUnit.tablespoon,
+      );
       expect(parseIngredientLine('1 tsp salt').unit, MeasurementUnit.teaspoon);
-      expect(parseIngredientLine('250 ml milk').unit, MeasurementUnit.milliliter);
+      expect(
+        parseIngredientLine('250 ml milk').unit,
+        MeasurementUnit.milliliter,
+      );
     });
 
-    test('no leading number keeps the whole line as the name, unstated amount', () {
-      // The same "the source did not say" the model reports — nothing is lost.
-      final p = parseIngredientLine('מלח לפי הטעם');
-      expect(p.amount, isNull);
-      expect(p.unit, MeasurementUnit.unspecified);
-      expect(p.name, 'מלח לפי הטעם');
-    });
+    test(
+      'no leading number keeps the whole line as the name, unstated amount',
+      () {
+        // The same "the source did not say" the model reports — nothing is lost.
+        final p = parseIngredientLine('מלח לפי הטעם');
+        expect(p.amount, isNull);
+        expect(p.unit, MeasurementUnit.unspecified);
+        expect(p.name, 'מלח לפי הטעם');
+      },
+    );
 
-    test('a line that is only a number keeps the original text as the name', () {
-      // Better a nonsense name than an empty one that saves as a blank row.
-      expect(parseIngredientLine('2').name, '2');
-    });
+    test(
+      'a line that is only a number keeps the original text as the name',
+      () {
+        // Better a nonsense name than an empty one that saves as a blank row.
+        expect(parseIngredientLine('2').name, '2');
+      },
+    );
   });
 }

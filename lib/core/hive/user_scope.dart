@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -25,10 +27,12 @@ class UserScope {
     'recipeBooksBox',
     'mealPlansBox',
     'groceryListsBox',
+    'groceryUiBox',
     'dailyUsageBox',
     'priceRecordsBox',
     'receiptsBox',
     'productPricingBox',
+    'contentVariantsBox',
   ];
 
   String? _uid;
@@ -72,6 +76,75 @@ class UserScope {
     final box = await Hive.openBox<T>(name);
     _opened[name] = box;
     return box;
+  }
+
+  /// On sign-out: deletes every scoped box of the account that was signed
+  /// in — the files, not just their contents — and leaves the scope pointing
+  /// at nobody, so a late read throws rather than recreating a box.
+  ///
+  /// Also sweeps the scoped box files any other account left on this device
+  /// before sign-out wiped them. Everything here is mirrored to the account's
+  /// cloud copy (see `CloudSyncService`), which the next sign-in hydrates
+  /// from; what is not — the translation cache, the open grocery list — is
+  /// rebuilt or defaulted on its own.
+  ///
+  /// Device-level boxes (theme, login language, a skipped update) are not
+  /// scoped and not touched: they belong to the phone, not to an account.
+  ///
+  /// Must run after the signed-in screens are gone: they hold streams on
+  /// these boxes, and deleting a box under a live screen is what the
+  /// comment on [switchTo] warns about.
+  Future<void> clearAccount() async {
+    final uid = _uid;
+    _uid = null;
+    if (uid == null) return;
+
+    String? directory;
+    for (final base in scopedBoxes) {
+      final name = '${base}_$uid';
+      final box = _opened.remove(name);
+      try {
+        if (box != null && box.isOpen) {
+          directory ??= _directoryOf(box.path);
+          await box.deleteFromDisk();
+        } else {
+          await Hive.deleteBoxFromDisk(name);
+        }
+      } catch (e) {
+        debugPrint('Deleting $name failed: $e');
+      }
+    }
+    // Anything still held (a box of another account) is closed first, so
+    // the sweep below never deletes a file under an open box.
+    for (final box in _opened.values) {
+      if (box.isOpen) await box.close();
+    }
+    _opened.clear();
+    if (directory != null) await _sweepLeftovers(directory);
+  }
+
+  static String? _directoryOf(String? path) =>
+      path == null ? null : File(path).parent.path;
+
+  /// Deletes every `<scoped box>_<uid>` file in [directory], whoever it
+  /// belonged to. Hive writes box names lower-cased, so the match is too.
+  static Future<void> _sweepLeftovers(String directory) async {
+    final prefixes = [for (final base in scopedBoxes) '${base.toLowerCase()}_'];
+    try {
+      await for (final entry in Directory(directory).list()) {
+        if (entry is! File) continue;
+        final file = entry.uri.pathSegments.last.toLowerCase();
+        if (!(file.endsWith('.hive') || file.endsWith('.lock'))) continue;
+        if (!prefixes.any(file.startsWith)) continue;
+        try {
+          await entry.delete();
+        } catch (e) {
+          debugPrint('Leftover box $file not deleted: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Leftover box sweep failed: $e');
+    }
   }
 
   /// Test seam — the singleton otherwise carries a uid between tests.

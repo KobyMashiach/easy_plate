@@ -87,7 +87,12 @@
     "appleAlreadyUsed": "That Apple account already belongs to another user",
     "appleAlreadyLinked": "An Apple account is already linked",
     "blockedTitle": "Account blocked",
-    "blockedBody": "This account was blocked by the app's administrator. Contact us from the support screen for details."
+    "blockedBody": "This account was blocked by the app's administrator. Contact us from the support screen for details.",
+    "phoneClaimedTitle": "This number belongs to an existing account",
+    "phoneClaimedBody": "$phone is already connected to another EasyPlate account. To reach that account and its recipes, sign in the way you did before (Google, Apple or email) and verify the number there again.",
+    "phoneClaimedSignIn": "Sign in to my existing account",
+    "phoneClaimedCreateNew": "Create a new account anyway",
+    "phoneClaimedCreateNewConfirm": "A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number."
   },
   "profile": {
     "setupTitle": "A few last details",
@@ -166,7 +171,46 @@
     "reminderTwoDaysBefore": "Two days before (evening)",
     "reminderDayBefore": "Day before (evening)",
     "reminderSameDayMorning": "Shopping day (morning)",
-    "reminderSameDayAfternoon": "Shopping day (afternoon)"
+    "reminderSameDayAfternoon": "Shopping day (afternoon)",
+    "translatingContent": "Translating your recipes and menus…",
+    "translatedContent": "$count items translated",
+    "translationPartialTitle": "Translation unfinished",
+    "translationPartial": "$count items stayed in their own language. You can try again later.",
+    "translationFailed": "Translation failed. Your content stayed in its own language.",
+    "account": "Account",
+    "notifications": "Notifications",
+    "notificationsHint": "Which alerts reach you, and how",
+    "settingsHint": "Account, notifications, language and appearance"
+  },
+  "notificationSettings": {
+    "title": "Notification settings",
+    "push": "Push notifications",
+    "pushHint": "Alerts on this device. Off, nothing is pushed; the inbox still fills up.",
+    "pushDenied": "Notifications are blocked for EasyPlate in the device settings. Allow them there to receive alerts.",
+    "community": "Community",
+    "repliesOnMyPosts": "Replies to my posts",
+    "repliesOnMyPostsHint": "Someone answered a thread you opened",
+    "repliesOnThreads": "Replies in threads I joined",
+    "repliesOnThreadsHint": "A new reply in a thread you replied to",
+    "sharing": "Sharing",
+    "shareInvites": "Share invites",
+    "shareInvitesHint": "Someone shared a recipe, book or plan with you. The invite always reaches the inbox; this is the alert.",
+    "sharedRecipeUpdates": "Updates to saved recipes",
+    "sharedRecipeUpdatesHint": "The author changed a community recipe you saved",
+    "easyPlate": "From EasyPlate",
+    "adminReplies": "Replies to my support messages",
+    "announcements": "Announcements",
+    "announcementsHint": "News and updates from the EasyPlate team",
+    "inApp": "While the app is open",
+    "foregroundPopups": "Show alerts as a popup",
+    "foregroundPopupsHint": "A push that arrives while you are in the app opens a small card. Off, it only goes to the inbox.",
+    "reminders": "Shopping reminders"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "hint": "Shopping, dietary needs and how the books behave",
+    "shopping": "Shopping",
+    "books": "Recipe books"
   },
   "more": {
     "title": "More",
@@ -177,7 +221,8 @@
     "supportBody": "Write to us and we will get back to you.",
     "whatsapp": "Message us on WhatsApp",
     "email": "Send an email",
-    "supportUnavailable": "We could not open that app"
+    "supportUnavailable": "We could not open that app",
+    "preferences": "Preferences"
   },
   "language": {
     "hebrew": "עברית",
@@ -335,7 +380,10 @@
     "alreadySaved": "You already have this recipe",
     "savedTag": "Saved",
     "removeSaved": "Remove from saved recipes",
-    "removeSavedConfirm": "The recipe will be removed from your saved recipes. You can save it again from the community."
+    "removeSavedConfirm": "The recipe will be removed from your saved recipes. You can save it again from the community.",
+    "oneNewPost": "1 new post",
+    "newPosts": "$count new posts",
+    "replyFailed": "Your reply could not be sent"
   },
   "sharing": {
     "title": "Share recipe",
@@ -412,7 +460,12 @@
     "sharedPlan": "$name shared the plan \"$recipe\" with you",
     "adminReply": "A reply from the EasyPlate team to your message",
     "adminReplyQuote": "Your message: \"$excerpt\"",
-    "adminMessage": "A message from EasyPlate"
+    "adminMessage": "A message from EasyPlate",
+    "forumReplyOnMyPost": "$name replied to your post \"$post\"",
+    "forumReplyOnThread": "$name replied in \"$post\"",
+    "openThread": "Open thread",
+    "threadGone": "This thread was deleted",
+    "settings": "Settings"
   },
   "editor": {
     "title": "Edit recipe",
@@ -546,7 +599,40 @@
     "allPlansHint": "Aggregated from every menu",
     "selectPlansTitle": "Which menus feed this list?",
     "applySelection": "Update list",
-    "selectAllPlans": "All menus"
+    "selectAllPlans": "All menus",
+    "myLists": "My lists",
+    "listsCount": "$count lists",
+    "oneList": "One list",
+    "newList": "New list",
+    "newListTitle": "New shopping list",
+    "listName": "List name",
+    "defaultListName": "Shopping list",
+    "fromPlans": "From menus",
+    "fromPlansHint": "Combines the recipes in your meal plans",
+    "fromRecipe": "From a recipe",
+    "fromRecipeHint": "The ingredients of one recipe",
+    "emptyList": "Empty list",
+    "emptyListHint": "You add the items by hand",
+    "sourcePlans": "From menus",
+    "sourceRecipe": "From the recipe \"$title\"",
+    "sourceManual": "Hand-made list",
+    "renameList": "Rename list",
+    "deleteList": "Delete list",
+    "deleteListConfirm": "\"$name\" and all its items will be deleted.",
+    "progress": "$checked/$total",
+    "servings": "Servings",
+    "timesOver": "Quantity",
+    "scaleValue": "×$value",
+    "rebuildFromRecipe": "Rebuild from the recipe",
+    "createFromRecipe": "Create shopping list",
+    "createList": "Create list",
+    "recipeListTitle": "Shopping list from a recipe",
+    "recipeListHint": "The recipe's ingredients, scaled to how much you are making",
+    "listCreated": "The list \"$name\" was created",
+    "openList": "Open list",
+    "stayHere": "Stay here",
+    "noIngredients": "This recipe has no ingredients to shop for",
+    "addFirstItem": "Add an item"
   },
   "receipt": {
     "title": "Scan a receipt",

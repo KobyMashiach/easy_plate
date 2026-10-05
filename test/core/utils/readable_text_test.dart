@@ -34,7 +34,8 @@ void main() {
   test('prefers the main content region when the page marks one', () {
     final filler = 'סרגל צד ' * 60;
     final article = 'תוכן המתכון ' * 40;
-    final html = '<body><div>$filler</div><article><p>$article</p></article></body>';
+    final html =
+        '<body><div>$filler</div><article><p>$article</p></article></body>';
 
     final body = readableTextFromHtml(html).body;
     expect(body, contains('תוכן המתכון'));
@@ -44,7 +45,8 @@ void main() {
   test('a short article does not hide the rest of the page', () {
     // Some sites wrap only a teaser in <article>; trimming to that would throw
     // the actual recipe away.
-    const html = '<body><article>קצר</article><p>המצרכים והשלבים המלאים כאן</p></body>';
+    const html =
+        '<body><article>קצר</article><p>המצרכים והשלבים המלאים כאן</p></body>';
     expect(readableTextFromHtml(html).body, contains('המצרכים והשלבים'));
   });
 
@@ -60,6 +62,11 @@ void main() {
 
   test('an empty or scaffolding-only page reports as empty', () {
     expect(readableTextFromHtml('').isEmpty, isTrue);
-    expect(readableTextFromHtml('<html><head><title>x</title></head></html>').isEmpty, isTrue);
+    expect(
+      readableTextFromHtml(
+        '<html><head><title>x</title></head></html>',
+      ).isEmpty,
+      isTrue,
+    );
   });
 }

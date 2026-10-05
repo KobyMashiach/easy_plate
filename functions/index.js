@@ -4,6 +4,7 @@
 const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const { logger } = require("firebase-functions");
+const notificationPrefs = require("./notificationPrefs");
 
 admin.initializeApp();
 
@@ -19,6 +20,9 @@ exports.priceStats = require("./priceStats").priceStats;
 
 // The administrator's account actions: block, delete, push to one or all.
 exports.adminUsers = require("./adminUsers").adminUsers;
+
+// Translates the account's own content into the language it picked.
+exports.translateContent = require("./translateContent").translateContent;
 
 // Once a week: the shekel rate and Google's token prices, so the dashboard's
 // cost figure never depends on a number somebody typed. Each half is on its
@@ -62,6 +66,12 @@ const bodyFor = (data, fromName) => {
     const message = String(data.message || "").trim();
     return message ? `תשובה לפנייה שלך: ${message.slice(0, 180)}` : "יש תשובה לפנייה שלך";
   }
+  if (data.type === "forumReply") {
+    const title = String(data.postTitle || "").trim();
+    const excerpt = String(data.excerpt || "").trim();
+    const where = data.onMyPost === true ? `הגיב/ה לפוסט שלך "${title}"` : `הגיב/ה בדיון "${title}"`;
+    return excerpt ? `${fromName} ${where}: ${excerpt.slice(0, 140)}` : `${fromName} ${where}`;
+  }
   return "יש לך התראה חדשה";
 };
 
@@ -75,10 +85,18 @@ exports.pushOnNotification = onDocumentCreated(
     if (data.silent === true) return;
 
     const db = admin.firestore();
-    const [user, from] = await Promise.all([
+    const [user, from, prefs] = await Promise.all([
       db.doc(`users/${event.params.uid}`).get(),
       db.doc(`public_profiles/${data.fromUid}`).get(),
+      notificationPrefs.load(db, event.params.uid),
     ]);
+
+    // The account's own choice, checked before the token: an inbox item
+    // is written for every kind, the push only for the kinds they asked for.
+    if (!notificationPrefs.wantsPush(prefs, data)) {
+      logger.info("push muted by preference", { uid: event.params.uid, type: String(data.type || "") });
+      return;
+    }
 
     const token = user.get("pushToken");
     if (!token) return;
@@ -93,6 +111,11 @@ exports.pushOnNotification = onDocumentCreated(
         inviteId: String(data.inviteId || ""),
         collabId: String(data.collabId || ""),
         kind: String(data.kind || ""),
+        // For a forum reply: what the tap opens, and which reply to land on.
+        postId: String(data.postId || ""),
+        replyId: String(data.replyId || ""),
+        onMyPost: String(data.onMyPost === true),
+        notificationId: String(event.params.itemId || ""),
       },
       android: { priority: "high" },
       apns: { payload: { aps: { sound: "default" } } },
@@ -155,17 +178,90 @@ exports.onSharedRecipeUpdated = onDocumentUpdated(
     logger.info("post edited", { sharedId, changed, copies: copies.size, savers: savers.size });
     if (savers.size === 0) return;
 
+    const item = {
+      type: "sharedRecipeUpdated",
+      fromUid: authorUid,
+      sharedId,
+      recipeTitle: String(after.title || ""),
+      read: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    const uids = [...savers];
+    const prefs = await Promise.all(uids.map((uid) => notificationPrefs.load(db, uid)));
     const batch = db.batch();
-    for (const uid of savers) {
-      batch.set(db.collection("notifications").doc(uid).collection("items").doc(), {
-        type: "sharedRecipeUpdated",
-        fromUid: authorUid,
-        sharedId,
-        recipeTitle: String(after.title || ""),
+    let written = 0;
+    uids.forEach((uid, i) => {
+      // A saver who switched these off gets neither the item nor the push.
+      if (!notificationPrefs.wantsInboxItem(prefs[i], item)) return;
+      batch.set(db.collection("notifications").doc(uid).collection("items").doc(), item);
+      written++;
+    });
+    if (written > 0) await batch.commit();
+  },
+);
+
+// Someone replied in a thread: the thread's author and everyone who has
+// replied in it before are told, except the replier themself. Each gets
+// one inbox item (and, through pushOnNotification, a push), subject to
+// their own notification choices. The reply's opening words travel with
+// the item so the inbox row reads without a second lookup, and the ids
+// are what a tap on the push opens.
+exports.onForumReplyCreated = onDocumentCreated(
+  "forum_posts/{postId}/replies/{replyId}",
+  async (event) => {
+    const reply = event.data?.data();
+    if (!reply) return;
+    const { postId, replyId } = event.params;
+    const db = admin.firestore();
+    const postRef = db.doc(`forum_posts/${postId}`);
+    const [post, earlier] = await Promise.all([
+      postRef.get(),
+      postRef.collection("replies").select("authorUid").get(),
+    ]);
+    if (!post.exists) return;
+
+    const replierUid = String(reply.authorUid || "");
+    const postAuthorUid = String(post.get("authorUid") || "");
+
+    // uid → whether the thread is theirs. The author's own entry wins over
+    // a "joined" one, since a thread's author has usually replied in it too.
+    const recipients = new Map();
+    if (postAuthorUid && postAuthorUid !== replierUid) recipients.set(postAuthorUid, true);
+    for (const doc of earlier.docs) {
+      const uid = String(doc.get("authorUid") || "");
+      if (!uid || uid === replierUid || recipients.has(uid)) continue;
+      recipients.set(uid, false);
+    }
+    if (recipients.size === 0) {
+      logger.info("forum reply, nobody to tell", { postId, replyId });
+      return;
+    }
+
+    const body = String(reply.body || "").trim();
+    const attached = String(reply.sharedRecipeTitle || "").trim();
+    const excerpt = (body || (attached ? `🍽 ${attached}` : "")).slice(0, 140);
+    const uids = [...recipients.keys()];
+    const prefs = await Promise.all(uids.map((uid) => notificationPrefs.load(db, uid)));
+
+    const batch = db.batch();
+    let written = 0;
+    uids.forEach((uid, i) => {
+      const item = {
+        type: "forumReply",
+        fromUid: replierUid,
+        postId,
+        replyId,
+        postTitle: String(post.get("title") || ""),
+        excerpt,
+        onMyPost: recipients.get(uid) === true,
         read: false,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    }
-    await batch.commit();
+      };
+      if (!notificationPrefs.wantsInboxItem(prefs[i], item)) return;
+      batch.set(db.collection("notifications").doc(uid).collection("items").doc(), item);
+      written++;
+    });
+    if (written > 0) await batch.commit();
+    logger.info("forum reply told", { postId, replyId, recipients: uids.length, written });
   },
 );

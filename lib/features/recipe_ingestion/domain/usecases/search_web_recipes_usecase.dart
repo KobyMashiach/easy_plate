@@ -9,6 +9,5 @@ class SearchWebRecipesUseCase {
   Future<List<WebSearchResultEntity>> call(
     String query, {
     List<DietaryPreference> preferences = const [],
-  }) =>
-      repository.searchWeb(query, preferences);
+  }) => repository.searchWeb(query, preferences);
 }

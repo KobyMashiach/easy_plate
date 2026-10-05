@@ -25,65 +25,158 @@ import '../../domain/entities/forum_post_entity.dart';
 import '../bloc/forum_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
 
-class ForumPage extends StatelessWidget {
+/// The forum tab. Live: the bloc holds a Firestore listener on the thread
+/// window, so a reply or a new thread from anyone shows without a pull.
+class ForumPage extends StatefulWidget {
   const ForumPage({super.key});
 
   @override
+  State<ForumPage> createState() => _ForumPageState();
+}
+
+class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
+  late final ForumBloc _bloc = ForumBloc.fromContext(context);
+
+  /// Owned here rather than by the list so it outlives a switch between the
+  /// loaded, empty and error views and keeps the reader's place.
+  final _scroll = ScrollController();
+
+  /// Within this many pixels of the top the list counts as "at the top": new
+  /// threads join it directly instead of waiting on the pill.
+  static const _topSlack = 24.0;
+
+  bool _atTop = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _scroll.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scroll.removeListener(_onScroll);
+    _scroll.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _bloc.close();
+    super.dispose();
+  }
+
+  /// The listener is closed while the app is in the background: nothing is
+  /// looking, and a phone in a pocket should not hold a socket open for it.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _bloc.add(const ForumEvent.setLive(true));
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        _bloc.add(const ForumEvent.setLive(false));
+      case AppLifecycleState.inactive:
+        break;
+    }
+  }
+
+  void _onScroll() {
+    final atTop = !_scroll.hasClients || _scroll.offset <= _topSlack;
+    if (atTop == _atTop) return;
+    _atTop = atTop;
+    _bloc.add(ForumEvent.viewportAtTop(atTop));
+  }
+
+  Future<void> _showIncoming() async {
+    _bloc.add(const ForumEvent.revealIncoming());
+    await scrollToTop();
+  }
+
+  Future<void> scrollToTop() async {
+    if (!_scroll.hasClients) return;
+    await _scroll.animateTo(
+      0,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ForumBloc.fromContext(context),
-      child: Builder(
-        builder: (context) => Stack(
-          children: [
-            BlocBuilder<ForumBloc, ForumState>(
-              builder: (context, state) {
-                return switch (state) {
-                  ForumLoading() => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  ForumLoaded(posts: final posts) => _PostList(posts: posts),
-                  ForumError(error: final error) => ErrorRetryView(
-                    error: error,
-                    onRetry: () =>
-                        context.read<ForumBloc>().add(const ForumEvent.init()),
-                  ),
-                };
-              },
-            ),
-            PositionedDirectional(
-              end: AppSpacing.marginMobile,
-              bottom: ClayNavDock.bottomPadding(context),
-              child: FloatingActionButton(
-                heroTag: 'forum-new-post',
-                backgroundColor: AppColors.primary,
-                onPressed: () => _openComposer(context),
-                child: Icon(Icons.edit_rounded, color: AppColors.onPrimary),
+    return BlocProvider.value(
+      value: _bloc,
+      child: Stack(
+        children: [
+          BlocBuilder<ForumBloc, ForumState>(
+            builder: (context, state) {
+              return switch (state) {
+                ForumLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                ForumLoaded(posts: final posts) => _PostList(
+                  posts: posts,
+                  controller: _scroll,
+                ),
+                ForumError(error: final error) => ErrorRetryView(
+                  error: error,
+                  onRetry: () =>
+                      context.read<ForumBloc>().add(const ForumEvent.init()),
+                ),
+              };
+            },
+          ),
+          // Threads that arrived while the reader was further down. Selected
+          // narrowly so a like or a reply count elsewhere does not touch it.
+          Positioned(
+            top: AppSpacing.sm,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: BlocSelector<ForumBloc, ForumState, int>(
+                selector: (state) => switch (state) {
+                  ForumLoaded(incoming: final incoming) => incoming.length,
+                  _ => 0,
+                },
+                builder: (context, count) => _IncomingPill(
+                  count: count,
+                  onTap: _showIncoming,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+          PositionedDirectional(
+            end: AppSpacing.marginMobile,
+            bottom: ClayNavDock.bottomPadding(context),
+            child: FloatingActionButton(
+              heroTag: 'forum-new-post',
+              backgroundColor: AppColors.primary,
+              onPressed: () => _openComposer(context),
+              child: Icon(Icons.edit_rounded, color: AppColors.onPrimary),
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-Future<void> _openComposer(BuildContext context) async {
-  final bloc = context.read<ForumBloc>();
-  final result = await showModalBottomSheet<({String title, String body})>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: AppColors.surfaceContainerLowest,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
-    ),
-    builder: (_) => const _PostComposer(),
-  );
-  if (result == null || !context.mounted) return;
-  await AppDialog.busyEvent(
-    context,
-    bloc,
-    ForumEvent.createPost(result.title, result.body),
-  );
+  Future<void> _openComposer(BuildContext context) async {
+    final result = await showModalBottomSheet<({String title, String body})>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
+      ),
+      builder: (_) => const _PostComposer(),
+    );
+    if (result == null || !context.mounted) return;
+    await AppDialog.busyEvent(
+      context,
+      _bloc,
+      ForumEvent.createPost(result.title, result.body),
+    );
+    // The new thread is at the top; take the author there.
+    if (mounted) await scrollToTop();
+  }
 }
 
 /// Dispatches a reload and hands the indicator a future that completes when the
@@ -94,10 +187,73 @@ Future<void> refreshForum(BuildContext context) {
   return done.future;
 }
 
+/// "N new posts", slid in over the list when there is something to show.
+class _IncomingPill extends StatelessWidget {
+  final int count;
+  final VoidCallback onTap;
+
+  const _IncomingPill({required this.count, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, -0.5),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ),
+      ),
+      child: count == 0
+          ? const SizedBox.shrink()
+          : Material(
+              key: const ValueKey('forum-incoming'),
+              color: AppColors.primary,
+              shape: const StadiumBorder(),
+              elevation: 4,
+              child: InkWell(
+                customBorder: const StadiumBorder(),
+                onTap: onTap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                    vertical: AppSpacing.base,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.arrow_upward_rounded,
+                        size: 16,
+                        color: AppColors.onPrimary,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        count == 1
+                            ? t.community.oneNewPost
+                            : t.community.newPosts(count: count),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: AppColors.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}
+
 class _PostList extends StatefulWidget {
   final List<ForumPostEntity> posts;
+  final ScrollController controller;
 
-  const _PostList({required this.posts});
+  const _PostList({required this.posts, required this.controller});
 
   @override
   State<_PostList> createState() => _PostListState();
@@ -144,6 +300,7 @@ class _PostListState extends State<_PostList> {
                       : MonetizationConfig.feedAdInterval,
                 );
                 return ListView.separated(
+                  controller: widget.controller,
                   // Always scrollable so a list too short to overflow can
                   // still be pulled.
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -158,8 +315,12 @@ class _PostListState extends State<_PostList> {
                       const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, position) =>
                       switch (layout.slotAt(position)) {
-                        ContentSlot(index: final index) => _PostCard(
-                          post: posts[index],
+                        // Keyed by thread so a row that moves keeps its
+                        // element — and its ink state — rather than being
+                        // rebuilt as a different thread's card.
+                        ContentSlot(index: final index) => RepaintBoundary(
+                          key: ValueKey(posts[index].id),
+                          child: _PostCard(post: posts[index]),
                         ),
                         AdSlot(adIndex: final adIndex) => switch (_ads.slot(
                           adIndex,
@@ -200,12 +361,10 @@ class _PostCard extends StatelessWidget {
     await AppDialog.busyEvent(context, bloc, ForumEvent.deletePost(post.id));
   }
 
-  /// Likes and replies given inside the thread come back to this row with
-  /// the reload on return; nothing here would otherwise notice them.
-  Future<void> _open(BuildContext context) async {
-    await context.pushNamed(Routing.forumThread, extra: post);
-    if (context.mounted) await refreshForum(context);
-  }
+  /// The row is live, so likes and replies given inside the thread reach it
+  /// on their own; nothing to reload on return.
+  void _open(BuildContext context) =>
+      context.pushNamed(Routing.forumThread, extra: post);
 
   @override
   Widget build(BuildContext context) {

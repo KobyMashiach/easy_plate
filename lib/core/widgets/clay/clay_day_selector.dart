@@ -29,13 +29,17 @@ class ClayDaySelector extends StatelessWidget {
       height: 90,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.marginMobile),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.marginMobile,
+        ),
         itemCount: labels.length,
         separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
         itemBuilder: (context, index) {
           final isActive = index == selectedIndex;
           final count = counts?[index] ?? 0;
-          final foreground = isActive ? AppColors.onPrimaryContainer : AppColors.primary;
+          final foreground = isActive
+              ? AppColors.onPrimaryContainer
+              : AppColors.primary;
 
           return SizedBox(
             width: 72,
@@ -52,7 +56,9 @@ class ClayDaySelector extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.labelSm.copyWith(
-                      color: isActive ? AppColors.primaryFixed : AppColors.primary,
+                      color: isActive
+                          ? AppColors.primaryFixed
+                          : AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),

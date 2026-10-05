@@ -9,7 +9,8 @@ class _Swatch extends StatelessWidget {
   const _Swatch();
 
   @override
-  Widget build(BuildContext context) => ColoredBox(key: const Key('swatch'), color: AppColors.background);
+  Widget build(BuildContext context) =>
+      ColoredBox(key: const Key('swatch'), color: AppColors.background);
 }
 
 /// Holds one widget instance across its own rebuilds, like the tabs in the
@@ -33,7 +34,9 @@ void main() {
     await ThemeController().setMode(AppThemeMode.light);
   });
 
-  testWidgets('a theme change repaints widgets nothing else would rebuild', (tester) async {
+  testWidgets('a theme change repaints widgets nothing else would rebuild', (
+    tester,
+  ) async {
     await ThemeController().setMode(AppThemeMode.light);
     await tester.pumpWidget(
       ListenableBuilder(
@@ -41,13 +44,21 @@ void main() {
         builder: (context, _) => const MaterialApp(home: _Holder()),
       ),
     );
-    final before = tester.widget<ColoredBox>(find.byKey(const Key('swatch'))).color;
+    final before = tester
+        .widget<ColoredBox>(find.byKey(const Key('swatch')))
+        .color;
     expect(before, AppPalette.light.background);
 
     await ThemeController().setMode(AppThemeMode.dark);
     await tester.pump();
 
-    final after = tester.widget<ColoredBox>(find.byKey(const Key('swatch'))).color;
-    expect(after, AppPalette.dark.background, reason: 'the whole tree is marked dirty on a switch');
+    final after = tester
+        .widget<ColoredBox>(find.byKey(const Key('swatch')))
+        .color;
+    expect(
+      after,
+      AppPalette.dark.background,
+      reason: 'the whole tree is marked dirty on a switch',
+    );
   });
 }

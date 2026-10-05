@@ -48,6 +48,16 @@ class ShoppingReminderService {
   /// tab notifier simply holds the value until it is.
   void _openGroceries() => MainTabs.index.value = MainTabs.groceries;
 
+  /// On sign-out: the reminders were the signed-out account's.
+  Future<void> cancelAll() async {
+    try {
+      await initialize();
+      await _plugin.cancelAll();
+    } catch (e) {
+      debugPrint('Cancelling reminders failed: $e');
+    }
+  }
+
   /// Reschedules the whole reminder set. Called on app start and whenever the
   /// shopping day changes in settings.
   Future<void> scheduleForShoppingDay(

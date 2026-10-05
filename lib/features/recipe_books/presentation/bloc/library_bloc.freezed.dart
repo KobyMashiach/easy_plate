@@ -55,7 +55,7 @@ extension LibraryEventPatterns on LibraryEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _CreateBook value)?  createBook,TResult Function( _DeleteBook value)?  deleteBook,TResult Function( _SetCoverImage value)?  setCoverImage,TResult Function( _RenameBook value)?  renameBook,TResult Function( _SetSpine value)?  setSpine,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _CreateBook value)?  createBook,TResult Function( _DeleteBook value)?  deleteBook,TResult Function( _SetCoverImage value)?  setCoverImage,TResult Function( _RenameBook value)?  renameBook,TResult Function( _SetSpine value)?  setSpine,TResult Function( _BooksChanged value)?  booksChanged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -64,7 +64,8 @@ return createBook(_that);case _DeleteBook() when deleteBook != null:
 return deleteBook(_that);case _SetCoverImage() when setCoverImage != null:
 return setCoverImage(_that);case _RenameBook() when renameBook != null:
 return renameBook(_that);case _SetSpine() when setSpine != null:
-return setSpine(_that);case _:
+return setSpine(_that);case _BooksChanged() when booksChanged != null:
+return booksChanged(_that);case _:
   return orElse();
 
 }
@@ -82,7 +83,7 @@ return setSpine(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _CreateBook value)  createBook,required TResult Function( _DeleteBook value)  deleteBook,required TResult Function( _SetCoverImage value)  setCoverImage,required TResult Function( _RenameBook value)  renameBook,required TResult Function( _SetSpine value)  setSpine,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _CreateBook value)  createBook,required TResult Function( _DeleteBook value)  deleteBook,required TResult Function( _SetCoverImage value)  setCoverImage,required TResult Function( _RenameBook value)  renameBook,required TResult Function( _SetSpine value)  setSpine,required TResult Function( _BooksChanged value)  booksChanged,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -91,7 +92,8 @@ return createBook(_that);case _DeleteBook():
 return deleteBook(_that);case _SetCoverImage():
 return setCoverImage(_that);case _RenameBook():
 return renameBook(_that);case _SetSpine():
-return setSpine(_that);}
+return setSpine(_that);case _BooksChanged():
+return booksChanged(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -105,7 +107,7 @@ return setSpine(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _CreateBook value)?  createBook,TResult? Function( _DeleteBook value)?  deleteBook,TResult? Function( _SetCoverImage value)?  setCoverImage,TResult? Function( _RenameBook value)?  renameBook,TResult? Function( _SetSpine value)?  setSpine,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _CreateBook value)?  createBook,TResult? Function( _DeleteBook value)?  deleteBook,TResult? Function( _SetCoverImage value)?  setCoverImage,TResult? Function( _RenameBook value)?  renameBook,TResult? Function( _SetSpine value)?  setSpine,TResult? Function( _BooksChanged value)?  booksChanged,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -114,7 +116,8 @@ return createBook(_that);case _DeleteBook() when deleteBook != null:
 return deleteBook(_that);case _SetCoverImage() when setCoverImage != null:
 return setCoverImage(_that);case _RenameBook() when renameBook != null:
 return renameBook(_that);case _SetSpine() when setSpine != null:
-return setSpine(_that);case _:
+return setSpine(_that);case _BooksChanged() when booksChanged != null:
+return booksChanged(_that);case _:
   return null;
 
 }
@@ -131,7 +134,7 @@ return setSpine(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String title,  String? id,  BookSpine? spine)?  createBook,TResult Function( String id)?  deleteBook,TResult Function( String id,  String? fileName)?  setCoverImage,TResult Function( String id,  String title)?  renameBook,TResult Function( String id,  BookSpine spine)?  setSpine,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( String title,  String? id,  BookSpine? spine)?  createBook,TResult Function( String id)?  deleteBook,TResult Function( String id,  String? fileName)?  setCoverImage,TResult Function( String id,  String title)?  renameBook,TResult Function( String id,  BookSpine spine)?  setSpine,TResult Function( List<RecipeBookEntity> books)?  booksChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _CreateBook() when createBook != null:
@@ -139,7 +142,8 @@ return createBook(_that.title,_that.id,_that.spine);case _DeleteBook() when dele
 return deleteBook(_that.id);case _SetCoverImage() when setCoverImage != null:
 return setCoverImage(_that.id,_that.fileName);case _RenameBook() when renameBook != null:
 return renameBook(_that.id,_that.title);case _SetSpine() when setSpine != null:
-return setSpine(_that.id,_that.spine);case _:
+return setSpine(_that.id,_that.spine);case _BooksChanged() when booksChanged != null:
+return booksChanged(_that.books);case _:
   return orElse();
 
 }
@@ -157,7 +161,7 @@ return setSpine(_that.id,_that.spine);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String title,  String? id,  BookSpine? spine)  createBook,required TResult Function( String id)  deleteBook,required TResult Function( String id,  String? fileName)  setCoverImage,required TResult Function( String id,  String title)  renameBook,required TResult Function( String id,  BookSpine spine)  setSpine,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( String title,  String? id,  BookSpine? spine)  createBook,required TResult Function( String id)  deleteBook,required TResult Function( String id,  String? fileName)  setCoverImage,required TResult Function( String id,  String title)  renameBook,required TResult Function( String id,  BookSpine spine)  setSpine,required TResult Function( List<RecipeBookEntity> books)  booksChanged,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _CreateBook():
@@ -165,7 +169,8 @@ return createBook(_that.title,_that.id,_that.spine);case _DeleteBook():
 return deleteBook(_that.id);case _SetCoverImage():
 return setCoverImage(_that.id,_that.fileName);case _RenameBook():
 return renameBook(_that.id,_that.title);case _SetSpine():
-return setSpine(_that.id,_that.spine);}
+return setSpine(_that.id,_that.spine);case _BooksChanged():
+return booksChanged(_that.books);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -179,7 +184,7 @@ return setSpine(_that.id,_that.spine);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String title,  String? id,  BookSpine? spine)?  createBook,TResult? Function( String id)?  deleteBook,TResult? Function( String id,  String? fileName)?  setCoverImage,TResult? Function( String id,  String title)?  renameBook,TResult? Function( String id,  BookSpine spine)?  setSpine,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( String title,  String? id,  BookSpine? spine)?  createBook,TResult? Function( String id)?  deleteBook,TResult? Function( String id,  String? fileName)?  setCoverImage,TResult? Function( String id,  String title)?  renameBook,TResult? Function( String id,  BookSpine spine)?  setSpine,TResult? Function( List<RecipeBookEntity> books)?  booksChanged,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _CreateBook() when createBook != null:
@@ -187,7 +192,8 @@ return createBook(_that.title,_that.id,_that.spine);case _DeleteBook() when dele
 return deleteBook(_that.id);case _SetCoverImage() when setCoverImage != null:
 return setCoverImage(_that.id,_that.fileName);case _RenameBook() when renameBook != null:
 return renameBook(_that.id,_that.title);case _SetSpine() when setSpine != null:
-return setSpine(_that.id,_that.spine);case _:
+return setSpine(_that.id,_that.spine);case _BooksChanged() when booksChanged != null:
+return booksChanged(_that.books);case _:
   return null;
 
 }
@@ -561,6 +567,78 @@ class __$SetSpineCopyWithImpl<$Res>
 null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,null == spine ? _self.spine : spine // ignore: cast_nullable_to_non_nullable
 as BookSpine,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _BooksChanged implements LibraryEvent {
+  const _BooksChanged(final  List<RecipeBookEntity> books): _books = books;
+  
+
+ final  List<RecipeBookEntity> _books;
+ List<RecipeBookEntity> get books {
+  if (_books is EqualUnmodifiableListView) return _books;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_books);
+}
+
+
+/// Create a copy of LibraryEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BooksChangedCopyWith<_BooksChanged> get copyWith => __$BooksChangedCopyWithImpl<_BooksChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BooksChanged&&const DeepCollectionEquality().equals(other._books, _books));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_books));
+
+@override
+String toString() {
+  return 'LibraryEvent.booksChanged(books: $books)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BooksChangedCopyWith<$Res> implements $LibraryEventCopyWith<$Res> {
+  factory _$BooksChangedCopyWith(_BooksChanged value, $Res Function(_BooksChanged) _then) = __$BooksChangedCopyWithImpl;
+@useResult
+$Res call({
+ List<RecipeBookEntity> books
+});
+
+
+
+
+}
+/// @nodoc
+class __$BooksChangedCopyWithImpl<$Res>
+    implements _$BooksChangedCopyWith<$Res> {
+  __$BooksChangedCopyWithImpl(this._self, this._then);
+
+  final _BooksChanged _self;
+  final $Res Function(_BooksChanged) _then;
+
+/// Create a copy of LibraryEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? books = null,}) {
+  return _then(_BooksChanged(
+null == books ? _self._books : books // ignore: cast_nullable_to_non_nullable
+as List<RecipeBookEntity>,
   ));
 }
 

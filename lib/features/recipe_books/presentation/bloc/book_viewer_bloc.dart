@@ -23,15 +23,19 @@ sealed class BookViewerEvent with _$BookViewerEvent {
   const factory BookViewerEvent.init(String bookId) = _Init;
   const factory BookViewerEvent.addRecipe(String recipeId) = _AddRecipe;
   const factory BookViewerEvent.removeRecipe(String recipeId) = _RemoveRecipe;
-  const factory BookViewerEvent.reorderRecipes(int oldIndex, int newIndex) = _ReorderRecipes;
-  const factory BookViewerEvent.setCoverImage(String? fileName) = _SetCoverImage;
+  const factory BookViewerEvent.reorderRecipes(int oldIndex, int newIndex) =
+      _ReorderRecipes;
+  const factory BookViewerEvent.setCoverImage(String? fileName) =
+      _SetCoverImage;
 }
 
 @freezed
 sealed class BookViewerState with _$BookViewerState {
   const factory BookViewerState.loading() = BookViewerLoading;
-  const factory BookViewerState.loaded(RecipeBookEntity book, List<RecipeEntity> recipes) =
-      BookViewerLoaded;
+  const factory BookViewerState.loaded(
+    RecipeBookEntity book,
+    List<RecipeEntity> recipes,
+  ) = BookViewerLoaded;
   const factory BookViewerState.notFound() = BookViewerNotFound;
 }
 
@@ -59,7 +63,9 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
 
   factory BookViewerBloc.fromContext(BuildContext context) {
     return BookViewerBloc(
-      getBookByIdUseCase: GetBookByIdUseCase(context.read<RecipeBooksRepository>()),
+      getBookByIdUseCase: GetBookByIdUseCase(
+        context.read<RecipeBooksRepository>(),
+      ),
       saveBookUseCase: SaveBookUseCase(context.read<RecipeBooksRepository>()),
       recipesRepository: context.read(),
       sharing: context.read(),
@@ -69,10 +75,15 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
   Future<void> _saveAndPublish(RecipeBookEntity book) async {
     await saveBookUseCase(book);
     final uid = UserScope().uid;
-    if (book.isShared && uid != null) await sharing?.books.publish(book, uid: uid);
+    if (book.isShared && uid != null) {
+      await sharing?.books.publish(book, uid: uid);
+    }
   }
 
-  Future<void> _loadAndEmit(RecipeBookEntity book, Emitter<BookViewerState> emit) async {
+  Future<void> _loadAndEmit(
+    RecipeBookEntity book,
+    Emitter<BookViewerState> emit,
+  ) async {
     final recipes = <RecipeEntity>[];
     for (final ref in book.orderedRefs) {
       final recipe = await recipesRepository.getRecipeById(ref.recipeId);
@@ -101,11 +112,16 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
     await _loadAndEmit(book, emit);
   }
 
-  Future<void> _addRecipe(_AddRecipe event, Emitter<BookViewerState> emit) async {
+  Future<void> _addRecipe(
+    _AddRecipe event,
+    Emitter<BookViewerState> emit,
+  ) async {
     final current = state;
     if (current is! BookViewerLoaded) return;
     if (!current.book.canEdit) return;
-    if (current.book.recipeRefs.any((r) => r.recipeId == event.recipeId)) return;
+    if (current.book.recipeRefs.any((r) => r.recipeId == event.recipeId)) {
+      return;
+    }
     final nextOrder = current.book.recipeRefs.length;
     final updatedBook = current.book.copyWith(
       recipeRefs: [
@@ -120,7 +136,10 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
   /// Moves the recipe at [_ReorderRecipes.oldIndex] to
   /// [_ReorderRecipes.newIndex] and renumbers the whole list, so `order` stays
   /// a dense 0..n-1 sequence rather than drifting into gaps.
-  Future<void> _reorderRecipes(_ReorderRecipes event, Emitter<BookViewerState> emit) async {
+  Future<void> _reorderRecipes(
+    _ReorderRecipes event,
+    Emitter<BookViewerState> emit,
+  ) async {
     final current = state;
     if (current is! BookViewerLoaded) return;
 
@@ -144,7 +163,10 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
 
   /// Replacing or clearing the cover deletes the previous file so removed
   /// photos don't pile up in the app's image directory.
-  Future<void> _setCoverImage(_SetCoverImage event, Emitter<BookViewerState> emit) async {
+  Future<void> _setCoverImage(
+    _SetCoverImage event,
+    Emitter<BookViewerState> emit,
+  ) async {
     final current = state;
     if (current is! BookViewerLoaded) return;
 
@@ -162,7 +184,9 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
       await ImageStorageService().delete(previous);
       // A shared book's members still point at the uploaded cover; it stays.
       if (!current.book.isShared) {
-        unawaited(RecipeImageStore().remove(previousRemote, uid: UserScope().uid));
+        unawaited(
+          RecipeImageStore().remove(previousRemote, uid: UserScope().uid),
+        );
       }
     }
     final uid = UserScope().uid;
@@ -175,11 +199,16 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
     await _loadAndEmit(updatedBook, emit);
   }
 
-  Future<void> _removeRecipe(_RemoveRecipe event, Emitter<BookViewerState> emit) async {
+  Future<void> _removeRecipe(
+    _RemoveRecipe event,
+    Emitter<BookViewerState> emit,
+  ) async {
     final current = state;
     if (current is! BookViewerLoaded || !current.book.canEdit) return;
     final updatedBook = current.book.copyWith(
-      recipeRefs: current.book.recipeRefs.where((r) => r.recipeId != event.recipeId).toList(),
+      recipeRefs: current.book.recipeRefs
+          .where((r) => r.recipeId != event.recipeId)
+          .toList(),
     );
     await _saveAndPublish(updatedBook);
     await _loadAndEmit(updatedBook, emit);

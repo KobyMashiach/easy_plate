@@ -8,6 +8,8 @@ class StartPhoneVerificationUseCase {
   Future<String> call(
     String phoneNumber, {
     void Function(AppUserEntity user)? autoResolved,
-  }) =>
-      repository.startPhoneVerification(phoneNumber, autoResolved: autoResolved);
+  }) => repository.startPhoneVerification(
+    phoneNumber,
+    autoResolved: autoResolved,
+  );
 }

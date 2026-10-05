@@ -87,7 +87,12 @@
     "appleAlreadyUsed": "חשבון Apple הזה כבר משויך למשתמש אחר",
     "appleAlreadyLinked": "כבר מקושר חשבון Apple",
     "blockedTitle": "החשבון נחסם",
-    "blockedBody": "החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה."
+    "blockedBody": "החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.",
+    "phoneClaimedTitle": "המספר הזה שייך לחשבון קיים",
+    "phoneClaimedBody": "המספר $phone כבר מחובר לחשבון EasyPlate אחר. כדי להגיע לחשבון הזה ולמתכונים שלו, היכנסו כמו שנכנסתם אליו עד עכשיו (Google, ‏Apple או מייל), ואמתו שם את המספר מחדש.",
+    "phoneClaimedSignIn": "כניסה לחשבון הקיים שלי",
+    "phoneClaimedCreateNew": "יצירת חשבון חדש בכל זאת",
+    "phoneClaimedCreateNewConfirm": "ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה."
   },
   "profile": {
     "setupTitle": "כמה פרטים אחרונים",
@@ -166,7 +171,46 @@
     "reminderTwoDaysBefore": "יומיים לפני (ערב)",
     "reminderDayBefore": "יום לפני (ערב)",
     "reminderSameDayMorning": "ביום הקניות (בוקר)",
-    "reminderSameDayAfternoon": "ביום הקניות (אחה״צ)"
+    "reminderSameDayAfternoon": "ביום הקניות (אחה״צ)",
+    "translatingContent": "מתרגם את המתכונים והתפריטים שלך...",
+    "translatedContent": "$count פריטים תורגמו",
+    "translationPartialTitle": "התרגום לא הושלם",
+    "translationPartial": "$count פריטים נשארו בשפת המקור. אפשר לנסות שוב מאוחר יותר.",
+    "translationFailed": "התרגום נכשל. התוכן נשאר בשפת המקור.",
+    "account": "חשבון",
+    "notifications": "התראות",
+    "notificationsHint": "אילו התראות מגיעות אליך, ואיך",
+    "settingsHint": "חשבון, התראות, שפה ומראה"
+  },
+  "notificationSettings": {
+    "title": "הגדרות התראות",
+    "push": "התראות דחיפה",
+    "pushHint": "התראות במכשיר הזה. בכיבוי, שום דבר לא נשלח לטלפון; תיבת ההתראות ממשיכה להתמלא.",
+    "pushDenied": "ההתראות של EasyPlate חסומות בהגדרות המכשיר. כדי לקבל התראות, יש לאפשר אותן שם.",
+    "community": "קהילה",
+    "repliesOnMyPosts": "תגובות לפוסטים שלי",
+    "repliesOnMyPostsHint": "מישהו ענה בדיון שפתחת",
+    "repliesOnThreads": "תגובות בדיונים שהשתתפתי בהם",
+    "repliesOnThreadsHint": "תגובה חדשה בדיון שהגבת בו",
+    "sharing": "שיתוף",
+    "shareInvites": "הזמנות לשיתוף",
+    "shareInvitesHint": "מישהו שיתף איתך מתכון, ספר או תפריט. ההזמנה תמיד מגיעה לתיבה; כאן נקבע רק אם תישלח התראה.",
+    "sharedRecipeUpdates": "עדכונים למתכונים ששמרתי",
+    "sharedRecipeUpdatesHint": "הכותב/ת שינה/תה מתכון מהקהילה ששמרת",
+    "easyPlate": "מ-EasyPlate",
+    "adminReplies": "תשובות לפניות שלי לתמיכה",
+    "announcements": "הודעות מהצוות",
+    "announcementsHint": "חדשות ועדכונים מצוות EasyPlate",
+    "inApp": "כשהאפליקציה פתוחה",
+    "foregroundPopups": "הצגת התראות כחלונית",
+    "foregroundPopupsHint": "התראה שמגיעה בזמן שהאפליקציה פתוחה נפתחת בכרטיס קטן. בכיבוי, היא מגיעה רק לתיבת ההתראות.",
+    "reminders": "תזכורות קניות"
+  },
+  "preferences": {
+    "title": "העדפות",
+    "hint": "קניות, העדפות תזונתיות והתנהגות הספרים",
+    "shopping": "קניות",
+    "books": "ספרי מתכונים"
   },
   "more": {
     "title": "עוד",
@@ -177,7 +221,8 @@
     "supportBody": "כתבו לנו ונחזור אליכם בהקדם.",
     "whatsapp": "שליחת הודעה בוואטסאפ",
     "email": "שליחת מייל",
-    "supportUnavailable": "לא הצלחנו לפתוח את האפליקציה"
+    "supportUnavailable": "לא הצלחנו לפתוח את האפליקציה",
+    "preferences": "העדפות"
   },
   "language": {
     "hebrew": "עברית",
@@ -335,7 +380,10 @@
     "alreadySaved": "המתכון כבר שמור אצלכם",
     "savedTag": "שמור אצלכם",
     "removeSaved": "הסרה מהמתכונים ששמרתי",
-    "removeSavedConfirm": "המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה."
+    "removeSavedConfirm": "המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.",
+    "oneNewPost": "פוסט חדש אחד",
+    "newPosts": "$count פוסטים חדשים",
+    "replyFailed": "לא הצלחנו לשלוח את התגובה"
   },
   "sharing": {
     "title": "שיתוף מתכון",
@@ -412,7 +460,12 @@
     "sharedPlan": "$name שיתף/ה איתך את התפריט \"$recipe\"",
     "adminReply": "תשובה מצוות EasyPlate לפנייה שלך",
     "adminReplyQuote": "הפנייה שלך: \"$excerpt\"",
-    "adminMessage": "הודעה מ-EasyPlate"
+    "adminMessage": "הודעה מ-EasyPlate",
+    "forumReplyOnMyPost": "$name הגיב/ה לפוסט שלך \"$post\"",
+    "forumReplyOnThread": "$name הגיב/ה בדיון \"$post\"",
+    "openThread": "פתיחת הדיון",
+    "threadGone": "הדיון הזה נמחק",
+    "settings": "הגדרות"
   },
   "editor": {
     "title": "עריכת מתכון",
@@ -546,7 +599,40 @@
     "allPlansHint": "הרשימה מרוכזת מכל התפריטים",
     "selectPlansTitle": "אילו תפריטים ייכנסו לרשימה?",
     "applySelection": "עדכון הרשימה",
-    "selectAllPlans": "כל התפריטים"
+    "selectAllPlans": "כל התפריטים",
+    "myLists": "הרשימות שלי",
+    "listsCount": "$count רשימות",
+    "oneList": "רשימה אחת",
+    "newList": "רשימה חדשה",
+    "newListTitle": "רשימת קניות חדשה",
+    "listName": "שם הרשימה",
+    "defaultListName": "רשימת קניות",
+    "fromPlans": "מהתפריטים",
+    "fromPlansHint": "מרכזת את המתכונים שבתפריטים שלך",
+    "fromRecipe": "ממתכון",
+    "fromRecipeHint": "המצרכים של מתכון אחד",
+    "emptyList": "רשימה ריקה",
+    "emptyListHint": "מוסיפים את הפריטים ידנית",
+    "sourcePlans": "מהתפריטים",
+    "sourceRecipe": "מהמתכון \"$title\"",
+    "sourceManual": "רשימה ידנית",
+    "renameList": "שינוי שם הרשימה",
+    "deleteList": "מחיקת הרשימה",
+    "deleteListConfirm": "\"$name\" וכל הפריטים שבה יימחקו.",
+    "progress": "$checked/$total",
+    "servings": "מנות",
+    "timesOver": "כמות",
+    "scaleValue": "×$value",
+    "rebuildFromRecipe": "בנייה מחדש מהמתכון",
+    "createFromRecipe": "יצירת רשימת קניות",
+    "createList": "יצירת הרשימה",
+    "recipeListTitle": "רשימת קניות ממתכון",
+    "recipeListHint": "המצרכים של המתכון, לפי הכמות שמכינים",
+    "listCreated": "הרשימה \"$name\" נוצרה",
+    "openList": "פתיחת הרשימה",
+    "stayHere": "להישאר כאן",
+    "noIngredients": "אין במתכון הזה מצרכים לקנות",
+    "addFirstItem": "הוספת פריט"
   },
   "receipt": {
     "title": "סריקת קבלה",

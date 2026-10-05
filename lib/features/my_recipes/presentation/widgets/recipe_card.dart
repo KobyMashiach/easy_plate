@@ -42,7 +42,8 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalMinutes = (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
+    final totalMinutes =
+        (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
     final calories = recipe.nutrition?.calories;
 
     return SizedBox(
@@ -85,7 +86,9 @@ class RecipeCard extends StatelessWidget {
                       child: _Badge(
                         icon: Icons.timer_rounded,
                         label: durationLabel(totalMinutes),
-                        color: AppColors.surfaceContainerLowest.withValues(alpha: 0.9),
+                        color: AppColors.surfaceContainerLowest.withValues(
+                          alpha: 0.9,
+                        ),
                         foreground: AppColors.onSurface,
                       ),
                     ),
@@ -97,9 +100,14 @@ class RecipeCard extends StatelessWidget {
                         tooltip: t.community.removeSaved,
                         visualDensity: VisualDensity.compact,
                         style: IconButton.styleFrom(
-                          backgroundColor: AppColors.surfaceContainerLowest.withValues(alpha: 0.9),
+                          backgroundColor: AppColors.surfaceContainerLowest
+                              .withValues(alpha: 0.9),
                         ),
-                        icon: Icon(Icons.bookmark_remove_rounded, size: 18, color: AppColors.error),
+                        icon: Icon(
+                          Icons.bookmark_remove_rounded,
+                          size: 18,
+                          color: AppColors.error,
+                        ),
                         onPressed: remove,
                       ),
                     ),
@@ -142,41 +150,49 @@ class _MetaRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final chips = <Widget>[];
     if (recipe.pendingAnalysis) {
-      chips.add(ClayTag(
-        label: t.recipe.pendingAnalysis,
-        icon: Icons.hourglass_top_rounded,
-        background: AppColors.secondaryContainer,
-        foreground: AppColors.onSecondaryContainer,
-      ));
+      chips.add(
+        ClayTag(
+          label: t.recipe.pendingAnalysis,
+          icon: Icons.hourglass_top_rounded,
+          background: AppColors.secondaryContainer,
+          foreground: AppColors.onSecondaryContainer,
+        ),
+      );
     } else if (recipe.collabRole case final role?) {
-      chips.add(ClayTag(
-        label: switch (role) {
-          CollabRole.owner => t.sharing.ownerTag,
-          CollabRole.editor => t.sharing.editorTag,
-          CollabRole.viewer => t.sharing.viewerTag,
-        },
-        icon: Icons.group_rounded,
-        background: AppColors.secondaryContainer,
-        foreground: AppColors.onSecondaryContainer,
-      ));
+      chips.add(
+        ClayTag(
+          label: switch (role) {
+            CollabRole.owner => t.sharing.ownerTag,
+            CollabRole.editor => t.sharing.editorTag,
+            CollabRole.viewer => t.sharing.viewerTag,
+          },
+          icon: Icons.group_rounded,
+          background: AppColors.secondaryContainer,
+          foreground: AppColors.onSecondaryContainer,
+        ),
+      );
     }
     for (final tag in recipe.dietaryTags) {
       if (chips.length >= 2) break;
       final (background, foreground) = dietaryColors(tag);
-      chips.add(ClayTag(
-        label: dietaryLabel(tag),
-        icon: dietaryIcon(tag),
-        background: background,
-        foreground: foreground,
-      ));
+      chips.add(
+        ClayTag(
+          label: dietaryLabel(tag),
+          icon: dietaryIcon(tag),
+          background: background,
+          foreground: foreground,
+        ),
+      );
     }
     if (chips.isEmpty) {
-      chips.add(ClayTag(
-        label: t.recipe.ingredientsCount(count: recipe.ingredients.length),
-        icon: Icons.list_alt_rounded,
-        background: AppColors.surfaceContainerLow,
-        foreground: AppColors.tertiary,
-      ));
+      chips.add(
+        ClayTag(
+          label: t.recipe.ingredientsCount(count: recipe.ingredients.length),
+          icon: Icons.list_alt_rounded,
+          background: AppColors.surfaceContainerLow,
+          foreground: AppColors.tertiary,
+        ),
+      );
     }
     // Clipped rather than wrapped: the card's height is fixed, and a second
     // row of chips would push the title out.
@@ -214,7 +230,10 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.base, vertical: AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.base,
+        vertical: AppSpacing.xs,
+      ),
       decoration: ShapeDecoration(color: color, shape: const StadiumBorder()),
       child: Row(
         mainAxisSize: MainAxisSize.min,

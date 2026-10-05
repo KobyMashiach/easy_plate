@@ -25,6 +25,14 @@ class RecipeBookEntity {
   final CollabRole? collabRole;
   final DateTime createdAt;
 
+  /// The language this record's text is written in, as an [AppLanguage]
+  /// name. Null for records saved before translation existed.
+  final String? contentLang;
+
+  /// Bumped when the text is edited; see the model's field of the same
+  /// name. A translation made from this version stays good until it moves.
+  final int contentVersion;
+
   const RecipeBookEntity({
     required this.id,
     required this.title,
@@ -36,6 +44,8 @@ class RecipeBookEntity {
     this.spine,
     this.collabId,
     this.collabRole,
+    this.contentLang,
+    this.contentVersion = 0,
   });
 
   bool get isShared => collabId != null;
@@ -44,7 +54,8 @@ class RecipeBookEntity {
   /// Only the owner may share a book on; a member cannot hand it further.
   bool get isMine => collabRole == null || collabRole == CollabRole.owner;
 
-  List<BookRecipeRefEntity> get orderedRefs => [...recipeRefs]..sort((a, b) => a.order.compareTo(b.order));
+  List<BookRecipeRefEntity> get orderedRefs =>
+      [...recipeRefs]..sort((a, b) => a.order.compareTo(b.order));
 
   RecipeBookEntity copyWith({
     String? title,
@@ -59,23 +70,30 @@ class RecipeBookEntity {
     CollabRole? collabRole,
     // Both are null for "unchanged", so dropping the share needs a flag.
     bool clearCollab = false,
+    String? contentLang,
+    int? contentVersion,
   }) {
     return RecipeBookEntity(
       id: id,
       title: title ?? this.title,
       recipeRefs: recipeRefs ?? this.recipeRefs,
       collaborators: collaborators ?? this.collaborators,
-      coverImageFileName:
-          removeCoverImage ? null : (coverImageFileName ?? this.coverImageFileName),
+      coverImageFileName: removeCoverImage
+          ? null
+          : (coverImageFileName ?? this.coverImageFileName),
       // A replaced cover invalidates the uploaded one, as with a recipe photo.
       coverImageStoragePath: removeCoverImage
           ? null
           : (coverImageStoragePath ??
-              (coverImageFileName != null ? null : this.coverImageStoragePath)),
+                (coverImageFileName != null
+                    ? null
+                    : this.coverImageStoragePath)),
       spine: spine ?? this.spine,
       collabId: clearCollab ? null : (collabId ?? this.collabId),
       collabRole: clearCollab ? null : (collabRole ?? this.collabRole),
       createdAt: createdAt,
+      contentLang: contentLang ?? this.contentLang,
+      contentVersion: contentVersion ?? this.contentVersion,
     );
   }
 }

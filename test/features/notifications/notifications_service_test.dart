@@ -27,7 +27,8 @@ class _FakeNotifications implements NotificationsRepository {
   Future<void> markAllRead(String uid) async {}
 }
 
-AppNotificationEntity item(String id, {bool read = false}) => AppNotificationEntity(
+AppNotificationEntity item(String id, {bool read = false}) =>
+    AppNotificationEntity(
       id: id,
       type: AppNotificationType.shareInvite,
       fromUid: 'dana',
@@ -61,15 +62,18 @@ void main() {
     expect(repository.watches, 1);
   });
 
-  test('signing out clears everything, so the next account sees nothing stale', () async {
-    service.bind('me', repository);
-    repository.controller.add([item('a')]);
-    await Future<void>.delayed(Duration.zero);
-    expect(service.unreadCount.value, 1);
+  test(
+    'signing out clears everything, so the next account sees nothing stale',
+    () async {
+      service.bind('me', repository);
+      repository.controller.add([item('a')]);
+      await Future<void>.delayed(Duration.zero);
+      expect(service.unreadCount.value, 1);
 
-    service.unbind();
-    expect(service.unreadCount.value, 0);
-    expect(service.items.value, isEmpty);
-    expect(service.uid, isNull);
-  });
+      service.unbind();
+      expect(service.unreadCount.value, 0);
+      expect(service.items.value, isEmpty);
+      expect(service.uid, isNull);
+    },
+  );
 }

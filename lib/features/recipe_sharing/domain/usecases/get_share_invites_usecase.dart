@@ -5,6 +5,8 @@ class GetShareInvitesUseCase {
   final RecipeSharingRepository repository;
   GetShareInvitesUseCase(this.repository);
 
-  Future<List<ShareInviteEntity>> incoming(String uid) => repository.incomingInvites(uid);
-  Future<List<ShareInviteEntity>> outgoing(String uid) => repository.outgoingInvites(uid);
+  Future<List<ShareInviteEntity>> incoming(String uid) =>
+      repository.incomingInvites(uid);
+  Future<List<ShareInviteEntity>> outgoing(String uid) =>
+      repository.outgoingInvites(uid);
 }

@@ -31,9 +31,13 @@ class BouncyCheckbox extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: value ? AppColors.secondaryContainer : AppColors.surfaceContainerLowest,
+            color: value
+                ? AppColors.secondaryContainer
+                : AppColors.surfaceContainerLowest,
             border: Border.all(
-              color: value ? AppColors.secondaryContainer : AppColors.outlineVariant,
+              color: value
+                  ? AppColors.secondaryContainer
+                  : AppColors.outlineVariant,
               width: 2,
             ),
           ),

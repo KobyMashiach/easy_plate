@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/features/price_book/domain/entities/receipt_scan_entity.dart';
-import 'package:easy_plate/features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart' show ReceiptPage;
+import 'package:easy_plate/features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart'
+    show ReceiptPage;
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import 'package:easy_plate/features/my_recipes/presentation/pages/recipe_editor_page.dart';
@@ -28,10 +29,14 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
   @override
   Future<Uint8List> generateImage(String prompt) => throw UnimplementedError();
   @override
-  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) => throw UnimplementedError();
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) =>
+      throw UnimplementedError();
 
   @override
-  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) async {
+  Future<RecipeEntity> refineRecipe(
+    RecipeEntity recipe, {
+    required bool timesChanged,
+  }) async {
     refineCalls++;
     refined = recipe;
     refinedTimesChanged = timesChanged;
@@ -39,24 +44,34 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
   }
 
   @override
-  Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> preferences) =>
-      throw UnimplementedError();
+  Future<RecipeEntity> parseRawText(
+    String text,
+    List<DietaryPreference> preferences,
+  ) => throw UnimplementedError();
 
   @override
-  Future<List<WebSearchResultEntity>> searchWeb(String q, List<DietaryPreference> p) =>
-      throw UnimplementedError();
+  Future<List<WebSearchResultEntity>> searchWeb(
+    String q,
+    List<DietaryPreference> p,
+  ) => throw UnimplementedError();
 
   @override
-  Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences) =>
-      throw UnimplementedError();
+  Future<RecipeEntity> parseFromUrl(
+    String url,
+    List<DietaryPreference> preferences,
+  ) => throw UnimplementedError();
 
   @override
-  Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) =>
-      throw UnimplementedError();
+  Future<RecipeEntity> parseFromSocialVideo(
+    String url,
+    List<DietaryPreference> preferences,
+  ) => throw UnimplementedError();
 
   @override
-  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) =>
-      throw UnimplementedError();
+  Future<RecipeEntity> generateRecipe(
+    String request,
+    List<DietaryPreference> preferences,
+  ) => throw UnimplementedError();
 
   @override
   Future<OriginalRecipePageEntity> fetchOriginalPage(String url) =>
@@ -64,16 +79,20 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
 }
 
 RecipeEntity buildRecipe() => RecipeEntity(
-      id: 'r1',
-      title: 'שקשוקה',
-      prepTimeMinutes: 10,
-      cookTimeMinutes: 20,
-      ingredients: const [
-        RecipeIngredientEntity(name: 'עגבניות', amount: 400, unit: MeasurementUnit.gram),
-      ],
-      steps: const ['ערבוב עפ מלח פלפל', 'מבשלים 20 דקות'],
-      createdAt: DateTime(2026, 1, 1),
-    );
+  id: 'r1',
+  title: 'שקשוקה',
+  prepTimeMinutes: 10,
+  cookTimeMinutes: 20,
+  ingredients: const [
+    RecipeIngredientEntity(
+      name: 'עגבניות',
+      amount: 400,
+      unit: MeasurementUnit.gram,
+    ),
+  ],
+  steps: const ['ערבוב עפ מלח פלפל', 'מבשלים 20 דקות'],
+  createdAt: DateTime(2026, 1, 1),
+);
 
 // Field order in the editor: title, prep, cook, then each ingredient's amount
 // and name, then one field per step.
@@ -102,7 +121,9 @@ void main() {
               body: TextButton(
                 onPressed: () async {
                   popped = await Navigator.of(context).push<RecipeEntity>(
-                    MaterialPageRoute(builder: (_) => RecipeEditorPage(recipe: recipe)),
+                    MaterialPageRoute(
+                      builder: (_) => RecipeEditorPage(recipe: recipe),
+                    ),
                   );
                 },
                 child: const Text('open'),
@@ -163,7 +184,10 @@ void main() {
 
     // The editor is a lazy ListView; a tall viewport keeps every field built so
     // the indices above stay stable.
-    final view = TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher.views.first;
+    final view = TestWidgetsFlutterBinding.ensureInitialized()
+        .platformDispatcher
+        .views
+        .first;
     view.physicalSize = const Size(1200, 4000);
     view.devicePixelRatio = 1.0;
     addTearDown(() {
@@ -175,17 +199,24 @@ void main() {
   testWidgets('loads the recipe into the structured fields', (tester) async {
     await openEditor(tester, buildRecipe());
 
-    final fields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+    final fields = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
     expect(fields[_title].controller?.text, 'שקשוקה');
     expect(fields[_prep].controller?.text, '10');
     expect(fields[_cook].controller?.text, '20');
     expect(fields[_firstStep].controller?.text, 'ערבוב עפ מלח פלפל');
   });
 
-  testWidgets('edits the title and pops the recipe without calling the model', (tester) async {
+  testWidgets('edits the title and pops the recipe without calling the model', (
+    tester,
+  ) async {
     await openEditor(tester, buildRecipe());
 
-    await tester.enterText(find.byType(TextField).at(_title), 'שקשוקה ירושלמית');
+    await tester.enterText(
+      find.byType(TextField).at(_title),
+      'שקשוקה ירושלמית',
+    );
     await save(tester);
 
     expect(popped?.title, 'שקשוקה ירושלמית');
@@ -195,7 +226,9 @@ void main() {
     expect(repository.refineCalls, 0, reason: 'times unchanged, so no refine');
   });
 
-  testWidgets('an empty title blocks saving before the sheet even opens', (tester) async {
+  testWidgets('an empty title blocks saving before the sheet even opens', (
+    tester,
+  ) async {
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_title), '   ');
@@ -206,7 +239,9 @@ void main() {
     expect(find.byType(RecipeEditorPage), findsOneWidget);
   });
 
-  testWidgets('a plain save after a time change does not wait on the model', (tester) async {
+  testWidgets('a plain save after a time change does not wait on the model', (
+    tester,
+  ) async {
     // The whole point of the sheet: a quick edit must stay quick.
     await openEditor(tester, buildRecipe());
 
@@ -219,8 +254,11 @@ void main() {
     expect(popped?.steps.last, 'מבשלים 20 דקות');
   });
 
-  testWidgets('saving with AI after a time change re-syncs the steps', (tester) async {
-    repository.onRefine = (recipe) => recipe.copyWith(steps: ['ערבוב עם מלח פלפל', 'מבשלים 35 דקות']);
+  testWidgets('saving with AI after a time change re-syncs the steps', (
+    tester,
+  ) async {
+    repository.onRefine = (recipe) =>
+        recipe.copyWith(steps: ['ערבוב עם מלח פלפל', 'מבשלים 35 דקות']);
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_cook), '35');
@@ -232,7 +270,9 @@ void main() {
     expect(popped?.steps.last, 'מבשלים 35 דקות');
   });
 
-  testWidgets('clearing a time field stores null instead of the old value', (tester) async {
+  testWidgets('clearing a time field stores null instead of the old value', (
+    tester,
+  ) async {
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_prep), '');
@@ -242,32 +282,42 @@ void main() {
     expect(popped?.cookTimeMinutes, 20);
   });
 
-  testWidgets('the spellcheck action rewrites the fields in place', (tester) async {
-    repository.onRefine = (recipe) => recipe.copyWith(steps: ['ערבוב עם מלח פלפל', recipe.steps[1]]);
+  testWidgets('the spellcheck action rewrites the fields in place', (
+    tester,
+  ) async {
+    repository.onRefine = (recipe) =>
+        recipe.copyWith(steps: ['ערבוב עם מלח פלפל', recipe.steps[1]]);
     await openEditor(tester, buildRecipe());
 
     await tester.tap(find.byIcon(Icons.spellcheck_rounded));
     await tester.pumpAndSettle();
 
     expect(repository.refinedTimesChanged, isFalse);
-    final fields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+    final fields = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
     expect(fields[_firstStep].controller?.text, 'ערבוב עם מלח פלפל');
   });
 
-  testWidgets('a correction that changes nothing does not claim it fixed something',
-      (tester) async {
-    // onRefine left null: the model hands the text straight back.
-    await openEditor(tester, buildRecipe());
+  testWidgets(
+    'a correction that changes nothing does not claim it fixed something',
+    (tester) async {
+      // onRefine left null: the model hands the text straight back.
+      await openEditor(tester, buildRecipe());
 
-    await tester.tap(find.byIcon(Icons.spellcheck_rounded));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.spellcheck_rounded));
+      await tester.pumpAndSettle();
 
-    expect(find.text('לא נמצאו שגיאות כתיב'), findsOneWidget);
-    expect(find.text('המתכון תוקן'), findsNothing);
-  });
+      expect(find.text('לא נמצאו שגיאות כתיב'), findsOneWidget);
+      expect(find.text('המתכון תוקן'), findsNothing);
+    },
+  );
 
-  testWidgets('a real correction reports that it fixed something', (tester) async {
-    repository.onRefine = (recipe) => recipe.copyWith(steps: ['ערבוב עם מלח פלפל', recipe.steps[1]]);
+  testWidgets('a real correction reports that it fixed something', (
+    tester,
+  ) async {
+    repository.onRefine = (recipe) =>
+        recipe.copyWith(steps: ['ערבוב עם מלח פלפל', recipe.steps[1]]);
     await openEditor(tester, buildRecipe());
 
     await tester.tap(find.byIcon(Icons.spellcheck_rounded));
@@ -276,10 +326,13 @@ void main() {
     expect(find.text('המתכון תוקן'), findsOneWidget);
   });
 
-  testWidgets('a blank row does not shift the corrections onto it', (tester) async {
+  testWidgets('a blank row does not shift the corrections onto it', (
+    tester,
+  ) async {
     // Blanking the first step leaves one step to correct, so a correction that
     // walked all rows would land the result on the blank row instead.
-    repository.onRefine = (recipe) => recipe.copyWith(steps: ['מבשלים 30 דקות']);
+    repository.onRefine = (recipe) =>
+        recipe.copyWith(steps: ['מבשלים 30 דקות']);
     await openEditor(tester, buildRecipe());
 
     await tester.enterText(find.byType(TextField).at(_firstStep), '');
@@ -287,12 +340,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.refined?.steps, ['מבשלים 20 דקות']);
-    final fields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+    final fields = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
     expect(fields[_firstStep].controller?.text, isEmpty);
     expect(fields[_firstStep + 1].controller?.text, 'מבשלים 30 דקות');
   });
 
-  testWidgets('a refine failure leaves the edits intact and still saves', (tester) async {
+  testWidgets('a refine failure leaves the edits intact and still saves', (
+    tester,
+  ) async {
     repository.onRefine = (_) => throw Exception('offline');
     await openEditor(tester, buildRecipe());
 
@@ -322,7 +379,10 @@ void main() {
       title: 'שקשוקה',
       ingredients: const [],
       steps: const ['ערבוב'],
-      dietaryTags: const [DietaryPreference.dairy, DietaryPreference.vegetarian],
+      dietaryTags: const [
+        DietaryPreference.dairy,
+        DietaryPreference.vegetarian,
+      ],
       createdAt: DateTime(2026, 1, 1),
     );
     await openEditor(tester, tagged);
@@ -334,7 +394,9 @@ void main() {
     expect(popped?.dietaryTags, [DietaryPreference.vegetarian]);
   });
 
-  testWidgets('dragging a step by its handle reorders the saved recipe', (tester) async {
+  testWidgets('dragging a step by its handle reorders the saved recipe', (
+    tester,
+  ) async {
     await openEditor(tester, buildRecipe());
 
     await dragStep(tester, 0, 1);
@@ -343,11 +405,15 @@ void main() {
     expect(popped?.steps, ['מבשלים 20 דקות', 'ערבוב עפ מלח פלפל']);
   });
 
-  testWidgets('reordering carries the text with the step, not the position',
-      (tester) async {
+  testWidgets('reordering carries the text with the step, not the position', (
+    tester,
+  ) async {
     await openEditor(tester, buildRecipe());
 
-    await tester.enterText(find.byType(TextField).at(_firstStep), 'שלב ראשון ערוך');
+    await tester.enterText(
+      find.byType(TextField).at(_firstStep),
+      'שלב ראשון ערוך',
+    );
     await tester.pumpAndSettle();
 
     await dragStep(tester, 0, 1);
@@ -356,7 +422,9 @@ void main() {
     expect(popped?.steps.last, 'שלב ראשון ערוך');
   });
 
-  testWidgets('dropping a step removes it from the saved recipe', (tester) async {
+  testWidgets('dropping a step removes it from the saved recipe', (
+    tester,
+  ) async {
     await openEditor(tester, buildRecipe());
 
     await tester.tap(find.byIcon(Icons.remove_circle_outline_rounded).last);
@@ -373,26 +441,31 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('the allergy topic opens the allergen lists, and both are saved', (tester) async {
-      await openEditor(tester, buildRecipe());
+    testWidgets(
+      'the allergy topic opens the allergen lists, and both are saved',
+      (tester) async {
+        await openEditor(tester, buildRecipe());
 
-      // Nothing about allergens until the topic is on.
-      expect(find.text('סימון אלרגנים'), findsNothing);
+        // Nothing about allergens until the topic is on.
+        expect(find.text('סימון אלרגנים'), findsNothing);
 
-      await tapVisible(tester, find.text('אלרגיה'));
-      await tapVisible(tester, find.text('סימון אלרגנים'));
-      await tapVisible(tester, find.text('ביצים'));
-      await tapVisible(tester, find.text('עלול להכיל'));
-      // Two pickers are open now; the trace list is the lower one.
-      await tapVisible(tester, find.text('אגוזים').last);
-      await save(tester);
+        await tapVisible(tester, find.text('אלרגיה'));
+        await tapVisible(tester, find.text('סימון אלרגנים'));
+        await tapVisible(tester, find.text('ביצים'));
+        await tapVisible(tester, find.text('עלול להכיל'));
+        // Two pickers are open now; the trace list is the lower one.
+        await tapVisible(tester, find.text('אגוזים').last);
+        await save(tester);
 
-      expect(popped?.dietaryTags, contains(DietaryPreference.allergy));
-      expect(popped?.allergens, [Allergen.eggs]);
-      expect(popped?.mayContain, [Allergen.treeNuts]);
-    });
+        expect(popped?.dietaryTags, contains(DietaryPreference.allergy));
+        expect(popped?.allergens, [Allergen.eggs]);
+        expect(popped?.mayContain, [Allergen.treeNuts]);
+      },
+    );
 
-    testWidgets('a recipe that arrives with allergens shows them open', (tester) async {
+    testWidgets('a recipe that arrives with allergens shows them open', (
+      tester,
+    ) async {
       final tagged = RecipeEntity(
         id: 'r1',
         title: 'עוגה',
@@ -414,7 +487,9 @@ void main() {
       expect(popped?.mayContain, [Allergen.treeNuts]);
     });
 
-    testWidgets('dropping the allergy topic drops the allergens with it', (tester) async {
+    testWidgets('dropping the allergy topic drops the allergens with it', (
+      tester,
+    ) async {
       final tagged = RecipeEntity(
         id: 'r1',
         title: 'עוגה',

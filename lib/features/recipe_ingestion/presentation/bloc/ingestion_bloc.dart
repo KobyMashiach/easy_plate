@@ -26,7 +26,8 @@ part 'ingestion_bloc.freezed.dart';
 
 @freezed
 sealed class IngestionEvent with _$IngestionEvent {
-  const factory IngestionEvent.selectChannel(RecipeIngestionChannel channel) = _SelectChannel;
+  const factory IngestionEvent.selectChannel(RecipeIngestionChannel channel) =
+      _SelectChannel;
   const factory IngestionEvent.parseRawText(String text) = _ParseRawText;
   const factory IngestionEvent.searchWeb(String query) = _SearchWeb;
   const factory IngestionEvent.parseUrl(String url) = _ParseUrl;
@@ -35,12 +36,15 @@ sealed class IngestionEvent with _$IngestionEvent {
 
   /// Asks the model to write a recipe from a description of the dish.
   const factory IngestionEvent.generateRecipe(String request) = _GenerateRecipe;
-  const factory IngestionEvent.updateRecipe(RecipeEntity recipe) = _UpdateRecipe;
+  const factory IngestionEvent.updateRecipe(RecipeEntity recipe) =
+      _UpdateRecipe;
   const factory IngestionEvent.saveRecipe(RecipeEntity recipe) = _SaveRecipe;
 
   /// Saves the unanalysed text as a template, flagged for a later analysis.
-  const factory IngestionEvent.saveAsTemplate(String text, {String? sourceUrl}) =
-      _SaveAsTemplate;
+  const factory IngestionEvent.saveAsTemplate(
+    String text, {
+    String? sourceUrl,
+  }) = _SaveAsTemplate;
 
   /// Opens the review on a template so the user structures it by hand.
   const factory IngestionEvent.editManually(String text, {String? sourceUrl}) =
@@ -49,14 +53,18 @@ sealed class IngestionEvent with _$IngestionEvent {
 
 @freezed
 sealed class IngestionState with _$IngestionState {
-  const factory IngestionState.idle(RecipeIngestionChannel channel) = IngestionIdle;
-  const factory IngestionState.parsing(RecipeIngestionChannel channel) = IngestionParsing;
+  const factory IngestionState.idle(RecipeIngestionChannel channel) =
+      IngestionIdle;
+  const factory IngestionState.parsing(RecipeIngestionChannel channel) =
+      IngestionParsing;
   const factory IngestionState.searchResults(
     RecipeIngestionChannel channel,
     List<WebSearchResultEntity> results,
   ) = IngestionSearchResults;
-  const factory IngestionState.review(RecipeIngestionChannel channel, RecipeEntity recipe) =
-      IngestionReview;
+  const factory IngestionState.review(
+    RecipeIngestionChannel channel,
+    RecipeEntity recipe,
+  ) = IngestionReview;
 
   /// The page as written, for reading. No model was involved in reaching it.
   const factory IngestionState.original(
@@ -74,8 +82,10 @@ sealed class IngestionState with _$IngestionState {
     String? sourceUrl,
     required bool timedOut,
   }) = IngestionUnparsed;
-  const factory IngestionState.errorMessage(RecipeIngestionChannel channel, String error) =
-      IngestionError;
+  const factory IngestionState.errorMessage(
+    RecipeIngestionChannel channel,
+    String error,
+  ) = IngestionError;
 }
 
 class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
@@ -133,8 +143,12 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       parseRawTextUseCase: ParseRawTextUseCase(context.read()),
       searchWebRecipesUseCase: SearchWebRecipesUseCase(context.read()),
       parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(context.read()),
-      fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(context.read()),
-      parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(context.read()),
+      fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(
+        context.read(),
+      ),
+      parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(
+        context.read(),
+      ),
       generateRecipeUseCase: GenerateRecipeUseCase(context.read()),
       saveRecipeUseCase: SaveRecipeUseCase(context.read()),
       getUserPreferencesUseCase: GetUserPreferencesUseCase(context.read()),
@@ -144,7 +158,10 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   Future<List<DietaryPreference>> get _preferences async =>
       (await getUserPreferencesUseCase()).dietaryPreferences;
 
-  FutureOr<void> _selectChannel(_SelectChannel event, Emitter<IngestionState> emit) {
+  FutureOr<void> _selectChannel(
+    _SelectChannel event,
+    Emitter<IngestionState> emit,
+  ) {
     _channel = event.channel;
     emit(.idle(event.channel));
   }
@@ -160,15 +177,28 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   }) async {
     emit(.parsing(_channel));
     try {
-      final timeout = _channel == RecipeIngestionChannel.socialVideo ? socialTimeout : analysisTimeout;
+      final timeout = _channel == RecipeIngestionChannel.socialVideo
+          ? socialTimeout
+          : analysisTimeout;
       final recipe = await parse(await _preferences).timeout(timeout);
       emit(.review(_channel, recipe));
     } on TimeoutException {
       debugPrint('Ingestion timed out after $analysisTimeout');
-      await _offerText(emit, fallbackText, sourceUrl: sourceUrl, timedOut: true);
+      await _offerText(
+        emit,
+        fallbackText,
+        sourceUrl: sourceUrl,
+        timedOut: true,
+      );
     } catch (e) {
       debugPrint('Ingestion error: $e');
-      await _offerText(emit, fallbackText, sourceUrl: sourceUrl, timedOut: false, error: e);
+      await _offerText(
+        emit,
+        fallbackText,
+        sourceUrl: sourceUrl,
+        timedOut: false,
+        error: e,
+      );
     }
   }
 
@@ -211,23 +241,32 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   }
 
   RecipeEntity _template(String text, String? sourceUrl) => buildTemplateRecipe(
-        id: _uuid.v4(),
-        text: text,
-        channel: _channel,
-        untitled: t.ingestion.untitledRecipe,
-        sourceUrl: sourceUrl,
-      );
+    id: _uuid.v4(),
+    text: text,
+    channel: _channel,
+    untitled: t.ingestion.untitledRecipe,
+    sourceUrl: sourceUrl,
+  );
 
-  Future<void> _saveAsTemplate(_SaveAsTemplate event, Emitter<IngestionState> emit) async {
+  Future<void> _saveAsTemplate(
+    _SaveAsTemplate event,
+    Emitter<IngestionState> emit,
+  ) async {
     await saveRecipeUseCase(_template(event.text, event.sourceUrl));
     emit(const IngestionState.saved());
   }
 
-  FutureOr<void> _editManually(_EditManually event, Emitter<IngestionState> emit) {
+  FutureOr<void> _editManually(
+    _EditManually event,
+    Emitter<IngestionState> emit,
+  ) {
     emit(.review(_channel, _template(event.text, event.sourceUrl)));
   }
 
-  Future<void> _parseRawText(_ParseRawText event, Emitter<IngestionState> emit) {
+  Future<void> _parseRawText(
+    _ParseRawText event,
+    Emitter<IngestionState> emit,
+  ) {
     return _runParse(
       emit,
       (prefs) => parseRawTextUseCase(event.text, preferences: prefs),
@@ -252,20 +291,29 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
 
   /// Reuses the parsing spinner while the page loads — it is the same "hold
   /// on" from the user's side, just much shorter.
-  Future<void> _viewOriginal(_ViewOriginal event, Emitter<IngestionState> emit) async {
+  Future<void> _viewOriginal(
+    _ViewOriginal event,
+    Emitter<IngestionState> emit,
+  ) async {
     emit(.parsing(_channel));
     try {
-      emit(.original(_channel, await fetchOriginalRecipePageUseCase(event.url)));
+      emit(
+        .original(_channel, await fetchOriginalRecipePageUseCase(event.url)),
+      );
     } catch (e) {
       debugPrint('Original page error: $e');
       emit(.errorMessage(_channel, e.toString()));
     }
   }
 
-  Future<void> _parseSocialVideo(_ParseSocialVideo event, Emitter<IngestionState> emit) {
+  Future<void> _parseSocialVideo(
+    _ParseSocialVideo event,
+    Emitter<IngestionState> emit,
+  ) {
     return _runParse(
       emit,
-      (prefs) => parseRecipeFromSocialVideoUseCase(event.url, preferences: prefs),
+      (prefs) =>
+          parseRecipeFromSocialVideoUseCase(event.url, preferences: prefs),
       fallbackText: () => _pageText(event.url),
       sourceUrl: event.url,
     );
@@ -273,7 +321,10 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
 
   /// The request itself is the fallback: kept as a template it can be run
   /// again later from the details screen, the same as pasted text.
-  Future<void> _generateRecipe(_GenerateRecipe event, Emitter<IngestionState> emit) {
+  Future<void> _generateRecipe(
+    _GenerateRecipe event,
+    Emitter<IngestionState> emit,
+  ) {
     return _runParse(
       emit,
       (prefs) => generateRecipeUseCase(event.request, preferences: prefs),
@@ -281,10 +332,16 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     );
   }
 
-  Future<void> _searchWeb(_SearchWeb event, Emitter<IngestionState> emit) async {
+  Future<void> _searchWeb(
+    _SearchWeb event,
+    Emitter<IngestionState> emit,
+  ) async {
     emit(.parsing(_channel));
     try {
-      final results = await searchWebRecipesUseCase(event.query, preferences: await _preferences);
+      final results = await searchWebRecipesUseCase(
+        event.query,
+        preferences: await _preferences,
+      );
       emit(.searchResults(_channel, results));
     } catch (e) {
       debugPrint('Web search error: $e');
@@ -294,11 +351,17 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
 
   /// The editor hands back the whole recipe, so the review simply re-renders
   /// what came out of it — nothing is persisted until the user saves.
-  FutureOr<void> _updateRecipe(_UpdateRecipe event, Emitter<IngestionState> emit) {
+  FutureOr<void> _updateRecipe(
+    _UpdateRecipe event,
+    Emitter<IngestionState> emit,
+  ) {
     emit(.review(_channel, event.recipe));
   }
 
-  Future<void> _saveRecipe(_SaveRecipe event, Emitter<IngestionState> emit) async {
+  Future<void> _saveRecipe(
+    _SaveRecipe event,
+    Emitter<IngestionState> emit,
+  ) async {
     await saveRecipeUseCase(event.recipe);
     emit(const IngestionState.saved());
   }

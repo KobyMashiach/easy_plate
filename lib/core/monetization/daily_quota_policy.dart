@@ -77,7 +77,9 @@ abstract class DailyQuotaPolicy {
     required bool premium,
     QuotaLimits limits = QuotaLimits.defaults,
   }) {
-    if (usedToday >= limits.aiExtractionsFor(premium: premium)) return GateVerdict.blocked;
+    if (usedToday >= limits.aiExtractionsFor(premium: premium)) {
+      return GateVerdict.blocked;
+    }
     return premium ? GateVerdict.free : GateVerdict.rewarded;
   }
 
@@ -85,15 +87,18 @@ abstract class DailyQuotaPolicy {
       _clamp(limits.freeSharedViews - viewedToday);
 
   /// Rewarded openings left, counting only once the free ones are gone.
-  static int remainingRewardedSharedViews(int viewedToday, QuotaLimits limits) =>
-      _clamp(limits.totalSharedViews - _max(viewedToday, limits.freeSharedViews));
+  static int remainingRewardedSharedViews(
+    int viewedToday,
+    QuotaLimits limits,
+  ) => _clamp(
+    limits.totalSharedViews - _max(viewedToday, limits.freeSharedViews),
+  );
 
   static int remainingAiExtractions(
     int usedToday,
     QuotaLimits limits, {
     bool premium = false,
-  }) =>
-      _clamp(limits.aiExtractionsFor(premium: premium) - usedToday);
+  }) => _clamp(limits.aiExtractionsFor(premium: premium) - usedToday);
 
   static int _clamp(int n) => n < 0 ? 0 : n;
   static int _max(int a, int b) => a > b ? a : b;

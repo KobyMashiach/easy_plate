@@ -48,6 +48,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$allergens$ru allergens = _Translations$allergens$ru._(_root);
 	@override late final _Translations$weekday$ru weekday = _Translations$weekday$ru._(_root);
 	@override late final _Translations$settings$ru settings = _Translations$settings$ru._(_root);
+	@override late final _Translations$notificationSettings$ru notificationSettings = _Translations$notificationSettings$ru._(_root);
+	@override late final _Translations$preferences$ru preferences = _Translations$preferences$ru._(_root);
 	@override late final _Translations$more$ru more = _Translations$more$ru._(_root);
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
@@ -174,6 +176,11 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get appleAlreadyLinked => 'Аккаунт Apple уже привязан';
 	@override String get blockedTitle => 'Аккаунт заблокирован';
 	@override String get blockedBody => 'Этот аккаунт заблокирован администратором приложения. За подробностями напишите нам с экрана поддержки.';
+	@override String get phoneClaimedTitle => 'Этот номер принадлежит существующему аккаунту';
+	@override String phoneClaimedBody({required Object phone}) => 'Номер ${phone} уже связан с другим аккаунтом EasyPlate. Чтобы попасть в тот аккаунт и к его рецептам, войдите так же, как раньше (Google, Apple или почта), и подтвердите номер там заново.';
+	@override String get phoneClaimedSignIn => 'Войти в мой существующий аккаунт';
+	@override String get phoneClaimedCreateNew => 'Всё равно создать новый аккаунт';
+	@override String get phoneClaimedCreateNewConfirm => 'Для этого номера будет открыт новый пустой аккаунт. Существующий аккаунт останется как есть, но с этим номером в него больше не войти.';
 }
 
 // Path: profile
@@ -295,6 +302,59 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get reminderDayBefore => 'За день (вечером)';
 	@override String get reminderSameDayMorning => 'В день покупок (утром)';
 	@override String get reminderSameDayAfternoon => 'В день покупок (днём)';
+	@override String get translatingContent => 'Переводим ваши рецепты и меню…';
+	@override String translatedContent({required Object count}) => 'Переведено элементов: ${count}';
+	@override String get translationPartialTitle => 'Перевод не завершён';
+	@override String translationPartial({required Object count}) => '${count} элементов остались на своём языке. Попробуйте позже.';
+	@override String get translationFailed => 'Не удалось перевести. Содержимое осталось на своём языке.';
+	@override String get account => 'Аккаунт';
+	@override String get notifications => 'Уведомления';
+	@override String get notificationsHint => 'Какие оповещения вы получаете и как';
+	@override String get settingsHint => 'Аккаунт, уведомления, язык и оформление';
+}
+
+// Path: notificationSettings
+class _Translations$notificationSettings$ru extends Translations$notificationSettings$he {
+	_Translations$notificationSettings$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Настройки уведомлений';
+	@override String get push => 'Push-уведомления';
+	@override String get pushHint => 'Оповещения на этом устройстве. Если выключено, на телефон ничего не приходит; входящие продолжают пополняться.';
+	@override String get pushDenied => 'Уведомления EasyPlate заблокированы в настройках устройства. Разрешите их там, чтобы получать оповещения.';
+	@override String get community => 'Сообщество';
+	@override String get repliesOnMyPosts => 'Ответы на мои посты';
+	@override String get repliesOnMyPostsHint => 'Кто-то ответил в обсуждении, которое вы открыли';
+	@override String get repliesOnThreads => 'Ответы в обсуждениях, где я участвую';
+	@override String get repliesOnThreadsHint => 'Новый ответ в обсуждении, где вы отвечали';
+	@override String get sharing => 'Совместный доступ';
+	@override String get shareInvites => 'Приглашения';
+	@override String get shareInvitesHint => 'Кто-то поделился с вами рецептом, книгой или планом. Приглашение всегда приходит во входящие; здесь только оповещение.';
+	@override String get sharedRecipeUpdates => 'Обновления сохранённых рецептов';
+	@override String get sharedRecipeUpdatesHint => 'Автор изменил рецепт из сообщества, который вы сохранили';
+	@override String get easyPlate => 'От EasyPlate';
+	@override String get adminReplies => 'Ответы на мои обращения в поддержку';
+	@override String get announcements => 'Объявления';
+	@override String get announcementsHint => 'Новости и обновления от команды EasyPlate';
+	@override String get inApp => 'Когда приложение открыто';
+	@override String get foregroundPopups => 'Показывать оповещения всплывающей карточкой';
+	@override String get foregroundPopupsHint => 'Уведомление, пришедшее пока вы в приложении, открывает небольшую карточку. Если выключено, оно попадает только во входящие.';
+	@override String get reminders => 'Напоминания о покупках';
+}
+
+// Path: preferences
+class _Translations$preferences$ru extends Translations$preferences$he {
+	_Translations$preferences$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Предпочтения';
+	@override String get hint => 'Покупки, питание и поведение книг';
+	@override String get shopping => 'Покупки';
+	@override String get books => 'Книги рецептов';
 }
 
 // Path: more
@@ -313,6 +373,7 @@ class _Translations$more$ru extends Translations$more$he {
 	@override String get whatsapp => 'Написать в WhatsApp';
 	@override String get email => 'Отправить письмо';
 	@override String get supportUnavailable => 'Не удалось открыть приложение';
+	@override String get preferences => 'Предпочтения';
 }
 
 // Path: language
@@ -506,6 +567,9 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String get savedTag => 'Сохранено';
 	@override String get removeSaved => 'Убрать из сохранённых';
 	@override String get removeSavedConfirm => 'Рецепт будет убран из сохранённых. Его можно снова сохранить из сообщества.';
+	@override String get oneNewPost => '1 новый пост';
+	@override String newPosts({required Object count}) => 'Новых постов: ${count}';
+	@override String get replyFailed => 'Не удалось отправить ваш ответ';
 }
 
 // Path: sharing
@@ -597,6 +661,11 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String get adminReply => 'Ответ команды EasyPlate на ваше обращение';
 	@override String adminReplyQuote({required Object excerpt}) => 'Ваше обращение: "${excerpt}"';
 	@override String get adminMessage => 'Сообщение от EasyPlate';
+	@override String forumReplyOnMyPost({required Object name, required Object post}) => '${name} ответил(а) на ваш пост «${post}»';
+	@override String forumReplyOnThread({required Object name, required Object post}) => '${name} ответил(а) в «${post}»';
+	@override String get openThread => 'Открыть обсуждение';
+	@override String get threadGone => 'Это обсуждение удалено';
+	@override String get settings => 'Настройки';
 }
 
 // Path: editor
@@ -759,6 +828,39 @@ class _Translations$groceryList$ru extends Translations$groceryList$he {
 	@override String get selectPlansTitle => 'Какие меню входят в список?';
 	@override String get applySelection => 'Обновить список';
 	@override String get selectAllPlans => 'Все меню';
+	@override String get myLists => 'Мои списки';
+	@override String listsCount({required Object count}) => 'Списков: ${count}';
+	@override String get oneList => 'Один список';
+	@override String get newList => 'Новый список';
+	@override String get newListTitle => 'Новый список покупок';
+	@override String get listName => 'Название списка';
+	@override String get defaultListName => 'Список покупок';
+	@override String get fromPlans => 'Из меню';
+	@override String get fromPlansHint => 'Объединяет рецепты из ваших планов питания';
+	@override String get fromRecipe => 'Из рецепта';
+	@override String get fromRecipeHint => 'Ингредиенты одного рецепта';
+	@override String get emptyList => 'Пустой список';
+	@override String get emptyListHint => 'Вы добавляете товары вручную';
+	@override String get sourcePlans => 'Из меню';
+	@override String sourceRecipe({required Object title}) => 'Из рецепта «${title}»';
+	@override String get sourceManual => 'Ручной список';
+	@override String get renameList => 'Переименовать список';
+	@override String get deleteList => 'Удалить список';
+	@override String deleteListConfirm({required Object name}) => '«${name}» и все его товары будут удалены.';
+	@override String progress({required Object checked, required Object total}) => '${checked}/${total}';
+	@override String get servings => 'Порции';
+	@override String get timesOver => 'Количество';
+	@override String scaleValue({required Object value}) => '×${value}';
+	@override String get rebuildFromRecipe => 'Пересобрать из рецепта';
+	@override String get createFromRecipe => 'Создать список покупок';
+	@override String get createList => 'Создать список';
+	@override String get recipeListTitle => 'Список покупок из рецепта';
+	@override String get recipeListHint => 'Ингредиенты рецепта с учётом того, сколько вы готовите';
+	@override String listCreated({required Object name}) => 'Список «${name}» создан';
+	@override String get openList => 'Открыть список';
+	@override String get stayHere => 'Остаться здесь';
+	@override String get noIngredients => 'В этом рецепте нет ингредиентов для покупки';
+	@override String get addFirstItem => 'Добавить товар';
 }
 
 // Path: receipt
@@ -1539,6 +1641,11 @@ extension on TranslationsRu {
 			'auth.appleAlreadyLinked' => 'Аккаунт Apple уже привязан',
 			'auth.blockedTitle' => 'Аккаунт заблокирован',
 			'auth.blockedBody' => 'Этот аккаунт заблокирован администратором приложения. За подробностями напишите нам с экрана поддержки.',
+			'auth.phoneClaimedTitle' => 'Этот номер принадлежит существующему аккаунту',
+			'auth.phoneClaimedBody' => ({required Object phone}) => 'Номер ${phone} уже связан с другим аккаунтом EasyPlate. Чтобы попасть в тот аккаунт и к его рецептам, войдите так же, как раньше (Google, Apple или почта), и подтвердите номер там заново.',
+			'auth.phoneClaimedSignIn' => 'Войти в мой существующий аккаунт',
+			'auth.phoneClaimedCreateNew' => 'Всё равно создать новый аккаунт',
+			'auth.phoneClaimedCreateNewConfirm' => 'Для этого номера будет открыт новый пустой аккаунт. Существующий аккаунт останется как есть, но с этим номером в него больше не войти.',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',
@@ -1606,6 +1713,41 @@ extension on TranslationsRu {
 			'settings.reminderDayBefore' => 'За день (вечером)',
 			'settings.reminderSameDayMorning' => 'В день покупок (утром)',
 			'settings.reminderSameDayAfternoon' => 'В день покупок (днём)',
+			'settings.translatingContent' => 'Переводим ваши рецепты и меню…',
+			'settings.translatedContent' => ({required Object count}) => 'Переведено элементов: ${count}',
+			'settings.translationPartialTitle' => 'Перевод не завершён',
+			'settings.translationPartial' => ({required Object count}) => '${count} элементов остались на своём языке. Попробуйте позже.',
+			'settings.translationFailed' => 'Не удалось перевести. Содержимое осталось на своём языке.',
+			'settings.account' => 'Аккаунт',
+			'settings.notifications' => 'Уведомления',
+			'settings.notificationsHint' => 'Какие оповещения вы получаете и как',
+			'settings.settingsHint' => 'Аккаунт, уведомления, язык и оформление',
+			'notificationSettings.title' => 'Настройки уведомлений',
+			'notificationSettings.push' => 'Push-уведомления',
+			'notificationSettings.pushHint' => 'Оповещения на этом устройстве. Если выключено, на телефон ничего не приходит; входящие продолжают пополняться.',
+			'notificationSettings.pushDenied' => 'Уведомления EasyPlate заблокированы в настройках устройства. Разрешите их там, чтобы получать оповещения.',
+			'notificationSettings.community' => 'Сообщество',
+			'notificationSettings.repliesOnMyPosts' => 'Ответы на мои посты',
+			'notificationSettings.repliesOnMyPostsHint' => 'Кто-то ответил в обсуждении, которое вы открыли',
+			'notificationSettings.repliesOnThreads' => 'Ответы в обсуждениях, где я участвую',
+			'notificationSettings.repliesOnThreadsHint' => 'Новый ответ в обсуждении, где вы отвечали',
+			'notificationSettings.sharing' => 'Совместный доступ',
+			'notificationSettings.shareInvites' => 'Приглашения',
+			'notificationSettings.shareInvitesHint' => 'Кто-то поделился с вами рецептом, книгой или планом. Приглашение всегда приходит во входящие; здесь только оповещение.',
+			'notificationSettings.sharedRecipeUpdates' => 'Обновления сохранённых рецептов',
+			'notificationSettings.sharedRecipeUpdatesHint' => 'Автор изменил рецепт из сообщества, который вы сохранили',
+			'notificationSettings.easyPlate' => 'От EasyPlate',
+			'notificationSettings.adminReplies' => 'Ответы на мои обращения в поддержку',
+			'notificationSettings.announcements' => 'Объявления',
+			'notificationSettings.announcementsHint' => 'Новости и обновления от команды EasyPlate',
+			'notificationSettings.inApp' => 'Когда приложение открыто',
+			'notificationSettings.foregroundPopups' => 'Показывать оповещения всплывающей карточкой',
+			'notificationSettings.foregroundPopupsHint' => 'Уведомление, пришедшее пока вы в приложении, открывает небольшую карточку. Если выключено, оно попадает только во входящие.',
+			'notificationSettings.reminders' => 'Напоминания о покупках',
+			'preferences.title' => 'Предпочтения',
+			'preferences.hint' => 'Покупки, питание и поведение книг',
+			'preferences.shopping' => 'Покупки',
+			'preferences.books' => 'Книги рецептов',
 			'more.title' => 'Ещё',
 			'more.settings' => 'Настройки',
 			'more.profile' => 'Мой профиль',
@@ -1615,6 +1757,7 @@ extension on TranslationsRu {
 			'more.whatsapp' => 'Написать в WhatsApp',
 			'more.email' => 'Отправить письмо',
 			'more.supportUnavailable' => 'Не удалось открыть приложение',
+			'more.preferences' => 'Предпочтения',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -1763,6 +1906,9 @@ extension on TranslationsRu {
 			'community.savedTag' => 'Сохранено',
 			'community.removeSaved' => 'Убрать из сохранённых',
 			'community.removeSavedConfirm' => 'Рецепт будет убран из сохранённых. Его можно снова сохранить из сообщества.',
+			'community.oneNewPost' => '1 новый пост',
+			'community.newPosts' => ({required Object count}) => 'Новых постов: ${count}',
+			'community.replyFailed' => 'Не удалось отправить ваш ответ',
 			'sharing.title' => 'Поделиться рецептом',
 			'sharing.contactLabel' => 'Почта или телефон человека',
 			'sharing.contactHint' => 'name@example.com или 05…',
@@ -1836,6 +1982,11 @@ extension on TranslationsRu {
 			'notifications.adminReply' => 'Ответ команды EasyPlate на ваше обращение',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Ваше обращение: "${excerpt}"',
 			'notifications.adminMessage' => 'Сообщение от EasyPlate',
+			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} ответил(а) на ваш пост «${post}»',
+			'notifications.forumReplyOnThread' => ({required Object name, required Object post}) => '${name} ответил(а) в «${post}»',
+			'notifications.openThread' => 'Открыть обсуждение',
+			'notifications.threadGone' => 'Это обсуждение удалено',
+			'notifications.settings' => 'Настройки',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -1916,6 +2067,8 @@ extension on TranslationsRu {
 			'mealPlanner.breakfast' => 'Завтрак',
 			'mealPlanner.lunch' => 'Обед',
 			'mealPlanner.dinner' => 'Ужин',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'Утренний перекус',
 			'mealPlanner.afternoonSnack' => 'Дневной перекус',
 			'mealPlanner.eveningSnack' => 'Вечерний перекус',
@@ -1962,11 +2115,42 @@ extension on TranslationsRu {
 			'groceryList.selectPlansTitle' => 'Какие меню входят в список?',
 			'groceryList.applySelection' => 'Обновить список',
 			'groceryList.selectAllPlans' => 'Все меню',
+			'groceryList.myLists' => 'Мои списки',
+			'groceryList.listsCount' => ({required Object count}) => 'Списков: ${count}',
+			'groceryList.oneList' => 'Один список',
+			'groceryList.newList' => 'Новый список',
+			'groceryList.newListTitle' => 'Новый список покупок',
+			'groceryList.listName' => 'Название списка',
+			'groceryList.defaultListName' => 'Список покупок',
+			'groceryList.fromPlans' => 'Из меню',
+			'groceryList.fromPlansHint' => 'Объединяет рецепты из ваших планов питания',
+			'groceryList.fromRecipe' => 'Из рецепта',
+			'groceryList.fromRecipeHint' => 'Ингредиенты одного рецепта',
+			'groceryList.emptyList' => 'Пустой список',
+			'groceryList.emptyListHint' => 'Вы добавляете товары вручную',
+			'groceryList.sourcePlans' => 'Из меню',
+			'groceryList.sourceRecipe' => ({required Object title}) => 'Из рецепта «${title}»',
+			'groceryList.sourceManual' => 'Ручной список',
+			'groceryList.renameList' => 'Переименовать список',
+			'groceryList.deleteList' => 'Удалить список',
+			'groceryList.deleteListConfirm' => ({required Object name}) => '«${name}» и все его товары будут удалены.',
+			'groceryList.progress' => ({required Object checked, required Object total}) => '${checked}/${total}',
+			'groceryList.servings' => 'Порции',
+			'groceryList.timesOver' => 'Количество',
+			'groceryList.scaleValue' => ({required Object value}) => '×${value}',
+			'groceryList.rebuildFromRecipe' => 'Пересобрать из рецепта',
+			'groceryList.createFromRecipe' => 'Создать список покупок',
+			'groceryList.createList' => 'Создать список',
+			'groceryList.recipeListTitle' => 'Список покупок из рецепта',
+			'groceryList.recipeListHint' => 'Ингредиенты рецепта с учётом того, сколько вы готовите',
+			'groceryList.listCreated' => ({required Object name}) => 'Список «${name}» создан',
+			'groceryList.openList' => 'Открыть список',
+			'groceryList.stayHere' => 'Остаться здесь',
+			'groceryList.noIngredients' => 'В этом рецепте нет ингредиентов для покупки',
+			'groceryList.addFirstItem' => 'Добавить товар',
 			'receipt.title' => 'Сканировать чек',
 			'receipt.subtitle' => 'Сфотографируйте чек или загрузите PDF, и цены сохранятся для списка покупок',
 			'receipt.camera' => 'Сфотографировать чек',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraHint' => 'Длинный чек? Сделайте несколько фото, мы их объединим',
 			'receipt.gallery' => 'Выбрать из галереи',
 			'receipt.pdf' => 'Файл PDF',
@@ -2397,6 +2581,8 @@ extension on TranslationsRu {
 			'adminDashboard.send' => 'Отправить',
 			'adminDashboard.blocked' => 'Заблокированные',
 			'adminDashboard.disable' => 'Заблокировать аккаунт',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.enable' => 'Разблокировать',
 			'adminDashboard.blockMessageHint' => 'Что увидит пользователь при попытке войти',
 			'adminDashboard.disabledDone' => 'Аккаунт заблокирован',

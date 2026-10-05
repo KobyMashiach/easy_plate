@@ -28,37 +28,50 @@ sealed class RecipeBookModel with _$RecipeBookModel {
     // account's role in it. Null for a book that was never shared.
     @HiveField(8) String? collabId,
     @HiveField(9) String? collabRole,
+
+    /// The language the title is written in; see [RecipeModel.contentLang].
+    @HiveField(10) String? contentLang,
+
+    /// See [RecipeModel.contentVersion].
+    @HiveField(11) @Default(0) int contentVersion,
   }) = _RecipeBookModel;
 
-  factory RecipeBookModel.fromJson(Map<String, dynamic> json) => _$RecipeBookModelFromJson(json);
+  factory RecipeBookModel.fromJson(Map<String, dynamic> json) =>
+      _$RecipeBookModelFromJson(json);
 }
 
 extension RecipeBookModelMapper on RecipeBookModel {
   RecipeBookEntity toEntity() => RecipeBookEntity(
-        id: id,
-        title: title,
-        recipeRefs: recipeRefs.map((r) => r.toEntity()).toList(),
-        collaborators: collaborators.map((k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v))),
-        coverImageFileName: coverImageFileName,
-        coverImageStoragePath: coverImageStoragePath,
-        spine: BookSpine.fromName(spine),
-        collabId: collabId,
-        collabRole: CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
-        createdAt: createdAt,
-      );
+    id: id,
+    title: title,
+    recipeRefs: recipeRefs.map((r) => r.toEntity()).toList(),
+    collaborators: collaborators.map(
+      (k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v)),
+    ),
+    coverImageFileName: coverImageFileName,
+    coverImageStoragePath: coverImageStoragePath,
+    spine: BookSpine.fromName(spine),
+    collabId: collabId,
+    collabRole: CollabRole.values
+        .where((r) => r.name == collabRole)
+        .firstOrNull,
+    createdAt: createdAt,
+    contentLang: contentLang,
+  );
 }
 
 extension RecipeBookEntityMapper on RecipeBookEntity {
   RecipeBookModel toModel() => RecipeBookModel(
-        id: id,
-        title: title,
-        recipeRefs: recipeRefs.map((r) => r.toModel()).toList(),
-        collaborators: collaborators.map((k, v) => MapEntry(k, v.name)),
-        coverImageFileName: coverImageFileName,
-        coverImageStoragePath: coverImageStoragePath,
-        spine: spine?.name,
-        collabId: collabId,
-        collabRole: collabRole?.name,
-        createdAt: createdAt,
-      );
+    id: id,
+    title: title,
+    recipeRefs: recipeRefs.map((r) => r.toModel()).toList(),
+    collaborators: collaborators.map((k, v) => MapEntry(k, v.name)),
+    coverImageFileName: coverImageFileName,
+    coverImageStoragePath: coverImageStoragePath,
+    spine: spine?.name,
+    collabId: collabId,
+    collabRole: collabRole?.name,
+    createdAt: createdAt,
+    contentLang: contentLang,
+  );
 }

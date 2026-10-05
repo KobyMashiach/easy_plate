@@ -14,11 +14,17 @@ void main() {
 
   test('a real value passes through untouched', () {
     expect(FirebaseAuthDataSource.blankToNull('a@b.co.il'), 'a@b.co.il');
-    expect(FirebaseAuthDataSource.blankToNull('+972508247743'), '+972508247743');
+    expect(
+      FirebaseAuthDataSource.blankToNull('+972508247743'),
+      '+972508247743',
+    );
   });
 
   test('a Google-linked account reports it', () {
-    const linked = AppUserEntity(uid: 'u1', providerIds: ['phone', 'google.com']);
+    const linked = AppUserEntity(
+      uid: 'u1',
+      providerIds: ['phone', 'google.com'],
+    );
     const notLinked = AppUserEntity(uid: 'u1', providerIds: ['phone']);
     expect(linked.hasGoogle, isTrue);
     expect(notLinked.hasGoogle, isFalse);

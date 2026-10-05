@@ -62,7 +62,11 @@ class _HostState extends State<_Host> {
                     context,
                     [
                       const WalkthroughStep(title: 'welcome', body: 'hello'),
-                      const WalkthroughStep(title: 'one', body: 'tap first', targetId: 'first'),
+                      const WalkthroughStep(
+                        title: 'one',
+                        body: 'tap first',
+                        targetId: 'first',
+                      ),
                       const WalkthroughStep(
                         title: 'two',
                         body: 'look at second',
@@ -80,7 +84,11 @@ class _HostState extends State<_Host> {
                   onPressed: () => Walkthrough.start(
                     context,
                     [
-                      const WalkthroughStep(title: 'open', body: 'tap opener', targetId: 'opener'),
+                      const WalkthroughStep(
+                        title: 'open',
+                        body: 'tap opener',
+                        targetId: 'opener',
+                      ),
                       const WalkthroughStep(
                         title: 'inside',
                         body: 'tap confirm',
@@ -120,7 +128,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }
 
-  testWidgets('walks the steps: next, a tap on the target, and finish', (tester) async {
+  testWidgets('walks the steps: next, a tap on the target, and finish', (
+    tester,
+  ) async {
     await open(tester);
     expect(find.text('welcome'), findsOneWidget);
 
@@ -157,7 +167,9 @@ void main() {
     expect(find.text('one'), findsOneWidget);
   });
 
-  testWidgets('a stay step follows the tap into its dialog and out again', (tester) async {
+  testWidgets('a stay step follows the tap into its dialog and out again', (
+    tester,
+  ) async {
     await tester.pumpWidget(const MaterialApp(home: _Host()));
     await tester.tap(find.text('start dialog tour'));
     await tester.pump();
@@ -183,7 +195,9 @@ void main() {
     expect(Walkthrough.isActive, isFalse);
   });
 
-  testWidgets('a stay step whose dialog never opened is passed over', (tester) async {
+  testWidgets('a stay step whose dialog never opened is passed over', (
+    tester,
+  ) async {
     await tester.pumpWidget(const MaterialApp(home: _Host()));
     await tester.tap(find.text('start dialog tour'));
     await tester.pump();
@@ -204,7 +218,9 @@ void main() {
     expect(Walkthrough.isActive, isFalse);
   });
 
-  testWidgets('prefill hands out the sample only while a tour runs', (tester) async {
+  testWidgets('prefill hands out the sample only while a tour runs', (
+    tester,
+  ) async {
     expect(Walkthrough.prefill('sample'), isNull);
     await open(tester);
     expect(Walkthrough.prefill('sample'), 'sample');
@@ -213,7 +229,9 @@ void main() {
     expect(Walkthrough.prefill('sample'), isNull);
   });
 
-  testWidgets('skip step moves on without the tap; close ends it early', (tester) async {
+  testWidgets('skip step moves on without the tap; close ends it early', (
+    tester,
+  ) async {
     await open(tester);
     await tester.tap(find.text('דלג על שלב'));
     await tester.pump();

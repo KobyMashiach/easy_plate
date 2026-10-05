@@ -87,7 +87,12 @@
     "appleAlreadyUsed": "Этот аккаунт Apple уже принадлежит другому пользователю",
     "appleAlreadyLinked": "Аккаунт Apple уже привязан",
     "blockedTitle": "Аккаунт заблокирован",
-    "blockedBody": "Этот аккаунт заблокирован администратором приложения. За подробностями напишите нам с экрана поддержки."
+    "blockedBody": "Этот аккаунт заблокирован администратором приложения. За подробностями напишите нам с экрана поддержки.",
+    "phoneClaimedTitle": "Этот номер принадлежит существующему аккаунту",
+    "phoneClaimedBody": "Номер $phone уже связан с другим аккаунтом EasyPlate. Чтобы попасть в тот аккаунт и к его рецептам, войдите так же, как раньше (Google, Apple или почта), и подтвердите номер там заново.",
+    "phoneClaimedSignIn": "Войти в мой существующий аккаунт",
+    "phoneClaimedCreateNew": "Всё равно создать новый аккаунт",
+    "phoneClaimedCreateNewConfirm": "Для этого номера будет открыт новый пустой аккаунт. Существующий аккаунт останется как есть, но с этим номером в него больше не войти."
   },
   "profile": {
     "setupTitle": "Последние детали",
@@ -166,7 +171,46 @@
     "reminderTwoDaysBefore": "За два дня (вечером)",
     "reminderDayBefore": "За день (вечером)",
     "reminderSameDayMorning": "В день покупок (утром)",
-    "reminderSameDayAfternoon": "В день покупок (днём)"
+    "reminderSameDayAfternoon": "В день покупок (днём)",
+    "translatingContent": "Переводим ваши рецепты и меню…",
+    "translatedContent": "Переведено элементов: $count",
+    "translationPartialTitle": "Перевод не завершён",
+    "translationPartial": "$count элементов остались на своём языке. Попробуйте позже.",
+    "translationFailed": "Не удалось перевести. Содержимое осталось на своём языке.",
+    "account": "Аккаунт",
+    "notifications": "Уведомления",
+    "notificationsHint": "Какие оповещения вы получаете и как",
+    "settingsHint": "Аккаунт, уведомления, язык и оформление"
+  },
+  "notificationSettings": {
+    "title": "Настройки уведомлений",
+    "push": "Push-уведомления",
+    "pushHint": "Оповещения на этом устройстве. Если выключено, на телефон ничего не приходит; входящие продолжают пополняться.",
+    "pushDenied": "Уведомления EasyPlate заблокированы в настройках устройства. Разрешите их там, чтобы получать оповещения.",
+    "community": "Сообщество",
+    "repliesOnMyPosts": "Ответы на мои посты",
+    "repliesOnMyPostsHint": "Кто-то ответил в обсуждении, которое вы открыли",
+    "repliesOnThreads": "Ответы в обсуждениях, где я участвую",
+    "repliesOnThreadsHint": "Новый ответ в обсуждении, где вы отвечали",
+    "sharing": "Совместный доступ",
+    "shareInvites": "Приглашения",
+    "shareInvitesHint": "Кто-то поделился с вами рецептом, книгой или планом. Приглашение всегда приходит во входящие; здесь только оповещение.",
+    "sharedRecipeUpdates": "Обновления сохранённых рецептов",
+    "sharedRecipeUpdatesHint": "Автор изменил рецепт из сообщества, который вы сохранили",
+    "easyPlate": "От EasyPlate",
+    "adminReplies": "Ответы на мои обращения в поддержку",
+    "announcements": "Объявления",
+    "announcementsHint": "Новости и обновления от команды EasyPlate",
+    "inApp": "Когда приложение открыто",
+    "foregroundPopups": "Показывать оповещения всплывающей карточкой",
+    "foregroundPopupsHint": "Уведомление, пришедшее пока вы в приложении, открывает небольшую карточку. Если выключено, оно попадает только во входящие.",
+    "reminders": "Напоминания о покупках"
+  },
+  "preferences": {
+    "title": "Предпочтения",
+    "hint": "Покупки, питание и поведение книг",
+    "shopping": "Покупки",
+    "books": "Книги рецептов"
   },
   "more": {
     "title": "Ещё",
@@ -177,7 +221,8 @@
     "supportBody": "Напишите нам, и мы ответим.",
     "whatsapp": "Написать в WhatsApp",
     "email": "Отправить письмо",
-    "supportUnavailable": "Не удалось открыть приложение"
+    "supportUnavailable": "Не удалось открыть приложение",
+    "preferences": "Предпочтения"
   },
   "language": {
     "hebrew": "עברית",
@@ -335,7 +380,10 @@
     "alreadySaved": "Этот рецепт у вас уже есть",
     "savedTag": "Сохранено",
     "removeSaved": "Убрать из сохранённых",
-    "removeSavedConfirm": "Рецепт будет убран из сохранённых. Его можно снова сохранить из сообщества."
+    "removeSavedConfirm": "Рецепт будет убран из сохранённых. Его можно снова сохранить из сообщества.",
+    "oneNewPost": "1 новый пост",
+    "newPosts": "Новых постов: $count",
+    "replyFailed": "Не удалось отправить ваш ответ"
   },
   "sharing": {
     "title": "Поделиться рецептом",
@@ -412,7 +460,12 @@
     "sharedPlan": "$name поделился(-ась) с вами меню «$recipe»",
     "adminReply": "Ответ команды EasyPlate на ваше обращение",
     "adminReplyQuote": "Ваше обращение: \"$excerpt\"",
-    "adminMessage": "Сообщение от EasyPlate"
+    "adminMessage": "Сообщение от EasyPlate",
+    "forumReplyOnMyPost": "$name ответил(а) на ваш пост «$post»",
+    "forumReplyOnThread": "$name ответил(а) в «$post»",
+    "openThread": "Открыть обсуждение",
+    "threadGone": "Это обсуждение удалено",
+    "settings": "Настройки"
   },
   "editor": {
     "title": "Редактирование рецепта",
@@ -546,7 +599,40 @@
     "allPlansHint": "Сводка по всем меню",
     "selectPlansTitle": "Какие меню входят в список?",
     "applySelection": "Обновить список",
-    "selectAllPlans": "Все меню"
+    "selectAllPlans": "Все меню",
+    "myLists": "Мои списки",
+    "listsCount": "Списков: $count",
+    "oneList": "Один список",
+    "newList": "Новый список",
+    "newListTitle": "Новый список покупок",
+    "listName": "Название списка",
+    "defaultListName": "Список покупок",
+    "fromPlans": "Из меню",
+    "fromPlansHint": "Объединяет рецепты из ваших планов питания",
+    "fromRecipe": "Из рецепта",
+    "fromRecipeHint": "Ингредиенты одного рецепта",
+    "emptyList": "Пустой список",
+    "emptyListHint": "Вы добавляете товары вручную",
+    "sourcePlans": "Из меню",
+    "sourceRecipe": "Из рецепта «$title»",
+    "sourceManual": "Ручной список",
+    "renameList": "Переименовать список",
+    "deleteList": "Удалить список",
+    "deleteListConfirm": "«$name» и все его товары будут удалены.",
+    "progress": "$checked/$total",
+    "servings": "Порции",
+    "timesOver": "Количество",
+    "scaleValue": "×$value",
+    "rebuildFromRecipe": "Пересобрать из рецепта",
+    "createFromRecipe": "Создать список покупок",
+    "createList": "Создать список",
+    "recipeListTitle": "Список покупок из рецепта",
+    "recipeListHint": "Ингредиенты рецепта с учётом того, сколько вы готовите",
+    "listCreated": "Список «$name» создан",
+    "openList": "Открыть список",
+    "stayHere": "Остаться здесь",
+    "noIngredients": "В этом рецепте нет ингредиентов для покупки",
+    "addFirstItem": "Добавить товар"
   },
   "receipt": {
     "title": "Сканировать чек",

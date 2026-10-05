@@ -21,14 +21,23 @@ abstract class RecipeSharingRemoteDataSource {
   Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid);
   Future<CollabRecipeEntity?> getCollab(String collabId);
   Future<void> setInviteStatus(String inviteId, ShareInviteStatus status);
-  Future<void> joinCollab(String collabId, {required String uid, required CollabRole role});
-  Future<void> writeCollab(String collabId, RecipeEntity recipe, {required String byUid});
+  Future<void> joinCollab(
+    String collabId, {
+    required String uid,
+    required CollabRole role,
+  });
+  Future<void> writeCollab(
+    String collabId,
+    RecipeEntity recipe, {
+    required String byUid,
+  });
   Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid);
   Future<List<CollabRecipeEntity>> collabsSharedWith(String uid);
   Future<void> removeMember(String collabId, String memberUid);
 }
 
-class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource {
+class RecipeSharingFirestoreDataSource
+    implements RecipeSharingRemoteDataSource {
   static const collabs = 'collab_recipes';
   static const invites = 'share_invites';
   static const notifications = 'notifications';
@@ -37,33 +46,37 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
   final FirebaseFirestore _firestore;
 
   RecipeSharingFirestoreDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   DocumentReference<Map<String, dynamic>> _collab(String id) =>
       _firestore.collection(collabs).doc(id);
 
   Map<String, dynamic> _recipeFields(RecipeEntity recipe) => {
-        'title': recipe.title,
-        'prepTimeMinutes': recipe.prepTimeMinutes,
-        'cookTimeMinutes': recipe.cookTimeMinutes,
-        'ingredients': [
-          for (final i in recipe.ingredients)
-            {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
-        ],
-        'steps': recipe.steps,
-        'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
-        'allergens': recipe.allergens.names,
-        'mayContain': recipe.mayContain.names,
-        // The photo travels as its Storage path plus the file name to cache it
-        // under. Before this the picture was simply left behind, and the other
-        // account's copy of a shared recipe was permanently blank.
-        'imageFileName': recipe.imageFileName,
-        'imageStoragePath': recipe.imageStoragePath,
-        'servings': recipe.servings,
-        'nutrition': recipe.nutrition?.toJson(),
-      };
+    'title': recipe.title,
+    'prepTimeMinutes': recipe.prepTimeMinutes,
+    'cookTimeMinutes': recipe.cookTimeMinutes,
+    'ingredients': [
+      for (final i in recipe.ingredients)
+        {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
+    ],
+    'steps': recipe.steps,
+    'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
+    'allergens': recipe.allergens.names,
+    'mayContain': recipe.mayContain.names,
+    // The photo travels as its Storage path plus the file name to cache it
+    // under. Before this the picture was simply left behind, and the other
+    // account's copy of a shared recipe was permanently blank.
+    'imageFileName': recipe.imageFileName,
+    'imageStoragePath': recipe.imageStoragePath,
+    'servings': recipe.servings,
+    'nutrition': recipe.nutrition?.toJson(),
+  };
 
-  RecipeEntity _recipeFrom(String id, Map<String, dynamic> data, DateTime createdAt) {
+  RecipeEntity _recipeFrom(
+    String id,
+    Map<String, dynamic> data,
+    DateTime createdAt,
+  ) {
     return RecipeEntity(
       id: id,
       title: (data['title'] as String?) ?? '',
@@ -71,19 +84,26 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
       cookTimeMinutes: (data['cookTimeMinutes'] as num?)?.toInt(),
       ingredients: ((data['ingredients'] as List?) ?? const [])
           .whereType<Map<String, dynamic>>()
-          .map((raw) => RecipeIngredientEntity(
-                name: (raw['name'] as String?) ?? '',
-                amount: (raw['amount'] as num?)?.toDouble(),
-                unit: MeasurementUnit.values.firstWhere(
-                  (u) => u.name == raw['unit'],
-                  orElse: () => MeasurementUnit.unspecified,
-                ),
-              ))
+          .map(
+            (raw) => RecipeIngredientEntity(
+              name: (raw['name'] as String?) ?? '',
+              amount: (raw['amount'] as num?)?.toDouble(),
+              unit: MeasurementUnit.values.firstWhere(
+                (u) => u.name == raw['unit'],
+                orElse: () => MeasurementUnit.unspecified,
+              ),
+            ),
+          )
           .toList(),
-      steps: ((data['steps'] as List?) ?? const []).whereType<String>().toList(),
+      steps: ((data['steps'] as List?) ?? const [])
+          .whereType<String>()
+          .toList(),
       dietaryTags: ((data['dietaryTags'] as List?) ?? const [])
           .whereType<String>()
-          .map((n) => DietaryPreference.values.where((d) => d.name == n).firstOrNull)
+          .map(
+            (n) =>
+                DietaryPreference.values.where((d) => d.name == n).firstOrNull,
+          )
           .nonNulls
           .toList(),
       allergens: Allergen.fromNames(data['allergens']),
@@ -98,7 +118,8 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
 
   CollabRecipeEntity _collabFrom(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? const <String, dynamic>{};
-    final createdAt = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+    final createdAt =
+        (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
     final rawMembers = (data['members'] as Map?) ?? const {};
     return CollabRecipeEntity(
       id: doc.id,
@@ -107,7 +128,9 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
         // Null-aware value: an unknown role name drops the entry rather than
         // inventing a role for it.
         for (final entry in rawMembers.entries)
-          entry.key as String: ?CollabRole.values.where((r) => r.name == entry.value).firstOrNull,
+          entry.key as String: ?CollabRole.values
+              .where((r) => r.name == entry.value)
+              .firstOrNull,
       },
       recipe: _recipeFrom(doc.id, data, createdAt),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? createdAt,
@@ -116,7 +139,10 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
   }
 
   @override
-  Future<String> createCollab(RecipeEntity recipe, {required String ownerUid}) async {
+  Future<String> createCollab(
+    RecipeEntity recipe, {
+    required String ownerUid,
+  }) async {
     final id = _uuid.v4();
     await _collab(id).set({
       ..._recipeFields(recipe),
@@ -142,7 +168,10 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
     required String targetUid,
     required CollabRole role,
   }) {
-    final inviteId = ShareInviteEntity.idFor(collabId: collabId, targetUid: targetUid);
+    final inviteId = ShareInviteEntity.idFor(
+      collabId: collabId,
+      targetUid: targetUid,
+    );
     final batch = _firestore.batch();
     batch.set(_firestore.collection(invites).doc(inviteId), {
       'collabId': collabId,
@@ -154,7 +183,11 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
       'createdAt': Timestamp.now(),
     });
     batch.set(
-      _firestore.collection(notifications).doc(targetUid).collection('items').doc(inviteId),
+      _firestore
+          .collection(notifications)
+          .doc(targetUid)
+          .collection('items')
+          .doc(inviteId),
       {
         'type': AppNotificationType.shareInvite.name,
         'fromUid': ownerUid,
@@ -169,7 +202,9 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
     return batch.commit();
   }
 
-  ShareInviteEntity _inviteFrom(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+  ShareInviteEntity _inviteFrom(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data();
     return ShareInviteEntity(
       id: doc.id,
@@ -206,8 +241,10 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
 
   @override
   Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid) async {
-    final snapshot =
-        await _firestore.collection(invites).where('ownerUid', isEqualTo: ownerUid).get();
+    final snapshot = await _firestore
+        .collection(invites)
+        .where('ownerUid', isEqualTo: ownerUid)
+        .get();
     return snapshot.docs.map(_inviteFrom).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
@@ -227,7 +264,11 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
   }
 
   @override
-  Future<void> joinCollab(String collabId, {required String uid, required CollabRole role}) {
+  Future<void> joinCollab(
+    String collabId, {
+    required String uid,
+    required CollabRole role,
+  }) {
     return _collab(collabId).update({
       'members.$uid': role.name,
       'memberUids': FieldValue.arrayUnion([uid]),
@@ -236,7 +277,11 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
   }
 
   @override
-  Future<void> writeCollab(String collabId, RecipeEntity recipe, {required String byUid}) {
+  Future<void> writeCollab(
+    String collabId,
+    RecipeEntity recipe, {
+    required String byUid,
+  }) {
     return _collab(collabId).update({
       ..._recipeFields(recipe),
       'updatedAt': FieldValue.serverTimestamp(),
@@ -246,8 +291,10 @@ class RecipeSharingFirestoreDataSource implements RecipeSharingRemoteDataSource 
 
   @override
   Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid) async {
-    final snapshot =
-        await _firestore.collection(collabs).where('ownerUid', isEqualTo: uid).get();
+    final snapshot = await _firestore
+        .collection(collabs)
+        .where('ownerUid', isEqualTo: uid)
+        .get();
     return snapshot.docs.map(_collabFrom).toList();
   }
 

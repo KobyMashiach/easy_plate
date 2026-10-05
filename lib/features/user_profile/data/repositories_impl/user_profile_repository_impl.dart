@@ -11,28 +11,40 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   UserProfileRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<UserProfileEntity?> getProfile(String uid) => remoteDataSource.getProfile(uid);
+  Future<UserProfileEntity?> getProfile(String uid) =>
+      remoteDataSource.getProfile(uid);
 
   @override
-  Future<void> saveProfile(UserProfileEntity profile) => remoteDataSource.saveProfile(profile);
+  Future<void> saveProfile(UserProfileEntity profile) =>
+      remoteDataSource.saveProfile(profile);
 
   @override
-  Future<String> uploadPhoto(String uid, File file) => remoteDataSource.uploadPhoto(uid, file);
+  Future<String> uploadPhoto(String uid, File file) =>
+      remoteDataSource.uploadPhoto(uid, file);
 
   @override
   Future<void> savePushToken(String uid, String token) =>
       remoteDataSource.savePushToken(uid, token);
 
   @override
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) =>
-      remoteDataSource.touchDevice(uid, platform: platform, appVersion: appVersion);
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  }) => remoteDataSource.touchDevice(
+    uid,
+    platform: platform,
+    appVersion: appVersion,
+  );
 
   @override
-  Future<String?> blockMessage(String uid) => remoteDataSource.blockMessage(uid);
+  Future<String?> blockMessage(String uid) =>
+      remoteDataSource.blockMessage(uid);
 
   @override
-  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) =>
-      remoteDataSource.getPublicProfiles(uids);
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(
+    Set<String> uids,
+  ) => remoteDataSource.getPublicProfiles(uids);
 
   @override
   Future<void> publishPublicProfile(UserProfileEntity profile) =>

@@ -33,11 +33,13 @@ class DailyUsageService extends ChangeNotifier {
 
   bool get isLoaded => _usage != null;
 
-  DailyUsageModel get _current => _usage ?? DailyUsageModel.empty(TrustedClock().today);
+  DailyUsageModel get _current =>
+      _usage ?? DailyUsageModel.empty(TrustedClock().today);
 
   int get sharedViewsToday => _current.viewedSharedIds.length;
   int get aiExtractionsToday => _current.aiExtractions;
-  bool hasViewedShared(String sharedId) => _current.viewedSharedIds.contains(sharedId);
+  bool hasViewedShared(String sharedId) =>
+      _current.viewedSharedIds.contains(sharedId);
 
   /// Reads the account's record, once per account. Cheap to call repeatedly:
   /// after the first load it only checks whether the day has rolled over.
@@ -55,7 +57,9 @@ class DailyUsageService extends ChangeNotifier {
     try {
       final box = await _box();
       final stored = box.get(DailyUsageModel.storageKey);
-      _usage = (stored ?? DailyUsageModel.empty(TrustedClock().today)).forDay(TrustedClock().today);
+      _usage = (stored ?? DailyUsageModel.empty(TrustedClock().today)).forDay(
+        TrustedClock().today,
+      );
       _uid = uid;
       notifyListeners();
     } catch (e) {
@@ -66,7 +70,11 @@ class DailyUsageService extends ChangeNotifier {
   Future<void> recordSharedView(String sharedId) async {
     await ensureLoaded();
     if (hasViewedShared(sharedId)) return;
-    await _write(_current.copyWith(viewedSharedIds: [..._current.viewedSharedIds, sharedId]));
+    await _write(
+      _current.copyWith(
+        viewedSharedIds: [..._current.viewedSharedIds, sharedId],
+      ),
+    );
   }
 
   Future<void> recordAiExtraction() async {
@@ -97,7 +105,8 @@ class DailyUsageService extends ChangeNotifier {
     unawaited((cloudOverride ?? CloudSyncService().dailyUsage).push(usage));
   }
 
-  Future<Box<DailyUsageModel>> _box() => UserScope().open<DailyUsageModel>(DailyUsageModel.hiveKey);
+  Future<Box<DailyUsageModel>> _box() =>
+      UserScope().open<DailyUsageModel>(DailyUsageModel.hiveKey);
 
   /// Drops the in-memory record. Called on sign-out so the next account never
   /// starts from the previous one's count, and by tests.

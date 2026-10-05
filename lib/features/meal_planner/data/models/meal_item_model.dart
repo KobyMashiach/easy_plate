@@ -17,23 +17,24 @@ sealed class MealItemModel with _$MealItemModel {
     @HiveField(3) @Default([]) List<RecipeIngredientModel> ingredients,
   }) = _MealItemModel;
 
-  factory MealItemModel.fromJson(Map<String, dynamic> json) => _$MealItemModelFromJson(json);
+  factory MealItemModel.fromJson(Map<String, dynamic> json) =>
+      _$MealItemModelFromJson(json);
 }
 
 extension MealItemModelMapper on MealItemModel {
   MealItemEntity toEntity() => MealItemEntity(
-        id: id,
-        recipeId: recipeId,
-        freeText: freeText,
-        ingredients: ingredients.map((i) => i.toEntity()).toList(),
-      );
+    id: id,
+    recipeId: recipeId,
+    freeText: freeText,
+    ingredients: ingredients.map((i) => i.toEntity()).toList(),
+  );
 }
 
 extension MealItemEntityMapper on MealItemEntity {
   MealItemModel toModel() => MealItemModel(
-        id: id,
-        recipeId: recipeId,
-        freeText: freeText,
-        ingredients: ingredients.map((i) => i.toModel()).toList(),
-      );
+    id: id,
+    recipeId: recipeId,
+    freeText: freeText,
+    ingredients: ingredients.map((i) => i.toModel()).toList(),
+  );
 }

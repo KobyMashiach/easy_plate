@@ -5,5 +5,6 @@ class EstimateNutritionUseCase {
   final RecipeIngestionRepository repository;
   EstimateNutritionUseCase(this.repository);
 
-  Future<RecipeEntity> call(RecipeEntity recipe) => repository.estimateNutrition(recipe);
+  Future<RecipeEntity> call(RecipeEntity recipe) =>
+      repository.estimateNutrition(recipe);
 }

@@ -41,40 +41,53 @@ void main() {
     );
   });
 
-  test('a new account inherits the language chosen on the login screen', () async {
-    device.language = AppLanguage.russian;
+  test(
+    'a new account inherits the language chosen on the login screen',
+    () async {
+      device.language = AppLanguage.russian;
 
-    final preferences = await repository.getPreferences();
-    expect(preferences.language, AppLanguage.russian);
-  });
+      final preferences = await repository.getPreferences();
+      expect(preferences.language, AppLanguage.russian);
+    },
+  );
 
-  test('with no device choice a new account falls back to the default', () async {
-    final preferences = await repository.getPreferences();
-    expect(preferences.language, AppLanguage.hebrew);
-  });
+  test(
+    'with no device choice a new account falls back to the default',
+    () async {
+      final preferences = await repository.getPreferences();
+      expect(preferences.language, AppLanguage.hebrew);
+    },
+  );
 
-  test('an existing account keeps its own language, not the device one', () async {
-    // Two accounts on one device must not overwrite each other's choice.
-    device.language = AppLanguage.russian;
-    local.stored = const UserPreferencesEntity(
-      shoppingDay: ShoppingDay.sunday,
-      dietaryPreferences: [],
-      language: AppLanguage.french,
-    ).toModel();
+  test(
+    'an existing account keeps its own language, not the device one',
+    () async {
+      // Two accounts on one device must not overwrite each other's choice.
+      device.language = AppLanguage.russian;
+      local.stored = const UserPreferencesEntity(
+        shoppingDay: ShoppingDay.sunday,
+        dietaryPreferences: [],
+        language: AppLanguage.french,
+      ).toModel();
 
-    final preferences = await repository.getPreferences();
-    expect(preferences.language, AppLanguage.french);
-  });
+      final preferences = await repository.getPreferences();
+      expect(preferences.language, AppLanguage.french);
+    },
+  );
 
-  test('saving mirrors the language to the device, for the next login screen',
-      () async {
-    await repository.savePreferences(const UserPreferencesEntity(
-      shoppingDay: ShoppingDay.monday,
-      dietaryPreferences: [],
-      language: AppLanguage.arabic,
-    ));
+  test(
+    'saving mirrors the language to the device, for the next login screen',
+    () async {
+      await repository.savePreferences(
+        const UserPreferencesEntity(
+          shoppingDay: ShoppingDay.monday,
+          dietaryPreferences: [],
+          language: AppLanguage.arabic,
+        ),
+      );
 
-    expect(device.language, AppLanguage.arabic);
-    expect(local.stored?.language, AppLanguage.arabic);
-  });
+      expect(device.language, AppLanguage.arabic);
+      expect(local.stored?.language, AppLanguage.arabic);
+    },
+  );
 }

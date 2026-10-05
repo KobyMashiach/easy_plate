@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Future<void> pump(WidgetTester tester, String name) {
     return tester.pumpWidget(
-      MaterialApp(home: Scaffold(body: ProfileAvatar(name: name))),
+      MaterialApp(
+        home: Scaffold(body: ProfileAvatar(name: name)),
+      ),
     );
   }
 
@@ -29,8 +31,9 @@ void main() {
     expect(find.text('JD'), findsOneWidget);
   });
 
-  testWidgets('an empty name falls back to the icon, not an empty bubble',
-      (tester) async {
+  testWidgets('an empty name falls back to the icon, not an empty bubble', (
+    tester,
+  ) async {
     // The profile has no name until registration is filled in, so this is the
     // state the avatar renders in on a brand new account.
     await pump(tester, '   ');

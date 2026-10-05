@@ -30,7 +30,11 @@ class _FakeAuthRepository implements AuthRepository {
 
 class _FakeProfileRepository implements UserProfileRepository {
   @override
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) async {}
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  }) async {}
 
   @override
   Future<String?> blockMessage(String uid) async => null;
@@ -57,16 +61,24 @@ class _FakeProfileRepository implements UserProfileRepository {
 
   UserProfileEntity? published;
 
+  /// Who the directory says owns a contact; null for nobody.
+  String? directoryOwner;
+  bool directoryThrows = false;
+
   @override
-  Future<String?> findUidByContact(String contact) async => null;
+  Future<String?> findUidByContact(String contact) async {
+    if (directoryThrows) throw Exception('offline');
+    return directoryOwner;
+  }
 
   @override
   Future<void> publishPublicProfile(UserProfileEntity profile) async =>
       published = profile;
 
   @override
-  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) async =>
-      const {};
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(
+    Set<String> uids,
+  ) async => const {};
 }
 
 class _FakePreferencesRepository implements UserPreferencesRepository {
@@ -74,10 +86,10 @@ class _FakePreferencesRepository implements UserPreferencesRepository {
 
   @override
   Future<UserPreferencesEntity> getPreferences() async => UserPreferencesEntity(
-        shoppingDay: ShoppingDay.sunday,
-        dietaryPreferences: const [],
-        onboardingComplete: onboardingComplete,
-      );
+    shoppingDay: ShoppingDay.sunday,
+    dietaryPreferences: const [],
+    onboardingComplete: onboardingComplete,
+  );
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -100,10 +112,10 @@ const _phonelessUser = AppUserEntity(
 );
 
 UserProfileEntity buildProfile({String fullName = 'כובי'}) => UserProfileEntity(
-      uid: 'u1',
-      fullName: fullName,
-      createdAt: DateTime(2026, 1, 1),
-    );
+  uid: 'u1',
+  fullName: fullName,
+  createdAt: DateTime(2026, 1, 1),
+);
 
 void main() {
   late _FakeAuthRepository auth;
@@ -140,11 +152,14 @@ void main() {
     expect(session.user, isNull);
   });
 
-  test('a signed-in user without a profile document needs registration', () async {
-    profiles.profile = null;
-    await signIn(_user);
-    expect(session.stage, AuthStage.needsProfile);
-  });
+  test(
+    'a signed-in user without a profile document needs registration',
+    () async {
+      profiles.profile = null;
+      await signIn(_user);
+      expect(session.stage, AuthStage.needsProfile);
+    },
+  );
 
   test('a profile with a blank name still needs registration', () async {
     profiles.profile = buildProfile(fullName: '   ');
@@ -152,11 +167,14 @@ void main() {
     expect(session.stage, AuthStage.needsProfile);
   });
 
-  test('a complete profile moves on to onboarding when it is unfinished', () async {
-    profiles.profile = buildProfile();
-    await signIn(_user);
-    expect(session.stage, AuthStage.needsOnboarding);
-  });
+  test(
+    'a complete profile moves on to onboarding when it is unfinished',
+    () async {
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.needsOnboarding);
+    },
+  );
 
   test('a complete profile with onboarding already done is ready', () async {
     // Read from this account's own preferences box, not from a device-wide flag.
@@ -175,148 +193,229 @@ void main() {
     expect(session.stage, AuthStage.ready);
   });
 
-  test('signing in republishes the public profile, backfilling old accounts',
-      () async {
-    // Accounts created before public_profiles existed have none, so their old
-    // posts would keep showing the name stored at post time.
-    profiles.profile = buildProfile(fullName: 'כובי');
-    await signIn(_user);
-    await Future<void>.delayed(Duration.zero);
+  test(
+    'signing in republishes the public profile, backfilling old accounts',
+    () async {
+      // Accounts created before public_profiles existed have none, so their old
+      // posts would keep showing the name stored at post time.
+      profiles.profile = buildProfile(fullName: 'כובי');
+      await signIn(_user);
+      await Future<void>.delayed(Duration.zero);
 
-    expect(profiles.published?.fullName, 'כובי');
-  });
+      expect(profiles.published?.fullName, 'כובי');
+    },
+  );
 
-  test('a failed profile lookup does not push a known user back to registration',
-      () async {
-    profiles.profile = buildProfile();
-    await signIn(_user);
-    expect(session.stage, AuthStage.needsOnboarding);
+  test(
+    'a failed profile lookup does not push a known user back to registration',
+    () async {
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.needsOnboarding);
 
-    // Same user, transient backend failure on a later resolve.
-    profiles.failWith = Exception('firestore down');
-    await session.refreshProfile();
-    expect(session.stage, AuthStage.needsOnboarding);
-    expect(session.profile, isNotNull);
-  });
+      // Same user, transient backend failure on a later resolve.
+      profiles.failWith = Exception('firestore down');
+      await session.refreshProfile();
+      expect(session.stage, AuthStage.needsOnboarding);
+      expect(session.profile, isNotNull);
+    },
+  );
 
   test('an account with no verified phone is held at the phone gate', () async {
     await signIn(_phonelessUser);
     expect(session.stage, AuthStage.needsPhone);
   });
 
-  test('the phone gate is reached before the profile is ever looked up', () async {
-    await signIn(_phonelessUser);
-    // Holding here without touching Firestore is the point: an account that has
-    // not proved a number should not open a per-user box or read a profile.
-    expect(profiles.reads, 0);
-  });
+  test(
+    'the phone gate is reached before the profile is ever looked up',
+    () async {
+      await signIn(_phonelessUser);
+      // Holding here without touching Firestore is the point: an account that has
+      // not proved a number should not open a per-user box or read a profile.
+      expect(profiles.reads, 0);
+    },
+  );
 
   test('linking a phone releases the gate', () async {
     await signIn(_phonelessUser);
     expect(session.stage, AuthStage.needsPhone);
 
     profiles.profile = buildProfile();
-    await session.refreshUser(const AppUserEntity(
-      uid: 'u2',
-      email: 'g@b.com',
-      phoneNumber: '+972500000001',
-      providerIds: ['google.com', 'phone'],
-    ));
+    await session.refreshUser(
+      const AppUserEntity(
+        uid: 'u2',
+        email: 'g@b.com',
+        phoneNumber: '+972500000001',
+        providerIds: ['google.com', 'phone'],
+      ),
+    );
 
     expect(session.stage, isNot(AuthStage.needsPhone));
   });
 
-  test('a phone account with an unverified linked email still stops for the email',
-      () async {
-    profiles.profile = buildProfile();
-    await signIn(const AppUserEntity(
-      uid: 'u1',
-      email: 'a@b.com',
-      phoneNumber: '+972500000000',
-      providerIds: ['phone', 'password'],
-    ));
-    expect(session.stage, AuthStage.needsEmailVerification);
-  });
+  test(
+    'a phone account with an unverified linked email still stops for the email',
+    () async {
+      profiles.profile = buildProfile();
+      await signIn(
+        const AppUserEntity(
+          uid: 'u1',
+          email: 'a@b.com',
+          phoneNumber: '+972500000000',
+          providerIds: ['phone', 'password'],
+        ),
+      );
+      expect(session.stage, AuthStage.needsEmailVerification);
+    },
+  );
 
-  test('signing out forgets the previous account\'s onboarding state', () async {
-    preferences.onboardingComplete = true;
-    profiles.profile = buildProfile();
-    await signIn(_user);
-    expect(session.stage, AuthStage.ready);
+  test(
+    'signing out forgets the previous account\'s onboarding state',
+    () async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.ready);
 
-    await signIn(null);
-    expect(session.stage, AuthStage.signedOut);
-
-    // A second account on the same device has its own preferences box, and
-    // must not inherit the first one's completed onboarding.
-    preferences.onboardingComplete = false;
-    await signIn(_user);
-    expect(session.stage, AuthStage.needsOnboarding);
-  });
-
-  test('preferences are handed to the caller for locale and reminders', () async {
-    UserPreferencesEntity? applied;
-    session.resetForTest();
-    session.bind(
-      auth: auth,
-      profiles: profiles,
-      preferences: preferences,
-      onPreferencesLoaded: (p) async => applied = p,
-    );
-    profiles.profile = buildProfile();
-    preferences.onboardingComplete = true;
-
-    await signIn(_user);
-    expect(applied, isNotNull);
-    expect(applied!.onboardingComplete, isTrue);
-  });
-
-  test('rebinding does not resubscribe, so one auth event is handled once', () async {
-    preferences.onboardingComplete = true;
-    profiles.profile = buildProfile();
-    await signIn(_user);
-    expect(session.stage, AuthStage.ready);
-
-    final readsBefore = profiles.reads;
-    // Same call main.dart makes, re-run by a rebuild under TranslationProvider.
-    session.bind(auth: auth, profiles: profiles, preferences: preferences);
-    await signIn(_user);
-
-    // A second subscription would resolve the same event twice.
-    expect(profiles.reads - readsBefore, 1);
-    expect(session.stage, AuthStage.ready);
-  });
-
-  group('minimum splash', () {
-    test('the first stage waits out the minimum, and the latest one wins', () async {
-      session.minimumSplash = const Duration(milliseconds: 120);
-      final seen = <AuthStage>[];
-      session.addListener(() => seen.add(session.stage));
-
-      auth.emit(null);
-      await Future<void>.delayed(const Duration(milliseconds: 30));
-      expect(session.stage, AuthStage.unknown);
-      expect(seen, isEmpty);
-
-      // Signed in before the hold ends: that, not the sign-out, is what the
-      // gate opens on — and only once.
-      profiles.profile = null;
-      auth.emit(_user);
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-
-      expect(seen, [AuthStage.needsProfile]);
-    });
-
-    test('later changes are immediate once the splash has been shown', () async {
-      session.minimumSplash = const Duration(milliseconds: 60);
-      auth.emit(null);
-      await Future<void>.delayed(const Duration(milliseconds: 90));
+      await signIn(null);
       expect(session.stage, AuthStage.signedOut);
 
-      profiles.profile = null;
-      auth.emit(_user);
-      await Future<void>.delayed(Duration.zero);
+      // A second account on the same device has its own preferences box, and
+      // must not inherit the first one's completed onboarding.
+      preferences.onboardingComplete = false;
+      await signIn(_user);
+      expect(session.stage, AuthStage.needsOnboarding);
+    },
+  );
+
+  test(
+    'preferences are handed to the caller for locale and reminders',
+    () async {
+      UserPreferencesEntity? applied;
+      session.resetForTest();
+      session.bind(
+        auth: auth,
+        profiles: profiles,
+        preferences: preferences,
+        onPreferencesLoaded: (p) async => applied = p,
+      );
+      profiles.profile = buildProfile();
+      preferences.onboardingComplete = true;
+
+      await signIn(_user);
+      expect(applied, isNotNull);
+      expect(applied!.onboardingComplete, isTrue);
+    },
+  );
+
+  test(
+    'rebinding does not resubscribe, so one auth event is handled once',
+    () async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.ready);
+
+      final readsBefore = profiles.reads;
+      // Same call main.dart makes, re-run by a rebuild under TranslationProvider.
+      session.bind(auth: auth, profiles: profiles, preferences: preferences);
+      await signIn(_user);
+
+      // A second subscription would resolve the same event twice.
+      expect(profiles.reads - readsBefore, 1);
+      expect(session.stage, AuthStage.ready);
+    },
+  );
+
+  group('minimum splash', () {
+    test(
+      'the first stage waits out the minimum, and the latest one wins',
+      () async {
+        session.minimumSplash = const Duration(milliseconds: 120);
+        final seen = <AuthStage>[];
+        session.addListener(() => seen.add(session.stage));
+
+        auth.emit(null);
+        await Future<void>.delayed(const Duration(milliseconds: 30));
+        expect(session.stage, AuthStage.unknown);
+        expect(seen, isEmpty);
+
+        // Signed in before the hold ends: that, not the sign-out, is what the
+        // gate opens on — and only once.
+        profiles.profile = null;
+        auth.emit(_user);
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+
+        expect(seen, [AuthStage.needsProfile]);
+      },
+    );
+
+    test(
+      'later changes are immediate once the splash has been shown',
+      () async {
+        session.minimumSplash = const Duration(milliseconds: 60);
+        auth.emit(null);
+        await Future<void>.delayed(const Duration(milliseconds: 90));
+        expect(session.stage, AuthStage.signedOut);
+
+        profiles.profile = null;
+        auth.emit(_user);
+        await Future<void>.delayed(Duration.zero);
+        expect(session.stage, AuthStage.needsProfile);
+      },
+    );
+  });
+
+  group('a new phone account for a number another account owns', () {
+    const fresh = AppUserEntity(
+      uid: 'new-1',
+      phoneNumber: '+972553180148',
+      providerIds: ['phone'],
+    );
+
+    test('is held on the claimed stage instead of registering', () async {
+      profiles.directoryOwner = 'old-account';
+      await signIn(fresh);
+      expect(session.stage, AuthStage.phoneClaimed);
+    });
+
+    test('choosing a new account anyway moves on to registration', () async {
+      profiles.directoryOwner = 'old-account';
+      await signIn(fresh);
+
+      session.acknowledgePhoneClaim();
       expect(session.stage, AuthStage.needsProfile);
+
+      // A later auth event for the same account does not ask again.
+      await session.refreshUser(fresh);
+      expect(session.stage, AuthStage.needsProfile);
+    });
+
+    test('a number nobody owns registers as before', () async {
+      await signIn(fresh);
+      expect(session.stage, AuthStage.needsProfile);
+    });
+
+    test(
+      'the directory pointing at this very account is no conflict',
+      () async {
+        profiles.directoryOwner = 'new-1';
+        await signIn(fresh);
+        expect(session.stage, AuthStage.needsProfile);
+      },
+    );
+
+    test('a lookup that fails never keeps a new user out', () async {
+      profiles.directoryThrows = true;
+      await signIn(fresh);
+      expect(session.stage, AuthStage.needsProfile);
+    });
+
+    test('an account that already has a profile is never asked', () async {
+      profiles.directoryOwner = 'old-account';
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, isNot(AuthStage.phoneClaimed));
     });
   });
 }

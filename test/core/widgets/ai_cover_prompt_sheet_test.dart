@@ -11,42 +11,63 @@ void main() {
 
   group('bookCoverPrompt', () {
     test('a theme and a subject are combined, the subject in front', () {
-      final p = GenerateImageUseCase.bookCoverPrompt('ספר', theme: CoverTheme.indulgent, subject: 'המבורגר');
+      final p = GenerateImageUseCase.bookCoverPrompt(
+        'ספר',
+        theme: CoverTheme.indulgent,
+        subject: 'המבורגר',
+      );
       expect(p, contains('featuring המבורגר, gloriously indulgent'));
       expect(p, contains('titled "ספר"'));
     });
 
     test('either alone still makes a cover, and blank text counts as none', () {
-      expect(GenerateImageUseCase.bookCoverPrompt('b', theme: CoverTheme.kids), contains('kid-friendly'));
-      expect(GenerateImageUseCase.bookCoverPrompt('b', subject: 'סושי'), contains('featuring סושי'));
-      expect(GenerateImageUseCase.bookCoverPrompt('b', subject: '   '), contains('warm, inviting'));
+      expect(
+        GenerateImageUseCase.bookCoverPrompt('b', theme: CoverTheme.kids),
+        contains('kid-friendly'),
+      );
+      expect(
+        GenerateImageUseCase.bookCoverPrompt('b', subject: 'סושי'),
+        contains('featuring סושי'),
+      );
+      expect(
+        GenerateImageUseCase.bookCoverPrompt('b', subject: '   '),
+        contains('warm, inviting'),
+      );
     });
   });
 
   Future<String?> open(WidgetTester tester) async {
     String? result;
-    await tester.pumpWidget(TranslationProvider(
-      child: MaterialApp(
-        locale: const Locale('he'),
-        supportedLocales: AppLocaleUtils.supportedLocales,
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        home: Builder(
-          builder: (context) => TextButton(
-            onPressed: () async => result = await showCoverPromptSheet(context, bookTitle: 'שבת'),
-            child: const Text('open'),
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: MaterialApp(
+          locale: const Locale('he'),
+          supportedLocales: AppLocaleUtils.supportedLocales,
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async => result = await showCoverPromptSheet(
+                context,
+                bookTitle: 'שבת',
+              ),
+              child: const Text('open'),
+            ),
           ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     return result;
   }
 
-  ClayButton generateButton(WidgetTester tester) =>
-      tester.widget<ClayButton>(find.widgetWithText(ClayButton, t.image.coverGenerate));
+  ClayButton generateButton(WidgetTester tester) => tester.widget<ClayButton>(
+    find.widgetWithText(ClayButton, t.image.coverGenerate),
+  );
 
-  testWidgets('nothing chosen means no button, a chip alone is enough', (tester) async {
+  testWidgets('nothing chosen means no button, a chip alone is enough', (
+    tester,
+  ) async {
     await open(tester);
     expect(generateButton(tester).onPressed, isNull);
     expect(find.text(t.image.coverRequired), findsOneWidget);
@@ -64,19 +85,24 @@ void main() {
 
   testWidgets('chip plus text come back as one prompt', (tester) async {
     String? result;
-    await tester.pumpWidget(TranslationProvider(
-      child: MaterialApp(
-        locale: const Locale('he'),
-        supportedLocales: AppLocaleUtils.supportedLocales,
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        home: Builder(
-          builder: (context) => TextButton(
-            onPressed: () async => result = await showCoverPromptSheet(context, bookTitle: 'שבת'),
-            child: const Text('open'),
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: MaterialApp(
+          locale: const Locale('he'),
+          supportedLocales: AppLocaleUtils.supportedLocales,
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async => result = await showCoverPromptSheet(
+                context,
+                bookTitle: 'שבת',
+              ),
+              child: const Text('open'),
+            ),
           ),
         ),
       ),
-    ));
+    );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     await tester.tap(find.text(t.image.themeIndulgent));

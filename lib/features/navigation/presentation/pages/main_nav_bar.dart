@@ -30,23 +30,36 @@ class _MainNavBarState extends State<MainNavBar> {
   /// twice. A different account signing in gets its own offer.
   static String? _tourOfferedTo;
 
+  /// The five tabs, built once per locale. Rebuilding them on every tab
+  /// switch — as a setState here once did — re-ran the build of all five,
+  /// hidden ones included, with their filtering and price estimates.
+  List<Widget>? _pages;
+  AppLocale? _pagesLocale;
+
   @override
   void initState() {
     super.initState();
     // The main screen is where a signed-in session lands: the token goes
     // to the log each time, so a test push always has a fresh one to use.
     FirebaseService().logPushToken();
-    MainTabs.index.addListener(_onTabChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _offerFirstRunTour());
   }
 
-  @override
-  void dispose() {
-    MainTabs.index.removeListener(_onTabChanged);
-    super.dispose();
+  List<Widget> _pagesFor(AppLocale locale) {
+    if (_pagesLocale == locale && _pages != null) return _pages!;
+    _pagesLocale = locale;
+    // Keying each tab by locale remounts them — and so re-reads the global
+    // `t` they build with — the moment the language changes, while leaving
+    // them untouched on every other rebuild.
+    // Recipes lead: they are the home tab, with the books right after them.
+    return _pages = [
+      MyRecipesPage(key: ValueKey('recipes-$locale')),
+      LibraryPage(key: ValueKey('library-$locale')),
+      MealPlannerPage(key: ValueKey('mealPlanner-$locale')),
+      GroceryListPage(key: ValueKey('groceries-$locale')),
+      CommunityPage(key: ValueKey('community-$locale')),
+    ];
   }
-
-  void _onTabChanged() => setState(() {});
 
   /// A new account is walked through the app once. Finished or closed, the
   /// flag is saved with the preferences so it never comes back on its own —
@@ -65,7 +78,9 @@ class _MainNavBarState extends State<MainNavBar> {
       firstRunWalkthrough(),
       onDone: (_) async {
         final latest = await preferences.getPreferences();
-        await preferences.savePreferences(latest.copyWith(walkthroughSeen: true));
+        await preferences.savePreferences(
+          latest.copyWith(walkthroughSeen: true),
+        );
       },
     );
   }
@@ -77,65 +92,55 @@ class _MainNavBarState extends State<MainNavBar> {
     // const instance, so Flutter skips it when only the locale changed and the
     // labels stayed stale until something else forced a rebuild.
     final t = context.t;
-    final index = MainTabs.index.value;
-
-    // Keying each tab by locale remounts them — and so re-reads the global `t`
-    // they build with — the moment the language changes, while leaving them
-    // untouched on every other rebuild. Const instances would be identical
-    // across builds, which is what left the tabs in the old language.
-    final locale = LocaleSettings.currentLocale;
-    // Recipes lead: they are the home tab, with the books right after them.
-    final pages = [
-      MyRecipesPage(key: ValueKey('recipes-$locale')),
-      LibraryPage(key: ValueKey('library-$locale')),
-      MealPlannerPage(key: ValueKey('mealPlanner-$locale')),
-      GroceryListPage(key: ValueKey('groceries-$locale')),
-      CommunityPage(key: ValueKey('community-$locale')),
+    final pages = _pagesFor(LocaleSettings.currentLocale);
+    final destinations = [
+      ClayNavDestination(
+        icon: Icons.receipt_long_rounded,
+        label: t.nav.recipes,
+      ),
+      ClayNavDestination(
+        icon: Icons.library_books_rounded,
+        label: t.nav.library,
+      ),
+      ClayNavDestination(
+        icon: Icons.calendar_today_rounded,
+        label: t.nav.mealPlan,
+      ),
+      ClayNavDestination(
+        icon: Icons.shopping_cart_rounded,
+        label: t.nav.groceries,
+      ),
+      ClayNavDestination(icon: Icons.groups_rounded, label: t.nav.community),
     ];
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // The dock floats above the content rather than displacing it, so pages
-      // reserve ClayNavDock.bottomPadding at the bottom of their scroll views.
-      body: Stack(
-        children: [
-          IndexedStack(index: index, children: pages),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              // Android needs the gesture-bar inset; on iOS the dock's own
-              // bottom margin already clears the home indicator, so reserving
-              // it again just floats the dock too high.
-              bottom: defaultTargetPlatform == TargetPlatform.android,
-              child: ClayNavDock(
-                selectedIndex: index,
-                onSelected: (selected) => MainTabs.index.value = selected,
-                destinations: [
-                  ClayNavDestination(
-                    icon: Icons.receipt_long_rounded,
-                    label: t.nav.recipes,
-                  ),
-                  ClayNavDestination(
-                    icon: Icons.library_books_rounded,
-                    label: t.nav.library,
-                  ),
-                  ClayNavDestination(
-                    icon: Icons.calendar_today_rounded,
-                    label: t.nav.mealPlan,
-                  ),
-                  ClayNavDestination(
-                    icon: Icons.shopping_cart_rounded,
-                    label: t.nav.groceries,
-                  ),
-                  ClayNavDestination(
-                    icon: Icons.groups_rounded,
-                    label: t.nav.community,
-                  ),
-                ],
+    // Only the stack's index and the dock follow a tab switch; the pages
+    // themselves are the same instances and are left alone.
+    return ValueListenableBuilder<int>(
+      valueListenable: MainTabs.index,
+      builder: (context, index, _) => Scaffold(
+        backgroundColor: AppColors.background,
+        // The dock floats above the content rather than displacing it, so
+        // pages reserve ClayNavDock.bottomPadding at the bottom of their
+        // scroll views.
+        body: Stack(
+          children: [
+            IndexedStack(index: index, children: pages),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                // Android needs the gesture-bar inset; on iOS the dock's own
+                // bottom margin already clears the home indicator, so
+                // reserving it again just floats the dock too high.
+                bottom: defaultTargetPlatform == TargetPlatform.android,
+                child: ClayNavDock(
+                  selectedIndex: index,
+                  onSelected: (selected) => MainTabs.index.value = selected,
+                  destinations: destinations,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

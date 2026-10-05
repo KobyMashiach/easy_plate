@@ -80,12 +80,12 @@ abstract class AppColors {
   /// Tag colours per dietary preference, keyed by [DietaryPreference.name].
   /// Pairs are (container, onContainer) drawn from the palette above.
   static Map<String, (Color, Color)> get dietaryTagColors => {
-        'meat': (errorContainer, onErrorContainer),
-        'dairy': (infoContainer, onInfoContainer),
-        'vegetarian': (secondaryContainer, onSecondaryContainer),
-        'vegan': (secondaryFixedDim, onSecondaryFixed),
-        'kosher': (tertiaryFixed, onTertiaryFixedVariant),
-        'glutenFree': (primaryFixed, onPrimaryFixedVariant),
-        'allergy': (surfaceContainerHighest, onSurfaceVariant),
-      };
+    'meat': (errorContainer, onErrorContainer),
+    'dairy': (infoContainer, onInfoContainer),
+    'vegetarian': (secondaryContainer, onSecondaryContainer),
+    'vegan': (secondaryFixedDim, onSecondaryFixed),
+    'kosher': (tertiaryFixed, onTertiaryFixedVariant),
+    'glutenFree': (primaryFixed, onPrimaryFixedVariant),
+    'allergy': (surfaceContainerHighest, onSurfaceVariant),
+  };
 }

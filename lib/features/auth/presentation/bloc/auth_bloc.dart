@@ -22,13 +22,18 @@ part 'auth_bloc.freezed.dart';
 
 @freezed
 sealed class AuthEvent with _$AuthEvent {
-  const factory AuthEvent.signInWithEmail(String email, String password) = _SignInWithEmail;
-  const factory AuthEvent.registerWithEmail(String email, String password) = _RegisterWithEmail;
+  const factory AuthEvent.signInWithEmail(String email, String password) =
+      _SignInWithEmail;
+  const factory AuthEvent.registerWithEmail(String email, String password) =
+      _RegisterWithEmail;
   const factory AuthEvent.signInWithGoogle() = _SignInWithGoogle;
   const factory AuthEvent.signInWithApple() = _SignInWithApple;
-  const factory AuthEvent.startPhoneVerification(String phoneNumber) = _StartPhoneVerification;
-  const factory AuthEvent.confirmPhoneCode(String verificationId, String smsCode) =
-      _ConfirmPhoneCode;
+  const factory AuthEvent.startPhoneVerification(String phoneNumber) =
+      _StartPhoneVerification;
+  const factory AuthEvent.confirmPhoneCode(
+    String verificationId,
+    String smsCode,
+  ) = _ConfirmPhoneCode;
   const factory AuthEvent.sendPasswordReset(String email) = _SendPasswordReset;
   const factory AuthEvent.signOut() = _SignOut;
 }
@@ -39,7 +44,8 @@ sealed class AuthState with _$AuthState {
   const factory AuthState.loading() = AuthLoading;
 
   /// The SMS is out; the UI moves on to the code screen with this id.
-  const factory AuthState.codeSent(String verificationId, String phoneNumber) = AuthCodeSent;
+  const factory AuthState.codeSent(String verificationId, String phoneNumber) =
+      AuthCodeSent;
 
   /// Firebase accepted the credentials. Routing is driven by
   /// [AuthSessionService], so this only tells the screen to stop spinning.
@@ -92,7 +98,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       registerWithEmailUseCase: RegisterWithEmailUseCase(context.read()),
       signInWithGoogleUseCase: SignInWithGoogleUseCase(context.read()),
       signInWithAppleUseCase: SignInWithAppleUseCase(context.read()),
-      startPhoneVerificationUseCase: StartPhoneVerificationUseCase(context.read()),
+      startPhoneVerificationUseCase: StartPhoneVerificationUseCase(
+        context.read(),
+      ),
       confirmPhoneCodeUseCase: ConfirmPhoneCodeUseCase(context.read()),
       sendPasswordResetUseCase: SendPasswordResetUseCase(context.read()),
       signOutUseCase: SignOutUseCase(context.read()),
@@ -101,7 +109,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   /// Cancelling a Google or Apple sheet is a normal gesture, not a failure, so
   /// it returns the form to rest instead of showing an error.
-  Future<void> _run(Emitter<AuthState> emit, Future<void> Function() action) async {
+  Future<void> _run(
+    Emitter<AuthState> emit,
+    Future<void> Function() action,
+  ) async {
     emit(const AuthState.loading());
     try {
       await action();
@@ -109,58 +120,85 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       debugPrint('Auth error: $e');
       // The Firebase code when there is one, else the error type — the screen
       // translates either.
-      emit(e.type == AppErrorType.cancelled
-          ? const AuthState.idle()
-          : AuthState.errorMessage(e.message.isNotEmpty ? e.message : e.type.name));
+      emit(
+        e.type == AppErrorType.cancelled
+            ? const AuthState.idle()
+            : AuthState.errorMessage(
+                e.message.isNotEmpty ? e.message : e.type.name,
+              ),
+      );
     } catch (e) {
       debugPrint('Auth error: $e');
       emit(AuthState.errorMessage(e.toString()));
     }
   }
 
-  Future<void> _signInWithEmail(_SignInWithEmail event, Emitter<AuthState> emit) {
+  Future<void> _signInWithEmail(
+    _SignInWithEmail event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
       await signInWithEmailUseCase(event.email, event.password);
       emit(const AuthState.authenticated());
     });
   }
 
-  Future<void> _registerWithEmail(_RegisterWithEmail event, Emitter<AuthState> emit) {
+  Future<void> _registerWithEmail(
+    _RegisterWithEmail event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
       await registerWithEmailUseCase(event.email, event.password);
       emit(const AuthState.authenticated());
     });
   }
 
-  Future<void> _signInWithGoogle(_SignInWithGoogle event, Emitter<AuthState> emit) {
+  Future<void> _signInWithGoogle(
+    _SignInWithGoogle event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
       await signInWithGoogleUseCase();
       emit(const AuthState.authenticated());
     });
   }
 
-  Future<void> _signInWithApple(_SignInWithApple event, Emitter<AuthState> emit) {
+  Future<void> _signInWithApple(
+    _SignInWithApple event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
       await signInWithAppleUseCase();
       emit(const AuthState.authenticated());
     });
   }
 
-  Future<void> _startPhoneVerification(_StartPhoneVerification event, Emitter<AuthState> emit) {
+  Future<void> _startPhoneVerification(
+    _StartPhoneVerification event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
-      final verificationId = await startPhoneVerificationUseCase(event.phoneNumber);
+      final verificationId = await startPhoneVerificationUseCase(
+        event.phoneNumber,
+      );
       emit(AuthState.codeSent(verificationId, event.phoneNumber));
     });
   }
 
-  Future<void> _confirmPhoneCode(_ConfirmPhoneCode event, Emitter<AuthState> emit) {
+  Future<void> _confirmPhoneCode(
+    _ConfirmPhoneCode event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
       await confirmPhoneCodeUseCase(event.verificationId, event.smsCode);
       emit(const AuthState.authenticated());
     });
   }
 
-  Future<void> _sendPasswordReset(_SendPasswordReset event, Emitter<AuthState> emit) {
+  Future<void> _sendPasswordReset(
+    _SendPasswordReset event,
+    Emitter<AuthState> emit,
+  ) {
     return _run(emit, () async {
       await sendPasswordResetUseCase(event.email);
       emit(const AuthState.passwordResetSent());

@@ -291,10 +291,10 @@ class AppDialog extends StatelessWidget {
       // Settles in from slightly small and below, the way a clay surface
       // would land, rather than Material's fade.
       transitionBuilder: (_, animation, _, child) {
-        final curved = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutBack,
-        );
+        // A drive, not a CurvedAnimation: this builder runs on every tick
+        // of the transition, and a CurvedAnimation registers itself on the
+        // route's animation each time and is never disposed.
+        final curved = animation.drive(CurveTween(curve: Curves.easeOutBack));
         return FadeTransition(
           opacity: animation,
           child: ScaleTransition(
@@ -575,6 +575,14 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
     duration: const Duration(milliseconds: 380),
     reverseDuration: const Duration(milliseconds: 220),
   );
+
+  /// Built once: a CurvedAnimation listens to its parent, so one per build
+  /// piled listeners onto the controller for as long as the notice lived.
+  late final CurvedAnimation _entrance = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOutBack,
+    reverseCurve: Curves.easeIn,
+  );
   Timer? _timer;
 
   @override
@@ -596,6 +604,7 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _timer?.cancel();
+    _entrance.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -603,11 +612,7 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final dialog = widget.dialog;
-    final entrance = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
-      reverseCurve: Curves.easeIn,
-    );
+    final entrance = _entrance;
 
     return SafeArea(
       child: Align(

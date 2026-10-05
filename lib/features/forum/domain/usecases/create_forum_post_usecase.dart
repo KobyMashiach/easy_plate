@@ -10,12 +10,11 @@ class CreateForumPostUseCase {
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
-  }) =>
-      repository.createPost(
-        title: title,
-        body: body,
-        authorUid: authorUid,
-        authorName: authorName,
-        authorPhotoUrl: authorPhotoUrl,
-      );
+  }) => repository.createPost(
+    title: title,
+    body: body,
+    authorUid: authorUid,
+    authorName: authorName,
+    authorPhotoUrl: authorPhotoUrl,
+  );
 }

@@ -27,14 +27,24 @@ void main() {
       expect(type, AppErrorType.overloaded);
     });
 
-    test('a 429 whose body never parsed is treated as capacity, not as quota', () {
-      expect(HttpCalls.errorTypeFor(429, 'upstream said no'), AppErrorType.overloaded);
-      expect(HttpCalls.errorTypeFor(429, null), AppErrorType.overloaded);
-    });
+    test(
+      'a 429 whose body never parsed is treated as capacity, not as quota',
+      () {
+        expect(
+          HttpCalls.errorTypeFor(429, 'upstream said no'),
+          AppErrorType.overloaded,
+        );
+        expect(HttpCalls.errorTypeFor(429, null), AppErrorType.overloaded);
+      },
+    );
 
     test('the server errors the proxy returns stay retryable', () {
       for (final status in [500, 502, 503, 504, 529]) {
-        expect(HttpCalls.errorTypeFor(status, null), AppErrorType.overloaded, reason: '$status');
+        expect(
+          HttpCalls.errorTypeFor(status, null),
+          AppErrorType.overloaded,
+          reason: '$status',
+        );
       }
     });
 

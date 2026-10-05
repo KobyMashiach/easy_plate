@@ -26,7 +26,10 @@ class RespondToShareInviteUseCase {
 
   /// This account's cache of [collab], under a fresh id. Shared with the
   /// book and plan flows, which let a member into every recipe inside.
-  static RecipeEntity localCopy(CollabRecipeEntity collab, {required CollabRole role}) {
+  static RecipeEntity localCopy(
+    CollabRecipeEntity collab, {
+    required CollabRole role,
+  }) {
     return RecipeEntity(
       id: _uuid.v4(),
       title: collab.recipe.title,
@@ -50,5 +53,6 @@ class RespondToShareInviteUseCase {
     );
   }
 
-  Future<void> decline(ShareInviteEntity invite) => sharing.declineInvite(invite);
+  Future<void> decline(ShareInviteEntity invite) =>
+      sharing.declineInvite(invite);
 }

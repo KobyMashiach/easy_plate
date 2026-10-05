@@ -17,7 +17,11 @@ class RecipeBookPage extends StatelessWidget {
   final RecipeEntity recipe;
   final int pageNumber;
 
-  const RecipeBookPage({super.key, required this.recipe, required this.pageNumber});
+  const RecipeBookPage({
+    super.key,
+    required this.recipe,
+    required this.pageNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +56,10 @@ class RecipeBookPage extends StatelessWidget {
                       runSpacing: AppSpacing.base,
                       children: [
                         for (final tag in recipe.dietaryTags)
-                          if (dietaryColors(tag) case (final background, final foreground))
+                          if (dietaryColors(tag) case (
+                            final background,
+                            final foreground,
+                          ))
                             ClayTag(
                               label: dietaryLabel(tag),
                               icon: dietaryIcon(tag),
@@ -68,11 +75,13 @@ class RecipeBookPage extends StatelessWidget {
                     runSpacing: AppSpacing.base,
                     children: [
                       ClayTag(
-                        label: '${t.recipe.prepTime} · ${optionalDurationLabel(recipe.prepTimeMinutes)}',
+                        label:
+                            '${t.recipe.prepTime} · ${optionalDurationLabel(recipe.prepTimeMinutes)}',
                         icon: Icons.timer_rounded,
                       ),
                       ClayTag(
-                        label: '${t.recipe.cookTime} · ${optionalDurationLabel(recipe.cookTimeMinutes)}',
+                        label:
+                            '${t.recipe.cookTime} · ${optionalDurationLabel(recipe.cookTimeMinutes)}',
                         icon: Icons.local_fire_department_rounded,
                         background: AppColors.secondaryContainer,
                         foreground: AppColors.onSecondaryContainer,
@@ -87,20 +96,31 @@ class RecipeBookPage extends StatelessWidget {
                         ? kMissingInfoPlaceholder
                         : ingredient.displayAmount;
                     final unit = measurementUnitLabel(ingredient.unit);
-                    final line =
-                        [amount, unit, ingredient.name].where((s) => s.isNotEmpty).join(' ');
+                    final line = [
+                      amount,
+                      unit,
+                      ingredient.name,
+                    ].where((s) => s.isNotEmpty).join(' ');
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.xs,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 7),
-                            child: Icon(Icons.circle, size: 6, color: AppColors.primary),
+                            child: Icon(
+                              Icons.circle,
+                              size: 6,
+                              color: AppColors.primary,
+                            ),
                           ),
                           const SizedBox(width: AppSpacing.sm),
-                          Expanded(child: Text(line, style: AppTextStyles.bodyMd)),
+                          Expanded(
+                            child: Text(line, style: AppTextStyles.bodyMd),
+                          ),
                         ],
                       ),
                     );
@@ -109,34 +129,39 @@ class RecipeBookPage extends StatelessWidget {
                   BookPageHeading(title: t.recipe.instructions),
                   const SizedBox(height: AppSpacing.base),
                   ...recipe.steps.asMap().entries.map(
-                        (entry) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 26,
-                                height: 26,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryFixed,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  '${entry.key + 1}',
-                                  style: AppTextStyles.labelSm.copyWith(
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.sm),
-                              Expanded(
-                                child: Text(entry.value, style: AppTextStyles.bodyMd),
-                              ),
-                            ],
-                          ),
-                        ),
+                    (entry) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.base,
                       ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 26,
+                            height: 26,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryFixed,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '${entry.key + 1}',
+                              style: AppTextStyles.labelSm.copyWith(
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              entry.value,
+                              style: AppTextStyles.bodyMd,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -151,8 +176,6 @@ class RecipeBookPage extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 /// A section heading on a book page: primary text over a double rule.
@@ -166,7 +189,9 @@ class BookPageHeading extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(bottom: AppSpacing.base),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.primaryFixed, width: 2)),
+        border: Border(
+          bottom: BorderSide(color: AppColors.primaryFixed, width: 2),
+        ),
       ),
       child: Text(
         title,

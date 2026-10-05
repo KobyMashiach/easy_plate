@@ -24,6 +24,17 @@ class AppNotificationEntity {
   final String? message;
   final String? feedbackExcerpt;
   final String? title;
+
+  /// The thread and the reply, for [AppNotificationType.forumReply]: what
+  /// a tap opens and scrolls to. [postTitle] and [excerpt] are copied at
+  /// write time so the row reads without a lookup; [onMyPost] says whether
+  /// the reply is to a thread this account opened or one it only joined.
+  final String? postId;
+  final String? replyId;
+  final String? postTitle;
+  final String? excerpt;
+  final bool onMyPost;
+
   final bool read;
   final DateTime createdAt;
 
@@ -43,6 +54,11 @@ class AppNotificationEntity {
     this.message,
     this.feedbackExcerpt,
     this.title,
+    this.postId,
+    this.replyId,
+    this.postTitle,
+    this.excerpt,
+    this.onMyPost = false,
   });
 
   AppNotificationEntity withFromName(String name) => AppNotificationEntity(
@@ -59,6 +75,11 @@ class AppNotificationEntity {
     message: message,
     feedbackExcerpt: feedbackExcerpt,
     title: title,
+    postId: postId,
+    replyId: replyId,
+    postTitle: postTitle,
+    excerpt: excerpt,
+    onMyPost: onMyPost,
     read: read,
     createdAt: createdAt,
   );

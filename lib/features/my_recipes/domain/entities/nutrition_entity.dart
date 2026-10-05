@@ -16,23 +16,29 @@ class NutritionEntity {
     required this.fatGrams,
   });
 
-  static const zero = NutritionEntity(calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0);
+  static const zero = NutritionEntity(
+    calories: 0,
+    proteinGrams: 0,
+    carbsGrams: 0,
+    fatGrams: 0,
+  );
 
-  bool get isEmpty => calories == 0 && proteinGrams == 0 && carbsGrams == 0 && fatGrams == 0;
+  bool get isEmpty =>
+      calories == 0 && proteinGrams == 0 && carbsGrams == 0 && fatGrams == 0;
 
   NutritionEntity operator +(NutritionEntity other) => NutritionEntity(
-        calories: calories + other.calories,
-        proteinGrams: proteinGrams + other.proteinGrams,
-        carbsGrams: carbsGrams + other.carbsGrams,
-        fatGrams: fatGrams + other.fatGrams,
-      );
+    calories: calories + other.calories,
+    proteinGrams: proteinGrams + other.proteinGrams,
+    carbsGrams: carbsGrams + other.carbsGrams,
+    fatGrams: fatGrams + other.fatGrams,
+  );
 
   NutritionEntity scaled(double factor) => NutritionEntity(
-        calories: (calories * factor).round(),
-        proteinGrams: proteinGrams * factor,
-        carbsGrams: carbsGrams * factor,
-        fatGrams: fatGrams * factor,
-      );
+    calories: (calories * factor).round(),
+    proteinGrams: proteinGrams * factor,
+    carbsGrams: carbsGrams * factor,
+    fatGrams: fatGrams * factor,
+  );
 
   /// Calories the three macros account for (4/4/9 kcal per gram). Usually a
   /// little under [calories] — alcohol, fibre and rounding make up the rest.
@@ -52,11 +58,11 @@ class NutritionEntity {
 
   /// The shape every Firestore document carries it in (`nutrition` field).
   Map<String, dynamic> toJson() => {
-        'calories': calories,
-        'proteinGrams': proteinGrams,
-        'carbsGrams': carbsGrams,
-        'fatGrams': fatGrams,
-      };
+    'calories': calories,
+    'proteinGrams': proteinGrams,
+    'carbsGrams': carbsGrams,
+    'fatGrams': fatGrams,
+  };
 
   /// Null for a document written before nutrition existed, or one carrying
   /// garbage in the field.

@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/api_config.dart';
@@ -24,13 +23,21 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
   bool get _useFakeData => kDebugMode && !ApiConfig.isConfigured;
 
   @override
-  Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> preferences) {
-    if (_useFakeData) return Future.value(fakeParsedRecipe(RecipeIngestionChannel.rawText));
+  Future<RecipeEntity> parseRawText(
+    String text,
+    List<DietaryPreference> preferences,
+  ) {
+    if (_useFakeData) {
+      return Future.value(fakeParsedRecipe(RecipeIngestionChannel.rawText));
+    }
     return aiDataSource.parseRawText(text, preferences);
   }
 
   @override
-  Future<List<WebSearchResultEntity>> searchWeb(String query, List<DietaryPreference> preferences) {
+  Future<List<WebSearchResultEntity>> searchWeb(
+    String query,
+    List<DietaryPreference> preferences,
+  ) {
     if (_useFakeData) return Future.value(fakeWebSearchResults);
     return aiDataSource.searchWeb(query, preferences);
   }
@@ -40,7 +47,10 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
   /// default. Tried before the fake-data branch on purpose, so a URL import
   /// works even with no key configured.
   @override
-  Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences) async {
+  Future<RecipeEntity> parseFromUrl(
+    String url,
+    List<DietaryPreference> preferences,
+  ) async {
     final structured = await _structuredFromPage(url);
     if (structured != null) return structured;
 
@@ -62,16 +72,26 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
   }
 
   @override
-  Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) {
+  Future<RecipeEntity> parseFromSocialVideo(
+    String url,
+    List<DietaryPreference> preferences,
+  ) {
     if (_useFakeData) {
-      return Future.value(fakeParsedRecipe(RecipeIngestionChannel.socialVideo, sourceUrl: url));
+      return Future.value(
+        fakeParsedRecipe(RecipeIngestionChannel.socialVideo, sourceUrl: url),
+      );
     }
     return aiDataSource.parseFromSocialVideo(url, preferences);
   }
 
   @override
-  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) {
-    if (_useFakeData) return Future.value(fakeParsedRecipe(RecipeIngestionChannel.aiRequest));
+  Future<RecipeEntity> generateRecipe(
+    String request,
+    List<DietaryPreference> preferences,
+  ) {
+    if (_useFakeData) {
+      return Future.value(fakeParsedRecipe(RecipeIngestionChannel.aiRequest));
+    }
     return aiDataSource.generateRecipe(request, preferences);
   }
 
@@ -85,7 +105,10 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
       webPageDataSource.fetch(url);
 
   @override
-  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) {
+  Future<RecipeEntity> refineRecipe(
+    RecipeEntity recipe, {
+    required bool timesChanged,
+  }) {
     return aiDataSource.refineRecipe(recipe, timesChanged: timesChanged);
   }
 
@@ -94,8 +117,10 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
       aiDataSource.estimateNutrition(recipe);
 
   @override
-  Future<Uint8List> generateImage(String prompt) => aiDataSource.generateImage(prompt);
+  Future<Uint8List> generateImage(String prompt) =>
+      aiDataSource.generateImage(prompt);
 
   @override
-  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) => aiDataSource.scanReceipt(pages);
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) =>
+      aiDataSource.scanReceipt(pages);
 }

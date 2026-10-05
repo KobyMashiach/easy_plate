@@ -15,7 +15,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeProfiles implements UserProfileRepository {
   @override
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) async {}
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  }) async {}
 
   @override
   Future<String?> blockMessage(String uid) async => null;
@@ -24,7 +28,9 @@ class _FakeProfiles implements UserProfileRepository {
   Set<String>? lastRequested;
 
   @override
-  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) async {
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(
+    Set<String> uids,
+  ) async {
     lastRequested = uids;
     return {
       for (final entry in public.entries)
@@ -56,12 +62,16 @@ class _FakeForumSource implements ForumRemoteDataSource {
   List<ForumReplyEntity> replies = [];
 
   @override
-  Future<List<ForumPostEntity>> getPosts({required String viewerUid, int limit = 50}) async =>
-      posts;
+  Future<List<ForumPostEntity>> getPosts({
+    required String viewerUid,
+    int limit = 50,
+  }) async => posts;
 
   @override
-  Future<List<ForumReplyEntity>> getReplies(String postId, {required String viewerUid}) async =>
-      replies;
+  Future<List<ForumReplyEntity>> getReplies(
+    String postId, {
+    required String viewerUid,
+  }) async => replies;
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -74,12 +84,13 @@ class _FakeSharedSource implements SharedRecipesRemoteDataSource {
   Future<List<SharedRecipeEntity>> getFeed({
     required String viewerUid,
     int limit = 50,
-  }) async =>
-      feed;
+  }) async => feed;
 
   @override
-  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async =>
-      feed.where((r) => r.id == id).firstOrNull;
+  Future<SharedRecipeEntity?> getById(
+    String id, {
+    required String viewerUid,
+  }) async => feed.where((r) => r.id == id).firstOrNull;
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -97,22 +108,24 @@ ForumPostEntity buildPost({String uid = 'u1', String storedName = 'שם ישן'}
       replyCount: 2,
     );
 
-SharedRecipeEntity buildShared({String uid = 'u1', String storedName = 'שם ישן'}) =>
-    SharedRecipeEntity(
-      id: 's1',
-      authorUid: uid,
-      authorName: storedName,
-      authorPhotoUrl: 'https://old/photo.jpg',
-      likeCount: 7,
-      createdAt: DateTime(2026, 1, 1),
-      recipe: RecipeEntity(
-        id: 's1',
-        title: 'שקשוקה',
-        ingredients: const [],
-        steps: const [],
-        createdAt: DateTime(2026, 1, 1),
-      ),
-    );
+SharedRecipeEntity buildShared({
+  String uid = 'u1',
+  String storedName = 'שם ישן',
+}) => SharedRecipeEntity(
+  id: 's1',
+  authorUid: uid,
+  authorName: storedName,
+  authorPhotoUrl: 'https://old/photo.jpg',
+  likeCount: 7,
+  createdAt: DateTime(2026, 1, 1),
+  recipe: RecipeEntity(
+    id: 's1',
+    title: 'שקשוקה',
+    ingredients: const [],
+    steps: const [],
+    createdAt: DateTime(2026, 1, 1),
+  ),
+);
 
 void main() {
   late _FakeProfiles profiles;
@@ -131,20 +144,23 @@ void main() {
       );
     });
 
-    test("a post shows the author's current name, not the stored one", () async {
-      source.posts = [buildPost()];
-      profiles.public = {
-        'u1': const PublicProfileEntity(
-          uid: 'u1',
-          fullName: 'שם חדש',
-          photoUrl: 'https://new/photo.jpg',
-        ),
-      };
+    test(
+      "a post shows the author's current name, not the stored one",
+      () async {
+        source.posts = [buildPost()];
+        profiles.public = {
+          'u1': const PublicProfileEntity(
+            uid: 'u1',
+            fullName: 'שם חדש',
+            photoUrl: 'https://new/photo.jpg',
+          ),
+        };
 
-      final posts = await repository.getPosts(viewerUid: 'me');
-      expect(posts.single.authorName, 'שם חדש');
-      expect(posts.single.authorPhotoUrl, 'https://new/photo.jpg');
-    });
+        final posts = await repository.getPosts(viewerUid: 'me');
+        expect(posts.single.authorName, 'שם חדש');
+        expect(posts.single.authorPhotoUrl, 'https://new/photo.jpg');
+      },
+    );
 
     test('an author with no public profile keeps the stored name', () async {
       // Accounts that existed before public profiles, and deleted ones, would
@@ -223,15 +239,18 @@ void main() {
       expect(feed.single.recipe.title, 'שקשוקה');
     });
 
-    test('getById resolves too, so a forum link opens with the live name', () async {
-      source.feed = [buildShared()];
-      profiles.public = {
-        'u1': const PublicProfileEntity(uid: 'u1', fullName: 'שם חדש'),
-      };
+    test(
+      'getById resolves too, so a forum link opens with the live name',
+      () async {
+        source.feed = [buildShared()];
+        profiles.public = {
+          'u1': const PublicProfileEntity(uid: 'u1', fullName: 'שם חדש'),
+        };
 
-      final shared = await repository.getById('s1', viewerUid: 'me');
-      expect(shared?.authorName, 'שם חדש');
-    });
+        final shared = await repository.getById('s1', viewerUid: 'me');
+        expect(shared?.authorName, 'שם חדש');
+      },
+    );
 
     test('one lookup covers every author on the page', () async {
       source.feed = [

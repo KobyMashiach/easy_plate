@@ -20,17 +20,18 @@ class WebPageDataSourceImpl implements WebPageDataSource {
   final HttpCalls httpCalls;
 
   WebPageDataSourceImpl({HttpCalls? httpCalls})
-      : httpCalls = httpCalls ??
-            HttpCalls(
-              // Plenty of recipe sites answer a bare client with a bot wall;
-              // a browser user agent gets the same page a person sees.
-              headers: const {
-                'User-Agent':
-                    'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) '
-                        'Chrome/124.0 Mobile Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml',
-              },
-            );
+    : httpCalls =
+          httpCalls ??
+          HttpCalls(
+            // Plenty of recipe sites answer a bare client with a bot wall;
+            // a browser user agent gets the same page a person sees.
+            headers: const {
+              'User-Agent':
+                  'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/124.0 Mobile Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml',
+            },
+          );
 
   @override
   Future<OriginalRecipePageEntity> fetch(String url) async {
@@ -44,7 +45,10 @@ class WebPageDataSourceImpl implements WebPageDataSource {
     // A page can legitimately have JSON-LD and near-empty visible text (a
     // JavaScript-rendered site). Only give up when there is neither.
     if (readable.isEmpty && structured == null) {
-      throw const AppException(AppErrorType.parsingFailed, message: 'Page had no readable text');
+      throw const AppException(
+        AppErrorType.parsingFailed,
+        message: 'Page had no readable text',
+      );
     }
 
     return OriginalRecipePageEntity(

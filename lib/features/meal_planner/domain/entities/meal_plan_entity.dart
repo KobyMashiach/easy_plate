@@ -12,6 +12,14 @@ class MealPlanEntity {
   final String? collabId;
   final CollabRole? collabRole;
 
+  /// The language this record's text is written in, as an [AppLanguage]
+  /// name. Null for records saved before translation existed.
+  final String? contentLang;
+
+  /// Bumped when the text is edited; see the model's field of the same
+  /// name. A translation made from this version stays good until it moves.
+  final int contentVersion;
+
   const MealPlanEntity({
     required this.id,
     required this.name,
@@ -19,6 +27,8 @@ class MealPlanEntity {
     required this.createdAt,
     this.collabId,
     this.collabRole,
+    this.contentLang,
+    this.contentVersion = 0,
   });
 
   bool get isShared => collabId != null;
@@ -40,6 +50,8 @@ class MealPlanEntity {
     CollabRole? collabRole,
     // Both are null for "unchanged", so dropping the share needs a flag.
     bool clearCollab = false,
+    String? contentLang,
+    int? contentVersion,
   }) {
     return MealPlanEntity(
       id: id,
@@ -48,6 +60,8 @@ class MealPlanEntity {
       collabId: clearCollab ? null : (collabId ?? this.collabId),
       collabRole: clearCollab ? null : (collabRole ?? this.collabRole),
       createdAt: createdAt,
+      contentLang: contentLang ?? this.contentLang,
+      contentVersion: contentVersion ?? this.contentVersion,
     );
   }
 }

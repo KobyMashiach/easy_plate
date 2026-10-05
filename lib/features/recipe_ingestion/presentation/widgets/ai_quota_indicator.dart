@@ -50,7 +50,9 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
           premium: premium,
         );
         final blocked = remaining == 0;
-        final foreground = blocked ? AppColors.onSurfaceVariant : AppColors.primary;
+        final foreground = blocked
+            ? AppColors.onSurfaceVariant
+            : AppColors.primary;
 
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -60,7 +62,9 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
               vertical: AppSpacing.base,
             ),
             decoration: ShapeDecoration(
-              color: blocked ? AppColors.surfaceContainerHighest : AppColors.primaryFixed,
+              color: blocked
+                  ? AppColors.surfaceContainerHighest
+                  : AppColors.primaryFixed,
               shape: const StadiumBorder(),
             ),
             child: Row(
@@ -69,8 +73,8 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
                   blocked
                       ? Icons.lock_outline_rounded
                       : premium
-                          ? Icons.auto_awesome_rounded
-                          : Icons.play_circle_outline_rounded,
+                      ? Icons.auto_awesome_rounded
+                      : Icons.play_circle_outline_rounded,
                   size: 16,
                   color: foreground,
                 ),
@@ -84,9 +88,13 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
                             ? t.ads.aiQuotaReached
                             : t.ads.aiQuotaLeft(
                                 remaining: remaining,
-                                total: limits.aiExtractionsFor(premium: premium),
+                                total: limits.aiExtractionsFor(
+                                  premium: premium,
+                                ),
                               ),
-                        style: AppTextStyles.labelSm.copyWith(color: foreground),
+                        style: AppTextStyles.labelSm.copyWith(
+                          color: foreground,
+                        ),
                       ),
                       // The video hint is a free-account thing.
                       if (!blocked && !premium)

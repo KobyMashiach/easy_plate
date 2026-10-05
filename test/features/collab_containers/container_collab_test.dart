@@ -24,7 +24,8 @@ import 'package:flutter_test/flutter_test.dart';
 const owner = 'owner-uid';
 const friend = 'friend-uid';
 
-RecipeEntity recipe(String id, {String? collabId, CollabRole? role}) => RecipeEntity(
+RecipeEntity recipe(String id, {String? collabId, CollabRole? role}) =>
+    RecipeEntity(
       id: id,
       title: 'Recipe $id',
       ingredients: const [],
@@ -36,16 +37,23 @@ RecipeEntity recipe(String id, {String? collabId, CollabRole? role}) => RecipeEn
 
 class _Recipes implements RecipesRepository {
   final Map<String, RecipeEntity> stored;
-  _Recipes(Iterable<RecipeEntity> initial) : stored = {for (final r in initial) r.id: r};
+  _Recipes(Iterable<RecipeEntity> initial)
+    : stored = {for (final r in initial) r.id: r};
 
   @override
   Future<List<RecipeEntity>> getRecipes() async => stored.values.toList();
   @override
   Future<RecipeEntity?> getRecipeById(String id) async => stored[id];
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async => stored[recipe.id] = recipe;
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async => stored[recipe.id] = recipe;
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async => recipe;
+  Future<RecipeEntity> readyForSharing(
+    RecipeEntity recipe, {
+    bool persist = true,
+  }) async => recipe;
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -56,7 +64,10 @@ class _Sharing implements RecipeSharingRepository {
   final Map<String, CollabRecipeEntity> collabs = {};
 
   @override
-  Future<String> ensureCollab(RecipeEntity recipe, {required String ownerUid}) async {
+  Future<String> ensureCollab(
+    RecipeEntity recipe, {
+    required String ownerUid,
+  }) async {
     if (recipe.collabId case final id?) return id;
     final id = 'rc-${next++}';
     log.add('ensure:${recipe.id}->$id');
@@ -77,9 +88,11 @@ class _Sharing implements RecipeSharingRepository {
   }
 
   @override
-  Future<CollabRecipeEntity?> getCollab(String collabId) async => collabs[collabId];
+  Future<CollabRecipeEntity?> getCollab(String collabId) async =>
+      collabs[collabId];
   @override
-  Future<void> removeMember(String collabId, String memberUid) async => log.add('rm:$collabId:$memberUid');
+  Future<void> removeMember(String collabId, String memberUid) async =>
+      log.add('rm:$collabId:$memberUid');
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -118,7 +131,12 @@ class _Containers implements CollabContainersRepository {
   }
 
   @override
-  Future<void> write(String id, {required String title, required Map<String, dynamic> content, required String byUid}) async {
+  Future<void> write(
+    String id, {
+    required String title,
+    required Map<String, dynamic> content,
+    required String byUid,
+  }) async {
     final old = docs[id]!;
     docs[id] = CollabContainerEntity(
       id: id,
@@ -142,8 +160,9 @@ class _Containers implements CollabContainersRepository {
     required String targetUid,
     required CollabRole role,
     required List<RecipeInvite> recipes,
-  }) async =>
-      log.add('invite:${container.id}:$targetUid:${role.name}:${recipes.map((r) => r.collabId).join(',')}');
+  }) async => log.add(
+    'invite:${container.id}:$targetUid:${role.name}:${recipes.map((r) => r.collabId).join(',')}',
+  );
 
   @override
   Future<void> inviteToRecipes({
@@ -151,12 +170,15 @@ class _Containers implements CollabContainersRepository {
     required Map<String, CollabRole> participants,
     required List<RecipeInvite> recipes,
     required String byUid,
-  }) async =>
-      log.add('recipeInvites:${participants.keys.join(',')}:${recipes.map((r) => r.collabId).join(',')}');
+  }) async => log.add(
+    'recipeInvites:${participants.keys.join(',')}:${recipes.map((r) => r.collabId).join(',')}',
+  );
 
   @override
-  Future<ShareInviteEntity?> recipeInvite({required String collabId, required String uid}) async =>
-      recipeInvites['${collabId}_$uid'];
+  Future<ShareInviteEntity?> recipeInvite({
+    required String collabId,
+    required String uid,
+  }) async => recipeInvites['${collabId}_$uid'];
 
   @override
   Future<CollabContainerEntity> acceptInvite(ShareInviteEntity invite) async {
@@ -176,17 +198,23 @@ class _Containers implements CollabContainersRepository {
   @override
   Future<void> declineInvite(ShareInviteEntity invite) async {}
   @override
-  Future<List<CollabContainerEntity>> ownedBy(String uid) async => docs.values.where((d) => d.ownerUid == uid).toList();
+  Future<List<CollabContainerEntity>> ownedBy(String uid) async =>
+      docs.values.where((d) => d.ownerUid == uid).toList();
   @override
   Future<List<CollabContainerEntity>> sharedWith(String uid) async =>
       docs.values.where((d) => d.members.containsKey(uid)).toList();
   @override
-  Future<void> removeMember(String containerId, String memberUid) async => log.add('leave:$containerId:$memberUid');
+  Future<void> removeMember(String containerId, String memberUid) async =>
+      log.add('leave:$containerId:$memberUid');
 }
 
 class _Profiles implements UserProfileRepository {
   @override
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) async {}
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  }) async {}
 
   @override
   Future<String?> blockMessage(String uid) async => null;
@@ -195,7 +223,9 @@ class _Profiles implements UserProfileRepository {
   @override
   Future<String?> findUidByContact(String contact) async => directory[contact];
   @override
-  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) async => const {};
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(
+    Set<String> uids,
+  ) async => const {};
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -205,9 +235,14 @@ class _Books implements RecipeBooksRepository {
   @override
   Future<List<RecipeBookEntity>> getBooks() async => stored.values.toList();
   @override
+  Stream<List<RecipeBookEntity>> watchBooks() => const Stream.empty();
+  @override
   Future<RecipeBookEntity?> getBookById(String id) async => stored[id];
   @override
-  Future<void> saveBook(RecipeBookEntity book) async => stored[book.id] = book;
+  Future<void> saveBook(
+    RecipeBookEntity book, {
+    bool stampLanguage = true,
+  }) async => stored[book.id] = book;
   @override
   Future<void> deleteBook(String id) async => stored.remove(id);
 }
@@ -217,22 +252,33 @@ class _Plans implements MealPlansRepository {
   @override
   Future<List<MealPlanEntity>> getPlans() async => stored.values.toList();
   @override
+  Stream<List<MealPlanEntity>> watchPlans() => const Stream.empty();
+  @override
   Future<MealPlanEntity?> getPlanById(String id) async => stored[id];
   @override
-  Future<void> savePlan(MealPlanEntity plan) async => stored[plan.id] = plan;
+  Future<void> savePlan(
+    MealPlanEntity plan, {
+    bool stampLanguage = true,
+  }) async => stored[plan.id] = plan;
   @override
   Future<void> deletePlan(String id) async => stored.remove(id);
 }
 
-RecipeBookEntity book({String? collabId, CollabRole? role, List<String> recipeIds = const ['r1', 'r2']}) =>
-    RecipeBookEntity(
-      id: 'book-1',
-      title: 'Weeknights',
-      recipeRefs: [for (var i = 0; i < recipeIds.length; i++) BookRecipeRefEntity(recipeId: recipeIds[i], order: i)],
-      createdAt: DateTime(2026),
-      collabId: collabId,
-      collabRole: role,
-    );
+RecipeBookEntity book({
+  String? collabId,
+  CollabRole? role,
+  List<String> recipeIds = const ['r1', 'r2'],
+}) => RecipeBookEntity(
+  id: 'book-1',
+  title: 'Weeknights',
+  recipeRefs: [
+    for (var i = 0; i < recipeIds.length; i++)
+      BookRecipeRefEntity(recipeId: recipeIds[i], order: i),
+  ],
+  createdAt: DateTime(2026),
+  collabId: collabId,
+  collabRole: role,
+);
 
 void main() {
   late _Recipes recipes;
@@ -243,20 +289,31 @@ void main() {
   late _Plans plans;
 
   ContainerCollab<RecipeBookEntity> bookCollab() => ContainerCollab(
-        adapter: BookContainerAdapter(books),
-        containers: containers,
-        linker: RecipeLinker(sharing: sharing, recipes: recipes, containers: containers),
-        profiles: profiles,
-      );
+    adapter: BookContainerAdapter(books),
+    containers: containers,
+    linker: RecipeLinker(
+      sharing: sharing,
+      recipes: recipes,
+      containers: containers,
+    ),
+    profiles: profiles,
+  );
   ContainerCollab<MealPlanEntity> planCollab() => ContainerCollab(
-        adapter: PlanContainerAdapter(plans),
-        containers: containers,
-        linker: RecipeLinker(sharing: sharing, recipes: recipes, containers: containers),
-        profiles: profiles,
-      );
+    adapter: PlanContainerAdapter(plans),
+    containers: containers,
+    linker: RecipeLinker(
+      sharing: sharing,
+      recipes: recipes,
+      containers: containers,
+    ),
+    profiles: profiles,
+  );
 
   setUp(() {
-    recipes = _Recipes([recipe('r1'), recipe('r2', collabId: 'rc-old', role: CollabRole.owner)]);
+    recipes = _Recipes([
+      recipe('r1'),
+      recipe('r2', collabId: 'rc-old', role: CollabRole.owner),
+    ]);
     sharing = _Sharing();
     containers = _Containers();
     profiles = _Profiles()..directory['friend@x.com'] = friend;
@@ -265,65 +322,112 @@ void main() {
   });
 
   group('share', () {
-    test('makes every own recipe shared, creates the container and invites into all of them', () async {
-      books.stored['book-1'] = book();
-      final owned = await bookCollab().share(book(), contact: 'friend@x.com', role: CollabRole.editor, ownerUid: owner);
+    test(
+      'makes every own recipe shared, creates the container and invites into all of them',
+      () async {
+        books.stored['book-1'] = book();
+        final owned = await bookCollab().share(
+          book(),
+          contact: 'friend@x.com',
+          role: CollabRole.editor,
+          ownerUid: owner,
+        );
 
-      expect(owned.collabId, 'container-1');
-      expect(owned.collabRole, CollabRole.owner);
-      expect(books.stored['book-1']!.collabId, 'container-1');
-      // r1 was private and got a collab; r2 already had one.
-      expect(sharing.log, ['ensure:r1->rc-0']);
-      expect(recipes.stored['r1']!.collabId, 'rc-0');
-      expect(recipes.stored['r1']!.collabRole, CollabRole.owner);
-      // Both recipes are in the document by collab id, in order.
-      final doc = containers.docs['container-1']!;
-      expect(doc.recipeCollabIds, {'rc-0', 'rc-old'});
-      expect(containers.log.last, 'invite:container-1:$friend:editor:rc-0,rc-old');
-    });
+        expect(owned.collabId, 'container-1');
+        expect(owned.collabRole, CollabRole.owner);
+        expect(books.stored['book-1']!.collabId, 'container-1');
+        // r1 was private and got a collab; r2 already had one.
+        expect(sharing.log, ['ensure:r1->rc-0']);
+        expect(recipes.stored['r1']!.collabId, 'rc-0');
+        expect(recipes.stored['r1']!.collabRole, CollabRole.owner);
+        // Both recipes are in the document by collab id, in order.
+        final doc = containers.docs['container-1']!;
+        expect(doc.recipeCollabIds, {'rc-0', 'rc-old'});
+        expect(
+          containers.log.last,
+          'invite:container-1:$friend:editor:rc-0,rc-old',
+        );
+      },
+    );
 
     test('refuses a contact that is not found, and oneself', () async {
       expect(
-        () => bookCollab().share(book(), contact: 'nobody@x.com', role: CollabRole.viewer, ownerUid: owner),
-        throwsA(isA<ShareFailure>().having((f) => f.code, 'code', ShareFailure.notFound)),
+        () => bookCollab().share(
+          book(),
+          contact: 'nobody@x.com',
+          role: CollabRole.viewer,
+          ownerUid: owner,
+        ),
+        throwsA(
+          isA<ShareFailure>().having(
+            (f) => f.code,
+            'code',
+            ShareFailure.notFound,
+          ),
+        ),
       );
       profiles.directory['me@x.com'] = owner;
       expect(
-        () => bookCollab().share(book(), contact: 'me@x.com', role: CollabRole.viewer, ownerUid: owner),
-        throwsA(isA<ShareFailure>().having((f) => f.code, 'code', ShareFailure.self)),
+        () => bookCollab().share(
+          book(),
+          contact: 'me@x.com',
+          role: CollabRole.viewer,
+          ownerUid: owner,
+        ),
+        throwsA(
+          isA<ShareFailure>().having((f) => f.code, 'code', ShareFailure.self),
+        ),
       );
     });
 
     test('a member cannot share on', () async {
       expect(
-        () => bookCollab().share(book(collabId: 'c', role: CollabRole.editor), contact: 'friend@x.com', role: CollabRole.viewer, ownerUid: friend),
+        () => bookCollab().share(
+          book(collabId: 'c', role: CollabRole.editor),
+          contact: 'friend@x.com',
+          role: CollabRole.viewer,
+          ownerUid: friend,
+        ),
         throwsStateError,
       );
     });
   });
 
   group('publish', () {
-    test('rewrites the document and lets participants into recipes new to it', () async {
-      containers.docs['container-1'] = CollabContainerEntity(
-        id: 'container-1',
-        kind: CollabKind.book,
-        ownerUid: owner,
-        members: const {friend: CollabRole.editor},
-        title: 'Weeknights',
-        content: const {'recipes': [{'collabId': 'rc-old', 'order': 0}]},
-        updatedAt: DateTime(2026),
-      );
-      await bookCollab().publish(book(collabId: 'container-1', role: CollabRole.owner), uid: owner);
+    test(
+      'rewrites the document and lets participants into recipes new to it',
+      () async {
+        containers.docs['container-1'] = CollabContainerEntity(
+          id: 'container-1',
+          kind: CollabKind.book,
+          ownerUid: owner,
+          members: const {friend: CollabRole.editor},
+          title: 'Weeknights',
+          content: const {
+            'recipes': [
+              {'collabId': 'rc-old', 'order': 0},
+            ],
+          },
+          updatedAt: DateTime(2026),
+        );
+        await bookCollab().publish(
+          book(collabId: 'container-1', role: CollabRole.owner),
+          uid: owner,
+        );
 
-      expect(containers.log, contains('write:container-1'));
-      // r1 is new to the share: both of the owner's recipes are offered, the
-      // datasource skips the invites that already exist.
-      expect(containers.log.last, 'recipeInvites:$owner,$friend:rc-0,rc-old');
-    });
+        expect(containers.log, contains('write:container-1'));
+        // r1 is new to the share: both of the owner's recipes are offered, the
+        // datasource skips the invites that already exist.
+        expect(containers.log.last, 'recipeInvites:$owner,$friend:rc-0,rc-old');
+      },
+    );
 
     test('a viewer is refused', () async {
       expect(
-        () => bookCollab().publish(book(collabId: 'container-1', role: CollabRole.viewer), uid: friend),
+        () => bookCollab().publish(
+          book(collabId: 'container-1', role: CollabRole.viewer),
+          uid: friend,
+        ),
         throwsA(anything),
       );
       expect(containers.log, isEmpty);
@@ -336,79 +440,92 @@ void main() {
   });
 
   group('accept', () {
-    test('joins, lets itself into each recipe, and builds the local plan with local recipe ids', () async {
-      recipes = _Recipes(const []);
-      sharing.collabs['rc-a'] = CollabRecipeEntity(
-        id: 'rc-a',
-        ownerUid: owner,
-        members: const {},
-        recipe: recipe('x')..title,
-        updatedAt: DateTime(2026),
-      );
-      containers.docs['plan-c'] = CollabContainerEntity(
-        id: 'plan-c',
-        kind: CollabKind.mealPlan,
-        ownerUid: owner,
-        members: const {},
-        title: 'Week 1',
-        content: const {
-          'meals': [
-            {
-              'id': 'm1',
-              'weekday': 0,
-              'name': 'Dinner',
-              'order': 0,
-              'items': [
-                {'id': 'i1', 'recipeCollabId': 'rc-a', 'label': 'Recipe x'},
-                {'id': 'i2', 'recipeCollabId': 'rc-missing', 'label': 'Secret dish'},
-                {'id': 'i3', 'freeText': 'Salad', 'ingredients': [{'name': 'tomato', 'amount': 2, 'unit': 'piece'}]},
-              ],
-            },
-          ],
-        },
-        updatedAt: DateTime(2026),
-      );
-      containers.recipeInvites['rc-a_$friend'] = ShareInviteEntity(
-        id: 'rc-a_$friend',
-        collabId: 'rc-a',
-        recipeTitle: 'Recipe x',
-        ownerUid: owner,
-        targetUid: friend,
-        role: CollabRole.viewer,
-        status: ShareInviteStatus.pending,
-        createdAt: DateTime(2026),
-        via: 'plan-c',
-      );
-      final invite = ShareInviteEntity(
-        id: 'plan-c_$friend',
-        collabId: 'plan-c',
-        recipeTitle: 'Week 1',
-        ownerUid: owner,
-        targetUid: friend,
-        role: CollabRole.viewer,
-        status: ShareInviteStatus.pending,
-        createdAt: DateTime(2026),
-        kind: CollabKind.mealPlan,
-      );
+    test(
+      'joins, lets itself into each recipe, and builds the local plan with local recipe ids',
+      () async {
+        recipes = _Recipes(const []);
+        sharing.collabs['rc-a'] = CollabRecipeEntity(
+          id: 'rc-a',
+          ownerUid: owner,
+          members: const {},
+          recipe: recipe('x')..title,
+          updatedAt: DateTime(2026),
+        );
+        containers.docs['plan-c'] = CollabContainerEntity(
+          id: 'plan-c',
+          kind: CollabKind.mealPlan,
+          ownerUid: owner,
+          members: const {},
+          title: 'Week 1',
+          content: const {
+            'meals': [
+              {
+                'id': 'm1',
+                'weekday': 0,
+                'name': 'Dinner',
+                'order': 0,
+                'items': [
+                  {'id': 'i1', 'recipeCollabId': 'rc-a', 'label': 'Recipe x'},
+                  {
+                    'id': 'i2',
+                    'recipeCollabId': 'rc-missing',
+                    'label': 'Secret dish',
+                  },
+                  {
+                    'id': 'i3',
+                    'freeText': 'Salad',
+                    'ingredients': [
+                      {'name': 'tomato', 'amount': 2, 'unit': 'piece'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          updatedAt: DateTime(2026),
+        );
+        containers.recipeInvites['rc-a_$friend'] = ShareInviteEntity(
+          id: 'rc-a_$friend',
+          collabId: 'rc-a',
+          recipeTitle: 'Recipe x',
+          ownerUid: owner,
+          targetUid: friend,
+          role: CollabRole.viewer,
+          status: ShareInviteStatus.pending,
+          createdAt: DateTime(2026),
+          via: 'plan-c',
+        );
+        final invite = ShareInviteEntity(
+          id: 'plan-c_$friend',
+          collabId: 'plan-c',
+          recipeTitle: 'Week 1',
+          ownerUid: owner,
+          targetUid: friend,
+          role: CollabRole.viewer,
+          status: ShareInviteStatus.pending,
+          createdAt: DateTime(2026),
+          kind: CollabKind.mealPlan,
+        );
 
-      final plan = await planCollab().accept(invite, uid: friend);
+        final plan = await planCollab().accept(invite, uid: friend);
 
-      expect(plan.collabId, 'plan-c');
-      expect(plan.collabRole, CollabRole.viewer);
-      expect(plan.name, 'Week 1');
-      expect(plans.stored[plan.id], isNotNull);
-      // The recipe was accepted and cached locally under a fresh id.
-      expect(sharing.log, ['acceptRecipe:rc-a']);
-      final local = recipes.stored.values.single;
-      expect(local.collabId, 'rc-a');
-      final items = plan.meals.single.items;
-      expect(items[0].recipeId, local.id);
-      // A recipe this account was never let into degrades to its label.
-      expect(items[1].recipeId, isNull);
-      expect(items[1].freeText, 'Secret dish');
-      expect(items[2].freeText, 'Salad');
-      expect(items[2].ingredients.single.name, 'tomato');
-    });
+        expect(plan.collabId, 'plan-c');
+        expect(plan.collabRole, CollabRole.viewer);
+        expect(plan.name, 'Week 1');
+        expect(plans.stored[plan.id], isNotNull);
+        // The recipe was accepted and cached locally under a fresh id.
+        expect(sharing.log, ['acceptRecipe:rc-a']);
+        final local = recipes.stored.values.single;
+        expect(local.collabId, 'rc-a');
+        final items = plan.meals.single.items;
+        expect(items[0].recipeId, local.id);
+        // A recipe this account was never let into degrades to its label.
+        expect(items[1].recipeId, isNull);
+        expect(items[1].freeText, 'Secret dish');
+        expect(items[2].freeText, 'Salad');
+        expect(items[2].ingredients.single.name, 'tomato');
+      },
+    );
   });
 
   group('sync', () {
@@ -423,13 +540,19 @@ void main() {
 
     test('a refused read (removed from the share) orphans too', () async {
       final local = book(collabId: 'c', role: CollabRole.viewer);
-      containers.getError = Exception('[cloud_firestore/permission-denied] Missing or insufficient permissions.');
+      containers.getError = Exception(
+        '[cloud_firestore/permission-denied] Missing or insufficient permissions.',
+      );
       final result = await bookCollab().sync(local, uid: friend);
       expect(result.collabId, isNull);
     });
 
     test('an unchanged document leaves the copy as it is', () async {
-      final local = book(collabId: 'c', role: CollabRole.owner, recipeIds: const ['r2']);
+      final local = book(
+        collabId: 'c',
+        role: CollabRole.owner,
+        recipeIds: const ['r2'],
+      );
       books.stored[local.id] = local;
       containers.docs['c'] = CollabContainerEntity(
         id: 'c',
@@ -437,7 +560,11 @@ void main() {
         ownerUid: owner,
         members: const {},
         title: 'Weeknights',
-        content: const {'recipes': [{'collabId': 'rc-old', 'order': 0}]},
+        content: const {
+          'recipes': [
+            {'collabId': 'rc-old', 'order': 0},
+          ],
+        },
         updatedAt: DateTime(2026),
       );
       final result = await bookCollab().sync(local, uid: owner);
@@ -446,38 +573,55 @@ void main() {
   });
 
   group('refresh', () {
-    test('rewrites only the copies whose document changed, and never orphans', () async {
-      books.stored['book-1'] = book(collabId: 'c', role: CollabRole.viewer, recipeIds: const ['r2']);
-      books.stored['book-2'] = RecipeBookEntity(
-        id: 'book-2',
-        title: 'Other',
-        recipeRefs: const [],
-        createdAt: DateTime(2026),
-        collabId: 'not-in-answer',
-        collabRole: CollabRole.viewer,
-      );
-      final fetched = [
-        CollabContainerEntity(
-          id: 'c',
-          kind: CollabKind.book,
-          ownerUid: owner,
-          members: const {friend: CollabRole.viewer},
-          title: 'Renamed',
-          content: const {'recipes': [{'collabId': 'rc-old', 'order': 0}]},
-          updatedAt: DateTime(2026),
-        ),
-      ];
-      final rewritten = await bookCollab().refresh(fetched, uid: friend);
-      expect(rewritten, 1);
-      expect(books.stored['book-1']!.title, 'Renamed');
-      expect(books.stored['book-2']!.collabId, 'not-in-answer');
-    });
+    test(
+      'rewrites only the copies whose document changed, and never orphans',
+      () async {
+        books.stored['book-1'] = book(
+          collabId: 'c',
+          role: CollabRole.viewer,
+          recipeIds: const ['r2'],
+        );
+        books.stored['book-2'] = RecipeBookEntity(
+          id: 'book-2',
+          title: 'Other',
+          recipeRefs: const [],
+          createdAt: DateTime(2026),
+          collabId: 'not-in-answer',
+          collabRole: CollabRole.viewer,
+        );
+        final fetched = [
+          CollabContainerEntity(
+            id: 'c',
+            kind: CollabKind.book,
+            ownerUid: owner,
+            members: const {friend: CollabRole.viewer},
+            title: 'Renamed',
+            content: const {
+              'recipes': [
+                {'collabId': 'rc-old', 'order': 0},
+              ],
+            },
+            updatedAt: DateTime(2026),
+          ),
+        ];
+        final rewritten = await bookCollab().refresh(fetched, uid: friend);
+        expect(rewritten, 1);
+        expect(books.stored['book-1']!.title, 'Renamed');
+        expect(books.stored['book-2']!.collabId, 'not-in-answer');
+      },
+    );
   });
 
   group('retire', () {
     test('the owner deletes the document, a member leaves it', () async {
-      await bookCollab().retire(book(collabId: 'c', role: CollabRole.owner), uid: owner);
-      await bookCollab().retire(book(collabId: 'c', role: CollabRole.editor), uid: friend);
+      await bookCollab().retire(
+        book(collabId: 'c', role: CollabRole.owner),
+        uid: owner,
+      );
+      await bookCollab().retire(
+        book(collabId: 'c', role: CollabRole.editor),
+        uid: friend,
+      );
       expect(containers.log, ['delete:c', 'leave:c:$friend']);
     });
   });
@@ -488,14 +632,24 @@ void main() {
       id: 'p',
       name: 'W',
       meals: [
-        const MealEntity(id: 'm', weekday: 2, name: 'Lunch', order: 1, items: [
-          MealItemEntity(id: 'a', recipeId: 'r2'),
-          MealItemEntity(id: 'b', freeText: 'Toast'),
-        ]),
+        const MealEntity(
+          id: 'm',
+          weekday: 2,
+          name: 'Lunch',
+          order: 1,
+          items: [
+            MealItemEntity(id: 'a', recipeId: 'r2'),
+            MealItemEntity(id: 'b', freeText: 'Toast'),
+          ],
+        ),
       ],
       createdAt: DateTime(2026),
     );
-    final content = adapter.encode(plan, collabIdByRecipeId: {'r2': 'rc-old'}, titles: {'r2': 'Recipe r2'});
+    final content = adapter.encode(
+      plan,
+      collabIdByRecipeId: {'r2': 'rc-old'},
+      titles: {'r2': 'Recipe r2'},
+    );
     final container = CollabContainerEntity(
       id: 'c',
       kind: CollabKind.mealPlan,
@@ -505,7 +659,12 @@ void main() {
       content: content,
       updatedAt: DateTime(2026),
     );
-    final back = adapter.decode(container, local: plan, recipeIdByCollabId: {'rc-old': 'r2'}, uid: owner);
+    final back = adapter.decode(
+      container,
+      local: plan,
+      recipeIdByCollabId: {'rc-old': 'r2'},
+      uid: owner,
+    );
     expect(back.id, 'p');
     expect(back.meals.single.weekday, 2);
     expect(back.meals.single.items[0].recipeId, 'r2');

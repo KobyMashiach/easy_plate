@@ -38,7 +38,9 @@ class _ClayButtonState extends State<ClayButton> {
     final enabled = widget.onPressed != null;
     final sunk = _pressed || !enabled;
     final face = widget.destructive ? AppColors.error : AppColors.primary;
-    final slab = widget.destructive ? AppColors.onErrorContainer : AppColors.onPrimaryFixedVariant;
+    final slab = widget.destructive
+        ? AppColors.onErrorContainer
+        : AppColors.onPrimaryFixedVariant;
 
     return GestureDetector(
       onTap: widget.onPressed,
@@ -54,13 +56,18 @@ class _ClayButtonState extends State<ClayButton> {
             Positioned.fill(
               top: AppShadows.buttonThickness,
               child: DecoratedBox(
-                decoration: ShapeDecoration(color: slab, shape: const StadiumBorder()),
+                decoration: ShapeDecoration(
+                  color: slab,
+                  shape: const StadiumBorder(),
+                ),
               ),
             ),
             AnimatedContainer(
               duration: const Duration(milliseconds: 120),
               curve: Curves.easeOut,
-              margin: EdgeInsets.only(top: sunk ? AppShadows.buttonThickness : 0),
+              margin: EdgeInsets.only(
+                top: sunk ? AppShadows.buttonThickness : 0,
+              ),
               width: widget.expanded ? double.infinity : null,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
@@ -80,7 +87,9 @@ class _ClayButtonState extends State<ClayButton> {
                       ],
               ),
               child: Row(
-                mainAxisSize: widget.expanded ? MainAxisSize.max : MainAxisSize.min,
+                mainAxisSize: widget.expanded
+                    ? MainAxisSize.max
+                    : MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (widget.icon != null) ...[
@@ -89,7 +98,9 @@ class _ClayButtonState extends State<ClayButton> {
                   ],
                   Text(
                     widget.label,
-                    style: AppTextStyles.labelMd.copyWith(color: AppColors.onPrimary),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onPrimary,
+                    ),
                   ),
                 ],
               ),

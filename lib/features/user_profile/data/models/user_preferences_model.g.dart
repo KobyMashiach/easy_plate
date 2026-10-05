@@ -28,13 +28,21 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       walkthroughSeen: fields[6] == null ? false : fields[6] as bool,
       communityPricesEnabled: fields[7] == null ? false : fields[7] as bool,
       shoppingReminderSlots: (fields[8] as List?)?.cast<String>(),
+      pushEnabled: fields[9] == null ? true : fields[9] as bool,
+      notifyRepliesOnMyPosts: fields[10] == null ? true : fields[10] as bool,
+      notifyRepliesOnThreads: fields[11] == null ? true : fields[11] as bool,
+      notifyShareInvites: fields[12] == null ? true : fields[12] as bool,
+      notifySharedRecipeUpdates: fields[13] == null ? true : fields[13] as bool,
+      notifyAdminReplies: fields[14] == null ? true : fields[14] as bool,
+      notifyAnnouncements: fields[15] == null ? true : fields[15] as bool,
+      foregroundPopupsEnabled: fields[16] == null ? true : fields[16] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -52,7 +60,23 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(7)
       ..write(obj.communityPricesEnabled)
       ..writeByte(8)
-      ..write(obj.shoppingReminderSlots);
+      ..write(obj.shoppingReminderSlots)
+      ..writeByte(9)
+      ..write(obj.pushEnabled)
+      ..writeByte(10)
+      ..write(obj.notifyRepliesOnMyPosts)
+      ..writeByte(11)
+      ..write(obj.notifyRepliesOnThreads)
+      ..writeByte(12)
+      ..write(obj.notifyShareInvites)
+      ..writeByte(13)
+      ..write(obj.notifySharedRecipeUpdates)
+      ..writeByte(14)
+      ..write(obj.notifyAdminReplies)
+      ..writeByte(15)
+      ..write(obj.notifyAnnouncements)
+      ..writeByte(16)
+      ..write(obj.foregroundPopupsEnabled);
   }
 
   @override
@@ -88,6 +112,14 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
   shoppingReminderSlots: (json['shoppingReminderSlots'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  pushEnabled: json['pushEnabled'] as bool? ?? true,
+  notifyRepliesOnMyPosts: json['notifyRepliesOnMyPosts'] as bool? ?? true,
+  notifyRepliesOnThreads: json['notifyRepliesOnThreads'] as bool? ?? true,
+  notifyShareInvites: json['notifyShareInvites'] as bool? ?? true,
+  notifySharedRecipeUpdates: json['notifySharedRecipeUpdates'] as bool? ?? true,
+  notifyAdminReplies: json['notifyAdminReplies'] as bool? ?? true,
+  notifyAnnouncements: json['notifyAnnouncements'] as bool? ?? true,
+  foregroundPopupsEnabled: json['foregroundPopupsEnabled'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -104,6 +136,14 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'walkthroughSeen': instance.walkthroughSeen,
   'communityPricesEnabled': instance.communityPricesEnabled,
   'shoppingReminderSlots': instance.shoppingReminderSlots,
+  'pushEnabled': instance.pushEnabled,
+  'notifyRepliesOnMyPosts': instance.notifyRepliesOnMyPosts,
+  'notifyRepliesOnThreads': instance.notifyRepliesOnThreads,
+  'notifyShareInvites': instance.notifyShareInvites,
+  'notifySharedRecipeUpdates': instance.notifySharedRecipeUpdates,
+  'notifyAdminReplies': instance.notifyAdminReplies,
+  'notifyAnnouncements': instance.notifyAnnouncements,
+  'foregroundPopupsEnabled': instance.foregroundPopupsEnabled,
 };
 
 const _$ShoppingDayEnumMap = {

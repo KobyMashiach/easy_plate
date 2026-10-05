@@ -61,7 +61,8 @@ class OpenBookShell extends StatefulWidget {
   State<OpenBookShell> createState() => _OpenBookShellState();
 }
 
-class _OpenBookShellState extends State<OpenBookShell> implements BookNavigator {
+class _OpenBookShellState extends State<OpenBookShell>
+    implements BookNavigator {
   /// Books open at once — a sample book opens over the guide — so the
   /// portrait lock only comes back when the last of them closes.
   static int _openBooks = 0;

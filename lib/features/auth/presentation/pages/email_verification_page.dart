@@ -69,12 +69,14 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   }
 
   /// A word in passing, gone on its own.
-  void _toast(String message) => AppDialog.success(message: message).notify(context);
+  void _toast(String message) =>
+      AppDialog.success(message: message).notify(context);
 
   /// Something to read before going on.
   void _fail(String message) => AppDialog.error(message: message).show(context);
 
-  void _warn(String message) => AppDialog.warning(message: message).notify(context);
+  void _warn(String message) =>
+      AppDialog.warning(message: message).notify(context);
 
   @override
   Widget build(BuildContext context) {
@@ -87,20 +89,27 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           appBar: ClayTopAppBar(
             title: t.auth.verifyEmailTitle,
             trailingIcon: Icons.logout_rounded,
-            onTrailingTap:
-                _busy ? null : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
+            onTrailingTap: _busy
+                ? null
+                : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
           ),
           body: SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.marginMobile),
               children: [
                 const SizedBox(height: AppSpacing.lg),
-                Icon(Icons.mark_email_unread_rounded, size: 64, color: AppColors.primary),
+                Icon(
+                  Icons.mark_email_unread_rounded,
+                  size: 64,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   t.auth.verifyEmailBody(email: email),
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 ClayButton(
@@ -115,7 +124,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                     onPressed: _busy ? null : () => _send(),
                     child: Text(
                       t.auth.resendEmail,
-                      style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),

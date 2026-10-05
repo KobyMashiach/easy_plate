@@ -7,24 +7,24 @@ import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 
 String dietaryLabel(DietaryPreference preference) => switch (preference) {
-      DietaryPreference.meat => t.dietary.meat,
-      DietaryPreference.dairy => t.dietary.dairy,
-      DietaryPreference.vegetarian => t.dietary.vegetarian,
-      DietaryPreference.vegan => t.dietary.vegan,
-      DietaryPreference.kosher => t.dietary.kosher,
-      DietaryPreference.glutenFree => t.dietary.glutenFree,
-      DietaryPreference.allergy => t.dietary.allergy,
-    };
+  DietaryPreference.meat => t.dietary.meat,
+  DietaryPreference.dairy => t.dietary.dairy,
+  DietaryPreference.vegetarian => t.dietary.vegetarian,
+  DietaryPreference.vegan => t.dietary.vegan,
+  DietaryPreference.kosher => t.dietary.kosher,
+  DietaryPreference.glutenFree => t.dietary.glutenFree,
+  DietaryPreference.allergy => t.dietary.allergy,
+};
 
 IconData dietaryIcon(DietaryPreference preference) => switch (preference) {
-      DietaryPreference.meat => Icons.set_meal_rounded,
-      DietaryPreference.dairy => Icons.egg_alt_rounded,
-      DietaryPreference.vegetarian => Icons.eco_rounded,
-      DietaryPreference.vegan => Icons.spa_rounded,
-      DietaryPreference.kosher => Icons.verified_rounded,
-      DietaryPreference.glutenFree => Icons.block_rounded,
-      DietaryPreference.allergy => Icons.warning_amber_rounded,
-    };
+  DietaryPreference.meat => Icons.set_meal_rounded,
+  DietaryPreference.dairy => Icons.egg_alt_rounded,
+  DietaryPreference.vegetarian => Icons.eco_rounded,
+  DietaryPreference.vegan => Icons.spa_rounded,
+  DietaryPreference.kosher => Icons.verified_rounded,
+  DietaryPreference.glutenFree => Icons.block_rounded,
+  DietaryPreference.allergy => Icons.warning_amber_rounded,
+};
 
 /// Colour pair (background, foreground) for a dietary tag.
 (Color, Color) dietaryColors(DietaryPreference preference) =>
@@ -37,7 +37,11 @@ class DietaryChipSelector extends StatelessWidget {
   final List<DietaryPreference> selected;
   final ValueChanged<DietaryPreference> onToggle;
 
-  const DietaryChipSelector({super.key, required this.selected, required this.onToggle});
+  const DietaryChipSelector({
+    super.key,
+    required this.selected,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {

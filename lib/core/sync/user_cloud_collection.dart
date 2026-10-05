@@ -119,18 +119,22 @@ class UserCloudCollection<T> implements CloudMirror {
 
     final box = await UserScope().open<T>(boxName);
     final remoteIds = <String>{};
+    final decoded = <String, T>{};
 
     for (final doc in snapshot.docs) {
       try {
         // Decoded one at a time: a single document written by an older build
         // should cost that one record, not the whole collection.
-        final value = fromJson(doc.data());
-        await box.put(doc.id, value);
+        decoded[doc.id] = fromJson(doc.data());
         remoteIds.add(doc.id);
       } catch (e) {
         debugPrint('Cloud hydrate of $collection/${doc.id} skipped: $e');
       }
     }
+    // One write, one box event: every tab watching this box re-reads it
+    // once, not once per record. Sign-in with a few hundred recipes used to
+    // rebuild the recipes tab a few hundred times.
+    if (decoded.isNotEmpty) await box.putAll(decoded);
 
     // Copied before pushing: the loop above writes to the same box.
     for (final value in box.values.toList()) {

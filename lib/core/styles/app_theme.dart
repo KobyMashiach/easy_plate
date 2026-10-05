@@ -95,7 +95,9 @@ abstract class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.headlineMd.copyWith(color: AppColors.primary),
+        titleTextStyle: AppTextStyles.headlineMd.copyWith(
+          color: AppColors.primary,
+        ),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surfaceContainerLowest,
@@ -162,7 +164,9 @@ abstract class AppTheme {
         selectedColor: AppColors.primaryFixed,
         checkmarkColor: AppColors.primary,
         labelStyle: AppTextStyles.labelMd,
-        secondaryLabelStyle: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+        secondaryLabelStyle: AppTextStyles.labelMd.copyWith(
+          color: AppColors.primary,
+        ),
         side: BorderSide(color: AppColors.outlineVariant),
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(
@@ -174,7 +178,9 @@ abstract class AppTheme {
         filled: true,
         fillColor: AppColors.surfaceContainerLow,
         hintStyle: AppTextStyles.bodyMd.copyWith(color: AppColors.outline),
-        labelStyle: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+        labelStyle: AppTextStyles.labelMd.copyWith(
+          color: AppColors.onSurfaceVariant,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.gutter,
           vertical: AppSpacing.sm,
@@ -197,7 +203,9 @@ abstract class AppTheme {
         surfaceTintColor: Colors.transparent,
         titleTextStyle: AppTextStyles.headlineMd,
         contentTextStyle: AppTextStyles.bodyMd,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: AppColors.surfaceContainerLowest,
@@ -205,7 +213,9 @@ abstract class AppTheme {
         showDragHandle: true,
         dragHandleColor: AppColors.outlineVariant,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppRadius.lg),
+          ),
         ),
       ),
       switchTheme: SwitchThemeData(
@@ -227,7 +237,9 @@ abstract class AppTheme {
       ),
       listTileTheme: ListTileThemeData(
         titleTextStyle: AppTextStyles.bodyMd,
-        subtitleTextStyle: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+        subtitleTextStyle: AppTextStyles.labelMd.copyWith(
+          color: AppColors.onSurfaceVariant,
+        ),
         iconColor: AppColors.onSurfaceVariant,
       ),
     );

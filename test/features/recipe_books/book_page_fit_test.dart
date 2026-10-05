@@ -10,18 +10,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 RecipeEntity recipe() => RecipeEntity(
-      id: 'r',
-      title: 'עוף בתנור עם תפוחי אדמה ורוזמרין טרי מהגינה',
-      prepTimeMinutes: 20,
-      cookTimeMinutes: 75,
-      ingredients: const [
-        RecipeIngredientEntity(name: 'כרעיים עוף', amount: 4, unit: MeasurementUnit.unit),
-        RecipeIngredientEntity(name: 'תפוחי אדמה', amount: 800, unit: MeasurementUnit.gram),
-      ],
-      steps: const ['מחממים תנור.', 'אופים 75 דקות.'],
-      dietaryTags: const [DietaryPreference.meat, DietaryPreference.kosher],
-      createdAt: DateTime(2026, 1, 1),
-    );
+  id: 'r',
+  title: 'עוף בתנור עם תפוחי אדמה ורוזמרין טרי מהגינה',
+  prepTimeMinutes: 20,
+  cookTimeMinutes: 75,
+  ingredients: const [
+    RecipeIngredientEntity(
+      name: 'כרעיים עוף',
+      amount: 4,
+      unit: MeasurementUnit.unit,
+    ),
+    RecipeIngredientEntity(
+      name: 'תפוחי אדמה',
+      amount: 800,
+      unit: MeasurementUnit.gram,
+    ),
+  ],
+  steps: const ['מחממים תנור.', 'אופים 75 דקות.'],
+  dietaryTags: const [DietaryPreference.meat, DietaryPreference.kosher],
+  createdAt: DateTime(2026, 1, 1),
+);
 
 /// Collects layout errors while the body runs. The test font draws every
 /// glyph a full em wide, so Hebrew runs far wider than on a phone and a
@@ -57,11 +65,17 @@ String _summary(String error) {
   return '$message @ $where';
 }
 
-Widget host(Size size, Widget child, {TextDirection direction = TextDirection.rtl}) {
+Widget host(
+  Size size,
+  Widget child, {
+  TextDirection direction = TextDirection.rtl,
+}) {
   return MaterialApp(
     home: Directionality(
       textDirection: direction,
-      child: Center(child: SizedBox.fromSize(size: size, child: child)),
+      child: Center(
+        child: SizedBox.fromSize(size: size, child: child),
+      ),
     ),
   );
 }
@@ -71,35 +85,54 @@ const leaves = [Size(390, 700), Size(400, 222), Size(360, 200)];
 
 void main() {
   for (final size in leaves) {
-    testWidgets('a recipe page fits a ${size.width}x${size.height} leaf', (tester) async {
+    testWidgets('a recipe page fits a ${size.width}x${size.height} leaf', (
+      tester,
+    ) async {
       final errors = await verticalOverflows(() async {
-        await tester.pumpWidget(host(size, RecipeBookPage(recipe: recipe(), pageNumber: 2)));
+        await tester.pumpWidget(
+          host(size, RecipeBookPage(recipe: recipe(), pageNumber: 2)),
+        );
         await tester.pumpAndSettle();
       });
       expect(errors, isEmpty);
     });
 
-    testWidgets('a contents page fits a ${size.width}x${size.height} leaf', (tester) async {
+    testWidgets('a contents page fits a ${size.width}x${size.height} leaf', (
+      tester,
+    ) async {
       final errors = await verticalOverflows(() async {
-        await tester.pumpWidget(host(
-          size,
-          TableOfContentsPage(bookTitle: 'ספר', recipes: [recipe()], onSelectRecipe: (_) {}),
-        ));
+        await tester.pumpWidget(
+          host(
+            size,
+            TableOfContentsPage(
+              bookTitle: 'ספר',
+              recipes: [recipe()],
+              onSelectRecipe: (_) {},
+            ),
+          ),
+        );
         await tester.pumpAndSettle();
       });
       expect(errors, isEmpty);
     });
   }
 
-  testWidgets('every page of the guide fits a phone on its side', (tester) async {
+  testWidgets('every page of the guide fits a phone on its side', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(844, 390);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
     final errors = await verticalOverflows(() async {
-      await tester.pumpWidget(const MaterialApp(
-        home: Directionality(textDirection: TextDirection.rtl, child: TutorialBookPage()),
-      ));
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: TutorialBookPage(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       // Leaf by leaf to the back cover. A Hebrew book turns forward to the right.
       for (var i = 0; i < 6; i++) {
@@ -110,20 +143,27 @@ void main() {
     expect(errors, isEmpty);
   });
 
-  testWidgets('a Hebrew book opens with its first page on the right', (tester) async {
+  testWidgets('a Hebrew book opens with its first page on the right', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(844, 390);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(MaterialApp(
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: OpenBookShell(
-          pages: (_) => const [Center(child: Text('first')), Center(child: Text('second'))],
-          actions: (_) => const [],
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Directionality(
+          textDirection: TextDirection.rtl,
+          child: OpenBookShell(
+            pages: (_) => const [
+              Center(child: Text('first')),
+              Center(child: Text('second')),
+            ],
+            actions: (_) => const [],
+          ),
         ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
 
     expect(find.byType(BookSpreadFlip), findsOneWidget);

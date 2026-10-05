@@ -37,7 +37,10 @@ ReadableText readableTextFromHtml(String html) {
   // Block edges become line breaks, so a list of ingredients does not collapse
   // into one run-on line.
   text = text.replaceAll(
-    RegExp(r'<br\s*/?>|</(p|div|li|h[1-6]|tr|section|blockquote|dd|dt)>', caseSensitive: false),
+    RegExp(
+      r'<br\s*/?>|</(p|div|li|h[1-6]|tr|section|blockquote|dd|dt)>',
+      caseSensitive: false,
+    ),
     '\n',
   );
   text = text.replaceAll(RegExp(r'<li[^>]*>', caseSensitive: false), '• ');
@@ -59,7 +62,11 @@ ReadableText readableTextFromHtml(String html) {
 }
 
 String? _match(String source, String pattern) {
-  final match = RegExp(pattern, caseSensitive: false, dotAll: true).firstMatch(source);
+  final match = RegExp(
+    pattern,
+    caseSensitive: false,
+    dotAll: true,
+  ).firstMatch(source);
   return match?.group(1);
 }
 
@@ -87,7 +94,10 @@ String decodeHtmlEntities(String text) {
   out = out.replaceAllMapped(
     RegExp(r'&#(x?)([0-9a-fA-F]+);'),
     (m) {
-      final code = int.tryParse(m.group(2)!, radix: m.group(1)!.isEmpty ? 10 : 16);
+      final code = int.tryParse(
+        m.group(2)!,
+        radix: m.group(1)!.isEmpty ? 10 : 16,
+      );
       return code == null ? m.group(0)! : String.fromCharCode(code);
     },
   );

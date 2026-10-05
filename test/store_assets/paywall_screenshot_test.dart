@@ -47,10 +47,9 @@ const _offers = [
 const _sizes = [(640, 920), (1080, 1920), (1080, 2266)];
 
 /// Where a render belongs: the listing pipeline, or Apple's review slot.
-String _pathFor(int width, int height, AppLocale locale) =>
-    height == 2266
-        ? 'store_assets/raw/${locale.languageCode}/10_premium.png'
-        : '$_outDir/premium_${locale.languageCode}_${width}x$height.png';
+String _pathFor(int width, int height, AppLocale locale) => height == 2266
+    ? 'store_assets/raw/${locale.languageCode}/10_premium.png'
+    : '$_outDir/premium_${locale.languageCode}_${width}x$height.png';
 
 Future<void> _loadFonts() async {
   // Tests otherwise render every glyph in the Ahem test font.
@@ -75,7 +74,9 @@ Future<void> _loadFonts() async {
   }
   final root = Platform.environment['FLUTTER_ROOT'];
   if (root != null) {
-    final icons = File('$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
+    final icons = File(
+      '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+    );
     if (icons.existsSync()) {
       final loader = FontLoader('MaterialIcons')
         ..addFont(icons.readAsBytes().then((b) => ByteData.sublistView(b)));
@@ -142,10 +143,13 @@ void main() {
           );
           await tester.pumpAndSettle();
 
-          final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final boundary =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
           await tester.runAsync(() async {
             final image = await boundary.toImage(pixelRatio: ratio);
-            final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+            final bytes = await image.toByteData(
+              format: ui.ImageByteFormat.png,
+            );
             expect(image.width, width);
             expect(image.height, height);
             final file = File(_pathFor(width, height, locale));

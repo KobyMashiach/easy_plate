@@ -1,5 +1,12 @@
+import 'package:equatable/equatable.dart';
+
 /// A discussion thread's opening message.
-class ForumPostEntity {
+///
+/// Value equality matters here: the feed is fed by a live Firestore stream,
+/// and bloc drops a state equal to the current one. Without `==` every
+/// snapshot — including the ones that changed nothing the viewer can see —
+/// would rebuild the whole list.
+class ForumPostEntity extends Equatable {
   final String id;
   final String title;
   final String body;
@@ -63,4 +70,37 @@ class ForumPostEntity {
       likedByMe: !likedByMe,
     );
   }
+
+  /// The same thread as the server now has it, but with this viewer's like as
+  /// the app knows it. Used when a live snapshot lands while a like of the
+  /// viewer's own is still on its way up, so the heart does not flicker back.
+  ForumPostEntity withViewerLike(bool liked) {
+    if (liked == likedByMe) return this;
+    return ForumPostEntity(
+      id: id,
+      title: title,
+      body: body,
+      authorUid: authorUid,
+      authorName: authorName,
+      authorPhotoUrl: authorPhotoUrl,
+      createdAt: createdAt,
+      replyCount: replyCount,
+      likeCount: likeCount,
+      likedByMe: liked,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    id,
+    title,
+    body,
+    authorUid,
+    authorName,
+    authorPhotoUrl,
+    createdAt,
+    replyCount,
+    likeCount,
+    likedByMe,
+  ];
 }

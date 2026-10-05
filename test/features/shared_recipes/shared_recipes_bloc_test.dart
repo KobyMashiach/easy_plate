@@ -23,15 +23,26 @@ class _FakeSharedRepository implements SharedRecipesRepository {
   final unshared = <String>[];
 
   @override
-  Future<List<SharedRecipeEntity>> getFeed({required String viewerUid, int limit = 50}) async {
+  Future<List<SharedRecipeEntity>> getFeed({
+    required String viewerUid,
+    int limit = 50,
+  }) async {
     feedCalls++;
     if (feedThrows) throw Exception('offline');
     return feed;
   }
 
   @override
-  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async =>
-      feed.where((r) => r.id == id).firstOrNull;
+  Future<SharedRecipeEntity?> getById(
+    String id, {
+    required String viewerUid,
+  }) async => feed.where((r) => r.id == id).firstOrNull;
+
+  @override
+  Future<List<SharedRecipeEntity>> getByAuthor(
+    String authorUid, {
+    int limit = 200,
+  }) async => feed.where((r) => r.authorUid == authorUid).toList();
 
   @override
   Future<bool> toggleLike(String id, {required String viewerUid}) async {
@@ -65,12 +76,18 @@ class _FakeRecipesRepository implements RecipesRepository {
   Future<List<RecipeEntity>> getRecipes() async => saved;
 
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async => saved.add(recipe);
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async => saved.add(recipe);
 
   /// Nothing to upload in a test, which is also what the real repository
   /// returns for a recipe with no photo.
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async => recipe;
+  Future<RecipeEntity> readyForSharing(
+    RecipeEntity recipe, {
+    bool persist = true,
+  }) async => recipe;
 
   final changes = StreamController<List<RecipeEntity>>.broadcast();
 
@@ -85,37 +102,36 @@ SharedRecipeEntity buildShared({
   String id = 's1',
   int likeCount = 3,
   bool likedByMe = false,
-}) =>
-    SharedRecipeEntity(
-      id: id,
-      authorUid: 'someone',
-      authorName: 'דנה',
-      createdAt: DateTime(2026, 1, 1),
-      likeCount: likeCount,
-      likedByMe: likedByMe,
-      recipe: RecipeEntity(
-        id: id,
-        title: 'שקשוקה',
-        ingredients: const [],
-        steps: const ['ערבוב'],
-        createdAt: DateTime(2026, 1, 1),
-      ),
-    );
+}) => SharedRecipeEntity(
+  id: id,
+  authorUid: 'someone',
+  authorName: 'דנה',
+  createdAt: DateTime(2026, 1, 1),
+  likeCount: likeCount,
+  likedByMe: likedByMe,
+  recipe: RecipeEntity(
+    id: id,
+    title: 'שקשוקה',
+    ingredients: const [],
+    steps: const ['ערבוב'],
+    createdAt: DateTime(2026, 1, 1),
+  ),
+);
 
 void main() {
   late _FakeSharedRepository shared;
   late _FakeRecipesRepository recipes;
 
   SharedRecipesBloc buildBloc() => SharedRecipesBloc(
-        getSharedRecipesUseCase: GetSharedRecipesUseCase(shared),
-        shareRecipeUseCase: ShareRecipeUseCase(shared, recipes),
-        toggleLikeUseCase: ToggleSharedRecipeLikeUseCase(shared),
-        unshareRecipeUseCase: UnshareRecipeUseCase(shared),
-        updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(shared, recipes),
-        saveRecipeUseCase: SaveRecipeUseCase(recipes),
-        getRecipesUseCase: GetRecipesUseCase(recipes),
-        recipesRepository: recipes,
-      );
+    getSharedRecipesUseCase: GetSharedRecipesUseCase(shared),
+    shareRecipeUseCase: ShareRecipeUseCase(shared, recipes),
+    toggleLikeUseCase: ToggleSharedRecipeLikeUseCase(shared),
+    unshareRecipeUseCase: UnshareRecipeUseCase(shared),
+    updateSharedRecipeUseCase: UpdateSharedRecipeUseCase(shared, recipes),
+    saveRecipeUseCase: SaveRecipeUseCase(recipes),
+    getRecipesUseCase: GetRecipesUseCase(recipes),
+    recipesRepository: recipes,
+  );
 
   setUp(() {
     shared = _FakeSharedRepository();
@@ -182,18 +198,21 @@ void main() {
     });
   });
 
-  test('liking flips the row and bumps the count before the write lands', () async {
-    shared.feed = [buildShared(likeCount: 3, likedByMe: false)];
-    final bloc = buildBloc();
-    await Future<void>.delayed(Duration.zero);
+  test(
+    'liking flips the row and bumps the count before the write lands',
+    () async {
+      shared.feed = [buildShared(likeCount: 3, likedByMe: false)];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
 
-    bloc.add(const SharedRecipesEvent.toggleLike('s1'));
-    await Future<void>.delayed(Duration.zero);
+      bloc.add(const SharedRecipesEvent.toggleLike('s1'));
+      await Future<void>.delayed(Duration.zero);
 
-    final row = (bloc.state as SharedRecipesLoaded).recipes.single;
-    expect(row.likedByMe, isTrue);
-    expect(row.likeCount, 4);
-  });
+      final row = (bloc.state as SharedRecipesLoaded).recipes.single;
+      expect(row.likedByMe, isTrue);
+      expect(row.likeCount, 4);
+    },
+  );
 
   test('unliking a liked row steps the count back down', () async {
     shared.feed = [buildShared(likeCount: 3, likedByMe: true)];
@@ -236,7 +255,11 @@ void main() {
     final copy = recipes.saved.single;
     expect(copy.title, 'שקשוקה');
     expect(copy.steps, ['ערבוב']);
-    expect(copy.id, isNot('s1'), reason: 'a copy must not collide with the shared original');
+    expect(
+      copy.id,
+      isNot('s1'),
+      reason: 'a copy must not collide with the shared original',
+    );
   });
 
   test('editing a shared recipe replaces the row in place', () async {
@@ -288,30 +311,37 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(shared.unshared, ['s1']);
-    expect((bloc.state as SharedRecipesLoaded).recipes.map((r) => r.id), ['s2']);
+    expect((bloc.state as SharedRecipesLoaded).recipes.map((r) => r.id), [
+      's2',
+    ]);
   });
 
   group('saved mark', () {
-    test('follows the local recipes: a removal on the recipes tab unmarks the row', () async {
-      shared.feed = [buildShared(id: 's1')];
-      recipes.saved.add(RecipeEntity(
-        id: 'local',
-        title: 'שקשוקה',
-        ingredients: const [],
-        steps: const [],
-        savedFromSharedId: 's1',
-        createdAt: DateTime(2026, 1, 1),
-      ));
-      final bloc = buildBloc();
-      await Future<void>.delayed(Duration.zero);
-      expect((bloc.state as SharedRecipesLoaded).savedIds, {'s1'});
+    test(
+      'follows the local recipes: a removal on the recipes tab unmarks the row',
+      () async {
+        shared.feed = [buildShared(id: 's1')];
+        recipes.saved.add(
+          RecipeEntity(
+            id: 'local',
+            title: 'שקשוקה',
+            ingredients: const [],
+            steps: const [],
+            savedFromSharedId: 's1',
+            createdAt: DateTime(2026, 1, 1),
+          ),
+        );
+        final bloc = buildBloc();
+        await Future<void>.delayed(Duration.zero);
+        expect((bloc.state as SharedRecipesLoaded).savedIds, {'s1'});
 
-      // The box reports the recipe gone; nothing here was reloaded.
-      recipes.changes.add(const []);
-      await Future<void>.delayed(Duration.zero);
+        // The box reports the recipe gone; nothing here was reloaded.
+        recipes.changes.add(const []);
+        await Future<void>.delayed(Duration.zero);
 
-      expect((bloc.state as SharedRecipesLoaded).savedIds, isEmpty);
-      await bloc.close();
-    });
+        expect((bloc.state as SharedRecipesLoaded).savedIds, isEmpty);
+        await bloc.close();
+      },
+    );
   });
 }

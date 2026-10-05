@@ -62,8 +62,9 @@ class PlanNutrition {
 
   /// Per planned day, or zero when nothing is planned. Averaging over all
   /// seven would punish a plan that only covers weekdays.
-  NutritionEntity get dailyAverage =>
-      plannedDays == 0 ? NutritionEntity.zero : weekTotal.scaled(1 / plannedDays);
+  NutritionEntity get dailyAverage => plannedDays == 0
+      ? NutritionEntity.zero
+      : weekTotal.scaled(1 / plannedDays);
 
   int get missingItems => days.fold(0, (n, d) => n + d.missingItems);
 
@@ -71,19 +72,29 @@ class PlanNutrition {
 
   /// The largest day, for scaling the week chart. Never zero, so a bar
   /// division is always safe.
-  int get peakCalories =>
-      days.fold(1, (peak, d) => d.total.calories > peak ? d.total.calories : peak);
+  int get peakCalories => days.fold(
+    1,
+    (peak, d) => d.total.calories > peak ? d.total.calories : peak,
+  );
 
   DayNutrition day(int weekday) => days[weekday];
 
   /// Pure: everything comes from [plan] and the recipes it references.
-  static PlanNutrition of(MealPlanEntity plan, Map<String, RecipeEntity> recipes) {
+  static PlanNutrition of(
+    MealPlanEntity plan,
+    Map<String, RecipeEntity> recipes,
+  ) {
     return PlanNutrition([
-      for (var weekday = 0; weekday < weekdays; weekday++) _day(weekday, plan, recipes),
+      for (var weekday = 0; weekday < weekdays; weekday++)
+        _day(weekday, plan, recipes),
     ]);
   }
 
-  static DayNutrition _day(int weekday, MealPlanEntity plan, Map<String, RecipeEntity> recipes) {
+  static DayNutrition _day(
+    int weekday,
+    MealPlanEntity plan,
+    Map<String, RecipeEntity> recipes,
+  ) {
     final meals = <MealNutrition>[];
     var total = NutritionEntity.zero;
     var counted = 0;
@@ -93,7 +104,9 @@ class PlanNutrition {
       var mealCounted = 0;
       var mealMissing = 0;
       for (final item in meal.items) {
-        final nutrition = item.recipeId == null ? null : recipes[item.recipeId]?.nutrition;
+        final nutrition = item.recipeId == null
+            ? null
+            : recipes[item.recipeId]?.nutrition;
         if (nutrition == null) {
           mealMissing++;
         } else {
@@ -101,12 +114,14 @@ class PlanNutrition {
           mealCounted++;
         }
       }
-      meals.add(MealNutrition(
-        meal: meal,
-        total: mealTotal,
-        countedItems: mealCounted,
-        missingItems: mealMissing,
-      ));
+      meals.add(
+        MealNutrition(
+          meal: meal,
+          total: mealTotal,
+          countedItems: mealCounted,
+          missingItems: mealMissing,
+        ),
+      );
       total += mealTotal;
       counted += mealCounted;
       missing += mealMissing;

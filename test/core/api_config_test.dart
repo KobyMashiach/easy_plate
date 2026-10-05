@@ -24,7 +24,10 @@ void main() {
     });
 
     test('going direct without a key is not configured', () {
-      expect(ApiConfig.configuredFor(ApiConfig.googleDirectBaseUrl, ''), isFalse);
+      expect(
+        ApiConfig.configuredFor(ApiConfig.googleDirectBaseUrl, ''),
+        isFalse,
+      );
     });
 
     test('going direct with a key is configured', () {

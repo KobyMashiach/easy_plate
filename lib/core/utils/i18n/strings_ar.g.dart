@@ -48,6 +48,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$allergens$ar allergens = _Translations$allergens$ar._(_root);
 	@override late final _Translations$weekday$ar weekday = _Translations$weekday$ar._(_root);
 	@override late final _Translations$settings$ar settings = _Translations$settings$ar._(_root);
+	@override late final _Translations$notificationSettings$ar notificationSettings = _Translations$notificationSettings$ar._(_root);
+	@override late final _Translations$preferences$ar preferences = _Translations$preferences$ar._(_root);
 	@override late final _Translations$more$ar more = _Translations$more$ar._(_root);
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
@@ -174,6 +176,11 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get appleAlreadyLinked => 'تم ربط حساب Apple بالفعل';
 	@override String get blockedTitle => 'تم حظر الحساب';
 	@override String get blockedBody => 'تم حظر هذا الحساب من قِبل مدير التطبيق. للتفاصيل تواصل معنا من شاشة الدعم.';
+	@override String get phoneClaimedTitle => 'هذا الرقم تابع لحساب موجود';
+	@override String phoneClaimedBody({required Object phone}) => 'الرقم ${phone} مرتبط بالفعل بحساب EasyPlate آخر. للوصول إلى ذلك الحساب ووصفاته، سجّل الدخول بالطريقة التي استخدمتها سابقًا (Google أو Apple أو البريد) وتحقّق من الرقم هناك مجددًا.';
+	@override String get phoneClaimedSignIn => 'الدخول إلى حسابي الموجود';
+	@override String get phoneClaimedCreateNew => 'إنشاء حساب جديد على أي حال';
+	@override String get phoneClaimedCreateNewConfirm => 'سيُفتح حساب جديد فارغ لهذا الرقم. يبقى الحساب الموجود كما هو، لكن لن يمكن الوصول إليه بهذا الرقم بعد الآن.';
 }
 
 // Path: profile
@@ -295,6 +302,59 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get reminderDayBefore => 'قبل يوم (مساءً)';
 	@override String get reminderSameDayMorning => 'يوم التسوق (صباحًا)';
 	@override String get reminderSameDayAfternoon => 'يوم التسوق (بعد الظهر)';
+	@override String get translatingContent => 'جارٍ ترجمة وصفاتك وقوائمك…';
+	@override String translatedContent({required Object count}) => 'تمت ترجمة ${count} عناصر';
+	@override String get translationPartialTitle => 'الترجمة لم تكتمل';
+	@override String translationPartial({required Object count}) => 'بقي ${count} عناصر بلغتها الأصلية. يمكن المحاولة لاحقًا.';
+	@override String get translationFailed => 'فشلت الترجمة. بقي المحتوى بلغته الأصلية.';
+	@override String get account => 'الحساب';
+	@override String get notifications => 'الإشعارات';
+	@override String get notificationsHint => 'أي التنبيهات تصلك، وكيف';
+	@override String get settingsHint => 'الحساب، الإشعارات، اللغة والمظهر';
+}
+
+// Path: notificationSettings
+class _Translations$notificationSettings$ar extends Translations$notificationSettings$he {
+	_Translations$notificationSettings$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'إعدادات الإشعارات';
+	@override String get push => 'الإشعارات الفورية';
+	@override String get pushHint => 'تنبيهات على هذا الجهاز. عند الإيقاف لا يُرسل شيء إلى الهاتف؛ يستمر صندوق الإشعارات بالامتلاء.';
+	@override String get pushDenied => 'إشعارات EasyPlate محظورة في إعدادات الجهاز. اسمح بها هناك لتلقي التنبيهات.';
+	@override String get community => 'المجتمع';
+	@override String get repliesOnMyPosts => 'الردود على منشوراتي';
+	@override String get repliesOnMyPostsHint => 'أجاب أحدهم في نقاش فتحته';
+	@override String get repliesOnThreads => 'الردود في نقاشات شاركت فيها';
+	@override String get repliesOnThreadsHint => 'رد جديد في نقاش رددت فيه';
+	@override String get sharing => 'المشاركة';
+	@override String get shareInvites => 'دعوات المشاركة';
+	@override String get shareInvitesHint => 'شارك أحدهم معك وصفة أو كتابًا أو خطة. تصل الدعوة دائمًا إلى الصندوق؛ هذا هو التنبيه فقط.';
+	@override String get sharedRecipeUpdates => 'تحديثات الوصفات المحفوظة';
+	@override String get sharedRecipeUpdatesHint => 'غيّر الكاتب وصفة من المجتمع حفظتها';
+	@override String get easyPlate => 'من EasyPlate';
+	@override String get adminReplies => 'الردود على رسائل الدعم الخاصة بي';
+	@override String get announcements => 'الإعلانات';
+	@override String get announcementsHint => 'أخبار وتحديثات من فريق EasyPlate';
+	@override String get inApp => 'أثناء فتح التطبيق';
+	@override String get foregroundPopups => 'عرض التنبيهات كنافذة منبثقة';
+	@override String get foregroundPopupsHint => 'التنبيه الذي يصل أثناء وجودك في التطبيق يفتح بطاقة صغيرة. عند الإيقاف يذهب إلى الصندوق فقط.';
+	@override String get reminders => 'تذكيرات التسوق';
+}
+
+// Path: preferences
+class _Translations$preferences$ar extends Translations$preferences$he {
+	_Translations$preferences$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'التفضيلات';
+	@override String get hint => 'التسوق، الاحتياجات الغذائية وسلوك الكتب';
+	@override String get shopping => 'التسوق';
+	@override String get books => 'كتب الوصفات';
 }
 
 // Path: more
@@ -313,6 +373,7 @@ class _Translations$more$ar extends Translations$more$he {
 	@override String get whatsapp => 'راسلونا على واتساب';
 	@override String get email => 'إرسال بريد';
 	@override String get supportUnavailable => 'تعذّر فتح التطبيق';
+	@override String get preferences => 'التفضيلات';
 }
 
 // Path: language
@@ -506,6 +567,9 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String get savedTag => 'محفوظة لديك';
 	@override String get removeSaved => 'إزالة من الوصفات المحفوظة';
 	@override String get removeSavedConfirm => 'ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع.';
+	@override String get oneNewPost => 'منشور جديد واحد';
+	@override String newPosts({required Object count}) => '${count} منشورات جديدة';
+	@override String get replyFailed => 'تعذّر إرسال ردك';
 }
 
 // Path: sharing
@@ -597,6 +661,11 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String get adminReply => 'رد من فريق EasyPlate على رسالتك';
 	@override String adminReplyQuote({required Object excerpt}) => 'رسالتك: "${excerpt}"';
 	@override String get adminMessage => 'رسالة من EasyPlate';
+	@override String forumReplyOnMyPost({required Object name, required Object post}) => 'ردّ ${name} على منشورك "${post}"';
+	@override String forumReplyOnThread({required Object name, required Object post}) => 'ردّ ${name} في "${post}"';
+	@override String get openThread => 'فتح النقاش';
+	@override String get threadGone => 'تم حذف هذا النقاش';
+	@override String get settings => 'الإعدادات';
 }
 
 // Path: editor
@@ -759,6 +828,39 @@ class _Translations$groceryList$ar extends Translations$groceryList$he {
 	@override String get selectPlansTitle => 'أي القوائم تغذّي هذه اللائحة؟';
 	@override String get applySelection => 'تحديث اللائحة';
 	@override String get selectAllPlans => 'كل القوائم';
+	@override String get myLists => 'قوائمي';
+	@override String listsCount({required Object count}) => '${count} قوائم';
+	@override String get oneList => 'قائمة واحدة';
+	@override String get newList => 'قائمة جديدة';
+	@override String get newListTitle => 'قائمة تسوق جديدة';
+	@override String get listName => 'اسم القائمة';
+	@override String get defaultListName => 'قائمة التسوق';
+	@override String get fromPlans => 'من القوائم الغذائية';
+	@override String get fromPlansHint => 'تجمع وصفات خطط وجباتك';
+	@override String get fromRecipe => 'من وصفة';
+	@override String get fromRecipeHint => 'مكونات وصفة واحدة';
+	@override String get emptyList => 'قائمة فارغة';
+	@override String get emptyListHint => 'تضيف العناصر يدويًا';
+	@override String get sourcePlans => 'من القوائم الغذائية';
+	@override String sourceRecipe({required Object title}) => 'من وصفة "${title}"';
+	@override String get sourceManual => 'قائمة يدوية';
+	@override String get renameList => 'إعادة تسمية القائمة';
+	@override String get deleteList => 'حذف القائمة';
+	@override String deleteListConfirm({required Object name}) => 'سيتم حذف "${name}" وكل عناصرها.';
+	@override String progress({required Object checked, required Object total}) => '${checked}/${total}';
+	@override String get servings => 'حصص';
+	@override String get timesOver => 'الكمية';
+	@override String scaleValue({required Object value}) => '×${value}';
+	@override String get rebuildFromRecipe => 'إعادة البناء من الوصفة';
+	@override String get createFromRecipe => 'إنشاء قائمة تسوق';
+	@override String get createList => 'إنشاء القائمة';
+	@override String get recipeListTitle => 'قائمة تسوق من وصفة';
+	@override String get recipeListHint => 'مكونات الوصفة حسب الكمية التي تحضّرها';
+	@override String listCreated({required Object name}) => 'تم إنشاء القائمة "${name}"';
+	@override String get openList => 'فتح القائمة';
+	@override String get stayHere => 'البقاء هنا';
+	@override String get noIngredients => 'لا توجد في هذه الوصفة مكونات للشراء';
+	@override String get addFirstItem => 'إضافة عنصر';
 }
 
 // Path: receipt
@@ -1539,6 +1641,11 @@ extension on TranslationsAr {
 			'auth.appleAlreadyLinked' => 'تم ربط حساب Apple بالفعل',
 			'auth.blockedTitle' => 'تم حظر الحساب',
 			'auth.blockedBody' => 'تم حظر هذا الحساب من قِبل مدير التطبيق. للتفاصيل تواصل معنا من شاشة الدعم.',
+			'auth.phoneClaimedTitle' => 'هذا الرقم تابع لحساب موجود',
+			'auth.phoneClaimedBody' => ({required Object phone}) => 'الرقم ${phone} مرتبط بالفعل بحساب EasyPlate آخر. للوصول إلى ذلك الحساب ووصفاته، سجّل الدخول بالطريقة التي استخدمتها سابقًا (Google أو Apple أو البريد) وتحقّق من الرقم هناك مجددًا.',
+			'auth.phoneClaimedSignIn' => 'الدخول إلى حسابي الموجود',
+			'auth.phoneClaimedCreateNew' => 'إنشاء حساب جديد على أي حال',
+			'auth.phoneClaimedCreateNewConfirm' => 'سيُفتح حساب جديد فارغ لهذا الرقم. يبقى الحساب الموجود كما هو، لكن لن يمكن الوصول إليه بهذا الرقم بعد الآن.',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',
@@ -1606,6 +1713,41 @@ extension on TranslationsAr {
 			'settings.reminderDayBefore' => 'قبل يوم (مساءً)',
 			'settings.reminderSameDayMorning' => 'يوم التسوق (صباحًا)',
 			'settings.reminderSameDayAfternoon' => 'يوم التسوق (بعد الظهر)',
+			'settings.translatingContent' => 'جارٍ ترجمة وصفاتك وقوائمك…',
+			'settings.translatedContent' => ({required Object count}) => 'تمت ترجمة ${count} عناصر',
+			'settings.translationPartialTitle' => 'الترجمة لم تكتمل',
+			'settings.translationPartial' => ({required Object count}) => 'بقي ${count} عناصر بلغتها الأصلية. يمكن المحاولة لاحقًا.',
+			'settings.translationFailed' => 'فشلت الترجمة. بقي المحتوى بلغته الأصلية.',
+			'settings.account' => 'الحساب',
+			'settings.notifications' => 'الإشعارات',
+			'settings.notificationsHint' => 'أي التنبيهات تصلك، وكيف',
+			'settings.settingsHint' => 'الحساب، الإشعارات، اللغة والمظهر',
+			'notificationSettings.title' => 'إعدادات الإشعارات',
+			'notificationSettings.push' => 'الإشعارات الفورية',
+			'notificationSettings.pushHint' => 'تنبيهات على هذا الجهاز. عند الإيقاف لا يُرسل شيء إلى الهاتف؛ يستمر صندوق الإشعارات بالامتلاء.',
+			'notificationSettings.pushDenied' => 'إشعارات EasyPlate محظورة في إعدادات الجهاز. اسمح بها هناك لتلقي التنبيهات.',
+			'notificationSettings.community' => 'المجتمع',
+			'notificationSettings.repliesOnMyPosts' => 'الردود على منشوراتي',
+			'notificationSettings.repliesOnMyPostsHint' => 'أجاب أحدهم في نقاش فتحته',
+			'notificationSettings.repliesOnThreads' => 'الردود في نقاشات شاركت فيها',
+			'notificationSettings.repliesOnThreadsHint' => 'رد جديد في نقاش رددت فيه',
+			'notificationSettings.sharing' => 'المشاركة',
+			'notificationSettings.shareInvites' => 'دعوات المشاركة',
+			'notificationSettings.shareInvitesHint' => 'شارك أحدهم معك وصفة أو كتابًا أو خطة. تصل الدعوة دائمًا إلى الصندوق؛ هذا هو التنبيه فقط.',
+			'notificationSettings.sharedRecipeUpdates' => 'تحديثات الوصفات المحفوظة',
+			'notificationSettings.sharedRecipeUpdatesHint' => 'غيّر الكاتب وصفة من المجتمع حفظتها',
+			'notificationSettings.easyPlate' => 'من EasyPlate',
+			'notificationSettings.adminReplies' => 'الردود على رسائل الدعم الخاصة بي',
+			'notificationSettings.announcements' => 'الإعلانات',
+			'notificationSettings.announcementsHint' => 'أخبار وتحديثات من فريق EasyPlate',
+			'notificationSettings.inApp' => 'أثناء فتح التطبيق',
+			'notificationSettings.foregroundPopups' => 'عرض التنبيهات كنافذة منبثقة',
+			'notificationSettings.foregroundPopupsHint' => 'التنبيه الذي يصل أثناء وجودك في التطبيق يفتح بطاقة صغيرة. عند الإيقاف يذهب إلى الصندوق فقط.',
+			'notificationSettings.reminders' => 'تذكيرات التسوق',
+			'preferences.title' => 'التفضيلات',
+			'preferences.hint' => 'التسوق، الاحتياجات الغذائية وسلوك الكتب',
+			'preferences.shopping' => 'التسوق',
+			'preferences.books' => 'كتب الوصفات',
 			'more.title' => 'المزيد',
 			'more.settings' => 'الإعدادات',
 			'more.profile' => 'ملفي الشخصي',
@@ -1615,6 +1757,7 @@ extension on TranslationsAr {
 			'more.whatsapp' => 'راسلونا على واتساب',
 			'more.email' => 'إرسال بريد',
 			'more.supportUnavailable' => 'تعذّر فتح التطبيق',
+			'more.preferences' => 'التفضيلات',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -1763,6 +1906,9 @@ extension on TranslationsAr {
 			'community.savedTag' => 'محفوظة لديك',
 			'community.removeSaved' => 'إزالة من الوصفات المحفوظة',
 			'community.removeSavedConfirm' => 'ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع.',
+			'community.oneNewPost' => 'منشور جديد واحد',
+			'community.newPosts' => ({required Object count}) => '${count} منشورات جديدة',
+			'community.replyFailed' => 'تعذّر إرسال ردك',
 			'sharing.title' => 'مشاركة الوصفة',
 			'sharing.contactLabel' => 'بريد أو هاتف الشريك',
 			'sharing.contactHint' => 'name@example.com أو 05…',
@@ -1836,6 +1982,11 @@ extension on TranslationsAr {
 			'notifications.adminReply' => 'رد من فريق EasyPlate على رسالتك',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'رسالتك: "${excerpt}"',
 			'notifications.adminMessage' => 'رسالة من EasyPlate',
+			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => 'ردّ ${name} على منشورك "${post}"',
+			'notifications.forumReplyOnThread' => ({required Object name, required Object post}) => 'ردّ ${name} في "${post}"',
+			'notifications.openThread' => 'فتح النقاش',
+			'notifications.threadGone' => 'تم حذف هذا النقاش',
+			'notifications.settings' => 'الإعدادات',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -1916,6 +2067,8 @@ extension on TranslationsAr {
 			'mealPlanner.breakfast' => 'فطور',
 			'mealPlanner.lunch' => 'غداء',
 			'mealPlanner.dinner' => 'عشاء',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'وجبة خفيفة صباحية',
 			'mealPlanner.afternoonSnack' => 'وجبة خفيفة بعد الظهر',
 			'mealPlanner.eveningSnack' => 'وجبة خفيفة مسائية',
@@ -1962,11 +2115,42 @@ extension on TranslationsAr {
 			'groceryList.selectPlansTitle' => 'أي القوائم تغذّي هذه اللائحة؟',
 			'groceryList.applySelection' => 'تحديث اللائحة',
 			'groceryList.selectAllPlans' => 'كل القوائم',
+			'groceryList.myLists' => 'قوائمي',
+			'groceryList.listsCount' => ({required Object count}) => '${count} قوائم',
+			'groceryList.oneList' => 'قائمة واحدة',
+			'groceryList.newList' => 'قائمة جديدة',
+			'groceryList.newListTitle' => 'قائمة تسوق جديدة',
+			'groceryList.listName' => 'اسم القائمة',
+			'groceryList.defaultListName' => 'قائمة التسوق',
+			'groceryList.fromPlans' => 'من القوائم الغذائية',
+			'groceryList.fromPlansHint' => 'تجمع وصفات خطط وجباتك',
+			'groceryList.fromRecipe' => 'من وصفة',
+			'groceryList.fromRecipeHint' => 'مكونات وصفة واحدة',
+			'groceryList.emptyList' => 'قائمة فارغة',
+			'groceryList.emptyListHint' => 'تضيف العناصر يدويًا',
+			'groceryList.sourcePlans' => 'من القوائم الغذائية',
+			'groceryList.sourceRecipe' => ({required Object title}) => 'من وصفة "${title}"',
+			'groceryList.sourceManual' => 'قائمة يدوية',
+			'groceryList.renameList' => 'إعادة تسمية القائمة',
+			'groceryList.deleteList' => 'حذف القائمة',
+			'groceryList.deleteListConfirm' => ({required Object name}) => 'سيتم حذف "${name}" وكل عناصرها.',
+			'groceryList.progress' => ({required Object checked, required Object total}) => '${checked}/${total}',
+			'groceryList.servings' => 'حصص',
+			'groceryList.timesOver' => 'الكمية',
+			'groceryList.scaleValue' => ({required Object value}) => '×${value}',
+			'groceryList.rebuildFromRecipe' => 'إعادة البناء من الوصفة',
+			'groceryList.createFromRecipe' => 'إنشاء قائمة تسوق',
+			'groceryList.createList' => 'إنشاء القائمة',
+			'groceryList.recipeListTitle' => 'قائمة تسوق من وصفة',
+			'groceryList.recipeListHint' => 'مكونات الوصفة حسب الكمية التي تحضّرها',
+			'groceryList.listCreated' => ({required Object name}) => 'تم إنشاء القائمة "${name}"',
+			'groceryList.openList' => 'فتح القائمة',
+			'groceryList.stayHere' => 'البقاء هنا',
+			'groceryList.noIngredients' => 'لا توجد في هذه الوصفة مكونات للشراء',
+			'groceryList.addFirstItem' => 'إضافة عنصر',
 			'receipt.title' => 'مسح إيصال',
 			'receipt.subtitle' => 'صوّر إيصالاً أو ارفع PDF، وتُحفظ الأسعار لقائمة التسوق',
 			'receipt.camera' => 'تصوير الإيصال',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraHint' => 'إيصال طويل؟ التقط عدة صور وسندمجها',
 			'receipt.gallery' => 'اختيار من المعرض',
 			'receipt.pdf' => 'ملف PDF',
@@ -2397,6 +2581,8 @@ extension on TranslationsAr {
 			'adminDashboard.send' => 'إرسال',
 			'adminDashboard.blocked' => 'محظورون',
 			'adminDashboard.disable' => 'حظر الحساب',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.enable' => 'إلغاء الحظر',
 			'adminDashboard.blockMessageHint' => 'ما سيراه المستخدم عند محاولة الدخول',
 			'adminDashboard.disabledDone' => 'تم حظر الحساب',

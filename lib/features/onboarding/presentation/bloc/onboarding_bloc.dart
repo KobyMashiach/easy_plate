@@ -13,9 +13,11 @@ part 'onboarding_bloc.freezed.dart';
 
 @freezed
 sealed class OnboardingEvent with _$OnboardingEvent {
-  const factory OnboardingEvent.selectShoppingDay(ShoppingDay day) = _SelectShoppingDay;
-  const factory OnboardingEvent.toggleDietaryPreference(DietaryPreference preference) =
-      _ToggleDietaryPreference;
+  const factory OnboardingEvent.selectShoppingDay(ShoppingDay day) =
+      _SelectShoppingDay;
+  const factory OnboardingEvent.toggleDietaryPreference(
+    DietaryPreference preference,
+  ) = _ToggleDietaryPreference;
   const factory OnboardingEvent.finish() = _Finish;
 }
 
@@ -36,7 +38,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final SaveUserPreferencesUseCase saveUserPreferencesUseCase;
 
   OnboardingBloc({required this.saveUserPreferencesUseCase})
-      : super(const OnboardingState.editing(ShoppingDay.sunday, [])) {
+    : super(const OnboardingState.editing(ShoppingDay.sunday, [])) {
     on<_SelectShoppingDay>(_selectShoppingDay);
     on<_ToggleDietaryPreference>(_toggleDietaryPreference);
     on<_Finish>(_finish);
@@ -48,7 +50,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     );
   }
 
-  FutureOr<void> _selectShoppingDay(_SelectShoppingDay event, Emitter<OnboardingState> emit) {
+  FutureOr<void> _selectShoppingDay(
+    _SelectShoppingDay event,
+    Emitter<OnboardingState> emit,
+  ) {
     final current = state;
     if (current is Editing) {
       emit(.editing(event.day, current.selectedPreferences));

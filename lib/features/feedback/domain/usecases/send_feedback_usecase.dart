@@ -19,15 +19,17 @@ class SendFeedbackUseCase {
   }) {
     final text = message.trim();
     if (text.isEmpty) throw ArgumentError('a message is required');
-    return repository.send(FeedbackEntity(
-      id: _uuid.v4(),
-      type: type,
-      message: text,
-      authorUid: authorUid,
-      authorName: authorName,
-      authorEmail: authorEmail,
-      appVersion: appVersion,
-      createdAt: DateTime.now(),
-    ));
+    return repository.send(
+      FeedbackEntity(
+        id: _uuid.v4(),
+        type: type,
+        message: text,
+        authorUid: authorUid,
+        authorName: authorName,
+        authorEmail: authorEmail,
+        appVersion: appVersion,
+        createdAt: DateTime.now(),
+      ),
+    );
   }
 }

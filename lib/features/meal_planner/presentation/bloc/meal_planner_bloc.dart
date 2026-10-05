@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/translation/content_changes.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,19 +20,23 @@ import '../../domain/entities/meal_plan_entity.dart';
 import '../../domain/usecases/delete_meal_plan_usecase.dart';
 import '../../domain/usecases/get_meal_plans_usecase.dart';
 import '../../domain/usecases/save_meal_plan_usecase.dart';
+import '../../domain/usecases/watch_meal_plans_usecase.dart';
 
 part 'meal_planner_bloc.freezed.dart';
 
 @freezed
 sealed class MealPlannerEvent with _$MealPlannerEvent {
   const factory MealPlannerEvent.init() = _Init;
-  const factory MealPlannerEvent.createPlan(String name, MealPlanTemplate template) =
-      _CreatePlan;
+  const factory MealPlannerEvent.createPlan(
+    String name,
+    MealPlanTemplate template,
+  ) = _CreatePlan;
   const factory MealPlannerEvent.selectPlan(String planId) = _SelectPlan;
   const factory MealPlannerEvent.deletePlan(String planId) = _DeletePlan;
   const factory MealPlannerEvent.addMeal(int weekday, String name) = _AddMeal;
   const factory MealPlannerEvent.removeMeal(String mealId) = _RemoveMeal;
-  const factory MealPlannerEvent.addRecipeItem(String mealId, String recipeId) = _AddRecipeItem;
+  const factory MealPlannerEvent.addRecipeItem(String mealId, String recipeId) =
+      _AddRecipeItem;
   const factory MealPlannerEvent.addFreeTextItem(
     String mealId,
     String text,
@@ -42,7 +48,16 @@ sealed class MealPlannerEvent with _$MealPlannerEvent {
     String text,
     List<RecipeIngredientEntity> ingredients,
   ) = _UpdateFreeTextItem;
-  const factory MealPlannerEvent.removeItem(String mealId, String itemId) = _RemoveItem;
+  const factory MealPlannerEvent.removeItem(String mealId, String itemId) =
+      _RemoveItem;
+
+  /// The plans box changed — from this bloc or from anywhere else.
+  const factory MealPlannerEvent.plansChanged(List<MealPlanEntity> plans) =
+      _PlansChanged;
+
+  /// The recipes box changed: titles and nutrition behind the items.
+  const factory MealPlannerEvent.recipesChanged(List<RecipeEntity> recipes) =
+      _RecipesChanged;
 }
 
 @freezed
@@ -59,10 +74,21 @@ sealed class MealPlannerState with _$MealPlannerState {
 }
 
 class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
+  StreamSubscription<void>? _contentChanges;
+  StreamSubscription<List<MealPlanEntity>>? _plans;
+  StreamSubscription<List<RecipeEntity>>? _recipesStream;
+
   final GetMealPlansUseCase getMealPlansUseCase;
   final SaveMealPlanUseCase saveMealPlanUseCase;
   final DeleteMealPlanUseCase deleteMealPlanUseCase;
   final RecipesRepository recipesRepository;
+
+  /// The plans as the box has them. Null in tests without a live box.
+  final WatchMealPlansUseCase? watchMealPlansUseCase;
+
+  /// Whether to follow the recipes box for titles and nutrition. Off in
+  /// tests whose fake repository has no stream.
+  final bool watchRecipes;
 
   /// Refreshes a shared plan when it is opened and carries edits to it
   /// across accounts. Null in tests.
@@ -74,9 +100,15 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     required this.saveMealPlanUseCase,
     required this.deleteMealPlanUseCase,
     required this.recipesRepository,
+    this.watchMealPlansUseCase,
+    this.watchRecipes = false,
     this.sharing,
   }) : super(const MealPlannerState.loading()) {
     on<_Init>(_init);
+    // A language switch rewrites every record at once; show it.
+    _contentChanges = ContentChanges.instance.stream.listen(
+      (_) => add(const _Init()),
+    );
     on<_CreatePlan>(_createPlan);
     on<_SelectPlan>(_selectPlan);
     on<_DeletePlan>(_deletePlan);
@@ -86,7 +118,24 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     on<_AddFreeTextItem>(_addFreeTextItem);
     on<_UpdateFreeTextItem>(_updateFreeTextItem);
     on<_RemoveItem>(_removeItem);
+    on<_PlansChanged>(_plansChanged);
+    on<_RecipesChanged>(_recipesChanged);
     add(const MealPlannerEvent.init());
+    // A plan accepted from an invite, or rewritten by the resume refresh,
+    // is written to the box by code that never touches this bloc; and a
+    // recipe renamed or re-estimated on the recipes tab changes what the
+    // board shows for it. Both tabs live in an IndexedStack and would
+    // otherwise keep showing the old words until the app restarted.
+    _plans = watchMealPlansUseCase?.call().listen(
+      (plans) => add(MealPlannerEvent.plansChanged(plans)),
+      onError: (Object e) => debugPrint('Plans stream failed: $e'),
+    );
+    if (watchRecipes) {
+      _recipesStream = recipesRepository.watchRecipes().listen(
+        (recipes) => add(MealPlannerEvent.recipesChanged(recipes)),
+        onError: (Object e) => debugPrint('Recipes stream failed: $e'),
+      );
+    }
   }
 
   factory MealPlannerBloc.fromContext(BuildContext context) {
@@ -95,7 +144,45 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       saveMealPlanUseCase: SaveMealPlanUseCase(context.read()),
       deleteMealPlanUseCase: DeleteMealPlanUseCase(context.read()),
       recipesRepository: context.read(),
+      watchMealPlansUseCase: WatchMealPlansUseCase(context.read()),
+      watchRecipes: true,
       sharing: context.read(),
+    );
+  }
+
+  /// The plans moved under the board: keep the selection by id, or fall
+  /// back to the first plan when the selected one is gone.
+  void _plansChanged(_PlansChanged event, Emitter<MealPlannerState> emit) {
+    final current = state;
+    if (current is! MealPlannerLoaded) return;
+    final selectedId = current.selectedPlan?.id;
+    final selected =
+        event.plans.where((p) => p.id == selectedId).firstOrNull ??
+        event.plans.firstOrNull;
+    emit(
+      .loaded(
+        event.plans,
+        selectedPlan: selected,
+        recipeTitles: current.recipeTitles,
+        recipes: current.recipes,
+      ),
+    );
+  }
+
+  void _recipesChanged(
+    _RecipesChanged event,
+    Emitter<MealPlannerState> emit,
+  ) {
+    final current = state;
+    if (current is! MealPlannerLoaded) return;
+    final recipes = {for (final recipe in event.recipes) recipe.id: recipe};
+    emit(
+      .loaded(
+        current.plans,
+        selectedPlan: current.selectedPlan,
+        recipeTitles: {for (final r in recipes.values) r.id: r.title},
+        recipes: recipes,
+      ),
     );
   }
 
@@ -113,11 +200,20 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   }) async {
     try {
       var plans = await getMealPlansUseCase();
-      final selectedId = selectedPlanId ??
-          (state is MealPlannerLoaded ? (state as MealPlannerLoaded).selectedPlan?.id : null);
-      var selected = plans.where((p) => p.id == selectedId).firstOrNull ?? plans.firstOrNull;
+      final selectedId =
+          selectedPlanId ??
+          (state is MealPlannerLoaded
+              ? (state as MealPlannerLoaded).selectedPlan?.id
+              : null);
+      var selected =
+          plans.where((p) => p.id == selectedId).firstOrNull ??
+          plans.firstOrNull;
       final uid = UserScope().uid;
-      if (syncShared && selected != null && selected.isShared && uid != null && sharing != null) {
+      if (syncShared &&
+          selected != null &&
+          selected.isShared &&
+          uid != null &&
+          sharing != null) {
         try {
           selected = await sharing!.plans.sync(selected, uid: uid);
           plans = await getMealPlansUseCase();
@@ -126,12 +222,14 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
         }
       }
       final recipes = await _recipes();
-      emit(.loaded(
-        plans,
-        selectedPlan: selected,
-        recipeTitles: {for (final r in recipes.values) r.id: r.title},
-        recipes: recipes,
-      ));
+      emit(
+        .loaded(
+          plans,
+          selectedPlan: selected,
+          recipeTitles: {for (final r in recipes.values) r.id: r.title},
+          recipes: recipes,
+        ),
+      );
     } catch (e) {
       debugPrint('Meal planner error: $e');
       emit(.errorMessage(e.toString()));
@@ -159,27 +257,31 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     await _reload(emit, selectedPlanId: updated.id);
   }
 
-  Future<void> _init(_Init event, Emitter<MealPlannerState> emit) => _reload(emit, syncShared: true);
+  Future<void> _init(_Init event, Emitter<MealPlannerState> emit) =>
+      _reload(emit, syncShared: true);
 
   /// Meal names for a template, in the order they're eaten.
   List<String> _templateMeals(MealPlanTemplate template) => switch (template) {
-        MealPlanTemplate.free => const [],
-        MealPlanTemplate.threeMeals => [
-            t.mealPlanner.breakfast,
-            t.mealPlanner.lunch,
-            t.mealPlanner.dinner,
-          ],
-        MealPlanTemplate.sixMeals => [
-            t.mealPlanner.breakfast,
-            t.mealPlanner.morningSnack,
-            t.mealPlanner.lunch,
-            t.mealPlanner.afternoonSnack,
-            t.mealPlanner.dinner,
-            t.mealPlanner.eveningSnack,
-          ],
-      };
+    MealPlanTemplate.free => const [],
+    MealPlanTemplate.threeMeals => [
+      t.mealPlanner.breakfast,
+      t.mealPlanner.lunch,
+      t.mealPlanner.dinner,
+    ],
+    MealPlanTemplate.sixMeals => [
+      t.mealPlanner.breakfast,
+      t.mealPlanner.morningSnack,
+      t.mealPlanner.lunch,
+      t.mealPlanner.afternoonSnack,
+      t.mealPlanner.dinner,
+      t.mealPlanner.eveningSnack,
+    ],
+  };
 
-  Future<void> _createPlan(_CreatePlan event, Emitter<MealPlannerState> emit) async {
+  Future<void> _createPlan(
+    _CreatePlan event,
+    Emitter<MealPlannerState> emit,
+  ) async {
     final names = _templateMeals(event.template);
 
     // A template seeds the same meals on every weekday; it's only a starting
@@ -210,11 +312,18 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       _reload(emit, selectedPlanId: event.planId, syncShared: true);
 
   /// The owner takes the shared document down with it; a member only leaves.
-  Future<void> _deletePlan(_DeletePlan event, Emitter<MealPlannerState> emit) async {
+  Future<void> _deletePlan(
+    _DeletePlan event,
+    Emitter<MealPlannerState> emit,
+  ) async {
     final current = state;
-    final plan = current is MealPlannerLoaded ? current.plans.where((p) => p.id == event.planId).firstOrNull : null;
+    final plan = current is MealPlannerLoaded
+        ? current.plans.where((p) => p.id == event.planId).firstOrNull
+        : null;
     final uid = UserScope().uid;
-    if (plan != null && plan.isShared && uid != null) await sharing?.plans.retire(plan, uid: uid);
+    if (plan != null && plan.isShared && uid != null) {
+      await sharing?.plans.retire(plan, uid: uid);
+    }
     await deleteMealPlanUseCase(event.planId);
     await _reload(emit);
   }
@@ -222,35 +331,50 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   Future<void> _addMeal(_AddMeal event, Emitter<MealPlannerState> emit) {
     return _updateSelectedPlan(emit, (plan) {
       final order = plan.mealsForWeekday(event.weekday).length;
-      return plan.copyWith(meals: [
-        ...plan.meals,
-        MealEntity(
-          id: _uuid.v4(),
-          weekday: event.weekday,
-          name: event.name,
-          order: order,
-          items: const [],
-        ),
-      ]);
+      return plan.copyWith(
+        meals: [
+          ...plan.meals,
+          MealEntity(
+            id: _uuid.v4(),
+            weekday: event.weekday,
+            name: event.name,
+            order: order,
+            items: const [],
+          ),
+        ],
+      );
     });
   }
 
   Future<void> _removeMeal(_RemoveMeal event, Emitter<MealPlannerState> emit) {
     return _updateSelectedPlan(
       emit,
-      (plan) => plan.copyWith(meals: plan.meals.where((m) => m.id != event.mealId).toList()),
+      (plan) => plan.copyWith(
+        meals: plan.meals.where((m) => m.id != event.mealId).toList(),
+      ),
     );
   }
 
-  MealPlanEntity _withItemAdded(MealPlanEntity plan, String mealId, MealItemEntity item) {
+  MealPlanEntity _withItemAdded(
+    MealPlanEntity plan,
+    String mealId,
+    MealItemEntity item,
+  ) {
     return plan.copyWith(
       meals: plan.meals
-          .map((meal) => meal.id == mealId ? meal.copyWith(items: [...meal.items, item]) : meal)
+          .map(
+            (meal) => meal.id == mealId
+                ? meal.copyWith(items: [...meal.items, item])
+                : meal,
+          )
           .toList(),
     );
   }
 
-  Future<void> _addRecipeItem(_AddRecipeItem event, Emitter<MealPlannerState> emit) {
+  Future<void> _addRecipeItem(
+    _AddRecipeItem event,
+    Emitter<MealPlannerState> emit,
+  ) {
     return _updateSelectedPlan(
       emit,
       (plan) => _withItemAdded(
@@ -261,7 +385,10 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     );
   }
 
-  Future<void> _addFreeTextItem(_AddFreeTextItem event, Emitter<MealPlannerState> emit) {
+  Future<void> _addFreeTextItem(
+    _AddFreeTextItem event,
+    Emitter<MealPlannerState> emit,
+  ) {
     return _updateSelectedPlan(
       emit,
       (plan) => _withItemAdded(
@@ -306,9 +433,19 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       return plan.copyWith(
         meals: plan.meals.map((meal) {
           if (meal.id != event.mealId) return meal;
-          return meal.copyWith(items: meal.items.where((i) => i.id != event.itemId).toList());
+          return meal.copyWith(
+            items: meal.items.where((i) => i.id != event.itemId).toList(),
+          );
         }).toList(),
       );
     });
+  }
+
+  @override
+  Future<void> close() async {
+    await _contentChanges?.cancel();
+    await _plans?.cancel();
+    await _recipesStream?.cancel();
+    return super.close();
   }
 }

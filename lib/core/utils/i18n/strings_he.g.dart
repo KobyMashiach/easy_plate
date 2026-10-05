@@ -52,6 +52,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$allergens$he allergens = Translations$allergens$he.internal(_root);
 	late final Translations$weekday$he weekday = Translations$weekday$he.internal(_root);
 	late final Translations$settings$he settings = Translations$settings$he.internal(_root);
+	late final Translations$notificationSettings$he notificationSettings = Translations$notificationSettings$he.internal(_root);
+	late final Translations$preferences$he preferences = Translations$preferences$he.internal(_root);
 	late final Translations$more$he more = Translations$more$he.internal(_root);
 	late final Translations$language$he language = Translations$language$he.internal(_root);
 	late final Translations$books$he books = Translations$books$he.internal(_root);
@@ -348,6 +350,21 @@ class Translations$auth$he {
 
 	/// he: 'החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.'
 	String get blockedBody => 'החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.';
+
+	/// he: 'המספר הזה שייך לחשבון קיים'
+	String get phoneClaimedTitle => 'המספר הזה שייך לחשבון קיים';
+
+	/// he: 'המספר $phone כבר מחובר לחשבון EasyPlate אחר. כדי להגיע לחשבון הזה ולמתכונים שלו, היכנסו כמו שנכנסתם אליו עד עכשיו (Google, ‏Apple או מייל), ואמתו שם את המספר מחדש.'
+	String phoneClaimedBody({required Object phone}) => 'המספר ${phone} כבר מחובר לחשבון EasyPlate אחר. כדי להגיע לחשבון הזה ולמתכונים שלו, היכנסו כמו שנכנסתם אליו עד עכשיו (Google, ‏Apple או מייל), ואמתו שם את המספר מחדש.';
+
+	/// he: 'כניסה לחשבון הקיים שלי'
+	String get phoneClaimedSignIn => 'כניסה לחשבון הקיים שלי';
+
+	/// he: 'יצירת חשבון חדש בכל זאת'
+	String get phoneClaimedCreateNew => 'יצירת חשבון חדש בכל זאת';
+
+	/// he: 'ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה.'
+	String get phoneClaimedCreateNewConfirm => 'ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה.';
 }
 
 // Path: profile
@@ -603,6 +620,129 @@ class Translations$settings$he {
 
 	/// he: 'ביום הקניות (אחה״צ)'
 	String get reminderSameDayAfternoon => 'ביום הקניות (אחה״צ)';
+
+	/// he: 'מתרגם את המתכונים והתפריטים שלך...'
+	String get translatingContent => 'מתרגם את המתכונים והתפריטים שלך...';
+
+	/// he: '$count פריטים תורגמו'
+	String translatedContent({required Object count}) => '${count} פריטים תורגמו';
+
+	/// he: 'התרגום לא הושלם'
+	String get translationPartialTitle => 'התרגום לא הושלם';
+
+	/// he: '$count פריטים נשארו בשפת המקור. אפשר לנסות שוב מאוחר יותר.'
+	String translationPartial({required Object count}) => '${count} פריטים נשארו בשפת המקור. אפשר לנסות שוב מאוחר יותר.';
+
+	/// he: 'התרגום נכשל. התוכן נשאר בשפת המקור.'
+	String get translationFailed => 'התרגום נכשל. התוכן נשאר בשפת המקור.';
+
+	/// he: 'חשבון'
+	String get account => 'חשבון';
+
+	/// he: 'התראות'
+	String get notifications => 'התראות';
+
+	/// he: 'אילו התראות מגיעות אליך, ואיך'
+	String get notificationsHint => 'אילו התראות מגיעות אליך, ואיך';
+
+	/// he: 'חשבון, התראות, שפה ומראה'
+	String get settingsHint => 'חשבון, התראות, שפה ומראה';
+}
+
+// Path: notificationSettings
+class Translations$notificationSettings$he {
+	Translations$notificationSettings$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'הגדרות התראות'
+	String get title => 'הגדרות התראות';
+
+	/// he: 'התראות דחיפה'
+	String get push => 'התראות דחיפה';
+
+	/// he: 'התראות במכשיר הזה. בכיבוי, שום דבר לא נשלח לטלפון; תיבת ההתראות ממשיכה להתמלא.'
+	String get pushHint => 'התראות במכשיר הזה. בכיבוי, שום דבר לא נשלח לטלפון; תיבת ההתראות ממשיכה להתמלא.';
+
+	/// he: 'ההתראות של EasyPlate חסומות בהגדרות המכשיר. כדי לקבל התראות, יש לאפשר אותן שם.'
+	String get pushDenied => 'ההתראות של EasyPlate חסומות בהגדרות המכשיר. כדי לקבל התראות, יש לאפשר אותן שם.';
+
+	/// he: 'קהילה'
+	String get community => 'קהילה';
+
+	/// he: 'תגובות לפוסטים שלי'
+	String get repliesOnMyPosts => 'תגובות לפוסטים שלי';
+
+	/// he: 'מישהו ענה בדיון שפתחת'
+	String get repliesOnMyPostsHint => 'מישהו ענה בדיון שפתחת';
+
+	/// he: 'תגובות בדיונים שהשתתפתי בהם'
+	String get repliesOnThreads => 'תגובות בדיונים שהשתתפתי בהם';
+
+	/// he: 'תגובה חדשה בדיון שהגבת בו'
+	String get repliesOnThreadsHint => 'תגובה חדשה בדיון שהגבת בו';
+
+	/// he: 'שיתוף'
+	String get sharing => 'שיתוף';
+
+	/// he: 'הזמנות לשיתוף'
+	String get shareInvites => 'הזמנות לשיתוף';
+
+	/// he: 'מישהו שיתף איתך מתכון, ספר או תפריט. ההזמנה תמיד מגיעה לתיבה; כאן נקבע רק אם תישלח התראה.'
+	String get shareInvitesHint => 'מישהו שיתף איתך מתכון, ספר או תפריט. ההזמנה תמיד מגיעה לתיבה; כאן נקבע רק אם תישלח התראה.';
+
+	/// he: 'עדכונים למתכונים ששמרתי'
+	String get sharedRecipeUpdates => 'עדכונים למתכונים ששמרתי';
+
+	/// he: 'הכותב/ת שינה/תה מתכון מהקהילה ששמרת'
+	String get sharedRecipeUpdatesHint => 'הכותב/ת שינה/תה מתכון מהקהילה ששמרת';
+
+	/// he: 'מ-EasyPlate'
+	String get easyPlate => 'מ-EasyPlate';
+
+	/// he: 'תשובות לפניות שלי לתמיכה'
+	String get adminReplies => 'תשובות לפניות שלי לתמיכה';
+
+	/// he: 'הודעות מהצוות'
+	String get announcements => 'הודעות מהצוות';
+
+	/// he: 'חדשות ועדכונים מצוות EasyPlate'
+	String get announcementsHint => 'חדשות ועדכונים מצוות EasyPlate';
+
+	/// he: 'כשהאפליקציה פתוחה'
+	String get inApp => 'כשהאפליקציה פתוחה';
+
+	/// he: 'הצגת התראות כחלונית'
+	String get foregroundPopups => 'הצגת התראות כחלונית';
+
+	/// he: 'התראה שמגיעה בזמן שהאפליקציה פתוחה נפתחת בכרטיס קטן. בכיבוי, היא מגיעה רק לתיבת ההתראות.'
+	String get foregroundPopupsHint => 'התראה שמגיעה בזמן שהאפליקציה פתוחה נפתחת בכרטיס קטן. בכיבוי, היא מגיעה רק לתיבת ההתראות.';
+
+	/// he: 'תזכורות קניות'
+	String get reminders => 'תזכורות קניות';
+}
+
+// Path: preferences
+class Translations$preferences$he {
+	Translations$preferences$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'העדפות'
+	String get title => 'העדפות';
+
+	/// he: 'קניות, העדפות תזונתיות והתנהגות הספרים'
+	String get hint => 'קניות, העדפות תזונתיות והתנהגות הספרים';
+
+	/// he: 'קניות'
+	String get shopping => 'קניות';
+
+	/// he: 'ספרי מתכונים'
+	String get books => 'ספרי מתכונים';
 }
 
 // Path: more
@@ -639,6 +779,9 @@ class Translations$more$he {
 
 	/// he: 'לא הצלחנו לפתוח את האפליקציה'
 	String get supportUnavailable => 'לא הצלחנו לפתוח את האפליקציה';
+
+	/// he: 'העדפות'
+	String get preferences => 'העדפות';
 }
 
 // Path: language
@@ -1128,6 +1271,15 @@ class Translations$community$he {
 
 	/// he: 'המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.'
 	String get removeSavedConfirm => 'המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.';
+
+	/// he: 'פוסט חדש אחד'
+	String get oneNewPost => 'פוסט חדש אחד';
+
+	/// he: '$count פוסטים חדשים'
+	String newPosts({required Object count}) => '${count} פוסטים חדשים';
+
+	/// he: 'לא הצלחנו לשלוח את התגובה'
+	String get replyFailed => 'לא הצלחנו לשלוח את התגובה';
 }
 
 // Path: sharing
@@ -1365,6 +1517,21 @@ class Translations$notifications$he {
 
 	/// he: 'הודעה מ-EasyPlate'
 	String get adminMessage => 'הודעה מ-EasyPlate';
+
+	/// he: '$name הגיב/ה לפוסט שלך "$post"'
+	String forumReplyOnMyPost({required Object name, required Object post}) => '${name} הגיב/ה לפוסט שלך "${post}"';
+
+	/// he: '$name הגיב/ה בדיון "$post"'
+	String forumReplyOnThread({required Object name, required Object post}) => '${name} הגיב/ה בדיון "${post}"';
+
+	/// he: 'פתיחת הדיון'
+	String get openThread => 'פתיחת הדיון';
+
+	/// he: 'הדיון הזה נמחק'
+	String get threadGone => 'הדיון הזה נמחק';
+
+	/// he: 'הגדרות'
+	String get settings => 'הגדרות';
 }
 
 // Path: editor
@@ -1779,6 +1946,105 @@ class Translations$groceryList$he {
 
 	/// he: 'כל התפריטים'
 	String get selectAllPlans => 'כל התפריטים';
+
+	/// he: 'הרשימות שלי'
+	String get myLists => 'הרשימות שלי';
+
+	/// he: '$count רשימות'
+	String listsCount({required Object count}) => '${count} רשימות';
+
+	/// he: 'רשימה אחת'
+	String get oneList => 'רשימה אחת';
+
+	/// he: 'רשימה חדשה'
+	String get newList => 'רשימה חדשה';
+
+	/// he: 'רשימת קניות חדשה'
+	String get newListTitle => 'רשימת קניות חדשה';
+
+	/// he: 'שם הרשימה'
+	String get listName => 'שם הרשימה';
+
+	/// he: 'רשימת קניות'
+	String get defaultListName => 'רשימת קניות';
+
+	/// he: 'מהתפריטים'
+	String get fromPlans => 'מהתפריטים';
+
+	/// he: 'מרכזת את המתכונים שבתפריטים שלך'
+	String get fromPlansHint => 'מרכזת את המתכונים שבתפריטים שלך';
+
+	/// he: 'ממתכון'
+	String get fromRecipe => 'ממתכון';
+
+	/// he: 'המצרכים של מתכון אחד'
+	String get fromRecipeHint => 'המצרכים של מתכון אחד';
+
+	/// he: 'רשימה ריקה'
+	String get emptyList => 'רשימה ריקה';
+
+	/// he: 'מוסיפים את הפריטים ידנית'
+	String get emptyListHint => 'מוסיפים את הפריטים ידנית';
+
+	/// he: 'מהתפריטים'
+	String get sourcePlans => 'מהתפריטים';
+
+	/// he: 'מהמתכון "$title"'
+	String sourceRecipe({required Object title}) => 'מהמתכון "${title}"';
+
+	/// he: 'רשימה ידנית'
+	String get sourceManual => 'רשימה ידנית';
+
+	/// he: 'שינוי שם הרשימה'
+	String get renameList => 'שינוי שם הרשימה';
+
+	/// he: 'מחיקת הרשימה'
+	String get deleteList => 'מחיקת הרשימה';
+
+	/// he: '"$name" וכל הפריטים שבה יימחקו.'
+	String deleteListConfirm({required Object name}) => '"${name}" וכל הפריטים שבה יימחקו.';
+
+	/// he: '$checked/$total'
+	String progress({required Object checked, required Object total}) => '${checked}/${total}';
+
+	/// he: 'מנות'
+	String get servings => 'מנות';
+
+	/// he: 'כמות'
+	String get timesOver => 'כמות';
+
+	/// he: '×$value'
+	String scaleValue({required Object value}) => '×${value}';
+
+	/// he: 'בנייה מחדש מהמתכון'
+	String get rebuildFromRecipe => 'בנייה מחדש מהמתכון';
+
+	/// he: 'יצירת רשימת קניות'
+	String get createFromRecipe => 'יצירת רשימת קניות';
+
+	/// he: 'יצירת הרשימה'
+	String get createList => 'יצירת הרשימה';
+
+	/// he: 'רשימת קניות ממתכון'
+	String get recipeListTitle => 'רשימת קניות ממתכון';
+
+	/// he: 'המצרכים של המתכון, לפי הכמות שמכינים'
+	String get recipeListHint => 'המצרכים של המתכון, לפי הכמות שמכינים';
+
+	/// he: 'הרשימה "$name" נוצרה'
+	String listCreated({required Object name}) => 'הרשימה "${name}" נוצרה';
+
+	/// he: 'פתיחת הרשימה'
+	String get openList => 'פתיחת הרשימה';
+
+	/// he: 'להישאר כאן'
+	String get stayHere => 'להישאר כאן';
+
+	/// he: 'אין במתכון הזה מצרכים לקנות'
+	String get noIngredients => 'אין במתכון הזה מצרכים לקנות';
+
+	/// he: 'הוספת פריט'
+	String get addFirstItem => 'הוספת פריט';
 }
 
 // Path: receipt
@@ -3526,6 +3792,11 @@ extension on Translations {
 			'auth.appleAlreadyLinked' => 'כבר מקושר חשבון Apple',
 			'auth.blockedTitle' => 'החשבון נחסם',
 			'auth.blockedBody' => 'החשבון הזה נחסם על ידי מנהל האפליקציה. לפרטים אפשר לפנות אלינו במסך התמיכה.',
+			'auth.phoneClaimedTitle' => 'המספר הזה שייך לחשבון קיים',
+			'auth.phoneClaimedBody' => ({required Object phone}) => 'המספר ${phone} כבר מחובר לחשבון EasyPlate אחר. כדי להגיע לחשבון הזה ולמתכונים שלו, היכנסו כמו שנכנסתם אליו עד עכשיו (Google, ‏Apple או מייל), ואמתו שם את המספר מחדש.',
+			'auth.phoneClaimedSignIn' => 'כניסה לחשבון הקיים שלי',
+			'auth.phoneClaimedCreateNew' => 'יצירת חשבון חדש בכל זאת',
+			'auth.phoneClaimedCreateNewConfirm' => 'ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה.',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',
@@ -3593,6 +3864,41 @@ extension on Translations {
 			'settings.reminderDayBefore' => 'יום לפני (ערב)',
 			'settings.reminderSameDayMorning' => 'ביום הקניות (בוקר)',
 			'settings.reminderSameDayAfternoon' => 'ביום הקניות (אחה״צ)',
+			'settings.translatingContent' => 'מתרגם את המתכונים והתפריטים שלך...',
+			'settings.translatedContent' => ({required Object count}) => '${count} פריטים תורגמו',
+			'settings.translationPartialTitle' => 'התרגום לא הושלם',
+			'settings.translationPartial' => ({required Object count}) => '${count} פריטים נשארו בשפת המקור. אפשר לנסות שוב מאוחר יותר.',
+			'settings.translationFailed' => 'התרגום נכשל. התוכן נשאר בשפת המקור.',
+			'settings.account' => 'חשבון',
+			'settings.notifications' => 'התראות',
+			'settings.notificationsHint' => 'אילו התראות מגיעות אליך, ואיך',
+			'settings.settingsHint' => 'חשבון, התראות, שפה ומראה',
+			'notificationSettings.title' => 'הגדרות התראות',
+			'notificationSettings.push' => 'התראות דחיפה',
+			'notificationSettings.pushHint' => 'התראות במכשיר הזה. בכיבוי, שום דבר לא נשלח לטלפון; תיבת ההתראות ממשיכה להתמלא.',
+			'notificationSettings.pushDenied' => 'ההתראות של EasyPlate חסומות בהגדרות המכשיר. כדי לקבל התראות, יש לאפשר אותן שם.',
+			'notificationSettings.community' => 'קהילה',
+			'notificationSettings.repliesOnMyPosts' => 'תגובות לפוסטים שלי',
+			'notificationSettings.repliesOnMyPostsHint' => 'מישהו ענה בדיון שפתחת',
+			'notificationSettings.repliesOnThreads' => 'תגובות בדיונים שהשתתפתי בהם',
+			'notificationSettings.repliesOnThreadsHint' => 'תגובה חדשה בדיון שהגבת בו',
+			'notificationSettings.sharing' => 'שיתוף',
+			'notificationSettings.shareInvites' => 'הזמנות לשיתוף',
+			'notificationSettings.shareInvitesHint' => 'מישהו שיתף איתך מתכון, ספר או תפריט. ההזמנה תמיד מגיעה לתיבה; כאן נקבע רק אם תישלח התראה.',
+			'notificationSettings.sharedRecipeUpdates' => 'עדכונים למתכונים ששמרתי',
+			'notificationSettings.sharedRecipeUpdatesHint' => 'הכותב/ת שינה/תה מתכון מהקהילה ששמרת',
+			'notificationSettings.easyPlate' => 'מ-EasyPlate',
+			'notificationSettings.adminReplies' => 'תשובות לפניות שלי לתמיכה',
+			'notificationSettings.announcements' => 'הודעות מהצוות',
+			'notificationSettings.announcementsHint' => 'חדשות ועדכונים מצוות EasyPlate',
+			'notificationSettings.inApp' => 'כשהאפליקציה פתוחה',
+			'notificationSettings.foregroundPopups' => 'הצגת התראות כחלונית',
+			'notificationSettings.foregroundPopupsHint' => 'התראה שמגיעה בזמן שהאפליקציה פתוחה נפתחת בכרטיס קטן. בכיבוי, היא מגיעה רק לתיבת ההתראות.',
+			'notificationSettings.reminders' => 'תזכורות קניות',
+			'preferences.title' => 'העדפות',
+			'preferences.hint' => 'קניות, העדפות תזונתיות והתנהגות הספרים',
+			'preferences.shopping' => 'קניות',
+			'preferences.books' => 'ספרי מתכונים',
 			'more.title' => 'עוד',
 			'more.settings' => 'הגדרות',
 			'more.profile' => 'פרופיל אישי',
@@ -3602,6 +3908,7 @@ extension on Translations {
 			'more.whatsapp' => 'שליחת הודעה בוואטסאפ',
 			'more.email' => 'שליחת מייל',
 			'more.supportUnavailable' => 'לא הצלחנו לפתוח את האפליקציה',
+			'more.preferences' => 'העדפות',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -3750,6 +4057,9 @@ extension on Translations {
 			'community.savedTag' => 'שמור אצלכם',
 			'community.removeSaved' => 'הסרה מהמתכונים ששמרתי',
 			'community.removeSavedConfirm' => 'המתכון יוסר מהמתכונים ששמרתם. אפשר לשמור אותו שוב מהקהילה.',
+			'community.oneNewPost' => 'פוסט חדש אחד',
+			'community.newPosts' => ({required Object count}) => '${count} פוסטים חדשים',
+			'community.replyFailed' => 'לא הצלחנו לשלוח את התגובה',
 			'sharing.title' => 'שיתוף מתכון',
 			'sharing.contactLabel' => 'אימייל או טלפון של השותף/ה',
 			'sharing.contactHint' => 'name@example.com או 05…',
@@ -3823,6 +4133,11 @@ extension on Translations {
 			'notifications.adminReply' => 'תשובה מצוות EasyPlate לפנייה שלך',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'הפנייה שלך: "${excerpt}"',
 			'notifications.adminMessage' => 'הודעה מ-EasyPlate',
+			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} הגיב/ה לפוסט שלך "${post}"',
+			'notifications.forumReplyOnThread' => ({required Object name, required Object post}) => '${name} הגיב/ה בדיון "${post}"',
+			'notifications.openThread' => 'פתיחת הדיון',
+			'notifications.threadGone' => 'הדיון הזה נמחק',
+			'notifications.settings' => 'הגדרות',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -3903,6 +4218,8 @@ extension on Translations {
 			'mealPlanner.breakfast' => 'בוקר',
 			'mealPlanner.lunch' => 'צהריים',
 			'mealPlanner.dinner' => 'ערב',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'ביניים בוקר',
 			'mealPlanner.afternoonSnack' => 'ביניים צהריים',
 			'mealPlanner.eveningSnack' => 'ביניים ערב',
@@ -3949,11 +4266,42 @@ extension on Translations {
 			'groceryList.selectPlansTitle' => 'אילו תפריטים ייכנסו לרשימה?',
 			'groceryList.applySelection' => 'עדכון הרשימה',
 			'groceryList.selectAllPlans' => 'כל התפריטים',
+			'groceryList.myLists' => 'הרשימות שלי',
+			'groceryList.listsCount' => ({required Object count}) => '${count} רשימות',
+			'groceryList.oneList' => 'רשימה אחת',
+			'groceryList.newList' => 'רשימה חדשה',
+			'groceryList.newListTitle' => 'רשימת קניות חדשה',
+			'groceryList.listName' => 'שם הרשימה',
+			'groceryList.defaultListName' => 'רשימת קניות',
+			'groceryList.fromPlans' => 'מהתפריטים',
+			'groceryList.fromPlansHint' => 'מרכזת את המתכונים שבתפריטים שלך',
+			'groceryList.fromRecipe' => 'ממתכון',
+			'groceryList.fromRecipeHint' => 'המצרכים של מתכון אחד',
+			'groceryList.emptyList' => 'רשימה ריקה',
+			'groceryList.emptyListHint' => 'מוסיפים את הפריטים ידנית',
+			'groceryList.sourcePlans' => 'מהתפריטים',
+			'groceryList.sourceRecipe' => ({required Object title}) => 'מהמתכון "${title}"',
+			'groceryList.sourceManual' => 'רשימה ידנית',
+			'groceryList.renameList' => 'שינוי שם הרשימה',
+			'groceryList.deleteList' => 'מחיקת הרשימה',
+			'groceryList.deleteListConfirm' => ({required Object name}) => '"${name}" וכל הפריטים שבה יימחקו.',
+			'groceryList.progress' => ({required Object checked, required Object total}) => '${checked}/${total}',
+			'groceryList.servings' => 'מנות',
+			'groceryList.timesOver' => 'כמות',
+			'groceryList.scaleValue' => ({required Object value}) => '×${value}',
+			'groceryList.rebuildFromRecipe' => 'בנייה מחדש מהמתכון',
+			'groceryList.createFromRecipe' => 'יצירת רשימת קניות',
+			'groceryList.createList' => 'יצירת הרשימה',
+			'groceryList.recipeListTitle' => 'רשימת קניות ממתכון',
+			'groceryList.recipeListHint' => 'המצרכים של המתכון, לפי הכמות שמכינים',
+			'groceryList.listCreated' => ({required Object name}) => 'הרשימה "${name}" נוצרה',
+			'groceryList.openList' => 'פתיחת הרשימה',
+			'groceryList.stayHere' => 'להישאר כאן',
+			'groceryList.noIngredients' => 'אין במתכון הזה מצרכים לקנות',
+			'groceryList.addFirstItem' => 'הוספת פריט',
 			'receipt.title' => 'סריקת קבלה',
 			'receipt.subtitle' => 'צלמו קבלה או העלו PDF, והמחירים יישמרו לרשימת הקניות',
 			'receipt.camera' => 'צילום קבלה',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraHint' => 'קבלה ארוכה? צלמו כמה תמונות, נאחד אותן',
 			'receipt.gallery' => 'בחירה מהגלריה',
 			'receipt.pdf' => 'קובץ PDF',
@@ -4384,6 +4732,8 @@ extension on Translations {
 			'adminDashboard.send' => 'שליחה',
 			'adminDashboard.blocked' => 'חסומים',
 			'adminDashboard.disable' => 'חסימת חשבון',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.enable' => 'ביטול חסימה',
 			'adminDashboard.blockMessageHint' => 'מה המשתמש יראה כשינסה להתחבר',
 			'adminDashboard.disabledDone' => 'החשבון נחסם',

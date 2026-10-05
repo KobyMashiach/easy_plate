@@ -26,6 +26,18 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     @HiveField(7) @Default(false) bool communityPricesEnabled,
     // Slot names; null (older records) reads as the defaults.
     @HiveField(8) List<String>? shoppingReminderSlots,
+    // Notification choices, appended in one go. Records written before them
+    // decode as "on", which is what every account had until now. The json
+    // keys below are what the Cloud Functions read from the cloud mirror,
+    // so they are named exactly as the entity's fields.
+    @HiveField(9) @Default(true) bool pushEnabled,
+    @HiveField(10) @Default(true) bool notifyRepliesOnMyPosts,
+    @HiveField(11) @Default(true) bool notifyRepliesOnThreads,
+    @HiveField(12) @Default(true) bool notifyShareInvites,
+    @HiveField(13) @Default(true) bool notifySharedRecipeUpdates,
+    @HiveField(14) @Default(true) bool notifyAdminReplies,
+    @HiveField(15) @Default(true) bool notifyAnnouncements,
+    @HiveField(16) @Default(true) bool foregroundPopupsEnabled,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -34,30 +46,46 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
 
 extension UserPreferencesModelMapper on UserPreferencesModel {
   UserPreferencesEntity toEntity() => UserPreferencesEntity(
-        shoppingDay: shoppingDay,
-        dietaryPreferences: dietaryPreferences,
-        language: language,
-        soundEffectsEnabled: soundEffectsEnabled,
-        fastPageTurnEnabled: fastPageTurnEnabled,
-        onboardingComplete: onboardingComplete,
-        walkthroughSeen: walkthroughSeen,
-        communityPricesEnabled: communityPricesEnabled,
-        shoppingReminderSlots: shoppingReminderSlots == null
-            ? ShoppingReminderSlot.defaults
-            : ShoppingReminderSlot.fromNames(shoppingReminderSlots!),
-      );
+    shoppingDay: shoppingDay,
+    dietaryPreferences: dietaryPreferences,
+    language: language,
+    soundEffectsEnabled: soundEffectsEnabled,
+    fastPageTurnEnabled: fastPageTurnEnabled,
+    onboardingComplete: onboardingComplete,
+    walkthroughSeen: walkthroughSeen,
+    communityPricesEnabled: communityPricesEnabled,
+    shoppingReminderSlots: shoppingReminderSlots == null
+        ? ShoppingReminderSlot.defaults
+        : ShoppingReminderSlot.fromNames(shoppingReminderSlots!),
+    pushEnabled: pushEnabled,
+    notifyRepliesOnMyPosts: notifyRepliesOnMyPosts,
+    notifyRepliesOnThreads: notifyRepliesOnThreads,
+    notifyShareInvites: notifyShareInvites,
+    notifySharedRecipeUpdates: notifySharedRecipeUpdates,
+    notifyAdminReplies: notifyAdminReplies,
+    notifyAnnouncements: notifyAnnouncements,
+    foregroundPopupsEnabled: foregroundPopupsEnabled,
+  );
 }
 
 extension UserPreferencesEntityMapper on UserPreferencesEntity {
   UserPreferencesModel toModel() => UserPreferencesModel(
-        shoppingDay: shoppingDay,
-        dietaryPreferences: dietaryPreferences,
-        language: language,
-        soundEffectsEnabled: soundEffectsEnabled,
-        fastPageTurnEnabled: fastPageTurnEnabled,
-        onboardingComplete: onboardingComplete,
-        walkthroughSeen: walkthroughSeen,
-        communityPricesEnabled: communityPricesEnabled,
-        shoppingReminderSlots: [for (final s in shoppingReminderSlots) s.name],
-      );
+    shoppingDay: shoppingDay,
+    dietaryPreferences: dietaryPreferences,
+    language: language,
+    soundEffectsEnabled: soundEffectsEnabled,
+    fastPageTurnEnabled: fastPageTurnEnabled,
+    onboardingComplete: onboardingComplete,
+    walkthroughSeen: walkthroughSeen,
+    communityPricesEnabled: communityPricesEnabled,
+    shoppingReminderSlots: [for (final s in shoppingReminderSlots) s.name],
+    pushEnabled: pushEnabled,
+    notifyRepliesOnMyPosts: notifyRepliesOnMyPosts,
+    notifyRepliesOnThreads: notifyRepliesOnThreads,
+    notifyShareInvites: notifyShareInvites,
+    notifySharedRecipeUpdates: notifySharedRecipeUpdates,
+    notifyAdminReplies: notifyAdminReplies,
+    notifyAnnouncements: notifyAnnouncements,
+    foregroundPopupsEnabled: foregroundPopupsEnabled,
+  );
 }

@@ -9,18 +9,41 @@ const _uuid = Uuid();
 
 /// Debug-only stand-in used when no Gemini API key is configured, so the
 /// ingestion flow can be exercised end to end without network access.
-RecipeEntity fakeParsedRecipe(RecipeIngestionChannel channel, {String? sourceUrl}) {
+RecipeEntity fakeParsedRecipe(
+  RecipeIngestionChannel channel, {
+  String? sourceUrl,
+}) {
   return RecipeEntity(
     id: _uuid.v4(),
     title: 'שקשוקה ירושלמית',
     prepTimeMinutes: 10,
     cookTimeMinutes: 20,
     ingredients: const [
-      RecipeIngredientEntity(name: 'עגבניות מרוסקות', amount: 400, unit: MeasurementUnit.gram),
-      RecipeIngredientEntity(name: 'ביצים', amount: 4, unit: MeasurementUnit.unit),
-      RecipeIngredientEntity(name: 'בצל', amount: 1, unit: MeasurementUnit.unit),
-      RecipeIngredientEntity(name: 'שמן זית', amount: 2, unit: MeasurementUnit.tablespoon),
-      RecipeIngredientEntity(name: 'פפריקה מתוקה', amount: null, unit: MeasurementUnit.unspecified),
+      RecipeIngredientEntity(
+        name: 'עגבניות מרוסקות',
+        amount: 400,
+        unit: MeasurementUnit.gram,
+      ),
+      RecipeIngredientEntity(
+        name: 'ביצים',
+        amount: 4,
+        unit: MeasurementUnit.unit,
+      ),
+      RecipeIngredientEntity(
+        name: 'בצל',
+        amount: 1,
+        unit: MeasurementUnit.unit,
+      ),
+      RecipeIngredientEntity(
+        name: 'שמן זית',
+        amount: 2,
+        unit: MeasurementUnit.tablespoon,
+      ),
+      RecipeIngredientEntity(
+        name: 'פפריקה מתוקה',
+        amount: null,
+        unit: MeasurementUnit.unspecified,
+      ),
     ],
     steps: const [
       'מחממים שמן זית במחבת ומטגנים את הבצל עד להזהבה.',

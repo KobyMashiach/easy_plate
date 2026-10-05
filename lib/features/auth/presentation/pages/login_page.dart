@@ -55,7 +55,8 @@ class _LoginViewState extends State<_LoginView> {
     super.dispose();
   }
 
-  bool _validEmail(String value) => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
+  bool _validEmail(String value) =>
+      RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
 
   /// Firebase requires E.164. Local Israeli numbers are the common paste, so
   /// `05…` is upgraded rather than rejected.
@@ -113,7 +114,10 @@ class _LoginViewState extends State<_LoginView> {
           case AuthCodeSent(verificationId: final id, phoneNumber: final phone):
             context.pushNamed(
               Routing.phoneVerify,
-              extra: PhoneVerificationArgs(verificationId: id, phoneNumber: phone),
+              extra: PhoneVerificationArgs(
+                verificationId: id,
+                phoneNumber: phone,
+              ),
             );
           case AuthPasswordResetSent():
             AppDialog.success(message: t.auth.resetSent).notify(context);
@@ -143,7 +147,9 @@ class _LoginViewState extends State<_LoginView> {
                 Text(
                   t.auth.subtitle,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 _methodToggle(busy),
@@ -151,7 +157,9 @@ class _LoginViewState extends State<_LoginView> {
                 ClayCard(
                   radius: AppRadius.md,
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  child: _method == _Method.email ? _emailForm(busy) : _phoneForm(busy),
+                  child: _method == _Method.email
+                      ? _emailForm(busy)
+                      : _phoneForm(busy),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 _divider(),
@@ -160,8 +168,11 @@ class _LoginViewState extends State<_LoginView> {
                   label: t.auth.continueWithGoogle,
                   icon: Icons.g_mobiledata_rounded,
                   expanded: true,
-                  onPressed:
-                      busy ? null : () => context.read<AuthBloc>().add(const AuthEvent.signInWithGoogle()),
+                  onPressed: busy
+                      ? null
+                      : () => context.read<AuthBloc>().add(
+                          const AuthEvent.signInWithGoogle(),
+                        ),
                 ),
                 // iOS only: Apple requires an equivalent privacy-focused option
                 // wherever a third-party sign-in is offered, and Android has no
@@ -174,7 +185,9 @@ class _LoginViewState extends State<_LoginView> {
                     expanded: true,
                     onPressed: busy
                         ? null
-                        : () => context.read<AuthBloc>().add(const AuthEvent.signInWithApple()),
+                        : () => context.read<AuthBloc>().add(
+                            const AuthEvent.signInWithApple(),
+                          ),
                   ),
                 ],
                 if (busy) ...[
@@ -229,15 +242,23 @@ class _LoginViewState extends State<_LoginView> {
           vertical: AppSpacing.gutter,
         ),
         decoration: ShapeDecoration(
-          color: selected ? AppColors.primaryFixed : AppColors.surfaceContainerLow,
+          color: selected
+              ? AppColors.primaryFixed
+              : AppColors.surfaceContainerLow,
           shape: StadiumBorder(
-            side: BorderSide(color: selected ? AppColors.primary : AppColors.outlineVariant),
+            side: BorderSide(
+              color: selected ? AppColors.primary : AppColors.outlineVariant,
+            ),
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: selected ? AppColors.primary : AppColors.tertiary),
+            Icon(
+              icon,
+              size: 16,
+              color: selected ? AppColors.primary : AppColors.tertiary,
+            ),
             const SizedBox(width: AppSpacing.xs),
             Flexible(
               child: Text(
@@ -266,7 +287,10 @@ class _LoginViewState extends State<_LoginView> {
           autofillHints: const [AutofillHints.email],
           textInputAction: TextInputAction.next,
           style: AppTextStyles.bodyMd,
-          decoration: InputDecoration(labelText: t.auth.email, hintText: t.auth.emailHint),
+          decoration: InputDecoration(
+            labelText: t.auth.email,
+            hintText: t.auth.emailHint,
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
         TextField(
@@ -295,14 +319,18 @@ class _LoginViewState extends State<_LoginView> {
             Flexible(
               child: Text(
                 t.auth.phoneFirstHint,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ),
             TextButton(
               onPressed: busy ? null : _resetPassword,
               child: Text(
                 t.auth.forgotPassword,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -349,7 +377,9 @@ class _LoginViewState extends State<_LoginView> {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           child: Text(
             t.common.or,
-            style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.labelMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
         ),
         Expanded(child: Divider(color: AppColors.outlineVariant)),
@@ -369,9 +399,9 @@ class _LanguageButton extends StatelessWidget {
   const _LanguageButton({required this.onChanged});
 
   AppLanguage get _current => AppLanguage.values.firstWhere(
-        (language) => language.locale == LocaleSettings.currentLocale,
-        orElse: () => AppLanguage.hebrew,
-      );
+    (language) => language.locale == LocaleSettings.currentLocale,
+    orElse: () => AppLanguage.hebrew,
+  );
 
   Future<void> _pick(BuildContext context) async {
     final picked = await showModalBottomSheet<AppLanguage>(
@@ -391,7 +421,8 @@ class _LanguageButton extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               LanguageSelector(
                 selected: _current,
-                onSelect: (language) => Navigator.of(sheetContext).pop(language),
+                onSelect: (language) =>
+                    Navigator.of(sheetContext).pop(language),
               ),
             ],
           ),
@@ -421,8 +452,11 @@ class _LanguageButton extends StatelessWidget {
               _current.label,
               style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
             ),
-            Icon(Icons.keyboard_arrow_down_rounded,
-                size: 18, color: AppColors.primary),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: AppColors.primary,
+            ),
           ],
         ),
       ),

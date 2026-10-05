@@ -19,9 +19,11 @@ sealed class BookRecipeRefModel with _$BookRecipeRefModel {
 }
 
 extension BookRecipeRefModelMapper on BookRecipeRefModel {
-  BookRecipeRefEntity toEntity() => BookRecipeRefEntity(recipeId: recipeId, order: order);
+  BookRecipeRefEntity toEntity() =>
+      BookRecipeRefEntity(recipeId: recipeId, order: order);
 }
 
 extension BookRecipeRefEntityMapper on BookRecipeRefEntity {
-  BookRecipeRefModel toModel() => BookRecipeRefModel(recipeId: recipeId, order: order);
+  BookRecipeRefModel toModel() =>
+      BookRecipeRefModel(recipeId: recipeId, order: order);
 }

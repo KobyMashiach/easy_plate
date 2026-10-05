@@ -46,7 +46,8 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
     super.dispose();
   }
 
-  LinkPhoneUseCase get _useCase => LinkPhoneUseCase(context.read<AuthRepository>());
+  LinkPhoneUseCase get _useCase =>
+      LinkPhoneUseCase(context.read<AuthRepository>());
 
   Future<void> _send() async {
     final phone = normalisePhone(_phone.text);
@@ -112,7 +113,9 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
     if (e is AppException && e.message == 'credential-already-in-use') {
       return t.auth.phoneAlreadyUsed;
     }
-    return e is AppException ? authErrorMessage(e.message) : t.auth.errorUnknown;
+    return e is AppException
+        ? authErrorMessage(e.message)
+        : t.auth.errorUnknown;
   }
 
   @override
@@ -128,22 +131,29 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
             // The only way out for someone who signed in with an account they
             // cannot attach a number to.
             trailingIcon: Icons.logout_rounded,
-            onTrailingTap:
-                _busy ? null : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
+            onTrailingTap: _busy
+                ? null
+                : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
           ),
           body: SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.marginMobile),
               children: [
                 const SizedBox(height: AppSpacing.lg),
-                Icon(Icons.phone_iphone_rounded, size: 64, color: AppColors.primary),
+                Icon(
+                  Icons.phone_iphone_rounded,
+                  size: 64,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   awaitingCode
                       ? t.auth.codeSentTo(phone: _sentTo ?? '')
                       : t.auth.phoneGateBody,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 if (!awaitingCode)
@@ -170,7 +180,10 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
                     textAlign: TextAlign.center,
                     textDirection: TextDirection.ltr,
                     style: AppTextStyles.headlineMd,
-                    decoration: InputDecoration(hintText: '••••••', errorText: _error),
+                    decoration: InputDecoration(
+                      hintText: '••••••',
+                      errorText: _error,
+                    ),
                   ),
                 const SizedBox(height: AppSpacing.md),
                 ClayButton(
@@ -186,7 +199,9 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
                       onPressed: _busy ? null : _editNumber,
                       child: Text(
                         t.auth.changeNumber,
-                        style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ),

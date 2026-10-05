@@ -101,7 +101,8 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
     super.dispose();
   }
 
-  LinkPhoneUseCase get _useCase => LinkPhoneUseCase(context.read<AuthRepository>());
+  LinkPhoneUseCase get _useCase =>
+      LinkPhoneUseCase(context.read<AuthRepository>());
 
   Future<void> _send() async {
     final phone = normalisePhone(_phone.text);
@@ -150,7 +151,9 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
     if (e is AppException && e.message == 'credential-already-in-use') {
       return t.auth.phoneAlreadyUsed;
     }
-    return e is AppException ? authErrorMessage(e.message) : t.auth.errorUnknown;
+    return e is AppException
+        ? authErrorMessage(e.message)
+        : t.auth.errorUnknown;
   }
 
   @override
@@ -240,15 +243,20 @@ class _LinkEmailSheetState extends State<_LinkEmailSheet> {
       _busy = true;
     });
     try {
-      await LinkEmailPasswordUseCase(context.read<AuthRepository>())(email, password);
+      await LinkEmailPasswordUseCase(context.read<AuthRepository>())(
+        email,
+        password,
+      );
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       debugPrint('Email link failed: $e');
       if (!mounted) return;
       setState(() {
         _error = switch (e) {
-          AppException(message: 'email-already-in-use') => t.auth.errorEmailInUse,
-          AppException(message: 'provider-already-linked') => t.auth.emailAlreadyLinked,
+          AppException(message: 'email-already-in-use') =>
+            t.auth.errorEmailInUse,
+          AppException(message: 'provider-already-linked') =>
+            t.auth.emailAlreadyLinked,
           AppException(message: final code) => authErrorMessage(code),
           _ => t.auth.errorUnknown,
         };
@@ -268,7 +276,10 @@ class _LinkEmailSheetState extends State<_LinkEmailSheet> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           style: AppTextStyles.bodyMd,
-          decoration: InputDecoration(labelText: t.auth.email, hintText: t.auth.emailHint),
+          decoration: InputDecoration(
+            labelText: t.auth.email,
+            hintText: t.auth.emailHint,
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
         TextField(

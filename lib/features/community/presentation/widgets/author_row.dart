@@ -42,6 +42,10 @@ class AuthorRow extends StatelessWidget {
                 ? Image.network(
                     photoUrl!,
                     fit: BoxFit.cover,
+                    // On every feed, forum and reply row: decoded at the
+                    // 32px it is drawn at, not the upload's size.
+                    cacheWidth: (32 * MediaQuery.devicePixelRatioOf(context))
+                        .round(),
                     errorBuilder: (_, _, _) => const _Fallback(),
                   )
                 : const _Fallback(),
@@ -58,7 +62,9 @@ class AuthorRow extends StatelessWidget {
         ),
         Text(
           _age,
-          style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+          style: AppTextStyles.labelSm.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
         ),
         ?trailing,
       ],

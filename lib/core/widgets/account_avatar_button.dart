@@ -45,10 +45,16 @@ class AccountAvatarButton extends StatelessWidget {
               border: Border.all(color: AppColors.surfaceContainerHighest),
               boxShadow: AppShadows.control,
             ),
-            child: ProfileAvatar(
-              name: session.profile?.fullName ?? '',
-              photoUrl: session.profile?.photoUrl ?? session.user?.photoUrl,
-              size: 34,
+            // This button is a const in five app bars: it is never rebuilt
+            // on its own, so a renamed account or a new photo has to reach
+            // it through the listenable rather than a plain read.
+            child: ValueListenableBuilder(
+              valueListenable: session.profileListenable,
+              builder: (context, profile, _) => ProfileAvatar(
+                name: profile?.fullName ?? '',
+                photoUrl: profile?.photoUrl ?? session.user?.photoUrl,
+                size: 34,
+              ),
             ),
           ),
         ),

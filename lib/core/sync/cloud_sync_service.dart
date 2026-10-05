@@ -147,6 +147,10 @@ class CloudSyncService {
     }
   }
 
+  /// On sign-out, once the local boxes are deleted: the next sign-in of the
+  /// same account has to pull everything back, not skip it as already done.
+  void forget() => _hydratedUid = null;
+
   /// Tests share the singleton, and a leftover uid would skip their hydrate.
   @visibleForTesting
   void resetForTest() => _hydratedUid = null;

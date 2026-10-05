@@ -8,6 +8,7 @@ import '../../constants/app_text_styles.dart';
 class ClayTag extends StatelessWidget {
   final String label;
   final IconData? icon;
+
   /// Null reads as the theme's primaryFixed / primary.
   final Color? background;
   final Color? foreground;
@@ -29,7 +30,10 @@ class ClayTag extends StatelessWidget {
         horizontal: AppSpacing.base,
         vertical: AppSpacing.xs,
       ),
-      decoration: ShapeDecoration(color: background, shape: const StadiumBorder()),
+      decoration: ShapeDecoration(
+        color: background,
+        shape: const StadiumBorder(),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

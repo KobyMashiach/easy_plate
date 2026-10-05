@@ -49,8 +49,10 @@ abstract class QuotaGates {
         _notify(context, t.ads.sharedQuotaReached);
         return false;
       case GateVerdict.rewarded:
-        final remaining =
-            DailyQuotaPolicy.remainingRewardedSharedViews(usage.sharedViewsToday, limits);
+        final remaining = DailyQuotaPolicy.remainingRewardedSharedViews(
+          usage.sharedViewsToday,
+          limits,
+        );
         final unlocked = await showRewardGateSheet(
           context,
           title: t.ads.unlockRecipeTitle,

@@ -11,13 +11,18 @@ import 'clay/clay.dart';
 /// subject in free text, or both. Returns the finished prompt, or null when
 /// the user backs out. One of the two is required — an empty ask would just
 /// produce a generic cover nobody wanted.
-Future<String?> showCoverPromptSheet(BuildContext context, {required String bookTitle}) {
+Future<String?> showCoverPromptSheet(
+  BuildContext context, {
+  required String bookTitle,
+}) {
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     builder: (sheetContext) => Padding(
       // Sits above the keyboard when the text field has focus.
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(sheetContext).bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
+      ),
       child: _CoverPromptSheet(bookTitle: bookTitle),
     ),
   );
@@ -51,26 +56,26 @@ class _CoverPromptSheetState extends State<_CoverPromptSheet> {
   bool get _canGenerate => _theme != null || _text.text.trim().isNotEmpty;
 
   static String _label(CoverTheme theme) => switch (theme) {
-        CoverTheme.kids => t.image.themeKids,
-        CoverTheme.healthy => t.image.themeHealthy,
-        CoverTheme.indulgent => t.image.themeIndulgent,
-        CoverTheme.sweets => t.image.themeSweets,
-        CoverTheme.meat => t.image.themeMeat,
-        CoverTheme.vegan => t.image.themeVegan,
-        CoverTheme.holidays => t.image.themeHolidays,
-        CoverTheme.quick => t.image.themeQuick,
-      };
+    CoverTheme.kids => t.image.themeKids,
+    CoverTheme.healthy => t.image.themeHealthy,
+    CoverTheme.indulgent => t.image.themeIndulgent,
+    CoverTheme.sweets => t.image.themeSweets,
+    CoverTheme.meat => t.image.themeMeat,
+    CoverTheme.vegan => t.image.themeVegan,
+    CoverTheme.holidays => t.image.themeHolidays,
+    CoverTheme.quick => t.image.themeQuick,
+  };
 
   static IconData _icon(CoverTheme theme) => switch (theme) {
-        CoverTheme.kids => Icons.child_care_rounded,
-        CoverTheme.healthy => Icons.spa_rounded,
-        CoverTheme.indulgent => Icons.local_pizza_rounded,
-        CoverTheme.sweets => Icons.cake_rounded,
-        CoverTheme.meat => Icons.outdoor_grill_rounded,
-        CoverTheme.vegan => Icons.eco_rounded,
-        CoverTheme.holidays => Icons.celebration_rounded,
-        CoverTheme.quick => Icons.bolt_rounded,
-      };
+    CoverTheme.kids => Icons.child_care_rounded,
+    CoverTheme.healthy => Icons.spa_rounded,
+    CoverTheme.indulgent => Icons.local_pizza_rounded,
+    CoverTheme.sweets => Icons.cake_rounded,
+    CoverTheme.meat => Icons.outdoor_grill_rounded,
+    CoverTheme.vegan => Icons.eco_rounded,
+    CoverTheme.holidays => Icons.celebration_rounded,
+    CoverTheme.quick => Icons.bolt_rounded,
+  };
 
   void _submit() {
     Navigator.of(context).pop(
@@ -100,7 +105,9 @@ class _CoverPromptSheetState extends State<_CoverPromptSheet> {
             const SizedBox(height: AppSpacing.xs),
             Text(
               t.image.coverHint,
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.gutter),
             Wrap(
@@ -114,7 +121,8 @@ class _CoverPromptSheetState extends State<_CoverPromptSheet> {
                     selected: _theme == theme,
                     // Tapping the chosen one again clears it: free text alone
                     // is a valid ask.
-                    onTap: () => setState(() => _theme = _theme == theme ? null : theme),
+                    onTap: () =>
+                        setState(() => _theme = _theme == theme ? null : theme),
                   ),
               ],
             ),
@@ -172,11 +180,16 @@ class _ThemeChip extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter, vertical: AppSpacing.base),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.gutter,
+          vertical: AppSpacing.base,
+        ),
         decoration: ShapeDecoration(
           color: selected ? AppColors.primary : AppColors.surfaceContainerLow,
           shape: StadiumBorder(
-            side: BorderSide(color: selected ? AppColors.primary : AppColors.outlineVariant),
+            side: BorderSide(
+              color: selected ? AppColors.primary : AppColors.outlineVariant,
+            ),
           ),
         ),
         child: Row(

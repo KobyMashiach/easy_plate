@@ -61,7 +61,7 @@ extension ForumEventPatterns on ForumEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _CreatePost value)?  createPost,TResult Function( _DeletePost value)?  deletePost,TResult Function( _ToggleLike value)?  toggleLike,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _CreatePost value)?  createPost,TResult Function( _DeletePost value)?  deletePost,TResult Function( _ToggleLike value)?  toggleLike,TResult Function( _ViewportAtTop value)?  viewportAtTop,TResult Function( _RevealIncoming value)?  revealIncoming,TResult Function( _SetLive value)?  setLive,TResult Function( _Synced value)?  synced,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -69,7 +69,11 @@ return init(_that);case _Refresh() when refresh != null:
 return refresh(_that);case _CreatePost() when createPost != null:
 return createPost(_that);case _DeletePost() when deletePost != null:
 return deletePost(_that);case _ToggleLike() when toggleLike != null:
-return toggleLike(_that);case _:
+return toggleLike(_that);case _ViewportAtTop() when viewportAtTop != null:
+return viewportAtTop(_that);case _RevealIncoming() when revealIncoming != null:
+return revealIncoming(_that);case _SetLive() when setLive != null:
+return setLive(_that);case _Synced() when synced != null:
+return synced(_that);case _:
   return orElse();
 
 }
@@ -87,7 +91,7 @@ return toggleLike(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _CreatePost value)  createPost,required TResult Function( _DeletePost value)  deletePost,required TResult Function( _ToggleLike value)  toggleLike,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _CreatePost value)  createPost,required TResult Function( _DeletePost value)  deletePost,required TResult Function( _ToggleLike value)  toggleLike,required TResult Function( _ViewportAtTop value)  viewportAtTop,required TResult Function( _RevealIncoming value)  revealIncoming,required TResult Function( _SetLive value)  setLive,required TResult Function( _Synced value)  synced,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -95,7 +99,11 @@ return init(_that);case _Refresh():
 return refresh(_that);case _CreatePost():
 return createPost(_that);case _DeletePost():
 return deletePost(_that);case _ToggleLike():
-return toggleLike(_that);}
+return toggleLike(_that);case _ViewportAtTop():
+return viewportAtTop(_that);case _RevealIncoming():
+return revealIncoming(_that);case _SetLive():
+return setLive(_that);case _Synced():
+return synced(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -109,7 +117,7 @@ return toggleLike(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _CreatePost value)?  createPost,TResult? Function( _DeletePost value)?  deletePost,TResult? Function( _ToggleLike value)?  toggleLike,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _CreatePost value)?  createPost,TResult? Function( _DeletePost value)?  deletePost,TResult? Function( _ToggleLike value)?  toggleLike,TResult? Function( _ViewportAtTop value)?  viewportAtTop,TResult? Function( _RevealIncoming value)?  revealIncoming,TResult? Function( _SetLive value)?  setLive,TResult? Function( _Synced value)?  synced,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -117,7 +125,11 @@ return init(_that);case _Refresh() when refresh != null:
 return refresh(_that);case _CreatePost() when createPost != null:
 return createPost(_that);case _DeletePost() when deletePost != null:
 return deletePost(_that);case _ToggleLike() when toggleLike != null:
-return toggleLike(_that);case _:
+return toggleLike(_that);case _ViewportAtTop() when viewportAtTop != null:
+return viewportAtTop(_that);case _RevealIncoming() when revealIncoming != null:
+return revealIncoming(_that);case _SetLive() when setLive != null:
+return setLive(_that);case _Synced() when synced != null:
+return synced(_that);case _:
   return null;
 
 }
@@ -134,14 +146,18 @@ return toggleLike(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String title,  String body)?  createPost,TResult Function( String postId)?  deletePost,TResult Function( String postId)?  toggleLike,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( String title,  String body)?  createPost,TResult Function( String postId)?  deletePost,TResult Function( String postId)?  toggleLike,TResult Function( bool atTop)?  viewportAtTop,TResult Function()?  revealIncoming,TResult Function( bool live)?  setLive,TResult Function( List<ForumPostEntity> posts)?  synced,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
 return refresh(_that.done);case _CreatePost() when createPost != null:
 return createPost(_that.title,_that.body);case _DeletePost() when deletePost != null:
 return deletePost(_that.postId);case _ToggleLike() when toggleLike != null:
-return toggleLike(_that.postId);case _:
+return toggleLike(_that.postId);case _ViewportAtTop() when viewportAtTop != null:
+return viewportAtTop(_that.atTop);case _RevealIncoming() when revealIncoming != null:
+return revealIncoming();case _SetLive() when setLive != null:
+return setLive(_that.live);case _Synced() when synced != null:
+return synced(_that.posts);case _:
   return orElse();
 
 }
@@ -159,14 +175,18 @@ return toggleLike(_that.postId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String title,  String body)  createPost,required TResult Function( String postId)  deletePost,required TResult Function( String postId)  toggleLike,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( String title,  String body)  createPost,required TResult Function( String postId)  deletePost,required TResult Function( String postId)  toggleLike,required TResult Function( bool atTop)  viewportAtTop,required TResult Function()  revealIncoming,required TResult Function( bool live)  setLive,required TResult Function( List<ForumPostEntity> posts)  synced,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Refresh():
 return refresh(_that.done);case _CreatePost():
 return createPost(_that.title,_that.body);case _DeletePost():
 return deletePost(_that.postId);case _ToggleLike():
-return toggleLike(_that.postId);}
+return toggleLike(_that.postId);case _ViewportAtTop():
+return viewportAtTop(_that.atTop);case _RevealIncoming():
+return revealIncoming();case _SetLive():
+return setLive(_that.live);case _Synced():
+return synced(_that.posts);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -180,14 +200,18 @@ return toggleLike(_that.postId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String title,  String body)?  createPost,TResult? Function( String postId)?  deletePost,TResult? Function( String postId)?  toggleLike,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( String title,  String body)?  createPost,TResult? Function( String postId)?  deletePost,TResult? Function( String postId)?  toggleLike,TResult? Function( bool atTop)?  viewportAtTop,TResult? Function()?  revealIncoming,TResult? Function( bool live)?  setLive,TResult? Function( List<ForumPostEntity> posts)?  synced,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
 return refresh(_that.done);case _CreatePost() when createPost != null:
 return createPost(_that.title,_that.body);case _DeletePost() when deletePost != null:
 return deletePost(_that.postId);case _ToggleLike() when toggleLike != null:
-return toggleLike(_that.postId);case _:
+return toggleLike(_that.postId);case _ViewportAtTop() when viewportAtTop != null:
+return viewportAtTop(_that.atTop);case _RevealIncoming() when revealIncoming != null:
+return revealIncoming();case _SetLive() when setLive != null:
+return setLive(_that.live);case _Synced() when synced != null:
+return synced(_that.posts);case _:
   return null;
 
 }
@@ -524,6 +548,266 @@ as String,
 }
 
 /// @nodoc
+
+
+class _ViewportAtTop with DiagnosticableTreeMixin implements ForumEvent {
+  const _ViewportAtTop(this.atTop);
+  
+
+ final  bool atTop;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ViewportAtTopCopyWith<_ViewportAtTop> get copyWith => __$ViewportAtTopCopyWithImpl<_ViewportAtTop>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumEvent.viewportAtTop'))
+    ..add(DiagnosticsProperty('atTop', atTop));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ViewportAtTop&&(identical(other.atTop, atTop) || other.atTop == atTop));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,atTop);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumEvent.viewportAtTop(atTop: $atTop)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ViewportAtTopCopyWith<$Res> implements $ForumEventCopyWith<$Res> {
+  factory _$ViewportAtTopCopyWith(_ViewportAtTop value, $Res Function(_ViewportAtTop) _then) = __$ViewportAtTopCopyWithImpl;
+@useResult
+$Res call({
+ bool atTop
+});
+
+
+
+
+}
+/// @nodoc
+class __$ViewportAtTopCopyWithImpl<$Res>
+    implements _$ViewportAtTopCopyWith<$Res> {
+  __$ViewportAtTopCopyWithImpl(this._self, this._then);
+
+  final _ViewportAtTop _self;
+  final $Res Function(_ViewportAtTop) _then;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? atTop = null,}) {
+  return _then(_ViewportAtTop(
+null == atTop ? _self.atTop : atTop // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _RevealIncoming with DiagnosticableTreeMixin implements ForumEvent {
+  const _RevealIncoming();
+  
+
+
+
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumEvent.revealIncoming'))
+    ;
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RevealIncoming);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumEvent.revealIncoming()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _SetLive with DiagnosticableTreeMixin implements ForumEvent {
+  const _SetLive(this.live);
+  
+
+ final  bool live;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SetLiveCopyWith<_SetLive> get copyWith => __$SetLiveCopyWithImpl<_SetLive>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumEvent.setLive'))
+    ..add(DiagnosticsProperty('live', live));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SetLive&&(identical(other.live, live) || other.live == live));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,live);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumEvent.setLive(live: $live)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SetLiveCopyWith<$Res> implements $ForumEventCopyWith<$Res> {
+  factory _$SetLiveCopyWith(_SetLive value, $Res Function(_SetLive) _then) = __$SetLiveCopyWithImpl;
+@useResult
+$Res call({
+ bool live
+});
+
+
+
+
+}
+/// @nodoc
+class __$SetLiveCopyWithImpl<$Res>
+    implements _$SetLiveCopyWith<$Res> {
+  __$SetLiveCopyWithImpl(this._self, this._then);
+
+  final _SetLive _self;
+  final $Res Function(_SetLive) _then;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? live = null,}) {
+  return _then(_SetLive(
+null == live ? _self.live : live // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Synced with DiagnosticableTreeMixin implements ForumEvent {
+  const _Synced(final  List<ForumPostEntity> posts): _posts = posts;
+  
+
+ final  List<ForumPostEntity> _posts;
+ List<ForumPostEntity> get posts {
+  if (_posts is EqualUnmodifiableListView) return _posts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_posts);
+}
+
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SyncedCopyWith<_Synced> get copyWith => __$SyncedCopyWithImpl<_Synced>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'ForumEvent.synced'))
+    ..add(DiagnosticsProperty('posts', posts));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Synced&&const DeepCollectionEquality().equals(other._posts, _posts));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_posts));
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'ForumEvent.synced(posts: $posts)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SyncedCopyWith<$Res> implements $ForumEventCopyWith<$Res> {
+  factory _$SyncedCopyWith(_Synced value, $Res Function(_Synced) _then) = __$SyncedCopyWithImpl;
+@useResult
+$Res call({
+ List<ForumPostEntity> posts
+});
+
+
+
+
+}
+/// @nodoc
+class __$SyncedCopyWithImpl<$Res>
+    implements _$SyncedCopyWith<$Res> {
+  __$SyncedCopyWithImpl(this._self, this._then);
+
+  final _Synced _self;
+  final $Res Function(_Synced) _then;
+
+/// Create a copy of ForumEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? posts = null,}) {
+  return _then(_Synced(
+null == posts ? _self._posts : posts // ignore: cast_nullable_to_non_nullable
+as List<ForumPostEntity>,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$ForumState implements DiagnosticableTreeMixin {
 
 
@@ -640,11 +924,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<ForumPostEntity> posts)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<ForumPostEntity> posts,  List<ForumPostEntity> incoming)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ForumLoading() when loading != null:
 return loading();case ForumLoaded() when loaded != null:
-return loaded(_that.posts);case ForumError() when errorMessage != null:
+return loaded(_that.posts,_that.incoming);case ForumError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return orElse();
 
@@ -663,11 +947,11 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<ForumPostEntity> posts)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<ForumPostEntity> posts,  List<ForumPostEntity> incoming)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case ForumLoading():
 return loading();case ForumLoaded():
-return loaded(_that.posts);case ForumError():
+return loaded(_that.posts,_that.incoming);case ForumError():
 return errorMessage(_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -682,11 +966,11 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<ForumPostEntity> posts)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<ForumPostEntity> posts,  List<ForumPostEntity> incoming)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case ForumLoading() when loading != null:
 return loading();case ForumLoaded() when loaded != null:
-return loaded(_that.posts);case ForumError() when errorMessage != null:
+return loaded(_that.posts,_that.incoming);case ForumError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return null;
 
@@ -737,7 +1021,7 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 class ForumLoaded with DiagnosticableTreeMixin implements ForumState {
-  const ForumLoaded(final  List<ForumPostEntity> posts): _posts = posts;
+  const ForumLoaded(final  List<ForumPostEntity> posts, {final  List<ForumPostEntity> incoming = const <ForumPostEntity>[]}): _posts = posts,_incoming = incoming;
   
 
  final  List<ForumPostEntity> _posts;
@@ -745,6 +1029,13 @@ class ForumLoaded with DiagnosticableTreeMixin implements ForumState {
   if (_posts is EqualUnmodifiableListView) return _posts;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_posts);
+}
+
+ final  List<ForumPostEntity> _incoming;
+@JsonKey() List<ForumPostEntity> get incoming {
+  if (_incoming is EqualUnmodifiableListView) return _incoming;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_incoming);
 }
 
 
@@ -759,21 +1050,21 @@ $ForumLoadedCopyWith<ForumLoaded> get copyWith => _$ForumLoadedCopyWithImpl<Foru
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'ForumState.loaded'))
-    ..add(DiagnosticsProperty('posts', posts));
+    ..add(DiagnosticsProperty('posts', posts))..add(DiagnosticsProperty('incoming', incoming));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumLoaded&&const DeepCollectionEquality().equals(other._posts, _posts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForumLoaded&&const DeepCollectionEquality().equals(other._posts, _posts)&&const DeepCollectionEquality().equals(other._incoming, _incoming));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_posts));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_posts),const DeepCollectionEquality().hash(_incoming));
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'ForumState.loaded(posts: $posts)';
+  return 'ForumState.loaded(posts: $posts, incoming: $incoming)';
 }
 
 
@@ -784,7 +1075,7 @@ abstract mixin class $ForumLoadedCopyWith<$Res> implements $ForumStateCopyWith<$
   factory $ForumLoadedCopyWith(ForumLoaded value, $Res Function(ForumLoaded) _then) = _$ForumLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<ForumPostEntity> posts
+ List<ForumPostEntity> posts, List<ForumPostEntity> incoming
 });
 
 
@@ -801,9 +1092,10 @@ class _$ForumLoadedCopyWithImpl<$Res>
 
 /// Create a copy of ForumState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? posts = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? posts = null,Object? incoming = null,}) {
   return _then(ForumLoaded(
 null == posts ? _self._posts : posts // ignore: cast_nullable_to_non_nullable
+as List<ForumPostEntity>,incoming: null == incoming ? _self._incoming : incoming // ignore: cast_nullable_to_non_nullable
 as List<ForumPostEntity>,
   ));
 }

@@ -41,11 +41,17 @@ class ErrorRetryView extends StatelessWidget {
               const SizedBox(height: AppSpacing.base),
               Text(
                 error,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.gutter),
-              ClayButton(label: t.common.retry, icon: Icons.refresh_rounded, onPressed: onRetry),
+              ClayButton(
+                label: t.common.retry,
+                icon: Icons.refresh_rounded,
+                onPressed: onRetry,
+              ),
             ],
           ),
         ),

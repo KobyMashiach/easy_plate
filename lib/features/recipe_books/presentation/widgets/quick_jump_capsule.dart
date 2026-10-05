@@ -45,7 +45,9 @@ class QuickJumpCapsule extends StatelessWidget {
           decoration: ShapeDecoration(
             color: AppColors.surface.withValues(alpha: 0.8),
             shape: StadiumBorder(
-              side: BorderSide(color: AppColors.outlineVariant.withValues(alpha: 0.3)),
+              side: BorderSide(
+                color: AppColors.outlineVariant.withValues(alpha: 0.3),
+              ),
             ),
             shadows: AppShadows.card,
           ),
@@ -57,7 +59,9 @@ class QuickJumpCapsule extends StatelessWidget {
                   Container(
                     width: 1,
                     height: AppSpacing.md,
-                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
                     color: AppColors.outlineVariant.withValues(alpha: 0.5),
                   ),
                 _CapsuleButton(action: actions[i]),
@@ -87,7 +91,9 @@ class _CapsuleButton extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(
             action.label,
-            style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.labelSm.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
         ],
       ),

@@ -4,7 +4,8 @@ import 'dart:async';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/features/price_book/domain/entities/receipt_scan_entity.dart';
-import 'package:easy_plate/features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart' show ReceiptPage;
+import 'package:easy_plate/features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart'
+    show ReceiptPage;
 import 'package:easy_plate/features/my_recipes/domain/entities/recipe_entity.dart';
 import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repository.dart';
 import 'package:easy_plate/features/my_recipes/domain/usecases/save_recipe_usecase.dart';
@@ -24,12 +25,12 @@ import 'package:easy_plate/features/user_profile/domain/usecases/get_user_prefer
 import 'package:flutter_test/flutter_test.dart';
 
 RecipeEntity parsed(String title) => RecipeEntity(
-      id: 'p',
-      title: title,
-      ingredients: const [],
-      steps: const ['שלב'],
-      createdAt: DateTime(2026, 1, 1),
-    );
+  id: 'p',
+  title: title,
+  ingredients: const [],
+  steps: const ['שלב'],
+  createdAt: DateTime(2026, 1, 1),
+);
 
 class _FakeIngestion implements RecipeIngestionRepository {
   /// What the model does: completes, hangs, or throws — the caller decides.
@@ -38,18 +39,24 @@ class _FakeIngestion implements RecipeIngestionRepository {
   bool pageThrows = false;
 
   @override
-  Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> p) => onParse!(text);
+  Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> p) =>
+      onParse!(text);
 
   @override
-  Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> p) => onParse!(url);
-
-  @override
-  Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> p) =>
+  Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> p) =>
       onParse!(url);
 
   @override
-  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> p) =>
-      onParse!(request);
+  Future<RecipeEntity> parseFromSocialVideo(
+    String url,
+    List<DietaryPreference> p,
+  ) => onParse!(url);
+
+  @override
+  Future<RecipeEntity> generateRecipe(
+    String request,
+    List<DietaryPreference> p,
+  ) => onParse!(request);
 
   @override
   Future<OriginalRecipePageEntity> fetchOriginalPage(String url) async {
@@ -58,25 +65,34 @@ class _FakeIngestion implements RecipeIngestionRepository {
   }
 
   @override
-  Future<List<WebSearchResultEntity>> searchWeb(String q, List<DietaryPreference> p) =>
-      throw UnimplementedError();
+  Future<List<WebSearchResultEntity>> searchWeb(
+    String q,
+    List<DietaryPreference> p,
+  ) => throw UnimplementedError();
 
   @override
-  Future<RecipeEntity> refineRecipe(RecipeEntity r, {required bool timesChanged}) =>
-      throw UnimplementedError();
+  Future<RecipeEntity> refineRecipe(
+    RecipeEntity r, {
+    required bool timesChanged,
+  }) => throw UnimplementedError();
   @override
-  Future<RecipeEntity> estimateNutrition(RecipeEntity r) => throw UnimplementedError();
+  Future<RecipeEntity> estimateNutrition(RecipeEntity r) =>
+      throw UnimplementedError();
   @override
   Future<Uint8List> generateImage(String prompt) => throw UnimplementedError();
   @override
-  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) => throw UnimplementedError();
+  Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) =>
+      throw UnimplementedError();
 }
 
 class _FakeRecipes implements RecipesRepository {
   final saved = <RecipeEntity>[];
 
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async => saved.add(recipe);
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async => saved.add(recipe);
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -85,7 +101,10 @@ class _FakeRecipes implements RecipesRepository {
 class _FakePreferences implements UserPreferencesRepository {
   @override
   Future<UserPreferencesEntity> getPreferences() async =>
-      const UserPreferencesEntity(shoppingDay: ShoppingDay.sunday, dietaryPreferences: []);
+      const UserPreferencesEntity(
+        shoppingDay: ShoppingDay.sunday,
+        dietaryPreferences: [],
+      );
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -96,16 +115,18 @@ void main() {
   late _FakeRecipes recipes;
 
   IngestionBloc buildBloc() => IngestionBloc(
-        analysisTimeout: const Duration(milliseconds: 50),
-        parseRawTextUseCase: ParseRawTextUseCase(ingestion),
-        searchWebRecipesUseCase: SearchWebRecipesUseCase(ingestion),
-        parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(ingestion),
-        parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(ingestion),
-        generateRecipeUseCase: GenerateRecipeUseCase(ingestion),
-        fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(ingestion),
-        saveRecipeUseCase: SaveRecipeUseCase(recipes),
-        getUserPreferencesUseCase: GetUserPreferencesUseCase(_FakePreferences()),
-      );
+    analysisTimeout: const Duration(milliseconds: 50),
+    parseRawTextUseCase: ParseRawTextUseCase(ingestion),
+    searchWebRecipesUseCase: SearchWebRecipesUseCase(ingestion),
+    parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(ingestion),
+    parseRecipeFromSocialVideoUseCase: ParseRecipeFromSocialVideoUseCase(
+      ingestion,
+    ),
+    generateRecipeUseCase: GenerateRecipeUseCase(ingestion),
+    fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(ingestion),
+    saveRecipeUseCase: SaveRecipeUseCase(recipes),
+    getUserPreferencesUseCase: GetUserPreferencesUseCase(_FakePreferences()),
+  );
 
   Future<IngestionState> settle(IngestionBloc bloc) =>
       bloc.stream.firstWhere((s) => s is! IngestionParsing);
@@ -126,82 +147,105 @@ void main() {
     expect((state as IngestionReview).recipe.title, 'שקשוקה');
   });
 
-  test('an analysis past the cap hands the pasted text back, marked timed out', () async {
-    // The model never answers. Without the cap this spinner would turn forever.
-    ingestion.onParse = (_) => Completer<RecipeEntity>().future;
-    final bloc = buildBloc();
+  test(
+    'an analysis past the cap hands the pasted text back, marked timed out',
+    () async {
+      // The model never answers. Without the cap this spinner would turn forever.
+      ingestion.onParse = (_) => Completer<RecipeEntity>().future;
+      final bloc = buildBloc();
 
-    bloc.add(const IngestionEvent.parseRawText('4 ביצים\nמטגנים'));
-    final state = await settle(bloc);
+      bloc.add(const IngestionEvent.parseRawText('4 ביצים\nמטגנים'));
+      final state = await settle(bloc);
 
-    expect(state, isA<IngestionUnparsed>());
-    final unparsed = state as IngestionUnparsed;
-    expect(unparsed.text, '4 ביצים\nמטגנים');
-    expect(unparsed.timedOut, isTrue);
-  });
+      expect(state, isA<IngestionUnparsed>());
+      final unparsed = state as IngestionUnparsed;
+      expect(unparsed.text, '4 ביצים\nמטגנים');
+      expect(unparsed.timedOut, isTrue);
+    },
+  );
 
-  test('a failed analysis hands the text back too, marked as a failure', () async {
-    ingestion.onParse = (_) async => throw Exception('overloaded');
-    final bloc = buildBloc();
+  test(
+    'a failed analysis hands the text back too, marked as a failure',
+    () async {
+      ingestion.onParse = (_) async => throw Exception('overloaded');
+      final bloc = buildBloc();
 
-    bloc.add(const IngestionEvent.parseRawText('טקסט'));
-    final state = await settle(bloc);
+      bloc.add(const IngestionEvent.parseRawText('טקסט'));
+      final state = await settle(bloc);
 
-    expect(state, isA<IngestionUnparsed>());
-    expect((state as IngestionUnparsed).timedOut, isFalse);
-  });
+      expect(state, isA<IngestionUnparsed>());
+      expect((state as IngestionUnparsed).timedOut, isFalse);
+    },
+  );
 
-  test('for a link, the fallback is the page text fetched without the model', () async {
-    ingestion.onParse = (_) => Completer<RecipeEntity>().future;
-    ingestion.pageText = 'המתכון כפי שהוא באתר';
-    final bloc = buildBloc()
-      ..add(const IngestionEvent.selectChannel(RecipeIngestionChannel.urlScrape));
-    await Future<void>.delayed(Duration.zero);
+  test(
+    'for a link, the fallback is the page text fetched without the model',
+    () async {
+      ingestion.onParse = (_) => Completer<RecipeEntity>().future;
+      ingestion.pageText = 'המתכון כפי שהוא באתר';
+      final bloc = buildBloc()
+        ..add(
+          const IngestionEvent.selectChannel(RecipeIngestionChannel.urlScrape),
+        );
+      await Future<void>.delayed(Duration.zero);
 
-    bloc.add(const IngestionEvent.parseUrl('https://example.com/r'));
-    final state = await settle(bloc);
+      bloc.add(const IngestionEvent.parseUrl('https://example.com/r'));
+      final state = await settle(bloc);
 
-    expect(state, isA<IngestionUnparsed>());
-    final unparsed = state as IngestionUnparsed;
-    expect(unparsed.text, 'המתכון כפי שהוא באתר');
-    expect(unparsed.sourceUrl, 'https://example.com/r');
-  });
+      expect(state, isA<IngestionUnparsed>());
+      final unparsed = state as IngestionUnparsed;
+      expect(unparsed.text, 'המתכון כפי שהוא באתר');
+      expect(unparsed.sourceUrl, 'https://example.com/r');
+    },
+  );
 
   test('when even the page cannot be fetched, it is a plain error', () async {
     // Nothing to offer back — an empty "unparsed" screen would be worse.
     ingestion.onParse = (_) => Completer<RecipeEntity>().future;
     ingestion.pageThrows = true;
     final bloc = buildBloc()
-      ..add(const IngestionEvent.selectChannel(RecipeIngestionChannel.urlScrape));
+      ..add(
+        const IngestionEvent.selectChannel(RecipeIngestionChannel.urlScrape),
+      );
     await Future<void>.delayed(Duration.zero);
 
     bloc.add(const IngestionEvent.parseUrl('https://example.com/r'));
     expect(await settle(bloc), isA<IngestionError>());
   });
 
-  test('save for later stores a pending template holding the full text', () async {
-    final bloc = buildBloc();
+  test(
+    'save for later stores a pending template holding the full text',
+    () async {
+      final bloc = buildBloc();
 
-    bloc.add(const IngestionEvent.saveAsTemplate('שקשוקה\n4 ביצים'));
-    final state = await bloc.stream.first;
+      bloc.add(const IngestionEvent.saveAsTemplate('שקשוקה\n4 ביצים'));
+      final state = await bloc.stream.first;
 
-    expect(state, isA<IngestionSaved>());
-    final saved = recipes.saved.single;
-    expect(saved.pendingAnalysis, isTrue);
-    expect(saved.title, 'שקשוקה');
-    expect(saved.rawText, 'שקשוקה\n4 ביצים');
-  });
+      expect(state, isA<IngestionSaved>());
+      final saved = recipes.saved.single;
+      expect(saved.pendingAnalysis, isTrue);
+      expect(saved.title, 'שקשוקה');
+      expect(saved.rawText, 'שקשוקה\n4 ביצים');
+    },
+  );
 
-  test('edit manually opens the review on the template without saving yet', () async {
-    final bloc = buildBloc();
+  test(
+    'edit manually opens the review on the template without saving yet',
+    () async {
+      final bloc = buildBloc();
 
-    bloc.add(const IngestionEvent.editManually('שקשוקה\n4 ביצים'));
-    final state = await bloc.stream.first;
+      bloc.add(const IngestionEvent.editManually('שקשוקה\n4 ביצים'));
+      final state = await bloc.stream.first;
 
-    expect(state, isA<IngestionReview>());
-    expect((state as IngestionReview).recipe.pendingAnalysis, isTrue);
-    expect(recipes.saved, isEmpty, reason: 'nothing persists until the user saves');
-  });
+      expect(state, isA<IngestionReview>());
+      expect((state as IngestionReview).recipe.pendingAnalysis, isTrue);
+      expect(
+        recipes.saved,
+        isEmpty,
+        reason: 'nothing persists until the user saves',
+      );
+    },
+  );
 
   group('recipe request', () {
     test('a request lands on review with the recipe the model wrote', () async {
@@ -213,30 +257,39 @@ void main() {
 
       // Selecting the channel emits idle, which would satisfy [settle] on its
       // own — so wait it out before asking for the recipe.
-      bloc.add(const IngestionEvent.selectChannel(RecipeIngestionChannel.aiRequest));
+      bloc.add(
+        const IngestionEvent.selectChannel(RecipeIngestionChannel.aiRequest),
+      );
       await bloc.stream.first;
-      bloc.add(const IngestionEvent.generateRecipe('מתכון לדייסת סולת לתינוקת בת שנה'));
+      bloc.add(
+        const IngestionEvent.generateRecipe('מתכון לדייסת סולת לתינוקת בת שנה'),
+      );
       final state = await settle(bloc);
 
       expect(state, isA<IngestionReview>());
       expect((state as IngestionReview).recipe.title, 'דייסת סולת לתינוקות');
     });
 
-    test('a request the model never answers is handed back on its own channel', () async {
-      // So the retry re-asks for a recipe rather than parsing the request as one.
-      ingestion.onParse = (_) => Completer<RecipeEntity>().future;
-      final bloc = buildBloc();
+    test(
+      'a request the model never answers is handed back on its own channel',
+      () async {
+        // So the retry re-asks for a recipe rather than parsing the request as one.
+        ingestion.onParse = (_) => Completer<RecipeEntity>().future;
+        final bloc = buildBloc();
 
-      bloc.add(const IngestionEvent.selectChannel(RecipeIngestionChannel.aiRequest));
-      await bloc.stream.first;
-      bloc.add(const IngestionEvent.generateRecipe('דייסת סולת'));
-      final state = await settle(bloc);
+        bloc.add(
+          const IngestionEvent.selectChannel(RecipeIngestionChannel.aiRequest),
+        );
+        await bloc.stream.first;
+        bloc.add(const IngestionEvent.generateRecipe('דייסת סולת'));
+        final state = await settle(bloc);
 
-      expect(state, isA<IngestionUnparsed>());
-      final unparsed = state as IngestionUnparsed;
-      expect(unparsed.channel, RecipeIngestionChannel.aiRequest);
-      expect(unparsed.text, 'דייסת סולת');
-      expect(unparsed.timedOut, isTrue);
-    });
+        expect(state, isA<IngestionUnparsed>());
+        final unparsed = state as IngestionUnparsed;
+        expect(unparsed.channel, RecipeIngestionChannel.aiRequest);
+        expect(unparsed.text, 'דייסת סולת');
+        expect(unparsed.timedOut, isTrue);
+      },
+    );
   });
 }

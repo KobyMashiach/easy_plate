@@ -65,5 +65,6 @@ class _WalkthroughTargetState extends State<WalkthroughTarget> {
   }
 
   @override
-  Widget build(BuildContext context) => KeyedSubtree(key: _key, child: widget.child);
+  Widget build(BuildContext context) =>
+      KeyedSubtree(key: _key, child: widget.child);
 }

@@ -1,6 +1,7 @@
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../repositories/shared_recipes_repository.dart';
+import '../shared_feed_changes.dart';
 
 class UpdateSharedRecipeUseCase {
   final SharedRecipesRepository repository;
@@ -19,6 +20,7 @@ class UpdateSharedRecipeUseCase {
     bool persist = true,
   }) async {
     final ready = await recipes.readyForSharing(recipe, persist: persist);
-    return repository.updateShared(sharedRecipeId, ready);
+    await repository.updateShared(sharedRecipeId, ready);
+    SharedFeedChanges.instance.notify(sharedRecipeId);
   }
 }

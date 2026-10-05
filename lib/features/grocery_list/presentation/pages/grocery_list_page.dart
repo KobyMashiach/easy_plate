@@ -16,6 +16,7 @@ import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
 import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
+import '../widgets/grocery_lists_ui.dart';
 import '../widgets/grocery_progress_card.dart';
 import '../widgets/meal_plan_filter_card.dart';
 import '../widgets/grocery_section.dart';
@@ -63,8 +64,12 @@ class GroceryListPage extends StatelessWidget {
                   GroceryListLoading() => const Center(
                     child: CircularProgressIndicator(),
                   ),
-                  GroceryListLoaded(list: final list, plans: final plans) =>
-                    _ListBody(list: list, plans: plans),
+                  GroceryListLoaded(
+                    list: final list,
+                    plans: final plans,
+                    lists: final lists,
+                  ) =>
+                    _ListBody(list: list, plans: plans, lists: lists),
                   GroceryListError(error: final error) => ErrorRetryView(
                     error: error,
                     onRetry: () => context.read<GroceryListBloc>().add(
@@ -93,8 +98,31 @@ Future<void> scanReceipt(BuildContext context) async {
 class _ListBody extends StatelessWidget {
   final GroceryListEntity list;
   final List<MealPlanEntity> plans;
+  final List<GroceryListEntity> lists;
 
-  const _ListBody({required this.list, required this.plans});
+  const _ListBody({
+    required this.list,
+    required this.plans,
+    required this.lists,
+  });
+
+  /// Which list is open, then what it is made from: the menu picker for a
+  /// plans list, the servings for a recipe list, nothing for a hand-made one.
+  List<Widget> _header() => [
+    GroceryListSwitcherCard(list: list, lists: lists),
+    const SizedBox(height: AppSpacing.gutter),
+    ...switch (list.source) {
+      GroceryListSource.plans => [
+        MealPlanFilterCard(list: list, plans: plans),
+        const SizedBox(height: AppSpacing.gutter),
+      ],
+      GroceryListSource.recipe => [
+        RecipeListCard(list: list),
+        const SizedBox(height: AppSpacing.gutter),
+      ],
+      GroceryListSource.manual => const <Widget>[],
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -104,17 +132,30 @@ class _ListBody extends StatelessWidget {
       return _scroll(
         context,
         bloc,
+        list,
         children: [
-          MealPlanFilterCard(list: list, plans: plans),
-          const SizedBox(height: AppSpacing.lg),
+          ..._header(),
+          const SizedBox(height: AppSpacing.sm),
           ClayEmptyState(
             icon: Icons.shopping_basket_rounded,
             message: t.groceryList.empty,
-            action: ClayButton(
-              label: t.groceryList.aggregated,
-              icon: Icons.autorenew_rounded,
-              onPressed: () => bloc.add(const GroceryListEvent.regenerate()),
-            ),
+            action: switch (list.source) {
+              GroceryListSource.manual => ClayButton(
+                label: t.groceryList.addFirstItem,
+                icon: Icons.add_rounded,
+                onPressed: () => showAddGroceryItemSheet(context),
+              ),
+              GroceryListSource.recipe => ClayButton(
+                label: t.groceryList.rebuildFromRecipe,
+                icon: Icons.autorenew_rounded,
+                onPressed: () => bloc.add(const GroceryListEvent.regenerate()),
+              ),
+              GroceryListSource.plans => ClayButton(
+                label: t.groceryList.aggregated,
+                icon: Icons.autorenew_rounded,
+                onPressed: () => bloc.add(const GroceryListEvent.regenerate()),
+              ),
+            },
           ),
         ],
       );
@@ -127,9 +168,9 @@ class _ListBody extends StatelessWidget {
     return _scroll(
       context,
       bloc,
+      list,
       children: [
-        MealPlanFilterCard(list: list, plans: plans),
-        const SizedBox(height: AppSpacing.gutter),
+        ..._header(),
         GroceryProgressCard(
           collected: checked.length,
           total: list.items.length,
@@ -188,12 +229,13 @@ class _ListBody extends StatelessWidget {
 /// scroll back up; the three actions stay in their corner throughout.
 Widget _scroll(
   BuildContext context,
-  GroceryListBloc bloc, {
+  GroceryListBloc bloc,
+  GroceryListEntity list, {
   required List<Widget> children,
 }) {
   return ClayFloatingHeaderView(
     title: t.groceryList.title,
-    trailing: _actions(context, bloc),
+    trailing: _actions(context, bloc, list),
     // Three buttons and the gaps between them.
     trailingWidth: 48 * 3 + AppSpacing.base * 2,
     bottomGap: AppSpacing.lg,
@@ -213,7 +255,11 @@ Widget _scroll(
 
 /// The list's own controls sit with its title: a rebuild from the meal plans,
 /// and a line added by hand.
-Widget _actions(BuildContext context, GroceryListBloc bloc) {
+Widget _actions(
+  BuildContext context,
+  GroceryListBloc bloc,
+  GroceryListEntity list,
+) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -233,11 +279,17 @@ Widget _actions(BuildContext context, GroceryListBloc bloc) {
       const SizedBox(width: AppSpacing.base),
       WalkthroughTarget(
         id: WalkthroughIds.groceriesRegenerate,
+        // A hand-made list has nothing to rebuild from: the button stays in
+        // its place, greyed, so the row does not shift between lists.
         child: ClayIconButton(
           icon: Icons.autorenew_rounded,
           size: 48,
-          tooltip: t.groceryList.aggregated,
-          onTap: () => bloc.add(const GroceryListEvent.regenerate()),
+          tooltip: list.source == GroceryListSource.recipe
+              ? t.groceryList.rebuildFromRecipe
+              : t.groceryList.aggregated,
+          onTap: list.canRegenerate
+              ? () => bloc.add(const GroceryListEvent.regenerate())
+              : null,
         ),
       ),
       const SizedBox(width: AppSpacing.base),

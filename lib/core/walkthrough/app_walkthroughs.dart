@@ -327,6 +327,9 @@ List<WalkthroughTopic> appWalkthroughTopics() {
 
 /// The tour a new account gets once: a welcome, then every chapter in order.
 List<WalkthroughStep> firstRunWalkthrough() => [
-      WalkthroughStep(title: t.walkthrough.welcomeTitle, body: t.walkthrough.welcomeBody),
-      for (final topic in appWalkthroughTopics()) ...topic.steps,
-    ];
+  WalkthroughStep(
+    title: t.walkthrough.welcomeTitle,
+    body: t.walkthrough.welcomeBody,
+  ),
+  for (final topic in appWalkthroughTopics()) ...topic.steps,
+];

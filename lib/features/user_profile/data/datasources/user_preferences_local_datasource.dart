@@ -7,16 +7,21 @@ abstract class UserPreferencesLocalDataSource {
   Future<void> savePreferences(UserPreferencesModel preferences);
 }
 
-class UserPreferencesLocalDataSourceImpl implements UserPreferencesLocalDataSource {
+class UserPreferencesLocalDataSourceImpl
+    implements UserPreferencesLocalDataSource {
   @override
   Future<UserPreferencesModel?> getPreferences() async {
-    final box = await UserScope().open<UserPreferencesModel>(UserPreferencesModel.hiveKey);
+    final box = await UserScope().open<UserPreferencesModel>(
+      UserPreferencesModel.hiveKey,
+    );
     return box.get(UserPreferencesModel.storageKey);
   }
 
   @override
   Future<void> savePreferences(UserPreferencesModel preferences) async {
-    final box = await UserScope().open<UserPreferencesModel>(UserPreferencesModel.hiveKey);
+    final box = await UserScope().open<UserPreferencesModel>(
+      UserPreferencesModel.hiveKey,
+    );
     await box.put(UserPreferencesModel.storageKey, preferences);
   }
 }

@@ -15,7 +15,10 @@ class PhoneVerificationArgs {
   final String verificationId;
   final String phoneNumber;
 
-  const PhoneVerificationArgs({required this.verificationId, required this.phoneNumber});
+  const PhoneVerificationArgs({
+    required this.verificationId,
+    required this.phoneNumber,
+  });
 }
 
 class PhoneVerificationPage extends StatelessWidget {
@@ -62,7 +65,9 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
       return;
     }
     setState(() => _fieldError = null);
-    context.read<AuthBloc>().add(AuthEvent.confirmPhoneCode(_verificationId, code));
+    context.read<AuthBloc>().add(
+      AuthEvent.confirmPhoneCode(_verificationId, code),
+    );
   }
 
   @override
@@ -96,7 +101,9 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
                 Text(
                   t.auth.codeSentTo(phone: widget.args.phoneNumber),
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 ClayCard(
@@ -136,12 +143,16 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
                         child: TextButton(
                           onPressed: busy
                               ? null
-                              : () => context
-                                  .read<AuthBloc>()
-                                  .add(AuthEvent.startPhoneVerification(widget.args.phoneNumber)),
+                              : () => context.read<AuthBloc>().add(
+                                  AuthEvent.startPhoneVerification(
+                                    widget.args.phoneNumber,
+                                  ),
+                                ),
                           child: Text(
                             t.auth.resendCode,
-                            style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+                            style: AppTextStyles.labelMd.copyWith(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),

@@ -81,7 +81,9 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
                         Text(
                           item.name,
                           style: AppTextStyles.bodyLg.copyWith(
-                            decoration: item.isChecked ? TextDecoration.lineThrough : null,
+                            decoration: item.isChecked
+                                ? TextDecoration.lineThrough
+                                : null,
                             color: item.isChecked
                                 ? AppColors.outline
                                 : AppColors.onSurface,
@@ -100,31 +102,38 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
                   // What this line is likely to cost, from past receipts.
                   Consumer<PriceBookService>(
                     builder: (context, prices, _) => Padding(
-                      padding: const EdgeInsetsDirectional.only(end: AppSpacing.base),
-                      child: Builder(builder: (context) {
-                        final estimate = prices.estimateFor(item);
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                          // A tap records a price by hand — the way in
-                          // without a receipt, and the way to correct one.
-                          onTap: () async {
-                            final saved = await showAddPriceDialog(
-                              context,
-                              name: item.name,
-                              price: estimate.unitPrice,
-                              unit: estimate.unit,
-                            );
-                            if (saved) await prices.load();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.xs),
-                            child: PriceChip(
-                              estimate: estimate,
-                              multiplier: PriceBookService.multiplierFor(item, estimate),
+                      padding: const EdgeInsetsDirectional.only(
+                        end: AppSpacing.base,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          final estimate = prices.estimateFor(item);
+                          return InkWell(
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            // A tap records a price by hand — the way in
+                            // without a receipt, and the way to correct one.
+                            onTap: () async {
+                              final saved = await showAddPriceDialog(
+                                context,
+                                name: item.name,
+                                price: estimate.unitPrice,
+                                unit: estimate.unit,
+                              );
+                              if (saved) await prices.load();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(AppSpacing.xs),
+                              child: PriceChip(
+                                estimate: estimate,
+                                multiplier: PriceBookService.multiplierFor(
+                                  item,
+                                  estimate,
+                                ),
+                              ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   BouncyCheckbox(
@@ -137,8 +146,9 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
             AnimatedCrossFade(
               duration: const Duration(milliseconds: 300),
               sizeCurve: Curves.easeOut,
-              crossFadeState:
-                  _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              crossFadeState: _expanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
               firstChild: const SizedBox(width: double.infinity),
               secondChild: _SourceBreakdown(item: item),
             ),

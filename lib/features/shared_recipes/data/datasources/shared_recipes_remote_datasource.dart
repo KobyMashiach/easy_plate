@@ -13,6 +13,10 @@ abstract class SharedRecipesRemoteDataSource {
     int limit = 50,
   });
   Future<SharedRecipeEntity?> getById(String id, {required String viewerUid});
+  Future<List<SharedRecipeEntity>> getByAuthor(
+    String authorUid, {
+    int limit = 200,
+  });
   Future<String> share(
     RecipeEntity recipe, {
     required String authorUid,
@@ -59,6 +63,22 @@ class SharedRecipesFirestoreDataSource
     return [
       for (var i = 0; i < snapshot.docs.length; i++)
         _toEntity(snapshot.docs[i], likedByMe: liked[i].exists),
+    ];
+  }
+
+  @override
+  Future<List<SharedRecipeEntity>> getByAuthor(
+    String authorUid, {
+    int limit = 200,
+  }) async {
+    // Equality on one field: no composite index needed, and no ordering so
+    // none is needed for that either.
+    final snapshot = await _root
+        .where('authorUid', isEqualTo: authorUid)
+        .limit(limit)
+        .get();
+    return [
+      for (final doc in snapshot.docs) _toEntity(doc, likedByMe: false),
     ];
   }
 

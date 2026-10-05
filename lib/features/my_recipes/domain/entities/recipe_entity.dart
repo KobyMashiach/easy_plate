@@ -66,6 +66,14 @@ class RecipeEntity {
   final String? sharedRecipeId;
   final DateTime createdAt;
 
+  /// The language this record's text is written in, as an [AppLanguage]
+  /// name. Null for records saved before translation existed.
+  final String? contentLang;
+
+  /// Bumped when the text is edited; see the model's field of the same
+  /// name. A translation made from this version stays good until it moves.
+  final int contentVersion;
+
   const RecipeEntity({
     required this.id,
     required this.title,
@@ -87,6 +95,8 @@ class RecipeEntity {
     this.pendingAnalysis = false,
     this.collabId,
     this.collabRole,
+    this.contentLang,
+    this.contentVersion = 0,
     this.sharedRecipeId,
   });
 
@@ -103,7 +113,8 @@ class RecipeEntity {
   /// passing someone else's recipe along — to the feed or to a contact — is
   /// not this account's to do.
   bool get isMine =>
-      !isSavedFromCommunity && (collabRole == null || collabRole == CollabRole.owner);
+      !isSavedFromCommunity &&
+      (collabRole == null || collabRole == CollabRole.owner);
 
   /// The original text a template was saved from, for a later analysis.
   String get rawText => steps.join('\n');
@@ -129,6 +140,8 @@ class RecipeEntity {
     String? sharedRecipeId,
     // Null means "unchanged"; taking a post down needs its own flag.
     bool clearSharedRecipeId = false,
+    String? contentLang,
+    int? contentVersion,
   }) {
     return RecipeEntity(
       id: id,
@@ -151,13 +164,18 @@ class RecipeEntity {
       // picture that was just replaced.
       imageStoragePath: removeImage
           ? null
-          : (imageStoragePath ?? (imageFileName != null ? null : this.imageStoragePath)),
+          : (imageStoragePath ??
+                (imageFileName != null ? null : this.imageStoragePath)),
       savedFromSharedId: savedFromSharedId,
       pendingAnalysis: pendingAnalysis ?? this.pendingAnalysis,
       collabId: collabId ?? this.collabId,
       collabRole: collabRole ?? this.collabRole,
-      sharedRecipeId: clearSharedRecipeId ? null : (sharedRecipeId ?? this.sharedRecipeId),
+      sharedRecipeId: clearSharedRecipeId
+          ? null
+          : (sharedRecipeId ?? this.sharedRecipeId),
       createdAt: createdAt,
+      contentLang: contentLang ?? this.contentLang,
+      contentVersion: contentVersion ?? this.contentVersion,
     );
   }
 }

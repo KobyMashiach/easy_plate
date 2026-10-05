@@ -22,7 +22,9 @@ RecipeEntity buildTemplateRecipe({
 
   final firstLine = lines.isEmpty ? untitled : lines.first;
   // A pasted first line can be a whole paragraph; a title is not.
-  final title = firstLine.length > 80 ? '${firstLine.substring(0, 77)}…' : firstLine;
+  final title = firstLine.length > 80
+      ? '${firstLine.substring(0, 77)}…'
+      : firstLine;
 
   return RecipeEntity(
     id: id,
@@ -38,10 +40,10 @@ RecipeEntity buildTemplateRecipe({
 
 /// The blank the structured editor opens on for a recipe written by hand.
 RecipeEntity buildBlankRecipe({required String id}) => RecipeEntity(
-      id: id,
-      title: '',
-      ingredients: const [],
-      steps: const [],
-      sourceChannel: RecipeIngestionChannel.manual,
-      createdAt: DateTime.now(),
-    );
+  id: id,
+  title: '',
+  ingredients: const [],
+  steps: const [],
+  sourceChannel: RecipeIngestionChannel.manual,
+  createdAt: DateTime.now(),
+);

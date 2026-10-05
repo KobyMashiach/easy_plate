@@ -6,6 +6,8 @@ class ParseRecipeFromUrlUseCase {
   final RecipeIngestionRepository repository;
   ParseRecipeFromUrlUseCase(this.repository);
 
-  Future<RecipeEntity> call(String url, {List<DietaryPreference> preferences = const []}) =>
-      repository.parseFromUrl(url, preferences);
+  Future<RecipeEntity> call(
+    String url, {
+    List<DietaryPreference> preferences = const [],
+  }) => repository.parseFromUrl(url, preferences);
 }

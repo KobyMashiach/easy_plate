@@ -13,7 +13,11 @@ abstract class UserProfileRemoteDataSource {
   Future<void> saveProfile(UserProfileEntity profile);
   Future<String> uploadPhoto(String uid, File file);
   Future<void> savePushToken(String uid, String token);
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion});
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  });
   Future<String?> blockMessage(String uid);
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids);
   Future<void> publishPublicProfile(UserProfileEntity profile);
@@ -37,9 +41,11 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
 
-  UserProfileFirestoreDataSource({FirebaseFirestore? firestore, FirebaseStorage? storage})
-      : _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance;
+  UserProfileFirestoreDataSource({
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _storage = storage ?? FirebaseStorage.instance;
 
   DocumentReference<Map<String, dynamic>> _doc(String uid) =>
       _firestore.collection(collection).doc(uid);
@@ -127,12 +133,16 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
       if (contact == null) continue;
       final hash = contactHash(contact.value);
       hashes.add(hash);
-      batch.set(_firestore.collection(directoryCollection).doc(hash), {'uid': profile.uid});
+      batch.set(_firestore.collection(directoryCollection).doc(hash), {
+        'uid': profile.uid,
+      });
     }
     // Logged so a "not found" on the other side can be checked against the
     // console: these are the document ids that should exist under the
     // directory for this account.
-    debugPrint('Directory publish ${profile.uid}: ${hashes.isEmpty ? '(no contacts)' : hashes}');
+    debugPrint(
+      'Directory publish ${profile.uid}: ${hashes.isEmpty ? '(no contacts)' : hashes}',
+    );
   }
 
   @override
@@ -140,14 +150,21 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
     final normalized = normalizeContact(contact);
     if (normalized == null) return null;
     final hash = contactHash(normalized.value);
-    final doc = await _firestore.collection(directoryCollection).doc(hash).get();
+    final doc = await _firestore
+        .collection(directoryCollection)
+        .doc(hash)
+        .get();
     final uid = doc.data()?['uid'] as String?;
-    debugPrint('Directory lookup "${normalized.value}" → $hash → ${uid ?? 'not found'}');
+    debugPrint(
+      'Directory lookup "${normalized.value}" → $hash → ${uid ?? 'not found'}',
+    );
     return uid;
   }
 
   @override
-  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids) async {
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(
+    Set<String> uids,
+  ) async {
     if (uids.isEmpty) return const {};
 
     final ids = uids.toList();
@@ -157,10 +174,12 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
     ];
 
     final snapshots = await Future.wait(
-      chunks.map((chunk) => _firestore
-          .collection(publicCollection)
-          .where(FieldPath.documentId, whereIn: chunk)
-          .get()),
+      chunks.map(
+        (chunk) => _firestore
+            .collection(publicCollection)
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get(),
+      ),
     );
 
     return {
@@ -189,7 +208,11 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   }
 
   @override
-  Future<void> touchDevice(String uid, {required String platform, String? appVersion}) {
+  Future<void> touchDevice(
+    String uid, {
+    required String platform,
+    String? appVersion,
+  }) {
     return _doc(uid).set({
       'platform': platform,
       'appVersion': ?appVersion,
@@ -203,7 +226,10 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   @override
   Future<String?> blockMessage(String uid) async {
     try {
-      final doc = await _firestore.collection(accountStatusCollection).doc(uid).get();
+      final doc = await _firestore
+          .collection(accountStatusCollection)
+          .doc(uid)
+          .get();
       final data = doc.data();
       if (data == null || data['disabled'] != true) return null;
       return (data['message'] as String?) ?? '';

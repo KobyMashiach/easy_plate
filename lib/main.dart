@@ -26,10 +26,14 @@ import 'core/theme/theme_controller.dart';
 import 'core/theme/theme_switcher.dart';
 import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
+import 'core/utils/rebuild_everything.dart';
 import 'core/utils/routing/app_router.dart';
 import 'core/utils/routing/routing.dart';
 import 'core/widgets/app_dialog.dart';
 import 'core/widgets/update_gate.dart';
+import 'core/constants/app_enums.dart';
+import 'features/forum/presentation/open_forum_thread.dart';
+import 'features/notifications/domain/repositories/notifications_repository.dart';
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 
 Future<void> main() async {
@@ -48,28 +52,38 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Hive.initFlutter();
-  // Before the first frame, so the splash is already in the chosen theme.
-  await ThemeController().init();
   await AdaptersController.registerAdapters();
-  // Caches the images directory so ClayImage can resolve paths synchronously
-  // while building.
-  await ImageStorageService().init();
-
-  // After Hive, which holds the skipped-version record, and after Firebase, so
-  // the first verdict already sees whatever Remote Config had activated on the
-  // previous run. A later fetch re-runs it on its own.
-  await AppUpdateService().init();
-
-  // Preferences are stored per account, so they cannot be read until auth
-  // resolves. Until then the gate shows the splash and the login in whatever
-  // language was last chosen on this device, falling back to the device locale
-  // the first time.
-  final deviceLanguage = await DeviceLocaleStore().read();
+  // Four independent reads — the theme (before the first frame, so the
+  // splash is already in the chosen theme), the images directory (so
+  // ClayImage can resolve paths synchronously while building), the update
+  // verdict (after Hive, which holds the skipped-version record, and after
+  // Firebase, so it sees whatever Remote Config had activated on the
+  // previous run) and the device language — run together rather than one
+  // after another: each is a platform channel or a disk read, and the
+  // first frame waited on the sum of them.
+  final (_, _, _, deviceLanguage) = await (
+    ThemeController().init(),
+    ImageStorageService().init(),
+    AppUpdateService().init(),
+    // Preferences are stored per account, so they cannot be read until
+    // auth resolves. Until then the gate shows the splash and the login in
+    // whatever language was last chosen on this device, falling back to
+    // the device locale the first time.
+    DeviceLocaleStore().read(),
+  ).wait;
   if (deviceLanguage != null) {
     await LocaleSettings.setLocale(deviceLanguage.locale);
   } else {
     await LocaleSettings.useDeviceLocale();
   }
+
+  // Strings are read through slang's global `t`, which nothing subscribes
+  // to: a page kept alive under the router, or a tab in the IndexedStack,
+  // kept its old labels after a switch — an English title over a Hebrew
+  // page. Every locale change, whoever makes it, sweeps the tree.
+  LocaleSettings.getLocaleStream().listen((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => rebuildEverything());
+  });
 
   runApp(
     TranslationProvider(
@@ -135,9 +149,9 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // A tapped push lands on the inbox — whether the app was already running
-    // or was launched by the tap.
-    FirebaseService().onNotificationOpened = _openInbox;
+    // A tapped push lands where it points — a thread, or the inbox —
+    // whether the app was already running or was launched by the tap.
+    FirebaseService().onNotificationOpened = _openFromPush;
     AuthSessionService().addListener(_onSessionChanged);
     FirebaseService().deliverPendingNotificationTap();
     // A push while the app is open becomes the app's own popup, with a way
@@ -154,40 +168,102 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   }
 
   /// A tap on a push arriving before the session is ready — the app was
-  /// closed — is held until it is, then lands on the inbox on top of the
-  /// home screen the gate has just shown.
-  bool _inboxPending = false;
+  /// closed — is held until it is, then lands where it points on top of
+  /// the home screen the gate has just shown.
+  Map<String, String>? _pendingPush;
 
-  void _openInbox() {
+  void _openFromPush(Map<String, String> data) {
     if (AuthSessionService().stage == AuthStage.ready) {
-      _router.pushNamed(Routing.notifications);
+      _navigateForPush(data);
     } else {
-      _inboxPending = true;
+      _pendingPush = data;
     }
   }
 
   void _onSessionChanged() {
-    if (!_inboxPending || AuthSessionService().stage != AuthStage.ready) return;
-    _inboxPending = false;
-    // A beat later than the gate's own redirect to /home, so the inbox is
+    final pending = _pendingPush;
+    if (pending == null || AuthSessionService().stage != AuthStage.ready) {
+      return;
+    }
+    _pendingPush = null;
+    // A beat later than the gate's own redirect to /home, so the target is
     // pushed over it rather than replaced by it.
     Future.delayed(const Duration(milliseconds: 400), () {
-      if (mounted) _router.pushNamed(Routing.notifications);
+      if (mounted) _navigateForPush(pending);
     });
+  }
+
+  /// Where a push's payload points: a forum reply opens its thread on the
+  /// reply itself; everything else opens the inbox, where the item can be
+  /// acted on. The inbox item the push mirrors is marked read on the way,
+  /// so the bell does not keep counting something already seen.
+  Future<void> _navigateForPush(Map<String, String> data) async {
+    final context = _router.routerDelegate.navigatorKey.currentContext;
+    _markPushRead(context, data['notificationId']);
+    final postId = data['postId'];
+    if (context != null &&
+        data['type'] == AppNotificationType.forumReply.name &&
+        postId != null &&
+        postId.isNotEmpty) {
+      final opened = await openForumThread(
+        context,
+        postId: postId,
+        replyId: data['replyId'],
+      );
+      if (opened) return;
+    }
+    _router.pushNamed(Routing.notifications);
+  }
+
+  void _markPushRead(BuildContext? context, String? notificationId) {
+    final uid = AuthSessionService().user?.uid;
+    if (context == null || uid == null) return;
+    if (notificationId == null || notificationId.isEmpty) return;
+    unawaited(
+      context
+          .read<NotificationsRepository>()
+          .markRead(uid, notificationId)
+          .catchError(
+            (Object e) => debugPrint('Mark push read failed: $e'),
+          ),
+    );
+  }
+
+  /// The account's own choices decide whether a push that arrived while
+  /// the app is open becomes a popup. The server already honours them
+  /// before sending, so this catches only the push that was in flight
+  /// when a switch went off — and the popup switch itself.
+  bool _wantsPopup(PushBanner push) {
+    final preferences = AuthSessionService().preferencesListenable.value;
+    if (preferences == null) return true;
+    if (!preferences.foregroundPopupsEnabled) return false;
+    final type = AppNotificationType.values
+        .where((t) => t.name == push.data['type'])
+        .firstOrNull;
+    if (type == null) return true;
+    return preferences.allowsAlert(
+      type,
+      onMyPost: push.data['onMyPost'] == 'true',
+    );
   }
 
   Future<void> _onForegroundPush() async {
     final push = ForegroundPushService().latest.value;
     final context = _router.routerDelegate.navigatorKey.currentContext;
-    if (push == null || context == null) return;
+    if (push == null || context == null || !_wantsPopup(push)) return;
+    final isThread =
+        push.data['type'] == AppNotificationType.forumReply.name &&
+        (push.data['postId'] ?? '').isNotEmpty;
     final open = await AppDialog.info(
       title: push.title.isEmpty ? null : push.title,
       message: push.body,
       icon: Icons.notifications_active_rounded,
-      confirmLabel: t.notifications.openInbox,
+      confirmLabel: isThread
+          ? t.notifications.openThread
+          : t.notifications.openInbox,
       cancelLabel: t.common.cancel,
     ).show(context);
-    if (open == true) _router.pushNamed(Routing.notifications);
+    if (open == true) await _navigateForPush(push.data);
   }
 
   @override

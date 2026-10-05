@@ -5,5 +5,6 @@ class FetchOriginalRecipePageUseCase {
   final RecipeIngestionRepository repository;
   FetchOriginalRecipePageUseCase(this.repository);
 
-  Future<OriginalRecipePageEntity> call(String url) => repository.fetchOriginalPage(url);
+  Future<OriginalRecipePageEntity> call(String url) =>
+      repository.fetchOriginalPage(url);
 }

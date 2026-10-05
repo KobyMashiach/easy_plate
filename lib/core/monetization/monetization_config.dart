@@ -12,20 +12,27 @@ abstract class MonetizationConfig {
 
   /// The kill switch. Off, the app behaves exactly as it did before ads: no
   /// cards in the feeds, no quotas, no gates.
-  static bool get adsEnabled => _remote.remoteBool(FirebaseService.adsEnabledKey);
+  static bool get adsEnabled =>
+      _remote.remoteBool(FirebaseService.adsEnabledKey);
 
   /// Grant the unlock when no rewarded ad could be served.
-  static bool get failOpen => _remote.remoteBool(FirebaseService.adsFailOpenKey);
+  static bool get failOpen =>
+      _remote.remoteBool(FirebaseService.adsFailOpenKey);
 
   /// Feed items between two native cards. Zero or less disables the cards.
-  static int get feedAdInterval => _remote.remoteInt(FirebaseService.feedAdIntervalKey);
+  static int get feedAdInterval =>
+      _remote.remoteInt(FirebaseService.feedAdIntervalKey);
 
   static QuotaLimits get limits => QuotaLimits(
-        freeSharedViews: _remote.remoteInt(FirebaseService.quotaSharedFreeKey),
-        rewardedSharedViews: _remote.remoteInt(FirebaseService.quotaSharedRewardedKey),
-        rewardedAiExtractions: _remote.remoteInt(FirebaseService.quotaAiRewardedKey),
-        premiumAiExtractions: _remote.remoteInt(FirebaseService.quotaAiPremiumKey),
-      );
+    freeSharedViews: _remote.remoteInt(FirebaseService.quotaSharedFreeKey),
+    rewardedSharedViews: _remote.remoteInt(
+      FirebaseService.quotaSharedRewardedKey,
+    ),
+    rewardedAiExtractions: _remote.remoteInt(
+      FirebaseService.quotaAiRewardedKey,
+    ),
+    premiumAiExtractions: _remote.remoteInt(FirebaseService.quotaAiPremiumKey),
+  );
 
   static bool get isPremium => EntitlementService().isPremium;
 

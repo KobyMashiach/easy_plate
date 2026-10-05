@@ -15,7 +15,9 @@ import 'package:flutter/foundation.dart';
 /// webhook looks for in `entitlement_ids`, and the key the app reads from
 /// `CustomerInfo.entitlements.active`.
 abstract class PurchasesConfig {
-  static const _apiKeyAndroid = String.fromEnvironment('REVENUECAT_API_KEY_ANDROID');
+  static const _apiKeyAndroid = String.fromEnvironment(
+    'REVENUECAT_API_KEY_ANDROID',
+  );
   static const _apiKeyIos = String.fromEnvironment('REVENUECAT_API_KEY_IOS');
 
   /// The single entitlement EasyPlate sells: no ads, no daily quotas.
@@ -26,22 +28,22 @@ abstract class PurchasesConfig {
   /// The key for the platform this build runs on, or blank when none was
   /// supplied — see [enabled].
   static String get apiKey => resolveKey(
-        android: _apiKeyAndroid,
-        ios: _apiKeyIos,
-        isIos: _isIos,
-      );
+    android: _apiKeyAndroid,
+    ios: _apiKeyIos,
+    isIos: _isIos,
+  );
 
   @visibleForTesting
   static String resolveKey({
     required String android,
     required String ios,
     required bool isIos,
-  }) =>
-      (isIos ? ios : android).trim();
+  }) => (isIos ? ios : android).trim();
 
   /// Purchases only exist on the two mobile platforms with a key to talk to
   /// RevenueCat; everywhere else the layer is a no-op.
   static bool get enabled => supported && apiKey.isNotEmpty;
 
-  static bool get supported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  static bool get supported =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 }

@@ -91,17 +91,27 @@ class _FeedbackFormState extends State<FeedbackForm> {
           const SizedBox(height: AppSpacing.base),
           Text(
             t.feedback.subtitle,
-            style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.bodyMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: AppSpacing.gutter),
           ClaySegmentedControl(
             segments: [
-              ClaySegment(label: t.feedback.bug, icon: Icons.bug_report_rounded),
-              ClaySegment(label: t.feedback.suggestion, icon: Icons.lightbulb_rounded),
+              ClaySegment(
+                label: t.feedback.bug,
+                icon: Icons.bug_report_rounded,
+              ),
+              ClaySegment(
+                label: t.feedback.suggestion,
+                icon: Icons.lightbulb_rounded,
+              ),
             ],
             selectedIndex: _type == FeedbackType.bug ? 0 : 1,
             onSelected: (index) => setState(
-              () => _type = index == 0 ? FeedbackType.bug : FeedbackType.suggestion,
+              () => _type = index == 0
+                  ? FeedbackType.bug
+                  : FeedbackType.suggestion,
             ),
           ),
           const SizedBox(height: AppSpacing.gutter),

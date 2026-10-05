@@ -12,6 +12,15 @@ abstract class SharedRecipesRepository {
   /// recipe it links to.
   Future<SharedRecipeEntity?> getById(String id, {required String viewerUid});
 
+  /// The posts [authorUid] published, newest first, without the viewer's
+  /// like resolved (`likedByMe` reads false). For matching a local recipe
+  /// to its post, which needs the titles and nothing else; the feed read
+  /// this replaced cost a like lookup per post on top.
+  Future<List<SharedRecipeEntity>> getByAuthor(
+    String authorUid, {
+    int limit = 200,
+  });
+
   /// Publishes [recipe]; resolves with the new post's id.
   Future<String> share(
     RecipeEntity recipe, {

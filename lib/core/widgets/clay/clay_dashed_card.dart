@@ -61,7 +61,9 @@ class ClayDashedCard extends StatelessWidget {
                 Text(
                   description!,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: AppColors.outline,
+                  ),
                 ),
               ],
             ],
@@ -96,7 +98,10 @@ class _DashedBorderPainter extends CustomPainter {
       var distance = 0.0;
       while (distance < metric.length) {
         canvas.drawPath(
-          metric.extractPath(distance, math.min(distance + dash, metric.length)),
+          metric.extractPath(
+            distance,
+            math.min(distance + dash, metric.length),
+          ),
           paint,
         );
         distance += dash + gap;

@@ -9,7 +9,11 @@ class ClayProgressBar extends StatelessWidget {
   final double value;
   final double height;
 
-  const ClayProgressBar({super.key, required this.value, this.height = AppSpacing.md});
+  const ClayProgressBar({
+    super.key,
+    required this.value,
+    this.height = AppSpacing.md,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,10 @@ class ClayProgressBar extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.surfaceContainerHighest, AppColors.surfaceContainer],
+            colors: [
+              AppColors.surfaceContainerHighest,
+              AppColors.surfaceContainer,
+            ],
             stops: const [0, 0.5],
           ),
           borderRadius: BorderRadius.circular(AppRadius.full),

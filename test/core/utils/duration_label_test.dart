@@ -15,10 +15,13 @@ void main() {
     expect(durationLabel(90), '1 שע׳ ו30 דק׳');
   });
 
-  test('a whole number of hours drops the minutes rather than showing zero', () {
-    expect(durationLabel(60), '1 שע׳');
-    expect(durationLabel(120), '2 שע׳');
-  });
+  test(
+    'a whole number of hours drops the minutes rather than showing zero',
+    () {
+      expect(durationLabel(60), '1 שע׳');
+      expect(durationLabel(120), '2 שע׳');
+    },
+  );
 
   test('zero is a real answer and stays in minutes', () {
     expect(durationLabel(0), '0 דק׳');

@@ -51,7 +51,14 @@ enum AccessRole {
 ///
 /// [aiRequest] is the one channel with no source to read from: the user
 /// describes the dish they want and the model writes the recipe.
-enum RecipeIngestionChannel { rawText, webSearch, urlScrape, socialVideo, aiRequest, manual }
+enum RecipeIngestionChannel {
+  rawText,
+  webSearch,
+  urlScrape,
+  socialVideo,
+  aiRequest,
+  manual,
+}
 
 /// Starting shape for a new meal plan. Not persisted — it only decides which
 /// meals get pre-created across the week, and the plan is freely editable
@@ -110,7 +117,8 @@ enum Allergen {
   peanuts,
   treeNuts,
   sesame,
-  soy;
+  soy
+  ;
 
   /// Names back to values, in this order and without repeats. Anything that
   /// is not a known name — an old client's value, a model's slip — is dropped
@@ -118,7 +126,10 @@ enum Allergen {
   static List<Allergen> fromNames(Object? raw) {
     if (raw is! List) return const [];
     final names = raw.whereType<String>().toSet();
-    return [for (final a in values) if (names.contains(a.name)) a];
+    return [
+      for (final a in values)
+        if (names.contains(a.name)) a,
+    ];
   }
 }
 
@@ -136,10 +147,12 @@ enum CollabRole { owner, editor, viewer }
 enum CollabKind {
   recipe,
   book,
-  mealPlan;
+  mealPlan
+  ;
 
   static CollabKind fromName(String? name) =>
-      CollabKind.values.where((k) => k.name == name).firstOrNull ?? CollabKind.recipe;
+      CollabKind.values.where((k) => k.name == name).firstOrNull ??
+      CollabKind.recipe;
 }
 
 enum ShareInviteStatus { pending, accepted, declined }
@@ -150,17 +163,30 @@ enum ShoppingReminderSlot {
   twoDaysBefore,
   dayBefore,
   sameDayMorning,
-  sameDayAfternoon;
+  sameDayAfternoon
+  ;
 
-  static const defaults = [ShoppingReminderSlot.dayBefore, ShoppingReminderSlot.sameDayMorning];
+  static const defaults = [
+    ShoppingReminderSlot.dayBefore,
+    ShoppingReminderSlot.sameDayMorning,
+  ];
 
   static List<ShoppingReminderSlot> fromNames(Iterable<String> names) => [
-        for (final slot in ShoppingReminderSlot.values)
-          if (names.contains(slot.name)) slot,
-      ];
+    for (final slot in ShoppingReminderSlot.values)
+      if (names.contains(slot.name)) slot,
+  ];
 }
 
 /// Notification kinds. Written by the app (an invite, or the administrator's
 /// answer to a support message) or by a Cloud Function (a community post the
 /// user saved was edited by its author).
-enum AppNotificationType { shareInvite, sharedRecipeUpdated, adminReply, adminMessage }
+enum AppNotificationType {
+  shareInvite,
+  sharedRecipeUpdated,
+  adminReply,
+  adminMessage,
+
+  /// Someone replied in a forum thread the account opened or took part in.
+  /// Written by the `onForumReplyCreated` function.
+  forumReply,
+}

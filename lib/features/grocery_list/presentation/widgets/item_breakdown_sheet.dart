@@ -66,9 +66,20 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
   ];
   late MeasurementUnit _unit = widget.item.unit;
 
+  /// One per source, owned here for the sheet's life. Creating them in
+  /// build — as this once did — made a new, never-disposed controller for
+  /// every row on every rebuild, and lost the text being typed with each.
+  late final List<TextEditingController> _amountControllers = [
+    for (final source in _sources)
+      TextEditingController(text: formatAmount(source.amount)),
+  ];
+
   @override
   void dispose() {
     _bufferController.dispose();
+    for (final controller in _amountControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -76,8 +87,12 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
 
   void _removeSource(int index) {
     if (_sources.length <= 1) return;
+    final controller = _amountControllers.removeAt(index);
     setState(() => _sources = [..._sources]..removeAt(index));
     widget.onRemoveSource(index);
+    // After the frame that drops its field, so the field is not torn down
+    // while still bound to it.
+    WidgetsBinding.instance.addPostFrameCallback((_) => controller.dispose());
   }
 
   @override
@@ -91,7 +106,8 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
       padding: EdgeInsets.only(
         left: AppSpacing.marginMobile,
         right: AppSpacing.marginMobile,
-        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -102,7 +118,9 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
             const SizedBox(height: AppSpacing.xs),
             Text(
               '${t.groceryList.breakdownTitle} · $_total $unitLabel'.trim(),
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.labelMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.gutter),
             Text(t.groceryList.unit, style: AppTextStyles.labelMd),
@@ -139,7 +157,9 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                     child: Text(
                       measurementUnitPickerLabel(unit),
                       style: AppTextStyles.labelMd.copyWith(
-                        color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
+                        color: isSelected
+                            ? AppColors.onPrimary
+                            : AppColors.tertiary,
                       ),
                     ),
                   ),
@@ -150,9 +170,7 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
             Text(t.groceryList.amount, style: AppTextStyles.labelMd),
             const SizedBox(height: AppSpacing.base),
             ..._sources.asMap().entries.map((entry) {
-              final controller = TextEditingController(
-                text: formatAmount(entry.value.amount),
-              );
+              final controller = _amountControllers[entry.key];
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                 child: Row(
@@ -169,7 +187,9 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                       width: 88,
                       child: TextField(
                         controller: controller,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         textAlign: TextAlign.center,
                         style: AppTextStyles.labelMd,
                         decoration: const InputDecoration(isDense: true),
@@ -192,14 +212,22 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                       width: 52,
                       child: Text(
                         unitLabel,
-                        style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: AppColors.outline,
+                        ),
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close_rounded, size: 18),
-                      color: canRemove ? AppColors.error : AppColors.outlineVariant,
-                      tooltip: canRemove ? t.common.delete : t.groceryList.lastSource,
-                      onPressed: canRemove ? () => _removeSource(entry.key) : null,
+                      color: canRemove
+                          ? AppColors.error
+                          : AppColors.outlineVariant,
+                      tooltip: canRemove
+                          ? t.common.delete
+                          : t.groceryList.lastSource,
+                      onPressed: canRemove
+                          ? () => _removeSource(entry.key)
+                          : null,
                     ),
                   ],
                 ),
@@ -210,7 +238,9 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                 padding: const EdgeInsets.only(top: AppSpacing.xs),
                 child: Text(
                   t.groceryList.lastSource,
-                  style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.outline,
+                  ),
                 ),
               ),
             const Divider(height: AppSpacing.lg),
@@ -219,9 +249,13 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                 Expanded(
                   child: TextField(
                     controller: _bufferController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     style: AppTextStyles.bodyMd,
-                    decoration: InputDecoration(labelText: t.groceryList.buffer),
+                    decoration: InputDecoration(
+                      labelText: t.groceryList.buffer,
+                    ),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),

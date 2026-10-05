@@ -87,7 +87,12 @@
     "appleAlreadyUsed": "حساب Apple هذا مرتبط بمستخدم آخر",
     "appleAlreadyLinked": "تم ربط حساب Apple بالفعل",
     "blockedTitle": "تم حظر الحساب",
-    "blockedBody": "تم حظر هذا الحساب من قِبل مدير التطبيق. للتفاصيل تواصل معنا من شاشة الدعم."
+    "blockedBody": "تم حظر هذا الحساب من قِبل مدير التطبيق. للتفاصيل تواصل معنا من شاشة الدعم.",
+    "phoneClaimedTitle": "هذا الرقم تابع لحساب موجود",
+    "phoneClaimedBody": "الرقم $phone مرتبط بالفعل بحساب EasyPlate آخر. للوصول إلى ذلك الحساب ووصفاته، سجّل الدخول بالطريقة التي استخدمتها سابقًا (Google أو Apple أو البريد) وتحقّق من الرقم هناك مجددًا.",
+    "phoneClaimedSignIn": "الدخول إلى حسابي الموجود",
+    "phoneClaimedCreateNew": "إنشاء حساب جديد على أي حال",
+    "phoneClaimedCreateNewConfirm": "سيُفتح حساب جديد فارغ لهذا الرقم. يبقى الحساب الموجود كما هو، لكن لن يمكن الوصول إليه بهذا الرقم بعد الآن."
   },
   "profile": {
     "setupTitle": "تفاصيل أخيرة",
@@ -166,7 +171,46 @@
     "reminderTwoDaysBefore": "قبل يومين (مساءً)",
     "reminderDayBefore": "قبل يوم (مساءً)",
     "reminderSameDayMorning": "يوم التسوق (صباحًا)",
-    "reminderSameDayAfternoon": "يوم التسوق (بعد الظهر)"
+    "reminderSameDayAfternoon": "يوم التسوق (بعد الظهر)",
+    "translatingContent": "جارٍ ترجمة وصفاتك وقوائمك…",
+    "translatedContent": "تمت ترجمة $count عناصر",
+    "translationPartialTitle": "الترجمة لم تكتمل",
+    "translationPartial": "بقي $count عناصر بلغتها الأصلية. يمكن المحاولة لاحقًا.",
+    "translationFailed": "فشلت الترجمة. بقي المحتوى بلغته الأصلية.",
+    "account": "الحساب",
+    "notifications": "الإشعارات",
+    "notificationsHint": "أي التنبيهات تصلك، وكيف",
+    "settingsHint": "الحساب، الإشعارات، اللغة والمظهر"
+  },
+  "notificationSettings": {
+    "title": "إعدادات الإشعارات",
+    "push": "الإشعارات الفورية",
+    "pushHint": "تنبيهات على هذا الجهاز. عند الإيقاف لا يُرسل شيء إلى الهاتف؛ يستمر صندوق الإشعارات بالامتلاء.",
+    "pushDenied": "إشعارات EasyPlate محظورة في إعدادات الجهاز. اسمح بها هناك لتلقي التنبيهات.",
+    "community": "المجتمع",
+    "repliesOnMyPosts": "الردود على منشوراتي",
+    "repliesOnMyPostsHint": "أجاب أحدهم في نقاش فتحته",
+    "repliesOnThreads": "الردود في نقاشات شاركت فيها",
+    "repliesOnThreadsHint": "رد جديد في نقاش رددت فيه",
+    "sharing": "المشاركة",
+    "shareInvites": "دعوات المشاركة",
+    "shareInvitesHint": "شارك أحدهم معك وصفة أو كتابًا أو خطة. تصل الدعوة دائمًا إلى الصندوق؛ هذا هو التنبيه فقط.",
+    "sharedRecipeUpdates": "تحديثات الوصفات المحفوظة",
+    "sharedRecipeUpdatesHint": "غيّر الكاتب وصفة من المجتمع حفظتها",
+    "easyPlate": "من EasyPlate",
+    "adminReplies": "الردود على رسائل الدعم الخاصة بي",
+    "announcements": "الإعلانات",
+    "announcementsHint": "أخبار وتحديثات من فريق EasyPlate",
+    "inApp": "أثناء فتح التطبيق",
+    "foregroundPopups": "عرض التنبيهات كنافذة منبثقة",
+    "foregroundPopupsHint": "التنبيه الذي يصل أثناء وجودك في التطبيق يفتح بطاقة صغيرة. عند الإيقاف يذهب إلى الصندوق فقط.",
+    "reminders": "تذكيرات التسوق"
+  },
+  "preferences": {
+    "title": "التفضيلات",
+    "hint": "التسوق، الاحتياجات الغذائية وسلوك الكتب",
+    "shopping": "التسوق",
+    "books": "كتب الوصفات"
   },
   "more": {
     "title": "المزيد",
@@ -177,7 +221,8 @@
     "supportBody": "اكتبوا لنا وسنعود إليكم قريبًا.",
     "whatsapp": "راسلونا على واتساب",
     "email": "إرسال بريد",
-    "supportUnavailable": "تعذّر فتح التطبيق"
+    "supportUnavailable": "تعذّر فتح التطبيق",
+    "preferences": "التفضيلات"
   },
   "language": {
     "hebrew": "עברית",
@@ -335,7 +380,10 @@
     "alreadySaved": "هذه الوصفة محفوظة لديكم بالفعل",
     "savedTag": "محفوظة لديك",
     "removeSaved": "إزالة من الوصفات المحفوظة",
-    "removeSavedConfirm": "ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع."
+    "removeSavedConfirm": "ستُزال الوصفة من وصفاتك المحفوظة. يمكنك حفظها مجدداً من المجتمع.",
+    "oneNewPost": "منشور جديد واحد",
+    "newPosts": "$count منشورات جديدة",
+    "replyFailed": "تعذّر إرسال ردك"
   },
   "sharing": {
     "title": "مشاركة الوصفة",
@@ -412,7 +460,12 @@
     "sharedPlan": "$name شارك/ت معك الخطة \"$recipe\"",
     "adminReply": "رد من فريق EasyPlate على رسالتك",
     "adminReplyQuote": "رسالتك: \"$excerpt\"",
-    "adminMessage": "رسالة من EasyPlate"
+    "adminMessage": "رسالة من EasyPlate",
+    "forumReplyOnMyPost": "ردّ $name على منشورك \"$post\"",
+    "forumReplyOnThread": "ردّ $name في \"$post\"",
+    "openThread": "فتح النقاش",
+    "threadGone": "تم حذف هذا النقاش",
+    "settings": "الإعدادات"
   },
   "editor": {
     "title": "تعديل الوصفة",
@@ -546,7 +599,40 @@
     "allPlansHint": "مجمّعة من كل القوائم",
     "selectPlansTitle": "أي القوائم تغذّي هذه اللائحة؟",
     "applySelection": "تحديث اللائحة",
-    "selectAllPlans": "كل القوائم"
+    "selectAllPlans": "كل القوائم",
+    "myLists": "قوائمي",
+    "listsCount": "$count قوائم",
+    "oneList": "قائمة واحدة",
+    "newList": "قائمة جديدة",
+    "newListTitle": "قائمة تسوق جديدة",
+    "listName": "اسم القائمة",
+    "defaultListName": "قائمة التسوق",
+    "fromPlans": "من القوائم الغذائية",
+    "fromPlansHint": "تجمع وصفات خطط وجباتك",
+    "fromRecipe": "من وصفة",
+    "fromRecipeHint": "مكونات وصفة واحدة",
+    "emptyList": "قائمة فارغة",
+    "emptyListHint": "تضيف العناصر يدويًا",
+    "sourcePlans": "من القوائم الغذائية",
+    "sourceRecipe": "من وصفة \"$title\"",
+    "sourceManual": "قائمة يدوية",
+    "renameList": "إعادة تسمية القائمة",
+    "deleteList": "حذف القائمة",
+    "deleteListConfirm": "سيتم حذف \"$name\" وكل عناصرها.",
+    "progress": "$checked/$total",
+    "servings": "حصص",
+    "timesOver": "الكمية",
+    "scaleValue": "×$value",
+    "rebuildFromRecipe": "إعادة البناء من الوصفة",
+    "createFromRecipe": "إنشاء قائمة تسوق",
+    "createList": "إنشاء القائمة",
+    "recipeListTitle": "قائمة تسوق من وصفة",
+    "recipeListHint": "مكونات الوصفة حسب الكمية التي تحضّرها",
+    "listCreated": "تم إنشاء القائمة \"$name\"",
+    "openList": "فتح القائمة",
+    "stayHere": "البقاء هنا",
+    "noIngredients": "لا توجد في هذه الوصفة مكونات للشراء",
+    "addFirstItem": "إضافة عنصر"
   },
   "receipt": {
     "title": "مسح إيصال",

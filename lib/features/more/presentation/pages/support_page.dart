@@ -32,7 +32,9 @@ class SupportPage extends StatelessWidget {
   Future<void> _open(BuildContext context, Uri uri) async {
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened) {
-      if (context.mounted) AppDialog.error(message: t.more.supportUnavailable).show(context);
+      if (context.mounted) {
+        AppDialog.error(message: t.more.supportUnavailable).show(context);
+      }
     }
   }
 
@@ -62,7 +64,11 @@ class SupportPage extends StatelessWidget {
               onTap: () => context.pushNamed(Routing.tutorial),
               child: Row(
                 children: [
-                  const ClayIconButton(icon: Icons.school_rounded, filled: true, size: 48),
+                  const ClayIconButton(
+                    icon: Icons.school_rounded,
+                    filled: true,
+                    size: 48,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
@@ -71,8 +77,9 @@ class SupportPage extends StatelessWidget {
                         Text(t.walkthrough.start, style: AppTextStyles.bodyLg),
                         Text(
                           t.walkthrough.startHint,
-                          style: AppTextStyles.labelSm
-                              .copyWith(color: AppColors.onPrimaryFixedVariant),
+                          style: AppTextStyles.labelSm.copyWith(
+                            color: AppColors.onPrimaryFixedVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -82,7 +89,11 @@ class SupportPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Icon(Icons.support_agent_rounded, size: 56, color: AppColors.primary),
+            Icon(
+              Icons.support_agent_rounded,
+              size: 56,
+              color: AppColors.primary,
+            ),
             const SizedBox(height: AppSpacing.gutter),
             Text(
               t.more.supportTitle,
@@ -93,7 +104,9 @@ class SupportPage extends StatelessWidget {
             Text(
               t.more.supportBody,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
             ClayButton(
@@ -102,7 +115,9 @@ class SupportPage extends StatelessWidget {
               expanded: true,
               onPressed: () => _open(
                 context,
-                Uri.https('wa.me', '/$supportPhone', {'text': _signature.trim()}),
+                Uri.https('wa.me', '/$supportPhone', {
+                  'text': _signature.trim(),
+                }),
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -117,7 +132,8 @@ class SupportPage extends StatelessWidget {
                   path: supportEmail,
                   // Built by hand rather than with queryParameters, which
                   // encodes spaces as '+' — mail clients show that literally.
-                  query: 'subject=${Uri.encodeComponent(t.appName)}'
+                  query:
+                      'subject=${Uri.encodeComponent(t.appName)}'
                       '&body=${Uri.encodeComponent(_signature)}',
                 ),
               ),

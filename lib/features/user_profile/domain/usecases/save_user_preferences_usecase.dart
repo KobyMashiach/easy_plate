@@ -5,5 +5,6 @@ class SaveUserPreferencesUseCase {
   final UserPreferencesRepository repository;
   SaveUserPreferencesUseCase(this.repository);
 
-  Future<void> call(UserPreferencesEntity preferences) => repository.savePreferences(preferences);
+  Future<void> call(UserPreferencesEntity preferences) =>
+      repository.savePreferences(preferences);
 }

@@ -207,9 +207,11 @@ class FirebaseService {
   }
 
   /// Set by the app once the router exists; a tap before that is held in
-  /// [_pendingTap] and delivered by [deliverPendingNotificationTap].
-  VoidCallback? onNotificationOpened;
-  bool _pendingTap = false;
+  /// [_pendingTap] and delivered by [deliverPendingNotificationTap]. The
+  /// argument is the push's data payload (`type`, `postId`, `replyId`, …),
+  /// which is what decides where the tap lands.
+  void Function(Map<String, String> data)? onNotificationOpened;
+  Map<String, String>? _pendingTap;
 
   void _wireMessaging() {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -224,16 +226,22 @@ class FirebaseService {
       // The system draws nothing for a foreground message; we do.
       ForegroundPushService().show(message);
     });
-    FirebaseMessaging.onMessageOpenedApp.listen((_) => _notifyTap());
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) => _notifyTap(_dataOf(message)),
+    );
   }
 
-  void _notifyTap() {
+  static Map<String, String> _dataOf(RemoteMessage message) => {
+    for (final entry in message.data.entries) entry.key: entry.value.toString(),
+  };
+
+  void _notifyTap(Map<String, String> data) {
     final handler = onNotificationOpened;
     if (handler == null) {
-      _pendingTap = true;
+      _pendingTap = data;
       return;
     }
-    handler();
+    handler(data);
   }
 
   /// A push that *launched* the app is reported by `getInitialMessage`, not the
@@ -241,10 +249,9 @@ class FirebaseService {
   Future<void> deliverPendingNotificationTap() async {
     try {
       final initial = await FirebaseMessaging.instance.getInitialMessage();
-      if (initial != null || _pendingTap) {
-        _pendingTap = false;
-        onNotificationOpened?.call();
-      }
+      final pending = initial != null ? _dataOf(initial) : _pendingTap;
+      _pendingTap = null;
+      if (pending != null) onNotificationOpened?.call(pending);
     } catch (e) {
       debugPrint('Initial message check failed: $e');
     }

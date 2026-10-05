@@ -30,6 +30,11 @@ import '../../domain/usecases/save_recipe_usecase.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../../shared_recipes/domain/usecases/update_shared_recipe_usecase.dart';
+import '../../../grocery_list/data/datasources/active_grocery_list_store.dart';
+import '../../../grocery_list/domain/repositories/grocery_lists_repository.dart';
+import '../../../grocery_list/domain/usecases/create_recipe_grocery_list_usecase.dart';
+import '../../../grocery_list/presentation/widgets/grocery_lists_ui.dart';
+import '../../../../core/navigation/main_tabs.dart';
 import '../../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
 import '../../../recipe_sharing/domain/usecases/save_collab_recipe_usecase.dart';
 import '../../../recipe_sharing/domain/usecases/sync_collab_recipe_usecase.dart';
@@ -340,18 +345,52 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     final uid = AuthSessionService().user?.uid;
     if (uid == null) return null;
     try {
-      final feed = await context.read<SharedRecipesRepository>().getFeed(
-        viewerUid: uid,
-        limit: 200,
+      // Only this account's posts, and without a like lookup per post: the
+      // whole feed with likes was two hundred reads plus two hundred more,
+      // on every save of a never-shared recipe.
+      final mine = await context.read<SharedRecipesRepository>().getByAuthor(
+        uid,
       );
       final title = recipe.title.trim();
-      final mine = feed
-          .where((p) => p.authorUid == uid && p.recipe.title.trim() == title)
+      final matches = mine
+          .where((p) => p.recipe.title.trim() == title)
           .toList();
-      return mine.length == 1 ? mine.single.id : null;
+      return matches.length == 1 ? matches.single.id : null;
     } catch (e) {
       debugPrint('Post lookup failed: $e');
       return null;
+    }
+  }
+
+  /// A new shopping list holding this recipe's ingredients, scaled to how
+  /// much is being made — then, if the user wants, straight to it.
+  Future<void> _createGroceryList() async {
+    final options = await showRecipeGroceryListSheet(context, recipe);
+    if (options == null || !mounted) return;
+    final create = CreateRecipeGroceryListUseCase(
+      context.read<GroceryListsRepository>(),
+      HiveActiveGroceryListStore.instance,
+    );
+    try {
+      final list = await AppDialog.busy(
+        context,
+        () => create(recipe, name: options.name, scale: options.scale),
+      );
+      if (!mounted) return;
+      final open = await AppDialog.info(
+        message: t.groceryList.listCreated(name: list.name),
+        icon: Icons.shopping_cart_rounded,
+        confirmLabel: t.groceryList.openList,
+        cancelLabel: t.groceryList.stayHere,
+      ).show(context);
+      if (open != true || !mounted) return;
+      // The groceries tab already opened the new list (it follows the
+      // active-list store); this only takes the user there.
+      MainTabs.index.value = MainTabs.groceries;
+      context.goNamed(Routing.home);
+    } catch (e) {
+      debugPrint('Grocery list from recipe failed: $e');
+      if (mounted) AppDialog.error(message: t.common.error).show(context);
     }
   }
 
@@ -640,6 +679,18 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                     ),
                   ),
                 ),
+                if (recipe.ingredients.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  // Shopping for just this dish, without building a menu
+                  // around it. Offered on read-only recipes too: a community
+                  // recipe is as shoppable as one of the account's own.
+                  ClayButton(
+                    label: t.groceryList.createFromRecipe,
+                    icon: Icons.shopping_cart_rounded,
+                    expanded: true,
+                    onPressed: _createGroceryList,
+                  ),
+                ],
               ],
             ),
           ),

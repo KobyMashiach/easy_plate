@@ -14,10 +14,16 @@ import 'package:flutter/foundation.dart';
 /// interstitials, no app-open ads — every ad is either content-shaped or the
 /// price of something the user chose to unlock.
 abstract class AdsConfig {
-  static const _nativeAndroid = String.fromEnvironment('ADMOB_NATIVE_AD_UNIT_ANDROID');
+  static const _nativeAndroid = String.fromEnvironment(
+    'ADMOB_NATIVE_AD_UNIT_ANDROID',
+  );
   static const _nativeIos = String.fromEnvironment('ADMOB_NATIVE_AD_UNIT_IOS');
-  static const _rewardedAndroid = String.fromEnvironment('ADMOB_REWARDED_AD_UNIT_ANDROID');
-  static const _rewardedIos = String.fromEnvironment('ADMOB_REWARDED_AD_UNIT_IOS');
+  static const _rewardedAndroid = String.fromEnvironment(
+    'ADMOB_REWARDED_AD_UNIT_ANDROID',
+  );
+  static const _rewardedIos = String.fromEnvironment(
+    'ADMOB_REWARDED_AD_UNIT_IOS',
+  );
 
   /// `true`/`false` to force; blank follows the build mode.
   static const _testAdsDefine = String.fromEnvironment('ADMOB_TEST_ADS');
@@ -34,10 +40,12 @@ abstract class AdsConfig {
 
   /// Debug builds serve test ads unless told otherwise: clicks on a live unit
   /// from a developer's phone are exactly what AdMob suspends accounts for.
-  static bool get useTestAds => resolveUseTestAds(_testAdsDefine, debug: kDebugMode);
+  static bool get useTestAds =>
+      resolveUseTestAds(_testAdsDefine, debug: kDebugMode);
 
   @visibleForTesting
-  static bool resolveUseTestAds(String define, {required bool debug}) => switch (define) {
+  static bool resolveUseTestAds(String define, {required bool debug}) =>
+      switch (define) {
         'true' => true,
         'false' => false,
         _ => debug,
@@ -46,16 +54,16 @@ abstract class AdsConfig {
   static bool get _isIos => !kIsWeb && Platform.isIOS;
 
   static String get nativeAdUnitId => resolveUnit(
-        configured: _isIos ? _nativeIos : _nativeAndroid,
-        test: _isIos ? testNativeIos : testNativeAndroid,
-        useTest: useTestAds,
-      );
+    configured: _isIos ? _nativeIos : _nativeAndroid,
+    test: _isIos ? testNativeIos : testNativeAndroid,
+    useTest: useTestAds,
+  );
 
   static String get rewardedAdUnitId => resolveUnit(
-        configured: _isIos ? _rewardedIos : _rewardedAndroid,
-        test: _isIos ? testRewardedIos : testRewardedAndroid,
-        useTest: useTestAds,
-      );
+    configured: _isIos ? _rewardedIos : _rewardedAndroid,
+    test: _isIos ? testRewardedIos : testRewardedAndroid,
+    useTest: useTestAds,
+  );
 
   /// A blank define falls back to the test unit rather than to an empty id,
   /// which the SDK would reject with a load error on every card — the iOS
@@ -65,10 +73,10 @@ abstract class AdsConfig {
     required String configured,
     required String test,
     required bool useTest,
-  }) =>
-      useTest || configured.trim().isEmpty ? test : configured.trim();
+  }) => useTest || configured.trim().isEmpty ? test : configured.trim();
 
   /// Ads only exist on the two mobile platforms; everywhere else (tests,
   /// desktop) the whole layer is a no-op.
-  static bool get supported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  static bool get supported =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 }

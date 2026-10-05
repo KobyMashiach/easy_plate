@@ -22,12 +22,23 @@ class ImageStorageService {
   Directory? _directory;
   final _picker = ImagePicker();
 
+  /// The files known to be in the directory, and the names known not to
+  /// be. [pathFor] is asked by every card on every build, from inside
+  /// `build`; a synchronous stat of the disk for each was the one piece of
+  /// I/O left on the UI thread while a grid scrolled. Every write and
+  /// delete goes through this service, so the sets stay true.
+  final _present = <String>{};
+  final _absent = <String>{};
+
   Future<void> init() async {
     if (_directory != null) return;
     final documents = await getApplicationDocumentsDirectory();
     final directory = Directory('${documents.path}/$_folderName');
     if (!await directory.exists()) {
       await directory.create(recursive: true);
+    }
+    await for (final entry in directory.list()) {
+      if (entry is File) _present.add(entry.uri.pathSegments.last);
     }
     _directory = directory;
   }
@@ -37,7 +48,20 @@ class ImageStorageService {
   String? pathFor(String? fileName) {
     if (fileName == null || _directory == null) return null;
     final path = '${_directory!.path}/$fileName';
-    return File(path).existsSync() ? path : null;
+    if (_present.contains(fileName)) return path;
+    if (_absent.contains(fileName)) return null;
+    // A name this session has not met: one stat, remembered either way.
+    if (File(path).existsSync()) {
+      _present.add(fileName);
+      return path;
+    }
+    _absent.add(fileName);
+    return null;
+  }
+
+  void _remember(String fileName) {
+    _present.add(fileName);
+    _absent.remove(fileName);
   }
 
   /// Opens the picker and copies the chosen photo into app storage.
@@ -60,6 +84,7 @@ class ImageStorageService {
           : 'jpg';
       final fileName = '${_uuid.v4()}.$extension';
       await File(picked.path).copy('${_directory!.path}/$fileName');
+      _remember(fileName);
       return fileName;
     } catch (e) {
       debugPrint('Image pick error: $e');
@@ -78,6 +103,7 @@ class ImageStorageService {
       await init();
       final file = File('${_directory!.path}/$fileName');
       await file.writeAsBytes(bytes, flush: true);
+      _remember(fileName);
       return file.path;
     } catch (e) {
       debugPrint('Image cache write error: $e');
@@ -88,6 +114,8 @@ class ImageStorageService {
   Future<void> delete(String? fileName) async {
     final path = pathFor(fileName);
     if (path == null) return;
+    _present.remove(fileName);
+    _absent.add(fileName!);
     try {
       await File(path).delete();
     } catch (e) {

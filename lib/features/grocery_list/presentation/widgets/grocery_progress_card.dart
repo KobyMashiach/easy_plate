@@ -12,7 +12,11 @@ class GroceryProgressCard extends StatelessWidget {
   final int collected;
   final int total;
 
-  const GroceryProgressCard({super.key, required this.collected, required this.total});
+  const GroceryProgressCard({
+    super.key,
+    required this.collected,
+    required this.total,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +31,16 @@ class GroceryProgressCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(t.groceryList.collectionProgress, style: AppTextStyles.labelMd),
+                child: Text(
+                  t.groceryList.collectionProgress,
+                  style: AppTextStyles.labelMd,
+                ),
               ),
               Text(
                 '${(ratio * 100).round()}%',
-                style: AppTextStyles.headlineMd.copyWith(color: AppColors.primary),
+                style: AppTextStyles.headlineMd.copyWith(
+                  color: AppColors.primary,
+                ),
               ),
             ],
           ),

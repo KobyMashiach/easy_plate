@@ -47,7 +47,9 @@ class AdsService {
       ConsentRequestParameters(),
       () => updated.complete(),
       (error) {
-        debugPrint('Consent info update failed: ${error.errorCode} ${error.message}');
+        debugPrint(
+          'Consent info update failed: ${error.errorCode} ${error.message}',
+        );
         updated.complete();
       },
     );

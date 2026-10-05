@@ -17,7 +17,9 @@ mixin _$MealPlanModel {
 
 @HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) List<MealModel> get meals;@HiveField(3) DateTime get createdAt;// Cross-account sharing, appended: the shared document and this
 // account's role in it. Null for a plan that was never shared.
-@HiveField(4) String? get collabId;@HiveField(5) String? get collabRole;
+@HiveField(4) String? get collabId;@HiveField(5) String? get collabRole;/// The language the name and the meal names are written in.
+@HiveField(6) String? get contentLang;/// See [RecipeModel.contentVersion].
+@HiveField(7) int get contentVersion;
 /// Create a copy of MealPlanModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +32,16 @@ $MealPlanModelCopyWith<MealPlanModel> get copyWith => _$MealPlanModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.meals, meals)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.meals, meals)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole)&&(identical(other.contentLang, contentLang) || other.contentLang == contentLang)&&(identical(other.contentVersion, contentVersion) || other.contentVersion == contentVersion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(meals),createdAt,collabId,collabRole);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(meals),createdAt,collabId,collabRole,contentLang,contentVersion);
 
 @override
 String toString() {
-  return 'MealPlanModel(id: $id, name: $name, meals: $meals, createdAt: $createdAt, collabId: $collabId, collabRole: $collabRole)';
+  return 'MealPlanModel(id: $id, name: $name, meals: $meals, createdAt: $createdAt, collabId: $collabId, collabRole: $collabRole, contentLang: $contentLang, contentVersion: $contentVersion)';
 }
 
 
@@ -50,7 +52,7 @@ abstract mixin class $MealPlanModelCopyWith<$Res>  {
   factory $MealPlanModelCopyWith(MealPlanModel value, $Res Function(MealPlanModel) _then) = _$MealPlanModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion
 });
 
 
@@ -67,7 +69,7 @@ class _$MealPlanModelCopyWithImpl<$Res>
 
 /// Create a copy of MealPlanModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? meals = null,Object? createdAt = null,Object? collabId = freezed,Object? collabRole = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? meals = null,Object? createdAt = null,Object? collabId = freezed,Object? collabRole = freezed,Object? contentLang = freezed,Object? contentVersion = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -75,7 +77,9 @@ as String,meals: null == meals ? _self.meals : meals // ignore: cast_nullable_to
 as List<MealModel>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,collabId: freezed == collabId ? _self.collabId : collabId // ignore: cast_nullable_to_non_nullable
 as String?,collabRole: freezed == collabRole ? _self.collabRole : collabRole // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,contentLang: freezed == contentLang ? _self.contentLang : contentLang // ignore: cast_nullable_to_non_nullable
+as String?,contentVersion: null == contentVersion ? _self.contentVersion : contentVersion // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -157,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MealPlanModel() when $default != null:
-return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole);case _:
+return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);case _:
   return orElse();
 
 }
@@ -178,10 +182,10 @@ return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)  $default,) {final _that = this;
 switch (_that) {
 case _MealPlanModel():
-return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole);}
+return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -195,10 +199,10 @@ return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)?  $default,) {final _that = this;
 switch (_that) {
 case _MealPlanModel() when $default != null:
-return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole);case _:
+return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);case _:
   return null;
 
 }
@@ -210,7 +214,7 @@ return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_
 @JsonSerializable()
 
 class _MealPlanModel implements MealPlanModel {
-  const _MealPlanModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<MealModel> meals, @HiveField(3) required this.createdAt, @HiveField(4) this.collabId, @HiveField(5) this.collabRole}): _meals = meals;
+  const _MealPlanModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<MealModel> meals, @HiveField(3) required this.createdAt, @HiveField(4) this.collabId, @HiveField(5) this.collabRole, @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0}): _meals = meals;
   factory _MealPlanModel.fromJson(Map<String, dynamic> json) => _$MealPlanModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -227,6 +231,10 @@ class _MealPlanModel implements MealPlanModel {
 // account's role in it. Null for a plan that was never shared.
 @override@HiveField(4) final  String? collabId;
 @override@HiveField(5) final  String? collabRole;
+/// The language the name and the meal names are written in.
+@override@HiveField(6) final  String? contentLang;
+/// See [RecipeModel.contentVersion].
+@override@JsonKey()@HiveField(7) final  int contentVersion;
 
 /// Create a copy of MealPlanModel
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._meals, _meals)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealPlanModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._meals, _meals)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole)&&(identical(other.contentLang, contentLang) || other.contentLang == contentLang)&&(identical(other.contentVersion, contentVersion) || other.contentVersion == contentVersion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_meals),createdAt,collabId,collabRole);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_meals),createdAt,collabId,collabRole,contentLang,contentVersion);
 
 @override
 String toString() {
-  return 'MealPlanModel(id: $id, name: $name, meals: $meals, createdAt: $createdAt, collabId: $collabId, collabRole: $collabRole)';
+  return 'MealPlanModel(id: $id, name: $name, meals: $meals, createdAt: $createdAt, collabId: $collabId, collabRole: $collabRole, contentLang: $contentLang, contentVersion: $contentVersion)';
 }
 
 
@@ -261,7 +269,7 @@ abstract mixin class _$MealPlanModelCopyWith<$Res> implements $MealPlanModelCopy
   factory _$MealPlanModelCopyWith(_MealPlanModel value, $Res Function(_MealPlanModel) _then) = __$MealPlanModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion
 });
 
 
@@ -278,7 +286,7 @@ class __$MealPlanModelCopyWithImpl<$Res>
 
 /// Create a copy of MealPlanModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? meals = null,Object? createdAt = null,Object? collabId = freezed,Object? collabRole = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? meals = null,Object? createdAt = null,Object? collabId = freezed,Object? collabRole = freezed,Object? contentLang = freezed,Object? contentVersion = null,}) {
   return _then(_MealPlanModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -286,7 +294,9 @@ as String,meals: null == meals ? _self._meals : meals // ignore: cast_nullable_t
 as List<MealModel>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,collabId: freezed == collabId ? _self.collabId : collabId // ignore: cast_nullable_to_non_nullable
 as String?,collabRole: freezed == collabRole ? _self.collabRole : collabRole // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,contentLang: freezed == contentLang ? _self.contentLang : contentLang // ignore: cast_nullable_to_non_nullable
+as String?,contentVersion: null == contentVersion ? _self.contentVersion : contentVersion // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

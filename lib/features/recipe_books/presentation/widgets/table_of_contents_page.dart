@@ -49,10 +49,10 @@ class TableOfContentsPage extends StatelessWidget {
           GestureDetector(
             onTap: coverImageFileName != null || coverImageRemotePath != null
                 ? () => showImageViewer(
-                      context,
-                      fileName: coverImageFileName,
-                      remotePath: coverImageRemotePath,
-                    )
+                    context,
+                    fileName: coverImageFileName,
+                    remotePath: coverImageRemotePath,
+                  )
                 : onTapCover,
             onLongPress: onTapCover,
             behavior: HitTestBehavior.opaque,

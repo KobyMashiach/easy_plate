@@ -87,7 +87,12 @@
     "appleAlreadyUsed": "Ce compte Apple appartient déjà à un autre utilisateur",
     "appleAlreadyLinked": "Un compte Apple est déjà lié",
     "blockedTitle": "Compte bloqué",
-    "blockedBody": "Ce compte a été bloqué par l'administrateur de l'application. Contactez-nous depuis l'écran d'assistance."
+    "blockedBody": "Ce compte a été bloqué par l'administrateur de l'application. Contactez-nous depuis l'écran d'assistance.",
+    "phoneClaimedTitle": "Ce numéro appartient à un compte existant",
+    "phoneClaimedBody": "Le numéro $phone est déjà lié à un autre compte EasyPlate. Pour retrouver ce compte et ses recettes, connectez-vous comme avant (Google, Apple ou e-mail) et vérifiez-y à nouveau le numéro.",
+    "phoneClaimedSignIn": "Me connecter à mon compte existant",
+    "phoneClaimedCreateNew": "Créer quand même un nouveau compte",
+    "phoneClaimedCreateNewConfirm": "Un nouveau compte vide sera ouvert pour ce numéro. Le compte existant reste tel quel, mais ne sera plus accessible avec ce numéro."
   },
   "profile": {
     "setupTitle": "Encore quelques détails",
@@ -166,7 +171,46 @@
     "reminderTwoDaysBefore": "Deux jours avant (soir)",
     "reminderDayBefore": "La veille (soir)",
     "reminderSameDayMorning": "Le jour même (matin)",
-    "reminderSameDayAfternoon": "Le jour même (après-midi)"
+    "reminderSameDayAfternoon": "Le jour même (après-midi)",
+    "translatingContent": "Traduction de vos recettes et menus…",
+    "translatedContent": "$count éléments traduits",
+    "translationPartialTitle": "Traduction incomplète",
+    "translationPartial": "$count éléments sont restés dans leur langue. Réessayez plus tard.",
+    "translationFailed": "La traduction a échoué. Votre contenu est resté dans sa langue.",
+    "account": "Compte",
+    "notifications": "Notifications",
+    "notificationsHint": "Quelles alertes vous parviennent, et comment",
+    "settingsHint": "Compte, notifications, langue et apparence"
+  },
+  "notificationSettings": {
+    "title": "Paramètres des notifications",
+    "push": "Notifications push",
+    "pushHint": "Alertes sur cet appareil. Désactivé, rien n’est envoyé au téléphone ; la boîte de réception continue de se remplir.",
+    "pushDenied": "Les notifications d’EasyPlate sont bloquées dans les réglages de l’appareil. Autorisez-les pour recevoir les alertes.",
+    "community": "Communauté",
+    "repliesOnMyPosts": "Réponses à mes publications",
+    "repliesOnMyPostsHint": "Quelqu’un a répondu dans une discussion que vous avez ouverte",
+    "repliesOnThreads": "Réponses dans les discussions où je participe",
+    "repliesOnThreadsHint": "Une nouvelle réponse dans une discussion où vous avez répondu",
+    "sharing": "Partage",
+    "shareInvites": "Invitations de partage",
+    "shareInvitesHint": "Quelqu’un a partagé une recette, un livre ou un menu avec vous. L’invitation arrive toujours dans la boîte ; ceci ne concerne que l’alerte.",
+    "sharedRecipeUpdates": "Mises à jour des recettes enregistrées",
+    "sharedRecipeUpdatesHint": "L’auteur a modifié une recette de la communauté que vous avez enregistrée",
+    "easyPlate": "De la part d’EasyPlate",
+    "adminReplies": "Réponses à mes messages au support",
+    "announcements": "Annonces",
+    "announcementsHint": "Nouvelles et mises à jour de l’équipe EasyPlate",
+    "inApp": "Quand l’application est ouverte",
+    "foregroundPopups": "Afficher les alertes en fenêtre",
+    "foregroundPopupsHint": "Une notification reçue pendant que vous êtes dans l’application ouvre une petite carte. Désactivé, elle va seulement dans la boîte.",
+    "reminders": "Rappels de courses"
+  },
+  "preferences": {
+    "title": "Préférences",
+    "hint": "Courses, régime alimentaire et comportement des livres",
+    "shopping": "Courses",
+    "books": "Livres de recettes"
   },
   "more": {
     "title": "Plus",
@@ -177,7 +221,8 @@
     "supportBody": "Écrivez-nous et nous reviendrons vers vous.",
     "whatsapp": "Nous écrire sur WhatsApp",
     "email": "Envoyer un e-mail",
-    "supportUnavailable": "Impossible d'ouvrir cette application"
+    "supportUnavailable": "Impossible d'ouvrir cette application",
+    "preferences": "Préférences"
   },
   "language": {
     "hebrew": "עברית",
@@ -335,7 +380,10 @@
     "alreadySaved": "Vous avez déjà cette recette",
     "savedTag": "Enregistrée",
     "removeSaved": "Retirer des recettes enregistrées",
-    "removeSavedConfirm": "La recette sera retirée de vos recettes enregistrées. Vous pourrez la réenregistrer depuis la communauté."
+    "removeSavedConfirm": "La recette sera retirée de vos recettes enregistrées. Vous pourrez la réenregistrer depuis la communauté.",
+    "oneNewPost": "1 nouvelle publication",
+    "newPosts": "$count nouvelles publications",
+    "replyFailed": "Votre réponse n’a pas pu être envoyée"
   },
   "sharing": {
     "title": "Partager la recette",
@@ -412,7 +460,12 @@
     "sharedPlan": "$name a partagé le menu « $recipe » avec vous",
     "adminReply": "Réponse de l'équipe EasyPlate à votre message",
     "adminReplyQuote": "Votre message : \"$excerpt\"",
-    "adminMessage": "Un message d'EasyPlate"
+    "adminMessage": "Un message d'EasyPlate",
+    "forumReplyOnMyPost": "$name a répondu à votre publication « $post »",
+    "forumReplyOnThread": "$name a répondu dans « $post »",
+    "openThread": "Ouvrir la discussion",
+    "threadGone": "Cette discussion a été supprimée",
+    "settings": "Paramètres"
   },
   "editor": {
     "title": "Modifier la recette",
@@ -546,7 +599,40 @@
     "allPlansHint": "Agrégé depuis tous les menus",
     "selectPlansTitle": "Quels menus alimentent cette liste ?",
     "applySelection": "Mettre à jour",
-    "selectAllPlans": "Tous les menus"
+    "selectAllPlans": "Tous les menus",
+    "myLists": "Mes listes",
+    "listsCount": "$count listes",
+    "oneList": "Une liste",
+    "newList": "Nouvelle liste",
+    "newListTitle": "Nouvelle liste de courses",
+    "listName": "Nom de la liste",
+    "defaultListName": "Liste de courses",
+    "fromPlans": "Depuis les menus",
+    "fromPlansHint": "Regroupe les recettes de vos menus",
+    "fromRecipe": "Depuis une recette",
+    "fromRecipeHint": "Les ingrédients d’une seule recette",
+    "emptyList": "Liste vide",
+    "emptyListHint": "Vous ajoutez les articles vous-même",
+    "sourcePlans": "Depuis les menus",
+    "sourceRecipe": "Depuis la recette « $title »",
+    "sourceManual": "Liste manuelle",
+    "renameList": "Renommer la liste",
+    "deleteList": "Supprimer la liste",
+    "deleteListConfirm": "« $name » et tous ses articles seront supprimés.",
+    "progress": "$checked/$total",
+    "servings": "Portions",
+    "timesOver": "Quantité",
+    "scaleValue": "×$value",
+    "rebuildFromRecipe": "Reconstruire depuis la recette",
+    "createFromRecipe": "Créer une liste de courses",
+    "createList": "Créer la liste",
+    "recipeListTitle": "Liste de courses depuis une recette",
+    "recipeListHint": "Les ingrédients de la recette, selon la quantité préparée",
+    "listCreated": "La liste « $name » a été créée",
+    "openList": "Ouvrir la liste",
+    "stayHere": "Rester ici",
+    "noIngredients": "Cette recette n’a aucun ingrédient à acheter",
+    "addFirstItem": "Ajouter un article"
   },
   "receipt": {
     "title": "Scanner un ticket",

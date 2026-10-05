@@ -27,13 +27,20 @@ class GroceryListModelAdapter extends TypeAdapter<GroceryListModel> {
       selectedPlanIds: fields[5] == null
           ? []
           : (fields[5] as List).cast<String>(),
+      contentLang: fields[6] as String?,
+      contentVersion: fields[7] == null ? 0 : (fields[7] as num).toInt(),
+      source: fields[8] == null ? 'plans' : fields[8] as String,
+      recipeId: fields[9] as String?,
+      recipeScale: fields[10] == null ? 1.0 : (fields[10] as num).toDouble(),
+      recipeServings: (fields[11] as num?)?.toInt(),
+      recipeTitle: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, GroceryListModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -45,7 +52,21 @@ class GroceryListModelAdapter extends TypeAdapter<GroceryListModel> {
       ..writeByte(4)
       ..write(obj.createdAt)
       ..writeByte(5)
-      ..write(obj.selectedPlanIds);
+      ..write(obj.selectedPlanIds)
+      ..writeByte(6)
+      ..write(obj.contentLang)
+      ..writeByte(7)
+      ..write(obj.contentVersion)
+      ..writeByte(8)
+      ..write(obj.source)
+      ..writeByte(9)
+      ..write(obj.recipeId)
+      ..writeByte(10)
+      ..write(obj.recipeScale)
+      ..writeByte(11)
+      ..write(obj.recipeServings)
+      ..writeByte(12)
+      ..write(obj.recipeTitle);
   }
 
   @override
@@ -81,6 +102,13 @@ _GroceryListModel _$GroceryListModelFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const <String>[],
+      contentLang: json['contentLang'] as String?,
+      contentVersion: (json['contentVersion'] as num?)?.toInt() ?? 0,
+      source: json['source'] as String? ?? 'plans',
+      recipeId: json['recipeId'] as String?,
+      recipeScale: (json['recipeScale'] as num?)?.toDouble() ?? 1.0,
+      recipeServings: (json['recipeServings'] as num?)?.toInt(),
+      recipeTitle: json['recipeTitle'] as String?,
     );
 
 Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
@@ -91,4 +119,11 @@ Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
       'collaborators': instance.collaborators,
       'createdAt': instance.createdAt.toIso8601String(),
       'selectedPlanIds': instance.selectedPlanIds,
+      'contentLang': instance.contentLang,
+      'contentVersion': instance.contentVersion,
+      'source': instance.source,
+      'recipeId': instance.recipeId,
+      'recipeScale': instance.recipeScale,
+      'recipeServings': instance.recipeServings,
+      'recipeTitle': instance.recipeTitle,
     };

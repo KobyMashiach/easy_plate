@@ -22,29 +22,59 @@ sealed class GroceryListModel with _$GroceryListModel {
     // Appended, never reordered: lists written before this existed decode with
     // the default and keep meaning "all plans".
     @HiveField(5) @Default(<String>[]) List<String> selectedPlanIds,
+
+    /// The language the list name and the item names are written in.
+    @HiveField(6) String? contentLang,
+
+    /// See [RecipeModel.contentVersion].
+    @HiveField(7) @Default(0) int contentVersion,
+
+    // Appended for multiple lists. A list written before them decodes as a
+    // meal-plan list, which is what the one list there was always was.
+    /// A [GroceryListSource] name.
+    @HiveField(8) @Default('plans') String source,
+    @HiveField(9) String? recipeId,
+    @HiveField(10) @Default(1.0) double recipeScale,
+    @HiveField(11) int? recipeServings,
+    @HiveField(12) String? recipeTitle,
   }) = _GroceryListModel;
 
-  factory GroceryListModel.fromJson(Map<String, dynamic> json) => _$GroceryListModelFromJson(json);
+  factory GroceryListModel.fromJson(Map<String, dynamic> json) =>
+      _$GroceryListModelFromJson(json);
 }
 
 extension GroceryListModelMapper on GroceryListModel {
   GroceryListEntity toEntity() => GroceryListEntity(
-        id: id,
-        name: name,
-        items: items.map((i) => i.toEntity()).toList(),
-        collaborators: collaborators.map((k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v))),
-        selectedPlanIds: selectedPlanIds,
-        createdAt: createdAt,
-      );
+    id: id,
+    name: name,
+    items: items.map((i) => i.toEntity()).toList(),
+    collaborators: collaborators.map(
+      (k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v)),
+    ),
+    selectedPlanIds: selectedPlanIds,
+    createdAt: createdAt,
+    contentLang: contentLang,
+    source: GroceryListSource.fromName(source),
+    recipeId: recipeId,
+    recipeScale: recipeScale,
+    recipeServings: recipeServings,
+    recipeTitle: recipeTitle,
+  );
 }
 
 extension GroceryListEntityMapper on GroceryListEntity {
   GroceryListModel toModel() => GroceryListModel(
-        id: id,
-        name: name,
-        items: items.map((i) => i.toModel()).toList(),
-        collaborators: collaborators.map((k, v) => MapEntry(k, v.name)),
-        selectedPlanIds: selectedPlanIds,
-        createdAt: createdAt,
-      );
+    id: id,
+    name: name,
+    items: items.map((i) => i.toModel()).toList(),
+    collaborators: collaborators.map((k, v) => MapEntry(k, v.name)),
+    selectedPlanIds: selectedPlanIds,
+    createdAt: createdAt,
+    contentLang: contentLang,
+    source: source.name,
+    recipeId: recipeId,
+    recipeScale: recipeScale,
+    recipeServings: recipeServings,
+    recipeTitle: recipeTitle,
+  );
 }

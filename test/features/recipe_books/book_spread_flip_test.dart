@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Five pages make three spreads; the last faces a blank.
-List<Widget> pages() => [for (var i = 0; i < 5; i++) Center(child: Text('p$i'))];
+List<Widget> pages() => [
+  for (var i = 0; i < 5; i++) Center(child: Text('p$i')),
+];
 
 Widget host(
   BookSpreadController controller, {
@@ -34,7 +36,9 @@ void main() {
     expect(BookSpreadFlip.spreadCount(0), 1);
   });
 
-  testWidgets('opens at the first spread, showing its two pages', (tester) async {
+  testWidgets('opens at the first spread, showing its two pages', (
+    tester,
+  ) async {
     await tester.pumpWidget(host(BookSpreadController()));
     expect(find.text('p0'), findsOneWidget);
     expect(find.text('p1'), findsOneWidget);
@@ -84,7 +88,9 @@ void main() {
     expect(find.text('p4'), findsOneWidget);
   });
 
-  testWidgets('a drag toward the start turns forward in a Latin book', (tester) async {
+  testWidgets('a drag toward the start turns forward in a Latin book', (
+    tester,
+  ) async {
     final controller = BookSpreadController();
     await tester.pumpWidget(host(controller));
 

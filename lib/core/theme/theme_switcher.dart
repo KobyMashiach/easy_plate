@@ -32,7 +32,8 @@ class ThemeSwitcher extends StatefulWidget {
   State<ThemeSwitcher> createState() => ThemeSwitcherState();
 }
 
-class ThemeSwitcherState extends State<ThemeSwitcher> with SingleTickerProviderStateMixin {
+class ThemeSwitcherState extends State<ThemeSwitcher>
+    with SingleTickerProviderStateMixin {
   static const duration = Duration(milliseconds: 650);
 
   final _boundary = GlobalKey();
@@ -62,13 +63,18 @@ class ThemeSwitcherState extends State<ThemeSwitcher> with SingleTickerProviderS
   /// there is nothing to animate and the choice is just stored.
   Future<void> switchTo(AppThemeMode mode, {required Offset origin}) async {
     final controller = ThemeController();
-    if (_progress.isAnimating || controller.resolvesDark(mode) == controller.isDark) {
+    if (_progress.isAnimating ||
+        controller.resolvesDark(mode) == controller.isDark) {
       await controller.setMode(mode);
       return;
     }
 
     final image = await _capture();
-    if (!mounted) return;
+    if (!mounted) {
+      // A full-screen raster on the GPU: not something to leave behind.
+      image?.dispose();
+      return;
+    }
     if (image == null) {
       // Could not rasterise (headless, or mid-layout): switch without the show.
       await controller.setMode(mode);
@@ -97,7 +103,9 @@ class ThemeSwitcherState extends State<ThemeSwitcher> with SingleTickerProviderS
     final boundary = _boundary.currentContext?.findRenderObject();
     if (boundary is! RenderRepaintBoundary) return null;
     try {
-      return await boundary.toImage(pixelRatio: MediaQuery.devicePixelRatioOf(context));
+      return await boundary.toImage(
+        pixelRatio: MediaQuery.devicePixelRatioOf(context),
+      );
     } catch (_) {
       return null;
     }
@@ -133,14 +141,21 @@ class _RevealPainter extends CustomPainter {
   final Offset origin;
   final double progress;
 
-  const _RevealPainter({required this.image, required this.origin, required this.progress});
+  const _RevealPainter({
+    required this.image,
+    required this.origin,
+    required this.progress,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     // Far enough to clear the farthest corner, whichever corner that is.
     final reach = math.max(
       math.max(origin.distance, (Offset(size.width, 0) - origin).distance),
-      math.max((Offset(0, size.height) - origin).distance, (Offset(size.width, size.height) - origin).distance),
+      math.max(
+        (Offset(0, size.height) - origin).distance,
+        (Offset(size.width, size.height) - origin).distance,
+      ),
     );
     final hole = Path()
       ..fillType = PathFillType.evenOdd

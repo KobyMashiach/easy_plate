@@ -55,7 +55,7 @@ extension GroceryListEventPatterns on GroceryListEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Regenerate value)?  regenerate,TResult Function( _SelectPlans value)?  selectPlans,TResult Function( _ToggleItem value)?  toggleItem,TResult Function( _AddAdHocItem value)?  addAdHocItem,TResult Function( _RemoveItem value)?  removeItem,TResult Function( _AddBuffer value)?  addBuffer,TResult Function( _AdjustSource value)?  adjustSource,TResult Function( _RemoveSource value)?  removeSource,TResult Function( _ChangeUnit value)?  changeUnit,TResult Function( _SetAllChecked value)?  setAllChecked,TResult Function( _DeleteCheckedItems value)?  deleteCheckedItems,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Regenerate value)?  regenerate,TResult Function( _SelectPlans value)?  selectPlans,TResult Function( _ToggleItem value)?  toggleItem,TResult Function( _AddAdHocItem value)?  addAdHocItem,TResult Function( _RemoveItem value)?  removeItem,TResult Function( _AddBuffer value)?  addBuffer,TResult Function( _AdjustSource value)?  adjustSource,TResult Function( _RemoveSource value)?  removeSource,TResult Function( _ChangeUnit value)?  changeUnit,TResult Function( _SetAllChecked value)?  setAllChecked,TResult Function( _DeleteCheckedItems value)?  deleteCheckedItems,TResult Function( _PlansChanged value)?  plansChanged,TResult Function( _SelectList value)?  selectList,TResult Function( _CreateList value)?  createList,TResult Function( _CreateRecipeList value)?  createRecipeList,TResult Function( _RenameList value)?  renameList,TResult Function( _DeleteList value)?  deleteList,TResult Function( _SetRecipeScale value)?  setRecipeScale,TResult Function( _ListsChanged value)?  listsChanged,TResult Function( _ActiveChanged value)?  activeChanged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -70,7 +70,16 @@ return adjustSource(_that);case _RemoveSource() when removeSource != null:
 return removeSource(_that);case _ChangeUnit() when changeUnit != null:
 return changeUnit(_that);case _SetAllChecked() when setAllChecked != null:
 return setAllChecked(_that);case _DeleteCheckedItems() when deleteCheckedItems != null:
-return deleteCheckedItems(_that);case _:
+return deleteCheckedItems(_that);case _PlansChanged() when plansChanged != null:
+return plansChanged(_that);case _SelectList() when selectList != null:
+return selectList(_that);case _CreateList() when createList != null:
+return createList(_that);case _CreateRecipeList() when createRecipeList != null:
+return createRecipeList(_that);case _RenameList() when renameList != null:
+return renameList(_that);case _DeleteList() when deleteList != null:
+return deleteList(_that);case _SetRecipeScale() when setRecipeScale != null:
+return setRecipeScale(_that);case _ListsChanged() when listsChanged != null:
+return listsChanged(_that);case _ActiveChanged() when activeChanged != null:
+return activeChanged(_that);case _:
   return orElse();
 
 }
@@ -88,7 +97,7 @@ return deleteCheckedItems(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Regenerate value)  regenerate,required TResult Function( _SelectPlans value)  selectPlans,required TResult Function( _ToggleItem value)  toggleItem,required TResult Function( _AddAdHocItem value)  addAdHocItem,required TResult Function( _RemoveItem value)  removeItem,required TResult Function( _AddBuffer value)  addBuffer,required TResult Function( _AdjustSource value)  adjustSource,required TResult Function( _RemoveSource value)  removeSource,required TResult Function( _ChangeUnit value)  changeUnit,required TResult Function( _SetAllChecked value)  setAllChecked,required TResult Function( _DeleteCheckedItems value)  deleteCheckedItems,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Regenerate value)  regenerate,required TResult Function( _SelectPlans value)  selectPlans,required TResult Function( _ToggleItem value)  toggleItem,required TResult Function( _AddAdHocItem value)  addAdHocItem,required TResult Function( _RemoveItem value)  removeItem,required TResult Function( _AddBuffer value)  addBuffer,required TResult Function( _AdjustSource value)  adjustSource,required TResult Function( _RemoveSource value)  removeSource,required TResult Function( _ChangeUnit value)  changeUnit,required TResult Function( _SetAllChecked value)  setAllChecked,required TResult Function( _DeleteCheckedItems value)  deleteCheckedItems,required TResult Function( _PlansChanged value)  plansChanged,required TResult Function( _SelectList value)  selectList,required TResult Function( _CreateList value)  createList,required TResult Function( _CreateRecipeList value)  createRecipeList,required TResult Function( _RenameList value)  renameList,required TResult Function( _DeleteList value)  deleteList,required TResult Function( _SetRecipeScale value)  setRecipeScale,required TResult Function( _ListsChanged value)  listsChanged,required TResult Function( _ActiveChanged value)  activeChanged,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -103,7 +112,16 @@ return adjustSource(_that);case _RemoveSource():
 return removeSource(_that);case _ChangeUnit():
 return changeUnit(_that);case _SetAllChecked():
 return setAllChecked(_that);case _DeleteCheckedItems():
-return deleteCheckedItems(_that);}
+return deleteCheckedItems(_that);case _PlansChanged():
+return plansChanged(_that);case _SelectList():
+return selectList(_that);case _CreateList():
+return createList(_that);case _CreateRecipeList():
+return createRecipeList(_that);case _RenameList():
+return renameList(_that);case _DeleteList():
+return deleteList(_that);case _SetRecipeScale():
+return setRecipeScale(_that);case _ListsChanged():
+return listsChanged(_that);case _ActiveChanged():
+return activeChanged(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -117,7 +135,7 @@ return deleteCheckedItems(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Regenerate value)?  regenerate,TResult? Function( _SelectPlans value)?  selectPlans,TResult? Function( _ToggleItem value)?  toggleItem,TResult? Function( _AddAdHocItem value)?  addAdHocItem,TResult? Function( _RemoveItem value)?  removeItem,TResult? Function( _AddBuffer value)?  addBuffer,TResult? Function( _AdjustSource value)?  adjustSource,TResult? Function( _RemoveSource value)?  removeSource,TResult? Function( _ChangeUnit value)?  changeUnit,TResult? Function( _SetAllChecked value)?  setAllChecked,TResult? Function( _DeleteCheckedItems value)?  deleteCheckedItems,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Regenerate value)?  regenerate,TResult? Function( _SelectPlans value)?  selectPlans,TResult? Function( _ToggleItem value)?  toggleItem,TResult? Function( _AddAdHocItem value)?  addAdHocItem,TResult? Function( _RemoveItem value)?  removeItem,TResult? Function( _AddBuffer value)?  addBuffer,TResult? Function( _AdjustSource value)?  adjustSource,TResult? Function( _RemoveSource value)?  removeSource,TResult? Function( _ChangeUnit value)?  changeUnit,TResult? Function( _SetAllChecked value)?  setAllChecked,TResult? Function( _DeleteCheckedItems value)?  deleteCheckedItems,TResult? Function( _PlansChanged value)?  plansChanged,TResult? Function( _SelectList value)?  selectList,TResult? Function( _CreateList value)?  createList,TResult? Function( _CreateRecipeList value)?  createRecipeList,TResult? Function( _RenameList value)?  renameList,TResult? Function( _DeleteList value)?  deleteList,TResult? Function( _SetRecipeScale value)?  setRecipeScale,TResult? Function( _ListsChanged value)?  listsChanged,TResult? Function( _ActiveChanged value)?  activeChanged,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -132,7 +150,16 @@ return adjustSource(_that);case _RemoveSource() when removeSource != null:
 return removeSource(_that);case _ChangeUnit() when changeUnit != null:
 return changeUnit(_that);case _SetAllChecked() when setAllChecked != null:
 return setAllChecked(_that);case _DeleteCheckedItems() when deleteCheckedItems != null:
-return deleteCheckedItems(_that);case _:
+return deleteCheckedItems(_that);case _PlansChanged() when plansChanged != null:
+return plansChanged(_that);case _SelectList() when selectList != null:
+return selectList(_that);case _CreateList() when createList != null:
+return createList(_that);case _CreateRecipeList() when createRecipeList != null:
+return createRecipeList(_that);case _RenameList() when renameList != null:
+return renameList(_that);case _DeleteList() when deleteList != null:
+return deleteList(_that);case _SetRecipeScale() when setRecipeScale != null:
+return setRecipeScale(_that);case _ListsChanged() when listsChanged != null:
+return listsChanged(_that);case _ActiveChanged() when activeChanged != null:
+return activeChanged(_that);case _:
   return null;
 
 }
@@ -149,7 +176,7 @@ return deleteCheckedItems(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  regenerate,TResult Function( List<String> planIds)?  selectPlans,TResult Function( String itemId)?  toggleItem,TResult Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult Function( String itemId)?  removeItem,TResult Function( String itemId,  double amount)?  addBuffer,TResult Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult Function( String itemId,  int sourceIndex)?  removeSource,TResult Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult Function( bool checked)?  setAllChecked,TResult Function()?  deleteCheckedItems,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  regenerate,TResult Function( List<String> planIds)?  selectPlans,TResult Function( String itemId)?  toggleItem,TResult Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult Function( String itemId)?  removeItem,TResult Function( String itemId,  double amount)?  addBuffer,TResult Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult Function( String itemId,  int sourceIndex)?  removeSource,TResult Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult Function( bool checked)?  setAllChecked,TResult Function()?  deleteCheckedItems,TResult Function( List<MealPlanEntity> plans)?  plansChanged,TResult Function( String listId)?  selectList,TResult Function( String name,  GroceryListSource source)?  createList,TResult Function( RecipeEntity recipe,  String name,  double scale)?  createRecipeList,TResult Function( String listId,  String name)?  renameList,TResult Function( String listId)?  deleteList,TResult Function( double scale)?  setRecipeScale,TResult Function( List<GroceryListEntity> lists)?  listsChanged,TResult Function( String listId)?  activeChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Regenerate() when regenerate != null:
@@ -163,7 +190,16 @@ return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSou
 return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit() when changeUnit != null:
 return changeUnit(_that.itemId,_that.unit);case _SetAllChecked() when setAllChecked != null:
 return setAllChecked(_that.checked);case _DeleteCheckedItems() when deleteCheckedItems != null:
-return deleteCheckedItems();case _:
+return deleteCheckedItems();case _PlansChanged() when plansChanged != null:
+return plansChanged(_that.plans);case _SelectList() when selectList != null:
+return selectList(_that.listId);case _CreateList() when createList != null:
+return createList(_that.name,_that.source);case _CreateRecipeList() when createRecipeList != null:
+return createRecipeList(_that.recipe,_that.name,_that.scale);case _RenameList() when renameList != null:
+return renameList(_that.listId,_that.name);case _DeleteList() when deleteList != null:
+return deleteList(_that.listId);case _SetRecipeScale() when setRecipeScale != null:
+return setRecipeScale(_that.scale);case _ListsChanged() when listsChanged != null:
+return listsChanged(_that.lists);case _ActiveChanged() when activeChanged != null:
+return activeChanged(_that.listId);case _:
   return orElse();
 
 }
@@ -181,7 +217,7 @@ return deleteCheckedItems();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  regenerate,required TResult Function( List<String> planIds)  selectPlans,required TResult Function( String itemId)  toggleItem,required TResult Function( String name,  double amount,  MeasurementUnit unit)  addAdHocItem,required TResult Function( String itemId)  removeItem,required TResult Function( String itemId,  double amount)  addBuffer,required TResult Function( String itemId,  int sourceIndex,  double amount)  adjustSource,required TResult Function( String itemId,  int sourceIndex)  removeSource,required TResult Function( String itemId,  MeasurementUnit unit)  changeUnit,required TResult Function( bool checked)  setAllChecked,required TResult Function()  deleteCheckedItems,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  regenerate,required TResult Function( List<String> planIds)  selectPlans,required TResult Function( String itemId)  toggleItem,required TResult Function( String name,  double amount,  MeasurementUnit unit)  addAdHocItem,required TResult Function( String itemId)  removeItem,required TResult Function( String itemId,  double amount)  addBuffer,required TResult Function( String itemId,  int sourceIndex,  double amount)  adjustSource,required TResult Function( String itemId,  int sourceIndex)  removeSource,required TResult Function( String itemId,  MeasurementUnit unit)  changeUnit,required TResult Function( bool checked)  setAllChecked,required TResult Function()  deleteCheckedItems,required TResult Function( List<MealPlanEntity> plans)  plansChanged,required TResult Function( String listId)  selectList,required TResult Function( String name,  GroceryListSource source)  createList,required TResult Function( RecipeEntity recipe,  String name,  double scale)  createRecipeList,required TResult Function( String listId,  String name)  renameList,required TResult Function( String listId)  deleteList,required TResult Function( double scale)  setRecipeScale,required TResult Function( List<GroceryListEntity> lists)  listsChanged,required TResult Function( String listId)  activeChanged,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Regenerate():
@@ -195,7 +231,16 @@ return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSou
 return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit():
 return changeUnit(_that.itemId,_that.unit);case _SetAllChecked():
 return setAllChecked(_that.checked);case _DeleteCheckedItems():
-return deleteCheckedItems();}
+return deleteCheckedItems();case _PlansChanged():
+return plansChanged(_that.plans);case _SelectList():
+return selectList(_that.listId);case _CreateList():
+return createList(_that.name,_that.source);case _CreateRecipeList():
+return createRecipeList(_that.recipe,_that.name,_that.scale);case _RenameList():
+return renameList(_that.listId,_that.name);case _DeleteList():
+return deleteList(_that.listId);case _SetRecipeScale():
+return setRecipeScale(_that.scale);case _ListsChanged():
+return listsChanged(_that.lists);case _ActiveChanged():
+return activeChanged(_that.listId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -209,7 +254,7 @@ return deleteCheckedItems();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  regenerate,TResult? Function( List<String> planIds)?  selectPlans,TResult? Function( String itemId)?  toggleItem,TResult? Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult? Function( String itemId)?  removeItem,TResult? Function( String itemId,  double amount)?  addBuffer,TResult? Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult? Function( String itemId,  int sourceIndex)?  removeSource,TResult? Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult? Function( bool checked)?  setAllChecked,TResult? Function()?  deleteCheckedItems,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  regenerate,TResult? Function( List<String> planIds)?  selectPlans,TResult? Function( String itemId)?  toggleItem,TResult? Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult? Function( String itemId)?  removeItem,TResult? Function( String itemId,  double amount)?  addBuffer,TResult? Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult? Function( String itemId,  int sourceIndex)?  removeSource,TResult? Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult? Function( bool checked)?  setAllChecked,TResult? Function()?  deleteCheckedItems,TResult? Function( List<MealPlanEntity> plans)?  plansChanged,TResult? Function( String listId)?  selectList,TResult? Function( String name,  GroceryListSource source)?  createList,TResult? Function( RecipeEntity recipe,  String name,  double scale)?  createRecipeList,TResult? Function( String listId,  String name)?  renameList,TResult? Function( String listId)?  deleteList,TResult? Function( double scale)?  setRecipeScale,TResult? Function( List<GroceryListEntity> lists)?  listsChanged,TResult? Function( String listId)?  activeChanged,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Regenerate() when regenerate != null:
@@ -223,7 +268,16 @@ return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSou
 return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit() when changeUnit != null:
 return changeUnit(_that.itemId,_that.unit);case _SetAllChecked() when setAllChecked != null:
 return setAllChecked(_that.checked);case _DeleteCheckedItems() when deleteCheckedItems != null:
-return deleteCheckedItems();case _:
+return deleteCheckedItems();case _PlansChanged() when plansChanged != null:
+return plansChanged(_that.plans);case _SelectList() when selectList != null:
+return selectList(_that.listId);case _CreateList() when createList != null:
+return createList(_that.name,_that.source);case _CreateRecipeList() when createRecipeList != null:
+return createRecipeList(_that.recipe,_that.name,_that.scale);case _RenameList() when renameList != null:
+return renameList(_that.listId,_that.name);case _DeleteList() when deleteList != null:
+return deleteList(_that.listId);case _SetRecipeScale() when setRecipeScale != null:
+return setRecipeScale(_that.scale);case _ListsChanged() when listsChanged != null:
+return listsChanged(_that.lists);case _ActiveChanged() when activeChanged != null:
+return activeChanged(_that.listId);case _:
   return null;
 
 }
@@ -942,6 +996,620 @@ String toString() {
 
 
 /// @nodoc
+
+
+class _PlansChanged implements GroceryListEvent {
+  const _PlansChanged(final  List<MealPlanEntity> plans): _plans = plans;
+  
+
+ final  List<MealPlanEntity> _plans;
+ List<MealPlanEntity> get plans {
+  if (_plans is EqualUnmodifiableListView) return _plans;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_plans);
+}
+
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PlansChangedCopyWith<_PlansChanged> get copyWith => __$PlansChangedCopyWithImpl<_PlansChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PlansChanged&&const DeepCollectionEquality().equals(other._plans, _plans));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_plans));
+
+@override
+String toString() {
+  return 'GroceryListEvent.plansChanged(plans: $plans)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PlansChangedCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$PlansChangedCopyWith(_PlansChanged value, $Res Function(_PlansChanged) _then) = __$PlansChangedCopyWithImpl;
+@useResult
+$Res call({
+ List<MealPlanEntity> plans
+});
+
+
+
+
+}
+/// @nodoc
+class __$PlansChangedCopyWithImpl<$Res>
+    implements _$PlansChangedCopyWith<$Res> {
+  __$PlansChangedCopyWithImpl(this._self, this._then);
+
+  final _PlansChanged _self;
+  final $Res Function(_PlansChanged) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? plans = null,}) {
+  return _then(_PlansChanged(
+null == plans ? _self._plans : plans // ignore: cast_nullable_to_non_nullable
+as List<MealPlanEntity>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SelectList implements GroceryListEvent {
+  const _SelectList(this.listId);
+  
+
+ final  String listId;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SelectListCopyWith<_SelectList> get copyWith => __$SelectListCopyWithImpl<_SelectList>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SelectList&&(identical(other.listId, listId) || other.listId == listId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,listId);
+
+@override
+String toString() {
+  return 'GroceryListEvent.selectList(listId: $listId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SelectListCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$SelectListCopyWith(_SelectList value, $Res Function(_SelectList) _then) = __$SelectListCopyWithImpl;
+@useResult
+$Res call({
+ String listId
+});
+
+
+
+
+}
+/// @nodoc
+class __$SelectListCopyWithImpl<$Res>
+    implements _$SelectListCopyWith<$Res> {
+  __$SelectListCopyWithImpl(this._self, this._then);
+
+  final _SelectList _self;
+  final $Res Function(_SelectList) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? listId = null,}) {
+  return _then(_SelectList(
+null == listId ? _self.listId : listId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _CreateList implements GroceryListEvent {
+  const _CreateList(this.name, this.source);
+  
+
+ final  String name;
+ final  GroceryListSource source;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CreateListCopyWith<_CreateList> get copyWith => __$CreateListCopyWithImpl<_CreateList>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateList&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,name,source);
+
+@override
+String toString() {
+  return 'GroceryListEvent.createList(name: $name, source: $source)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CreateListCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$CreateListCopyWith(_CreateList value, $Res Function(_CreateList) _then) = __$CreateListCopyWithImpl;
+@useResult
+$Res call({
+ String name, GroceryListSource source
+});
+
+
+
+
+}
+/// @nodoc
+class __$CreateListCopyWithImpl<$Res>
+    implements _$CreateListCopyWith<$Res> {
+  __$CreateListCopyWithImpl(this._self, this._then);
+
+  final _CreateList _self;
+  final $Res Function(_CreateList) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? name = null,Object? source = null,}) {
+  return _then(_CreateList(
+null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
+as GroceryListSource,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _CreateRecipeList implements GroceryListEvent {
+  const _CreateRecipeList(this.recipe, this.name, this.scale);
+  
+
+ final  RecipeEntity recipe;
+ final  String name;
+ final  double scale;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CreateRecipeListCopyWith<_CreateRecipeList> get copyWith => __$CreateRecipeListCopyWithImpl<_CreateRecipeList>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateRecipeList&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.name, name) || other.name == name)&&(identical(other.scale, scale) || other.scale == scale));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,recipe,name,scale);
+
+@override
+String toString() {
+  return 'GroceryListEvent.createRecipeList(recipe: $recipe, name: $name, scale: $scale)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CreateRecipeListCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$CreateRecipeListCopyWith(_CreateRecipeList value, $Res Function(_CreateRecipeList) _then) = __$CreateRecipeListCopyWithImpl;
+@useResult
+$Res call({
+ RecipeEntity recipe, String name, double scale
+});
+
+
+
+
+}
+/// @nodoc
+class __$CreateRecipeListCopyWithImpl<$Res>
+    implements _$CreateRecipeListCopyWith<$Res> {
+  __$CreateRecipeListCopyWithImpl(this._self, this._then);
+
+  final _CreateRecipeList _self;
+  final $Res Function(_CreateRecipeList) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? recipe = null,Object? name = null,Object? scale = null,}) {
+  return _then(_CreateRecipeList(
+null == recipe ? _self.recipe : recipe // ignore: cast_nullable_to_non_nullable
+as RecipeEntity,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,null == scale ? _self.scale : scale // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _RenameList implements GroceryListEvent {
+  const _RenameList(this.listId, this.name);
+  
+
+ final  String listId;
+ final  String name;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RenameListCopyWith<_RenameList> get copyWith => __$RenameListCopyWithImpl<_RenameList>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RenameList&&(identical(other.listId, listId) || other.listId == listId)&&(identical(other.name, name) || other.name == name));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,listId,name);
+
+@override
+String toString() {
+  return 'GroceryListEvent.renameList(listId: $listId, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RenameListCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$RenameListCopyWith(_RenameList value, $Res Function(_RenameList) _then) = __$RenameListCopyWithImpl;
+@useResult
+$Res call({
+ String listId, String name
+});
+
+
+
+
+}
+/// @nodoc
+class __$RenameListCopyWithImpl<$Res>
+    implements _$RenameListCopyWith<$Res> {
+  __$RenameListCopyWithImpl(this._self, this._then);
+
+  final _RenameList _self;
+  final $Res Function(_RenameList) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? listId = null,Object? name = null,}) {
+  return _then(_RenameList(
+null == listId ? _self.listId : listId // ignore: cast_nullable_to_non_nullable
+as String,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _DeleteList implements GroceryListEvent {
+  const _DeleteList(this.listId);
+  
+
+ final  String listId;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DeleteListCopyWith<_DeleteList> get copyWith => __$DeleteListCopyWithImpl<_DeleteList>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteList&&(identical(other.listId, listId) || other.listId == listId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,listId);
+
+@override
+String toString() {
+  return 'GroceryListEvent.deleteList(listId: $listId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DeleteListCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$DeleteListCopyWith(_DeleteList value, $Res Function(_DeleteList) _then) = __$DeleteListCopyWithImpl;
+@useResult
+$Res call({
+ String listId
+});
+
+
+
+
+}
+/// @nodoc
+class __$DeleteListCopyWithImpl<$Res>
+    implements _$DeleteListCopyWith<$Res> {
+  __$DeleteListCopyWithImpl(this._self, this._then);
+
+  final _DeleteList _self;
+  final $Res Function(_DeleteList) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? listId = null,}) {
+  return _then(_DeleteList(
+null == listId ? _self.listId : listId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SetRecipeScale implements GroceryListEvent {
+  const _SetRecipeScale(this.scale);
+  
+
+ final  double scale;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SetRecipeScaleCopyWith<_SetRecipeScale> get copyWith => __$SetRecipeScaleCopyWithImpl<_SetRecipeScale>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SetRecipeScale&&(identical(other.scale, scale) || other.scale == scale));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,scale);
+
+@override
+String toString() {
+  return 'GroceryListEvent.setRecipeScale(scale: $scale)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SetRecipeScaleCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$SetRecipeScaleCopyWith(_SetRecipeScale value, $Res Function(_SetRecipeScale) _then) = __$SetRecipeScaleCopyWithImpl;
+@useResult
+$Res call({
+ double scale
+});
+
+
+
+
+}
+/// @nodoc
+class __$SetRecipeScaleCopyWithImpl<$Res>
+    implements _$SetRecipeScaleCopyWith<$Res> {
+  __$SetRecipeScaleCopyWithImpl(this._self, this._then);
+
+  final _SetRecipeScale _self;
+  final $Res Function(_SetRecipeScale) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? scale = null,}) {
+  return _then(_SetRecipeScale(
+null == scale ? _self.scale : scale // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ListsChanged implements GroceryListEvent {
+  const _ListsChanged(final  List<GroceryListEntity> lists): _lists = lists;
+  
+
+ final  List<GroceryListEntity> _lists;
+ List<GroceryListEntity> get lists {
+  if (_lists is EqualUnmodifiableListView) return _lists;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lists);
+}
+
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ListsChangedCopyWith<_ListsChanged> get copyWith => __$ListsChangedCopyWithImpl<_ListsChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListsChanged&&const DeepCollectionEquality().equals(other._lists, _lists));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_lists));
+
+@override
+String toString() {
+  return 'GroceryListEvent.listsChanged(lists: $lists)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ListsChangedCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$ListsChangedCopyWith(_ListsChanged value, $Res Function(_ListsChanged) _then) = __$ListsChangedCopyWithImpl;
+@useResult
+$Res call({
+ List<GroceryListEntity> lists
+});
+
+
+
+
+}
+/// @nodoc
+class __$ListsChangedCopyWithImpl<$Res>
+    implements _$ListsChangedCopyWith<$Res> {
+  __$ListsChangedCopyWithImpl(this._self, this._then);
+
+  final _ListsChanged _self;
+  final $Res Function(_ListsChanged) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? lists = null,}) {
+  return _then(_ListsChanged(
+null == lists ? _self._lists : lists // ignore: cast_nullable_to_non_nullable
+as List<GroceryListEntity>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ActiveChanged implements GroceryListEvent {
+  const _ActiveChanged(this.listId);
+  
+
+ final  String listId;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ActiveChangedCopyWith<_ActiveChanged> get copyWith => __$ActiveChangedCopyWithImpl<_ActiveChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActiveChanged&&(identical(other.listId, listId) || other.listId == listId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,listId);
+
+@override
+String toString() {
+  return 'GroceryListEvent.activeChanged(listId: $listId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ActiveChangedCopyWith<$Res> implements $GroceryListEventCopyWith<$Res> {
+  factory _$ActiveChangedCopyWith(_ActiveChanged value, $Res Function(_ActiveChanged) _then) = __$ActiveChangedCopyWithImpl;
+@useResult
+$Res call({
+ String listId
+});
+
+
+
+
+}
+/// @nodoc
+class __$ActiveChangedCopyWithImpl<$Res>
+    implements _$ActiveChangedCopyWith<$Res> {
+  __$ActiveChangedCopyWithImpl(this._self, this._then);
+
+  final _ActiveChanged _self;
+  final $Res Function(_ActiveChanged) _then;
+
+/// Create a copy of GroceryListEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? listId = null,}) {
+  return _then(_ActiveChanged(
+null == listId ? _self.listId : listId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$GroceryListState {
 
 
@@ -1052,11 +1720,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( GroceryListEntity list,  List<MealPlanEntity> plans)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( GroceryListEntity list,  List<MealPlanEntity> plans,  List<GroceryListEntity> lists)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case GroceryListLoading() when loading != null:
 return loading();case GroceryListLoaded() when loaded != null:
-return loaded(_that.list,_that.plans);case GroceryListError() when errorMessage != null:
+return loaded(_that.list,_that.plans,_that.lists);case GroceryListError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return orElse();
 
@@ -1075,11 +1743,11 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( GroceryListEntity list,  List<MealPlanEntity> plans)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( GroceryListEntity list,  List<MealPlanEntity> plans,  List<GroceryListEntity> lists)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case GroceryListLoading():
 return loading();case GroceryListLoaded():
-return loaded(_that.list,_that.plans);case GroceryListError():
+return loaded(_that.list,_that.plans,_that.lists);case GroceryListError():
 return errorMessage(_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -1094,11 +1762,11 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( GroceryListEntity list,  List<MealPlanEntity> plans)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( GroceryListEntity list,  List<MealPlanEntity> plans,  List<GroceryListEntity> lists)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case GroceryListLoading() when loading != null:
 return loading();case GroceryListLoaded() when loaded != null:
-return loaded(_that.list,_that.plans);case GroceryListError() when errorMessage != null:
+return loaded(_that.list,_that.plans,_that.lists);case GroceryListError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return null;
 
@@ -1143,7 +1811,7 @@ String toString() {
 
 
 class GroceryListLoaded implements GroceryListState {
-  const GroceryListLoaded(this.list, {final  List<MealPlanEntity> plans = const <MealPlanEntity>[]}): _plans = plans;
+  const GroceryListLoaded(this.list, {final  List<MealPlanEntity> plans = const <MealPlanEntity>[], final  List<GroceryListEntity> lists = const <GroceryListEntity>[]}): _plans = plans,_lists = lists;
   
 
  final  GroceryListEntity list;
@@ -1152,6 +1820,13 @@ class GroceryListLoaded implements GroceryListState {
   if (_plans is EqualUnmodifiableListView) return _plans;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_plans);
+}
+
+ final  List<GroceryListEntity> _lists;
+@JsonKey() List<GroceryListEntity> get lists {
+  if (_lists is EqualUnmodifiableListView) return _lists;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lists);
 }
 
 
@@ -1165,16 +1840,16 @@ $GroceryListLoadedCopyWith<GroceryListLoaded> get copyWith => _$GroceryListLoade
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GroceryListLoaded&&(identical(other.list, list) || other.list == list)&&const DeepCollectionEquality().equals(other._plans, _plans));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GroceryListLoaded&&(identical(other.list, list) || other.list == list)&&const DeepCollectionEquality().equals(other._plans, _plans)&&const DeepCollectionEquality().equals(other._lists, _lists));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,list,const DeepCollectionEquality().hash(_plans));
+int get hashCode => Object.hash(runtimeType,list,const DeepCollectionEquality().hash(_plans),const DeepCollectionEquality().hash(_lists));
 
 @override
 String toString() {
-  return 'GroceryListState.loaded(list: $list, plans: $plans)';
+  return 'GroceryListState.loaded(list: $list, plans: $plans, lists: $lists)';
 }
 
 
@@ -1185,7 +1860,7 @@ abstract mixin class $GroceryListLoadedCopyWith<$Res> implements $GroceryListSta
   factory $GroceryListLoadedCopyWith(GroceryListLoaded value, $Res Function(GroceryListLoaded) _then) = _$GroceryListLoadedCopyWithImpl;
 @useResult
 $Res call({
- GroceryListEntity list, List<MealPlanEntity> plans
+ GroceryListEntity list, List<MealPlanEntity> plans, List<GroceryListEntity> lists
 });
 
 
@@ -1202,11 +1877,12 @@ class _$GroceryListLoadedCopyWithImpl<$Res>
 
 /// Create a copy of GroceryListState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? list = null,Object? plans = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? list = null,Object? plans = null,Object? lists = null,}) {
   return _then(GroceryListLoaded(
 null == list ? _self.list : list // ignore: cast_nullable_to_non_nullable
 as GroceryListEntity,plans: null == plans ? _self._plans : plans // ignore: cast_nullable_to_non_nullable
-as List<MealPlanEntity>,
+as List<MealPlanEntity>,lists: null == lists ? _self._lists : lists // ignore: cast_nullable_to_non_nullable
+as List<GroceryListEntity>,
   ));
 }
 

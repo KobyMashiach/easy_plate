@@ -38,7 +38,9 @@ class _GrocerySectionState extends State<GrocerySection> {
           child: Container(
             padding: const EdgeInsets.only(bottom: AppSpacing.base),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.surfaceVariant)),
+              border: Border(
+                bottom: BorderSide(color: AppColors.surfaceVariant),
+              ),
             ),
             child: Row(
               children: [
@@ -65,7 +67,9 @@ class _GrocerySectionState extends State<GrocerySection> {
                   ),
                   child: Text(
                     '${widget.items.length}',
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.primary),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ],
@@ -75,7 +79,9 @@ class _GrocerySectionState extends State<GrocerySection> {
         AnimatedCrossFade(
           duration: const Duration(milliseconds: 300),
           sizeCurve: Curves.easeOut,
-          crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: _expanded
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
           firstChild: const SizedBox(width: double.infinity),
           secondChild: Padding(
             padding: const EdgeInsets.only(top: AppSpacing.gutter),

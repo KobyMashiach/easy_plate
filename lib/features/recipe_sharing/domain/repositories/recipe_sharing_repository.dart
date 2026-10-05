@@ -29,7 +29,11 @@ abstract class RecipeSharingRepository {
 
   /// A save by the owner or an editor. Bumps `updatedAt`, which is how a cache
   /// on another device knows to refresh.
-  Future<void> writeCollab(String collabId, RecipeEntity recipe, {required String byUid});
+  Future<void> writeCollab(
+    String collabId,
+    RecipeEntity recipe, {
+    required String byUid,
+  });
 
   Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid);
   Future<List<CollabRecipeEntity>> collabsSharedWith(String uid);

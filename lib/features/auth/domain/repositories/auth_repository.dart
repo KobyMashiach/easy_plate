@@ -25,6 +25,10 @@ abstract class AuthRepository {
 
   Future<void> signOut();
 
+  /// Deletes the signed-in account. For a phone account created by mistake
+  /// seconds ago, before it holds any data — see [AuthStage.phoneClaimed].
+  Future<void> deleteCurrentUser();
+
   /// Language for the SMS and email messages Firebase sends on our behalf.
   Future<void> setLanguage(String languageCode);
 

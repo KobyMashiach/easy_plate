@@ -16,7 +16,10 @@ class GenerateImageUseCase {
 
   /// A plated shot of the dish, in the style of the community photos.
   static String recipePrompt(RecipeEntity recipe) {
-    final ingredients = recipe.ingredients.take(8).map((i) => i.name).join(', ');
+    final ingredients = recipe.ingredients
+        .take(8)
+        .map((i) => i.name)
+        .join(', ');
     return 'Appetizing food photograph of the dish "${recipe.title}"'
         '${ingredients.isEmpty ? '' : ', made with $ingredients'}. '
         'Plated and ready to eat, natural daylight, shallow depth of field, '
@@ -27,7 +30,11 @@ class GenerateImageUseCase {
   /// of food; [subject] is what the user typed and is placed front and
   /// centre — both together give "a pile of indulgent burgers", either alone
   /// still gives a cover.
-  static String bookCoverPrompt(String title, {CoverTheme? theme, String? subject}) {
+  static String bookCoverPrompt(
+    String title, {
+    CoverTheme? theme,
+    String? subject,
+  }) {
     final what = subject?.trim();
     final focus = what == null || what.isEmpty ? null : what;
     final scene = switch ((theme, focus)) {
@@ -52,20 +59,25 @@ enum CoverTheme {
   meat,
   vegan,
   holidays,
-  quick;
+  quick
+  ;
 
   String get promptFragment => switch (this) {
-        CoverTheme.kids =>
-          'playful and colourful, kid-friendly food with fun shapes, bright cheerful palette',
-        CoverTheme.healthy =>
-          'fresh and healthy — vegetables, grains, greens, light and clean, morning light',
-        CoverTheme.indulgent =>
-          'gloriously indulgent comfort food, rich, oozing, decadent, moody dramatic light',
-        CoverTheme.sweets => 'desserts and baking — cakes, pastries, cookies, soft pastel palette',
-        CoverTheme.meat => 'grilled meats and barbecue, smoky, charred, rustic wooden board',
-        CoverTheme.vegan => 'plant-based dishes, vibrant vegetables and legumes, earthy tones',
-        CoverTheme.holidays =>
-          'a festive holiday table, celebratory, abundant, candles and warm golden light',
-        CoverTheme.quick => 'quick everyday meals, simple ingredients, bright and practical',
-      };
+    CoverTheme.kids =>
+      'playful and colourful, kid-friendly food with fun shapes, bright cheerful palette',
+    CoverTheme.healthy =>
+      'fresh and healthy — vegetables, grains, greens, light and clean, morning light',
+    CoverTheme.indulgent =>
+      'gloriously indulgent comfort food, rich, oozing, decadent, moody dramatic light',
+    CoverTheme.sweets =>
+      'desserts and baking — cakes, pastries, cookies, soft pastel palette',
+    CoverTheme.meat =>
+      'grilled meats and barbecue, smoky, charred, rustic wooden board',
+    CoverTheme.vegan =>
+      'plant-based dishes, vibrant vegetables and legumes, earthy tones',
+    CoverTheme.holidays =>
+      'a festive holiday table, celebratory, abundant, candles and warm golden light',
+    CoverTheme.quick =>
+      'quick everyday meals, simple ingredients, bright and practical',
+  };
 }

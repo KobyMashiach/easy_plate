@@ -15,7 +15,12 @@ class ClayPageHeader extends StatelessWidget {
   /// controls in the bar.
   final Widget? trailing;
 
-  const ClayPageHeader({super.key, required this.title, this.subtitle, this.trailing});
+  const ClayPageHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +32,9 @@ class ClayPageHeader extends StatelessWidget {
           const SizedBox(height: AppSpacing.base),
           Text(
             subtitle!,
-            style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+            style: AppTextStyles.bodyMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
           ),
         ],
       ],
@@ -39,7 +46,10 @@ class ClayPageHeader extends StatelessWidget {
       children: [
         Expanded(child: text),
         const SizedBox(width: AppSpacing.sm),
-        Padding(padding: const EdgeInsets.only(top: AppSpacing.xs), child: trailing),
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.xs),
+          child: trailing,
+        ),
       ],
     );
   }
@@ -114,7 +124,9 @@ class ClayEmptyState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             if (action != null) ...[
               const SizedBox(height: AppSpacing.md),

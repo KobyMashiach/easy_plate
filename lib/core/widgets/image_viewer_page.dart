@@ -18,7 +18,8 @@ Future<void> showImageViewer(
       barrierColor: Colors.black,
       transitionDuration: const Duration(milliseconds: 220),
       reverseTransitionDuration: const Duration(milliseconds: 180),
-      pageBuilder: (_, _, _) => _ImageViewerPage(fileName: fileName, remotePath: remotePath),
+      pageBuilder: (_, _, _) =>
+          _ImageViewerPage(fileName: fileName, remotePath: remotePath),
       transitionsBuilder: (_, animation, _, child) => FadeTransition(
         opacity: animation,
         child: ScaleTransition(
@@ -78,7 +79,9 @@ class _ImageViewerPageState extends State<_ImageViewerPage> {
                 onVerticalDragEnd: (d) {
                   // Swipe down to dismiss, only when not zoomed in — zoomed,
                   // a vertical drag is panning the picture.
-                  if (!_zoomed && (d.primaryVelocity ?? 0) > 500) Navigator.of(context).maybePop();
+                  if (!_zoomed && (d.primaryVelocity ?? 0) > 500) {
+                    Navigator.of(context).maybePop();
+                  }
                 },
                 child: InteractiveViewer(
                   transformationController: _zoom,

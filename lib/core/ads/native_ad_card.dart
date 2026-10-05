@@ -43,7 +43,10 @@ class NativeAdCard extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: radius,
-            child: SizedBox(height: height, child: AdWidget(ad: ad)),
+            child: SizedBox(
+              height: height,
+              child: AdWidget(ad: ad),
+            ),
           ),
         );
       },

@@ -27,9 +27,10 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
   final FirebaseFirestore _firestore;
 
   FeedbackFirestoreDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  CollectionReference<Map<String, dynamic>> get _root => _firestore.collection(collection);
+  CollectionReference<Map<String, dynamic>> get _root =>
+      _firestore.collection(collection);
 
   @override
   Future<void> send(FeedbackEntity feedback) {
@@ -46,7 +47,10 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
 
   @override
   Future<List<FeedbackEntity>> getAll({int limit = 200}) async {
-    final snapshot = await _root.orderBy('createdAt', descending: true).limit(limit).get();
+    final snapshot = await _root
+        .orderBy('createdAt', descending: true)
+        .limit(limit)
+        .get();
     return [for (final doc in snapshot.docs) ?_toEntity(doc)];
   }
 
@@ -124,7 +128,9 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
 
   FeedbackEntity? _toEntity(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? const <String, dynamic>{};
-    final type = FeedbackType.values.where((t) => t.name == data['type']).firstOrNull;
+    final type = FeedbackType.values
+        .where((t) => t.name == data['type'])
+        .firstOrNull;
     if (type == null) return null;
     return FeedbackEntity(
       id: doc.id,

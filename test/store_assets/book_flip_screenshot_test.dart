@@ -41,14 +41,30 @@ List<RecipeEntity> _recipes(AppLocale locale) {
       servings: 4,
       dietaryTags: const [DietaryPreference.vegetarian],
       ingredients: [
-        _i(he ? 'עגבניות מרוסקות' : 'Crushed tomatoes', 800, MeasurementUnit.gram),
+        _i(
+          he ? 'עגבניות מרוסקות' : 'Crushed tomatoes',
+          800,
+          MeasurementUnit.gram,
+        ),
         _i(he ? 'שמן זית' : 'Olive oil', 3, MeasurementUnit.tablespoon),
-        _i(he ? 'פפריקה מתוקה' : 'Sweet paprika', 1, MeasurementUnit.tablespoon),
+        _i(
+          he ? 'פפריקה מתוקה' : 'Sweet paprika',
+          1,
+          MeasurementUnit.tablespoon,
+        ),
         _i(he ? 'כמון' : 'Cumin', 1, MeasurementUnit.teaspoon),
       ],
       steps: he
-          ? ['מטגנים בצל ופלפל עד ריכוך.', 'מוסיפים עגבניות ותבלינים ומבשלים 15 דקות.', 'שוברים ביצים פנימה ומכסים.']
-          : ['Soften the onion and pepper.', 'Add tomatoes and spices, simmer 15 minutes.', 'Crack in the eggs and cover.'],
+          ? [
+              'מטגנים בצל ופלפל עד ריכוך.',
+              'מוסיפים עגבניות ותבלינים ומבשלים 15 דקות.',
+              'שוברים ביצים פנימה ומכסים.',
+            ]
+          : [
+              'Soften the onion and pepper.',
+              'Add tomatoes and spices, simmer 15 minutes.',
+              'Crack in the eggs and cover.',
+            ],
       createdAt: at,
     ),
     RecipeEntity(
@@ -65,8 +81,16 @@ List<RecipeEntity> _recipes(AppLocale locale) {
         _i(he ? 'חלב' : 'Milk', 250, MeasurementUnit.milliliter),
       ],
       steps: he
-          ? ['מערבבים את היבשים.', 'מוסיפים את הרטובים וטורפים.', 'אופים 40 דקות ב-170 מעלות.']
-          : ['Mix the dry ingredients.', 'Add the wet ones and whisk.', 'Bake 40 minutes at 170°C.'],
+          ? [
+              'מערבבים את היבשים.',
+              'מוסיפים את הרטובים וטורפים.',
+              'אופים 40 דקות ב-170 מעלות.',
+            ]
+          : [
+              'Mix the dry ingredients.',
+              'Add the wet ones and whisk.',
+              'Bake 40 minutes at 170°C.',
+            ],
       createdAt: at,
     ),
     RecipeEntity(
@@ -79,11 +103,23 @@ List<RecipeEntity> _recipes(AppLocale locale) {
       ingredients: [
         _i(he ? 'פסטה' : 'Pasta', 500, MeasurementUnit.gram),
         _i(he ? 'פטריות' : 'Mushrooms', 300, MeasurementUnit.gram),
-        _i(he ? 'שמנת לבישול' : 'Cooking cream', 250, MeasurementUnit.milliliter),
+        _i(
+          he ? 'שמנת לבישול' : 'Cooking cream',
+          250,
+          MeasurementUnit.milliliter,
+        ),
       ],
       steps: he
-          ? ['מבשלים את הפסטה.', 'מקפיצים פטריות ושום.', 'מוסיפים שמנת ומערבבים עם הפסטה.']
-          : ['Cook the pasta.', 'Sauté mushrooms and garlic.', 'Add cream and toss with the pasta.'],
+          ? [
+              'מבשלים את הפסטה.',
+              'מקפיצים פטריות ושום.',
+              'מוסיפים שמנת ומערבבים עם הפסטה.',
+            ]
+          : [
+              'Cook the pasta.',
+              'Sauté mushrooms and garlic.',
+              'Add cream and toss with the pasta.',
+            ],
       createdAt: at,
     ),
     RecipeEntity(
@@ -100,7 +136,11 @@ List<RecipeEntity> _recipes(AppLocale locale) {
       ],
       steps: he
           ? ['מבשלים קינואה ומצננים.', 'קוצצים ירקות.', 'מתבלים ומגישים.']
-          : ['Cook and cool the quinoa.', 'Chop the vegetables.', 'Dress and serve.'],
+          : [
+              'Cook and cool the quinoa.',
+              'Chop the vegetables.',
+              'Dress and serve.',
+            ],
       createdAt: at,
     ),
   ];
@@ -123,7 +163,9 @@ Future<void> _loadFonts() async {
   }
   final root = Platform.environment['FLUTTER_ROOT'];
   if (root != null) {
-    final icons = File('$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
+    final icons = File(
+      '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+    );
     if (icons.existsSync()) {
       final loader = FontLoader('MaterialIcons')
         ..addFont(icons.readAsBytes().then((b) => ByteData.sublistView(b)));
@@ -187,11 +229,14 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 420));
 
-      final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final boundary =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
       await tester.runAsync(() async {
         final image = await boundary.toImage(pixelRatio: 2.6);
         final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-        final out = File('store_assets/raw/${locale.languageCode}/05_book_flip.png');
+        final out = File(
+          'store_assets/raw/${locale.languageCode}/05_book_flip.png',
+        );
         // A shot taken from a real phone, with real recipes and photos, is
         // the better source and is never overwritten by this stand-in.
         if (out.existsSync()) {

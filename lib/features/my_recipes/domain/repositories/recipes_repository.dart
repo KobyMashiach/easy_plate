@@ -6,7 +6,15 @@ abstract class RecipesRepository {
   /// The list, kept current as recipes are saved from anywhere in the app.
   Stream<List<RecipeEntity>> watchRecipes();
   Future<RecipeEntity?> getRecipeById(String id);
-  Future<void> saveRecipe(RecipeEntity recipe);
+
+  /// Saves [recipe].
+  ///
+  /// [stampLanguage] records which language the text is in and, when the
+  /// words actually changed, moves [RecipeEntity.contentVersion] on so the
+  /// translations made from the old wording are no longer offered. The
+  /// translation service passes false: it rewrites the same content in
+  /// another language, which is not an edit.
+  Future<void> saveRecipe(RecipeEntity recipe, {bool stampLanguage = true});
   Future<void> deleteRecipe(String id);
 
   /// The recipe with its photo guaranteed uploaded, for the paths that publish
@@ -20,5 +28,8 @@ abstract class RecipesRepository {
   /// Uploads the photo if it has not been yet. With [persist] the local copy
   /// is saved with the new path; false for a community post being edited,
   /// which has no local copy to save (its id is the post's).
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true});
+  Future<RecipeEntity> readyForSharing(
+    RecipeEntity recipe, {
+    bool persist = true,
+  });
 }

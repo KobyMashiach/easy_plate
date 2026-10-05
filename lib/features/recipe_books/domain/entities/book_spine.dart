@@ -13,8 +13,10 @@ enum BookSpine {
   rose,
   plum,
   forest,
-  slate;
+  slate
+  ;
 
-  static BookSpine? fromName(String? name) =>
-      name == null ? null : BookSpine.values.where((s) => s.name == name).firstOrNull;
+  static BookSpine? fromName(String? name) => name == null
+      ? null
+      : BookSpine.values.where((s) => s.name == name).firstOrNull;
 }

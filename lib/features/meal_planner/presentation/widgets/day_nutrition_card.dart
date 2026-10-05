@@ -16,7 +16,11 @@ class DayNutritionCard extends StatelessWidget {
   final DayNutrition day;
   final VoidCallback onOpenDashboard;
 
-  const DayNutritionCard({super.key, required this.day, required this.onOpenDashboard});
+  const DayNutritionCard({
+    super.key,
+    required this.day,
+    required this.onOpenDashboard,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +53,18 @@ class DayNutritionCard extends StatelessWidget {
                   nutrition: day.total,
                   size: 88,
                   thickness: 10,
-                  center: Icon(Icons.restaurant_rounded, color: AppColors.outline),
+                  center: Icon(
+                    Icons.restaurant_rounded,
+                    color: AppColors.outline,
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.gutter),
                 Expanded(
                   child: Text(
                     t.nutrition.noPlanned,
-                    style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],
@@ -72,12 +81,18 @@ class DayNutritionCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
-                Icon(Icons.info_outline_rounded, size: 14, color: AppColors.outline),
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 14,
+                  color: AppColors.outline,
+                ),
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
                     t.nutrition.missingCount(count: day.missingItems),
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.outline,
+                    ),
                   ),
                 ),
               ],

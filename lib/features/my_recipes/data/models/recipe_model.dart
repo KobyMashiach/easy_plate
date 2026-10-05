@@ -46,63 +46,80 @@ sealed class RecipeModel with _$RecipeModel {
     @HiveField(19) NutritionModel? nutrition,
     // The community post id, appended: older recipes decode as null.
     @HiveField(20) String? sharedRecipeId,
+
+    /// Which language the title, ingredients and steps are written in
+    /// right now. Null on records saved before translation existed; the
+    /// script they are in tells us well enough.
+    @HiveField(21) String? contentLang,
+
+    /// Bumped whenever the text above is edited. A stored translation
+    /// carries the version it was made from, so it is reused for as long
+    /// as the words have not moved — and the number does not change when
+    /// the record is translated, which is what makes a switch free the
+    /// second time.
+    @HiveField(22) @Default(0) int contentVersion,
   }) = _RecipeModel;
 
-  factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
+  factory RecipeModel.fromJson(Map<String, dynamic> json) =>
+      _$RecipeModelFromJson(json);
 }
 
 extension RecipeModelMapper on RecipeModel {
   RecipeEntity toEntity() => RecipeEntity(
-        id: id,
-        title: title,
-        prepTimeMinutes: prepTimeMinutes,
-        cookTimeMinutes: cookTimeMinutes,
-        ingredients: ingredients.map((i) => i.toEntity()).toList(),
-        steps: steps,
-        dietaryTags: dietaryTags,
-        servings: servings,
-        nutrition: nutrition?.toEntity(),
-        allergens: Allergen.fromNames(allergens),
-        mayContain: Allergen.fromNames(mayContain),
-        sourceChannel: sourceChannel == null
-            ? null
-            : RecipeIngestionChannel.values.firstWhere((c) => c.name == sourceChannel),
-        sourceUrl: sourceUrl,
-        imageFileName: imageFileName,
-        imageStoragePath: imageStoragePath,
-        savedFromSharedId: savedFromSharedId,
-        pendingAnalysis: pendingAnalysis,
-        collabId: collabId,
-        collabRole: collabRole == null
-            ? null
-            : CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
-        sharedRecipeId: sharedRecipeId,
-        createdAt: createdAt,
-      );
+    id: id,
+    title: title,
+    prepTimeMinutes: prepTimeMinutes,
+    cookTimeMinutes: cookTimeMinutes,
+    ingredients: ingredients.map((i) => i.toEntity()).toList(),
+    steps: steps,
+    dietaryTags: dietaryTags,
+    servings: servings,
+    nutrition: nutrition?.toEntity(),
+    allergens: Allergen.fromNames(allergens),
+    mayContain: Allergen.fromNames(mayContain),
+    sourceChannel: sourceChannel == null
+        ? null
+        : RecipeIngestionChannel.values.firstWhere(
+            (c) => c.name == sourceChannel,
+          ),
+    sourceUrl: sourceUrl,
+    imageFileName: imageFileName,
+    imageStoragePath: imageStoragePath,
+    savedFromSharedId: savedFromSharedId,
+    pendingAnalysis: pendingAnalysis,
+    collabId: collabId,
+    collabRole: collabRole == null
+        ? null
+        : CollabRole.values.where((r) => r.name == collabRole).firstOrNull,
+    sharedRecipeId: sharedRecipeId,
+    createdAt: createdAt,
+    contentLang: contentLang,
+  );
 }
 
 extension RecipeEntityMapper on RecipeEntity {
   RecipeModel toModel() => RecipeModel(
-        id: id,
-        title: title,
-        prepTimeMinutes: prepTimeMinutes,
-        cookTimeMinutes: cookTimeMinutes,
-        ingredients: ingredients.map((i) => i.toModel()).toList(),
-        steps: steps,
-        dietaryTags: dietaryTags,
-        servings: servings,
-        nutrition: nutrition?.toModel(),
-        allergens: allergens.names,
-        mayContain: mayContain.names,
-        sourceChannel: sourceChannel?.name,
-        sourceUrl: sourceUrl,
-        imageFileName: imageFileName,
-        imageStoragePath: imageStoragePath,
-        savedFromSharedId: savedFromSharedId,
-        pendingAnalysis: pendingAnalysis,
-        collabId: collabId,
-        collabRole: collabRole?.name,
-        sharedRecipeId: sharedRecipeId,
-        createdAt: createdAt,
-      );
+    id: id,
+    title: title,
+    prepTimeMinutes: prepTimeMinutes,
+    cookTimeMinutes: cookTimeMinutes,
+    ingredients: ingredients.map((i) => i.toModel()).toList(),
+    steps: steps,
+    dietaryTags: dietaryTags,
+    servings: servings,
+    nutrition: nutrition?.toModel(),
+    allergens: allergens.names,
+    mayContain: mayContain.names,
+    sourceChannel: sourceChannel?.name,
+    sourceUrl: sourceUrl,
+    imageFileName: imageFileName,
+    imageStoragePath: imageStoragePath,
+    savedFromSharedId: savedFromSharedId,
+    pendingAnalysis: pendingAnalysis,
+    collabId: collabId,
+    collabRole: collabRole?.name,
+    sharedRecipeId: sharedRecipeId,
+    createdAt: createdAt,
+    contentLang: contentLang,
+  );
 }

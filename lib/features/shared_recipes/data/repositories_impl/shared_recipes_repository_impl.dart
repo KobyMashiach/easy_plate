@@ -50,6 +50,12 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
   }
 
   @override
+  Future<List<SharedRecipeEntity>> getByAuthor(
+    String authorUid, {
+    int limit = 200,
+  }) => remoteDataSource.getByAuthor(authorUid, limit: limit);
+
+  @override
   Future<SharedRecipeEntity?> getById(
     String id, {
     required String viewerUid,

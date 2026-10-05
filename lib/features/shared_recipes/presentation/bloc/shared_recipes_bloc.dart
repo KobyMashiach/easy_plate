@@ -10,6 +10,7 @@ import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/usecases/get_recipes_usecase.dart';
 import '../../../my_recipes/domain/usecases/save_recipe_usecase.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
+import '../../domain/shared_feed_changes.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../domain/usecases/get_shared_recipes_usecase.dart';
 import '../../domain/usecases/import_shared_recipe_usecase.dart';
@@ -74,6 +75,12 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
   List<SharedRecipeEntity> _feed = [];
   Set<String> _savedIds = {};
   StreamSubscription<List<RecipeEntity>>? _recipes;
+  StreamSubscription<String>? _feedChanges;
+
+  /// True while one of this bloc's own writes is in flight. The use cases
+  /// announce every change to the feed; the ones this bloc made are already
+  /// applied in place and need no reload.
+  bool _writing = false;
 
   SharedRecipesBloc({
     required this.getSharedRecipesUseCase,
@@ -103,11 +110,17 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
       ),
       onError: (Object e) => debugPrint('Saved ids stream failed: $e'),
     );
+    // A post rewritten from the recipe details page ("update both"), or
+    // shared from the recipes tab: re-read so the feed shows it.
+    _feedChanges = SharedFeedChanges.instance.stream.listen((_) {
+      if (!_writing && state is SharedRecipesLoaded) add(const _Init());
+    });
   }
 
   @override
   Future<void> close() {
     _recipes?.cancel();
+    _feedChanges?.cancel();
     return super.close();
   }
 
@@ -165,6 +178,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
 
   Future<void> _share(_Share event, Emitter<SharedRecipesState> emit) async {
     final profile = AuthSessionService().profile;
+    _writing = true;
     try {
       final postId = await shareRecipeUseCase(
         event.recipe,
@@ -186,6 +200,8 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     } catch (e) {
       debugPrint('Share recipe error: $e');
       emit(.errorMessage(e.toString()));
+    } finally {
+      _writing = false;
     }
   }
 
@@ -224,6 +240,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     final index = _feed.indexWhere((r) => r.id == event.id);
     if (index == -1) return;
 
+    _writing = true;
     try {
       await updateSharedRecipeUseCase(event.id, event.recipe);
       _feed = [..._feed]..[index] = _feed[index].copyWith(recipe: event.recipe);
@@ -231,6 +248,8 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     } catch (e) {
       debugPrint('Update shared recipe error: $e');
       emit(.errorMessage(e.toString()));
+    } finally {
+      _writing = false;
     }
   }
 
@@ -238,6 +257,7 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     _Unshare event,
     Emitter<SharedRecipesState> emit,
   ) async {
+    _writing = true;
     try {
       await unshareRecipeUseCase(event.id);
       for (final local in await recipesRepository.getRecipes()) {
@@ -252,6 +272,8 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
     } catch (e) {
       debugPrint('Unshare error: $e');
       emit(.errorMessage(e.toString()));
+    } finally {
+      _writing = false;
     }
   }
 

@@ -16,12 +16,30 @@ import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 
 abstract class RecipeAiDataSource {
-  Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> preferences);
-  Future<List<WebSearchResultEntity>> searchWeb(String query, List<DietaryPreference> preferences);
-  Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences);
-  Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences);
-  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences);
-  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged});
+  Future<RecipeEntity> parseRawText(
+    String text,
+    List<DietaryPreference> preferences,
+  );
+  Future<List<WebSearchResultEntity>> searchWeb(
+    String query,
+    List<DietaryPreference> preferences,
+  );
+  Future<RecipeEntity> parseFromUrl(
+    String url,
+    List<DietaryPreference> preferences,
+  );
+  Future<RecipeEntity> parseFromSocialVideo(
+    String url,
+    List<DietaryPreference> preferences,
+  );
+  Future<RecipeEntity> generateRecipe(
+    String request,
+    List<DietaryPreference> preferences,
+  );
+  Future<RecipeEntity> refineRecipe(
+    RecipeEntity recipe, {
+    required bool timesChanged,
+  });
   Future<RecipeEntity> estimateNutrition(RecipeEntity recipe);
 
   /// A picture for [prompt], as JPEG bytes.
@@ -51,7 +69,7 @@ class GeminiRecipeAiDataSource implements RecipeAiDataSource {
   static const _uuid = Uuid();
 
   GeminiRecipeAiDataSource({HttpCalls? httpCalls})
-      : httpCalls = httpCalls ?? _defaultHttpCalls();
+    : httpCalls = httpCalls ?? _defaultHttpCalls();
 
   /// The video function shares the proxy's auth, so the same header provider
   /// signs it; built on first use so tests that never touch it pay nothing.
@@ -98,7 +116,8 @@ allergy — אם ורק אם שדה allergens אינו ריק.
 gluten (חיטה, קמח, לחם, פסטה, קוסקוס, סולת, בורגול, שעורה, שיפון), milk (חלב, גבינה, חמאה, שמנת, יוגורט), eggs (ביצים), fish (דגים), shellfish (פירות ים), peanuts (בוטנים), treeNuts (שקדים, אגוזי מלך, אגוזי לוז, קשיו, פיסטוק, פקאן), sesame (שומשום, טחינה), soy (סויה, רוטב סויה, טופו).
 שדה may_contain — רק אלרגנים שהמקור מציין במפורש שהמתכון עלול להכיל אותם (למשל "עלול להכיל עקבות אגוזים"). בלי ציון מפורש כזה — רשימה ריקה. אל תנחש.''';
 
-  static const _systemPrompt = '''
+  static const _systemPrompt =
+      '''
 אתה מנתח מתכונים. החזר אך ורק מידע שמופיע במקור.
 מדיניות אפס הזיות: אסור להמציא מצרכים, כמויות, יחידות מידה או שלבים שאינם מופיעים במקור.
 אם כמות, יחידה או זמן חסרים במקור — השמט את השדה לגמרי. אל תנחש.
@@ -114,14 +133,19 @@ $_dietaryTagRules
   static const _recipeSchema = {
     'type': 'object',
     'properties': {
-      'title': {'type': 'string', 'description': 'Dish title as written in the source'},
+      'title': {
+        'type': 'string',
+        'description': 'Dish title as written in the source',
+      },
       'prep_time_minutes': {
         'type': 'integer',
-        'description': 'Preparation time in minutes. Omit if the source does not state it',
+        'description':
+            'Preparation time in minutes. Omit if the source does not state it',
       },
       'cook_time_minutes': {
         'type': 'integer',
-        'description': 'Cook time in minutes. Omit if the source does not state it',
+        'description':
+            'Cook time in minutes. Omit if the source does not state it',
       },
       'ingredients': {
         'type': 'array',
@@ -163,7 +187,15 @@ $_dietaryTagRules
           'type': 'string',
           // Mirrors DietaryPreference by name; a value the model returns
           // outside this list is dropped by dietaryTagsFromModel.
-          'enum': ['meat', 'dairy', 'vegetarian', 'vegan', 'kosher', 'glutenFree', 'allergy'],
+          'enum': [
+            'meat',
+            'dairy',
+            'vegetarian',
+            'vegan',
+            'kosher',
+            'glutenFree',
+            'allergy',
+          ],
         },
         'description':
             'Dietary tags decided from the ingredient list alone. Empty when none clearly applies',
@@ -212,8 +244,14 @@ $_dietaryTagRules
         'Estimated nutrition for ONE serving, derived from the ingredient amounts divided by servings. Estimate from typical values when amounts are missing',
     'properties': {
       'calories': {'type': 'integer', 'description': 'kcal per serving'},
-      'protein_g': {'type': 'number', 'description': 'grams of protein per serving'},
-      'carbs_g': {'type': 'number', 'description': 'grams of carbohydrate per serving'},
+      'protein_g': {
+        'type': 'number',
+        'description': 'grams of protein per serving',
+      },
+      'carbs_g': {
+        'type': 'number',
+        'description': 'grams of carbohydrate per serving',
+      },
       'fat_g': {'type': 'number', 'description': 'grams of fat per serving'},
     },
     'required': ['calories', 'protein_g', 'carbs_g', 'fat_g'],
@@ -261,7 +299,8 @@ $_dietaryTagRules
   /// The one prompt that *wants* the model to fill things in. Every other call
   /// is an extraction under a no-invention rule; here there is no source, and
   /// a recipe with amounts and times left out would be useless to cook from.
-  static const _generateSystemPrompt = '''
+  static const _generateSystemPrompt =
+      '''
 אתה שף ומפתח מתכונים. המשתמש מתאר מנה שהוא רוצה להכין, ואתה כותב לו מתכון מלא ומעשי.
 כתוב את המתכון בשפה שבה נכתבה הבקשה.
 המתכון חייב להיות שלם: כותרת קצרה, זמן הכנה וזמן בישול בדקות, רשימת מצרכים עם כמות ויחידת מידה לכל מצרך, ושלבי הכנה ברורים לפי הסדר.
@@ -305,7 +344,8 @@ $_dietaryTagRules
       'steps': {
         'type': 'array',
         'items': {'type': 'string'},
-        'description': 'Same steps in the same order, spelling and stated times corrected',
+        'description':
+            'Same steps in the same order, spelling and stated times corrected',
       },
     },
     'required': ['title', 'ingredient_names', 'steps'],
@@ -354,7 +394,9 @@ $_dietaryTagRules
     for (final step in (data['steps'] as List?) ?? const []) {
       if (step is! Map) continue;
       for (final block in (step['content'] as List?) ?? const []) {
-        if (block is Map && block['text'] is String) buffer.write(block['text']);
+        if (block is Map && block['text'] is String) {
+          buffer.write(block['text']);
+        }
       }
     }
 
@@ -368,10 +410,13 @@ $_dietaryTagRules
   /// pasting it, and the model call is the one thing here that costs money.
   /// [kind] keeps the web and social prompts apart: they ask for different
   /// things from the same URL. Ignored by Google when talking to it directly.
-  static Map<String, String> sourceUrlHeaders(String url, {required String kind}) => {
-        'x-easyplate-source-url': url,
-        'x-easyplate-source-kind': kind,
-      };
+  static Map<String, String> sourceUrlHeaders(
+    String url, {
+    required String kind,
+  }) => {
+    'x-easyplate-source-url': url,
+    'x-easyplate-source-kind': kind,
+  };
 
   /// Capacity spikes on a hot model answer with a retryable status rather than
   /// a permanent failure, so the identical request is worth re-sending before
@@ -381,7 +426,9 @@ $_dietaryTagRules
     required String feature,
     Map<String, String>? headers,
   }) async {
-    return _decodeRecipe(await _callRaw(body, feature: feature, headers: headers));
+    return _decodeRecipe(
+      await _callRaw(body, feature: feature, headers: headers),
+    );
   }
 
   /// Names the feature a call belongs to, for the administrator's cost
@@ -394,11 +441,14 @@ $_dietaryTagRules
     try {
       final response = await _socialCalls.post('', data: body);
       final data = response?.data;
-      if (data is! Map<String, dynamic>) throw const AppException(AppErrorType.parsingFailed);
+      if (data is! Map<String, dynamic>) {
+        throw const AppException(AppErrorType.parsingFailed);
+      }
       return data;
     } on AppException catch (e) {
       // The function's own refusals travel as 422 with a SOCIAL_* status.
-      if (e.message.contains('SOCIAL_UNREADABLE') || e.message.contains('SOCIAL_EMPTY')) {
+      if (e.message.contains('SOCIAL_UNREADABLE') ||
+          e.message.contains('SOCIAL_EMPTY')) {
         throw AppException(AppErrorType.unreadableSource, message: e.message);
       }
       rethrow;
@@ -437,8 +487,11 @@ $_dietaryTagRules
     Map<String, dynamic>? data;
     for (var attempt = 0; ; attempt++) {
       try {
-        final response =
-            await httpCalls.post(ApiConfig.interactionsPath, data: body, headers: headers);
+        final response = await httpCalls.post(
+          ApiConfig.interactionsPath,
+          data: body,
+          headers: headers,
+        );
         data = response?.data as Map<String, dynamic>?;
         break;
       } on AppException catch (e) {
@@ -446,7 +499,9 @@ $_dietaryTagRules
         // typed `quotaExceeded` and falls straight through, since waiting for
         // it cannot help.
         if (e.type != AppErrorType.overloaded || attempt >= 2) rethrow;
-        debugPrint('Gemini busy, retrying (attempt ${attempt + 1}): ${e.message}');
+        debugPrint(
+          'Gemini busy, retrying (attempt ${attempt + 1}): ${e.message}',
+        );
         // Sub-second, deliberately. The whole analysis runs under the bloc's
         // timeout, and the old 2s/4s pair spent a fifth of that budget waiting
         // rather than working — a retry that lands after the deadline is the
@@ -465,14 +520,16 @@ $_dietaryTagRules
   }) {
     final ingredients = ((input['ingredients'] as List?) ?? const [])
         .cast<Map<String, dynamic>>()
-        .map((raw) => RecipeIngredientEntity(
-              name: raw['name'] as String,
-              amount: (raw['amount'] as num?)?.toDouble(),
-              unit: MeasurementUnit.values.firstWhere(
-                (u) => u.name == raw['unit'],
-                orElse: () => MeasurementUnit.unspecified,
-              ),
-            ))
+        .map(
+          (raw) => RecipeIngredientEntity(
+            name: raw['name'] as String,
+            amount: (raw['amount'] as num?)?.toDouble(),
+            unit: MeasurementUnit.values.firstWhere(
+              (u) => u.name == raw['unit'],
+              orElse: () => MeasurementUnit.unspecified,
+            ),
+          ),
+        )
         .toList();
 
     final allergens = Allergen.fromNames(input['allergens']);
@@ -506,10 +563,22 @@ $_dietaryTagRules
   static const _receiptSchema = {
     'type': 'object',
     'properties': {
-      'store': {'type': 'string', 'description': 'Store or chain name as printed. Omit if absent'},
-      'date': {'type': 'string', 'description': 'Purchase date as YYYY-MM-DD. Omit if absent'},
-      'currency': {'type': 'string', 'description': 'ISO 4217 code, e.g. ILS. Default ILS'},
-      'total': {'type': 'number', 'description': 'The receipt total as printed. Omit if absent'},
+      'store': {
+        'type': 'string',
+        'description': 'Store or chain name as printed. Omit if absent',
+      },
+      'date': {
+        'type': 'string',
+        'description': 'Purchase date as YYYY-MM-DD. Omit if absent',
+      },
+      'currency': {
+        'type': 'string',
+        'description': 'ISO 4217 code, e.g. ILS. Default ILS',
+      },
+      'total': {
+        'type': 'number',
+        'description': 'The receipt total as printed. Omit if absent',
+      },
       'items': {
         'type': 'array',
         'items': {
@@ -537,14 +606,23 @@ $_dietaryTagRules
             },
             'unit_price': {
               'type': 'number',
-              'description': 'Price per one unit, after any discount line that applies to this item',
+              'description':
+                  'Price per one unit, after any discount line that applies to this item',
             },
             'line_total': {
               'type': 'number',
-              'description': 'The amount paid for the line as printed, after discounts',
+              'description':
+                  'The amount paid for the line as printed, after discounts',
             },
           },
-          'required': ['name', 'printed_name', 'unit', 'quantity', 'unit_price', 'line_total'],
+          'required': [
+            'name',
+            'printed_name',
+            'unit',
+            'quantity',
+            'unit_price',
+            'line_total',
+          ],
         },
       },
       'unreadable': {
@@ -624,22 +702,28 @@ $_dietaryTagRules
       }
       if (name.isEmpty || price == null || price <= 0) continue;
       if (quantity <= 0) quantity = 1;
-      items.add(ReceiptLineEntity(
-        name: name,
-        printedName: printed == null || printed.isEmpty ? name : printed,
-        quantity: quantity,
-        unitPrice: price,
-        unit: PriceUnit.fromName(raw['unit'] as String?),
-      ));
+      items.add(
+        ReceiptLineEntity(
+          name: name,
+          printedName: printed == null || printed.isEmpty ? name : printed,
+          quantity: quantity,
+          unitPrice: price,
+          unit: PriceUnit.fromName(raw['unit'] as String?),
+        ),
+      );
     }
-    final date = data['date'] is String ? DateTime.tryParse(data['date'] as String) : null;
+    final date = data['date'] is String
+        ? DateTime.tryParse(data['date'] as String)
+        : null;
     return ReceiptScanEntity(
       store: (data['store'] as String?)?.trim(),
       purchasedAt: date,
       currency: (data['currency'] as String?)?.trim().toUpperCase() ?? 'ILS',
       total: (data['total'] as num?)?.toDouble(),
       items: items,
-      unreadable: ((data['unreadable'] as List?) ?? const []).whereType<String>().toList(),
+      unreadable: ((data['unreadable'] as List?) ?? const [])
+          .whereType<String>()
+          .toList(),
     );
   }
 
@@ -663,13 +747,20 @@ $_dietaryTagRules
     for (final step in (data['steps'] as List?) ?? const []) {
       if (step is! Map) continue;
       for (final block in (step['content'] as List?) ?? const []) {
-        if (block is Map && block['type'] == 'image' && block['data'] is String) {
+        if (block is Map &&
+            block['type'] == 'image' &&
+            block['data'] is String) {
           return base64Decode(block['data'] as String);
         }
       }
     }
-    debugPrint('Gemini returned no image block: ${jsonEncode(data).substring(0, 300)}');
-    throw const AppException(AppErrorType.parsingFailed, message: 'No image returned');
+    debugPrint(
+      'Gemini returned no image block: ${jsonEncode(data).substring(0, 300)}',
+    );
+    throw const AppException(
+      AppErrorType.parsingFailed,
+      message: 'No image returned',
+    );
   }
 
   /// Fills in servings and per-serving nutrition for a recipe that has none —
@@ -689,14 +780,18 @@ $_dietaryTagRules
     final data = await _callStructured(
       feature: 'nutrition',
       _body(
-        input: 'הערך את מספר המנות ואת הערכים התזונתיים למנה אחת של המתכון הבא. '
+        input:
+            'הערך את מספר המנות ואת הערכים התזונתיים למנה אחת של המתכון הבא. '
             'אם מספר המנות נתון, השתמש בו.\n\n$payload',
         schema: _estimateSchema,
       ),
     );
     final nutrition = nutritionFromModel(data['nutrition']);
     if (nutrition == null) {
-      throw const AppException(AppErrorType.parsingFailed, message: 'No nutrition returned');
+      throw const AppException(
+        AppErrorType.parsingFailed,
+        message: 'No nutrition returned',
+      );
     }
     return recipe.copyWith(
       servings: recipe.servings ?? _servingsFrom(data['servings']),
@@ -710,7 +805,10 @@ $_dietaryTagRules
   }
 
   @override
-  Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> preferences) async {
+  Future<RecipeEntity> parseRawText(
+    String text,
+    List<DietaryPreference> preferences,
+  ) async {
     final input = await _callStructured(
       feature: 'text',
       _body(
@@ -722,7 +820,10 @@ $_dietaryTagRules
   }
 
   @override
-  Future<RecipeEntity> parseFromUrl(String url, List<DietaryPreference> preferences) async {
+  Future<RecipeEntity> parseFromUrl(
+    String url,
+    List<DietaryPreference> preferences,
+  ) async {
     final input = await _callStructured(
       feature: 'url',
       _body(
@@ -735,7 +836,11 @@ $_dietaryTagRules
       ),
       headers: sourceUrlHeaders(url, kind: 'url'),
     );
-    return _toEntity(input, channel: RecipeIngestionChannel.urlScrape, sourceUrl: url);
+    return _toEntity(
+      input,
+      channel: RecipeIngestionChannel.urlScrape,
+      sourceUrl: url,
+    );
   }
 
   /// The video itself, when there is a server to fetch it: the social
@@ -749,13 +854,17 @@ $_dietaryTagRules
   /// Tier 2 (audio transcription + on-screen OCR) needs a video-processing
   /// service that this client does not have access to.
   @override
-  Future<RecipeEntity> parseFromSocialVideo(String url, List<DietaryPreference> preferences) async {
+  Future<RecipeEntity> parseFromSocialVideo(
+    String url,
+    List<DietaryPreference> preferences,
+  ) async {
     if (ApiConfig.usesProxy) {
       final data = await _postSocial({
         'url': url,
         'model': ApiConfig.model,
         'system_instruction': _systemPrompt,
-        'prompt': 'שלוף את המתכון מהסרטון הבא: מהטקסט שמופיע על המסך, ממה שנאמר, ממה שנעשה, ומהכיתוב. '
+        'prompt':
+            'שלוף את המתכון מהסרטון הבא: מהטקסט שמופיע על המסך, ממה שנאמר, ממה שנעשה, ומהכיתוב. '
             'אם הכמויות לא נאמרות אך נראות, הערך אותן. אם אין מתכון בסרטון, החזר רשימות ריקות.'
             '${_dietaryHint(preferences)}',
         'schema': _recipeSchema,
@@ -778,17 +887,25 @@ $_dietaryTagRules
       ),
       headers: sourceUrlHeaders(url, kind: 'social'),
     );
-    return _toEntity(input, channel: RecipeIngestionChannel.socialVideo, sourceUrl: url);
+    return _toEntity(
+      input,
+      channel: RecipeIngestionChannel.socialVideo,
+      sourceUrl: url,
+    );
   }
 
   /// No cache headers: two people asking for "a lasagne" are two requests,
   /// and the proxy's URL cache keys on a link this call does not have.
   @override
-  Future<RecipeEntity> generateRecipe(String request, List<DietaryPreference> preferences) async {
+  Future<RecipeEntity> generateRecipe(
+    String request,
+    List<DietaryPreference> preferences,
+  ) async {
     final input = await _callStructured(
       feature: 'generate',
       _body(
-        input: 'כתוב מתכון מלא לפי הבקשה הבאה:\n\n$request${_dietaryHint(preferences)}',
+        input:
+            'כתוב מתכון מלא לפי הבקשה הבאה:\n\n$request${_dietaryHint(preferences)}',
         schema: _recipeSchema,
         systemInstruction: _generateSystemPrompt,
       ),
@@ -804,7 +921,8 @@ $_dietaryTagRules
     final data = await _callStructured(
       feature: 'search',
       _body(
-        input: 'חפש 3 עד 5 מתכונים באינטרנט עבור: $query.${_dietaryHint(preferences)}',
+        input:
+            'חפש 3 עד 5 מתכונים באינטרנט עבור: $query.${_dietaryHint(preferences)}',
         schema: _searchResultsSchema,
         tools: const [
           {'type': 'google_search'},
@@ -816,16 +934,21 @@ $_dietaryTagRules
 
     return ((data['results'] as List?) ?? const [])
         .cast<Map<String, dynamic>>()
-        .map((r) => WebSearchResultEntity(
-              title: r['title'] as String,
-              url: r['url'] as String,
-              snippet: r['snippet'] as String,
-            ))
+        .map(
+          (r) => WebSearchResultEntity(
+            title: r['title'] as String,
+            url: r['url'] as String,
+            snippet: r['snippet'] as String,
+          ),
+        )
         .toList();
   }
 
   @override
-  Future<RecipeEntity> refineRecipe(RecipeEntity recipe, {required bool timesChanged}) async {
+  Future<RecipeEntity> refineRecipe(
+    RecipeEntity recipe, {
+    required bool timesChanged,
+  }) async {
     final payload = jsonEncode({
       'title': recipe.title,
       'prep_time_minutes': recipe.prepTimeMinutes,
@@ -848,13 +971,19 @@ $_dietaryTagRules
     );
 
     final title = data['title'];
-    final names = ((data['ingredient_names'] as List?) ?? const []).whereType<String>().toList();
-    final steps = ((data['steps'] as List?) ?? const []).whereType<String>().toList();
+    final names = ((data['ingredient_names'] as List?) ?? const [])
+        .whereType<String>()
+        .toList();
+    final steps = ((data['steps'] as List?) ?? const [])
+        .whereType<String>()
+        .toList();
 
     // A changed length means the model restructured the recipe instead of only
     // rewording it, so that part falls back to exactly what the user typed.
     return recipe.copyWith(
-      title: title is String && title.trim().isNotEmpty ? title.trim() : recipe.title,
+      title: title is String && title.trim().isNotEmpty
+          ? title.trim()
+          : recipe.title,
       ingredients: names.length == recipe.ingredients.length
           ? [
               for (var i = 0; i < names.length; i++)
@@ -877,7 +1006,8 @@ NutritionEntity? nutritionFromModel(Object? raw) {
   if (raw is! Map) return null;
   final calories = (raw['calories'] as num?)?.toInt();
   if (calories == null) return null;
-  double grams(String key) => ((raw[key] as num?)?.toDouble() ?? 0).clamp(0, double.infinity);
+  double grams(String key) =>
+      ((raw[key] as num?)?.toDouble() ?? 0).clamp(0, double.infinity);
   return NutritionEntity(
     calories: calories < 0 ? 0 : calories,
     proteinGrams: grams('protein_g'),
@@ -893,7 +1023,10 @@ NutritionEntity? nutritionFromModel(Object? raw) {
 List<DietaryPreference> dietaryTagsFromModel(Object? raw) {
   if (raw is! List) return const [];
   final names = raw.whereType<String>().toSet();
-  return [for (final tag in DietaryPreference.values) if (names.contains(tag.name)) tag];
+  return [
+    for (final tag in DietaryPreference.values)
+      if (names.contains(tag.name)) tag,
+  ];
 }
 
 /// The `allergy` tag follows the allergen list: a recipe the model found
@@ -903,6 +1036,8 @@ List<DietaryPreference> dietaryTagsWithAllergens(
   List<DietaryPreference> tags,
   List<Allergen> allergens,
 ) {
-  if (allergens.isEmpty || tags.contains(DietaryPreference.allergy)) return tags;
+  if (allergens.isEmpty || tags.contains(DietaryPreference.allergy)) {
+    return tags;
+  }
   return [...tags, DietaryPreference.allergy];
 }

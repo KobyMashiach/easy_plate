@@ -14,6 +14,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
+const notificationPrefs = require("./notificationPrefs");
 
 const proxy = require("./aiProxy").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
@@ -23,6 +24,8 @@ const ADMIN_EMAIL = "koby9779@gmail.com";
 const MAX_TITLE = 80;
 const MAX_BODY = 1000;
 const FCM_BATCH = 500;
+// How many preference documents are read at once for a broadcast.
+const PREFS_BATCH = 50;
 
 function isAdmin(caller) {
   return !!caller && String(caller.email || "").trim().toLowerCase() === ADMIN_EMAIL;
@@ -148,6 +151,15 @@ async function notifyAll({ fromUid, title, message }) {
   let items = 0;
   let batch = db.batch();
   let pending = 0;
+  // Each account's notification choices, read in bounded parallel groups:
+  // the item is written for everyone (an announcement has to be readable),
+  // the push only to those who left announcements on.
+  const prefsByUid = new Map();
+  for (let i = 0; i < users.docs.length; i += PREFS_BATCH) {
+    const chunk = users.docs.slice(i, i + PREFS_BATCH);
+    const loaded = await Promise.all(chunk.map((doc) => notificationPrefs.load(db, doc.id)));
+    chunk.forEach((doc, j) => prefsByUid.set(doc.id, loaded[j]));
+  }
   for (const doc of users.docs) {
     batch.set(
       db.collection("notifications").doc(doc.id).collection("items").doc(),
@@ -161,7 +173,10 @@ async function notifyAll({ fromUid, title, message }) {
       pending = 0;
     }
     const token = doc.get("pushToken");
-    if (typeof token === "string" && token) tokens.push(token);
+    const prefs = prefsByUid.get(doc.id) || notificationPrefs.DEFAULTS;
+    if (typeof token === "string" && token && notificationPrefs.wantsPush(prefs, { type: "adminMessage" })) {
+      tokens.push(token);
+    }
   }
   if (pending > 0) await batch.commit();
 

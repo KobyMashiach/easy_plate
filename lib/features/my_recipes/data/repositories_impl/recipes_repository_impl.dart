@@ -4,6 +4,7 @@ import 'dart:async';
 import '../../../../core/hive/user_scope.dart';
 import '../../../../core/sync/recipe_image_store.dart';
 import '../../../../core/sync/user_cloud_collection.dart';
+import '../../../../core/translation/content_translation.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/repositories/recipes_repository.dart';
 import '../datasources/recipes_local_datasource.dart';
@@ -46,7 +47,13 @@ class RecipesRepositoryImpl implements RecipesRepository {
   }
 
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async {
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async {
+    if (stampLanguage) {
+      recipe = await _stamped(recipe);
+    }
     final model = recipe.toModel();
     await localDataSource.saveRecipe(model);
     // Deliberately not awaited: offline, Firestore holds the write in its own
@@ -128,4 +135,28 @@ class RecipesRepositoryImpl implements RecipesRepository {
           Future.value(),
     );
   }
+
+  /// Marks a record with the language it is being written in, and moves its
+  /// version on when the words actually changed. Translations made from the
+  /// old wording then stop matching and are made again; a save that only
+  /// touched a photo or a tag leaves them alone.
+  Future<RecipeEntity> _stamped(RecipeEntity recipe) async {
+    final previous = (await localDataSource.getRecipeById(
+      recipe.id,
+    ))?.toEntity();
+    final edited = previous == null || _words(previous) != _words(recipe);
+    if (!edited && recipe.contentLang != null) return recipe;
+    return recipe.copyWith(
+      contentLang: currentContentLanguage().code,
+      contentVersion: edited && previous != null
+          ? previous.contentVersion + 1
+          : recipe.contentVersion,
+    );
+  }
+
+  static String _words(RecipeEntity r) => [
+    r.title,
+    for (final i in r.ingredients) i.name,
+    ...r.steps,
+  ].join('\n');
 }

@@ -22,6 +22,10 @@ abstract class AuthDataSource {
   });
   Future<AppUserEntity> confirmPhoneCode(String verificationId, String smsCode);
   Future<void> signOut();
+
+  /// Deletes the signed-in Firebase user. Only ever used on an account that
+  /// was minted a moment ago and holds nothing yet.
+  Future<void> deleteCurrentUser();
   Future<void> setLanguage(String languageCode);
 
   Future<void> sendEmailVerification();
@@ -44,7 +48,8 @@ abstract class AuthDataSource {
 class FirebaseAuthDataSource implements AuthDataSource {
   final FirebaseAuth _auth;
 
-  FirebaseAuthDataSource({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
+  FirebaseAuthDataSource({FirebaseAuth? auth})
+    : _auth = auth ?? FirebaseAuth.instance;
 
   /// google_sign_in 7 replaced the per-call configuration of v6 with a single
   /// initialised singleton, so the first use has to await it.
@@ -77,7 +82,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
   User get _requireUser {
     final user = _auth.currentUser;
     if (user == null) {
-      throw const AppException(AppErrorType.unauthorized, message: 'no-current-user');
+      throw const AppException(
+        AppErrorType.unauthorized,
+        message: 'no-current-user',
+      );
     }
     return user;
   }
@@ -95,10 +103,15 @@ class FirebaseAuthDataSource implements AuthDataSource {
       'invalid-credential' ||
       'wrong-password' ||
       'user-not-found' ||
-      'invalid-verification-code' =>
-        AppException(AppErrorType.unauthorized, message: e.code),
+      'invalid-verification-code' => AppException(
+        AppErrorType.unauthorized,
+        message: e.code,
+      ),
       'network-request-failed' => const AppException(AppErrorType.networkError),
-      'too-many-requests' => AppException(AppErrorType.overloaded, message: e.code),
+      'too-many-requests' => AppException(
+        AppErrorType.overloaded,
+        message: e.code,
+      ),
       _ => AppException(AppErrorType.unknown, message: e.code),
     };
   }
@@ -112,7 +125,8 @@ class FirebaseAuthDataSource implements AuthDataSource {
       _auth.setLanguageCode(languageCode);
 
   @override
-  Stream<AppUserEntity?> authStateChanges() => _auth.authStateChanges().map(_map);
+  Stream<AppUserEntity?> authStateChanges() =>
+      _auth.authStateChanges().map(_map);
 
   @override
   AppUserEntity? get currentUser => _map(_auth.currentUser);
@@ -120,7 +134,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
   @override
   Future<AppUserEntity> signInWithEmail(String email, String password) async {
     try {
-      final result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final result = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return _map(result.user)!;
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
@@ -130,7 +147,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
   @override
   Future<AppUserEntity> registerWithEmail(String email, String password) async {
     try {
-      final result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      final result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return _map(result.user)!;
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
@@ -156,7 +176,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
     } on GoogleSignInException catch (e) {
       throw e.code == GoogleSignInExceptionCode.canceled
           ? const AppException(AppErrorType.cancelled)
-          : AppException(AppErrorType.unknown, message: e.description ?? e.code.name);
+          : AppException(
+              AppErrorType.unknown,
+              message: e.description ?? e.code.name,
+            );
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }
@@ -239,7 +262,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<AppUserEntity> confirmPhoneCode(String verificationId, String smsCode) async {
+  Future<AppUserEntity> confirmPhoneCode(
+    String verificationId,
+    String smsCode,
+  ) async {
     try {
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
@@ -247,6 +273,15 @@ class FirebaseAuthDataSource implements AuthDataSource {
       );
       final result = await _auth.signInWithCredential(credential);
       return _map(result.user)!;
+    } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  @override
+  Future<void> deleteCurrentUser() async {
+    try {
+      await _auth.currentUser?.delete();
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }
@@ -348,12 +383,17 @@ class FirebaseAuthDataSource implements AuthDataSource {
           message: 'Google returned no ID token',
         );
       }
-      await _requireUser.linkWithCredential(GoogleAuthProvider.credential(idToken: idToken));
+      await _requireUser.linkWithCredential(
+        GoogleAuthProvider.credential(idToken: idToken),
+      );
       await _auth.currentUser?.reload();
     } on GoogleSignInException catch (e) {
       throw e.code == GoogleSignInExceptionCode.canceled
           ? const AppException(AppErrorType.cancelled)
-          : AppException(AppErrorType.unknown, message: e.description ?? e.code.name);
+          : AppException(
+              AppErrorType.unknown,
+              message: e.description ?? e.code.name,
+            );
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }
@@ -375,7 +415,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
   @override
   Future<void> linkEmailPassword(String email, String password) async {
     try {
-      final credential = EmailAuthProvider.credential(email: email, password: password);
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
       await _requireUser.linkWithCredential(credential);
       await _auth.currentUser?.reload();
       await _auth.currentUser?.sendEmailVerification();

@@ -33,7 +33,11 @@ void main() {
   });
 
   test('a phone-only account has no address to confirm', () {
-    const user = AppUserEntity(uid: 'u1', phoneNumber: '+972508247743', providerIds: ['phone']);
+    const user = AppUserEntity(
+      uid: 'u1',
+      phoneNumber: '+972508247743',
+      providerIds: ['phone'],
+    );
     expect(user.needsEmailVerification, isFalse);
     expect(user.hasPhone, isTrue);
     expect(user.hasPassword, isFalse);
@@ -71,7 +75,10 @@ void main() {
     });
 
     test('a linked account keeps the number it proved', () {
-      const user = AppUserEntity(uid: 'u', providerIds: ['google.com', 'phone']);
+      const user = AppUserEntity(
+        uid: 'u',
+        providerIds: ['google.com', 'phone'],
+      );
       expect(user.needsPhoneVerification, isFalse);
     });
 

@@ -18,23 +18,24 @@ sealed class NutritionModel with _$NutritionModel {
     @HiveField(3) @Default(0) double fatGrams,
   }) = _NutritionModel;
 
-  factory NutritionModel.fromJson(Map<String, dynamic> json) => _$NutritionModelFromJson(json);
+  factory NutritionModel.fromJson(Map<String, dynamic> json) =>
+      _$NutritionModelFromJson(json);
 }
 
 extension NutritionModelMapper on NutritionModel {
   NutritionEntity toEntity() => NutritionEntity(
-        calories: calories,
-        proteinGrams: proteinGrams,
-        carbsGrams: carbsGrams,
-        fatGrams: fatGrams,
-      );
+    calories: calories,
+    proteinGrams: proteinGrams,
+    carbsGrams: carbsGrams,
+    fatGrams: fatGrams,
+  );
 }
 
 extension NutritionEntityMapper on NutritionEntity {
   NutritionModel toModel() => NutritionModel(
-        calories: calories,
-        proteinGrams: proteinGrams,
-        carbsGrams: carbsGrams,
-        fatGrams: fatGrams,
-      );
+    calories: calories,
+    proteinGrams: proteinGrams,
+    carbsGrams: carbsGrams,
+    fatGrams: fatGrams,
+  );
 }

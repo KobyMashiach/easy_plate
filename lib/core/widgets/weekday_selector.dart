@@ -7,14 +7,14 @@ import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
 
 String weekdayLabel(ShoppingDay day) => switch (day) {
-      ShoppingDay.sunday => t.weekday.sunday,
-      ShoppingDay.monday => t.weekday.monday,
-      ShoppingDay.tuesday => t.weekday.tuesday,
-      ShoppingDay.wednesday => t.weekday.wednesday,
-      ShoppingDay.thursday => t.weekday.thursday,
-      ShoppingDay.friday => t.weekday.friday,
-      ShoppingDay.saturday => t.weekday.saturday,
-    };
+  ShoppingDay.sunday => t.weekday.sunday,
+  ShoppingDay.monday => t.weekday.monday,
+  ShoppingDay.tuesday => t.weekday.tuesday,
+  ShoppingDay.wednesday => t.weekday.wednesday,
+  ShoppingDay.thursday => t.weekday.thursday,
+  ShoppingDay.friday => t.weekday.friday,
+  ShoppingDay.saturday => t.weekday.saturday,
+};
 
 /// Pill day picker: the active day takes the Lavender Glow fill with white
 /// text, inactive days a lavender-white fill with indigo text.
@@ -22,7 +22,11 @@ class WeekdaySelector extends StatelessWidget {
   final ShoppingDay selected;
   final ValueChanged<ShoppingDay> onSelect;
 
-  const WeekdaySelector({super.key, required this.selected, required this.onSelect});
+  const WeekdaySelector({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +45,14 @@ class WeekdaySelector extends StatelessWidget {
               vertical: AppSpacing.base,
             ),
             decoration: ShapeDecoration(
-              color: isSelected ? AppColors.primary : AppColors.surfaceContainerLow,
+              color: isSelected
+                  ? AppColors.primary
+                  : AppColors.surfaceContainerLow,
               shape: StadiumBorder(
                 side: BorderSide(
-                  color: isSelected ? AppColors.primary : AppColors.outlineVariant,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.outlineVariant,
                 ),
               ),
             ),

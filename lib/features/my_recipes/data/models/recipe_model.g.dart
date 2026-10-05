@@ -40,13 +40,15 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       servings: (fields[18] as num?)?.toInt(),
       nutrition: fields[19] as NutritionModel?,
       sharedRecipeId: fields[20] as String?,
+      contentLang: fields[21] as String?,
+      contentVersion: fields[22] == null ? 0 : (fields[22] as num).toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeModel obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -88,7 +90,11 @@ class RecipeModelAdapter extends TypeAdapter<RecipeModel> {
       ..writeByte(19)
       ..write(obj.nutrition)
       ..writeByte(20)
-      ..write(obj.sharedRecipeId);
+      ..write(obj.sharedRecipeId)
+      ..writeByte(21)
+      ..write(obj.contentLang)
+      ..writeByte(22)
+      ..write(obj.contentVersion);
   }
 
   @override
@@ -142,6 +148,8 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
       ? null
       : NutritionModel.fromJson(json['nutrition'] as Map<String, dynamic>),
   sharedRecipeId: json['sharedRecipeId'] as String?,
+  contentLang: json['contentLang'] as String?,
+  contentVersion: (json['contentVersion'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -169,6 +177,8 @@ Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
       'servings': instance.servings,
       'nutrition': instance.nutrition?.toJson(),
       'sharedRecipeId': instance.sharedRecipeId,
+      'contentLang': instance.contentLang,
+      'contentVersion': instance.contentVersion,
     };
 
 const _$DietaryPreferenceEnumMap = {

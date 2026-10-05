@@ -8,6 +8,7 @@ import '../../../features/price_book/presentation/pages/price_book_page.dart';
 import '../../../features/price_book/presentation/pages/receipt_details_page.dart';
 import '../../../features/price_book/domain/entities/receipt_entity.dart';
 import '../../../features/price_book/presentation/pages/receipt_images_page.dart';
+import '../../../features/auth/presentation/pages/phone_claimed_page.dart';
 import '../../../features/auth/presentation/pages/phone_gate_page.dart';
 import '../../../features/auth/presentation/pages/phone_verification_page.dart';
 import '../../../features/auth/presentation/pages/profile_setup_page.dart';
@@ -27,6 +28,8 @@ import '../../../features/notifications/presentation/pages/notifications_page.da
 import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../../features/recipe_books/presentation/pages/book_viewer_page.dart';
 import '../../../features/recipe_ingestion/presentation/pages/ingestion_page.dart';
+import '../../../features/settings/presentation/pages/notification_settings_page.dart';
+import '../../../features/settings/presentation/pages/preferences_page.dart';
 import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
@@ -43,6 +46,7 @@ const _stageEntryPoint = {
   AuthStage.needsPhone: Routing.phoneGate,
   AuthStage.needsEmailVerification: Routing.verifyEmail,
   AuthStage.needsProfile: Routing.register,
+  AuthStage.phoneClaimed: Routing.phoneClaimed,
   AuthStage.needsOnboarding: Routing.onboarding,
   AuthStage.blocked: Routing.blocked,
 };
@@ -117,6 +121,11 @@ GoRouter buildRouter() {
         path: Routing.verifyEmail,
         name: Routing.verifyEmail,
         builder: (context, state) => const EmailVerificationPage(),
+      ),
+      GoRoute(
+        path: Routing.phoneClaimed,
+        name: Routing.phoneClaimed,
+        builder: (context, state) => const PhoneClaimedPage(),
       ),
       GoRoute(
         path: Routing.register,
@@ -199,6 +208,16 @@ GoRouter buildRouter() {
             builder: (context, state) => const SettingsPage(),
           ),
           GoRoute(
+            path: Routing.preferences,
+            name: Routing.preferences,
+            builder: (context, state) => const PreferencesPage(),
+          ),
+          GoRoute(
+            path: Routing.notificationSettings,
+            name: Routing.notificationSettings,
+            builder: (context, state) => const NotificationSettingsPage(),
+          ),
+          GoRoute(
             path: Routing.profileEdit,
             name: Routing.profileEdit,
             builder: (context, state) =>
@@ -227,8 +246,12 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.forumThread,
             name: Routing.forumThread,
-            builder: (context, state) =>
-                ForumThreadPage(post: state.extra as ForumPostEntity),
+            // `?reply=` names the reply to scroll to — set by a tap on a
+            // reply notification, absent when opened from the list.
+            builder: (context, state) => ForumThreadPage(
+              post: state.extra as ForumPostEntity,
+              highlightReplyId: state.uri.queryParameters['reply'],
+            ),
           ),
           GoRoute(
             path: Routing.ingestion,

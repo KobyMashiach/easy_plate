@@ -22,6 +22,7 @@ import '../monetization/daily_usage_service.dart';
 import '../monetization/entitlement_service.dart';
 import '../monetization/purchases_service.dart';
 import '../sync/cloud_sync_service.dart';
+import 'shopping_reminder_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
 
@@ -40,6 +41,13 @@ enum AuthStage {
   /// has not been confirmed yet.
   needsEmailVerification,
   needsProfile,
+
+  /// A phone sign-in just opened a brand-new account, but the app's own
+  /// directory says the number already belongs to a different account —
+  /// one whose phone provider was since detached (a Firebase test number
+  /// taken off the list did exactly this). Held here so the user can go back
+  /// to the account with their data instead of silently starting a second.
+  phoneClaimed,
   needsOnboarding,
   ready,
 
@@ -86,6 +94,23 @@ class AuthSessionService extends ChangeNotifier {
   AppUserEntity? get user => _user;
   UserProfileEntity? get profile => _profile;
 
+  /// The signed-in account's profile, as something to listen to. Separate
+  /// from this service's own notifications on purpose: those drive the
+  /// router's redirect, and a renamed account is not a reason to re-run it.
+  /// Null while signed out or before the profile is resolved.
+  final profileListenable = ValueNotifier<UserProfileEntity?>(null);
+
+  /// The signed-in account's preferences, as last read or saved. The
+  /// settings screens push every save through [publishPreferences], so a
+  /// widget that depends on one (the grocery tab's price fallback, the
+  /// popup gate for pushes) follows it without a restart.
+  final preferencesListenable = ValueNotifier<UserPreferencesEntity?>(null);
+
+  void publishPreferences(UserPreferencesEntity preferences) {
+    _onboardingComplete = preferences.onboardingComplete;
+    preferencesListenable.value = preferences;
+  }
+
   /// Idempotent on purpose. It is called from a `Builder` inside the provider
   /// tree, which rebuilds whenever the app locale changes — re-running it would
   /// resubscribe and reset [_onboardingComplete] to its startup value, sending
@@ -127,6 +152,8 @@ class AuthSessionService extends ChangeNotifier {
 
     if (user == null) {
       _profile = null;
+      profileListenable.value = null;
+      preferencesListenable.value = null;
       _onboardingComplete = false;
       NotificationsService().unbind();
       AdminInboxService().unbind();
@@ -138,6 +165,7 @@ class AuthSessionService extends ChangeNotifier {
       unawaited(PurchasesService().logOut());
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
+      unawaited(_wipeLocalAccount());
       return;
     }
 
@@ -180,12 +208,34 @@ class AuthSessionService extends ChangeNotifier {
     await _resolveProfile(user);
   }
 
+  /// How long after sign-out the local boxes are deleted: long enough for the
+  /// router to have replaced the home screen with the login and for the
+  /// route transition to finish, so no signed-in screen is left holding a
+  /// stream on a box being deleted.
+  @visibleForTesting
+  static Duration wipeDelay = const Duration(milliseconds: 1200);
+
+  /// Deletes everything the signed-out account kept on this device in Hive.
+  /// The cloud copy is untouched; the next sign-in hydrates from it.
+  Future<void> _wipeLocalAccount() async {
+    await Future<void>.delayed(wipeDelay);
+    // Signed back in during the wait (a quick account switch): the scope
+    // already belongs to the new account, and switchTo closed the old
+    // one's boxes. Leave it.
+    if (_user != null) return;
+    await UserScope().clearAccount();
+    CloudSyncService().forget();
+    await ShoppingReminderService().cancelAll();
+    debugPrint('Signed out: local account data deleted');
+  }
+
   /// Read only once the scope points at this account, since the preferences
   /// box is itself per-user.
   Future<void> _loadPreferences() async {
     try {
       final preferences = await _preferences!.getPreferences();
       _onboardingComplete = preferences.onboardingComplete;
+      preferencesListenable.value = preferences;
       await onPreferencesLoaded?.call(preferences);
     } catch (e) {
       debugPrint('Preferences load failed: $e');
@@ -203,6 +253,7 @@ class AuthSessionService extends ChangeNotifier {
   Future<void> _resolveProfile(AppUserEntity user) async {
     try {
       _profile = await _profiles!.getProfile(user.uid);
+      profileListenable.value = _profile;
     } catch (e) {
       // Firestore serves a cached document when offline, so a throw here means
       // something worse. Keep any profile already resolved rather than pushing
@@ -219,6 +270,10 @@ class AuthSessionService extends ChangeNotifier {
     }
 
     if (_profile == null || !_profile!.isComplete) {
+      if (_profile == null && await _numberClaimedElsewhere(user)) {
+        _set(AuthStage.phoneClaimed);
+        return;
+      }
       _set(AuthStage.needsProfile);
       return;
     }
@@ -289,6 +344,36 @@ class AuthSessionService extends ChangeNotifier {
     }
   }
 
+  /// The account the user chose to open anyway, past [AuthStage.phoneClaimed].
+  String? _claimAcknowledgedBy;
+
+  /// Whether [user]'s phone is listed in the directory under another uid.
+  /// Only asked for an account with no profile at all — one that was just
+  /// created. Any failure reads as "no": a lookup that cannot be made must
+  /// not keep a real new user out.
+  Future<bool> _numberClaimedElsewhere(AppUserEntity user) async {
+    final phone = user.phoneNumber;
+    if (phone == null || phone.isEmpty) return false;
+    if (_claimAcknowledgedBy == user.uid) return false;
+    try {
+      final owner = await _profiles!.findUidByContact(phone);
+      return owner != null && owner != user.uid;
+    } catch (e) {
+      debugPrint('Phone owner lookup failed: $e');
+      return false;
+    }
+  }
+
+  /// From [AuthStage.phoneClaimed]: the user wants a new account for this
+  /// number after all. Registration takes over, and publishing the new
+  /// profile points the directory at this account.
+  void acknowledgePhoneClaim() {
+    final user = _user;
+    if (user == null || _stage != AuthStage.phoneClaimed) return;
+    _claimAcknowledgedBy = user.uid;
+    _set(AuthStage.needsProfile);
+  }
+
   /// Called after the registration screen writes the profile.
   Future<void> refreshProfile() async {
     final user = _user;
@@ -342,10 +427,14 @@ class AuthSessionService extends ChangeNotifier {
     _heldStage = null;
     _boundAt = null;
     minimumSplash = Duration.zero;
+    wipeDelay = Duration.zero;
     _bound = false;
     _stage = AuthStage.unknown;
     _user = null;
     _profile = null;
+    profileListenable.value = null;
+    preferencesListenable.value = null;
+    _claimAcknowledgedBy = null;
     _onboardingComplete = false;
     onPreferencesLoaded = null;
     _notifications = null;

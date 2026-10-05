@@ -5,6 +5,7 @@ class Routing {
   static const phoneGate = '/phone_gate';
   static const verifyEmail = '/verify_email';
   static const register = '/register';
+  static const phoneClaimed = '/phone_claimed';
   static const onboarding = '/onboarding';
   static const home = '/home';
   static const blocked = '/blocked';
@@ -23,6 +24,8 @@ class Routing {
   static const receiptImages = 'receipt_images';
   static const groceryListDetails = 'grocery_list_details';
   static const settings = 'settings';
+  static const preferences = 'preferences';
+  static const notificationSettings = 'notification_settings';
   static const accountMenu = 'account_menu';
   static const support = 'support';
   static const premium = 'premium';

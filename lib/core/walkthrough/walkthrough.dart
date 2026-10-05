@@ -220,7 +220,9 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     final size = MediaQuery.sizeOf(context);
     final padding = MediaQuery.paddingOf(context);
     final insets = MediaQuery.viewInsetsOf(context);
-    final hole = _step.targetId == null ? null : _target?.inflate(AppSpacing.base);
+    final hole = _step.targetId == null
+        ? null
+        : _target?.inflate(AppSpacing.base);
     final isLast = _index == widget.steps.length - 1;
 
     return Stack(
@@ -254,7 +256,13 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     ].where((r) => !r.isEmpty).toList();
   }
 
-  Widget _card(Size size, EdgeInsets padding, EdgeInsets insets, Rect? hole, bool isLast) {
+  Widget _card(
+    Size size,
+    EdgeInsets padding,
+    EdgeInsets insets,
+    Rect? hole,
+    bool isLast,
+  ) {
     const cardHeight = 250.0;
     final width = (size.width - 2 * AppSpacing.gutter).clamp(0.0, 420.0);
     final left = (size.width - width) / 2;
@@ -266,7 +274,8 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     double? bottom;
     if (hole == null) {
       top = (floor - cardHeight) / 2;
-    } else if (floor - hole.bottom - padding.bottom >= cardHeight + AppSpacing.md) {
+    } else if (floor - hole.bottom - padding.bottom >=
+        cardHeight + AppSpacing.md) {
       top = hole.bottom + AppSpacing.md;
     } else if (hole.top - padding.top >= cardHeight + AppSpacing.md) {
       bottom = size.height - hole.top + AppSpacing.md;
@@ -295,14 +304,23 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
               children: [
                 Expanded(
                   child: Text(
-                    t.walkthrough.stepOf(current: _index + 1, total: widget.steps.length),
-                    style: AppTextStyles.labelSm.copyWith(color: AppColors.onSurfaceVariant),
+                    t.walkthrough.stepOf(
+                      current: _index + 1,
+                      total: widget.steps.length,
+                    ),
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 IconButton(
                   tooltip: t.walkthrough.close,
                   visualDensity: VisualDensity.compact,
-                  icon: Icon(Icons.close_rounded, size: 20, color: AppColors.tertiary),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 20,
+                    color: AppColors.tertiary,
+                  ),
                   onPressed: () => widget.onDone(false),
                 ),
               ],
@@ -311,18 +329,26 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
             const SizedBox(height: AppSpacing.base),
             Text(
               _step.body,
-              style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             if (hole != null && _step.advanceOnTap) ...[
               const SizedBox(height: AppSpacing.base),
               Row(
                 children: [
-                  Icon(Icons.touch_app_rounded, size: 16, color: AppColors.primary),
+                  Icon(
+                    Icons.touch_app_rounded,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
                       t.walkthrough.tapHint,
-                      style: AppTextStyles.labelSm.copyWith(color: AppColors.primary),
+                      style: AppTextStyles.labelSm.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],
@@ -336,13 +362,17 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
                     onPressed: () => _enter(_index + 1),
                     child: Text(
                       t.walkthrough.skipStep,
-                      style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 const Spacer(),
                 ClayButton(
                   label: isLast ? t.walkthrough.finish : t.walkthrough.next,
-                  icon: isLast ? Icons.check_rounded : Icons.arrow_forward_rounded,
+                  icon: isLast
+                      ? Icons.check_rounded
+                      : Icons.arrow_forward_rounded,
                   onPressed: _advance,
                 ),
               ],
@@ -354,7 +384,11 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
 
     return Positioned(
       left: left,
-      top: top == null ? null : (top < padding.top + AppSpacing.sm ? padding.top + AppSpacing.sm : top),
+      top: top == null
+          ? null
+          : (top < padding.top + AppSpacing.sm
+                ? padding.top + AppSpacing.sm
+                : top),
       bottom: bottom,
       child: card,
     );
@@ -397,7 +431,10 @@ class _DimPainter extends CustomPainter {
       canvas.drawRect(screen, dim);
       return;
     }
-    final rounded = RRect.fromRectAndRadius(window, const Radius.circular(AppRadius.md));
+    final rounded = RRect.fromRectAndRadius(
+      window,
+      const Radius.circular(AppRadius.md),
+    );
     canvas.drawPath(
       Path.combine(
         PathOperation.difference,
@@ -409,7 +446,9 @@ class _DimPainter extends CustomPainter {
     final ring = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
-      ..color = AppColors.secondaryContainer.withValues(alpha: 0.6 + 0.4 * pulse);
+      ..color = AppColors.secondaryContainer.withValues(
+        alpha: 0.6 + 0.4 * pulse,
+      );
     canvas.drawRRect(rounded.inflate(2 + 4 * pulse), ring);
   }
 

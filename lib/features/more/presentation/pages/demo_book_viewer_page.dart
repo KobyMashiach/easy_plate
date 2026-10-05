@@ -16,7 +16,11 @@ class DemoBookViewerPage extends StatelessWidget {
   final RecipeBookEntity book;
   final List<RecipeEntity> recipes;
 
-  const DemoBookViewerPage({super.key, required this.book, required this.recipes});
+  const DemoBookViewerPage({
+    super.key,
+    required this.book,
+    required this.recipes,
+  });
 
   @override
   Widget build(BuildContext context) {

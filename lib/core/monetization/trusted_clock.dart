@@ -67,7 +67,9 @@ class TrustedClock {
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 5);
     try {
       final request = await client.headUrl(Uri.parse(_timeSource));
-      final response = await request.close().timeout(const Duration(seconds: 5));
+      final response = await request.close().timeout(
+        const Duration(seconds: 5),
+      );
       final header = response.headers.value(HttpHeaders.dateHeader);
       // Drain, or the socket stays open until the client is garbage collected.
       unawaited(response.drain<void>().catchError((_) {}));

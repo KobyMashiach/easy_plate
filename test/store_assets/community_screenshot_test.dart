@@ -117,7 +117,16 @@ class _FakeSharedRecipes implements SharedRecipesRepository {
   }) async => feed;
 
   @override
-  Future<SharedRecipeEntity?> getById(String id, {required String viewerUid}) async => null;
+  Future<SharedRecipeEntity?> getById(
+    String id, {
+    required String viewerUid,
+  }) async => null;
+
+  @override
+  Future<List<SharedRecipeEntity>> getByAuthor(
+    String authorUid, {
+    int limit = 200,
+  }) async => const [];
 
   @override
   Future<String> share(
@@ -128,7 +137,10 @@ class _FakeSharedRecipes implements SharedRecipesRepository {
   }) async => '';
 
   @override
-  Future<bool> toggleLike(String sharedRecipeId, {required String viewerUid}) async => false;
+  Future<bool> toggleLike(
+    String sharedRecipeId, {
+    required String viewerUid,
+  }) async => false;
 
   @override
   Future<void> updateShared(String sharedRecipeId, RecipeEntity recipe) async {}
@@ -148,13 +160,19 @@ class _FakeRecipes implements RecipesRepository {
   Future<RecipeEntity?> getRecipeById(String id) async => null;
 
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async {}
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async {}
 
   @override
   Future<void> deleteRecipe(String id) async {}
 
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async => recipe;
+  Future<RecipeEntity> readyForSharing(
+    RecipeEntity recipe, {
+    bool persist = true,
+  }) async => recipe;
 
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -162,8 +180,10 @@ class _FakeRecipes implements RecipesRepository {
 
 class _FakeForum implements ForumRepository {
   @override
-  Future<List<ForumPostEntity>> getPosts({required String viewerUid, int limit = 50}) async =>
-      const [];
+  Future<List<ForumPostEntity>> getPosts({
+    required String viewerUid,
+    int limit = 50,
+  }) async => const [];
 
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -186,7 +206,9 @@ Future<void> _loadFonts() async {
   }
   final root = Platform.environment['FLUTTER_ROOT'];
   if (root != null) {
-    final icons = File('$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf');
+    final icons = File(
+      '$root/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+    );
     if (icons.existsSync()) {
       final loader = FontLoader('MaterialIcons')
         ..addFont(icons.readAsBytes().then((b) => ByteData.sublistView(b)));
@@ -242,11 +264,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final boundary =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
       await tester.runAsync(() async {
         final image = await boundary.toImage(pixelRatio: 2.6);
         final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-        final out = File('store_assets/raw/${locale.languageCode}/09_community.png');
+        final out = File(
+          'store_assets/raw/${locale.languageCode}/09_community.png',
+        );
         out.parent.createSync(recursive: true);
         out.writeAsBytesSync(bytes!.buffer.asUint8List());
       });

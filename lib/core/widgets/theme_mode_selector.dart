@@ -13,16 +13,16 @@ class ThemeModeSelector extends StatelessWidget {
   const ThemeModeSelector({super.key});
 
   static IconData _icon(AppThemeMode mode) => switch (mode) {
-        AppThemeMode.system => Icons.brightness_auto_rounded,
-        AppThemeMode.light => Icons.light_mode_rounded,
-        AppThemeMode.dark => Icons.dark_mode_rounded,
-      };
+    AppThemeMode.system => Icons.brightness_auto_rounded,
+    AppThemeMode.light => Icons.light_mode_rounded,
+    AppThemeMode.dark => Icons.dark_mode_rounded,
+  };
 
   static String _label(AppThemeMode mode) => switch (mode) {
-        AppThemeMode.system => t.settings.themeSystem,
-        AppThemeMode.light => t.settings.themeLight,
-        AppThemeMode.dark => t.settings.themeDark,
-      };
+    AppThemeMode.system => t.settings.themeSystem,
+    AppThemeMode.light => t.settings.themeLight,
+    AppThemeMode.dark => t.settings.themeDark,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +37,9 @@ class ThemeModeSelector extends StatelessWidget {
           children: AppThemeMode.values.map((mode) {
             final isSelected = mode == selected;
             return GestureDetector(
-              onTapUp: (details) =>
-                  ThemeSwitcher.of(context).switchTo(mode, origin: details.globalPosition),
+              onTapUp: (details) => ThemeSwitcher.of(
+                context,
+              ).switchTo(mode, origin: details.globalPosition),
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
@@ -47,10 +48,14 @@ class ThemeModeSelector extends StatelessWidget {
                   vertical: AppSpacing.base,
                 ),
                 decoration: ShapeDecoration(
-                  color: isSelected ? AppColors.primary : AppColors.surfaceContainerLow,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.surfaceContainerLow,
                   shape: StadiumBorder(
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : AppColors.outlineVariant,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.outlineVariant,
                     ),
                   ),
                 ),
@@ -60,13 +65,17 @@ class ThemeModeSelector extends StatelessWidget {
                     Icon(
                       _icon(mode),
                       size: 16,
-                      color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
+                      color: isSelected
+                          ? AppColors.onPrimary
+                          : AppColors.tertiary,
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     Text(
                       _label(mode),
                       style: AppTextStyles.labelMd.copyWith(
-                        color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
+                        color: isSelected
+                            ? AppColors.onPrimary
+                            : AppColors.tertiary,
                       ),
                     ),
                   ],

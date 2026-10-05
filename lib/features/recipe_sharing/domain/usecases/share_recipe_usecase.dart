@@ -46,6 +46,7 @@ class ShareRecipeUseCase {
     required String contact,
     required CollabRole role,
     required String ownerUid,
+
     /// The sender's own verified contacts, used only when the target is not
     /// found — to tell "they never published" from "nobody can be found".
     List<String> senderContacts = const [],
@@ -53,7 +54,9 @@ class ShareRecipeUseCase {
     assert(role != CollabRole.owner, 'an invite grants viewer or editor only');
     // A copy saved from the community, or a recipe someone else let this
     // account into, is not this account's to hand on.
-    if (!recipe.isMine) throw StateError('Only recipes this account wrote can be shared');
+    if (!recipe.isMine) {
+      throw StateError('Only recipes this account wrote can be shared');
+    }
 
     String? targetUid;
     try {
@@ -80,7 +83,10 @@ class ShareRecipeUseCase {
     recipe = await recipes.readyForSharing(recipe);
 
     final collabId = await sharing.ensureCollab(recipe, ownerUid: ownerUid);
-    final owned = recipe.copyWith(collabId: collabId, collabRole: CollabRole.owner);
+    final owned = recipe.copyWith(
+      collabId: collabId,
+      collabRole: CollabRole.owner,
+    );
     if (recipe.collabId == null) await recipes.saveRecipe(owned);
 
     await sharing.invite(

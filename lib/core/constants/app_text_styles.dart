@@ -44,12 +44,18 @@ abstract class AppTextStyles {
     );
   }
 
-  static TextStyle get displayLg => _style(size: 40, weight: 800, lineHeight: 48, letterSpacing: -0.02);
-  static TextStyle get headlineLg => _style(size: 32, weight: 700, lineHeight: 40, letterSpacing: -0.01);
-  static TextStyle get headlineLgMobile => _style(size: 28, weight: 700, lineHeight: 36);
-  static TextStyle get headlineMd => _style(size: 24, weight: 700, lineHeight: 32);
+  static TextStyle get displayLg =>
+      _style(size: 40, weight: 800, lineHeight: 48, letterSpacing: -0.02);
+  static TextStyle get headlineLg =>
+      _style(size: 32, weight: 700, lineHeight: 40, letterSpacing: -0.01);
+  static TextStyle get headlineLgMobile =>
+      _style(size: 28, weight: 700, lineHeight: 36);
+  static TextStyle get headlineMd =>
+      _style(size: 24, weight: 700, lineHeight: 32);
   static TextStyle get bodyLg => _style(size: 18, weight: 500, lineHeight: 28);
   static TextStyle get bodyMd => _style(size: 16, weight: 500, lineHeight: 24);
-  static TextStyle get labelMd => _style(size: 14, weight: 600, lineHeight: 20, letterSpacing: 0.01);
-  static TextStyle get labelSm => _style(size: 12, weight: 700, lineHeight: 16, letterSpacing: 0.03);
+  static TextStyle get labelMd =>
+      _style(size: 14, weight: 600, lineHeight: 20, letterSpacing: 0.01);
+  static TextStyle get labelSm =>
+      _style(size: 12, weight: 700, lineHeight: 16, letterSpacing: 0.03);
 }

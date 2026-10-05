@@ -28,29 +28,35 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AppUserEntity> signInWithApple() => dataSource.signInWithApple();
 
   @override
-  Future<void> sendPasswordReset(String email) => dataSource.sendPasswordReset(email);
+  Future<void> sendPasswordReset(String email) =>
+      dataSource.sendPasswordReset(email);
 
   @override
   Future<String> startPhoneVerification(
     String phoneNumber, {
     void Function(AppUserEntity user)? autoResolved,
     void Function(Object error)? onFailed,
-  }) =>
-      dataSource.startPhoneVerification(
-        phoneNumber,
-        autoResolved: autoResolved,
-        onFailed: onFailed,
-      );
+  }) => dataSource.startPhoneVerification(
+    phoneNumber,
+    autoResolved: autoResolved,
+    onFailed: onFailed,
+  );
 
   @override
-  Future<AppUserEntity> confirmPhoneCode(String verificationId, String smsCode) =>
-      dataSource.confirmPhoneCode(verificationId, smsCode);
+  Future<AppUserEntity> confirmPhoneCode(
+    String verificationId,
+    String smsCode,
+  ) => dataSource.confirmPhoneCode(verificationId, smsCode);
 
   @override
   Future<void> signOut() => dataSource.signOut();
 
   @override
-  Future<void> setLanguage(String languageCode) => dataSource.setLanguage(languageCode);
+  Future<void> deleteCurrentUser() => dataSource.deleteCurrentUser();
+
+  @override
+  Future<void> setLanguage(String languageCode) =>
+      dataSource.setLanguage(languageCode);
 
   @override
   Future<void> sendEmailVerification() => dataSource.sendEmailVerification();
@@ -59,7 +65,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> refreshEmailVerified() => dataSource.refreshEmailVerified();
 
   @override
-  Future<String> startPhoneLink(String phoneNumber) => dataSource.startPhoneLink(phoneNumber);
+  Future<String> startPhoneLink(String phoneNumber) =>
+      dataSource.startPhoneLink(phoneNumber);
 
   @override
   Future<void> linkPhone(String verificationId, String smsCode) =>

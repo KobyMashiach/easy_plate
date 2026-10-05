@@ -21,8 +21,14 @@ class ProfileAvatar extends StatelessWidget {
 
   /// First letters of the first two words. Falls back to a person icon when
   /// the name is empty, which it is until the profile is filled in.
+  static final _whitespace = RegExp(r'\s+');
+
   String get _initials {
-    final words = name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    final words = name
+        .trim()
+        .split(_whitespace)
+        .where((w) => w.isNotEmpty)
+        .toList();
     if (words.isEmpty) return '';
     return words.take(2).map((w) => w.characters.first).join().toUpperCase();
   }
@@ -39,7 +45,12 @@ class ProfileAvatar extends StatelessWidget {
             ? Image.network(
                 photoUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _Placeholder(initials: initials, size: size),
+                // A profile photo is decoded at the few dozen pixels it is
+                // drawn at, not at whatever size it was uploaded.
+                cacheWidth: (size * MediaQuery.devicePixelRatioOf(context))
+                    .round(),
+                errorBuilder: (_, _, _) =>
+                    _Placeholder(initials: initials, size: size),
               )
             : _Placeholder(initials: initials, size: size),
       ),
@@ -59,7 +70,11 @@ class _Placeholder extends StatelessWidget {
       color: AppColors.primaryFixed,
       child: Center(
         child: initials.isEmpty
-            ? Icon(Icons.person_rounded, size: size * 0.55, color: AppColors.primary)
+            ? Icon(
+                Icons.person_rounded,
+                size: size * 0.55,
+                color: AppColors.primary,
+              )
             : Text(
                 initials,
                 style: AppTextStyles.labelMd.copyWith(

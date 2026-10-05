@@ -42,7 +42,10 @@ void main() {
     test('the same person keyed by email or by phone is two entries', () {
       // Both hashes point at the same uid in the directory; that is why the
       // profile publishes one entry per verified contact.
-      expect(contactHash('koby@example.com'), isNot(contactHash('+972508247743')));
+      expect(
+        contactHash('koby@example.com'),
+        isNot(contactHash('+972508247743')),
+      );
     });
   });
 }

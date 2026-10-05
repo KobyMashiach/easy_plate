@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../core/services/auth_session_service.dart';
 import '../../grocery_list/domain/entities/grocery_item_entity.dart';
 import '../domain/entities/price_record_entity.dart';
 import '../domain/entities/product_pricing_entity.dart';
@@ -23,8 +24,37 @@ class PriceBookService extends ChangeNotifier {
   final _community = <String, CommunityPriceEntity?>{};
   final _pending = <String>{};
   bool _loaded = false;
+  bool _disposed = false;
 
-  PriceBookService({required this.repository, this.communityEnabled = false});
+  PriceBookService({required this.repository, this.communityEnabled = false}) {
+    // The switch lives on the preferences screen; this service lives on
+    // the grocery tab, which stays mounted. Following the session's copy
+    // is what makes a flip there take effect here without a restart.
+    AuthSessionService().preferencesListenable.addListener(_onPreferences);
+    _onPreferences();
+  }
+
+  void _onPreferences() {
+    final preferences = AuthSessionService().preferencesListenable.value;
+    if (preferences == null) return;
+    if (preferences.communityPricesEnabled == communityEnabled) return;
+    communityEnabled = preferences.communityPricesEnabled;
+    _notify();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    AuthSessionService().preferencesListenable.removeListener(_onPreferences);
+    super.dispose();
+  }
+
+  /// Every notification goes through here: the loads and the community
+  /// lookups complete on their own time, possibly after the grocery tab
+  /// (and this service with it) is gone.
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
 
   bool get isLoaded => _loaded;
   List<PriceRecordEntity> get records => _records;
@@ -38,7 +68,7 @@ class PriceBookService extends ChangeNotifier {
       _records = const [];
     }
     _loaded = true;
-    notifyListeners();
+    _notify();
   }
 
   /// How many of the estimate's price unit the line amounts to: 850 g of
@@ -81,7 +111,7 @@ class PriceBookService extends ChangeNotifier {
         .then((result) {
           _community[key] = result;
           _pending.remove(key);
-          notifyListeners();
+          _notify();
         })
         .catchError((Object e) {
           debugPrint('Community price failed: $e');

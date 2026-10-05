@@ -104,8 +104,13 @@ Future<bool> showAddPriceDialog(
   final value = double.tryParse(
     priceController.text.trim().replaceAll(',', '.'),
   );
-  nameController.dispose();
-  priceController.dispose();
+  // The dialog's exit transition is still drawing the fields bound to
+  // these when `show` returns; disposing at once threw "used after being
+  // disposed". They go once the transition (260 ms) has surely finished.
+  Future<void>.delayed(const Duration(milliseconds: 400), () {
+    nameController.dispose();
+    priceController.dispose();
+  });
   if (confirmed != true ||
       productName.isEmpty ||
       value == null ||

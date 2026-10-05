@@ -6,6 +6,8 @@ class GenerateRecipeUseCase {
   final RecipeIngestionRepository repository;
   GenerateRecipeUseCase(this.repository);
 
-  Future<RecipeEntity> call(String request, {List<DietaryPreference> preferences = const []}) =>
-      repository.generateRecipe(request, preferences);
+  Future<RecipeEntity> call(
+    String request, {
+    List<DietaryPreference> preferences = const [],
+  }) => repository.generateRecipe(request, preferences);
 }

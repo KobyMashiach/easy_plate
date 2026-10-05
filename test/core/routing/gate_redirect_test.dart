@@ -19,8 +19,15 @@ void main() {
 
   group('signedOut', () {
     test('sends every screen to the login', () {
-      for (final location in [Routing.home, Routing.register, Routing.onboarding]) {
-        expect(gateRedirect(stage: AuthStage.signedOut, location: location), Routing.login);
+      for (final location in [
+        Routing.home,
+        Routing.register,
+        Routing.onboarding,
+      ]) {
+        expect(
+          gateRedirect(stage: AuthStage.signedOut, location: location),
+          Routing.login,
+        );
       }
     });
 
@@ -57,7 +64,10 @@ void main() {
 
     test('does not reuse the sign-in SMS screen, which needs arguments', () {
       expect(
-        gateRedirect(stage: AuthStage.needsPhone, location: Routing.phoneVerify),
+        gateRedirect(
+          stage: AuthStage.needsPhone,
+          location: Routing.phoneVerify,
+        ),
         Routing.phoneGate,
       );
     });
@@ -66,21 +76,33 @@ void main() {
   group('needsEmailVerification', () {
     test('holds a password account on the verification screen', () {
       expect(
-        gateRedirect(stage: AuthStage.needsEmailVerification, location: Routing.home),
+        gateRedirect(
+          stage: AuthStage.needsEmailVerification,
+          location: Routing.home,
+        ),
         Routing.verifyEmail,
       );
       expect(
-        gateRedirect(stage: AuthStage.needsEmailVerification, location: Routing.verifyEmail),
+        gateRedirect(
+          stage: AuthStage.needsEmailVerification,
+          location: Routing.verifyEmail,
+        ),
         isNull,
       );
     });
 
-    test('does not let registration be reached before the address is confirmed', () {
-      expect(
-        gateRedirect(stage: AuthStage.needsEmailVerification, location: Routing.register),
-        Routing.verifyEmail,
-      );
-    });
+    test(
+      'does not let registration be reached before the address is confirmed',
+      () {
+        expect(
+          gateRedirect(
+            stage: AuthStage.needsEmailVerification,
+            location: Routing.register,
+          ),
+          Routing.verifyEmail,
+        );
+      },
+    );
   });
 
   group('needsProfile', () {
@@ -101,7 +123,10 @@ void main() {
 
     test('does not let the phone screen bypass registration', () {
       expect(
-        gateRedirect(stage: AuthStage.needsProfile, location: Routing.phoneVerify),
+        gateRedirect(
+          stage: AuthStage.needsProfile,
+          location: Routing.phoneVerify,
+        ),
         Routing.register,
       );
     });
@@ -138,7 +163,10 @@ void main() {
         Routing.onboarding,
       );
       expect(
-        gateRedirect(stage: AuthStage.needsOnboarding, location: Routing.onboarding),
+        gateRedirect(
+          stage: AuthStage.needsOnboarding,
+          location: Routing.onboarding,
+        ),
         isNull,
       );
     });
@@ -157,16 +185,36 @@ void main() {
         Routing.register,
         Routing.onboarding,
       ]) {
-        expect(gateRedirect(stage: AuthStage.ready, location: location), Routing.home);
+        expect(
+          gateRedirect(stage: AuthStage.ready, location: location),
+          Routing.home,
+        );
       }
     });
 
     test('leaves ordinary app routes alone', () {
-      expect(gateRedirect(stage: AuthStage.ready, location: Routing.home), isNull);
+      expect(
+        gateRedirect(stage: AuthStage.ready, location: Routing.home),
+        isNull,
+      );
       expect(
         gateRedirect(stage: AuthStage.ready, location: '/home/recipe_details'),
         isNull,
       );
     });
+  });
+
+  test('a claimed number is held on its own screen', () {
+    expect(
+      gateRedirect(stage: AuthStage.phoneClaimed, location: Routing.home),
+      Routing.phoneClaimed,
+    );
+    expect(
+      gateRedirect(
+        stage: AuthStage.phoneClaimed,
+        location: Routing.phoneClaimed,
+      ),
+      isNull,
+    );
   });
 }

@@ -103,10 +103,12 @@ class _TicketsTabState extends State<TicketsTab> {
       confirmLabel: s.send,
     );
     if (message == null || !mounted) return;
+    // Read once, before the awaits inside: `_manage` reaches for context.
+    final manage = _manage;
     await _run(
       () async {
-        await _manage.reply(f, message.body, fromUid: uid);
-        if (!f.read) await _manage.setRead(f, true);
+        await manage.reply(f, message.body, fromUid: uid);
+        if (!f.read) await manage.setRead(f, true);
       },
       done: s.replySent,
     );

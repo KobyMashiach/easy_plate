@@ -3,7 +3,8 @@ import 'package:easy_plate/features/price_book/domain/price_estimator.dart';
 import 'package:easy_plate/features/price_book/domain/product_name.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-PriceRecordEntity _r(String name, double price, {int day = 1}) => PriceRecordEntity(
+PriceRecordEntity _r(String name, double price, {int day = 1}) =>
+    PriceRecordEntity(
       id: '$name-$day',
       name: name,
       normalizedName: normalizeProductName(name),
@@ -40,9 +41,20 @@ void main() {
   });
 
   test('the community fills in only when the book is silent', () {
-    const community = CommunityPriceEntity(normalizedName: 'שמן זית', median: 30, average: 31, count: 12);
-    expect(PriceEstimator.estimate('שמן זית', book, community: community).basis, PriceBasis.community);
-    expect(PriceEstimator.estimate('חלב', book, community: community).basis, PriceBasis.personal);
+    const community = CommunityPriceEntity(
+      normalizedName: 'שמן זית',
+      median: 30,
+      average: 31,
+      count: 12,
+    );
+    expect(
+      PriceEstimator.estimate('שמן זית', book, community: community).basis,
+      PriceBasis.community,
+    );
+    expect(
+      PriceEstimator.estimate('חלב', book, community: community).basis,
+      PriceBasis.personal,
+    );
   });
 
   test('the summary adds only what it knows and counts the rest', () {

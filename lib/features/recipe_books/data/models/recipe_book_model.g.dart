@@ -29,13 +29,15 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
       spine: fields[7] as String?,
       collabId: fields[8] as String?,
       collabRole: fields[9] as String?,
+      contentLang: fields[10] as String?,
+      contentVersion: fields[11] == null ? 0 : (fields[11] as num).toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeBookModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -55,7 +57,11 @@ class RecipeBookModelAdapter extends TypeAdapter<RecipeBookModel> {
       ..writeByte(8)
       ..write(obj.collabId)
       ..writeByte(9)
-      ..write(obj.collabRole);
+      ..write(obj.collabRole)
+      ..writeByte(10)
+      ..write(obj.contentLang)
+      ..writeByte(11)
+      ..write(obj.contentVersion);
   }
 
   @override
@@ -91,6 +97,8 @@ _RecipeBookModel _$RecipeBookModelFromJson(Map<String, dynamic> json) =>
       spine: json['spine'] as String?,
       collabId: json['collabId'] as String?,
       collabRole: json['collabRole'] as String?,
+      contentLang: json['contentLang'] as String?,
+      contentVersion: (json['contentVersion'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
@@ -105,4 +113,6 @@ Map<String, dynamic> _$RecipeBookModelToJson(_RecipeBookModel instance) =>
       'spine': instance.spine,
       'collabId': instance.collabId,
       'collabRole': instance.collabRole,
+      'contentLang': instance.contentLang,
+      'contentVersion': instance.contentVersion,
     };

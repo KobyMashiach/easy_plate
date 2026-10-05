@@ -1,4 +1,8 @@
-class ForumReplyEntity {
+import 'package:equatable/equatable.dart';
+
+/// One reply in a thread. Value-equal, for the same reason as
+/// [ForumPostEntity]: the thread is fed by a live stream.
+class ForumReplyEntity extends Equatable {
   final String id;
   final String body;
   final String authorUid;
@@ -18,6 +22,11 @@ class ForumReplyEntity {
   /// it is not part of the stored document.
   final bool likedByMe;
 
+  /// True while this is the viewer's own reply drawn ahead of the server's
+  /// acknowledgement. The id is already the final one, so the live stream
+  /// replaces this entry in place once the write lands.
+  final bool pending;
+
   const ForumReplyEntity({
     required this.id,
     required this.body,
@@ -29,6 +38,7 @@ class ForumReplyEntity {
     this.sharedRecipeTitle,
     this.likeCount = 0,
     this.likedByMe = false,
+    this.pending = false,
   });
 
   bool get hasRecipe => sharedRecipeId != null;
@@ -48,6 +58,7 @@ class ForumReplyEntity {
       sharedRecipeTitle: sharedRecipeTitle,
       likeCount: likeCount,
       likedByMe: likedByMe,
+      pending: pending,
     );
   }
 
@@ -64,6 +75,40 @@ class ForumReplyEntity {
       sharedRecipeTitle: sharedRecipeTitle,
       likeCount: likeCount + (likedByMe ? -1 : 1),
       likedByMe: !likedByMe,
+      pending: pending,
     );
   }
+
+  /// See [ForumPostEntity.withViewerLike].
+  ForumReplyEntity withViewerLike(bool liked) {
+    if (liked == likedByMe) return this;
+    return ForumReplyEntity(
+      id: id,
+      body: body,
+      authorUid: authorUid,
+      authorName: authorName,
+      authorPhotoUrl: authorPhotoUrl,
+      createdAt: createdAt,
+      sharedRecipeId: sharedRecipeId,
+      sharedRecipeTitle: sharedRecipeTitle,
+      likeCount: likeCount,
+      likedByMe: liked,
+      pending: pending,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    id,
+    body,
+    authorUid,
+    authorName,
+    authorPhotoUrl,
+    createdAt,
+    sharedRecipeId,
+    sharedRecipeTitle,
+    likeCount,
+    likedByMe,
+    pending,
+  ];
 }

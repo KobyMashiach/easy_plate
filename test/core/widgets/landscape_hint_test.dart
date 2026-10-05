@@ -7,28 +7,41 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   setUp(() => LocaleSettings.setLocaleSync(AppLocale.he));
 
-  testWidgets('scrolling the hint out of view does not re-lock portrait', (tester) async {
+  testWidgets('scrolling the hint out of view does not re-lock portrait', (
+    tester,
+  ) async {
     final calls = <List<String>>[];
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
-      if (call.method == 'SystemChrome.setPreferredOrientations') {
-        calls.add((call.arguments as List).cast<String>());
-      }
-      return null;
-    });
-    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'SystemChrome.setPreferredOrientations') {
+          calls.add((call.arguments as List).cast<String>());
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
 
     final scroll = ScrollController();
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: ListView(
-          controller: scroll,
-          children: [
-            const LandscapeHint(),
-            for (var i = 0; i < 40; i++) SizedBox(height: 100, child: Text('row $i')),
-          ],
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ListView(
+            controller: scroll,
+            children: [
+              const LandscapeHint(),
+              for (var i = 0; i < 40; i++)
+                SizedBox(height: 100, child: Text('row $i')),
+            ],
+          ),
         ),
       ),
-    ));
+    );
 
     await tester.tap(find.text(t.common.rotateLandscape));
     await tester.pumpAndSettle();
@@ -38,7 +51,11 @@ void main() {
     // Far enough that the hint is well outside the viewport and its cache.
     scroll.jumpTo(3000);
     await tester.pumpAndSettle();
-    expect(calls.length, before, reason: 'no re-lock while the screen is still open');
+    expect(
+      calls.length,
+      before,
+      reason: 'no re-lock while the screen is still open',
+    );
 
     // Leaving the screen is what locks portrait again.
     await tester.pumpWidget(const MaterialApp(home: SizedBox()));

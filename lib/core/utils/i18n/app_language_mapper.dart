@@ -6,18 +6,18 @@ import 'strings.g.dart';
 /// localisation code.
 extension AppLanguageLocale on AppLanguage {
   AppLocale get locale => switch (this) {
-        AppLanguage.hebrew => AppLocale.he,
-        AppLanguage.english => AppLocale.en,
-        AppLanguage.arabic => AppLocale.ar,
-        AppLanguage.french => AppLocale.fr,
-        AppLanguage.russian => AppLocale.ru,
-      };
+    AppLanguage.hebrew => AppLocale.he,
+    AppLanguage.english => AppLocale.en,
+    AppLanguage.arabic => AppLocale.ar,
+    AppLanguage.french => AppLocale.fr,
+    AppLanguage.russian => AppLocale.ru,
+  };
 
   String get label => switch (this) {
-        AppLanguage.hebrew => t.language.hebrew,
-        AppLanguage.english => t.language.english,
-        AppLanguage.arabic => t.language.arabic,
-        AppLanguage.french => t.language.french,
-        AppLanguage.russian => t.language.russian,
-      };
+    AppLanguage.hebrew => t.language.hebrew,
+    AppLanguage.english => t.language.english,
+    AppLanguage.arabic => t.language.arabic,
+    AppLanguage.french => t.language.french,
+    AppLanguage.russian => t.language.russian,
+  };
 }

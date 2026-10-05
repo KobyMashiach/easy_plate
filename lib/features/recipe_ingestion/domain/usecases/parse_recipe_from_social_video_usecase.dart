@@ -6,6 +6,8 @@ class ParseRecipeFromSocialVideoUseCase {
   final RecipeIngestionRepository repository;
   ParseRecipeFromSocialVideoUseCase(this.repository);
 
-  Future<RecipeEntity> call(String url, {List<DietaryPreference> preferences = const []}) =>
-      repository.parseFromSocialVideo(url, preferences);
+  Future<RecipeEntity> call(
+    String url, {
+    List<DietaryPreference> preferences = const [],
+  }) => repository.parseFromSocialVideo(url, preferences);
 }

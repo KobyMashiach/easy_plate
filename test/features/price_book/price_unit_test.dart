@@ -4,7 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('weight prices convert grams and kilograms', () {
-    expect(PriceUnit.kg.multiplierFor(MeasurementUnit.gram, 850), closeTo(0.85, 1e-9));
+    expect(
+      PriceUnit.kg.multiplierFor(MeasurementUnit.gram, 850),
+      closeTo(0.85, 1e-9),
+    );
     expect(PriceUnit.kg.multiplierFor(MeasurementUnit.kilogram, 2), 2);
     expect(PriceUnit.kg.multiplierFor(MeasurementUnit.unit, 2), isNull);
   });
@@ -15,7 +18,10 @@ void main() {
   });
 
   test('litre prices convert millilitres', () {
-    expect(PriceUnit.liter.multiplierFor(MeasurementUnit.milliliter, 250), 0.25);
+    expect(
+      PriceUnit.liter.multiplierFor(MeasurementUnit.milliliter, 250),
+      0.25,
+    );
     expect(PriceUnit.liter.multiplierFor(MeasurementUnit.cup, 1), isNull);
   });
 

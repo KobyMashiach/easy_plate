@@ -130,11 +130,8 @@ class _RecipesBodyState extends State<_RecipesBody> {
       ),
       slivers: [
         SliverPadding(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.marginMobile,
-            0,
-            AppSpacing.marginMobile,
-            ClayNavDock.bottomPadding(context),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.marginMobile,
           ),
           sliver: SliverList.list(
             children: [
@@ -222,72 +219,88 @@ class _RecipesBodyState extends State<_RecipesBody> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              if (recipes.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: AppSpacing.lg),
-                  child: ClayEmptyState(
-                    icon: _savedTab
-                        ? Icons.bookmark_border_rounded
-                        : Icons.restaurant_menu_rounded,
-                    message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
-                    action: _savedTab
-                        ? null
-                        : ClayButton(
-                            label: t.ingestion.title,
-                            icon: Icons.add_rounded,
-                            onPressed: () =>
-                                context.pushNamed(Routing.ingestion),
-                          ),
-                  ),
-                )
-              else
-                // Two photo cards to a row, like a cookbook's picture index.
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: AppSpacing.sm,
-                    crossAxisSpacing: AppSpacing.sm,
-                    mainAxisExtent: RecipeCard.height,
-                  ),
-                  itemCount: recipes.length,
-                  itemBuilder: (context, index) {
-                    final recipe = recipes[index];
-                    return RecipeCard(
-                      recipe: recipe,
-                      // No reload on return: the list is driven by the box, so an
-                      // edit made on the details page arrives on its own.
-                      onTap: () => context.pushNamed(
-                        Routing.recipeDetails,
-                        extra: RecipeDetailsArgs(recipe: recipe),
-                      ),
-                      // Long-press to share. Only for recipes this account wrote —
-                      // a member of someone else's recipe cannot invite others, and
-                      // a copy saved from the community is not this account's to
-                      // pass on.
-                      onRemove: recipe.isSavedFromCommunity
-                          ? () => _confirmRemove(context, bloc, recipe)
-                          : null,
-                      onShare: recipe.isMine
-                          ? () async {
-                              final sent = await showRecipeShareSheet(
-                                context,
-                                recipe,
-                              );
-                              if (sent == true && context.mounted) {
-                                AppDialog.success(
-                                  message: t.sharing.sent,
-                                ).notify(context);
-                              }
-                            }
-                          : null,
-                    );
-                  },
-                ),
             ],
           ),
         ),
+        // The grid is a sliver of its own, not a shrink-wrapped GridView
+        // inside the list above: shrink-wrap lays out and decodes every
+        // card at once, so nothing was virtualised and a long collection
+        // paid for all its photos before the first frame.
+        if (recipes.isEmpty)
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.marginMobile,
+              AppSpacing.lg,
+              AppSpacing.marginMobile,
+              ClayNavDock.bottomPadding(context),
+            ),
+            sliver: SliverToBoxAdapter(
+              child: ClayEmptyState(
+                icon: _savedTab
+                    ? Icons.bookmark_border_rounded
+                    : Icons.restaurant_menu_rounded,
+                message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
+                action: _savedTab
+                    ? null
+                    : ClayButton(
+                        label: t.ingestion.title,
+                        icon: Icons.add_rounded,
+                        onPressed: () => context.pushNamed(Routing.ingestion),
+                      ),
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.marginMobile,
+              0,
+              AppSpacing.marginMobile,
+              ClayNavDock.bottomPadding(context),
+            ),
+            // Two photo cards to a row, like a cookbook's picture index.
+            sliver: SliverGrid.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: AppSpacing.sm,
+                crossAxisSpacing: AppSpacing.sm,
+                mainAxisExtent: RecipeCard.height,
+              ),
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                final recipe = recipes[index];
+                return RecipeCard(
+                  recipe: recipe,
+                  // No reload on return: the list is driven by the box, so an
+                  // edit made on the details page arrives on its own.
+                  onTap: () => context.pushNamed(
+                    Routing.recipeDetails,
+                    extra: RecipeDetailsArgs(recipe: recipe),
+                  ),
+                  // Long-press to share. Only for recipes this account wrote —
+                  // a member of someone else's recipe cannot invite others, and
+                  // a copy saved from the community is not this account's to
+                  // pass on.
+                  onRemove: recipe.isSavedFromCommunity
+                      ? () => _confirmRemove(context, bloc, recipe)
+                      : null,
+                  onShare: recipe.isMine
+                      ? () async {
+                          final sent = await showRecipeShareSheet(
+                            context,
+                            recipe,
+                          );
+                          if (sent == true && context.mounted) {
+                            AppDialog.success(
+                              message: t.sharing.sent,
+                            ).notify(context);
+                          }
+                        }
+                      : null,
+                );
+              },
+            ),
+          ),
       ],
     );
   }

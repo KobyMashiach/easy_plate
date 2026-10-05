@@ -10,20 +10,28 @@ class HttpCalls {
   /// once would start failing mid-session.
   final Future<Map<String, String>> Function()? headerProvider;
 
-  HttpCalls({String? baseUrl, Map<String, String>? headers, this.headerProvider})
-      : _dio = Dio(BaseOptions(
-          baseUrl: baseUrl ?? '',
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 120),
-          headers: {'Content-Type': 'application/json', ...?headers},
-        ));
+  HttpCalls({
+    String? baseUrl,
+    Map<String, String>? headers,
+    this.headerProvider,
+  }) : _dio = Dio(
+         BaseOptions(
+           baseUrl: baseUrl ?? '',
+           connectTimeout: const Duration(seconds: 15),
+           receiveTimeout: const Duration(seconds: 120),
+           headers: {'Content-Type': 'application/json', ...?headers},
+         ),
+       );
 
   Future<Response?> get(String path, {Map<String, dynamic>? queryParameters}) =>
       _request('GET', path, null, queryParameters, null);
 
   /// [headers] are for this one call, on top of the fixed and provided ones.
-  Future<Response?> post(String path, {dynamic data, Map<String, String>? headers}) =>
-      _request('POST', path, data, null, headers);
+  Future<Response?> post(
+    String path, {
+    dynamic data,
+    Map<String, String>? headers,
+  }) => _request('POST', path, data, null, headers);
 
   Future<Response?> _request(
     String method,
@@ -39,19 +47,23 @@ class HttpCalls {
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(method: method, headers: {...?dynamicHeaders, ...?headers}),
+        options: Options(
+          method: method,
+          headers: {...?dynamicHeaders, ...?headers},
+        ),
       );
     } on DioException catch (e) {
       throw switch (e.type) {
         DioExceptionType.cancel => const AppException(AppErrorType.cancelled),
         DioExceptionType.connectionError ||
         DioExceptionType.connectionTimeout ||
-        DioExceptionType.receiveTimeout =>
-          const AppException(AppErrorType.networkError),
+        DioExceptionType.receiveTimeout => const AppException(
+          AppErrorType.networkError,
+        ),
         _ => AppException(
-            errorTypeFor(e.response?.statusCode, e.response?.data),
-            message: e.response?.data?.toString() ?? e.message ?? '',
-          ),
+          errorTypeFor(e.response?.statusCode, e.response?.data),
+          message: e.response?.data?.toString() ?? e.message ?? '',
+        ),
       };
     }
   }

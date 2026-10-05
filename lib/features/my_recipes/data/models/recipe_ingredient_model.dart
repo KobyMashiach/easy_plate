@@ -21,9 +21,11 @@ sealed class RecipeIngredientModel with _$RecipeIngredientModel {
 }
 
 extension RecipeIngredientModelMapper on RecipeIngredientModel {
-  RecipeIngredientEntity toEntity() => RecipeIngredientEntity(name: name, amount: amount, unit: unit);
+  RecipeIngredientEntity toEntity() =>
+      RecipeIngredientEntity(name: name, amount: amount, unit: unit);
 }
 
 extension RecipeIngredientEntityMapper on RecipeIngredientEntity {
-  RecipeIngredientModel toModel() => RecipeIngredientModel(name: name, amount: amount, unit: unit);
+  RecipeIngredientModel toModel() =>
+      RecipeIngredientModel(name: name, amount: amount, unit: unit);
 }

@@ -50,7 +50,6 @@ class AccountMenuPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final session = AuthSessionService();
-    final profile = session.profile;
 
     return BlocProvider(
       create: (context) => AuthBloc.fromContext(context),
@@ -65,41 +64,46 @@ class AccountMenuPage extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.marginMobile),
               children: [
-                ClayCard(
-                  radius: AppRadius.md,
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Row(
-                    children: [
-                      ProfileAvatar(
-                        name: profile?.fullName ?? '',
-                        photoUrl: profile?.photoUrl ?? session.user?.photoUrl,
-                        size: 56,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              profile?.fullName ?? '',
-                              style: AppTextStyles.bodyLg,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              profile?.email ??
-                                  profile?.phoneNumber ??
-                                  session.user?.email ??
-                                  session.user?.phoneNumber ??
-                                  '',
-                              style: AppTextStyles.labelMd.copyWith(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                // Listens rather than reads once: coming back from the
+                // profile editor must show the new name and photo.
+                ValueListenableBuilder(
+                  valueListenable: session.profileListenable,
+                  builder: (context, profile, _) => ClayCard(
+                    radius: AppRadius.md,
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Row(
+                      children: [
+                        ProfileAvatar(
+                          name: profile?.fullName ?? '',
+                          photoUrl: profile?.photoUrl ?? session.user?.photoUrl,
+                          size: 56,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                profile?.fullName ?? '',
+                                style: AppTextStyles.bodyLg,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                profile?.email ??
+                                    profile?.phoneNumber ??
+                                    session.user?.email ??
+                                    session.user?.phoneNumber ??
+                                    '',
+                                style: AppTextStyles.labelMd.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -136,19 +140,25 @@ class AccountMenuPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
+                // Two doors, kept apart on purpose: הגדרות is the account
+                // and the app (profile, notifications, language, look);
+                // העדפות is how the app behaves for you (shopping day,
+                // dietary needs, the books).
                 WalkthroughTarget(
                   id: WalkthroughIds.accountSettings,
                   child: _MenuRow(
-                    icon: Icons.tune_rounded,
+                    icon: Icons.settings_rounded,
                     label: t.more.settings,
+                    hint: t.settings.settingsHint,
                     onTap: () => context.pushNamed(Routing.settings),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _MenuRow(
-                  icon: Icons.person_rounded,
-                  label: t.more.profile,
-                  onTap: () => context.pushNamed(Routing.profileEdit),
+                  icon: Icons.tune_rounded,
+                  label: t.more.preferences,
+                  hint: t.preferences.hint,
+                  onTap: () => context.pushNamed(Routing.preferences),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _MenuRow(
@@ -205,6 +215,9 @@ class _MenuRow extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
+  /// A line under the label saying what is behind the row.
+  final String? hint;
+
   /// Things waiting behind the row, drawn on its icon. Zero draws nothing.
   final int badge;
 
@@ -212,6 +225,7 @@ class _MenuRow extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.hint,
     this.badge = 0,
   });
 
@@ -228,7 +242,23 @@ class _MenuRow extends StatelessWidget {
             child: Icon(icon, size: 22, color: AppColors.primary),
           ),
           const SizedBox(width: AppSpacing.sm),
-          Expanded(child: Text(label, style: AppTextStyles.bodyLg)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: AppTextStyles.bodyLg),
+                if (hint != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    hint!,
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.outline,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
           Icon(Icons.chevron_right_rounded, color: AppColors.tertiary),
         ],
       ),

@@ -60,7 +60,9 @@ class RewardedAdService {
           completer.complete();
         },
         onAdFailedToLoad: (error) {
-          debugPrint('Rewarded ad failed to load: ${error.code} ${error.message}');
+          debugPrint(
+            'Rewarded ad failed to load: ${error.code} ${error.message}',
+          );
           _consecutiveFailures++;
           _loading = null;
           completer.complete();
@@ -95,11 +97,15 @@ class RewardedAdService {
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
         if (!outcome.isCompleted) {
-          outcome.complete(earned ? RewardOutcome.earned : RewardOutcome.dismissed);
+          outcome.complete(
+            earned ? RewardOutcome.earned : RewardOutcome.dismissed,
+          );
         }
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        debugPrint('Rewarded ad failed to show: ${error.code} ${error.message}');
+        debugPrint(
+          'Rewarded ad failed to show: ${error.code} ${error.message}',
+        );
         ad.dispose();
         if (!outcome.isCompleted) outcome.complete(RewardOutcome.unavailable);
       },
@@ -109,6 +115,9 @@ class RewardedAdService {
       await ad.show(onUserEarnedReward: (_, reward) => earned = true);
     } catch (e) {
       debugPrint('Rewarded ad show threw: $e');
+      // Neither callback above fires when show() itself throws, and the
+      // field was already cleared: nothing else will release this ad.
+      ad.dispose();
       if (!outcome.isCompleted) outcome.complete(RewardOutcome.unavailable);
     }
 

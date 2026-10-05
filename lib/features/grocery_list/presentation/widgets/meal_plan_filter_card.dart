@@ -16,7 +16,11 @@ class MealPlanFilterCard extends StatefulWidget {
   final GroceryListEntity list;
   final List<MealPlanEntity> plans;
 
-  const MealPlanFilterCard({super.key, required this.list, required this.plans});
+  const MealPlanFilterCard({
+    super.key,
+    required this.list,
+    required this.plans,
+  });
 
   @override
   State<MealPlanFilterCard> createState() => _MealPlanFilterCardState();
@@ -29,7 +33,9 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
   /// deleted simply drops out.
   List<MealPlanEntity> get _included {
     if (widget.list.includesAllPlans) return widget.plans;
-    return widget.plans.where((p) => widget.list.selectedPlanIds.contains(p.id)).toList();
+    return widget.plans
+        .where((p) => widget.list.selectedPlanIds.contains(p.id))
+        .toList();
   }
 
   String get _summary {
@@ -52,7 +58,11 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
             behavior: HitTestBehavior.opaque,
             child: Row(
               children: [
-                Icon(Icons.filter_list_rounded, size: 20, color: AppColors.primary),
+                Icon(
+                  Icons.filter_list_rounded,
+                  size: 20,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
@@ -65,8 +75,9 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
                             : _included.map((p) => p.name).join(' · '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.labelMd
-                            .copyWith(color: AppColors.onSurfaceVariant),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -84,8 +95,9 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
           ),
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 200),
-            crossFadeState:
-                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            crossFadeState: _expanded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
             firstChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -93,7 +105,9 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
                 if (_included.isEmpty)
                   Text(
                     t.groceryList.noPlansToPick,
-                    style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
                   )
                 else
                   Wrap(
@@ -101,7 +115,10 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
                     runSpacing: AppSpacing.base,
                     children: [
                       for (final plan in _included)
-                        ClayTag(label: plan.name, icon: Icons.calendar_today_rounded),
+                        ClayTag(
+                          label: plan.name,
+                          icon: Icons.calendar_today_rounded,
+                        ),
                     ],
                   ),
               ],
@@ -136,7 +153,9 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
     // Everything ticked collapses back to "all", so a plan added later is
     // picked up instead of being silently excluded by a frozen id list.
     final everything = selected.length == widget.plans.length;
-    bloc.add(GroceryListEvent.selectPlans(everything ? const [] : selected.toList()));
+    bloc.add(
+      GroceryListEvent.selectPlans(everything ? const [] : selected.toList()),
+    );
   }
 }
 
@@ -164,7 +183,10 @@ class _MealPlanPickerSheet extends StatefulWidget {
   final List<MealPlanEntity> plans;
   final Set<String> initiallySelected;
 
-  const _MealPlanPickerSheet({required this.plans, required this.initiallySelected});
+  const _MealPlanPickerSheet({
+    required this.plans,
+    required this.initiallySelected,
+  });
 
   @override
   State<_MealPlanPickerSheet> createState() => _MealPlanPickerSheetState();
@@ -189,7 +211,10 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClaySectionHeader(title: t.groceryList.selectPlansTitle, underline: true),
+            ClaySectionHeader(
+              title: t.groceryList.selectPlansTitle,
+              underline: true,
+            ),
             const SizedBox(height: AppSpacing.sm),
             _row(
               label: t.groceryList.selectAllPlans,
@@ -197,7 +222,9 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
               onChanged: (checked) => setState(() {
                 _selected
                   ..clear()
-                  ..addAll(checked ? widget.plans.map((p) => p.id) : const <String>[]);
+                  ..addAll(
+                    checked ? widget.plans.map((p) => p.id) : const <String>[],
+                  );
               }),
               emphasised: true,
             ),
@@ -227,7 +254,9 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
               icon: Icons.check_rounded,
               expanded: true,
               // An empty pick would aggregate nothing, so it cannot be applied.
-              onPressed: _selected.isEmpty ? null : () => Navigator.of(context).pop(_selected),
+              onPressed: _selected.isEmpty
+                  ? null
+                  : () => Navigator.of(context).pop(_selected),
             ),
           ],
         ),
@@ -247,7 +276,10 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
         child: Row(
           children: [
-            BouncyCheckbox(value: checked, onChanged: (_) => onChanged(!checked)),
+            BouncyCheckbox(
+              value: checked,
+              onChanged: (_) => onChanged(!checked),
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(

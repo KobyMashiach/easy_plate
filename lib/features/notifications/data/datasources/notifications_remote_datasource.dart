@@ -46,6 +46,11 @@ class NotificationsFirestoreDataSource
               message: data['message'] as String?,
               feedbackExcerpt: data['feedbackExcerpt'] as String?,
               title: data['title'] as String?,
+              postId: data['postId'] as String?,
+              replyId: data['replyId'] as String?,
+              postTitle: data['postTitle'] as String?,
+              excerpt: data['excerpt'] as String?,
+              onMyPost: (data['onMyPost'] as bool?) ?? false,
               kind: CollabKind.fromName(data['kind'] as String?),
               role: CollabRole.values
                   .where((r) => r.name == data['role'])

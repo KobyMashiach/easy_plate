@@ -85,7 +85,9 @@ JsonLdRecipe? _toRecipe(Map<String, dynamic> node) {
   final title = _text(node['name']) ?? _text(node['headline']);
   if (title == null || title.isEmpty) return null;
 
-  final ingredients = _stringList(node['recipeIngredient'] ?? node['ingredients']);
+  final ingredients = _stringList(
+    node['recipeIngredient'] ?? node['ingredients'],
+  );
   final steps = _steps(node['recipeInstructions']);
   // A "recipe" with neither is a stub; the model does better with the page.
   if (ingredients.isEmpty && steps.isEmpty) return null;
@@ -146,14 +148,15 @@ List<String> _stringList(Object? node) {
 String? _text(Object? node) {
   if (node is String) return _clean(node);
   if (node is List && node.isNotEmpty) return _text(node.first);
-  if (node is Map<String, dynamic>) return _text(node['@value'] ?? node['name'] ?? node['text']);
+  if (node is Map<String, dynamic>) {
+    return _text(node['@value'] ?? node['name'] ?? node['text']);
+  }
   return null;
 }
 
-String _clean(String value) => decodeHtmlEntities(value)
-    .replaceAll(RegExp(r'<[^>]+>'), ' ')
-    .replaceAll(RegExp(r'\s+'), ' ')
-    .trim();
+String _clean(String value) => decodeHtmlEntities(
+  value,
+).replaceAll(RegExp(r'<[^>]+>'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
 
 /// schema.org names its diets `https://schema.org/VeganDiet` and so on; only
 /// the ones the app has a chip for are mapped.
@@ -190,10 +193,18 @@ int? parseIso8601DurationMinutes(String? value) {
 
   final total = days * 24 * 60 + hours * 60 + minutes + (seconds >= 30 ? 1 : 0);
   // A duration that matched but adds up to nothing was "P" or "PT" — unstated.
-  return total == 0 && match.group(0) == value.trim() && !value.contains(RegExp(r'\d')) ? null : total;
+  return total == 0 &&
+          match.group(0) == value.trim() &&
+          !value.contains(RegExp(r'\d'))
+      ? null
+      : total;
 }
 
-typedef ParsedIngredient = ({double? amount, MeasurementUnit unit, String name});
+typedef ParsedIngredient = ({
+  double? amount,
+  MeasurementUnit unit,
+  String name,
+});
 
 /// Splits "2 כוסות קמח" into amount 2, unit cup, name קמח.
 ///
@@ -233,7 +244,14 @@ ParsedIngredient parseIngredientLine(String line) {
 
 double? _amount(String token) {
   const words = {'חצי': 0.5, 'רבע': 0.25, 'שלושת רבעי': 0.75};
-  const glyphs = {'½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1 / 3, '⅔': 2 / 3, '⅛': 0.125};
+  const glyphs = {
+    '½': 0.5,
+    '¼': 0.25,
+    '¾': 0.75,
+    '⅓': 1 / 3,
+    '⅔': 2 / 3,
+    '⅛': 0.125,
+  };
   if (words[token] case final w?) return w;
   if (glyphs[token] case final g?) return g;
 
@@ -263,30 +281,42 @@ MeasurementUnit? _unitFor(String raw) {
     'כוס': MeasurementUnit.cup, 'כוסות': MeasurementUnit.cup,
     'כף': MeasurementUnit.tablespoon, 'כפות': MeasurementUnit.tablespoon,
     'כפית': MeasurementUnit.teaspoon, 'כפיות': MeasurementUnit.teaspoon,
-    'גרם': MeasurementUnit.gram, "גר'": MeasurementUnit.gram, "ג'": MeasurementUnit.gram,
+    'גרם': MeasurementUnit.gram,
+    "גר'": MeasurementUnit.gram,
+    "ג'": MeasurementUnit.gram,
     'ק"ג': MeasurementUnit.kilogram, 'קילו': MeasurementUnit.kilogram,
     'קילוגרם': MeasurementUnit.kilogram,
     'מ"ל': MeasurementUnit.milliliter, 'מל': MeasurementUnit.milliliter,
     'ליטר': MeasurementUnit.liter,
     'קורט': MeasurementUnit.pinch, 'קמצוץ': MeasurementUnit.pinch,
-    'יחידה': MeasurementUnit.unit, 'יחידות': MeasurementUnit.unit, "יח'": MeasurementUnit.unit,
+    'יחידה': MeasurementUnit.unit,
+    'יחידות': MeasurementUnit.unit,
+    "יח'": MeasurementUnit.unit,
     // English
     'cup': MeasurementUnit.cup, 'cups': MeasurementUnit.cup,
-    'tbsp': MeasurementUnit.tablespoon, 'tablespoon': MeasurementUnit.tablespoon,
+    'tbsp': MeasurementUnit.tablespoon,
+    'tablespoon': MeasurementUnit.tablespoon,
     'tablespoons': MeasurementUnit.tablespoon,
     'tsp': MeasurementUnit.teaspoon, 'teaspoon': MeasurementUnit.teaspoon,
     'teaspoons': MeasurementUnit.teaspoon,
-    'g': MeasurementUnit.gram, 'gram': MeasurementUnit.gram, 'grams': MeasurementUnit.gram,
+    'g': MeasurementUnit.gram,
+    'gram': MeasurementUnit.gram,
+    'grams': MeasurementUnit.gram,
     'kg': MeasurementUnit.kilogram, 'kilogram': MeasurementUnit.kilogram,
     'kilograms': MeasurementUnit.kilogram,
     'ml': MeasurementUnit.milliliter, 'milliliter': MeasurementUnit.milliliter,
-    'milliliters': MeasurementUnit.milliliter, 'millilitre': MeasurementUnit.milliliter,
+    'milliliters': MeasurementUnit.milliliter,
+    'millilitre': MeasurementUnit.milliliter,
     'millilitres': MeasurementUnit.milliliter,
-    'l': MeasurementUnit.liter, 'liter': MeasurementUnit.liter, 'liters': MeasurementUnit.liter,
+    'l': MeasurementUnit.liter,
+    'liter': MeasurementUnit.liter,
+    'liters': MeasurementUnit.liter,
     'litre': MeasurementUnit.liter, 'litres': MeasurementUnit.liter,
     'pinch': MeasurementUnit.pinch,
     'unit': MeasurementUnit.unit, 'units': MeasurementUnit.unit,
-    'piece': MeasurementUnit.unit, 'pieces': MeasurementUnit.unit, 'pcs': MeasurementUnit.unit,
+    'piece': MeasurementUnit.unit,
+    'pieces': MeasurementUnit.unit,
+    'pcs': MeasurementUnit.unit,
   };
   return map[word];
 }

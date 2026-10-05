@@ -8,24 +8,28 @@ import '../../domain/entities/book_spine.dart';
 /// the rest are fixed mid-saturation tones that read on the lavender shelf
 /// in light and dark alike.
 Color bookSpineColor(BookSpine spine) => switch (spine) {
-      BookSpine.violet => AppColors.primary,
-      BookSpine.indigo => AppColors.tertiary,
-      BookSpine.teal => AppColors.secondary,
-      BookSpine.mint => AppColors.mintFresh,
-      BookSpine.amber => AppColors.warmAccent,
-      BookSpine.coral => const Color(0xFFE8734A),
-      BookSpine.rose => const Color(0xFFD6457A),
-      BookSpine.plum => const Color(0xFF8E44AD),
-      BookSpine.forest => const Color(0xFF2E8B57),
-      BookSpine.slate => const Color(0xFF5C6F82),
-    };
+  BookSpine.violet => AppColors.primary,
+  BookSpine.indigo => AppColors.tertiary,
+  BookSpine.teal => AppColors.secondary,
+  BookSpine.mint => AppColors.mintFresh,
+  BookSpine.amber => AppColors.warmAccent,
+  BookSpine.coral => const Color(0xFFE8734A),
+  BookSpine.rose => const Color(0xFFD6457A),
+  BookSpine.plum => const Color(0xFF8E44AD),
+  BookSpine.forest => const Color(0xFF2E8B57),
+  BookSpine.slate => const Color(0xFF5C6F82),
+};
 
 /// A row of swatches; the chosen one carries a tick.
 class SpineColorPicker extends StatelessWidget {
   final BookSpine? selected;
   final ValueChanged<BookSpine> onSelect;
 
-  const SpineColorPicker({super.key, required this.selected, required this.onSelect});
+  const SpineColorPicker({
+    super.key,
+    required this.selected,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +50,9 @@ class SpineColorPicker extends StatelessWidget {
                 color: bookSpineColor(spine),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: spine == selected ? AppColors.onSurface : AppColors.surfaceContainerLowest,
+                  color: spine == selected
+                      ? AppColors.onSurface
+                      : AppColors.surfaceContainerLowest,
                   width: spine == selected ? 3 : 2,
                 ),
                 boxShadow: [
@@ -58,7 +64,11 @@ class SpineColorPicker extends StatelessWidget {
                 ],
               ),
               child: spine == selected
-                  ? const Icon(Icons.check_rounded, color: Colors.white, size: 22)
+                  ? const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    )
                   : null,
             ),
           ),

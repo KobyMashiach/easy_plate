@@ -20,17 +20,23 @@ class _FakeRecipesRepository implements RecipesRepository {
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
-RecipeEntity buildRecipe(String id, String title, String ingredient) => RecipeEntity(
+RecipeEntity buildRecipe(String id, String title, String ingredient) =>
+    RecipeEntity(
       id: id,
       title: title,
       ingredients: [
-        RecipeIngredientEntity(name: ingredient, amount: 100, unit: MeasurementUnit.gram),
+        RecipeIngredientEntity(
+          name: ingredient,
+          amount: 100,
+          unit: MeasurementUnit.gram,
+        ),
       ],
       steps: const [],
       createdAt: DateTime(2026, 1, 1),
     );
 
-MealPlanEntity buildPlan(String id, String name, String recipeId) => MealPlanEntity(
+MealPlanEntity buildPlan(String id, String name, String recipeId) =>
+    MealPlanEntity(
       id: id,
       name: name,
       meals: [
@@ -47,12 +53,16 @@ MealPlanEntity buildPlan(String id, String name, String recipeId) => MealPlanEnt
 
 /// Mirrors the bloc's selection rule so the filtering contract is pinned
 /// without standing a Hive-backed bloc up.
-List<MealPlanEntity> applySelection(GroceryListEntity list, List<MealPlanEntity> plans) {
+List<MealPlanEntity> applySelection(
+  GroceryListEntity list,
+  List<MealPlanEntity> plans,
+) {
   if (list.includesAllPlans) return plans;
   return plans.where((p) => list.selectedPlanIds.contains(p.id)).toList();
 }
 
-GroceryListEntity buildList({List<String> selected = const []}) => GroceryListEntity(
+GroceryListEntity buildList({List<String> selected = const []}) =>
+    GroceryListEntity(
       id: 'primary',
       name: 'רשימה',
       items: const [],
@@ -65,7 +75,10 @@ void main() {
     'r1': buildRecipe('r1', 'שקשוקה', 'עגבניות'),
     'r2': buildRecipe('r2', 'סלט', 'מלפפון'),
   });
-  final plans = [buildPlan('p1', 'תפריט א', 'r1'), buildPlan('p2', 'תפריט ב', 'r2')];
+  final plans = [
+    buildPlan('p1', 'תפריט א', 'r1'),
+    buildPlan('p2', 'תפריט ב', 'r2'),
+  ];
   final useCase = BuildAggregateGroceryListUseCase(recipes);
 
   test('an empty selection means every menu', () async {

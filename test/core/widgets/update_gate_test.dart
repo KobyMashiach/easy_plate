@@ -41,7 +41,9 @@ void main() {
     expect(find.text(t.update.later), findsOneWidget);
   });
 
-  testWidgets('the prompt sits over the app rather than replacing it', (tester) async {
+  testWidgets('the prompt sits over the app rather than replacing it', (
+    tester,
+  ) async {
     await pump(tester, UpdateRequirement.optional);
     expect(find.text('the app'), findsOneWidget);
     expect(find.byKey(barrierKey), findsOneWidget);

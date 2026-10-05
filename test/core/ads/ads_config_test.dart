@@ -9,27 +9,49 @@ void main() {
     expect(AdsConfig.resolveUseTestAds('true', debug: false), isTrue);
   });
 
-  test('a blank unit id falls back to the test unit rather than an empty string', () {
-    expect(
-      AdsConfig.resolveUnit(configured: '', test: 'test-unit', useTest: false),
-      'test-unit',
-    );
-    expect(
-      AdsConfig.resolveUnit(configured: '   ', test: 'test-unit', useTest: false),
-      'test-unit',
-    );
-  });
+  test(
+    'a blank unit id falls back to the test unit rather than an empty string',
+    () {
+      expect(
+        AdsConfig.resolveUnit(
+          configured: '',
+          test: 'test-unit',
+          useTest: false,
+        ),
+        'test-unit',
+      );
+      expect(
+        AdsConfig.resolveUnit(
+          configured: '   ',
+          test: 'test-unit',
+          useTest: false,
+        ),
+        'test-unit',
+      );
+    },
+  );
 
-  test('a configured unit is used in release, and ignored when test ads are forced', () {
-    expect(
-      AdsConfig.resolveUnit(configured: ' real-unit ', test: 'test-unit', useTest: false),
-      'real-unit',
-    );
-    expect(
-      AdsConfig.resolveUnit(configured: 'real-unit', test: 'test-unit', useTest: true),
-      'test-unit',
-    );
-  });
+  test(
+    'a configured unit is used in release, and ignored when test ads are forced',
+    () {
+      expect(
+        AdsConfig.resolveUnit(
+          configured: ' real-unit ',
+          test: 'test-unit',
+          useTest: false,
+        ),
+        'real-unit',
+      );
+      expect(
+        AdsConfig.resolveUnit(
+          configured: 'real-unit',
+          test: 'test-unit',
+          useTest: true,
+        ),
+        'test-unit',
+      );
+    },
+  );
 
   test('the sample units are Google\'s, not ours', () {
     for (final id in [

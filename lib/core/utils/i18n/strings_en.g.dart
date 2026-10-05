@@ -48,6 +48,8 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$allergens$en allergens = _Translations$allergens$en._(_root);
 	@override late final _Translations$weekday$en weekday = _Translations$weekday$en._(_root);
 	@override late final _Translations$settings$en settings = _Translations$settings$en._(_root);
+	@override late final _Translations$notificationSettings$en notificationSettings = _Translations$notificationSettings$en._(_root);
+	@override late final _Translations$preferences$en preferences = _Translations$preferences$en._(_root);
 	@override late final _Translations$more$en more = _Translations$more$en._(_root);
 	@override late final _Translations$language$en language = _Translations$language$en._(_root);
 	@override late final _Translations$books$en books = _Translations$books$en._(_root);
@@ -174,6 +176,11 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get appleAlreadyLinked => 'An Apple account is already linked';
 	@override String get blockedTitle => 'Account blocked';
 	@override String get blockedBody => 'This account was blocked by the app\'s administrator. Contact us from the support screen for details.';
+	@override String get phoneClaimedTitle => 'This number belongs to an existing account';
+	@override String phoneClaimedBody({required Object phone}) => '${phone} is already connected to another EasyPlate account. To reach that account and its recipes, sign in the way you did before (Google, Apple or email) and verify the number there again.';
+	@override String get phoneClaimedSignIn => 'Sign in to my existing account';
+	@override String get phoneClaimedCreateNew => 'Create a new account anyway';
+	@override String get phoneClaimedCreateNewConfirm => 'A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number.';
 }
 
 // Path: profile
@@ -295,6 +302,59 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get reminderDayBefore => 'Day before (evening)';
 	@override String get reminderSameDayMorning => 'Shopping day (morning)';
 	@override String get reminderSameDayAfternoon => 'Shopping day (afternoon)';
+	@override String get translatingContent => 'Translating your recipes and menus…';
+	@override String translatedContent({required Object count}) => '${count} items translated';
+	@override String get translationPartialTitle => 'Translation unfinished';
+	@override String translationPartial({required Object count}) => '${count} items stayed in their own language. You can try again later.';
+	@override String get translationFailed => 'Translation failed. Your content stayed in its own language.';
+	@override String get account => 'Account';
+	@override String get notifications => 'Notifications';
+	@override String get notificationsHint => 'Which alerts reach you, and how';
+	@override String get settingsHint => 'Account, notifications, language and appearance';
+}
+
+// Path: notificationSettings
+class _Translations$notificationSettings$en extends Translations$notificationSettings$he {
+	_Translations$notificationSettings$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Notification settings';
+	@override String get push => 'Push notifications';
+	@override String get pushHint => 'Alerts on this device. Off, nothing is pushed; the inbox still fills up.';
+	@override String get pushDenied => 'Notifications are blocked for EasyPlate in the device settings. Allow them there to receive alerts.';
+	@override String get community => 'Community';
+	@override String get repliesOnMyPosts => 'Replies to my posts';
+	@override String get repliesOnMyPostsHint => 'Someone answered a thread you opened';
+	@override String get repliesOnThreads => 'Replies in threads I joined';
+	@override String get repliesOnThreadsHint => 'A new reply in a thread you replied to';
+	@override String get sharing => 'Sharing';
+	@override String get shareInvites => 'Share invites';
+	@override String get shareInvitesHint => 'Someone shared a recipe, book or plan with you. The invite always reaches the inbox; this is the alert.';
+	@override String get sharedRecipeUpdates => 'Updates to saved recipes';
+	@override String get sharedRecipeUpdatesHint => 'The author changed a community recipe you saved';
+	@override String get easyPlate => 'From EasyPlate';
+	@override String get adminReplies => 'Replies to my support messages';
+	@override String get announcements => 'Announcements';
+	@override String get announcementsHint => 'News and updates from the EasyPlate team';
+	@override String get inApp => 'While the app is open';
+	@override String get foregroundPopups => 'Show alerts as a popup';
+	@override String get foregroundPopupsHint => 'A push that arrives while you are in the app opens a small card. Off, it only goes to the inbox.';
+	@override String get reminders => 'Shopping reminders';
+}
+
+// Path: preferences
+class _Translations$preferences$en extends Translations$preferences$he {
+	_Translations$preferences$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Preferences';
+	@override String get hint => 'Shopping, dietary needs and how the books behave';
+	@override String get shopping => 'Shopping';
+	@override String get books => 'Recipe books';
 }
 
 // Path: more
@@ -313,6 +373,7 @@ class _Translations$more$en extends Translations$more$he {
 	@override String get whatsapp => 'Message us on WhatsApp';
 	@override String get email => 'Send an email';
 	@override String get supportUnavailable => 'We could not open that app';
+	@override String get preferences => 'Preferences';
 }
 
 // Path: language
@@ -506,6 +567,9 @@ class _Translations$community$en extends Translations$community$he {
 	@override String get savedTag => 'Saved';
 	@override String get removeSaved => 'Remove from saved recipes';
 	@override String get removeSavedConfirm => 'The recipe will be removed from your saved recipes. You can save it again from the community.';
+	@override String get oneNewPost => '1 new post';
+	@override String newPosts({required Object count}) => '${count} new posts';
+	@override String get replyFailed => 'Your reply could not be sent';
 }
 
 // Path: sharing
@@ -597,6 +661,11 @@ class _Translations$notifications$en extends Translations$notifications$he {
 	@override String get adminReply => 'A reply from the EasyPlate team to your message';
 	@override String adminReplyQuote({required Object excerpt}) => 'Your message: "${excerpt}"';
 	@override String get adminMessage => 'A message from EasyPlate';
+	@override String forumReplyOnMyPost({required Object name, required Object post}) => '${name} replied to your post "${post}"';
+	@override String forumReplyOnThread({required Object name, required Object post}) => '${name} replied in "${post}"';
+	@override String get openThread => 'Open thread';
+	@override String get threadGone => 'This thread was deleted';
+	@override String get settings => 'Settings';
 }
 
 // Path: editor
@@ -759,6 +828,39 @@ class _Translations$groceryList$en extends Translations$groceryList$he {
 	@override String get selectPlansTitle => 'Which menus feed this list?';
 	@override String get applySelection => 'Update list';
 	@override String get selectAllPlans => 'All menus';
+	@override String get myLists => 'My lists';
+	@override String listsCount({required Object count}) => '${count} lists';
+	@override String get oneList => 'One list';
+	@override String get newList => 'New list';
+	@override String get newListTitle => 'New shopping list';
+	@override String get listName => 'List name';
+	@override String get defaultListName => 'Shopping list';
+	@override String get fromPlans => 'From menus';
+	@override String get fromPlansHint => 'Combines the recipes in your meal plans';
+	@override String get fromRecipe => 'From a recipe';
+	@override String get fromRecipeHint => 'The ingredients of one recipe';
+	@override String get emptyList => 'Empty list';
+	@override String get emptyListHint => 'You add the items by hand';
+	@override String get sourcePlans => 'From menus';
+	@override String sourceRecipe({required Object title}) => 'From the recipe "${title}"';
+	@override String get sourceManual => 'Hand-made list';
+	@override String get renameList => 'Rename list';
+	@override String get deleteList => 'Delete list';
+	@override String deleteListConfirm({required Object name}) => '"${name}" and all its items will be deleted.';
+	@override String progress({required Object checked, required Object total}) => '${checked}/${total}';
+	@override String get servings => 'Servings';
+	@override String get timesOver => 'Quantity';
+	@override String scaleValue({required Object value}) => '×${value}';
+	@override String get rebuildFromRecipe => 'Rebuild from the recipe';
+	@override String get createFromRecipe => 'Create shopping list';
+	@override String get createList => 'Create list';
+	@override String get recipeListTitle => 'Shopping list from a recipe';
+	@override String get recipeListHint => 'The recipe\'s ingredients, scaled to how much you are making';
+	@override String listCreated({required Object name}) => 'The list "${name}" was created';
+	@override String get openList => 'Open list';
+	@override String get stayHere => 'Stay here';
+	@override String get noIngredients => 'This recipe has no ingredients to shop for';
+	@override String get addFirstItem => 'Add an item';
 }
 
 // Path: receipt
@@ -1539,6 +1641,11 @@ extension on TranslationsEn {
 			'auth.appleAlreadyLinked' => 'An Apple account is already linked',
 			'auth.blockedTitle' => 'Account blocked',
 			'auth.blockedBody' => 'This account was blocked by the app\'s administrator. Contact us from the support screen for details.',
+			'auth.phoneClaimedTitle' => 'This number belongs to an existing account',
+			'auth.phoneClaimedBody' => ({required Object phone}) => '${phone} is already connected to another EasyPlate account. To reach that account and its recipes, sign in the way you did before (Google, Apple or email) and verify the number there again.',
+			'auth.phoneClaimedSignIn' => 'Sign in to my existing account',
+			'auth.phoneClaimedCreateNew' => 'Create a new account anyway',
+			'auth.phoneClaimedCreateNewConfirm' => 'A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number.',
 			'profile.setupTitle' => 'A few last details',
 			'profile.setupSubtitle' => 'So we know what to call you',
 			'profile.fullName' => 'Full name',
@@ -1606,6 +1713,41 @@ extension on TranslationsEn {
 			'settings.reminderDayBefore' => 'Day before (evening)',
 			'settings.reminderSameDayMorning' => 'Shopping day (morning)',
 			'settings.reminderSameDayAfternoon' => 'Shopping day (afternoon)',
+			'settings.translatingContent' => 'Translating your recipes and menus…',
+			'settings.translatedContent' => ({required Object count}) => '${count} items translated',
+			'settings.translationPartialTitle' => 'Translation unfinished',
+			'settings.translationPartial' => ({required Object count}) => '${count} items stayed in their own language. You can try again later.',
+			'settings.translationFailed' => 'Translation failed. Your content stayed in its own language.',
+			'settings.account' => 'Account',
+			'settings.notifications' => 'Notifications',
+			'settings.notificationsHint' => 'Which alerts reach you, and how',
+			'settings.settingsHint' => 'Account, notifications, language and appearance',
+			'notificationSettings.title' => 'Notification settings',
+			'notificationSettings.push' => 'Push notifications',
+			'notificationSettings.pushHint' => 'Alerts on this device. Off, nothing is pushed; the inbox still fills up.',
+			'notificationSettings.pushDenied' => 'Notifications are blocked for EasyPlate in the device settings. Allow them there to receive alerts.',
+			'notificationSettings.community' => 'Community',
+			'notificationSettings.repliesOnMyPosts' => 'Replies to my posts',
+			'notificationSettings.repliesOnMyPostsHint' => 'Someone answered a thread you opened',
+			'notificationSettings.repliesOnThreads' => 'Replies in threads I joined',
+			'notificationSettings.repliesOnThreadsHint' => 'A new reply in a thread you replied to',
+			'notificationSettings.sharing' => 'Sharing',
+			'notificationSettings.shareInvites' => 'Share invites',
+			'notificationSettings.shareInvitesHint' => 'Someone shared a recipe, book or plan with you. The invite always reaches the inbox; this is the alert.',
+			'notificationSettings.sharedRecipeUpdates' => 'Updates to saved recipes',
+			'notificationSettings.sharedRecipeUpdatesHint' => 'The author changed a community recipe you saved',
+			'notificationSettings.easyPlate' => 'From EasyPlate',
+			'notificationSettings.adminReplies' => 'Replies to my support messages',
+			'notificationSettings.announcements' => 'Announcements',
+			'notificationSettings.announcementsHint' => 'News and updates from the EasyPlate team',
+			'notificationSettings.inApp' => 'While the app is open',
+			'notificationSettings.foregroundPopups' => 'Show alerts as a popup',
+			'notificationSettings.foregroundPopupsHint' => 'A push that arrives while you are in the app opens a small card. Off, it only goes to the inbox.',
+			'notificationSettings.reminders' => 'Shopping reminders',
+			'preferences.title' => 'Preferences',
+			'preferences.hint' => 'Shopping, dietary needs and how the books behave',
+			'preferences.shopping' => 'Shopping',
+			'preferences.books' => 'Recipe books',
 			'more.title' => 'More',
 			'more.settings' => 'Settings',
 			'more.profile' => 'My profile',
@@ -1615,6 +1757,7 @@ extension on TranslationsEn {
 			'more.whatsapp' => 'Message us on WhatsApp',
 			'more.email' => 'Send an email',
 			'more.supportUnavailable' => 'We could not open that app',
+			'more.preferences' => 'Preferences',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -1763,6 +1906,9 @@ extension on TranslationsEn {
 			'community.savedTag' => 'Saved',
 			'community.removeSaved' => 'Remove from saved recipes',
 			'community.removeSavedConfirm' => 'The recipe will be removed from your saved recipes. You can save it again from the community.',
+			'community.oneNewPost' => '1 new post',
+			'community.newPosts' => ({required Object count}) => '${count} new posts',
+			'community.replyFailed' => 'Your reply could not be sent',
 			'sharing.title' => 'Share recipe',
 			'sharing.contactLabel' => 'Email or phone of the person',
 			'sharing.contactHint' => 'name@example.com or 05…',
@@ -1836,6 +1982,11 @@ extension on TranslationsEn {
 			'notifications.adminReply' => 'A reply from the EasyPlate team to your message',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Your message: "${excerpt}"',
 			'notifications.adminMessage' => 'A message from EasyPlate',
+			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} replied to your post "${post}"',
+			'notifications.forumReplyOnThread' => ({required Object name, required Object post}) => '${name} replied in "${post}"',
+			'notifications.openThread' => 'Open thread',
+			'notifications.threadGone' => 'This thread was deleted',
+			'notifications.settings' => 'Settings',
 			'editor.title' => 'Edit recipe',
 			'editor.recipeTitle' => 'Recipe name',
 			'editor.titleHint' => 'For example: Jerusalem shakshuka',
@@ -1916,6 +2067,8 @@ extension on TranslationsEn {
 			'mealPlanner.breakfast' => 'Breakfast',
 			'mealPlanner.lunch' => 'Lunch',
 			'mealPlanner.dinner' => 'Dinner',
+			_ => null,
+		} ?? switch (path) {
 			'mealPlanner.morningSnack' => 'Morning snack',
 			'mealPlanner.afternoonSnack' => 'Afternoon snack',
 			'mealPlanner.eveningSnack' => 'Evening snack',
@@ -1962,11 +2115,42 @@ extension on TranslationsEn {
 			'groceryList.selectPlansTitle' => 'Which menus feed this list?',
 			'groceryList.applySelection' => 'Update list',
 			'groceryList.selectAllPlans' => 'All menus',
+			'groceryList.myLists' => 'My lists',
+			'groceryList.listsCount' => ({required Object count}) => '${count} lists',
+			'groceryList.oneList' => 'One list',
+			'groceryList.newList' => 'New list',
+			'groceryList.newListTitle' => 'New shopping list',
+			'groceryList.listName' => 'List name',
+			'groceryList.defaultListName' => 'Shopping list',
+			'groceryList.fromPlans' => 'From menus',
+			'groceryList.fromPlansHint' => 'Combines the recipes in your meal plans',
+			'groceryList.fromRecipe' => 'From a recipe',
+			'groceryList.fromRecipeHint' => 'The ingredients of one recipe',
+			'groceryList.emptyList' => 'Empty list',
+			'groceryList.emptyListHint' => 'You add the items by hand',
+			'groceryList.sourcePlans' => 'From menus',
+			'groceryList.sourceRecipe' => ({required Object title}) => 'From the recipe "${title}"',
+			'groceryList.sourceManual' => 'Hand-made list',
+			'groceryList.renameList' => 'Rename list',
+			'groceryList.deleteList' => 'Delete list',
+			'groceryList.deleteListConfirm' => ({required Object name}) => '"${name}" and all its items will be deleted.',
+			'groceryList.progress' => ({required Object checked, required Object total}) => '${checked}/${total}',
+			'groceryList.servings' => 'Servings',
+			'groceryList.timesOver' => 'Quantity',
+			'groceryList.scaleValue' => ({required Object value}) => '×${value}',
+			'groceryList.rebuildFromRecipe' => 'Rebuild from the recipe',
+			'groceryList.createFromRecipe' => 'Create shopping list',
+			'groceryList.createList' => 'Create list',
+			'groceryList.recipeListTitle' => 'Shopping list from a recipe',
+			'groceryList.recipeListHint' => 'The recipe\'s ingredients, scaled to how much you are making',
+			'groceryList.listCreated' => ({required Object name}) => 'The list "${name}" was created',
+			'groceryList.openList' => 'Open list',
+			'groceryList.stayHere' => 'Stay here',
+			'groceryList.noIngredients' => 'This recipe has no ingredients to shop for',
+			'groceryList.addFirstItem' => 'Add an item',
 			'receipt.title' => 'Scan a receipt',
 			'receipt.subtitle' => 'Photograph a receipt or upload a PDF, and the prices are kept for your grocery list',
 			'receipt.camera' => 'Photograph receipt',
-			_ => null,
-		} ?? switch (path) {
 			'receipt.cameraHint' => 'Long receipt? Take several photos, we merge them',
 			'receipt.gallery' => 'Pick from gallery',
 			'receipt.pdf' => 'PDF file',
@@ -2397,6 +2581,8 @@ extension on TranslationsEn {
 			'adminDashboard.send' => 'Send',
 			'adminDashboard.blocked' => 'Blocked',
 			'adminDashboard.disable' => 'Block account',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.enable' => 'Unblock',
 			'adminDashboard.blockMessageHint' => 'What the user sees when they try to sign in',
 			'adminDashboard.disabledDone' => 'Account blocked',

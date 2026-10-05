@@ -11,7 +11,10 @@ import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 
 /// Result of the quick-entry sheet: the item's name plus the products it is
 /// made of (possibly empty).
-typedef QuickEntryResult = ({String text, List<RecipeIngredientEntity> ingredients});
+typedef QuickEntryResult = ({
+  String text,
+  List<RecipeIngredientEntity> ingredients,
+});
 
 /// Creates or edits a free-text meal item. Listing products here is what lets
 /// a quick entry like "omelette" contribute eggs, milk and oil to the grocery
@@ -37,9 +40,12 @@ class _ProductDraft {
   final TextEditingController amount;
   MeasurementUnit unit;
 
-  _ProductDraft({String name = '', String amount = '', this.unit = MeasurementUnit.unit})
-      : name = TextEditingController(text: name),
-        amount = TextEditingController(text: amount);
+  _ProductDraft({
+    String name = '',
+    String amount = '',
+    this.unit = MeasurementUnit.unit,
+  }) : name = TextEditingController(text: name),
+       amount = TextEditingController(text: amount);
 
   void dispose() {
     name.dispose();
@@ -58,7 +64,9 @@ class _QuickEntryForm extends StatefulWidget {
 }
 
 class _QuickEntryFormState extends State<_QuickEntryForm> {
-  late final _nameController = TextEditingController(text: widget.initialText ?? '');
+  late final _nameController = TextEditingController(
+    text: widget.initialText ?? '',
+  );
   late final List<_ProductDraft> _products = [
     for (final ingredient in widget.initialIngredients)
       _ProductDraft(
@@ -106,7 +114,8 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
       padding: EdgeInsets.only(
         left: AppSpacing.marginMobile,
         right: AppSpacing.marginMobile,
-        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom + AppSpacing.marginMobile,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -131,12 +140,16 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
             Row(
               children: [
                 Expanded(
-                  child: Text(t.mealPlanner.products, style: AppTextStyles.labelMd),
+                  child: Text(
+                    t.mealPlanner.products,
+                    style: AppTextStyles.labelMd,
+                  ),
                 ),
                 TextButton.icon(
                   icon: const Icon(Icons.add_rounded, size: 18),
                   label: Text(t.mealPlanner.addProduct),
-                  onPressed: () => setState(() => _products.add(_ProductDraft())),
+                  onPressed: () =>
+                      setState(() => _products.add(_ProductDraft())),
                 ),
               ],
             ),
@@ -145,7 +158,9 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
                 padding: const EdgeInsets.only(bottom: AppSpacing.base),
                 child: Text(
                   t.mealPlanner.noProducts,
-                  style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.outline,
+                  ),
                 ),
               ),
             ..._products.asMap().entries.map((entry) {
@@ -175,7 +190,9 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
                             child: TextField(
                               controller: product.amount,
                               keyboardType:
-                                  const TextInputType.numberWithOptions(decimal: true),
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               textAlign: TextAlign.center,
                               style: AppTextStyles.bodyMd,
                               decoration: InputDecoration(
@@ -201,9 +218,12 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
                           children: [
                             for (final unit in MeasurementUnit.values)
                               Padding(
-                                padding: const EdgeInsets.only(right: AppSpacing.base),
+                                padding: const EdgeInsets.only(
+                                  right: AppSpacing.base,
+                                ),
                                 child: GestureDetector(
-                                  onTap: () => setState(() => product.unit = unit),
+                                  onTap: () =>
+                                      setState(() => product.unit = unit),
                                   behavior: HitTestBehavior.opaque,
                                   child: Container(
                                     alignment: Alignment.center,

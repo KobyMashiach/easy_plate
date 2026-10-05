@@ -3,22 +3,43 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   List<String> render(FeedAdLayout layout) => [
-        for (var i = 0; i < layout.length; i++)
-          switch (layout.slotAt(i)) {
-            ContentSlot(index: final index) => 'c$index',
-            AdSlot(adIndex: final adIndex) => 'ad$adIndex',
-          },
-      ];
+    for (var i = 0; i < layout.length; i++)
+      switch (layout.slotAt(i)) {
+        ContentSlot(index: final index) => 'c$index',
+        AdSlot(adIndex: final adIndex) => 'ad$adIndex',
+      },
+  ];
 
   test('an ad after every five items, and never as the last row', () {
     expect(
       render(const FeedAdLayout(itemCount: 12, interval: 5)),
-      ['c0', 'c1', 'c2', 'c3', 'c4', 'ad0', 'c5', 'c6', 'c7', 'c8', 'c9', 'ad1', 'c10', 'c11'],
+      [
+        'c0',
+        'c1',
+        'c2',
+        'c3',
+        'c4',
+        'ad0',
+        'c5',
+        'c6',
+        'c7',
+        'c8',
+        'c9',
+        'ad1',
+        'c10',
+        'c11',
+      ],
     );
   });
 
   test('exactly five items carry no ad', () {
-    expect(render(const FeedAdLayout(itemCount: 5, interval: 5)), ['c0', 'c1', 'c2', 'c3', 'c4']);
+    expect(render(const FeedAdLayout(itemCount: 5, interval: 5)), [
+      'c0',
+      'c1',
+      'c2',
+      'c3',
+      'c4',
+    ]);
   });
 
   test('six items carry one, between the fifth and the sixth', () {

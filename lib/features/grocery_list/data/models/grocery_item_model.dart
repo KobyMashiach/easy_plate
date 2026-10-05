@@ -21,29 +21,30 @@ sealed class GroceryItemModel with _$GroceryItemModel {
     @HiveField(6) @Default(false) bool isAdHoc,
   }) = _GroceryItemModel;
 
-  factory GroceryItemModel.fromJson(Map<String, dynamic> json) => _$GroceryItemModelFromJson(json);
+  factory GroceryItemModel.fromJson(Map<String, dynamic> json) =>
+      _$GroceryItemModelFromJson(json);
 }
 
 extension GroceryItemModelMapper on GroceryItemModel {
   GroceryItemEntity toEntity() => GroceryItemEntity(
-        id: id,
-        name: name,
-        unit: unit,
-        sources: sources.map((s) => s.toEntity()).toList(),
-        isChecked: isChecked,
-        category: category,
-        isAdHoc: isAdHoc,
-      );
+    id: id,
+    name: name,
+    unit: unit,
+    sources: sources.map((s) => s.toEntity()).toList(),
+    isChecked: isChecked,
+    category: category,
+    isAdHoc: isAdHoc,
+  );
 }
 
 extension GroceryItemEntityMapper on GroceryItemEntity {
   GroceryItemModel toModel() => GroceryItemModel(
-        id: id,
-        name: name,
-        unit: unit,
-        sources: sources.map((s) => s.toModel()).toList(),
-        isChecked: isChecked,
-        category: category,
-        isAdHoc: isAdHoc,
-      );
+    id: id,
+    name: name,
+    unit: unit,
+    sources: sources.map((s) => s.toModel()).toList(),
+    isChecked: isChecked,
+    category: category,
+    isAdHoc: isAdHoc,
+  );
 }

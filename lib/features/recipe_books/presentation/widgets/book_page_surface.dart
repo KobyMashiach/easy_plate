@@ -13,13 +13,19 @@ import '../../../../core/constants/app_spacing.dart';
 class BookPageSide extends InheritedWidget {
   final bool spineAtEnd;
 
-  const BookPageSide({super.key, required this.spineAtEnd, required super.child});
+  const BookPageSide({
+    super.key,
+    required this.spineAtEnd,
+    required super.child,
+  });
 
   static bool spineAtEndOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<BookPageSide>()?.spineAtEnd ?? false;
+      context.dependOnInheritedWidgetOfExactType<BookPageSide>()?.spineAtEnd ??
+      false;
 
   @override
-  bool updateShouldNotify(BookPageSide oldWidget) => oldWidget.spineAtEnd != spineAtEnd;
+  bool updateShouldNotify(BookPageSide oldWidget) =>
+      oldWidget.spineAtEnd != spineAtEnd;
 }
 
 /// A single leaf of an open recipe book: the bright page stock plus the inner

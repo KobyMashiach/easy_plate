@@ -33,9 +33,16 @@ class OnboardingPage extends StatelessWidget {
           return ClayScaffold(
             body: SafeArea(
               child: switch (state) {
-                Editing(shoppingDay: final day, selectedPreferences: final selected) =>
-                  _OnboardingForm(shoppingDay: day, selectedPreferences: selected),
-                Saving() || Complete() => const Center(child: CircularProgressIndicator()),
+                Editing(
+                  shoppingDay: final day,
+                  selectedPreferences: final selected,
+                ) =>
+                  _OnboardingForm(
+                    shoppingDay: day,
+                    selectedPreferences: selected,
+                  ),
+                Saving() ||
+                Complete() => const Center(child: CircularProgressIndicator()),
               },
             ),
           );
@@ -49,7 +56,10 @@ class _OnboardingForm extends StatelessWidget {
   final ShoppingDay shoppingDay;
   final List<DietaryPreference> selectedPreferences;
 
-  const _OnboardingForm({required this.shoppingDay, required this.selectedPreferences});
+  const _OnboardingForm({
+    required this.shoppingDay,
+    required this.selectedPreferences,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +94,9 @@ class _OnboardingForm extends StatelessWidget {
         Text(
           t.onboarding.welcomeSubtitle,
           textAlign: TextAlign.center,
-          style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+          style: AppTextStyles.bodyMd.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: AppSpacing.xl),
         ClayCard(

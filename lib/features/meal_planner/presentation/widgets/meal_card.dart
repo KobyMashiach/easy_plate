@@ -41,15 +41,18 @@ class MealCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: ClayTag(label: meal.name, icon: Icons.restaurant_rounded),
+                child: ClayTag(
+                  label: meal.name,
+                  icon: Icons.restaurant_rounded,
+                ),
               ),
               if (!readOnly)
-              IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, size: 20),
-                color: AppColors.outline,
-                tooltip: t.common.delete,
-                onPressed: () => bloc.add(.removeMeal(meal.id)),
-              ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                  color: AppColors.outline,
+                  tooltip: t.common.delete,
+                  onPressed: () => bloc.add(.removeMeal(meal.id)),
+                ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -89,7 +92,8 @@ class MealCard extends StatelessWidget {
                           children: [
                             Text(
                               item.recipeId != null
-                                  ? (recipeTitles[item.recipeId] ?? t.common.missingInfo)
+                                  ? (recipeTitles[item.recipeId] ??
+                                        t.common.missingInfo)
                                   : (item.freeText ?? ''),
                               style: AppTextStyles.bodyMd,
                             ),
@@ -106,45 +110,48 @@ class MealCard extends StatelessWidget {
                         ),
                       ),
                       if (!readOnly)
-                      GestureDetector(
-                        onTap: () => bloc.add(.removeItem(meal.id, item.id)),
-                        behavior: HitTestBehavior.opaque,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.xs),
-                          child: Icon(
-                            Icons.close_rounded,
-                            size: 16,
-                            color: AppColors.outline,
+                        GestureDetector(
+                          onTap: () => bloc.add(.removeItem(meal.id, item.id)),
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.all(AppSpacing.xs),
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 16,
+                              color: AppColors.outline,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
               ),
           if (!readOnly) ...[
-          const Divider(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: TextButton.icon(
-                  icon: const Icon(Icons.restaurant_menu_rounded, size: 18),
-                  label: Text(t.mealPlanner.pickRecipe),
-                  onPressed: () async {
-                    final recipe = await showRecipePickerSheet(context);
-                    if (recipe != null) bloc.add(.addRecipeItem(meal.id, recipe.id));
-                  },
+            const Divider(height: AppSpacing.md),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.restaurant_menu_rounded, size: 18),
+                    label: Text(t.mealPlanner.pickRecipe),
+                    onPressed: () async {
+                      final recipe = await showRecipePickerSheet(context);
+                      if (recipe != null) {
+                        bloc.add(.addRecipeItem(meal.id, recipe.id));
+                      }
+                    },
+                  ),
                 ),
-              ),
-              Expanded(
-                child: TextButton.icon(
-                  icon: const Icon(Icons.edit_note_rounded, size: 18),
-                  label: Text(t.mealPlanner.quickEntry),
-                  onPressed: () => _showQuickEntryDialog(context, bloc, meal.id),
+                Expanded(
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.edit_note_rounded, size: 18),
+                    label: Text(t.mealPlanner.quickEntry),
+                    onPressed: () =>
+                        _showQuickEntryDialog(context, bloc, meal.id),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ],
         ],
       ),
@@ -172,6 +179,8 @@ class MealCard extends StatelessWidget {
       initialIngredients: item.ingredients,
     );
     if (result == null) return;
-    bloc.add(.updateFreeTextItem(meal.id, item.id, result.text, result.ingredients));
+    bloc.add(
+      .updateFreeTextItem(meal.id, item.id, result.text, result.ingredients),
+    );
   }
 }

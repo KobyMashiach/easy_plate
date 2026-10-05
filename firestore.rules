@@ -341,6 +341,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Lines anyone has already had translated, keyed by hash of the text and
+    // the language. Written by the translateContent function alone; the app
+    // never reads it directly, so it stays closed on both sides.
+    match /translation_cache/{key} {
+      allow read, write: if false;
+    }
+
     // The dashboard's own settings — the token price table and the exchange
     // rate. The administrator's alone, both ways.
     match /admin_config/{name} {

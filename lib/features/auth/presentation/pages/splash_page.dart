@@ -32,35 +32,43 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     duration: const Duration(milliseconds: 1800),
   )..repeat(reverse: true);
 
-  late final Animation<double> _tileScale = CurvedAnimation(
+  // Each curve listens to its controller and has to be disposed with it.
+  late final CurvedAnimation _tileScale = CurvedAnimation(
     parent: _entrance,
     curve: const Interval(0, 0.55, curve: Curves.easeOutBack),
   );
-  late final Animation<double> _tileFade = CurvedAnimation(
+  late final CurvedAnimation _tileFade = CurvedAnimation(
     parent: _entrance,
     curve: const Interval(0, 0.35, curve: Curves.easeOut),
   );
-  late final Animation<double> _titleFade = CurvedAnimation(
+  late final CurvedAnimation _titleFade = CurvedAnimation(
     parent: _entrance,
     curve: const Interval(0.45, 0.85, curve: Curves.easeOut),
   );
-  late final Animation<Offset> _titleRise =
-      Tween(
-        begin: const Offset(0, 0.6),
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(
-          parent: _entrance,
-          curve: const Interval(0.45, 0.9, curve: Curves.easeOutCubic),
-        ),
-      );
-  late final Animation<double> _dotsFade = CurvedAnimation(
+  late final CurvedAnimation _titleRiseCurve = CurvedAnimation(
+    parent: _entrance,
+    curve: const Interval(0.45, 0.9, curve: Curves.easeOutCubic),
+  );
+  late final Animation<Offset> _titleRise = Tween(
+    begin: const Offset(0, 0.6),
+    end: Offset.zero,
+  ).animate(_titleRiseCurve);
+  late final CurvedAnimation _dotsFade = CurvedAnimation(
     parent: _entrance,
     curve: const Interval(0.75, 1, curve: Curves.easeOut),
   );
+  late final Animation<double> _tileScaleTween = Tween(
+    begin: 0.6,
+    end: 1.0,
+  ).animate(_tileScale);
 
   @override
   void dispose() {
+    _tileScale.dispose();
+    _tileFade.dispose();
+    _titleFade.dispose();
+    _titleRiseCurve.dispose();
+    _dotsFade.dispose();
     _entrance.dispose();
     _halo.dispose();
     super.dispose();
@@ -83,19 +91,22 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   // repeating controller, behind the tile.
                   AnimatedBuilder(
                     animation: _halo,
-                    builder: (context, _) {
+                    // The disc itself does not change per frame: handed in
+                    // as `child` so only the opacity and scale are rebuilt.
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primaryFixed,
+                      ),
+                      child: const SizedBox.expand(),
+                    ),
+                    builder: (context, disc) {
                       final t = Curves.easeInOut.transform(_halo.value);
                       return Opacity(
                         opacity: _tileFade.value * (0.55 - 0.3 * t),
                         child: Transform.scale(
                           scale: 0.8 + 0.25 * t,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.primaryFixed,
-                            ),
-                            child: const SizedBox.expand(),
-                          ),
+                          child: disc,
                         ),
                       );
                     },
@@ -103,7 +114,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   FadeTransition(
                     opacity: _tileFade,
                     child: ScaleTransition(
-                      scale: Tween(begin: 0.6, end: 1.0).animate(_tileScale),
+                      scale: _tileScaleTween,
                       child: Container(
                         width: 128,
                         height: 128,

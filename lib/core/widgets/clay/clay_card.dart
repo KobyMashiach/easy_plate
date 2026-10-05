@@ -16,6 +16,7 @@ class ClayCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final bool showSpine;
+
   /// Null reads as the theme's primaryFixed.
   final Color? spineColor;
   final bool isActive;
@@ -44,8 +45,11 @@ class _ClayCardState extends State<ClayCard> {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(widget.radius);
-    final background = widget.color ??
-        (widget.isActive ? AppColors.primaryContainer : AppColors.surfaceContainerLowest);
+    final background =
+        widget.color ??
+        (widget.isActive
+            ? AppColors.primaryContainer
+            : AppColors.surfaceContainerLowest);
 
     final card = AnimatedScale(
       scale: _pressed ? 0.98 : 1,
@@ -75,7 +79,9 @@ class _ClayCardState extends State<ClayCard> {
                       end: Alignment.center,
                       colors: [
                         AppShadows.bevelHighlight.withValues(
-                          alpha: (widget.isActive ? 0.2 : 0.5) * AppShadows.bevelStrength,
+                          alpha:
+                              (widget.isActive ? 0.2 : 0.5) *
+                              AppShadows.bevelStrength,
                         ),
                         // Fade to transparent *white*: fading to
                         // Colors.transparent (transparent black) would tint
@@ -91,12 +97,16 @@ class _ClayCardState extends State<ClayCard> {
                   start: 0,
                   top: 0,
                   bottom: 0,
-                  child: _ClaySpine(color: widget.spineColor ?? AppColors.primaryFixed),
+                  child: _ClaySpine(
+                    color: widget.spineColor ?? AppColors.primaryFixed,
+                  ),
                 ),
               Padding(
                 padding: widget.padding.add(
                   widget.showSpine
-                      ? const EdgeInsetsDirectional.only(start: AppSpacing.gutter)
+                      ? const EdgeInsetsDirectional.only(
+                          start: AppSpacing.gutter,
+                        )
                       : EdgeInsets.zero,
                 ),
                 child: widget.child,

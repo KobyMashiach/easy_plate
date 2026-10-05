@@ -44,23 +44,28 @@ Future<RecipeEntity?> showRecipePickerSheet(
             return BlocBuilder<MyRecipesBloc, MyRecipesState>(
               builder: (context, state) {
                 return switch (state) {
-                  MyRecipesLoading() => const Center(child: CircularProgressIndicator()),
+                  MyRecipesLoading() => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                   MyRecipesLoaded(
                     recipes: final recipes,
                     dietaryFilters: final filters,
                   ) =>
                     _PickerBody(
-                      recipes: where == null ? recipes : recipes.where(where).toList(),
+                      recipes: where == null
+                          ? recipes
+                          : recipes.where(where).toList(),
                       filters: filters,
                       initialSelectedIds: selectedIds,
                       onToggle: onToggle,
                       scrollController: scrollController,
                     ),
                   MyRecipesError(error: final error) => ErrorRetryView(
-                      error: error,
-                      onRetry: () =>
-                          context.read<MyRecipesBloc>().add(const MyRecipesEvent.init()),
+                    error: error,
+                    onRetry: () => context.read<MyRecipesBloc>().add(
+                      const MyRecipesEvent.init(),
                     ),
+                  ),
                 };
               },
             );
@@ -119,7 +124,10 @@ class _PickerBodyState extends State<_PickerBody> {
           Row(
             children: [
               Expanded(
-                child: Text(t.mealPlanner.pickRecipe, style: AppTextStyles.headlineMd),
+                child: Text(
+                  t.mealPlanner.pickRecipe,
+                  style: AppTextStyles.headlineMd,
+                ),
               ),
               if (_isMultiSelect)
                 TextButton(
@@ -168,7 +176,8 @@ class _PickerBodyState extends State<_PickerBody> {
             child: ListView.separated(
               controller: widget.scrollController,
               itemCount: widget.recipes.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.base),
+              separatorBuilder: (_, _) =>
+                  const SizedBox(height: AppSpacing.base),
               itemBuilder: (context, index) {
                 final recipe = widget.recipes[index];
                 final isSelected = _selected.contains(recipe.id);

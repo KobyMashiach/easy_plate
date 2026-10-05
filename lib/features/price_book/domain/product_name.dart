@@ -4,10 +4,17 @@
 /// change both or the community lookup silently misses.
 String normalizeProductName(String raw) => raw
     .toLowerCase()
-    .replaceAll(RegExp(r'[֑-ׇ]'), '')
-    .replaceAll(RegExp(r'[^\p{L}\p{N}%\s]', unicode: true), ' ')
-    .replaceAll(RegExp(r'\s+'), ' ')
+    .replaceAll(_niqqud, '')
+    .replaceAll(_punctuation, ' ')
+    .replaceAll(_spaces, ' ')
     .trim();
+
+// Compiled once. This runs for every (grocery line × price record) pair on
+// every build of the grocery tab; three fresh RegExps per call was most of
+// that cost.
+final _niqqud = RegExp(r'[֑-ׇ]');
+final _punctuation = RegExp(r'[^\p{L}\p{N}%\s]', unicode: true);
+final _spaces = RegExp(r'\s+');
 
 /// The words of a normalised name, for the looser matches.
 List<String> productTokens(String normalized) =>

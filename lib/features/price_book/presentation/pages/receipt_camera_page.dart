@@ -56,7 +56,16 @@ class _ReceiptCameraPageState extends State<ReceiptCameraPage>
     _start();
   }
 
+  /// True between a start and its outcome, so a resume that lands while
+  /// the camera is still coming up does not open it twice.
+  bool _starting = false;
+
   Future<void> _start() async {
+    if (_starting || _controller != null) return;
+    _starting = true;
+    // Held outside the try so a failure part-way through the setup can
+    // still release the native camera it had already opened.
+    CameraController? controller;
     try {
       final cameras = await availableCameras();
       final back =
@@ -65,7 +74,7 @@ class _ReceiptCameraPageState extends State<ReceiptCameraPage>
               .firstOrNull ??
           cameras.firstOrNull;
       if (back == null) throw StateError('no camera');
-      final controller = CameraController(
+      controller = CameraController(
         back,
         ResolutionPreset.veryHigh,
         enableAudio: false,
@@ -86,11 +95,14 @@ class _ReceiptCameraPageState extends State<ReceiptCameraPage>
     } catch (e) {
       debugPrint('Receipt camera unavailable: $e');
       ReceiptCameraPage.lastOpenSucceeded = false;
+      unawaited(controller?.dispose());
       if (!mounted) return;
       setState(() => _failed = true);
       // Nothing to look through: hand back to the sheet, which falls back
       // to the system camera.
       Navigator.of(context).maybePop();
+    } finally {
+      _starting = false;
     }
   }
 
@@ -137,22 +149,34 @@ class _ReceiptCameraPageState extends State<ReceiptCameraPage>
       debugPrint('Receipt capture failed: $e');
       _capturing = false;
       _detector.reset();
-      if (mounted && _controller != null) {
-        await _controller!.startImageStream(_onFrame);
+      // Only the controller the shot was taken with: a pause in between
+      // has already disposed it and nulled the field.
+      if (mounted && identical(_controller, controller)) {
+        await controller.startImageStream(_onFrame);
       }
     }
   }
 
+  /// The camera is released while the app is away and reopened on return.
+  /// The release goes through setState so the preview stops drawing from
+  /// a disposed controller; before, the field was nulled silently and the
+  /// resume check then saw "no controller" and never restarted it.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
-    if (state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.paused) {
-      controller.dispose();
-      _controller = null;
-    } else if (state == AppLifecycleState.resumed) {
-      _start();
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        final controller = _controller;
+        if (controller == null) return;
+        setState(() => _controller = null);
+        _capturing = false;
+        _detector.reset();
+        unawaited(controller.dispose());
+      case AppLifecycleState.resumed:
+        if (_controller == null && !_failed) _start();
+      case AppLifecycleState.detached:
+        break;
     }
   }
 

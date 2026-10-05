@@ -9,7 +9,11 @@ import 'spine_color_picker.dart';
 /// Spine colours cycle so a shelf of books reads as distinct objects, the way
 /// the Stitch library carousel alternates primary / secondary / tertiary.
 // The pre-choice rotation, kept so older shelves look as they did.
-List<Color> get _spineColors => [AppColors.primary, AppColors.secondary, AppColors.tertiary];
+List<Color> get _spineColors => [
+  AppColors.primary,
+  AppColors.secondary,
+  AppColors.tertiary,
+];
 
 class BookCoverCard extends StatelessWidget {
   final RecipeBookEntity book;

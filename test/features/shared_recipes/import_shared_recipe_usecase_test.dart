@@ -9,24 +9,27 @@ class _FakeRecipes implements RecipesRepository {
   @override
   Future<List<RecipeEntity>> getRecipes() async => saved;
   @override
-  Future<void> saveRecipe(RecipeEntity recipe) async => saved.add(recipe);
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async => saved.add(recipe);
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
 SharedRecipeEntity shared() => SharedRecipeEntity(
-      id: 's1',
-      authorUid: 'dana',
-      authorName: 'דנה',
-      createdAt: DateTime(2026, 1, 1),
-      recipe: RecipeEntity(
-        id: 's1',
-        title: 'קובה סלק',
-        ingredients: const [],
-        steps: const ['מבשלים'],
-        createdAt: DateTime(2026, 1, 1),
-      ),
-    );
+  id: 's1',
+  authorUid: 'dana',
+  authorName: 'דנה',
+  createdAt: DateTime(2026, 1, 1),
+  recipe: RecipeEntity(
+    id: 's1',
+    title: 'קובה סלק',
+    ingredients: const [],
+    steps: const ['מבשלים'],
+    createdAt: DateTime(2026, 1, 1),
+  ),
+);
 
 void main() {
   late _FakeRecipes recipes;

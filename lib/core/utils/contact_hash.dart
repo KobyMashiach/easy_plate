@@ -25,10 +25,11 @@ NormalizedContact? normalizeContact(String raw) {
   final e164 = digits.startsWith('+')
       ? digits
       : digits.startsWith('0')
-          ? '+972${digits.substring(1)}'
-          : '+$digits';
+      ? '+972${digits.substring(1)}'
+      : '+$digits';
   return (value: e164, isEmail: false);
 }
 
 /// The directory key for a normalised contact.
-String contactHash(String normalized) => sha256.convert(utf8.encode(normalized)).toString();
+String contactHash(String normalized) =>
+    sha256.convert(utf8.encode(normalized)).toString();

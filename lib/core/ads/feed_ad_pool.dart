@@ -39,7 +39,9 @@ class NativeAdSlot extends ChangeNotifier {
           notifyListeners();
         },
         onAdFailedToLoad: (ad, error) {
-          debugPrint('Native ad failed to load: ${error.code} ${error.message}');
+          debugPrint(
+            'Native ad failed to load: ${error.code} ${error.message}',
+          );
           ad.dispose();
           if (_disposed) return;
           _ad = null;
@@ -59,7 +61,8 @@ class NativeAdSlot extends ChangeNotifier {
   }
 }
 
-bool _isRtl(String languageCode) => languageCode == 'he' || languageCode == 'ar';
+bool _isRtl(String languageCode) =>
+    languageCode == 'he' || languageCode == 'ar';
 
 /// The native ads of one feed, by position, owned by the feed's state.
 ///

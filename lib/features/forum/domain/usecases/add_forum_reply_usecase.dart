@@ -4,7 +4,8 @@ class AddForumReplyUseCase {
   final ForumRepository repository;
   AddForumReplyUseCase(this.repository);
 
-  Future<void> call({
+  /// Returns the id the reply was written under.
+  Future<String> call({
     required String postId,
     required String body,
     required String authorUid,
@@ -12,14 +13,13 @@ class AddForumReplyUseCase {
     String? authorPhotoUrl,
     String? sharedRecipeId,
     String? sharedRecipeTitle,
-  }) =>
-      repository.addReply(
-        postId: postId,
-        body: body,
-        authorUid: authorUid,
-        authorName: authorName,
-        authorPhotoUrl: authorPhotoUrl,
-        sharedRecipeId: sharedRecipeId,
-        sharedRecipeTitle: sharedRecipeTitle,
-      );
+  }) => repository.addReply(
+    postId: postId,
+    body: body,
+    authorUid: authorUid,
+    authorName: authorName,
+    authorPhotoUrl: authorPhotoUrl,
+    sharedRecipeId: sharedRecipeId,
+    sharedRecipeTitle: sharedRecipeTitle,
+  );
 }

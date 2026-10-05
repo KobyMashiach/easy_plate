@@ -24,18 +24,27 @@ void main() {
 
     test('a real value is honoured in both directions', () {
       expect(FirebaseService.resolveIsProd(raw: 'true', parsed: true), isTrue);
-      expect(FirebaseService.resolveIsProd(raw: 'false', parsed: false), isFalse);
+      expect(
+        FirebaseService.resolveIsProd(raw: 'false', parsed: false),
+        isFalse,
+      );
     });
 
     test('an explicit false still shows DEV, which is the whole point', () {
-      expect(FirebaseService.resolveIsProd(raw: 'false', parsed: false), isFalse);
+      expect(
+        FirebaseService.resolveIsProd(raw: 'false', parsed: false),
+        isFalse,
+      );
     });
   });
 
-  test('the flag starts from the default, so nothing reads null before a fetch', () {
-    expect(FirebaseService().isProdListenable.value, isTrue);
-    expect(FirebaseService().isProd, isTrue);
-  });
+  test(
+    'the flag starts from the default, so nothing reads null before a fetch',
+    () {
+      expect(FirebaseService().isProdListenable.value, isTrue);
+      expect(FirebaseService().isProd, isTrue);
+    },
+  );
 
   test('listeners are notified when the flag changes', () {
     final service = FirebaseService();

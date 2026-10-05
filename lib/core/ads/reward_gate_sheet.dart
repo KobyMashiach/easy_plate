@@ -94,12 +94,18 @@ class _RewardGateSheetState extends State<_RewardGateSheet> {
               ),
             ),
             const SizedBox(height: AppSpacing.gutter),
-            Text(widget.title, textAlign: TextAlign.center, style: AppTextStyles.headlineMd),
+            Text(
+              widget.title,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.headlineMd,
+            ),
             const SizedBox(height: AppSpacing.base),
             Text(
               widget.message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTextStyles.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             if (_playing)
@@ -111,7 +117,9 @@ class _RewardGateSheetState extends State<_RewardGateSheet> {
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       t.ads.loadingVideo,
-                      style: AppTextStyles.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -128,7 +136,9 @@ class _RewardGateSheetState extends State<_RewardGateSheet> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(
                   t.common.cancel,
-                  style: AppTextStyles.labelMd.copyWith(color: AppColors.tertiary),
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: AppColors.tertiary,
+                  ),
                 ),
               ),
             ],

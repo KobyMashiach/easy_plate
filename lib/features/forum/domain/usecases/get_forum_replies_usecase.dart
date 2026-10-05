@@ -5,6 +5,8 @@ class GetForumRepliesUseCase {
   final ForumRepository repository;
   GetForumRepliesUseCase(this.repository);
 
-  Future<List<ForumReplyEntity>> call(String postId, {required String viewerUid}) =>
-      repository.getReplies(postId, viewerUid: viewerUid);
+  Future<List<ForumReplyEntity>> call(
+    String postId, {
+    required String viewerUid,
+  }) => repository.getReplies(postId, viewerUid: viewerUid);
 }

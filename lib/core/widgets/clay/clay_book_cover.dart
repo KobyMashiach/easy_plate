@@ -12,6 +12,7 @@ class ClayBookCover extends StatefulWidget {
   final String title;
   final String eyebrow;
   final String meta;
+
   /// Null reads as the primary colour of the current theme.
   final Color? spineColor;
   final IconData icon;
@@ -96,7 +97,9 @@ class _ClayBookCoverState extends State<ClayBookCover> {
                           children: [
                             Text(
                               widget.eyebrow,
-                              style: AppTextStyles.labelSm.copyWith(color: _spine),
+                              style: AppTextStyles.labelSm.copyWith(
+                                color: _spine,
+                              ),
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
@@ -105,7 +108,9 @@ class _ClayBookCoverState extends State<ClayBookCover> {
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.bodyLg.copyWith(
                                 fontWeight: FontWeight.w700,
-                                fontVariations: const [FontVariation('wght', 700)],
+                                fontVariations: const [
+                                  FontVariation('wght', 700),
+                                ],
                               ),
                             ),
                             const SizedBox(height: AppSpacing.xs),

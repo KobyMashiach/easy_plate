@@ -1,6 +1,7 @@
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../repositories/shared_recipes_repository.dart';
+import '../shared_feed_changes.dart';
 
 class ShareRecipeUseCase {
   final SharedRecipesRepository repository;
@@ -26,11 +27,13 @@ class ShareRecipeUseCase {
       throw StateError('Only recipes this account wrote can be shared');
     }
     final ready = await recipes.readyForSharing(recipe);
-    return repository.share(
+    final id = await repository.share(
       ready,
       authorUid: authorUid,
       authorName: authorName,
       authorPhotoUrl: authorPhotoUrl,
     );
+    SharedFeedChanges.instance.notify(id);
+    return id;
   }
 }
