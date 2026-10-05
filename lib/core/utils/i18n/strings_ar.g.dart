@@ -718,7 +718,7 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get pasteHint => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر';
 	@override String get webSearch => 'بحث في الإنترنت';
 	@override String get urlScrape => 'رابط موقع';
-	@override String get socialVideo => 'فيديو: TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideo => 'فيديو من الشبكات';
 	@override String get socialVideoHint => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك';
 	@override String get socialUnreadable => 'تعذّرت قراءة هذا الفيديو. قد يكون الحساب خاصًا أو حظرت المنصة الطلب. يمكنك نسخ الوصف ولصقه كنص.';
 	@override String get aiRequest => 'طلب وصفة';
@@ -752,7 +752,7 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get generate => 'إنشاء وصفة';
 	@override String get generating => 'جارٍ كتابة الوصفة...';
 	@override String get file => 'تسجيل / PDF';
-	@override String get fileHint => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة، أو رسالة صوتية، أو ملف PDF لوصفة. يمكنك أيضًا مشاركة مثل هذا الملف مباشرةً إلى Easy Plate من أي تطبيق.';
+	@override String get fileHint => 'يمكنك أيضًا مشاركة تسجيل أو PDF مباشرةً إلى Easy Plate من أي تطبيق عبر زر المشاركة المعتاد.';
 	@override String get chooseFile => 'اختيار ملف';
 	@override String get replaceFile => 'ملف آخر';
 	@override String get fileTooLarge => 'الملفات كبيرة جدًا. الحد الإجمالي هو 10MB، نحو عشر دقائق من التسجيل.';
@@ -761,6 +761,16 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get addFile => 'إضافة ملف';
 	@override String filesAsOne({required Object count}) => '${count} ملفات — تُحلَّل معًا كوصفة واحدة، بالترتيب';
 	@override String get shareMoreHint => 'يمكنك العودة إلى واتساب ومشاركة تسجيل آخر — سينضم إلى القائمة هنا.';
+	@override String get chooseSource => 'من أين تأتي الوصفة؟';
+	@override String get pasteTextDescription => 'وصلتك وصفة على واتساب أو نسختها من موقع أو رسالة؟ الصق النص هنا كما هو. سيتعرّف النموذج على اسم الطبق والمكوّنات بكمياتها وخطوات التحضير، ويرتّب كل شيء بصيغة موحّدة. بلا حدّ يومي.';
+	@override String get webSearchDescription => 'اكتب ما تشتهي تحضيره وسنبحث لك عن وصفات في الإنترنت. من النتائج يمكنك قراءة الوصفة الأصلية كما هي، أو استيرادها إلى الصيغة المنظّمة في التطبيق.';
+	@override String get webSearchHint => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر';
+	@override String get urlScrapeDescription => 'الصق رابطًا لصفحة وصفة في موقع أو مدونة. سنقرأ الصفحة ونتجاهل الإعلانات والقصص حولها، ونستخرج الوصفة فقط: المكوّنات والكميات والخطوات. في مواقع كثيرة لا يستهلك هذا حتى من حصّتك اليومية.';
+	@override String get urlScrapeHint => 'https://www.example.com/recipe/...';
+	@override String get socialVideoDescription => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك. سنشاهد الفيديو عنك ونستمع لما يُقال ونقرأ الترجمة والوصف، ونحوّله إلى وصفة مكتوبة ومرتّبة. يستغرق ذلك نحو دقيقة.';
+	@override String get aiRequestDescription => 'ليست لديك وصفة، فقط فكرة؟ صِف الطبق ولمن هو وما يهمّك، وسيكتب لك النموذج وصفة كاملة وفق التفضيلات الغذائية التي حدّدتها.';
+	@override String get manualDescription => 'اكتب الوصفة بنفسك مباشرة في المحرّر المنظّم: الاسم، المكوّنات بكمياتها ووحداتها، وخطوات التحضير. بلا ذكاء اصطناعي وبلا انتظار. مناسب لوصفة الجدّة التي تحفظها عن ظهر قلب.';
+	@override String get fileDescription => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة أو يرويها، أو رسالة صوتية من واتساب، أو ملف PDF لوصفة. سنفرّغ ونقرأ كل شيء ونستخرج وصفة مرتّبة. يمكن إرفاق عدة ملفات وتُحلَّل معًا كوصفة واحدة.';
 }
 
 // Path: mealPlanner
@@ -2031,7 +2041,7 @@ extension on TranslationsAr {
 			'ingestion.pasteHint' => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر',
 			'ingestion.webSearch' => 'بحث في الإنترنت',
 			'ingestion.urlScrape' => 'رابط موقع',
-			'ingestion.socialVideo' => 'فيديو: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideo' => 'فيديو من الشبكات',
 			'ingestion.socialVideoHint' => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك',
 			'ingestion.socialUnreadable' => 'تعذّرت قراءة هذا الفيديو. قد يكون الحساب خاصًا أو حظرت المنصة الطلب. يمكنك نسخ الوصف ولصقه كنص.',
 			'ingestion.aiRequest' => 'طلب وصفة',
@@ -2065,7 +2075,7 @@ extension on TranslationsAr {
 			'ingestion.generate' => 'إنشاء وصفة',
 			'ingestion.generating' => 'جارٍ كتابة الوصفة...',
 			'ingestion.file' => 'تسجيل / PDF',
-			'ingestion.fileHint' => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة، أو رسالة صوتية، أو ملف PDF لوصفة. يمكنك أيضًا مشاركة مثل هذا الملف مباشرةً إلى Easy Plate من أي تطبيق.',
+			'ingestion.fileHint' => 'يمكنك أيضًا مشاركة تسجيل أو PDF مباشرةً إلى Easy Plate من أي تطبيق عبر زر المشاركة المعتاد.',
 			'ingestion.chooseFile' => 'اختيار ملف',
 			'ingestion.replaceFile' => 'ملف آخر',
 			'ingestion.fileTooLarge' => 'الملفات كبيرة جدًا. الحد الإجمالي هو 10MB، نحو عشر دقائق من التسجيل.',
@@ -2074,11 +2084,21 @@ extension on TranslationsAr {
 			'ingestion.addFile' => 'إضافة ملف',
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} ملفات — تُحلَّل معًا كوصفة واحدة، بالترتيب',
 			'ingestion.shareMoreHint' => 'يمكنك العودة إلى واتساب ومشاركة تسجيل آخر — سينضم إلى القائمة هنا.',
+			'ingestion.chooseSource' => 'من أين تأتي الوصفة؟',
+			'ingestion.pasteTextDescription' => 'وصلتك وصفة على واتساب أو نسختها من موقع أو رسالة؟ الصق النص هنا كما هو. سيتعرّف النموذج على اسم الطبق والمكوّنات بكمياتها وخطوات التحضير، ويرتّب كل شيء بصيغة موحّدة. بلا حدّ يومي.',
+			'ingestion.webSearchDescription' => 'اكتب ما تشتهي تحضيره وسنبحث لك عن وصفات في الإنترنت. من النتائج يمكنك قراءة الوصفة الأصلية كما هي، أو استيرادها إلى الصيغة المنظّمة في التطبيق.',
+			_ => null,
+		} ?? switch (path) {
+			'ingestion.webSearchHint' => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر',
+			'ingestion.urlScrapeDescription' => 'الصق رابطًا لصفحة وصفة في موقع أو مدونة. سنقرأ الصفحة ونتجاهل الإعلانات والقصص حولها، ونستخرج الوصفة فقط: المكوّنات والكميات والخطوات. في مواقع كثيرة لا يستهلك هذا حتى من حصّتك اليومية.',
+			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
+			'ingestion.socialVideoDescription' => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك. سنشاهد الفيديو عنك ونستمع لما يُقال ونقرأ الترجمة والوصف، ونحوّله إلى وصفة مكتوبة ومرتّبة. يستغرق ذلك نحو دقيقة.',
+			'ingestion.aiRequestDescription' => 'ليست لديك وصفة، فقط فكرة؟ صِف الطبق ولمن هو وما يهمّك، وسيكتب لك النموذج وصفة كاملة وفق التفضيلات الغذائية التي حدّدتها.',
+			'ingestion.manualDescription' => 'اكتب الوصفة بنفسك مباشرة في المحرّر المنظّم: الاسم، المكوّنات بكمياتها ووحداتها، وخطوات التحضير. بلا ذكاء اصطناعي وبلا انتظار. مناسب لوصفة الجدّة التي تحفظها عن ظهر قلب.',
+			'ingestion.fileDescription' => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة أو يرويها، أو رسالة صوتية من واتساب، أو ملف PDF لوصفة. سنفرّغ ونقرأ كل شيء ونستخرج وصفة مرتّبة. يمكن إرفاق عدة ملفات وتُحلَّل معًا كوصفة واحدة.',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'إضافة وجبة',
 			'mealPlanner.mealName' => 'اسم الوجبة',
 			'mealPlanner.addItem' => 'إضافة عنصر',
@@ -2581,6 +2601,8 @@ extension on TranslationsAr {
 			'adminDashboard.pricingSaved' => 'تم حفظ الأسعار',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'تم التحديث ${date}',
 			'adminDashboard.kindText' => 'نص',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'رابط',
 			'adminDashboard.kindSocial' => 'شبكة اجتماعية',
 			'adminDashboard.kindSocialVideo' => 'فيديو (خادم)',
@@ -2591,8 +2613,6 @@ extension on TranslationsAr {
 			'adminDashboard.kindNutrition' => 'تغذية',
 			'adminDashboard.kindRefine' => 'تحسين',
 			'adminDashboard.kindGenerate' => 'توليد',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.allTime' => 'كل الوقت',
 			'adminDashboard.recentCalls' => 'آخر الطلبات',
 			'adminDashboard.noCalls' => 'لا طلبات',

@@ -718,7 +718,7 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get pasteHint => 'Вставьте сюда рецепт из WhatsApp или любого другого источника';
 	@override String get webSearch => 'Поиск в интернете';
 	@override String get urlScrape => 'Ссылка на сайт';
-	@override String get socialVideo => 'Видео: TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideo => 'Видео из соцсетей';
 	@override String get socialVideoHint => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook';
 	@override String get socialUnreadable => 'Не удалось прочитать это видео. Возможно, аккаунт закрыт или платформа заблокировала запрос. Скопируйте описание и вставьте его как текст.';
 	@override String get aiRequest => 'Запросить рецепт';
@@ -752,7 +752,7 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get generate => 'Создать рецепт';
 	@override String get generating => 'Пишем ваш рецепт...';
 	@override String get file => 'Запись / PDF';
-	@override String get fileHint => 'Выберите аудиофайл, где кто-то читает рецепт, голосовое сообщение или PDF с рецептом. Такой файл можно также отправить в Easy Plate прямо из любого приложения.';
+	@override String get fileHint => 'Запись или PDF можно также отправить в Easy Plate прямо из любого приложения через обычную кнопку «Поделиться».';
 	@override String get chooseFile => 'Выбрать файл';
 	@override String get replaceFile => 'Другой файл';
 	@override String get fileTooLarge => 'Файлы слишком большие. Общий предел — 10 МБ, около десяти минут записи.';
@@ -761,6 +761,16 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get addFile => 'Добавить файл';
 	@override String filesAsOne({required Object count}) => '${count} файлов — будут проанализированы вместе как один рецепт, по порядку';
 	@override String get shareMoreHint => 'Можно вернуться в WhatsApp и поделиться ещё одной записью — она добавится к списку здесь.';
+	@override String get chooseSource => 'Откуда рецепт?';
+	@override String get pasteTextDescription => 'Получили рецепт в WhatsApp или скопировали с сайта или из сообщения? Вставьте текст как есть. Модель найдёт название блюда, ингредиенты с количествами и шаги и оформит всё в едином формате. Без дневного лимита.';
+	@override String get webSearchDescription => 'Напишите, что хочется приготовить, и мы поищем рецепты в интернете. Из результатов можно прочитать оригинальную страницу как есть или импортировать её в структурированный формат приложения.';
+	@override String get webSearchHint => 'Например: шакшука, чизкейк, свекольная кубба';
+	@override String get urlScrapeDescription => 'Вставьте ссылку на страницу рецепта на сайте или в блоге. Мы прочитаем страницу, пропустим рекламу и истории вокруг и извлечём только рецепт: ингредиенты, количества и шаги. На многих сайтах это даже не расходует дневной лимит.';
+	@override String get urlScrapeHint => 'https://www.example.com/recipe/...';
+	@override String get socialVideoDescription => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook. Мы посмотрим его за вас, послушаем, что говорят, прочитаем субтитры и описание и превратим всё в записанный, структурированный рецепт. Это занимает около минуты.';
+	@override String get aiRequestDescription => 'Нет рецепта, есть только идея? Опишите блюдо, для кого оно и что для вас важно, и модель напишет полный рецепт с учётом ваших пищевых предпочтений.';
+	@override String get manualDescription => 'Напишите рецепт сами, прямо в структурированном редакторе: название, ингредиенты с количествами и единицами, шаги. Без ИИ и без ожидания. Для бабушкиного рецепта, который вы знаете наизусть.';
+	@override String get fileDescription => 'Выберите аудиофайл, где кто-то читает или рассказывает рецепт, голосовое сообщение из WhatsApp или PDF с рецептом. Мы расшифруем и прочитаем всё и извлечём аккуратный рецепт. Можно приложить несколько файлов — они анализируются вместе как один рецепт.';
 }
 
 // Path: mealPlanner
@@ -2031,7 +2041,7 @@ extension on TranslationsRu {
 			'ingestion.pasteHint' => 'Вставьте сюда рецепт из WhatsApp или любого другого источника',
 			'ingestion.webSearch' => 'Поиск в интернете',
 			'ingestion.urlScrape' => 'Ссылка на сайт',
-			'ingestion.socialVideo' => 'Видео: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideo' => 'Видео из соцсетей',
 			'ingestion.socialVideoHint' => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook',
 			'ingestion.socialUnreadable' => 'Не удалось прочитать это видео. Возможно, аккаунт закрыт или платформа заблокировала запрос. Скопируйте описание и вставьте его как текст.',
 			'ingestion.aiRequest' => 'Запросить рецепт',
@@ -2065,7 +2075,7 @@ extension on TranslationsRu {
 			'ingestion.generate' => 'Создать рецепт',
 			'ingestion.generating' => 'Пишем ваш рецепт...',
 			'ingestion.file' => 'Запись / PDF',
-			'ingestion.fileHint' => 'Выберите аудиофайл, где кто-то читает рецепт, голосовое сообщение или PDF с рецептом. Такой файл можно также отправить в Easy Plate прямо из любого приложения.',
+			'ingestion.fileHint' => 'Запись или PDF можно также отправить в Easy Plate прямо из любого приложения через обычную кнопку «Поделиться».',
 			'ingestion.chooseFile' => 'Выбрать файл',
 			'ingestion.replaceFile' => 'Другой файл',
 			'ingestion.fileTooLarge' => 'Файлы слишком большие. Общий предел — 10 МБ, около десяти минут записи.',
@@ -2074,11 +2084,21 @@ extension on TranslationsRu {
 			'ingestion.addFile' => 'Добавить файл',
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} файлов — будут проанализированы вместе как один рецепт, по порядку',
 			'ingestion.shareMoreHint' => 'Можно вернуться в WhatsApp и поделиться ещё одной записью — она добавится к списку здесь.',
+			'ingestion.chooseSource' => 'Откуда рецепт?',
+			'ingestion.pasteTextDescription' => 'Получили рецепт в WhatsApp или скопировали с сайта или из сообщения? Вставьте текст как есть. Модель найдёт название блюда, ингредиенты с количествами и шаги и оформит всё в едином формате. Без дневного лимита.',
+			'ingestion.webSearchDescription' => 'Напишите, что хочется приготовить, и мы поищем рецепты в интернете. Из результатов можно прочитать оригинальную страницу как есть или импортировать её в структурированный формат приложения.',
+			_ => null,
+		} ?? switch (path) {
+			'ingestion.webSearchHint' => 'Например: шакшука, чизкейк, свекольная кубба',
+			'ingestion.urlScrapeDescription' => 'Вставьте ссылку на страницу рецепта на сайте или в блоге. Мы прочитаем страницу, пропустим рекламу и истории вокруг и извлечём только рецепт: ингредиенты, количества и шаги. На многих сайтах это даже не расходует дневной лимит.',
+			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
+			'ingestion.socialVideoDescription' => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook. Мы посмотрим его за вас, послушаем, что говорят, прочитаем субтитры и описание и превратим всё в записанный, структурированный рецепт. Это занимает около минуты.',
+			'ingestion.aiRequestDescription' => 'Нет рецепта, есть только идея? Опишите блюдо, для кого оно и что для вас важно, и модель напишет полный рецепт с учётом ваших пищевых предпочтений.',
+			'ingestion.manualDescription' => 'Напишите рецепт сами, прямо в структурированном редакторе: название, ингредиенты с количествами и единицами, шаги. Без ИИ и без ожидания. Для бабушкиного рецепта, который вы знаете наизусть.',
+			'ingestion.fileDescription' => 'Выберите аудиофайл, где кто-то читает или рассказывает рецепт, голосовое сообщение из WhatsApp или PDF с рецептом. Мы расшифруем и прочитаем всё и извлечём аккуратный рецепт. Можно приложить несколько файлов — они анализируются вместе как один рецепт.',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'Добавить приём пищи',
 			'mealPlanner.mealName' => 'Название приёма пищи',
 			'mealPlanner.addItem' => 'Добавить позицию',
@@ -2581,6 +2601,8 @@ extension on TranslationsRu {
 			'adminDashboard.pricingSaved' => 'Прайс сохранён',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'Обновлено ${date}',
 			'adminDashboard.kindText' => 'Текст',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'Ссылка',
 			'adminDashboard.kindSocial' => 'Соцсеть',
 			'adminDashboard.kindSocialVideo' => 'Видео (сервер)',
@@ -2591,8 +2613,6 @@ extension on TranslationsRu {
 			'adminDashboard.kindNutrition' => 'Питание',
 			'adminDashboard.kindRefine' => 'Правка',
 			'adminDashboard.kindGenerate' => 'Генерация',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.allTime' => 'за всё время',
 			'adminDashboard.recentCalls' => 'Последние запросы',
 			'adminDashboard.noCalls' => 'Запросов нет',

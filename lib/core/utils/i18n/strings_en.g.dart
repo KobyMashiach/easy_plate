@@ -718,7 +718,7 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get pasteHint => 'Paste a recipe here from WhatsApp or any other source';
 	@override String get webSearch => 'Search the web';
 	@override String get urlScrape => 'Website link';
-	@override String get socialVideo => 'Video: TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideo => 'Social video';
 	@override String get socialVideoHint => 'Paste a link to a TikTok, Instagram, YouTube or Facebook video';
 	@override String get socialUnreadable => 'We could not read this video. The account may be private, or the platform blocked the request. You can copy the caption and paste it as text.';
 	@override String get aiRequest => 'Ask for a recipe';
@@ -752,7 +752,7 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get generate => 'Create recipe';
 	@override String get generating => 'Writing your recipe...';
 	@override String get file => 'Recording / PDF';
-	@override String get fileHint => 'Pick an audio file of someone reading the recipe out, a voice note, or a recipe PDF. You can also share such a file straight into Easy Plate from any app.';
+	@override String get fileHint => 'You can also share a recording or a PDF straight into Easy Plate from any app, through the usual share button.';
 	@override String get chooseFile => 'Choose a file';
 	@override String get replaceFile => 'Another file';
 	@override String get fileTooLarge => 'The files are too large. The total limit is 10MB, about ten minutes of recording.';
@@ -761,6 +761,16 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get addFile => 'Add a file';
 	@override String filesAsOne({required Object count}) => '${count} files — analysed together as one recipe, in order';
 	@override String get shareMoreHint => 'You can go back to WhatsApp and share another recording — it will join the list here.';
+	@override String get chooseSource => 'Where is the recipe coming from?';
+	@override String get pasteTextDescription => 'Got a recipe on WhatsApp, or copied one from a site or a message? Paste the text here as it is. The model picks out the dish name, the ingredients with their amounts and the steps, and lays it all out in one format. No daily limit.';
+	@override String get webSearchDescription => 'Tell us what you feel like making and we will search the web for recipes. From the results you can read the original page as it is, or import it into the app’s structured format.';
+	@override String get webSearchHint => 'For example: shakshuka, cheesecake, beetroot kubbeh';
+	@override String get urlScrapeDescription => 'Paste a link to a recipe page on a site or blog. We read the page, skip the ads and the stories around it, and extract only the recipe: ingredients, amounts and steps. On many sites this does not even use your daily allowance.';
+	@override String get urlScrapeHint => 'https://www.example.com/recipe/...';
+	@override String get socialVideoDescription => 'Paste a link to a TikTok, Instagram, YouTube or Facebook video. We watch it for you, listen to what is said and read the captions and description, and turn it into a written, structured recipe. It takes about a minute.';
+	@override String get aiRequestDescription => 'No recipe, just an idea? Describe the dish, who it is for and what matters to you, and the model writes a complete recipe that respects the dietary preferences you set.';
+	@override String get manualDescription => 'Write the recipe yourself, straight into the structured editor: name, ingredients with amounts and units, and the steps. No AI, no waiting. Right for grandma’s recipe you know by heart.';
+	@override String get fileDescription => 'Pick an audio file in which someone reads or tells the recipe, a WhatsApp voice note, or a recipe PDF. We transcribe and read all of it and extract a tidy recipe. Several files can be attached; they are analysed together as one recipe.';
 }
 
 // Path: mealPlanner
@@ -2031,7 +2041,7 @@ extension on TranslationsEn {
 			'ingestion.pasteHint' => 'Paste a recipe here from WhatsApp or any other source',
 			'ingestion.webSearch' => 'Search the web',
 			'ingestion.urlScrape' => 'Website link',
-			'ingestion.socialVideo' => 'Video: TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideo' => 'Social video',
 			'ingestion.socialVideoHint' => 'Paste a link to a TikTok, Instagram, YouTube or Facebook video',
 			'ingestion.socialUnreadable' => 'We could not read this video. The account may be private, or the platform blocked the request. You can copy the caption and paste it as text.',
 			'ingestion.aiRequest' => 'Ask for a recipe',
@@ -2065,7 +2075,7 @@ extension on TranslationsEn {
 			'ingestion.generate' => 'Create recipe',
 			'ingestion.generating' => 'Writing your recipe...',
 			'ingestion.file' => 'Recording / PDF',
-			'ingestion.fileHint' => 'Pick an audio file of someone reading the recipe out, a voice note, or a recipe PDF. You can also share such a file straight into Easy Plate from any app.',
+			'ingestion.fileHint' => 'You can also share a recording or a PDF straight into Easy Plate from any app, through the usual share button.',
 			'ingestion.chooseFile' => 'Choose a file',
 			'ingestion.replaceFile' => 'Another file',
 			'ingestion.fileTooLarge' => 'The files are too large. The total limit is 10MB, about ten minutes of recording.',
@@ -2074,11 +2084,21 @@ extension on TranslationsEn {
 			'ingestion.addFile' => 'Add a file',
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} files — analysed together as one recipe, in order',
 			'ingestion.shareMoreHint' => 'You can go back to WhatsApp and share another recording — it will join the list here.',
+			'ingestion.chooseSource' => 'Where is the recipe coming from?',
+			'ingestion.pasteTextDescription' => 'Got a recipe on WhatsApp, or copied one from a site or a message? Paste the text here as it is. The model picks out the dish name, the ingredients with their amounts and the steps, and lays it all out in one format. No daily limit.',
+			'ingestion.webSearchDescription' => 'Tell us what you feel like making and we will search the web for recipes. From the results you can read the original page as it is, or import it into the app’s structured format.',
+			_ => null,
+		} ?? switch (path) {
+			'ingestion.webSearchHint' => 'For example: shakshuka, cheesecake, beetroot kubbeh',
+			'ingestion.urlScrapeDescription' => 'Paste a link to a recipe page on a site or blog. We read the page, skip the ads and the stories around it, and extract only the recipe: ingredients, amounts and steps. On many sites this does not even use your daily allowance.',
+			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
+			'ingestion.socialVideoDescription' => 'Paste a link to a TikTok, Instagram, YouTube or Facebook video. We watch it for you, listen to what is said and read the captions and description, and turn it into a written, structured recipe. It takes about a minute.',
+			'ingestion.aiRequestDescription' => 'No recipe, just an idea? Describe the dish, who it is for and what matters to you, and the model writes a complete recipe that respects the dietary preferences you set.',
+			'ingestion.manualDescription' => 'Write the recipe yourself, straight into the structured editor: name, ingredients with amounts and units, and the steps. No AI, no waiting. Right for grandma’s recipe you know by heart.',
+			'ingestion.fileDescription' => 'Pick an audio file in which someone reads or tells the recipe, a WhatsApp voice note, or a recipe PDF. We transcribe and read all of it and extract a tidy recipe. Several files can be attached; they are analysed together as one recipe.',
 			'mealPlanner.title' => 'Meal planning',
 			'mealPlanner.newPlan' => 'New plan',
 			'mealPlanner.planName' => 'Plan name',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'Add a meal',
 			'mealPlanner.mealName' => 'Meal name',
 			'mealPlanner.addItem' => 'Add an item',
@@ -2581,6 +2601,8 @@ extension on TranslationsEn {
 			'adminDashboard.pricingSaved' => 'Price list saved',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'Updated ${date}',
 			'adminDashboard.kindText' => 'Text',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'Link',
 			'adminDashboard.kindSocial' => 'Social',
 			'adminDashboard.kindSocialVideo' => 'Video (server)',
@@ -2591,8 +2613,6 @@ extension on TranslationsEn {
 			'adminDashboard.kindNutrition' => 'Nutrition',
 			'adminDashboard.kindRefine' => 'Refine',
 			'adminDashboard.kindGenerate' => 'Generate',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.allTime' => 'all time',
 			'adminDashboard.recentCalls' => 'Recent calls',
 			'adminDashboard.noCalls' => 'No calls',

@@ -33,6 +33,7 @@ import '../widgets/ai_quota_indicator.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/constants/app_motion.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/services/share_intent_service.dart';
 import '../../../../core/widgets/app_dialog.dart';
 
@@ -61,6 +62,19 @@ String _channelLabel(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.aiRequest => t.ingestion.aiRequest,
   RecipeIngestionChannel.manual => t.ingestion.manual,
   RecipeIngestionChannel.file => t.ingestion.file,
+};
+
+/// What each channel does, in a few sentences: what to give it, what the
+/// app does with it, and what it costs. Shown on the channel's card, so the
+/// choice never has to be guessed from a chip's two words.
+String _channelDescription(RecipeIngestionChannel channel) => switch (channel) {
+  RecipeIngestionChannel.rawText => t.ingestion.pasteTextDescription,
+  RecipeIngestionChannel.webSearch => t.ingestion.webSearchDescription,
+  RecipeIngestionChannel.urlScrape => t.ingestion.urlScrapeDescription,
+  RecipeIngestionChannel.socialVideo => t.ingestion.socialVideoDescription,
+  RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestDescription,
+  RecipeIngestionChannel.manual => t.ingestion.manualDescription,
+  RecipeIngestionChannel.file => t.ingestion.fileDescription,
 };
 
 IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
@@ -246,8 +260,8 @@ class _ChannelFormState extends State<_ChannelForm> {
 
   String get _hint => switch (widget.channel) {
     RecipeIngestionChannel.rawText => t.ingestion.pasteHint,
-    RecipeIngestionChannel.webSearch => 'קובה סלק',
-    RecipeIngestionChannel.urlScrape => 'https://...',
+    RecipeIngestionChannel.webSearch => t.ingestion.webSearchHint,
+    RecipeIngestionChannel.urlScrape => t.ingestion.urlScrapeHint,
     RecipeIngestionChannel.socialVideo => t.ingestion.socialVideoHint,
     RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestHint,
     // No text input on these channels: the editor, or a picked file, is
@@ -338,14 +352,15 @@ class _ChannelFormState extends State<_ChannelForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClaySectionHeader(title: t.ingestion.file),
-          const SizedBox(height: AppSpacing.gutter),
+          const _ChannelIntro(channel: RecipeIngestionChannel.file),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             t.ingestion.fileHint,
-            style: AppTextStyles.bodyMd.copyWith(
+            style: AppTextStyles.labelMd.copyWith(
               color: AppColors.onSurfaceVariant,
             ),
           ),
+          if (_files.isNotEmpty) const SizedBox(height: AppSpacing.xs),
           for (final (index, file) in _files.indexed) ...[
             const SizedBox(height: AppSpacing.sm),
             _FileRow(
@@ -371,7 +386,7 @@ class _ChannelFormState extends State<_ChannelForm> {
               ),
             ),
           ],
-          const SizedBox(height: AppSpacing.gutter),
+          const SizedBox(height: AppSpacing.md),
           ClayButton(
             label: _files.isEmpty
                 ? t.ingestion.chooseFile
@@ -449,80 +464,41 @@ class _ChannelFormState extends State<_ChannelForm> {
       children: [
         ClayPageHeader(title: t.ingestion.title),
         const SizedBox(height: AppSpacing.md),
+        // The question the chips answer, so the row reads as a choice and
+        // not as a set of tags.
+        Text(
+          t.ingestion.chooseSource,
+          style: AppTextStyles.labelMd.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         WalkthroughTarget(
           id: WalkthroughIds.ingestionChannels,
           child: Wrap(
             spacing: AppSpacing.base,
             runSpacing: AppSpacing.base,
-            children: RecipeIngestionChannel.values.map((channel) {
-              final isSelected = widget.channel == channel;
-              return GestureDetector(
-                onTap: () =>
-                    context.read<IngestionBloc>().add(.selectChannel(channel)),
-                behavior: HitTestBehavior.opaque,
-                child: AnimatedContainer(
-                  duration: AppMotion.quick,
-                  curve: AppMotion.easeOut,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.base,
-                  ),
-                  decoration: ShapeDecoration(
-                    color: isSelected
-                        ? AppColors.primaryFixed
-                        : AppColors.surfaceContainerLow,
-                    shape: StadiumBorder(
-                      side: BorderSide(
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.outlineVariant,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _channelIcon(channel),
-                        size: 16,
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.tertiary,
-                      ),
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(
-                        _channelLabel(channel),
-                        style: AppTextStyles.labelMd.copyWith(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.tertiary,
-                        ),
-                      ),
-                    ],
+            children: [
+              for (final channel in RecipeIngestionChannel.values)
+                _ChannelChip(
+                  channel: channel,
+                  selected: widget.channel == channel,
+                  onTap: () => context.read<IngestionBloc>().add(
+                    .selectChannel(channel),
                   ),
                 ),
-              );
-            }).toList(),
+            ],
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: AppSpacing.md),
+        // The card for the chosen channel: what it is, in full, then its
+        // input. The same shape for every channel, so switching between
+        // them reads as turning a page rather than landing on a new form.
         if (widget.channel == RecipeIngestionChannel.manual) ...[
           ClayCard(
             radius: AppRadius.md,
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClaySectionHeader(title: t.ingestion.manual),
-                const SizedBox(height: AppSpacing.gutter),
-                Text(
-                  t.ingestion.manualHint,
-                  style: AppTextStyles.bodyMd.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
+            child: _ChannelIntro(channel: widget.channel),
           ),
           const SizedBox(height: AppSpacing.lg),
           ClayButton(
@@ -541,7 +517,7 @@ class _ChannelFormState extends State<_ChannelForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClaySectionHeader(title: _channelLabel(widget.channel)),
+                  _ChannelIntro(channel: widget.channel),
                   const SizedBox(height: AppSpacing.gutter),
                   WalkthroughTarget(
                     id: WalkthroughIds.ingestionInput,
@@ -570,6 +546,108 @@ class _ChannelFormState extends State<_ChannelForm> {
             builder: (context, _) => _parseButton(),
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// One way in, as a pill: icon and name, filled when it is the one chosen.
+class _ChannelChip extends StatelessWidget {
+  final RecipeIngestionChannel channel;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ChannelChip({
+    required this.channel,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ink = selected ? AppColors.onPrimary : AppColors.primary;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: AppMotion.quick,
+        curve: AppMotion.easeOut,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm + 2,
+          vertical: AppSpacing.base + 2,
+        ),
+        decoration: ShapeDecoration(
+          color: selected ? AppColors.primary : AppColors.surfaceContainerLow,
+          shape: StadiumBorder(
+            side: BorderSide(
+              color: selected ? AppColors.primary : AppColors.outlineVariant,
+            ),
+          ),
+          shadows: selected ? AppShadows.control : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(_channelIcon(channel), size: 18, color: ink),
+            const SizedBox(width: AppSpacing.xs + 2),
+            Text(
+              _channelLabel(channel),
+              style: AppTextStyles.labelMd.copyWith(
+                color: ink,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The head of a channel's card: its icon in a medallion, its name, and the
+/// full explanation of what it does — the same block on every channel.
+class _ChannelIntro extends StatelessWidget {
+  final RecipeIngestionChannel channel;
+
+  const _ChannelIntro({required this.channel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.primaryFixed,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _channelIcon(channel),
+                size: 22,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                _channelLabel(channel),
+                style: AppTextStyles.headlineMd,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          _channelDescription(channel),
+          style: AppTextStyles.bodyMd.copyWith(
+            color: AppColors.onSurfaceVariant,
+            height: 1.5,
+          ),
+        ),
       ],
     );
   }

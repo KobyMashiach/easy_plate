@@ -718,7 +718,7 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get pasteHint => 'Collez ici une recette venant de WhatsApp ou de toute autre source';
 	@override String get webSearch => 'Rechercher sur le web';
 	@override String get urlScrape => 'Lien vers un site';
-	@override String get socialVideo => 'Vidéo : TikTok / Instagram / YouTube / Facebook';
+	@override String get socialVideo => 'Vidéo des réseaux';
 	@override String get socialVideoHint => 'Collez un lien vers une vidéo TikTok, Instagram, YouTube ou Facebook';
 	@override String get socialUnreadable => 'Impossible de lire cette vidéo. Le compte est peut-être privé, ou la plateforme a bloqué la requête. Vous pouvez copier la description et la coller comme texte.';
 	@override String get aiRequest => 'Demander une recette';
@@ -752,7 +752,7 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get generate => 'Créer la recette';
 	@override String get generating => 'Rédaction de votre recette...';
 	@override String get file => 'Enregistrement / PDF';
-	@override String get fileHint => 'Choisissez un fichier audio où quelqu’un lit la recette, un message vocal ou un PDF de recette. Vous pouvez aussi partager un tel fichier directement vers Easy Plate depuis n’importe quelle application.';
+	@override String get fileHint => 'Vous pouvez aussi partager un enregistrement ou un PDF directement vers Easy Plate depuis n’importe quelle application, via le bouton de partage habituel.';
 	@override String get chooseFile => 'Choisir un fichier';
 	@override String get replaceFile => 'Autre fichier';
 	@override String get fileTooLarge => 'Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.';
@@ -761,6 +761,16 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get addFile => 'Ajouter un fichier';
 	@override String filesAsOne({required Object count}) => '${count} fichiers — analysés ensemble comme une seule recette, dans l’ordre';
 	@override String get shareMoreHint => 'Vous pouvez revenir dans WhatsApp et partager un autre enregistrement : il rejoindra la liste ici.';
+	@override String get chooseSource => 'D’où vient la recette ?';
+	@override String get pasteTextDescription => 'Vous avez reçu une recette sur WhatsApp, ou copié un texte depuis un site ou un message ? Collez-le ici tel quel. Le modèle repère le nom du plat, les ingrédients avec leurs quantités et les étapes, et range le tout dans un format unique. Sans limite quotidienne.';
+	@override String get webSearchDescription => 'Dites-nous ce que vous avez envie de cuisiner et nous cherchons des recettes sur le web. Depuis les résultats, lisez la page d’origine telle quelle ou importez-la dans le format structuré de l’application.';
+	@override String get webSearchHint => 'Par exemple : shakshuka, cheesecake, kebbé de betterave';
+	@override String get urlScrapeDescription => 'Collez le lien d’une page de recette, site ou blog. Nous lisons la page, ignorons les publicités et les histoires autour, et n’extrayons que la recette : ingrédients, quantités et étapes. Sur beaucoup de sites, cela n’entame même pas votre quota quotidien.';
+	@override String get urlScrapeHint => 'https://www.exemple.fr/recette/...';
+	@override String get socialVideoDescription => 'Collez le lien d’une vidéo TikTok, Instagram, YouTube ou Facebook. Nous la regardons pour vous, écoutons ce qui est dit, lisons les sous-titres et la description, et en faisons une recette écrite et structurée. Comptez environ une minute.';
+	@override String get aiRequestDescription => 'Pas de recette, juste une idée ? Décrivez le plat, pour qui il est et ce qui compte pour vous : le modèle écrit une recette complète qui respecte vos préférences alimentaires.';
+	@override String get manualDescription => 'Écrivez la recette vous-même, directement dans l’éditeur structuré : nom, ingrédients avec quantités et unités, étapes. Sans IA, sans attente. Idéal pour la recette de grand-mère que vous connaissez par cœur.';
+	@override String get fileDescription => 'Choisissez un fichier audio où quelqu’un lit ou raconte la recette, un message vocal WhatsApp ou un PDF de recette. Nous transcrivons et lisons tout, puis en extrayons une recette propre. Plusieurs fichiers peuvent être joints : ils sont analysés ensemble comme une seule recette.';
 }
 
 // Path: mealPlanner
@@ -2031,7 +2041,7 @@ extension on TranslationsFr {
 			'ingestion.pasteHint' => 'Collez ici une recette venant de WhatsApp ou de toute autre source',
 			'ingestion.webSearch' => 'Rechercher sur le web',
 			'ingestion.urlScrape' => 'Lien vers un site',
-			'ingestion.socialVideo' => 'Vidéo : TikTok / Instagram / YouTube / Facebook',
+			'ingestion.socialVideo' => 'Vidéo des réseaux',
 			'ingestion.socialVideoHint' => 'Collez un lien vers une vidéo TikTok, Instagram, YouTube ou Facebook',
 			'ingestion.socialUnreadable' => 'Impossible de lire cette vidéo. Le compte est peut-être privé, ou la plateforme a bloqué la requête. Vous pouvez copier la description et la coller comme texte.',
 			'ingestion.aiRequest' => 'Demander une recette',
@@ -2065,7 +2075,7 @@ extension on TranslationsFr {
 			'ingestion.generate' => 'Créer la recette',
 			'ingestion.generating' => 'Rédaction de votre recette...',
 			'ingestion.file' => 'Enregistrement / PDF',
-			'ingestion.fileHint' => 'Choisissez un fichier audio où quelqu’un lit la recette, un message vocal ou un PDF de recette. Vous pouvez aussi partager un tel fichier directement vers Easy Plate depuis n’importe quelle application.',
+			'ingestion.fileHint' => 'Vous pouvez aussi partager un enregistrement ou un PDF directement vers Easy Plate depuis n’importe quelle application, via le bouton de partage habituel.',
 			'ingestion.chooseFile' => 'Choisir un fichier',
 			'ingestion.replaceFile' => 'Autre fichier',
 			'ingestion.fileTooLarge' => 'Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.',
@@ -2074,11 +2084,21 @@ extension on TranslationsFr {
 			'ingestion.addFile' => 'Ajouter un fichier',
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} fichiers — analysés ensemble comme une seule recette, dans l’ordre',
 			'ingestion.shareMoreHint' => 'Vous pouvez revenir dans WhatsApp et partager un autre enregistrement : il rejoindra la liste ici.',
+			'ingestion.chooseSource' => 'D’où vient la recette ?',
+			'ingestion.pasteTextDescription' => 'Vous avez reçu une recette sur WhatsApp, ou copié un texte depuis un site ou un message ? Collez-le ici tel quel. Le modèle repère le nom du plat, les ingrédients avec leurs quantités et les étapes, et range le tout dans un format unique. Sans limite quotidienne.',
+			'ingestion.webSearchDescription' => 'Dites-nous ce que vous avez envie de cuisiner et nous cherchons des recettes sur le web. Depuis les résultats, lisez la page d’origine telle quelle ou importez-la dans le format structuré de l’application.',
+			_ => null,
+		} ?? switch (path) {
+			'ingestion.webSearchHint' => 'Par exemple : shakshuka, cheesecake, kebbé de betterave',
+			'ingestion.urlScrapeDescription' => 'Collez le lien d’une page de recette, site ou blog. Nous lisons la page, ignorons les publicités et les histoires autour, et n’extrayons que la recette : ingrédients, quantités et étapes. Sur beaucoup de sites, cela n’entame même pas votre quota quotidien.',
+			'ingestion.urlScrapeHint' => 'https://www.exemple.fr/recette/...',
+			'ingestion.socialVideoDescription' => 'Collez le lien d’une vidéo TikTok, Instagram, YouTube ou Facebook. Nous la regardons pour vous, écoutons ce qui est dit, lisons les sous-titres et la description, et en faisons une recette écrite et structurée. Comptez environ une minute.',
+			'ingestion.aiRequestDescription' => 'Pas de recette, juste une idée ? Décrivez le plat, pour qui il est et ce qui compte pour vous : le modèle écrit une recette complète qui respecte vos préférences alimentaires.',
+			'ingestion.manualDescription' => 'Écrivez la recette vous-même, directement dans l’éditeur structuré : nom, ingrédients avec quantités et unités, étapes. Sans IA, sans attente. Idéal pour la recette de grand-mère que vous connaissez par cœur.',
+			'ingestion.fileDescription' => 'Choisissez un fichier audio où quelqu’un lit ou raconte la recette, un message vocal WhatsApp ou un PDF de recette. Nous transcrivons et lisons tout, puis en extrayons une recette propre. Plusieurs fichiers peuvent être joints : ils sont analysés ensemble comme une seule recette.',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',
-			_ => null,
-		} ?? switch (path) {
 			'mealPlanner.addMeal' => 'Ajouter un repas',
 			'mealPlanner.mealName' => 'Nom du repas',
 			'mealPlanner.addItem' => 'Ajouter un élément',
@@ -2581,6 +2601,8 @@ extension on TranslationsFr {
 			'adminDashboard.pricingSaved' => 'Tarifs enregistrés',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'Mis à jour ${date}',
 			'adminDashboard.kindText' => 'Texte',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'Lien',
 			'adminDashboard.kindSocial' => 'Réseau social',
 			'adminDashboard.kindSocialVideo' => 'Vidéo (serveur)',
@@ -2591,8 +2613,6 @@ extension on TranslationsFr {
 			'adminDashboard.kindNutrition' => 'Nutrition',
 			'adminDashboard.kindRefine' => 'Correction',
 			'adminDashboard.kindGenerate' => 'Génération',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.allTime' => 'depuis toujours',
 			'adminDashboard.recentCalls' => 'Derniers appels',
 			'adminDashboard.noCalls' => 'Aucun appel',
