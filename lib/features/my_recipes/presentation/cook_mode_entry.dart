@@ -10,3 +10,7 @@ import '../domain/entities/recipe_entity.dart';
 void openCookMode(BuildContext context, RecipeEntity recipe) {
   context.pushNamed(Routing.cookMode, extra: recipe);
 }
+
+/// The same door, under a name a class with its own `openCookMode` can use.
+void cookModeFrom(BuildContext context, RecipeEntity recipe) =>
+    openCookMode(context, recipe);

@@ -51,6 +51,10 @@ abstract class MonetizationConfig {
   static bool get cookModeLocked =>
       _remote.remoteBool(FirebaseService.cookModePremiumOnlyKey) && !isPremium;
 
+  /// The in-app assistant is Premium while the console says so.
+  static bool get assistantLocked =>
+      _remote.remoteBool(FirebaseService.assistantPremiumOnlyKey) && !isPremium;
+
   /// Pushes, reminders and popups are Premium while the console says so.
   /// The inbox itself stays: share invites must still be answerable.
   static bool get notificationsLocked =>

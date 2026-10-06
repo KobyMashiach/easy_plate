@@ -78,6 +78,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$feedback$he feedback = Translations$feedback$he.internal(_root);
 	late final Translations$adminBilling$he adminBilling = Translations$adminBilling$he.internal(_root);
 	late final Translations$adminDashboard$he adminDashboard = Translations$adminDashboard$he.internal(_root);
+	late final Translations$assistant$he assistant = Translations$assistant$he.internal(_root);
 }
 
 // Path: common
@@ -3605,6 +3606,104 @@ class Translations$adminDashboard$he {
 	String grantStarts({required Object date}) => 'מתחיל ב-${date}';
 }
 
+// Path: assistant
+class Translations$assistant$he {
+	Translations$assistant$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'העוזר'
+	String get title => 'העוזר';
+
+	/// he: 'הסו-שף שלך: שאלות, תכנון, קניות ובישול'
+	String get subtitle => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול';
+
+	/// he: 'שאלו או אמרו לי מה לעשות…'
+	String get placeholder => 'שאלו או אמרו לי מה לעשות…';
+
+	/// he: 'שליחה'
+	String get send => 'שליחה';
+
+	/// he: 'חושב…'
+	String get thinking => 'חושב…';
+
+	/// he: 'מבצע: $tool'
+	String working({required Object tool}) => 'מבצע: ${tool}';
+
+	/// he: 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?'
+	String get welcome => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?';
+
+	/// he: 'משהו השתבש. נסו שוב.'
+	String get error => 'משהו השתבש. נסו שוב.';
+
+	/// he: 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.'
+	String get quotaReached => 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.';
+
+	/// he: 'העוזר הוא חלק מ-EasyPlate Premium'
+	String get premiumOnly => 'העוזר הוא חלק מ-EasyPlate Premium';
+
+	/// he: 'לפרימיום'
+	String get unlock => 'לפרימיום';
+
+	/// he: 'שיחה חדשה'
+	String get clear => 'שיחה חדשה';
+
+	/// he: 'פתיחה'
+	String get openResult => 'פתיחה';
+
+	/// he: 'בוצע'
+	String get done => 'בוצע';
+
+	/// he: 'בוטל'
+	String get undone => 'בוטל';
+
+	/// he: 'למחוק?'
+	String get confirmTitle => 'למחוק?';
+
+	/// he: '$what יימחק.'
+	String confirmBody({required Object what}) => '${what} יימחק.';
+
+	/// he: 'לא מצאתי את "$name".'
+	String notFound({required Object name}) => 'לא מצאתי את "${name}".';
+
+	/// he: 'רשימת קניות'
+	String get listTitle => 'רשימת קניות';
+
+	/// he: 'נוספו $count פריטים'
+	String addedItems({required Object count}) => 'נוספו ${count} פריטים';
+
+	/// he: 'תוכנן ל$day · $slot'
+	String plannedMeal({required Object day, required Object slot}) => 'תוכנן ל${day} · ${slot}';
+
+	/// he: 'המתכון נשמר'
+	String get recipeSaved => 'המתכון נשמר';
+
+	/// he: 'מצב בישול הופעל'
+	String get cookStarted => 'מצב בישול הופעל';
+
+	/// he: 'טיימר הוגדר לשלב $n'
+	String timerSet({required Object n}) => 'טיימר הוגדר לשלב ${n}';
+
+	/// he: 'ההעדפה נשמרה'
+	String get prefSaved => 'ההעדפה נשמרה';
+
+	/// he: 'זה דורש EasyPlate Premium.'
+	String get needsPremium => 'זה דורש EasyPlate Premium.';
+
+	/// he: '$count תוצאות'
+	String results({required Object count}) => '${count} תוצאות';
+
+	late final Translations$assistant$suggest$he suggest = Translations$assistant$suggest$he.internal(_root);
+
+	/// he: 'לאיזו רשימה?'
+	String get whichList => 'לאיזו רשימה?';
+
+	/// he: 'הרשימה נוצרה'
+	String get listCreated => 'הרשימה נוצרה';
+}
+
 // Path: walkthrough.topics
 class Translations$walkthrough$topics$he {
 	Translations$walkthrough$topics$he.internal(this._root);
@@ -3643,6 +3742,120 @@ class Translations$walkthrough$demo$he {
 
 	/// he: 'שקשוקה ירושלמית מצרכים: 400 גרם עגבניות מרוסקות 4 ביצים בצל אחד 2 כפות שמן זית כפית פפריקה מתוקה קורט מלח הכנה: 1. מחממים שמן זית במחבת ומטגנים את הבצל עד להזהבה. 2. מוסיפים את העגבניות והפפריקה ומבשלים 10 דקות על אש נמוכה. 3. שוברים את הביצים לתוך הרוטב, מכסים ומבשלים עד שהחלבון מתקשה.'
 	String get recipeText => 'שקשוקה ירושלמית\n\nמצרכים:\n400 גרם עגבניות מרוסקות\n4 ביצים\nבצל אחד\n2 כפות שמן זית\nכפית פפריקה מתוקה\nקורט מלח\n\nהכנה:\n1. מחממים שמן זית במחבת ומטגנים את הבצל עד להזהבה.\n2. מוסיפים את העגבניות והפפריקה ומבשלים 10 דקות על אש נמוכה.\n3. שוברים את הביצים לתוך הרוטב, מכסים ומבשלים עד שהחלבון מתקשה.';
+}
+
+// Path: assistant.suggest
+class Translations$assistant$suggest$he {
+	Translations$assistant$suggest$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	List<String> get templates => [
+		'תוסיף {food} לרשימת הקניות',
+		'תוסיף {food} ו{food2} לרשימה',
+		'תתכנן {dish} ל{meal} ביום {day}',
+		'תתכנן משהו מהיר ל{meal} ביום {day}',
+		'מה אפשר לבשל מ{food} ו{food2}?',
+		'תייבא מתכון מ{site}',
+		'תמצא מתכון ל{dish} ברשת',
+		'תתחיל לבשל {dish}',
+		'תפעיל טיימר של {n} דקות לשלב 2',
+		'תכין רשימת קניות מ{dish}',
+		'תיצור ספר בשם {book}',
+		'אילו מהמתכונים שלי {diet}?',
+		'תסמן ש{food} נקנה',
+		'תוריד {food} מהרשימה',
+		'תיצור תוכנית לשבוע הבא',
+		'מה מתוכנן ליום {day}?',
+		'תשנה את יום הקניות ל{day}',
+		'תציע ארוחת ערב {diet} ליום {day}',
+		'כמה זמן מבשלים ביצה קשה?',
+		'במה אפשר להחליף {food} במתכון?',
+		'איך שומרים {food}?',
+		'כמה קלוריות יש ב{dish}?',
+		'באיזו טמפרטורה אופים {dish}?',
+		'איך הופכים {dish} לטבעוני?',
+		'כמה זה {n} כפות בגרמים?',
+		'למה ה{dish} שלי יצא יבש?',
+		'מה מתאים בצד ל{dish}?',
+		'אפשר להקפיא {food}?',
+		'איך מסמיכים רוטב?',
+		'רעיון ל{meal} {diet} מהיר?',
+	];
+	List<String> get food => [
+		'חלב',
+		'ביצים',
+		'לחם',
+		'עגבניות',
+		'בצל',
+		'שמן זית',
+		'אורז',
+		'עוף',
+		'לימונים',
+		'שום',
+		'חמאה',
+		'קמח',
+		'גבינה',
+		'יוגורט',
+		'מלפפונים',
+		'פסטה',
+	];
+	List<String> get dish => [
+		'שקשוקה',
+		'מרק עדשים',
+		'פסטה פסטו',
+		'קארי עוף',
+		'סלמון',
+		'מוקפץ',
+		'פנקייקים',
+		'חומוס',
+		'ירקות בתנור',
+		'לחם בננות',
+	];
+	List<String> get day => [
+		'ראשון',
+		'שני',
+		'שלישי',
+		'רביעי',
+		'חמישי',
+		'שישי',
+		'שבת',
+		'מחר',
+	];
+	List<String> get meal => [
+		'ארוחת בוקר',
+		'ארוחת צהריים',
+		'ארוחת ערב',
+	];
+	List<String> get n => [
+		'5',
+		'8',
+		'10',
+		'12',
+		'15',
+		'20',
+		'25',
+		'30',
+	];
+	List<String> get site => [
+		'טיקטוק',
+		'אינסטגרם',
+		'יוטיוב',
+		'בלוג',
+	];
+	List<String> get book => [
+		'ימי חול',
+		'שבת',
+		'ילדים',
+		'קינוחים',
+	];
+	List<String> get diet => [
+		'צמחוניים',
+		'טבעוניים',
+		'ללא גלוטן',
+		'חלביים',
+	];
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -4986,6 +5199,122 @@ extension on Translations {
 			'adminDashboard.grantRange' => 'טווח תאריכים מדויק',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'ניתן פרימיום עד ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'מתחיל ב-${date}',
+			'assistant.title' => 'העוזר',
+			'assistant.subtitle' => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול',
+			'assistant.placeholder' => 'שאלו או אמרו לי מה לעשות…',
+			'assistant.send' => 'שליחה',
+			'assistant.thinking' => 'חושב…',
+			'assistant.working' => ({required Object tool}) => 'מבצע: ${tool}',
+			'assistant.welcome' => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?',
+			'assistant.error' => 'משהו השתבש. נסו שוב.',
+			'assistant.quotaReached' => 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.',
+			'assistant.premiumOnly' => 'העוזר הוא חלק מ-EasyPlate Premium',
+			'assistant.unlock' => 'לפרימיום',
+			'assistant.clear' => 'שיחה חדשה',
+			'assistant.openResult' => 'פתיחה',
+			'assistant.done' => 'בוצע',
+			'assistant.undone' => 'בוטל',
+			'assistant.confirmTitle' => 'למחוק?',
+			'assistant.confirmBody' => ({required Object what}) => '${what} יימחק.',
+			'assistant.notFound' => ({required Object name}) => 'לא מצאתי את "${name}".',
+			'assistant.listTitle' => 'רשימת קניות',
+			'assistant.addedItems' => ({required Object count}) => 'נוספו ${count} פריטים',
+			'assistant.plannedMeal' => ({required Object day, required Object slot}) => 'תוכנן ל${day} · ${slot}',
+			'assistant.recipeSaved' => 'המתכון נשמר',
+			'assistant.cookStarted' => 'מצב בישול הופעל',
+			'assistant.timerSet' => ({required Object n}) => 'טיימר הוגדר לשלב ${n}',
+			'assistant.prefSaved' => 'ההעדפה נשמרה',
+			'assistant.needsPremium' => 'זה דורש EasyPlate Premium.',
+			'assistant.results' => ({required Object count}) => '${count} תוצאות',
+			'assistant.suggest.templates.0' => 'תוסיף {food} לרשימת הקניות',
+			'assistant.suggest.templates.1' => 'תוסיף {food} ו{food2} לרשימה',
+			'assistant.suggest.templates.2' => 'תתכנן {dish} ל{meal} ביום {day}',
+			'assistant.suggest.templates.3' => 'תתכנן משהו מהיר ל{meal} ביום {day}',
+			'assistant.suggest.templates.4' => 'מה אפשר לבשל מ{food} ו{food2}?',
+			'assistant.suggest.templates.5' => 'תייבא מתכון מ{site}',
+			'assistant.suggest.templates.6' => 'תמצא מתכון ל{dish} ברשת',
+			'assistant.suggest.templates.7' => 'תתחיל לבשל {dish}',
+			'assistant.suggest.templates.8' => 'תפעיל טיימר של {n} דקות לשלב 2',
+			'assistant.suggest.templates.9' => 'תכין רשימת קניות מ{dish}',
+			'assistant.suggest.templates.10' => 'תיצור ספר בשם {book}',
+			'assistant.suggest.templates.11' => 'אילו מהמתכונים שלי {diet}?',
+			'assistant.suggest.templates.12' => 'תסמן ש{food} נקנה',
+			'assistant.suggest.templates.13' => 'תוריד {food} מהרשימה',
+			'assistant.suggest.templates.14' => 'תיצור תוכנית לשבוע הבא',
+			'assistant.suggest.templates.15' => 'מה מתוכנן ליום {day}?',
+			'assistant.suggest.templates.16' => 'תשנה את יום הקניות ל{day}',
+			'assistant.suggest.templates.17' => 'תציע ארוחת ערב {diet} ליום {day}',
+			'assistant.suggest.templates.18' => 'כמה זמן מבשלים ביצה קשה?',
+			'assistant.suggest.templates.19' => 'במה אפשר להחליף {food} במתכון?',
+			'assistant.suggest.templates.20' => 'איך שומרים {food}?',
+			'assistant.suggest.templates.21' => 'כמה קלוריות יש ב{dish}?',
+			'assistant.suggest.templates.22' => 'באיזו טמפרטורה אופים {dish}?',
+			'assistant.suggest.templates.23' => 'איך הופכים {dish} לטבעוני?',
+			'assistant.suggest.templates.24' => 'כמה זה {n} כפות בגרמים?',
+			'assistant.suggest.templates.25' => 'למה ה{dish} שלי יצא יבש?',
+			'assistant.suggest.templates.26' => 'מה מתאים בצד ל{dish}?',
+			'assistant.suggest.templates.27' => 'אפשר להקפיא {food}?',
+			'assistant.suggest.templates.28' => 'איך מסמיכים רוטב?',
+			'assistant.suggest.templates.29' => 'רעיון ל{meal} {diet} מהיר?',
+			'assistant.suggest.food.0' => 'חלב',
+			'assistant.suggest.food.1' => 'ביצים',
+			'assistant.suggest.food.2' => 'לחם',
+			'assistant.suggest.food.3' => 'עגבניות',
+			'assistant.suggest.food.4' => 'בצל',
+			'assistant.suggest.food.5' => 'שמן זית',
+			'assistant.suggest.food.6' => 'אורז',
+			'assistant.suggest.food.7' => 'עוף',
+			'assistant.suggest.food.8' => 'לימונים',
+			'assistant.suggest.food.9' => 'שום',
+			'assistant.suggest.food.10' => 'חמאה',
+			'assistant.suggest.food.11' => 'קמח',
+			'assistant.suggest.food.12' => 'גבינה',
+			'assistant.suggest.food.13' => 'יוגורט',
+			'assistant.suggest.food.14' => 'מלפפונים',
+			'assistant.suggest.food.15' => 'פסטה',
+			'assistant.suggest.dish.0' => 'שקשוקה',
+			'assistant.suggest.dish.1' => 'מרק עדשים',
+			'assistant.suggest.dish.2' => 'פסטה פסטו',
+			'assistant.suggest.dish.3' => 'קארי עוף',
+			'assistant.suggest.dish.4' => 'סלמון',
+			'assistant.suggest.dish.5' => 'מוקפץ',
+			'assistant.suggest.dish.6' => 'פנקייקים',
+			'assistant.suggest.dish.7' => 'חומוס',
+			'assistant.suggest.dish.8' => 'ירקות בתנור',
+			'assistant.suggest.dish.9' => 'לחם בננות',
+			'assistant.suggest.day.0' => 'ראשון',
+			'assistant.suggest.day.1' => 'שני',
+			'assistant.suggest.day.2' => 'שלישי',
+			'assistant.suggest.day.3' => 'רביעי',
+			'assistant.suggest.day.4' => 'חמישי',
+			'assistant.suggest.day.5' => 'שישי',
+			'assistant.suggest.day.6' => 'שבת',
+			'assistant.suggest.day.7' => 'מחר',
+			'assistant.suggest.meal.0' => 'ארוחת בוקר',
+			'assistant.suggest.meal.1' => 'ארוחת צהריים',
+			'assistant.suggest.meal.2' => 'ארוחת ערב',
+			'assistant.suggest.n.0' => '5',
+			'assistant.suggest.n.1' => '8',
+			'assistant.suggest.n.2' => '10',
+			'assistant.suggest.n.3' => '12',
+			'assistant.suggest.n.4' => '15',
+			'assistant.suggest.n.5' => '20',
+			'assistant.suggest.n.6' => '25',
+			'assistant.suggest.n.7' => '30',
+			'assistant.suggest.site.0' => 'טיקטוק',
+			'assistant.suggest.site.1' => 'אינסטגרם',
+			'assistant.suggest.site.2' => 'יוטיוב',
+			'assistant.suggest.site.3' => 'בלוג',
+			'assistant.suggest.book.0' => 'ימי חול',
+			'assistant.suggest.book.1' => 'שבת',
+			'assistant.suggest.book.2' => 'ילדים',
+			'assistant.suggest.book.3' => 'קינוחים',
+			'assistant.suggest.diet.0' => 'צמחוניים',
+			'assistant.suggest.diet.1' => 'טבעוניים',
+			'assistant.suggest.diet.2' => 'ללא גלוטן',
+			'assistant.suggest.diet.3' => 'חלביים',
+			'assistant.whichList' => 'לאיזו רשימה?',
+			'assistant.listCreated' => 'הרשימה נוצרה',
 			_ => null,
 		};
 	}

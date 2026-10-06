@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_spacing.dart';
+import '../../../assistant/presentation/widgets/assistant_fab.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/navigation/main_tabs.dart';
 import '../../../../core/services/auth_session_service.dart';
@@ -125,6 +127,12 @@ class _MainNavBarState extends State<MainNavBar> {
         body: Stack(
           children: [
             IndexedStack(index: index, children: pages),
+            // The copilot, on every tab, in the corner above the dock.
+            PositionedDirectional(
+              end: AppSpacing.marginMobile,
+              bottom: ClayNavDock.bottomPadding(context) + AppSpacing.base,
+              child: const AssistantFab(),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: SafeArea(

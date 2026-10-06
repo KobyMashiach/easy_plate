@@ -171,6 +171,13 @@ class AccountMenuPage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _MenuRow(
+                  icon: Icons.auto_awesome_rounded,
+                  label: t.assistant.title,
+                  hint: t.assistant.subtitle,
+                  onTap: () => context.pushNamed(Routing.assistant),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _MenuRow(
                   icon: Icons.support_agent_rounded,
                   label: t.more.support,
                   onTap: () => context.pushNamed(Routing.support),

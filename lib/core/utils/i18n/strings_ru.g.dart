@@ -74,6 +74,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$feedback$ru feedback = _Translations$feedback$ru._(_root);
 	@override late final _Translations$adminBilling$ru adminBilling = _Translations$adminBilling$ru._(_root);
 	@override late final _Translations$adminDashboard$ru adminDashboard = _Translations$adminDashboard$ru._(_root);
+	@override late final _Translations$assistant$ru assistant = _Translations$assistant$ru._(_root);
 }
 
 // Path: common
@@ -1464,6 +1465,45 @@ class _Translations$adminDashboard$ru extends Translations$adminDashboard$he {
 	@override String grantStarts({required Object date}) => 'Начнётся ${date}';
 }
 
+// Path: assistant
+class _Translations$assistant$ru extends Translations$assistant$he {
+	_Translations$assistant$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Ассистент';
+	@override String get subtitle => 'Ваш су-шеф: вопросы, планы, покупки, готовка';
+	@override String get placeholder => 'Спросите или скажите, что сделать…';
+	@override String get send => 'Отправить';
+	@override String get thinking => 'Думаю…';
+	@override String working({required Object tool}) => 'Выполняю: ${tool}';
+	@override String get welcome => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?';
+	@override String get error => 'Что-то пошло не так. Попробуйте снова.';
+	@override String get quotaReached => 'Дневной лимит ИИ исчерпан. Откроется завтра.';
+	@override String get premiumOnly => 'Ассистент входит в EasyPlate Premium';
+	@override String get unlock => 'Открыть Premium';
+	@override String get clear => 'Новый разговор';
+	@override String get openResult => 'Открыть';
+	@override String get done => 'Готово';
+	@override String get undone => 'Отменено';
+	@override String get confirmTitle => 'Удалить?';
+	@override String confirmBody({required Object what}) => '${what} будет удалено.';
+	@override String notFound({required Object name}) => 'Не нашёл «${name}».';
+	@override String get listTitle => 'Список покупок';
+	@override String addedItems({required Object count}) => 'Добавлено: ${count}';
+	@override String plannedMeal({required Object day, required Object slot}) => 'Запланировано на ${day} · ${slot}';
+	@override String get recipeSaved => 'Рецепт сохранён';
+	@override String get cookStarted => 'Режим готовки запущен';
+	@override String timerSet({required Object n}) => 'Таймер на шаг ${n}';
+	@override String get prefSaved => 'Настройка сохранена';
+	@override String get needsPremium => 'Для этого нужен EasyPlate Premium.';
+	@override String results({required Object count}) => 'Результатов: ${count}';
+	@override late final _Translations$assistant$suggest$ru suggest = _Translations$assistant$suggest$ru._(_root);
+	@override String get whichList => 'В какой список?';
+	@override String get listCreated => 'Список создан';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1492,6 +1532,120 @@ class _Translations$walkthrough$demo$ru extends Translations$walkthrough$demo$he
 	@override String get mealName => 'Ужин';
 	@override String get groceryItem => 'Помидоры';
 	@override String get recipeText => 'Иерусалимская шакшука\n\nИнгредиенты:\n400 г протёртых томатов\n4 яйца\n1 луковица\n2 ст. л. оливкового масла\n1 ч. л. сладкой паприки\nЩепотка соли\n\nПриготовление:\n1. Разогреть оливковое масло на сковороде и обжарить лук до золотистого цвета.\n2. Добавить томаты и паприку, тушить 10 минут на слабом огне.\n3. Разбить яйца в соус, накрыть крышкой и готовить, пока белок не схватится.';
+}
+
+// Path: assistant.suggest
+class _Translations$assistant$suggest$ru extends Translations$assistant$suggest$he {
+	_Translations$assistant$suggest$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get templates => [
+		'Добавь {food} в список покупок',
+		'Добавь {food} и {food2} в список',
+		'Запланируй {dish} на {meal} в {day}',
+		'Запланируй что-то быстрое на {meal} в {day}',
+		'Что приготовить из {food} и {food2}?',
+		'Импортируй рецепт из {site}',
+		'Найди рецепт {dish} в интернете',
+		'Начни готовить {dish}',
+		'Поставь таймер на {n} минут для шага 2',
+		'Составь список покупок из {dish}',
+		'Создай книгу «{book}»',
+		'Какие мои рецепты {diet}?',
+		'Отметь {food} как купленное',
+		'Убери {food} из списка',
+		'Создай план на следующую неделю',
+		'Что запланировано на {day}?',
+		'Поменяй день покупок на {day}',
+		'Предложи {diet} ужин на {day}',
+		'Сколько варить яйцо вкрутую?',
+		'Чем заменить {food} в рецепте?',
+		'Как хранить {food}?',
+		'Сколько калорий в {dish}?',
+		'Какая температура духовки для {dish}?',
+		'Как сделать {dish} веганским?',
+		'Сколько граммов в {n} столовых ложках?',
+		'Почему {dish} получился сухим?',
+		'Что подать к {dish}?',
+		'Можно ли заморозить {food}?',
+		'Как загустить соус?',
+		'Идея быстрого {diet} {meal}?',
+	];
+	@override List<String> get food => [
+		'молоко',
+		'яйца',
+		'хлеб',
+		'помидоры',
+		'лук',
+		'оливковое масло',
+		'рис',
+		'курицу',
+		'лимоны',
+		'чеснок',
+		'масло',
+		'муку',
+		'сыр',
+		'йогурт',
+		'огурцы',
+		'пасту',
+	];
+	@override List<String> get dish => [
+		'шакшуку',
+		'чечевичный суп',
+		'пасту песто',
+		'куриное карри',
+		'лосось',
+		'овощи вок',
+		'панкейки',
+		'хумус',
+		'запечённые овощи',
+		'банановый хлеб',
+	];
+	@override List<String> get day => [
+		'воскресенье',
+		'понедельник',
+		'вторник',
+		'среду',
+		'четверг',
+		'пятницу',
+		'субботу',
+		'завтра',
+	];
+	@override List<String> get meal => [
+		'завтрак',
+		'обед',
+		'ужин',
+	];
+	@override List<String> get n => [
+		'5',
+		'8',
+		'10',
+		'12',
+		'15',
+		'20',
+		'25',
+		'30',
+	];
+	@override List<String> get site => [
+		'TikTok',
+		'Instagram',
+		'YouTube',
+		'блога',
+	];
+	@override List<String> get book => [
+		'Будни',
+		'Шаббат',
+		'Детям',
+		'Десерты',
+	];
+	@override List<String> get diet => [
+		'вегетарианские',
+		'веганские',
+		'без глютена',
+		'молочные',
+	];
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -2739,6 +2893,122 @@ extension on TranslationsRu {
 			'adminDashboard.grantRange' => 'Точный диапазон дат',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Премиум выдан до ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Начнётся ${date}',
+			'assistant.title' => 'Ассистент',
+			'assistant.subtitle' => 'Ваш су-шеф: вопросы, планы, покупки, готовка',
+			'assistant.placeholder' => 'Спросите или скажите, что сделать…',
+			'assistant.send' => 'Отправить',
+			'assistant.thinking' => 'Думаю…',
+			'assistant.working' => ({required Object tool}) => 'Выполняю: ${tool}',
+			'assistant.welcome' => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?',
+			'assistant.error' => 'Что-то пошло не так. Попробуйте снова.',
+			'assistant.quotaReached' => 'Дневной лимит ИИ исчерпан. Откроется завтра.',
+			'assistant.premiumOnly' => 'Ассистент входит в EasyPlate Premium',
+			'assistant.unlock' => 'Открыть Premium',
+			'assistant.clear' => 'Новый разговор',
+			'assistant.openResult' => 'Открыть',
+			'assistant.done' => 'Готово',
+			'assistant.undone' => 'Отменено',
+			'assistant.confirmTitle' => 'Удалить?',
+			'assistant.confirmBody' => ({required Object what}) => '${what} будет удалено.',
+			'assistant.notFound' => ({required Object name}) => 'Не нашёл «${name}».',
+			'assistant.listTitle' => 'Список покупок',
+			'assistant.addedItems' => ({required Object count}) => 'Добавлено: ${count}',
+			'assistant.plannedMeal' => ({required Object day, required Object slot}) => 'Запланировано на ${day} · ${slot}',
+			'assistant.recipeSaved' => 'Рецепт сохранён',
+			'assistant.cookStarted' => 'Режим готовки запущен',
+			'assistant.timerSet' => ({required Object n}) => 'Таймер на шаг ${n}',
+			'assistant.prefSaved' => 'Настройка сохранена',
+			'assistant.needsPremium' => 'Для этого нужен EasyPlate Premium.',
+			'assistant.results' => ({required Object count}) => 'Результатов: ${count}',
+			'assistant.suggest.templates.0' => 'Добавь {food} в список покупок',
+			'assistant.suggest.templates.1' => 'Добавь {food} и {food2} в список',
+			'assistant.suggest.templates.2' => 'Запланируй {dish} на {meal} в {day}',
+			'assistant.suggest.templates.3' => 'Запланируй что-то быстрое на {meal} в {day}',
+			'assistant.suggest.templates.4' => 'Что приготовить из {food} и {food2}?',
+			'assistant.suggest.templates.5' => 'Импортируй рецепт из {site}',
+			'assistant.suggest.templates.6' => 'Найди рецепт {dish} в интернете',
+			'assistant.suggest.templates.7' => 'Начни готовить {dish}',
+			'assistant.suggest.templates.8' => 'Поставь таймер на {n} минут для шага 2',
+			'assistant.suggest.templates.9' => 'Составь список покупок из {dish}',
+			'assistant.suggest.templates.10' => 'Создай книгу «{book}»',
+			'assistant.suggest.templates.11' => 'Какие мои рецепты {diet}?',
+			'assistant.suggest.templates.12' => 'Отметь {food} как купленное',
+			'assistant.suggest.templates.13' => 'Убери {food} из списка',
+			'assistant.suggest.templates.14' => 'Создай план на следующую неделю',
+			'assistant.suggest.templates.15' => 'Что запланировано на {day}?',
+			'assistant.suggest.templates.16' => 'Поменяй день покупок на {day}',
+			'assistant.suggest.templates.17' => 'Предложи {diet} ужин на {day}',
+			'assistant.suggest.templates.18' => 'Сколько варить яйцо вкрутую?',
+			'assistant.suggest.templates.19' => 'Чем заменить {food} в рецепте?',
+			'assistant.suggest.templates.20' => 'Как хранить {food}?',
+			'assistant.suggest.templates.21' => 'Сколько калорий в {dish}?',
+			'assistant.suggest.templates.22' => 'Какая температура духовки для {dish}?',
+			'assistant.suggest.templates.23' => 'Как сделать {dish} веганским?',
+			'assistant.suggest.templates.24' => 'Сколько граммов в {n} столовых ложках?',
+			'assistant.suggest.templates.25' => 'Почему {dish} получился сухим?',
+			'assistant.suggest.templates.26' => 'Что подать к {dish}?',
+			'assistant.suggest.templates.27' => 'Можно ли заморозить {food}?',
+			'assistant.suggest.templates.28' => 'Как загустить соус?',
+			'assistant.suggest.templates.29' => 'Идея быстрого {diet} {meal}?',
+			'assistant.suggest.food.0' => 'молоко',
+			'assistant.suggest.food.1' => 'яйца',
+			'assistant.suggest.food.2' => 'хлеб',
+			'assistant.suggest.food.3' => 'помидоры',
+			'assistant.suggest.food.4' => 'лук',
+			'assistant.suggest.food.5' => 'оливковое масло',
+			'assistant.suggest.food.6' => 'рис',
+			'assistant.suggest.food.7' => 'курицу',
+			'assistant.suggest.food.8' => 'лимоны',
+			'assistant.suggest.food.9' => 'чеснок',
+			'assistant.suggest.food.10' => 'масло',
+			'assistant.suggest.food.11' => 'муку',
+			'assistant.suggest.food.12' => 'сыр',
+			'assistant.suggest.food.13' => 'йогурт',
+			'assistant.suggest.food.14' => 'огурцы',
+			'assistant.suggest.food.15' => 'пасту',
+			'assistant.suggest.dish.0' => 'шакшуку',
+			'assistant.suggest.dish.1' => 'чечевичный суп',
+			'assistant.suggest.dish.2' => 'пасту песто',
+			'assistant.suggest.dish.3' => 'куриное карри',
+			'assistant.suggest.dish.4' => 'лосось',
+			'assistant.suggest.dish.5' => 'овощи вок',
+			'assistant.suggest.dish.6' => 'панкейки',
+			'assistant.suggest.dish.7' => 'хумус',
+			'assistant.suggest.dish.8' => 'запечённые овощи',
+			'assistant.suggest.dish.9' => 'банановый хлеб',
+			'assistant.suggest.day.0' => 'воскресенье',
+			'assistant.suggest.day.1' => 'понедельник',
+			'assistant.suggest.day.2' => 'вторник',
+			'assistant.suggest.day.3' => 'среду',
+			'assistant.suggest.day.4' => 'четверг',
+			'assistant.suggest.day.5' => 'пятницу',
+			'assistant.suggest.day.6' => 'субботу',
+			'assistant.suggest.day.7' => 'завтра',
+			'assistant.suggest.meal.0' => 'завтрак',
+			'assistant.suggest.meal.1' => 'обед',
+			'assistant.suggest.meal.2' => 'ужин',
+			'assistant.suggest.n.0' => '5',
+			'assistant.suggest.n.1' => '8',
+			'assistant.suggest.n.2' => '10',
+			'assistant.suggest.n.3' => '12',
+			'assistant.suggest.n.4' => '15',
+			'assistant.suggest.n.5' => '20',
+			'assistant.suggest.n.6' => '25',
+			'assistant.suggest.n.7' => '30',
+			'assistant.suggest.site.0' => 'TikTok',
+			'assistant.suggest.site.1' => 'Instagram',
+			'assistant.suggest.site.2' => 'YouTube',
+			'assistant.suggest.site.3' => 'блога',
+			'assistant.suggest.book.0' => 'Будни',
+			'assistant.suggest.book.1' => 'Шаббат',
+			'assistant.suggest.book.2' => 'Детям',
+			'assistant.suggest.book.3' => 'Десерты',
+			'assistant.suggest.diet.0' => 'вегетарианские',
+			'assistant.suggest.diet.1' => 'веганские',
+			'assistant.suggest.diet.2' => 'без глютена',
+			'assistant.suggest.diet.3' => 'молочные',
+			'assistant.whichList' => 'В какой список?',
+			'assistant.listCreated' => 'Список создан',
 			_ => null,
 		};
 	}

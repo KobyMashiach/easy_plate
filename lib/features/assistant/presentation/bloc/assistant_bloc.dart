@@ -1,0 +1,248 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../../core/errors/app_exception.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
+import '../../domain/assistant_agent.dart';
+import '../../domain/assistant_dispatcher.dart';
+import '../../domain/assistant_models.dart';
+
+sealed class AssistantEvent {
+  const AssistantEvent();
+}
+
+class AssistantSend extends AssistantEvent {
+  final String text;
+  const AssistantSend(this.text);
+}
+
+class AssistantToggleGroceryItem extends AssistantEvent {
+  final String listId;
+  final String itemId;
+  const AssistantToggleGroceryItem(this.listId, this.itemId);
+}
+
+class AssistantReset extends AssistantEvent {
+  const AssistantReset();
+}
+
+class AssistantState {
+  final List<AssistantMessage> messages;
+  final bool busy;
+
+  /// The tool running right now, for the status line.
+  final String? workingOn;
+
+  const AssistantState({
+    this.messages = const [],
+    this.busy = false,
+    this.workingOn,
+  });
+
+  AssistantState copyWith({
+    List<AssistantMessage>? messages,
+    bool? busy,
+    String? workingOn,
+    bool clearWorking = false,
+  }) => AssistantState(
+    messages: messages ?? this.messages,
+    busy: busy ?? this.busy,
+    workingOn: clearWorking ? null : (workingOn ?? this.workingOn),
+  );
+}
+
+/// Drives one conversation: the user's words go to the agent, every tool
+/// the model runs becomes a card, and the final reply is revealed word by
+/// word (the transport is not streamed, the reading still is).
+class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
+  final AssistantAgent agent;
+  final AssistantDispatcher dispatcher;
+
+  static const _uuid = Uuid();
+
+  AssistantBloc({required this.agent, required this.dispatcher})
+    : super(
+        AssistantState(
+          messages: [
+            AssistantMessage(
+              id: _uuid.v4(),
+              role: AssistantRole.assistant,
+              text: t.assistant.welcome,
+            ),
+          ],
+        ),
+      ) {
+    on<AssistantSend>(_onSend);
+    on<AssistantToggleGroceryItem>(_onToggle);
+    on<AssistantReset>(_onReset);
+  }
+
+  Future<void> _onSend(
+    AssistantSend event,
+    Emitter<AssistantState> emit,
+  ) async {
+    final text = event.text.trim();
+    if (text.isEmpty || state.busy) return;
+    final user = AssistantMessage(
+      id: _uuid.v4(),
+      role: AssistantRole.user,
+      text: text,
+    );
+    final pending = AssistantMessage(
+      id: _uuid.v4(),
+      role: AssistantRole.assistant,
+      pending: true,
+    );
+    emit(
+      state.copyWith(
+        messages: [...state.messages, user, pending],
+        busy: true,
+        clearWorking: true,
+      ),
+    );
+
+    try {
+      await for (final e in agent.send(text)) {
+        switch (e) {
+          case AgentToolStarted():
+            emit(state.copyWith(workingOn: e.call.name));
+          case AgentToolFinished():
+            final card = e.result.card;
+            if (card != null) {
+              // The card lands above the pending bubble, in call order.
+              final without = state.messages.where((m) => m.id != pending.id);
+              emit(
+                state.copyWith(
+                  messages: [
+                    ...without,
+                    AssistantMessage(
+                      id: _uuid.v4(),
+                      role: AssistantRole.tool,
+                      card: card,
+                    ),
+                    pending,
+                  ],
+                  clearWorking: true,
+                ),
+              );
+            }
+          case AgentReply():
+            await _reveal(pending.id, e.text, emit);
+        }
+      }
+    } on AppException catch (e) {
+      _fail(pending.id, _messageFor(e), emit);
+    } catch (_) {
+      _fail(pending.id, t.assistant.error, emit);
+    }
+    emit(state.copyWith(busy: false, clearWorking: true));
+  }
+
+  String _messageFor(AppException e) => switch (e.type) {
+    AppErrorType.quotaExceeded => t.assistant.quotaReached,
+    AppErrorType.networkError => t.common.networkError,
+    _ => t.assistant.error,
+  };
+
+  /// Word-by-word reveal of the reply, paced so a long answer still lands
+  /// within about a second and a half.
+  Future<void> _reveal(
+    String id,
+    String text,
+    Emitter<AssistantState> emit,
+  ) async {
+    if (text.isEmpty) {
+      _replace(
+        id,
+        (m) => m.copyWith(text: t.assistant.done, pending: false),
+        emit,
+      );
+      return;
+    }
+    final words = text.split(' ');
+    final perTick = (words.length / 40).ceil().clamp(1, 6);
+    final shown = StringBuffer();
+    for (var i = 0; i < words.length; i += perTick) {
+      if (shown.isNotEmpty) shown.write(' ');
+      shown.write(words.skip(i).take(perTick).join(' '));
+      final done = i + perTick >= words.length;
+      _replace(
+        id,
+        (m) => m.copyWith(text: shown.toString(), pending: !done),
+        emit,
+      );
+      if (!done) await Future<void>.delayed(const Duration(milliseconds: 35));
+    }
+  }
+
+  void _fail(String id, String message, Emitter<AssistantState> emit) =>
+      _replace(
+        id,
+        (m) => m.copyWith(text: message, pending: false, error: true),
+        emit,
+      );
+
+  void _replace(
+    String id,
+    AssistantMessage Function(AssistantMessage) change,
+    Emitter<AssistantState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        messages: [
+          for (final m in state.messages) m.id == id ? change(m) : m,
+        ],
+      ),
+    );
+  }
+
+  Future<void> _onToggle(
+    AssistantToggleGroceryItem event,
+    Emitter<AssistantState> emit,
+  ) async {
+    await dispatcher.toggleGroceryItem(event.listId, event.itemId);
+    // Reflect it on every card that shows that list.
+    emit(
+      state.copyWith(
+        messages: [
+          for (final m in state.messages)
+            if (m.card case final GroceryCard card
+                when card.listId == event.listId)
+              AssistantMessage(
+                id: m.id,
+                role: m.role,
+                card: GroceryCard(
+                  listId: card.listId,
+                  listName: card.listName,
+                  items: [
+                    for (final i in card.items)
+                      i.id == event.itemId
+                          ? i.copyWith(isChecked: !i.isChecked)
+                          : i,
+                  ],
+                ),
+              )
+            else
+              m,
+        ],
+      ),
+    );
+  }
+
+  void _onReset(AssistantReset event, Emitter<AssistantState> emit) {
+    agent.reset();
+    emit(
+      AssistantState(
+        messages: [
+          AssistantMessage(
+            id: _uuid.v4(),
+            role: AssistantRole.assistant,
+            text: t.assistant.welcome,
+          ),
+        ],
+      ),
+    );
+  }
+}

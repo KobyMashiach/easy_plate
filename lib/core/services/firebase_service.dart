@@ -72,6 +72,7 @@ class FirebaseService {
     // hands Premium features out for free.
     cookModePremiumOnlyKey: true,
     notificationsPremiumOnlyKey: true,
+    assistantPremiumOnlyKey: true,
   };
 
   static const adsEnabledKey = 'ads_enabled';
@@ -83,6 +84,7 @@ class FirebaseService {
   static const quotaAiPremiumKey = 'quota_ai_premium';
   static const cookModePremiumOnlyKey = 'cook_mode_premium_only';
   static const notificationsPremiumOnlyKey = 'notifications_premium_only';
+  static const assistantPremiumOnlyKey = 'assistant_premium_only';
 
   static const isProdKey = 'isProd';
 

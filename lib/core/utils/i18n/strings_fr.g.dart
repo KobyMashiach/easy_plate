@@ -74,6 +74,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$feedback$fr feedback = _Translations$feedback$fr._(_root);
 	@override late final _Translations$adminBilling$fr adminBilling = _Translations$adminBilling$fr._(_root);
 	@override late final _Translations$adminDashboard$fr adminDashboard = _Translations$adminDashboard$fr._(_root);
+	@override late final _Translations$assistant$fr assistant = _Translations$assistant$fr._(_root);
 }
 
 // Path: common
@@ -1464,6 +1465,45 @@ class _Translations$adminDashboard$fr extends Translations$adminDashboard$he {
 	@override String grantStarts({required Object date}) => 'Commence le ${date}';
 }
 
+// Path: assistant
+class _Translations$assistant$fr extends Translations$assistant$he {
+	_Translations$assistant$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Assistant';
+	@override String get subtitle => 'Votre sous-chef : questions, planning, courses, cuisine';
+	@override String get placeholder => 'Demandez ou dites-moi quoi faire…';
+	@override String get send => 'Envoyer';
+	@override String get thinking => 'Je réfléchis…';
+	@override String working({required Object tool}) => 'En cours : ${tool}';
+	@override String get welcome => 'Bonjour ! Je peux ajouter des courses, planifier votre semaine, importer des recettes depuis des liens, lancer le mode cuisine et plus. On fait quoi ?';
+	@override String get error => 'Une erreur est survenue. Réessayez.';
+	@override String get quotaReached => 'Le quota IA du jour est épuisé. Il se renouvelle demain.';
+	@override String get premiumOnly => 'L\'assistant fait partie d\'EasyPlate Premium';
+	@override String get unlock => 'Voir Premium';
+	@override String get clear => 'Nouvelle conversation';
+	@override String get openResult => 'Ouvrir';
+	@override String get done => 'Fait';
+	@override String get undone => 'Annulé';
+	@override String get confirmTitle => 'Supprimer ?';
+	@override String confirmBody({required Object what}) => '${what} sera supprimé.';
+	@override String notFound({required Object name}) => 'Je n\'ai pas trouvé « ${name} ».';
+	@override String get listTitle => 'Liste de courses';
+	@override String addedItems({required Object count}) => '${count} articles ajoutés';
+	@override String plannedMeal({required Object day, required Object slot}) => 'Prévu pour ${day} · ${slot}';
+	@override String get recipeSaved => 'Recette enregistrée';
+	@override String get cookStarted => 'Mode cuisine lancé';
+	@override String timerSet({required Object n}) => 'Minuteur réglé pour l\'étape ${n}';
+	@override String get prefSaved => 'Préférence enregistrée';
+	@override String get needsPremium => 'Cela nécessite EasyPlate Premium.';
+	@override String results({required Object count}) => '${count} résultats';
+	@override late final _Translations$assistant$suggest$fr suggest = _Translations$assistant$suggest$fr._(_root);
+	@override String get whichList => 'Quelle liste ?';
+	@override String get listCreated => 'Liste créée';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1492,6 +1532,120 @@ class _Translations$walkthrough$demo$fr extends Translations$walkthrough$demo$he
 	@override String get mealName => 'Dîner';
 	@override String get groceryItem => 'Tomates';
 	@override String get recipeText => 'Chakchouka de Jérusalem\n\nIngrédients :\n400 g de tomates concassées\n4 œufs\n1 oignon\n2 c. à s. d\'huile d\'olive\n1 c. à c. de paprika doux\nUne pincée de sel\n\nPréparation :\n1. Chauffer l\'huile d\'olive dans une poêle et faire dorer l\'oignon.\n2. Ajouter les tomates et le paprika, laisser mijoter 10 minutes.\n3. Casser les œufs dans la sauce, couvrir et cuire jusqu\'à ce que le blanc prenne.';
+}
+
+// Path: assistant.suggest
+class _Translations$assistant$suggest$fr extends Translations$assistant$suggest$he {
+	_Translations$assistant$suggest$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get templates => [
+		'Ajoute {food} à ma liste de courses',
+		'Ajoute {food} et {food2} à la liste',
+		'Prévois {dish} pour le {meal} de {day}',
+		'Prévois quelque chose de rapide pour le {meal} de {day}',
+		'Que cuisiner avec {food} et {food2} ?',
+		'Importe une recette depuis {site}',
+		'Trouve une recette de {dish} en ligne',
+		'Lance la cuisson de {dish}',
+		'Mets un minuteur de {n} minutes pour l\'étape 2',
+		'Fais une liste de courses à partir de {dish}',
+		'Crée un livre nommé {book}',
+		'Lesquelles de mes recettes sont {diet} ?',
+		'Marque {food} comme acheté',
+		'Retire {food} de la liste',
+		'Crée un plan pour la semaine prochaine',
+		'Qu\'est-ce qui est prévu {day} ?',
+		'Change mon jour de courses pour {day}',
+		'Propose un dîner {diet} pour {day}',
+		'Combien de temps pour un œuf dur ?',
+		'Par quoi remplacer {food} dans une recette ?',
+		'Comment conserver {food} ?',
+		'Combien de calories dans {dish} ?',
+		'Quelle température de four pour {dish} ?',
+		'Comment rendre {dish} végane ?',
+		'Combien de grammes font {n} cuillères à soupe ?',
+		'Pourquoi mon {dish} est sec ?',
+		'Qu\'est-ce qui va bien avec {dish} ?',
+		'Peut-on congeler {food} ?',
+		'Comment épaissir une sauce ?',
+		'Une idée de {meal} {diet} rapide ?',
+	];
+	@override List<String> get food => [
+		'du lait',
+		'des œufs',
+		'du pain',
+		'des tomates',
+		'des oignons',
+		'de l\'huile d\'olive',
+		'du riz',
+		'du poulet',
+		'des citrons',
+		'de l\'ail',
+		'du beurre',
+		'de la farine',
+		'du fromage',
+		'du yaourt',
+		'des concombres',
+		'des pâtes',
+	];
+	@override List<String> get dish => [
+		'chakchouka',
+		'soupe de lentilles',
+		'pâtes au pesto',
+		'curry de poulet',
+		'saumon',
+		'sauté de légumes',
+		'pancakes',
+		'houmous',
+		'légumes rôtis',
+		'banana bread',
+	];
+	@override List<String> get day => [
+		'dimanche',
+		'lundi',
+		'mardi',
+		'mercredi',
+		'jeudi',
+		'vendredi',
+		'samedi',
+		'demain',
+	];
+	@override List<String> get meal => [
+		'petit-déjeuner',
+		'déjeuner',
+		'dîner',
+	];
+	@override List<String> get n => [
+		'5',
+		'8',
+		'10',
+		'12',
+		'15',
+		'20',
+		'25',
+		'30',
+	];
+	@override List<String> get site => [
+		'TikTok',
+		'Instagram',
+		'YouTube',
+		'un blog',
+	];
+	@override List<String> get book => [
+		'Semaine',
+		'Shabbat',
+		'Enfants',
+		'Desserts',
+	];
+	@override List<String> get diet => [
+		'végétariennes',
+		'véganes',
+		'sans gluten',
+		'lactées',
+	];
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -2739,6 +2893,122 @@ extension on TranslationsFr {
 			'adminDashboard.grantRange' => 'Dates exactes',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Premium accordé jusqu\'au ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Commence le ${date}',
+			'assistant.title' => 'Assistant',
+			'assistant.subtitle' => 'Votre sous-chef : questions, planning, courses, cuisine',
+			'assistant.placeholder' => 'Demandez ou dites-moi quoi faire…',
+			'assistant.send' => 'Envoyer',
+			'assistant.thinking' => 'Je réfléchis…',
+			'assistant.working' => ({required Object tool}) => 'En cours : ${tool}',
+			'assistant.welcome' => 'Bonjour ! Je peux ajouter des courses, planifier votre semaine, importer des recettes depuis des liens, lancer le mode cuisine et plus. On fait quoi ?',
+			'assistant.error' => 'Une erreur est survenue. Réessayez.',
+			'assistant.quotaReached' => 'Le quota IA du jour est épuisé. Il se renouvelle demain.',
+			'assistant.premiumOnly' => 'L\'assistant fait partie d\'EasyPlate Premium',
+			'assistant.unlock' => 'Voir Premium',
+			'assistant.clear' => 'Nouvelle conversation',
+			'assistant.openResult' => 'Ouvrir',
+			'assistant.done' => 'Fait',
+			'assistant.undone' => 'Annulé',
+			'assistant.confirmTitle' => 'Supprimer ?',
+			'assistant.confirmBody' => ({required Object what}) => '${what} sera supprimé.',
+			'assistant.notFound' => ({required Object name}) => 'Je n\'ai pas trouvé « ${name} ».',
+			'assistant.listTitle' => 'Liste de courses',
+			'assistant.addedItems' => ({required Object count}) => '${count} articles ajoutés',
+			'assistant.plannedMeal' => ({required Object day, required Object slot}) => 'Prévu pour ${day} · ${slot}',
+			'assistant.recipeSaved' => 'Recette enregistrée',
+			'assistant.cookStarted' => 'Mode cuisine lancé',
+			'assistant.timerSet' => ({required Object n}) => 'Minuteur réglé pour l\'étape ${n}',
+			'assistant.prefSaved' => 'Préférence enregistrée',
+			'assistant.needsPremium' => 'Cela nécessite EasyPlate Premium.',
+			'assistant.results' => ({required Object count}) => '${count} résultats',
+			'assistant.suggest.templates.0' => 'Ajoute {food} à ma liste de courses',
+			'assistant.suggest.templates.1' => 'Ajoute {food} et {food2} à la liste',
+			'assistant.suggest.templates.2' => 'Prévois {dish} pour le {meal} de {day}',
+			'assistant.suggest.templates.3' => 'Prévois quelque chose de rapide pour le {meal} de {day}',
+			'assistant.suggest.templates.4' => 'Que cuisiner avec {food} et {food2} ?',
+			'assistant.suggest.templates.5' => 'Importe une recette depuis {site}',
+			'assistant.suggest.templates.6' => 'Trouve une recette de {dish} en ligne',
+			'assistant.suggest.templates.7' => 'Lance la cuisson de {dish}',
+			'assistant.suggest.templates.8' => 'Mets un minuteur de {n} minutes pour l\'étape 2',
+			'assistant.suggest.templates.9' => 'Fais une liste de courses à partir de {dish}',
+			'assistant.suggest.templates.10' => 'Crée un livre nommé {book}',
+			'assistant.suggest.templates.11' => 'Lesquelles de mes recettes sont {diet} ?',
+			'assistant.suggest.templates.12' => 'Marque {food} comme acheté',
+			'assistant.suggest.templates.13' => 'Retire {food} de la liste',
+			'assistant.suggest.templates.14' => 'Crée un plan pour la semaine prochaine',
+			'assistant.suggest.templates.15' => 'Qu\'est-ce qui est prévu {day} ?',
+			'assistant.suggest.templates.16' => 'Change mon jour de courses pour {day}',
+			'assistant.suggest.templates.17' => 'Propose un dîner {diet} pour {day}',
+			'assistant.suggest.templates.18' => 'Combien de temps pour un œuf dur ?',
+			'assistant.suggest.templates.19' => 'Par quoi remplacer {food} dans une recette ?',
+			'assistant.suggest.templates.20' => 'Comment conserver {food} ?',
+			'assistant.suggest.templates.21' => 'Combien de calories dans {dish} ?',
+			'assistant.suggest.templates.22' => 'Quelle température de four pour {dish} ?',
+			'assistant.suggest.templates.23' => 'Comment rendre {dish} végane ?',
+			'assistant.suggest.templates.24' => 'Combien de grammes font {n} cuillères à soupe ?',
+			'assistant.suggest.templates.25' => 'Pourquoi mon {dish} est sec ?',
+			'assistant.suggest.templates.26' => 'Qu\'est-ce qui va bien avec {dish} ?',
+			'assistant.suggest.templates.27' => 'Peut-on congeler {food} ?',
+			'assistant.suggest.templates.28' => 'Comment épaissir une sauce ?',
+			'assistant.suggest.templates.29' => 'Une idée de {meal} {diet} rapide ?',
+			'assistant.suggest.food.0' => 'du lait',
+			'assistant.suggest.food.1' => 'des œufs',
+			'assistant.suggest.food.2' => 'du pain',
+			'assistant.suggest.food.3' => 'des tomates',
+			'assistant.suggest.food.4' => 'des oignons',
+			'assistant.suggest.food.5' => 'de l\'huile d\'olive',
+			'assistant.suggest.food.6' => 'du riz',
+			'assistant.suggest.food.7' => 'du poulet',
+			'assistant.suggest.food.8' => 'des citrons',
+			'assistant.suggest.food.9' => 'de l\'ail',
+			'assistant.suggest.food.10' => 'du beurre',
+			'assistant.suggest.food.11' => 'de la farine',
+			'assistant.suggest.food.12' => 'du fromage',
+			'assistant.suggest.food.13' => 'du yaourt',
+			'assistant.suggest.food.14' => 'des concombres',
+			'assistant.suggest.food.15' => 'des pâtes',
+			'assistant.suggest.dish.0' => 'chakchouka',
+			'assistant.suggest.dish.1' => 'soupe de lentilles',
+			'assistant.suggest.dish.2' => 'pâtes au pesto',
+			'assistant.suggest.dish.3' => 'curry de poulet',
+			'assistant.suggest.dish.4' => 'saumon',
+			'assistant.suggest.dish.5' => 'sauté de légumes',
+			'assistant.suggest.dish.6' => 'pancakes',
+			'assistant.suggest.dish.7' => 'houmous',
+			'assistant.suggest.dish.8' => 'légumes rôtis',
+			'assistant.suggest.dish.9' => 'banana bread',
+			'assistant.suggest.day.0' => 'dimanche',
+			'assistant.suggest.day.1' => 'lundi',
+			'assistant.suggest.day.2' => 'mardi',
+			'assistant.suggest.day.3' => 'mercredi',
+			'assistant.suggest.day.4' => 'jeudi',
+			'assistant.suggest.day.5' => 'vendredi',
+			'assistant.suggest.day.6' => 'samedi',
+			'assistant.suggest.day.7' => 'demain',
+			'assistant.suggest.meal.0' => 'petit-déjeuner',
+			'assistant.suggest.meal.1' => 'déjeuner',
+			'assistant.suggest.meal.2' => 'dîner',
+			'assistant.suggest.n.0' => '5',
+			'assistant.suggest.n.1' => '8',
+			'assistant.suggest.n.2' => '10',
+			'assistant.suggest.n.3' => '12',
+			'assistant.suggest.n.4' => '15',
+			'assistant.suggest.n.5' => '20',
+			'assistant.suggest.n.6' => '25',
+			'assistant.suggest.n.7' => '30',
+			'assistant.suggest.site.0' => 'TikTok',
+			'assistant.suggest.site.1' => 'Instagram',
+			'assistant.suggest.site.2' => 'YouTube',
+			'assistant.suggest.site.3' => 'un blog',
+			'assistant.suggest.book.0' => 'Semaine',
+			'assistant.suggest.book.1' => 'Shabbat',
+			'assistant.suggest.book.2' => 'Enfants',
+			'assistant.suggest.book.3' => 'Desserts',
+			'assistant.suggest.diet.0' => 'végétariennes',
+			'assistant.suggest.diet.1' => 'véganes',
+			'assistant.suggest.diet.2' => 'sans gluten',
+			'assistant.suggest.diet.3' => 'lactées',
+			'assistant.whichList' => 'Quelle liste ?',
+			'assistant.listCreated' => 'Liste créée',
 			_ => null,
 		};
 	}

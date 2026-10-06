@@ -74,6 +74,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$feedback$ar feedback = _Translations$feedback$ar._(_root);
 	@override late final _Translations$adminBilling$ar adminBilling = _Translations$adminBilling$ar._(_root);
 	@override late final _Translations$adminDashboard$ar adminDashboard = _Translations$adminDashboard$ar._(_root);
+	@override late final _Translations$assistant$ar assistant = _Translations$assistant$ar._(_root);
 }
 
 // Path: common
@@ -1464,6 +1465,45 @@ class _Translations$adminDashboard$ar extends Translations$adminDashboard$he {
 	@override String grantStarts({required Object date}) => 'يبدأ في ${date}';
 }
 
+// Path: assistant
+class _Translations$assistant$ar extends Translations$assistant$he {
+	_Translations$assistant$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'المساعد';
+	@override String get subtitle => 'مساعد الطاهي: اسأل، خطط، تسوّق، اطبخ';
+	@override String get placeholder => 'اسأل أو قل لي ماذا أفعل…';
+	@override String get send => 'إرسال';
+	@override String get thinking => 'أفكّر…';
+	@override String working({required Object tool}) => 'أنفّذ: ${tool}';
+	@override String get welcome => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟';
+	@override String get error => 'حدث خطأ ما. حاول مجددًا.';
+	@override String get quotaReached => 'استُهلكت حصة الذكاء الاصطناعي لليوم. تُفتح غدًا.';
+	@override String get premiumOnly => 'المساعد جزء من EasyPlate Premium';
+	@override String get unlock => 'عرض بريميوم';
+	@override String get clear => 'محادثة جديدة';
+	@override String get openResult => 'فتح';
+	@override String get done => 'تم';
+	@override String get undone => 'تم التراجع';
+	@override String get confirmTitle => 'حذف؟';
+	@override String confirmBody({required Object what}) => 'سيتم حذف ${what}.';
+	@override String notFound({required Object name}) => 'لم أجد "${name}".';
+	@override String get listTitle => 'قائمة التسوّق';
+	@override String addedItems({required Object count}) => 'أُضيف ${count} عناصر';
+	@override String plannedMeal({required Object day, required Object slot}) => 'خُطط لـ${day} · ${slot}';
+	@override String get recipeSaved => 'حُفظت الوصفة';
+	@override String get cookStarted => 'بدأ وضع الطبخ';
+	@override String timerSet({required Object n}) => 'ضُبط مؤقّت للخطوة ${n}';
+	@override String get prefSaved => 'حُفظ التفضيل';
+	@override String get needsPremium => 'هذا يتطلب EasyPlate Premium.';
+	@override String results({required Object count}) => '${count} نتائج';
+	@override late final _Translations$assistant$suggest$ar suggest = _Translations$assistant$suggest$ar._(_root);
+	@override String get whichList => 'أي قائمة؟';
+	@override String get listCreated => 'أُنشئت القائمة';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1492,6 +1532,120 @@ class _Translations$walkthrough$demo$ar extends Translations$walkthrough$demo$he
 	@override String get mealName => 'عشاء';
 	@override String get groceryItem => 'طماطم';
 	@override String get recipeText => 'شكشوكة مقدسية\n\nالمكوّنات:\n400 غرام طماطم مهروسة\n4 بيضات\nبصلة واحدة\nملعقتا طعام زيت زيتون\nملعقة صغيرة بابريكا حلوة\nرشّة ملح\n\nالطريقة:\n1. سخّن زيت الزيتون في مقلاة وقلّب البصل حتى يذهبّ.\n2. أضف الطماطم والبابريكا واطبخ 10 دقائق على نار هادئة.\n3. اكسر البيض فوق الصلصة، غطِّ المقلاة واطبخ حتى يتماسك البياض.';
+}
+
+// Path: assistant.suggest
+class _Translations$assistant$suggest$ar extends Translations$assistant$suggest$he {
+	_Translations$assistant$suggest$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get templates => [
+		'أضف {food} إلى قائمة التسوّق',
+		'أضف {food} و{food2} إلى القائمة',
+		'خطط {dish} لـ{meal} يوم {day}',
+		'خطط شيئًا سريعًا لـ{meal} يوم {day}',
+		'ماذا أطبخ بـ{food} و{food2}؟',
+		'استورد وصفة من {site}',
+		'ابحث عن وصفة {dish} على الإنترنت',
+		'ابدأ طبخ {dish}',
+		'شغّل مؤقّت {n} دقيقة للخطوة 2',
+		'أنشئ قائمة تسوّق من {dish}',
+		'أنشئ كتابًا باسم {book}',
+		'أي وصفاتي {diet}؟',
+		'علّم {food} كمشترى',
+		'احذف {food} من القائمة',
+		'أنشئ خطة للأسبوع القادم',
+		'ماذا خُطط ليوم {day}؟',
+		'غيّر يوم التسوّق إلى {day}',
+		'اقترح عشاءً {diet} ليوم {day}',
+		'كم أسلق البيضة؟',
+		'بماذا أستبدل {food} في وصفة؟',
+		'كيف أحفظ {food}؟',
+		'كم سعرة في {dish}؟',
+		'ما درجة حرارة الفرن المناسبة لـ{dish}؟',
+		'كيف أجعل {dish} نباتيًا؟',
+		'كم غرامًا في {n} ملاعق كبيرة؟',
+		'لماذا خرج {dish} جافًا؟',
+		'ماذا يناسب بجانب {dish}؟',
+		'هل يمكن تجميد {food}؟',
+		'كيف أثخّن الصلصة؟',
+		'فكرة {meal} {diet} سريعة؟',
+	];
+	@override List<String> get food => [
+		'حليب',
+		'بيض',
+		'خبز',
+		'طماطم',
+		'بصل',
+		'زيت زيتون',
+		'أرز',
+		'دجاج',
+		'ليمون',
+		'ثوم',
+		'زبدة',
+		'طحين',
+		'جبنة',
+		'لبن',
+		'خيار',
+		'معكرونة',
+	];
+	@override List<String> get dish => [
+		'شكشوكة',
+		'شوربة عدس',
+		'معكرونة بيستو',
+		'كاري دجاج',
+		'سلمون',
+		'خضار مقلية',
+		'بانكيك',
+		'حمص',
+		'خضار مشوية',
+		'خبز الموز',
+	];
+	@override List<String> get day => [
+		'الأحد',
+		'الاثنين',
+		'الثلاثاء',
+		'الأربعاء',
+		'الخميس',
+		'الجمعة',
+		'السبت',
+		'غدًا',
+	];
+	@override List<String> get meal => [
+		'الفطور',
+		'الغداء',
+		'العشاء',
+	];
+	@override List<String> get n => [
+		'5',
+		'8',
+		'10',
+		'12',
+		'15',
+		'20',
+		'25',
+		'30',
+	];
+	@override List<String> get site => [
+		'تيك توك',
+		'إنستغرام',
+		'يوتيوب',
+		'مدونة',
+	];
+	@override List<String> get book => [
+		'أيام الأسبوع',
+		'العطلة',
+		'الأطفال',
+		'حلويات',
+	];
+	@override List<String> get diet => [
+		'نباتية',
+		'نباتية صرفة',
+		'خالية من الغلوتين',
+		'ألبان',
+	];
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -2739,6 +2893,122 @@ extension on TranslationsAr {
 			'adminDashboard.grantRange' => 'نطاق تواريخ محدد',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'مُنح الاشتراك حتى ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'يبدأ في ${date}',
+			'assistant.title' => 'المساعد',
+			'assistant.subtitle' => 'مساعد الطاهي: اسأل، خطط، تسوّق، اطبخ',
+			'assistant.placeholder' => 'اسأل أو قل لي ماذا أفعل…',
+			'assistant.send' => 'إرسال',
+			'assistant.thinking' => 'أفكّر…',
+			'assistant.working' => ({required Object tool}) => 'أنفّذ: ${tool}',
+			'assistant.welcome' => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟',
+			'assistant.error' => 'حدث خطأ ما. حاول مجددًا.',
+			'assistant.quotaReached' => 'استُهلكت حصة الذكاء الاصطناعي لليوم. تُفتح غدًا.',
+			'assistant.premiumOnly' => 'المساعد جزء من EasyPlate Premium',
+			'assistant.unlock' => 'عرض بريميوم',
+			'assistant.clear' => 'محادثة جديدة',
+			'assistant.openResult' => 'فتح',
+			'assistant.done' => 'تم',
+			'assistant.undone' => 'تم التراجع',
+			'assistant.confirmTitle' => 'حذف؟',
+			'assistant.confirmBody' => ({required Object what}) => 'سيتم حذف ${what}.',
+			'assistant.notFound' => ({required Object name}) => 'لم أجد "${name}".',
+			'assistant.listTitle' => 'قائمة التسوّق',
+			'assistant.addedItems' => ({required Object count}) => 'أُضيف ${count} عناصر',
+			'assistant.plannedMeal' => ({required Object day, required Object slot}) => 'خُطط لـ${day} · ${slot}',
+			'assistant.recipeSaved' => 'حُفظت الوصفة',
+			'assistant.cookStarted' => 'بدأ وضع الطبخ',
+			'assistant.timerSet' => ({required Object n}) => 'ضُبط مؤقّت للخطوة ${n}',
+			'assistant.prefSaved' => 'حُفظ التفضيل',
+			'assistant.needsPremium' => 'هذا يتطلب EasyPlate Premium.',
+			'assistant.results' => ({required Object count}) => '${count} نتائج',
+			'assistant.suggest.templates.0' => 'أضف {food} إلى قائمة التسوّق',
+			'assistant.suggest.templates.1' => 'أضف {food} و{food2} إلى القائمة',
+			'assistant.suggest.templates.2' => 'خطط {dish} لـ{meal} يوم {day}',
+			'assistant.suggest.templates.3' => 'خطط شيئًا سريعًا لـ{meal} يوم {day}',
+			'assistant.suggest.templates.4' => 'ماذا أطبخ بـ{food} و{food2}؟',
+			'assistant.suggest.templates.5' => 'استورد وصفة من {site}',
+			'assistant.suggest.templates.6' => 'ابحث عن وصفة {dish} على الإنترنت',
+			'assistant.suggest.templates.7' => 'ابدأ طبخ {dish}',
+			'assistant.suggest.templates.8' => 'شغّل مؤقّت {n} دقيقة للخطوة 2',
+			'assistant.suggest.templates.9' => 'أنشئ قائمة تسوّق من {dish}',
+			'assistant.suggest.templates.10' => 'أنشئ كتابًا باسم {book}',
+			'assistant.suggest.templates.11' => 'أي وصفاتي {diet}؟',
+			'assistant.suggest.templates.12' => 'علّم {food} كمشترى',
+			'assistant.suggest.templates.13' => 'احذف {food} من القائمة',
+			'assistant.suggest.templates.14' => 'أنشئ خطة للأسبوع القادم',
+			'assistant.suggest.templates.15' => 'ماذا خُطط ليوم {day}؟',
+			'assistant.suggest.templates.16' => 'غيّر يوم التسوّق إلى {day}',
+			'assistant.suggest.templates.17' => 'اقترح عشاءً {diet} ليوم {day}',
+			'assistant.suggest.templates.18' => 'كم أسلق البيضة؟',
+			'assistant.suggest.templates.19' => 'بماذا أستبدل {food} في وصفة؟',
+			'assistant.suggest.templates.20' => 'كيف أحفظ {food}؟',
+			'assistant.suggest.templates.21' => 'كم سعرة في {dish}؟',
+			'assistant.suggest.templates.22' => 'ما درجة حرارة الفرن المناسبة لـ{dish}؟',
+			'assistant.suggest.templates.23' => 'كيف أجعل {dish} نباتيًا؟',
+			'assistant.suggest.templates.24' => 'كم غرامًا في {n} ملاعق كبيرة؟',
+			'assistant.suggest.templates.25' => 'لماذا خرج {dish} جافًا؟',
+			'assistant.suggest.templates.26' => 'ماذا يناسب بجانب {dish}؟',
+			'assistant.suggest.templates.27' => 'هل يمكن تجميد {food}؟',
+			'assistant.suggest.templates.28' => 'كيف أثخّن الصلصة؟',
+			'assistant.suggest.templates.29' => 'فكرة {meal} {diet} سريعة؟',
+			'assistant.suggest.food.0' => 'حليب',
+			'assistant.suggest.food.1' => 'بيض',
+			'assistant.suggest.food.2' => 'خبز',
+			'assistant.suggest.food.3' => 'طماطم',
+			'assistant.suggest.food.4' => 'بصل',
+			'assistant.suggest.food.5' => 'زيت زيتون',
+			'assistant.suggest.food.6' => 'أرز',
+			'assistant.suggest.food.7' => 'دجاج',
+			'assistant.suggest.food.8' => 'ليمون',
+			'assistant.suggest.food.9' => 'ثوم',
+			'assistant.suggest.food.10' => 'زبدة',
+			'assistant.suggest.food.11' => 'طحين',
+			'assistant.suggest.food.12' => 'جبنة',
+			'assistant.suggest.food.13' => 'لبن',
+			'assistant.suggest.food.14' => 'خيار',
+			'assistant.suggest.food.15' => 'معكرونة',
+			'assistant.suggest.dish.0' => 'شكشوكة',
+			'assistant.suggest.dish.1' => 'شوربة عدس',
+			'assistant.suggest.dish.2' => 'معكرونة بيستو',
+			'assistant.suggest.dish.3' => 'كاري دجاج',
+			'assistant.suggest.dish.4' => 'سلمون',
+			'assistant.suggest.dish.5' => 'خضار مقلية',
+			'assistant.suggest.dish.6' => 'بانكيك',
+			'assistant.suggest.dish.7' => 'حمص',
+			'assistant.suggest.dish.8' => 'خضار مشوية',
+			'assistant.suggest.dish.9' => 'خبز الموز',
+			'assistant.suggest.day.0' => 'الأحد',
+			'assistant.suggest.day.1' => 'الاثنين',
+			'assistant.suggest.day.2' => 'الثلاثاء',
+			'assistant.suggest.day.3' => 'الأربعاء',
+			'assistant.suggest.day.4' => 'الخميس',
+			'assistant.suggest.day.5' => 'الجمعة',
+			'assistant.suggest.day.6' => 'السبت',
+			'assistant.suggest.day.7' => 'غدًا',
+			'assistant.suggest.meal.0' => 'الفطور',
+			'assistant.suggest.meal.1' => 'الغداء',
+			'assistant.suggest.meal.2' => 'العشاء',
+			'assistant.suggest.n.0' => '5',
+			'assistant.suggest.n.1' => '8',
+			'assistant.suggest.n.2' => '10',
+			'assistant.suggest.n.3' => '12',
+			'assistant.suggest.n.4' => '15',
+			'assistant.suggest.n.5' => '20',
+			'assistant.suggest.n.6' => '25',
+			'assistant.suggest.n.7' => '30',
+			'assistant.suggest.site.0' => 'تيك توك',
+			'assistant.suggest.site.1' => 'إنستغرام',
+			'assistant.suggest.site.2' => 'يوتيوب',
+			'assistant.suggest.site.3' => 'مدونة',
+			'assistant.suggest.book.0' => 'أيام الأسبوع',
+			'assistant.suggest.book.1' => 'العطلة',
+			'assistant.suggest.book.2' => 'الأطفال',
+			'assistant.suggest.book.3' => 'حلويات',
+			'assistant.suggest.diet.0' => 'نباتية',
+			'assistant.suggest.diet.1' => 'نباتية صرفة',
+			'assistant.suggest.diet.2' => 'خالية من الغلوتين',
+			'assistant.suggest.diet.3' => 'ألبان',
+			'assistant.whichList' => 'أي قائمة؟',
+			'assistant.listCreated' => 'أُنشئت القائمة',
 			_ => null,
 		};
 	}
