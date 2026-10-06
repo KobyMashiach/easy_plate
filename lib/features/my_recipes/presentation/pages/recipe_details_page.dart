@@ -706,6 +706,21 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                   underline: true,
                 ),
                 const SizedBox(height: AppSpacing.sm),
+                if (recipe.steps.isNotEmpty) ...[
+                  // Hands-free reading of the same steps: one per screen,
+                  // large type, timers, and the screen kept awake. Works on
+                  // read-only recipes too; nothing here writes.
+                  ClayButton(
+                    label: t.cookMode.start,
+                    icon: Icons.local_fire_department_rounded,
+                    expanded: true,
+                    onPressed: () => context.pushNamed(
+                      Routing.cookMode,
+                      extra: recipe,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 ...recipe.steps.asMap().entries.map(
                   (entry) => Padding(
                     padding: const EdgeInsets.symmetric(

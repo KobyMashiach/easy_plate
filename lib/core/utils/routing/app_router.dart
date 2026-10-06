@@ -22,6 +22,7 @@ import '../../../features/more/presentation/pages/support_page.dart';
 import '../../../features/premium/presentation/pages/paywall_page.dart';
 import '../../../features/my_recipes/domain/entities/recipe_entity.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_details_page.dart';
+import '../../../features/my_recipes/presentation/pages/cook_mode_page.dart';
 import '../../../features/my_recipes/presentation/pages/recipe_editor_page.dart';
 import '../../../features/navigation/presentation/pages/main_nav_bar.dart';
 import '../../../features/notifications/presentation/pages/notifications_page.dart';
@@ -159,6 +160,12 @@ GoRouter buildRouter() {
                 readOnly: args.readOnly,
               );
             },
+          ),
+          GoRoute(
+            path: Routing.cookMode,
+            name: Routing.cookMode,
+            builder: (context, state) =>
+                CookModePage(recipe: state.extra as RecipeEntity),
           ),
           GoRoute(
             path: Routing.priceBook,

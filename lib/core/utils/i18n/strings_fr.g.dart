@@ -54,6 +54,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$fr language = _Translations$language$fr._(_root);
 	@override late final _Translations$books$fr books = _Translations$books$fr._(_root);
 	@override late final _Translations$recipe$fr recipe = _Translations$recipe$fr._(_root);
+	@override late final _Translations$cookMode$fr cookMode = _Translations$cookMode$fr._(_root);
 	@override late final _Translations$nutrition$fr nutrition = _Translations$nutrition$fr._(_root);
 	@override late final _Translations$community$fr community = _Translations$community$fr._(_root);
 	@override late final _Translations$sharing$fr sharing = _Translations$sharing$fr._(_root);
@@ -453,6 +454,42 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'Seulement la mienne';
 	@override String get communityUpdated => 'La copie de la communauté a été mise à jour';
 	@override String get communityGone => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement';
+}
+
+// Path: cookMode
+class _Translations$cookMode$fr extends Translations$cookMode$he {
+	_Translations$cookMode$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Mode cuisine';
+	@override String get start => 'Commencer à cuisiner';
+	@override String stepOf({required Object n, required Object total}) => 'Étape ${n} sur ${total}';
+	@override String get ingredients => 'Ingrédients';
+	@override String get inThisStep => 'Dans cette étape';
+	@override String get timer => 'Minuteur';
+	@override String get startTimer => 'Lancer le minuteur';
+	@override String get pause => 'Pause';
+	@override String get resume => 'Reprendre';
+	@override String get reset => 'Réinitialiser';
+	@override String get timeUp => 'C’est prêt !';
+	@override String get next => 'Étape suivante';
+	@override String get previous => 'Précédente';
+	@override String get finish => 'J’ai fini';
+	@override String get finishedTitle => 'Bon appétit !';
+	@override String get finishedBody => 'Toutes les étapes sont faites. L’écran peut se rendormir.';
+	@override String get screenOn => 'L’écran reste allumé pendant la cuisine';
+	@override String get noSteps => 'Cette recette n’a pas encore d’étapes';
+	@override String runningOnStep({required Object n}) => 'Minuteur en cours à l’étape ${n}';
+	@override String get inProgress => 'Cuisine en cours';
+	@override String inProgressBody({required Object recipe, required Object n, required Object total}) => '« ${recipe} » · étape ${n} sur ${total}';
+	@override String get resumeCooking => 'Continuer';
+	@override String get endCooking => 'Terminer';
+	@override String stepLabel({required Object n}) => 'Étape ${n}';
+	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · étape ${n}';
+	@override String timeUpBody({required Object n}) => 'Étape ${n} : c’est prêt';
+	@override String get runningTimers => 'Minuteurs en cours';
 }
 
 // Path: nutrition
@@ -1830,6 +1867,33 @@ extension on TranslationsFr {
 			'recipe.communityUpdateLocal' => 'Seulement la mienne',
 			'recipe.communityUpdated' => 'La copie de la communauté a été mise à jour',
 			'recipe.communityGone' => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement',
+			'cookMode.title' => 'Mode cuisine',
+			'cookMode.start' => 'Commencer à cuisiner',
+			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Étape ${n} sur ${total}',
+			'cookMode.ingredients' => 'Ingrédients',
+			'cookMode.inThisStep' => 'Dans cette étape',
+			'cookMode.timer' => 'Minuteur',
+			'cookMode.startTimer' => 'Lancer le minuteur',
+			'cookMode.pause' => 'Pause',
+			'cookMode.resume' => 'Reprendre',
+			'cookMode.reset' => 'Réinitialiser',
+			'cookMode.timeUp' => 'C’est prêt !',
+			'cookMode.next' => 'Étape suivante',
+			'cookMode.previous' => 'Précédente',
+			'cookMode.finish' => 'J’ai fini',
+			'cookMode.finishedTitle' => 'Bon appétit !',
+			'cookMode.finishedBody' => 'Toutes les étapes sont faites. L’écran peut se rendormir.',
+			'cookMode.screenOn' => 'L’écran reste allumé pendant la cuisine',
+			'cookMode.noSteps' => 'Cette recette n’a pas encore d’étapes',
+			'cookMode.runningOnStep' => ({required Object n}) => 'Minuteur en cours à l’étape ${n}',
+			'cookMode.inProgress' => 'Cuisine en cours',
+			'cookMode.inProgressBody' => ({required Object recipe, required Object n, required Object total}) => '« ${recipe} » · étape ${n} sur ${total}',
+			'cookMode.resumeCooking' => 'Continuer',
+			'cookMode.endCooking' => 'Terminer',
+			'cookMode.stepLabel' => ({required Object n}) => 'Étape ${n}',
+			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · étape ${n}',
+			'cookMode.timeUpBody' => ({required Object n}) => 'Étape ${n} : c’est prêt',
+			'cookMode.runningTimers' => 'Minuteurs en cours',
 			'nutrition.title' => 'Valeurs nutritionnelles',
 			'nutrition.perServing' => 'par portion',
 			'nutrition.perServingHint' => 'Toutes les valeurs sont pour une portion. Laissez vide pour retirer l’estimation.',
@@ -2060,6 +2124,8 @@ extension on TranslationsFr {
 			'ingestion.fetchFailed' => 'Impossible de charger la page',
 			'ingestion.loadingOriginal' => 'Chargement de la page...',
 			'ingestion.structuredFromSite' => 'Lue directement depuis les données structurées du site, sans IA',
+			_ => null,
+		} ?? switch (path) {
 			'ingestion.useStructured' => 'Continuer avec la recette structurée',
 			'ingestion.preferAi' => 'Traiter avec l\'IA à la place',
 			'ingestion.analysisTimedOut' => 'L\'analyse n\'a pas abouti à temps',
@@ -2087,8 +2153,6 @@ extension on TranslationsFr {
 			'ingestion.chooseSource' => 'D’où vient la recette ?',
 			'ingestion.pasteTextDescription' => 'Vous avez reçu une recette sur WhatsApp, ou copié un texte depuis un site ou un message ? Collez-le ici tel quel. Le modèle repère le nom du plat, les ingrédients avec leurs quantités et les étapes, et range le tout dans un format unique. Sans limite quotidienne.',
 			'ingestion.webSearchDescription' => 'Dites-nous ce que vous avez envie de cuisiner et nous cherchons des recettes sur le web. Depuis les résultats, lisez la page d’origine telle quelle ou importez-la dans le format structuré de l’application.',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.webSearchHint' => 'Par exemple : shakshuka, cheesecake, kebbé de betterave',
 			'ingestion.urlScrapeDescription' => 'Collez le lien d’une page de recette, site ou blog. Nous lisons la page, ignorons les publicités et les histoires autour, et n’extrayons que la recette : ingrédients, quantités et étapes. Sur beaucoup de sites, cela n’entame même pas votre quota quotidien.',
 			'ingestion.urlScrapeHint' => 'https://www.exemple.fr/recette/...',
@@ -2574,6 +2638,8 @@ extension on TranslationsFr {
 			'adminDashboard.forumPosts' => 'Fils du forum',
 			'adminDashboard.withPush' => 'Appareils avec notifications',
 			'adminDashboard.cacheEntries' => 'Liens en cache',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.cacheHits' => 'Hits du cache (appels économisés)',
 			'adminDashboard.config' => 'Configuration à distance',
 			'adminDashboard.environment' => 'Environnement',
@@ -2601,8 +2667,6 @@ extension on TranslationsFr {
 			'adminDashboard.pricingSaved' => 'Tarifs enregistrés',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'Mis à jour ${date}',
 			'adminDashboard.kindText' => 'Texte',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'Lien',
 			'adminDashboard.kindSocial' => 'Réseau social',
 			'adminDashboard.kindSocialVideo' => 'Vidéo (serveur)',

@@ -54,6 +54,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
 	@override late final _Translations$books$ar books = _Translations$books$ar._(_root);
 	@override late final _Translations$recipe$ar recipe = _Translations$recipe$ar._(_root);
+	@override late final _Translations$cookMode$ar cookMode = _Translations$cookMode$ar._(_root);
 	@override late final _Translations$nutrition$ar nutrition = _Translations$nutrition$ar._(_root);
 	@override late final _Translations$community$ar community = _Translations$community$ar._(_root);
 	@override late final _Translations$sharing$ar sharing = _Translations$sharing$ar._(_root);
@@ -453,6 +454,42 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'نسختي فقط';
 	@override String get communityUpdated => 'تم تحديث نسخة المجتمع';
 	@override String get communityGone => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط';
+}
+
+// Path: cookMode
+class _Translations$cookMode$ar extends Translations$cookMode$he {
+	_Translations$cookMode$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'وضع الطبخ';
+	@override String get start => 'ابدأ الطبخ';
+	@override String stepOf({required Object n, required Object total}) => 'الخطوة ${n} من ${total}';
+	@override String get ingredients => 'المكوّنات';
+	@override String get inThisStep => 'في هذه الخطوة';
+	@override String get timer => 'مؤقّت';
+	@override String get startTimer => 'تشغيل المؤقّت';
+	@override String get pause => 'إيقاف مؤقت';
+	@override String get resume => 'متابعة';
+	@override String get reset => 'إعادة ضبط';
+	@override String get timeUp => 'انتهى الوقت!';
+	@override String get next => 'الخطوة التالية';
+	@override String get previous => 'السابقة';
+	@override String get finish => 'انتهيت من الطبخ';
+	@override String get finishedTitle => 'بالهناء والشفاء!';
+	@override String get finishedBody => 'اكتملت كل الخطوات. يمكن للشاشة أن تنطفئ الآن.';
+	@override String get screenOn => 'تبقى الشاشة مضاءة أثناء الطبخ';
+	@override String get noSteps => 'لا توجد خطوات لهذه الوصفة بعد';
+	@override String runningOnStep({required Object n}) => 'المؤقّت يعمل في الخطوة ${n}';
+	@override String get inProgress => 'الطبخ قيد التنفيذ';
+	@override String inProgressBody({required Object recipe, required Object n, required Object total}) => '"${recipe}" · الخطوة ${n} من ${total}';
+	@override String get resumeCooking => 'متابعة';
+	@override String get endCooking => 'إنهاء';
+	@override String stepLabel({required Object n}) => 'الخطوة ${n}';
+	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · الخطوة ${n}';
+	@override String timeUpBody({required Object n}) => 'الخطوة ${n}: انتهى الوقت';
+	@override String get runningTimers => 'مؤقّتات تعمل';
 }
 
 // Path: nutrition
@@ -1830,6 +1867,33 @@ extension on TranslationsAr {
 			'recipe.communityUpdateLocal' => 'نسختي فقط',
 			'recipe.communityUpdated' => 'تم تحديث نسخة المجتمع',
 			'recipe.communityGone' => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط',
+			'cookMode.title' => 'وضع الطبخ',
+			'cookMode.start' => 'ابدأ الطبخ',
+			'cookMode.stepOf' => ({required Object n, required Object total}) => 'الخطوة ${n} من ${total}',
+			'cookMode.ingredients' => 'المكوّنات',
+			'cookMode.inThisStep' => 'في هذه الخطوة',
+			'cookMode.timer' => 'مؤقّت',
+			'cookMode.startTimer' => 'تشغيل المؤقّت',
+			'cookMode.pause' => 'إيقاف مؤقت',
+			'cookMode.resume' => 'متابعة',
+			'cookMode.reset' => 'إعادة ضبط',
+			'cookMode.timeUp' => 'انتهى الوقت!',
+			'cookMode.next' => 'الخطوة التالية',
+			'cookMode.previous' => 'السابقة',
+			'cookMode.finish' => 'انتهيت من الطبخ',
+			'cookMode.finishedTitle' => 'بالهناء والشفاء!',
+			'cookMode.finishedBody' => 'اكتملت كل الخطوات. يمكن للشاشة أن تنطفئ الآن.',
+			'cookMode.screenOn' => 'تبقى الشاشة مضاءة أثناء الطبخ',
+			'cookMode.noSteps' => 'لا توجد خطوات لهذه الوصفة بعد',
+			'cookMode.runningOnStep' => ({required Object n}) => 'المؤقّت يعمل في الخطوة ${n}',
+			'cookMode.inProgress' => 'الطبخ قيد التنفيذ',
+			'cookMode.inProgressBody' => ({required Object recipe, required Object n, required Object total}) => '"${recipe}" · الخطوة ${n} من ${total}',
+			'cookMode.resumeCooking' => 'متابعة',
+			'cookMode.endCooking' => 'إنهاء',
+			'cookMode.stepLabel' => ({required Object n}) => 'الخطوة ${n}',
+			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · الخطوة ${n}',
+			'cookMode.timeUpBody' => ({required Object n}) => 'الخطوة ${n}: انتهى الوقت',
+			'cookMode.runningTimers' => 'مؤقّتات تعمل',
 			'nutrition.title' => 'القيم الغذائية',
 			'nutrition.perServing' => 'للحصة',
 			'nutrition.perServingHint' => 'جميع القيم لحصة واحدة. اتركه فارغًا لإزالة التقدير.',
@@ -2060,6 +2124,8 @@ extension on TranslationsAr {
 			'ingestion.fetchFailed' => 'تعذّر تحميل الصفحة',
 			'ingestion.loadingOriginal' => 'جارٍ تحميل الصفحة...',
 			'ingestion.structuredFromSite' => 'قُرئت مباشرة من البيانات المنظّمة للموقع، بدون AI',
+			_ => null,
+		} ?? switch (path) {
 			'ingestion.useStructured' => 'المتابعة بالوصفة المنظّمة',
 			'ingestion.preferAi' => 'المعالجة عبر AI بدلًا من ذلك',
 			'ingestion.analysisTimedOut' => 'لم يكتمل التحليل في الوقت المحدد',
@@ -2087,8 +2153,6 @@ extension on TranslationsAr {
 			'ingestion.chooseSource' => 'من أين تأتي الوصفة؟',
 			'ingestion.pasteTextDescription' => 'وصلتك وصفة على واتساب أو نسختها من موقع أو رسالة؟ الصق النص هنا كما هو. سيتعرّف النموذج على اسم الطبق والمكوّنات بكمياتها وخطوات التحضير، ويرتّب كل شيء بصيغة موحّدة. بلا حدّ يومي.',
 			'ingestion.webSearchDescription' => 'اكتب ما تشتهي تحضيره وسنبحث لك عن وصفات في الإنترنت. من النتائج يمكنك قراءة الوصفة الأصلية كما هي، أو استيرادها إلى الصيغة المنظّمة في التطبيق.',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.webSearchHint' => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر',
 			'ingestion.urlScrapeDescription' => 'الصق رابطًا لصفحة وصفة في موقع أو مدونة. سنقرأ الصفحة ونتجاهل الإعلانات والقصص حولها، ونستخرج الوصفة فقط: المكوّنات والكميات والخطوات. في مواقع كثيرة لا يستهلك هذا حتى من حصّتك اليومية.',
 			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
@@ -2574,6 +2638,8 @@ extension on TranslationsAr {
 			'adminDashboard.forumPosts' => 'مواضيع المنتدى',
 			'adminDashboard.withPush' => 'أجهزة مع إشعارات',
 			'adminDashboard.cacheEntries' => 'روابط محفوظة',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.cacheHits' => 'إصابات الذاكرة (طلبات موفّرة)',
 			'adminDashboard.config' => 'الإعدادات عن بُعد',
 			'adminDashboard.environment' => 'البيئة',
@@ -2601,8 +2667,6 @@ extension on TranslationsAr {
 			'adminDashboard.pricingSaved' => 'تم حفظ الأسعار',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'تم التحديث ${date}',
 			'adminDashboard.kindText' => 'نص',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'رابط',
 			'adminDashboard.kindSocial' => 'شبكة اجتماعية',
 			'adminDashboard.kindSocialVideo' => 'فيديو (خادم)',

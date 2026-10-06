@@ -54,6 +54,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
 	@override late final _Translations$books$ru books = _Translations$books$ru._(_root);
 	@override late final _Translations$recipe$ru recipe = _Translations$recipe$ru._(_root);
+	@override late final _Translations$cookMode$ru cookMode = _Translations$cookMode$ru._(_root);
 	@override late final _Translations$nutrition$ru nutrition = _Translations$nutrition$ru._(_root);
 	@override late final _Translations$community$ru community = _Translations$community$ru._(_root);
 	@override late final _Translations$sharing$ru sharing = _Translations$sharing$ru._(_root);
@@ -453,6 +454,42 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'Только у меня';
 	@override String get communityUpdated => 'Копия в сообществе обновлена';
 	@override String get communityGone => 'Рецепта больше нет в сообществе; сохранено только у вас';
+}
+
+// Path: cookMode
+class _Translations$cookMode$ru extends Translations$cookMode$he {
+	_Translations$cookMode$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Режим готовки';
+	@override String get start => 'Начать готовить';
+	@override String stepOf({required Object n, required Object total}) => 'Шаг ${n} из ${total}';
+	@override String get ingredients => 'Ингредиенты';
+	@override String get inThisStep => 'В этом шаге';
+	@override String get timer => 'Таймер';
+	@override String get startTimer => 'Запустить таймер';
+	@override String get pause => 'Пауза';
+	@override String get resume => 'Продолжить';
+	@override String get reset => 'Сбросить';
+	@override String get timeUp => 'Время вышло!';
+	@override String get next => 'Следующий шаг';
+	@override String get previous => 'Назад';
+	@override String get finish => 'Готово';
+	@override String get finishedTitle => 'Приятного аппетита!';
+	@override String get finishedBody => 'Все шаги выполнены. Экран снова может гаснуть.';
+	@override String get screenOn => 'Экран не гаснет, пока вы готовите';
+	@override String get noSteps => 'У этого рецепта пока нет шагов';
+	@override String runningOnStep({required Object n}) => 'Таймер идёт на шаге ${n}';
+	@override String get inProgress => 'Готовка продолжается';
+	@override String inProgressBody({required Object recipe, required Object n, required Object total}) => '«${recipe}» · шаг ${n} из ${total}';
+	@override String get resumeCooking => 'Продолжить';
+	@override String get endCooking => 'Завершить';
+	@override String stepLabel({required Object n}) => 'Шаг ${n}';
+	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · шаг ${n}';
+	@override String timeUpBody({required Object n}) => 'Шаг ${n}: время вышло';
+	@override String get runningTimers => 'Идут таймеры';
 }
 
 // Path: nutrition
@@ -1830,6 +1867,33 @@ extension on TranslationsRu {
 			'recipe.communityUpdateLocal' => 'Только у меня',
 			'recipe.communityUpdated' => 'Копия в сообществе обновлена',
 			'recipe.communityGone' => 'Рецепта больше нет в сообществе; сохранено только у вас',
+			'cookMode.title' => 'Режим готовки',
+			'cookMode.start' => 'Начать готовить',
+			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Шаг ${n} из ${total}',
+			'cookMode.ingredients' => 'Ингредиенты',
+			'cookMode.inThisStep' => 'В этом шаге',
+			'cookMode.timer' => 'Таймер',
+			'cookMode.startTimer' => 'Запустить таймер',
+			'cookMode.pause' => 'Пауза',
+			'cookMode.resume' => 'Продолжить',
+			'cookMode.reset' => 'Сбросить',
+			'cookMode.timeUp' => 'Время вышло!',
+			'cookMode.next' => 'Следующий шаг',
+			'cookMode.previous' => 'Назад',
+			'cookMode.finish' => 'Готово',
+			'cookMode.finishedTitle' => 'Приятного аппетита!',
+			'cookMode.finishedBody' => 'Все шаги выполнены. Экран снова может гаснуть.',
+			'cookMode.screenOn' => 'Экран не гаснет, пока вы готовите',
+			'cookMode.noSteps' => 'У этого рецепта пока нет шагов',
+			'cookMode.runningOnStep' => ({required Object n}) => 'Таймер идёт на шаге ${n}',
+			'cookMode.inProgress' => 'Готовка продолжается',
+			'cookMode.inProgressBody' => ({required Object recipe, required Object n, required Object total}) => '«${recipe}» · шаг ${n} из ${total}',
+			'cookMode.resumeCooking' => 'Продолжить',
+			'cookMode.endCooking' => 'Завершить',
+			'cookMode.stepLabel' => ({required Object n}) => 'Шаг ${n}',
+			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · шаг ${n}',
+			'cookMode.timeUpBody' => ({required Object n}) => 'Шаг ${n}: время вышло',
+			'cookMode.runningTimers' => 'Идут таймеры',
 			'nutrition.title' => 'Пищевая ценность',
 			'nutrition.perServing' => 'на порцию',
 			'nutrition.perServingHint' => 'Все значения указаны на одну порцию. Оставьте пустым, чтобы убрать оценку.',
@@ -2060,6 +2124,8 @@ extension on TranslationsRu {
 			'ingestion.fetchFailed' => 'Не удалось загрузить страницу',
 			'ingestion.loadingOriginal' => 'Загружаем страницу...',
 			'ingestion.structuredFromSite' => 'Прочитано напрямую из структурированных данных сайта, без AI',
+			_ => null,
+		} ?? switch (path) {
 			'ingestion.useStructured' => 'Продолжить со структурированным рецептом',
 			'ingestion.preferAi' => 'Обработать через AI',
 			'ingestion.analysisTimedOut' => 'Анализ не завершился вовремя',
@@ -2087,8 +2153,6 @@ extension on TranslationsRu {
 			'ingestion.chooseSource' => 'Откуда рецепт?',
 			'ingestion.pasteTextDescription' => 'Получили рецепт в WhatsApp или скопировали с сайта или из сообщения? Вставьте текст как есть. Модель найдёт название блюда, ингредиенты с количествами и шаги и оформит всё в едином формате. Без дневного лимита.',
 			'ingestion.webSearchDescription' => 'Напишите, что хочется приготовить, и мы поищем рецепты в интернете. Из результатов можно прочитать оригинальную страницу как есть или импортировать её в структурированный формат приложения.',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.webSearchHint' => 'Например: шакшука, чизкейк, свекольная кубба',
 			'ingestion.urlScrapeDescription' => 'Вставьте ссылку на страницу рецепта на сайте или в блоге. Мы прочитаем страницу, пропустим рекламу и истории вокруг и извлечём только рецепт: ингредиенты, количества и шаги. На многих сайтах это даже не расходует дневной лимит.',
 			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
@@ -2574,6 +2638,8 @@ extension on TranslationsRu {
 			'adminDashboard.forumPosts' => 'Темы форума',
 			'adminDashboard.withPush' => 'Устройств с push',
 			'adminDashboard.cacheEntries' => 'Ссылок в кэше',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.cacheHits' => 'Попаданий в кэш (сэкономлено запросов)',
 			'adminDashboard.config' => 'Удалённые настройки',
 			'adminDashboard.environment' => 'Среда',
@@ -2601,8 +2667,6 @@ extension on TranslationsRu {
 			'adminDashboard.pricingSaved' => 'Прайс сохранён',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'Обновлено ${date}',
 			'adminDashboard.kindText' => 'Текст',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'Ссылка',
 			'adminDashboard.kindSocial' => 'Соцсеть',
 			'adminDashboard.kindSocialVideo' => 'Видео (сервер)',

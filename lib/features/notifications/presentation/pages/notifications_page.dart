@@ -7,17 +7,18 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/cook_session_service.dart';
 import '../../../../core/services/notifications_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/navigation/main_tabs.dart';
-import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../../forum/presentation/open_forum_thread.dart';
 import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
+import '../../../my_recipes/presentation/pages/cook_mode_page.dart';
 import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../../recipe_sharing/domain/usecases/get_share_invites_usecase.dart';
@@ -214,25 +215,43 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ),
       body: ValueListenableBuilder<List<AppNotificationEntity>>(
         valueListenable: NotificationsService().items,
-        builder: (context, items, _) => RefreshIndicator(
-          onRefresh: _loadPending,
-          color: AppColors.primary,
-          child: items.isEmpty
-              ? RefreshableEmptyState(
-                  child: ClayEmptyState(
-                    icon: Icons.notifications_none_rounded,
-                    message: t.notifications.empty,
-                  ),
-                )
-              : ListView.separated(
+        builder: (context, items, _) => AnimatedBuilder(
+          animation: CookSessionService(),
+          builder: (context, _) {
+            // Cooking in progress is the first thing here, inbox or no
+            // inbox: it is the way back into cook mode after leaving it.
+            final cooking = CookSessionService().isActive;
+            return RefreshIndicator(
+              onRefresh: _loadPending,
+              color: AppColors.primary,
+              child: items.isEmpty
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                      children: [
+                        if (cooking) ...[
+                          const _CookSessionCard(),
+                          const SizedBox(height: AppSpacing.lg),
+                        ],
+                        ClayEmptyState(
+                          icon: Icons.notifications_none_rounded,
+                          message: t.notifications.empty,
+                        ),
+                      ],
+                    )
+                  : ListView.separated(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                  // The first row is the "mark all read" action; the rest
-                  // are the items, each swipeable away.
-                  itemCount: items.length + 1,
+                  // The cooking card when there is one, then the "mark all
+                  // read" row, then the items, each swipeable away.
+                  itemCount: items.length + 1 + (cooking ? 1 : 0),
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
+                    if (cooking) {
+                      if (index == 0) return const _CookSessionCard();
+                      index -= 1;
+                    }
                     if (index == 0) {
                       return Row(
                         children: [
@@ -279,6 +298,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     );
                   },
                 ),
+            );
+          },
         ),
       ),
     );
@@ -528,6 +549,95 @@ extension on _NotificationsPageState {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// "You are in the middle of cooking": the recipe, the step, every running
+/// timer with its bar, and the two ways out — back into cook mode exactly
+/// where it was, or ending it for good.
+class _CookSessionCard extends StatelessWidget {
+  const _CookSessionCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final session = CookSessionService();
+    final recipe = session.recipe;
+    if (recipe == null) return const SizedBox.shrink();
+    final timers = session.activeTimers;
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      isActive: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryFixed,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.local_fire_department_rounded,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(t.cookMode.inProgress, style: AppTextStyles.bodyLg),
+                    Text(
+                      t.cookMode.inProgressBody(
+                        recipe: recipe.title,
+                        n: '${session.stepIndex + 1}',
+                        total: '${recipe.steps.length}',
+                      ),
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (timers.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            for (final entry in timers)
+              CookTimerRow(step: entry.key + 1, timer: entry.value),
+          ],
+          const SizedBox(height: AppSpacing.gutter),
+          Row(
+            children: [
+              Expanded(
+                child: ClayButton(
+                  label: t.cookMode.resumeCooking,
+                  icon: Icons.play_arrow_rounded,
+                  expanded: true,
+                  onPressed: () =>
+                      context.pushNamed(Routing.cookMode, extra: recipe),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: ClayButton(
+                  label: t.cookMode.endCooking,
+                  icon: Icons.stop_rounded,
+                  expanded: true,
+                  destructive: true,
+                  onPressed: session.finish,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

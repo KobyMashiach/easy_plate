@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Android 13+: without this the runtime prompt cannot be granted and every push is dropped silently. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Cook-mode timers ring at the second they end; granted by the user on
+         Android 14+, with an inexact fallback when it is not. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:label="Easy Plate"
         android:name="${applicationName}"

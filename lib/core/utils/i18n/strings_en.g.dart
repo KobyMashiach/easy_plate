@@ -54,6 +54,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$language$en language = _Translations$language$en._(_root);
 	@override late final _Translations$books$en books = _Translations$books$en._(_root);
 	@override late final _Translations$recipe$en recipe = _Translations$recipe$en._(_root);
+	@override late final _Translations$cookMode$en cookMode = _Translations$cookMode$en._(_root);
 	@override late final _Translations$nutrition$en nutrition = _Translations$nutrition$en._(_root);
 	@override late final _Translations$community$en community = _Translations$community$en._(_root);
 	@override late final _Translations$sharing$en sharing = _Translations$sharing$en._(_root);
@@ -453,6 +454,42 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'Only mine';
 	@override String get communityUpdated => 'The community copy was updated';
 	@override String get communityGone => 'The recipe is no longer in the community; saved only for you';
+}
+
+// Path: cookMode
+class _Translations$cookMode$en extends Translations$cookMode$he {
+	_Translations$cookMode$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Cook mode';
+	@override String get start => 'Start cooking';
+	@override String stepOf({required Object n, required Object total}) => 'Step ${n} of ${total}';
+	@override String get ingredients => 'Ingredients';
+	@override String get inThisStep => 'In this step';
+	@override String get timer => 'Timer';
+	@override String get startTimer => 'Start timer';
+	@override String get pause => 'Pause';
+	@override String get resume => 'Resume';
+	@override String get reset => 'Reset';
+	@override String get timeUp => 'Time\'s up!';
+	@override String get next => 'Next step';
+	@override String get previous => 'Previous';
+	@override String get finish => 'Done cooking';
+	@override String get finishedTitle => 'Enjoy your meal!';
+	@override String get finishedBody => 'Every step is done. The screen can sleep again now.';
+	@override String get screenOn => 'The screen stays on while you cook';
+	@override String get noSteps => 'This recipe has no steps yet';
+	@override String runningOnStep({required Object n}) => 'Timer running on step ${n}';
+	@override String get inProgress => 'Cooking in progress';
+	@override String inProgressBody({required Object recipe, required Object n, required Object total}) => '"${recipe}" · step ${n} of ${total}';
+	@override String get resumeCooking => 'Continue';
+	@override String get endCooking => 'End';
+	@override String stepLabel({required Object n}) => 'Step ${n}';
+	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · step ${n}';
+	@override String timeUpBody({required Object n}) => 'Step ${n}: time\'s up';
+	@override String get runningTimers => 'Running timers';
 }
 
 // Path: nutrition
@@ -1830,6 +1867,33 @@ extension on TranslationsEn {
 			'recipe.communityUpdateLocal' => 'Only mine',
 			'recipe.communityUpdated' => 'The community copy was updated',
 			'recipe.communityGone' => 'The recipe is no longer in the community; saved only for you',
+			'cookMode.title' => 'Cook mode',
+			'cookMode.start' => 'Start cooking',
+			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Step ${n} of ${total}',
+			'cookMode.ingredients' => 'Ingredients',
+			'cookMode.inThisStep' => 'In this step',
+			'cookMode.timer' => 'Timer',
+			'cookMode.startTimer' => 'Start timer',
+			'cookMode.pause' => 'Pause',
+			'cookMode.resume' => 'Resume',
+			'cookMode.reset' => 'Reset',
+			'cookMode.timeUp' => 'Time\'s up!',
+			'cookMode.next' => 'Next step',
+			'cookMode.previous' => 'Previous',
+			'cookMode.finish' => 'Done cooking',
+			'cookMode.finishedTitle' => 'Enjoy your meal!',
+			'cookMode.finishedBody' => 'Every step is done. The screen can sleep again now.',
+			'cookMode.screenOn' => 'The screen stays on while you cook',
+			'cookMode.noSteps' => 'This recipe has no steps yet',
+			'cookMode.runningOnStep' => ({required Object n}) => 'Timer running on step ${n}',
+			'cookMode.inProgress' => 'Cooking in progress',
+			'cookMode.inProgressBody' => ({required Object recipe, required Object n, required Object total}) => '"${recipe}" · step ${n} of ${total}',
+			'cookMode.resumeCooking' => 'Continue',
+			'cookMode.endCooking' => 'End',
+			'cookMode.stepLabel' => ({required Object n}) => 'Step ${n}',
+			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · step ${n}',
+			'cookMode.timeUpBody' => ({required Object n}) => 'Step ${n}: time\'s up',
+			'cookMode.runningTimers' => 'Running timers',
 			'nutrition.title' => 'Nutrition',
 			'nutrition.perServing' => 'per serving',
 			'nutrition.perServingHint' => 'All values are for one serving. Leave blank to drop the estimate.',
@@ -2060,6 +2124,8 @@ extension on TranslationsEn {
 			'ingestion.fetchFailed' => 'We could not load the page',
 			'ingestion.loadingOriginal' => 'Loading the page...',
 			'ingestion.structuredFromSite' => 'Read directly from the site\'s structured data, no AI involved',
+			_ => null,
+		} ?? switch (path) {
 			'ingestion.useStructured' => 'Continue with the structured recipe',
 			'ingestion.preferAi' => 'Process with AI instead',
 			'ingestion.analysisTimedOut' => 'The analysis did not finish in time',
@@ -2087,8 +2153,6 @@ extension on TranslationsEn {
 			'ingestion.chooseSource' => 'Where is the recipe coming from?',
 			'ingestion.pasteTextDescription' => 'Got a recipe on WhatsApp, or copied one from a site or a message? Paste the text here as it is. The model picks out the dish name, the ingredients with their amounts and the steps, and lays it all out in one format. No daily limit.',
 			'ingestion.webSearchDescription' => 'Tell us what you feel like making and we will search the web for recipes. From the results you can read the original page as it is, or import it into the app’s structured format.',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.webSearchHint' => 'For example: shakshuka, cheesecake, beetroot kubbeh',
 			'ingestion.urlScrapeDescription' => 'Paste a link to a recipe page on a site or blog. We read the page, skip the ads and the stories around it, and extract only the recipe: ingredients, amounts and steps. On many sites this does not even use your daily allowance.',
 			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
@@ -2574,6 +2638,8 @@ extension on TranslationsEn {
 			'adminDashboard.forumPosts' => 'Forum threads',
 			'adminDashboard.withPush' => 'Devices with push',
 			'adminDashboard.cacheEntries' => 'Cached links',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.cacheHits' => 'Cache hits (calls saved)',
 			'adminDashboard.config' => 'Remote config',
 			'adminDashboard.environment' => 'Environment',
@@ -2601,8 +2667,6 @@ extension on TranslationsEn {
 			'adminDashboard.pricingSaved' => 'Price list saved',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'Updated ${date}',
 			'adminDashboard.kindText' => 'Text',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'Link',
 			'adminDashboard.kindSocial' => 'Social',
 			'adminDashboard.kindSocialVideo' => 'Video (server)',

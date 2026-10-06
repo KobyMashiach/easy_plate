@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/legal_links.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/monetization/entitlement_service.dart';
@@ -45,6 +47,13 @@ class AccountMenuPage extends StatelessWidget {
         orElse: () => const AuthState.idle(),
       );
     });
+  }
+
+  Future<void> _openLegal(BuildContext context, Uri uri) async {
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && context.mounted) {
+      AppDialog.error(message: t.more.supportUnavailable).show(context);
+    }
   }
 
   @override
@@ -165,6 +174,21 @@ class AccountMenuPage extends StatelessWidget {
                   icon: Icons.support_agent_rounded,
                   label: t.more.support,
                   onTap: () => context.pushNamed(Routing.support),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                // The legal pair the stores want reachable from inside the
+                // app, not only from the paywall. Same addresses as the
+                // paywall's links, so a change to LegalLinks moves both.
+                _MenuRow(
+                  icon: Icons.privacy_tip_rounded,
+                  label: t.premium.privacy,
+                  onTap: () => _openLegal(context, LegalLinks.privacy),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _MenuRow(
+                  icon: Icons.gavel_rounded,
+                  label: t.premium.terms,
+                  onTap: () => _openLegal(context, LegalLinks.terms),
                 ),
                 // The administrator alone: everyone else's feedback, in one
                 // inbox. The rules refuse the read to any other account, so

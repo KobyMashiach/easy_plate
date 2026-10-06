@@ -18,7 +18,7 @@ class SupportPage extends StatelessWidget {
   const SupportPage({super.key});
 
   static const supportPhone = '972508247743';
-  static const supportEmail = 'support@easyplate.app';
+  static const supportEmail = 'support@aieasyplate.app';
 
   /// The signed-in identity goes in the message body so a reply does not have
   /// to start by asking who is writing.

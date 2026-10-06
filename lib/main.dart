@@ -21,6 +21,7 @@ import 'core/services/firebase_service.dart';
 import 'core/services/foreground_push_service.dart';
 import 'core/services/share_intent_service.dart';
 import 'core/services/image_storage_service.dart';
+import 'core/services/cook_session_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
 import 'core/theme/theme_controller.dart';
@@ -162,6 +163,9 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // ingestion screen on it.
     ShareIntentService().latest.addListener(_onShared);
     ShareIntentService().bind();
+    // A tap on a cook-mode timer notification lands back on the step.
+    CookSessionService().openCookMode = (recipe) =>
+        _router.pushNamed(Routing.cookMode, extra: recipe);
   }
 
   @override

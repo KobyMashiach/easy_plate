@@ -58,6 +58,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$language$he language = Translations$language$he.internal(_root);
 	late final Translations$books$he books = Translations$books$he.internal(_root);
 	late final Translations$recipe$he recipe = Translations$recipe$he.internal(_root);
+	late final Translations$cookMode$he cookMode = Translations$cookMode$he.internal(_root);
 	late final Translations$nutrition$he nutrition = Translations$nutrition$he.internal(_root);
 	late final Translations$community$he community = Translations$community$he.internal(_root);
 	late final Translations$sharing$he sharing = Translations$sharing$he.internal(_root);
@@ -965,6 +966,96 @@ class Translations$recipe$he {
 
 	/// he: 'המתכון כבר לא בקהילה, נשמר רק אצלך'
 	String get communityGone => 'המתכון כבר לא בקהילה, נשמר רק אצלך';
+}
+
+// Path: cookMode
+class Translations$cookMode$he {
+	Translations$cookMode$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'מצב בישול'
+	String get title => 'מצב בישול';
+
+	/// he: 'להתחיל לבשל'
+	String get start => 'להתחיל לבשל';
+
+	/// he: 'שלב $n מתוך $total'
+	String stepOf({required Object n, required Object total}) => 'שלב ${n} מתוך ${total}';
+
+	/// he: 'מצרכים'
+	String get ingredients => 'מצרכים';
+
+	/// he: 'בשלב הזה'
+	String get inThisStep => 'בשלב הזה';
+
+	/// he: 'טיימר'
+	String get timer => 'טיימר';
+
+	/// he: 'להפעיל טיימר'
+	String get startTimer => 'להפעיל טיימר';
+
+	/// he: 'השהיה'
+	String get pause => 'השהיה';
+
+	/// he: 'להמשיך'
+	String get resume => 'להמשיך';
+
+	/// he: 'איפוס'
+	String get reset => 'איפוס';
+
+	/// he: 'הזמן נגמר!'
+	String get timeUp => 'הזמן נגמר!';
+
+	/// he: 'לשלב הבא'
+	String get next => 'לשלב הבא';
+
+	/// he: 'הקודם'
+	String get previous => 'הקודם';
+
+	/// he: 'סיימתי לבשל'
+	String get finish => 'סיימתי לבשל';
+
+	/// he: 'בתיאבון!'
+	String get finishedTitle => 'בתיאבון!';
+
+	/// he: 'כל השלבים הושלמו. המסך יכול לכבות שוב.'
+	String get finishedBody => 'כל השלבים הושלמו. המסך יכול לכבות שוב.';
+
+	/// he: 'המסך נשאר דולק בזמן הבישול'
+	String get screenOn => 'המסך נשאר דולק בזמן הבישול';
+
+	/// he: 'למתכון הזה אין עדיין שלבים'
+	String get noSteps => 'למתכון הזה אין עדיין שלבים';
+
+	/// he: 'טיימר רץ בשלב $n'
+	String runningOnStep({required Object n}) => 'טיימר רץ בשלב ${n}';
+
+	/// he: 'באמצע מצב בישול'
+	String get inProgress => 'באמצע מצב בישול';
+
+	/// he: '"$recipe" · שלב $n מתוך $total'
+	String inProgressBody({required Object recipe, required Object n, required Object total}) => '"${recipe}" · שלב ${n} מתוך ${total}';
+
+	/// he: 'המשך'
+	String get resumeCooking => 'המשך';
+
+	/// he: 'סיום'
+	String get endCooking => 'סיום';
+
+	/// he: 'שלב $n'
+	String stepLabel({required Object n}) => 'שלב ${n}';
+
+	/// he: '$remaining/$total · שלב $n'
+	String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · שלב ${n}';
+
+	/// he: 'שלב $n: הזמן נגמר'
+	String timeUpBody({required Object n}) => 'שלב ${n}: הזמן נגמר';
+
+	/// he: 'טיימרים פועלים'
+	String get runningTimers => 'טיימרים פועלים';
 }
 
 // Path: nutrition
@@ -4021,6 +4112,33 @@ extension on Translations {
 			'recipe.communityUpdateLocal' => 'רק אצלי',
 			'recipe.communityUpdated' => 'העותק בקהילה עודכן',
 			'recipe.communityGone' => 'המתכון כבר לא בקהילה, נשמר רק אצלך',
+			'cookMode.title' => 'מצב בישול',
+			'cookMode.start' => 'להתחיל לבשל',
+			'cookMode.stepOf' => ({required Object n, required Object total}) => 'שלב ${n} מתוך ${total}',
+			'cookMode.ingredients' => 'מצרכים',
+			'cookMode.inThisStep' => 'בשלב הזה',
+			'cookMode.timer' => 'טיימר',
+			'cookMode.startTimer' => 'להפעיל טיימר',
+			'cookMode.pause' => 'השהיה',
+			'cookMode.resume' => 'להמשיך',
+			'cookMode.reset' => 'איפוס',
+			'cookMode.timeUp' => 'הזמן נגמר!',
+			'cookMode.next' => 'לשלב הבא',
+			'cookMode.previous' => 'הקודם',
+			'cookMode.finish' => 'סיימתי לבשל',
+			'cookMode.finishedTitle' => 'בתיאבון!',
+			'cookMode.finishedBody' => 'כל השלבים הושלמו. המסך יכול לכבות שוב.',
+			'cookMode.screenOn' => 'המסך נשאר דולק בזמן הבישול',
+			'cookMode.noSteps' => 'למתכון הזה אין עדיין שלבים',
+			'cookMode.runningOnStep' => ({required Object n}) => 'טיימר רץ בשלב ${n}',
+			'cookMode.inProgress' => 'באמצע מצב בישול',
+			'cookMode.inProgressBody' => ({required Object recipe, required Object n, required Object total}) => '"${recipe}" · שלב ${n} מתוך ${total}',
+			'cookMode.resumeCooking' => 'המשך',
+			'cookMode.endCooking' => 'סיום',
+			'cookMode.stepLabel' => ({required Object n}) => 'שלב ${n}',
+			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · שלב ${n}',
+			'cookMode.timeUpBody' => ({required Object n}) => 'שלב ${n}: הזמן נגמר',
+			'cookMode.runningTimers' => 'טיימרים פועלים',
 			'nutrition.title' => 'ערכים תזונתיים',
 			'nutrition.perServing' => 'למנה',
 			'nutrition.perServingHint' => 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.',
@@ -4251,6 +4369,8 @@ extension on Translations {
 			'ingestion.fetchFailed' => 'לא הצלחנו לטעון את העמוד',
 			'ingestion.loadingOriginal' => 'טוען את העמוד...',
 			'ingestion.structuredFromSite' => 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI',
+			_ => null,
+		} ?? switch (path) {
 			'ingestion.useStructured' => 'המשך למתכון המובנה',
 			'ingestion.preferAi' => 'עיבוד באמצעות AI במקום',
 			'ingestion.analysisTimedOut' => 'הניתוח לא הושלם בזמן',
@@ -4278,8 +4398,6 @@ extension on Translations {
 			'ingestion.chooseSource' => 'מאיפה מגיע המתכון?',
 			'ingestion.pasteTextDescription' => 'קיבלתם מתכון בוואטסאפ, העתקתם מאתר או מהודעה? הדביקו כאן את הטקסט כמו שהוא. המודל יזהה את שם המנה, המצרכים עם הכמויות ושלבי ההכנה, ויסדר הכול בפורמט אחיד. בלי מגבלה יומית.',
 			'ingestion.webSearchDescription' => 'כתבו מה בא לכם להכין, ונחפש בשבילכם מתכונים ברחבי האינטרנט. מתוך התוצאות תוכלו לקרוא את המתכון המקורי כפי שהוא, או לייבא אותו לפורמט המובנה של האפליקציה.',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.webSearchHint' => 'לדוגמה: קובה סלק, שקשוקה, עוגת גבינה',
 			'ingestion.urlScrapeDescription' => 'הדביקו קישור לעמוד מתכון באתר או בבלוג. נקרא את העמוד, נתעלם מהפרסומות ומהסיפורים שמסביב, ונחלץ רק את המתכון: מצרכים, כמויות ושלבים. באתרים רבים זה אפילו לא צורך מהמכסה היומית.',
 			'ingestion.urlScrapeHint' => 'https://www.example.co.il/recipe/...',
@@ -4765,6 +4883,8 @@ extension on Translations {
 			'adminDashboard.forumPosts' => 'שרשורי פורום',
 			'adminDashboard.withPush' => 'מכשירים עם התראות',
 			'adminDashboard.cacheEntries' => 'קישורים במטמון',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.cacheHits' => 'פגיעות מטמון (קריאות שנחסכו)',
 			'adminDashboard.config' => 'הגדרות מרחוק',
 			'adminDashboard.environment' => 'סביבה',
@@ -4792,8 +4912,6 @@ extension on Translations {
 			'adminDashboard.pricingSaved' => 'המחירון נשמר',
 			'adminDashboard.loadedAt' => ({required Object date}) => 'עודכן ${date}',
 			'adminDashboard.kindText' => 'טקסט',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.kindUrl' => 'קישור',
 			'adminDashboard.kindSocial' => 'רשת חברתית',
 			'adminDashboard.kindSocialVideo' => 'וידאו (שרת)',

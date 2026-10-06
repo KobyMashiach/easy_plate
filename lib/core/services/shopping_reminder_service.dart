@@ -5,6 +5,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../constants/app_enums.dart';
 import '../navigation/main_tabs.dart';
+import 'cook_session_service.dart';
 
 /// Staggered reminders leading up to the configured shopping day (spec §6.5):
 /// two days before (1), one day before (1), and the shopping day itself (2 —
@@ -36,17 +37,33 @@ class ShoppingReminderService {
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
       ),
-      // A tap on a reminder lands on the grocery list, running or not.
-      onDidReceiveNotificationResponse: (_) => _openGroceries(),
+      // A tap on a reminder lands on the grocery list, running or not. A
+      // cook-mode timer carries its own payload and reopens the step.
+      onDidReceiveNotificationResponse: (response) =>
+          _openFor(response.payload),
     );
     final launch = await _plugin.getNotificationAppLaunchDetails();
-    if (launch?.didNotificationLaunchApp ?? false) _openGroceries();
+    if (launch?.didNotificationLaunchApp ?? false) {
+      _openFor(launch?.notificationResponse?.payload);
+    }
     _initialized = true;
   }
 
   /// Switches to the grocery tab; if the main screen is not up yet, the
   /// tab notifier simply holds the value until it is.
   void _openGroceries() => MainTabs.index.value = MainTabs.groceries;
+
+  void _openFor(String? payload) {
+    if (payload == CookSessionService.payload) {
+      CookSessionService().reopen();
+    } else {
+      _openGroceries();
+    }
+  }
+
+  /// The one plugin instance, shared with the cook-mode timers so a second
+  /// `initialize` never overwrites the tap callback above.
+  FlutterLocalNotificationsPlugin get plugin => _plugin;
 
   /// On sign-out: the reminders were the signed-out account's.
   Future<void> cancelAll() async {

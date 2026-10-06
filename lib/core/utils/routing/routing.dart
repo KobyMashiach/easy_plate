@@ -14,6 +14,7 @@ class Routing {
   static const bookDetails = 'book_details';
   static const recipeDetails = 'recipe_details';
   static const recipeEditor = 'recipe_editor';
+  static const cookMode = 'cook_mode';
   static const ingestion = 'ingestion';
   static const ingestionReview = 'ingestion_review';
   static const mealPlanDetails = 'meal_plan_details';
