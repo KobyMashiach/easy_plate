@@ -487,9 +487,10 @@ class _Translations$cookMode$fr extends Translations$cookMode$he {
 	@override String get resumeCooking => 'Continuer';
 	@override String get endCooking => 'Terminer';
 	@override String stepLabel({required Object n}) => 'Étape ${n}';
-	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · étape ${n}';
+	@override String ongoingBody({required Object time, required Object total, required Object n}) => 'Fin à ${time} · ${total} · étape ${n}';
 	@override String timeUpBody({required Object n}) => 'Étape ${n} : c’est prêt';
 	@override String get runningTimers => 'Minuteurs en cours';
+	@override String get premiumOnly => 'Le mode cuisine fait partie d’EasyPlate Premium';
 }
 
 // Path: nutrition
@@ -1891,9 +1892,10 @@ extension on TranslationsFr {
 			'cookMode.resumeCooking' => 'Continuer',
 			'cookMode.endCooking' => 'Terminer',
 			'cookMode.stepLabel' => ({required Object n}) => 'Étape ${n}',
-			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · étape ${n}',
+			'cookMode.ongoingBody' => ({required Object time, required Object total, required Object n}) => 'Fin à ${time} · ${total} · étape ${n}',
 			'cookMode.timeUpBody' => ({required Object n}) => 'Étape ${n} : c’est prêt',
 			'cookMode.runningTimers' => 'Minuteurs en cours',
+			'cookMode.premiumOnly' => 'Le mode cuisine fait partie d’EasyPlate Premium',
 			'nutrition.title' => 'Valeurs nutritionnelles',
 			'nutrition.perServing' => 'par portion',
 			'nutrition.perServingHint' => 'Toutes les valeurs sont pour une portion. Laissez vide pour retirer l’estimation.',
@@ -2123,9 +2125,9 @@ extension on TranslationsFr {
 			'ingestion.originalTitle' => 'Recette originale',
 			'ingestion.fetchFailed' => 'Impossible de charger la page',
 			'ingestion.loadingOriginal' => 'Chargement de la page...',
-			'ingestion.structuredFromSite' => 'Lue directement depuis les données structurées du site, sans IA',
 			_ => null,
 		} ?? switch (path) {
+			'ingestion.structuredFromSite' => 'Lue directement depuis les données structurées du site, sans IA',
 			'ingestion.useStructured' => 'Continuer avec la recette structurée',
 			'ingestion.preferAi' => 'Traiter avec l\'IA à la place',
 			'ingestion.analysisTimedOut' => 'L\'analyse n\'a pas abouti à temps',
@@ -2637,9 +2639,9 @@ extension on TranslationsFr {
 			'adminDashboard.sharedRecipes' => 'Recettes partagées',
 			'adminDashboard.forumPosts' => 'Fils du forum',
 			'adminDashboard.withPush' => 'Appareils avec notifications',
-			'adminDashboard.cacheEntries' => 'Liens en cache',
 			_ => null,
 		} ?? switch (path) {
+			'adminDashboard.cacheEntries' => 'Liens en cache',
 			'adminDashboard.cacheHits' => 'Hits du cache (appels économisés)',
 			'adminDashboard.config' => 'Configuration à distance',
 			'adminDashboard.environment' => 'Environnement',

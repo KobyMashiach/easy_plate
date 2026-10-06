@@ -24,6 +24,10 @@ import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/nutrition/nutrition_widgets.dart';
 import '../widgets/nutrition_facts_card.dart';
 import '../../domain/entities/recipe_entity.dart';
+import '../cook_mode_entry.dart';
+import '../../../../core/monetization/monetization_config.dart';
+import '../../../../core/services/firebase_service.dart';
+import '../../../../core/monetization/entitlement_service.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/repositories/recipes_repository.dart';
 import '../../domain/usecases/save_recipe_usecase.dart';
@@ -84,6 +88,12 @@ class RecipeDetailsPage extends StatefulWidget {
 }
 
 class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
+  /// The plan and the console flags: what decides the cook-mode gate.
+  late final _gateChanges = Listenable.merge([
+    EntitlementService(),
+    FirebaseService().configRevision,
+  ]);
+
   late RecipeEntity recipe = widget.recipe;
   bool _analyzing = false;
 
@@ -709,15 +719,35 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                 if (recipe.steps.isNotEmpty) ...[
                   // Hands-free reading of the same steps: one per screen,
                   // large type, timers, and the screen kept awake. Works on
-                  // read-only recipes too; nothing here writes.
-                  ClayButton(
-                    label: t.cookMode.start,
-                    icon: Icons.local_fire_department_rounded,
-                    expanded: true,
-                    onPressed: () => context.pushNamed(
-                      Routing.cookMode,
-                      extra: recipe,
-                    ),
+                  // read-only recipes too; nothing here writes. Rebuilt when
+                  // the plan or the console flags change.
+                  ListenableBuilder(
+                    listenable: _gateChanges,
+                    builder: (context, _) {
+                      final locked = MonetizationConfig.cookModeLocked;
+                      return Column(
+                        children: [
+                          ClayButton(
+                            label: t.cookMode.start,
+                            icon: locked
+                                ? Icons.workspace_premium_rounded
+                                : Icons.local_fire_department_rounded,
+                            expanded: true,
+                            onPressed: () => openCookMode(context, recipe),
+                          ),
+                          if (locked) ...[
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              t.cookMode.premiumOnly,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.labelMd.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: AppSpacing.sm),
                 ],

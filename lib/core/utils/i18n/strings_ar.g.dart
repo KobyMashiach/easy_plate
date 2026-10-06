@@ -487,9 +487,10 @@ class _Translations$cookMode$ar extends Translations$cookMode$he {
 	@override String get resumeCooking => 'متابعة';
 	@override String get endCooking => 'إنهاء';
 	@override String stepLabel({required Object n}) => 'الخطوة ${n}';
-	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · الخطوة ${n}';
+	@override String ongoingBody({required Object time, required Object total, required Object n}) => 'ينتهي في ${time} · ${total} · الخطوة ${n}';
 	@override String timeUpBody({required Object n}) => 'الخطوة ${n}: انتهى الوقت';
 	@override String get runningTimers => 'مؤقّتات تعمل';
+	@override String get premiumOnly => 'وضع الطبخ جزء من EasyPlate Premium';
 }
 
 // Path: nutrition
@@ -1891,9 +1892,10 @@ extension on TranslationsAr {
 			'cookMode.resumeCooking' => 'متابعة',
 			'cookMode.endCooking' => 'إنهاء',
 			'cookMode.stepLabel' => ({required Object n}) => 'الخطوة ${n}',
-			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · الخطوة ${n}',
+			'cookMode.ongoingBody' => ({required Object time, required Object total, required Object n}) => 'ينتهي في ${time} · ${total} · الخطوة ${n}',
 			'cookMode.timeUpBody' => ({required Object n}) => 'الخطوة ${n}: انتهى الوقت',
 			'cookMode.runningTimers' => 'مؤقّتات تعمل',
+			'cookMode.premiumOnly' => 'وضع الطبخ جزء من EasyPlate Premium',
 			'nutrition.title' => 'القيم الغذائية',
 			'nutrition.perServing' => 'للحصة',
 			'nutrition.perServingHint' => 'جميع القيم لحصة واحدة. اتركه فارغًا لإزالة التقدير.',
@@ -2123,9 +2125,9 @@ extension on TranslationsAr {
 			'ingestion.originalTitle' => 'الوصفة الأصلية',
 			'ingestion.fetchFailed' => 'تعذّر تحميل الصفحة',
 			'ingestion.loadingOriginal' => 'جارٍ تحميل الصفحة...',
-			'ingestion.structuredFromSite' => 'قُرئت مباشرة من البيانات المنظّمة للموقع، بدون AI',
 			_ => null,
 		} ?? switch (path) {
+			'ingestion.structuredFromSite' => 'قُرئت مباشرة من البيانات المنظّمة للموقع، بدون AI',
 			'ingestion.useStructured' => 'المتابعة بالوصفة المنظّمة',
 			'ingestion.preferAi' => 'المعالجة عبر AI بدلًا من ذلك',
 			'ingestion.analysisTimedOut' => 'لم يكتمل التحليل في الوقت المحدد',
@@ -2637,9 +2639,9 @@ extension on TranslationsAr {
 			'adminDashboard.sharedRecipes' => 'وصفات مشتركة',
 			'adminDashboard.forumPosts' => 'مواضيع المنتدى',
 			'adminDashboard.withPush' => 'أجهزة مع إشعارات',
-			'adminDashboard.cacheEntries' => 'روابط محفوظة',
 			_ => null,
 		} ?? switch (path) {
+			'adminDashboard.cacheEntries' => 'روابط محفوظة',
 			'adminDashboard.cacheHits' => 'إصابات الذاكرة (طلبات موفّرة)',
 			'adminDashboard.config' => 'الإعدادات عن بُعد',
 			'adminDashboard.environment' => 'البيئة',

@@ -22,6 +22,7 @@ import '../monetization/daily_usage_service.dart';
 import '../monetization/entitlement_service.dart';
 import '../monetization/purchases_service.dart';
 import '../sync/cloud_sync_service.dart';
+import 'cook_session_service.dart';
 import 'shopping_reminder_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
@@ -165,6 +166,9 @@ class AuthSessionService extends ChangeNotifier {
       unawaited(PurchasesService().logOut());
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
+      // The cooking belonged to the account that just left: its timers,
+      // rings and banner must not carry over to whoever signs in next.
+      CookSessionService().finishAll();
       unawaited(_wipeLocalAccount());
       return;
     }

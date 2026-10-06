@@ -307,9 +307,10 @@
     "resumeCooking": "Продолжить",
     "endCooking": "Завершить",
     "stepLabel": "Шаг $n",
-    "ongoingBody": "$remaining/$total · шаг $n",
+    "ongoingBody": "Закончится в $time · $total · шаг $n",
     "timeUpBody": "Шаг $n: время вышло",
-    "runningTimers": "Идут таймеры"
+    "runningTimers": "Идут таймеры",
+    "premiumOnly": "Режим готовки входит в EasyPlate Premium"
   },
   "nutrition": {
     "title": "Пищевая ценность",

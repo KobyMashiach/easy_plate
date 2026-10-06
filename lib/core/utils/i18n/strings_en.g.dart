@@ -487,9 +487,10 @@ class _Translations$cookMode$en extends Translations$cookMode$he {
 	@override String get resumeCooking => 'Continue';
 	@override String get endCooking => 'End';
 	@override String stepLabel({required Object n}) => 'Step ${n}';
-	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · step ${n}';
+	@override String ongoingBody({required Object time, required Object total, required Object n}) => 'Ends at ${time} · ${total} · step ${n}';
 	@override String timeUpBody({required Object n}) => 'Step ${n}: time\'s up';
 	@override String get runningTimers => 'Running timers';
+	@override String get premiumOnly => 'Cook mode is part of EasyPlate Premium';
 }
 
 // Path: nutrition
@@ -1891,9 +1892,10 @@ extension on TranslationsEn {
 			'cookMode.resumeCooking' => 'Continue',
 			'cookMode.endCooking' => 'End',
 			'cookMode.stepLabel' => ({required Object n}) => 'Step ${n}',
-			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · step ${n}',
+			'cookMode.ongoingBody' => ({required Object time, required Object total, required Object n}) => 'Ends at ${time} · ${total} · step ${n}',
 			'cookMode.timeUpBody' => ({required Object n}) => 'Step ${n}: time\'s up',
 			'cookMode.runningTimers' => 'Running timers',
+			'cookMode.premiumOnly' => 'Cook mode is part of EasyPlate Premium',
 			'nutrition.title' => 'Nutrition',
 			'nutrition.perServing' => 'per serving',
 			'nutrition.perServingHint' => 'All values are for one serving. Leave blank to drop the estimate.',
@@ -2123,9 +2125,9 @@ extension on TranslationsEn {
 			'ingestion.originalTitle' => 'Original recipe',
 			'ingestion.fetchFailed' => 'We could not load the page',
 			'ingestion.loadingOriginal' => 'Loading the page...',
-			'ingestion.structuredFromSite' => 'Read directly from the site\'s structured data, no AI involved',
 			_ => null,
 		} ?? switch (path) {
+			'ingestion.structuredFromSite' => 'Read directly from the site\'s structured data, no AI involved',
 			'ingestion.useStructured' => 'Continue with the structured recipe',
 			'ingestion.preferAi' => 'Process with AI instead',
 			'ingestion.analysisTimedOut' => 'The analysis did not finish in time',
@@ -2637,9 +2639,9 @@ extension on TranslationsEn {
 			'adminDashboard.sharedRecipes' => 'Shared recipes',
 			'adminDashboard.forumPosts' => 'Forum threads',
 			'adminDashboard.withPush' => 'Devices with push',
-			'adminDashboard.cacheEntries' => 'Cached links',
 			_ => null,
 		} ?? switch (path) {
+			'adminDashboard.cacheEntries' => 'Cached links',
 			'adminDashboard.cacheHits' => 'Cache hits (calls saved)',
 			'adminDashboard.config' => 'Remote config',
 			'adminDashboard.environment' => 'Environment',

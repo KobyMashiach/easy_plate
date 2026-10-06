@@ -11,6 +11,11 @@
     <!-- Cook-mode timers ring at the second they end; granted by the user on
          Android 14+, with an inexact fallback when it is not. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- While a cook-mode timer runs, a foreground service keeps the app's
+         Dart side alive in the background so the timer notifications keep
+         moving. Special use: a kitchen timer, declared as such to Play. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <application
         android:label="Easy Plate"
         android:name="${applicationName}"
@@ -79,6 +84,15 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
+        <!-- flutter_foreground_task: the name must stay exactly this. -->
+        <service
+            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="cooking_timer" />
+        </service>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

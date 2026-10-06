@@ -307,9 +307,10 @@
     "resumeCooking": "Continue",
     "endCooking": "End",
     "stepLabel": "Step $n",
-    "ongoingBody": "$remaining/$total · step $n",
+    "ongoingBody": "Ends at $time · $total · step $n",
     "timeUpBody": "Step $n: time's up",
-    "runningTimers": "Running timers"
+    "runningTimers": "Running timers",
+    "premiumOnly": "Cook mode is part of EasyPlate Premium"
   },
   "nutrition": {
     "title": "Nutrition",

@@ -67,6 +67,11 @@ class FirebaseService {
     // Premium's own ceiling on AI extractions: no video, but every call is
     // paid for, so it is a bigger number rather than none.
     quotaAiPremiumKey: 10,
+    // Plan gates, read by MonetizationConfig: what a free account is kept
+    // out of until it upgrades. Default to gated so a failed fetch never
+    // hands Premium features out for free.
+    cookModePremiumOnlyKey: true,
+    notificationsPremiumOnlyKey: true,
   };
 
   static const adsEnabledKey = 'ads_enabled';
@@ -76,6 +81,8 @@ class FirebaseService {
   static const quotaSharedRewardedKey = 'quota_shared_rewarded';
   static const quotaAiRewardedKey = 'quota_ai_rewarded';
   static const quotaAiPremiumKey = 'quota_ai_premium';
+  static const cookModePremiumOnlyKey = 'cook_mode_premium_only';
+  static const notificationsPremiumOnlyKey = 'notifications_premium_only';
 
   static const isProdKey = 'isProd';
 

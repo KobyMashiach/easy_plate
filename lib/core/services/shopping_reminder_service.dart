@@ -4,6 +4,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../constants/app_enums.dart';
+import '../monetization/monetization_config.dart';
 import '../navigation/main_tabs.dart';
 import 'cook_session_service.dart';
 
@@ -54,11 +55,7 @@ class ShoppingReminderService {
   void _openGroceries() => MainTabs.index.value = MainTabs.groceries;
 
   void _openFor(String? payload) {
-    if (payload == CookSessionService.payload) {
-      CookSessionService().reopen();
-    } else {
-      _openGroceries();
-    }
+    if (!CookSessionService().handlePayload(payload)) _openGroceries();
   }
 
   /// The one plugin instance, shared with the cook-mode timers so a second
@@ -67,6 +64,7 @@ class ShoppingReminderService {
 
   /// On sign-out: the reminders were the signed-out account's.
   Future<void> cancelAll() async {
+    _lastKey = null;
     try {
       await initialize();
       await _plugin.cancelAll();
@@ -77,12 +75,53 @@ class ShoppingReminderService {
 
   /// Reschedules the whole reminder set. Called on app start and whenever the
   /// shopping day changes in settings.
+  /// What the last schedule was built from. Callers fire on settings
+  /// changes, sign-in, plan changes and console flags, often for the same
+  /// answer; only a different answer is worth the plugin round trips.
+  String? _lastKey;
+
+  /// Calls arrive close together (sign-in, then the first entitlement
+  /// snapshot); run one after another so two cancel/schedule loops never
+  /// interleave on the same ids.
+  Future<void> _queue = Future.value();
+
   Future<void> scheduleForShoppingDay(
     ShoppingDay shoppingDay, {
     List<ShoppingReminderSlot> slots = ShoppingReminderSlot.defaults,
-  }) async {
+  }) {
+    final next = _queue.then((_) => _scheduleIfChanged(shoppingDay, slots));
+    _queue = next.then((_) {}, onError: (_) {});
+    return next;
+  }
+
+  Future<void> _scheduleIfChanged(
+    ShoppingDay shoppingDay,
+    List<ShoppingReminderSlot> slots,
+  ) async {
+    final locked = MonetizationConfig.notificationsLocked;
+    final key = '$locked|$shoppingDay|$slots';
+    if (key == _lastKey) return;
+    // Recorded only once the work below went through: a plugin hiccup must
+    // not silence this key for the rest of the session.
+    _lastKey = null;
+    await _schedule(shoppingDay, slots, locked);
+    _lastKey = key;
+  }
+
+  Future<void> _schedule(
+    ShoppingDay shoppingDay,
+    List<ShoppingReminderSlot> slots,
+    bool locked,
+  ) async {
     await initialize();
-    await _plugin.cancelAll();
+    // Only this service's own slots: a blanket cancelAll would also drop
+    // the cook-mode timer rings, which share the plugin.
+    for (var i = 0; i < ShoppingReminderSlot.values.length; i++) {
+      await _plugin.cancel(id: i);
+    }
+    // Reminders are Premium while the console says so; a free account's
+    // slots are cleared and nothing new is set.
+    if (locked) return;
 
     // Dart weekdays run Mon=1..Sun=7; ShoppingDay runs Sunday-first.
     final targetWeekday = shoppingDay.index == 0

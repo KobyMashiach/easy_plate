@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,10 @@ import 'core/services/firebase_service.dart';
 import 'core/services/foreground_push_service.dart';
 import 'core/services/share_intent_service.dart';
 import 'core/services/image_storage_service.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+
+import 'core/monetization/monetization_config.dart';
+import 'core/monetization/entitlement_service.dart';
 import 'core/services/cook_session_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
@@ -40,6 +45,11 @@ import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // The cook-timer foreground service talks to the UI over this port;
+  // Android only, the web engine has no isolate ports.
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    FlutterForegroundTask.initCommunicationPort();
+  }
   await MemoryLogger.init();
   // Before anything that might throw, so Crashlytics captures startup failures.
   await FirebaseService().init();
@@ -166,10 +176,38 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // A tap on a cook-mode timer notification lands back on the step.
     CookSessionService().openCookMode = (recipe) =>
         _router.pushNamed(Routing.cookMode, extra: recipe);
+    // The plan or the console flags changing must re-decide the reminders:
+    // a new subscriber gets them at once, a lapsed one loses them.
+    EntitlementService().addListener(_reapplyReminders);
+    FirebaseService().configRevision.addListener(_reapplyReminders);
+    // A cooking left mid-way by the previous run (back out of the app, a
+    // process Android reclaimed) comes back with its timers.
+    AuthSessionService().addListener(_restoreCookSession);
+    _restoreCookSession();
+  }
+
+  /// The service itself skips a reschedule that would change nothing.
+  void _reapplyReminders() {
+    final preferences = AuthSessionService().preferencesListenable.value;
+    if (preferences == null || !preferences.onboardingComplete) return;
+    unawaited(
+      ShoppingReminderService().scheduleForShoppingDay(
+        preferences.shoppingDay,
+        slots: preferences.shoppingReminderSlots,
+      ),
+    );
+  }
+
+  void _restoreCookSession() {
+    if (AuthSessionService().user == null) return;
+    unawaited(CookSessionService().restore());
   }
 
   @override
   void dispose() {
+    EntitlementService().removeListener(_reapplyReminders);
+    FirebaseService().configRevision.removeListener(_reapplyReminders);
+    AuthSessionService().removeListener(_restoreCookSession);
     ShareIntentService().latest.removeListener(_onShared);
     ForegroundPushService().latest.removeListener(_onForegroundPush);
     AuthSessionService().removeListener(_onSessionChanged);
@@ -265,6 +303,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   /// before sending, so this catches only the push that was in flight
   /// when a switch went off — and the popup switch itself.
   bool _wantsPopup(PushBanner push) {
+    if (MonetizationConfig.notificationsLocked) return false;
     final preferences = AuthSessionService().preferencesListenable.value;
     if (preferences == null) return true;
     if (!preferences.foregroundPopupsEnabled) return false;

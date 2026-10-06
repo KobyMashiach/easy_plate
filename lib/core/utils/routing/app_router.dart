@@ -36,6 +36,8 @@ import '../../../features/settings/presentation/pages/settings_page.dart';
 import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
 import 'routing.dart';
+import '../../monetization/entitlement_service.dart';
+import '../../monetization/monetization_config.dart';
 import '../../../features/more/presentation/pages/tutorial_book_page.dart';
 import '../../../features/admin_dashboard/presentation/pages/admin_dashboard_page.dart';
 import '../../../features/auth/presentation/pages/blocked_page.dart';
@@ -164,6 +166,16 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.cookMode,
             name: Routing.cookMode,
+            // The plan gate lives here, so every door into cook mode (the
+            // recipe, the inbox card, a notification tap) is gated at once.
+            redirect: (context, state) async {
+              // The verdict first: a paying account on a fresh install must
+              // not be bounced on the default while its document loads.
+              await EntitlementService().whenResolved();
+              return MonetizationConfig.cookModeLocked
+                  ? state.namedLocation(Routing.premium)
+                  : null;
+            },
             builder: (context, state) =>
                 CookModePage(recipe: state.extra as RecipeEntity),
           ),

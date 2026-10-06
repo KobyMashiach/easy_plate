@@ -307,9 +307,10 @@
     "resumeCooking": "המשך",
     "endCooking": "סיום",
     "stepLabel": "שלב $n",
-    "ongoingBody": "$remaining/$total · שלב $n",
+    "ongoingBody": "מסתיים ב-$time · $total · שלב $n",
     "timeUpBody": "שלב $n: הזמן נגמר",
-    "runningTimers": "טיימרים פועלים"
+    "runningTimers": "טיימרים פועלים",
+    "premiumOnly": "מצב בישול הוא חלק מ-EasyPlate Premium"
   },
   "nutrition": {
     "title": "ערכים תזונתיים",

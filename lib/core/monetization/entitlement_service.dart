@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive_ce/hive.dart';
 
 /// Whether the signed-in account is premium — no ads, no daily quotas.
 ///
@@ -36,13 +37,77 @@ class EntitlementService extends ChangeNotifier {
   Timer? _boundary;
   Map<String, dynamic>? _lastData;
 
-  bool get isPremium => _premium;
+  /// The verdict every gate reads. Live once the account's document has
+  /// been read; until then the one remembered from the last run for this
+  /// account (or the store's word), so a paying account is not treated as
+  /// free for the first second after launch, and a fresh install with
+  /// nothing remembered is.
+  bool get isPremium => _premium || (!_resolved && (_remembered ?? false));
+
+  /// True once the account's entitlement document has been read at least
+  /// once this session. Until then nothing should be locked on the strength
+  /// of the default `false`: a paying account would see the paywall for the
+  /// first second after launch.
+  bool get resolved => _resolved;
+  bool _resolved = false;
+
+  bool? _remembered;
+  String? _uid;
+
+  /// Completes once the account's document has been read (at once if it
+  /// already was), or after [timeout] offline, so a caller can wait for the
+  /// real verdict instead of acting on a default.
+  Future<void> whenResolved({Duration timeout = const Duration(seconds: 4)}) {
+    if (_resolved) return Future.value();
+    final completer = Completer<void>();
+    late final VoidCallback listener;
+    listener = () {
+      if (_resolved && !completer.isCompleted) {
+        removeListener(listener);
+        completer.complete();
+      }
+    };
+    addListener(listener);
+    Future<void>.delayed(timeout, () {
+      if (!completer.isCompleted) {
+        removeListener(listener);
+        completer.complete();
+      }
+    });
+    return completer.future;
+  }
+
+  static const _cacheBox = 'entitlementCacheBox';
+
+  Future<void> _loadRemembered(String uid) async {
+    try {
+      final box = await Hive.openBox<bool>(_cacheBox);
+      final value = box.get(uid);
+      if (_uid == uid && !_resolved && value != _remembered) {
+        _remembered = value;
+        notifyListeners();
+      }
+    } catch (_) {
+      // No Hive (tests): nothing remembered.
+    }
+  }
+
+  Future<void> _remember(bool premium) async {
+    final uid = _uid;
+    if (uid == null) return;
+    try {
+      final box = await Hive.openBox<bool>(_cacheBox);
+      await box.put(uid, premium);
+    } catch (_) {}
+  }
 
   /// Follows [uid]'s entitlement for as long as they are signed in. Safe to
   /// call without Firebase up (tests): the failure is logged and the account
   /// stays free.
   void watch(String uid) {
     clear();
+    _uid = uid;
+    unawaited(_loadRemembered(uid));
     try {
       _subscription = FirebaseFirestore.instance
           .collection(collection)
@@ -61,6 +126,10 @@ class EntitlementService extends ChangeNotifier {
   /// flag must never outlive the account it belonged to.
   void _onData(Map<String, dynamic>? data) {
     _lastData = data;
+    // The verdict is applied before anyone is told the document is in.
+    final first = !_resolved;
+    _resolved = true;
+    _force = first;
     final now = DateTime.now();
     _setServer(resolvePremium(data, now));
     _boundary?.cancel();
@@ -85,6 +154,9 @@ class EntitlementService extends ChangeNotifier {
     _subscription = null;
     _server = false;
     _store = false;
+    _resolved = false;
+    _remembered = null;
+    _uid = null;
     _recompute();
   }
 
@@ -133,9 +205,19 @@ class EntitlementService extends ChangeNotifier {
     _recompute();
   }
 
+  /// Set when the next recompute must notify even for an unchanged verdict:
+  /// the first snapshot flips `resolved`, which listeners act on.
+  bool _force = false;
+
   void _recompute() {
     final premium = _server || _store;
-    if (_premium == premium) return;
+    if (_resolved && premium != _remembered) {
+      _remembered = premium;
+      unawaited(_remember(premium));
+    }
+    final force = _force;
+    _force = false;
+    if (_premium == premium && !force) return;
     _premium = premium;
     notifyListeners();
   }

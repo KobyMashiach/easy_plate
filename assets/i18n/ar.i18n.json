@@ -307,9 +307,10 @@
     "resumeCooking": "متابعة",
     "endCooking": "إنهاء",
     "stepLabel": "الخطوة $n",
-    "ongoingBody": "$remaining/$total · الخطوة $n",
+    "ongoingBody": "ينتهي في $time · $total · الخطوة $n",
     "timeUpBody": "الخطوة $n: انتهى الوقت",
-    "runningTimers": "مؤقّتات تعمل"
+    "runningTimers": "مؤقّتات تعمل",
+    "premiumOnly": "وضع الطبخ جزء من EasyPlate Premium"
   },
   "nutrition": {
     "title": "القيم الغذائية",

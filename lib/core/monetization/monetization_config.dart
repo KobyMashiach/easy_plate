@@ -44,4 +44,16 @@ abstract class MonetizationConfig {
   /// Whether AI extractions are counted at all. The kill switch turns every
   /// quota off; premium only changes which allowance applies.
   static bool get aiGated => adsEnabled;
+
+  /// Cook mode is a Premium feature while the console says so. The plan
+  /// gates below are a product decision apart from `ads_enabled`: that kill
+  /// switch turns off ads and the daily quotas, not what the plans include.
+  static bool get cookModeLocked =>
+      _remote.remoteBool(FirebaseService.cookModePremiumOnlyKey) && !isPremium;
+
+  /// Pushes, reminders and popups are Premium while the console says so.
+  /// The inbox itself stays: share invites must still be answerable.
+  static bool get notificationsLocked =>
+      _remote.remoteBool(FirebaseService.notificationsPremiumOnlyKey) &&
+      !isPremium;
 }

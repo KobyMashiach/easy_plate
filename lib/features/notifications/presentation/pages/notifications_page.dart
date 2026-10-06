@@ -19,6 +19,8 @@ import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
 import '../../../my_recipes/presentation/pages/cook_mode_page.dart';
+import '../../../my_recipes/presentation/cook_mode_entry.dart';
+import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../../recipe_sharing/domain/usecases/get_share_invites_usecase.dart';
@@ -220,7 +222,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
           builder: (context, _) {
             // Cooking in progress is the first thing here, inbox or no
             // inbox: it is the way back into cook mode after leaving it.
-            final cooking = CookSessionService().isActive;
+            // One card per recipe being cooked.
+            final cooking = CookSessionService().sessions;
             return RefreshIndicator(
               onRefresh: _loadPending,
               color: AppColors.primary,
@@ -229,10 +232,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(AppSpacing.marginMobile),
                       children: [
-                        if (cooking) ...[
-                          const _CookSessionCard(),
-                          const SizedBox(height: AppSpacing.lg),
+                        for (final s in cooking) ...[
+                          _CookSessionCard(session: s),
+                          const SizedBox(height: AppSpacing.sm),
                         ],
+                        if (cooking.isNotEmpty)
+                          const SizedBox(height: AppSpacing.md),
                         ClayEmptyState(
                           icon: Icons.notifications_none_rounded,
                           message: t.notifications.empty,
@@ -244,14 +249,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   padding: const EdgeInsets.all(AppSpacing.marginMobile),
                   // The cooking card when there is one, then the "mark all
                   // read" row, then the items, each swipeable away.
-                  itemCount: items.length + 1 + (cooking ? 1 : 0),
+                  itemCount: items.length + 1 + cooking.length,
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
-                    if (cooking) {
-                      if (index == 0) return const _CookSessionCard();
-                      index -= 1;
+                    if (index < cooking.length) {
+                      return _CookSessionCard(session: cooking[index]);
                     }
+                    index -= cooking.length;
                     if (index == 0) {
                       return Row(
                         children: [
@@ -559,14 +564,25 @@ extension on _NotificationsPageState {
 /// timer with its bar, and the two ways out — back into cook mode exactly
 /// where it was, or ending it for good.
 class _CookSessionCard extends StatelessWidget {
-  const _CookSessionCard();
+  final CookSession session;
+
+  const _CookSessionCard({required this.session});
 
   @override
   Widget build(BuildContext context) {
-    final session = CookSessionService();
-    final recipe = session.recipe;
-    if (recipe == null) return const SizedBox.shrink();
-    final timers = session.activeTimers;
+    final service = CookSessionService();
+    // The list above rebuilds on every tick of the service; a session that
+    // ended between two frames just draws nothing.
+    if (service.session(session.id) == null) return const SizedBox.shrink();
+    return _body(context, service, session.recipe, session.activeTimers);
+  }
+
+  Widget _body(
+    BuildContext context,
+    CookSessionService service,
+    RecipeEntity recipe,
+    List<MapEntry<int, CookTimer>> timers,
+  ) {
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -622,8 +638,7 @@ class _CookSessionCard extends StatelessWidget {
                   label: t.cookMode.resumeCooking,
                   icon: Icons.play_arrow_rounded,
                   expanded: true,
-                  onPressed: () =>
-                      context.pushNamed(Routing.cookMode, extra: recipe),
+                  onPressed: () => openCookMode(context, recipe),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -633,7 +648,7 @@ class _CookSessionCard extends StatelessWidget {
                   icon: Icons.stop_rounded,
                   expanded: true,
                   destructive: true,
-                  onPressed: session.finish,
+                  onPressed: () => service.finish(session.id),
                 ),
               ),
             ],

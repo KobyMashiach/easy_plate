@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/app_motion.dart';
+import '../press_scale.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 
@@ -10,7 +10,7 @@ import '../../constants/app_spacing.dart';
 ///
 /// [showSpine] draws the vertical gradient edge that makes recipe and grocery
 /// cards read as physical books. [onTap] adds the tactile 1.02x press scale.
-class ClayCard extends StatefulWidget {
+class ClayCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final double radius;
@@ -37,18 +37,11 @@ class ClayCard extends StatefulWidget {
   });
 
   @override
-  State<ClayCard> createState() => _ClayCardState();
-}
-
-class _ClayCardState extends State<ClayCard> {
-  bool _pressed = false;
-
-  @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(widget.radius);
+    final corners = BorderRadius.circular(radius);
     final background =
-        widget.color ??
-        (widget.isActive
+        color ??
+        (isActive
             ? AppColors.primaryContainer
             : AppColors.surfaceContainerLowest);
 
@@ -56,84 +49,76 @@ class _ClayCardState extends State<ClayCard> {
     // way an iOS card's does, with no visible point where the arc begins —
     // and a hairline edge rather than a full pixel.
     final shape = RoundedSuperellipseBorder(
-      borderRadius: radius,
-      side: widget.isActive
+      borderRadius: corners,
+      side: isActive
           ? BorderSide.none
           : BorderSide(color: AppColors.surfaceContainerHighest, width: 0.5),
     );
 
-    final card = AnimatedScale(
-      scale: _pressed ? 0.98 : 1,
-      duration: AppMotion.press,
-      curve: AppMotion.easeOut,
-      child: DecoratedBox(
-        decoration: ShapeDecoration(
-          color: background,
-          shape: shape,
-          shadows: widget.isActive ? AppShadows.active : AppShadows.card,
-        ),
-        child: ClipRSuperellipse(
-          borderRadius: radius,
-          child: Stack(
-            children: [
-              // Top-left highlight standing in for the inset bevel glow, which
-              // Flutter's BoxShadow cannot express.
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: ShapeDecoration(
-                    shape: RoundedSuperellipseBorder(borderRadius: radius),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.center,
-                      colors: [
-                        AppShadows.bevelHighlight.withValues(
-                          alpha:
-                              (widget.isActive ? 0.2 : 0.5) *
-                              AppShadows.bevelStrength,
-                        ),
-                        // Fade to transparent *white*: fading to
-                        // Colors.transparent (transparent black) would tint
-                        // the midpoint grey.
-                        AppShadows.bevelHighlight.withValues(alpha: 0),
-                      ],
-                    ),
+    final card = DecoratedBox(
+      decoration: ShapeDecoration(
+        color: background,
+        shape: shape,
+        shadows: isActive ? AppShadows.active : AppShadows.card,
+      ),
+      child: ClipRSuperellipse(
+        borderRadius: corners,
+        child: Stack(
+          children: [
+            // Top-left highlight standing in for the inset bevel glow, which
+            // Flutter's BoxShadow cannot express.
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: ShapeDecoration(
+                  shape: RoundedSuperellipseBorder(borderRadius: corners),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.center,
+                    colors: [
+                      AppShadows.bevelHighlight.withValues(
+                        alpha:
+                            (isActive ? 0.2 : 0.5) * AppShadows.bevelStrength,
+                      ),
+                      // Fade to transparent *white*: fading to
+                      // Colors.transparent (transparent black) would tint
+                      // the midpoint grey.
+                      AppShadows.bevelHighlight.withValues(alpha: 0),
+                    ],
                   ),
                 ),
               ),
-              if (widget.showSpine)
-                PositionedDirectional(
-                  start: 0,
-                  top: 0,
-                  bottom: 0,
-                  child: _ClaySpine(
-                    color: widget.spineColor ?? AppColors.primaryFixed,
-                  ),
+            ),
+            if (showSpine)
+              PositionedDirectional(
+                start: 0,
+                top: 0,
+                bottom: 0,
+                child: _ClaySpine(
+                  color: spineColor ?? AppColors.primaryFixed,
                 ),
-              Padding(
-                padding: widget.padding.add(
-                  widget.showSpine
-                      ? const EdgeInsetsDirectional.only(
-                          start: AppSpacing.gutter,
-                        )
-                      : EdgeInsets.zero,
-                ),
-                child: widget.child,
               ),
-            ],
-          ),
+            Padding(
+              padding: padding.add(
+                showSpine
+                    ? const EdgeInsetsDirectional.only(
+                        start: AppSpacing.gutter,
+                      )
+                    : EdgeInsets.zero,
+              ),
+              child: child,
+            ),
+          ],
         ),
       ),
     );
 
-    if (widget.onTap == null) return card;
+    if (onTap == null && onLongPress == null) return card;
 
-    return GestureDetector(
-      onTap: widget.onTap,
-      onLongPress: widget.onLongPress,
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTapCancel: () => setState(() => _pressed = false),
-      behavior: HitTestBehavior.opaque,
+    // The press feedback every tappable surface shares.
+    return PressScale(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      scale: 0.98,
       child: card,
     );
   }

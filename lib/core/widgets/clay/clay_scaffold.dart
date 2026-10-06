@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
+import '../cook_timer_banner.dart';
 import '../../constants/app_shadows.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
@@ -120,7 +121,8 @@ class ClayScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: appBar,
       floatingActionButton: floatingActionButton,
-      body: body,
+      // Running cook-mode timers sit right under the bar, on every screen.
+      body: CookTimerBanner(insetTop: appBar == null, child: body),
     );
   }
 }

@@ -1048,14 +1048,17 @@ class Translations$cookMode$he {
 	/// he: 'שלב $n'
 	String stepLabel({required Object n}) => 'שלב ${n}';
 
-	/// he: '$remaining/$total · שלב $n'
-	String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · שלב ${n}';
+	/// he: 'מסתיים ב-$time · $total · שלב $n'
+	String ongoingBody({required Object time, required Object total, required Object n}) => 'מסתיים ב-${time} · ${total} · שלב ${n}';
 
 	/// he: 'שלב $n: הזמן נגמר'
 	String timeUpBody({required Object n}) => 'שלב ${n}: הזמן נגמר';
 
 	/// he: 'טיימרים פועלים'
 	String get runningTimers => 'טיימרים פועלים';
+
+	/// he: 'מצב בישול הוא חלק מ-EasyPlate Premium'
+	String get premiumOnly => 'מצב בישול הוא חלק מ-EasyPlate Premium';
 }
 
 // Path: nutrition
@@ -4136,9 +4139,10 @@ extension on Translations {
 			'cookMode.resumeCooking' => 'המשך',
 			'cookMode.endCooking' => 'סיום',
 			'cookMode.stepLabel' => ({required Object n}) => 'שלב ${n}',
-			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · שלב ${n}',
+			'cookMode.ongoingBody' => ({required Object time, required Object total, required Object n}) => 'מסתיים ב-${time} · ${total} · שלב ${n}',
 			'cookMode.timeUpBody' => ({required Object n}) => 'שלב ${n}: הזמן נגמר',
 			'cookMode.runningTimers' => 'טיימרים פועלים',
+			'cookMode.premiumOnly' => 'מצב בישול הוא חלק מ-EasyPlate Premium',
 			'nutrition.title' => 'ערכים תזונתיים',
 			'nutrition.perServing' => 'למנה',
 			'nutrition.perServingHint' => 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.',
@@ -4368,9 +4372,9 @@ extension on Translations {
 			'ingestion.originalTitle' => 'המתכון המקורי',
 			'ingestion.fetchFailed' => 'לא הצלחנו לטעון את העמוד',
 			'ingestion.loadingOriginal' => 'טוען את העמוד...',
-			'ingestion.structuredFromSite' => 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI',
 			_ => null,
 		} ?? switch (path) {
+			'ingestion.structuredFromSite' => 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI',
 			'ingestion.useStructured' => 'המשך למתכון המובנה',
 			'ingestion.preferAi' => 'עיבוד באמצעות AI במקום',
 			'ingestion.analysisTimedOut' => 'הניתוח לא הושלם בזמן',
@@ -4882,9 +4886,9 @@ extension on Translations {
 			'adminDashboard.sharedRecipes' => 'מתכונים משותפים',
 			'adminDashboard.forumPosts' => 'שרשורי פורום',
 			'adminDashboard.withPush' => 'מכשירים עם התראות',
-			'adminDashboard.cacheEntries' => 'קישורים במטמון',
 			_ => null,
 		} ?? switch (path) {
+			'adminDashboard.cacheEntries' => 'קישורים במטמון',
 			'adminDashboard.cacheHits' => 'פגיעות מטמון (קריאות שנחסכו)',
 			'adminDashboard.config' => 'הגדרות מרחוק',
 			'adminDashboard.environment' => 'סביבה',

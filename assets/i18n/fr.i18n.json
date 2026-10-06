@@ -307,9 +307,10 @@
     "resumeCooking": "Continuer",
     "endCooking": "Terminer",
     "stepLabel": "Étape $n",
-    "ongoingBody": "$remaining/$total · étape $n",
+    "ongoingBody": "Fin à $time · $total · étape $n",
     "timeUpBody": "Étape $n : c’est prêt",
-    "runningTimers": "Minuteurs en cours"
+    "runningTimers": "Minuteurs en cours",
+    "premiumOnly": "Le mode cuisine fait partie d’EasyPlate Premium"
   },
   "nutrition": {
     "title": "Valeurs nutritionnelles",

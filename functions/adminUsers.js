@@ -15,6 +15,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
 const notificationPrefs = require("./notificationPrefs");
+const remoteFlags = require("./remoteFlags");
 
 const proxy = require("./aiProxy").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
@@ -147,6 +148,14 @@ async function notifyOne({ fromUid, uid, title, message }) {
 async function notifyAll({ fromUid, title, message }) {
   const db = admin.firestore();
   const users = await db.collection("users").select("pushToken").get();
+  // Plans are in entitlements/{uid}: read once, keyed by uid, and only when
+  // the gate is on, since with it off the answer is never consulted.
+  const pushPremiumOnly = remoteFlags.boolFrom(await remoteFlags.params(), "notifications_premium_only", true);
+  const entitlementByUid = new Map();
+  if (pushPremiumOnly) {
+    const entitlements = await db.collection("entitlements").select("premium", "premiumFrom", "premiumUntil").get();
+    for (const d of entitlements.docs) entitlementByUid.set(d.id, d);
+  }
   const tokens = [];
   let items = 0;
   let batch = db.batch();
@@ -174,7 +183,10 @@ async function notifyAll({ fromUid, title, message }) {
     }
     const token = doc.get("pushToken");
     const prefs = prefsByUid.get(doc.id) || notificationPrefs.DEFAULTS;
-    if (typeof token === "string" && token && notificationPrefs.wantsPush(prefs, { type: "adminMessage" })) {
+    // The plan gate applies to a broadcast as to any push: the inbox item
+    // is written for everyone, the ring only for accounts the plan allows.
+    const planAllows = remoteFlags.pushAllowed({ premiumOnly: pushPremiumOnly, premium: remoteFlags.isPremium(entitlementByUid.get(doc.id)) });
+    if (typeof token === "string" && token && planAllows && notificationPrefs.wantsPush(prefs, { type: "adminMessage" })) {
       tokens.push(token);
     }
   }

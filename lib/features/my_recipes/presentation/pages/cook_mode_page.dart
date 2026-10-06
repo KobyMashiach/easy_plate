@@ -14,6 +14,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/step_duration.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
+import '../../../../core/widgets/press_scale.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 
@@ -36,19 +37,23 @@ class _CookModePageState extends State<CookModePage> {
   late final PageController _pages;
 
   List<String> get _steps => widget.recipe.steps;
-  int get _index => _session.stepIndex;
+  String get _id => widget.recipe.id;
+  CookSession? get _cook => _session.session(_id);
+  int get _index => _cook?.stepIndex ?? 0;
 
   @override
   void initState() {
     super.initState();
-    _session.start(widget.recipe);
-    _pages = PageController(initialPage: _session.stepIndex);
+    final cook = _session.start(widget.recipe);
+    _session.screenShown(_id);
+    _pages = PageController(initialPage: cook.stepIndex);
     // No wakelock on the web and in tests; cooking carries on without it.
     unawaited(WakelockPlus.enable().catchError((_) {}));
   }
 
   @override
   void dispose() {
+    _session.screenHidden(_id);
     unawaited(WakelockPlus.disable().catchError((_) {}));
     _pages.dispose();
     super.dispose();
@@ -69,7 +74,7 @@ class _CookModePageState extends State<CookModePage> {
       builder: (context) =>
           _FinishedDialog(onClose: () => Navigator.of(context).pop()),
     );
-    _session.finish();
+    _session.finish(_id);
     if (mounted) Navigator.of(context).maybePop();
   }
 
@@ -128,7 +133,8 @@ class _CookModePageState extends State<CookModePage> {
               animation: _session,
               builder: (context, _) {
                 // Finished elsewhere (the inbox's "end"): nothing to show.
-                if (!_session.isActive) return const SizedBox.shrink();
+                final cook = _cook;
+                if (cook == null) return const SizedBox.shrink();
                 final isLast = _index == total - 1;
                 return SafeArea(
                   child: Column(
@@ -179,7 +185,7 @@ class _CookModePageState extends State<CookModePage> {
                       ),
                       // Every timer counting down, whichever step it is on.
                       _RunningTimersStrip(
-                        timers: _session.activeTimers,
+                        timers: cook.activeTimers,
                         onTap: _go,
                       ),
                       Expanded(
@@ -188,15 +194,15 @@ class _CookModePageState extends State<CookModePage> {
                           itemCount: total,
                           onPageChanged: (i) {
                             HapticFeedback.selectionClick();
-                            _session.setStep(i);
+                            _session.setStep(_id, i);
                           },
                           itemBuilder: (context, i) => _StepPage(
                             number: i + 1,
                             text: _steps[i],
                             ingredients: _ingredientsIn(_steps[i]),
-                            timer: _session.timers[i],
-                            onToggleTimer: () => _session.toggleTimer(i),
-                            onResetTimer: () => _session.resetTimer(i),
+                            timer: cook.timers[i],
+                            onToggleTimer: () => _session.toggleTimer(_id, i),
+                            onResetTimer: () => _session.resetTimer(_id, i),
                           ),
                         ),
                       ),
@@ -252,9 +258,8 @@ class _FinishPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final enabled = onTap != null;
     final ink = enabled ? AppColors.onSecondaryContainer : AppColors.outline;
-    return GestureDetector(
+    return PressScale(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
@@ -373,7 +378,7 @@ class CookTimerRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${formatClock(timer.remaining)} / ${formatClock(timer.total)}',
+                  timer.display,
                   style: AppTextStyles.bodyLg.copyWith(
                     color: ink,
                     fontWeight: FontWeight.w700,
@@ -418,6 +423,16 @@ class _StepPage extends StatelessWidget {
         AppSpacing.gutter,
       ),
       children: [
+        // The timer and its controls lead, so starting it never means
+        // scrolling past the instruction first.
+        if (timer != null) ...[
+          _TimerCard(
+            timer: timer!,
+            onToggle: onToggleTimer,
+            onReset: onResetTimer,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+        ],
         ClayCard(
           radius: AppRadius.lg,
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -476,14 +491,6 @@ class _StepPage extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
-        if (timer != null) ...[
-          const SizedBox(height: AppSpacing.sm),
-          _TimerCard(
-            timer: timer!,
-            onToggle: onToggleTimer,
-            onReset: onResetTimer,
           ),
         ],
       ],

@@ -1,0 +1,111 @@
+{
+  "conditions": [
+    {
+      "name": "IsAndroidProd",
+      "expression": "app.id == '1:1012123687685:android:995afe4e31edfbdbadb56c' && app.version.<=(['1.0.0'])",
+      "tagColor": "PURPLE"
+    },
+    {
+      "name": "IsIosProd",
+      "expression": "app.id == '1:1012123687685:ios:431d0631f8355a7badb56c' && app.version.<=(['1.0.0'])",
+      "tagColor": "CYAN"
+    }
+  ],
+  "parameters": {
+    "ads_fail_open": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "מה קורה כשאין סרטון Rewarded זמין (אין fill, אופליין). true מאשר את הפתיחה בכל זאת, false חוסם ומציג \"אין סרטון זמין כרגע\".",
+      "valueType": "BOOLEAN"
+    },
+    "minimumVersion": {
+      "defaultValue": {
+        "value": "0.1.0"
+      },
+      "valueType": "STRING"
+    },
+    "quota_shared_rewarded": {
+      "defaultValue": {
+        "value": "3"
+      },
+      "description": "כמה נוספים ביום נפתחים אחרי סרטון, אחרי שהחינמיים נגמרו. מעבר לסכום השניים, נעול עד מחר.",
+      "valueType": "NUMBER"
+    },
+    "ads_feed_interval": {
+      "defaultValue": {
+        "value": "5"
+      },
+      "description": "כל כמה פריטים בפיד מופיע כרטיס מודעה. 0 מבטל את הכרטיסים בלי לגעת במכסות.",
+      "valueType": "NUMBER"
+    },
+    "gemini_minInstances": {
+      "defaultValue": {
+        "value": "1"
+      },
+      "description": "כמות שרתים שחובה שיפעלו תמיד - כשיש יותר מ20 יוזרים אפשר להוריד ל-0",
+      "valueType": "NUMBER"
+    },
+    "gemini_timeoutSeconds": {
+      "defaultValue": {
+        "value": "120"
+      },
+      "valueType": "NUMBER"
+    },
+    "quota_shared_free": {
+      "defaultValue": {
+        "value": "3"
+      },
+      "description": "כמה מתכונים משותפים ביום נפתחים בחינם.",
+      "valueType": "NUMBER"
+    },
+    "isProd": {
+      "defaultValue": {
+        "value": "0.0.1"
+      },
+      "conditionalValues": {
+        "IsAndroidProd": {
+          "value": ""
+        },
+        "IsIosProd": {
+          "value": ""
+        }
+      },
+      "valueType": "STRING"
+    },
+    "ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "מתג כיבוי כללי. false מסתיר את כל הכרטיסים בפידים ומבטל את כל המכסות והגייטים, האפליקציה מתנהגת כמו לפני המודעות.",
+      "valueType": "BOOLEAN"
+    },
+    "quota_ai_rewarded": {
+      "defaultValue": {
+        "value": "3"
+      },
+      "description": "כמה חילוצי AI מקישור ביום, כל אחד אחרי סרטון.",
+      "valueType": "NUMBER"
+    },
+    "gemini_maxInstances": {
+      "defaultValue": {
+        "value": "10"
+      },
+      "valueType": "NUMBER"
+    },
+    "cook_mode_premium_only": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "מצב בישול (שלב-שלב, טיימרים, התראות טיימר) זמין רק לפרימיום. false פותח אותו לכולם.",
+      "valueType": "BOOLEAN"
+    },
+    "notifications_premium_only": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "פוש, תזכורות יום קניות ופופאפים באפליקציה רק לפרימיום (השרת והמכשיר בודקים). תיבת ההתראות עצמה נשארת לכולם. false פותח לכולם.",
+      "valueType": "BOOLEAN"
+    }
+  }
+}

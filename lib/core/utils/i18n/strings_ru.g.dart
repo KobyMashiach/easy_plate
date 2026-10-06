@@ -487,9 +487,10 @@ class _Translations$cookMode$ru extends Translations$cookMode$he {
 	@override String get resumeCooking => 'Продолжить';
 	@override String get endCooking => 'Завершить';
 	@override String stepLabel({required Object n}) => 'Шаг ${n}';
-	@override String ongoingBody({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · шаг ${n}';
+	@override String ongoingBody({required Object time, required Object total, required Object n}) => 'Закончится в ${time} · ${total} · шаг ${n}';
 	@override String timeUpBody({required Object n}) => 'Шаг ${n}: время вышло';
 	@override String get runningTimers => 'Идут таймеры';
+	@override String get premiumOnly => 'Режим готовки входит в EasyPlate Premium';
 }
 
 // Path: nutrition
@@ -1891,9 +1892,10 @@ extension on TranslationsRu {
 			'cookMode.resumeCooking' => 'Продолжить',
 			'cookMode.endCooking' => 'Завершить',
 			'cookMode.stepLabel' => ({required Object n}) => 'Шаг ${n}',
-			'cookMode.ongoingBody' => ({required Object remaining, required Object total, required Object n}) => '${remaining}/${total} · шаг ${n}',
+			'cookMode.ongoingBody' => ({required Object time, required Object total, required Object n}) => 'Закончится в ${time} · ${total} · шаг ${n}',
 			'cookMode.timeUpBody' => ({required Object n}) => 'Шаг ${n}: время вышло',
 			'cookMode.runningTimers' => 'Идут таймеры',
+			'cookMode.premiumOnly' => 'Режим готовки входит в EasyPlate Premium',
 			'nutrition.title' => 'Пищевая ценность',
 			'nutrition.perServing' => 'на порцию',
 			'nutrition.perServingHint' => 'Все значения указаны на одну порцию. Оставьте пустым, чтобы убрать оценку.',
@@ -2123,9 +2125,9 @@ extension on TranslationsRu {
 			'ingestion.originalTitle' => 'Оригинальный рецепт',
 			'ingestion.fetchFailed' => 'Не удалось загрузить страницу',
 			'ingestion.loadingOriginal' => 'Загружаем страницу...',
-			'ingestion.structuredFromSite' => 'Прочитано напрямую из структурированных данных сайта, без AI',
 			_ => null,
 		} ?? switch (path) {
+			'ingestion.structuredFromSite' => 'Прочитано напрямую из структурированных данных сайта, без AI',
 			'ingestion.useStructured' => 'Продолжить со структурированным рецептом',
 			'ingestion.preferAi' => 'Обработать через AI',
 			'ingestion.analysisTimedOut' => 'Анализ не завершился вовремя',
@@ -2637,9 +2639,9 @@ extension on TranslationsRu {
 			'adminDashboard.sharedRecipes' => 'Общие рецепты',
 			'adminDashboard.forumPosts' => 'Темы форума',
 			'adminDashboard.withPush' => 'Устройств с push',
-			'adminDashboard.cacheEntries' => 'Ссылок в кэше',
 			_ => null,
 		} ?? switch (path) {
+			'adminDashboard.cacheEntries' => 'Ссылок в кэше',
 			'adminDashboard.cacheHits' => 'Попаданий в кэш (сэкономлено запросов)',
 			'adminDashboard.config' => 'Удалённые настройки',
 			'adminDashboard.environment' => 'Среда',

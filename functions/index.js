@@ -5,6 +5,7 @@ const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/
 const admin = require("firebase-admin");
 const { logger } = require("firebase-functions");
 const notificationPrefs = require("./notificationPrefs");
+const remoteFlags = require("./remoteFlags");
 
 admin.initializeApp();
 
@@ -85,16 +86,26 @@ exports.pushOnNotification = onDocumentCreated(
     if (data.silent === true) return;
 
     const db = admin.firestore();
-    const [user, from, prefs] = await Promise.all([
+    const [user, from, prefs, entitlement] = await Promise.all([
       db.doc(`users/${event.params.uid}`).get(),
       db.doc(`public_profiles/${data.fromUid}`).get(),
       notificationPrefs.load(db, event.params.uid),
+      // The plan lives beside the account, not in it (the RevenueCat
+      // webhook and admin grants write entitlements/{uid}).
+      db.doc(`entitlements/${event.params.uid}`).get(),
     ]);
 
     // The account's own choice, checked before the token: an inbox item
     // is written for every kind, the push only for the kinds they asked for.
     if (!notificationPrefs.wantsPush(prefs, data)) {
       logger.info("push muted by preference", { uid: event.params.uid, type: String(data.type || "") });
+      return;
+    }
+
+    // The plan's say, after the preference: on a gated plan a free account
+    // keeps its inbox item but no phone rings.
+    if (!(await remoteFlags.pushAllowedFor(entitlement))) {
+      logger.info("push withheld: free plan", { uid: event.params.uid, type: String(data.type || "") });
       return;
     }
 
