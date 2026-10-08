@@ -23,6 +23,7 @@ import '../../domain/entities/price_unit.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/features/feature_gate.dart';
 
 enum _ReceiptSort { date, store, total }
 
@@ -372,18 +373,23 @@ class _PriceBookPageState extends State<PriceBookPage>
                       if (await showAddPriceDialog(context)) _load();
                     },
                   ),
-                  const SizedBox(width: AppSpacing.base),
-                  WalkthroughTarget(
-                    id: WalkthroughIds.priceBookScan,
-                    child: ClayIconButton(
-                      icon: Icons.document_scanner_rounded,
-                      filled: true,
-                      size: 48,
-                      tooltip: t.receipt.title,
-                      onTap: () async {
-                        final saved = await scanReceiptFlow(context);
-                        if (saved != null) _load();
-                      },
+                  FeatureGate(
+                    feature: FeaturesFlags.receiptScan,
+                    compact: true,
+                    axis: Axis.horizontal,
+                    gapBefore: AppSpacing.base,
+                    child: WalkthroughTarget(
+                      id: WalkthroughIds.priceBookScan,
+                      child: ClayIconButton(
+                        icon: Icons.document_scanner_rounded,
+                        filled: true,
+                        size: 48,
+                        tooltip: t.receipt.title,
+                        onTap: () async {
+                          final saved = await scanReceiptFlow(context);
+                          if (saved != null) _load();
+                        },
+                      ),
                     ),
                   ),
                 ],

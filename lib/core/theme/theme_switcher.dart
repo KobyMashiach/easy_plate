@@ -88,6 +88,11 @@ class ThemeSwitcherState extends State<ThemeSwitcher>
       _snapshot?.dispose();
       _snapshot = image;
       _origin = origin;
+      // The last reveal left the controller at 1 — a fully open hole. With
+      // the snapshot installed at that value the new colours showed for a
+      // frame before `forward(from: 0)` closed the hole again: the jump
+      // seen on every switch after the first. Start closed.
+      _progress.value = 0;
     });
     await controller.setMode(mode);
     // Let the new colours paint under the snapshot before the hole opens,

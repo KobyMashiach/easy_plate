@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import '../../../core/constants/app_enums.dart';
+import '../../grocery_list/domain/entities/grocery_list_entity.dart';
+import '../../grocery_list/domain/repositories/grocery_lists_repository.dart';
 import '../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../meal_planner/domain/repositories/meal_plans_repository.dart';
 import '../../my_recipes/domain/repositories/recipes_repository.dart';
@@ -24,6 +26,7 @@ class ContainerSharingService {
   final UserProfileRepository profiles;
   final RecipeBooksRepository booksRepository;
   final MealPlansRepository plansRepository;
+  final GroceryListsRepository listsRepository;
 
   late final RecipeLinker _linker = RecipeLinker(
     sharing: sharing,
@@ -42,6 +45,12 @@ class ContainerSharingService {
     linker: _linker,
     profiles: profiles,
   );
+  late final ContainerCollab<GroceryListEntity> lists = ContainerCollab(
+    adapter: GroceryListContainerAdapter(listsRepository),
+    containers: containers,
+    linker: _linker,
+    profiles: profiles,
+  );
 
   ContainerSharingService({
     required this.containers,
@@ -50,6 +59,7 @@ class ContainerSharingService {
     required this.profiles,
     required this.booksRepository,
     required this.plansRepository,
+    required this.listsRepository,
   });
 
   /// Both queries once, then each kind refreshed from the same answer.
@@ -61,7 +71,8 @@ class ContainerSharingService {
     ]);
     final all = fetched.expand((list) => list).toList();
     return await books.refresh(all, uid: uid) +
-        await plans.refresh(all, uid: uid);
+        await plans.refresh(all, uid: uid) +
+        await lists.refresh(all, uid: uid);
   }
 
   /// Accepts a book or plan invite; returns the local copy, typed by kind.
@@ -69,6 +80,7 @@ class ContainerSharingService {
       switch (invite.kind) {
         CollabKind.book => books.accept(invite, uid: uid),
         CollabKind.mealPlan => plans.accept(invite, uid: uid),
+        CollabKind.groceryList => lists.accept(invite, uid: uid),
         CollabKind.recipe => throw ArgumentError(
           'recipe invites go through RespondToShareInviteUseCase',
         ),

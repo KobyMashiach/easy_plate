@@ -24,6 +24,8 @@ import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../collab_containers/presentation/widgets/container_share_sheets.dart';
+import '../../../../core/features/feature_gate.dart';
+import '../../../assistant/domain/assistant_scope.dart';
 
 class MealPlannerPage extends StatelessWidget {
   const MealPlannerPage({super.key});
@@ -261,6 +263,147 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
 
 /// The board shows one weekday at a time, selected through the pill row —
 /// the day is view state only, so no bloc event is involved.
+/// The plan's own actions: delete it, or — for a member of a shared plan —
+/// leave it. Adding used to be the only thing one could do with plans; a
+/// plan that was no longer wanted simply stayed.
+void _showPlanOptions(BuildContext context, MealPlanEntity plan) {
+  final bloc = context.read<MealPlannerBloc>();
+  // A member does not delete a shared plan; they leave it.
+  final leaves = plan.isShared && !plan.isMine;
+
+  showModalBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.marginMobile,
+          0,
+          AppSpacing.marginMobile,
+          AppSpacing.marginMobile,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(plan.name, style: AppTextStyles.headlineMd),
+            const SizedBox(height: AppSpacing.gutter),
+            // The copilot, locked to this plan.
+            FeatureGate(
+              feature: FeaturesFlags.assistantScoped,
+              gapAfter: AppSpacing.base,
+              child: ClayCard(
+                radius: AppRadius.md,
+                padding: const EdgeInsets.all(AppSpacing.gutter),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  context.pushNamed(
+                    Routing.assistant,
+                    extra: AssistantScope.mealPlan(
+                      id: plan.id,
+                      title: plan.name,
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.auto_awesome_rounded, color: AppColors.primary),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(t.assistant.askAboutPlan, style: AppTextStyles.bodyMd),
+                  ],
+                ),
+              ),
+            ),
+            // Only the owner hands a plan on; a member cannot share it
+            // further. The same door as the header's share button.
+            if (plan.isMine)
+              FeatureGate(
+                feature: FeaturesFlags.sharePlans,
+                gapAfter: AppSpacing.base,
+                child: ClayCard(
+                  radius: AppRadius.md,
+                  padding: const EdgeInsets.all(AppSpacing.gutter),
+                  onTap: () async {
+                    Navigator.of(sheetContext).pop();
+                    final sent = await showPlanShareSheet(context, plan);
+                    if (sent == true && context.mounted) {
+                      AppDialog.success(
+                        message: t.sharing.sent,
+                      ).notify(context);
+                      // The share tags the plan with its collab id.
+                      bloc.add(.selectPlan(plan.id));
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.person_add_alt_1_rounded,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(t.sharing.sharePlan, style: AppTextStyles.bodyMd),
+                    ],
+                  ),
+                ),
+              ),
+            ClayCard(
+              radius: AppRadius.md,
+              padding: const EdgeInsets.all(AppSpacing.gutter),
+              onTap: () {
+                Navigator.of(sheetContext).pop();
+                _confirmDeletePlan(context, bloc, plan, leaves: leaves);
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    leaves
+                        ? Icons.logout_rounded
+                        : Icons.delete_outline_rounded,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    leaves ? t.sharing.leave : t.mealPlanner.deletePlan,
+                    style: AppTextStyles.bodyMd.copyWith(
+                      color: AppColors.error,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> _confirmDeletePlan(
+  BuildContext context,
+  MealPlannerBloc bloc,
+  MealPlanEntity plan, {
+  required bool leaves,
+}) async {
+  final confirmed = await AppDialog.warning(
+    title: leaves ? t.sharing.leave : t.mealPlanner.deletePlan,
+    message: leaves
+        ? t.mealPlanner.leavePlanConfirm(name: plan.name)
+        : t.mealPlanner.deletePlanConfirm(name: plan.name),
+    icon: leaves ? Icons.logout_rounded : Icons.delete_outline_rounded,
+    confirmLabel: leaves ? t.sharing.leave : t.common.delete,
+    cancelLabel: t.common.cancel,
+    destructive: true,
+  ).show(context);
+  if (!(confirmed ?? false) || !context.mounted) return;
+  await AppDialog.busyEvent(
+    context,
+    bloc,
+    MealPlannerEvent.deletePlan(plan.id),
+  );
+  if (context.mounted) {
+    AppDialog.success(message: t.mealPlanner.planDeleted).notify(context);
+  }
+}
+
 class _PlanBoard extends StatefulWidget {
   final List<MealPlanEntity> plans;
   final MealPlanEntity plan;
@@ -290,34 +433,52 @@ class _PlanBoardState extends State<_PlanBoard> {
 
     // The plan's name floats away as the board scrolls and returns on the
     // first scroll back up; the actions stay in their corner throughout.
+    // Only the owner hands a plan on; a member cannot share it further.
+    final canShare = widget.plan.isMine && FeaturesFlags.sharePlans.isVisible;
+    // Share (when allowed), options, new: 48 each plus the gaps between.
+    final buttons = canShare ? 3 : 2;
     return ClayFloatingHeaderView(
       title: widget.plan.name,
       subtitle: t.mealPlanner.title,
       bottomGap: 0,
-      trailingWidth: widget.plan.isMine ? 48 * 2 + AppSpacing.base : 48,
+      trailingWidth: 48.0 * buttons + AppSpacing.base * (buttons - 1),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Only the owner hands a plan on; a member cannot share it further.
-          if (widget.plan.isMine) ...[
-            WalkthroughTarget(
-              id: WalkthroughIds.mealPlanShare,
-              child: ClayIconButton(
-                icon: Icons.person_add_alt_1_rounded,
-                size: 48,
-                tooltip: t.sharing.sharePlan,
-                onTap: () async {
-                  final sent = await showPlanShareSheet(context, widget.plan);
-                  if (sent == true && context.mounted) {
-                    AppDialog.success(message: t.sharing.sent).notify(context);
-                    // The share tags the plan with its collab id.
-                    bloc.add(.selectPlan(widget.plan.id));
-                  }
-                },
+          if (widget.plan.isMine)
+            FeatureGate(
+              feature: FeaturesFlags.sharePlans,
+              compact: true,
+              axis: Axis.horizontal,
+              gapAfter: AppSpacing.base,
+              child: WalkthroughTarget(
+                id: WalkthroughIds.mealPlanShare,
+                child: ClayIconButton(
+                  icon: Icons.person_add_alt_1_rounded,
+                  size: 48,
+                  tooltip: t.sharing.sharePlan,
+                  onTap: () async {
+                    final sent = await showPlanShareSheet(context, widget.plan);
+                    if (sent == true && context.mounted) {
+                      AppDialog.success(
+                        message: t.sharing.sent,
+                      ).notify(context);
+                      // The share tags the plan with its collab id.
+                      bloc.add(.selectPlan(widget.plan.id));
+                    }
+                  },
+                ),
               ),
             ),
-            const SizedBox(width: AppSpacing.base),
-          ],
+          // Deleting (or, for a member, leaving) lives behind the options
+          // button; the plan chips below open the same sheet on a long press.
+          ClayIconButton(
+            icon: Icons.more_horiz_rounded,
+            size: 48,
+            tooltip: t.mealPlanner.planOptions,
+            onTap: () => _showPlanOptions(context, widget.plan),
+          ),
+          const SizedBox(width: AppSpacing.base),
           WalkthroughTarget(
             id: WalkthroughIds.mealPlanAdd,
             child: ClayIconButton(
@@ -367,6 +528,7 @@ class _PlanBoardState extends State<_PlanBoard> {
                           final isSelected = p.id == widget.plan.id;
                           return GestureDetector(
                             onTap: () => bloc.add(.selectPlan(p.id)),
+                            onLongPress: () => _showPlanOptions(context, p),
                             behavior: HitTestBehavior.opaque,
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -412,22 +574,25 @@ class _PlanBoardState extends State<_PlanBoard> {
                 onSelected: (index) => setState(() => _weekday = index),
               ),
               const SizedBox(height: AppSpacing.gutter),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.marginMobile,
-                ),
-                child: DayNutritionCard(
-                  day: nutrition.day(_weekday),
-                  onOpenDashboard: () => context.pushNamed(
-                    Routing.nutritionDashboard,
-                    extra: NutritionDashboardArgs(
-                      plan: widget.plan,
-                      recipes: widget.recipes,
+              FeatureGate(
+                feature: FeaturesFlags.nutrition,
+                gapAfter: AppSpacing.gutter,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.marginMobile,
+                  ),
+                  child: DayNutritionCard(
+                    day: nutrition.day(_weekday),
+                    onOpenDashboard: () => context.pushNamed(
+                      Routing.nutritionDashboard,
+                      extra: NutritionDashboardArgs(
+                        plan: widget.plan,
+                        recipes: widget.recipes,
+                      ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: AppSpacing.gutter),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.marginMobile,

@@ -217,4 +217,35 @@ void main() {
       isNull,
     );
   });
+
+  group('device session', () {
+    test(
+      'holds another device, and an expired month, on the session screen',
+      () {
+        for (final stage in [AuthStage.otherDevice, AuthStage.sessionExpired]) {
+          for (final location in [
+            Routing.home,
+            Routing.login,
+            Routing.blocked,
+          ]) {
+            expect(
+              gateRedirect(stage: stage, location: location),
+              Routing.sessionGate,
+            );
+          }
+          expect(
+            gateRedirect(stage: stage, location: Routing.sessionGate),
+            isNull,
+          );
+        }
+      },
+    );
+
+    test('is not reachable once the session is held', () {
+      expect(
+        gateRedirect(stage: AuthStage.ready, location: Routing.sessionGate),
+        Routing.home,
+      );
+    });
+  });
 }

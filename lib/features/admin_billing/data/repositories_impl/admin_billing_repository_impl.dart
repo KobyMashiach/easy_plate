@@ -34,6 +34,10 @@ class AdminBillingRepositoryImpl implements AdminBillingRepository {
   Future<void> enableAccount(String uid) => usersDataSource.enable(uid);
 
   @override
+  Future<void> releaseSession(String uid) =>
+      usersDataSource.releaseSession(uid);
+
+  @override
   Future<void> deleteAccount(String uid) => usersDataSource.delete(uid);
 
   @override

@@ -1,15 +1,35 @@
-/// Where the paywall sends people for the legal text Apple and Google require
-/// next to a subscription (App Store guideline 3.1.2, Play's subscription
-/// policy): a terms-of-use link and a privacy-policy link, both reachable
-/// from the purchase screen itself.
+import '../utils/i18n/strings.g.dart';
+
+/// Where the paywall and the help page send people for the legal text Apple
+/// and Google require next to a subscription (App Store guideline 3.1.2,
+/// Play's subscription policy): a terms-of-use link and a privacy-policy
+/// link, both reachable from the purchase screen itself.
+///
+/// The site has every document in the app's five languages, prerendered at
+/// `/privacy` (English) and `/he/privacy`, `/ar/…`, `/fr/…`, `/ru/…`, so the
+/// link follows the language the app is in rather than always opening the
+/// English page. Read on every access: the language can change mid-session.
 abstract class LegalLinks {
-  /// Apple's standard EULA, which is what App Store Connect uses when no
-  /// custom one is uploaded. Google accepts it as a terms link too.
-  static final terms = Uri.parse(
-    'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
+  static const site = 'https://aieasyplate.app';
+
+  /// Our own terms (replaced Apple's standard EULA once the page existed;
+  /// the same text should be pasted into App Store Connect as a custom
+  /// EULA so the store listing shows it too).
+  static Uri get terms => _localized('terms');
+
+  static Uri get privacy => _localized('privacy');
+
+  /// The page in the app's current language; English has no prefix.
+  static Uri _localized(String doc) => localizedFor(
+    doc,
+    LocaleSettings.currentLocale.languageCode,
   );
 
-  /// There is no privacy policy page yet (see the release audit): this is the
-  /// address it has to end up at, on the same domain as the support mailbox.
-  static final privacy = Uri.parse('https://aieasyplate.app/privacy');
+  /// The rule on its own, for tests: a known language gets its prefix,
+  /// anything else the English page.
+  static Uri localizedFor(String doc, String languageCode) {
+    const prefixed = {'he', 'ar', 'fr', 'ru'};
+    final prefix = prefixed.contains(languageCode) ? '/$languageCode' : '';
+    return Uri.parse('$site$prefix/$doc');
+  }
 }

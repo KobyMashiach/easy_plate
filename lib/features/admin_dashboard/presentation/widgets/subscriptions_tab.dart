@@ -210,6 +210,13 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
     t.adminDashboard.enabledDone,
   );
 
+  /// A phone lost or wiped without signing out holds the account's session
+  /// for the month; this frees it and signs that device out.
+  Future<void> _releaseSession(BillingAccountEntity account) => _act(
+    () => _repository.releaseSession(account.uid),
+    t.adminDashboard.releaseSessionDone,
+  );
+
   Future<void> _delete(BillingAccountEntity account) async {
     final s = t.adminDashboard;
     final ok = await AppDialog.warning(
@@ -320,6 +327,14 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
             ),
             ListTile(
               leading: Icon(
+                Icons.phonelink_off_rounded,
+                color: AppColors.primary,
+              ),
+              title: Text(s.releaseSession),
+              onTap: () => Navigator.of(sheetContext).pop('releaseSession'),
+            ),
+            ListTile(
+              leading: Icon(
                 Icons.delete_forever_rounded,
                 color: AppColors.error,
               ),
@@ -344,6 +359,8 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
         await _enable(account);
       case 'delete':
         await _delete(account);
+      case 'releaseSession':
+        await _releaseSession(account);
     }
   }
 

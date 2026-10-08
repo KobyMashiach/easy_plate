@@ -31,6 +31,8 @@ import '../../domain/entities/app_notification_entity.dart';
 import '../../domain/repositories/notifications_repository.dart';
 import '../../domain/usecases/mark_notification_read_usecase.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../grocery_list/data/datasources/active_grocery_list_store.dart';
+import '../../../grocery_list/domain/entities/grocery_list_entity.dart';
 
 /// The inbox. The list itself is live through [NotificationsService]; the
 /// pending invites are fetched here so a share can be answered in place.
@@ -117,6 +119,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
             // on it.
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.mealPlan;
+          case CollabKind.groceryList:
+            final list =
+                await containers.accept(invite, uid: _uid) as GroceryListEntity;
+            // The groceries tab opens on the list last chosen on this
+            // device: make it this one before landing there.
+            await HiveActiveGroceryListStore.instance.write(list.id);
+            await _markRead(item);
+            if (!mounted) return;
+            _toast(t.sharing.acceptedList);
+            Navigator.of(context).maybePop();
+            MainTabs.index.value = MainTabs.groceries;
           case CollabKind.household:
             // Never an invite: a household is joined by code.
             break;
@@ -349,6 +362,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 recipe: item.recipeTitle ?? '',
               ),
               CollabKind.mealPlan => t.notifications.sharedPlan(
+                name: item.fromName ?? '',
+                recipe: item.recipeTitle ?? '',
+              ),
+              CollabKind.groceryList => t.notifications.sharedList(
                 name: item.fromName ?? '',
                 recipe: item.recipeTitle ?? '',
               ),

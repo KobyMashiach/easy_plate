@@ -1,6 +1,10 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../core/constants/app_enums.dart';
+import '../../grocery_list/domain/entities/grocery_item_entity.dart';
+import '../../grocery_list/domain/entities/grocery_item_source_entity.dart';
+import '../../grocery_list/domain/entities/grocery_list_entity.dart';
+import '../../grocery_list/domain/repositories/grocery_lists_repository.dart';
 import '../../meal_planner/domain/entities/meal_entity.dart';
 import '../../meal_planner/domain/entities/meal_item_entity.dart';
 import '../../meal_planner/domain/entities/meal_plan_entity.dart';
@@ -298,4 +302,129 @@ class PlanContainerAdapter extends ContainerAdapter<MealPlanEntity> {
   Future<MealPlanEntity?> byId(String id) => plans.getPlanById(id);
   @override
   Future<void> save(MealPlanEntity item) => plans.savePlan(item);
+}
+
+/// A grocery list travels as written: every line with its amounts, ticks
+/// and category. Nothing is linked — a line's recipe source is a label to
+/// the other side, and the list it came from (a plan, a recipe) stays a
+/// fact about the owner's copy only.
+class GroceryListContainerAdapter extends ContainerAdapter<GroceryListEntity> {
+  final GroceryListsRepository lists;
+  GroceryListContainerAdapter(this.lists);
+
+  @override
+  CollabKind get kind => CollabKind.groceryList;
+  @override
+  String idOf(GroceryListEntity item) => item.id;
+  @override
+  String? collabIdOf(GroceryListEntity item) => item.collabId;
+  @override
+  CollabRole? roleOf(GroceryListEntity item) => item.collabRole;
+  @override
+  String titleOf(GroceryListEntity item) => item.name;
+  @override
+  List<String> recipeIdsOf(GroceryListEntity item) => const [];
+
+  @override
+  GroceryListEntity withCollab(
+    GroceryListEntity item, {
+    required String collabId,
+    required CollabRole role,
+  }) => item.copyWith(collabId: collabId, collabRole: role);
+  @override
+  GroceryListEntity withoutCollab(GroceryListEntity item) =>
+      item.copyWith(clearCollab: true);
+
+  @override
+  Map<String, dynamic> encode(
+    GroceryListEntity item, {
+    required Map<String, String> collabIdByRecipeId,
+    required Map<String, String> titles,
+  }) {
+    return {
+      'items': [
+        for (final line in item.items)
+          {
+            'id': line.id,
+            'name': line.name,
+            'unit': line.unit.name,
+            'category': line.category,
+            'isChecked': line.isChecked,
+            'isAdHoc': line.isAdHoc,
+            'sources': [
+              for (final source in line.sources)
+                {'label': source.label, 'amount': source.amount},
+            ],
+          },
+      ],
+    };
+  }
+
+  @override
+  GroceryListEntity decode(
+    CollabContainerEntity container, {
+    required GroceryListEntity? local,
+    required Map<String, String> recipeIdByCollabId,
+    required String uid,
+  }) {
+    final items = <GroceryItemEntity>[];
+    for (final raw in (container.content['items'] as List?) ?? const []) {
+      if (raw is! Map) continue;
+      final sources = <GroceryItemSourceEntity>[];
+      for (final rawSource in (raw['sources'] as List?) ?? const []) {
+        if (rawSource is! Map) continue;
+        sources.add(
+          GroceryItemSourceEntity(
+            label: (rawSource['label'] as String?) ?? '',
+            amount: (rawSource['amount'] as num?)?.toDouble() ?? 0,
+          ),
+        );
+      }
+      items.add(
+        GroceryItemEntity(
+          id: (raw['id'] as String?) ?? _uuid.v4(),
+          name: (raw['name'] as String?) ?? '',
+          unit: MeasurementUnit.values.firstWhere(
+            (u) => u.name == raw['unit'],
+            orElse: () => MeasurementUnit.unspecified,
+          ),
+          sources: sources,
+          category: (raw['category'] as String?) ?? '',
+          isChecked: raw['isChecked'] == true,
+          isAdHoc: raw['isAdHoc'] == true,
+        ),
+      );
+    }
+    // A member's copy is hand-made as far as rebuilding goes: the plans or
+    // the recipe it was built from live on the owner's account. The owner's
+    // own copy keeps its source and can still be rebuilt.
+    final mine = container.roleOf(uid) == CollabRole.owner;
+    return GroceryListEntity(
+      id: local?.id ?? _uuid.v4(),
+      name: container.title,
+      items: items,
+      collaborators: local?.collaborators ?? const {},
+      selectedPlanIds: mine ? (local?.selectedPlanIds ?? const []) : const [],
+      createdAt: local?.createdAt ?? DateTime.now(),
+      contentLang: local?.contentLang,
+      contentVersion: local?.contentVersion ?? 0,
+      source: mine
+          ? (local?.source ?? GroceryListSource.manual)
+          : GroceryListSource.manual,
+      recipeId: mine ? local?.recipeId : null,
+      recipeScale: mine ? (local?.recipeScale ?? 1) : 1,
+      recipeServings: mine ? local?.recipeServings : null,
+      recipeTitle: mine ? local?.recipeTitle : null,
+      collabId: container.id,
+      collabRole: container.roleOf(uid),
+    );
+  }
+
+  @override
+  Future<List<GroceryListEntity>> all() => lists.getLists();
+  @override
+  Future<GroceryListEntity?> byId(String id) => lists.getListById(id);
+  @override
+  Future<void> save(GroceryListEntity item) =>
+      lists.saveList(item, stampLanguage: false);
 }

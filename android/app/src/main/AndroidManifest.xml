@@ -6,6 +6,9 @@
     <uses-permission android:name="com.android.vending.BILLING" />
     <!-- The receipt scanner drives the camera itself (auto-capture); the system camera app needs none. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Talking to the in-app assistant: the device's speech recognizer
+         turns speech into text; nothing is recorded by the app. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Android 13+: without this the runtime prompt cannot be granted and every push is dropped silently. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Cook-mode timers ring at the second they end; granted by the user on
@@ -117,6 +120,14 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <!-- Android 11+: the speech recognizer and text-to-speech engines
+             are other packages, invisible unless declared. -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

@@ -11,7 +11,11 @@ import '../constants/app_motion.dart';
 /// System / light / dark, as pills like the language chips. A tap hands its
 /// position to [ThemeSwitcher], which is where the circle starts growing.
 class ThemeModeSelector extends StatelessWidget {
-  const ThemeModeSelector({super.key});
+  /// Told after the device switched, so the choice can be remembered on
+  /// the account as well.
+  final void Function(AppThemeMode mode)? onChanged;
+
+  const ThemeModeSelector({super.key, this.onChanged});
 
   static IconData _icon(AppThemeMode mode) => switch (mode) {
     AppThemeMode.system => Icons.brightness_auto_rounded,
@@ -38,9 +42,14 @@ class ThemeModeSelector extends StatelessWidget {
           children: AppThemeMode.values.map((mode) {
             final isSelected = mode == selected;
             return GestureDetector(
-              onTapUp: (details) => ThemeSwitcher.of(
-                context,
-              ).switchTo(mode, origin: details.globalPosition),
+              onTapUp: (details) async {
+                // The reveal first, the account afterwards: a save that
+                // lands mid-animation must not touch the palette.
+                await ThemeSwitcher.of(
+                  context,
+                ).switchTo(mode, origin: details.globalPosition);
+                onChanged?.call(mode);
+              },
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
                 duration: AppMotion.quick,

@@ -9,6 +9,9 @@ import '../../domain/entities/billing_entities.dart';
 /// the caller is the administrator.
 abstract class AdminUsersRemoteDataSource {
   Future<void> disable(String uid, String message);
+
+  /// Frees the account's device session and signs that device out.
+  Future<void> releaseSession(String uid);
   Future<void> enable(String uid);
   Future<void> delete(String uid);
   Future<void> notify(
@@ -49,6 +52,10 @@ class AdminUsersHttpDataSource implements AdminUsersRemoteDataSource {
   @override
   Future<void> disable(String uid, String message) =>
       _post({'action': 'disable', 'uid': uid, 'message': message});
+
+  @override
+  Future<void> releaseSession(String uid) =>
+      _post({'action': 'releaseSession', 'uid': uid});
 
   @override
   Future<void> enable(String uid) => _post({'action': 'enable', 'uid': uid});

@@ -18,7 +18,7 @@ void main() {
       ),
     );
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('העוזר'), findsOneWidget);
+    expect(find.text('שפי'), findsOneWidget);
     expect(find.byIcon(Icons.auto_awesome_rounded), findsOneWidget);
   });
 }

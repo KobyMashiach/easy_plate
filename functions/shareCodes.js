@@ -10,7 +10,7 @@ const proxy = require("./aiProxy").internals;
 const households = require("./households").internals;
 
 const CODE_RE = /^[A-Z2-9]{8}$/;
-const KINDS = new Set(["recipe", "book", "mealPlan", "household"]);
+const KINDS = new Set(["recipe", "book", "mealPlan", "groceryList", "household"]);
 
 // Normalises "ep-7k3m 9qx2" → "7K3M9QX2".
 function normalizeCode(raw) {
@@ -99,7 +99,7 @@ async function redeem(db, code, uid) {
     batch.set(db.collection("share_invites").doc(inviteId(doc.targetId, uid)), inviteFields(fields));
     batch.set(db.collection("notifications").doc(uid).collection("items").doc(inviteId(doc.targetId, uid)), notificationFields(fields));
     invite = { id: inviteId(doc.targetId, uid), ...fields };
-  } else if (doc.kind === "book" || doc.kind === "mealPlan") {
+  } else if (doc.kind === "book" || doc.kind === "mealPlan" || doc.kind === "groceryList") {
     const container = await db.collection("collab_containers").doc(doc.targetId).get();
     if (!container.exists) return { error: "gone" };
     if ((container.get("memberUids") || []).includes(uid)) return { already: true };

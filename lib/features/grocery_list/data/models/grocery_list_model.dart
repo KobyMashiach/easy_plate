@@ -37,6 +37,11 @@ sealed class GroceryListModel with _$GroceryListModel {
     @HiveField(10) @Default(1.0) double recipeScale,
     @HiveField(11) int? recipeServings,
     @HiveField(12) String? recipeTitle,
+
+    // Appended for sharing, as on MealPlanModel: the shared document's id
+    // and this account's role name.
+    @HiveField(13) String? collabId,
+    @HiveField(14) String? collabRole,
   }) = _GroceryListModel;
 
   factory GroceryListModel.fromJson(Map<String, dynamic> json) =>
@@ -59,6 +64,10 @@ extension GroceryListModelMapper on GroceryListModel {
     recipeScale: recipeScale,
     recipeServings: recipeServings,
     recipeTitle: recipeTitle,
+    collabId: collabId,
+    collabRole: CollabRole.values
+        .where((r) => r.name == collabRole)
+        .firstOrNull,
   );
 }
 
@@ -76,5 +85,7 @@ extension GroceryListEntityMapper on GroceryListEntity {
     recipeScale: recipeScale,
     recipeServings: recipeServings,
     recipeTitle: recipeTitle,
+    collabId: collabId,
+    collabRole: collabRole?.name,
   );
 }

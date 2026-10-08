@@ -8,10 +8,13 @@ import '../../features/recipe_ingestion/domain/usecases/generate_image_usecase.d
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
+import '../features/feature_gate.dart';
+import '../network/image_search_client.dart';
 import '../services/image_storage_service.dart';
 import '../utils/i18n/strings.g.dart';
 import 'app_dialog.dart';
 import 'clay/clay.dart';
+import 'web_image_picker_page.dart';
 
 /// Outcome of the photo sheet: a newly stored file name, or an explicit removal.
 class ImagePickResult {
@@ -31,11 +34,16 @@ class ImagePickResult {
 /// image makes no sense — a profile photo. [aiPromptPicker] instead lets the
 /// user shape the prompt first (a book cover's theme and subject); it
 /// returns null when they back out.
+///
+/// [searchQuery] adds a "search Google Images" row that opens a grid of
+/// results for it (a recipe's title), ten at a time, and stores the one
+/// picked like a photo taken here. Null where there is nothing to search for.
 Future<ImagePickResult?> showImageSourceSheet(
   BuildContext context, {
   required bool hasImage,
   String? aiPrompt,
   Future<String?> Function(BuildContext context)? aiPromptPicker,
+  String? searchQuery,
 }) {
   assert(
     aiPrompt == null || aiPromptPicker == null,
@@ -47,6 +55,7 @@ Future<ImagePickResult?> showImageSourceSheet(
       hasImage: hasImage,
       aiPrompt: aiPrompt,
       aiPromptPicker: aiPromptPicker,
+      searchQuery: searchQuery,
     ),
   );
 }
@@ -55,14 +64,23 @@ class _ImageSourceSheet extends StatefulWidget {
   final bool hasImage;
   final String? aiPrompt;
   final Future<String?> Function(BuildContext context)? aiPromptPicker;
+  final String? searchQuery;
 
   const _ImageSourceSheet({
     required this.hasImage,
     required this.aiPrompt,
     required this.aiPromptPicker,
+    required this.searchQuery,
   });
 
   bool get offersAi => aiPrompt != null || aiPromptPicker != null;
+
+  /// Only behind the proxy: against Google directly there is no server to
+  /// hold the search key.
+  bool get offersSearch =>
+      searchQuery != null &&
+      searchQuery!.trim().isNotEmpty &&
+      ImageSearchClient.isAvailable;
 
   @override
   State<_ImageSourceSheet> createState() => _ImageSourceSheetState();
@@ -84,6 +102,13 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
     Navigator.of(
       context,
     ).pop(fileName == null ? null : ImagePickResult.picked(fileName));
+  }
+
+  /// The picker page stores the picture itself and hands back its name.
+  Future<void> _searchWeb() async {
+    final fileName = await pickWebImage(context, query: widget.searchQuery!);
+    if (fileName == null || !mounted) return;
+    Navigator.of(context).pop(ImagePickResult.picked(fileName));
   }
 
   Future<void> _generate() async {
@@ -172,24 +197,41 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
                   label: t.image.camera,
                   onTap: () => _pick(ImageSource.camera),
                 ),
-                if (widget.offersAi) ...[
-                  const SizedBox(height: AppSpacing.base),
-                  _SourceTile(
-                    icon: Icons.auto_awesome_rounded,
-                    label: t.image.generate,
-                    highlighted: true,
-                    onTap: _generate,
-                  ),
-                  if (_failed) ...[
-                    const SizedBox(height: AppSpacing.base),
-                    Text(
-                      t.image.generateFailed,
-                      style: AppTextStyles.labelMd.copyWith(
-                        color: AppColors.error,
-                      ),
+                if (widget.offersSearch)
+                  FeatureGate(
+                    feature: FeaturesFlags.recipeImageSearch,
+                    gapBefore: AppSpacing.base,
+                    child: _SourceTile(
+                      icon: Icons.image_search_rounded,
+                      label: t.image.webSearch,
+                      onTap: _searchWeb,
                     ),
-                  ],
-                ],
+                  ),
+                if (widget.offersAi)
+                  FeatureGate(
+                    feature: FeaturesFlags.recipeImageAi,
+                    gapBefore: AppSpacing.base,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _SourceTile(
+                          icon: Icons.auto_awesome_rounded,
+                          label: t.image.generate,
+                          highlighted: true,
+                          onTap: _generate,
+                        ),
+                        if (_failed) ...[
+                          const SizedBox(height: AppSpacing.base),
+                          Text(
+                            t.image.generateFailed,
+                            style: AppTextStyles.labelMd.copyWith(
+                              color: AppColors.error,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 if (widget.hasImage) ...[
                   const SizedBox(height: AppSpacing.base),
                   _SourceTile(

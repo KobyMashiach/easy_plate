@@ -46,6 +46,7 @@ function parseRequest(body) {
     case "disable":
     case "enable":
     case "delete":
+    case "releaseSession":
       if (!uid) return { error: "uid is required" };
       return { action, uid, message };
     case "notify":
@@ -97,6 +98,18 @@ async function enable(uid) {
 /// Every place an account leaves a trace, in one sweep. Community posts and
 /// shared recipes are left standing under the author's uid, the way a
 /// forum keeps posts of departed members; they can be removed by hand.
+// Frees the account's device session (a phone lost or wiped without
+// signing out would otherwise hold it for the month) and revokes the
+// tokens, so the device that held it is signed out as well.
+async function releaseSession(uid) {
+  await admin.firestore().doc(`sessions/${uid}`).delete();
+  try {
+    await admin.auth().revokeRefreshTokens(uid);
+  } catch (err) {
+    logger.warn("revoke failed", { uid, reason: err.message });
+  }
+}
+
 async function remove(uid) {
   const db = admin.firestore();
   const directory = await db.collection("user_directory").where("uid", "==", uid).get();
@@ -107,6 +120,7 @@ async function remove(uid) {
     `entitlements/${uid}`,
     `ai_usage/${uid}`,
     `account_status/${uid}`,
+    `sessions/${uid}`,
   ]) {
     batch.delete(db.doc(path));
   }
@@ -150,9 +164,9 @@ async function notifyAll({ fromUid, title, message }) {
   const users = await db.collection("users").select("pushToken").get();
   // Plans are in entitlements/{uid}: read once, keyed by uid, and only when
   // the gate is on, since with it off the answer is never consulted.
-  const pushPremiumOnly = remoteFlags.boolFrom(await remoteFlags.params(), "notifications_premium_only", true);
+  const pushFlag = remoteFlags.intFrom(await remoteFlags.params(), remoteFlags.NOTIFICATIONS_FLAG, 2);
   const entitlementByUid = new Map();
-  if (pushPremiumOnly) {
+  if (pushFlag === 3) {
     const entitlements = await db.collection("entitlements").select("premium", "premiumFrom", "premiumUntil").get();
     for (const d of entitlements.docs) entitlementByUid.set(d.id, d);
   }
@@ -185,7 +199,7 @@ async function notifyAll({ fromUid, title, message }) {
     const prefs = prefsByUid.get(doc.id) || notificationPrefs.DEFAULTS;
     // The plan gate applies to a broadcast as to any push: the inbox item
     // is written for everyone, the ring only for accounts the plan allows.
-    const planAllows = remoteFlags.pushAllowed({ premiumOnly: pushPremiumOnly, premium: remoteFlags.isPremium(entitlementByUid.get(doc.id)) });
+    const planAllows = remoteFlags.pushAllowed({ flag: pushFlag, premium: remoteFlags.isPremium(entitlementByUid.get(doc.id)) });
     if (typeof token === "string" && token && planAllows && notificationPrefs.wantsPush(prefs, { type: "adminMessage" })) {
       tokens.push(token);
     }
@@ -240,6 +254,9 @@ exports.adminUsers = onRequest(
         case "delete":
           await remove(request.uid);
           break;
+        case "releaseSession":
+          await releaseSession(request.uid);
+          break;
         case "notify":
           await notifyOne({ fromUid: caller.uid, ...request });
           break;
@@ -261,4 +278,4 @@ exports.adminUsers = onRequest(
   },
 );
 
-exports.internals = { parseRequest, isAdmin };
+exports.internals = { parseRequest, isAdmin, remove };

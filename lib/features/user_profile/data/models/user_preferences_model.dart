@@ -38,6 +38,9 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     @HiveField(14) @Default(true) bool notifyAdminReplies,
     @HiveField(15) @Default(true) bool notifyAnnouncements,
     @HiveField(16) @Default(true) bool foregroundPopupsEnabled,
+
+    /// An `AppThemeMode` name; see the entity.
+    @HiveField(17) String? themeMode,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -65,6 +68,7 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
     notifyAdminReplies: notifyAdminReplies,
     notifyAnnouncements: notifyAnnouncements,
     foregroundPopupsEnabled: foregroundPopupsEnabled,
+    themeMode: themeMode,
   );
 }
 
@@ -87,5 +91,6 @@ extension UserPreferencesEntityMapper on UserPreferencesEntity {
     notifyAdminReplies: notifyAdminReplies,
     notifyAnnouncements: notifyAnnouncements,
     foregroundPopupsEnabled: foregroundPopupsEnabled,
+    themeMode: themeMode,
   );
 }

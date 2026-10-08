@@ -19,3 +19,7 @@ export const APP_STORE_ID = '6809243199';
 export const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.KHEasyDev.easy_plate';
 
 export const SUPPORT = 'support@aieasyplate.app';
+
+// When the copy (home, guides, legal) last changed: the sitemap's lastmod and
+// the pages' dateModified. Bump it when you edit copy, not on every build.
+export const CONTENT_UPDATED = '2026-10-08';

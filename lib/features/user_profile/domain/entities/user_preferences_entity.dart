@@ -55,6 +55,11 @@ class UserPreferencesEntity {
   /// popup. Off, it goes to the inbox (and the bell's badge) only.
   final bool foregroundPopupsEnabled;
 
+  /// The light / dark / follow-the-device choice, as an `AppThemeMode` name,
+  /// so signing in on another device (or again on this one) brings the same
+  /// look. Null: never chosen on this account, the device keeps its own.
+  final String? themeMode;
+
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
@@ -73,6 +78,7 @@ class UserPreferencesEntity {
     this.notifyAdminReplies = true,
     this.notifyAnnouncements = true,
     this.foregroundPopupsEnabled = true,
+    this.themeMode,
   });
 
   /// Whether an alert of [type] should be shown on this device right now:
@@ -109,6 +115,7 @@ class UserPreferencesEntity {
     bool? notifyAdminReplies,
     bool? notifyAnnouncements,
     bool? foregroundPopupsEnabled,
+    String? themeMode,
   }) {
     return UserPreferencesEntity(
       shoppingDay: shoppingDay ?? this.shoppingDay,
@@ -134,6 +141,7 @@ class UserPreferencesEntity {
       notifyAnnouncements: notifyAnnouncements ?? this.notifyAnnouncements,
       foregroundPopupsEnabled:
           foregroundPopupsEnabled ?? this.foregroundPopupsEnabled,
+      themeMode: themeMode ?? this.themeMode,
     );
   }
 }

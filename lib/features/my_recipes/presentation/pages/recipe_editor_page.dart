@@ -20,6 +20,7 @@ import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/landscape_hint.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// Structured editor for a recipe — the same shape the parser produces, so a
 /// freshly parsed recipe and a saved one are corrected through one screen.
@@ -822,12 +823,15 @@ class _SaveOptionsSheet extends StatelessWidget {
               hint: t.editor.savePlainHint,
               onTap: () => onPick(false),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            _option(
-              icon: Icons.auto_awesome_rounded,
-              title: t.editor.saveWithAi,
-              hint: t.editor.saveWithAiHint,
-              onTap: () => onPick(true),
+            FeatureGate(
+              feature: FeaturesFlags.saveWithAi,
+              gapBefore: AppSpacing.sm,
+              child: _option(
+                icon: Icons.auto_awesome_rounded,
+                title: t.editor.saveWithAi,
+                hint: t.editor.saveWithAiHint,
+                onTap: () => onPick(true),
+              ),
             ),
           ],
         ),

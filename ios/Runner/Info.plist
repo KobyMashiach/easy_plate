@@ -64,7 +64,7 @@
 	     iOS App ID from the AdMob console before an App Store build. -->
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Allows ads to be more relevant to you. EasyPlate never sells your data.</string>
+	<string>EasyPlate shows ads on free accounts. Allowing tracking lets Google AdMob use your advertising identifier to pick ads that are more relevant to you and to measure them. EasyPlate never sells your data, and Premium has no ads.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -245,9 +245,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Take photos of your recipes, book covers and receipts, and scan share codes.</string>
+	<string>EasyPlate uses the camera to take a photo of a recipe you are saving, a cover for a recipe book, or a grocery receipt whose prices you want recorded, and to scan a QR share code from a friend. Photos are stored with your recipes; the scanner keeps no picture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Choose photos for your recipes and book covers.</string>
+	<string>EasyPlate opens your photo library so you can pick an existing picture for a recipe, a recipe book cover or a profile photo, or a photo of a grocery receipt to read prices from. Only the pictures you pick are used.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>EasyPlate uses the microphone so you can talk to the in-app assistant instead of typing: what you say is turned into text on the device or by Apple's speech service and nothing is recorded or stored. The camera screen for receipts and photos may also request it as part of the camera session.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>EasyPlate uses speech recognition to turn what you say to the in-app assistant into text, so you can ask about a recipe or add to a list hands-free. Audio is processed by Apple's speech service and is not kept by EasyPlate.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

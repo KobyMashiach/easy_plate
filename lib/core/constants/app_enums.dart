@@ -152,6 +152,9 @@ enum CollabKind {
   book,
   mealPlan,
 
+  /// A grocery list: items travel as written, no recipes are linked.
+  groceryList,
+
   /// A Pro Duo / Pro Family household; only share codes carry this kind.
   /// Redeeming one adds a member directly, so no invite ever has it.
   household

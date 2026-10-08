@@ -7,14 +7,26 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/widgets/press_scale.dart';
+import '../../domain/assistant_scope.dart';
 
 /// The door to the copilot, floating above the dock on every main tab: a
 /// gradient pill with a sparkle and the assistant's name, lit by a soft
 /// glow that breathes slowly so the eye finds it, and still under reduced
 /// motion.
 class AssistantFab extends StatefulWidget {
-  const AssistantFab({super.key});
+  /// Set, the pill opens the copilot locked to that one item (a recipe's
+  /// page floats one); null opens the general copilot.
+  final AssistantScope? scope;
+
+  /// A pale pill with a purple sparkle, for a page whose own buttons are
+  /// already purple: the floating one has to read as another layer, not
+  /// as one more action in the same colour.
+  final bool light;
+
+  const AssistantFab({super.key, this.scope, this.light = false});
 
   @override
   State<AssistantFab> createState() => _AssistantFabState();
@@ -45,7 +57,7 @@ class _AssistantFabState extends State<AssistantFab>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    final fab = AnimatedBuilder(
       animation: _breath,
       builder: (context, child) {
         final glow = 0.45 + 0.25 * _breath.value;
@@ -66,7 +78,7 @@ class _AssistantFabState extends State<AssistantFab>
       },
       child: PressScale(
         scale: .95,
-        onTap: () => context.pushNamed(Routing.assistant),
+        onTap: () => context.pushNamed(Routing.assistant, extra: widget.scope),
         child: Semantics(
           button: true,
           label: t.assistant.title,
@@ -77,16 +89,23 @@ class _AssistantFabState extends State<AssistantFab>
               end: AppSpacing.md,
             ),
             decoration: ShapeDecoration(
-              shape: const StadiumBorder(),
-              gradient: LinearGradient(
-                begin: AlignmentDirectional.topStart,
-                end: AlignmentDirectional.bottomEnd,
-                colors: [
-                  AppColors.lavenderGlow,
-                  AppColors.primary,
-                  AppColors.onPrimaryFixedVariant,
-                ],
-              ),
+              shape: widget.light
+                  ? StadiumBorder(
+                      side: BorderSide(color: AppColors.primary, width: 1.5),
+                    )
+                  : const StadiumBorder(),
+              color: widget.light ? AppColors.surfaceContainerLowest : null,
+              gradient: widget.light
+                  ? null
+                  : LinearGradient(
+                      begin: AlignmentDirectional.topStart,
+                      end: AlignmentDirectional.bottomEnd,
+                      colors: [
+                        AppColors.lavenderGlow,
+                        AppColors.primary,
+                        AppColors.onPrimaryFixedVariant,
+                      ],
+                    ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -95,20 +114,26 @@ class _AssistantFabState extends State<AssistantFab>
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .22),
+                    color: widget.light
+                        ? AppColors.primaryFixed
+                        : Colors.white.withValues(alpha: .22),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.auto_awesome_rounded,
                     size: 18,
-                    color: AppColors.onPrimary,
+                    color: widget.light
+                        ? AppColors.primary
+                        : AppColors.onPrimary,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
                   t.assistant.title,
                   style: AppTextStyles.bodyLg.copyWith(
-                    color: AppColors.onPrimary,
+                    color: widget.light
+                        ? AppColors.primary
+                        : AppColors.onPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -118,5 +143,10 @@ class _AssistantFabState extends State<AssistantFab>
         ),
       ),
     );
+    // The tour points at the general button only: the scoped one lives
+    // inside a recipe, and two targets with one id would fight.
+    return widget.scope == null
+        ? WalkthroughTarget(id: WalkthroughIds.assistantFab, child: fab)
+        : fab;
   }
 }

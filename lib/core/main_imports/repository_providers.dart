@@ -202,6 +202,12 @@ List<SingleChildWidget> buildRepositoryProviders() {
     ),
     // Shared books and plans. After the books and plans repositories: it
     // writes into both when a shared copy arrives.
+    RepositoryProvider<GroceryListsRepository>(
+      create: (context) => GroceryListsRepositoryImpl(
+        localDataSource: context.read(),
+        cloud: CloudSyncService().groceryLists,
+      ),
+    ),
     RepositoryProvider<ContainerSharingService>(
       create: (context) => ContainerSharingService(
         containers: context.read(),
@@ -210,6 +216,7 @@ List<SingleChildWidget> buildRepositoryProviders() {
         profiles: context.read(),
         booksRepository: context.read(),
         plansRepository: context.read(),
+        listsRepository: context.read(),
       ),
     ),
     RepositoryProvider<ShareCodesRepository>(
@@ -223,12 +230,6 @@ List<SingleChildWidget> buildRepositoryProviders() {
         sharing: context.read(),
         recipes: context.read(),
         profiles: context.read(),
-      ),
-    ),
-    RepositoryProvider<GroceryListsRepository>(
-      create: (context) => GroceryListsRepositoryImpl(
-        localDataSource: context.read(),
-        cloud: CloudSyncService().groceryLists,
       ),
     ),
     RepositoryProvider<PriceRecordsLocalDataSource>(

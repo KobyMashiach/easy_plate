@@ -45,6 +45,14 @@ abstract class ShareGates {
         t.shareCode.limitPlans,
       );
 
+  static Future<bool> list(BuildContext context, {required int sharedNow}) =>
+      _held(
+        context,
+        sharedNow,
+        MonetizationConfig.freeSharedLists,
+        t.shareCode.limitLists,
+      );
+
   static Future<bool> _held(
     BuildContext context,
     int sharedNow,

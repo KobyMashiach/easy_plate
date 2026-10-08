@@ -11,6 +11,9 @@ import '../../../../core/widgets/error_retry_view.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
 import '../widgets/settings_widgets.dart';
+import '../../../../core/features/feature_gate.dart';
+import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/walkthrough/app_walkthroughs.dart';
 
 /// Every alert the app can send, each behind its own switch. The choices
 /// are saved with the account's preferences, which the Cloud Functions
@@ -131,11 +134,14 @@ class _Body extends StatelessWidget {
       title: t.notificationSettings.title,
       rows: [
         if (systemAllowed == false) const _SystemDeniedNote(),
-        row(
-          NotificationSetting.push,
-          title: t.notificationSettings.push,
-          description: t.notificationSettings.pushHint,
-          dependsOnPush: false,
+        WalkthroughTarget(
+          id: WalkthroughIds.notificationsPush,
+          child: row(
+            NotificationSetting.push,
+            title: t.notificationSettings.push,
+            description: t.notificationSettings.pushHint,
+            dependsOnPush: false,
+          ),
         ),
         SettingsGroupLabel(t.notificationSettings.community),
         row(
@@ -175,14 +181,26 @@ class _Body extends StatelessWidget {
           title: t.notificationSettings.foregroundPopups,
           description: t.notificationSettings.foregroundPopupsHint,
         ),
-        SettingsGroupLabel(t.notificationSettings.reminders),
         // Scheduled on the device, not pushed: independent of the master
         // switch above, which only governs what the server sends.
-        SettingsCard(
-          title: t.settings.shoppingReminders,
-          child: ReminderSlotPicker(
-            selected: preferences.shoppingReminderSlots,
-            onChanged: (slots) => bloc.add(.setShoppingReminders(slots)),
+        FeatureGate(
+          feature: FeaturesFlags.shoppingReminder,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SettingsGroupLabel(t.notificationSettings.reminders),
+              WalkthroughTarget(
+                id: WalkthroughIds.notificationsReminders,
+                child: SettingsCard(
+                  title: t.settings.shoppingReminders,
+                  child: ReminderSlotPicker(
+                    selected: preferences.shoppingReminderSlots,
+                    onChanged: (slots) =>
+                        bloc.add(.setShoppingReminders(slots)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],

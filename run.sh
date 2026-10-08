@@ -36,6 +36,11 @@ function androidClean() {
   flutter clean && flutter pub get
 }
 
+function deleteAllFirebaseData() {
+  echo "Delete all Firebase data"
+  firebase firestore:delete --all-collections
+}
+
 function androidLogs() {
   echo "Android Logs"
   adb logcat -s flutter
@@ -179,6 +184,7 @@ function menu() {
   echo "26. Clear Gradle Cache"
   echo "27. Create Launcher Icons"
   echo "28. Store Screenshots (paywall review image)"
+  echo "29. Delete all Firebase data"
   echo ""
   echo "🌐 WEBSITE"
   echo "--------------------------------------"
@@ -213,6 +219,7 @@ function menu() {
     26) clearGradleCache ;;
     27) createLauncherIcons ;;
     28) storeScreenshots ;;
+    29) deleteAllFirebaseData ;;
 
     31) androidLogs ;;
     32) iosLogs ;;

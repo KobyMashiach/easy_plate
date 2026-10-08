@@ -21,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { SITE, APP_STORE_URL, APP_STORE_ID, PLAY_URL, SUPPORT } from './site.config.mjs';
+import { SITE, APP_STORE_URL, APP_STORE_ID, PLAY_URL, SUPPORT, CONTENT_UPDATED } from './site.config.mjs';
 import { SLUGS } from './topics.mjs';
 import { renderGuide, guideUrl, homeGuidesSection, homeFooterGuides } from './guides.mjs';
 
@@ -31,7 +31,9 @@ const LANGS = Object.keys(LANG_URLS);
 const OG_LOCALE = { en: 'en_US', he: 'he_IL', ar: 'ar_AR', fr: 'fr_FR', ru: 'ru_RU' };
 const SCREENS = ['01_recipes', '02_recipe_details', '03_ai_import', '04_library', '05_book_flip', '06_meal_plan', '07_nutrition', '08_grocery', '09_community', '10_premium'];
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const LASTMOD = new Date().toISOString().slice(0, 10);
+// The date the copy last changed, not the build date: a sitemap whose every
+// URL "changed" on every build teaches crawlers to ignore lastmod.
+const LASTMOD = CONTENT_UPDATED;
 
 // `/` for English, `/he` for Hebrew, `/he/privacy`, `/recipe-app`, …
 const pathFor = (lang, rest = '') => { const base = LANG_URLS[lang] === '/' ? '' : LANG_URLS[lang]; return (base + '/' + rest).replace(/\/$/, '') || '/'; };
@@ -150,12 +152,23 @@ function prefill(html, lang) {
   return { out, filled, skipped };
 }
 
+const FONTS_CSS = {
+  en: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap',
+  fr: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap',
+  ru: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;800&display=swap',
+  he: 'https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap',
+  ar: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Heebo:wght@600;800&display=swap',
+};
+
 function renderHome(lang) {
   const meta = I18N[lang].meta;
   const html = applyConfig(tpl)
     .replace(/<html lang="[a-z]+" dir="(ltr|rtl)"/, `<html lang="${lang}" dir="${meta.dir}"`)
     .replace(SEO_BLOCK, seoHead(lang))
     .replace(/const PAGE_LANG = '[a-z]+';/, `const PAGE_LANG = '${lang}';`)
+    // Only the families this language renders with: the template asks for
+    // four so the live language switch works, a prerendered page needs one.
+    .replace(/https:\/\/fonts\.googleapis\.com\/css2\?family=[^"]+display=swap/, FONTS_CSS[lang])
     .replace(/href="(?:\/[a-z]{2})?\/privacy(?:\.html)?(?:\?lang=[a-z]+)?"/g, `href="${pathFor(lang, 'privacy')}"`)
     .replace(/href="(?:\/[a-z]{2})?\/terms(?:\.html)?(?:\?lang=[a-z]+)?"/g, `href="${pathFor(lang, 'terms')}"`)
     .replace(/  <!-- guides:start -->[\s\S]*?<!-- guides:end -->/, homeGuidesSection(lang, LANG_URLS))
@@ -236,6 +249,11 @@ ${hreflangLinks(l => urlFor(l, doc))}
     .replace(/<div id="sections">[\s\S]*?<\/div>/, `<div id="sections">${secs}</div>`)
     .replace(/<select id="langSel" aria-label="Language">[\s\S]*?<\/select>/, `<select id="langSel" aria-label="${esc(m.lang)}">${LANGS.map(k => `<option value="${k}"${k === lang ? ' selected' : ''}>${esc(META[k].name)}</option>`).join('')}</select>`)
     // runtime: fixed language, links to the sibling pages, select navigates
+    // Strip what an earlier build injected (the English output is also the
+    // source file), or every build adds another `const PAGE_LANG` and the
+    // script dies on the duplicate declaration — which is what left the
+    // language select dead on the legal pages.
+    .replace(/  const PAGE_LANG = '[a-z]+';\n  const LEGAL_URLS = \{[^\n]*\};\n/g, '')
     .replace(/  function pickLang\(\) \{/, `  const PAGE_LANG = '${lang}';\n  const LEGAL_URLS = ${JSON.stringify(Object.fromEntries(LANGS.map(l => [l, pathFor(l, doc)])))};\n  function pickLang() {`)
     .replace(/for \(const id of \['homeLink', 'navHome'\]\) document\.getElementById\(id\)\.href = [^\n]*;/, `for (const id of ['homeLink', 'navHome']) document.getElementById(id).href = '${pathFor(lang)}';`)
     .replace(/for \(const id of \['navOther', 'footOther'\]\) document\.getElementById\(id\)\.href = [^\n]*;/, `for (const id of ['navOther', 'footOther']) document.getElementById(id).href = '${pathFor(lang, other)}';`)

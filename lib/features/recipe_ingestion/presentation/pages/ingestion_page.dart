@@ -36,6 +36,7 @@ import '../../../../core/constants/app_motion.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/services/share_intent_service.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// The channels whose analysis is a heavy AI call — a link fetched, a video
 /// watched, a recording listened to — the ones behind the daily quota.
@@ -76,6 +77,24 @@ String _channelDescription(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.manual => t.ingestion.manualDescription,
   RecipeIngestionChannel.file => t.ingestion.fileDescription,
 };
+
+/// The console switch for each way in. Manual entry has none: an editor
+/// with nothing in it is the floor the others stand on.
+FeaturesFlags? channelFeature(RecipeIngestionChannel channel) =>
+    switch (channel) {
+      RecipeIngestionChannel.rawText => FeaturesFlags.ingestText,
+      RecipeIngestionChannel.webSearch => FeaturesFlags.ingestWebSearch,
+      RecipeIngestionChannel.urlScrape => FeaturesFlags.ingestLink,
+      RecipeIngestionChannel.socialVideo => FeaturesFlags.ingestSocialVideo,
+      RecipeIngestionChannel.aiRequest => FeaturesFlags.ingestAiRequest,
+      RecipeIngestionChannel.file => FeaturesFlags.ingestFile,
+      RecipeIngestionChannel.manual => null,
+    };
+
+bool _channelAllowed(RecipeIngestionChannel channel) {
+  final feature = channelFeature(channel);
+  return feature == null || feature.isEnabled;
+}
 
 IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.rawText => Icons.content_paste_rounded,
@@ -459,6 +478,20 @@ class _ChannelFormState extends State<_ChannelForm> {
 
   @override
   Widget build(BuildContext context) {
+    // The channel on screen was switched off in the console (or was never
+    // allowed): the first one that is allowed takes its place.
+    if (!_channelAllowed(widget.channel)) {
+      final fallback = RecipeIngestionChannel.values
+          .where(_channelAllowed)
+          .firstOrNull;
+      if (fallback != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.read<IngestionBloc>().add(.selectChannel(fallback));
+          }
+        });
+      }
+    }
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.marginMobile),
       children: [
@@ -480,13 +513,26 @@ class _ChannelFormState extends State<_ChannelForm> {
             runSpacing: AppSpacing.base,
             children: [
               for (final channel in RecipeIngestionChannel.values)
-                _ChannelChip(
-                  channel: channel,
-                  selected: widget.channel == channel,
-                  onTap: () => context.read<IngestionBloc>().add(
-                    .selectChannel(channel),
+                if (channelFeature(channel) case final feature?)
+                  FeatureGate(
+                    feature: feature,
+                    compact: true,
+                    child: _ChannelChip(
+                      channel: channel,
+                      selected: widget.channel == channel,
+                      onTap: () => context.read<IngestionBloc>().add(
+                        .selectChannel(channel),
+                      ),
+                    ),
+                  )
+                else
+                  _ChannelChip(
+                    channel: channel,
+                    selected: widget.channel == channel,
+                    onTap: () => context.read<IngestionBloc>().add(
+                      .selectChannel(channel),
+                    ),
                   ),
-                ),
             ],
           ),
         ),

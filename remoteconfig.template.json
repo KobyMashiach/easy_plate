@@ -93,27 +93,6 @@
       },
       "valueType": "NUMBER"
     },
-    "cook_mode_premium_only": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "מצב בישול (שלב-שלב, טיימרים, התראות טיימר) זמין רק לפרימיום. false פותח אותו לכולם.",
-      "valueType": "BOOLEAN"
-    },
-    "notifications_premium_only": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "פוש, תזכורות יום קניות ופופאפים באפליקציה רק לפרימיום (השרת והמכשיר בודקים). תיבת ההתראות עצמה נשארת לכולם. false פותח לכולם.",
-      "valueType": "BOOLEAN"
-    },
-    "assistant_premium_only": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "העוזר החכם בצ׳אט (ביצוע פעולות באפליקציה בשפה חופשית) זמין רק לפרימיום. false פותח אותו לכולם.",
-      "valueType": "BOOLEAN"
-    },
     "share_free_recipes_weekly": {
       "defaultValue": {
         "value": "5"
@@ -134,6 +113,363 @@
       },
       "description": "כמה תפריטים משותפים חשבון חינמי יכול להחזיק בו-זמנית.",
       "valueType": "NUMBER"
+    },
+    "share_free_lists_total": {
+      "defaultValue": {
+        "value": "2"
+      },
+      "description": "כמה רשימות קניות משותפות חשבון חינמי יכול להחזיק בו-זמנית.",
+      "valueType": "NUMBER"
+    },
+    "tts_cloud_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "הקראת התשובות של שפי בקול של Google Cloud Text-to-Speech (טבעי, דרך פונקציית speak). false: הקול של המכשיר.",
+      "valueType": "BOOLEAN"
+    },
+    "tts_voice_he": {
+      "defaultValue": {
+        "value": "he-IL-Chirp3-HD-Aoede"
+      },
+      "description": "שם הקול של Google ל-he-IL (לפי GET texttospeech.googleapis.com/v1/voices?languageCode=he-IL). Chirp3-HD הכי טבעי; Wavenet זול יותר. השרת קורא בכל פנייה (cache של 5 דקות), בלי deploy.",
+      "valueType": "STRING"
+    },
+    "tts_voice_en": {
+      "defaultValue": {
+        "value": "en-US-Chirp3-HD-Aoede"
+      },
+      "description": "שם הקול של Google ל-en-US (לפי GET texttospeech.googleapis.com/v1/voices?languageCode=en-US). Chirp3-HD הכי טבעי; Wavenet זול יותר. השרת קורא בכל פנייה (cache של 5 דקות), בלי deploy.",
+      "valueType": "STRING"
+    },
+    "tts_voice_ar": {
+      "defaultValue": {
+        "value": "ar-XA-Chirp3-HD-Aoede"
+      },
+      "description": "שם הקול של Google ל-ar-XA (לפי GET texttospeech.googleapis.com/v1/voices?languageCode=ar-XA). Chirp3-HD הכי טבעי; Wavenet זול יותר. השרת קורא בכל פנייה (cache של 5 דקות), בלי deploy.",
+      "valueType": "STRING"
+    },
+    "tts_voice_fr": {
+      "defaultValue": {
+        "value": "fr-FR-Chirp3-HD-Aoede"
+      },
+      "description": "שם הקול של Google ל-fr-FR (לפי GET texttospeech.googleapis.com/v1/voices?languageCode=fr-FR). Chirp3-HD הכי טבעי; Wavenet זול יותר. השרת קורא בכל פנייה (cache של 5 דקות), בלי deploy.",
+      "valueType": "STRING"
+    },
+    "tts_voice_ru": {
+      "defaultValue": {
+        "value": "ru-RU-Chirp3-HD-Aoede"
+      },
+      "description": "שם הקול של Google ל-ru-RU (לפי GET texttospeech.googleapis.com/v1/voices?languageCode=ru-RU). Chirp3-HD הכי טבעי; Wavenet זול יותר. השרת קורא בכל פנייה (cache של 5 דקות), בלי deploy.",
+      "valueType": "STRING"
+    },
+    "session_days": {
+      "defaultValue": {
+        "value": "30"
+      },
+      "description": "כמה ימים נמשכת התחברות במכשיר אחד. בסוף התקופה השרת מבטל את הטוקנים והמשתמש מתחבר מחדש (ריצה יומית 04:10). 0 = בלי תפוגה.",
+      "valueType": "NUMBER"
+    }
+  },
+  "parameterGroups": {
+    "featureFlags": {
+      "description": "דגלי פיצ׳רים. לכל פרמטר: 0 = לא מופיע, 1 = מופיע מושבת עם \"בקרוב\", 2 = רגיל לכולם, 3 = רק למנויים בתשלום (חינמי רואה נעול ולחיצה פותחת את הפרימיום). ברירת המחדל באפליקציה לכולם 2. נקרא דרך FeaturesFlags; שינוי מגיע למשתמשים בפתיחה/חזרה הבאה, בלי גרסה חדשה.",
+      "parameters": {
+        "ff_books": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "טאב ספרי המתכונים (יצירת ספרים, כריכה, פתיחת ספר כספר). משפיע גם על \"ספרים\" בבחירת מקור לרשימת קניות.",
+          "valueType": "NUMBER"
+        },
+        "ff_meal_plans": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "טאב התפריטים (תכנון שבועי, ארוחות, תבניות). משפיע גם על \"מתפריטים\" ביצירת רשימת קניות.",
+          "valueType": "NUMBER"
+        },
+        "ff_grocery_lists": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "טאב רשימות הקניות (כמה רשימות, מקור: תפריטים/מתכון/ידני).",
+          "valueType": "NUMBER"
+        },
+        "ff_community": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "טאב הקהילה כולו (מתכונים משותפים + פורום). לכיבוי חלקי יש ff_shared_recipes ו-ff_forum.",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_text": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הוספת מתכון מהדבקת טקסט חופשי (צ׳יפ \"הדבקת טקסט\" במסך ההוספה).",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_web_search": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הוספת מתכון מחיפוש ברשת (צ׳יפ \"חיפוש ברשת\").",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_link": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הוספת מתכון מקישור לאתר (צ׳יפ \"קישור\").",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_social_video": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הוספת מתכון מסרטון טיקטוק / אינסטגרם / יוטיוב / פייסבוק (צ׳יפ \"סרטון\").",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_ai_request": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "בקשת מתכון מה-AI בשפה חופשית (צ׳יפ \"בקשה מ-AI\").",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_file": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הוספת מתכון מקובץ PDF או הקלטת אודיו (צ׳יפ \"קובץ\").",
+          "valueType": "NUMBER"
+        },
+        "ff_share_in": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "קבלת שיתוף מאפליקציה אחרת (וואטסאפ, דפדפן, קבצים) ישירות למסך ההוספה. כבוי: השיתוף נזרק.",
+          "valueType": "NUMBER"
+        },
+        "ff_save_with_ai": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "האפשרות \"שמירה עם AI\" בעורך המתכון (ניתוח, תגיות ותזונה בשמירה).",
+          "valueType": "NUMBER"
+        },
+        "ff_cook_mode": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "מצב בישול (שלב-שלב, מסך דולק). כולל כניסה ממתכון, מתיבת ההתראות ומהעוזר. 3 = רק לפרימיום (החליף את cook_mode_premium_only).",
+          "valueType": "NUMBER"
+        },
+        "ff_cook_timers": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "טיימרים בתוך מצב בישול, הפס של הטיימרים הרצים וההתראות ברקע כשטיימר נגמר. כבוי: אין אפשרות להפעיל טיימר.",
+          "valueType": "NUMBER"
+        },
+        "ff_nutrition": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "כרטיס התזונה במתכון (הערכת מאקרו ב-AI), כרטיס התזונה היומי בתפריט ודשבורד התזונה השבועי.",
+          "valueType": "NUMBER"
+        },
+        "ff_recipe_image_ai": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "\"צור תמונה ב-AI\" בבחירת תמונה למתכון ולכריכת ספר.",
+          "valueType": "NUMBER"
+        },
+        "ff_recipe_image_search": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "\"חיפוש תמונה בגוגל\" בבחירת תמונה למתכון (10 תוצאות בכל גלילה). דורש SERPER_API_KEY (serper.dev) בפונקציה imageSearch.",
+          "valueType": "NUMBER"
+        },
+        "ff_grocery_from_recipe": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "כפתור \"רשימת קניות מהמתכון\" במסך המתכון.",
+          "valueType": "NUMBER"
+        },
+        "ff_shared_recipes": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "פיד המתכונים המשותפים בקהילה (פרסום, שמירה, מכסות צפייה).",
+          "valueType": "NUMBER"
+        },
+        "ff_forum": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הפורום (פיד, דיונים, תגובות, פתיחת דיון מהתראה).",
+          "valueType": "NUMBER"
+        },
+        "ff_likes": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "לייקים על מתכונים משותפים, פוסטים ותגובות (הלב והמונה).",
+          "valueType": "NUMBER"
+        },
+        "ff_share_recipes": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "שיתוף מתכון לאיש קשר (לחיצה ארוכה על מתכון). מסך \"גישה משותפת\" נשאר כל עוד אחד משלושת השיתופים דולק.",
+          "valueType": "NUMBER"
+        },
+        "ff_share_books": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "שיתוף ספר מתכונים (שורת \"שיתוף\" בתפריט הספר).",
+          "valueType": "NUMBER"
+        },
+        "ff_share_plans": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "שיתוף תפריט (כפתור השיתוף בכותרת התפריט).",
+          "valueType": "NUMBER"
+        },
+        "ff_share_grocery_lists": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "שיתוף רשימת קניות (שורת \"שיתוף\" בתפריט הרשימה, קוד/קישור/QR, קבלה בתיבת ההתראות). חבר שאינו הבעלים יוצא מהשיתוף במקום למחוק.",
+          "valueType": "NUMBER"
+        },
+        "ff_share_codes": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "שיתוף בקוד / קישור / QR: הטאב \"קוד\" בגיליון השיתוף, הצטרפות בקוד, סריקת QR וקישורי /s/.",
+          "valueType": "NUMBER"
+        },
+        "ff_households": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "משק בית (Pro Duo / Family): שורת \"משק בית\" בתפריט החשבון והמסך שלה.",
+          "valueType": "NUMBER"
+        },
+        "ff_price_book": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "ספר המחירים (אייקון במסך הקניות, מחירים אישיים, קבלות שמורות, מתג \"מחירי קהילה\" בהעדפות).",
+          "valueType": "NUMBER"
+        },
+        "ff_receipt_scan": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "סריקת קבלה (מצלמה / גלריה / PDF) מספר המחירים ומכרטיס עלות הקניות.",
+          "valueType": "NUMBER"
+        },
+        "ff_grocery_cost": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "כרטיס \"עלות משוערת\" ברשימת הקניות.",
+          "valueType": "NUMBER"
+        },
+        "ff_shopping_reminder": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "תזכורות יום הקניות (ההגדרה והתזמון במכשיר). כבוי: שום תזכורת לא מתוזמנת.",
+          "valueType": "NUMBER"
+        },
+        "ff_assistant": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "העוזר החכם (הכפתור הצף בכל טאב, השורה בתפריט החשבון והמסך). 3 = רק לפרימיום (החליף את assistant_premium_only).",
+          "valueType": "NUMBER"
+        },
+        "ff_assistant_scoped": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "העוזר הממוקד: כפתור \"שאלו את העוזר\" בתוך מתכון, בתפריט (⋯) וברשימת קניות, שפותח שיחה שיודעת רק את הפריט הזה ומסרבת לכל השאר. הכניסה עצמה עוברת גם דרך ff_assistant.",
+          "valueType": "NUMBER"
+        },
+        "ff_assistant_voice": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "דיבור עם העוזר: כפתור המיקרופון (זיהוי דיבור של המכשיר) והקראת התשובות (TTS). כבוי: מקלידים בלבד.",
+          "valueType": "NUMBER"
+        },
+        "ff_notifications": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "התראות: הפעמון, תיבת ההתראות, מסך הגדרות ההתראות, פופאפים ופוש (גם השרת קורא את זה לפני שליחה). 3 = רק לפרימיום (החליף את notifications_premium_only). כבוי: הפעמון נעלם ופוש לא נשלח.",
+          "valueType": "NUMBER"
+        },
+        "ff_premium": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "שורת הפרימיום בתפריט החשבון, מסך הפרימיום (paywall) וכפתור \"לראות תוכניות\" במשק בית. כבוי: מי שמופנה לפרימיום נוחת במסך הבית.",
+          "valueType": "NUMBER"
+        },
+        "ff_content_translation": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "תרגום התוכן של החשבון (מתכונים, ספרים, תפריטים, רשימות) בעת החלפת שפה. כבוי: רק הממשק מחליף שפה.",
+          "valueType": "NUMBER"
+        },
+        "ff_theming": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "כרטיס \"מראה\" (בחירת ערכת צבעים / מצב כהה) במסך ההגדרות.",
+          "valueType": "NUMBER"
+        },
+        "ff_walkthrough": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הסיור המודרך: ההצעה בכניסה הראשונה והפעלה מחדש מתוך ספר ההדרכה.",
+          "valueType": "NUMBER"
+        },
+        "ff_tutorial_book": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "ספר ההדרכה (הכרטיס במסך התמיכה והמסך עצמו).",
+          "valueType": "NUMBER"
+        },
+        "ff_feedback": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "טופס המשוב (באג / הצעה) במסך התמיכה.",
+          "valueType": "NUMBER"
+        },
+        "ff_single_session": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "מכשיר אחד לחשבון: 2 = מכשיר שני נחסם עד שהראשון מתנתק (מסך \"החשבון מחובר במכשיר אחר\"). 0 = כמה מכשירים במקביל (הרישום נשמר, בלי חסימה). 1 ו-3 מתנהגים כמו 0.",
+          "valueType": "NUMBER"
+        }
+      }
     }
   }
 }

@@ -245,7 +245,7 @@ service cloud.firestore {
       allow read: if isOwner() || isMember();
       allow create: if signedIn()
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.kind in ['book', 'mealPlan'];
+                    && request.resource.data.kind in ['book', 'mealPlan', 'groceryList'];
       allow delete: if isOwner();
       allow update: if
         (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid)
@@ -341,6 +341,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Which device holds the account right now, and until when. Written by
+    // the sessions function alone; the account listens to its own so a
+    // release or an expiry elsewhere signs it out at once.
+    match /sessions/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if false;
+    }
+
     // Lines anyone has already had translated, keyed by hash of the text and
     // the language. Written by the translateContent function alone; the app
     // never reads it directly, so it stays closed on both sides.
@@ -360,7 +368,7 @@ service cloud.firestore {
       allow read: if signedIn() && resource.data.ownerUid == request.auth.uid;
       allow create: if signedIn()
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.kind in ['recipe', 'book', 'mealPlan', 'household']
+                    && request.resource.data.kind in ['recipe', 'book', 'mealPlan', 'groceryList', 'household']
                     && request.resource.data.role in ['viewer', 'editor']
                     && request.resource.data.uses == 0
                     && request.resource.data.revoked == false;

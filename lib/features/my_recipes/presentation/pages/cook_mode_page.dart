@@ -17,6 +17,7 @@ import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/press_scale.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// One step at a time, in type large enough to read from across the counter,
 /// with the screen kept awake. Each step shows the ingredients it mentions
@@ -185,7 +186,9 @@ class _CookModePageState extends State<CookModePage> {
                       ),
                       // Every timer counting down, whichever step it is on.
                       _RunningTimersStrip(
-                        timers: cook.activeTimers,
+                        timers: FeaturesFlags.cookTimers.isEnabled
+                            ? cook.activeTimers
+                            : const [],
                         onTap: _go,
                       ),
                       Expanded(
@@ -425,14 +428,16 @@ class _StepPage extends StatelessWidget {
       children: [
         // The timer and its controls lead, so starting it never means
         // scrolling past the instruction first.
-        if (timer != null) ...[
-          _TimerCard(
-            timer: timer!,
-            onToggle: onToggleTimer,
-            onReset: onResetTimer,
+        if (timer != null)
+          FeatureGate(
+            feature: FeaturesFlags.cookTimers,
+            gapAfter: AppSpacing.sm,
+            child: _TimerCard(
+              timer: timer!,
+              onToggle: onToggleTimer,
+              onReset: onResetTimer,
+            ),
           ),
-          const SizedBox(height: AppSpacing.sm),
-        ],
         ClayCard(
           radius: AppRadius.lg,
           padding: const EdgeInsets.all(AppSpacing.md),

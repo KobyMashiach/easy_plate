@@ -1,5 +1,7 @@
 import '../../../core/constants/app_enums.dart';
 import '../../collab_containers/domain/container_sharing_service.dart';
+import '../../grocery_list/data/datasources/active_grocery_list_store.dart';
+import '../../grocery_list/domain/entities/grocery_list_entity.dart';
 import '../../household/domain/household_entity.dart';
 import '../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../my_recipes/domain/entities/recipe_entity.dart';
@@ -99,6 +101,24 @@ class ShareCodeService {
     );
   }
 
+  Future<ShareCodeEntity> createForList(
+    GroceryListEntity list, {
+    required CollabRole role,
+    required String uid,
+  }) async {
+    final prepared = await containers.lists.ensureContainer(
+      list,
+      ownerUid: uid,
+    );
+    return codes.create(
+      kind: CollabKind.groceryList,
+      targetId: prepared.container.id,
+      ownerUid: uid,
+      role: role,
+      title: prepared.container.title,
+    );
+  }
+
   /// The owner's live codes for an item that is already shared; an item
   /// without a collab id has none.
   Future<List<ShareCodeEntity>> activeFor(
@@ -138,6 +158,13 @@ class ShareCodeService {
       case CollabKind.book:
       case CollabKind.mealPlan:
         await containers.accept(invite, uid: uid);
+        return JoinResult(title: invite.recipeTitle, kind: invite.kind);
+      case CollabKind.groceryList:
+        final list =
+            await containers.accept(invite, uid: uid) as GroceryListEntity;
+        // Opened as the device's active list, so the groceries tab shows
+        // what was just joined.
+        await HiveActiveGroceryListStore.instance.write(list.id);
         return JoinResult(title: invite.recipeTitle, kind: invite.kind);
       case CollabKind.household:
         // The server answers a household code with `household`, never an

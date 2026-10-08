@@ -12,6 +12,7 @@ import '../../../share_codes/domain/share_code_entity.dart';
 import '../../../share_codes/presentation/share_code_hooks.dart';
 import '../../../share_codes/presentation/widgets/share_code_panel.dart';
 import '../../domain/usecases/share_recipe_usecase.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// What the sheet does once a contact and a role are chosen. Throws
 /// [ShareFailure] for the reasons the sheet knows how to word.
@@ -232,7 +233,8 @@ class _ShareSheetState extends State<_ShareSheet> {
                   ),
                 ),
               const SizedBox(height: AppSpacing.md),
-              if (widget.codes != null) ...[
+              if (widget.codes != null &&
+                  FeaturesFlags.shareCodes.isVisible) ...[
                 ClaySegmentedControl(
                   segments: [
                     ClaySegment(
@@ -245,8 +247,16 @@ class _ShareSheetState extends State<_ShareSheet> {
                     ),
                   ],
                   selectedIndex: _mode,
-                  onSelected: (index) =>
-                      index == 1 ? _enterCodeMode() : setState(() => _mode = 0),
+                  onSelected: (index) {
+                    if (index != 1) {
+                      setState(() => _mode = 0);
+                    } else if (guardFeature(
+                      context,
+                      FeaturesFlags.shareCodes,
+                    )) {
+                      _enterCodeMode();
+                    }
+                  },
                 ),
                 const SizedBox(height: AppSpacing.md),
               ],

@@ -9,6 +9,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../domain/assistant_agent.dart';
 import '../../domain/assistant_dispatcher.dart';
 import '../../domain/assistant_models.dart';
+import '../../domain/assistant_text.dart';
 
 sealed class AssistantEvent {
   const AssistantEvent();
@@ -27,6 +28,13 @@ class AssistantToggleGroceryItem extends AssistantEvent {
 
 class AssistantReset extends AssistantEvent {
   const AssistantReset();
+}
+
+/// The square button while a turn runs: the reply is abandoned, the chat
+/// is free again. Whatever the model was mid-way through stops at its next
+/// step.
+class AssistantCancel extends AssistantEvent {
+  const AssistantCancel();
 }
 
 class AssistantState {
@@ -61,24 +69,42 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
   final AssistantAgent agent;
   final AssistantDispatcher dispatcher;
 
+  /// The first bubble; null greets by name. A scoped conversation opens
+  /// with "what would you like to know about X?" instead.
+  final String? welcome;
+
+  /// Told the full reply the moment it arrives, before the word-by-word
+  /// reveal: the page reads it out when the user is talking rather than
+  /// typing.
+  final void Function(String text)? onReply;
+
   static const _uuid = Uuid();
 
-  AssistantBloc({required this.agent, required this.dispatcher})
-    : super(
-        AssistantState(
-          messages: [
-            AssistantMessage(
-              id: _uuid.v4(),
-              role: AssistantRole.assistant,
-              text: _welcome(),
-            ),
-          ],
-        ),
-      ) {
+  AssistantBloc({
+    required this.agent,
+    required this.dispatcher,
+    this.welcome,
+    this.onReply,
+  }) : super(_initial(welcome)) {
     on<AssistantSend>(_onSend);
     on<AssistantToggleGroceryItem>(_onToggle);
     on<AssistantReset>(_onReset);
+    on<AssistantCancel>(_onCancel);
   }
+
+  /// Which turn is live; a cancel bumps it, and the turn that was running
+  /// drops out at its next event (which also cancels the agent's stream).
+  int _turn = 0;
+
+  static AssistantState _initial(String? welcome) => AssistantState(
+    messages: [
+      AssistantMessage(
+        id: _uuid.v4(),
+        role: AssistantRole.assistant,
+        text: welcome ?? _welcome(),
+      ),
+    ],
+  );
 
   /// "Hi Koby!" when the profile has a name, a plain hello otherwise.
   static String _welcome() {
@@ -95,6 +121,7 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
   ) async {
     final text = event.text.trim();
     if (text.isEmpty || state.busy) return;
+    final turn = ++_turn;
     final user = AssistantMessage(
       id: _uuid.v4(),
       role: AssistantRole.user,
@@ -115,6 +142,7 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
 
     try {
       await for (final e in agent.send(text)) {
+        if (turn != _turn) break;
         switch (e) {
           case AgentToolStarted():
             emit(state.copyWith(workingOn: e.call.name));
@@ -139,15 +167,33 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
               );
             }
           case AgentReply():
-            await _reveal(pending.id, e.text, emit);
+            onReply?.call(e.text);
+            await _reveal(pending.id, AssistantText.display(e.text), emit);
         }
       }
     } on AppException catch (e) {
-      _fail(pending.id, _messageFor(e), emit);
+      if (turn == _turn) _fail(pending.id, _messageFor(e), emit);
     } catch (_) {
-      _fail(pending.id, t.assistant.error, emit);
+      if (turn == _turn) _fail(pending.id, t.assistant.error, emit);
     }
-    emit(state.copyWith(busy: false, clearWorking: true));
+    if (turn == _turn) emit(state.copyWith(busy: false, clearWorking: true));
+  }
+
+  void _onCancel(AssistantCancel event, Emitter<AssistantState> emit) {
+    if (!state.busy) return;
+    _turn++;
+    emit(
+      state.copyWith(
+        messages: [
+          for (final m in state.messages)
+            m.pending
+                ? m.copyWith(text: t.assistant.cancelled, pending: false)
+                : m,
+        ],
+        busy: false,
+        clearWorking: true,
+      ),
+    );
   }
 
   String _messageFor(AppException e) => switch (e.type) {
@@ -243,16 +289,6 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
 
   void _onReset(AssistantReset event, Emitter<AssistantState> emit) {
     agent.reset();
-    emit(
-      AssistantState(
-        messages: [
-          AssistantMessage(
-            id: _uuid.v4(),
-            role: AssistantRole.assistant,
-            text: _welcome(),
-          ),
-        ],
-      ),
-    );
+    emit(_initial(welcome));
   }
 }

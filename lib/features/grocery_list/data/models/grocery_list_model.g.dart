@@ -34,13 +34,15 @@ class GroceryListModelAdapter extends TypeAdapter<GroceryListModel> {
       recipeScale: fields[10] == null ? 1.0 : (fields[10] as num).toDouble(),
       recipeServings: (fields[11] as num?)?.toInt(),
       recipeTitle: fields[12] as String?,
+      collabId: fields[13] as String?,
+      collabRole: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, GroceryListModel obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -66,7 +68,11 @@ class GroceryListModelAdapter extends TypeAdapter<GroceryListModel> {
       ..writeByte(11)
       ..write(obj.recipeServings)
       ..writeByte(12)
-      ..write(obj.recipeTitle);
+      ..write(obj.recipeTitle)
+      ..writeByte(13)
+      ..write(obj.collabId)
+      ..writeByte(14)
+      ..write(obj.collabRole);
   }
 
   @override
@@ -109,6 +115,8 @@ _GroceryListModel _$GroceryListModelFromJson(Map<String, dynamic> json) =>
       recipeScale: (json['recipeScale'] as num?)?.toDouble() ?? 1.0,
       recipeServings: (json['recipeServings'] as num?)?.toInt(),
       recipeTitle: json['recipeTitle'] as String?,
+      collabId: json['collabId'] as String?,
+      collabRole: json['collabRole'] as String?,
     );
 
 Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
@@ -126,4 +134,6 @@ Map<String, dynamic> _$GroceryListModelToJson(_GroceryListModel instance) =>
       'recipeScale': instance.recipeScale,
       'recipeServings': instance.recipeServings,
       'recipeTitle': instance.recipeTitle,
+      'collabId': instance.collabId,
+      'collabRole': instance.collabRole,
     };

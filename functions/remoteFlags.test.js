@@ -2,18 +2,21 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const flags = require("./remoteFlags");
 
-test("the gate withholds pushes from free accounts only", () => {
-  assert.equal(flags.pushAllowed({ premiumOnly: true, premium: false }), false);
-  assert.equal(flags.pushAllowed({ premiumOnly: true, premium: undefined }), false);
-  assert.equal(flags.pushAllowed({ premiumOnly: true, premium: true }), true);
-  assert.equal(flags.pushAllowed({ premiumOnly: false, premium: false }), true);
+test("the flag decides who gets a push: 2 everyone, 3 Premium, 0/1 nobody", () => {
+  assert.equal(flags.pushAllowed({ flag: 3, premium: false }), false);
+  assert.equal(flags.pushAllowed({ flag: 3, premium: undefined }), false);
+  assert.equal(flags.pushAllowed({ flag: 3, premium: true }), true);
+  assert.equal(flags.pushAllowed({ flag: 2, premium: false }), true);
+  assert.equal(flags.pushAllowed({ flag: 1, premium: true }), false);
+  assert.equal(flags.pushAllowed({ flag: 0, premium: true }), false);
 });
 
-test("a missing or blank parameter falls back to gated", () => {
-  assert.equal(flags.boolFrom({}, "notifications_premium_only", true), true);
-  assert.equal(flags.boolFrom({ notifications_premium_only: { defaultValue: { value: "" } } }, "notifications_premium_only", true), true);
-  assert.equal(flags.boolFrom({ notifications_premium_only: { defaultValue: { value: "false" } } }, "notifications_premium_only", true), false);
-  assert.equal(flags.boolFrom({ notifications_premium_only: { defaultValue: { value: "TRUE" } } }, "notifications_premium_only", false), true);
+test("a missing, blank or garbled flag falls back to the default", () => {
+  assert.equal(flags.intFrom({}, "ff_notifications", 2), 2);
+  assert.equal(flags.intFrom({ ff_notifications: { defaultValue: { value: "" } } }, "ff_notifications", 2), 2);
+  assert.equal(flags.intFrom({ ff_notifications: { defaultValue: { value: "3" } } }, "ff_notifications", 2), 3);
+  assert.equal(flags.intFrom({ ff_notifications: { defaultValue: { value: "x" } } }, "ff_notifications", 2), 2);
+  assert.equal(flags.boolFrom({ a: { defaultValue: { value: "TRUE" } } }, "a", false), true);
 });
 
 test("premium follows the same window as the app", () => {
@@ -31,8 +34,8 @@ test("premium follows the same window as the app", () => {
 test("a parameter inside a parameter group is found", () => {
   const flat = flags.flatten({
     parameters: { a: { defaultValue: { value: "1" } } },
-    parameterGroups: { Plans: { parameters: { notifications_premium_only: { defaultValue: { value: "false" } } } } },
+    parameterGroups: { featureFlags: { parameters: { ff_notifications: { defaultValue: { value: "3" } } } } },
   });
-  assert.equal(flags.boolFrom(flat, "notifications_premium_only", true), false);
+  assert.equal(flags.intFrom(flat, "ff_notifications", 2), 3);
   assert.equal(flags.boolFrom(flat, "a", false), false);
 });

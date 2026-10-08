@@ -22,7 +22,9 @@ mixin _$GroceryListModel {
 @HiveField(7) int get contentVersion;// Appended for multiple lists. A list written before them decodes as a
 // meal-plan list, which is what the one list there was always was.
 /// A [GroceryListSource] name.
-@HiveField(8) String get source;@HiveField(9) String? get recipeId;@HiveField(10) double get recipeScale;@HiveField(11) int? get recipeServings;@HiveField(12) String? get recipeTitle;
+@HiveField(8) String get source;@HiveField(9) String? get recipeId;@HiveField(10) double get recipeScale;@HiveField(11) int? get recipeServings;@HiveField(12) String? get recipeTitle;// Appended for sharing, as on MealPlanModel: the shared document's id
+// and this account's role name.
+@HiveField(13) String? get collabId;@HiveField(14) String? get collabRole;
 /// Create a copy of GroceryListModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,16 +37,16 @@ $GroceryListModelCopyWith<GroceryListModel> get copyWith => _$GroceryListModelCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GroceryListModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.collaborators, collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.selectedPlanIds, selectedPlanIds)&&(identical(other.contentLang, contentLang) || other.contentLang == contentLang)&&(identical(other.contentVersion, contentVersion) || other.contentVersion == contentVersion)&&(identical(other.source, source) || other.source == source)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.recipeScale, recipeScale) || other.recipeScale == recipeScale)&&(identical(other.recipeServings, recipeServings) || other.recipeServings == recipeServings)&&(identical(other.recipeTitle, recipeTitle) || other.recipeTitle == recipeTitle));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GroceryListModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.collaborators, collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.selectedPlanIds, selectedPlanIds)&&(identical(other.contentLang, contentLang) || other.contentLang == contentLang)&&(identical(other.contentVersion, contentVersion) || other.contentVersion == contentVersion)&&(identical(other.source, source) || other.source == source)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.recipeScale, recipeScale) || other.recipeScale == recipeScale)&&(identical(other.recipeServings, recipeServings) || other.recipeServings == recipeServings)&&(identical(other.recipeTitle, recipeTitle) || other.recipeTitle == recipeTitle)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(collaborators),createdAt,const DeepCollectionEquality().hash(selectedPlanIds),contentLang,contentVersion,source,recipeId,recipeScale,recipeServings,recipeTitle);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(collaborators),createdAt,const DeepCollectionEquality().hash(selectedPlanIds),contentLang,contentVersion,source,recipeId,recipeScale,recipeServings,recipeTitle,collabId,collabRole);
 
 @override
 String toString() {
-  return 'GroceryListModel(id: $id, name: $name, items: $items, collaborators: $collaborators, createdAt: $createdAt, selectedPlanIds: $selectedPlanIds, contentLang: $contentLang, contentVersion: $contentVersion, source: $source, recipeId: $recipeId, recipeScale: $recipeScale, recipeServings: $recipeServings, recipeTitle: $recipeTitle)';
+  return 'GroceryListModel(id: $id, name: $name, items: $items, collaborators: $collaborators, createdAt: $createdAt, selectedPlanIds: $selectedPlanIds, contentLang: $contentLang, contentVersion: $contentVersion, source: $source, recipeId: $recipeId, recipeScale: $recipeScale, recipeServings: $recipeServings, recipeTitle: $recipeTitle, collabId: $collabId, collabRole: $collabRole)';
 }
 
 
@@ -55,7 +57,7 @@ abstract mixin class $GroceryListModelCopyWith<$Res>  {
   factory $GroceryListModelCopyWith(GroceryListModel value, $Res Function(GroceryListModel) _then) = _$GroceryListModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle,@HiveField(13) String? collabId,@HiveField(14) String? collabRole
 });
 
 
@@ -72,7 +74,7 @@ class _$GroceryListModelCopyWithImpl<$Res>
 
 /// Create a copy of GroceryListModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? items = null,Object? collaborators = null,Object? createdAt = null,Object? selectedPlanIds = null,Object? contentLang = freezed,Object? contentVersion = null,Object? source = null,Object? recipeId = freezed,Object? recipeScale = null,Object? recipeServings = freezed,Object? recipeTitle = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? items = null,Object? collaborators = null,Object? createdAt = null,Object? selectedPlanIds = null,Object? contentLang = freezed,Object? contentVersion = null,Object? source = null,Object? recipeId = freezed,Object? recipeScale = null,Object? recipeServings = freezed,Object? recipeTitle = freezed,Object? collabId = freezed,Object? collabRole = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -87,6 +89,8 @@ as String,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: c
 as String?,recipeScale: null == recipeScale ? _self.recipeScale : recipeScale // ignore: cast_nullable_to_non_nullable
 as double,recipeServings: freezed == recipeServings ? _self.recipeServings : recipeServings // ignore: cast_nullable_to_non_nullable
 as int?,recipeTitle: freezed == recipeTitle ? _self.recipeTitle : recipeTitle // ignore: cast_nullable_to_non_nullable
+as String?,collabId: freezed == collabId ? _self.collabId : collabId // ignore: cast_nullable_to_non_nullable
+as String?,collabRole: freezed == collabRole ? _self.collabRole : collabRole // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -169,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GroceryListModel() when $default != null:
-return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle);case _:
+return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle,_that.collabId,_that.collabRole);case _:
   return orElse();
 
 }
@@ -190,10 +194,10 @@ return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.create
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)  $default,) {final _that = this;
 switch (_that) {
 case _GroceryListModel():
-return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle);}
+return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle,_that.collabId,_that.collabRole);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -207,10 +211,10 @@ return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.create
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)?  $default,) {final _that = this;
 switch (_that) {
 case _GroceryListModel() when $default != null:
-return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle);case _:
+return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle,_that.collabId,_that.collabRole);case _:
   return null;
 
 }
@@ -222,7 +226,7 @@ return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.create
 @JsonSerializable()
 
 class _GroceryListModel implements GroceryListModel {
-  const _GroceryListModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<GroceryItemModel> items, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4) required this.createdAt, @HiveField(5) final  List<String> selectedPlanIds = const <String>[], @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0, @HiveField(8) this.source = 'plans', @HiveField(9) this.recipeId, @HiveField(10) this.recipeScale = 1.0, @HiveField(11) this.recipeServings, @HiveField(12) this.recipeTitle}): _items = items,_collaborators = collaborators,_selectedPlanIds = selectedPlanIds;
+  const _GroceryListModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<GroceryItemModel> items, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4) required this.createdAt, @HiveField(5) final  List<String> selectedPlanIds = const <String>[], @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0, @HiveField(8) this.source = 'plans', @HiveField(9) this.recipeId, @HiveField(10) this.recipeScale = 1.0, @HiveField(11) this.recipeServings, @HiveField(12) this.recipeTitle, @HiveField(13) this.collabId, @HiveField(14) this.collabRole}): _items = items,_collaborators = collaborators,_selectedPlanIds = selectedPlanIds;
   factory _GroceryListModel.fromJson(Map<String, dynamic> json) => _$GroceryListModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -265,6 +269,10 @@ class _GroceryListModel implements GroceryListModel {
 @override@JsonKey()@HiveField(10) final  double recipeScale;
 @override@HiveField(11) final  int? recipeServings;
 @override@HiveField(12) final  String? recipeTitle;
+// Appended for sharing, as on MealPlanModel: the shared document's id
+// and this account's role name.
+@override@HiveField(13) final  String? collabId;
+@override@HiveField(14) final  String? collabRole;
 
 /// Create a copy of GroceryListModel
 /// with the given fields replaced by the non-null parameter values.
@@ -279,16 +287,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GroceryListModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._collaborators, _collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._selectedPlanIds, _selectedPlanIds)&&(identical(other.contentLang, contentLang) || other.contentLang == contentLang)&&(identical(other.contentVersion, contentVersion) || other.contentVersion == contentVersion)&&(identical(other.source, source) || other.source == source)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.recipeScale, recipeScale) || other.recipeScale == recipeScale)&&(identical(other.recipeServings, recipeServings) || other.recipeServings == recipeServings)&&(identical(other.recipeTitle, recipeTitle) || other.recipeTitle == recipeTitle));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GroceryListModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._collaborators, _collaborators)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._selectedPlanIds, _selectedPlanIds)&&(identical(other.contentLang, contentLang) || other.contentLang == contentLang)&&(identical(other.contentVersion, contentVersion) || other.contentVersion == contentVersion)&&(identical(other.source, source) || other.source == source)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.recipeScale, recipeScale) || other.recipeScale == recipeScale)&&(identical(other.recipeServings, recipeServings) || other.recipeServings == recipeServings)&&(identical(other.recipeTitle, recipeTitle) || other.recipeTitle == recipeTitle)&&(identical(other.collabId, collabId) || other.collabId == collabId)&&(identical(other.collabRole, collabRole) || other.collabRole == collabRole));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_collaborators),createdAt,const DeepCollectionEquality().hash(_selectedPlanIds),contentLang,contentVersion,source,recipeId,recipeScale,recipeServings,recipeTitle);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_collaborators),createdAt,const DeepCollectionEquality().hash(_selectedPlanIds),contentLang,contentVersion,source,recipeId,recipeScale,recipeServings,recipeTitle,collabId,collabRole);
 
 @override
 String toString() {
-  return 'GroceryListModel(id: $id, name: $name, items: $items, collaborators: $collaborators, createdAt: $createdAt, selectedPlanIds: $selectedPlanIds, contentLang: $contentLang, contentVersion: $contentVersion, source: $source, recipeId: $recipeId, recipeScale: $recipeScale, recipeServings: $recipeServings, recipeTitle: $recipeTitle)';
+  return 'GroceryListModel(id: $id, name: $name, items: $items, collaborators: $collaborators, createdAt: $createdAt, selectedPlanIds: $selectedPlanIds, contentLang: $contentLang, contentVersion: $contentVersion, source: $source, recipeId: $recipeId, recipeScale: $recipeScale, recipeServings: $recipeServings, recipeTitle: $recipeTitle, collabId: $collabId, collabRole: $collabRole)';
 }
 
 
@@ -299,7 +307,7 @@ abstract mixin class _$GroceryListModelCopyWith<$Res> implements $GroceryListMod
   factory _$GroceryListModelCopyWith(_GroceryListModel value, $Res Function(_GroceryListModel) _then) = __$GroceryListModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle,@HiveField(13) String? collabId,@HiveField(14) String? collabRole
 });
 
 
@@ -316,7 +324,7 @@ class __$GroceryListModelCopyWithImpl<$Res>
 
 /// Create a copy of GroceryListModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? items = null,Object? collaborators = null,Object? createdAt = null,Object? selectedPlanIds = null,Object? contentLang = freezed,Object? contentVersion = null,Object? source = null,Object? recipeId = freezed,Object? recipeScale = null,Object? recipeServings = freezed,Object? recipeTitle = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? items = null,Object? collaborators = null,Object? createdAt = null,Object? selectedPlanIds = null,Object? contentLang = freezed,Object? contentVersion = null,Object? source = null,Object? recipeId = freezed,Object? recipeScale = null,Object? recipeServings = freezed,Object? recipeTitle = freezed,Object? collabId = freezed,Object? collabRole = freezed,}) {
   return _then(_GroceryListModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -331,6 +339,8 @@ as String,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: c
 as String?,recipeScale: null == recipeScale ? _self.recipeScale : recipeScale // ignore: cast_nullable_to_non_nullable
 as double,recipeServings: freezed == recipeServings ? _self.recipeServings : recipeServings // ignore: cast_nullable_to_non_nullable
 as int?,recipeTitle: freezed == recipeTitle ? _self.recipeTitle : recipeTitle // ignore: cast_nullable_to_non_nullable
+as String?,collabId: freezed == collabId ? _self.collabId : collabId // ignore: cast_nullable_to_non_nullable
+as String?,collabRole: freezed == collabRole ? _self.collabRole : collabRole // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

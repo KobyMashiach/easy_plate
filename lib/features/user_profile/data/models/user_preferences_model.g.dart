@@ -36,13 +36,14 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       notifyAdminReplies: fields[14] == null ? true : fields[14] as bool,
       notifyAnnouncements: fields[15] == null ? true : fields[15] as bool,
       foregroundPopupsEnabled: fields[16] == null ? true : fields[16] as bool,
+      themeMode: fields[17] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -76,7 +77,9 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(15)
       ..write(obj.notifyAnnouncements)
       ..writeByte(16)
-      ..write(obj.foregroundPopupsEnabled);
+      ..write(obj.foregroundPopupsEnabled)
+      ..writeByte(17)
+      ..write(obj.themeMode);
   }
 
   @override
@@ -120,6 +123,7 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
   notifyAdminReplies: json['notifyAdminReplies'] as bool? ?? true,
   notifyAnnouncements: json['notifyAnnouncements'] as bool? ?? true,
   foregroundPopupsEnabled: json['foregroundPopupsEnabled'] as bool? ?? true,
+  themeMode: json['themeMode'] as String?,
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -144,6 +148,7 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'notifyAdminReplies': instance.notifyAdminReplies,
   'notifyAnnouncements': instance.notifyAnnouncements,
   'foregroundPopupsEnabled': instance.foregroundPopupsEnabled,
+  'themeMode': instance.themeMode,
 };
 
 const _$ShoppingDayEnumMap = {

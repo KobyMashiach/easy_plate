@@ -165,16 +165,24 @@ class _OpenBookShellState extends State<OpenBookShell>
     if (distance == 0) return;
 
     final generation = ++_navigationGeneration;
+    final forward = distance > 0;
 
-    if (!_fastPageTurnEnabled) {
-      // goToPage skips the animation and, unlike a real turn, never reports
-      // back through onPageFlipped — so the current page is tracked here.
-      _controller.goToPage(target);
-      setState(() => _currentPage = target);
+    if (_fastPageTurnEnabled) {
+      // One real turn onto the destination: the pages in between are
+      // skipped silently (goToPage animates nothing and never reports
+      // through onPageFlipped, so the current page is tracked here), and
+      // the landing still flips like a page rather than cutting.
+      if (distance.abs() > 1) {
+        final beforeTarget = forward ? target - 1 : target + 1;
+        _controller.goToPage(beforeTarget);
+        setState(() => _currentPage = beforeTarget);
+      }
+      if (!mounted || generation != _navigationGeneration) return;
+      await _turnOnePage(forward: forward);
       return;
     }
 
-    final forward = distance > 0;
+    // Off: every page on the way is turned, like riffling a real book.
     for (var i = 0; i < distance.abs(); i++) {
       // A newer jump (or a disposed book) retires this run mid-flight.
       if (!mounted || generation != _navigationGeneration) return;
@@ -189,12 +197,16 @@ class _OpenBookShellState extends State<OpenBookShell>
     final distance = target - _spread.spread;
     if (distance == 0) return;
     final generation = ++_navigationGeneration;
+    final forward = distance > 0;
 
-    if (!_fastPageTurnEnabled) {
-      _spread.jumpTo(target);
+    if (_fastPageTurnEnabled) {
+      // The same single turn for a spread: land next to the target, then
+      // turn one leaf onto it.
+      if (distance.abs() > 1) _spread.jumpTo(forward ? target - 1 : target + 1);
+      if (!mounted || generation != _navigationGeneration) return;
+      await (forward ? _spread.next() : _spread.previous());
       return;
     }
-    final forward = distance > 0;
     for (var i = 0; i < distance.abs(); i++) {
       if (!mounted || generation != _navigationGeneration) return;
       await (forward ? _spread.next() : _spread.previous());

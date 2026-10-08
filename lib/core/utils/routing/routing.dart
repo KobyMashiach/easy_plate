@@ -9,6 +9,7 @@ class Routing {
   static const onboarding = '/onboarding';
   static const home = '/home';
   static const blocked = '/blocked';
+  static const sessionGate = '/session';
 
   // relative child routes (nested under /home)
   static const bookDetails = 'book_details';
@@ -30,6 +31,7 @@ class Routing {
   static const notificationSettings = 'notification_settings';
   static const accountMenu = 'account_menu';
   static const support = 'support';
+  static const help = 'help';
   static const premium = 'premium';
   static const sharing = 'sharing';
   static const joinCode = 'join_code';

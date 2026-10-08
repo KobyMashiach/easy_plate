@@ -1,3 +1,4 @@
+import '../features/features_flags.dart';
 import '../services/firebase_service.dart';
 import 'daily_quota_policy.dart';
 import 'entitlement_service.dart';
@@ -45,15 +46,13 @@ abstract class MonetizationConfig {
   /// quota off; premium only changes which allowance applies.
   static bool get aiGated => adsEnabled;
 
-  /// Cook mode is a Premium feature while the console says so. The plan
-  /// gates below are a product decision apart from `ads_enabled`: that kill
-  /// switch turns off ads and the daily quotas, not what the plans include.
-  static bool get cookModeLocked =>
-      _remote.remoteBool(FirebaseService.cookModePremiumOnlyKey) && !isPremium;
+  /// Cook mode, the assistant and the notifications are Premium while the
+  /// console's feature flag says `3` (see `FeaturesFlags`). Kept here so the
+  /// callers that ask "is it locked for this account" have one place to
+  /// ask; the flag's other values (hidden, coming soon) are the gate's.
+  static bool get cookModeLocked => FeaturesFlags.cookMode.isLocked;
 
-  /// The in-app assistant is Premium while the console says so.
-  static bool get assistantLocked =>
-      _remote.remoteBool(FirebaseService.assistantPremiumOnlyKey) && !isPremium;
+  static bool get assistantLocked => FeaturesFlags.assistant.isLocked;
 
   /// Free-tier sharing allowances (Premium: unlimited).
   static int get freeRecipeSharesWeekly =>
@@ -62,10 +61,10 @@ abstract class MonetizationConfig {
       _remote.remoteInt(FirebaseService.shareFreeBooksKey);
   static int get freeSharedPlans =>
       _remote.remoteInt(FirebaseService.shareFreePlansKey);
+  static int get freeSharedLists =>
+      _remote.remoteInt(FirebaseService.shareFreeListsKey);
 
   /// Pushes, reminders and popups are Premium while the console says so.
   /// The inbox itself stays: share invites must still be answerable.
-  static bool get notificationsLocked =>
-      _remote.remoteBool(FirebaseService.notificationsPremiumOnlyKey) &&
-      !isPremium;
+  static bool get notificationsLocked => FeaturesFlags.notifications.isLocked;
 }

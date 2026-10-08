@@ -24,6 +24,7 @@ import '../widgets/book_cover_card.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/features/feature_gate.dart';
 
 class LibraryPage extends StatelessWidget {
   const LibraryPage({super.key});
@@ -165,34 +166,36 @@ class LibraryPage extends StatelessWidget {
                 ],
                 const SizedBox(height: AppSpacing.gutter),
                 // Only the owner hands a book on; a member cannot share it further.
-                if (book.isMine) ...[
-                  ClayCard(
-                    radius: AppRadius.md,
-                    padding: const EdgeInsets.all(AppSpacing.gutter),
-                    onTap: () async {
-                      Navigator.of(sheetContext).pop();
-                      final sent = await showBookShareSheet(context, book);
-                      if (sent == true && context.mounted) {
-                        AppDialog.success(
-                          message: t.sharing.sent,
-                        ).notify(context);
-                        // The share tags the book with its collab id.
-                        bloc.add(const LibraryEvent.init());
-                      }
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.person_add_alt_1_rounded,
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Text(t.books.share, style: AppTextStyles.bodyMd),
-                      ],
+                if (book.isMine)
+                  FeatureGate(
+                    feature: FeaturesFlags.shareBooks,
+                    gapAfter: AppSpacing.base,
+                    child: ClayCard(
+                      radius: AppRadius.md,
+                      padding: const EdgeInsets.all(AppSpacing.gutter),
+                      onTap: () async {
+                        Navigator.of(sheetContext).pop();
+                        final sent = await showBookShareSheet(context, book);
+                        if (sent == true && context.mounted) {
+                          AppDialog.success(
+                            message: t.sharing.sent,
+                          ).notify(context);
+                          // The share tags the book with its collab id.
+                          bloc.add(const LibraryEvent.init());
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.person_add_alt_1_rounded,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Text(t.books.share, style: AppTextStyles.bodyMd),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.base),
-                ],
                 // A read-only copy: nothing below changes it.
                 if (book.canEdit) ...[
                   ClayCard(

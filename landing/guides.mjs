@@ -33,14 +33,70 @@ export const LABELS = {
     fr: { label: 'Recettes TikTok', blurb: 'Comment une vidéo TikTok, un Reel ou YouTube devient une recette avec quantités, étapes et macros.' },
     ru: { label: 'Рецепты из TikTok', blurb: 'Как видео из TikTok, рилс или YouTube становится рецептом с количествами, шагами и КБЖУ.' },
   },
+  'save-instagram-recipes': {
+    en: { label: 'Save Instagram recipes', blurb: 'A Reel or a YouTube video becomes a recipe with ingredients, amounts, steps and nutrition.' },
+    he: { label: 'מתכונים מאינסטגרם ויוטיוב', blurb: 'ריל או סרטון יוטיוב הופך למתכון עם מצרכים, כמויות, שלבים וערכים תזונתיים.' },
+    ar: { label: 'وصفات إنستغرام ويوتيوب', blurb: 'يتحوّل الريل أو فيديو يوتيوب إلى وصفة بالمكوّنات والكميات والخطوات والقيم الغذائية.' },
+    fr: { label: 'Recettes Instagram et YouTube', blurb: 'Un Reel ou une vidéo YouTube devient une recette avec ingrédients, quantités, étapes et nutrition.' },
+    ru: { label: 'Рецепты из Instagram и YouTube', blurb: 'Рилс или видео YouTube становится рецептом с ингредиентами, количествами, шагами и КБЖУ.' },
+  },
+  'recipe-calorie-calculator': {
+    en: { label: 'Recipe calorie calculator', blurb: 'Calories, protein, carbs and fat per serving for any recipe, and a weekly nutrition dashboard.' },
+    he: { label: 'מחשבון קלוריות למתכון', blurb: 'קלוריות, חלבון, פחמימות ושומן למנה לכל מתכון, ולוח תזונה שבועי.' },
+    ar: { label: 'حاسبة سعرات الوصفات', blurb: 'سعرات وبروتين وكربوهيدرات ودهون لكل حصة لأي وصفة، ولوحة تغذية أسبوعية.' },
+    fr: { label: 'Calculateur de calories', blurb: 'Calories, protéines, glucides et lipides par portion pour toute recette, et un tableau nutrition hebdomadaire.' },
+    ru: { label: 'Калькулятор калорий рецепта', blurb: 'Калории, белки, углеводы и жиры на порцию для любого рецепта и недельная панель питания.' },
+  },
+  'grocery-prices-receipt-scanner': {
+    en: { label: 'Prices from receipts', blurb: 'Scan receipts into a price book and see what the grocery list will cost before you shop.' },
+    he: { label: 'מחירים מהקבלות', blurb: 'סורקים קבלות לספר מחירים ורואים כמה רשימת הקניות תעלה לפני הקנייה.' },
+    ar: { label: 'أسعار من الفواتير', blurb: 'امسح الفواتير إلى دفتر أسعار وشاهد كم ستكلّف قائمة التسوّق قبل الشراء.' },
+    fr: { label: 'Prix depuis les tickets', blurb: 'Scannez les tickets dans un carnet de prix et voyez ce que coûtera la liste avant les courses.' },
+    ru: { label: 'Цены из чеков', blurb: 'Сканируйте чеки в книгу цен и узнавайте, сколько будет стоить список, до магазина.' },
+  },
+  'family-cookbook': {
+    en: { label: 'Family cookbook', blurb: 'Shared digital cookbooks the whole family reads and edits, from grandma’s voice note onward.' },
+    he: { label: 'ספר מתכונים משפחתי', blurb: 'ספרי מתכונים דיגיטליים משותפים שכל המשפחה קוראת ועורכת, מההקלטה של סבתא והלאה.' },
+    ar: { label: 'كتاب طبخ عائلي', blurb: 'كتب طبخ رقمية مشتركة تقرؤها العائلة كلها وتحرّرها، من رسالة الجدة الصوتية فصاعدًا.' },
+    fr: { label: 'Livre de recettes familial', blurb: 'Des livres numériques partagés que toute la famille lit et modifie, de la note vocale de mamie à aujourd’hui.' },
+    ru: { label: 'Семейная книга рецептов', blurb: 'Общие цифровые книги, которые вся семья читает и редактирует, начиная с голосового бабушки.' },
+  },
+  'cook-mode-timers': {
+    en: { label: 'Cook mode and timers', blurb: 'One step per screen in large type, with background timers that ring even when you leave.' },
+    he: { label: 'מצב בישול וטיימרים', blurb: 'שלב אחד בכל מסך באותיות גדולות, עם טיימרים ברקע שמצלצלים גם כשיוצאים.' },
+    ar: { label: 'وضع الطبخ والمؤقّتات', blurb: 'خطوة واحدة في كل شاشة بخط كبير، مع مؤقّتات في الخلفية ترنّ حتى عند المغادرة.' },
+    fr: { label: 'Mode cuisine et minuteurs', blurb: 'Une étape par écran en grands caractères, avec des minuteurs en arrière-plan qui sonnent même si vous partez.' },
+    ru: { label: 'Режим готовки и таймеры', blurb: 'Один шаг на экран крупным шрифтом и фоновые таймеры, которые звонят, даже если вы вышли.' },
+  },
+  'recipe-from-pdf-or-voice': {
+    en: { label: 'PDF or voice note to recipe', blurb: 'A PDF page or a WhatsApp voice note, written by the AI as a recipe with amounts and steps.' },
+    he: { label: 'מ-PDF או מהקלטה למתכון', blurb: 'עמוד PDF או הודעה קולית מוואטסאפ, שה-AI כותב כמתכון עם כמויות ושלבים.' },
+    ar: { label: 'من PDF أو رسالة صوتية إلى وصفة', blurb: 'صفحة PDF أو رسالة واتساب صوتية يكتبها الذكاء الاصطناعي كوصفة بالكميات والخطوات.' },
+    fr: { label: 'PDF ou note vocale en recette', blurb: 'Une page PDF ou une note vocale WhatsApp, écrite par l’IA en recette avec quantités et étapes.' },
+    ru: { label: 'PDF или голосовое в рецепт', blurb: 'Страница PDF или голосовое из WhatsApp, записанное ИИ как рецепт с количествами и шагами.' },
+  },
+  'weekly-family-meal-plan': {
+    en: { label: 'Family weekly menu', blurb: 'One shared week for the whole family, with the grocery list and the nutrition built from it.' },
+    he: { label: 'תפריט שבועי למשפחה', blurb: 'שבוע משותף אחד לכל המשפחה, עם רשימת הקניות והערכים התזונתיים שנבנים ממנו.' },
+    ar: { label: 'قائمة أسبوعية للعائلة', blurb: 'أسبوع مشترك واحد للعائلة كلها، مع قائمة التسوّق والقيم الغذائية المبنية منه.' },
+    fr: { label: 'Menu de la semaine en famille', blurb: 'Une semaine partagée pour toute la famille, avec la liste de courses et la nutrition qui en découlent.' },
+    ru: { label: 'Семейное меню на неделю', blurb: 'Одна общая неделя для всей семьи, со списком покупок и КБЖУ, собранными из неё.' },
+  },
+  'ai-cooking-assistant': {
+    en: { label: 'AI cooking assistant', blurb: 'Shefi answers about your own recipes, plans and lists, by voice or text, and acts on them.' },
+    he: { label: 'עוזר בישול AI', blurb: 'שפי עונה על המתכונים, התפריטים והרשימות שלכם, בקול או בכתב, ופועל עליהם.' },
+    ar: { label: 'مساعد طبخ بالذكاء الاصطناعي', blurb: 'يجيب شيفي عن وصفاتك وخططك وقوائمك، بالصوت أو الكتابة، ويتصرّف بناءً عليها.' },
+    fr: { label: 'Assistant de cuisine IA', blurb: 'Shefi répond sur vos recettes, plans et listes, à la voix ou à l’écrit, et agit dessus.' },
+    ru: { label: 'ИИ-помощник на кухне', blurb: 'Шефи отвечает о ваших рецептах, планах и списках голосом или текстом и действует.' },
+  },
 };
 
 const HOME_GUIDES = {
-  en: { eyebrow: 'Guides', title: 'One app for recipes, the weekly menu and the shopping', sub: 'Four short guides on what EasyPlate does for each part of the kitchen week.' },
-  he: { eyebrow: 'מדריכים', title: 'אפליקציה אחת למתכונים, לתפריט השבועי ולקניות', sub: 'ארבעה מדריכים קצרים על מה ש-EasyPlate עושה בכל חלק של שבוע המטבח.' },
-  ar: { eyebrow: 'أدلة', title: 'تطبيق واحد للوصفات وقائمة الأسبوع والتسوّق', sub: 'أربعة أدلة قصيرة عمّا يفعله EasyPlate في كل جزء من أسبوع المطبخ.' },
-  fr: { eyebrow: 'Guides', title: 'Une seule app pour les recettes, le menu de la semaine et les courses', sub: 'Quatre guides courts sur ce qu’EasyPlate fait pour chaque moment de la semaine en cuisine.' },
-  ru: { eyebrow: 'Гиды', title: 'Одно приложение для рецептов, меню на неделю и покупок', sub: 'Четыре коротких гида о том, что EasyPlate делает в каждой части кухонной недели.' },
+  en: { eyebrow: 'Guides', title: 'One app for recipes, the weekly menu and the shopping', sub: 'Short guides on what EasyPlate does for each part of the kitchen week: saving, planning, shopping and cooking.' },
+  he: { eyebrow: 'מדריכים', title: 'אפליקציה אחת למתכונים, לתפריט השבועי ולקניות', sub: 'מדריכים קצרים על מה ש-EasyPlate עושה בכל חלק של שבוע המטבח: שמירה, תכנון, קניות ובישול.' },
+  ar: { eyebrow: 'أدلة', title: 'تطبيق واحد للوصفات وقائمة الأسبوع والتسوّق', sub: 'أدلة قصيرة عمّا يفعله EasyPlate في كل جزء من أسبوع المطبخ: الحفظ والتخطيط والتسوّق والطبخ.' },
+  fr: { eyebrow: 'Guides', title: 'Une seule app pour les recettes, le menu de la semaine et les courses', sub: 'Des guides courts sur ce qu’EasyPlate fait à chaque moment de la semaine en cuisine : enregistrer, planifier, acheter, cuisiner.' },
+  ru: { eyebrow: 'Гиды', title: 'Одно приложение для рецептов, меню на неделю и покупок', sub: 'Короткие гиды о том, что EasyPlate делает в каждой части кухонной недели: сохранить, спланировать, купить, приготовить.' },
 };
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -49,10 +105,16 @@ const ICON_SVG = {
   'shopping-basket': '<path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m5 11 4-7"/><path d="m9 11 1 9"/>',
   'calendar-days': '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>',
   'sparkles': '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+  'calculator': '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
+  'receipt': '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+  'users': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  'flame': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
   'check': '<path d="M20 6 9 17l-5-5"/>',
   'arrow': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
   'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
   'mail': '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  'mic': '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
   'shield': '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
 };
 const icon = (name, cls = 'h-5 w-5') => `<svg xmlns="http://www.w3.org/2000/svg" class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_SVG[name]}</svg>`;

@@ -19,6 +19,7 @@ import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../data/household_remote_datasource.dart';
 import '../../domain/household_entity.dart';
 import '../../domain/household_service.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// The Pro Duo / Pro Family screen: open a shared account, see who is in
 /// it, invite with a code, remove, leave or close it.
@@ -218,11 +219,14 @@ class _HouseholdPageState extends State<HouseholdPage> {
           onPressed: _busy ? null : _create,
         ),
       ] else
-        ClayButton(
-          label: t.household.seePlans,
-          icon: Icons.workspace_premium_rounded,
-          expanded: true,
-          onPressed: () => context.pushNamed(Routing.premium),
+        FeatureGate(
+          feature: FeaturesFlags.premium,
+          child: ClayButton(
+            label: t.household.seePlans,
+            icon: Icons.workspace_premium_rounded,
+            expanded: true,
+            onPressed: () => context.pushNamed(Routing.premium),
+          ),
         ),
     ];
   }

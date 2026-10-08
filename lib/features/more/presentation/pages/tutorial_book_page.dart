@@ -19,6 +19,7 @@ import '../../../recipe_books/presentation/widgets/quick_jump_capsule.dart';
 import '../../../recipe_books/presentation/widgets/recipe_book_page.dart';
 import '../../../recipe_books/presentation/widgets/table_of_contents_page.dart';
 import 'demo_book_viewer_page.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// The guide, as a book from the library: the same open-book shell, page
 /// stock, contents page with dotted leaders, page numbers and page turn as
@@ -39,6 +40,7 @@ class TutorialBookPage extends StatelessWidget {
   /// support screen they started from, rather than left on whichever tab
   /// the last step pointed at.
   void _run(BuildContext context, List<WalkthroughStep> steps) {
+    if (!guardFeature(context, FeaturesFlags.walkthrough)) return;
     final router = GoRouter.of(context);
     Walkthrough.start(
       context,

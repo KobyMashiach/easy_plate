@@ -25,9 +25,6 @@ import '../../../../core/widgets/nutrition/nutrition_widgets.dart';
 import '../widgets/nutrition_facts_card.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../cook_mode_entry.dart';
-import '../../../../core/monetization/monetization_config.dart';
-import '../../../../core/services/firebase_service.dart';
-import '../../../../core/monetization/entitlement_service.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/repositories/recipes_repository.dart';
 import '../../domain/usecases/save_recipe_usecase.dart';
@@ -48,6 +45,9 @@ import '../../../recipe_ingestion/domain/usecases/generate_image_usecase.dart';
 import '../../../recipe_ingestion/domain/usecases/generate_recipe_usecase.dart';
 import '../../../recipe_ingestion/domain/usecases/parse_raw_text_usecase.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/features/feature_gate.dart';
+import '../../../assistant/domain/assistant_scope.dart';
+import '../../../assistant/presentation/widgets/assistant_fab.dart';
 
 /// Route payload for [RecipeDetailsPage]. A bare entity was not enough once
 /// the same screen started opening community recipes: those must not expose
@@ -88,12 +88,6 @@ class RecipeDetailsPage extends StatefulWidget {
 }
 
 class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
-  /// The plan and the console flags: what decides the cook-mode gate.
-  late final _gateChanges = Listenable.merge([
-    EntitlementService(),
-    FirebaseService().configRevision,
-  ]);
-
   late RecipeEntity recipe = widget.recipe;
   bool _analyzing = false;
 
@@ -217,6 +211,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       context,
       hasImage: recipe.imageFileName != null,
       aiPrompt: GenerateImageUseCase.recipePrompt(recipe),
+      searchQuery: recipe.title,
     );
     if (result == null || !mounted) return;
 
@@ -417,6 +412,20 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return ClayScaffold(
+      // The copilot locked to this recipe, floating like the main one;
+      // drawn only when the console opens it to this account.
+      floatingActionButton: FeatureGate.builder(
+        feature: FeaturesFlags.assistantScoped,
+        builder: (context, access) => access.isEnabled
+            ? AssistantFab(
+                light: true,
+                scope: AssistantScope.recipe(
+                  id: recipe.id,
+                  title: recipe.title,
+                ),
+              )
+            : const SizedBox.shrink(),
+      ),
       appBar: ClayTopAppBar(
         title: t.appName,
         leadingIcon: Icons.arrow_back_rounded,
@@ -425,11 +434,13 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         onTrailingTap: _readOnly ? null : _edit,
       ),
       body: ListView(
+        // Room at the end for the floating copilot, so the last buttons
+        // scroll out from under it instead of sitting there in its colour.
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.marginMobile,
           AppSpacing.md,
           AppSpacing.marginMobile,
-          AppSpacing.xl,
+          AppSpacing.xl + ClayNavDock.fabClearance,
         ),
         children: [
           GestureDetector(
@@ -596,17 +607,20 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
             mayContain: recipe.mayContain,
           ),
           const SizedBox(height: AppSpacing.lg),
-          NutritionFactsCard(
-            nutrition: recipe.nutrition,
-            servings: recipe.servings,
-            estimating: _estimating,
-            // Only a recipe with ingredients can be estimated, and only by
-            // someone allowed to change it.
-            onEstimate: _readOnly || recipe.ingredients.isEmpty
-                ? null
-                : _estimateNutrition,
+          FeatureGate(
+            feature: FeaturesFlags.nutrition,
+            gapAfter: AppSpacing.md,
+            child: NutritionFactsCard(
+              nutrition: recipe.nutrition,
+              servings: recipe.servings,
+              estimating: _estimating,
+              // Only a recipe with ingredients can be estimated, and only by
+              // someone allowed to change it.
+              onEstimate: _readOnly || recipe.ingredients.isEmpty
+                  ? null
+                  : _estimateNutrition,
+            ),
           ),
-          const SizedBox(height: AppSpacing.md),
           if (recipe.pendingAnalysis) ...[
             ClayCard(
               radius: AppRadius.md,
@@ -654,6 +668,22 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
             ),
             const SizedBox(height: AppSpacing.md),
           ],
+          // Hands-free reading of the steps: one per screen, large type,
+          // timers, and the screen kept awake. Above the ingredients, where
+          // the cook reaches first; works on read-only recipes too, nothing
+          // here writes. The gate draws Premium-only / coming-soon itself.
+          // (Shefi for this recipe is the floating button, not a row here.)
+          if (recipe.steps.isNotEmpty)
+            FeatureGate(
+              feature: FeaturesFlags.cookMode,
+              gapAfter: AppSpacing.md,
+              child: ClayButton(
+                label: t.cookMode.start,
+                icon: Icons.local_fire_department_rounded,
+                expanded: true,
+                onPressed: () => openCookMode(context, recipe),
+              ),
+            ),
           ClayCard(
             radius: AppRadius.md,
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -689,18 +719,20 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                     ),
                   ),
                 ),
-                if (recipe.ingredients.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.md),
+                if (recipe.ingredients.isNotEmpty)
                   // Shopping for just this dish, without building a menu
                   // around it. Offered on read-only recipes too: a community
                   // recipe is as shoppable as one of the account's own.
-                  ClayButton(
-                    label: t.groceryList.createFromRecipe,
-                    icon: Icons.shopping_cart_rounded,
-                    expanded: true,
-                    onPressed: _createGroceryList,
+                  FeatureGate(
+                    feature: FeaturesFlags.groceryFromRecipe,
+                    gapBefore: AppSpacing.md,
+                    child: ClayButton(
+                      label: t.groceryList.createFromRecipe,
+                      icon: Icons.shopping_cart_rounded,
+                      expanded: true,
+                      onPressed: _createGroceryList,
+                    ),
                   ),
-                ],
               ],
             ),
           ),
@@ -716,41 +748,6 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                   underline: true,
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                if (recipe.steps.isNotEmpty) ...[
-                  // Hands-free reading of the same steps: one per screen,
-                  // large type, timers, and the screen kept awake. Works on
-                  // read-only recipes too; nothing here writes. Rebuilt when
-                  // the plan or the console flags change.
-                  ListenableBuilder(
-                    listenable: _gateChanges,
-                    builder: (context, _) {
-                      final locked = MonetizationConfig.cookModeLocked;
-                      return Column(
-                        children: [
-                          ClayButton(
-                            label: t.cookMode.start,
-                            icon: locked
-                                ? Icons.workspace_premium_rounded
-                                : Icons.local_fire_department_rounded,
-                            expanded: true,
-                            onPressed: () => openCookMode(context, recipe),
-                          ),
-                          if (locked) ...[
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              t.cookMode.premiumOnly,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.labelMd.copyWith(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
                 ...recipe.steps.asMap().entries.map(
                   (entry) => Padding(
                     padding: const EdgeInsets.symmetric(

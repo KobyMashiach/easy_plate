@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '../features/features_flags.dart';
 import 'foreground_push_service.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
@@ -35,7 +36,7 @@ class FirebaseService {
 
   /// Remote Config keys, with the values used until the first fetch lands.
   @visibleForTesting
-  static const remoteDefaults = <String, dynamic>{
+  static final remoteDefaults = <String, dynamic>{
     'ai_ingestion_enabled': true,
     'max_recipes_per_book': 50,
     // Defaults to production. A failed or slow fetch must never be what puts a
@@ -67,17 +68,19 @@ class FirebaseService {
     // Premium's own ceiling on AI extractions: no video, but every call is
     // paid for, so it is a bigger number rather than none.
     quotaAiPremiumKey: 10,
-    // Plan gates, read by MonetizationConfig: what a free account is kept
-    // out of until it upgrades. Default to gated so a failed fetch never
-    // hands Premium features out for free.
-    cookModePremiumOnlyKey: true,
-    notificationsPremiumOnlyKey: true,
-    assistantPremiumOnlyKey: true,
     // What a free account may share: recipes per calendar week, books and
     // meal plans at once. Zero disables; Premium is unlimited.
     shareFreeRecipesWeeklyKey: 5,
     shareFreeBooksKey: 2,
     shareFreePlansKey: 2,
+    shareFreeListsKey: 2,
+    // Shefi's replies read out by Google's cloud voice (the `speak`
+    // function); false falls back to the device's own engine.
+    ttsCloudEnabledKey: true,
+    // Feature switches (`ff_*`: 0 hidden / 1 coming soon / 2 on / 3 Premium
+    // only), read by FeaturesFlags. All on, as asked, so a failed fetch
+    // never hides a feature.
+    ...FeaturesFlags.remoteDefaults,
   };
 
   static const adsEnabledKey = 'ads_enabled';
@@ -87,12 +90,11 @@ class FirebaseService {
   static const quotaSharedRewardedKey = 'quota_shared_rewarded';
   static const quotaAiRewardedKey = 'quota_ai_rewarded';
   static const quotaAiPremiumKey = 'quota_ai_premium';
-  static const cookModePremiumOnlyKey = 'cook_mode_premium_only';
-  static const notificationsPremiumOnlyKey = 'notifications_premium_only';
-  static const assistantPremiumOnlyKey = 'assistant_premium_only';
   static const shareFreeRecipesWeeklyKey = 'share_free_recipes_weekly';
   static const shareFreeBooksKey = 'share_free_books_total';
   static const shareFreePlansKey = 'share_free_plans_total';
+  static const shareFreeListsKey = 'share_free_lists_total';
+  static const ttsCloudEnabledKey = 'tts_cloud_enabled';
 
   static const isProdKey = 'isProd';
 
@@ -280,20 +282,40 @@ class FirebaseService {
       await config.setConfigSettings(
         RemoteConfigSettings(
           fetchTimeout: const Duration(seconds: 10),
-          // A release build must not hammer the backend; debug wants each run to
-          // see the latest values.
+          // Every entry to the app (launch, resume) re-fetches, so a flag
+          // flipped in the console is in force on the next open. One minute
+          // between fetches in release keeps a burst of resumes under
+          // Firebase's own per-device throttle; the live stream below
+          // covers the minutes in between.
           minimumFetchInterval: kDebugMode
               ? Duration.zero
-              : const Duration(hours: 1),
+              : const Duration(minutes: 1),
         ),
       );
       await config.setDefaults(remoteDefaults);
       await config.fetchAndActivate();
       _publishFlags(config);
+      // A console edit reaches the device as it is made, instead of on the
+      // next fetch (up to an hour away in a release build): the feature
+      // flags are flipped from the console while testing, and a stale
+      // value on the phone looks like a bug in the app.
+      _configUpdates ??= config.onConfigUpdated.listen(
+        (_) async {
+          try {
+            await config.activate();
+            _publishFlags(config);
+          } catch (e) {
+            debugPrint('Remote Config live update failed: $e');
+          }
+        },
+        onError: (Object e) => debugPrint('Remote Config stream failed: $e'),
+      );
     } catch (e) {
       debugPrint('Remote Config unavailable: $e');
     }
   }
+
+  StreamSubscription<RemoteConfigUpdate>? _configUpdates;
 
   /// Push permission is asked for only once there is a signed-in user to
   /// attach the token to — a prompt on a cold first launch has nothing to

@@ -5,6 +5,7 @@ import '../../../../core/services/admin_access.dart';
 import '../../../../core/services/admin_inbox_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../widgets/config_tab.dart';
 import '../widgets/dashboard_tab.dart';
 import '../widgets/subscriptions_tab.dart';
 import '../widgets/tickets_tab.dart';
@@ -24,7 +25,7 @@ class AdminDashboardPage extends StatefulWidget {
   State<AdminDashboardPage> createState() => _AdminDashboardPageState();
 }
 
-enum AdminDashboardTab { dashboard, subscriptions, tickets }
+enum AdminDashboardTab { dashboard, subscriptions, tickets, config }
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   late int _tab = widget.initialTab.clamp(
@@ -78,6 +79,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             icon: Icons.support_agent_rounded,
                             badge: unread,
                           ),
+                          ClaySegment(
+                            label: s.tabConfig,
+                            icon: Icons.tune_rounded,
+                          ),
                         ],
                         selectedIndex: _tab,
                         onSelected: (index) => setState(() => _tab = index),
@@ -95,6 +100,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         ),
                         const SubscriptionsTab(),
                         const TicketsTab(),
+                        const ConfigTab(),
                       ],
                     ),
                   ),

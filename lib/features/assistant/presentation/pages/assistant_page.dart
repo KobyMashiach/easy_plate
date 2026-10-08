@@ -11,6 +11,7 @@ import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/monetization/quota_gates.dart';
 import '../../../../core/navigation/main_tabs.dart';
 import '../../../../core/services/cook_session_service.dart';
+import '../../../../core/features/feature_gate.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
@@ -31,11 +32,18 @@ import '../../domain/assistant_ui_bridge.dart';
 import '../assistant_suggestions.dart';
 import '../bloc/assistant_bloc.dart';
 import '../widgets/assistant_cards.dart';
+import '../../domain/assistant_scope.dart';
+import '../../domain/assistant_text.dart';
+import '../../domain/assistant_tools.dart';
+import '../assistant_voice.dart';
 
 /// The chat with the copilot. A Premium feature while the console says so:
 /// a free account sees what it does and a way to the paywall.
 class AssistantPage extends StatelessWidget {
-  const AssistantPage({super.key});
+  /// Null is the general copilot; set, the conversation is about one item.
+  final AssistantScope? scope;
+
+  const AssistantPage({super.key, this.scope});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +54,7 @@ class AssistantPage extends StatelessWidget {
       ]),
       builder: (context, _) => MonetizationConfig.assistantLocked
           ? const _LockedView()
-          : const _ChatView(),
+          : _ChatView(scope: scope),
     );
   }
 }
@@ -100,7 +108,8 @@ class _LockedView extends StatelessWidget {
                 label: t.assistant.unlock,
                 icon: Icons.workspace_premium_rounded,
                 expanded: true,
-                onPressed: () => context.pushNamed(Routing.premium),
+                onPressed: () =>
+                    showPremiumOnlyDialog(context, FeaturesFlags.assistant),
               ),
             ],
           ),
@@ -111,7 +120,9 @@ class _LockedView extends StatelessWidget {
 }
 
 class _ChatView extends StatefulWidget {
-  const _ChatView();
+  final AssistantScope? scope;
+
+  const _ChatView({this.scope});
 
   @override
   State<_ChatView> createState() => _ChatViewState();
@@ -120,8 +131,21 @@ class _ChatView extends StatefulWidget {
 class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
   late final AssistantBloc _bloc;
   final _input = TextEditingController();
-  List<String> _suggestions = AssistantSuggestions.pick(5);
+  late List<String> _suggestions = _pickSuggestions();
   final _scroll = ScrollController();
+  final _voice = AssistantVoice();
+
+  AssistantScope? get _scope => widget.scope;
+
+  List<String> _pickSuggestions() {
+    final scope = _scope;
+    if (scope == null) return AssistantSuggestions.pick(5);
+    return switch (scope.kind) {
+      AssistantScopeKind.recipe => t.assistant.scopedPrompts.recipe,
+      AssistantScopeKind.mealPlan => t.assistant.scopedPrompts.mealPlan,
+      AssistantScopeKind.groceryList => t.assistant.scopedPrompts.groceryList,
+    };
+  }
 
   @override
   void initState() {
@@ -137,13 +161,22 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       cooking: CookSessionService(),
       ui: this,
     );
+    final scope = _scope;
     _bloc = AssistantBloc(
       dispatcher: dispatcher,
       agent: AssistantAgent(
         remote: GeminiAssistantRemoteDataSource(),
         dispatcher: dispatcher,
         systemInstruction: () => _system,
+        // A scoped conversation only gets the tools of its one item.
+        tools: scope == null
+            ? null
+            : AssistantTools.declarationsFor(scope.toolNames),
       ),
+      welcome: scope == null
+          ? null
+          : t.assistant.scopedWelcome(name: scope.title),
+      onReply: _onReply,
     );
     _refreshSnapshot();
   }
@@ -153,11 +186,21 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
   String _system = '';
   Future<void> _refreshSnapshot() async {
     final snapshot = await _bloc.dispatcher.snapshot();
+    final scope = _scope;
+    // The item in full, re-read after every turn so an edit the assistant
+    // just made is what it reasons about next.
+    final details = scope == null
+        ? null
+        : await _bloc.dispatcher.describe(scope);
     if (!mounted) return;
     _system = AssistantPrompt.system(
       snapshot: snapshot,
       language: LocaleSettings.currentLocale.languageCode,
       offTopicReply: t.assistant.offTopic,
+      scope: scope?.promptSection(
+        details: details ?? '(no longer available)',
+        offTopicReply: t.assistant.scopedOffTopic(name: scope.title),
+      ),
     );
   }
 
@@ -166,7 +209,43 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
     _bloc.close();
     _input.dispose();
     _scroll.dispose();
+    _voice.dispose();
     super.dispose();
+  }
+
+  /// Whether the turn in flight was spoken. A spoken turn gets a spoken
+  /// reply, and when that reply asks something the microphone opens again
+  /// on its own, so the exchange runs like a conversation. A typed turn
+  /// stays silent: no voice, no microphone.
+  bool _spokenTurn = false;
+
+  void _onReply(String text) {
+    if (!_spokenTurn) return;
+    final asks = AssistantText.asks(text);
+    _voice.speak(text).then((_) {
+      if (!mounted || !_spokenTurn || !asks) return;
+      // Only when the reply was actually heard to its end: a stop (or a
+      // new typed message) meanwhile cancels the follow-up.
+      if (_voice.speakReplies.value && !_voice.listening.value) _toggleMic();
+    });
+  }
+
+  /// The microphone: open it, put what is heard into the field as it
+  /// comes, and send the final transcript on its own.
+  Future<void> _toggleMic() async {
+    if (_voice.listening.value) {
+      await _voice.stopListening();
+      return;
+    }
+    await _voice.stopSpeaking();
+    final started = await _voice.listen((text, {required isFinal}) {
+      if (!mounted) return;
+      _input.text = text;
+      if (isFinal && text.trim().isNotEmpty) _send(text, spoken: true);
+    });
+    if (!started && mounted) {
+      AppDialog.error(message: t.assistant.micUnavailable).show(context);
+    }
   }
 
   // ---- AssistantUiBridge --------------------------------------------------
@@ -232,7 +311,10 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
 
   // ---- UI -----------------------------------------------------------------
 
-  void _send(String text) {
+  void _send(String text, {bool spoken = false}) {
+    _spokenTurn = spoken;
+    _voice.speakReplies.value = spoken;
+    if (!spoken) _voice.stopSpeaking();
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
     _input.clear();
@@ -264,16 +346,14 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
           final fresh = state.messages.length <= 1;
           return ClayScaffold(
             appBar: ClayTopAppBar(
-              title: t.assistant.title,
+              title: _scope?.title ?? t.assistant.title,
               leadingIcon: Icons.arrow_back_rounded,
               onLeadingTap: () => Navigator.of(context).maybePop(),
               trailingIcon: Icons.add_comment_outlined,
               onTrailingTap: state.busy
                   ? null
                   : () {
-                      setState(
-                        () => _suggestions = AssistantSuggestions.pick(5),
-                      );
+                      setState(() => _suggestions = _pickSuggestions());
                       _bloc.add(const AssistantReset());
                     },
             ),
@@ -318,7 +398,14 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
                   _InputBar(
                     controller: _input,
                     enabled: !state.busy,
+                    busy: state.busy,
                     onSend: _send,
+                    onCancel: () {
+                      _voice.stopSpeaking();
+                      _bloc.add(const AssistantCancel());
+                    },
+                    voice: _voice,
+                    onMic: _toggleMic,
                   ),
                 ],
               ),
@@ -482,16 +569,31 @@ class _DotsState extends State<_Dots> with SingleTickerProviderStateMixin {
 class _InputBar extends StatelessWidget {
   final TextEditingController controller;
   final bool enabled;
+
+  /// A turn is running: the send button becomes the stop square.
+  final bool busy;
   final void Function(String) onSend;
+  final VoidCallback onCancel;
+  final AssistantVoice voice;
+  final VoidCallback onMic;
 
   const _InputBar({
     required this.controller,
     required this.enabled,
+    required this.busy,
     required this.onSend,
+    required this.onCancel,
+    required this.voice,
+    required this.onMic,
   });
 
   @override
   Widget build(BuildContext context) {
+    // One row: the field takes most of the width, the two buttons sit
+    // together at its end (left in RTL, right in LTR). Once the text needs
+    // a second line the buttons stack — send above the microphone — so the
+    // field becomes three lines tall (scrolling inside beyond that). The line count is
+    // measured at the single-row width, so the layout never flip-flops.
     return Padding(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.marginMobile,
@@ -499,38 +601,152 @@ class _InputBar extends StatelessWidget {
         AppSpacing.marginMobile,
         MediaQuery.viewInsetsOf(context).bottom + AppSpacing.sm,
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: ClayInset(
-              child: TextField(
-                controller: controller,
-                enabled: enabled,
-                minLines: 1,
-                maxLines: 4,
-                textInputAction: TextInputAction.send,
-                onSubmitted: onSend,
-                decoration: InputDecoration(
-                  hintText: t.assistant.placeholder,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.sm,
-                  ),
+      child: ClayCard(
+        radius: AppRadius.lg,
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: LayoutBuilder(
+          builder: (context, constraints) => ValueListenableBuilder<bool>(
+            valueListenable: voice.listening,
+            builder: (context, listening, _) =>
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: controller,
+                  builder: (context, value, _) {
+                    final stacked = _wraps(context, value.text, constraints);
+                    final buttons = _buttons(context, listening, value);
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Stacked, the field is three lines tall — the
+                        // height of the column of buttons beside it.
+                        Expanded(
+                          child: _field(listening, minLines: stacked ? 3 : 1),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        if (stacked)
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (var i = 0; i < buttons.length; i++) ...[
+                                if (i > 0)
+                                  const SizedBox(height: AppSpacing.sm),
+                                buttons[i],
+                              ],
+                            ],
+                          )
+                        else
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (var i = buttons.length - 1; i >= 0; i--) ...[
+                                if (i < buttons.length - 1)
+                                  const SizedBox(width: AppSpacing.sm),
+                                buttons[i],
+                              ],
+                            ],
+                          ),
+                      ],
+                    );
+                  },
                 ),
-              ),
-            ),
           ),
-          const SizedBox(width: AppSpacing.base),
-          ClayIconButton(
-            icon: Icons.arrow_upward_rounded,
-            filled: true,
-            size: 48,
-            tooltip: t.assistant.send,
-            onTap: enabled ? () => onSend(controller.text) : null,
-          ),
-        ],
+        ),
       ),
     );
   }
+
+  static const _buttonSize = 44.0;
+
+  /// Whether [text] needs more than one line in the field at its single-row
+  /// width (the card minus the two buttons beside it).
+  bool _wraps(BuildContext context, String text, BoxConstraints constraints) {
+    if (text.isEmpty) return false;
+    if (text.contains('\n')) return true;
+    final buttons = _buttonSize * 2 + AppSpacing.sm * 2;
+    final width =
+        constraints.maxWidth - buttons - AppSpacing.sm - AppSpacing.gutter * 2;
+    if (width <= 0) return false;
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: AppTextStyles.bodyMd),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: width);
+    return painter.computeLineMetrics().length > 1;
+  }
+
+  // Never taller than three lines: a longer question scrolls inside the
+  // field instead of pushing the composer up.
+  Widget _field(bool listening, {required int minLines}) => ClayInset(
+    radius: AppRadius.md,
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+    child: Center(
+      child: TextField(
+        controller: controller,
+        enabled: enabled,
+        minLines: minLines,
+        maxLines: 3,
+        textInputAction: TextInputAction.send,
+        onSubmitted: onSend,
+        style: AppTextStyles.bodyMd,
+        // The pill is the ClayInset around it: the theme's own filled box
+        // and outline must not draw inside it. While the mic listens the
+        // hint says so.
+        decoration: InputDecoration(
+          hintText: listening ? t.assistant.listening : t.assistant.placeholder,
+          hintStyle: listening
+              ? AppTextStyles.bodyMd.copyWith(color: AppColors.primary)
+              : null,
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.sm,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  /// Send (or the stop square while the model thinks) first, the
+  /// microphone second — the order of the stacked column; the row draws
+  /// them reversed so the microphone sits nearer the field.
+  List<Widget> _buttons(
+    BuildContext context,
+    bool listening,
+    TextEditingValue value,
+  ) => [
+    if (busy)
+      ClayIconButton(
+        icon: Icons.stop_rounded,
+        filled: true,
+        size: _buttonSize,
+        tooltip: t.assistant.stop,
+        onTap: onCancel,
+      )
+    else
+      ClayIconButton(
+        icon: Icons.arrow_upward_rounded,
+        filled: true,
+        size: _buttonSize,
+        tooltip: t.assistant.send,
+        onTap: value.text.trim().isNotEmpty
+            ? () => onSend(controller.text)
+            : null,
+      ),
+    // Talking, behind the voice flag: hidden when the flag says so, and
+    // then the send button stands alone.
+    if (FeaturesFlags.assistantVoice.isVisible)
+      FeatureGate(
+        feature: FeaturesFlags.assistantVoice,
+        compact: true,
+        child: ClayIconButton(
+          icon: listening ? Icons.stop_rounded : Icons.mic_rounded,
+          size: _buttonSize,
+          filled: listening,
+          tooltip: listening ? t.assistant.stopListening : t.assistant.listen,
+          onTap: enabled || listening ? onMic : null,
+        ),
+      ),
+  ];
 }

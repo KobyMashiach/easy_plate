@@ -81,6 +81,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$assistant$he assistant = Translations$assistant$he.internal(_root);
 	late final Translations$shareCode$he shareCode = Translations$shareCode$he.internal(_root);
 	late final Translations$household$he household = Translations$household$he.internal(_root);
+	late final Translations$feature$he feature = Translations$feature$he.internal(_root);
+	late final Translations$featureName$he featureName = Translations$featureName$he.internal(_root);
+	late final Translations$adminConfig$he adminConfig = Translations$adminConfig$he.internal(_root);
 }
 
 // Path: common
@@ -369,6 +372,33 @@ class Translations$auth$he {
 
 	/// he: 'ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה.'
 	String get phoneClaimedCreateNewConfirm => 'ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה.';
+
+	/// he: 'החשבון מחובר במכשיר אחר'
+	String get sessionOtherDeviceTitle => 'החשבון מחובר במכשיר אחר';
+
+	/// he: 'החשבון הזה פתוח כרגע ב$platform$since. אפשר להשתמש בו במכשיר אחד בכל פעם: התנתקו שם, ואז לחצו ״נסו שוב״.'
+	String sessionOtherDeviceBody({required Object platform, required Object since}) => 'החשבון הזה פתוח כרגע ב${platform}${since}. אפשר להשתמש בו במכשיר אחד בכל פעם: התנתקו שם, ואז לחצו ״נסו שוב״.';
+
+	/// he: ' מאז $date'
+	String sessionSince({required Object date}) => ' מאז ${date}';
+
+	/// he: 'ההתחברות פגה'
+	String get sessionExpiredTitle => 'ההתחברות פגה';
+
+	/// he: 'התחברות נמשכת עד חודש. כדי להמשיך, התחברו מחדש.'
+	String get sessionExpiredBody => 'התחברות נמשכת עד חודש. כדי להמשיך, התחברו מחדש.';
+
+	/// he: 'נסו שוב'
+	String get sessionRetry => 'נסו שוב';
+
+	/// he: 'אייפון'
+	String get platformIos => 'אייפון';
+
+	/// he: 'אנדרואיד'
+	String get platformAndroid => 'אנדרואיד';
+
+	/// he: 'מכשיר אחר'
+	String get platformOther => 'מכשיר אחר';
 }
 
 // Path: profile
@@ -592,8 +622,8 @@ class Translations$settings$he {
 	/// he: 'מעבר מהיר בספר'
 	String get fastPageTurn => 'מעבר מהיר בספר';
 
-	/// he: 'קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.'
-	String get fastPageTurnHint => 'קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.';
+	/// he: 'קפיצה מתוכן העניינים או מהניווט המהיר מדפדפת דף אחד בלבד אל היעד. בכיבוי מדפדפים דרך כל העמודים שבדרך.'
+	String get fastPageTurnHint => 'קפיצה מתוכן העניינים או מהניווט המהיר מדפדפת דף אחד בלבד אל היעד. בכיבוי מדפדפים דרך כל העמודים שבדרך.';
 
 	/// he: 'ניהול שיתופים'
 	String get sharedAccess => 'ניהול שיתופים';
@@ -651,6 +681,33 @@ class Translations$settings$he {
 
 	/// he: 'חשבון, התראות, שפה ומראה'
 	String get settingsHint => 'חשבון, התראות, שפה ומראה';
+
+	/// he: 'אזור מסוכן'
+	String get dangerZone => 'אזור מסוכן';
+
+	/// he: 'מחיקת החשבון'
+	String get deleteAccount => 'מחיקת החשבון';
+
+	/// he: 'מחיקה לצמיתות של החשבון וכל המידע שבו'
+	String get deleteAccountHint => 'מחיקה לצמיתות של החשבון וכל המידע שבו';
+
+	/// he: 'למחוק את החשבון לצמיתות?'
+	String get deleteAccountTitle => 'למחוק את החשבון לצמיתות?';
+
+	/// he: 'החשבון, המתכונים, הספרים, התפריטים, רשימות הקניות, הקבלות, התמונות, הפוסטים והתגובות שלכם יימחקו לצמיתות משרתינו ומהמכשיר הזה, ואי אפשר יהיה לשחזר אותם. מה ששיתפתם יוסר גם ממי ששיתפתם איתו. מנוי פעיל אינו מתבטל אוטומטית: בטלו אותו ב-App Store או ב-Google Play.'
+	String get deleteAccountBody => 'החשבון, המתכונים, הספרים, התפריטים, רשימות הקניות, הקבלות, התמונות, הפוסטים והתגובות שלכם יימחקו לצמיתות משרתינו ומהמכשיר הזה, ואי אפשר יהיה לשחזר אותם. מה ששיתפתם יוסר גם ממי ששיתפתם איתו. מנוי פעיל אינו מתבטל אוטומטית: בטלו אותו ב-App Store או ב-Google Play.';
+
+	/// he: 'מחיקה לצמיתות'
+	String get deleteAccountConfirm => 'מחיקה לצמיתות';
+
+	/// he: 'מוחקים את החשבון…'
+	String get deletingAccount => 'מוחקים את החשבון…';
+
+	/// he: 'מחיקת החשבון נכשלה. נסו שוב, או כתבו ל-support@aieasyplate.app.'
+	String get deleteAccountFailed => 'מחיקת החשבון נכשלה. נסו שוב, או כתבו ל-support@aieasyplate.app.';
+
+	/// he: 'אתם הבעלים של משק בית משותף. סגרו אותו קודם במסך "משק בית" ואז נסו שוב.'
+	String get deleteAccountHousehold => 'אתם הבעלים של משק בית משותף. סגרו אותו קודם במסך "משק בית" ואז נסו שוב.';
 }
 
 // Path: notificationSettings
@@ -786,6 +843,15 @@ class Translations$more$he {
 
 	/// he: 'העדפות'
 	String get preferences => 'העדפות';
+
+	/// he: 'תמיכה ומידע'
+	String get help => 'תמיכה ומידע';
+
+	/// he: 'תמיכה, מדיניות פרטיות ותנאי שימוש'
+	String get helpHint => 'תמיכה, מדיניות פרטיות ותנאי שימוש';
+
+	/// he: 'מידע משפטי'
+	String get legal => 'מידע משפטי';
 }
 
 // Path: language
@@ -1536,6 +1602,18 @@ class Translations$sharing$he {
 
 	/// he: 'המתכונים שבפנים ישותפו יחד איתו'
 	String get recipesTravel => 'המתכונים שבפנים ישותפו יחד איתו';
+
+	/// he: 'שיתוף רשימת קניות'
+	String get shareList => 'שיתוף רשימת קניות';
+
+	/// he: 'הרשימה נוספה לרשימות הקניות שלכם'
+	String get acceptedList => 'הרשימה נוספה לרשימות הקניות שלכם';
+
+	/// he: 'הרשימה שותפה איתכם לצפייה בלבד'
+	String get viewerCannotEditList => 'הרשימה שותפה איתכם לצפייה בלבד';
+
+	/// he: 'רשימת קניות'
+	String get kindList => 'רשימת קניות';
 }
 
 // Path: notifications
@@ -1629,6 +1707,9 @@ class Translations$notifications$he {
 
 	/// he: 'הגדרות'
 	String get settings => 'הגדרות';
+
+	/// he: '$name שיתף/ה איתך את רשימת הקניות "$recipe"'
+	String sharedList({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את רשימת הקניות "${recipe}"';
 }
 
 // Path: editor
@@ -2007,6 +2088,21 @@ class Translations$mealPlanner$he {
 
 	/// he: 'עריכת פריט'
 	String get editItem => 'עריכת פריט';
+
+	/// he: 'אפשרויות תפריט'
+	String get planOptions => 'אפשרויות תפריט';
+
+	/// he: 'מחיקת התפריט'
+	String get deletePlan => 'מחיקת התפריט';
+
+	/// he: 'למחוק את התפריט "$name"? הארוחות שבו יימחקו.'
+	String deletePlanConfirm({required Object name}) => 'למחוק את התפריט "${name}"? הארוחות שבו יימחקו.';
+
+	/// he: 'לצאת מהשיתוף של התפריט "$name"? הוא יוסר מהרשימה שלך.'
+	String leavePlanConfirm({required Object name}) => 'לצאת מהשיתוף של התפריט "${name}"? הוא יוסר מהרשימה שלך.';
+
+	/// he: 'התפריט נמחק'
+	String get planDeleted => 'התפריט נמחק';
 }
 
 // Path: groceryList
@@ -2202,6 +2298,9 @@ class Translations$groceryList$he {
 
 	/// he: 'הוספת פריט'
 	String get addFirstItem => 'הוספת פריט';
+
+	/// he: 'לצאת מהשיתוף של הרשימה "$name"? היא תוסר מהרשימות שלך.'
+	String leaveListConfirm({required Object name}) => 'לצאת מהשיתוף של הרשימה "${name}"? היא תוסר מהרשימות שלך.';
 }
 
 // Path: receipt
@@ -2634,6 +2733,30 @@ class Translations$image$he {
 
 	/// he: 'מהיר ופשוט'
 	String get themeQuick => 'מהיר ופשוט';
+
+	/// he: 'חיפוש תמונה בגוגל'
+	String get webSearch => 'חיפוש תמונה בגוגל';
+
+	/// he: 'חיפוש תמונה'
+	String get webSearchTitle => 'חיפוש תמונה';
+
+	/// he: 'מה לחפש? למשל: קובה סלק'
+	String get webSearchHint => 'מה לחפש? למשל: קובה סלק';
+
+	/// he: 'לא נמצאו תמונות, נסו ניסוח אחר'
+	String get webSearchEmpty => 'לא נמצאו תמונות, נסו ניסוח אחר';
+
+	/// he: 'החיפוש נכשל, נסו שוב'
+	String get webSearchFailed => 'החיפוש נכשל, נסו שוב';
+
+	/// he: 'חיפוש התמונות לא זמין כרגע'
+	String get webSearchUnavailable => 'חיפוש התמונות לא זמין כרגע';
+
+	/// he: 'אלה כל התוצאות'
+	String get webSearchEnd => 'אלה כל התוצאות';
+
+	/// he: 'לא הצלחנו להוריד את התמונה, נסו אחרת'
+	String get webSearchDownloadFailed => 'לא הצלחנו להוריד את התמונה, נסו אחרת';
 }
 
 // Path: nav
@@ -3187,14 +3310,14 @@ class Translations$adminDashboard$he {
 	/// he: 'לוח בקרה'
 	String get title => 'לוח בקרה';
 
-	/// he: 'דשבורד'
-	String get tabDashboard => 'דשבורד';
+	/// he: 'סקירה'
+	String get tabDashboard => 'סקירה';
 
 	/// he: 'מנויים'
 	String get tabSubscriptions => 'מנויים';
 
-	/// he: 'ניהול פניות'
-	String get tabTickets => 'ניהול פניות';
+	/// he: 'פניות'
+	String get tabTickets => 'פניות';
 
 	/// he: 'היום'
 	String get rangeToday => 'היום';
@@ -3627,6 +3750,15 @@ class Translations$adminDashboard$he {
 
 	/// he: 'מתחיל ב-$date'
 	String grantStarts({required Object date}) => 'מתחיל ב-${date}';
+
+	/// he: 'תצורה'
+	String get tabConfig => 'תצורה';
+
+	/// he: 'ניתוק מהמכשיר המחובר'
+	String get releaseSession => 'ניתוק מהמכשיר המחובר';
+
+	/// he: 'המכשיר נותק; המשתמש יתבקש להתחבר מחדש'
+	String get releaseSessionDone => 'המכשיר נותק; המשתמש יתבקש להתחבר מחדש';
 }
 
 // Path: assistant
@@ -3637,8 +3769,8 @@ class Translations$assistant$he {
 
 	// Translations
 
-	/// he: 'העוזר'
-	String get title => 'העוזר';
+	/// he: 'שפי'
+	String get title => 'שפי';
 
 	/// he: 'הסו-שף שלך: שאלות, תכנון, קניות ובישול'
 	String get subtitle => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול';
@@ -3664,8 +3796,8 @@ class Translations$assistant$he {
 	/// he: 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.'
 	String get quotaReached => 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.';
 
-	/// he: 'העוזר הוא חלק מ-EasyPlate Premium'
-	String get premiumOnly => 'העוזר הוא חלק מ-EasyPlate Premium';
+	/// he: 'שפי הוא חלק מ-EasyPlate Premium'
+	String get premiumOnly => 'שפי הוא חלק מ-EasyPlate Premium';
 
 	/// he: 'לפרימיום'
 	String get unlock => 'לפרימיום';
@@ -3731,6 +3863,44 @@ class Translations$assistant$he {
 
 	/// he: 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?'
 	String get welcomeAnon => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?';
+
+	/// he: 'מה תרצו לדעת לגבי "$name"?'
+	String scopedWelcome({required Object name}) => 'מה תרצו לדעת לגבי "${name}"?';
+
+	/// he: 'כאן אני עוזר רק לגבי "$name". לשאלות אחרות פתחו את שפי מהתפריט.'
+	String scopedOffTopic({required Object name}) => 'כאן אני עוזר רק לגבי "${name}". לשאלות אחרות פתחו את שפי מהתפריט.';
+
+	/// he: 'שאלו את שפי על המתכון'
+	String get askAboutRecipe => 'שאלו את שפי על המתכון';
+
+	/// he: 'שאלו את שפי על התפריט'
+	String get askAboutPlan => 'שאלו את שפי על התפריט';
+
+	/// he: 'שאלו את שפי על הרשימה'
+	String get askAboutList => 'שאלו את שפי על הרשימה';
+
+	/// he: 'דברו אל שפי'
+	String get listen => 'דברו אל שפי';
+
+	/// he: 'עצירת ההאזנה'
+	String get stopListening => 'עצירת ההאזנה';
+
+	/// he: 'הקראת התשובות'
+	String get speakReplies => 'הקראת התשובות';
+
+	/// he: 'אי אפשר להשתמש במיקרופון. בדקו את הרשאת המיקרופון וזיהוי הדיבור בהגדרות המכשיר.'
+	String get micUnavailable => 'אי אפשר להשתמש במיקרופון. בדקו את הרשאת המיקרופון וזיהוי הדיבור בהגדרות המכשיר.';
+
+	late final Translations$assistant$scopedPrompts$he scopedPrompts = Translations$assistant$scopedPrompts$he.internal(_root);
+
+	/// he: 'מקשיב…'
+	String get listening => 'מקשיב…';
+
+	/// he: 'עצירה'
+	String get stop => 'עצירה';
+
+	/// he: 'בוטל.'
+	String get cancelled => 'בוטל.';
 }
 
 // Path: shareCode
@@ -3842,6 +4012,9 @@ class Translations$shareCode$he {
 
 	/// he: '$name הזמין אתכם לחשבון המשותף שלו ב-EasyPlate. קוד: $code $link'
 	String householdMessage({required Object name, required Object code, required Object link}) => '${name} הזמין אתכם לחשבון המשותף שלו ב-EasyPlate. קוד: ${code}\n${link}';
+
+	/// he: 'חשבון חינמי יכול לשתף עד $count רשימות קניות.'
+	String limitLists({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} רשימות קניות.';
 }
 
 // Path: household
@@ -3937,6 +4110,220 @@ class Translations$household$he {
 	String get lapsed => 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.';
 }
 
+// Path: feature
+class Translations$feature$he {
+	Translations$feature$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'בקרוב'
+	String get comingSoon => 'בקרוב';
+
+	/// he: 'הפיצ׳ר הזה יגיע בקרוב'
+	String get comingSoonMessage => 'הפיצ׳ר הזה יגיע בקרוב';
+
+	/// he: 'הפיצ׳ר הזה לא זמין כרגע'
+	String get unavailable => 'הפיצ׳ר הזה לא זמין כרגע';
+
+	/// he: 'לפרימיום'
+	String get premiumOnly => 'לפרימיום';
+
+	/// he: 'הפיצ׳ר הזה זמין למנויי פרימיום'
+	String get premiumOnlyMessage => 'הפיצ׳ר הזה זמין למנויי פרימיום';
+
+	/// he: 'לפרימיום בלבד'
+	String get premiumOnlyTitle => 'לפרימיום בלבד';
+
+	/// he: 'האפשרות "$name" פתוחה רק למשתמשי פרימיום'
+	String premiumOnlyFor({required Object name}) => 'האפשרות "${name}" פתוחה רק למשתמשי פרימיום';
+
+	/// he: 'עבור לפרימיום'
+	String get goPremium => 'עבור לפרימיום';
+}
+
+// Path: featureName
+class Translations$featureName$he {
+	Translations$featureName$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ספרי מתכונים'
+	String get books => 'ספרי מתכונים';
+
+	/// he: 'תפריטים'
+	String get mealPlans => 'תפריטים';
+
+	/// he: 'רשימות קניות'
+	String get groceryLists => 'רשימות קניות';
+
+	/// he: 'קהילה'
+	String get community => 'קהילה';
+
+	/// he: 'הוספת מתכון מטקסט'
+	String get ingestText => 'הוספת מתכון מטקסט';
+
+	/// he: 'חיפוש מתכון ברשת'
+	String get ingestWebSearch => 'חיפוש מתכון ברשת';
+
+	/// he: 'הוספת מתכון מקישור'
+	String get ingestLink => 'הוספת מתכון מקישור';
+
+	/// he: 'הוספת מתכון מסרטון'
+	String get ingestSocialVideo => 'הוספת מתכון מסרטון';
+
+	/// he: 'בקשת מתכון מה-AI'
+	String get ingestAiRequest => 'בקשת מתכון מה-AI';
+
+	/// he: 'הוספת מתכון מקובץ'
+	String get ingestFile => 'הוספת מתכון מקובץ';
+
+	/// he: 'שיתוף מאפליקציה אחרת'
+	String get shareIn => 'שיתוף מאפליקציה אחרת';
+
+	/// he: 'שמירה עם AI'
+	String get saveWithAi => 'שמירה עם AI';
+
+	/// he: 'מצב בישול'
+	String get cookMode => 'מצב בישול';
+
+	/// he: 'טיימרים בבישול'
+	String get cookTimers => 'טיימרים בבישול';
+
+	/// he: 'ערכים תזונתיים'
+	String get nutrition => 'ערכים תזונתיים';
+
+	/// he: 'יצירת תמונה ב-AI'
+	String get recipeImageAi => 'יצירת תמונה ב-AI';
+
+	/// he: 'חיפוש תמונה בגוגל'
+	String get recipeImageSearch => 'חיפוש תמונה בגוגל';
+
+	/// he: 'רשימת קניות ממתכון'
+	String get groceryFromRecipe => 'רשימת קניות ממתכון';
+
+	/// he: 'מתכונים משותפים'
+	String get sharedRecipes => 'מתכונים משותפים';
+
+	/// he: 'פורום'
+	String get forum => 'פורום';
+
+	/// he: 'לייקים'
+	String get likes => 'לייקים';
+
+	/// he: 'שיתוף מתכונים'
+	String get shareRecipes => 'שיתוף מתכונים';
+
+	/// he: 'שיתוף ספרים'
+	String get shareBooks => 'שיתוף ספרים';
+
+	/// he: 'שיתוף תפריטים'
+	String get sharePlans => 'שיתוף תפריטים';
+
+	/// he: 'שיתוף רשימות קניות'
+	String get shareGroceryLists => 'שיתוף רשימות קניות';
+
+	/// he: 'שיתוף בקוד'
+	String get shareCodes => 'שיתוף בקוד';
+
+	/// he: 'משק בית'
+	String get households => 'משק בית';
+
+	/// he: 'ספר מחירים'
+	String get priceBook => 'ספר מחירים';
+
+	/// he: 'סריקת קבלה'
+	String get receiptScan => 'סריקת קבלה';
+
+	/// he: 'עלות משוערת'
+	String get groceryCost => 'עלות משוערת';
+
+	/// he: 'תזכורת קניות'
+	String get shoppingReminder => 'תזכורת קניות';
+
+	/// he: 'שפי (העוזר החכם)'
+	String get assistant => 'שפי (העוזר החכם)';
+
+	/// he: 'התראות'
+	String get notifications => 'התראות';
+
+	/// he: 'פרימיום'
+	String get premium => 'פרימיום';
+
+	/// he: 'תרגום תוכן'
+	String get contentTranslation => 'תרגום תוכן';
+
+	/// he: 'מראה'
+	String get theming => 'מראה';
+
+	/// he: 'סיור מודרך'
+	String get walkthrough => 'סיור מודרך';
+
+	/// he: 'ספר הדרכה'
+	String get tutorialBook => 'ספר הדרכה';
+
+	/// he: 'משוב'
+	String get feedback => 'משוב';
+
+	/// he: 'שפי בתוך פריט'
+	String get assistantScoped => 'שפי בתוך פריט';
+
+	/// he: 'דיבור עם שפי'
+	String get assistantVoice => 'דיבור עם שפי';
+
+	/// he: 'מכשיר אחד לחשבון'
+	String get singleSession => 'מכשיר אחד לחשבון';
+}
+
+// Path: adminConfig
+class Translations$adminConfig$he {
+	Translations$adminConfig$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).'
+	String get intro => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).';
+
+	/// he: 'לא הצלחנו לטעון את התצורה'
+	String get loadFailed => 'לא הצלחנו לטעון את התצורה';
+
+	/// he: 'הפרסום נכשל. בדקו את הערך ונסו שוב'
+	String get saveFailed => 'הפרסום נכשל. בדקו את הערך ונסו שוב';
+
+	/// he: '״$name״ פורסם'
+	String saved({required Object name}) => '״${name}״ פורסם';
+
+	/// he: '$n הגדרות'
+	String count({required Object n}) => '${n} הגדרות';
+
+	/// he: 'חיפוש בכל ההגדרות'
+	String get searchAll => 'חיפוש בכל ההגדרות';
+
+	/// he: 'חיפוש ב$section'
+	String searchIn({required Object section}) => 'חיפוש ב${section}';
+
+	/// he: 'אין הגדרה שמתאימה ל״$query״'
+	String noResults({required Object query}) => 'אין הגדרה שמתאימה ל״${query}״';
+
+	/// he: 'הכל'
+	String get filterAll => 'הכל';
+
+	/// he: 'ניקוי החיפוש'
+	String get clearSearch => 'ניקוי החיפוש';
+
+	/// he: 'אין פיצ׳רים במצב הזה'
+	String get noFlagsInState => 'אין פיצ׳רים במצב הזה';
+
+	late final Translations$adminConfig$groups$he groups = Translations$adminConfig$groups$he.internal(_root);
+	late final Translations$adminConfig$flag$he flag = Translations$adminConfig$flag$he.internal(_root);
+	late final Translations$adminConfig$labels$he labels = Translations$adminConfig$labels$he.internal(_root);
+}
+
 // Path: walkthrough.topics
 class Translations$walkthrough$topics$he {
 	Translations$walkthrough$topics$he.internal(this._root);
@@ -3951,6 +4338,7 @@ class Translations$walkthrough$topics$he {
 	late final Translations$walkthrough$topics$groceries$he groceries = Translations$walkthrough$topics$groceries$he.internal(_root);
 	late final Translations$walkthrough$topics$community$he community = Translations$walkthrough$topics$community$he.internal(_root);
 	late final Translations$walkthrough$topics$account$he account = Translations$walkthrough$topics$account$he.internal(_root);
+	late final Translations$walkthrough$topics$settings$he settings = Translations$walkthrough$topics$settings$he.internal(_root);
 }
 
 // Path: walkthrough.demo
@@ -4091,6 +4479,168 @@ class Translations$assistant$suggest$he {
 	];
 }
 
+// Path: assistant.scopedPrompts
+class Translations$assistant$scopedPrompts$he {
+	Translations$assistant$scopedPrompts$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	List<String> get recipe => [
+		'מה הערכים התזונתיים למנה?',
+		'איך מכינים את זה ל-8 סועדים?',
+		'במה אפשר להחליף מצרך שאין לי?',
+		'הוסיפו את המתכון לתפריט של מחר',
+		'צרו רשימת קניות מהמתכון',
+	];
+	List<String> get mealPlan => [
+		'מה אוכלים היום?',
+		'הוסיפו ארוחת ערב ליום שלישי',
+		'מה חסר בתפריט השבוע?',
+		'צרו רשימת קניות מהתפריט',
+		'כמה קלוריות ביום רביעי?',
+	];
+	List<String> get groceryList => [
+		'מה נשאר לקנות?',
+		'הוסיפו חלב וביצים',
+		'סמנו את העגבניות כנקנו',
+		'מחקו את מה שכבר קניתי',
+		'כמה זה 2 כוסות קמח בגרמים?',
+	];
+}
+
+// Path: adminConfig.groups
+class Translations$adminConfig$groups$he {
+	Translations$adminConfig$groups$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'פיצ׳רים'
+	String get features => 'פיצ׳רים';
+
+	/// he: 'פרסומות ומכסות'
+	String get adsQuotas => 'פרסומות ומכסות';
+
+	/// he: 'שיתוף בחשבון חינמי'
+	String get sharing => 'שיתוף בחשבון חינמי';
+
+	/// he: 'הקול של שפי'
+	String get voice => 'הקול של שפי';
+
+	/// he: 'גרסאות וסביבה'
+	String get versions => 'גרסאות וסביבה';
+
+	/// he: 'שרת ה-AI (דורש deploy)'
+	String get gemini => 'שרת ה-AI (דורש deploy)';
+
+	/// he: 'אחר'
+	String get other => 'אחר';
+}
+
+// Path: adminConfig.flag
+class Translations$adminConfig$flag$he {
+	Translations$adminConfig$flag$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'לא מוצג'
+	String get hidden => 'לא מוצג';
+
+	/// he: 'בקרוב'
+	String get comingSoon => 'בקרוב';
+
+	/// he: 'חינמי'
+	String get everyone => 'חינמי';
+
+	/// he: 'פרימיום'
+	String get premium => 'פרימיום';
+}
+
+// Path: adminConfig.labels
+class Translations$adminConfig$labels$he {
+	Translations$adminConfig$labels$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'פרסומות פעילות'
+	String get ads_enabled => 'פרסומות פעילות';
+
+	/// he: 'פתיחה כשאין סרטון'
+	String get ads_fail_open => 'פתיחה כשאין סרטון';
+
+	/// he: 'מרווח מודעות בפיד'
+	String get ads_feed_interval => 'מרווח מודעות בפיד';
+
+	/// he: 'מתכונים משותפים חינם ביום'
+	String get quota_shared_free => 'מתכונים משותפים חינם ביום';
+
+	/// he: 'מתכונים משותפים אחרי סרטון'
+	String get quota_shared_rewarded => 'מתכונים משותפים אחרי סרטון';
+
+	/// he: 'חילוצי AI אחרי סרטון ביום'
+	String get quota_ai_rewarded => 'חילוצי AI אחרי סרטון ביום';
+
+	/// he: 'שיתופי מתכון בשבוע'
+	String get share_free_recipes_weekly => 'שיתופי מתכון בשבוע';
+
+	/// he: 'ספרים משותפים בו-זמנית'
+	String get share_free_books_total => 'ספרים משותפים בו-זמנית';
+
+	/// he: 'תפריטים משותפים בו-זמנית'
+	String get share_free_plans_total => 'תפריטים משותפים בו-זמנית';
+
+	/// he: 'רשימות קניות משותפות בו-זמנית'
+	String get share_free_lists_total => 'רשימות קניות משותפות בו-זמנית';
+
+	/// he: 'קול ענן (Google)'
+	String get tts_cloud_enabled => 'קול ענן (Google)';
+
+	/// he: 'קול בעברית'
+	String get tts_voice_he => 'קול בעברית';
+
+	/// he: 'קול באנגלית'
+	String get tts_voice_en => 'קול באנגלית';
+
+	/// he: 'קול בערבית'
+	String get tts_voice_ar => 'קול בערבית';
+
+	/// he: 'קול בצרפתית'
+	String get tts_voice_fr => 'קול בצרפתית';
+
+	/// he: 'קול ברוסית'
+	String get tts_voice_ru => 'קול ברוסית';
+
+	/// he: 'גרסת פרודקשן'
+	String get isProd => 'גרסת פרודקשן';
+
+	/// he: 'גרסה מינימלית'
+	String get minimumVersion => 'גרסה מינימלית';
+
+	/// he: 'גרסה אחרונה'
+	String get latestVersion => 'גרסה אחרונה';
+
+	/// he: 'מזהה App Store'
+	String get iosAppStoreId => 'מזהה App Store';
+
+	/// he: 'מינימום שרתים'
+	String get gemini_minInstances => 'מינימום שרתים';
+
+	/// he: 'מקסימום שרתים'
+	String get gemini_maxInstances => 'מקסימום שרתים';
+
+	/// he: 'זמן קצוב לקריאה (שניות)'
+	String get gemini_timeoutSeconds => 'זמן קצוב לקריאה (שניות)';
+
+	/// he: 'ימי התחברות למכשיר'
+	String get session_days => 'ימי התחברות למכשיר';
+}
+
 // Path: walkthrough.topics.addRecipe
 class Translations$walkthrough$topics$addRecipe$he {
 	Translations$walkthrough$topics$addRecipe$he.internal(this._root);
@@ -4216,8 +4766,8 @@ class Translations$walkthrough$topics$groceries$he {
 	/// he: 'רשימת קניות ומחירים'
 	String get title => 'רשימת קניות ומחירים';
 
-	/// he: 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף והערכת עלות מהקבלות שלכם.'
-	String get summary => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף והערכת עלות מהקבלות שלכם.';
+	/// he: 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף, הערכת עלות מהקבלות שלכם, ושיתוף עם מי שקונה איתכם.'
+	String get summary => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף, הערכת עלות מהקבלות שלכם, ושיתוף עם מי שקונה איתכם.';
 
 	/// he: 'לחצו על ״קניות״.'
 	String get s1 => 'לחצו על ״קניות״.';
@@ -4239,6 +4789,9 @@ class Translations$walkthrough$topics$groceries$he {
 
 	/// he: 'סורקים קבלה, והמחיר של כל מוצר נשמר. מכאן רשימת הקניות מקבלת הערכת עלות, ומחירים חציוניים מהקהילה משלימים מה שעוד לא קניתם.'
 	String get s7 => 'סורקים קבלה, והמחיר של כל מוצר נשמר. מכאן רשימת הקניות מקבלת הערכת עלות, ומחירים חציוניים מהקהילה משלימים מה שעוד לא קניתם.';
+
+	/// he: 'שאלו את שפי על הרשימה הזו: מה חסר לארוחה, מה אפשר להחליף, או להוסיף פריטים בדיבור.'
+	String get shefi => 'שאלו את שפי על הרשימה הזו: מה חסר לארוחה, מה אפשר להחליף, או להוסיף פריטים בדיבור.';
 }
 
 // Path: walkthrough.topics.community
@@ -4288,14 +4841,77 @@ class Translations$walkthrough$topics$account$he {
 	/// he: 'פרימיום: ניתוחי AI ללא הגבלה יומית וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.'
 	String get s3 => 'פרימיום: ניתוחי AI ללא הגבלה יומית וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.';
 
-	/// he: 'גישה משותפת: מי חולק איתכם ספרים ותפריטים, ומה שיתפתם אתם.'
-	String get s4 => 'גישה משותפת: מי חולק איתכם ספרים ותפריטים, ומה שיתפתם אתם.';
+	/// he: 'גישה משותפת: מי חולק איתכם ספרים, תפריטים ורשימות קניות, ומה שיתפתם אתם.'
+	String get s4 => 'גישה משותפת: מי חולק איתכם ספרים, תפריטים ורשימות קניות, ומה שיתפתם אתם.';
 
 	/// he: 'לחצו על ״הגדרות״.'
 	String get s5 => 'לחצו על ״הגדרות״.';
 
 	/// he: 'מצב תצוגה: בהיר, כהה או לפי המכשיר. בהגדרות גם שפה, העדפות תזונה ואלרגנים. את ההדרכה הזו מפעילים שוב ממסך התמיכה שבחשבון.'
 	String get s6 => 'מצב תצוגה: בהיר, כהה או לפי המכשיר. בהגדרות גם שפה, העדפות תזונה ואלרגנים. את ההדרכה הזו מפעילים שוב ממסך התמיכה שבחשבון.';
+
+	/// he: 'שפי, העוזר החכם: הכפתור הצף הזה פותח שיחה. שואלים בכתב או בקול, ושפי עונה, מוסיף לתפריט, בונה רשימה או מפעיל מצב בישול. בתוך מתכון, תפריט או רשימה יש כפתור ״שאלו את שפי״ שמדבר רק על הפריט הזה.'
+	String get shefi => 'שפי, העוזר החכם: הכפתור הצף הזה פותח שיחה. שואלים בכתב או בקול, ושפי עונה, מוסיף לתפריט, בונה רשימה או מפעיל מצב בישול. בתוך מתכון, תפריט או רשימה יש כפתור ״שאלו את שפי״ שמדבר רק על הפריט הזה.';
+}
+
+// Path: walkthrough.topics.settings
+class Translations$walkthrough$topics$settings$he {
+	Translations$walkthrough$topics$settings$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'הגדרות והעדפות'
+	String get title => 'הגדרות והעדפות';
+
+	/// he: 'כל שורה בהגדרות ובהעדפות: פרופיל, שיתוף, התראות, שפה, מראה, מחיקת חשבון, יום קניות, מחירים, תזונה וספרים.'
+	String get summary => 'כל שורה בהגדרות ובהעדפות: פרופיל, שיתוף, התראות, שפה, מראה, מחיקת חשבון, יום קניות, מחירים, תזונה וספרים.';
+
+	/// he: 'לחצו על ״הגדרות״: כאן החשבון והאפליקציה.'
+	String get s1 => 'לחצו על ״הגדרות״: כאן החשבון והאפליקציה.';
+
+	/// he: 'פרופיל: השם והתמונה שהשותפים שלכם רואים, ודרכי ההתחברות המקושרות.'
+	String get s2 => 'פרופיל: השם והתמונה שהשותפים שלכם רואים, ודרכי ההתחברות המקושרות.';
+
+	/// he: 'גישה משותפת: מי חולק איתכם מתכונים, ספרים, תפריטים ורשימות, ומה שיתפתם אתם. מכאן גם מצטרפים בקוד או ב-QR.'
+	String get s3 => 'גישה משותפת: מי חולק איתכם מתכונים, ספרים, תפריטים ורשימות, ומה שיתפתם אתם. מכאן גם מצטרפים בקוד או ב-QR.';
+
+	/// he: 'לחצו על ״הגדרות התראות״.'
+	String get s4 => 'לחצו על ״הגדרות התראות״.';
+
+	/// he: 'התראות פוש: המתג הראשי. כשהוא כבוי שום דבר לא נשלח; למטה בוחרים מה כן: תגובות, הזמנות, עדכונים והודעות מהצוות.'
+	String get s5 => 'התראות פוש: המתג הראשי. כשהוא כבוי שום דבר לא נשלח; למטה בוחרים מה כן: תגובות, הזמנות, עדכונים והודעות מהצוות.';
+
+	/// he: 'תזכורות יום הקניות: מתי להזכיר לכם לפני הקנייה. מתוזמנות במכשיר, בלי קשר לפוש.'
+	String get s6 => 'תזכורות יום הקניות: מתי להזכיר לכם לפני הקנייה. מתוזמנות במכשיר, בלי קשר לפוש.';
+
+	/// he: 'שפה: החלפה מתרגמת גם את המתכונים, הספרים, התפריטים והרשימות שלכם.'
+	String get s7 => 'שפה: החלפה מתרגמת גם את המתכונים, הספרים, התפריטים והרשימות שלכם.';
+
+	/// he: 'מראה: בהיר, כהה או לפי המכשיר. הבחירה נשמרת בחשבון ועוברת איתכם למכשיר הבא.'
+	String get s8 => 'מראה: בהיר, כהה או לפי המכשיר. הבחירה נשמרת בחשבון ועוברת איתכם למכשיר הבא.';
+
+	/// he: 'מחיקת החשבון: מוחקת לצמיתות את החשבון וכל מה שבו, אחרי אישור. מנוי בחנות מבטלים בנפרד.'
+	String get s9 => 'מחיקת החשבון: מוחקת לצמיתות את החשבון וכל מה שבו, אחרי אישור. מנוי בחנות מבטלים בנפרד.';
+
+	/// he: 'חזרה לחשבון: לחצו על ״העדפות״, איך האפליקציה מתנהגת בשבילכם.'
+	String get s10 => 'חזרה לחשבון: לחצו על ״העדפות״, איך האפליקציה מתנהגת בשבילכם.';
+
+	/// he: 'יום הקניות: היום שסביבו נבנית רשימת הקניות ומתוזמנות התזכורות.'
+	String get s11 => 'יום הקניות: היום שסביבו נבנית רשימת הקניות ומתוזמנות התזכורות.';
+
+	/// he: 'מחירי קהילה: כשדולק, המחירים מהקבלות שלכם מצטרפים באופן אנונימי לממוצעים, ושורות שלא קניתם מוערכות לפיהם.'
+	String get s12 => 'מחירי קהילה: כשדולק, המחירים מהקבלות שלכם מצטרפים באופן אנונימי לממוצעים, ושורות שלא קניתם מוערכות לפיהם.';
+
+	/// he: 'העדפות תזונה ואלרגנים: מסמנים כאן, והאפליקציה מדגישה אותם במתכונים ובמתכונים משותפים.'
+	String get s13 => 'העדפות תזונה ואלרגנים: מסמנים כאן, והאפליקציה מדגישה אותם במתכונים ובמתכונים משותפים.';
+
+	/// he: 'מעבר מהיר בספר: קפיצה לעמוד רחוק מדפדפת דף אחד בלבד. בכיבוי מדפדפים דרך כל העמודים שבדרך.'
+	String get s14 => 'מעבר מהיר בספר: קפיצה לעמוד רחוק מדפדפת דף אחד בלבד. בכיבוי מדפדפים דרך כל העמודים שבדרך.';
+
+	/// he: 'צלילים: אפקטים קוליים בדפדוף ובפעולות. אפשר לכבות.'
+	String get s15 => 'צלילים: אפקטים קוליים בדפדוף ובפעולות. אפשר לכבות.';
 }
 
 /// The flat map containing all translations for locale <he>.
@@ -4397,6 +5013,15 @@ extension on Translations {
 			'auth.phoneClaimedSignIn' => 'כניסה לחשבון הקיים שלי',
 			'auth.phoneClaimedCreateNew' => 'יצירת חשבון חדש בכל זאת',
 			'auth.phoneClaimedCreateNewConfirm' => 'ייפתח חשבון חדש וריק עבור המספר הזה. החשבון הקיים יישאר כמו שהוא, אבל לא יהיה אפשר להגיע אליו יותר עם המספר הזה.',
+			'auth.sessionOtherDeviceTitle' => 'החשבון מחובר במכשיר אחר',
+			'auth.sessionOtherDeviceBody' => ({required Object platform, required Object since}) => 'החשבון הזה פתוח כרגע ב${platform}${since}. אפשר להשתמש בו במכשיר אחד בכל פעם: התנתקו שם, ואז לחצו ״נסו שוב״.',
+			'auth.sessionSince' => ({required Object date}) => ' מאז ${date}',
+			'auth.sessionExpiredTitle' => 'ההתחברות פגה',
+			'auth.sessionExpiredBody' => 'התחברות נמשכת עד חודש. כדי להמשיך, התחברו מחדש.',
+			'auth.sessionRetry' => 'נסו שוב',
+			'auth.platformIos' => 'אייפון',
+			'auth.platformAndroid' => 'אנדרואיד',
+			'auth.platformOther' => 'מכשיר אחר',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',
@@ -4453,7 +5078,7 @@ extension on Translations {
 			'settings.themeDark' => 'כהה',
 			'settings.soundEffects' => 'אפקטי קול (דפדוף עמודים)',
 			'settings.fastPageTurn' => 'מעבר מהיר בספר',
-			'settings.fastPageTurnHint' => 'קפיצה מתוכן העניינים או מהניווט המהיר תדפדף דרך העמודים שבדרך. בכיבוי, המעבר לעמוד יהיה מיידי.',
+			'settings.fastPageTurnHint' => 'קפיצה מתוכן העניינים או מהניווט המהיר מדפדפת דף אחד בלבד אל היעד. בכיבוי מדפדפים דרך כל העמודים שבדרך.',
 			'settings.sharedAccess' => 'ניהול שיתופים',
 			'settings.noSharedAccess' => 'עדיין לא שיתפתם ספרים או רשימות',
 			'settings.communityPrices' => 'מחירים לפי ממוצע המשתמשים',
@@ -4473,6 +5098,15 @@ extension on Translations {
 			'settings.notifications' => 'התראות',
 			'settings.notificationsHint' => 'אילו התראות מגיעות אליך, ואיך',
 			'settings.settingsHint' => 'חשבון, התראות, שפה ומראה',
+			'settings.dangerZone' => 'אזור מסוכן',
+			'settings.deleteAccount' => 'מחיקת החשבון',
+			'settings.deleteAccountHint' => 'מחיקה לצמיתות של החשבון וכל המידע שבו',
+			'settings.deleteAccountTitle' => 'למחוק את החשבון לצמיתות?',
+			'settings.deleteAccountBody' => 'החשבון, המתכונים, הספרים, התפריטים, רשימות הקניות, הקבלות, התמונות, הפוסטים והתגובות שלכם יימחקו לצמיתות משרתינו ומהמכשיר הזה, ואי אפשר יהיה לשחזר אותם. מה ששיתפתם יוסר גם ממי ששיתפתם איתו. מנוי פעיל אינו מתבטל אוטומטית: בטלו אותו ב-App Store או ב-Google Play.',
+			'settings.deleteAccountConfirm' => 'מחיקה לצמיתות',
+			'settings.deletingAccount' => 'מוחקים את החשבון…',
+			'settings.deleteAccountFailed' => 'מחיקת החשבון נכשלה. נסו שוב, או כתבו ל-support@aieasyplate.app.',
+			'settings.deleteAccountHousehold' => 'אתם הבעלים של משק בית משותף. סגרו אותו קודם במסך "משק בית" ואז נסו שוב.',
 			'notificationSettings.title' => 'הגדרות התראות',
 			'notificationSettings.push' => 'התראות דחיפה',
 			'notificationSettings.pushHint' => 'התראות במכשיר הזה. בכיבוי, שום דבר לא נשלח לטלפון; תיבת ההתראות ממשיכה להתמלא.',
@@ -4509,6 +5143,9 @@ extension on Translations {
 			'more.email' => 'שליחת מייל',
 			'more.supportUnavailable' => 'לא הצלחנו לפתוח את האפליקציה',
 			'more.preferences' => 'העדפות',
+			'more.help' => 'תמיכה ומידע',
+			'more.helpHint' => 'תמיכה, מדיניות פרטיות ותנאי שימוש',
+			'more.legal' => 'מידע משפטי',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -4738,6 +5375,10 @@ extension on Translations {
 			'sharing.kindBook' => 'ספר',
 			'sharing.kindPlan' => 'תפריט',
 			'sharing.recipesTravel' => 'המתכונים שבפנים ישותפו יחד איתו',
+			'sharing.shareList' => 'שיתוף רשימת קניות',
+			'sharing.acceptedList' => 'הרשימה נוספה לרשימות הקניות שלכם',
+			'sharing.viewerCannotEditList' => 'הרשימה שותפה איתכם לצפייה בלבד',
+			'sharing.kindList' => 'רשימת קניות',
 			'notifications.title' => 'התראות',
 			'notifications.empty' => 'אין התראות',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את "${recipe}"',
@@ -4766,6 +5407,7 @@ extension on Translations {
 			'notifications.openThread' => 'פתיחת הדיון',
 			'notifications.threadGone' => 'הדיון הזה נמחק',
 			'notifications.settings' => 'הגדרות',
+			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את רשימת הקניות "${recipe}"',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
@@ -4792,6 +5434,8 @@ extension on Translations {
 			'editor.discardBody' => 'השינויים שביצעתם לא יישמרו.',
 			'editor.discard' => 'בטל שינויים',
 			'editor.saveOptionsTitle' => 'איך לשמור?',
+			_ => null,
+		} ?? switch (path) {
 			'editor.savePlainHint' => 'שמירת השינויים כפי שהם, ללא המתנה',
 			'editor.saveWithAi' => 'שמירה עם עיבוד AI',
 			'editor.saveWithAiHint' => 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה',
@@ -4818,8 +5462,6 @@ extension on Translations {
 			'ingestion.originalTitle' => 'המתכון המקורי',
 			'ingestion.fetchFailed' => 'לא הצלחנו לטעון את העמוד',
 			'ingestion.loadingOriginal' => 'טוען את העמוד...',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.structuredFromSite' => 'המתכון נקרא ישירות מהנתונים המובנים של האתר, ללא עיבוד AI',
 			'ingestion.useStructured' => 'המשך למתכון המובנה',
 			'ingestion.preferAi' => 'עיבוד באמצעות AI במקום',
@@ -4885,6 +5527,11 @@ extension on Translations {
 			'mealPlanner.noProducts' => 'בלי מוצרים הפריט ייכנס לרשימת הקניות כשורה אחת בשמו',
 			'mealPlanner.itemName' => 'שם הפריט',
 			'mealPlanner.editItem' => 'עריכת פריט',
+			'mealPlanner.planOptions' => 'אפשרויות תפריט',
+			'mealPlanner.deletePlan' => 'מחיקת התפריט',
+			'mealPlanner.deletePlanConfirm' => ({required Object name}) => 'למחוק את התפריט "${name}"? הארוחות שבו יימחקו.',
+			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'לצאת מהשיתוף של התפריט "${name}"? הוא יוסר מהרשימה שלך.',
+			'mealPlanner.planDeleted' => 'התפריט נמחק',
 			'groceryList.title' => 'רשימת קניות',
 			'groceryList.aggregated' => 'מרוכז מכל התפריטים הפעילים',
 			'groceryList.addItem' => 'פריט חדש',
@@ -4947,6 +5594,7 @@ extension on Translations {
 			'groceryList.stayHere' => 'להישאר כאן',
 			'groceryList.noIngredients' => 'אין במתכון הזה מצרכים לקנות',
 			'groceryList.addFirstItem' => 'הוספת פריט',
+			'groceryList.leaveListConfirm' => ({required Object name}) => 'לצאת מהשיתוף של הרשימה "${name}"? היא תוסר מהרשימות שלך.',
 			'receipt.title' => 'סריקת קבלה',
 			'receipt.subtitle' => 'צלמו קבלה או העלו PDF, והמחירים יישמרו לרשימת הקניות',
 			'receipt.camera' => 'צילום קבלה',
@@ -5082,6 +5730,14 @@ extension on Translations {
 			'image.themeVegan' => 'טבעוני',
 			'image.themeHolidays' => 'חגים',
 			'image.themeQuick' => 'מהיר ופשוט',
+			'image.webSearch' => 'חיפוש תמונה בגוגל',
+			'image.webSearchTitle' => 'חיפוש תמונה',
+			'image.webSearchHint' => 'מה לחפש? למשל: קובה סלק',
+			'image.webSearchEmpty' => 'לא נמצאו תמונות, נסו ניסוח אחר',
+			'image.webSearchFailed' => 'החיפוש נכשל, נסו שוב',
+			'image.webSearchUnavailable' => 'חיפוש התמונות לא זמין כרגע',
+			'image.webSearchEnd' => 'אלה כל התוצאות',
+			'image.webSearchDownloadFailed' => 'לא הצלחנו להוריד את התמונה, נסו אחרת',
 			'nav.library' => 'ספרייה',
 			'nav.recipes' => 'מתכונים',
 			'nav.mealPlan' => 'תפריטים',
@@ -5213,7 +5869,7 @@ extension on Translations {
 			'walkthrough.topics.mealPlan.s6' => 'הדשבורד: ממוצע יומי, סך שבועי, עמודה לכל יום וחלוקת המאקרו. הערכים מוערכים על ידי ה-AI לכל מתכון, לפי מנה.',
 			'walkthrough.topics.mealPlan.s7' => 'כפתור השיתוף שולח את התוכנית לחשבון אחר, כעורך או כצופה. עריכה בצד אחד מגיעה לכולם.',
 			'walkthrough.topics.groceries.title' => 'רשימת קניות ומחירים',
-			'walkthrough.topics.groceries.summary' => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף והערכת עלות מהקבלות שלכם.',
+			'walkthrough.topics.groceries.summary' => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף, הערכת עלות מהקבלות שלכם, ושיתוף עם מי שקונה איתכם.',
 			'walkthrough.topics.groceries.s1' => 'לחצו על ״קניות״.',
 			'walkthrough.topics.groceries.s2' => 'רענון בונה מחדש את הרשימה מכל המתכונים בתפריט השבועי.',
 			'walkthrough.topics.groceries.s3' => 'לחצו על הפלוס כדי להוסיף פריט ביד.',
@@ -5221,6 +5877,7 @@ extension on Translations {
 			'walkthrough.topics.groceries.s5' => 'לחצו ״הוסף״ והפריט ייכנס לרשימה.',
 			'walkthrough.topics.groceries.s6' => 'לחצו כאן כדי לפתוח את ספר המחירים.',
 			'walkthrough.topics.groceries.s7' => 'סורקים קבלה, והמחיר של כל מוצר נשמר. מכאן רשימת הקניות מקבלת הערכת עלות, ומחירים חציוניים מהקהילה משלימים מה שעוד לא קניתם.',
+			'walkthrough.topics.groceries.shefi' => 'שאלו את שפי על הרשימה הזו: מה חסר לארוחה, מה אפשר להחליף, או להוסיף פריטים בדיבור.',
 			'walkthrough.topics.community.title' => 'קהילה',
 			'walkthrough.topics.community.summary' => 'מתכונים משותפים של כל המשתמשים, ופורום לשאלות ותשובות.',
 			'walkthrough.topics.community.s1' => 'לחצו על ״קהילה״.',
@@ -5231,9 +5888,27 @@ extension on Translations {
 			'walkthrough.topics.account.s1' => 'התראות: הזמנות לשיתוף ספרים ותפריטים, ועדכונים.',
 			'walkthrough.topics.account.s2' => 'לחצו על התמונה כדי לפתוח את החשבון.',
 			'walkthrough.topics.account.s3' => 'פרימיום: ניתוחי AI ללא הגבלה יומית וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.',
-			'walkthrough.topics.account.s4' => 'גישה משותפת: מי חולק איתכם ספרים ותפריטים, ומה שיתפתם אתם.',
+			'walkthrough.topics.account.s4' => 'גישה משותפת: מי חולק איתכם ספרים, תפריטים ורשימות קניות, ומה שיתפתם אתם.',
 			'walkthrough.topics.account.s5' => 'לחצו על ״הגדרות״.',
 			'walkthrough.topics.account.s6' => 'מצב תצוגה: בהיר, כהה או לפי המכשיר. בהגדרות גם שפה, העדפות תזונה ואלרגנים. את ההדרכה הזו מפעילים שוב ממסך התמיכה שבחשבון.',
+			'walkthrough.topics.account.shefi' => 'שפי, העוזר החכם: הכפתור הצף הזה פותח שיחה. שואלים בכתב או בקול, ושפי עונה, מוסיף לתפריט, בונה רשימה או מפעיל מצב בישול. בתוך מתכון, תפריט או רשימה יש כפתור ״שאלו את שפי״ שמדבר רק על הפריט הזה.',
+			'walkthrough.topics.settings.title' => 'הגדרות והעדפות',
+			'walkthrough.topics.settings.summary' => 'כל שורה בהגדרות ובהעדפות: פרופיל, שיתוף, התראות, שפה, מראה, מחיקת חשבון, יום קניות, מחירים, תזונה וספרים.',
+			'walkthrough.topics.settings.s1' => 'לחצו על ״הגדרות״: כאן החשבון והאפליקציה.',
+			'walkthrough.topics.settings.s2' => 'פרופיל: השם והתמונה שהשותפים שלכם רואים, ודרכי ההתחברות המקושרות.',
+			'walkthrough.topics.settings.s3' => 'גישה משותפת: מי חולק איתכם מתכונים, ספרים, תפריטים ורשימות, ומה שיתפתם אתם. מכאן גם מצטרפים בקוד או ב-QR.',
+			'walkthrough.topics.settings.s4' => 'לחצו על ״הגדרות התראות״.',
+			'walkthrough.topics.settings.s5' => 'התראות פוש: המתג הראשי. כשהוא כבוי שום דבר לא נשלח; למטה בוחרים מה כן: תגובות, הזמנות, עדכונים והודעות מהצוות.',
+			'walkthrough.topics.settings.s6' => 'תזכורות יום הקניות: מתי להזכיר לכם לפני הקנייה. מתוזמנות במכשיר, בלי קשר לפוש.',
+			'walkthrough.topics.settings.s7' => 'שפה: החלפה מתרגמת גם את המתכונים, הספרים, התפריטים והרשימות שלכם.',
+			'walkthrough.topics.settings.s8' => 'מראה: בהיר, כהה או לפי המכשיר. הבחירה נשמרת בחשבון ועוברת איתכם למכשיר הבא.',
+			'walkthrough.topics.settings.s9' => 'מחיקת החשבון: מוחקת לצמיתות את החשבון וכל מה שבו, אחרי אישור. מנוי בחנות מבטלים בנפרד.',
+			'walkthrough.topics.settings.s10' => 'חזרה לחשבון: לחצו על ״העדפות״, איך האפליקציה מתנהגת בשבילכם.',
+			'walkthrough.topics.settings.s11' => 'יום הקניות: היום שסביבו נבנית רשימת הקניות ומתוזמנות התזכורות.',
+			'walkthrough.topics.settings.s12' => 'מחירי קהילה: כשדולק, המחירים מהקבלות שלכם מצטרפים באופן אנונימי לממוצעים, ושורות שלא קניתם מוערכות לפיהם.',
+			'walkthrough.topics.settings.s13' => 'העדפות תזונה ואלרגנים: מסמנים כאן, והאפליקציה מדגישה אותם במתכונים ובמתכונים משותפים.',
+			'walkthrough.topics.settings.s14' => 'מעבר מהיר בספר: קפיצה לעמוד רחוק מדפדפת דף אחד בלבד. בכיבוי מדפדפים דרך כל העמודים שבדרך.',
+			'walkthrough.topics.settings.s15' => 'צלילים: אפקטים קוליים בדפדוף ובפעולות. אפשר לכבות.',
 			'walkthrough.demo.bookTitle' => 'הדרכה',
 			'walkthrough.demo.planName' => 'תפריט הדרכה',
 			'walkthrough.demo.mealName' => 'ארוחת ערב',
@@ -5273,6 +5948,8 @@ extension on Translations {
 			'adminBilling.viaRevenueCat' => 'מ-RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'מוצר: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} אירועים',
 			'adminBilling.grant' => 'תן פרימיום',
@@ -5290,9 +5967,9 @@ extension on Translations {
 			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} פרימיום · ${problems} בעיות · ${total} חשבונות',
 			'adminBilling.noEntitlementTag' => 'בלי entitlement',
 			'adminDashboard.title' => 'לוח בקרה',
-			'adminDashboard.tabDashboard' => 'דשבורד',
+			'adminDashboard.tabDashboard' => 'סקירה',
 			'adminDashboard.tabSubscriptions' => 'מנויים',
-			'adminDashboard.tabTickets' => 'ניהול פניות',
+			'adminDashboard.tabTickets' => 'פניות',
 			'adminDashboard.rangeToday' => 'היום',
 			'adminDashboard.rangeMonth' => '30 יום',
 			'adminDashboard.rangeAll' => 'הכל',
@@ -5332,8 +6009,6 @@ extension on Translations {
 			'adminDashboard.unknownModel' => 'לא במחירון',
 			'adminDashboard.usersCost' => 'עלות לפי משתמש',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} משתמשים',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'חיפוש לפי שם, מייל או uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'הצגת כל ${count} המשתמשים',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} קריאות',
@@ -5439,7 +6114,10 @@ extension on Translations {
 			'adminDashboard.grantRange' => 'טווח תאריכים מדויק',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'ניתן פרימיום עד ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'מתחיל ב-${date}',
-			'assistant.title' => 'העוזר',
+			'adminDashboard.tabConfig' => 'תצורה',
+			'adminDashboard.releaseSession' => 'ניתוק מהמכשיר המחובר',
+			'adminDashboard.releaseSessionDone' => 'המכשיר נותק; המשתמש יתבקש להתחבר מחדש',
+			'assistant.title' => 'שפי',
 			'assistant.subtitle' => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול',
 			'assistant.placeholder' => 'שאלו או אמרו לי מה לעשות…',
 			'assistant.send' => 'שליחה',
@@ -5448,7 +6126,7 @@ extension on Translations {
 			'assistant.welcome' => ({required Object name}) => 'היי ${name}! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?',
 			'assistant.error' => 'משהו השתבש. נסו שוב.',
 			'assistant.quotaReached' => 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.',
-			'assistant.premiumOnly' => 'העוזר הוא חלק מ-EasyPlate Premium',
+			'assistant.premiumOnly' => 'שפי הוא חלק מ-EasyPlate Premium',
 			'assistant.unlock' => 'לפרימיום',
 			'assistant.clear' => 'שיחה חדשה',
 			'assistant.openResult' => 'פתיחה',
@@ -5557,6 +6235,33 @@ extension on Translations {
 			'assistant.listCreated' => 'הרשימה נוצרה',
 			'assistant.offTopic' => 'אני כאן בשביל בישול, מתכונים, תכנון ארוחות וקניות. שאלו אותי כל דבר שקשור למטבח ואני על זה!',
 			'assistant.welcomeAnon' => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?',
+			'assistant.scopedWelcome' => ({required Object name}) => 'מה תרצו לדעת לגבי "${name}"?',
+			'assistant.scopedOffTopic' => ({required Object name}) => 'כאן אני עוזר רק לגבי "${name}". לשאלות אחרות פתחו את שפי מהתפריט.',
+			'assistant.askAboutRecipe' => 'שאלו את שפי על המתכון',
+			'assistant.askAboutPlan' => 'שאלו את שפי על התפריט',
+			'assistant.askAboutList' => 'שאלו את שפי על הרשימה',
+			'assistant.listen' => 'דברו אל שפי',
+			'assistant.stopListening' => 'עצירת ההאזנה',
+			'assistant.speakReplies' => 'הקראת התשובות',
+			'assistant.micUnavailable' => 'אי אפשר להשתמש במיקרופון. בדקו את הרשאת המיקרופון וזיהוי הדיבור בהגדרות המכשיר.',
+			'assistant.scopedPrompts.recipe.0' => 'מה הערכים התזונתיים למנה?',
+			'assistant.scopedPrompts.recipe.1' => 'איך מכינים את זה ל-8 סועדים?',
+			'assistant.scopedPrompts.recipe.2' => 'במה אפשר להחליף מצרך שאין לי?',
+			'assistant.scopedPrompts.recipe.3' => 'הוסיפו את המתכון לתפריט של מחר',
+			'assistant.scopedPrompts.recipe.4' => 'צרו רשימת קניות מהמתכון',
+			'assistant.scopedPrompts.mealPlan.0' => 'מה אוכלים היום?',
+			'assistant.scopedPrompts.mealPlan.1' => 'הוסיפו ארוחת ערב ליום שלישי',
+			'assistant.scopedPrompts.mealPlan.2' => 'מה חסר בתפריט השבוע?',
+			'assistant.scopedPrompts.mealPlan.3' => 'צרו רשימת קניות מהתפריט',
+			'assistant.scopedPrompts.mealPlan.4' => 'כמה קלוריות ביום רביעי?',
+			'assistant.scopedPrompts.groceryList.0' => 'מה נשאר לקנות?',
+			'assistant.scopedPrompts.groceryList.1' => 'הוסיפו חלב וביצים',
+			'assistant.scopedPrompts.groceryList.2' => 'סמנו את העגבניות כנקנו',
+			'assistant.scopedPrompts.groceryList.3' => 'מחקו את מה שכבר קניתי',
+			'assistant.scopedPrompts.groceryList.4' => 'כמה זה 2 כוסות קמח בגרמים?',
+			'assistant.listening' => 'מקשיב…',
+			'assistant.stop' => 'עצירה',
+			'assistant.cancelled' => 'בוטל.',
 			'shareCode.title' => 'קוד וקישור',
 			'shareCode.tabContact' => 'איש קשר',
 			'shareCode.tabCode' => 'קוד או קישור',
@@ -5591,6 +6296,7 @@ extension on Translations {
 			'shareCode.upgrade' => 'לפרימיום',
 			'shareCode.scanHint' => 'כוונו את המצלמה ל-QR של השיתוף',
 			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} הזמין אתכם לחשבון המשותף שלו ב-EasyPlate. קוד: ${code}\n${link}',
+			'shareCode.limitLists' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} רשימות קניות.',
 			'household.title' => 'חשבון משותף',
 			'household.duo' => 'Pro Duo',
 			'household.family' => 'Pro Family',
@@ -5619,6 +6325,102 @@ extension on Translations {
 			'household.inHousehold' => 'אתם כבר בחשבון משותף.',
 			'household.notEligibleCode' => 'התוכנית של הבעלים כבר לא כוללת חשבון משותף.',
 			'household.lapsed' => 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.',
+			'feature.comingSoon' => 'בקרוב',
+			'feature.comingSoonMessage' => 'הפיצ׳ר הזה יגיע בקרוב',
+			'feature.unavailable' => 'הפיצ׳ר הזה לא זמין כרגע',
+			'feature.premiumOnly' => 'לפרימיום',
+			'feature.premiumOnlyMessage' => 'הפיצ׳ר הזה זמין למנויי פרימיום',
+			'feature.premiumOnlyTitle' => 'לפרימיום בלבד',
+			'feature.premiumOnlyFor' => ({required Object name}) => 'האפשרות "${name}" פתוחה רק למשתמשי פרימיום',
+			'feature.goPremium' => 'עבור לפרימיום',
+			'featureName.books' => 'ספרי מתכונים',
+			'featureName.mealPlans' => 'תפריטים',
+			'featureName.groceryLists' => 'רשימות קניות',
+			'featureName.community' => 'קהילה',
+			'featureName.ingestText' => 'הוספת מתכון מטקסט',
+			'featureName.ingestWebSearch' => 'חיפוש מתכון ברשת',
+			'featureName.ingestLink' => 'הוספת מתכון מקישור',
+			'featureName.ingestSocialVideo' => 'הוספת מתכון מסרטון',
+			'featureName.ingestAiRequest' => 'בקשת מתכון מה-AI',
+			'featureName.ingestFile' => 'הוספת מתכון מקובץ',
+			'featureName.shareIn' => 'שיתוף מאפליקציה אחרת',
+			'featureName.saveWithAi' => 'שמירה עם AI',
+			'featureName.cookMode' => 'מצב בישול',
+			'featureName.cookTimers' => 'טיימרים בבישול',
+			'featureName.nutrition' => 'ערכים תזונתיים',
+			'featureName.recipeImageAi' => 'יצירת תמונה ב-AI',
+			'featureName.recipeImageSearch' => 'חיפוש תמונה בגוגל',
+			'featureName.groceryFromRecipe' => 'רשימת קניות ממתכון',
+			'featureName.sharedRecipes' => 'מתכונים משותפים',
+			'featureName.forum' => 'פורום',
+			'featureName.likes' => 'לייקים',
+			'featureName.shareRecipes' => 'שיתוף מתכונים',
+			'featureName.shareBooks' => 'שיתוף ספרים',
+			'featureName.sharePlans' => 'שיתוף תפריטים',
+			'featureName.shareGroceryLists' => 'שיתוף רשימות קניות',
+			'featureName.shareCodes' => 'שיתוף בקוד',
+			'featureName.households' => 'משק בית',
+			'featureName.priceBook' => 'ספר מחירים',
+			'featureName.receiptScan' => 'סריקת קבלה',
+			'featureName.groceryCost' => 'עלות משוערת',
+			'featureName.shoppingReminder' => 'תזכורת קניות',
+			'featureName.assistant' => 'שפי (העוזר החכם)',
+			'featureName.notifications' => 'התראות',
+			'featureName.premium' => 'פרימיום',
+			'featureName.contentTranslation' => 'תרגום תוכן',
+			'featureName.theming' => 'מראה',
+			'featureName.walkthrough' => 'סיור מודרך',
+			'featureName.tutorialBook' => 'ספר הדרכה',
+			'featureName.feedback' => 'משוב',
+			'featureName.assistantScoped' => 'שפי בתוך פריט',
+			'featureName.assistantVoice' => 'דיבור עם שפי',
+			'featureName.singleSession' => 'מכשיר אחד לחשבון',
+			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
+			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
+			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
+			'adminConfig.saved' => ({required Object name}) => '״${name}״ פורסם',
+			'adminConfig.count' => ({required Object n}) => '${n} הגדרות',
+			'adminConfig.searchAll' => 'חיפוש בכל ההגדרות',
+			'adminConfig.searchIn' => ({required Object section}) => 'חיפוש ב${section}',
+			'adminConfig.noResults' => ({required Object query}) => 'אין הגדרה שמתאימה ל״${query}״',
+			'adminConfig.filterAll' => 'הכל',
+			'adminConfig.clearSearch' => 'ניקוי החיפוש',
+			'adminConfig.noFlagsInState' => 'אין פיצ׳רים במצב הזה',
+			'adminConfig.groups.features' => 'פיצ׳רים',
+			'adminConfig.groups.adsQuotas' => 'פרסומות ומכסות',
+			'adminConfig.groups.sharing' => 'שיתוף בחשבון חינמי',
+			'adminConfig.groups.voice' => 'הקול של שפי',
+			'adminConfig.groups.versions' => 'גרסאות וסביבה',
+			'adminConfig.groups.gemini' => 'שרת ה-AI (דורש deploy)',
+			'adminConfig.groups.other' => 'אחר',
+			'adminConfig.flag.hidden' => 'לא מוצג',
+			'adminConfig.flag.comingSoon' => 'בקרוב',
+			'adminConfig.flag.everyone' => 'חינמי',
+			'adminConfig.flag.premium' => 'פרימיום',
+			'adminConfig.labels.ads_enabled' => 'פרסומות פעילות',
+			'adminConfig.labels.ads_fail_open' => 'פתיחה כשאין סרטון',
+			'adminConfig.labels.ads_feed_interval' => 'מרווח מודעות בפיד',
+			'adminConfig.labels.quota_shared_free' => 'מתכונים משותפים חינם ביום',
+			'adminConfig.labels.quota_shared_rewarded' => 'מתכונים משותפים אחרי סרטון',
+			'adminConfig.labels.quota_ai_rewarded' => 'חילוצי AI אחרי סרטון ביום',
+			'adminConfig.labels.share_free_recipes_weekly' => 'שיתופי מתכון בשבוע',
+			'adminConfig.labels.share_free_books_total' => 'ספרים משותפים בו-זמנית',
+			'adminConfig.labels.share_free_plans_total' => 'תפריטים משותפים בו-זמנית',
+			'adminConfig.labels.share_free_lists_total' => 'רשימות קניות משותפות בו-זמנית',
+			'adminConfig.labels.tts_cloud_enabled' => 'קול ענן (Google)',
+			'adminConfig.labels.tts_voice_he' => 'קול בעברית',
+			'adminConfig.labels.tts_voice_en' => 'קול באנגלית',
+			'adminConfig.labels.tts_voice_ar' => 'קול בערבית',
+			'adminConfig.labels.tts_voice_fr' => 'קול בצרפתית',
+			'adminConfig.labels.tts_voice_ru' => 'קול ברוסית',
+			'adminConfig.labels.isProd' => 'גרסת פרודקשן',
+			'adminConfig.labels.minimumVersion' => 'גרסה מינימלית',
+			'adminConfig.labels.latestVersion' => 'גרסה אחרונה',
+			'adminConfig.labels.iosAppStoreId' => 'מזהה App Store',
+			'adminConfig.labels.gemini_minInstances' => 'מינימום שרתים',
+			'adminConfig.labels.gemini_maxInstances' => 'מקסימום שרתים',
+			'adminConfig.labels.gemini_timeoutSeconds' => 'זמן קצוב לקריאה (שניות)',
+			'adminConfig.labels.session_days' => 'ימי התחברות למכשיר',
 			_ => null,
 		};
 	}

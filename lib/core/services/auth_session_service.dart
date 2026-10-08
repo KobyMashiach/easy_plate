@@ -23,10 +23,13 @@ import '../monetization/entitlement_service.dart';
 import '../monetization/purchases_service.dart';
 import '../sync/cloud_sync_service.dart';
 import 'cook_session_service.dart';
+import 'device_session_service.dart';
 import 'shopping_reminder_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
 import '../../features/household/domain/household_service.dart';
+import '../theme/theme_controller.dart';
+import '../features/features_flags.dart';
 
 /// Where the user stands in the gate: signed out, phone not yet proved, email
 /// not yet confirmed, signed in but without a profile document, profile filled
@@ -56,6 +59,15 @@ enum AuthStage {
   /// Switched off by the administrator. Held on the blocked screen with the
   /// reason until they sign out; nothing else in the app is reachable.
   blocked,
+
+  /// Another device holds the account's session. Held on the session screen
+  /// with a retry, for after that device signs out.
+  otherDevice,
+
+  /// The month-long session ran out (or was released by the administrator)
+  /// while this device was signed in. Held on the session screen until the
+  /// user signs in again.
+  sessionExpired,
 }
 
 /// Single source of truth for the auth gate, and the router's refresh signal.
@@ -108,6 +120,9 @@ class AuthSessionService extends ChangeNotifier {
   /// popup gate for pushes) follows it without a restart.
   final preferencesListenable = ValueNotifier<UserPreferencesEntity?>(null);
 
+  /// A change made on this device: the theme is not re-applied here — the
+  /// device already switched (and may still be animating the switch), and
+  /// re-applying it mid-animation flashed the new colours early.
   void publishPreferences(UserPreferencesEntity preferences) {
     _onboardingComplete = preferences.onboardingComplete;
     preferencesListenable.value = preferences;
@@ -160,6 +175,8 @@ class AuthSessionService extends ChangeNotifier {
       NotificationsService().unbind();
       AdminInboxService().unbind();
       _blockMessage = null;
+      _sessionRefusal = null;
+      DeviceSessionService().unwatch();
       // Neither may outlive the account: a premium flag would carry into the
       // next sign-in, and a quota count would be charged to the wrong person.
       EntitlementService().clear();
@@ -245,6 +262,9 @@ class AuthSessionService extends ChangeNotifier {
       final preferences = await _preferences!.getPreferences();
       _onboardingComplete = preferences.onboardingComplete;
       preferencesListenable.value = preferences;
+      // The account's look, on sign-in or a refresh from the cloud: a new
+      // device or a reinstall takes what the account remembers.
+      unawaited(ThemeController().applyFromAccount(preferences.themeMode));
       await onPreferencesLoaded?.call(preferences);
     } catch (e) {
       debugPrint('Preferences load failed: $e');
@@ -287,6 +307,11 @@ class AuthSessionService extends ChangeNotifier {
       return;
     }
 
+    // One device at a time: the server hands the session to this device or
+    // names the one that holds it. Only once the account is real (profile
+    // written), so a half-made account never occupies a session.
+    if (!await _claimSession(user.uid)) return;
+
     _set(_onboardingComplete ? AuthStage.ready : AuthStage.needsOnboarding);
     unawaited(_registerPush(user.uid));
     unawaited(_touchDevice(user.uid));
@@ -320,6 +345,58 @@ class AuthSessionService extends ChangeNotifier {
   /// [AuthStage.blocked]; blank when the administrator gave none.
   String? _blockMessage;
   String? get blockMessage => _blockMessage;
+
+  /// The other device, while [stage] is [AuthStage.otherDevice].
+  SessionRefusal? _sessionRefusal;
+  SessionRefusal? get sessionRefusal => _sessionRefusal;
+
+  /// Claims the account's device session and starts following it. False
+  /// when another device holds it, with the stage set to say so.
+  Future<bool> _claimSession(String uid) async {
+    final sessions = DeviceSessionService();
+    if (!FeaturesFlags.singleSession.isVisible) return true;
+    final refusal = await sessions.claim();
+    if (refusal != null) {
+      _sessionRefusal = refusal;
+      _set(AuthStage.otherDevice);
+      return false;
+    }
+    _sessionRefusal = null;
+    sessions.watch(uid, _onSessionEnded);
+    return true;
+  }
+
+  /// The session document stopped naming this device, while signed in.
+  void _onSessionEnded(SessionEnd end) {
+    if (_user == null) return;
+    if (_stage == AuthStage.otherDevice || _stage == AuthStage.sessionExpired) {
+      return;
+    }
+    DeviceSessionService().unwatch();
+    // Whatever was cooking stops with the session; the account's boxes
+    // stay for the sign-in that follows.
+    CookSessionService().finishAll();
+    _sessionRefusal = null;
+    _set(
+      end == SessionEnd.otherDevice
+          ? AuthStage.otherDevice
+          : AuthStage.sessionExpired,
+    );
+  }
+
+  /// From the session screen, after the other device signed out: asks
+  /// again, and the gate opens if the server now says yes.
+  Future<void> retrySession() async {
+    final user = _user;
+    if (user == null || _stage != AuthStage.otherDevice) return;
+    await _resolveProfile(user);
+  }
+
+  /// On resume: a month that ran out while the app sat in the background.
+  void checkSession() {
+    if (_user == null || _stage != AuthStage.ready) return;
+    if (DeviceSessionService().isExpired) _onSessionEnded(SessionEnd.expired);
+  }
 
   /// Which platform and build this account was last seen on, for the
   /// administrator's dashboard. Best effort, never awaited.
@@ -444,6 +521,7 @@ class AuthSessionService extends ChangeNotifier {
     profileListenable.value = null;
     preferencesListenable.value = null;
     _claimAcknowledgedBy = null;
+    _sessionRefusal = null;
     _onboardingComplete = false;
     onPreferencesLoaded = null;
     _notifications = null;

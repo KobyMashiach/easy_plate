@@ -77,6 +77,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$ru assistant = _Translations$assistant$ru._(_root);
 	@override late final _Translations$shareCode$ru shareCode = _Translations$shareCode$ru._(_root);
 	@override late final _Translations$household$ru household = _Translations$household$ru._(_root);
+	@override late final _Translations$feature$ru feature = _Translations$feature$ru._(_root);
+	@override late final _Translations$featureName$ru featureName = _Translations$featureName$ru._(_root);
 }
 
 // Path: common
@@ -185,6 +187,15 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get phoneClaimedSignIn => 'Войти в мой существующий аккаунт';
 	@override String get phoneClaimedCreateNew => 'Всё равно создать новый аккаунт';
 	@override String get phoneClaimedCreateNewConfirm => 'Для этого номера будет открыт новый пустой аккаунт. Существующий аккаунт останется как есть, но с этим номером в него больше не войти.';
+	@override String get sessionOtherDeviceTitle => 'Вход выполнен на другом устройстве';
+	@override String sessionOtherDeviceBody({required Object platform, required Object since}) => 'Этот аккаунт сейчас открыт на ${platform}${since}. Им можно пользоваться только на одном устройстве: выйдите там, затем нажмите «Повторить».';
+	@override String sessionSince({required Object date}) => ' с ${date}';
+	@override String get sessionExpiredTitle => 'Срок входа истёк';
+	@override String get sessionExpiredBody => 'Вход действует до месяца. Войдите снова, чтобы продолжить.';
+	@override String get sessionRetry => 'Повторить';
+	@override String get platformIos => 'iPhone';
+	@override String get platformAndroid => 'телефоне Android';
+	@override String get platformOther => 'другом устройстве';
 }
 
 // Path: profile
@@ -295,7 +306,7 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get themeDark => 'Тёмная';
 	@override String get soundEffects => 'Звуковые эффекты (перелистывание страниц)';
 	@override String get fastPageTurn => 'Быстрое перелистывание';
-	@override String get fastPageTurnHint => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.';
+	@override String get fastPageTurnHint => 'Переход из оглавления или быстрой навигации переворачивает одну страницу до цели. Выключите, чтобы листать все страницы по пути.';
 	@override String get sharedAccess => 'Управление доступом';
 	@override String get noSharedAccess => 'Вы ещё не делились книгами или списками';
 	@override String get communityPrices => 'Средние цены сообщества';
@@ -315,6 +326,15 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get notifications => 'Уведомления';
 	@override String get notificationsHint => 'Какие оповещения вы получаете и как';
 	@override String get settingsHint => 'Аккаунт, уведомления, язык и оформление';
+	@override String get dangerZone => 'Опасная зона';
+	@override String get deleteAccount => 'Удалить аккаунт';
+	@override String get deleteAccountHint => 'Безвозвратно удалить аккаунт и всё его содержимое';
+	@override String get deleteAccountTitle => 'Удалить аккаунт навсегда?';
+	@override String get deleteAccountBody => 'Ваш аккаунт, рецепты, книги, планы питания, списки покупок, чеки, фото, посты и ответы будут безвозвратно удалены с наших серверов и с этого устройства, восстановить их будет невозможно. То, чем вы делились, исчезнет и у тех, с кем вы делились. Активная подписка не отменяется автоматически: отмените её в App Store или Google Play.';
+	@override String get deleteAccountConfirm => 'Удалить навсегда';
+	@override String get deletingAccount => 'Удаляем аккаунт…';
+	@override String get deleteAccountFailed => 'Не удалось удалить аккаунт. Попробуйте ещё раз или напишите на support@aieasyplate.app.';
+	@override String get deleteAccountHousehold => 'Вы владелец общей семьи. Сначала закройте её на экране «Семья», затем попробуйте снова.';
 }
 
 // Path: notificationSettings
@@ -378,6 +398,9 @@ class _Translations$more$ru extends Translations$more$he {
 	@override String get email => 'Отправить письмо';
 	@override String get supportUnavailable => 'Не удалось открыть приложение';
 	@override String get preferences => 'Предпочтения';
+	@override String get help => 'Поддержка и документы';
+	@override String get helpHint => 'Поддержка, политика конфиденциальности и условия';
+	@override String get legal => 'Документы';
 }
 
 // Path: language
@@ -670,6 +693,10 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get kindBook => 'Книга';
 	@override String get kindPlan => 'Меню';
 	@override String get recipesTravel => 'Рецепты внутри будут переданы вместе с ним';
+	@override String get shareList => 'Поделиться списком покупок';
+	@override String get acceptedList => 'Список добавлен в ваши списки покупок';
+	@override String get viewerCannotEditList => 'Этот список открыт вам только для просмотра';
+	@override String get kindList => 'список покупок';
 }
 
 // Path: notifications
@@ -707,6 +734,7 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String get openThread => 'Открыть обсуждение';
 	@override String get threadGone => 'Это обсуждение удалено';
 	@override String get settings => 'Настройки';
+	@override String sharedList({required Object name, required Object recipe}) => '${name} поделился/лась с вами списком покупок «${recipe}»';
 }
 
 // Path: editor
@@ -851,6 +879,11 @@ class _Translations$mealPlanner$ru extends Translations$mealPlanner$he {
 	@override String get noProducts => 'Без продуктов позиция попадёт в список покупок одной строкой под своим названием';
 	@override String get itemName => 'Название позиции';
 	@override String get editItem => 'Изменить позицию';
+	@override String get planOptions => 'Параметры плана';
+	@override String get deletePlan => 'Удалить план';
+	@override String deletePlanConfirm({required Object name}) => 'Удалить план «${name}»? Его приёмы пищи тоже будут удалены.';
+	@override String leavePlanConfirm({required Object name}) => 'Выйти из общего плана «${name}»? Он исчезнет из вашего списка.';
+	@override String get planDeleted => 'План удалён';
 }
 
 // Path: groceryList
@@ -922,6 +955,7 @@ class _Translations$groceryList$ru extends Translations$groceryList$he {
 	@override String get stayHere => 'Остаться здесь';
 	@override String get noIngredients => 'В этом рецепте нет ингредиентов для покупки';
 	@override String get addFirstItem => 'Добавить товар';
+	@override String leaveListConfirm({required Object name}) => 'Выйти из общего списка «${name}»? Он исчезнет из ваших списков.';
 }
 
 // Path: receipt
@@ -1084,6 +1118,14 @@ class _Translations$image$ru extends Translations$image$he {
 	@override String get themeVegan => 'Веганское';
 	@override String get themeHolidays => 'Праздники';
 	@override String get themeQuick => 'Быстро и просто';
+	@override String get webSearch => 'Поиск в Google Картинках';
+	@override String get webSearchTitle => 'Поиск картинки';
+	@override String get webSearchHint => 'Что искать? например: кубе со свёклой';
+	@override String get webSearchEmpty => 'Картинки не найдены, попробуйте другие слова';
+	@override String get webSearchFailed => 'Поиск не удался, попробуйте ещё раз';
+	@override String get webSearchUnavailable => 'Поиск картинок сейчас недоступен';
+	@override String get webSearchEnd => 'Это все результаты';
+	@override String get webSearchDownloadFailed => 'Не удалось загрузить эту картинку, попробуйте другую';
 }
 
 // Path: nav
@@ -1481,7 +1523,7 @@ class _Translations$assistant$ru extends Translations$assistant$he {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Ассистент';
+	@override String get title => 'Шефи';
 	@override String get subtitle => 'Ваш су-шеф: вопросы, планы, покупки, готовка';
 	@override String get placeholder => 'Спросите или скажите, что сделать…';
 	@override String get send => 'Отправить';
@@ -1513,6 +1555,19 @@ class _Translations$assistant$ru extends Translations$assistant$he {
 	@override String get listCreated => 'Список создан';
 	@override String get offTopic => 'Я здесь для готовки, рецептов, планов питания и покупок. Спросите что угодно про кухню, и я помогу!';
 	@override String get welcomeAnon => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?';
+	@override String scopedWelcome({required Object name}) => 'Что вы хотите узнать о «${name}»?';
+	@override String scopedOffTopic({required Object name}) => 'Здесь я помогаю только с «${name}». Для остального откройте Шефи из меню.';
+	@override String get askAboutRecipe => 'Спросить Шефи об этом рецепте';
+	@override String get askAboutPlan => 'Спросить Шефи об этом меню';
+	@override String get askAboutList => 'Спросить Шефи об этом списке';
+	@override String get listen => 'Говорить с Шефи';
+	@override String get stopListening => 'Остановить прослушивание';
+	@override String get speakReplies => 'Читать ответы вслух';
+	@override String get micUnavailable => 'Микрофон недоступен. Проверьте разрешения на микрофон и распознавание речи в настройках устройства.';
+	@override late final _Translations$assistant$scopedPrompts$ru scopedPrompts = _Translations$assistant$scopedPrompts$ru._(_root);
+	@override String get listening => 'Слушаю…';
+	@override String get stop => 'Стоп';
+	@override String get cancelled => 'Отменено.';
 }
 
 // Path: shareCode
@@ -1556,6 +1611,7 @@ class _Translations$shareCode$ru extends Translations$shareCode$he {
 	@override String get upgrade => 'Открыть Premium';
 	@override String get scanHint => 'Наведите камеру на QR-код';
 	@override String householdMessage({required Object name, required Object code, required Object link}) => '${name} приглашает вас в общий аккаунт EasyPlate. Код: ${code}\n${link}';
+	@override String limitLists({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} списков покупок.';
 }
 
 // Path: household
@@ -1595,6 +1651,74 @@ class _Translations$household$ru extends Translations$household$he {
 	@override String get lapsed => 'Подписка владельца закончилась; Premium участников приостановлен.';
 }
 
+// Path: feature
+class _Translations$feature$ru extends Translations$feature$he {
+	_Translations$feature$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get comingSoon => 'Скоро';
+	@override String get comingSoonMessage => 'Эта функция скоро появится';
+	@override String get unavailable => 'Эта функция сейчас недоступна';
+	@override String get premiumOnly => 'Премиум';
+	@override String get premiumOnlyMessage => 'Эта функция для подписчиков Премиум';
+	@override String get premiumOnlyTitle => 'Только для Премиум';
+	@override String premiumOnlyFor({required Object name}) => 'Функция «${name}» доступна только подписчикам Премиум';
+	@override String get goPremium => 'Перейти на Премиум';
+}
+
+// Path: featureName
+class _Translations$featureName$ru extends Translations$featureName$he {
+	_Translations$featureName$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get books => 'Книги рецептов';
+	@override String get mealPlans => 'Планы питания';
+	@override String get groceryLists => 'Списки покупок';
+	@override String get community => 'Сообщество';
+	@override String get ingestText => 'Рецепт из текста';
+	@override String get ingestWebSearch => 'Поиск рецепта в интернете';
+	@override String get ingestLink => 'Рецепт по ссылке';
+	@override String get ingestSocialVideo => 'Рецепт из видео';
+	@override String get ingestAiRequest => 'Запрос рецепта у ИИ';
+	@override String get ingestFile => 'Рецепт из файла';
+	@override String get shareIn => 'Импорт из другого приложения';
+	@override String get saveWithAi => 'Сохранение с ИИ';
+	@override String get cookMode => 'Режим готовки';
+	@override String get cookTimers => 'Таймеры готовки';
+	@override String get nutrition => 'Питательная ценность';
+	@override String get recipeImageAi => 'Картинка от ИИ';
+	@override String get recipeImageSearch => 'Поиск картинок Google';
+	@override String get groceryFromRecipe => 'Список покупок из рецепта';
+	@override String get sharedRecipes => 'Общие рецепты';
+	@override String get forum => 'Форум';
+	@override String get likes => 'Лайки';
+	@override String get shareRecipes => 'Обмен рецептами';
+	@override String get shareBooks => 'Обмен книгами';
+	@override String get sharePlans => 'Обмен планами';
+	@override String get shareGroceryLists => 'Обмен списками покупок';
+	@override String get shareCodes => 'Коды доступа';
+	@override String get households => 'Семья';
+	@override String get priceBook => 'Книга цен';
+	@override String get receiptScan => 'Сканирование чека';
+	@override String get groceryCost => 'Примерная стоимость';
+	@override String get shoppingReminder => 'Напоминание о покупках';
+	@override String get assistant => 'Шефи (помощник)';
+	@override String get notifications => 'Уведомления';
+	@override String get premium => 'Премиум';
+	@override String get contentTranslation => 'Перевод контента';
+	@override String get theming => 'Оформление';
+	@override String get walkthrough => 'Обучение';
+	@override String get tutorialBook => 'Руководство';
+	@override String get feedback => 'Обратная связь';
+	@override String get assistantScoped => 'Шефи внутри элемента';
+	@override String get assistantVoice => 'Голос с Шефи';
+	@override String get singleSession => 'Одно устройство на аккаунт';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1609,6 +1733,7 @@ class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$groceries$ru groceries = _Translations$walkthrough$topics$groceries$ru._(_root);
 	@override late final _Translations$walkthrough$topics$community$ru community = _Translations$walkthrough$topics$community$ru._(_root);
 	@override late final _Translations$walkthrough$topics$account$ru account = _Translations$walkthrough$topics$account$ru._(_root);
+	@override late final _Translations$walkthrough$topics$settings$ru settings = _Translations$walkthrough$topics$settings$ru._(_root);
 }
 
 // Path: walkthrough.demo
@@ -1739,6 +1864,36 @@ class _Translations$assistant$suggest$ru extends Translations$assistant$suggest$
 	];
 }
 
+// Path: assistant.scopedPrompts
+class _Translations$assistant$scopedPrompts$ru extends Translations$assistant$scopedPrompts$he {
+	_Translations$assistant$scopedPrompts$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get recipe => [
+		'Какое КБЖУ на порцию?',
+		'Как приготовить это на 8 человек?',
+		'Чем заменить ингредиент, которого нет?',
+		'Добавь этот рецепт в меню на завтра',
+		'Создай список покупок из этого рецепта',
+	];
+	@override List<String> get mealPlan => [
+		'Что едим сегодня?',
+		'Добавь ужин на вторник',
+		'Чего не хватает на этой неделе?',
+		'Создай список покупок из этого меню',
+		'Сколько калорий в среду?',
+	];
+	@override List<String> get groceryList => [
+		'Что осталось купить?',
+		'Добавь молоко и яйца',
+		'Отметь помидоры как купленные',
+		'Удали то, что я уже купил',
+		'Сколько граммов в 2 стаканах муки?',
+	];
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$ru extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1809,7 +1964,7 @@ class _Translations$walkthrough$topics$groceries$ru extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Список покупок и цены';
-	@override String get summary => 'Список, построенный из плана, с отметкой уже собранного и оценкой стоимости по вашим чекам.';
+	@override String get summary => 'Список, построенный из плана, с отметкой уже собранного, оценкой стоимости по вашим чекам и общим доступом для тех, кто ходит за покупками с вами.';
 	@override String get s1 => 'Нажмите «Покупки».';
 	@override String get s2 => 'Обновление заново собирает список из всех рецептов недельного плана.';
 	@override String get s3 => 'Нажмите плюс, чтобы добавить пункт вручную.';
@@ -1817,6 +1972,7 @@ class _Translations$walkthrough$topics$groceries$ru extends Translations$walkthr
 	@override String get s5 => 'Нажмите «Добавить», и пункт попадёт в список.';
 	@override String get s6 => 'Нажмите здесь, чтобы открыть книгу цен.';
 	@override String get s7 => 'Отсканируйте чек, и цена каждого товара сохранится. Список покупок получит оценку стоимости, а медианные цены сообщества дополнят то, что вы ещё не покупали.';
+	@override String get shefi => 'Спросите Шефи об этом списке: чего не хватает для блюда, что заменить, или добавьте позиции голосом.';
 }
 
 // Path: walkthrough.topics.community
@@ -1845,9 +2001,36 @@ class _Translations$walkthrough$topics$account$ru extends Translations$walkthrou
 	@override String get s1 => 'Уведомления: приглашения к общим книгам и планам, и обновления.';
 	@override String get s2 => 'Нажмите на фото, чтобы открыть аккаунт.';
 	@override String get s3 => 'Премиум: разборы ИИ без дневного лимита и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.';
-	@override String get s4 => 'Общий доступ: кто делится с вами книгами и планами, и чем поделились вы.';
+	@override String get s4 => 'Общий доступ: кто делится с вами книгами, планами и списками покупок, и чем поделились вы.';
 	@override String get s5 => 'Нажмите «Настройки».';
 	@override String get s6 => 'Режим отображения: светлый, тёмный или как на устройстве. В настройках также язык, пищевые предпочтения и аллергены. Это руководство можно запустить снова с экрана поддержки в аккаунте.';
+	@override String get shefi => 'Шефи, умный помощник: эта плавающая кнопка открывает чат. Спросите текстом или голосом — Шефи ответит, добавит в план, соберёт список или запустит режим готовки. Внутри рецепта, плана или списка кнопка «Спросить Шефи» говорит только об этом элементе.';
+}
+
+// Path: walkthrough.topics.settings
+class _Translations$walkthrough$topics$settings$ru extends Translations$walkthrough$topics$settings$he {
+	_Translations$walkthrough$topics$settings$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Настройки и предпочтения';
+	@override String get summary => 'Каждая строка настроек и предпочтений: профиль, доступ, уведомления, язык, оформление, удаление аккаунта, день покупок, цены, питание и книги.';
+	@override String get s1 => 'Нажмите «Настройки»: здесь аккаунт и приложение.';
+	@override String get s2 => 'Профиль: имя и фото, которые видят те, с кем вы делитесь, и привязанные способы входа.';
+	@override String get s3 => 'Общий доступ: кто делится с вами рецептами, книгами, меню и списками, и чем поделились вы. Вход по коду или QR тоже начинается здесь.';
+	@override String get s4 => 'Нажмите «Настройки уведомлений».';
+	@override String get s5 => 'Push-уведомления: главный выключатель. Выключен — ничего не отправляется; ниже вы выбираете, что отправлять: ответы, приглашения, обновления и сообщения команды.';
+	@override String get s6 => 'Напоминания о дне покупок: когда напомнить перед походом в магазин. Планируются на устройстве, независимо от push.';
+	@override String get s7 => 'Язык: смена переводит и ваши рецепты, книги, меню и списки.';
+	@override String get s8 => 'Оформление: светлое, тёмное или как на устройстве. Выбор сохраняется в аккаунте и переходит с вами на следующее устройство.';
+	@override String get s9 => 'Удалить аккаунт: безвозвратно удаляет аккаунт и всё его содержимое после подтверждения. Подписка в магазине отменяется отдельно.';
+	@override String get s10 => 'Снова в аккаунте: нажмите «Предпочтения» — как приложение ведёт себя для вас.';
+	@override String get s11 => 'День покупок: день, вокруг которого строится список покупок и на который настроены напоминания.';
+	@override String get s12 => 'Цены сообщества: когда включено, цены из ваших чеков анонимно попадают в средние, а строки, которые вы не покупали, оцениваются по ним.';
+	@override String get s13 => 'Пищевые предпочтения и аллергены: отметьте их здесь, и приложение выделит их в рецептах и общих рецептах.';
+	@override String get s14 => 'Быстрое перелистывание книг: прыжок на далёкую страницу переворачивает одну страницу. Выключено — листаются все страницы по пути.';
+	@override String get s15 => 'Звуки: звуковые эффекты при перелистывании и действиях. Можно выключить.';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -1949,6 +2132,15 @@ extension on TranslationsRu {
 			'auth.phoneClaimedSignIn' => 'Войти в мой существующий аккаунт',
 			'auth.phoneClaimedCreateNew' => 'Всё равно создать новый аккаунт',
 			'auth.phoneClaimedCreateNewConfirm' => 'Для этого номера будет открыт новый пустой аккаунт. Существующий аккаунт останется как есть, но с этим номером в него больше не войти.',
+			'auth.sessionOtherDeviceTitle' => 'Вход выполнен на другом устройстве',
+			'auth.sessionOtherDeviceBody' => ({required Object platform, required Object since}) => 'Этот аккаунт сейчас открыт на ${platform}${since}. Им можно пользоваться только на одном устройстве: выйдите там, затем нажмите «Повторить».',
+			'auth.sessionSince' => ({required Object date}) => ' с ${date}',
+			'auth.sessionExpiredTitle' => 'Срок входа истёк',
+			'auth.sessionExpiredBody' => 'Вход действует до месяца. Войдите снова, чтобы продолжить.',
+			'auth.sessionRetry' => 'Повторить',
+			'auth.platformIos' => 'iPhone',
+			'auth.platformAndroid' => 'телефоне Android',
+			'auth.platformOther' => 'другом устройстве',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',
@@ -2005,7 +2197,7 @@ extension on TranslationsRu {
 			'settings.themeDark' => 'Тёмная',
 			'settings.soundEffects' => 'Звуковые эффекты (перелистывание страниц)',
 			'settings.fastPageTurn' => 'Быстрое перелистывание',
-			'settings.fastPageTurnHint' => 'Переход из содержания или быстрой навигации перелистывает страницы по пути. Отключите, чтобы сразу попадать на нужную страницу.',
+			'settings.fastPageTurnHint' => 'Переход из оглавления или быстрой навигации переворачивает одну страницу до цели. Выключите, чтобы листать все страницы по пути.',
 			'settings.sharedAccess' => 'Управление доступом',
 			'settings.noSharedAccess' => 'Вы ещё не делились книгами или списками',
 			'settings.communityPrices' => 'Средние цены сообщества',
@@ -2025,6 +2217,15 @@ extension on TranslationsRu {
 			'settings.notifications' => 'Уведомления',
 			'settings.notificationsHint' => 'Какие оповещения вы получаете и как',
 			'settings.settingsHint' => 'Аккаунт, уведомления, язык и оформление',
+			'settings.dangerZone' => 'Опасная зона',
+			'settings.deleteAccount' => 'Удалить аккаунт',
+			'settings.deleteAccountHint' => 'Безвозвратно удалить аккаунт и всё его содержимое',
+			'settings.deleteAccountTitle' => 'Удалить аккаунт навсегда?',
+			'settings.deleteAccountBody' => 'Ваш аккаунт, рецепты, книги, планы питания, списки покупок, чеки, фото, посты и ответы будут безвозвратно удалены с наших серверов и с этого устройства, восстановить их будет невозможно. То, чем вы делились, исчезнет и у тех, с кем вы делились. Активная подписка не отменяется автоматически: отмените её в App Store или Google Play.',
+			'settings.deleteAccountConfirm' => 'Удалить навсегда',
+			'settings.deletingAccount' => 'Удаляем аккаунт…',
+			'settings.deleteAccountFailed' => 'Не удалось удалить аккаунт. Попробуйте ещё раз или напишите на support@aieasyplate.app.',
+			'settings.deleteAccountHousehold' => 'Вы владелец общей семьи. Сначала закройте её на экране «Семья», затем попробуйте снова.',
 			'notificationSettings.title' => 'Настройки уведомлений',
 			'notificationSettings.push' => 'Push-уведомления',
 			'notificationSettings.pushHint' => 'Оповещения на этом устройстве. Если выключено, на телефон ничего не приходит; входящие продолжают пополняться.',
@@ -2061,6 +2262,9 @@ extension on TranslationsRu {
 			'more.email' => 'Отправить письмо',
 			'more.supportUnavailable' => 'Не удалось открыть приложение',
 			'more.preferences' => 'Предпочтения',
+			'more.help' => 'Поддержка и документы',
+			'more.helpHint' => 'Поддержка, политика конфиденциальности и условия',
+			'more.legal' => 'Документы',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -2290,6 +2494,10 @@ extension on TranslationsRu {
 			'sharing.kindBook' => 'Книга',
 			'sharing.kindPlan' => 'Меню',
 			'sharing.recipesTravel' => 'Рецепты внутри будут переданы вместе с ним',
+			'sharing.shareList' => 'Поделиться списком покупок',
+			'sharing.acceptedList' => 'Список добавлен в ваши списки покупок',
+			'sharing.viewerCannotEditList' => 'Этот список открыт вам только для просмотра',
+			'sharing.kindList' => 'список покупок',
 			'notifications.title' => 'Уведомления',
 			'notifications.empty' => 'Уведомлений нет',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»',
@@ -2318,6 +2526,7 @@ extension on TranslationsRu {
 			'notifications.openThread' => 'Открыть обсуждение',
 			'notifications.threadGone' => 'Это обсуждение удалено',
 			'notifications.settings' => 'Настройки',
+			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} поделился/лась с вами списком покупок «${recipe}»',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
@@ -2344,6 +2553,8 @@ extension on TranslationsRu {
 			'editor.discardBody' => 'Ваши правки не будут сохранены.',
 			'editor.discard' => 'Отменить',
 			'editor.saveOptionsTitle' => 'Как сохранить?',
+			_ => null,
+		} ?? switch (path) {
 			'editor.savePlainHint' => 'Сохранить изменения как есть, без ожидания',
 			'editor.saveWithAi' => 'Сохранить с проверкой AI',
 			'editor.saveWithAiHint' => 'Исправить орфографию и согласовать время в шагах',
@@ -2370,8 +2581,6 @@ extension on TranslationsRu {
 			'ingestion.originalTitle' => 'Оригинальный рецепт',
 			'ingestion.fetchFailed' => 'Не удалось загрузить страницу',
 			'ingestion.loadingOriginal' => 'Загружаем страницу...',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.structuredFromSite' => 'Прочитано напрямую из структурированных данных сайта, без AI',
 			'ingestion.useStructured' => 'Продолжить со структурированным рецептом',
 			'ingestion.preferAi' => 'Обработать через AI',
@@ -2437,6 +2646,11 @@ extension on TranslationsRu {
 			'mealPlanner.noProducts' => 'Без продуктов позиция попадёт в список покупок одной строкой под своим названием',
 			'mealPlanner.itemName' => 'Название позиции',
 			'mealPlanner.editItem' => 'Изменить позицию',
+			'mealPlanner.planOptions' => 'Параметры плана',
+			'mealPlanner.deletePlan' => 'Удалить план',
+			'mealPlanner.deletePlanConfirm' => ({required Object name}) => 'Удалить план «${name}»? Его приёмы пищи тоже будут удалены.',
+			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'Выйти из общего плана «${name}»? Он исчезнет из вашего списка.',
+			'mealPlanner.planDeleted' => 'План удалён',
 			'groceryList.title' => 'Список покупок',
 			'groceryList.aggregated' => 'Собран из всех активных меню',
 			'groceryList.addItem' => 'Новая позиция',
@@ -2499,6 +2713,7 @@ extension on TranslationsRu {
 			'groceryList.stayHere' => 'Остаться здесь',
 			'groceryList.noIngredients' => 'В этом рецепте нет ингредиентов для покупки',
 			'groceryList.addFirstItem' => 'Добавить товар',
+			'groceryList.leaveListConfirm' => ({required Object name}) => 'Выйти из общего списка «${name}»? Он исчезнет из ваших списков.',
 			'receipt.title' => 'Сканировать чек',
 			'receipt.subtitle' => 'Сфотографируйте чек или загрузите PDF, и цены сохранятся для списка покупок',
 			'receipt.camera' => 'Сфотографировать чек',
@@ -2634,6 +2849,14 @@ extension on TranslationsRu {
 			'image.themeVegan' => 'Веганское',
 			'image.themeHolidays' => 'Праздники',
 			'image.themeQuick' => 'Быстро и просто',
+			'image.webSearch' => 'Поиск в Google Картинках',
+			'image.webSearchTitle' => 'Поиск картинки',
+			'image.webSearchHint' => 'Что искать? например: кубе со свёклой',
+			'image.webSearchEmpty' => 'Картинки не найдены, попробуйте другие слова',
+			'image.webSearchFailed' => 'Поиск не удался, попробуйте ещё раз',
+			'image.webSearchUnavailable' => 'Поиск картинок сейчас недоступен',
+			'image.webSearchEnd' => 'Это все результаты',
+			'image.webSearchDownloadFailed' => 'Не удалось загрузить эту картинку, попробуйте другую',
 			'nav.library' => 'Книги',
 			'nav.recipes' => 'Рецепты',
 			'nav.mealPlan' => 'Меню',
@@ -2765,7 +2988,7 @@ extension on TranslationsRu {
 			'walkthrough.topics.mealPlan.s6' => 'Панель: среднее за день, итог за неделю, столбец на каждый день и распределение макронутриентов. Значения оценивает ИИ для каждого рецепта, на порцию.',
 			'walkthrough.topics.mealPlan.s7' => 'Кнопка «Поделиться» отправляет план другому аккаунту как редактору или зрителю. Правка с одной стороны доходит до всех.',
 			'walkthrough.topics.groceries.title' => 'Список покупок и цены',
-			'walkthrough.topics.groceries.summary' => 'Список, построенный из плана, с отметкой уже собранного и оценкой стоимости по вашим чекам.',
+			'walkthrough.topics.groceries.summary' => 'Список, построенный из плана, с отметкой уже собранного, оценкой стоимости по вашим чекам и общим доступом для тех, кто ходит за покупками с вами.',
 			'walkthrough.topics.groceries.s1' => 'Нажмите «Покупки».',
 			'walkthrough.topics.groceries.s2' => 'Обновление заново собирает список из всех рецептов недельного плана.',
 			'walkthrough.topics.groceries.s3' => 'Нажмите плюс, чтобы добавить пункт вручную.',
@@ -2773,6 +2996,7 @@ extension on TranslationsRu {
 			'walkthrough.topics.groceries.s5' => 'Нажмите «Добавить», и пункт попадёт в список.',
 			'walkthrough.topics.groceries.s6' => 'Нажмите здесь, чтобы открыть книгу цен.',
 			'walkthrough.topics.groceries.s7' => 'Отсканируйте чек, и цена каждого товара сохранится. Список покупок получит оценку стоимости, а медианные цены сообщества дополнят то, что вы ещё не покупали.',
+			'walkthrough.topics.groceries.shefi' => 'Спросите Шефи об этом списке: чего не хватает для блюда, что заменить, или добавьте позиции голосом.',
 			'walkthrough.topics.community.title' => 'Сообщество',
 			'walkthrough.topics.community.summary' => 'Рецепты, которыми делятся все, и форум вопросов и ответов.',
 			'walkthrough.topics.community.s1' => 'Нажмите «Сообщество».',
@@ -2783,9 +3007,27 @@ extension on TranslationsRu {
 			'walkthrough.topics.account.s1' => 'Уведомления: приглашения к общим книгам и планам, и обновления.',
 			'walkthrough.topics.account.s2' => 'Нажмите на фото, чтобы открыть аккаунт.',
 			'walkthrough.topics.account.s3' => 'Премиум: разборы ИИ без дневного лимита и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.',
-			'walkthrough.topics.account.s4' => 'Общий доступ: кто делится с вами книгами и планами, и чем поделились вы.',
+			'walkthrough.topics.account.s4' => 'Общий доступ: кто делится с вами книгами, планами и списками покупок, и чем поделились вы.',
 			'walkthrough.topics.account.s5' => 'Нажмите «Настройки».',
 			'walkthrough.topics.account.s6' => 'Режим отображения: светлый, тёмный или как на устройстве. В настройках также язык, пищевые предпочтения и аллергены. Это руководство можно запустить снова с экрана поддержки в аккаунте.',
+			'walkthrough.topics.account.shefi' => 'Шефи, умный помощник: эта плавающая кнопка открывает чат. Спросите текстом или голосом — Шефи ответит, добавит в план, соберёт список или запустит режим готовки. Внутри рецепта, плана или списка кнопка «Спросить Шефи» говорит только об этом элементе.',
+			'walkthrough.topics.settings.title' => 'Настройки и предпочтения',
+			'walkthrough.topics.settings.summary' => 'Каждая строка настроек и предпочтений: профиль, доступ, уведомления, язык, оформление, удаление аккаунта, день покупок, цены, питание и книги.',
+			'walkthrough.topics.settings.s1' => 'Нажмите «Настройки»: здесь аккаунт и приложение.',
+			'walkthrough.topics.settings.s2' => 'Профиль: имя и фото, которые видят те, с кем вы делитесь, и привязанные способы входа.',
+			'walkthrough.topics.settings.s3' => 'Общий доступ: кто делится с вами рецептами, книгами, меню и списками, и чем поделились вы. Вход по коду или QR тоже начинается здесь.',
+			'walkthrough.topics.settings.s4' => 'Нажмите «Настройки уведомлений».',
+			'walkthrough.topics.settings.s5' => 'Push-уведомления: главный выключатель. Выключен — ничего не отправляется; ниже вы выбираете, что отправлять: ответы, приглашения, обновления и сообщения команды.',
+			'walkthrough.topics.settings.s6' => 'Напоминания о дне покупок: когда напомнить перед походом в магазин. Планируются на устройстве, независимо от push.',
+			'walkthrough.topics.settings.s7' => 'Язык: смена переводит и ваши рецепты, книги, меню и списки.',
+			'walkthrough.topics.settings.s8' => 'Оформление: светлое, тёмное или как на устройстве. Выбор сохраняется в аккаунте и переходит с вами на следующее устройство.',
+			'walkthrough.topics.settings.s9' => 'Удалить аккаунт: безвозвратно удаляет аккаунт и всё его содержимое после подтверждения. Подписка в магазине отменяется отдельно.',
+			'walkthrough.topics.settings.s10' => 'Снова в аккаунте: нажмите «Предпочтения» — как приложение ведёт себя для вас.',
+			'walkthrough.topics.settings.s11' => 'День покупок: день, вокруг которого строится список покупок и на который настроены напоминания.',
+			'walkthrough.topics.settings.s12' => 'Цены сообщества: когда включено, цены из ваших чеков анонимно попадают в средние, а строки, которые вы не покупали, оцениваются по ним.',
+			'walkthrough.topics.settings.s13' => 'Пищевые предпочтения и аллергены: отметьте их здесь, и приложение выделит их в рецептах и общих рецептах.',
+			'walkthrough.topics.settings.s14' => 'Быстрое перелистывание книг: прыжок на далёкую страницу переворачивает одну страницу. Выключено — листаются все страницы по пути.',
+			'walkthrough.topics.settings.s15' => 'Звуки: звуковые эффекты при перелистывании и действиях. Можно выключить.',
 			'walkthrough.demo.bookTitle' => 'Обучение',
 			'walkthrough.demo.planName' => 'Учебный план',
 			'walkthrough.demo.mealName' => 'Ужин',
@@ -2825,6 +3067,8 @@ extension on TranslationsRu {
 			'adminBilling.viaRevenueCat' => 'Из RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'Продукт: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} событий',
 			'adminBilling.grant' => 'Дать премиум',
@@ -2884,8 +3128,6 @@ extension on TranslationsRu {
 			'adminDashboard.unknownModel' => 'нет в прайсе',
 			'adminDashboard.usersCost' => 'Стоимость по пользователям',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} пользователей',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'Поиск по имени, почте или uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'Показать всех (${count})',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} запросов',
@@ -2991,7 +3233,7 @@ extension on TranslationsRu {
 			'adminDashboard.grantRange' => 'Точный диапазон дат',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Премиум выдан до ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Начнётся ${date}',
-			'assistant.title' => 'Ассистент',
+			'assistant.title' => 'Шефи',
 			'assistant.subtitle' => 'Ваш су-шеф: вопросы, планы, покупки, готовка',
 			'assistant.placeholder' => 'Спросите или скажите, что сделать…',
 			'assistant.send' => 'Отправить',
@@ -3109,6 +3351,33 @@ extension on TranslationsRu {
 			'assistant.listCreated' => 'Список создан',
 			'assistant.offTopic' => 'Я здесь для готовки, рецептов, планов питания и покупок. Спросите что угодно про кухню, и я помогу!',
 			'assistant.welcomeAnon' => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?',
+			'assistant.scopedWelcome' => ({required Object name}) => 'Что вы хотите узнать о «${name}»?',
+			'assistant.scopedOffTopic' => ({required Object name}) => 'Здесь я помогаю только с «${name}». Для остального откройте Шефи из меню.',
+			'assistant.askAboutRecipe' => 'Спросить Шефи об этом рецепте',
+			'assistant.askAboutPlan' => 'Спросить Шефи об этом меню',
+			'assistant.askAboutList' => 'Спросить Шефи об этом списке',
+			'assistant.listen' => 'Говорить с Шефи',
+			'assistant.stopListening' => 'Остановить прослушивание',
+			'assistant.speakReplies' => 'Читать ответы вслух',
+			'assistant.micUnavailable' => 'Микрофон недоступен. Проверьте разрешения на микрофон и распознавание речи в настройках устройства.',
+			'assistant.scopedPrompts.recipe.0' => 'Какое КБЖУ на порцию?',
+			'assistant.scopedPrompts.recipe.1' => 'Как приготовить это на 8 человек?',
+			'assistant.scopedPrompts.recipe.2' => 'Чем заменить ингредиент, которого нет?',
+			'assistant.scopedPrompts.recipe.3' => 'Добавь этот рецепт в меню на завтра',
+			'assistant.scopedPrompts.recipe.4' => 'Создай список покупок из этого рецепта',
+			'assistant.scopedPrompts.mealPlan.0' => 'Что едим сегодня?',
+			'assistant.scopedPrompts.mealPlan.1' => 'Добавь ужин на вторник',
+			'assistant.scopedPrompts.mealPlan.2' => 'Чего не хватает на этой неделе?',
+			'assistant.scopedPrompts.mealPlan.3' => 'Создай список покупок из этого меню',
+			'assistant.scopedPrompts.mealPlan.4' => 'Сколько калорий в среду?',
+			'assistant.scopedPrompts.groceryList.0' => 'Что осталось купить?',
+			'assistant.scopedPrompts.groceryList.1' => 'Добавь молоко и яйца',
+			'assistant.scopedPrompts.groceryList.2' => 'Отметь помидоры как купленные',
+			'assistant.scopedPrompts.groceryList.3' => 'Удали то, что я уже купил',
+			'assistant.scopedPrompts.groceryList.4' => 'Сколько граммов в 2 стаканах муки?',
+			'assistant.listening' => 'Слушаю…',
+			'assistant.stop' => 'Стоп',
+			'assistant.cancelled' => 'Отменено.',
 			'shareCode.title' => 'Код и ссылка',
 			'shareCode.tabContact' => 'Контакт',
 			'shareCode.tabCode' => 'Код или ссылка',
@@ -3143,6 +3412,7 @@ extension on TranslationsRu {
 			'shareCode.upgrade' => 'Открыть Premium',
 			'shareCode.scanHint' => 'Наведите камеру на QR-код',
 			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} приглашает вас в общий аккаунт EasyPlate. Код: ${code}\n${link}',
+			'shareCode.limitLists' => ({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} списков покупок.',
 			'household.title' => 'Общий аккаунт',
 			'household.duo' => 'Pro Duo',
 			'household.family' => 'Pro Family',
@@ -3171,6 +3441,56 @@ extension on TranslationsRu {
 			'household.inHousehold' => 'Вы уже в общем аккаунте.',
 			'household.notEligibleCode' => 'Тариф владельца больше не включает общий аккаунт.',
 			'household.lapsed' => 'Подписка владельца закончилась; Premium участников приостановлен.',
+			'feature.comingSoon' => 'Скоро',
+			'feature.comingSoonMessage' => 'Эта функция скоро появится',
+			'feature.unavailable' => 'Эта функция сейчас недоступна',
+			'feature.premiumOnly' => 'Премиум',
+			'feature.premiumOnlyMessage' => 'Эта функция для подписчиков Премиум',
+			'feature.premiumOnlyTitle' => 'Только для Премиум',
+			'feature.premiumOnlyFor' => ({required Object name}) => 'Функция «${name}» доступна только подписчикам Премиум',
+			'feature.goPremium' => 'Перейти на Премиум',
+			'featureName.books' => 'Книги рецептов',
+			'featureName.mealPlans' => 'Планы питания',
+			'featureName.groceryLists' => 'Списки покупок',
+			'featureName.community' => 'Сообщество',
+			'featureName.ingestText' => 'Рецепт из текста',
+			'featureName.ingestWebSearch' => 'Поиск рецепта в интернете',
+			'featureName.ingestLink' => 'Рецепт по ссылке',
+			'featureName.ingestSocialVideo' => 'Рецепт из видео',
+			'featureName.ingestAiRequest' => 'Запрос рецепта у ИИ',
+			'featureName.ingestFile' => 'Рецепт из файла',
+			'featureName.shareIn' => 'Импорт из другого приложения',
+			'featureName.saveWithAi' => 'Сохранение с ИИ',
+			'featureName.cookMode' => 'Режим готовки',
+			'featureName.cookTimers' => 'Таймеры готовки',
+			'featureName.nutrition' => 'Питательная ценность',
+			'featureName.recipeImageAi' => 'Картинка от ИИ',
+			'featureName.recipeImageSearch' => 'Поиск картинок Google',
+			'featureName.groceryFromRecipe' => 'Список покупок из рецепта',
+			'featureName.sharedRecipes' => 'Общие рецепты',
+			'featureName.forum' => 'Форум',
+			'featureName.likes' => 'Лайки',
+			'featureName.shareRecipes' => 'Обмен рецептами',
+			'featureName.shareBooks' => 'Обмен книгами',
+			'featureName.sharePlans' => 'Обмен планами',
+			'featureName.shareGroceryLists' => 'Обмен списками покупок',
+			'featureName.shareCodes' => 'Коды доступа',
+			'featureName.households' => 'Семья',
+			'featureName.priceBook' => 'Книга цен',
+			'featureName.receiptScan' => 'Сканирование чека',
+			'featureName.groceryCost' => 'Примерная стоимость',
+			'featureName.shoppingReminder' => 'Напоминание о покупках',
+			'featureName.assistant' => 'Шефи (помощник)',
+			'featureName.notifications' => 'Уведомления',
+			'featureName.premium' => 'Премиум',
+			'featureName.contentTranslation' => 'Перевод контента',
+			'featureName.theming' => 'Оформление',
+			'featureName.walkthrough' => 'Обучение',
+			'featureName.tutorialBook' => 'Руководство',
+			'featureName.feedback' => 'Обратная связь',
+			'featureName.assistantScoped' => 'Шефи внутри элемента',
+			'featureName.assistantVoice' => 'Голос с Шефи',
+			'featureName.singleSession' => 'Одно устройство на аккаунт',
 			_ => null,
 		};
 	}

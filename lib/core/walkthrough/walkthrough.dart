@@ -97,6 +97,12 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
   int _pollsWaiting = 0;
   bool _targetSeen = false;
 
+  /// The card's real height, measured after layout: the body text differs
+  /// from step to step and language to language, and a fixed guess put a
+  /// tall card over the very control it pointed at.
+  final _cardKey = GlobalKey();
+  double _cardHeight = 250;
+
   static const _pollInterval = Duration(milliseconds: 80);
 
   /// How long a "stay" step waits for its target before giving up on it. A
@@ -144,6 +150,17 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
       _targetSeen = false;
     });
     _ensurePlace(_step);
+    _closeKeyboard();
+  }
+
+  /// A tour is read, not typed into: a field that takes focus (a form's
+  /// autofocus, a tap in the window) would raise the keyboard over half the
+  /// screen and push the target out from under its ring. The fields the
+  /// tour visits arrive filled in, so nothing is lost by keeping it down.
+  void _closeKeyboard() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) FocusManager.instance.primaryFocus?.unfocus();
+    });
   }
 
   /// The next step that can stand on its own — one that is not tied to
@@ -186,6 +203,9 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
 
   void _track(Timer _) {
     if (!mounted) return;
+    if (View.of(context).viewInsets.bottom > 0) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
     final id = _step.targetId;
     final rect = id == null ? null : WalkthroughTargets.rectOf(id);
     if (rect != null) _targetSeen = true;
@@ -240,6 +260,10 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
         // Everything but the window is blocked. Four slabs rather than one
         // sheet with a gap, so the window itself has nothing in it at all.
         for (final slab in _slabsAround(hole, size)) _Slab(rect: slab),
+        // A control that is only pointed at is blocked too: a tap on it
+        // would open its page under a tour that is still on this step,
+        // leaving the ring around an empty spot. "Next" is the way on.
+        if (hole != null && !_step.advanceOnTap) _Slab(rect: hole),
         _card(size, padding, insets, hole, isLast),
       ],
     );
@@ -263,8 +287,16 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     Rect? hole,
     bool isLast,
   ) {
-    const cardHeight = 250.0;
+    final cardHeight = _cardHeight;
     final width = (size.width - 2 * AppSpacing.gutter).clamp(0.0, 420.0);
+    // Measured once laid out; a change re-places the card on the next frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final measured = _cardKey.currentContext?.size?.height;
+      if (!mounted || measured == null) return;
+      if ((measured - _cardHeight).abs() > 1) {
+        setState(() => _cardHeight = measured);
+      }
+    });
     final left = (size.width - width) / 2;
     // The keyboard, when a highlighted field has opened it, takes the bottom
     // of the screen: the card is placed in what is left above it.
@@ -286,6 +318,7 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     }
 
     final card = Material(
+      key: _cardKey,
       type: MaterialType.transparency,
       child: Container(
         width: width,

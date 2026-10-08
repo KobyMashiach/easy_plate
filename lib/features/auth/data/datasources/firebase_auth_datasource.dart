@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/services/device_session_service.dart';
 import '../../domain/entities/app_user_entity.dart';
 
 abstract class AuthDataSource {
@@ -297,6 +298,9 @@ class FirebaseAuthDataSource implements AuthDataSource {
     } catch (e) {
       debugPrint('Google sign-out skipped: $e');
     }
+    // While the token is still valid: the device session is freed so the
+    // next device (or this one) can sign in without waiting out the month.
+    await DeviceSessionService().release();
     await _auth.signOut();
   }
 

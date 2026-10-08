@@ -78,6 +78,10 @@ sealed class SettingsEvent with _$SettingsEvent {
     NotificationSetting setting,
     bool enabled,
   ) = _SetNotification;
+
+  /// The look was switched; remember it on the account (the device itself
+  /// is already switched by ThemeController).
+  const factory SettingsEvent.setThemeMode(String mode) = _SetThemeMode;
 }
 
 @freezed
@@ -114,6 +118,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<_ToggleCommunityPrices>(_toggleCommunityPrices);
     on<_SetShoppingReminders>(_setShoppingReminders);
     on<_SetNotification>(_setNotification);
+    on<_SetThemeMode>(_setThemeMode);
     add(const SettingsEvent.init());
   }
 
@@ -252,6 +257,20 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     await ShoppingReminderService().scheduleForShoppingDay(
       updated.shoppingDay,
       slots: updated.shoppingReminderSlots,
+    );
+  }
+
+  Future<void> _setThemeMode(
+    _SetThemeMode event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    if (current.preferences.themeMode == event.mode) return;
+    await _commit(
+      current,
+      current.preferences.copyWith(themeMode: event.mode),
+      emit,
     );
   }
 

@@ -21,6 +21,7 @@ import 'recipe_details_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
+import '../../../../core/features/feature_gate.dart';
 
 class MyRecipesPage extends StatelessWidget {
   const MyRecipesPage({super.key});
@@ -284,8 +285,14 @@ class _RecipesBodyState extends State<_RecipesBody> {
                   onRemove: recipe.isSavedFromCommunity
                       ? () => _confirmRemove(context, bloc, recipe)
                       : null,
-                  onShare: recipe.isMine
+                  onShare: recipe.isMine && FeaturesFlags.shareRecipes.isVisible
                       ? () async {
+                          if (!guardFeature(
+                            context,
+                            FeaturesFlags.shareRecipes,
+                          )) {
+                            return;
+                          }
                           final sent = await showRecipeShareSheet(
                             context,
                             recipe,

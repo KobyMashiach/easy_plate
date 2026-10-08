@@ -12,6 +12,8 @@ import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
+import '../../../../core/features/feature_gate.dart';
+import '../../../collab_containers/presentation/widgets/container_share_sheets.dart';
 
 /// Everything about having more than one list: the card that names the open
 /// one, the sheet that switches between them, the sheet that starts a new
@@ -195,6 +197,10 @@ class _ListsSheet extends StatelessWidget {
                             Navigator.of(context).pop();
                           },
                           onRename: () => _rename(context, bloc, list),
+                          // Only the owner hands a list on.
+                          onShare: list.isMine
+                              ? () => _share(context, bloc, list)
+                              : null,
                           onDelete: () => _delete(context, bloc, list),
                         );
                       },
@@ -233,16 +239,35 @@ class _ListsSheet extends StatelessWidget {
     if (name != null) bloc.add(GroceryListEvent.renameList(list.id, name));
   }
 
+  Future<void> _share(
+    BuildContext context,
+    GroceryListBloc bloc,
+    GroceryListEntity list,
+  ) async {
+    if (!guardFeature(context, FeaturesFlags.shareGroceryLists)) return;
+    final sent = await showListShareSheet(context, list);
+    if (sent == true && context.mounted) {
+      AppDialog.success(message: t.sharing.sent).notify(context);
+      // The share tagged the list with its collab id: re-read it so the
+      // next write publishes.
+      bloc.add(const GroceryListEvent.init());
+    }
+  }
+
+  /// A member does not delete a shared list; they leave it.
   Future<void> _delete(
     BuildContext context,
     GroceryListBloc bloc,
     GroceryListEntity list,
   ) async {
+    final leaves = list.isShared && !list.isMine;
     final confirmed = await AppDialog.warning(
-      title: t.groceryList.deleteList,
-      message: t.groceryList.deleteListConfirm(name: list.name),
-      icon: Icons.delete_outline_rounded,
-      confirmLabel: t.common.delete,
+      title: leaves ? t.sharing.leave : t.groceryList.deleteList,
+      message: leaves
+          ? t.groceryList.leaveListConfirm(name: list.name)
+          : t.groceryList.deleteListConfirm(name: list.name),
+      icon: leaves ? Icons.logout_rounded : Icons.delete_outline_rounded,
+      confirmLabel: leaves ? t.sharing.leave : t.common.delete,
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
@@ -250,13 +275,17 @@ class _ListsSheet extends StatelessWidget {
   }
 }
 
-enum _RowAction { rename, delete }
+enum _RowAction { rename, share, delete }
 
 class _ListRow extends StatelessWidget {
   final GroceryListEntity list;
   final bool isOpen;
   final VoidCallback onOpen;
   final VoidCallback onRename;
+
+  /// Null for a list this account does not own: a member cannot share it
+  /// further.
+  final VoidCallback? onShare;
   final VoidCallback onDelete;
 
   const _ListRow({
@@ -264,6 +293,7 @@ class _ListRow extends StatelessWidget {
     required this.isOpen,
     required this.onOpen,
     required this.onRename,
+    required this.onShare,
     required this.onDelete,
   });
 
@@ -310,6 +340,10 @@ class _ListRow extends StatelessWidget {
               ],
             ),
           ),
+          if (list.isShared) ...[
+            Icon(Icons.group_rounded, size: 16, color: AppColors.tertiary),
+            const SizedBox(width: AppSpacing.xs),
+          ],
           if (list.items.isNotEmpty)
             Text(
               t.groceryList.progress(
@@ -323,21 +357,45 @@ class _ListRow extends StatelessWidget {
             icon: Icon(Icons.more_vert_rounded, color: AppColors.tertiary),
             onSelected: (action) => switch (action) {
               _RowAction.rename => onRename(),
+              _RowAction.share => onShare?.call(),
               _RowAction.delete => onDelete(),
             },
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: _RowAction.rename,
-                child: Text(t.groceryList.renameList),
-              ),
-              PopupMenuItem(
-                value: _RowAction.delete,
-                child: Text(
-                  t.groceryList.deleteList,
-                  style: TextStyle(color: AppColors.error),
+            itemBuilder: (_) {
+              final share = FeaturesFlags.shareGroceryLists.access;
+              final leaves = list.isShared && !list.isMine;
+              return [
+                // A viewer may not rename: the name is part of what is
+                // shared.
+                if (list.canEdit)
+                  PopupMenuItem(
+                    value: _RowAction.rename,
+                    child: Text(t.groceryList.renameList),
+                  ),
+                // The console's switch: gone, tagged, or as built. The tap
+                // itself is answered by guardFeature in the sheet.
+                if (onShare != null && share.isVisible)
+                  PopupMenuItem(
+                    value: _RowAction.share,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(t.sharing.shareList),
+                        if (!share.isEnabled) ...[
+                          const SizedBox(width: AppSpacing.base),
+                          AccessTag(access: share, compact: true),
+                        ],
+                      ],
+                    ),
+                  ),
+                PopupMenuItem(
+                  value: _RowAction.delete,
+                  child: Text(
+                    leaves ? t.sharing.leave : t.groceryList.deleteList,
+                    style: TextStyle(color: AppColors.error),
+                  ),
                 ),
-              ),
-            ],
+              ];
+            },
           ),
         ],
       ),
@@ -430,13 +488,16 @@ class _NewListSheetState extends State<_NewListSheet> {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-              _SourceOption(
-                icon: groceryListSourceIcon(GroceryListSource.plans),
-                title: t.groceryList.fromPlans,
-                hint: t.groceryList.fromPlansHint,
-                onTap: () => _pick(GroceryListSource.plans),
+              FeatureGate(
+                feature: FeaturesFlags.mealPlans,
+                gapAfter: AppSpacing.sm,
+                child: _SourceOption(
+                  icon: groceryListSourceIcon(GroceryListSource.plans),
+                  title: t.groceryList.fromPlans,
+                  hint: t.groceryList.fromPlansHint,
+                  onTap: () => _pick(GroceryListSource.plans),
+                ),
               ),
-              const SizedBox(height: AppSpacing.sm),
               _SourceOption(
                 icon: groceryListSourceIcon(GroceryListSource.recipe),
                 title: t.groceryList.fromRecipe,

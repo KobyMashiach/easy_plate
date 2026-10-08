@@ -29,6 +29,9 @@ import '../../../settings/presentation/bloc/settings_bloc.dart';
 import '../../../user_profile/domain/entities/public_profile_entity.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../../core/features/feature_gate.dart';
+import '../../../grocery_list/data/datasources/active_grocery_list_store.dart';
+import '../../../grocery_list/domain/entities/grocery_list_entity.dart';
 
 /// Everything this account shares or is shared: pending invites to answer,
 /// recipes it owns with their members, recipes it was let into, and the
@@ -141,6 +144,16 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
             _toast(t.sharing.acceptedPlan);
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.mealPlan;
+          case CollabKind.groceryList:
+            final list =
+                await containers.accept(invite, uid: _uid) as GroceryListEntity;
+            // The groceries tab opens on the list last chosen on this
+            // device: make it this one before landing there.
+            await HiveActiveGroceryListStore.instance.write(list.id);
+            if (!mounted) return;
+            _toast(t.sharing.acceptedList);
+            Navigator.of(context).maybePop();
+            MainTabs.index.value = MainTabs.groceries;
           case CollabKind.household:
             // Never an invite: a household is joined by code.
             break;
@@ -218,8 +231,11 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
           title: t.settings.sharedAccess,
           leadingIcon: Icons.arrow_back_rounded,
           onLeadingTap: () => Navigator.of(context).maybePop(),
-          trailingIcon: Icons.qr_code_scanner_rounded,
+          trailingIcon: FeaturesFlags.shareCodes.isVisible
+              ? Icons.qr_code_scanner_rounded
+              : null,
           onTrailingTap: () async {
+            if (!guardFeature(context, FeaturesFlags.shareCodes)) return;
             final joined = await context.pushNamed<bool>(Routing.joinCode);
             if (joined == true && mounted) await _load();
           },
@@ -296,12 +312,14 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
       CollabKind.recipe => t.sharing.kindRecipe,
       CollabKind.book => t.sharing.kindBook,
       CollabKind.mealPlan => t.sharing.kindPlan,
+      CollabKind.groceryList => t.sharing.kindList,
       CollabKind.household => t.household.title,
     },
     icon: switch (kind) {
       CollabKind.recipe => Icons.restaurant_menu_rounded,
       CollabKind.book => Icons.menu_book_rounded,
       CollabKind.mealPlan => Icons.calendar_month_rounded,
+      CollabKind.groceryList => Icons.shopping_cart_rounded,
       CollabKind.household => Icons.family_restroom_rounded,
     },
   );

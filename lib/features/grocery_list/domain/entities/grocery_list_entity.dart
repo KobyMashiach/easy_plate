@@ -51,6 +51,12 @@ class GroceryListEntity {
   final int? recipeServings;
   final String? recipeTitle;
 
+  /// Set once the list is shared: the `collab_containers` document this
+  /// copy mirrors, and what this account may do with it. Null for a list
+  /// that lives on this account alone.
+  final String? collabId;
+  final CollabRole? collabRole;
+
   const GroceryListEntity({
     required this.id,
     required this.name,
@@ -65,7 +71,15 @@ class GroceryListEntity {
     this.recipeScale = 1,
     this.recipeServings,
     this.recipeTitle,
+    this.collabId,
+    this.collabRole,
   });
+
+  bool get isShared => collabId != null;
+  bool get canEdit => collabRole != CollabRole.viewer;
+
+  /// Mine outright, or mine as the owner of the share.
+  bool get isMine => collabRole == null || collabRole == CollabRole.owner;
 
   bool get includesAllPlans => selectedPlanIds.isEmpty;
 
@@ -81,6 +95,9 @@ class GroceryListEntity {
     String? contentLang,
     int? contentVersion,
     double? recipeScale,
+    String? collabId,
+    CollabRole? collabRole,
+    bool clearCollab = false,
   }) {
     return GroceryListEntity(
       id: id,
@@ -96,6 +113,8 @@ class GroceryListEntity {
       recipeScale: recipeScale ?? this.recipeScale,
       recipeServings: recipeServings,
       recipeTitle: recipeTitle,
+      collabId: clearCollab ? null : (collabId ?? this.collabId),
+      collabRole: clearCollab ? null : (collabRole ?? this.collabRole),
     );
   }
 }

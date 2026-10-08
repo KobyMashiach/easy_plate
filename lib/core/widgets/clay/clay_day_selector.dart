@@ -48,25 +48,47 @@ class ClayDaySelector extends StatelessWidget {
               isActive: isActive,
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               onTap: () => onSelected(index),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    labels[index],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.labelSm.copyWith(
-                      color: isActive
-                          ? AppColors.primaryFixed
-                          : AppColors.primary,
+              // Centred on purpose: the card's child is a plain Stack entry
+              // and would otherwise hug its text at the start edge.
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      labels[index],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.labelSm.copyWith(
+                        color: isActive
+                            ? AppColors.primaryFixed
+                            : AppColors.primary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    '$count',
-                    style: AppTextStyles.headlineMd.copyWith(color: foreground),
-                  ),
-                ],
+                    const SizedBox(height: AppSpacing.xs),
+                    // The count is of meals: the plate says so, so a bare
+                    // number is never mistaken for a date.
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.restaurant_rounded,
+                          size: 16,
+                          color: foreground,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          '$count',
+                          style: AppTextStyles.headlineMd.copyWith(
+                            color: foreground,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );

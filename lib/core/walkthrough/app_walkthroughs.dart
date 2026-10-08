@@ -17,6 +17,8 @@ abstract class WalkthroughIds {
   static const mealPlanAdd = 'mealPlan.add';
   static const groceriesRegenerate = 'groceries.regenerate';
   static const groceriesAdd = 'groceries.add';
+  static const groceriesAssistant = 'groceries.assistant';
+  static const assistantFab = 'assistant.fab';
   static const communitySegments = 'community.segments';
   static const communityShare = 'community.share';
   static const ingestionInput = 'ingestion.input';
@@ -33,7 +35,20 @@ abstract class WalkthroughIds {
   static const accountPremium = 'account.premium';
   static const accountSharing = 'account.sharing';
   static const accountSettings = 'account.settings';
+  static const accountPreferences = 'account.preferences';
+  static const settingsProfile = 'settings.profile';
+  static const settingsSharing = 'settings.sharing';
+  static const settingsNotifications = 'settings.notifications';
+  static const settingsLanguage = 'settings.language';
   static const settingsTheme = 'settings.theme';
+  static const settingsDeleteAccount = 'settings.deleteAccount';
+  static const notificationsPush = 'notifications.push';
+  static const notificationsReminders = 'notifications.reminders';
+  static const prefsShoppingDay = 'prefs.shoppingDay';
+  static const prefsCommunityPrices = 'prefs.communityPrices';
+  static const prefsDietary = 'prefs.dietary';
+  static const prefsFastPageTurn = 'prefs.fastPageTurn';
+  static const prefsSound = 'prefs.sound';
 
   /// The text field and the confirm button of the app's prompt dialog: one
   /// pair of ids for every prompt, since only one dialog is ever up.
@@ -218,6 +233,13 @@ List<WalkthroughTopic> appWalkthroughTopics() {
         ),
         WalkthroughStep(
           title: w.groceries.title,
+          body: w.groceries.shefi,
+          targetId: WalkthroughIds.groceriesAssistant,
+          tab: MainTabs.groceries,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.groceries.title,
           body: w.groceries.s3,
           targetId: WalkthroughIds.groceriesAdd,
           tab: MainTabs.groceries,
@@ -282,6 +304,14 @@ List<WalkthroughTopic> appWalkthroughTopics() {
       title: w.account.title,
       summary: w.account.summary,
       steps: [
+        // Shefi floats on every tab; a free account that has it locked does
+        // not show the button, and the step is skipped.
+        WalkthroughStep(
+          title: w.account.title,
+          body: w.account.shefi,
+          targetId: WalkthroughIds.assistantFab,
+          advanceOnTap: false,
+        ),
         WalkthroughStep(
           title: w.account.title,
           body: w.account.s1,
@@ -307,17 +337,115 @@ List<WalkthroughTopic> appWalkthroughTopics() {
           route: Routing.accountMenu,
           advanceOnTap: false,
         ),
+      ],
+    ),
+    // Every row of the settings and the preferences, in the order they sit
+    // on their pages, with the tap into each page as a step of its own.
+    WalkthroughTopic(
+      id: 'settings',
+      title: w.settings.title,
+      summary: w.settings.summary,
+      steps: [
         WalkthroughStep(
-          title: w.account.title,
-          body: w.account.s5,
+          title: w.settings.title,
+          body: w.settings.s1,
           targetId: WalkthroughIds.accountSettings,
           route: Routing.accountMenu,
         ),
         WalkthroughStep(
-          title: w.account.title,
-          body: w.account.s6,
+          title: w.settings.title,
+          body: w.settings.s2,
+          targetId: WalkthroughIds.settingsProfile,
+          route: Routing.settings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s3,
+          targetId: WalkthroughIds.settingsSharing,
+          route: Routing.settings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s4,
+          targetId: WalkthroughIds.settingsNotifications,
+          route: Routing.settings,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s5,
+          targetId: WalkthroughIds.notificationsPush,
+          route: Routing.notificationSettings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s6,
+          targetId: WalkthroughIds.notificationsReminders,
+          route: Routing.notificationSettings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s7,
+          targetId: WalkthroughIds.settingsLanguage,
+          route: Routing.settings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s8,
           targetId: WalkthroughIds.settingsTheme,
           route: Routing.settings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s9,
+          targetId: WalkthroughIds.settingsDeleteAccount,
+          route: Routing.settings,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s10,
+          targetId: WalkthroughIds.accountPreferences,
+          route: Routing.accountMenu,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s11,
+          targetId: WalkthroughIds.prefsShoppingDay,
+          route: Routing.preferences,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s12,
+          targetId: WalkthroughIds.prefsCommunityPrices,
+          route: Routing.preferences,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s13,
+          targetId: WalkthroughIds.prefsDietary,
+          route: Routing.preferences,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s14,
+          targetId: WalkthroughIds.prefsFastPageTurn,
+          route: Routing.preferences,
+          advanceOnTap: false,
+        ),
+        WalkthroughStep(
+          title: w.settings.title,
+          body: w.settings.s15,
+          targetId: WalkthroughIds.prefsSound,
+          route: Routing.preferences,
           advanceOnTap: false,
         ),
       ],

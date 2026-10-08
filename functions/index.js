@@ -19,6 +19,15 @@ exports.socialRecipe = require("./socialRecipe").socialRecipe;
 // Community price averages, fed by receipts users chose to share.
 exports.priceStats = require("./priceStats").priceStats;
 
+// Google image results for a recipe photo, one page of ten at a time.
+exports.imageSearch = require("./imageSearch").imageSearch;
+
+// The signed-in user deleting their own account, as the stores require.
+exports.deleteAccount = require("./deleteAccount").deleteAccount;
+
+// Shefi's voice: a reply read out by Google Cloud Text-to-Speech.
+exports.speak = require("./speak").speak;
+
 // The administrator's account actions: block, delete, push to one or all.
 exports.adminUsers = require("./adminUsers").adminUsers;
 
@@ -52,7 +61,7 @@ const bodyFor = (data, fromName) => {
   if (data.type === "shareInvite") {
     const role = data.role === "editor" ? "לעריכה" : "לצפייה";
     // `recipeTitle` holds whatever was shared: a recipe, a book or a plan.
-    const what = data.kind === "book" ? "את הספר" : data.kind === "mealPlan" ? "את התפריט" : "את";
+    const what = data.kind === "book" ? "את הספר" : data.kind === "mealPlan" ? "את התפריט" : data.kind === "groceryList" ? "את רשימת הקניות" : "את";
     return `${fromName} שיתף/ה איתך ${what} "${data.recipeTitle}" ${role}`;
   }
   if (data.type === "sharedRecipeUpdated") {
@@ -278,6 +287,14 @@ exports.onForumReplyCreated = onDocumentCreated(
 );
 
 exports.shareCodes = require("./shareCodes").shareCodes;
+
+// The administrator editing Remote Config from the dashboard.
+exports.adminRemoteConfig = require("./adminRemoteConfig").adminRemoteConfig;
+
+// One signed-in device per account, a month at a time; the daily sweep
+// revokes the tokens of sessions that ran out.
+exports.sessions = require("./sessions").sessions;
+exports.expireSessions = require("./sessions").expireSessions;
 
 // Pro Duo / Pro Family: membership, inherited entitlement, the owner's
 // subscription following to every member.

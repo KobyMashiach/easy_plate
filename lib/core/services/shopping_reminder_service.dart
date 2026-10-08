@@ -7,6 +7,7 @@ import '../constants/app_enums.dart';
 import '../monetization/monetization_config.dart';
 import '../navigation/main_tabs.dart';
 import 'cook_session_service.dart';
+import '../features/features_flags.dart';
 
 /// Staggered reminders leading up to the configured shopping day (spec §6.5):
 /// two days before (1), one day before (1), and the shopping day itself (2 —
@@ -98,7 +99,12 @@ class ShoppingReminderService {
     ShoppingDay shoppingDay,
     List<ShoppingReminderSlot> slots,
   ) async {
-    final locked = MonetizationConfig.notificationsLocked;
+    // Premium gate, or the console's own switch for the reminders (and for
+    // notifications as a whole): either way nothing is scheduled.
+    final locked =
+        MonetizationConfig.notificationsLocked ||
+        !FeaturesFlags.shoppingReminder.isEnabled ||
+        !FeaturesFlags.notifications.isEnabled;
     final key = '$locked|$shoppingDay|$slots';
     if (key == _lastKey) return;
     // Recorded only once the work below went through: a plugin hiccup must

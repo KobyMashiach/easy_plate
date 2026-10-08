@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/legal_links.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/monetization/entitlement_service.dart';
@@ -21,6 +19,7 @@ import '../../../../core/services/admin_inbox_service.dart';
 import '../../../../core/widgets/count_badge.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// Reached from the avatar in every main screen's app bar.
 class AccountMenuPage extends StatelessWidget {
@@ -47,13 +46,6 @@ class AccountMenuPage extends StatelessWidget {
         orElse: () => const AuthState.idle(),
       );
     });
-  }
-
-  Future<void> _openLegal(BuildContext context, Uri uri) async {
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened && context.mounted) {
-      AppDialog.error(message: t.more.supportUnavailable).show(context);
-    }
   }
 
   @override
@@ -119,42 +111,54 @@ class AccountMenuPage extends StatelessWidget {
                 // Premium first: it is the one row that costs money, and the
                 // label flips to "active" so a subscriber sees their status
                 // rather than a second sales pitch.
-                ListenableBuilder(
-                  listenable: EntitlementService(),
-                  builder: (context, _) {
-                    final premium = EntitlementService().isPremium;
-                    return Column(
-                      children: [
-                        WalkthroughTarget(
-                          id: WalkthroughIds.accountPremium,
-                          child: _MenuRow(
-                            icon: Icons.workspace_premium_rounded,
-                            label: premium
-                                ? t.premium.activeTitle
-                                : t.premium.title,
-                            onTap: () => context.pushNamed(Routing.premium),
-                          ),
+                FeatureGate(
+                  feature: FeaturesFlags.premium,
+                  gapAfter: AppSpacing.sm,
+                  child: ListenableBuilder(
+                    listenable: EntitlementService(),
+                    builder: (context, _) {
+                      final premium = EntitlementService().isPremium;
+                      return WalkthroughTarget(
+                        id: WalkthroughIds.accountPremium,
+                        child: _MenuRow(
+                          icon: Icons.workspace_premium_rounded,
+                          label: premium
+                              ? t.premium.activeTitle
+                              : t.premium.title,
+                          onTap: () => context.pushNamed(Routing.premium),
                         ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                WalkthroughTarget(
-                  id: WalkthroughIds.accountSharing,
-                  child: _MenuRow(
-                    icon: Icons.group_rounded,
-                    label: t.settings.sharedAccess,
-                    onTap: () => context.pushNamed(Routing.sharing),
+                      );
+                    },
                   ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                _MenuRow(
-                  icon: Icons.family_restroom_rounded,
-                  label: t.household.title,
-                  onTap: () => context.pushNamed(Routing.household),
+                // The sharing screen serves every kind of share, so it stays
+                // as long as one of them does.
+                FeatureGate.any(
+                  features: const [
+                    FeaturesFlags.shareRecipes,
+                    FeaturesFlags.shareBooks,
+                    FeaturesFlags.sharePlans,
+                    FeaturesFlags.shareGroceryLists,
+                  ],
+                  gapAfter: AppSpacing.sm,
+                  child: WalkthroughTarget(
+                    id: WalkthroughIds.accountSharing,
+                    child: _MenuRow(
+                      icon: Icons.group_rounded,
+                      label: t.settings.sharedAccess,
+                      onTap: () => context.pushNamed(Routing.sharing),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
+                FeatureGate(
+                  feature: FeaturesFlags.households,
+                  gapAfter: AppSpacing.sm,
+                  child: _MenuRow(
+                    icon: Icons.family_restroom_rounded,
+                    label: t.household.title,
+                    onTap: () => context.pushNamed(Routing.household),
+                  ),
+                ),
                 // Two doors, kept apart on purpose: הגדרות is the account
                 // and the app (profile, notifications, language, look);
                 // העדפות is how the app behaves for you (shopping day,
@@ -169,39 +173,33 @@ class AccountMenuPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _MenuRow(
-                  icon: Icons.tune_rounded,
-                  label: t.more.preferences,
-                  hint: t.preferences.hint,
-                  onTap: () => context.pushNamed(Routing.preferences),
+                WalkthroughTarget(
+                  id: WalkthroughIds.accountPreferences,
+                  child: _MenuRow(
+                    icon: Icons.tune_rounded,
+                    label: t.more.preferences,
+                    hint: t.preferences.hint,
+                    onTap: () => context.pushNamed(Routing.preferences),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                _MenuRow(
-                  icon: Icons.auto_awesome_rounded,
-                  label: t.assistant.title,
-                  hint: t.assistant.subtitle,
-                  onTap: () => context.pushNamed(Routing.assistant),
+                FeatureGate(
+                  feature: FeaturesFlags.assistant,
+                  gapAfter: AppSpacing.sm,
+                  child: _MenuRow(
+                    icon: Icons.auto_awesome_rounded,
+                    label: t.assistant.title,
+                    hint: t.assistant.subtitle,
+                    onTap: () => context.pushNamed(Routing.assistant),
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
+                // Support and the legal pair behind one door, like the
+                // settings and the preferences: the help page lists them.
                 _MenuRow(
-                  icon: Icons.support_agent_rounded,
-                  label: t.more.support,
-                  onTap: () => context.pushNamed(Routing.support),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                // The legal pair the stores want reachable from inside the
-                // app, not only from the paywall. Same addresses as the
-                // paywall's links, so a change to LegalLinks moves both.
-                _MenuRow(
-                  icon: Icons.privacy_tip_rounded,
-                  label: t.premium.privacy,
-                  onTap: () => _openLegal(context, LegalLinks.privacy),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _MenuRow(
-                  icon: Icons.gavel_rounded,
-                  label: t.premium.terms,
-                  onTap: () => _openLegal(context, LegalLinks.terms),
+                  icon: Icons.help_outline_rounded,
+                  label: t.more.help,
+                  hint: t.more.helpHint,
+                  onTap: () => context.pushNamed(Routing.help),
                 ),
                 // The administrator alone: everyone else's feedback, in one
                 // inbox. The rules refuse the read to any other account, so

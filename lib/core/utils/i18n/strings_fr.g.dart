@@ -77,6 +77,8 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$fr assistant = _Translations$assistant$fr._(_root);
 	@override late final _Translations$shareCode$fr shareCode = _Translations$shareCode$fr._(_root);
 	@override late final _Translations$household$fr household = _Translations$household$fr._(_root);
+	@override late final _Translations$feature$fr feature = _Translations$feature$fr._(_root);
+	@override late final _Translations$featureName$fr featureName = _Translations$featureName$fr._(_root);
 }
 
 // Path: common
@@ -185,6 +187,15 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get phoneClaimedSignIn => 'Me connecter à mon compte existant';
 	@override String get phoneClaimedCreateNew => 'Créer quand même un nouveau compte';
 	@override String get phoneClaimedCreateNewConfirm => 'Un nouveau compte vide sera ouvert pour ce numéro. Le compte existant reste tel quel, mais ne sera plus accessible avec ce numéro.';
+	@override String get sessionOtherDeviceTitle => 'Connecté sur un autre appareil';
+	@override String sessionOtherDeviceBody({required Object platform, required Object since}) => 'Ce compte est ouvert sur ${platform}${since}. Il ne peut servir que sur un appareil à la fois : déconnectez-vous là-bas, puis touchez « Réessayer ».';
+	@override String sessionSince({required Object date}) => ' depuis le ${date}';
+	@override String get sessionExpiredTitle => 'Votre session a expiré';
+	@override String get sessionExpiredBody => 'Une connexion dure au plus un mois. Reconnectez-vous pour continuer.';
+	@override String get sessionRetry => 'Réessayer';
+	@override String get platformIos => 'un iPhone';
+	@override String get platformAndroid => 'un téléphone Android';
+	@override String get platformOther => 'un autre appareil';
 }
 
 // Path: profile
@@ -295,7 +306,7 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get themeDark => 'Sombre';
 	@override String get soundEffects => 'Effets sonores (tourner les pages)';
 	@override String get fastPageTurn => 'Feuilletage rapide';
-	@override String get fastPageTurnHint => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.';
+	@override String get fastPageTurnHint => 'Sauter depuis la table des matières ou la navigation rapide ne tourne qu’une page jusqu’à la destination. Désactivez pour feuilleter toutes les pages du chemin.';
 	@override String get sharedAccess => 'Gérer le partage';
 	@override String get noSharedAccess => 'Vous n\'avez encore partagé aucun livre ni aucune liste';
 	@override String get communityPrices => 'Prix moyens de la communauté';
@@ -315,6 +326,15 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get notifications => 'Notifications';
 	@override String get notificationsHint => 'Quelles alertes vous parviennent, et comment';
 	@override String get settingsHint => 'Compte, notifications, langue et apparence';
+	@override String get dangerZone => 'Zone sensible';
+	@override String get deleteAccount => 'Supprimer le compte';
+	@override String get deleteAccountHint => 'Supprimer définitivement le compte et tout son contenu';
+	@override String get deleteAccountTitle => 'Supprimer définitivement le compte ?';
+	@override String get deleteAccountBody => 'Votre compte, vos recettes, livres, plans de repas, listes de courses, tickets, photos, publications et réponses seront définitivement supprimés de nos serveurs et de cet appareil, sans possibilité de récupération. Ce que vous avez partagé est retiré chez les personnes concernées. Un abonnement actif n’est pas annulé automatiquement : annulez-le dans l’App Store ou Google Play.';
+	@override String get deleteAccountConfirm => 'Supprimer définitivement';
+	@override String get deletingAccount => 'Suppression du compte…';
+	@override String get deleteAccountFailed => 'La suppression du compte a échoué. Réessayez ou écrivez à support@aieasyplate.app.';
+	@override String get deleteAccountHousehold => 'Vous êtes propriétaire d’un foyer partagé. Fermez-le d’abord depuis l’écran Foyer, puis réessayez.';
 }
 
 // Path: notificationSettings
@@ -378,6 +398,9 @@ class _Translations$more$fr extends Translations$more$he {
 	@override String get email => 'Envoyer un e-mail';
 	@override String get supportUnavailable => 'Impossible d\'ouvrir cette application';
 	@override String get preferences => 'Préférences';
+	@override String get help => 'Support et mentions légales';
+	@override String get helpHint => 'Support, politique de confidentialité et conditions';
+	@override String get legal => 'Mentions légales';
 }
 
 // Path: language
@@ -670,6 +693,10 @@ class _Translations$sharing$fr extends Translations$sharing$he {
 	@override String get kindBook => 'Livre';
 	@override String get kindPlan => 'Menu';
 	@override String get recipesTravel => 'Les recettes qu’il contient sont partagées avec lui';
+	@override String get shareList => 'Partager la liste de courses';
+	@override String get acceptedList => 'La liste a été ajoutée à vos listes de courses';
+	@override String get viewerCannotEditList => 'Cette liste est partagée avec vous en lecture seule';
+	@override String get kindList => 'liste de courses';
 }
 
 // Path: notifications
@@ -707,6 +734,7 @@ class _Translations$notifications$fr extends Translations$notifications$he {
 	@override String get openThread => 'Ouvrir la discussion';
 	@override String get threadGone => 'Cette discussion a été supprimée';
 	@override String get settings => 'Paramètres';
+	@override String sharedList({required Object name, required Object recipe}) => '${name} a partagé la liste de courses « ${recipe} » avec vous';
 }
 
 // Path: editor
@@ -851,6 +879,11 @@ class _Translations$mealPlanner$fr extends Translations$mealPlanner$he {
 	@override String get noProducts => 'Sans produits, l\'élément rejoint la liste de courses comme une seule ligne à son nom';
 	@override String get itemName => 'Nom de l\'élément';
 	@override String get editItem => 'Modifier l\'élément';
+	@override String get planOptions => 'Options du plan';
+	@override String get deletePlan => 'Supprimer le plan';
+	@override String deletePlanConfirm({required Object name}) => 'Supprimer le plan « ${name} » ? Ses repas seront supprimés aussi.';
+	@override String leavePlanConfirm({required Object name}) => 'Quitter le plan partagé « ${name} » ? Il sera retiré de votre liste.';
+	@override String get planDeleted => 'Plan supprimé';
 }
 
 // Path: groceryList
@@ -922,6 +955,7 @@ class _Translations$groceryList$fr extends Translations$groceryList$he {
 	@override String get stayHere => 'Rester ici';
 	@override String get noIngredients => 'Cette recette n’a aucun ingrédient à acheter';
 	@override String get addFirstItem => 'Ajouter un article';
+	@override String leaveListConfirm({required Object name}) => 'Quitter la liste partagée « ${name} » ? Elle sera retirée de vos listes.';
 }
 
 // Path: receipt
@@ -1084,6 +1118,14 @@ class _Translations$image$fr extends Translations$image$he {
 	@override String get themeVegan => 'Végan';
 	@override String get themeHolidays => 'Fêtes';
 	@override String get themeQuick => 'Rapide et simple';
+	@override String get webSearch => 'Rechercher sur Google Images';
+	@override String get webSearchTitle => 'Recherche d’image';
+	@override String get webSearchHint => 'Que chercher ? ex. kubbeh à la betterave';
+	@override String get webSearchEmpty => 'Aucune image trouvée, essayez d’autres mots';
+	@override String get webSearchFailed => 'La recherche a échoué, réessayez';
+	@override String get webSearchUnavailable => 'La recherche d’images n’est pas disponible pour le moment';
+	@override String get webSearchEnd => 'Ce sont tous les résultats';
+	@override String get webSearchDownloadFailed => 'Impossible de télécharger cette image, essayez-en une autre';
 }
 
 // Path: nav
@@ -1481,7 +1523,7 @@ class _Translations$assistant$fr extends Translations$assistant$he {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Assistant';
+	@override String get title => 'Shefi';
 	@override String get subtitle => 'Votre sous-chef : questions, planning, courses, cuisine';
 	@override String get placeholder => 'Demandez ou dites-moi quoi faire…';
 	@override String get send => 'Envoyer';
@@ -1513,6 +1555,19 @@ class _Translations$assistant$fr extends Translations$assistant$he {
 	@override String get listCreated => 'Liste créée';
 	@override String get offTopic => 'Je suis là pour la cuisine, les recettes, les plans de repas et les courses. Demandez-moi n\'importe quoi côté cuisine et je m\'en occupe !';
 	@override String get welcomeAnon => 'Bonjour ! Je peux ajouter des courses, planifier votre semaine, importer des recettes depuis des liens, lancer le mode cuisine et plus. On fait quoi ?';
+	@override String scopedWelcome({required Object name}) => 'Que voulez-vous savoir sur « ${name} » ?';
+	@override String scopedOffTopic({required Object name}) => 'Ici je n’aide que pour « ${name} ». Pour le reste, ouvrez Shefi depuis le menu.';
+	@override String get askAboutRecipe => 'Demander à Shefi sur cette recette';
+	@override String get askAboutPlan => 'Demander à Shefi sur ce menu';
+	@override String get askAboutList => 'Demander à Shefi sur cette liste';
+	@override String get listen => 'Parler à Shefi';
+	@override String get stopListening => 'Arrêter l’écoute';
+	@override String get speakReplies => 'Lire les réponses à voix haute';
+	@override String get micUnavailable => 'Le micro ne peut pas être utilisé. Vérifiez les autorisations micro et reconnaissance vocale dans les réglages de l’appareil.';
+	@override late final _Translations$assistant$scopedPrompts$fr scopedPrompts = _Translations$assistant$scopedPrompts$fr._(_root);
+	@override String get listening => 'J’écoute…';
+	@override String get stop => 'Arrêter';
+	@override String get cancelled => 'Annulé.';
 }
 
 // Path: shareCode
@@ -1556,6 +1611,7 @@ class _Translations$shareCode$fr extends Translations$shareCode$he {
 	@override String get upgrade => 'Voir Premium';
 	@override String get scanHint => 'Pointez la caméra vers un QR de partage';
 	@override String householdMessage({required Object name, required Object code, required Object link}) => '${name} vous invite à rejoindre son compte partagé EasyPlate. Code : ${code}\n${link}';
+	@override String limitLists({required Object count}) => 'Un compte gratuit peut partager jusqu’à ${count} listes de courses.';
 }
 
 // Path: household
@@ -1595,6 +1651,74 @@ class _Translations$household$fr extends Translations$household$he {
 	@override String get lapsed => 'L’abonnement du propriétaire est terminé ; Premium est suspendu pour les membres.';
 }
 
+// Path: feature
+class _Translations$feature$fr extends Translations$feature$he {
+	_Translations$feature$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get comingSoon => 'Bientôt';
+	@override String get comingSoonMessage => 'Cette fonctionnalité arrive bientôt';
+	@override String get unavailable => 'Cette fonctionnalité n’est pas disponible pour le moment';
+	@override String get premiumOnly => 'Premium';
+	@override String get premiumOnlyMessage => 'Cette fonctionnalité est réservée aux abonnés Premium';
+	@override String get premiumOnlyTitle => 'Réservé à Premium';
+	@override String premiumOnlyFor({required Object name}) => 'L’option « ${name} » est réservée aux abonnés Premium';
+	@override String get goPremium => 'Passer à Premium';
+}
+
+// Path: featureName
+class _Translations$featureName$fr extends Translations$featureName$he {
+	_Translations$featureName$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get books => 'Livres de recettes';
+	@override String get mealPlans => 'Plans de repas';
+	@override String get groceryLists => 'Listes de courses';
+	@override String get community => 'Communauté';
+	@override String get ingestText => 'Recette depuis un texte';
+	@override String get ingestWebSearch => 'Recherche de recette sur le web';
+	@override String get ingestLink => 'Recette depuis un lien';
+	@override String get ingestSocialVideo => 'Recette depuis une vidéo';
+	@override String get ingestAiRequest => 'Demander une recette à l’IA';
+	@override String get ingestFile => 'Recette depuis un fichier';
+	@override String get shareIn => 'Partage depuis une autre application';
+	@override String get saveWithAi => 'Enregistrer avec l’IA';
+	@override String get cookMode => 'Mode cuisine';
+	@override String get cookTimers => 'Minuteurs de cuisson';
+	@override String get nutrition => 'Nutrition';
+	@override String get recipeImageAi => 'Image par IA';
+	@override String get recipeImageSearch => 'Recherche d’image Google';
+	@override String get groceryFromRecipe => 'Liste de courses depuis une recette';
+	@override String get sharedRecipes => 'Recettes partagées';
+	@override String get forum => 'Forum';
+	@override String get likes => 'J’aime';
+	@override String get shareRecipes => 'Partage de recettes';
+	@override String get shareBooks => 'Partage de livres';
+	@override String get sharePlans => 'Partage de plans';
+	@override String get shareGroceryLists => 'Partage de listes de courses';
+	@override String get shareCodes => 'Partage par code';
+	@override String get households => 'Foyer';
+	@override String get priceBook => 'Carnet de prix';
+	@override String get receiptScan => 'Scan de ticket';
+	@override String get groceryCost => 'Coût estimé';
+	@override String get shoppingReminder => 'Rappel de courses';
+	@override String get assistant => 'Shefi (l’assistant)';
+	@override String get notifications => 'Notifications';
+	@override String get premium => 'Premium';
+	@override String get contentTranslation => 'Traduction du contenu';
+	@override String get theming => 'Apparence';
+	@override String get walkthrough => 'Visite guidée';
+	@override String get tutorialBook => 'Livre de tutoriel';
+	@override String get feedback => 'Commentaires';
+	@override String get assistantScoped => 'Shefi dans un élément';
+	@override String get assistantVoice => 'Voix avec Shefi';
+	@override String get singleSession => 'Un appareil par compte';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1609,6 +1733,7 @@ class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$groceries$fr groceries = _Translations$walkthrough$topics$groceries$fr._(_root);
 	@override late final _Translations$walkthrough$topics$community$fr community = _Translations$walkthrough$topics$community$fr._(_root);
 	@override late final _Translations$walkthrough$topics$account$fr account = _Translations$walkthrough$topics$account$fr._(_root);
+	@override late final _Translations$walkthrough$topics$settings$fr settings = _Translations$walkthrough$topics$settings$fr._(_root);
 }
 
 // Path: walkthrough.demo
@@ -1739,6 +1864,36 @@ class _Translations$assistant$suggest$fr extends Translations$assistant$suggest$
 	];
 }
 
+// Path: assistant.scopedPrompts
+class _Translations$assistant$scopedPrompts$fr extends Translations$assistant$scopedPrompts$he {
+	_Translations$assistant$scopedPrompts$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get recipe => [
+		'Quelle est la nutrition par portion ?',
+		'Comment la faire pour 8 personnes ?',
+		'Par quoi remplacer un ingrédient qui me manque ?',
+		'Ajoute cette recette au menu de demain',
+		'Crée une liste de courses depuis cette recette',
+	];
+	@override List<String> get mealPlan => [
+		'Qu’est-ce qu’on mange aujourd’hui ?',
+		'Ajoute un dîner mardi',
+		'Que manque-t-il cette semaine ?',
+		'Crée une liste de courses depuis ce menu',
+		'Combien de calories mercredi ?',
+	];
+	@override List<String> get groceryList => [
+		'Que reste-t-il à acheter ?',
+		'Ajoute du lait et des œufs',
+		'Marque les tomates comme achetées',
+		'Supprime ce que j’ai déjà acheté',
+		'Combien font 2 tasses de farine en grammes ?',
+	];
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$fr extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1809,7 +1964,7 @@ class _Translations$walkthrough$topics$groceries$fr extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Liste de courses et prix';
-	@override String get summary => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché et une estimation du coût d\'après vos tickets.';
+	@override String get summary => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché, une estimation du coût d’après vos tickets, et le partage avec qui fait les courses avec vous.';
 	@override String get s1 => 'Touchez « Courses ».';
 	@override String get s2 => 'Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.';
 	@override String get s3 => 'Touchez le plus pour ajouter un article à la main.';
@@ -1817,6 +1972,7 @@ class _Translations$walkthrough$topics$groceries$fr extends Translations$walkthr
 	@override String get s5 => 'Touchez « Ajouter » et l\'article rejoint la liste.';
 	@override String get s6 => 'Touchez ici pour ouvrir le carnet de prix.';
 	@override String get s7 => 'Scannez un ticket et le prix de chaque produit est conservé. La liste de courses reçoit alors une estimation du coût, et les prix médians de la communauté complètent ce que vous n\'avez pas encore acheté.';
+	@override String get shefi => 'Demandez à Shefi à propos de cette liste : ce qui manque pour un repas, quoi remplacer, ou ajoutez des articles à la voix.';
 }
 
 // Path: walkthrough.topics.community
@@ -1845,9 +2001,36 @@ class _Translations$walkthrough$topics$account$fr extends Translations$walkthrou
 	@override String get s1 => 'Notifications : invitations à partager des livres et des plans, et mises à jour.';
 	@override String get s2 => 'Touchez la photo pour ouvrir votre compte.';
 	@override String get s3 => 'Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.';
-	@override String get s4 => 'Accès partagé : qui partage des livres et des plans avec vous, et ce que vous avez partagé.';
+	@override String get s4 => 'Accès partagé : qui partage des livres, des plans et des listes de courses avec vous, et ce que vous avez partagé.';
 	@override String get s5 => 'Touchez « Réglages ».';
 	@override String get s6 => 'Mode d\'affichage : clair, sombre ou selon l\'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l\'écran d\'assistance du compte.';
+	@override String get shefi => 'Shefi, l’assistant intelligent : ce bouton flottant ouvre une conversation. Posez la question à l’écrit ou à voix haute ; Shefi répond, ajoute au plan, construit une liste ou lance le mode cuisine. Dans une recette, un plan ou une liste, le bouton « Demander à Shefi » ne parle que de cet élément.';
+}
+
+// Path: walkthrough.topics.settings
+class _Translations$walkthrough$topics$settings$fr extends Translations$walkthrough$topics$settings$he {
+	_Translations$walkthrough$topics$settings$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Réglages et préférences';
+	@override String get summary => 'Chaque ligne des réglages et des préférences : profil, partage, notifications, langue, apparence, suppression du compte, jour des courses, prix, alimentation et livres.';
+	@override String get s1 => 'Touchez « Réglages » : le compte et l’application sont ici.';
+	@override String get s2 => 'Profil : le nom et la photo que voient les personnes avec qui vous partagez, et les méthodes de connexion liées.';
+	@override String get s3 => 'Accès partagé : qui partage recettes, livres, menus et listes avec vous, et ce que vous avez partagé. Rejoindre par code ou QR commence ici aussi.';
+	@override String get s4 => 'Touchez « Réglages des notifications ».';
+	@override String get s5 => 'Notifications push : l’interrupteur principal. Éteint, rien n’est envoyé ; en dessous vous choisissez quoi : réponses, invitations, mises à jour et messages de l’équipe.';
+	@override String get s6 => 'Rappels du jour des courses : quand vous rappeler avant les courses. Programmés sur l’appareil, indépendamment du push.';
+	@override String get s7 => 'Langue : changer traduit aussi vos recettes, livres, menus et listes.';
+	@override String get s8 => 'Apparence : clair, sombre ou selon l’appareil. Le choix est enregistré sur le compte et vous suit sur l’appareil suivant.';
+	@override String get s9 => 'Supprimer le compte : efface définitivement le compte et tout son contenu, après confirmation. Un abonnement en boutique s’annule à part.';
+	@override String get s10 => 'Retour au compte : touchez « Préférences », la façon dont l’application se comporte pour vous.';
+	@override String get s11 => 'Jour des courses : le jour autour duquel la liste est construite et les rappels programmés.';
+	@override String get s12 => 'Prix communautaires : activés, les prix de vos tickets rejoignent des moyennes anonymes et les lignes jamais achetées sont estimées d’après elles.';
+	@override String get s13 => 'Préférences alimentaires et allergènes : cochez-les ici et l’application les met en évidence dans les recettes et les recettes partagées.';
+	@override String get s14 => 'Tourne-page rapide dans les livres : sauter à une page lointaine ne tourne qu’une page. Désactivé, toutes les pages du chemin défilent.';
+	@override String get s15 => 'Sons : effets sonores au tourne-page et aux actions. Peut être désactivé.';
 }
 
 /// The flat map containing all translations for locale <fr>.
@@ -1949,6 +2132,15 @@ extension on TranslationsFr {
 			'auth.phoneClaimedSignIn' => 'Me connecter à mon compte existant',
 			'auth.phoneClaimedCreateNew' => 'Créer quand même un nouveau compte',
 			'auth.phoneClaimedCreateNewConfirm' => 'Un nouveau compte vide sera ouvert pour ce numéro. Le compte existant reste tel quel, mais ne sera plus accessible avec ce numéro.',
+			'auth.sessionOtherDeviceTitle' => 'Connecté sur un autre appareil',
+			'auth.sessionOtherDeviceBody' => ({required Object platform, required Object since}) => 'Ce compte est ouvert sur ${platform}${since}. Il ne peut servir que sur un appareil à la fois : déconnectez-vous là-bas, puis touchez « Réessayer ».',
+			'auth.sessionSince' => ({required Object date}) => ' depuis le ${date}',
+			'auth.sessionExpiredTitle' => 'Votre session a expiré',
+			'auth.sessionExpiredBody' => 'Une connexion dure au plus un mois. Reconnectez-vous pour continuer.',
+			'auth.sessionRetry' => 'Réessayer',
+			'auth.platformIos' => 'un iPhone',
+			'auth.platformAndroid' => 'un téléphone Android',
+			'auth.platformOther' => 'un autre appareil',
 			'profile.setupTitle' => 'Encore quelques détails',
 			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
 			'profile.fullName' => 'Nom complet',
@@ -2005,7 +2197,7 @@ extension on TranslationsFr {
 			'settings.themeDark' => 'Sombre',
 			'settings.soundEffects' => 'Effets sonores (tourner les pages)',
 			'settings.fastPageTurn' => 'Feuilletage rapide',
-			'settings.fastPageTurnHint' => 'Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.',
+			'settings.fastPageTurnHint' => 'Sauter depuis la table des matières ou la navigation rapide ne tourne qu’une page jusqu’à la destination. Désactivez pour feuilleter toutes les pages du chemin.',
 			'settings.sharedAccess' => 'Gérer le partage',
 			'settings.noSharedAccess' => 'Vous n\'avez encore partagé aucun livre ni aucune liste',
 			'settings.communityPrices' => 'Prix moyens de la communauté',
@@ -2025,6 +2217,15 @@ extension on TranslationsFr {
 			'settings.notifications' => 'Notifications',
 			'settings.notificationsHint' => 'Quelles alertes vous parviennent, et comment',
 			'settings.settingsHint' => 'Compte, notifications, langue et apparence',
+			'settings.dangerZone' => 'Zone sensible',
+			'settings.deleteAccount' => 'Supprimer le compte',
+			'settings.deleteAccountHint' => 'Supprimer définitivement le compte et tout son contenu',
+			'settings.deleteAccountTitle' => 'Supprimer définitivement le compte ?',
+			'settings.deleteAccountBody' => 'Votre compte, vos recettes, livres, plans de repas, listes de courses, tickets, photos, publications et réponses seront définitivement supprimés de nos serveurs et de cet appareil, sans possibilité de récupération. Ce que vous avez partagé est retiré chez les personnes concernées. Un abonnement actif n’est pas annulé automatiquement : annulez-le dans l’App Store ou Google Play.',
+			'settings.deleteAccountConfirm' => 'Supprimer définitivement',
+			'settings.deletingAccount' => 'Suppression du compte…',
+			'settings.deleteAccountFailed' => 'La suppression du compte a échoué. Réessayez ou écrivez à support@aieasyplate.app.',
+			'settings.deleteAccountHousehold' => 'Vous êtes propriétaire d’un foyer partagé. Fermez-le d’abord depuis l’écran Foyer, puis réessayez.',
 			'notificationSettings.title' => 'Paramètres des notifications',
 			'notificationSettings.push' => 'Notifications push',
 			'notificationSettings.pushHint' => 'Alertes sur cet appareil. Désactivé, rien n’est envoyé au téléphone ; la boîte de réception continue de se remplir.',
@@ -2061,6 +2262,9 @@ extension on TranslationsFr {
 			'more.email' => 'Envoyer un e-mail',
 			'more.supportUnavailable' => 'Impossible d\'ouvrir cette application',
 			'more.preferences' => 'Préférences',
+			'more.help' => 'Support et mentions légales',
+			'more.helpHint' => 'Support, politique de confidentialité et conditions',
+			'more.legal' => 'Mentions légales',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -2290,6 +2494,10 @@ extension on TranslationsFr {
 			'sharing.kindBook' => 'Livre',
 			'sharing.kindPlan' => 'Menu',
 			'sharing.recipesTravel' => 'Les recettes qu’il contient sont partagées avec lui',
+			'sharing.shareList' => 'Partager la liste de courses',
+			'sharing.acceptedList' => 'La liste a été ajoutée à vos listes de courses',
+			'sharing.viewerCannotEditList' => 'Cette liste est partagée avec vous en lecture seule',
+			'sharing.kindList' => 'liste de courses',
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'Aucune notification',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} a partagé « ${recipe} » avec vous',
@@ -2318,6 +2526,7 @@ extension on TranslationsFr {
 			'notifications.openThread' => 'Ouvrir la discussion',
 			'notifications.threadGone' => 'Cette discussion a été supprimée',
 			'notifications.settings' => 'Paramètres',
+			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} a partagé la liste de courses « ${recipe} » avec vous',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
@@ -2344,6 +2553,8 @@ extension on TranslationsFr {
 			'editor.discardBody' => 'Vos modifications ne seront pas enregistrées.',
 			'editor.discard' => 'Abandonner',
 			'editor.saveOptionsTitle' => 'Comment enregistrer ?',
+			_ => null,
+		} ?? switch (path) {
 			'editor.savePlainHint' => 'Enregistrer tel quel, sans attendre',
 			'editor.saveWithAi' => 'Enregistrer avec relecture IA',
 			'editor.saveWithAiHint' => 'Corriger l\'orthographe et aligner les durées des étapes',
@@ -2370,8 +2581,6 @@ extension on TranslationsFr {
 			'ingestion.originalTitle' => 'Recette originale',
 			'ingestion.fetchFailed' => 'Impossible de charger la page',
 			'ingestion.loadingOriginal' => 'Chargement de la page...',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.structuredFromSite' => 'Lue directement depuis les données structurées du site, sans IA',
 			'ingestion.useStructured' => 'Continuer avec la recette structurée',
 			'ingestion.preferAi' => 'Traiter avec l\'IA à la place',
@@ -2437,6 +2646,11 @@ extension on TranslationsFr {
 			'mealPlanner.noProducts' => 'Sans produits, l\'élément rejoint la liste de courses comme une seule ligne à son nom',
 			'mealPlanner.itemName' => 'Nom de l\'élément',
 			'mealPlanner.editItem' => 'Modifier l\'élément',
+			'mealPlanner.planOptions' => 'Options du plan',
+			'mealPlanner.deletePlan' => 'Supprimer le plan',
+			'mealPlanner.deletePlanConfirm' => ({required Object name}) => 'Supprimer le plan « ${name} » ? Ses repas seront supprimés aussi.',
+			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'Quitter le plan partagé « ${name} » ? Il sera retiré de votre liste.',
+			'mealPlanner.planDeleted' => 'Plan supprimé',
 			'groceryList.title' => 'Liste de courses',
 			'groceryList.aggregated' => 'Regroupée à partir de tous les menus actifs',
 			'groceryList.addItem' => 'Nouvel élément',
@@ -2499,6 +2713,7 @@ extension on TranslationsFr {
 			'groceryList.stayHere' => 'Rester ici',
 			'groceryList.noIngredients' => 'Cette recette n’a aucun ingrédient à acheter',
 			'groceryList.addFirstItem' => 'Ajouter un article',
+			'groceryList.leaveListConfirm' => ({required Object name}) => 'Quitter la liste partagée « ${name} » ? Elle sera retirée de vos listes.',
 			'receipt.title' => 'Scanner un ticket',
 			'receipt.subtitle' => 'Photographiez un ticket ou importez un PDF, les prix sont gardés pour votre liste de courses',
 			'receipt.camera' => 'Photographier le ticket',
@@ -2634,6 +2849,14 @@ extension on TranslationsFr {
 			'image.themeVegan' => 'Végan',
 			'image.themeHolidays' => 'Fêtes',
 			'image.themeQuick' => 'Rapide et simple',
+			'image.webSearch' => 'Rechercher sur Google Images',
+			'image.webSearchTitle' => 'Recherche d’image',
+			'image.webSearchHint' => 'Que chercher ? ex. kubbeh à la betterave',
+			'image.webSearchEmpty' => 'Aucune image trouvée, essayez d’autres mots',
+			'image.webSearchFailed' => 'La recherche a échoué, réessayez',
+			'image.webSearchUnavailable' => 'La recherche d’images n’est pas disponible pour le moment',
+			'image.webSearchEnd' => 'Ce sont tous les résultats',
+			'image.webSearchDownloadFailed' => 'Impossible de télécharger cette image, essayez-en une autre',
 			'nav.library' => 'Livres',
 			'nav.recipes' => 'Recettes',
 			'nav.mealPlan' => 'Repas',
@@ -2765,7 +2988,7 @@ extension on TranslationsFr {
 			'walkthrough.topics.mealPlan.s6' => 'Le tableau de bord : moyenne quotidienne, total de la semaine, une barre par jour et la répartition des macros. Les valeurs sont estimées par l\'IA pour chaque recette, par portion.',
 			'walkthrough.topics.mealPlan.s7' => 'Le bouton de partage envoie le plan à un autre compte, en éditeur ou en lecteur. Une modification d\'un côté arrive chez tout le monde.',
 			'walkthrough.topics.groceries.title' => 'Liste de courses et prix',
-			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché et une estimation du coût d\'après vos tickets.',
+			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché, une estimation du coût d’après vos tickets, et le partage avec qui fait les courses avec vous.',
 			'walkthrough.topics.groceries.s1' => 'Touchez « Courses ».',
 			'walkthrough.topics.groceries.s2' => 'Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.',
 			'walkthrough.topics.groceries.s3' => 'Touchez le plus pour ajouter un article à la main.',
@@ -2773,6 +2996,7 @@ extension on TranslationsFr {
 			'walkthrough.topics.groceries.s5' => 'Touchez « Ajouter » et l\'article rejoint la liste.',
 			'walkthrough.topics.groceries.s6' => 'Touchez ici pour ouvrir le carnet de prix.',
 			'walkthrough.topics.groceries.s7' => 'Scannez un ticket et le prix de chaque produit est conservé. La liste de courses reçoit alors une estimation du coût, et les prix médians de la communauté complètent ce que vous n\'avez pas encore acheté.',
+			'walkthrough.topics.groceries.shefi' => 'Demandez à Shefi à propos de cette liste : ce qui manque pour un repas, quoi remplacer, ou ajoutez des articles à la voix.',
 			'walkthrough.topics.community.title' => 'Communauté',
 			'walkthrough.topics.community.summary' => 'Les recettes partagées par tous, et un forum de questions et réponses.',
 			'walkthrough.topics.community.s1' => 'Touchez « Communauté ».',
@@ -2783,9 +3007,27 @@ extension on TranslationsFr {
 			'walkthrough.topics.account.s1' => 'Notifications : invitations à partager des livres et des plans, et mises à jour.',
 			'walkthrough.topics.account.s2' => 'Touchez la photo pour ouvrir votre compte.',
 			'walkthrough.topics.account.s3' => 'Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.',
-			'walkthrough.topics.account.s4' => 'Accès partagé : qui partage des livres et des plans avec vous, et ce que vous avez partagé.',
+			'walkthrough.topics.account.s4' => 'Accès partagé : qui partage des livres, des plans et des listes de courses avec vous, et ce que vous avez partagé.',
 			'walkthrough.topics.account.s5' => 'Touchez « Réglages ».',
 			'walkthrough.topics.account.s6' => 'Mode d\'affichage : clair, sombre ou selon l\'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l\'écran d\'assistance du compte.',
+			'walkthrough.topics.account.shefi' => 'Shefi, l’assistant intelligent : ce bouton flottant ouvre une conversation. Posez la question à l’écrit ou à voix haute ; Shefi répond, ajoute au plan, construit une liste ou lance le mode cuisine. Dans une recette, un plan ou une liste, le bouton « Demander à Shefi » ne parle que de cet élément.',
+			'walkthrough.topics.settings.title' => 'Réglages et préférences',
+			'walkthrough.topics.settings.summary' => 'Chaque ligne des réglages et des préférences : profil, partage, notifications, langue, apparence, suppression du compte, jour des courses, prix, alimentation et livres.',
+			'walkthrough.topics.settings.s1' => 'Touchez « Réglages » : le compte et l’application sont ici.',
+			'walkthrough.topics.settings.s2' => 'Profil : le nom et la photo que voient les personnes avec qui vous partagez, et les méthodes de connexion liées.',
+			'walkthrough.topics.settings.s3' => 'Accès partagé : qui partage recettes, livres, menus et listes avec vous, et ce que vous avez partagé. Rejoindre par code ou QR commence ici aussi.',
+			'walkthrough.topics.settings.s4' => 'Touchez « Réglages des notifications ».',
+			'walkthrough.topics.settings.s5' => 'Notifications push : l’interrupteur principal. Éteint, rien n’est envoyé ; en dessous vous choisissez quoi : réponses, invitations, mises à jour et messages de l’équipe.',
+			'walkthrough.topics.settings.s6' => 'Rappels du jour des courses : quand vous rappeler avant les courses. Programmés sur l’appareil, indépendamment du push.',
+			'walkthrough.topics.settings.s7' => 'Langue : changer traduit aussi vos recettes, livres, menus et listes.',
+			'walkthrough.topics.settings.s8' => 'Apparence : clair, sombre ou selon l’appareil. Le choix est enregistré sur le compte et vous suit sur l’appareil suivant.',
+			'walkthrough.topics.settings.s9' => 'Supprimer le compte : efface définitivement le compte et tout son contenu, après confirmation. Un abonnement en boutique s’annule à part.',
+			'walkthrough.topics.settings.s10' => 'Retour au compte : touchez « Préférences », la façon dont l’application se comporte pour vous.',
+			'walkthrough.topics.settings.s11' => 'Jour des courses : le jour autour duquel la liste est construite et les rappels programmés.',
+			'walkthrough.topics.settings.s12' => 'Prix communautaires : activés, les prix de vos tickets rejoignent des moyennes anonymes et les lignes jamais achetées sont estimées d’après elles.',
+			'walkthrough.topics.settings.s13' => 'Préférences alimentaires et allergènes : cochez-les ici et l’application les met en évidence dans les recettes et les recettes partagées.',
+			'walkthrough.topics.settings.s14' => 'Tourne-page rapide dans les livres : sauter à une page lointaine ne tourne qu’une page. Désactivé, toutes les pages du chemin défilent.',
+			'walkthrough.topics.settings.s15' => 'Sons : effets sonores au tourne-page et aux actions. Peut être désactivé.',
 			'walkthrough.demo.bookTitle' => 'Tutoriel',
 			'walkthrough.demo.planName' => 'Plan tutoriel',
 			'walkthrough.demo.mealName' => 'Dîner',
@@ -2825,6 +3067,8 @@ extension on TranslationsFr {
 			'adminBilling.viaRevenueCat' => 'Via RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'Produit : ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} événements',
 			'adminBilling.grant' => 'Accorder premium',
@@ -2884,8 +3128,6 @@ extension on TranslationsFr {
 			'adminDashboard.unknownModel' => 'absent des tarifs',
 			'adminDashboard.usersCost' => 'Coût par utilisateur',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} utilisateurs',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'Rechercher par nom, e-mail ou uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'Afficher les ${count} utilisateurs',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} appels',
@@ -2991,7 +3233,7 @@ extension on TranslationsFr {
 			'adminDashboard.grantRange' => 'Dates exactes',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Premium accordé jusqu\'au ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Commence le ${date}',
-			'assistant.title' => 'Assistant',
+			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Votre sous-chef : questions, planning, courses, cuisine',
 			'assistant.placeholder' => 'Demandez ou dites-moi quoi faire…',
 			'assistant.send' => 'Envoyer',
@@ -3109,6 +3351,33 @@ extension on TranslationsFr {
 			'assistant.listCreated' => 'Liste créée',
 			'assistant.offTopic' => 'Je suis là pour la cuisine, les recettes, les plans de repas et les courses. Demandez-moi n\'importe quoi côté cuisine et je m\'en occupe !',
 			'assistant.welcomeAnon' => 'Bonjour ! Je peux ajouter des courses, planifier votre semaine, importer des recettes depuis des liens, lancer le mode cuisine et plus. On fait quoi ?',
+			'assistant.scopedWelcome' => ({required Object name}) => 'Que voulez-vous savoir sur « ${name} » ?',
+			'assistant.scopedOffTopic' => ({required Object name}) => 'Ici je n’aide que pour « ${name} ». Pour le reste, ouvrez Shefi depuis le menu.',
+			'assistant.askAboutRecipe' => 'Demander à Shefi sur cette recette',
+			'assistant.askAboutPlan' => 'Demander à Shefi sur ce menu',
+			'assistant.askAboutList' => 'Demander à Shefi sur cette liste',
+			'assistant.listen' => 'Parler à Shefi',
+			'assistant.stopListening' => 'Arrêter l’écoute',
+			'assistant.speakReplies' => 'Lire les réponses à voix haute',
+			'assistant.micUnavailable' => 'Le micro ne peut pas être utilisé. Vérifiez les autorisations micro et reconnaissance vocale dans les réglages de l’appareil.',
+			'assistant.scopedPrompts.recipe.0' => 'Quelle est la nutrition par portion ?',
+			'assistant.scopedPrompts.recipe.1' => 'Comment la faire pour 8 personnes ?',
+			'assistant.scopedPrompts.recipe.2' => 'Par quoi remplacer un ingrédient qui me manque ?',
+			'assistant.scopedPrompts.recipe.3' => 'Ajoute cette recette au menu de demain',
+			'assistant.scopedPrompts.recipe.4' => 'Crée une liste de courses depuis cette recette',
+			'assistant.scopedPrompts.mealPlan.0' => 'Qu’est-ce qu’on mange aujourd’hui ?',
+			'assistant.scopedPrompts.mealPlan.1' => 'Ajoute un dîner mardi',
+			'assistant.scopedPrompts.mealPlan.2' => 'Que manque-t-il cette semaine ?',
+			'assistant.scopedPrompts.mealPlan.3' => 'Crée une liste de courses depuis ce menu',
+			'assistant.scopedPrompts.mealPlan.4' => 'Combien de calories mercredi ?',
+			'assistant.scopedPrompts.groceryList.0' => 'Que reste-t-il à acheter ?',
+			'assistant.scopedPrompts.groceryList.1' => 'Ajoute du lait et des œufs',
+			'assistant.scopedPrompts.groceryList.2' => 'Marque les tomates comme achetées',
+			'assistant.scopedPrompts.groceryList.3' => 'Supprime ce que j’ai déjà acheté',
+			'assistant.scopedPrompts.groceryList.4' => 'Combien font 2 tasses de farine en grammes ?',
+			'assistant.listening' => 'J’écoute…',
+			'assistant.stop' => 'Arrêter',
+			'assistant.cancelled' => 'Annulé.',
 			'shareCode.title' => 'Code et lien',
 			'shareCode.tabContact' => 'Contact',
 			'shareCode.tabCode' => 'Code ou lien',
@@ -3143,6 +3412,7 @@ extension on TranslationsFr {
 			'shareCode.upgrade' => 'Voir Premium',
 			'shareCode.scanHint' => 'Pointez la caméra vers un QR de partage',
 			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} vous invite à rejoindre son compte partagé EasyPlate. Code : ${code}\n${link}',
+			'shareCode.limitLists' => ({required Object count}) => 'Un compte gratuit peut partager jusqu’à ${count} listes de courses.',
 			'household.title' => 'Compte partagé',
 			'household.duo' => 'Pro Duo',
 			'household.family' => 'Pro Family',
@@ -3171,6 +3441,56 @@ extension on TranslationsFr {
 			'household.inHousehold' => 'Vous êtes déjà dans un compte partagé.',
 			'household.notEligibleCode' => 'L’offre du propriétaire n’inclut plus de compte partagé.',
 			'household.lapsed' => 'L’abonnement du propriétaire est terminé ; Premium est suspendu pour les membres.',
+			'feature.comingSoon' => 'Bientôt',
+			'feature.comingSoonMessage' => 'Cette fonctionnalité arrive bientôt',
+			'feature.unavailable' => 'Cette fonctionnalité n’est pas disponible pour le moment',
+			'feature.premiumOnly' => 'Premium',
+			'feature.premiumOnlyMessage' => 'Cette fonctionnalité est réservée aux abonnés Premium',
+			'feature.premiumOnlyTitle' => 'Réservé à Premium',
+			'feature.premiumOnlyFor' => ({required Object name}) => 'L’option « ${name} » est réservée aux abonnés Premium',
+			'feature.goPremium' => 'Passer à Premium',
+			'featureName.books' => 'Livres de recettes',
+			'featureName.mealPlans' => 'Plans de repas',
+			'featureName.groceryLists' => 'Listes de courses',
+			'featureName.community' => 'Communauté',
+			'featureName.ingestText' => 'Recette depuis un texte',
+			'featureName.ingestWebSearch' => 'Recherche de recette sur le web',
+			'featureName.ingestLink' => 'Recette depuis un lien',
+			'featureName.ingestSocialVideo' => 'Recette depuis une vidéo',
+			'featureName.ingestAiRequest' => 'Demander une recette à l’IA',
+			'featureName.ingestFile' => 'Recette depuis un fichier',
+			'featureName.shareIn' => 'Partage depuis une autre application',
+			'featureName.saveWithAi' => 'Enregistrer avec l’IA',
+			'featureName.cookMode' => 'Mode cuisine',
+			'featureName.cookTimers' => 'Minuteurs de cuisson',
+			'featureName.nutrition' => 'Nutrition',
+			'featureName.recipeImageAi' => 'Image par IA',
+			'featureName.recipeImageSearch' => 'Recherche d’image Google',
+			'featureName.groceryFromRecipe' => 'Liste de courses depuis une recette',
+			'featureName.sharedRecipes' => 'Recettes partagées',
+			'featureName.forum' => 'Forum',
+			'featureName.likes' => 'J’aime',
+			'featureName.shareRecipes' => 'Partage de recettes',
+			'featureName.shareBooks' => 'Partage de livres',
+			'featureName.sharePlans' => 'Partage de plans',
+			'featureName.shareGroceryLists' => 'Partage de listes de courses',
+			'featureName.shareCodes' => 'Partage par code',
+			'featureName.households' => 'Foyer',
+			'featureName.priceBook' => 'Carnet de prix',
+			'featureName.receiptScan' => 'Scan de ticket',
+			'featureName.groceryCost' => 'Coût estimé',
+			'featureName.shoppingReminder' => 'Rappel de courses',
+			'featureName.assistant' => 'Shefi (l’assistant)',
+			'featureName.notifications' => 'Notifications',
+			'featureName.premium' => 'Premium',
+			'featureName.contentTranslation' => 'Traduction du contenu',
+			'featureName.theming' => 'Apparence',
+			'featureName.walkthrough' => 'Visite guidée',
+			'featureName.tutorialBook' => 'Livre de tutoriel',
+			'featureName.feedback' => 'Commentaires',
+			'featureName.assistantScoped' => 'Shefi dans un élément',
+			'featureName.assistantVoice' => 'Voix avec Shefi',
+			'featureName.singleSession' => 'Un appareil par compte',
 			_ => null,
 		};
 	}

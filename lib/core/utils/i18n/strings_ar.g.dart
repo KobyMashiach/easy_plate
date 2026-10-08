@@ -77,6 +77,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$ar assistant = _Translations$assistant$ar._(_root);
 	@override late final _Translations$shareCode$ar shareCode = _Translations$shareCode$ar._(_root);
 	@override late final _Translations$household$ar household = _Translations$household$ar._(_root);
+	@override late final _Translations$feature$ar feature = _Translations$feature$ar._(_root);
+	@override late final _Translations$featureName$ar featureName = _Translations$featureName$ar._(_root);
 }
 
 // Path: common
@@ -185,6 +187,15 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get phoneClaimedSignIn => 'الدخول إلى حسابي الموجود';
 	@override String get phoneClaimedCreateNew => 'إنشاء حساب جديد على أي حال';
 	@override String get phoneClaimedCreateNewConfirm => 'سيُفتح حساب جديد فارغ لهذا الرقم. يبقى الحساب الموجود كما هو، لكن لن يمكن الوصول إليه بهذا الرقم بعد الآن.';
+	@override String get sessionOtherDeviceTitle => 'الحساب مسجّل الدخول على جهاز آخر';
+	@override String sessionOtherDeviceBody({required Object platform, required Object since}) => 'هذا الحساب مفتوح الآن على ${platform}${since}. يمكن استخدامه على جهاز واحد في كل مرة: سجّل الخروج هناك ثم اضغط «حاول مجددًا».';
+	@override String sessionSince({required Object date}) => ' منذ ${date}';
+	@override String get sessionExpiredTitle => 'انتهت صلاحية تسجيل الدخول';
+	@override String get sessionExpiredBody => 'يستمر تسجيل الدخول حتى شهر. سجّل الدخول من جديد للمتابعة.';
+	@override String get sessionRetry => 'حاول مجددًا';
+	@override String get platformIos => 'آيفون';
+	@override String get platformAndroid => 'هاتف أندرويد';
+	@override String get platformOther => 'جهاز آخر';
 }
 
 // Path: profile
@@ -295,7 +306,7 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get themeDark => 'داكن';
 	@override String get soundEffects => 'المؤثرات الصوتية (تقليب الصفحات)';
 	@override String get fastPageTurn => 'تصفّح سريع في الكتاب';
-	@override String get fastPageTurnHint => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.';
+	@override String get fastPageTurnHint => 'القفز من جدول المحتويات أو التنقل السريع يقلّب صفحة واحدة فقط إلى الوجهة. أوقفه لتقليب كل الصفحات في الطريق.';
 	@override String get sharedAccess => 'إدارة المشاركة';
 	@override String get noSharedAccess => 'لم تشارك أي كتب أو قوائم بعد';
 	@override String get communityPrices => 'متوسط أسعار المستخدمين';
@@ -315,6 +326,15 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get notifications => 'الإشعارات';
 	@override String get notificationsHint => 'أي التنبيهات تصلك، وكيف';
 	@override String get settingsHint => 'الحساب، الإشعارات، اللغة والمظهر';
+	@override String get dangerZone => 'منطقة الخطر';
+	@override String get deleteAccount => 'حذف الحساب';
+	@override String get deleteAccountHint => 'حذف الحساب وكل ما فيه نهائياً';
+	@override String get deleteAccountTitle => 'حذف الحساب نهائياً؟';
+	@override String get deleteAccountBody => 'سيُحذف حسابك ووصفاتك وكتبك وخطط وجباتك وقوائم التسوق والإيصالات والصور والمنشورات والردود نهائياً من خوادمنا ومن هذا الجهاز ولا يمكن استرجاعها. ما شاركته سيُزال أيضاً ممن شاركتهم إياه. الاشتراك النشط لا يُلغى تلقائياً: ألغِه من App Store أو Google Play.';
+	@override String get deleteAccountConfirm => 'حذف نهائي';
+	@override String get deletingAccount => 'جارٍ حذف الحساب…';
+	@override String get deleteAccountFailed => 'فشل حذف الحساب. حاول مرة أخرى أو راسلنا على support@aieasyplate.app.';
+	@override String get deleteAccountHousehold => 'أنت مالك أسرة مشتركة. أغلقها أولاً من شاشة "الأسرة" ثم حاول مرة أخرى.';
 }
 
 // Path: notificationSettings
@@ -378,6 +398,9 @@ class _Translations$more$ar extends Translations$more$he {
 	@override String get email => 'إرسال بريد';
 	@override String get supportUnavailable => 'تعذّر فتح التطبيق';
 	@override String get preferences => 'التفضيلات';
+	@override String get help => 'الدعم والمعلومات';
+	@override String get helpHint => 'الدعم وسياسة الخصوصية وشروط الخدمة';
+	@override String get legal => 'معلومات قانونية';
 }
 
 // Path: language
@@ -670,6 +693,10 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get kindBook => 'كتاب';
 	@override String get kindPlan => 'خطة';
 	@override String get recipesTravel => 'ستتم مشاركة الوصفات الموجودة بداخله معه';
+	@override String get shareList => 'مشاركة قائمة التسوق';
+	@override String get acceptedList => 'أُضيفت القائمة إلى قوائم التسوق لديك';
+	@override String get viewerCannotEditList => 'هذه القائمة مشاركة معك للعرض فقط';
+	@override String get kindList => 'قائمة تسوق';
 }
 
 // Path: notifications
@@ -707,6 +734,7 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String get openThread => 'فتح النقاش';
 	@override String get threadGone => 'تم حذف هذا النقاش';
 	@override String get settings => 'الإعدادات';
+	@override String sharedList({required Object name, required Object recipe}) => '${name} شارك/ت معك قائمة التسوق "${recipe}"';
 }
 
 // Path: editor
@@ -851,6 +879,11 @@ class _Translations$mealPlanner$ar extends Translations$mealPlanner$he {
 	@override String get noProducts => 'بدون منتجات يُضاف العنصر إلى قائمة التسوّق كسطر واحد باسمه';
 	@override String get itemName => 'اسم العنصر';
 	@override String get editItem => 'تعديل العنصر';
+	@override String get planOptions => 'خيارات الخطة';
+	@override String get deletePlan => 'حذف الخطة';
+	@override String deletePlanConfirm({required Object name}) => 'حذف الخطة "${name}"؟ ستُحذف وجباتها أيضاً.';
+	@override String leavePlanConfirm({required Object name}) => 'مغادرة الخطة المشتركة "${name}"؟ ستُزال من قائمتك.';
+	@override String get planDeleted => 'تم حذف الخطة';
 }
 
 // Path: groceryList
@@ -922,6 +955,7 @@ class _Translations$groceryList$ar extends Translations$groceryList$he {
 	@override String get stayHere => 'البقاء هنا';
 	@override String get noIngredients => 'لا توجد في هذه الوصفة مكونات للشراء';
 	@override String get addFirstItem => 'إضافة عنصر';
+	@override String leaveListConfirm({required Object name}) => 'مغادرة القائمة المشتركة "${name}"؟ ستُزال من قوائمك.';
 }
 
 // Path: receipt
@@ -1084,6 +1118,14 @@ class _Translations$image$ar extends Translations$image$he {
 	@override String get themeVegan => 'نباتي';
 	@override String get themeHolidays => 'أعياد';
 	@override String get themeQuick => 'سريع وبسيط';
+	@override String get webSearch => 'بحث صور في جوجل';
+	@override String get webSearchTitle => 'بحث عن صورة';
+	@override String get webSearchHint => 'عمّ تبحث؟ مثلاً: كبة شمندر';
+	@override String get webSearchEmpty => 'لم يتم العثور على صور، جرّب كلمات أخرى';
+	@override String get webSearchFailed => 'فشل البحث، حاول مرة أخرى';
+	@override String get webSearchUnavailable => 'بحث الصور غير متاح حالياً';
+	@override String get webSearchEnd => 'هذه كل النتائج';
+	@override String get webSearchDownloadFailed => 'تعذّر تنزيل هذه الصورة، جرّب صورة أخرى';
 }
 
 // Path: nav
@@ -1481,7 +1523,7 @@ class _Translations$assistant$ar extends Translations$assistant$he {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'المساعد';
+	@override String get title => 'شيفي';
 	@override String get subtitle => 'مساعد الطاهي: اسأل، خطط، تسوّق، اطبخ';
 	@override String get placeholder => 'اسأل أو قل لي ماذا أفعل…';
 	@override String get send => 'إرسال';
@@ -1490,7 +1532,7 @@ class _Translations$assistant$ar extends Translations$assistant$he {
 	@override String welcome({required Object name}) => 'مرحبًا ${name}! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟';
 	@override String get error => 'حدث خطأ ما. حاول مجددًا.';
 	@override String get quotaReached => 'استُهلكت حصة الذكاء الاصطناعي لليوم. تُفتح غدًا.';
-	@override String get premiumOnly => 'المساعد جزء من EasyPlate Premium';
+	@override String get premiumOnly => 'شيفي جزء من EasyPlate Premium';
 	@override String get unlock => 'عرض بريميوم';
 	@override String get clear => 'محادثة جديدة';
 	@override String get openResult => 'فتح';
@@ -1513,6 +1555,19 @@ class _Translations$assistant$ar extends Translations$assistant$he {
 	@override String get listCreated => 'أُنشئت القائمة';
 	@override String get offTopic => 'أنا هنا للطبخ والوصفات وتخطيط الوجبات والمشتريات. اسألني أي شيء يخص المطبخ وسأتولاه!';
 	@override String get welcomeAnon => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟';
+	@override String scopedWelcome({required Object name}) => 'ماذا تريد أن تعرف عن "${name}"؟';
+	@override String scopedOffTopic({required Object name}) => 'هنا أساعد فقط فيما يخص "${name}". لأي شيء آخر افتح شيفي من القائمة.';
+	@override String get askAboutRecipe => 'اسأل شيفي عن هذه الوصفة';
+	@override String get askAboutPlan => 'اسأل شيفي عن هذه الخطة';
+	@override String get askAboutList => 'اسأل شيفي عن هذه القائمة';
+	@override String get listen => 'تحدّث إلى شيفي';
+	@override String get stopListening => 'إيقاف الاستماع';
+	@override String get speakReplies => 'قراءة الردود بصوت عالٍ';
+	@override String get micUnavailable => 'لا يمكن استخدام الميكروفون. تحقق من أذونات الميكروفون والتعرف على الكلام في إعدادات الجهاز.';
+	@override late final _Translations$assistant$scopedPrompts$ar scopedPrompts = _Translations$assistant$scopedPrompts$ar._(_root);
+	@override String get listening => 'أستمع…';
+	@override String get stop => 'إيقاف';
+	@override String get cancelled => 'أُلغي.';
 }
 
 // Path: shareCode
@@ -1556,6 +1611,7 @@ class _Translations$shareCode$ar extends Translations$shareCode$he {
 	@override String get upgrade => 'عرض بريميوم';
 	@override String get scanHint => 'وجّه الكاميرا نحو رمز QR للمشاركة';
 	@override String householdMessage({required Object name, required Object code, required Object link}) => 'دعاك ${name} إلى حسابه المشترك في EasyPlate. الرمز: ${code}\n${link}';
+	@override String limitLists({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} قوائم تسوق.';
 }
 
 // Path: household
@@ -1595,6 +1651,74 @@ class _Translations$household$ar extends Translations$household$he {
 	@override String get lapsed => 'انتهى اشتراك المالك؛ بريميوم متوقف مؤقتًا للأعضاء.';
 }
 
+// Path: feature
+class _Translations$feature$ar extends Translations$feature$he {
+	_Translations$feature$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get comingSoon => 'قريباً';
+	@override String get comingSoonMessage => 'هذه الميزة ستصل قريباً';
+	@override String get unavailable => 'هذه الميزة غير متاحة حالياً';
+	@override String get premiumOnly => 'بريميوم';
+	@override String get premiumOnlyMessage => 'هذه الميزة لمشتركي بريميوم';
+	@override String get premiumOnlyTitle => 'لمشتركي بريميوم فقط';
+	@override String premiumOnlyFor({required Object name}) => 'خيار "${name}" متاح لمشتركي بريميوم فقط';
+	@override String get goPremium => 'الانتقال إلى بريميوم';
+}
+
+// Path: featureName
+class _Translations$featureName$ar extends Translations$featureName$he {
+	_Translations$featureName$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get books => 'كتب الوصفات';
+	@override String get mealPlans => 'خطط الوجبات';
+	@override String get groceryLists => 'قوائم التسوق';
+	@override String get community => 'المجتمع';
+	@override String get ingestText => 'وصفة من نص';
+	@override String get ingestWebSearch => 'البحث عن وصفة على الإنترنت';
+	@override String get ingestLink => 'وصفة من رابط';
+	@override String get ingestSocialVideo => 'وصفة من فيديو';
+	@override String get ingestAiRequest => 'طلب وصفة من الذكاء الاصطناعي';
+	@override String get ingestFile => 'وصفة من ملف';
+	@override String get shareIn => 'المشاركة من تطبيق آخر';
+	@override String get saveWithAi => 'الحفظ بالذكاء الاصطناعي';
+	@override String get cookMode => 'وضع الطهي';
+	@override String get cookTimers => 'مؤقتات الطهي';
+	@override String get nutrition => 'القيم الغذائية';
+	@override String get recipeImageAi => 'صورة بالذكاء الاصطناعي';
+	@override String get recipeImageSearch => 'بحث الصور في جوجل';
+	@override String get groceryFromRecipe => 'قائمة تسوق من وصفة';
+	@override String get sharedRecipes => 'الوصفات المشتركة';
+	@override String get forum => 'المنتدى';
+	@override String get likes => 'الإعجابات';
+	@override String get shareRecipes => 'مشاركة الوصفات';
+	@override String get shareBooks => 'مشاركة الكتب';
+	@override String get sharePlans => 'مشاركة الخطط';
+	@override String get shareGroceryLists => 'مشاركة قوائم التسوق';
+	@override String get shareCodes => 'المشاركة برمز';
+	@override String get households => 'الأسرة';
+	@override String get priceBook => 'دفتر الأسعار';
+	@override String get receiptScan => 'مسح الإيصال';
+	@override String get groceryCost => 'التكلفة التقديرية';
+	@override String get shoppingReminder => 'تذكير التسوق';
+	@override String get assistant => 'شيفي (المساعد)';
+	@override String get notifications => 'الإشعارات';
+	@override String get premium => 'بريميوم';
+	@override String get contentTranslation => 'ترجمة المحتوى';
+	@override String get theming => 'المظهر';
+	@override String get walkthrough => 'جولة إرشادية';
+	@override String get tutorialBook => 'كتاب التعليمات';
+	@override String get feedback => 'الملاحظات';
+	@override String get assistantScoped => 'شيفي داخل عنصر';
+	@override String get assistantVoice => 'التحدث مع شيفي';
+	@override String get singleSession => 'جهاز واحد لكل حساب';
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1609,6 +1733,7 @@ class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$groceries$ar groceries = _Translations$walkthrough$topics$groceries$ar._(_root);
 	@override late final _Translations$walkthrough$topics$community$ar community = _Translations$walkthrough$topics$community$ar._(_root);
 	@override late final _Translations$walkthrough$topics$account$ar account = _Translations$walkthrough$topics$account$ar._(_root);
+	@override late final _Translations$walkthrough$topics$settings$ar settings = _Translations$walkthrough$topics$settings$ar._(_root);
 }
 
 // Path: walkthrough.demo
@@ -1739,6 +1864,36 @@ class _Translations$assistant$suggest$ar extends Translations$assistant$suggest$
 	];
 }
 
+// Path: assistant.scopedPrompts
+class _Translations$assistant$scopedPrompts$ar extends Translations$assistant$scopedPrompts$he {
+	_Translations$assistant$scopedPrompts$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get recipe => [
+		'ما القيم الغذائية لكل حصة؟',
+		'كيف أحضّرها لثمانية أشخاص؟',
+		'بماذا أستبدل مكوّنًا لا أملكه؟',
+		'أضف هذه الوصفة إلى خطة الغد',
+		'أنشئ قائمة تسوّق من هذه الوصفة',
+	];
+	@override List<String> get mealPlan => [
+		'ماذا نأكل اليوم؟',
+		'أضف عشاءً يوم الثلاثاء',
+		'ما الناقص هذا الأسبوع؟',
+		'أنشئ قائمة تسوّق من هذه الخطة',
+		'كم سعرة يوم الأربعاء؟',
+	];
+	@override List<String> get groceryList => [
+		'ما الذي بقي لشرائه؟',
+		'أضف حليبًا وبيضًا',
+		'علّم الطماطم كمشتراة',
+		'احذف ما اشتريته بالفعل',
+		'كم يساوي كوبان من الدقيق بالغرام؟',
+	];
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$ar extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1809,7 +1964,7 @@ class _Translations$walkthrough$topics$groceries$ar extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'قائمة التسوّق والأسعار';
-	@override String get summary => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك.';
+	@override String get summary => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك، ومشاركة مع من يتسوّق معك.';
 	@override String get s1 => 'اضغط على "التسوّق".';
 	@override String get s2 => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.';
 	@override String get s3 => 'اضغط على زر الزائد لإضافة عنصر يدوياً.';
@@ -1817,6 +1972,7 @@ class _Translations$walkthrough$topics$groceries$ar extends Translations$walkthr
 	@override String get s5 => 'اضغط "إضافة" ويدخل العنصر إلى القائمة.';
 	@override String get s6 => 'اضغط هنا لفتح دفتر الأسعار.';
 	@override String get s7 => 'امسح إيصالاً ويُحفظ سعر كل منتج. من هنا تحصل قائمة التسوّق على تقدير للتكلفة، وتكمل أسعار المجتمع الوسيطة ما لم تشترِه بعد.';
+	@override String get shefi => 'اسأل شيفي عن هذه القائمة: ما ينقص لوجبة، ما يمكن استبداله، أو أضف عناصر بصوتك.';
 }
 
 // Path: walkthrough.topics.community
@@ -1845,9 +2001,36 @@ class _Translations$walkthrough$topics$account$ar extends Translations$walkthrou
 	@override String get s1 => 'الإشعارات: دعوات لمشاركة الكتب والخطط، وتحديثات.';
 	@override String get s2 => 'اضغط على الصورة لفتح حسابك.';
 	@override String get s3 => 'الاشتراك المميّز: تحليلات ذكاء اصطناعي بلا حدّ يومي وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.';
-	@override String get s4 => 'الوصول المشترك: من يشارك معك الكتب والخطط، وما شاركته أنت.';
+	@override String get s4 => 'الوصول المشترك: من يشارك معك الكتب والخطط وقوائم التسوّق، وما شاركته أنت.';
 	@override String get s5 => 'اضغط على "الإعدادات".';
 	@override String get s6 => 'وضع العرض: فاتح أو داكن أو حسب الجهاز. في الإعدادات أيضاً اللغة والتفضيلات الغذائية ومسبّبات الحساسية. يمكن تشغيل هذا الدليل مجدداً من شاشة الدعم في الحساب.';
+	@override String get shefi => 'شيفي، المساعد الذكي: هذا الزر العائم يفتح محادثة. اسأل كتابةً أو بصوتك، فيجيب شيفي ويضيف إلى الخطة ويبني قائمة أو يشغّل وضع الطبخ. داخل وصفة أو خطة أو قائمة، زر «اسأل شيفي» يتحدث عن هذا العنصر فقط.';
+}
+
+// Path: walkthrough.topics.settings
+class _Translations$walkthrough$topics$settings$ar extends Translations$walkthrough$topics$settings$he {
+	_Translations$walkthrough$topics$settings$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'الإعدادات والتفضيلات';
+	@override String get summary => 'كل صف في الإعدادات والتفضيلات: الملف الشخصي، المشاركة، الإشعارات، اللغة، المظهر، حذف الحساب، يوم التسوّق، الأسعار، التغذية والكتب.';
+	@override String get s1 => 'اضغط "الإعدادات": هنا الحساب والتطبيق.';
+	@override String get s2 => 'الملف الشخصي: الاسم والصورة اللذان يراهما من تشاركهم، وطرق تسجيل الدخول المرتبطة.';
+	@override String get s3 => 'الوصول المشترك: من يشارك معك الوصفات والكتب والخطط والقوائم، وما شاركته أنت. من هنا أيضًا تنضم برمز أو QR.';
+	@override String get s4 => 'اضغط "إعدادات الإشعارات".';
+	@override String get s5 => 'إشعارات الدفع: المفتاح الرئيسي. عندما يكون مطفأً لا يُرسل شيء؛ وتحته تختار ما يُرسل: الردود والدعوات والتحديثات ورسائل الفريق.';
+	@override String get s6 => 'تذكيرات يوم التسوّق: متى نذكّرك قبل التسوّق. مجدولة على الجهاز، بمعزل عن الدفع.';
+	@override String get s7 => 'اللغة: التبديل يترجم أيضًا وصفاتك وكتبك وخططك وقوائمك.';
+	@override String get s8 => 'المظهر: فاتح أو داكن أو حسب الجهاز. يُحفظ الاختيار في الحساب وينتقل معك إلى الجهاز التالي.';
+	@override String get s9 => 'حذف الحساب: يحذف الحساب وكل ما فيه نهائيًا بعد التأكيد. يُلغى اشتراك المتجر على حدة.';
+	@override String get s10 => 'عودة إلى الحساب: اضغط "التفضيلات"، كيف يتصرف التطبيق من أجلك.';
+	@override String get s11 => 'يوم التسوّق: اليوم الذي تُبنى حوله قائمة التسوّق وتُوقَّت التذكيرات.';
+	@override String get s12 => 'أسعار المجتمع: عند التفعيل تنضم أسعار فواتيرك مجهولة الهوية إلى المتوسطات، وتُقدَّر الأسطر التي لم تشترها وفقها.';
+	@override String get s13 => 'التفضيلات الغذائية ومسببات الحساسية: علّمها هنا ويبرزها التطبيق في الوصفات والوصفات المشتركة.';
+	@override String get s14 => 'تقليب سريع في الكتب: القفز إلى صفحة بعيدة يقلّب صفحة واحدة فقط. عند الإيقاف يقلّب كل الصفحات في الطريق.';
+	@override String get s15 => 'الأصوات: مؤثرات صوتية عند التقليب والإجراءات. يمكن إيقافها.';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -1949,6 +2132,15 @@ extension on TranslationsAr {
 			'auth.phoneClaimedSignIn' => 'الدخول إلى حسابي الموجود',
 			'auth.phoneClaimedCreateNew' => 'إنشاء حساب جديد على أي حال',
 			'auth.phoneClaimedCreateNewConfirm' => 'سيُفتح حساب جديد فارغ لهذا الرقم. يبقى الحساب الموجود كما هو، لكن لن يمكن الوصول إليه بهذا الرقم بعد الآن.',
+			'auth.sessionOtherDeviceTitle' => 'الحساب مسجّل الدخول على جهاز آخر',
+			'auth.sessionOtherDeviceBody' => ({required Object platform, required Object since}) => 'هذا الحساب مفتوح الآن على ${platform}${since}. يمكن استخدامه على جهاز واحد في كل مرة: سجّل الخروج هناك ثم اضغط «حاول مجددًا».',
+			'auth.sessionSince' => ({required Object date}) => ' منذ ${date}',
+			'auth.sessionExpiredTitle' => 'انتهت صلاحية تسجيل الدخول',
+			'auth.sessionExpiredBody' => 'يستمر تسجيل الدخول حتى شهر. سجّل الدخول من جديد للمتابعة.',
+			'auth.sessionRetry' => 'حاول مجددًا',
+			'auth.platformIos' => 'آيفون',
+			'auth.platformAndroid' => 'هاتف أندرويد',
+			'auth.platformOther' => 'جهاز آخر',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',
@@ -2005,7 +2197,7 @@ extension on TranslationsAr {
 			'settings.themeDark' => 'داكن',
 			'settings.soundEffects' => 'المؤثرات الصوتية (تقليب الصفحات)',
 			'settings.fastPageTurn' => 'تصفّح سريع في الكتاب',
-			'settings.fastPageTurnHint' => 'الانتقال من جدول المحتويات أو التنقّل السريع يقلّب الصفحات التي بينهما. أوقفه للانتقال إلى الصفحة مباشرة.',
+			'settings.fastPageTurnHint' => 'القفز من جدول المحتويات أو التنقل السريع يقلّب صفحة واحدة فقط إلى الوجهة. أوقفه لتقليب كل الصفحات في الطريق.',
 			'settings.sharedAccess' => 'إدارة المشاركة',
 			'settings.noSharedAccess' => 'لم تشارك أي كتب أو قوائم بعد',
 			'settings.communityPrices' => 'متوسط أسعار المستخدمين',
@@ -2025,6 +2217,15 @@ extension on TranslationsAr {
 			'settings.notifications' => 'الإشعارات',
 			'settings.notificationsHint' => 'أي التنبيهات تصلك، وكيف',
 			'settings.settingsHint' => 'الحساب، الإشعارات، اللغة والمظهر',
+			'settings.dangerZone' => 'منطقة الخطر',
+			'settings.deleteAccount' => 'حذف الحساب',
+			'settings.deleteAccountHint' => 'حذف الحساب وكل ما فيه نهائياً',
+			'settings.deleteAccountTitle' => 'حذف الحساب نهائياً؟',
+			'settings.deleteAccountBody' => 'سيُحذف حسابك ووصفاتك وكتبك وخطط وجباتك وقوائم التسوق والإيصالات والصور والمنشورات والردود نهائياً من خوادمنا ومن هذا الجهاز ولا يمكن استرجاعها. ما شاركته سيُزال أيضاً ممن شاركتهم إياه. الاشتراك النشط لا يُلغى تلقائياً: ألغِه من App Store أو Google Play.',
+			'settings.deleteAccountConfirm' => 'حذف نهائي',
+			'settings.deletingAccount' => 'جارٍ حذف الحساب…',
+			'settings.deleteAccountFailed' => 'فشل حذف الحساب. حاول مرة أخرى أو راسلنا على support@aieasyplate.app.',
+			'settings.deleteAccountHousehold' => 'أنت مالك أسرة مشتركة. أغلقها أولاً من شاشة "الأسرة" ثم حاول مرة أخرى.',
 			'notificationSettings.title' => 'إعدادات الإشعارات',
 			'notificationSettings.push' => 'الإشعارات الفورية',
 			'notificationSettings.pushHint' => 'تنبيهات على هذا الجهاز. عند الإيقاف لا يُرسل شيء إلى الهاتف؛ يستمر صندوق الإشعارات بالامتلاء.',
@@ -2061,6 +2262,9 @@ extension on TranslationsAr {
 			'more.email' => 'إرسال بريد',
 			'more.supportUnavailable' => 'تعذّر فتح التطبيق',
 			'more.preferences' => 'التفضيلات',
+			'more.help' => 'الدعم والمعلومات',
+			'more.helpHint' => 'الدعم وسياسة الخصوصية وشروط الخدمة',
+			'more.legal' => 'معلومات قانونية',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -2290,6 +2494,10 @@ extension on TranslationsAr {
 			'sharing.kindBook' => 'كتاب',
 			'sharing.kindPlan' => 'خطة',
 			'sharing.recipesTravel' => 'ستتم مشاركة الوصفات الموجودة بداخله معه',
+			'sharing.shareList' => 'مشاركة قائمة التسوق',
+			'sharing.acceptedList' => 'أُضيفت القائمة إلى قوائم التسوق لديك',
+			'sharing.viewerCannotEditList' => 'هذه القائمة مشاركة معك للعرض فقط',
+			'sharing.kindList' => 'قائمة تسوق',
 			'notifications.title' => 'الإشعارات',
 			'notifications.empty' => 'لا توجد إشعارات',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"',
@@ -2318,6 +2526,7 @@ extension on TranslationsAr {
 			'notifications.openThread' => 'فتح النقاش',
 			'notifications.threadGone' => 'تم حذف هذا النقاش',
 			'notifications.settings' => 'الإعدادات',
+			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك قائمة التسوق "${recipe}"',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
@@ -2344,6 +2553,8 @@ extension on TranslationsAr {
 			'editor.discardBody' => 'لن يتم حفظ تعديلاتك.',
 			'editor.discard' => 'تجاهل',
 			'editor.saveOptionsTitle' => 'كيف تريدون الحفظ؟',
+			_ => null,
+		} ?? switch (path) {
 			'editor.savePlainHint' => 'حفظ التغييرات كما هي، بدون انتظار',
 			'editor.saveWithAi' => 'حفظ مع مراجعة AI',
 			'editor.saveWithAiHint' => 'تصحيح الإملاء ومطابقة الأوقات المذكورة في الخطوات',
@@ -2370,8 +2581,6 @@ extension on TranslationsAr {
 			'ingestion.originalTitle' => 'الوصفة الأصلية',
 			'ingestion.fetchFailed' => 'تعذّر تحميل الصفحة',
 			'ingestion.loadingOriginal' => 'جارٍ تحميل الصفحة...',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.structuredFromSite' => 'قُرئت مباشرة من البيانات المنظّمة للموقع، بدون AI',
 			'ingestion.useStructured' => 'المتابعة بالوصفة المنظّمة',
 			'ingestion.preferAi' => 'المعالجة عبر AI بدلًا من ذلك',
@@ -2437,6 +2646,11 @@ extension on TranslationsAr {
 			'mealPlanner.noProducts' => 'بدون منتجات يُضاف العنصر إلى قائمة التسوّق كسطر واحد باسمه',
 			'mealPlanner.itemName' => 'اسم العنصر',
 			'mealPlanner.editItem' => 'تعديل العنصر',
+			'mealPlanner.planOptions' => 'خيارات الخطة',
+			'mealPlanner.deletePlan' => 'حذف الخطة',
+			'mealPlanner.deletePlanConfirm' => ({required Object name}) => 'حذف الخطة "${name}"؟ ستُحذف وجباتها أيضاً.',
+			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'مغادرة الخطة المشتركة "${name}"؟ ستُزال من قائمتك.',
+			'mealPlanner.planDeleted' => 'تم حذف الخطة',
 			'groceryList.title' => 'قائمة التسوّق',
 			'groceryList.aggregated' => 'مجمّعة من كل الخطط النشطة',
 			'groceryList.addItem' => 'عنصر جديد',
@@ -2499,6 +2713,7 @@ extension on TranslationsAr {
 			'groceryList.stayHere' => 'البقاء هنا',
 			'groceryList.noIngredients' => 'لا توجد في هذه الوصفة مكونات للشراء',
 			'groceryList.addFirstItem' => 'إضافة عنصر',
+			'groceryList.leaveListConfirm' => ({required Object name}) => 'مغادرة القائمة المشتركة "${name}"؟ ستُزال من قوائمك.',
 			'receipt.title' => 'مسح إيصال',
 			'receipt.subtitle' => 'صوّر إيصالاً أو ارفع PDF، وتُحفظ الأسعار لقائمة التسوق',
 			'receipt.camera' => 'تصوير الإيصال',
@@ -2634,6 +2849,14 @@ extension on TranslationsAr {
 			'image.themeVegan' => 'نباتي',
 			'image.themeHolidays' => 'أعياد',
 			'image.themeQuick' => 'سريع وبسيط',
+			'image.webSearch' => 'بحث صور في جوجل',
+			'image.webSearchTitle' => 'بحث عن صورة',
+			'image.webSearchHint' => 'عمّ تبحث؟ مثلاً: كبة شمندر',
+			'image.webSearchEmpty' => 'لم يتم العثور على صور، جرّب كلمات أخرى',
+			'image.webSearchFailed' => 'فشل البحث، حاول مرة أخرى',
+			'image.webSearchUnavailable' => 'بحث الصور غير متاح حالياً',
+			'image.webSearchEnd' => 'هذه كل النتائج',
+			'image.webSearchDownloadFailed' => 'تعذّر تنزيل هذه الصورة، جرّب صورة أخرى',
 			'nav.library' => 'المكتبة',
 			'nav.recipes' => 'الوصفات',
 			'nav.mealPlan' => 'الوجبات',
@@ -2765,7 +2988,7 @@ extension on TranslationsAr {
 			'walkthrough.topics.mealPlan.s6' => 'اللوحة: المتوسط اليومي، مجموع الأسبوع، عمود لكل يوم وتوزيع المغذّيات الكبرى. تُقدَّر القيم بالذكاء الاصطناعي لكل وصفة، لكل حصة.',
 			'walkthrough.topics.mealPlan.s7' => 'زر المشاركة يرسل الخطة إلى حساب آخر، كمحرّر أو كمشاهد. أي تعديل من طرف يصل إلى الجميع.',
 			'walkthrough.topics.groceries.title' => 'قائمة التسوّق والأسعار',
-			'walkthrough.topics.groceries.summary' => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك.',
+			'walkthrough.topics.groceries.summary' => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك، ومشاركة مع من يتسوّق معك.',
 			'walkthrough.topics.groceries.s1' => 'اضغط على "التسوّق".',
 			'walkthrough.topics.groceries.s2' => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.',
 			'walkthrough.topics.groceries.s3' => 'اضغط على زر الزائد لإضافة عنصر يدوياً.',
@@ -2773,6 +2996,7 @@ extension on TranslationsAr {
 			'walkthrough.topics.groceries.s5' => 'اضغط "إضافة" ويدخل العنصر إلى القائمة.',
 			'walkthrough.topics.groceries.s6' => 'اضغط هنا لفتح دفتر الأسعار.',
 			'walkthrough.topics.groceries.s7' => 'امسح إيصالاً ويُحفظ سعر كل منتج. من هنا تحصل قائمة التسوّق على تقدير للتكلفة، وتكمل أسعار المجتمع الوسيطة ما لم تشترِه بعد.',
+			'walkthrough.topics.groceries.shefi' => 'اسأل شيفي عن هذه القائمة: ما ينقص لوجبة، ما يمكن استبداله، أو أضف عناصر بصوتك.',
 			'walkthrough.topics.community.title' => 'المجتمع',
 			'walkthrough.topics.community.summary' => 'وصفات يشاركها الجميع، ومنتدى للأسئلة والأجوبة.',
 			'walkthrough.topics.community.s1' => 'اضغط على "المجتمع".',
@@ -2783,9 +3007,27 @@ extension on TranslationsAr {
 			'walkthrough.topics.account.s1' => 'الإشعارات: دعوات لمشاركة الكتب والخطط، وتحديثات.',
 			'walkthrough.topics.account.s2' => 'اضغط على الصورة لفتح حسابك.',
 			'walkthrough.topics.account.s3' => 'الاشتراك المميّز: تحليلات ذكاء اصطناعي بلا حدّ يومي وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.',
-			'walkthrough.topics.account.s4' => 'الوصول المشترك: من يشارك معك الكتب والخطط، وما شاركته أنت.',
+			'walkthrough.topics.account.s4' => 'الوصول المشترك: من يشارك معك الكتب والخطط وقوائم التسوّق، وما شاركته أنت.',
 			'walkthrough.topics.account.s5' => 'اضغط على "الإعدادات".',
 			'walkthrough.topics.account.s6' => 'وضع العرض: فاتح أو داكن أو حسب الجهاز. في الإعدادات أيضاً اللغة والتفضيلات الغذائية ومسبّبات الحساسية. يمكن تشغيل هذا الدليل مجدداً من شاشة الدعم في الحساب.',
+			'walkthrough.topics.account.shefi' => 'شيفي، المساعد الذكي: هذا الزر العائم يفتح محادثة. اسأل كتابةً أو بصوتك، فيجيب شيفي ويضيف إلى الخطة ويبني قائمة أو يشغّل وضع الطبخ. داخل وصفة أو خطة أو قائمة، زر «اسأل شيفي» يتحدث عن هذا العنصر فقط.',
+			'walkthrough.topics.settings.title' => 'الإعدادات والتفضيلات',
+			'walkthrough.topics.settings.summary' => 'كل صف في الإعدادات والتفضيلات: الملف الشخصي، المشاركة، الإشعارات، اللغة، المظهر، حذف الحساب، يوم التسوّق، الأسعار، التغذية والكتب.',
+			'walkthrough.topics.settings.s1' => 'اضغط "الإعدادات": هنا الحساب والتطبيق.',
+			'walkthrough.topics.settings.s2' => 'الملف الشخصي: الاسم والصورة اللذان يراهما من تشاركهم، وطرق تسجيل الدخول المرتبطة.',
+			'walkthrough.topics.settings.s3' => 'الوصول المشترك: من يشارك معك الوصفات والكتب والخطط والقوائم، وما شاركته أنت. من هنا أيضًا تنضم برمز أو QR.',
+			'walkthrough.topics.settings.s4' => 'اضغط "إعدادات الإشعارات".',
+			'walkthrough.topics.settings.s5' => 'إشعارات الدفع: المفتاح الرئيسي. عندما يكون مطفأً لا يُرسل شيء؛ وتحته تختار ما يُرسل: الردود والدعوات والتحديثات ورسائل الفريق.',
+			'walkthrough.topics.settings.s6' => 'تذكيرات يوم التسوّق: متى نذكّرك قبل التسوّق. مجدولة على الجهاز، بمعزل عن الدفع.',
+			'walkthrough.topics.settings.s7' => 'اللغة: التبديل يترجم أيضًا وصفاتك وكتبك وخططك وقوائمك.',
+			'walkthrough.topics.settings.s8' => 'المظهر: فاتح أو داكن أو حسب الجهاز. يُحفظ الاختيار في الحساب وينتقل معك إلى الجهاز التالي.',
+			'walkthrough.topics.settings.s9' => 'حذف الحساب: يحذف الحساب وكل ما فيه نهائيًا بعد التأكيد. يُلغى اشتراك المتجر على حدة.',
+			'walkthrough.topics.settings.s10' => 'عودة إلى الحساب: اضغط "التفضيلات"، كيف يتصرف التطبيق من أجلك.',
+			'walkthrough.topics.settings.s11' => 'يوم التسوّق: اليوم الذي تُبنى حوله قائمة التسوّق وتُوقَّت التذكيرات.',
+			'walkthrough.topics.settings.s12' => 'أسعار المجتمع: عند التفعيل تنضم أسعار فواتيرك مجهولة الهوية إلى المتوسطات، وتُقدَّر الأسطر التي لم تشترها وفقها.',
+			'walkthrough.topics.settings.s13' => 'التفضيلات الغذائية ومسببات الحساسية: علّمها هنا ويبرزها التطبيق في الوصفات والوصفات المشتركة.',
+			'walkthrough.topics.settings.s14' => 'تقليب سريع في الكتب: القفز إلى صفحة بعيدة يقلّب صفحة واحدة فقط. عند الإيقاف يقلّب كل الصفحات في الطريق.',
+			'walkthrough.topics.settings.s15' => 'الأصوات: مؤثرات صوتية عند التقليب والإجراءات. يمكن إيقافها.',
 			'walkthrough.demo.bookTitle' => 'دليل',
 			'walkthrough.demo.planName' => 'خطة الدليل',
 			'walkthrough.demo.mealName' => 'عشاء',
@@ -2825,6 +3067,8 @@ extension on TranslationsAr {
 			'adminBilling.viaRevenueCat' => 'من RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'المنتج: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} أحداث',
 			'adminBilling.grant' => 'منح بريميوم',
@@ -2884,8 +3128,6 @@ extension on TranslationsAr {
 			'adminDashboard.unknownModel' => 'ليس في قائمة الأسعار',
 			'adminDashboard.usersCost' => 'التكلفة حسب المستخدم',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} مستخدمين',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'بحث بالاسم أو البريد أو uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'عرض كل ${count} المستخدمين',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} طلبات',
@@ -2991,7 +3233,7 @@ extension on TranslationsAr {
 			'adminDashboard.grantRange' => 'نطاق تواريخ محدد',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'مُنح الاشتراك حتى ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'يبدأ في ${date}',
-			'assistant.title' => 'المساعد',
+			'assistant.title' => 'شيفي',
 			'assistant.subtitle' => 'مساعد الطاهي: اسأل، خطط، تسوّق، اطبخ',
 			'assistant.placeholder' => 'اسأل أو قل لي ماذا أفعل…',
 			'assistant.send' => 'إرسال',
@@ -3000,7 +3242,7 @@ extension on TranslationsAr {
 			'assistant.welcome' => ({required Object name}) => 'مرحبًا ${name}! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟',
 			'assistant.error' => 'حدث خطأ ما. حاول مجددًا.',
 			'assistant.quotaReached' => 'استُهلكت حصة الذكاء الاصطناعي لليوم. تُفتح غدًا.',
-			'assistant.premiumOnly' => 'المساعد جزء من EasyPlate Premium',
+			'assistant.premiumOnly' => 'شيفي جزء من EasyPlate Premium',
 			'assistant.unlock' => 'عرض بريميوم',
 			'assistant.clear' => 'محادثة جديدة',
 			'assistant.openResult' => 'فتح',
@@ -3109,6 +3351,33 @@ extension on TranslationsAr {
 			'assistant.listCreated' => 'أُنشئت القائمة',
 			'assistant.offTopic' => 'أنا هنا للطبخ والوصفات وتخطيط الوجبات والمشتريات. اسألني أي شيء يخص المطبخ وسأتولاه!',
 			'assistant.welcomeAnon' => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟',
+			'assistant.scopedWelcome' => ({required Object name}) => 'ماذا تريد أن تعرف عن "${name}"؟',
+			'assistant.scopedOffTopic' => ({required Object name}) => 'هنا أساعد فقط فيما يخص "${name}". لأي شيء آخر افتح شيفي من القائمة.',
+			'assistant.askAboutRecipe' => 'اسأل شيفي عن هذه الوصفة',
+			'assistant.askAboutPlan' => 'اسأل شيفي عن هذه الخطة',
+			'assistant.askAboutList' => 'اسأل شيفي عن هذه القائمة',
+			'assistant.listen' => 'تحدّث إلى شيفي',
+			'assistant.stopListening' => 'إيقاف الاستماع',
+			'assistant.speakReplies' => 'قراءة الردود بصوت عالٍ',
+			'assistant.micUnavailable' => 'لا يمكن استخدام الميكروفون. تحقق من أذونات الميكروفون والتعرف على الكلام في إعدادات الجهاز.',
+			'assistant.scopedPrompts.recipe.0' => 'ما القيم الغذائية لكل حصة؟',
+			'assistant.scopedPrompts.recipe.1' => 'كيف أحضّرها لثمانية أشخاص؟',
+			'assistant.scopedPrompts.recipe.2' => 'بماذا أستبدل مكوّنًا لا أملكه؟',
+			'assistant.scopedPrompts.recipe.3' => 'أضف هذه الوصفة إلى خطة الغد',
+			'assistant.scopedPrompts.recipe.4' => 'أنشئ قائمة تسوّق من هذه الوصفة',
+			'assistant.scopedPrompts.mealPlan.0' => 'ماذا نأكل اليوم؟',
+			'assistant.scopedPrompts.mealPlan.1' => 'أضف عشاءً يوم الثلاثاء',
+			'assistant.scopedPrompts.mealPlan.2' => 'ما الناقص هذا الأسبوع؟',
+			'assistant.scopedPrompts.mealPlan.3' => 'أنشئ قائمة تسوّق من هذه الخطة',
+			'assistant.scopedPrompts.mealPlan.4' => 'كم سعرة يوم الأربعاء؟',
+			'assistant.scopedPrompts.groceryList.0' => 'ما الذي بقي لشرائه؟',
+			'assistant.scopedPrompts.groceryList.1' => 'أضف حليبًا وبيضًا',
+			'assistant.scopedPrompts.groceryList.2' => 'علّم الطماطم كمشتراة',
+			'assistant.scopedPrompts.groceryList.3' => 'احذف ما اشتريته بالفعل',
+			'assistant.scopedPrompts.groceryList.4' => 'كم يساوي كوبان من الدقيق بالغرام؟',
+			'assistant.listening' => 'أستمع…',
+			'assistant.stop' => 'إيقاف',
+			'assistant.cancelled' => 'أُلغي.',
 			'shareCode.title' => 'رمز ورابط',
 			'shareCode.tabContact' => 'جهة اتصال',
 			'shareCode.tabCode' => 'رمز أو رابط',
@@ -3143,6 +3412,7 @@ extension on TranslationsAr {
 			'shareCode.upgrade' => 'عرض بريميوم',
 			'shareCode.scanHint' => 'وجّه الكاميرا نحو رمز QR للمشاركة',
 			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => 'دعاك ${name} إلى حسابه المشترك في EasyPlate. الرمز: ${code}\n${link}',
+			'shareCode.limitLists' => ({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} قوائم تسوق.',
 			'household.title' => 'حساب مشترك',
 			'household.duo' => 'Pro Duo',
 			'household.family' => 'Pro Family',
@@ -3171,6 +3441,56 @@ extension on TranslationsAr {
 			'household.inHousehold' => 'أنت بالفعل في حساب مشترك.',
 			'household.notEligibleCode' => 'خطة المالك لم تعد تشمل حسابًا مشتركًا.',
 			'household.lapsed' => 'انتهى اشتراك المالك؛ بريميوم متوقف مؤقتًا للأعضاء.',
+			'feature.comingSoon' => 'قريباً',
+			'feature.comingSoonMessage' => 'هذه الميزة ستصل قريباً',
+			'feature.unavailable' => 'هذه الميزة غير متاحة حالياً',
+			'feature.premiumOnly' => 'بريميوم',
+			'feature.premiumOnlyMessage' => 'هذه الميزة لمشتركي بريميوم',
+			'feature.premiumOnlyTitle' => 'لمشتركي بريميوم فقط',
+			'feature.premiumOnlyFor' => ({required Object name}) => 'خيار "${name}" متاح لمشتركي بريميوم فقط',
+			'feature.goPremium' => 'الانتقال إلى بريميوم',
+			'featureName.books' => 'كتب الوصفات',
+			'featureName.mealPlans' => 'خطط الوجبات',
+			'featureName.groceryLists' => 'قوائم التسوق',
+			'featureName.community' => 'المجتمع',
+			'featureName.ingestText' => 'وصفة من نص',
+			'featureName.ingestWebSearch' => 'البحث عن وصفة على الإنترنت',
+			'featureName.ingestLink' => 'وصفة من رابط',
+			'featureName.ingestSocialVideo' => 'وصفة من فيديو',
+			'featureName.ingestAiRequest' => 'طلب وصفة من الذكاء الاصطناعي',
+			'featureName.ingestFile' => 'وصفة من ملف',
+			'featureName.shareIn' => 'المشاركة من تطبيق آخر',
+			'featureName.saveWithAi' => 'الحفظ بالذكاء الاصطناعي',
+			'featureName.cookMode' => 'وضع الطهي',
+			'featureName.cookTimers' => 'مؤقتات الطهي',
+			'featureName.nutrition' => 'القيم الغذائية',
+			'featureName.recipeImageAi' => 'صورة بالذكاء الاصطناعي',
+			'featureName.recipeImageSearch' => 'بحث الصور في جوجل',
+			'featureName.groceryFromRecipe' => 'قائمة تسوق من وصفة',
+			'featureName.sharedRecipes' => 'الوصفات المشتركة',
+			'featureName.forum' => 'المنتدى',
+			'featureName.likes' => 'الإعجابات',
+			'featureName.shareRecipes' => 'مشاركة الوصفات',
+			'featureName.shareBooks' => 'مشاركة الكتب',
+			'featureName.sharePlans' => 'مشاركة الخطط',
+			'featureName.shareGroceryLists' => 'مشاركة قوائم التسوق',
+			'featureName.shareCodes' => 'المشاركة برمز',
+			'featureName.households' => 'الأسرة',
+			'featureName.priceBook' => 'دفتر الأسعار',
+			'featureName.receiptScan' => 'مسح الإيصال',
+			'featureName.groceryCost' => 'التكلفة التقديرية',
+			'featureName.shoppingReminder' => 'تذكير التسوق',
+			'featureName.assistant' => 'شيفي (المساعد)',
+			'featureName.notifications' => 'الإشعارات',
+			'featureName.premium' => 'بريميوم',
+			'featureName.contentTranslation' => 'ترجمة المحتوى',
+			'featureName.theming' => 'المظهر',
+			'featureName.walkthrough' => 'جولة إرشادية',
+			'featureName.tutorialBook' => 'كتاب التعليمات',
+			'featureName.feedback' => 'الملاحظات',
+			'featureName.assistantScoped' => 'شيفي داخل عنصر',
+			'featureName.assistantVoice' => 'التحدث مع شيفي',
+			'featureName.singleSession' => 'جهاز واحد لكل حساب',
 			_ => null,
 		};
 	}

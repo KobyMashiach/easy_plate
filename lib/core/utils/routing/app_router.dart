@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,14 +39,17 @@ import '../../services/auth_session_service.dart';
 import '../../services/firebase_service.dart';
 import 'routing.dart';
 import '../../monetization/entitlement_service.dart';
-import '../../monetization/monetization_config.dart';
 import '../../../features/more/presentation/pages/tutorial_book_page.dart';
 import '../../../features/admin_dashboard/presentation/pages/admin_dashboard_page.dart';
 import '../../../features/auth/presentation/pages/blocked_page.dart';
+import '../../../features/auth/presentation/pages/session_gate_page.dart';
 import '../../../features/household/presentation/pages/household_page.dart';
 import '../../../features/share_codes/domain/pending_share_code.dart';
 import '../../../features/share_codes/presentation/pages/join_by_code_page.dart';
 import '../../../features/share_codes/presentation/pages/scan_share_code_page.dart';
+import '../../features/features_flags.dart';
+import '../../../features/more/presentation/pages/help_menu_page.dart';
+import '../../../features/assistant/domain/assistant_scope.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
 /// whatever the current [AuthStage] demands.
@@ -58,6 +62,8 @@ const _stageEntryPoint = {
   AuthStage.phoneClaimed: Routing.phoneClaimed,
   AuthStage.needsOnboarding: Routing.onboarding,
   AuthStage.blocked: Routing.blocked,
+  AuthStage.otherDevice: Routing.sessionGate,
+  AuthStage.sessionExpired: Routing.sessionGate,
 };
 
 /// The gate's whole decision, as a pure function so it can be exercised
@@ -84,6 +90,32 @@ String? gateRedirect({required AuthStage stage, required String location}) {
   final destination = _stageEntryPoint[stage]!;
   return location == destination ? null : destination;
 }
+
+/// A route whose feature the console gated is not entered: a deep link, a
+/// push tap or a stale shortcut lands on the home screen instead — or on
+/// the paywall, when the feature is Premium-only and this account is not.
+/// The drawn entry points are gated where they are drawn; this is the
+/// backstop for every other way in.
+///
+/// [lockedOpens] is for the two routes a locked (Premium-only, free account)
+/// state must still reach: the paywall itself — sending a locked account to
+/// the paywall from the paywall is a redirect loop — and the inbox, which
+/// stays open so share invites and admin messages can be answered while
+/// pushes and popups are the Premium part.
+Future<String?> Function(BuildContext, GoRouterState) featureRedirect(
+  FeaturesFlags feature, {
+  bool lockedOpens = false,
+}) => (context, state) async {
+  // The verdict first: a paying account on a fresh install must not be
+  // bounced on the default while its document loads.
+  await EntitlementService().whenResolved();
+  return switch (feature.access) {
+    FeatureAccess.enabled => null,
+    FeatureAccess.locked =>
+      lockedOpens ? null : state.namedLocation(Routing.premium),
+    _ => Routing.home,
+  };
+};
 
 GoRouter buildRouter() {
   final session = AuthSessionService();
@@ -134,6 +166,11 @@ GoRouter buildRouter() {
         path: Routing.blocked,
         name: Routing.blocked,
         builder: (context, state) => const BlockedPage(),
+      ),
+      GoRoute(
+        path: Routing.sessionGate,
+        name: Routing.sessionGate,
+        builder: (context, state) => const SessionGatePage(),
       ),
       GoRoute(
         path: Routing.phoneVerify,
@@ -191,44 +228,44 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.cookMode,
             name: Routing.cookMode,
-            // The plan gate lives here, so every door into cook mode (the
+            // The gate lives here, so every door into cook mode (the
             // recipe, the inbox card, a notification tap) is gated at once.
-            redirect: (context, state) async {
-              // The verdict first: a paying account on a fresh install must
-              // not be bounced on the default while its document loads.
-              await EntitlementService().whenResolved();
-              return MonetizationConfig.cookModeLocked
-                  ? state.namedLocation(Routing.premium)
-                  : null;
-            },
+            redirect: featureRedirect(FeaturesFlags.cookMode),
             builder: (context, state) =>
                 CookModePage(recipe: state.extra as RecipeEntity),
           ),
           GoRoute(
             path: Routing.assistant,
             name: Routing.assistant,
-            builder: (context, state) => const AssistantPage(),
+            redirect: featureRedirect(FeaturesFlags.assistant),
+            // `extra` scopes the conversation to one recipe, plan or list.
+            builder: (context, state) =>
+                AssistantPage(scope: state.extra as AssistantScope?),
           ),
           GoRoute(
             path: Routing.priceBook,
             name: Routing.priceBook,
+            redirect: featureRedirect(FeaturesFlags.priceBook),
             builder: (context, state) => const PriceBookPage(),
           ),
           GoRoute(
             path: Routing.receiptImages,
             name: Routing.receiptImages,
+            redirect: featureRedirect(FeaturesFlags.priceBook),
             builder: (context, state) =>
                 ReceiptImagesPage(receipt: state.extra as ReceiptEntity),
           ),
           GoRoute(
             path: Routing.receiptDetails,
             name: Routing.receiptDetails,
+            redirect: featureRedirect(FeaturesFlags.priceBook),
             builder: (context, state) =>
                 ReceiptDetailsPage(receipt: state.extra as ReceiptEntity),
           ),
           GoRoute(
             path: Routing.receiptReview,
             name: Routing.receiptReview,
+            redirect: featureRedirect(FeaturesFlags.receiptScan),
             builder: (context, state) {
               final args = state.extra as ReceiptReviewArgs;
               return ReceiptReviewPage(scan: args.scan, pages: args.pages);
@@ -237,6 +274,7 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.nutritionDashboard,
             name: Routing.nutritionDashboard,
+            redirect: featureRedirect(FeaturesFlags.nutrition),
             builder: (context, state) => NutritionDashboardPage(
               args: state.extra as NutritionDashboardArgs,
             ),
@@ -265,6 +303,7 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.notificationSettings,
             name: Routing.notificationSettings,
+            redirect: featureRedirect(FeaturesFlags.notifications),
             builder: (context, state) => const NotificationSettingsPage(),
           ),
           GoRoute(
@@ -276,6 +315,10 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.notifications,
             name: Routing.notifications,
+            redirect: featureRedirect(
+              FeaturesFlags.notifications,
+              lockedOpens: true,
+            ),
             builder: (context, state) => const NotificationsPage(),
           ),
           GoRoute(
@@ -286,11 +329,13 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.household,
             name: Routing.household,
+            redirect: featureRedirect(FeaturesFlags.households),
             builder: (context, state) => const HouseholdPage(),
           ),
           GoRoute(
             path: Routing.joinCode,
             name: Routing.joinCode,
+            redirect: featureRedirect(FeaturesFlags.shareCodes),
             // `?code=` joins at once; absent, the screen asks for one.
             builder: (context, state) =>
                 JoinByCodePage(initialCode: state.uri.queryParameters['code']),
@@ -298,6 +343,7 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.scanCode,
             name: Routing.scanCode,
+            redirect: featureRedirect(FeaturesFlags.shareCodes),
             builder: (context, state) => const ScanShareCodePage(),
           ),
           GoRoute(
@@ -306,13 +352,20 @@ GoRouter buildRouter() {
             builder: (context, state) => const SupportPage(),
           ),
           GoRoute(
+            path: Routing.help,
+            name: Routing.help,
+            builder: (context, state) => const HelpMenuPage(),
+          ),
+          GoRoute(
             path: Routing.premium,
             name: Routing.premium,
+            redirect: featureRedirect(FeaturesFlags.premium, lockedOpens: true),
             builder: (context, state) => const PaywallPage(),
           ),
           GoRoute(
             path: Routing.forumThread,
             name: Routing.forumThread,
+            redirect: featureRedirect(FeaturesFlags.forum),
             // `?reply=` names the reply to scroll to — set by a tap on a
             // reply notification, absent when opened from the list.
             builder: (context, state) => ForumThreadPage(
@@ -329,6 +382,7 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.tutorial,
             name: Routing.tutorial,
+            redirect: featureRedirect(FeaturesFlags.tutorialBook),
             builder: (context, state) => const TutorialBookPage(),
           ),
           GoRoute(

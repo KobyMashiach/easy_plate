@@ -42,6 +42,8 @@ import 'core/constants/app_enums.dart';
 import 'features/forum/presentation/open_forum_thread.dart';
 import 'features/notifications/domain/repositories/notifications_repository.dart';
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
+import 'core/features/feature_gate.dart';
+import 'features/recipe_ingestion/presentation/pages/ingestion_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -255,6 +257,21 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     if (launch == null || AuthSessionService().stage != AuthStage.ready) {
       return;
     }
+    // Switched off in the console: the share is dropped, not held for a
+    // form that will never open. The same for the channel the payload maps
+    // to (a video link with video import off): opening the form on another
+    // channel would lose or misread what was shared.
+    final channel = launch.channel;
+    final channelFlag = channel == null ? null : channelFeature(channel);
+    if (!FeaturesFlags.shareIn.isEnabled ||
+        (channelFlag != null && !channelFlag.isEnabled)) {
+      service.clear();
+      final context = _router.routerDelegate.navigatorKey.currentContext;
+      if (context != null) {
+        explainAccess(context, channelFlag ?? FeaturesFlags.shareIn);
+      }
+      return;
+    }
     // A form already on screen takes the share into itself: the user went
     // back to WhatsApp for one more voice note, not for a new recipe.
     if (service.hasOpenForm) return;
@@ -267,6 +284,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   /// acted on. The inbox item the push mirrors is marked read on the way,
   /// so the bell does not keep counting something already seen.
   Future<void> _navigateForPush(Map<String, String> data) async {
+    if (!FeaturesFlags.notifications.isEnabled) return;
     final context = _router.routerDelegate.navigatorKey.currentContext;
     _markPushRead(context, data['notificationId']);
     final postId = data['postId'];
@@ -304,6 +322,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   /// when a switch went off — and the popup switch itself.
   bool _wantsPopup(PushBanner push) {
     if (MonetizationConfig.notificationsLocked) return false;
+    if (!FeaturesFlags.notifications.isEnabled) return false;
     final preferences = AuthSessionService().preferencesListenable.value;
     if (preferences == null) return true;
     if (!preferences.foregroundPopupsEnabled) return false;
@@ -351,6 +370,8 @@ class _EasyPlateAppState extends State<EasyPlateApp>
       // Same reasoning, for the recipes other accounts may have edited while
       // this app was in the background.
       AuthSessionService().refreshSharedRecipes();
+      // And for the device session: a month that ran out in the background.
+      AuthSessionService().checkSession();
       // And for the date: an app left open across midnight must not keep
       // charging today's openings to yesterday's allowance.
       TrustedClock().sync();

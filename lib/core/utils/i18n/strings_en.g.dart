@@ -77,6 +77,9 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$en assistant = _Translations$assistant$en._(_root);
 	@override late final _Translations$shareCode$en shareCode = _Translations$shareCode$en._(_root);
 	@override late final _Translations$household$en household = _Translations$household$en._(_root);
+	@override late final _Translations$feature$en feature = _Translations$feature$en._(_root);
+	@override late final _Translations$featureName$en featureName = _Translations$featureName$en._(_root);
+	@override late final _Translations$adminConfig$en adminConfig = _Translations$adminConfig$en._(_root);
 }
 
 // Path: common
@@ -185,6 +188,15 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get phoneClaimedSignIn => 'Sign in to my existing account';
 	@override String get phoneClaimedCreateNew => 'Create a new account anyway';
 	@override String get phoneClaimedCreateNewConfirm => 'A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number.';
+	@override String get sessionOtherDeviceTitle => 'Signed in on another device';
+	@override String sessionOtherDeviceBody({required Object platform, required Object since}) => 'This account is open on ${platform}${since}. It can be used on one device at a time: sign out there, then tap "Try again".';
+	@override String sessionSince({required Object date}) => ' since ${date}';
+	@override String get sessionExpiredTitle => 'Your session has expired';
+	@override String get sessionExpiredBody => 'A sign-in lasts up to a month. Sign in again to continue.';
+	@override String get sessionRetry => 'Try again';
+	@override String get platformIos => 'an iPhone';
+	@override String get platformAndroid => 'an Android phone';
+	@override String get platformOther => 'another device';
 }
 
 // Path: profile
@@ -295,7 +307,7 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get themeDark => 'Dark';
 	@override String get soundEffects => 'Sound effects (page turns)';
 	@override String get fastPageTurn => 'Fast page-through';
-	@override String get fastPageTurnHint => 'Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.';
+	@override String get fastPageTurnHint => 'Jumping from the table of contents or quick navigation turns a single page to the destination. Turn it off to flip through every page on the way.';
 	@override String get sharedAccess => 'Manage sharing';
 	@override String get noSharedAccess => 'You haven\'t shared any books or lists yet';
 	@override String get communityPrices => 'Community price averages';
@@ -315,6 +327,15 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get notifications => 'Notifications';
 	@override String get notificationsHint => 'Which alerts reach you, and how';
 	@override String get settingsHint => 'Account, notifications, language and appearance';
+	@override String get dangerZone => 'Danger zone';
+	@override String get deleteAccount => 'Delete account';
+	@override String get deleteAccountHint => 'Permanently delete the account and everything in it';
+	@override String get deleteAccountTitle => 'Delete the account for good?';
+	@override String get deleteAccountBody => 'Your account, recipes, books, meal plans, grocery lists, receipts, photos, posts and replies will be permanently deleted from our servers and from this device and cannot be recovered. What you shared is removed from the people you shared it with. An active subscription is not cancelled automatically: cancel it in the App Store or Google Play.';
+	@override String get deleteAccountConfirm => 'Delete permanently';
+	@override String get deletingAccount => 'Deleting the account…';
+	@override String get deleteAccountFailed => 'Deleting the account failed. Try again, or write to support@aieasyplate.app.';
+	@override String get deleteAccountHousehold => 'You own a shared household. Close it first from the Household screen, then try again.';
 }
 
 // Path: notificationSettings
@@ -378,6 +399,9 @@ class _Translations$more$en extends Translations$more$he {
 	@override String get email => 'Send an email';
 	@override String get supportUnavailable => 'We could not open that app';
 	@override String get preferences => 'Preferences';
+	@override String get help => 'Support & legal';
+	@override String get helpHint => 'Support, privacy policy and terms of service';
+	@override String get legal => 'Legal';
 }
 
 // Path: language
@@ -670,6 +694,10 @@ class _Translations$sharing$en extends Translations$sharing$he {
 	@override String get kindBook => 'Book';
 	@override String get kindPlan => 'Plan';
 	@override String get recipesTravel => 'The recipes inside are shared along with it';
+	@override String get shareList => 'Share grocery list';
+	@override String get acceptedList => 'The list was added to your grocery lists';
+	@override String get viewerCannotEditList => 'This list is shared with you view-only';
+	@override String get kindList => 'grocery list';
 }
 
 // Path: notifications
@@ -707,6 +735,7 @@ class _Translations$notifications$en extends Translations$notifications$he {
 	@override String get openThread => 'Open thread';
 	@override String get threadGone => 'This thread was deleted';
 	@override String get settings => 'Settings';
+	@override String sharedList({required Object name, required Object recipe}) => '${name} shared the grocery list "${recipe}" with you';
 }
 
 // Path: editor
@@ -851,6 +880,11 @@ class _Translations$mealPlanner$en extends Translations$mealPlanner$he {
 	@override String get noProducts => 'With no products the item joins the grocery list as a single line under its own name';
 	@override String get itemName => 'Item name';
 	@override String get editItem => 'Edit item';
+	@override String get planOptions => 'Plan options';
+	@override String get deletePlan => 'Delete plan';
+	@override String deletePlanConfirm({required Object name}) => 'Delete the plan "${name}"? Its meals will be deleted too.';
+	@override String leavePlanConfirm({required Object name}) => 'Leave the shared plan "${name}"? It will be removed from your list.';
+	@override String get planDeleted => 'Plan deleted';
 }
 
 // Path: groceryList
@@ -922,6 +956,7 @@ class _Translations$groceryList$en extends Translations$groceryList$he {
 	@override String get stayHere => 'Stay here';
 	@override String get noIngredients => 'This recipe has no ingredients to shop for';
 	@override String get addFirstItem => 'Add an item';
+	@override String leaveListConfirm({required Object name}) => 'Leave the shared list "${name}"? It will be removed from your lists.';
 }
 
 // Path: receipt
@@ -1084,6 +1119,14 @@ class _Translations$image$en extends Translations$image$he {
 	@override String get themeVegan => 'Vegan';
 	@override String get themeHolidays => 'Holidays';
 	@override String get themeQuick => 'Quick & simple';
+	@override String get webSearch => 'Search Google Images';
+	@override String get webSearchTitle => 'Image search';
+	@override String get webSearchHint => 'What to search for? e.g. beet kubbeh';
+	@override String get webSearchEmpty => 'No pictures found, try different words';
+	@override String get webSearchFailed => 'The search failed, please try again';
+	@override String get webSearchUnavailable => 'Image search is not available right now';
+	@override String get webSearchEnd => 'That is all the results';
+	@override String get webSearchDownloadFailed => 'Could not download that picture, try another';
 }
 
 // Path: nav
@@ -1325,7 +1368,7 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 
 	// Translations
 	@override String get title => 'Admin dashboard';
-	@override String get tabDashboard => 'Dashboard';
+	@override String get tabDashboard => 'Overview';
 	@override String get tabSubscriptions => 'Subscriptions';
 	@override String get tabTickets => 'Tickets';
 	@override String get rangeToday => 'Today';
@@ -1472,6 +1515,9 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 	@override String get grantRange => 'Exact date range';
 	@override String grantedUntil({required Object date}) => 'Premium granted until ${date}';
 	@override String grantStarts({required Object date}) => 'Starts ${date}';
+	@override String get tabConfig => 'Config';
+	@override String get releaseSession => 'Disconnect the signed-in device';
+	@override String get releaseSessionDone => 'Device disconnected; the user will be asked to sign in again';
 }
 
 // Path: assistant
@@ -1481,7 +1527,7 @@ class _Translations$assistant$en extends Translations$assistant$he {
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Assistant';
+	@override String get title => 'Shefi';
 	@override String get subtitle => 'Your sous-chef: ask, plan, shop, cook';
 	@override String get placeholder => 'Ask or tell me what to do…';
 	@override String get send => 'Send';
@@ -1490,7 +1536,7 @@ class _Translations$assistant$en extends Translations$assistant$he {
 	@override String welcome({required Object name}) => 'Hi ${name}! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?';
 	@override String get error => 'Something went wrong. Try again.';
 	@override String get quotaReached => 'Today\'s AI allowance is used up. It reopens tomorrow.';
-	@override String get premiumOnly => 'The assistant is part of EasyPlate Premium';
+	@override String get premiumOnly => 'Shefi is part of EasyPlate Premium';
 	@override String get unlock => 'See Premium';
 	@override String get clear => 'New conversation';
 	@override String get openResult => 'Open';
@@ -1513,6 +1559,19 @@ class _Translations$assistant$en extends Translations$assistant$he {
 	@override String get listCreated => 'List created';
 	@override String get offTopic => 'I\'m here for cooking, recipes, meal plans and groceries. Ask me anything in the kitchen and I\'m on it!';
 	@override String get welcomeAnon => 'Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?';
+	@override String scopedWelcome({required Object name}) => 'What would you like to know about "${name}"?';
+	@override String scopedOffTopic({required Object name}) => 'Here I only help with "${name}". For anything else, open Shefi from the menu.';
+	@override String get askAboutRecipe => 'Ask Shefi about this recipe';
+	@override String get askAboutPlan => 'Ask Shefi about this plan';
+	@override String get askAboutList => 'Ask Shefi about this list';
+	@override String get listen => 'Talk to Shefi';
+	@override String get stopListening => 'Stop listening';
+	@override String get speakReplies => 'Read replies aloud';
+	@override String get micUnavailable => 'The microphone cannot be used. Check the microphone and speech recognition permissions in the device settings.';
+	@override late final _Translations$assistant$scopedPrompts$en scopedPrompts = _Translations$assistant$scopedPrompts$en._(_root);
+	@override String get listening => 'Listening…';
+	@override String get stop => 'Stop';
+	@override String get cancelled => 'Cancelled.';
 }
 
 // Path: shareCode
@@ -1556,6 +1615,7 @@ class _Translations$shareCode$en extends Translations$shareCode$he {
 	@override String get upgrade => 'See Premium';
 	@override String get scanHint => 'Point the camera at a share QR';
 	@override String householdMessage({required Object name, required Object code, required Object link}) => '${name} invited you to their shared EasyPlate account. Code: ${code}\n${link}';
+	@override String limitLists({required Object count}) => 'Free accounts can share up to ${count} grocery lists.';
 }
 
 // Path: household
@@ -1595,6 +1655,97 @@ class _Translations$household$en extends Translations$household$he {
 	@override String get lapsed => 'The owner\'s subscription has ended; Premium is paused for members.';
 }
 
+// Path: feature
+class _Translations$feature$en extends Translations$feature$he {
+	_Translations$feature$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get comingSoon => 'Coming soon';
+	@override String get comingSoonMessage => 'This feature is coming soon';
+	@override String get unavailable => 'This feature is not available right now';
+	@override String get premiumOnly => 'Premium';
+	@override String get premiumOnlyMessage => 'This feature is for Premium subscribers';
+	@override String get premiumOnlyTitle => 'Premium only';
+	@override String premiumOnlyFor({required Object name}) => '"${name}" is open to Premium subscribers only';
+	@override String get goPremium => 'Go Premium';
+}
+
+// Path: featureName
+class _Translations$featureName$en extends Translations$featureName$he {
+	_Translations$featureName$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get books => 'Recipe books';
+	@override String get mealPlans => 'Meal plans';
+	@override String get groceryLists => 'Grocery lists';
+	@override String get community => 'Community';
+	@override String get ingestText => 'Recipe from text';
+	@override String get ingestWebSearch => 'Recipe web search';
+	@override String get ingestLink => 'Recipe from a link';
+	@override String get ingestSocialVideo => 'Recipe from a video';
+	@override String get ingestAiRequest => 'Ask AI for a recipe';
+	@override String get ingestFile => 'Recipe from a file';
+	@override String get shareIn => 'Share from another app';
+	@override String get saveWithAi => 'Save with AI';
+	@override String get cookMode => 'Cook mode';
+	@override String get cookTimers => 'Cooking timers';
+	@override String get nutrition => 'Nutrition';
+	@override String get recipeImageAi => 'AI picture';
+	@override String get recipeImageSearch => 'Google image search';
+	@override String get groceryFromRecipe => 'Grocery list from a recipe';
+	@override String get sharedRecipes => 'Shared recipes';
+	@override String get forum => 'Forum';
+	@override String get likes => 'Likes';
+	@override String get shareRecipes => 'Recipe sharing';
+	@override String get shareBooks => 'Book sharing';
+	@override String get sharePlans => 'Meal plan sharing';
+	@override String get shareGroceryLists => 'Grocery list sharing';
+	@override String get shareCodes => 'Share codes';
+	@override String get households => 'Household';
+	@override String get priceBook => 'Price book';
+	@override String get receiptScan => 'Receipt scan';
+	@override String get groceryCost => 'Estimated cost';
+	@override String get shoppingReminder => 'Shopping reminder';
+	@override String get assistant => 'Shefi (the assistant)';
+	@override String get notifications => 'Notifications';
+	@override String get premium => 'Premium';
+	@override String get contentTranslation => 'Content translation';
+	@override String get theming => 'Appearance';
+	@override String get walkthrough => 'Guided tour';
+	@override String get tutorialBook => 'Tutorial book';
+	@override String get feedback => 'Feedback';
+	@override String get assistantScoped => 'Shefi inside an item';
+	@override String get assistantVoice => 'Voice with Shefi';
+	@override String get singleSession => 'One device per account';
+}
+
+// Path: adminConfig
+class _Translations$adminConfig$en extends Translations$adminConfig$he {
+	_Translations$adminConfig$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get intro => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).';
+	@override String get loadFailed => 'Could not load the configuration';
+	@override String get saveFailed => 'Publishing failed. Check the value and try again';
+	@override String saved({required Object name}) => '"${name}" published';
+	@override String count({required Object n}) => '${n} settings';
+	@override String get searchAll => 'Search all settings';
+	@override String searchIn({required Object section}) => 'Search in ${section}';
+	@override String noResults({required Object query}) => 'No setting matches "${query}"';
+	@override String get filterAll => 'All';
+	@override String get clearSearch => 'Clear search';
+	@override String get noFlagsInState => 'No features in this state';
+	@override late final _Translations$adminConfig$groups$en groups = _Translations$adminConfig$groups$en._(_root);
+	@override late final _Translations$adminConfig$flag$en flag = _Translations$adminConfig$flag$en._(_root);
+	@override late final _Translations$adminConfig$labels$en labels = _Translations$adminConfig$labels$en._(_root);
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$en extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1609,6 +1760,7 @@ class _Translations$walkthrough$topics$en extends Translations$walkthrough$topic
 	@override late final _Translations$walkthrough$topics$groceries$en groceries = _Translations$walkthrough$topics$groceries$en._(_root);
 	@override late final _Translations$walkthrough$topics$community$en community = _Translations$walkthrough$topics$community$en._(_root);
 	@override late final _Translations$walkthrough$topics$account$en account = _Translations$walkthrough$topics$account$en._(_root);
+	@override late final _Translations$walkthrough$topics$settings$en settings = _Translations$walkthrough$topics$settings$en._(_root);
 }
 
 // Path: walkthrough.demo
@@ -1739,6 +1891,98 @@ class _Translations$assistant$suggest$en extends Translations$assistant$suggest$
 	];
 }
 
+// Path: assistant.scopedPrompts
+class _Translations$assistant$scopedPrompts$en extends Translations$assistant$scopedPrompts$he {
+	_Translations$assistant$scopedPrompts$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override List<String> get recipe => [
+		'What is the nutrition per serving?',
+		'How do I make it for 8 people?',
+		'What can I substitute for an ingredient I lack?',
+		'Add this recipe to tomorrow’s plan',
+		'Create a grocery list from this recipe',
+	];
+	@override List<String> get mealPlan => [
+		'What are we eating today?',
+		'Add a dinner on Tuesday',
+		'What is missing this week?',
+		'Create a grocery list from this plan',
+		'How many calories on Wednesday?',
+	];
+	@override List<String> get groceryList => [
+		'What is left to buy?',
+		'Add milk and eggs',
+		'Mark the tomatoes as bought',
+		'Remove what I already bought',
+		'How much is 2 cups of flour in grams?',
+	];
+}
+
+// Path: adminConfig.groups
+class _Translations$adminConfig$groups$en extends Translations$adminConfig$groups$he {
+	_Translations$adminConfig$groups$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get features => 'Features';
+	@override String get adsQuotas => 'Ads and quotas';
+	@override String get sharing => 'Sharing on a free account';
+	@override String get voice => 'Shefi\'s voice';
+	@override String get versions => 'Versions and environment';
+	@override String get gemini => 'AI server (needs a deploy)';
+	@override String get other => 'Other';
+}
+
+// Path: adminConfig.flag
+class _Translations$adminConfig$flag$en extends Translations$adminConfig$flag$he {
+	_Translations$adminConfig$flag$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get hidden => 'Hidden';
+	@override String get comingSoon => 'Coming soon';
+	@override String get everyone => 'Free';
+	@override String get premium => 'Premium';
+}
+
+// Path: adminConfig.labels
+class _Translations$adminConfig$labels$en extends Translations$adminConfig$labels$he {
+	_Translations$adminConfig$labels$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get ads_enabled => 'Ads enabled';
+	@override String get ads_fail_open => 'Open when no video';
+	@override String get ads_feed_interval => 'Ad interval in feeds';
+	@override String get quota_shared_free => 'Free shared recipes per day';
+	@override String get quota_shared_rewarded => 'Shared recipes after a video';
+	@override String get quota_ai_rewarded => 'AI imports after a video per day';
+	@override String get share_free_recipes_weekly => 'Recipe shares per week';
+	@override String get share_free_books_total => 'Shared books at once';
+	@override String get share_free_plans_total => 'Shared plans at once';
+	@override String get share_free_lists_total => 'Shared grocery lists at once';
+	@override String get tts_cloud_enabled => 'Cloud voice (Google)';
+	@override String get tts_voice_he => 'Hebrew voice';
+	@override String get tts_voice_en => 'English voice';
+	@override String get tts_voice_ar => 'Arabic voice';
+	@override String get tts_voice_fr => 'French voice';
+	@override String get tts_voice_ru => 'Russian voice';
+	@override String get isProd => 'Production version';
+	@override String get minimumVersion => 'Minimum version';
+	@override String get latestVersion => 'Latest version';
+	@override String get iosAppStoreId => 'App Store ID';
+	@override String get gemini_minInstances => 'Minimum instances';
+	@override String get gemini_maxInstances => 'Maximum instances';
+	@override String get gemini_timeoutSeconds => 'Call timeout (seconds)';
+	@override String get session_days => 'Session length (days)';
+}
+
 // Path: walkthrough.topics.addRecipe
 class _Translations$walkthrough$topics$addRecipe$en extends Translations$walkthrough$topics$addRecipe$he {
 	_Translations$walkthrough$topics$addRecipe$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1809,7 +2053,7 @@ class _Translations$walkthrough$topics$groceries$en extends Translations$walkthr
 
 	// Translations
 	@override String get title => 'Grocery list and prices';
-	@override String get summary => 'A list built from the plan, with what has been picked up ticked off and a cost estimate from your receipts.';
+	@override String get summary => 'A list built from the plan, with what has been picked up ticked off, a cost estimate from your receipts, and sharing with whoever shops with you.';
 	@override String get s1 => 'Tap "Groceries".';
 	@override String get s2 => 'Refresh rebuilds the list from every recipe in the weekly plan.';
 	@override String get s3 => 'Tap the plus to add an item by hand.';
@@ -1817,6 +2061,7 @@ class _Translations$walkthrough$topics$groceries$en extends Translations$walkthr
 	@override String get s5 => 'Tap "Add" and the item joins the list.';
 	@override String get s6 => 'Tap here to open the price book.';
 	@override String get s7 => 'Scan a receipt and the price of every product is kept. From there the grocery list gets a cost estimate, and community median prices fill in what you have not bought yet.';
+	@override String get shefi => 'Ask Shefi about this list: what is missing for a meal, what to swap, or add items by voice.';
 }
 
 // Path: walkthrough.topics.community
@@ -1845,9 +2090,36 @@ class _Translations$walkthrough$topics$account$en extends Translations$walkthrou
 	@override String get s1 => 'Notifications: invitations to share books and plans, and updates.';
 	@override String get s2 => 'Tap the picture to open your account.';
 	@override String get s3 => 'Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.';
-	@override String get s4 => 'Shared access: who shares books and plans with you, and what you have shared.';
+	@override String get s4 => 'Shared access: who shares books, plans and grocery lists with you, and what you have shared.';
 	@override String get s5 => 'Tap "Settings".';
 	@override String get s6 => 'Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.';
+	@override String get shefi => 'Shefi, the smart assistant: this floating button opens a chat. Ask in writing or out loud, and Shefi answers, adds to the plan, builds a list or starts Cook Mode. Inside a recipe, plan or list, the "Ask Shefi" button talks about that item only.';
+}
+
+// Path: walkthrough.topics.settings
+class _Translations$walkthrough$topics$settings$en extends Translations$walkthrough$topics$settings$he {
+	_Translations$walkthrough$topics$settings$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Settings and preferences';
+	@override String get summary => 'Every row of the settings and the preferences: profile, sharing, notifications, language, look, account deletion, shopping day, prices, diet and books.';
+	@override String get s1 => 'Tap "Settings": the account and the app live here.';
+	@override String get s2 => 'Profile: the name and photo the people you share with see, and the linked sign-in methods.';
+	@override String get s3 => 'Shared access: who shares recipes, books, plans and lists with you, and what you shared. Joining by code or QR starts here too.';
+	@override String get s4 => 'Tap "Notification settings".';
+	@override String get s5 => 'Push notifications: the master switch. Off, nothing is sent; below it you pick what is: replies, invites, updates and messages from the team.';
+	@override String get s6 => 'Shopping-day reminders: when to remind you before the shop. Scheduled on the device, apart from push.';
+	@override String get s7 => 'Language: switching also translates your recipes, books, plans and lists.';
+	@override String get s8 => 'Appearance: light, dark or follow the device. The choice is saved on the account and follows you to the next device.';
+	@override String get s9 => 'Delete account: permanently removes the account and everything in it, after a confirmation. A store subscription is cancelled separately.';
+	@override String get s10 => 'Back on the account: tap "Preferences", how the app behaves for you.';
+	@override String get s11 => 'Shopping day: the day the grocery list is built around and the reminders are timed to.';
+	@override String get s12 => 'Community prices: when on, prices from your receipts join anonymous averages, and lines you never bought are estimated from them.';
+	@override String get s13 => 'Dietary preferences and allergens: mark them here and the app highlights them in recipes and shared recipes.';
+	@override String get s14 => 'Fast page turn in books: jumping to a distant page turns a single page. Off, it flips through every page on the way.';
+	@override String get s15 => 'Sounds: sound effects on page turns and actions. Can be switched off.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1949,6 +2221,15 @@ extension on TranslationsEn {
 			'auth.phoneClaimedSignIn' => 'Sign in to my existing account',
 			'auth.phoneClaimedCreateNew' => 'Create a new account anyway',
 			'auth.phoneClaimedCreateNewConfirm' => 'A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number.',
+			'auth.sessionOtherDeviceTitle' => 'Signed in on another device',
+			'auth.sessionOtherDeviceBody' => ({required Object platform, required Object since}) => 'This account is open on ${platform}${since}. It can be used on one device at a time: sign out there, then tap "Try again".',
+			'auth.sessionSince' => ({required Object date}) => ' since ${date}',
+			'auth.sessionExpiredTitle' => 'Your session has expired',
+			'auth.sessionExpiredBody' => 'A sign-in lasts up to a month. Sign in again to continue.',
+			'auth.sessionRetry' => 'Try again',
+			'auth.platformIos' => 'an iPhone',
+			'auth.platformAndroid' => 'an Android phone',
+			'auth.platformOther' => 'another device',
 			'profile.setupTitle' => 'A few last details',
 			'profile.setupSubtitle' => 'So we know what to call you',
 			'profile.fullName' => 'Full name',
@@ -2005,7 +2286,7 @@ extension on TranslationsEn {
 			'settings.themeDark' => 'Dark',
 			'settings.soundEffects' => 'Sound effects (page turns)',
 			'settings.fastPageTurn' => 'Fast page-through',
-			'settings.fastPageTurnHint' => 'Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.',
+			'settings.fastPageTurnHint' => 'Jumping from the table of contents or quick navigation turns a single page to the destination. Turn it off to flip through every page on the way.',
 			'settings.sharedAccess' => 'Manage sharing',
 			'settings.noSharedAccess' => 'You haven\'t shared any books or lists yet',
 			'settings.communityPrices' => 'Community price averages',
@@ -2025,6 +2306,15 @@ extension on TranslationsEn {
 			'settings.notifications' => 'Notifications',
 			'settings.notificationsHint' => 'Which alerts reach you, and how',
 			'settings.settingsHint' => 'Account, notifications, language and appearance',
+			'settings.dangerZone' => 'Danger zone',
+			'settings.deleteAccount' => 'Delete account',
+			'settings.deleteAccountHint' => 'Permanently delete the account and everything in it',
+			'settings.deleteAccountTitle' => 'Delete the account for good?',
+			'settings.deleteAccountBody' => 'Your account, recipes, books, meal plans, grocery lists, receipts, photos, posts and replies will be permanently deleted from our servers and from this device and cannot be recovered. What you shared is removed from the people you shared it with. An active subscription is not cancelled automatically: cancel it in the App Store or Google Play.',
+			'settings.deleteAccountConfirm' => 'Delete permanently',
+			'settings.deletingAccount' => 'Deleting the account…',
+			'settings.deleteAccountFailed' => 'Deleting the account failed. Try again, or write to support@aieasyplate.app.',
+			'settings.deleteAccountHousehold' => 'You own a shared household. Close it first from the Household screen, then try again.',
 			'notificationSettings.title' => 'Notification settings',
 			'notificationSettings.push' => 'Push notifications',
 			'notificationSettings.pushHint' => 'Alerts on this device. Off, nothing is pushed; the inbox still fills up.',
@@ -2061,6 +2351,9 @@ extension on TranslationsEn {
 			'more.email' => 'Send an email',
 			'more.supportUnavailable' => 'We could not open that app',
 			'more.preferences' => 'Preferences',
+			'more.help' => 'Support & legal',
+			'more.helpHint' => 'Support, privacy policy and terms of service',
+			'more.legal' => 'Legal',
 			'language.hebrew' => 'עברית',
 			'language.english' => 'English',
 			'language.arabic' => 'العربية',
@@ -2290,6 +2583,10 @@ extension on TranslationsEn {
 			'sharing.kindBook' => 'Book',
 			'sharing.kindPlan' => 'Plan',
 			'sharing.recipesTravel' => 'The recipes inside are shared along with it',
+			'sharing.shareList' => 'Share grocery list',
+			'sharing.acceptedList' => 'The list was added to your grocery lists',
+			'sharing.viewerCannotEditList' => 'This list is shared with you view-only',
+			'sharing.kindList' => 'grocery list',
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'No notifications',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} shared "${recipe}" with you',
@@ -2318,6 +2615,7 @@ extension on TranslationsEn {
 			'notifications.openThread' => 'Open thread',
 			'notifications.threadGone' => 'This thread was deleted',
 			'notifications.settings' => 'Settings',
+			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} shared the grocery list "${recipe}" with you',
 			'editor.title' => 'Edit recipe',
 			'editor.recipeTitle' => 'Recipe name',
 			'editor.titleHint' => 'For example: Jerusalem shakshuka',
@@ -2344,6 +2642,8 @@ extension on TranslationsEn {
 			'editor.discardBody' => 'Your edits will not be saved.',
 			'editor.discard' => 'Discard',
 			'editor.saveOptionsTitle' => 'How would you like to save?',
+			_ => null,
+		} ?? switch (path) {
 			'editor.savePlainHint' => 'Save the changes as they are, no waiting',
 			'editor.saveWithAi' => 'Save with AI review',
 			'editor.saveWithAiHint' => 'Fix spelling and align the times written in the steps',
@@ -2370,8 +2670,6 @@ extension on TranslationsEn {
 			'ingestion.originalTitle' => 'Original recipe',
 			'ingestion.fetchFailed' => 'We could not load the page',
 			'ingestion.loadingOriginal' => 'Loading the page...',
-			_ => null,
-		} ?? switch (path) {
 			'ingestion.structuredFromSite' => 'Read directly from the site\'s structured data, no AI involved',
 			'ingestion.useStructured' => 'Continue with the structured recipe',
 			'ingestion.preferAi' => 'Process with AI instead',
@@ -2437,6 +2735,11 @@ extension on TranslationsEn {
 			'mealPlanner.noProducts' => 'With no products the item joins the grocery list as a single line under its own name',
 			'mealPlanner.itemName' => 'Item name',
 			'mealPlanner.editItem' => 'Edit item',
+			'mealPlanner.planOptions' => 'Plan options',
+			'mealPlanner.deletePlan' => 'Delete plan',
+			'mealPlanner.deletePlanConfirm' => ({required Object name}) => 'Delete the plan "${name}"? Its meals will be deleted too.',
+			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'Leave the shared plan "${name}"? It will be removed from your list.',
+			'mealPlanner.planDeleted' => 'Plan deleted',
 			'groceryList.title' => 'Grocery list',
 			'groceryList.aggregated' => 'Combined from all active plans',
 			'groceryList.addItem' => 'New item',
@@ -2499,6 +2802,7 @@ extension on TranslationsEn {
 			'groceryList.stayHere' => 'Stay here',
 			'groceryList.noIngredients' => 'This recipe has no ingredients to shop for',
 			'groceryList.addFirstItem' => 'Add an item',
+			'groceryList.leaveListConfirm' => ({required Object name}) => 'Leave the shared list "${name}"? It will be removed from your lists.',
 			'receipt.title' => 'Scan a receipt',
 			'receipt.subtitle' => 'Photograph a receipt or upload a PDF, and the prices are kept for your grocery list',
 			'receipt.camera' => 'Photograph receipt',
@@ -2634,6 +2938,14 @@ extension on TranslationsEn {
 			'image.themeVegan' => 'Vegan',
 			'image.themeHolidays' => 'Holidays',
 			'image.themeQuick' => 'Quick & simple',
+			'image.webSearch' => 'Search Google Images',
+			'image.webSearchTitle' => 'Image search',
+			'image.webSearchHint' => 'What to search for? e.g. beet kubbeh',
+			'image.webSearchEmpty' => 'No pictures found, try different words',
+			'image.webSearchFailed' => 'The search failed, please try again',
+			'image.webSearchUnavailable' => 'Image search is not available right now',
+			'image.webSearchEnd' => 'That is all the results',
+			'image.webSearchDownloadFailed' => 'Could not download that picture, try another',
 			'nav.library' => 'Library',
 			'nav.recipes' => 'Recipes',
 			'nav.mealPlan' => 'Meals',
@@ -2765,7 +3077,7 @@ extension on TranslationsEn {
 			'walkthrough.topics.mealPlan.s6' => 'The dashboard: daily average, weekly total, a bar per day and the macro split. The values are estimated by the AI for every recipe, per serving.',
 			'walkthrough.topics.mealPlan.s7' => 'The share button sends the plan to another account, as an editor or a viewer. An edit on one side reaches everyone.',
 			'walkthrough.topics.groceries.title' => 'Grocery list and prices',
-			'walkthrough.topics.groceries.summary' => 'A list built from the plan, with what has been picked up ticked off and a cost estimate from your receipts.',
+			'walkthrough.topics.groceries.summary' => 'A list built from the plan, with what has been picked up ticked off, a cost estimate from your receipts, and sharing with whoever shops with you.',
 			'walkthrough.topics.groceries.s1' => 'Tap "Groceries".',
 			'walkthrough.topics.groceries.s2' => 'Refresh rebuilds the list from every recipe in the weekly plan.',
 			'walkthrough.topics.groceries.s3' => 'Tap the plus to add an item by hand.',
@@ -2773,6 +3085,7 @@ extension on TranslationsEn {
 			'walkthrough.topics.groceries.s5' => 'Tap "Add" and the item joins the list.',
 			'walkthrough.topics.groceries.s6' => 'Tap here to open the price book.',
 			'walkthrough.topics.groceries.s7' => 'Scan a receipt and the price of every product is kept. From there the grocery list gets a cost estimate, and community median prices fill in what you have not bought yet.',
+			'walkthrough.topics.groceries.shefi' => 'Ask Shefi about this list: what is missing for a meal, what to swap, or add items by voice.',
 			'walkthrough.topics.community.title' => 'Community',
 			'walkthrough.topics.community.summary' => 'Recipes shared by everyone, and a forum for questions and answers.',
 			'walkthrough.topics.community.s1' => 'Tap "Community".',
@@ -2783,9 +3096,27 @@ extension on TranslationsEn {
 			'walkthrough.topics.account.s1' => 'Notifications: invitations to share books and plans, and updates.',
 			'walkthrough.topics.account.s2' => 'Tap the picture to open your account.',
 			'walkthrough.topics.account.s3' => 'Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.',
-			'walkthrough.topics.account.s4' => 'Shared access: who shares books and plans with you, and what you have shared.',
+			'walkthrough.topics.account.s4' => 'Shared access: who shares books, plans and grocery lists with you, and what you have shared.',
 			'walkthrough.topics.account.s5' => 'Tap "Settings".',
 			'walkthrough.topics.account.s6' => 'Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.',
+			'walkthrough.topics.account.shefi' => 'Shefi, the smart assistant: this floating button opens a chat. Ask in writing or out loud, and Shefi answers, adds to the plan, builds a list or starts Cook Mode. Inside a recipe, plan or list, the "Ask Shefi" button talks about that item only.',
+			'walkthrough.topics.settings.title' => 'Settings and preferences',
+			'walkthrough.topics.settings.summary' => 'Every row of the settings and the preferences: profile, sharing, notifications, language, look, account deletion, shopping day, prices, diet and books.',
+			'walkthrough.topics.settings.s1' => 'Tap "Settings": the account and the app live here.',
+			'walkthrough.topics.settings.s2' => 'Profile: the name and photo the people you share with see, and the linked sign-in methods.',
+			'walkthrough.topics.settings.s3' => 'Shared access: who shares recipes, books, plans and lists with you, and what you shared. Joining by code or QR starts here too.',
+			'walkthrough.topics.settings.s4' => 'Tap "Notification settings".',
+			'walkthrough.topics.settings.s5' => 'Push notifications: the master switch. Off, nothing is sent; below it you pick what is: replies, invites, updates and messages from the team.',
+			'walkthrough.topics.settings.s6' => 'Shopping-day reminders: when to remind you before the shop. Scheduled on the device, apart from push.',
+			'walkthrough.topics.settings.s7' => 'Language: switching also translates your recipes, books, plans and lists.',
+			'walkthrough.topics.settings.s8' => 'Appearance: light, dark or follow the device. The choice is saved on the account and follows you to the next device.',
+			'walkthrough.topics.settings.s9' => 'Delete account: permanently removes the account and everything in it, after a confirmation. A store subscription is cancelled separately.',
+			'walkthrough.topics.settings.s10' => 'Back on the account: tap "Preferences", how the app behaves for you.',
+			'walkthrough.topics.settings.s11' => 'Shopping day: the day the grocery list is built around and the reminders are timed to.',
+			'walkthrough.topics.settings.s12' => 'Community prices: when on, prices from your receipts join anonymous averages, and lines you never bought are estimated from them.',
+			'walkthrough.topics.settings.s13' => 'Dietary preferences and allergens: mark them here and the app highlights them in recipes and shared recipes.',
+			'walkthrough.topics.settings.s14' => 'Fast page turn in books: jumping to a distant page turns a single page. Off, it flips through every page on the way.',
+			'walkthrough.topics.settings.s15' => 'Sounds: sound effects on page turns and actions. Can be switched off.',
 			'walkthrough.demo.bookTitle' => 'Tutorial',
 			'walkthrough.demo.planName' => 'Tutorial plan',
 			'walkthrough.demo.mealName' => 'Dinner',
@@ -2825,6 +3156,8 @@ extension on TranslationsEn {
 			'adminBilling.viaRevenueCat' => 'From RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'Product: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} events',
 			'adminBilling.grant' => 'Grant premium',
@@ -2842,7 +3175,7 @@ extension on TranslationsEn {
 			'adminBilling.summary' => ({required Object premium, required Object problems, required Object total}) => '${premium} premium · ${problems} problems · ${total} accounts',
 			'adminBilling.noEntitlementTag' => 'No entitlement',
 			'adminDashboard.title' => 'Admin dashboard',
-			'adminDashboard.tabDashboard' => 'Dashboard',
+			'adminDashboard.tabDashboard' => 'Overview',
 			'adminDashboard.tabSubscriptions' => 'Subscriptions',
 			'adminDashboard.tabTickets' => 'Tickets',
 			'adminDashboard.rangeToday' => 'Today',
@@ -2884,8 +3217,6 @@ extension on TranslationsEn {
 			'adminDashboard.unknownModel' => 'not in price list',
 			'adminDashboard.usersCost' => 'Cost per user',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} users',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'Search by name, email or uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'Show all ${count} users',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} calls',
@@ -2991,7 +3322,10 @@ extension on TranslationsEn {
 			'adminDashboard.grantRange' => 'Exact date range',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Premium granted until ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Starts ${date}',
-			'assistant.title' => 'Assistant',
+			'adminDashboard.tabConfig' => 'Config',
+			'adminDashboard.releaseSession' => 'Disconnect the signed-in device',
+			'adminDashboard.releaseSessionDone' => 'Device disconnected; the user will be asked to sign in again',
+			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Your sous-chef: ask, plan, shop, cook',
 			'assistant.placeholder' => 'Ask or tell me what to do…',
 			'assistant.send' => 'Send',
@@ -3000,7 +3334,7 @@ extension on TranslationsEn {
 			'assistant.welcome' => ({required Object name}) => 'Hi ${name}! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?',
 			'assistant.error' => 'Something went wrong. Try again.',
 			'assistant.quotaReached' => 'Today\'s AI allowance is used up. It reopens tomorrow.',
-			'assistant.premiumOnly' => 'The assistant is part of EasyPlate Premium',
+			'assistant.premiumOnly' => 'Shefi is part of EasyPlate Premium',
 			'assistant.unlock' => 'See Premium',
 			'assistant.clear' => 'New conversation',
 			'assistant.openResult' => 'Open',
@@ -3109,6 +3443,33 @@ extension on TranslationsEn {
 			'assistant.listCreated' => 'List created',
 			'assistant.offTopic' => 'I\'m here for cooking, recipes, meal plans and groceries. Ask me anything in the kitchen and I\'m on it!',
 			'assistant.welcomeAnon' => 'Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?',
+			'assistant.scopedWelcome' => ({required Object name}) => 'What would you like to know about "${name}"?',
+			'assistant.scopedOffTopic' => ({required Object name}) => 'Here I only help with "${name}". For anything else, open Shefi from the menu.',
+			'assistant.askAboutRecipe' => 'Ask Shefi about this recipe',
+			'assistant.askAboutPlan' => 'Ask Shefi about this plan',
+			'assistant.askAboutList' => 'Ask Shefi about this list',
+			'assistant.listen' => 'Talk to Shefi',
+			'assistant.stopListening' => 'Stop listening',
+			'assistant.speakReplies' => 'Read replies aloud',
+			'assistant.micUnavailable' => 'The microphone cannot be used. Check the microphone and speech recognition permissions in the device settings.',
+			'assistant.scopedPrompts.recipe.0' => 'What is the nutrition per serving?',
+			'assistant.scopedPrompts.recipe.1' => 'How do I make it for 8 people?',
+			'assistant.scopedPrompts.recipe.2' => 'What can I substitute for an ingredient I lack?',
+			'assistant.scopedPrompts.recipe.3' => 'Add this recipe to tomorrow’s plan',
+			'assistant.scopedPrompts.recipe.4' => 'Create a grocery list from this recipe',
+			'assistant.scopedPrompts.mealPlan.0' => 'What are we eating today?',
+			'assistant.scopedPrompts.mealPlan.1' => 'Add a dinner on Tuesday',
+			'assistant.scopedPrompts.mealPlan.2' => 'What is missing this week?',
+			'assistant.scopedPrompts.mealPlan.3' => 'Create a grocery list from this plan',
+			'assistant.scopedPrompts.mealPlan.4' => 'How many calories on Wednesday?',
+			'assistant.scopedPrompts.groceryList.0' => 'What is left to buy?',
+			'assistant.scopedPrompts.groceryList.1' => 'Add milk and eggs',
+			'assistant.scopedPrompts.groceryList.2' => 'Mark the tomatoes as bought',
+			'assistant.scopedPrompts.groceryList.3' => 'Remove what I already bought',
+			'assistant.scopedPrompts.groceryList.4' => 'How much is 2 cups of flour in grams?',
+			'assistant.listening' => 'Listening…',
+			'assistant.stop' => 'Stop',
+			'assistant.cancelled' => 'Cancelled.',
 			'shareCode.title' => 'Code & link',
 			'shareCode.tabContact' => 'Contact',
 			'shareCode.tabCode' => 'Code or link',
@@ -3143,6 +3504,7 @@ extension on TranslationsEn {
 			'shareCode.upgrade' => 'See Premium',
 			'shareCode.scanHint' => 'Point the camera at a share QR',
 			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} invited you to their shared EasyPlate account. Code: ${code}\n${link}',
+			'shareCode.limitLists' => ({required Object count}) => 'Free accounts can share up to ${count} grocery lists.',
 			'household.title' => 'Shared account',
 			'household.duo' => 'Pro Duo',
 			'household.family' => 'Pro Family',
@@ -3171,6 +3533,102 @@ extension on TranslationsEn {
 			'household.inHousehold' => 'You are already in a shared account.',
 			'household.notEligibleCode' => 'The owner\'s plan no longer includes a shared account.',
 			'household.lapsed' => 'The owner\'s subscription has ended; Premium is paused for members.',
+			'feature.comingSoon' => 'Coming soon',
+			'feature.comingSoonMessage' => 'This feature is coming soon',
+			'feature.unavailable' => 'This feature is not available right now',
+			'feature.premiumOnly' => 'Premium',
+			'feature.premiumOnlyMessage' => 'This feature is for Premium subscribers',
+			'feature.premiumOnlyTitle' => 'Premium only',
+			'feature.premiumOnlyFor' => ({required Object name}) => '"${name}" is open to Premium subscribers only',
+			'feature.goPremium' => 'Go Premium',
+			'featureName.books' => 'Recipe books',
+			'featureName.mealPlans' => 'Meal plans',
+			'featureName.groceryLists' => 'Grocery lists',
+			'featureName.community' => 'Community',
+			'featureName.ingestText' => 'Recipe from text',
+			'featureName.ingestWebSearch' => 'Recipe web search',
+			'featureName.ingestLink' => 'Recipe from a link',
+			'featureName.ingestSocialVideo' => 'Recipe from a video',
+			'featureName.ingestAiRequest' => 'Ask AI for a recipe',
+			'featureName.ingestFile' => 'Recipe from a file',
+			'featureName.shareIn' => 'Share from another app',
+			'featureName.saveWithAi' => 'Save with AI',
+			'featureName.cookMode' => 'Cook mode',
+			'featureName.cookTimers' => 'Cooking timers',
+			'featureName.nutrition' => 'Nutrition',
+			'featureName.recipeImageAi' => 'AI picture',
+			'featureName.recipeImageSearch' => 'Google image search',
+			'featureName.groceryFromRecipe' => 'Grocery list from a recipe',
+			'featureName.sharedRecipes' => 'Shared recipes',
+			'featureName.forum' => 'Forum',
+			'featureName.likes' => 'Likes',
+			'featureName.shareRecipes' => 'Recipe sharing',
+			'featureName.shareBooks' => 'Book sharing',
+			'featureName.sharePlans' => 'Meal plan sharing',
+			'featureName.shareGroceryLists' => 'Grocery list sharing',
+			'featureName.shareCodes' => 'Share codes',
+			'featureName.households' => 'Household',
+			'featureName.priceBook' => 'Price book',
+			'featureName.receiptScan' => 'Receipt scan',
+			'featureName.groceryCost' => 'Estimated cost',
+			'featureName.shoppingReminder' => 'Shopping reminder',
+			'featureName.assistant' => 'Shefi (the assistant)',
+			'featureName.notifications' => 'Notifications',
+			'featureName.premium' => 'Premium',
+			'featureName.contentTranslation' => 'Content translation',
+			'featureName.theming' => 'Appearance',
+			'featureName.walkthrough' => 'Guided tour',
+			'featureName.tutorialBook' => 'Tutorial book',
+			'featureName.feedback' => 'Feedback',
+			'featureName.assistantScoped' => 'Shefi inside an item',
+			'featureName.assistantVoice' => 'Voice with Shefi',
+			'featureName.singleSession' => 'One device per account',
+			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
+			'adminConfig.loadFailed' => 'Could not load the configuration',
+			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
+			'adminConfig.saved' => ({required Object name}) => '"${name}" published',
+			'adminConfig.count' => ({required Object n}) => '${n} settings',
+			'adminConfig.searchAll' => 'Search all settings',
+			'adminConfig.searchIn' => ({required Object section}) => 'Search in ${section}',
+			'adminConfig.noResults' => ({required Object query}) => 'No setting matches "${query}"',
+			'adminConfig.filterAll' => 'All',
+			'adminConfig.clearSearch' => 'Clear search',
+			'adminConfig.noFlagsInState' => 'No features in this state',
+			'adminConfig.groups.features' => 'Features',
+			'adminConfig.groups.adsQuotas' => 'Ads and quotas',
+			'adminConfig.groups.sharing' => 'Sharing on a free account',
+			'adminConfig.groups.voice' => 'Shefi\'s voice',
+			'adminConfig.groups.versions' => 'Versions and environment',
+			'adminConfig.groups.gemini' => 'AI server (needs a deploy)',
+			'adminConfig.groups.other' => 'Other',
+			'adminConfig.flag.hidden' => 'Hidden',
+			'adminConfig.flag.comingSoon' => 'Coming soon',
+			'adminConfig.flag.everyone' => 'Free',
+			'adminConfig.flag.premium' => 'Premium',
+			'adminConfig.labels.ads_enabled' => 'Ads enabled',
+			'adminConfig.labels.ads_fail_open' => 'Open when no video',
+			'adminConfig.labels.ads_feed_interval' => 'Ad interval in feeds',
+			'adminConfig.labels.quota_shared_free' => 'Free shared recipes per day',
+			'adminConfig.labels.quota_shared_rewarded' => 'Shared recipes after a video',
+			'adminConfig.labels.quota_ai_rewarded' => 'AI imports after a video per day',
+			'adminConfig.labels.share_free_recipes_weekly' => 'Recipe shares per week',
+			'adminConfig.labels.share_free_books_total' => 'Shared books at once',
+			'adminConfig.labels.share_free_plans_total' => 'Shared plans at once',
+			'adminConfig.labels.share_free_lists_total' => 'Shared grocery lists at once',
+			'adminConfig.labels.tts_cloud_enabled' => 'Cloud voice (Google)',
+			'adminConfig.labels.tts_voice_he' => 'Hebrew voice',
+			'adminConfig.labels.tts_voice_en' => 'English voice',
+			'adminConfig.labels.tts_voice_ar' => 'Arabic voice',
+			'adminConfig.labels.tts_voice_fr' => 'French voice',
+			'adminConfig.labels.tts_voice_ru' => 'Russian voice',
+			'adminConfig.labels.isProd' => 'Production version',
+			'adminConfig.labels.minimumVersion' => 'Minimum version',
+			'adminConfig.labels.latestVersion' => 'Latest version',
+			'adminConfig.labels.iosAppStoreId' => 'App Store ID',
+			'adminConfig.labels.gemini_minInstances' => 'Minimum instances',
+			'adminConfig.labels.gemini_maxInstances' => 'Maximum instances',
+			'adminConfig.labels.gemini_timeoutSeconds' => 'Call timeout (seconds)',
+			'adminConfig.labels.session_days' => 'Session length (days)',
 			_ => null,
 		};
 	}

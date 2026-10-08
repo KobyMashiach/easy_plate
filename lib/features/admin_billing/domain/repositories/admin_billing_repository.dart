@@ -21,6 +21,9 @@ abstract class AdminBillingRepository {
   /// Holds the account on the blocked screen with [message] from its next
   /// gate check; [enableAccount] lets it back in.
   Future<void> disableAccount(String uid, String message);
+
+  /// Frees the account's device session and signs that device out.
+  Future<void> releaseSession(String uid);
   Future<void> enableAccount(String uid);
 
   /// Removes the Auth user and every trace of the account. Irreversible.

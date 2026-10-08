@@ -92,7 +92,16 @@
     "phoneClaimedBody": "Le numéro $phone est déjà lié à un autre compte EasyPlate. Pour retrouver ce compte et ses recettes, connectez-vous comme avant (Google, Apple ou e-mail) et vérifiez-y à nouveau le numéro.",
     "phoneClaimedSignIn": "Me connecter à mon compte existant",
     "phoneClaimedCreateNew": "Créer quand même un nouveau compte",
-    "phoneClaimedCreateNewConfirm": "Un nouveau compte vide sera ouvert pour ce numéro. Le compte existant reste tel quel, mais ne sera plus accessible avec ce numéro."
+    "phoneClaimedCreateNewConfirm": "Un nouveau compte vide sera ouvert pour ce numéro. Le compte existant reste tel quel, mais ne sera plus accessible avec ce numéro.",
+    "sessionOtherDeviceTitle": "Connecté sur un autre appareil",
+    "sessionOtherDeviceBody": "Ce compte est ouvert sur $platform$since. Il ne peut servir que sur un appareil à la fois : déconnectez-vous là-bas, puis touchez « Réessayer ».",
+    "sessionSince": " depuis le $date",
+    "sessionExpiredTitle": "Votre session a expiré",
+    "sessionExpiredBody": "Une connexion dure au plus un mois. Reconnectez-vous pour continuer.",
+    "sessionRetry": "Réessayer",
+    "platformIos": "un iPhone",
+    "platformAndroid": "un téléphone Android",
+    "platformOther": "un autre appareil"
   },
   "profile": {
     "setupTitle": "Encore quelques détails",
@@ -161,7 +170,7 @@
     "themeDark": "Sombre",
     "soundEffects": "Effets sonores (tourner les pages)",
     "fastPageTurn": "Feuilletage rapide",
-    "fastPageTurnHint": "Un saut depuis la table des matières ou la navigation rapide fait défiler les pages intermédiaires. Désactivez cette option pour arriver directement à la page.",
+    "fastPageTurnHint": "Sauter depuis la table des matières ou la navigation rapide ne tourne qu’une page jusqu’à la destination. Désactivez pour feuilleter toutes les pages du chemin.",
     "sharedAccess": "Gérer le partage",
     "noSharedAccess": "Vous n'avez encore partagé aucun livre ni aucune liste",
     "communityPrices": "Prix moyens de la communauté",
@@ -180,7 +189,16 @@
     "account": "Compte",
     "notifications": "Notifications",
     "notificationsHint": "Quelles alertes vous parviennent, et comment",
-    "settingsHint": "Compte, notifications, langue et apparence"
+    "settingsHint": "Compte, notifications, langue et apparence",
+    "dangerZone": "Zone sensible",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountHint": "Supprimer définitivement le compte et tout son contenu",
+    "deleteAccountTitle": "Supprimer définitivement le compte ?",
+    "deleteAccountBody": "Votre compte, vos recettes, livres, plans de repas, listes de courses, tickets, photos, publications et réponses seront définitivement supprimés de nos serveurs et de cet appareil, sans possibilité de récupération. Ce que vous avez partagé est retiré chez les personnes concernées. Un abonnement actif n’est pas annulé automatiquement : annulez-le dans l’App Store ou Google Play.",
+    "deleteAccountConfirm": "Supprimer définitivement",
+    "deletingAccount": "Suppression du compte…",
+    "deleteAccountFailed": "La suppression du compte a échoué. Réessayez ou écrivez à support@aieasyplate.app.",
+    "deleteAccountHousehold": "Vous êtes propriétaire d’un foyer partagé. Fermez-le d’abord depuis l’écran Foyer, puis réessayez."
   },
   "notificationSettings": {
     "title": "Paramètres des notifications",
@@ -222,7 +240,10 @@
     "whatsapp": "Nous écrire sur WhatsApp",
     "email": "Envoyer un e-mail",
     "supportUnavailable": "Impossible d'ouvrir cette application",
-    "preferences": "Préférences"
+    "preferences": "Préférences",
+    "help": "Support et mentions légales",
+    "helpHint": "Support, politique de confidentialité et conditions",
+    "legal": "Mentions légales"
   },
   "language": {
     "hebrew": "עברית",
@@ -465,7 +486,11 @@
     "kindRecipe": "Recette",
     "kindBook": "Livre",
     "kindPlan": "Menu",
-    "recipesTravel": "Les recettes qu’il contient sont partagées avec lui"
+    "recipesTravel": "Les recettes qu’il contient sont partagées avec lui",
+    "shareList": "Partager la liste de courses",
+    "acceptedList": "La liste a été ajoutée à vos listes de courses",
+    "viewerCannotEditList": "Cette liste est partagée avec vous en lecture seule",
+    "kindList": "liste de courses"
   },
   "notifications": {
     "title": "Notifications",
@@ -495,7 +520,8 @@
     "forumReplyOnThread": "$name a répondu dans « $post »",
     "openThread": "Ouvrir la discussion",
     "threadGone": "Cette discussion a été supprimée",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "sharedList": "$name a partagé la liste de courses « $recipe » avec vous"
   },
   "editor": {
     "title": "Modifier la recette",
@@ -618,7 +644,12 @@
     "productName": "Nom du produit",
     "noProducts": "Sans produits, l'élément rejoint la liste de courses comme une seule ligne à son nom",
     "itemName": "Nom de l'élément",
-    "editItem": "Modifier l'élément"
+    "editItem": "Modifier l'élément",
+    "planOptions": "Options du plan",
+    "deletePlan": "Supprimer le plan",
+    "deletePlanConfirm": "Supprimer le plan « $name » ? Ses repas seront supprimés aussi.",
+    "leavePlanConfirm": "Quitter le plan partagé « $name » ? Il sera retiré de votre liste.",
+    "planDeleted": "Plan supprimé"
   },
   "groceryList": {
     "title": "Liste de courses",
@@ -682,7 +713,8 @@
     "openList": "Ouvrir la liste",
     "stayHere": "Rester ici",
     "noIngredients": "Cette recette n’a aucun ingrédient à acheter",
-    "addFirstItem": "Ajouter un article"
+    "addFirstItem": "Ajouter un article",
+    "leaveListConfirm": "Quitter la liste partagée « $name » ? Elle sera retirée de vos listes."
   },
   "receipt": {
     "title": "Scanner un ticket",
@@ -823,7 +855,15 @@
     "themeMeat": "Viandes et grill",
     "themeVegan": "Végan",
     "themeHolidays": "Fêtes",
-    "themeQuick": "Rapide et simple"
+    "themeQuick": "Rapide et simple",
+    "webSearch": "Rechercher sur Google Images",
+    "webSearchTitle": "Recherche d’image",
+    "webSearchHint": "Que chercher ? ex. kubbeh à la betterave",
+    "webSearchEmpty": "Aucune image trouvée, essayez d’autres mots",
+    "webSearchFailed": "La recherche a échoué, réessayez",
+    "webSearchUnavailable": "La recherche d’images n’est pas disponible pour le moment",
+    "webSearchEnd": "Ce sont tous les résultats",
+    "webSearchDownloadFailed": "Impossible de télécharger cette image, essayez-en une autre"
   },
   "nav": {
     "library": "Livres",
@@ -987,14 +1027,15 @@
       },
       "groceries": {
         "title": "Liste de courses et prix",
-        "summary": "Une liste construite depuis le plan, avec ce qui est déjà pris coché et une estimation du coût d'après vos tickets.",
+        "summary": "Une liste construite depuis le plan, avec ce qui est déjà pris coché, une estimation du coût d’après vos tickets, et le partage avec qui fait les courses avec vous.",
         "s1": "Touchez « Courses ».",
         "s2": "Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.",
         "s3": "Touchez le plus pour ajouter un article à la main.",
         "s4": "Le nom de l'article est déjà rempli. Choisissez une quantité et une unité, ou partez d'un produit que vos tickets connaissent déjà.",
         "s5": "Touchez « Ajouter » et l'article rejoint la liste.",
         "s6": "Touchez ici pour ouvrir le carnet de prix.",
-        "s7": "Scannez un ticket et le prix de chaque produit est conservé. La liste de courses reçoit alors une estimation du coût, et les prix médians de la communauté complètent ce que vous n'avez pas encore acheté."
+        "s7": "Scannez un ticket et le prix de chaque produit est conservé. La liste de courses reçoit alors une estimation du coût, et les prix médians de la communauté complètent ce que vous n'avez pas encore acheté.",
+        "shefi": "Demandez à Shefi à propos de cette liste : ce qui manque pour un repas, quoi remplacer, ou ajoutez des articles à la voix."
       },
       "community": {
         "title": "Communauté",
@@ -1009,9 +1050,29 @@
         "s1": "Notifications : invitations à partager des livres et des plans, et mises à jour.",
         "s2": "Touchez la photo pour ouvrir votre compte.",
         "s3": "Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu'une courte vidéo prolonge.",
-        "s4": "Accès partagé : qui partage des livres et des plans avec vous, et ce que vous avez partagé.",
+        "s4": "Accès partagé : qui partage des livres, des plans et des listes de courses avec vous, et ce que vous avez partagé.",
         "s5": "Touchez « Réglages ».",
-        "s6": "Mode d'affichage : clair, sombre ou selon l'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l'écran d'assistance du compte."
+        "s6": "Mode d'affichage : clair, sombre ou selon l'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l'écran d'assistance du compte.",
+        "shefi": "Shefi, l’assistant intelligent : ce bouton flottant ouvre une conversation. Posez la question à l’écrit ou à voix haute ; Shefi répond, ajoute au plan, construit une liste ou lance le mode cuisine. Dans une recette, un plan ou une liste, le bouton « Demander à Shefi » ne parle que de cet élément."
+      },
+      "settings": {
+        "title": "Réglages et préférences",
+        "summary": "Chaque ligne des réglages et des préférences : profil, partage, notifications, langue, apparence, suppression du compte, jour des courses, prix, alimentation et livres.",
+        "s1": "Touchez « Réglages » : le compte et l’application sont ici.",
+        "s2": "Profil : le nom et la photo que voient les personnes avec qui vous partagez, et les méthodes de connexion liées.",
+        "s3": "Accès partagé : qui partage recettes, livres, menus et listes avec vous, et ce que vous avez partagé. Rejoindre par code ou QR commence ici aussi.",
+        "s4": "Touchez « Réglages des notifications ».",
+        "s5": "Notifications push : l’interrupteur principal. Éteint, rien n’est envoyé ; en dessous vous choisissez quoi : réponses, invitations, mises à jour et messages de l’équipe.",
+        "s6": "Rappels du jour des courses : quand vous rappeler avant les courses. Programmés sur l’appareil, indépendamment du push.",
+        "s7": "Langue : changer traduit aussi vos recettes, livres, menus et listes.",
+        "s8": "Apparence : clair, sombre ou selon l’appareil. Le choix est enregistré sur le compte et vous suit sur l’appareil suivant.",
+        "s9": "Supprimer le compte : efface définitivement le compte et tout son contenu, après confirmation. Un abonnement en boutique s’annule à part.",
+        "s10": "Retour au compte : touchez « Préférences », la façon dont l’application se comporte pour vous.",
+        "s11": "Jour des courses : le jour autour duquel la liste est construite et les rappels programmés.",
+        "s12": "Prix communautaires : activés, les prix de vos tickets rejoignent des moyennes anonymes et les lignes jamais achetées sont estimées d’après elles.",
+        "s13": "Préférences alimentaires et allergènes : cochez-les ici et l’application les met en évidence dans les recettes et les recettes partagées.",
+        "s14": "Tourne-page rapide dans les livres : sauter à une page lointaine ne tourne qu’une page. Désactivé, toutes les pages du chemin défilent.",
+        "s15": "Sons : effets sonores au tourne-page et aux actions. Peut être désactivé."
       }
     },
     "demo": {
@@ -1227,7 +1288,7 @@
     "grantStarts": "Commence le $date"
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Shefi",
     "subtitle": "Votre sous-chef : questions, planning, courses, cuisine",
     "placeholder": "Demandez ou dites-moi quoi faire…",
     "send": "Envoyer",
@@ -1364,7 +1425,42 @@
     "whichList": "Quelle liste ?",
     "listCreated": "Liste créée",
     "offTopic": "Je suis là pour la cuisine, les recettes, les plans de repas et les courses. Demandez-moi n'importe quoi côté cuisine et je m'en occupe !",
-    "welcomeAnon": "Bonjour ! Je peux ajouter des courses, planifier votre semaine, importer des recettes depuis des liens, lancer le mode cuisine et plus. On fait quoi ?"
+    "welcomeAnon": "Bonjour ! Je peux ajouter des courses, planifier votre semaine, importer des recettes depuis des liens, lancer le mode cuisine et plus. On fait quoi ?",
+    "scopedWelcome": "Que voulez-vous savoir sur « $name » ?",
+    "scopedOffTopic": "Ici je n’aide que pour « $name ». Pour le reste, ouvrez Shefi depuis le menu.",
+    "askAboutRecipe": "Demander à Shefi sur cette recette",
+    "askAboutPlan": "Demander à Shefi sur ce menu",
+    "askAboutList": "Demander à Shefi sur cette liste",
+    "listen": "Parler à Shefi",
+    "stopListening": "Arrêter l’écoute",
+    "speakReplies": "Lire les réponses à voix haute",
+    "micUnavailable": "Le micro ne peut pas être utilisé. Vérifiez les autorisations micro et reconnaissance vocale dans les réglages de l’appareil.",
+    "scopedPrompts": {
+      "recipe": [
+        "Quelle est la nutrition par portion ?",
+        "Comment la faire pour 8 personnes ?",
+        "Par quoi remplacer un ingrédient qui me manque ?",
+        "Ajoute cette recette au menu de demain",
+        "Crée une liste de courses depuis cette recette"
+      ],
+      "mealPlan": [
+        "Qu’est-ce qu’on mange aujourd’hui ?",
+        "Ajoute un dîner mardi",
+        "Que manque-t-il cette semaine ?",
+        "Crée une liste de courses depuis ce menu",
+        "Combien de calories mercredi ?"
+      ],
+      "groceryList": [
+        "Que reste-t-il à acheter ?",
+        "Ajoute du lait et des œufs",
+        "Marque les tomates comme achetées",
+        "Supprime ce que j’ai déjà acheté",
+        "Combien font 2 tasses de farine en grammes ?"
+      ]
+    },
+    "listening": "J’écoute…",
+    "stop": "Arrêter",
+    "cancelled": "Annulé."
   },
   "shareCode": {
     "title": "Code et lien",
@@ -1400,7 +1496,8 @@
     "limitPlans": "Un compte gratuit peut partager jusqu'à $count plans.",
     "upgrade": "Voir Premium",
     "scanHint": "Pointez la caméra vers un QR de partage",
-    "householdMessage": "$name vous invite à rejoindre son compte partagé EasyPlate. Code : $code\n$link"
+    "householdMessage": "$name vous invite à rejoindre son compte partagé EasyPlate. Code : $code\n$link",
+    "limitLists": "Un compte gratuit peut partager jusqu’à $count listes de courses."
   },
   "household": {
     "title": "Compte partagé",
@@ -1431,5 +1528,59 @@
     "inHousehold": "Vous êtes déjà dans un compte partagé.",
     "notEligibleCode": "L’offre du propriétaire n’inclut plus de compte partagé.",
     "lapsed": "L’abonnement du propriétaire est terminé ; Premium est suspendu pour les membres."
+  },
+  "feature": {
+    "comingSoon": "Bientôt",
+    "comingSoonMessage": "Cette fonctionnalité arrive bientôt",
+    "unavailable": "Cette fonctionnalité n’est pas disponible pour le moment",
+    "premiumOnly": "Premium",
+    "premiumOnlyMessage": "Cette fonctionnalité est réservée aux abonnés Premium",
+    "premiumOnlyTitle": "Réservé à Premium",
+    "premiumOnlyFor": "L’option « $name » est réservée aux abonnés Premium",
+    "goPremium": "Passer à Premium"
+  },
+  "featureName": {
+    "books": "Livres de recettes",
+    "mealPlans": "Plans de repas",
+    "groceryLists": "Listes de courses",
+    "community": "Communauté",
+    "ingestText": "Recette depuis un texte",
+    "ingestWebSearch": "Recherche de recette sur le web",
+    "ingestLink": "Recette depuis un lien",
+    "ingestSocialVideo": "Recette depuis une vidéo",
+    "ingestAiRequest": "Demander une recette à l’IA",
+    "ingestFile": "Recette depuis un fichier",
+    "shareIn": "Partage depuis une autre application",
+    "saveWithAi": "Enregistrer avec l’IA",
+    "cookMode": "Mode cuisine",
+    "cookTimers": "Minuteurs de cuisson",
+    "nutrition": "Nutrition",
+    "recipeImageAi": "Image par IA",
+    "recipeImageSearch": "Recherche d’image Google",
+    "groceryFromRecipe": "Liste de courses depuis une recette",
+    "sharedRecipes": "Recettes partagées",
+    "forum": "Forum",
+    "likes": "J’aime",
+    "shareRecipes": "Partage de recettes",
+    "shareBooks": "Partage de livres",
+    "sharePlans": "Partage de plans",
+    "shareGroceryLists": "Partage de listes de courses",
+    "shareCodes": "Partage par code",
+    "households": "Foyer",
+    "priceBook": "Carnet de prix",
+    "receiptScan": "Scan de ticket",
+    "groceryCost": "Coût estimé",
+    "shoppingReminder": "Rappel de courses",
+    "assistant": "Shefi (l’assistant)",
+    "notifications": "Notifications",
+    "premium": "Premium",
+    "contentTranslation": "Traduction du contenu",
+    "theming": "Apparence",
+    "walkthrough": "Visite guidée",
+    "tutorialBook": "Livre de tutoriel",
+    "feedback": "Commentaires",
+    "assistantScoped": "Shefi dans un élément",
+    "assistantVoice": "Voix avec Shefi",
+    "singleSession": "Un appareil par compte"
   }
 }

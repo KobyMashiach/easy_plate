@@ -104,12 +104,16 @@ class SettingsNavRow extends StatelessWidget {
   final String? hint;
   final VoidCallback onTap;
 
+  /// Error colours for a row that removes something for good.
+  final bool destructive;
+
   const SettingsNavRow({
     super.key,
     required this.icon,
     required this.label,
     required this.onTap,
     this.hint,
+    this.destructive = false,
   });
 
   @override
@@ -120,13 +124,22 @@ class SettingsNavRow extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, size: 22, color: AppColors.primary),
+          Icon(
+            icon,
+            size: 22,
+            color: destructive ? AppColors.error : AppColors.primary,
+          ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTextStyles.bodyLg),
+                Text(
+                  label,
+                  style: destructive
+                      ? AppTextStyles.bodyLg.copyWith(color: AppColors.error)
+                      : AppTextStyles.bodyLg,
+                ),
                 if (hint != null) ...[
                   const SizedBox(height: AppSpacing.xs),
                   Text(

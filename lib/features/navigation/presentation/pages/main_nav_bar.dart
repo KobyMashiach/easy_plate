@@ -21,6 +21,7 @@ import '../../../my_recipes/presentation/pages/my_recipes_page.dart';
 import '../../../recipe_books/presentation/pages/library_page.dart';
 import '../../../share_codes/domain/pending_share_code.dart';
 import '../../../user_profile/domain/repositories/user_preferences_repository.dart';
+import '../../../../core/features/feature_gate.dart';
 
 class MainNavBar extends StatefulWidget {
   const MainNavBar({super.key});
@@ -87,6 +88,12 @@ class _MainNavBarState extends State<MainNavBar> {
     final preferences = context.read<UserPreferencesRepository>();
     final current = await preferences.getPreferences();
     if (current.walkthroughSeen || !mounted) return;
+    // Switched off in the console: the tour waits, unmarked, for the day it
+    // is switched back on.
+    if (!FeaturesFlags.walkthrough.isEnabled) {
+      _tourOfferedTo = null;
+      return;
+    }
 
     Walkthrough.start(
       context,
@@ -128,41 +135,97 @@ class _MainNavBarState extends State<MainNavBar> {
       ClayNavDestination(icon: Icons.groups_rounded, label: t.nav.community),
     ];
 
+    // Which tabs the console lets through. Recipes are the home tab and
+    // have no switch; a tab marked "coming soon" keeps its place in the
+    // dock and opens on a notice instead of its page.
+    const features = <FeaturesFlags?>[
+      null,
+      FeaturesFlags.books,
+      FeaturesFlags.mealPlans,
+      FeaturesFlags.groceryLists,
+      FeaturesFlags.community,
+    ];
+
     // Only the stack's index and the dock follow a tab switch; the pages
     // themselves are the same instances and are left alone.
-    return ValueListenableBuilder<int>(
-      valueListenable: MainTabs.index,
-      builder: (context, index, _) => Scaffold(
-        backgroundColor: AppColors.background,
-        // The dock floats above the content rather than displacing it, so
-        // pages reserve ClayNavDock.bottomPadding at the bottom of their
-        // scroll views.
-        body: Stack(
-          children: [
-            IndexedStack(index: index, children: pages),
-            // The copilot, on every tab, in the corner above the dock.
-            PositionedDirectional(
-              end: AppSpacing.marginMobile,
-              bottom: ClayNavDock.bottomPadding(context) + AppSpacing.base,
-              child: const AssistantFab(),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SafeArea(
-                // Android needs the gesture-bar inset; on iOS the dock's own
-                // bottom margin already clears the home indicator, so
-                // reserving it again just floats the dock too high.
-                bottom: defaultTargetPlatform == TargetPlatform.android,
-                child: ClayNavDock(
-                  selectedIndex: index,
-                  onSelected: (selected) => MainTabs.index.value = selected,
-                  destinations: destinations,
-                ),
+    return ListenableBuilder(
+      listenable: FeaturesFlags.listenable,
+      builder: (context, _) {
+        final states = [
+          for (final feature in features)
+            feature == null ? FeatureAccess.enabled : feature.access,
+        ];
+        final visible = [
+          for (var i = 0; i < pages.length; i++)
+            if (states[i].isVisible) i,
+        ];
+        final children = [
+          for (var i = 0; i < pages.length; i++)
+            // A gated tab (coming soon, or Premium on a free account) keeps
+            // its place in the dock and opens on the notice instead.
+            states[i].isEnabled
+                ? pages[i]
+                : GatedTab(
+                    key: ValueKey('gated-$i-${states[i].name}'),
+                    label: destinations[i].label,
+                    feature: features[i]!,
+                    access: states[i],
+                  ),
+        ];
+        return ValueListenableBuilder<int>(
+          valueListenable: MainTabs.index,
+          builder: (context, index, _) {
+            // A hidden tab can still be asked for (a reminder tap, the
+            // assistant): the first visible one stands in.
+            final current = visible.contains(index) ? index : visible.first;
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              // The dock floats above the content rather than displacing
+              // it, so pages reserve ClayNavDock.bottomPadding at the
+              // bottom of their scroll views.
+              body: Stack(
+                children: [
+                  IndexedStack(index: current, children: children),
+                  // The copilot, on every tab, in the corner above the dock.
+                  PositionedDirectional(
+                    end: AppSpacing.marginMobile,
+                    bottom:
+                        ClayNavDock.bottomPadding(context) + AppSpacing.base,
+                    // Drawn only when the assistant is open to this account:
+                    // a greyed pill with a tag sat on top of whatever the
+                    // page had in that corner. The account menu's row keeps
+                    // the locked / coming-soon state and the way to Premium.
+                    child: FeatureGate.builder(
+                      feature: FeaturesFlags.assistant,
+                      builder: (context, access) => access.isEnabled
+                          ? const AssistantFab()
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SafeArea(
+                      // Android needs the gesture-bar inset; on iOS the
+                      // dock's own bottom margin already clears the home
+                      // indicator, so reserving it again just floats the
+                      // dock too high.
+                      bottom: defaultTargetPlatform == TargetPlatform.android,
+                      child: ClayNavDock(
+                        selectedIndex: visible.indexOf(current),
+                        onSelected: (selected) =>
+                            MainTabs.index.value = visible[selected],
+                        destinations: [
+                          for (final i in visible) destinations[i],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }

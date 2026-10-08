@@ -112,6 +112,13 @@ abstract class AssistantTools {
     },
   };
 
+  /// The declarations a scoped conversation gets: only the tools that act
+  /// on its one item (see AssistantScope.toolNames).
+  static List<Map<String, dynamic>> declarationsFor(Set<String> names) => [
+    for (final d in declarations)
+      if (names.contains(d['name'])) d,
+  ];
+
   static final List<Map<String, dynamic>> declarations = [
     _tool(
       searchRecipes,

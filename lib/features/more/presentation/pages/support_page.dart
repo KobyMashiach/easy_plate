@@ -11,6 +11,7 @@ import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../feedback/presentation/widgets/feedback_form.dart';
+import '../../../../core/features/feature_gate.dart';
 
 /// Ways to get help: the guide, a human by WhatsApp or mail, and a form for
 /// a bug or a suggestion that lands in the administrator's inbox.
@@ -57,38 +58,44 @@ class SupportPage extends StatelessWidget {
           children: [
             // The guide first: it answers most "how do I" questions before a
             // message has to be written.
-            ClayCard(
-              radius: AppRadius.md,
-              padding: const EdgeInsets.all(AppSpacing.md),
-              color: AppColors.primaryFixed,
-              onTap: () => context.pushNamed(Routing.tutorial),
-              child: Row(
-                children: [
-                  const ClayIconButton(
-                    icon: Icons.school_rounded,
-                    filled: true,
-                    size: 48,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(t.walkthrough.start, style: AppTextStyles.bodyLg),
-                        Text(
-                          t.walkthrough.startHint,
-                          style: AppTextStyles.labelSm.copyWith(
-                            color: AppColors.onPrimaryFixedVariant,
-                          ),
-                        ),
-                      ],
+            FeatureGate(
+              feature: FeaturesFlags.tutorialBook,
+              gapAfter: AppSpacing.lg,
+              child: ClayCard(
+                radius: AppRadius.md,
+                padding: const EdgeInsets.all(AppSpacing.md),
+                color: AppColors.primaryFixed,
+                onTap: () => context.pushNamed(Routing.tutorial),
+                child: Row(
+                  children: [
+                    const ClayIconButton(
+                      icon: Icons.school_rounded,
+                      filled: true,
+                      size: 48,
                     ),
-                  ),
-                  Icon(Icons.chevron_right_rounded, color: AppColors.primary),
-                ],
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t.walkthrough.start,
+                            style: AppTextStyles.bodyLg,
+                          ),
+                          Text(
+                            t.walkthrough.startHint,
+                            style: AppTextStyles.labelSm.copyWith(
+                              color: AppColors.onPrimaryFixedVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: AppColors.primary),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
             Icon(
               Icons.support_agent_rounded,
               size: 56,
@@ -138,8 +145,11 @@ class SupportPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: AppSpacing.xl),
-            const FeedbackForm(),
+            const FeatureGate(
+              feature: FeaturesFlags.feedback,
+              gapBefore: AppSpacing.xl,
+              child: FeedbackForm(),
+            ),
           ],
         ),
       ),

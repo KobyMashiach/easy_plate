@@ -23,6 +23,8 @@ import '../../domain/usecases/delete_grocery_list_usecase.dart';
 import '../../domain/usecases/get_grocery_lists_usecase.dart';
 import '../../domain/usecases/save_grocery_list_usecase.dart';
 import '../../domain/usecases/watch_grocery_lists_usecase.dart';
+import '../../../../core/hive/user_scope.dart';
+import '../../../collab_containers/domain/container_sharing_service.dart';
 
 part 'grocery_list_bloc.freezed.dart';
 
@@ -124,6 +126,10 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   final GetMealPlansUseCase getMealPlansUseCase;
   final ActiveGroceryListStore activeListStore;
 
+  /// Shared lists: the document behind a list another account can see.
+  /// Null in tests.
+  final ContainerSharingService? sharing;
+
   /// The plans as the box has them, for the picker. Null in tests.
   final WatchMealPlansUseCase? watchMealPlansUseCase;
 
@@ -148,6 +154,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     required this.createRecipeGroceryListUseCase,
     required this.getMealPlansUseCase,
     required this.activeListStore,
+    this.sharing,
     this.watchMealPlansUseCase,
     this.watchGroceryListsUseCase,
   }) : super(const GroceryListState.loading()) {
@@ -210,6 +217,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       ),
       getMealPlansUseCase: GetMealPlansUseCase(context.read()),
       activeListStore: store,
+      sharing: context.read(),
       watchMealPlansUseCase: WatchMealPlansUseCase(context.read()),
       watchGroceryListsUseCase: WatchGroceryListsUseCase(context.read()),
     );
@@ -257,9 +265,16 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final current = state;
     if (current is! GroceryListLoaded) return;
     final lists = _ordered(event.lists);
-    final stillThere = lists.any((l) => l.id == current.list.id);
-    if (stillThere || current.list.id == defaultListId) {
-      emit(current.copyWith(lists: _withList(lists, current.list)));
+    final fresh = lists.where((l) => l.id == current.list.id).firstOrNull;
+    if (fresh != null || current.list.id == defaultListId) {
+      // The open list keeps the version on screen: the box echoes every
+      // write back, and taking it would revert a tap made in the meantime.
+      // The one exception is the share itself, which gave the list its
+      // collab id; remote edits land through the sync on open/select.
+      final open = fresh != null && fresh.collabId != current.list.collabId
+          ? fresh
+          : current.list;
+      emit(current.copyWith(list: open, lists: _withList(lists, open)));
       return;
     }
     _activeId = null;
@@ -295,16 +310,47 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
 
   Future<GroceryListEntity> _currentList() async => (await _resolve()).list;
 
-  Future<void> _load(Emitter<GroceryListState> emit) async {
+  /// Every write goes through here: the box, then — for a shared list —
+  /// the shared document, so the other accounts see the change.
+  Future<void> _save(GroceryListEntity list) async {
+    await saveGroceryListUseCase(list);
+    final uid = UserScope().uid;
+    if (!list.isShared || uid == null) return;
     try {
-      final resolved = await _resolve();
-      emit(
-        .loaded(
-          resolved.list,
-          plans: await getMealPlansUseCase(),
-          lists: resolved.lists,
-        ),
-      );
+      await sharing?.lists.publish(list, uid: uid);
+    } catch (e) {
+      debugPrint('Shared list publish failed: $e');
+    }
+  }
+
+  /// [syncShared] pulls the open list's shared document first, when it has
+  /// one: opening a list is when another account's changes should show.
+  Future<void> _load(
+    Emitter<GroceryListState> emit, {
+    bool syncShared = false,
+  }) async {
+    try {
+      var resolved = await _resolve();
+      final plans = await getMealPlansUseCase();
+      // The local copy first — the screen must not wait on Firestore —
+      // then the shared document, and the screen again if it changed.
+      emit(.loaded(resolved.list, plans: plans, lists: resolved.lists));
+      final uid = UserScope().uid;
+      if (syncShared &&
+          resolved.list.isShared &&
+          uid != null &&
+          sharing != null) {
+        try {
+          final before = resolved.list;
+          final synced = await sharing!.lists.sync(before, uid: uid);
+          if (identical(synced, before)) return;
+          resolved = await _resolve();
+          if (_activeId != resolved.list.id) return;
+          emit(.loaded(resolved.list, plans: plans, lists: resolved.lists));
+        } catch (e) {
+          debugPrint('Shared list refresh failed: $e');
+        }
+      }
     } catch (e) {
       debugPrint('Grocery list error: $e');
       emit(.errorMessage(e.toString()));
@@ -318,7 +364,10 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     Emitter<GroceryListState> emit, {
     List<MealPlanEntity>? plans,
   }) async {
-    await saveGroceryListUseCase(list);
+    // A read-only shared list: the page hides the actions, this is the
+    // backstop.
+    if (!list.canEdit) return;
+    await _save(list);
     final current = state;
     final lists = current is GroceryListLoaded
         ? current.lists
@@ -340,6 +389,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   ) async {
     final current = state;
     if (current is! GroceryListLoaded) return;
+    if (!current.list.canEdit) return;
     final updated = current.list.copyWith(
       items: current.list.items
           .map((item) => item.id == itemId ? transform(item) : item)
@@ -350,11 +400,11 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     emit(
       current.copyWith(list: updated, lists: _withList(current.lists, updated)),
     );
-    await saveGroceryListUseCase(updated);
+    await _save(updated);
   }
 
   Future<void> _init(_Init event, Emitter<GroceryListState> emit) =>
-      _load(emit);
+      _load(emit, syncShared: true);
 
   /// Stores the choice and rebuilds straight away, so picking menus has a
   /// visible effect without a second tap on regenerate.
@@ -363,7 +413,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     Emitter<GroceryListState> emit,
   ) async {
     final existing = await _currentList();
-    await saveGroceryListUseCase(
+    await _save(
       existing.copyWith(selectedPlanIds: event.planIds),
     );
     await _regenerate(const _Regenerate(), emit);
@@ -435,7 +485,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     if (event.listId == _activeId && state is GroceryListLoaded) return;
     _activeId = event.listId;
     await activeListStore.write(event.listId);
-    await _load(emit);
+    await _load(emit, syncShared: true);
   }
 
   Future<void> _createList(
@@ -444,7 +494,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   ) async {
     final list = _newList(event.name, event.source);
     _activeId = list.id;
-    await saveGroceryListUseCase(list);
+    await _save(list);
     await activeListStore.write(list.id);
     if (list.canRegenerate) {
       // A plans list is only useful filled: built from every menu at once,
@@ -477,9 +527,9 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final name = event.name.trim();
     if (name.isEmpty) return;
     final target = current.lists.where((l) => l.id == event.listId).firstOrNull;
-    if (target == null) return;
+    if (target == null || !target.canEdit) return;
     final renamed = target.copyWith(name: name);
-    await saveGroceryListUseCase(renamed);
+    await _save(renamed);
     emit(
       current.copyWith(
         list: current.list.id == renamed.id ? renamed : current.list,
@@ -494,6 +544,16 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     _DeleteList event,
     Emitter<GroceryListState> emit,
   ) async {
+    // The owner takes the shared document down with it; a member only
+    // leaves.
+    final current = state;
+    final target = current is GroceryListLoaded
+        ? current.lists.where((l) => l.id == event.listId).firstOrNull
+        : null;
+    final uid = UserScope().uid;
+    if (target != null && target.isShared && uid != null) {
+      await sharing?.lists.retire(target, uid: uid);
+    }
     await deleteGroceryListUseCase(event.listId);
     if (event.listId == _activeId) {
       final remaining = _ordered(
@@ -545,7 +605,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
         lists: _withList(current.lists, rescaled),
       ),
     );
-    await saveGroceryListUseCase(rescaled);
+    await _save(rescaled);
   }
 
   Future<void> _toggleItem(_ToggleItem event, Emitter<GroceryListState> emit) {

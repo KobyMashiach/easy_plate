@@ -92,7 +92,16 @@
     "phoneClaimedBody": "$phone is already connected to another EasyPlate account. To reach that account and its recipes, sign in the way you did before (Google, Apple or email) and verify the number there again.",
     "phoneClaimedSignIn": "Sign in to my existing account",
     "phoneClaimedCreateNew": "Create a new account anyway",
-    "phoneClaimedCreateNewConfirm": "A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number."
+    "phoneClaimedCreateNewConfirm": "A new, empty account will be opened for this number. The existing account stays as it is, but it will no longer be reachable with this number.",
+    "sessionOtherDeviceTitle": "Signed in on another device",
+    "sessionOtherDeviceBody": "This account is open on $platform$since. It can be used on one device at a time: sign out there, then tap \"Try again\".",
+    "sessionSince": " since $date",
+    "sessionExpiredTitle": "Your session has expired",
+    "sessionExpiredBody": "A sign-in lasts up to a month. Sign in again to continue.",
+    "sessionRetry": "Try again",
+    "platformIos": "an iPhone",
+    "platformAndroid": "an Android phone",
+    "platformOther": "another device"
   },
   "profile": {
     "setupTitle": "A few last details",
@@ -161,7 +170,7 @@
     "themeDark": "Dark",
     "soundEffects": "Sound effects (page turns)",
     "fastPageTurn": "Fast page-through",
-    "fastPageTurnHint": "Jumping from the table of contents or quick navigation riffles through the pages along the way. Turn it off to land on the page instantly.",
+    "fastPageTurnHint": "Jumping from the table of contents or quick navigation turns a single page to the destination. Turn it off to flip through every page on the way.",
     "sharedAccess": "Manage sharing",
     "noSharedAccess": "You haven't shared any books or lists yet",
     "communityPrices": "Community price averages",
@@ -180,7 +189,16 @@
     "account": "Account",
     "notifications": "Notifications",
     "notificationsHint": "Which alerts reach you, and how",
-    "settingsHint": "Account, notifications, language and appearance"
+    "settingsHint": "Account, notifications, language and appearance",
+    "dangerZone": "Danger zone",
+    "deleteAccount": "Delete account",
+    "deleteAccountHint": "Permanently delete the account and everything in it",
+    "deleteAccountTitle": "Delete the account for good?",
+    "deleteAccountBody": "Your account, recipes, books, meal plans, grocery lists, receipts, photos, posts and replies will be permanently deleted from our servers and from this device and cannot be recovered. What you shared is removed from the people you shared it with. An active subscription is not cancelled automatically: cancel it in the App Store or Google Play.",
+    "deleteAccountConfirm": "Delete permanently",
+    "deletingAccount": "Deleting the account…",
+    "deleteAccountFailed": "Deleting the account failed. Try again, or write to support@aieasyplate.app.",
+    "deleteAccountHousehold": "You own a shared household. Close it first from the Household screen, then try again."
   },
   "notificationSettings": {
     "title": "Notification settings",
@@ -222,7 +240,10 @@
     "whatsapp": "Message us on WhatsApp",
     "email": "Send an email",
     "supportUnavailable": "We could not open that app",
-    "preferences": "Preferences"
+    "preferences": "Preferences",
+    "help": "Support & legal",
+    "helpHint": "Support, privacy policy and terms of service",
+    "legal": "Legal"
   },
   "language": {
     "hebrew": "עברית",
@@ -465,7 +486,11 @@
     "kindRecipe": "Recipe",
     "kindBook": "Book",
     "kindPlan": "Plan",
-    "recipesTravel": "The recipes inside are shared along with it"
+    "recipesTravel": "The recipes inside are shared along with it",
+    "shareList": "Share grocery list",
+    "acceptedList": "The list was added to your grocery lists",
+    "viewerCannotEditList": "This list is shared with you view-only",
+    "kindList": "grocery list"
   },
   "notifications": {
     "title": "Notifications",
@@ -495,7 +520,8 @@
     "forumReplyOnThread": "$name replied in \"$post\"",
     "openThread": "Open thread",
     "threadGone": "This thread was deleted",
-    "settings": "Settings"
+    "settings": "Settings",
+    "sharedList": "$name shared the grocery list \"$recipe\" with you"
   },
   "editor": {
     "title": "Edit recipe",
@@ -618,7 +644,12 @@
     "productName": "Product name",
     "noProducts": "With no products the item joins the grocery list as a single line under its own name",
     "itemName": "Item name",
-    "editItem": "Edit item"
+    "editItem": "Edit item",
+    "planOptions": "Plan options",
+    "deletePlan": "Delete plan",
+    "deletePlanConfirm": "Delete the plan \"$name\"? Its meals will be deleted too.",
+    "leavePlanConfirm": "Leave the shared plan \"$name\"? It will be removed from your list.",
+    "planDeleted": "Plan deleted"
   },
   "groceryList": {
     "title": "Grocery list",
@@ -682,7 +713,8 @@
     "openList": "Open list",
     "stayHere": "Stay here",
     "noIngredients": "This recipe has no ingredients to shop for",
-    "addFirstItem": "Add an item"
+    "addFirstItem": "Add an item",
+    "leaveListConfirm": "Leave the shared list \"$name\"? It will be removed from your lists."
   },
   "receipt": {
     "title": "Scan a receipt",
@@ -823,7 +855,15 @@
     "themeMeat": "Meat & grill",
     "themeVegan": "Vegan",
     "themeHolidays": "Holidays",
-    "themeQuick": "Quick & simple"
+    "themeQuick": "Quick & simple",
+    "webSearch": "Search Google Images",
+    "webSearchTitle": "Image search",
+    "webSearchHint": "What to search for? e.g. beet kubbeh",
+    "webSearchEmpty": "No pictures found, try different words",
+    "webSearchFailed": "The search failed, please try again",
+    "webSearchUnavailable": "Image search is not available right now",
+    "webSearchEnd": "That is all the results",
+    "webSearchDownloadFailed": "Could not download that picture, try another"
   },
   "nav": {
     "library": "Library",
@@ -987,14 +1027,15 @@
       },
       "groceries": {
         "title": "Grocery list and prices",
-        "summary": "A list built from the plan, with what has been picked up ticked off and a cost estimate from your receipts.",
+        "summary": "A list built from the plan, with what has been picked up ticked off, a cost estimate from your receipts, and sharing with whoever shops with you.",
         "s1": "Tap \"Groceries\".",
         "s2": "Refresh rebuilds the list from every recipe in the weekly plan.",
         "s3": "Tap the plus to add an item by hand.",
         "s4": "The item's name is already filled in. Pick an amount and a unit, or start from a product your receipts already know.",
         "s5": "Tap \"Add\" and the item joins the list.",
         "s6": "Tap here to open the price book.",
-        "s7": "Scan a receipt and the price of every product is kept. From there the grocery list gets a cost estimate, and community median prices fill in what you have not bought yet."
+        "s7": "Scan a receipt and the price of every product is kept. From there the grocery list gets a cost estimate, and community median prices fill in what you have not bought yet.",
+        "shefi": "Ask Shefi about this list: what is missing for a meal, what to swap, or add items by voice."
       },
       "community": {
         "title": "Community",
@@ -1009,9 +1050,29 @@
         "s1": "Notifications: invitations to share books and plans, and updates.",
         "s2": "Tap the picture to open your account.",
         "s3": "Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.",
-        "s4": "Shared access: who shares books and plans with you, and what you have shared.",
+        "s4": "Shared access: who shares books, plans and grocery lists with you, and what you have shared.",
         "s5": "Tap \"Settings\".",
-        "s6": "Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account."
+        "s6": "Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.",
+        "shefi": "Shefi, the smart assistant: this floating button opens a chat. Ask in writing or out loud, and Shefi answers, adds to the plan, builds a list or starts Cook Mode. Inside a recipe, plan or list, the \"Ask Shefi\" button talks about that item only."
+      },
+      "settings": {
+        "title": "Settings and preferences",
+        "summary": "Every row of the settings and the preferences: profile, sharing, notifications, language, look, account deletion, shopping day, prices, diet and books.",
+        "s1": "Tap \"Settings\": the account and the app live here.",
+        "s2": "Profile: the name and photo the people you share with see, and the linked sign-in methods.",
+        "s3": "Shared access: who shares recipes, books, plans and lists with you, and what you shared. Joining by code or QR starts here too.",
+        "s4": "Tap \"Notification settings\".",
+        "s5": "Push notifications: the master switch. Off, nothing is sent; below it you pick what is: replies, invites, updates and messages from the team.",
+        "s6": "Shopping-day reminders: when to remind you before the shop. Scheduled on the device, apart from push.",
+        "s7": "Language: switching also translates your recipes, books, plans and lists.",
+        "s8": "Appearance: light, dark or follow the device. The choice is saved on the account and follows you to the next device.",
+        "s9": "Delete account: permanently removes the account and everything in it, after a confirmation. A store subscription is cancelled separately.",
+        "s10": "Back on the account: tap \"Preferences\", how the app behaves for you.",
+        "s11": "Shopping day: the day the grocery list is built around and the reminders are timed to.",
+        "s12": "Community prices: when on, prices from your receipts join anonymous averages, and lines you never bought are estimated from them.",
+        "s13": "Dietary preferences and allergens: mark them here and the app highlights them in recipes and shared recipes.",
+        "s14": "Fast page turn in books: jumping to a distant page turns a single page. Off, it flips through every page on the way.",
+        "s15": "Sounds: sound effects on page turns and actions. Can be switched off."
       }
     },
     "demo": {
@@ -1078,7 +1139,7 @@
   },
   "adminDashboard": {
     "title": "Admin dashboard",
-    "tabDashboard": "Dashboard",
+    "tabDashboard": "Overview",
     "tabSubscriptions": "Subscriptions",
     "tabTickets": "Tickets",
     "rangeToday": "Today",
@@ -1224,10 +1285,13 @@
     "grantYear": "A year",
     "grantRange": "Exact date range",
     "grantedUntil": "Premium granted until $date",
-    "grantStarts": "Starts $date"
+    "grantStarts": "Starts $date",
+    "tabConfig": "Config",
+    "releaseSession": "Disconnect the signed-in device",
+    "releaseSessionDone": "Device disconnected; the user will be asked to sign in again"
   },
   "assistant": {
-    "title": "Assistant",
+    "title": "Shefi",
     "subtitle": "Your sous-chef: ask, plan, shop, cook",
     "placeholder": "Ask or tell me what to do…",
     "send": "Send",
@@ -1236,7 +1300,7 @@
     "welcome": "Hi $name! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?",
     "error": "Something went wrong. Try again.",
     "quotaReached": "Today's AI allowance is used up. It reopens tomorrow.",
-    "premiumOnly": "The assistant is part of EasyPlate Premium",
+    "premiumOnly": "Shefi is part of EasyPlate Premium",
     "unlock": "See Premium",
     "clear": "New conversation",
     "openResult": "Open",
@@ -1364,7 +1428,42 @@
     "whichList": "Which list?",
     "listCreated": "List created",
     "offTopic": "I'm here for cooking, recipes, meal plans and groceries. Ask me anything in the kitchen and I'm on it!",
-    "welcomeAnon": "Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?"
+    "welcomeAnon": "Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?",
+    "scopedWelcome": "What would you like to know about \"$name\"?",
+    "scopedOffTopic": "Here I only help with \"$name\". For anything else, open Shefi from the menu.",
+    "askAboutRecipe": "Ask Shefi about this recipe",
+    "askAboutPlan": "Ask Shefi about this plan",
+    "askAboutList": "Ask Shefi about this list",
+    "listen": "Talk to Shefi",
+    "stopListening": "Stop listening",
+    "speakReplies": "Read replies aloud",
+    "micUnavailable": "The microphone cannot be used. Check the microphone and speech recognition permissions in the device settings.",
+    "scopedPrompts": {
+      "recipe": [
+        "What is the nutrition per serving?",
+        "How do I make it for 8 people?",
+        "What can I substitute for an ingredient I lack?",
+        "Add this recipe to tomorrow’s plan",
+        "Create a grocery list from this recipe"
+      ],
+      "mealPlan": [
+        "What are we eating today?",
+        "Add a dinner on Tuesday",
+        "What is missing this week?",
+        "Create a grocery list from this plan",
+        "How many calories on Wednesday?"
+      ],
+      "groceryList": [
+        "What is left to buy?",
+        "Add milk and eggs",
+        "Mark the tomatoes as bought",
+        "Remove what I already bought",
+        "How much is 2 cups of flour in grams?"
+      ]
+    },
+    "listening": "Listening…",
+    "stop": "Stop",
+    "cancelled": "Cancelled."
   },
   "shareCode": {
     "title": "Code & link",
@@ -1400,7 +1499,8 @@
     "limitPlans": "Free accounts can share up to $count meal plans.",
     "upgrade": "See Premium",
     "scanHint": "Point the camera at a share QR",
-    "householdMessage": "$name invited you to their shared EasyPlate account. Code: $code\n$link"
+    "householdMessage": "$name invited you to their shared EasyPlate account. Code: $code\n$link",
+    "limitLists": "Free accounts can share up to $count grocery lists."
   },
   "household": {
     "title": "Shared account",
@@ -1431,5 +1531,113 @@
     "inHousehold": "You are already in a shared account.",
     "notEligibleCode": "The owner's plan no longer includes a shared account.",
     "lapsed": "The owner's subscription has ended; Premium is paused for members."
+  },
+  "feature": {
+    "comingSoon": "Coming soon",
+    "comingSoonMessage": "This feature is coming soon",
+    "unavailable": "This feature is not available right now",
+    "premiumOnly": "Premium",
+    "premiumOnlyMessage": "This feature is for Premium subscribers",
+    "premiumOnlyTitle": "Premium only",
+    "premiumOnlyFor": "\"$name\" is open to Premium subscribers only",
+    "goPremium": "Go Premium"
+  },
+  "featureName": {
+    "books": "Recipe books",
+    "mealPlans": "Meal plans",
+    "groceryLists": "Grocery lists",
+    "community": "Community",
+    "ingestText": "Recipe from text",
+    "ingestWebSearch": "Recipe web search",
+    "ingestLink": "Recipe from a link",
+    "ingestSocialVideo": "Recipe from a video",
+    "ingestAiRequest": "Ask AI for a recipe",
+    "ingestFile": "Recipe from a file",
+    "shareIn": "Share from another app",
+    "saveWithAi": "Save with AI",
+    "cookMode": "Cook mode",
+    "cookTimers": "Cooking timers",
+    "nutrition": "Nutrition",
+    "recipeImageAi": "AI picture",
+    "recipeImageSearch": "Google image search",
+    "groceryFromRecipe": "Grocery list from a recipe",
+    "sharedRecipes": "Shared recipes",
+    "forum": "Forum",
+    "likes": "Likes",
+    "shareRecipes": "Recipe sharing",
+    "shareBooks": "Book sharing",
+    "sharePlans": "Meal plan sharing",
+    "shareGroceryLists": "Grocery list sharing",
+    "shareCodes": "Share codes",
+    "households": "Household",
+    "priceBook": "Price book",
+    "receiptScan": "Receipt scan",
+    "groceryCost": "Estimated cost",
+    "shoppingReminder": "Shopping reminder",
+    "assistant": "Shefi (the assistant)",
+    "notifications": "Notifications",
+    "premium": "Premium",
+    "contentTranslation": "Content translation",
+    "theming": "Appearance",
+    "walkthrough": "Guided tour",
+    "tutorialBook": "Tutorial book",
+    "feedback": "Feedback",
+    "assistantScoped": "Shefi inside an item",
+    "assistantVoice": "Voice with Shefi",
+    "singleSession": "One device per account"
+  },
+  "adminConfig": {
+    "intro": "Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).",
+    "loadFailed": "Could not load the configuration",
+    "saveFailed": "Publishing failed. Check the value and try again",
+    "saved": "\"$name\" published",
+    "count": "$n settings",
+    "searchAll": "Search all settings",
+    "searchIn": "Search in $section",
+    "noResults": "No setting matches \"$query\"",
+    "filterAll": "All",
+    "clearSearch": "Clear search",
+    "noFlagsInState": "No features in this state",
+    "groups": {
+      "features": "Features",
+      "adsQuotas": "Ads and quotas",
+      "sharing": "Sharing on a free account",
+      "voice": "Shefi's voice",
+      "versions": "Versions and environment",
+      "gemini": "AI server (needs a deploy)",
+      "other": "Other"
+    },
+    "flag": {
+      "hidden": "Hidden",
+      "comingSoon": "Coming soon",
+      "everyone": "Free",
+      "premium": "Premium"
+    },
+    "labels": {
+      "ads_enabled": "Ads enabled",
+      "ads_fail_open": "Open when no video",
+      "ads_feed_interval": "Ad interval in feeds",
+      "quota_shared_free": "Free shared recipes per day",
+      "quota_shared_rewarded": "Shared recipes after a video",
+      "quota_ai_rewarded": "AI imports after a video per day",
+      "share_free_recipes_weekly": "Recipe shares per week",
+      "share_free_books_total": "Shared books at once",
+      "share_free_plans_total": "Shared plans at once",
+      "share_free_lists_total": "Shared grocery lists at once",
+      "tts_cloud_enabled": "Cloud voice (Google)",
+      "tts_voice_he": "Hebrew voice",
+      "tts_voice_en": "English voice",
+      "tts_voice_ar": "Arabic voice",
+      "tts_voice_fr": "French voice",
+      "tts_voice_ru": "Russian voice",
+      "isProd": "Production version",
+      "minimumVersion": "Minimum version",
+      "latestVersion": "Latest version",
+      "iosAppStoreId": "App Store ID",
+      "gemini_minInstances": "Minimum instances",
+      "gemini_maxInstances": "Maximum instances",
+      "gemini_timeoutSeconds": "Call timeout (seconds)",
+      "session_days": "Session length (days)"
+    }
   }
 }

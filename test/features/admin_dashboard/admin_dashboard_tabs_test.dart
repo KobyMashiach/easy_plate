@@ -194,6 +194,9 @@ class _FakeBilling implements AdminBillingRepository {
   @override
   Future<void> enableAccount(String uid) async => actions.add('enable:$uid');
   @override
+  Future<void> releaseSession(String uid) async =>
+      actions.add('releaseSession:$uid');
+  @override
   Future<void> deleteAccount(String uid) async => actions.add('delete:$uid');
   @override
   Future<void> notifyAccount(

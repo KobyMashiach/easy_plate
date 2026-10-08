@@ -33,6 +33,10 @@ class AssistantAgent {
   final AssistantDispatcher dispatcher;
   final String Function() systemInstruction;
 
+  /// The declarations this conversation may call: all of them, or the
+  /// scoped subset for a conversation about one item.
+  final List<Map<String, dynamic>> tools;
+
   static const maxRounds = 6;
 
   String? _interactionId;
@@ -41,7 +45,8 @@ class AssistantAgent {
     required this.remote,
     required this.dispatcher,
     required this.systemInstruction,
-  });
+    List<Map<String, dynamic>>? tools,
+  }) : tools = tools ?? AssistantTools.declarations;
 
   /// Forgets the server-side conversation.
   void reset() => _interactionId = null;
@@ -50,7 +55,7 @@ class AssistantAgent {
     var turn = await remote.send(
       message: message,
       systemInstruction: systemInstruction(),
-      tools: AssistantTools.declarations,
+      tools: tools,
       previousInteractionId: _interactionId,
     );
     _interactionId = turn.interactionId;
@@ -68,7 +73,7 @@ class AssistantAgent {
       turn = await remote.sendResults(
         previousInteractionId: turn.interactionId,
         results: results,
-        tools: AssistantTools.declarations,
+        tools: tools,
         callNames: names,
       );
       _interactionId = turn.interactionId;

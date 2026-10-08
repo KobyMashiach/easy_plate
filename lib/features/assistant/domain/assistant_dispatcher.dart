@@ -28,6 +28,7 @@ import '../../user_profile/domain/repositories/user_preferences_repository.dart'
 import 'assistant_models.dart';
 import 'assistant_tools.dart';
 import 'assistant_ui_bridge.dart';
+import 'assistant_scope.dart';
 
 /// Runs the model's function calls against the app's own repositories and
 /// use cases. Every tool returns a [ToolResult] the model can read, and most
@@ -1188,6 +1189,83 @@ class AssistantDispatcher {
   /// What the model should know before the first word: the date, the
   /// preferences, the recipes it can refer to by id, the active list and
   /// what is cooking. Kept short; the tools fetch the rest on demand.
+  /// Everything about one item, for a conversation locked to it: the model
+  /// reads this instead of looking the item up, and cannot mistake it for
+  /// another. Null when the item is gone.
+  Future<String?> describe(AssistantScope scope) async {
+    switch (scope.kind) {
+      case AssistantScopeKind.recipe:
+        final r = await recipes.getRecipeById(scope.id);
+        if (r == null) return null;
+        final b = StringBuffer()
+          ..writeln('Recipe "${r.title}" (id ${r.id}).')
+          ..writeln(
+            'Servings: ${r.servings ?? '?'}; prep ${r.prepTimeMinutes ?? '?'} min; '
+            'cook ${r.cookTimeMinutes ?? '?'} min; '
+            'tags: ${r.dietaryTags.map((d) => d.name).join(', ')}; '
+            'allergens: ${r.allergens.map((a) => a.name).join(', ')}.',
+          )
+          ..writeln('Ingredients:');
+        for (final i in r.ingredients) {
+          b.writeln(
+            '- ${i.name}${i.amount == null ? '' : ': ${i.amount} ${i.unit.name}'}',
+          );
+        }
+        b.writeln('Steps:');
+        for (var i = 0; i < r.steps.length; i++) {
+          b.writeln('${i + 1}. ${r.steps[i]}');
+        }
+        if (r.nutrition case final n?) {
+          b.writeln(
+            'Nutrition per serving (estimate): ${n.calories} kcal, '
+            'protein ${n.proteinGrams} g, carbs ${n.carbsGrams} g, fat ${n.fatGrams} g.',
+          );
+        }
+        return b.toString();
+      case AssistantScopeKind.mealPlan:
+        final p = await plans.getPlanById(scope.id);
+        if (p == null) return null;
+        final titles = {
+          for (final r in await recipes.getRecipes()) r.id: r.title,
+        };
+        final b = StringBuffer()
+          ..writeln('Meal plan "${p.name}" (id ${p.id}).');
+        for (var day = 0; day < 7; day++) {
+          final meals = p.mealsForWeekday(day);
+          if (meals.isEmpty) continue;
+          b.writeln('${ShoppingDay.values[day].name}:');
+          for (final m in meals) {
+            final items = m.items
+                .map(
+                  (i) => i.recipeId != null
+                      ? '${titles[i.recipeId] ?? 'recipe'} (recipe_id ${i.recipeId})'
+                      : (i.freeText ?? ''),
+                )
+                .join(', ');
+            b.writeln(
+              '- ${m.name} (meal_id ${m.id}): ${items.isEmpty ? 'empty' : items}',
+            );
+          }
+        }
+        return b.toString();
+      case AssistantScopeKind.groceryList:
+        final l = await groceries.getListById(scope.id);
+        if (l == null) return null;
+        final b = StringBuffer()
+          ..writeln(
+            'Grocery list "${l.name}" (list_id ${l.id}): ${l.items.length} items, '
+            '${l.checkedCount} bought.',
+          );
+        for (final i in l.items) {
+          b.writeln(
+            '- ${i.isChecked ? '[x]' : '[ ]'} ${i.name} (item_id ${i.id})'
+            '${i.totalAmount > 0 ? ': ${i.totalAmount} ${i.unit.name}' : ''}',
+          );
+        }
+        return b.toString();
+    }
+  }
+
   Future<String> snapshot() async {
     final prefs = await preferences.getPreferences();
     final all = await recipes.getRecipes();

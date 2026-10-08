@@ -53,6 +53,26 @@ abstract class ApiConfig {
   static String get shareCodesUrl =>
       aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/shareCodes');
 
+  /// Google image results for a recipe photo, same deploy.
+  static String get imageSearchUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/imageSearch');
+
+  /// The account deleting itself, same deploy.
+  static String get deleteAccountUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/deleteAccount');
+
+  /// Shefi's cloud voice (Google Cloud Text-to-Speech), same deploy.
+  static String get speakUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/speak');
+
+  /// The administrator's Remote Config editor, same deploy.
+  static String get adminRemoteConfigUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/adminRemoteConfig');
+
+  /// One device per account, a month at a time (claim / release).
+  static String get sessionsUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/sessions');
+
   /// Household membership (Pro Duo / Pro Family), same deploy.
   static String get householdsUrl =>
       aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/households');

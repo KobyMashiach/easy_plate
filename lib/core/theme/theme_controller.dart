@@ -66,6 +66,17 @@ class ThemeController extends ChangeNotifier {
     }
   }
 
+  /// The choice stored on the account arrived (sign-in, or a change made
+  /// on another device): the device follows it. Null means the account
+  /// never chose, and the device keeps what it has.
+  Future<void> applyFromAccount(String? modeName) async {
+    final mode = AppThemeMode.values
+        .where((m) => m.name == modeName)
+        .firstOrNull;
+    if (mode == null) return;
+    await setMode(mode);
+  }
+
   /// The phone flipped its own setting; only matters under [AppThemeMode.system].
   void onPlatformBrightnessChanged() {
     if (_mode == AppThemeMode.system) _apply(notify: true);

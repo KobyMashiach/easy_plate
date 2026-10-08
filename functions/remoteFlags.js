@@ -40,9 +40,21 @@ function boolFrom(parameters, name, fallback) {
   return String(raw).trim().toLowerCase() === "true";
 }
 
-// Pure rule: a free account gets no push while the gate is on.
-function pushAllowed({ premiumOnly, premium }) {
-  return !premiumOnly || premium === true;
+// The notifications feature flag (`ff_notifications`, in the featureFlags
+// group): 0 hidden, 1 coming soon, 2 on for everyone, 3 Premium only.
+function intFrom(parameters, name, fallback) {
+  const raw = parameters?.[name]?.defaultValue?.value;
+  if (raw === undefined || raw === null || String(raw).trim() === "") return fallback;
+  const parsed = parseInt(String(raw).trim(), 10);
+  return Number.isInteger(parsed) ? parsed : fallback;
+}
+
+// Pure rule: a push goes out when the feature is on for everyone, or on
+// for Premium and this account pays. Hidden or coming soon sends nothing.
+function pushAllowed({ flag, premium }) {
+  if (flag === 2) return true;
+  if (flag === 3) return premium === true;
+  return false;
 }
 
 function toMillis(value) {
@@ -68,9 +80,11 @@ function isPremium(userSnapOrData, nowMs = Date.now()) {
 async function pushAllowedFor(userSnap) {
   const p = await params();
   return pushAllowed({
-    premiumOnly: boolFrom(p, "notifications_premium_only", true),
+    flag: intFrom(p, NOTIFICATIONS_FLAG, 2),
     premium: isPremium(userSnap),
   });
 }
 
-module.exports = { pushAllowed, boolFrom, flatten, isPremium, pushAllowedFor, params };
+const NOTIFICATIONS_FLAG = "ff_notifications";
+
+module.exports = { pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG };

@@ -12,7 +12,16 @@
 // Edit copy here, then `npm run build`. Everything stated must be true of the
 // app: no invented numbers, ratings or testimonials.
 
-export const SLUGS = ['recipe-app', 'grocery-list-app', 'meal-planner', 'save-tiktok-recipes'];
+import { MORE_TOPICS } from './topics_more.mjs';
+import { MORE_TOPICS_2 } from './topics_more2.mjs';
+import { MORE_TOPICS_3 } from './topics_more3.mjs';
+
+export const SLUGS = [
+  'recipe-app', 'grocery-list-app', 'meal-planner', 'save-tiktok-recipes',
+  'save-instagram-recipes', 'recipe-calorie-calculator', 'grocery-prices-receipt-scanner',
+  'family-cookbook', 'cook-mode-timers', 'recipe-from-pdf-or-voice', 'weekly-family-meal-plan',
+  'ai-cooking-assistant',
+];
 
 // Labels shared by every guide page.
 export const UI = {
@@ -23,13 +32,13 @@ export const UI = {
   ru: { home: 'Главная', guides: 'Гиды', download: 'Скачать приложение', free: 'Бесплатно для начала. Без банковской карты.', how: 'Как это работает', faq: 'Частые вопросы', more: 'Другие гиды', back: 'EasyPlate главная', features: 'Возможности', pricing: 'Цены', privacy: 'Политика конфиденциальности', terms: 'Условия использования', support: 'Поддержка', appStoreTop: 'Загрузите в', appStore: 'App Store', playTop: 'ДОСТУПНО В', play: 'Google Play', copyright: '© 2026 EasyPlate. Все права защищены.', readingTime: 'мин чтения' },
 };
 
-export const TOPICS = {
+const BASE_TOPICS = {
   // ------------------------------------------------------------------ A
   'recipe-app': {
     icon: 'book-open', screens: ['01_recipes', '02_recipe_details'],
     en: {
-      title: 'Recipe App with AI – Save, Organize and Cook Your Recipes | EasyPlate',
-      description: 'EasyPlate is a recipe app that saves recipes from TikTok, Instagram, YouTube, websites, PDFs and voice notes, organizes them into cookbooks with nutrition per serving, and turns them into a weekly plan and grocery list. Free on iOS and Android.',
+      title: 'Recipe App with AI: Save, Organize, Cook | EasyPlate',
+      description: 'Save recipes from TikTok, Instagram, YouTube, websites, PDFs and voice notes into one cookbook with nutrition per serving, a weekly plan and a grocery list.',
       keywords: 'recipe app, recipe organizer app, recipe keeper, digital cookbook, save recipes app, recipe manager, AI recipe app, recipe app with nutrition, family cookbook app',
       h1: 'The recipe app that keeps every recipe you ever liked',
       intro: [
@@ -37,7 +46,7 @@ export const TOPICS = {
         'Instead of typing, you paste or share. The AI reads the video, page, text, PDF or voice note and returns a recipe you can edit. From there every recipe can go onto the weekly plan, into a shared book with your family, and onto the grocery list.',
       ],
       sections: [
-        { h2: 'Save a recipe from anywhere', p: 'EasyPlate accepts eight kinds of input, and all of them end as the same structured recipe:', bullets: ['A link from TikTok, Instagram, YouTube, Facebook or any recipe website.', 'Pasted text, for example a WhatsApp message or a caption.', 'A web search by dish name: EasyPlate finds a recipe and brings it back structured.', 'A request in your own words ("a lentil soup for four, no onions").', 'A voice note, transcribed and turned into a recipe.', 'A PDF or a photo of a printed recipe.'] },
+        { h2: 'Save a recipe from anywhere', p: 'EasyPlate accepts eight kinds of input, and all of them end as the same structured recipe:', bullets: ['A link from TikTok, Instagram, YouTube, Facebook or any recipe website.', 'Pasted text, for example a WhatsApp message or a caption.', 'A web search by dish name: EasyPlate finds a recipe and brings it back structured.', 'A request in your own words ("a lentil soup for four, no onions").', 'A voice note, transcribed and turned into a recipe.', 'A PDF file, read as a whole document.'] },
         { h2: 'Organize recipes into cookbooks', p: 'Recipes are grouped into books you name yourself: weeknight dinners, holiday menus, the kids’ favourites. Books have a two-page spread you flip through, a cover photo, and tags and search across everything. A book can be shared with another account as a viewer or an editor, and edits reach everyone in real time.', bullets: ['Tags, servings, cooking time and allergens on every recipe.', 'Full-text search across your whole library.', 'Shared family cookbooks with live editing.', 'Offline-first: everything you saved opens without a connection.'] },
         { h2: 'Cook with your hands free', p: 'Cook Mode turns a recipe into large, step-by-step screens with the ingredient amounts right where you need them and timers that keep running in the background. Nutrition per serving is estimated for every recipe and summed into a weekly dashboard, so planning healthier meals does not require a second app.', bullets: ['Step-by-step cook mode with background timers.', 'Calories, protein, carbs and fat per serving.', 'Scale servings and the amounts follow.', 'Five languages, including full right-to-left layouts in Hebrew and Arabic.'] },
       ],
@@ -56,8 +65,8 @@ export const TOPICS = {
       cta: { title: 'Your recipes, finally in one place.', sub: 'Download EasyPlate and save the next recipe you see.' },
     },
     he: {
-      title: 'אפליקציית מתכונים בעברית עם AI – שומרים, מסדרים ומבשלים | EasyPlate',
-      description: 'EasyPlate היא אפליקציית מתכונים בעברית ששומרת מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות קוליות, מסדרת אותם בספרי מתכונים עם ערכים תזונתיים למנה, והופכת אותם לתפריט שבועי ולרשימת קניות. חינם לאייפון ולאנדרואיד.',
+      title: 'אפליקציית מתכונים בעברית עם AI | EasyPlate',
+      description: 'שומרים מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות לספר מתכונים אחד עם ערכים תזונתיים, תפריט שבועי ורשימת קניות. חינם.',
       keywords: 'אפליקציית מתכונים, אפליקציית מתכונים בעברית, אפליקציה לשמירת מתכונים, ספר מתכונים דיגיטלי, ניהול מתכונים, אפליקציית מתכונים עם ערכים תזונתיים, ספר מתכונים משפחתי, אפליקציה לבישול',
       h1: 'אפליקציית המתכונים ששומרת כל מתכון שאהבתם',
       intro: [
@@ -65,7 +74,7 @@ export const TOPICS = {
         'במקום להקליד, מדביקים או משתפים. ה-AI קורא את הסרטון, העמוד, הטקסט, ה-PDF או ההקלטה ומחזיר מתכון שאפשר לערוך. משם כל מתכון יכול לעלות לתפריט השבועי, להיכנס לספר משותף עם המשפחה ולהגיע לרשימת הקניות.',
       ],
       sections: [
-        { h2: 'שומרים מתכון מכל מקום', p: 'EasyPlate מקבלת שמונה סוגי קלט, וכולם מסתיימים באותו מתכון מובנה:', bullets: ['קישור מטיקטוק, אינסטגרם, יוטיוב, פייסבוק או כל אתר מתכונים.', 'טקסט מודבק, למשל הודעת וואטסאפ או כיתוב של פוסט.', 'חיפוש ברשת לפי שם המנה: EasyPlate מוצאת מתכון ומחזירה אותו מסודר.', 'בקשה במילים שלכם ("מרק עדשים לארבעה, בלי בצל").', 'הקלטה קולית שמתומללת והופכת למתכון.', 'קובץ PDF או צילום של מתכון מודפס.'] },
+        { h2: 'שומרים מתכון מכל מקום', p: 'EasyPlate מקבלת שמונה סוגי קלט, וכולם מסתיימים באותו מתכון מובנה:', bullets: ['קישור מטיקטוק, אינסטגרם, יוטיוב, פייסבוק או כל אתר מתכונים.', 'טקסט מודבק, למשל הודעת וואטסאפ או כיתוב של פוסט.', 'חיפוש ברשת לפי שם המנה: EasyPlate מוצאת מתכון ומחזירה אותו מסודר.', 'בקשה במילים שלכם ("מרק עדשים לארבעה, בלי בצל").', 'הקלטה קולית שמתומללת והופכת למתכון.', 'קובץ PDF, שנקרא כמסמך שלם.'] },
         { h2: 'מסדרים מתכונים בספרים', p: 'המתכונים מקובצים לספרים שאתם קוראים להם בשם: ארוחות ערב של אמצע שבוע, תפריטי חג, המועדפים של הילדים. לכל ספר יש דפדוף בכפולת עמודים, תמונת שער, ותגיות וחיפוש על הכול. ספר אפשר לשתף עם חשבון אחר כצופה או כעורך, ועריכות מגיעות לכולם בזמן אמת.', bullets: ['תגיות, מנות, זמן הכנה ואלרגנים בכל מתכון.', 'חיפוש טקסט מלא בכל הספרייה.', 'ספרי מתכונים משפחתיים משותפים עם עריכה חיה.', 'עובד גם בלי אינטרנט: כל מה ששמרתם נפתח גם בלי חיבור.'] },
         { h2: 'מבשלים בלי ידיים', p: 'מצב בישול הופך מתכון למסכים גדולים, שלב אחרי שלב, עם כמויות המצרכים בדיוק איפה שצריך אותן וטיימרים שממשיכים לרוץ ברקע. לכל מתכון מחושבים ערכים תזונתיים משוערים למנה, והם מסתכמים ללוח שבועי, כך שתכנון ארוחות בריאות יותר לא דורש אפליקציה שנייה.', bullets: ['מצב בישול שלב אחרי שלב עם טיימרים ברקע.', 'קלוריות, חלבון, פחמימות ושומן למנה.', 'משנים את מספר המנות והכמויות מתעדכנות.', 'חמש שפות, כולל עברית וערבית מימין לשמאל.'] },
       ],
@@ -84,8 +93,8 @@ export const TOPICS = {
       cta: { title: 'המתכונים שלכם, סוף סוף במקום אחד.', sub: 'הורידו את EasyPlate ושמרו את המתכון הבא שתראו.' },
     },
     ar: {
-      title: 'تطبيق وصفات بالذكاء الاصطناعي – احفظ ونظّم واطبخ وصفاتك | EasyPlate',
-      description: 'EasyPlate تطبيق وصفات يحفظ الوصفات من تيك توك وإنستغرام ويوتيوب والمواقع وملفات PDF والرسائل الصوتية، وينظّمها في كتب طبخ مع القيم الغذائية لكل حصة، ويحوّلها إلى خطة أسبوعية وقائمة تسوّق. مجاني على iOS وأندرويد.',
+      title: 'تطبيق وصفات بالذكاء الاصطناعي | EasyPlate',
+      description: 'احفظ الوصفات من تيك توك وإنستغرام ويوتيوب والمواقع وPDF والرسائل الصوتية في كتاب طبخ واحد مع القيم الغذائية وخطة أسبوعية وقائمة تسوّق. مجاني.',
       keywords: 'تطبيق وصفات, تطبيق تنظيم الوصفات, حفظ الوصفات, كتاب طبخ رقمي, تطبيق وصفات بالذكاء الاصطناعي, تطبيق وصفات مع القيم الغذائية, كتاب طبخ عائلي, تطبيق طبخ',
       h1: 'تطبيق الوصفات الذي يحتفظ بكل وصفة أعجبتك',
       intro: [
@@ -93,7 +102,7 @@ export const TOPICS = {
         'بدل الكتابة، تلصق أو تشارك. يقرأ الذكاء الاصطناعي الفيديو أو الصفحة أو النص أو ملف PDF أو الرسالة الصوتية ويعيد وصفة يمكنك تعديلها. ومن هناك تنتقل كل وصفة إلى الخطة الأسبوعية، وإلى كتاب مشترك مع عائلتك، وإلى قائمة التسوّق.',
       ],
       sections: [
-        { h2: 'احفظ وصفة من أي مكان', p: 'يقبل EasyPlate ثمانية أنواع من المدخلات، وكلها تنتهي بالوصفة المنظمة نفسها:', bullets: ['رابط من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك أو أي موقع وصفات.', 'نص ملصوق، مثل رسالة واتساب أو تعليق منشور.', 'بحث في الويب باسم الطبق: يجد EasyPlate وصفة ويعيدها منظمة.', 'طلب بكلماتك ("شوربة عدس لأربعة أشخاص بدون بصل").', 'رسالة صوتية تُفرَّغ وتتحوّل إلى وصفة.', 'ملف PDF أو صورة لوصفة مطبوعة.'] },
+        { h2: 'احفظ وصفة من أي مكان', p: 'يقبل EasyPlate ثمانية أنواع من المدخلات، وكلها تنتهي بالوصفة المنظمة نفسها:', bullets: ['رابط من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك أو أي موقع وصفات.', 'نص ملصوق، مثل رسالة واتساب أو تعليق منشور.', 'بحث في الويب باسم الطبق: يجد EasyPlate وصفة ويعيدها منظمة.', 'طلب بكلماتك ("شوربة عدس لأربعة أشخاص بدون بصل").', 'رسالة صوتية تُفرَّغ وتتحوّل إلى وصفة.', 'ملف PDF يُقرأ كمستند كامل.'] },
         { h2: 'نظّم الوصفات في كتب', p: 'تُجمع الوصفات في كتب تسمّيها بنفسك: عشاء أيام الأسبوع، قوائم الأعياد، المفضّلة عند الأطفال. لكل كتاب صفحات مزدوجة تقلّبها، وصورة غلاف، ووسوم وبحث في كل شيء. يمكن مشاركة الكتاب مع حساب آخر كمشاهد أو محرّر، وتصل التعديلات للجميع فورًا.', bullets: ['وسوم وحصص ووقت تحضير ومسببات حساسية في كل وصفة.', 'بحث نصي كامل في مكتبتك كلها.', 'كتب طبخ عائلية مشتركة مع تحرير مباشر.', 'يعمل دون إنترنت: كل ما حفظته يُفتح بلا اتصال.'] },
         { h2: 'اطبخ ويداك حرّتان', p: 'يحوّل وضع الطبخ الوصفة إلى شاشات كبيرة خطوة بخطوة، مع كميات المكوّنات حيث تحتاجها بالضبط، ومؤقّتات تستمر في الخلفية. تُقدَّر القيم الغذائية لكل حصة في كل وصفة وتُجمع في لوحة أسبوعية، فلا يحتاج تخطيط وجبات أصحّ إلى تطبيق ثانٍ.', bullets: ['وضع طبخ خطوة بخطوة مع مؤقّتات في الخلفية.', 'سعرات وبروتين وكربوهيدرات ودهون لكل حصة.', 'غيّر عدد الحصص وتتبعها الكميات.', 'خمس لغات، مع تخطيط كامل من اليمين إلى اليسار بالعربية والعبرية.'] },
       ],
@@ -112,8 +121,8 @@ export const TOPICS = {
       cta: { title: 'وصفاتك، أخيرًا في مكان واحد.', sub: 'حمّل EasyPlate واحفظ الوصفة التالية التي تراها.' },
     },
     fr: {
-      title: 'Application de recettes avec IA – Enregistrez, organisez et cuisinez | EasyPlate',
-      description: 'EasyPlate est une application de recettes qui enregistre les recettes depuis TikTok, Instagram, YouTube, les sites web, les PDF et les notes vocales, les organise en livres avec la nutrition par portion, et les transforme en menu de la semaine et liste de courses. Gratuit sur iOS et Android.',
+      title: 'Application de recettes avec IA | EasyPlate',
+      description: 'Enregistrez des recettes depuis TikTok, Instagram, YouTube, sites, PDF et notes vocales dans un livre avec nutrition, menu de la semaine et liste de courses.',
       keywords: 'application recettes, appli recettes, organiseur de recettes, livre de recettes numérique, enregistrer des recettes, application recettes IA, recettes avec valeurs nutritionnelles, livre de recettes familial, application cuisine',
       h1: 'L’application de recettes qui garde toutes celles que vous avez aimées',
       intro: [
@@ -140,8 +149,8 @@ export const TOPICS = {
       cta: { title: 'Vos recettes, enfin au même endroit.', sub: 'Téléchargez EasyPlate et enregistrez la prochaine recette que vous verrez.' },
     },
     ru: {
-      title: 'Приложение рецептов с ИИ – сохраняйте, упорядочивайте и готовьте | EasyPlate',
-      description: 'EasyPlate — приложение рецептов, которое сохраняет рецепты из TikTok, Instagram, YouTube, с сайтов, из PDF и голосовых заметок, упорядочивает их в книги с КБЖУ на порцию и превращает в меню на неделю и список покупок. Бесплатно для iOS и Android.',
+      title: 'Приложение рецептов с ИИ | EasyPlate',
+      description: 'Сохраняйте рецепты из TikTok, Instagram, YouTube, с сайтов, из PDF и голосовых в одну книгу с КБЖУ, меню на неделю и списком покупок. Бесплатно.',
       keywords: 'приложение рецептов, приложение для рецептов, органайзер рецептов, цифровая книга рецептов, сохранить рецепт, приложение рецептов с ИИ, рецепты с КБЖУ, семейная книга рецептов, приложение для готовки',
       h1: 'Приложение рецептов, которое хранит всё, что вам понравилось',
       intro: [
@@ -149,7 +158,7 @@ export const TOPICS = {
         'Вместо набора текста вы вставляете или делитесь. ИИ читает видео, страницу, текст, PDF или голосовую заметку и возвращает рецепт, который можно редактировать. Дальше любой рецепт попадает в меню на неделю, в общую книгу с семьёй и в список покупок.',
       ],
       sections: [
-        { h2: 'Сохраняйте рецепт откуда угодно', p: 'EasyPlate принимает восемь видов ввода, и все они превращаются в один структурированный рецепт:', bullets: ['Ссылка из TikTok, Instagram, YouTube, Facebook или с любого сайта рецептов.', 'Вставленный текст, например сообщение из WhatsApp или подпись к посту.', 'Поиск в интернете по названию блюда: EasyPlate находит рецепт и возвращает его структурированным.', 'Запрос своими словами («чечевичный суп на четверых, без лука»).', 'Голосовая заметка, расшифрованная и превращённая в рецепт.', 'PDF или фото напечатанного рецепта.'] },
+        { h2: 'Сохраняйте рецепт откуда угодно', p: 'EasyPlate принимает восемь видов ввода, и все они превращаются в один структурированный рецепт:', bullets: ['Ссылка из TikTok, Instagram, YouTube, Facebook или с любого сайта рецептов.', 'Вставленный текст, например сообщение из WhatsApp или подпись к посту.', 'Поиск в интернете по названию блюда: EasyPlate находит рецепт и возвращает его структурированным.', 'Запрос своими словами («чечевичный суп на четверых, без лука»).', 'Голосовая заметка, расшифрованная и превращённая в рецепт.', 'Файл PDF, читается как целый документ.'] },
         { h2: 'Упорядочивайте рецепты в книги', p: 'Рецепты собираются в книги, которые вы называете сами: ужины на будни, праздничные меню, любимое у детей. У книги есть разворот, который листают, обложка, теги и поиск по всему. Книгу можно открыть другому аккаунту для просмотра или редактирования, и правки доходят до всех в реальном времени.', bullets: ['Теги, порции, время готовки и аллергены у каждого рецепта.', 'Полнотекстовый поиск по всей библиотеке.', 'Общие семейные книги рецептов с живым редактированием.', 'Работает офлайн: всё сохранённое открывается без соединения.'] },
         { h2: 'Готовьте, не трогая телефон', p: 'Режим готовки превращает рецепт в крупные экраны шаг за шагом, с количеством ингредиентов ровно там, где оно нужно, и таймерами, которые продолжают идти в фоне. Пищевая ценность на порцию оценивается для каждого рецепта и суммируется в недельную панель, так что для более здорового меню не нужно второе приложение.', bullets: ['Пошаговый режим готовки с фоновыми таймерами.', 'Калории, белки, углеводы и жиры на порцию.', 'Меняете число порций — количества пересчитываются.', 'Пять языков, включая иврит и арабский справа налево.'] },
       ],
@@ -173,8 +182,8 @@ export const TOPICS = {
   'grocery-list-app': {
     icon: 'shopping-basket', screens: ['08_grocery', '06_meal_plan'],
     en: {
-      title: 'Shared Grocery List App That Builds Itself from Your Recipes | EasyPlate',
-      description: 'EasyPlate is a grocery list app that builds the shopping list from your weekly meal plan, merges duplicates, groups items by supermarket aisle, shares it with your family in real time and estimates the cost from your own receipts. Free on iOS and Android.',
+      title: 'Shared Grocery List App Built from Recipes | EasyPlate',
+      description: 'A grocery list that builds itself from your meal plan, merges duplicates, groups by aisle, syncs with your family and estimates the cost from your receipts.',
       keywords: 'grocery list app, shopping list app, shared grocery list, family shopping list, grocery list from recipes, smart grocery list, grocery list by aisle, shopping list with prices',
       h1: 'A grocery list app that writes the list for you',
       intro: [
@@ -201,8 +210,8 @@ export const TOPICS = {
       cta: { title: 'Stop writing the same list every week.', sub: 'Download EasyPlate and let the plan write it for you.' },
     },
     he: {
-      title: 'אפליקציית רשימת קניות משותפת שנבנית לבד מהמתכונים | EasyPlate',
-      description: 'EasyPlate היא אפליקציית רשימת קניות שבונה את רשימת הקניות מהתפריט השבועי, מאחדת כפילויות, מסדרת לפי מחלקות בסופר, משתפת עם המשפחה בזמן אמת ומעריכה את העלות מהקבלות שלכם. חינם לאייפון ולאנדרואיד.',
+      title: 'אפליקציית רשימת קניות חכמה ומשותפת | EasyPlate',
+      description: 'רשימת קניות שנבנית לבד מהתפריט השבועי, מאחדת כפילויות, מסודרת לפי מחלקות, מסתנכרנת עם המשפחה ומעריכה עלות מהקבלות שלכם. חינם.',
       keywords: 'אפליקציית רשימת קניות, רשימת קניות משותפת, רשימת קניות משפחתית, רשימת קניות לסופר, רשימת קניות ממתכונים, רשימת קניות חכמה, רשימת קניות לפי מחלקות, רשימת קניות עם מחירים',
       h1: 'אפליקציית רשימת קניות שכותבת את הרשימה בשבילכם',
       intro: [
@@ -229,8 +238,8 @@ export const TOPICS = {
       cta: { title: 'די לכתוב את אותה רשימה כל שבוע.', sub: 'הורידו את EasyPlate ותנו לתפריט לכתוב אותה בשבילכם.' },
     },
     ar: {
-      title: 'تطبيق قائمة تسوّق مشتركة تُبنى تلقائيًا من وصفاتك | EasyPlate',
-      description: 'EasyPlate تطبيق قائمة تسوّق يبني قائمة المشتريات من خطة وجباتك الأسبوعية، ويدمج المكررات، ويرتّب الأصناف حسب أقسام المتجر، ويشاركها مع العائلة فورًا ويقدّر التكلفة من فواتيرك. مجاني على iOS وأندرويد.',
+      title: 'تطبيق قائمة تسوّق ذكية ومشتركة | EasyPlate',
+      description: 'قائمة تسوّق تُبنى تلقائيًا من خطة الوجبات، تدمج المكررات، تُرتّب حسب الأقسام، تتزامن مع العائلة وتقدّر التكلفة من فواتيرك. مجانية.',
       keywords: 'تطبيق قائمة تسوق, تطبيق قائمة مشتريات, قائمة تسوق مشتركة, قائمة تسوق عائلية, قائمة تسوق من الوصفات, قائمة تسوق ذكية, قائمة تسوق حسب الأقسام, قائمة تسوق مع الأسعار',
       h1: 'تطبيق قائمة تسوّق يكتب القائمة بدلًا منك',
       intro: [
@@ -257,8 +266,8 @@ export const TOPICS = {
       cta: { title: 'كفى كتابة القائمة نفسها كل أسبوع.', sub: 'حمّل EasyPlate ودع الخطة تكتبها لك.' },
     },
     fr: {
-      title: 'Application de liste de courses partagée qui se remplit depuis vos recettes | EasyPlate',
-      description: 'EasyPlate est une application de liste de courses qui construit la liste depuis votre menu de la semaine, fusionne les doublons, regroupe par rayon, la partage avec la famille en temps réel et estime le coût d’après vos tickets de caisse. Gratuit sur iOS et Android.',
+      title: 'Liste de courses partagée et intelligente | EasyPlate',
+      description: 'Une liste de courses qui se construit depuis votre menu, fusionne les doublons, se range par rayon, se partage en famille et estime le coût d’après vos tickets.',
       keywords: 'application liste de courses, liste de courses partagée, liste de courses familiale, liste de courses depuis recettes, liste de courses intelligente, liste de courses par rayon, liste de courses avec prix',
       h1: 'Une application de liste de courses qui écrit la liste à votre place',
       intro: [
@@ -285,8 +294,8 @@ export const TOPICS = {
       cta: { title: 'Arrêtez d’écrire la même liste chaque semaine.', sub: 'Téléchargez EasyPlate et laissez le menu l’écrire pour vous.' },
     },
     ru: {
-      title: 'Общий список покупок, который собирается сам из ваших рецептов | EasyPlate',
-      description: 'EasyPlate — приложение для списка покупок, которое собирает список из меню на неделю, объединяет повторы, группирует по отделам магазина, делится с семьёй в реальном времени и оценивает стоимость по вашим чекам. Бесплатно для iOS и Android.',
+      title: 'Умный общий список покупок | EasyPlate',
+      description: 'Список покупок, который собирается из меню, объединяет повторы, группирует по отделам, синхронизируется с семьёй и оценивает стоимость по чекам.',
       keywords: 'приложение список покупок, общий список покупок, семейный список покупок, список покупок из рецептов, умный список покупок, список покупок по отделам, список покупок с ценами',
       h1: 'Приложение для списка покупок, которое пишет список за вас',
       intro: [
@@ -318,8 +327,8 @@ export const TOPICS = {
   'meal-planner': {
     icon: 'calendar-days', screens: ['06_meal_plan', '07_nutrition'],
     en: {
-      title: 'Weekly Meal Planner App with Grocery List and Nutrition | EasyPlate',
-      description: 'EasyPlate is a weekly meal planner app: drag recipes onto the days of the week, get the grocery list and the calories, protein, carbs and fat per serving automatically, and share the plan with your family. Free on iOS and Android.',
+      title: 'Weekly Meal Planner with Grocery List | EasyPlate',
+      description: 'Drag recipes onto the days of the week and get the grocery list and the calories, protein, carbs and fat per serving automatically. Share the plan with family.',
       keywords: 'meal planner app, weekly meal plan, meal planning app, menu planner, weekly menu, meal prep planner, meal plan with grocery list, family meal planner, calorie meal planner',
       h1: 'A weekly meal planner that ends with a grocery list',
       intro: [
@@ -346,8 +355,8 @@ export const TOPICS = {
       cta: { title: 'Plan the week once. Cook all week.', sub: 'Download EasyPlate and build your first plan from recipes you already love.' },
     },
     he: {
-      title: 'אפליקציה לתכנון תפריט שבועי עם רשימת קניות וערכים תזונתיים | EasyPlate',
-      description: 'EasyPlate היא אפליקציה לתכנון תפריט שבועי: גוררים מתכונים לימי השבוע, מקבלים אוטומטית את רשימת הקניות ואת הקלוריות, החלבון, הפחמימות והשומן למנה, ומשתפים את התפריט עם המשפחה. חינם לאייפון ולאנדרואיד.',
+      title: 'תכנון תפריט שבועי עם רשימת קניות | EasyPlate',
+      description: 'גוררים מתכונים לימי השבוע ומקבלים אוטומטית רשימת קניות וקלוריות, חלבון, פחמימות ושומן למנה. משתפים את התפריט עם המשפחה. חינם.',
       keywords: 'תכנון תפריט שבועי, אפליקציה לתכנון ארוחות, תפריט שבועי למשפחה, מתכנן ארוחות, תפריט שבועי עם רשימת קניות, תכנון ארוחות שבועי, תפריט שבועי קלוריות, תפריט שבועי בריא',
       h1: 'תכנון תפריט שבועי שמסתיים ברשימת קניות',
       intro: [
@@ -374,8 +383,8 @@ export const TOPICS = {
       cta: { title: 'מתכננים את השבוע פעם אחת. מבשלים כל השבוע.', sub: 'הורידו את EasyPlate ובנו תפריט ראשון ממתכונים שאתם כבר אוהבים.' },
     },
     ar: {
-      title: 'تطبيق تخطيط وجبات أسبوعي مع قائمة تسوّق وقيم غذائية | EasyPlate',
-      description: 'EasyPlate تطبيق لتخطيط الوجبات الأسبوعية: اسحب الوصفات إلى أيام الأسبوع، واحصل تلقائيًا على قائمة التسوّق والسعرات والبروتين والكربوهيدرات والدهون لكل حصة، وشارك الخطة مع عائلتك. مجاني على iOS وأندرويد.',
+      title: 'تخطيط وجبات أسبوعي مع قائمة تسوّق | EasyPlate',
+      description: 'اسحب الوصفات إلى أيام الأسبوع واحصل تلقائيًا على قائمة التسوّق والسعرات والبروتين والكربوهيدرات والدهون لكل حصة. شارك الخطة مع العائلة.',
       keywords: 'تطبيق تخطيط الوجبات, خطة وجبات أسبوعية, تخطيط الوجبات الأسبوعي, قائمة الطعام الأسبوعية, منظم الوجبات, خطة وجبات مع قائمة تسوق, تخطيط وجبات العائلة, خطة وجبات بالسعرات',
       h1: 'مخطِّط وجبات أسبوعي ينتهي بقائمة تسوّق',
       intro: [
@@ -402,8 +411,8 @@ export const TOPICS = {
       cta: { title: 'خطّط الأسبوع مرة. اطبخ طوال الأسبوع.', sub: 'حمّل EasyPlate وابنِ خطتك الأولى من وصفات تحبها بالفعل.' },
     },
     fr: {
-      title: 'Application de menu de la semaine avec liste de courses et nutrition | EasyPlate',
-      description: 'EasyPlate est un planificateur de repas hebdomadaire : glissez des recettes sur les jours de la semaine, obtenez automatiquement la liste de courses et les calories, protéines, glucides et lipides par portion, et partagez le menu avec votre famille. Gratuit sur iOS et Android.',
+      title: 'Menu de la semaine avec liste de courses | EasyPlate',
+      description: 'Glissez des recettes sur les jours de la semaine et obtenez la liste de courses et les calories, protéines, glucides et lipides par portion. Partagez le menu.',
       keywords: 'planificateur de repas, menu de la semaine, application planning repas, planning repas hebdomadaire, menu hebdomadaire famille, batch cooking planning, menu avec liste de courses, planificateur de repas calories',
       h1: 'Un menu de la semaine qui se termine par une liste de courses',
       intro: [
@@ -430,8 +439,8 @@ export const TOPICS = {
       cta: { title: 'Planifiez la semaine une fois. Cuisinez toute la semaine.', sub: 'Téléchargez EasyPlate et créez votre premier menu avec des recettes que vous aimez déjà.' },
     },
     ru: {
-      title: 'Планировщик меню на неделю со списком покупок и КБЖУ | EasyPlate',
-      description: 'EasyPlate — приложение для планирования меню на неделю: перетаскивайте рецепты на дни недели, автоматически получайте список покупок и калории, белки, углеводы и жиры на порцию, делитесь планом с семьёй. Бесплатно для iOS и Android.',
+      title: 'Меню на неделю со списком покупок | EasyPlate',
+      description: 'Перетаскивайте рецепты на дни недели и автоматически получайте список покупок и калории, белки, углеводы и жиры на порцию. Делитесь меню с семьёй.',
       keywords: 'планировщик питания, меню на неделю, приложение планирование меню, планирование питания на неделю, семейное меню на неделю, меню со списком покупок, планировщик меню калории, план питания',
       h1: 'Планировщик меню на неделю, который заканчивается списком покупок',
       intro: [
@@ -463,8 +472,8 @@ export const TOPICS = {
   'save-tiktok-recipes': {
     icon: 'sparkles', screens: ['03_ai_import', '02_recipe_details'],
     en: {
-      title: 'How to Save Recipes from TikTok, Instagram and YouTube as Real Recipes | EasyPlate',
-      description: 'Stop screenshotting. Share a TikTok, Instagram Reel, YouTube or Facebook video to EasyPlate and the AI watches it, reads the caption and returns a recipe with ingredients, amounts, steps and nutrition. Free on iOS and Android.',
+      title: 'Save TikTok Recipes as Real Recipes | EasyPlate',
+      description: 'Share a TikTok, Reel or YouTube video to EasyPlate: the AI watches it, reads the caption and returns a recipe with ingredients, amounts, steps and nutrition.',
       keywords: 'save recipes from TikTok, TikTok recipe saver, save Instagram recipes, Instagram reel recipe, YouTube recipe extractor, video to recipe, TikTok recipes app, how to save a recipe from TikTok, recipe from video AI',
       h1: 'How to save a recipe from TikTok, Instagram or YouTube',
       intro: [
@@ -491,8 +500,8 @@ export const TOPICS = {
       cta: { title: 'The next recipe you like is already a recipe.', sub: 'Download EasyPlate and share your first video to it.' },
     },
     he: {
-      title: 'איך שומרים מתכון מטיקטוק, אינסטגרם ויוטיוב כמתכון אמיתי | EasyPlate',
-      description: 'די לצילומי מסך. משתפים סרטון מטיקטוק, ריל מאינסטגרם, יוטיוב או פייסבוק ל-EasyPlate, וה-AI צופה בו, קורא את הכיתוב ומחזיר מתכון עם מצרכים, כמויות, שלבים וערכים תזונתיים. חינם לאייפון ולאנדרואיד.',
+      title: 'איך שומרים מתכון מטיקטוק כמתכון אמיתי | EasyPlate',
+      description: 'משתפים סרטון מטיקטוק, ריל או יוטיוב ל-EasyPlate: ה-AI צופה בו, קורא את הכיתוב ומחזיר מתכון עם מצרכים, כמויות, שלבים וערכים תזונתיים. חינם.',
       keywords: 'מתכונים מטיקטוק, שמירת מתכון מטיקטוק, מתכונים מאינסטגרם, מתכון מריל, מתכונים מיוטיוב, סרטון למתכון, אפליקציה למתכונים מטיקטוק, איך שומרים מתכון מטיקטוק, מתכון מסרטון AI',
       h1: 'איך שומרים מתכון מטיקטוק, אינסטגרם או יוטיוב',
       intro: [
@@ -519,8 +528,8 @@ export const TOPICS = {
       cta: { title: 'המתכון הבא שתאהבו כבר מתכון.', sub: 'הורידו את EasyPlate ושתפו אליה את הסרטון הראשון.' },
     },
     ar: {
-      title: 'كيف تحفظ وصفة من تيك توك وإنستغرام ويوتيوب كوصفة حقيقية | EasyPlate',
-      description: 'كفى لقطات شاشة. شارك فيديو من تيك توك أو ريل إنستغرام أو يوتيوب أو فيسبوك مع EasyPlate، فيشاهده الذكاء الاصطناعي ويقرأ التعليق ويعيد وصفة بالمكوّنات والكميات والخطوات والقيم الغذائية. مجاني على iOS وأندرويد.',
+      title: 'احفظ وصفات تيك توك كوصفات حقيقية | EasyPlate',
+      description: 'شارك فيديو تيك توك أو ريل أو يوتيوب مع EasyPlate: يشاهده الذكاء الاصطناعي ويقرأ التعليق ويعيد وصفة بالمكوّنات والكميات والخطوات والقيم الغذائية.',
       keywords: 'حفظ وصفات تيك توك, وصفات تيك توك, حفظ وصفات إنستغرام, وصفة من ريل, وصفات يوتيوب, تحويل فيديو إلى وصفة, تطبيق وصفات تيك توك, كيف أحفظ وصفة من تيك توك, وصفة من فيديو بالذكاء الاصطناعي',
       h1: 'كيف تحفظ وصفة من تيك توك أو إنستغرام أو يوتيوب',
       intro: [
@@ -547,8 +556,8 @@ export const TOPICS = {
       cta: { title: 'الوصفة التالية التي ستعجبك هي وصفة بالفعل.', sub: 'حمّل EasyPlate وشارك أول فيديو معه.' },
     },
     fr: {
-      title: 'Comment enregistrer une recette TikTok, Instagram ou YouTube comme vraie recette | EasyPlate',
-      description: 'Fini les captures d’écran. Partagez une vidéo TikTok, un Reel Instagram, YouTube ou Facebook vers EasyPlate : l’IA la regarde, lit la légende et renvoie une recette avec ingrédients, quantités, étapes et nutrition. Gratuit sur iOS et Android.',
+      title: 'Enregistrer une recette TikTok en vraie recette | EasyPlate',
+      description: 'Partagez une vidéo TikTok, un Reel ou YouTube vers EasyPlate : l’IA la regarde, lit la légende et renvoie une recette avec ingrédients, quantités et étapes.',
       keywords: 'enregistrer recette TikTok, recettes TikTok, enregistrer recettes Instagram, recette depuis un reel, recettes YouTube, vidéo en recette, application recettes TikTok, comment sauvegarder une recette TikTok, recette depuis vidéo IA',
       h1: 'Comment enregistrer une recette depuis TikTok, Instagram ou YouTube',
       intro: [
@@ -575,8 +584,8 @@ export const TOPICS = {
       cta: { title: 'La prochaine recette que vous aimerez est déjà une recette.', sub: 'Téléchargez EasyPlate et partagez-lui votre première vidéo.' },
     },
     ru: {
-      title: 'Как сохранить рецепт из TikTok, Instagram и YouTube как настоящий рецепт | EasyPlate',
-      description: 'Хватит скриншотов. Поделитесь видео из TikTok, рилсом из Instagram, YouTube или Facebook с EasyPlate: ИИ посмотрит его, прочитает подпись и вернёт рецепт с ингредиентами, количествами, шагами и КБЖУ. Бесплатно для iOS и Android.',
+      title: 'Сохранить рецепт из TikTok как рецепт | EasyPlate',
+      description: 'Поделитесь видео из TikTok, рилсом или YouTube с EasyPlate: ИИ посмотрит его, прочитает подпись и вернёт рецепт с ингредиентами, количествами и шагами.',
       keywords: 'сохранить рецепт из TikTok, рецепты из TikTok, сохранить рецепт из Instagram, рецепт из рилс, рецепты из YouTube, видео в рецепт, приложение рецепты TikTok, как сохранить рецепт из тиктока, рецепт из видео ИИ',
       h1: 'Как сохранить рецепт из TikTok, Instagram или YouTube',
       intro: [
@@ -604,3 +613,5 @@ export const TOPICS = {
     },
   },
 };
+
+export const TOPICS = { ...BASE_TOPICS, ...MORE_TOPICS, ...MORE_TOPICS_2, ...MORE_TOPICS_3 };

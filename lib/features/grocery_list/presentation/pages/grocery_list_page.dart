@@ -30,6 +30,8 @@ import '../../../price_book/presentation/price_book_service.dart';
 import '../../../price_book/presentation/widgets/price_widgets.dart';
 import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
 import '../../../../core/constants/app_motion.dart';
+import '../../../../core/features/feature_gate.dart';
+import '../../../assistant/domain/assistant_scope.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -112,6 +114,23 @@ class _ListBody extends StatelessWidget {
   List<Widget> _header() => [
     GroceryListSwitcherCard(list: list, lists: lists),
     const SizedBox(height: AppSpacing.gutter),
+    // A shared list says so, and what this account may do with it.
+    if (list.isShared) ...[
+      Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: ClayTag(
+          label: switch (list.collabRole) {
+            CollabRole.owner => t.sharing.ownerTag,
+            CollabRole.editor => t.sharing.editorTag,
+            _ => t.sharing.viewerTag,
+          },
+          icon: Icons.group_rounded,
+          background: AppColors.secondaryContainer,
+          foreground: AppColors.onSecondaryContainer,
+        ),
+      ),
+      const SizedBox(height: AppSpacing.gutter),
+    ],
     ...switch (list.source) {
       GroceryListSource.plans => [
         MealPlanFilterCard(list: list, plans: plans),
@@ -140,23 +159,27 @@ class _ListBody extends StatelessWidget {
           ClayEmptyState(
             icon: Icons.shopping_basket_rounded,
             message: t.groceryList.empty,
-            action: switch (list.source) {
-              GroceryListSource.manual => ClayButton(
-                label: t.groceryList.addFirstItem,
-                icon: Icons.add_rounded,
-                onPressed: () => showAddGroceryItemSheet(context),
-              ),
-              GroceryListSource.recipe => ClayButton(
-                label: t.groceryList.rebuildFromRecipe,
-                icon: Icons.autorenew_rounded,
-                onPressed: () => bloc.add(const GroceryListEvent.regenerate()),
-              ),
-              GroceryListSource.plans => ClayButton(
-                label: t.groceryList.aggregated,
-                icon: Icons.autorenew_rounded,
-                onPressed: () => bloc.add(const GroceryListEvent.regenerate()),
-              ),
-            },
+            action: !list.canEdit
+                ? null
+                : switch (list.source) {
+                    GroceryListSource.manual => ClayButton(
+                      label: t.groceryList.addFirstItem,
+                      icon: Icons.add_rounded,
+                      onPressed: () => showAddGroceryItemSheet(context),
+                    ),
+                    GroceryListSource.recipe => ClayButton(
+                      label: t.groceryList.rebuildFromRecipe,
+                      icon: Icons.autorenew_rounded,
+                      onPressed: () =>
+                          bloc.add(const GroceryListEvent.regenerate()),
+                    ),
+                    GroceryListSource.plans => ClayButton(
+                      label: t.groceryList.aggregated,
+                      icon: Icons.autorenew_rounded,
+                      onPressed: () =>
+                          bloc.add(const GroceryListEvent.regenerate()),
+                    ),
+                  },
           ),
         ],
       );
@@ -177,48 +200,71 @@ class _ListBody extends StatelessWidget {
           total: list.items.length,
         ),
         const SizedBox(height: AppSpacing.gutter),
-        Row(
-          children: [
-            Expanded(
-              child: _BulkAction(
-                icon: allChecked
-                    ? Icons.remove_done_rounded
-                    : Icons.done_all_rounded,
-                label: allChecked
-                    ? t.groceryList.clearAll
-                    : t.groceryList.selectAll,
-                onTap: () => bloc.add(.setAllChecked(!allChecked)),
+        if (list.canEdit) ...[
+          Row(
+            children: [
+              Expanded(
+                child: _BulkAction(
+                  icon: allChecked
+                      ? Icons.remove_done_rounded
+                      : Icons.done_all_rounded,
+                  label: allChecked
+                      ? t.groceryList.clearAll
+                      : t.groceryList.selectAll,
+                  onTap: () => bloc.add(.setAllChecked(!allChecked)),
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _BulkAction(
-                icon: Icons.delete_sweep_rounded,
-                label: t.groceryList.deleteChecked,
-                isDestructive: true,
-                onTap: checked.isEmpty
-                    ? null
-                    : () =>
-                          bloc.add(const GroceryListEvent.deleteCheckedItems()),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _BulkAction(
+                  icon: Icons.delete_sweep_rounded,
+                  label: t.groceryList.deleteChecked,
+                  isDestructive: true,
+                  onTap: checked.isEmpty
+                      ? null
+                      : () => bloc.add(
+                          const GroceryListEvent.deleteCheckedItems(),
+                        ),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        GrocerySection(title: t.groceryList.uncheckedSection, items: unchecked),
-        const SizedBox(height: AppSpacing.lg),
-        GrocerySection(
-          title: t.groceryList.checkedSection,
-          items: checked,
-          // Collected lines are done with — kept out of the way by default.
-          initiallyExpanded: false,
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+        // A viewer of a shared list reads it; the lines take no taps.
+        IgnorePointer(
+          ignoring: !list.canEdit,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GrocerySection(
+                title: t.groceryList.uncheckedSection,
+                items: unchecked,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              GrocerySection(
+                title: t.groceryList.checkedSection,
+                items: checked,
+                // Collected lines are done with — kept out of the way by
+                // default.
+                initiallyExpanded: false,
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         // What the shop will cost, as far as past receipts can tell.
-        Consumer<PriceBookService>(
-          builder: (context, prices, _) => GroceryCostCard(
-            summary: prices.summarize(unchecked),
-            onScanReceipt: () => scanReceipt(context),
+        FeatureGate(
+          feature: FeaturesFlags.groceryCost,
+          child: Consumer<PriceBookService>(
+            builder: (context, prices, _) => GroceryCostCard(
+              summary: prices.summarize(unchecked),
+              onScanReceipt: () {
+                if (guardFeature(context, FeaturesFlags.receiptScan)) {
+                  scanReceipt(context);
+                }
+              },
+            ),
           ),
         ),
       ],
@@ -237,8 +283,11 @@ Widget _scroll(
   return ClayFloatingHeaderView(
     title: t.groceryList.title,
     trailing: _actions(context, bloc, list),
-    // Three buttons and the gaps between them.
-    trailingWidth: 48 * 3 + AppSpacing.base * 2,
+    // Three buttons and the gaps between them; a viewer gets only the
+    // price book. The copilot's button, when the console shows it.
+    trailingWidth:
+        (list.canEdit ? 48 * 3 + AppSpacing.base * 2 : 48) +
+        (FeaturesFlags.assistantScoped.isVisible ? 48 + AppSpacing.base : 0),
     bottomGap: AppSpacing.lg,
     slivers: [
       SliverPadding(
@@ -264,46 +313,72 @@ Widget _actions(
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      WalkthroughTarget(
-        id: WalkthroughIds.groceriesPriceBook,
-        child: ClayIconButton(
-          icon: Icons.receipt_long_rounded,
-          size: 48,
-          tooltip: t.receipt.priceBook,
-          onTap: () async {
-            final service = context.read<PriceBookService>();
-            await context.pushNamed(Routing.priceBook);
-            await service.load();
-          },
+      // The copilot, locked to this list.
+      FeatureGate(
+        feature: FeaturesFlags.assistantScoped,
+        compact: true,
+        axis: Axis.horizontal,
+        gapAfter: AppSpacing.base,
+        child: WalkthroughTarget(
+          id: WalkthroughIds.groceriesAssistant,
+          child: ClayIconButton(
+            icon: Icons.auto_awesome_rounded,
+            size: 48,
+            tooltip: t.assistant.askAboutList,
+            onTap: () => context.pushNamed(
+              Routing.assistant,
+              extra: AssistantScope.groceryList(id: list.id, title: list.name),
+            ),
+          ),
         ),
       ),
-      const SizedBox(width: AppSpacing.base),
-      WalkthroughTarget(
-        id: WalkthroughIds.groceriesRegenerate,
-        // A hand-made list has nothing to rebuild from: the button stays in
-        // its place, greyed, so the row does not shift between lists.
-        child: ClayIconButton(
-          icon: Icons.autorenew_rounded,
-          size: 48,
-          tooltip: list.source == GroceryListSource.recipe
-              ? t.groceryList.rebuildFromRecipe
-              : t.groceryList.aggregated,
-          onTap: list.canRegenerate
-              ? () => bloc.add(const GroceryListEvent.regenerate())
-              : null,
+      FeatureGate(
+        feature: FeaturesFlags.priceBook,
+        compact: true,
+        axis: Axis.horizontal,
+        gapAfter: AppSpacing.base,
+        child: WalkthroughTarget(
+          id: WalkthroughIds.groceriesPriceBook,
+          child: ClayIconButton(
+            icon: Icons.receipt_long_rounded,
+            size: 48,
+            tooltip: t.receipt.priceBook,
+            onTap: () async {
+              final service = context.read<PriceBookService>();
+              await context.pushNamed(Routing.priceBook);
+              await service.load();
+            },
+          ),
         ),
       ),
-      const SizedBox(width: AppSpacing.base),
-      WalkthroughTarget(
-        id: WalkthroughIds.groceriesAdd,
-        child: ClayIconButton(
-          icon: Icons.add_rounded,
-          filled: true,
-          size: 48,
-          tooltip: t.groceryList.addItem,
-          onTap: () => showAddGroceryItemSheet(context),
+      if (list.canEdit) ...[
+        WalkthroughTarget(
+          id: WalkthroughIds.groceriesRegenerate,
+          // A hand-made list has nothing to rebuild from: the button stays
+          // in its place, greyed, so the row does not shift between lists.
+          child: ClayIconButton(
+            icon: Icons.autorenew_rounded,
+            size: 48,
+            tooltip: list.source == GroceryListSource.recipe
+                ? t.groceryList.rebuildFromRecipe
+                : t.groceryList.aggregated,
+            onTap: list.canRegenerate
+                ? () => bloc.add(const GroceryListEvent.regenerate())
+                : null,
+          ),
         ),
-      ),
+        const SizedBox(width: AppSpacing.base),
+        WalkthroughTarget(
+          id: WalkthroughIds.groceriesAdd,
+          child: ClayIconButton(
+            icon: Icons.add_rounded,
+            filled: true,
+            size: 48,
+            tooltip: t.groceryList.addItem,
+            onTap: () => showAddGroceryItemSheet(context),
+          ),
+        ),
+      ],
     ],
   );
 }
