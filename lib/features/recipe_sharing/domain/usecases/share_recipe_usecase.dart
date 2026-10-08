@@ -75,28 +75,41 @@ class ShareRecipeUseCase {
     }
     if (targetUid == ownerUid) throw const ShareFailure(ShareFailure.self);
 
-    // Awaited, unlike the background upload a plain save does: the collab
-    // document is written from this recipe, and one published a moment after
-    // its photo was picked would carry no image path at all. The recipient's
-    // copy would then be blank for good — the upload finishing later does not
-    // go back and amend what was already sent.
-    recipe = await recipes.readyForSharing(recipe);
-
-    final collabId = await sharing.ensureCollab(recipe, ownerUid: ownerUid);
-    final owned = recipe.copyWith(
-      collabId: collabId,
-      collabRole: CollabRole.owner,
-    );
-    if (recipe.collabId == null) await recipes.saveRecipe(owned);
+    final (owned, collabId) = await prepare(recipe, ownerUid: ownerUid);
 
     await sharing.invite(
       collabId: collabId,
-      recipeTitle: recipe.title,
+      recipeTitle: owned.title,
       ownerUid: ownerUid,
       targetUid: targetUid,
       role: role,
     );
     return owned;
+  }
+
+  /// Makes the recipe shareable without inviting anyone: the photo is
+  /// uploaded, the collab document exists, and the local copy carries the
+  /// collab id as owner. The contact flow and share codes both start here.
+  Future<(RecipeEntity, String)> prepare(
+    RecipeEntity recipe, {
+    required String ownerUid,
+  }) async {
+    if (!recipe.isMine) {
+      throw StateError('Only recipes this account wrote can be shared');
+    }
+    // Awaited, unlike the background upload a plain save does: the collab
+    // document is written from this recipe, and one published a moment after
+    // its photo was picked would carry no image path at all. The recipient's
+    // copy would then be blank for good — the upload finishing later does not
+    // go back and amend what was already sent.
+    final ready = await recipes.readyForSharing(recipe);
+    final collabId = await sharing.ensureCollab(ready, ownerUid: ownerUid);
+    final owned = ready.copyWith(
+      collabId: collabId,
+      collabRole: CollabRole.owner,
+    );
+    if (ready.collabId == null) await recipes.saveRecipe(owned);
+    return (owned, collabId);
   }
 
   Future<bool> _anyResolves(List<String> contacts) async {

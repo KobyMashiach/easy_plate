@@ -1,0 +1,13 @@
+{
+  "name": "EasyPlate",
+  "short_name": "EasyPlate",
+  "description": "AI recipes from TikTok, Instagram and YouTube, weekly meal plans and smart grocery lists.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0c0a1f",
+  "theme_color": "#0c0a1f",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

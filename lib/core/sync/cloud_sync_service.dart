@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../../features/grocery_list/data/models/grocery_list_model.dart';
@@ -28,6 +30,7 @@ class CloudSyncService {
       UserCloudCollection(
         boxName: UserPreferencesModel.hiveKey,
         collection: 'preferences',
+        shared: false,
         idOf: (_) => UserPreferencesModel.storageKey,
         toJson: (model) => model.toJson(),
         fromJson: UserPreferencesModel.fromJson,
@@ -73,6 +76,7 @@ class CloudSyncService {
       UserCloudCollection(
         boxName: DailyUsageModel.hiveKey,
         collection: 'usage',
+        shared: false,
         idOf: (_) => DailyUsageModel.storageKey,
         toJson: (model) => model.toJson(),
         fromJson: DailyUsageModel.fromJson,
@@ -149,7 +153,50 @@ class CloudSyncService {
 
   /// On sign-out, once the local boxes are deleted: the next sign-in of the
   /// same account has to pull everything back, not skip it as already done.
-  void forget() => _hydratedUid = null;
+  void forget() {
+    _hydratedUid = null;
+    // Only when listeners exist: touching the mirrors builds them, and
+    // tests without Firebase sign out too.
+    if (_listening) unawaited(stopListening());
+  }
+
+  bool _listening = false;
+
+  /// Live mirroring, on while the account is in a household: a plan one
+  /// member changes is on the other's phone a moment later.
+  Future<void> startListening() async {
+    _listening = true;
+    for (final mirror in _mirrors) {
+      if (mirror.shared) await mirror.listen();
+    }
+  }
+
+  Future<void> stopListening() async {
+    if (!_listening) return;
+    _listening = false;
+    for (final mirror in _mirrors) {
+      await mirror.stopListening();
+    }
+  }
+
+  bool get isListening => _listening;
+
+  /// The account moved roots (joined, left or opened a household): the
+  /// shared mirrors are read again from the new root. Joining merges what
+  /// the box holds into the household (hydrate pushes back what the root
+  /// lacks); leaving first empties the shared boxes, or the household's data
+  /// would be pushed into the member's own root.
+  Future<void> rehome(String uid, {required bool wipeShared}) async {
+    await stopListening();
+    _hydratedUid = null;
+    if (wipeShared) {
+      for (final mirror in _mirrors) {
+        if (mirror.shared) await mirror.clearLocal();
+      }
+    }
+    await hydrate(uid);
+    if (CloudRoot.householdId != null) await startListening();
+  }
 
   /// Tests share the singleton, and a leftover uid would skip their hydrate.
   @visibleForTesting

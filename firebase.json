@@ -14,5 +14,83 @@
         "npm --prefix functions run config:sync"
       ]
     }
-  ]
+  ],
+  "hosting": {
+    "public": "landing",
+    "ignore": [
+      "**/.*",
+      "**/node_modules/**",
+      "build.mjs",
+      "firebase.json",
+      "guides.mjs",
+      "package-lock.json",
+      "package.json",
+      "site.config.mjs",
+      "tailwind.config.js",
+      "tailwind.input.css",
+      "topics.mjs"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**/*.@(jpg|jpeg|png|webp|svg|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=2592000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(css|js)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=600"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/s/**",
+        "destination": "/s/index.html"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/en",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/en/:rest*",
+        "destination": "/:rest*",
+        "type": 301
+      }
+    ]
+  }
 }

@@ -41,6 +41,23 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Share links: the router reads the path (/s/CODE) and opens
+                 the join screen. The https filter opens automatically only
+                 once assetlinks.json is published on the domain; until then
+                 the landing page's "open in app" button uses the scheme. -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="easyplate" android:host="open" android:pathPrefix="/s/" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="aieasyplate.app" android:pathPrefix="/s/" />
+            </intent-filter>
             <!-- The share sheet: a recording or voice note, a recipe PDF, or
                  a link / pasted text, handed straight to the ingestion
                  screen (see ShareIntentService). -->

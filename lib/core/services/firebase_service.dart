@@ -73,6 +73,11 @@ class FirebaseService {
     cookModePremiumOnlyKey: true,
     notificationsPremiumOnlyKey: true,
     assistantPremiumOnlyKey: true,
+    // What a free account may share: recipes per calendar week, books and
+    // meal plans at once. Zero disables; Premium is unlimited.
+    shareFreeRecipesWeeklyKey: 5,
+    shareFreeBooksKey: 2,
+    shareFreePlansKey: 2,
   };
 
   static const adsEnabledKey = 'ads_enabled';
@@ -85,6 +90,9 @@ class FirebaseService {
   static const cookModePremiumOnlyKey = 'cook_mode_premium_only';
   static const notificationsPremiumOnlyKey = 'notifications_premium_only';
   static const assistantPremiumOnlyKey = 'assistant_premium_only';
+  static const shareFreeRecipesWeeklyKey = 'share_free_recipes_weekly';
+  static const shareFreeBooksKey = 'share_free_books_total';
+  static const shareFreePlansKey = 'share_free_plans_total';
 
   static const isProdKey = 'isProd';
 

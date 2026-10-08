@@ -141,6 +141,9 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
             _toast(t.sharing.acceptedPlan);
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.mealPlan;
+          case CollabKind.household:
+            // Never an invite: a household is joined by code.
+            break;
         }
       } else {
         if (invite.kind == CollabKind.recipe) {
@@ -215,6 +218,11 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
           title: t.settings.sharedAccess,
           leadingIcon: Icons.arrow_back_rounded,
           onLeadingTap: () => Navigator.of(context).maybePop(),
+          trailingIcon: Icons.qr_code_scanner_rounded,
+          onTrailingTap: () async {
+            final joined = await context.pushNamed<bool>(Routing.joinCode);
+            if (joined == true && mounted) await _load();
+          },
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
@@ -288,11 +296,13 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
       CollabKind.recipe => t.sharing.kindRecipe,
       CollabKind.book => t.sharing.kindBook,
       CollabKind.mealPlan => t.sharing.kindPlan,
+      CollabKind.household => t.household.title,
     },
     icon: switch (kind) {
       CollabKind.recipe => Icons.restaurant_menu_rounded,
       CollabKind.book => Icons.menu_book_rounded,
       CollabKind.mealPlan => Icons.calendar_month_rounded,
+      CollabKind.household => Icons.family_restroom_rounded,
     },
   );
 

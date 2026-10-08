@@ -50,6 +50,13 @@ abstract class ApiConfig {
   static String get adminUsersUrl =>
       aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/adminUsers');
 
+  static String get shareCodesUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/shareCodes');
+
+  /// Household membership (Pro Duo / Pro Family), same deploy.
+  static String get householdsUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/households');
+
   static const model = String.fromEnvironment(
     'GEMINI_MODEL',
     defaultValue: 'gemini-3.8-flash',

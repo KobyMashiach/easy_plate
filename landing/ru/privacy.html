@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <!-- The Firebase default hosts serve the same files; keep one address for users and search engines. -->
+  <script>
+  if (window.location.hostname.endsWith('web.app') || window.location.hostname.endsWith('firebaseapp.com')) {
+    window.location.replace('https://aieasyplate.app' + window.location.pathname + window.location.search);
+  }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Политика конфиденциальности — EasyPlate</title>
+  <meta name="description" content="EasyPlate («EasyPlate», «мы») — мобильное приложение для сбора рецептов, планирования недельного меню и ведения списков покупок. Эта политика…" />
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://aieasyplate.app/ru/privacy" />
+  <link rel="alternate" hreflang="en" href="https://aieasyplate.app/privacy" />
+  <link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/privacy" />
+  <link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/privacy" />
+  <link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/privacy" />
+  <link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/privacy" />
+  <link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/privacy" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="EasyPlate" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:url" content="https://aieasyplate.app/ru/privacy" />
+  <meta property="og:title" content="Политика конфиденциальности — EasyPlate" />
+  <meta property="og:description" content="EasyPlate («EasyPlate», «мы») — мобильное приложение для сбора рецептов, планирования недельного меню и ведения списков покупок. Эта политика…" />
+  <meta property="og:image" content="https://aieasyplate.app/og/ru.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://aieasyplate.app/og/ru.png" />
+  <!-- seo:end -->
+  <meta name="theme-color" content="#0c0a1f" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Heebo:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg: #0c0a1f; --panel: rgba(255,255,255,.04); --line: rgba(255,255,255,.09); --fg: #f3eeff; --muted: rgba(243,238,255,.62); --brand: #8c6bff; --brand2: #62fae3; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.7 "Plus Jakarta Sans", Inter, Heebo, "Noto Sans Arabic", system-ui, sans-serif; overflow-x: clip; }
+    html[dir="rtl"] body { font-family: Heebo, "Noto Sans Arabic", "Plus Jakarta Sans", system-ui, sans-serif; }
+    html[lang="ar"] body { font-family: "Noto Sans Arabic", Heebo, system-ui, sans-serif; }
+    html[lang="ru"] body { font-family: Inter, "Plus Jakarta Sans", system-ui, sans-serif; }
+    a { color: var(--brand); text-decoration: none; } a:hover { text-decoration: underline; }
+    .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .bg::before { content: ""; position: absolute; left: 50%; top: -260px; width: 900px; height: 600px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(91,60,221,.38), transparent); filter: blur(60px); }
+    .bg::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.03) 1px, transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, #000 20%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 0%, #000 20%, transparent 100%); }
+    header { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); background: rgba(12,10,31,.7); border-bottom: 1px solid var(--line); }
+    .bar { max-width: 1040px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.01em; color: var(--fg); font-size: 18px; }
+    .logo:hover { text-decoration: none; }
+    .mark { width: 32px; height: 32px; border-radius: 10px; display: block; box-shadow: 0 8px 20px -8px rgba(116,89,247,.9); }
+    .grad { background: linear-gradient(92deg, #c9bfff, #8c6bff 40%, #62fae3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav a, .nav select { font: inherit; font-size: 14px; font-weight: 600; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; }
+    .nav a:hover { background: rgba(255,255,255,.08); text-decoration: none; }
+    .nav select { appearance: none; -webkit-appearance: none; padding-inline-end: 30px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9bfff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; cursor: pointer; }
+    html[dir="rtl"] .nav select { background-position: left 10px center; }
+    .nav select option { color: #111; }
+    main { max-width: 1040px; margin: 0 auto; padding: 48px 16px 80px; display: grid; grid-template-columns: 1fr; gap: 32px; }
+    @media (min-width: 900px) { main { grid-template-columns: 250px 1fr; gap: 48px; padding-top: 64px; } }
+    aside { position: sticky; top: 84px; align-self: start; }
+    .toc { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
+    .toc h2 { margin: 0 0 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .toc ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+    .toc a { display: block; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 10px; }
+    .toc a:hover, .toc a.active { color: var(--fg); background: rgba(140,107,255,.15); text-decoration: none; }
+    @media (max-width: 899px) { aside { position: static; } .toc ol { max-height: 220px; overflow: auto; } }
+    article { min-width: 0; }
+    .eyebrow { color: var(--brand); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 8px 0 6px; font-size: clamp(32px, 5vw, 48px); line-height: 1.1; letter-spacing: -.02em; font-weight: 800; }
+    .updated { color: var(--muted); font-size: 14px; margin: 0 0 28px; }
+    .intro { font-size: 17px; color: rgba(243,238,255,.85); background: linear-gradient(180deg, rgba(116,89,247,.16), rgba(255,255,255,.03)); border: 1px solid rgba(140,107,255,.3); border-radius: 20px; padding: 18px 20px; margin: 0 0 36px; }
+    section { padding: 8px 0 20px; border-bottom: 1px solid var(--line); margin-bottom: 20px; scroll-margin-top: 90px; }
+    section h2 { font-size: 22px; letter-spacing: -.01em; margin: 10px 0 10px; }
+    section p { margin: 0 0 12px; color: rgba(243,238,255,.8); }
+    section p b { color: var(--fg); }
+    footer { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+    footer a { color: var(--muted); } footer a:hover { color: var(--fg); }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <header>
+    <div class="bar">
+      <a class="logo" href="/ru" id="homeLink"><img class="mark" src="/icon-64.png" alt="" width="32" height="32" /><span>Easy<span class="grad">Plate</span></span></a>
+      <nav class="nav">
+        <a href="/ru" id="navHome">Главная</a>
+        <a href="/ru/terms" id="navOther">Условия использования</a>
+        <select id="langSel" aria-label="Язык"><option value="en">English</option><option value="he">עברית</option><option value="ar">العربية</option><option value="fr">Français</option><option value="ru" selected>Русский</option></select>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <aside><nav class="toc"><h2 id="tocTitle">Содержание</h2><ol id="toc"><li><a href="#s1">1. Кто мы</a></li><li><a href="#s2">2. Информация, которую вы нам передаёте</a></li><li><a href="#s3">3. Информация, собираемая автоматически</a></li><li><a href="#s4">4. Как мы используем информацию</a></li><li><a href="#s5">5. Искусственный интеллект</a></li><li><a href="#s6">6. Реклама</a></li><li><a href="#s7">7. Подписки и платежи</a></li><li><a href="#s8">8. С кем мы делимся информацией</a></li><li><a href="#s9">9. Где хранятся данные</a></li><li><a href="#s10">10. Хранение и удаление</a></li><li><a href="#s11">11. Режим готовки, таймеры и уведомления на вашем устройстве</a></li><li><a href="#s12">12. Безопасность</a></li><li><a href="#s13">13. Дети</a></li><li><a href="#s14">14. Ваши права</a></li><li><a href="#s15">15. Изменения политики</a></li><li><a href="#s16">16. Контакты</a></li></ol></nav></aside>
+    <article>
+      <div class="eyebrow">EasyPlate</div>
+      <h1 id="title">Политика конфиденциальности</h1>
+      <p class="updated" id="updated">Последнее обновление: 6 октября 2026</p>
+      <p class="intro" id="intro">EasyPlate («EasyPlate», «мы») — мобильное приложение для сбора рецептов, планирования недельного меню и ведения списков покупок. Эта политика объясняет, какую информацию мы собираем при использовании приложения, зачем, с кем делимся и какие у вас есть возможности. Используя EasyPlate, вы соглашаетесь с описанными здесь правилами.</p>
+      <div id="sections"><section id="s1"><h2>1. Кто мы</h2><p>EasyPlate управляется командой EasyPlate (идентификатор издателя в магазинах приложений: «KH Easy Dev»), базирующейся в Израиле. По любым вопросам, связанным с этой политикой, пишите на <a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a>.</p></section><section id="s2"><h2>2. Информация, которую вы нам передаёте</h2><p><b>Данные аккаунта.</b> Каждый аккаунт открывается с подтверждённым номером телефона, который является основной идентичностью аккаунта. Вы также можете привязать аккаунт Google, Apple ID (только iOS) или адрес электронной почты и пароль для повторного входа. Мы храним ваше имя и, по вашему желанию, фото профиля.</p><p><b>Предпочтения.</b> Язык, день еженедельных покупок, пищевые предпочтения и аллергены, настройки уведомлений и режим отображения.</p><p><b>Контент, который вы создаёте.</b> Рецепты, кулинарные книги, недельные планы питания, списки покупок, фото к рецептам, темы и ответы на форуме, лайки и сообщения обратной связи, которые вы нам отправляете.</p><p><b>Контент, который вы импортируете.</b> Вставленный текст, ссылки, файлы (PDF, аудио) и видео из TikTok, Instagram, YouTube, Facebook или других сайтов, которые вы просите приложение превратить в рецепт.</p><p><b>Чеки.</b> При сканировании чека мы сохраняем только названия продуктов, количество и цены. Мы не сохраняем магазин, дату, способ оплаты и плательщика. Если вы согласитесь, анонимные цены продуктов могут участвовать в расчёте медианных цен сообщества.</p><p><b>Обращения в поддержку.</b> То, что вы пишете нам по электронной почте, в WhatsApp или через форму обратной связи в приложении, вместе с вашим именем и ID аккаунта, чтобы мы могли ответить.</p></section><section id="s3"><h2>3. Информация, собираемая автоматически</h2><p><b>Использование и диагностика.</b> Мы используем Firebase Analytics и Firebase Crashlytics (Google), чтобы понимать, какие функции используются, и исправлять сбои: модель устройства, версия ОС, версия приложения, язык, приблизительный регион, события сессии и отчёты о сбоях. Это псевдонимные идентификаторы, а не ваше имя или номер телефона.</p><p><b>Токены уведомлений.</b> Токен устройства Firebase Cloud Messaging для доставки включённых вами уведомлений (приглашения к совместному доступу, ответы в ваших темах, напоминания о дне покупок).</p><p><b>Учёт использования ИИ.</b> Количество извлечений ИИ в день и расход токенов, чтобы применять бесплатный дневной лимит и лимиты Премиум и отслеживать наши расходы.</p><p><b>Рекламные идентификаторы.</b> В бесплатных аккаунтах Google AdMob может собирать рекламный идентификатор устройства для показа и измерения рекламы (см. раздел 6).</p></section><section id="s4"><h2>4. Как мы используем информацию</h2><p>Для работы приложения: вход, хранение и синхронизация контента между вашими устройствами, доставка запрошенных уведомлений, применение дневных лимитов и прав Премиум.</p><p>Для создания рецептов с помощью ИИ: текст, ссылка, файл или видео, которые вы отправляете, передаются модели ИИ (Google Gemini) для извлечения ингредиентов, шагов, порций, тегов и оценочной пищевой ценности. Мы отправляем только то, что нужно для этого запроса.</p><p>Для перевода вашего контента при смене языка с помощью того же сервиса ИИ.</p><p>Для совместного доступа: когда вы делитесь рецептом, книгой или планом либо публикуете в сообществе, получатели (или сообщество) видят этот контент, ваше отображаемое имя и фото профиля.</p><p>Для улучшения приложения, понимания использования, исправления ошибок и обеспечения безопасности.</p><p>Для показа рекламы в бесплатных аккаунтах и обработки подписок.</p><p>Для ответа на ваши обращения в поддержку.</p></section><section id="s5"><h2>5. Искусственный интеллект</h2><p>Извлечение рецептов, оценка пищевой ценности, запросы «попросить рецепт» и перевод контента выполняются моделями Gemini от Google через Google Cloud. Контент, отправленный для этого, обрабатывается по условиям API Google и не используется нами для вашей идентификации. Результаты ИИ могут быть ошибочными: всегда сами проверяйте количества, температуры приготовления, аллергены и пищевую ценность, особенно когда речь идёт о здоровье или аллергии.</p><p>Встроенный ассистент (чат) отправляет ваши сообщения вместе с коротким снимком аккаунта, нужным ему для действий (предпочтения, названия сохранённых рецептов, позиции активного списка покупок, что готовится), в тот же сервис Google Gemini и выполняет запрошенные действия через само приложение. Google хранит переписку только на время сеанса, и мы не используем её для вашей идентификации.</p></section><section id="s6"><h2>6. Реклама</h2><p>Бесплатные аккаунты видят рекламу в лентах сообщества и могут посмотреть видео с вознаграждением, чтобы расширить дневной лимит. Реклама показывается через Google AdMob, который может использовать рекламный идентификатор устройства и ограниченные данные устройства для подбора и измерения рекламы. Ограничить персонализацию можно в настройках устройства (iOS: Настройки › Конфиденциальность › Отслеживание / Реклама Apple; Android: Настройки › Google › Реклама). EasyPlate Premium убирает всю рекламу.</p></section><section id="s7"><h2>7. Подписки и платежи</h2><p>EasyPlate Premium продаётся через App Store от Apple и Google Play. Мы никогда не видим номер вашей карты. Покупки обрабатываются через RevenueCat, который получает анонимный ID пользователя приложения, чек магазина и статус подписки, чтобы Премиум был доступен на всех ваших устройствах. Возвраты и вопросы оплаты решает магазин, в котором вы совершили покупку.</p></section><section id="s8"><h2>8. С кем мы делимся информацией</h2><p>Поставщики услуг, обрабатывающие данные для нас: Google Firebase (аутентификация, база данных, хранилище, аналитика, отчёты о сбоях, push-уведомления, удалённая конфигурация), Google Cloud и Gemini (обработка ИИ), Google AdMob (реклама), RevenueCat (подписки), Apple и Google (вход и оплата).</p><p>Другие пользователи: только контент, которым вы решили поделиться или который опубликовали, с вашим отображаемым именем и фото.</p><p>Юридические основания: когда этого требует закон, судебное решение или защита прав, безопасности и имущества наших пользователей или EasyPlate.</p><p>Мы не продаём вашу личную информацию.</p><p>Коды и ссылки для общего доступа. Помимо приглашения контакта по e-mail или телефону, рецептом, книгой или планом питания можно поделиться коротким кодом, ссылкой (aieasyplate.app/s/…) или QR-изображением с ней. При создании сохраняется небольшая запись: название элемента, идентификатор вашего аккаунта, выбранный уровень доступа и срок действия (30 дней, если вы не отмените раньше). До этого момента присоединиться может любой, у кого есть код, поэтому относитесь к нему как к приглашению: при использовании он увидит ваше отображаемое имя и элемент точно так же, как приглашённый контакт, и вы в любой момент можете удалить его на экране общего доступа. Сканирование QR использует камеру только пока открыт сканер; изображения не сохраняются и никуда не отправляются. Системное окно «Поделиться» передаёт код и ссылку выбранному вами приложению (мессенджер, почта); что оно с ними делает, определяет его собственная политика.</p><p>Общие аккаунты (Pro Duo, Pro Family). Подписчик Pro Duo или Pro Family может открыть общий аккаунт и пригласить кодом ещё один (Duo) или до пяти (Family) аккаунтов. Внутри общего аккаунта рецепты, книги, планы питания, списки покупок, чеки и записи цен хранятся под общим аккаунтом, а не под каждым участником: все участники их видят и могут менять, а изменения зеркалируются на устройства участников по мере внесения. Участники видят отображаемые имена друг друга. Предпочтения, дневные лимиты и ваш профиль остаются вашими. Статус Premium владельца копируется участникам, пока подписка активна. Если вы покидаете аккаунт или вас удаляют, общие данные остаются в общем аккаунте и удаляются с вашего устройства; если владелец закрывает общий аккаунт, его данные удаляются с наших серверов, и копия остаётся только на устройстве владельца.</p></section><section id="s9"><h2>9. Где хранятся данные</h2><p>Ваши данные хранятся на серверах Google Cloud, которые могут находиться за пределами Израиля, в том числе в Европейском союзе и США. Google обеспечивает надлежащие гарантии для таких передач. Копия контента также хранится на вашем устройстве, чтобы приложение работало офлайн.</p></section><section id="s10"><h2>10. Хранение и удаление</h2><p>Мы храним аккаунт и контент, пока аккаунт существует. Вы можете в любой момент удалить любой рецепт, книгу, план, список или чек из приложения; общий контент удаляется и у тех, с кем вы им делились.</p><p>Чтобы удалить аккаунт целиком, напишите на <a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a> с электронной почты или телефона аккаунта либо используйте опцию удаления аккаунта в приложении, где она доступна. Мы удаляем аккаунт, контент и фото в течение 30 дней, за исключением записей, которые обязаны хранить по закону (например, записей о покупках), и анонимной статистики.</p><p>Данные о сбоях и аналитика хранятся Google в течение сроков, заданных в Firebase (до 14 месяцев), и после этого не связаны с вашим аккаунтом.</p></section><section id="s11"><h2>11. Режим готовки, таймеры и уведомления на вашем устройстве</h2><p>Режим готовки хранит рецепт, который вы готовите, текущий шаг и ваши таймеры только на устройстве, чтобы вы могли выйти из приложения и вернуться. Эти данные не отправляются нам или кому-либо ещё и удаляются при нажатии «Готово».</p><p>Таймеры используют локальные уведомления: уведомление, которое звонит по окончании таймера, а на Android — постоянное уведомление с обратным отсчётом, пока приложение в фоне. Для этого приложение запрашивает разрешение на уведомления, а на Android 14 и новее — разрешение на точные будильники, чтобы звонок был вовремя; без него звонок может задержаться.</p><p>На Android, пока идёт таймер, приложение держит запущенным фоновый сервис (foreground service), чтобы отсчёт продолжался, когда приложение не на экране. Android показывает для него постоянное уведомление, и он расходует немного батареи, пока не остановится последний таймер или вы не завершите готовку. Пока открыт экран режима готовки, экран не гаснет.</p></section><section id="s12"><h2>12. Безопасность</h2><p>Данные шифруются при передаче (TLS) и при хранении в Google Cloud. Доступ к вашему контенту обеспечивается серверными правилами безопасности: читать его можете только вы и аккаунты, с которыми вы поделились. Ни один способ передачи или хранения не является абсолютно безопасным, поэтому берегите свои способы входа.</p></section><section id="s13"><h2>13. Дети</h2><p>EasyPlate не предназначен для детей младше 13 лет (или более высокого минимального возраста в вашей стране), и мы сознательно не собираем их личные данные. Если вы считаете, что ребёнок создал аккаунт, свяжитесь с нами, и мы его удалим.</p></section><section id="s14"><h2>14. Ваши права</h2><p>В зависимости от места проживания (включая израильский Закон о защите частной жизни и, где применимо, GDPR ЕС) вы имеете право получить доступ к своим личным данным, исправить их, удалить, возразить против определённой обработки или ограничить её, получить копию данных в переносимом формате и отозвать согласие. Настройки уведомлений, рекламы и совместного доступа можно изменить в приложении; по остальным вопросам пишите на <a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a>. Вы также можете подать жалобу в местный орган по защите данных.</p></section><section id="s15"><h2>15. Изменения политики</h2><p>Мы можем время от времени обновлять эту политику. Дата «последнего обновления» вверху показывает текущую версию. О существенных изменениях мы сообщим в приложении или по контактным данным вашего аккаунта.</p></section><section id="s16"><h2>16. Контакты</h2><p>Вопросы, запросы и жалобы: <a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a>.</p></section></div>
+    </article>
+  </main>
+  <footer>
+    <span id="copyright">© 2026 EasyPlate. Все права защищены.</span>
+    <span><a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a> · <a href="/ru/terms" id="footOther">Условия использования</a></span>
+  </footer>
+
+  <script>
+  const META = {"en": {"name": "English", "dir": "ltr", "home": "Home", "other_privacy": "Privacy Policy", "other_terms": "Terms of Service", "lang": "Language", "copyright": "© 2026 EasyPlate. All rights reserved."}, "he": {"name": "עברית", "dir": "rtl", "home": "דף הבית", "other_privacy": "מדיניות פרטיות", "other_terms": "תנאי שימוש", "lang": "שפה", "copyright": "© 2026 EasyPlate. כל הזכויות שמורות."}, "ar": {"name": "العربية", "dir": "rtl", "home": "الرئيسية", "other_privacy": "سياسة الخصوصية", "other_terms": "شروط الخدمة", "lang": "اللغة", "copyright": "© 2026 EasyPlate. جميع الحقوق محفوظة."}, "fr": {"name": "Français", "dir": "ltr", "home": "Accueil", "other_privacy": "Politique de confidentialité", "other_terms": "Conditions d’utilisation", "lang": "Langue", "copyright": "© 2026 EasyPlate. Tous droits réservés."}, "ru": {"name": "Русский", "dir": "ltr", "home": "Главная", "other_privacy": "Политика конфиденциальности", "other_terms": "Условия использования", "lang": "Язык", "copyright": "© 2026 EasyPlate. Все права защищены."}};
+  const DOCS = {
+ "en": {
+  "title": "Privacy Policy",
+  "updated": "Last updated: October 6, 2026",
+  "toc": "Contents",
+  "intro": "EasyPlate (\"EasyPlate\", \"we\", \"us\") is a mobile application for collecting recipes, planning weekly meals and managing grocery lists. This policy explains what information we collect when you use the app, why we collect it, who we share it with and what choices you have. By using EasyPlate you agree to the practices described here.",
+  "sections": [
+   {
+    "h": "1. Who we are",
+    "p": [
+     "EasyPlate is operated by the EasyPlate team (publisher ID \"KH Easy Dev\" in the app stores), based in Israel. For anything related to this policy, write to support@aieasyplate.app."
+    ]
+   },
+   {
+    "h": "2. Information you give us",
+    "p": [
+     "Account details. Every account is opened with a verified phone number, which is the root identity of the account. You can also link a Google account, an Apple ID (iOS only) or an email address and password to sign back in. We store your name and, if you choose, a profile photo.",
+     "Preferences. Your language, your weekly shopping day, dietary preferences and allergens, notification settings and display mode.",
+     "Content you create. Recipes, recipe books, weekly meal plans, grocery lists, photos you attach to recipes, forum threads and replies, likes, and feedback messages you send us.",
+     "Content you import. Text you paste, links you share, files (PDF, audio) and videos from TikTok, Instagram, YouTube, Facebook or other websites that you ask the app to turn into a recipe.",
+     "Receipts. When you scan a receipt we keep the product names, quantities and prices only. We do not keep the store, the date, the payment method or who paid. If you opt in, anonymous product prices may be contributed to community price medians.",
+     "Support messages. What you write to us by email, WhatsApp or the in-app feedback form, together with your name and account ID so we can reply."
+    ]
+   },
+   {
+    "h": "3. Information collected automatically",
+    "p": [
+     "Usage and diagnostics. We use Firebase Analytics and Firebase Crashlytics (Google) to understand which features are used and to fix crashes. This includes device model, operating system version, app version, language, coarse region, session events and crash reports. These are pseudonymous identifiers, not your name or phone number.",
+     "Push tokens. A device token from Firebase Cloud Messaging so we can deliver the notifications you enabled (share invites, replies to your threads, shopping-day reminders).",
+     "AI usage accounting. The number of AI extractions you run per day and their token usage, so the free daily allowance and Premium limits can be applied and so we can monitor our own costs.",
+     "Advertising identifiers. On free accounts, Google AdMob may collect your device advertising ID to serve and measure ads (see section 6)."
+    ]
+   },
+   {
+    "h": "4. How we use information",
+    "p": [
+     "To run the app: sign you in, store and sync your content across your devices, deliver notifications you asked for, apply daily allowances and Premium entitlements.",
+     "To build recipes with AI: the text, link, file or video you submit is sent to an AI model (Google Gemini) to extract ingredients, steps, servings, tags and estimated nutrition. We send only what is needed for that request.",
+     "To translate your content when you switch language, using the same AI service.",
+     "To share: when you share a recipe, book or plan, or post in the community, the people you share with (or the community) can see that content, your display name and your profile photo.",
+     "To improve the app, understand usage, fix bugs and keep it secure.",
+     "To show ads on free accounts and to process subscriptions.",
+     "To respond to you when you contact support."
+    ]
+   },
+   {
+    "h": "5. Artificial intelligence",
+    "p": [
+     "Recipe extraction, nutrition estimates, \"ask for a recipe\" requests and content translation are performed by Google's Gemini models through Google Cloud. The content you submit for that purpose is processed under Google's API terms and is not used by us to identify you. AI output can be wrong: always check quantities, cooking temperatures, allergens and nutrition values yourself, especially where health or allergies are involved.",
+     "The in-app assistant (chat) sends your messages, together with a short snapshot of your account that the assistant needs to act (your preferences, the titles of your saved recipes, the items on your active grocery list, what is cooking), to the same Google Gemini service, and performs the actions you ask for through the app itself. Conversations are kept by Google for the duration of the session only and are not used by us to identify you."
+    ]
+   },
+   {
+    "h": "6. Advertising",
+    "p": [
+     "Free accounts see ads in community feeds and may choose to watch a rewarded video to extend a daily allowance. Ads are served by Google AdMob, which may use your device advertising ID and limited device data to select and measure ads. You can limit ad personalisation in your device settings (iOS: Settings › Privacy › Tracking / Apple Advertising; Android: Settings › Google › Ads). EasyPlate Premium removes all ads."
+    ]
+   },
+   {
+    "h": "7. Subscriptions and payments",
+    "p": [
+     "EasyPlate Premium is sold through Apple's App Store and Google Play. We never see your card number. Purchases are managed with RevenueCat, which receives an anonymous app user ID, your store receipt and subscription status so Premium can be unlocked on all your devices. Refunds and billing questions are handled by the store you purchased from."
+    ]
+   },
+   {
+    "h": "8. Who we share information with",
+    "p": [
+     "Service providers that process data for us: Google Firebase (authentication, database, storage, analytics, crash reporting, push notifications, remote configuration), Google Cloud and Gemini (AI processing), Google AdMob (ads), RevenueCat (subscriptions), Apple and Google (sign-in and billing).",
+     "Other users: only the content you choose to share or post, with your display name and photo.",
+     "Legal reasons: when required by law, a court order or to protect the rights, safety and property of our users or of EasyPlate.",
+     "We do not sell your personal information.",
+     "Share codes and links. Besides inviting a contact by email or phone, you can share a recipe, book or meal plan with a short code, a link (aieasyplate.app/s/…) or a QR image that carries it. Creating one stores a small record with the item's title, your account identifier, the access level you chose and an expiry (30 days unless you cancel it earlier). Anyone who has the code can join until then, so treat it like an invitation: when they redeem it, they see your display name and the shared item exactly as an invited contact would, and you can remove them from the shared-access screen at any time. Scanning a QR uses the camera only while the scanner is open; no picture is stored or sent anywhere. The system share sheet hands the code and link to the app you pick (messaging, mail); what that app does with it is governed by its own policy.",
+     "Shared accounts (Pro Duo, Pro Family). A Pro Duo or Pro Family subscriber can open a shared account and invite up to one (Duo) or five (Family) other accounts with a code. Inside a shared account, recipes, books, meal plans, grocery lists, receipts and price records are stored under the shared account rather than under each member, so every member sees and can change them, and changes are mirrored to members' devices as they happen. Members see each other's display names. Preferences, daily allowances and your profile stay your own. The owner's Premium status is copied to members for as long as the subscription is active. When you leave or are removed, the shared data stays with the shared account and is deleted from your device; when the owner closes the shared account, its data is deleted from our servers and only the owner's device keeps a copy."
+    ]
+   },
+   {
+    "h": "9. Where data is stored",
+    "p": [
+     "Your data is stored on Google Cloud servers, which may be located outside Israel, including in the European Union and the United States. Google maintains appropriate safeguards for these transfers. A copy of your content is also kept on your device so the app works offline."
+    ]
+   },
+   {
+    "h": "10. Retention and deletion",
+    "p": [
+     "We keep your account and content for as long as the account exists. You can delete any recipe, book, plan, list or receipt from inside the app at any time; shared content is removed from the people you shared it with as well.",
+     "To delete your whole account, write to support@aieasyplate.app from the account's email or phone, or use the account deletion option in the app where available. We delete your account, your content and your photos within 30 days, except for records we must keep by law (for example purchase records) and anonymous statistics.",
+     "Crash and analytics data is retained by Google for the periods set in Firebase (up to 14 months) and is not tied to your account afterwards."
+    ]
+   },
+   {
+    "h": "11. Cook mode, timers and notifications on your device",
+    "p": [
+     "Cook mode keeps the recipe you are cooking, the step you are on and your timers on your device only, so you can leave the app and come back. This information is not sent to us or to anyone else and is deleted when you tap \"done\".",
+     "Timers use local notifications: a notification that rings when a timer ends, and, on Android, an ongoing notification with the countdown while the app is in the background. For this the app asks for notification permission and, on Android 14 and later, for permission to schedule exact alarms so the ring is on time; without it the ring may be delayed.",
+     "On Android, while a timer runs, the app keeps a foreground service running so the countdown keeps moving when the app is not on screen. Android shows a permanent notification for it, and it uses some battery until the last timer stops or you end cooking. While the cook-mode screen is open the screen is kept awake."
+    ]
+   },
+   {
+    "h": "12. Security",
+    "p": [
+     "Data is encrypted in transit (TLS) and at rest on Google Cloud. Access to your content is enforced by server-side security rules: only you and the accounts you shared with can read it. No method of transmission or storage is perfectly secure, so please keep your sign-in methods safe."
+    ]
+   },
+   {
+    "h": "13. Children",
+    "p": [
+     "EasyPlate is not directed at children under 13 (or the higher minimum age in your country) and we do not knowingly collect personal information from them. If you believe a child has created an account, contact us and we will delete it."
+    ]
+   },
+   {
+    "h": "14. Your rights",
+    "p": [
+     "Depending on where you live (including under Israel's Protection of Privacy Law and, where applicable, the EU GDPR) you have the right to access the personal information we hold about you, correct it, delete it, object to or restrict certain processing, receive a copy of your data in a portable format and withdraw consent. You can change notification, advertising and sharing choices in the app, and contact us at support@aieasyplate.app for anything else. You may also complain to your local data protection authority."
+    ]
+   },
+   {
+    "h": "15. Changes to this policy",
+    "p": [
+     "We may update this policy from time to time. The \"last updated\" date at the top shows the current version. For material changes we will notify you in the app or by the contact details on your account."
+    ]
+   },
+   {
+    "h": "16. Contact",
+    "p": [
+     "Questions, requests and complaints: support@aieasyplate.app."
+    ]
+   }
+  ]
+ },
+ "he": {
+  "title": "מדיניות פרטיות",
+  "updated": "עודכן לאחרונה: 6 באוקטובר 2026",
+  "toc": "תוכן העניינים",
+  "intro": "EasyPlate (\"EasyPlate\", \"אנחנו\") היא אפליקציה לניהול מתכונים, תכנון ארוחות שבועי ורשימות קניות. מדיניות זו מסבירה איזה מידע אנחנו אוספים כשאתם משתמשים באפליקציה, למה, עם מי אנחנו חולקים אותו ואילו אפשרויות עומדות לרשותכם. השימוש ב-EasyPlate מהווה הסכמה לנהלים המתוארים כאן.",
+  "sections": [
+   {
+    "h": "1. מי אנחנו",
+    "p": [
+     "EasyPlate מופעלת על ידי צוות EasyPlate (מזהה המפרסם בחנויות: \"KH Easy Dev\"), שמקום מושבו בישראל. לכל עניין הקשור למדיניות זו כתבו אלינו ל-support@aieasyplate.app."
+    ]
+   },
+   {
+    "h": "2. מידע שאתם מוסרים לנו",
+    "p": [
+     "פרטי חשבון. כל חשבון נפתח עם מספר טלפון מאומת, שהוא הזהות הבסיסית של החשבון. אפשר לקשר גם חשבון Google, Apple ID (ב-iOS בלבד) או כתובת אימייל וסיסמה כדי להתחבר מחדש. אנחנו שומרים את שמכם, ואם תבחרו, גם תמונת פרופיל.",
+     "העדפות. השפה, יום הקניות השבועי, העדפות תזונה ואלרגנים, הגדרות התראות ומצב תצוגה.",
+     "תוכן שאתם יוצרים. מתכונים, ספרי מתכונים, תוכניות ארוחות שבועיות, רשימות קניות, תמונות שצירפתם למתכונים, שרשורים ותגובות בפורום, לייקים והודעות משוב ששלחתם לנו.",
+     "תוכן שאתם מייבאים. טקסט שהדבקתם, קישורים ששיתפתם, קבצים (PDF, אודיו) וסרטונים מטיקטוק, אינסטגרם, יוטיוב, פייסבוק או אתרים אחרים שביקשתם מהאפליקציה להפוך למתכון.",
+     "קבלות. כשסורקים קבלה אנחנו שומרים רק שמות מוצרים, כמויות ומחירים. איננו שומרים את החנות, התאריך, אמצעי התשלום או מי שילם. אם תאשרו זאת, מחירי מוצרים אנונימיים עשויים לתרום לחציון המחירים הקהילתי.",
+     "פניות לתמיכה. מה שכתבתם לנו באימייל, בוואטסאפ או בטופס המשוב באפליקציה, יחד עם שמכם ומזהה החשבון כדי שנוכל להשיב."
+    ]
+   },
+   {
+    "h": "3. מידע שנאסף אוטומטית",
+    "p": [
+     "שימוש ואבחון. אנחנו משתמשים ב-Firebase Analytics וב-Firebase Crashlytics (של Google) כדי להבין אילו יכולות בשימוש ולתקן קריסות. זה כולל דגם מכשיר, גרסת מערכת הפעלה, גרסת אפליקציה, שפה, אזור כללי, אירועי שימוש ודוחות קריסה. אלה מזהים פסאודונימיים, לא השם או הטלפון שלכם.",
+     "אסימוני התראות. אסימון מכשיר מ-Firebase Cloud Messaging כדי לשלוח את ההתראות שהפעלתם (הזמנות שיתוף, תגובות לשרשורים שלכם, תזכורות ליום הקניות).",
+     "חשבונאות שימוש ב-AI. מספר חילוצי ה-AI שהרצתם ביום ושימוש הטוקנים שלהם, כדי להחיל את המכסה היומית החינמית ומגבלות הפרימיום וכדי לעקוב אחר העלויות שלנו.",
+     "מזהי פרסום. בחשבונות חינמיים, Google AdMob עשויה לאסוף את מזהה הפרסום של המכשיר כדי להציג ולמדוד פרסומות (ראו סעיף 6)."
+    ]
+   },
+   {
+    "h": "4. איך אנחנו משתמשים במידע",
+    "p": [
+     "להפעלת האפליקציה: התחברות, שמירה וסנכרון של התוכן בין המכשירים שלכם, שליחת ההתראות שביקשתם, החלת מכסות יומיות וזכאויות פרימיום.",
+     "לבניית מתכונים עם AI: הטקסט, הקישור, הקובץ או הסרטון שהגשתם נשלחים למודל AI (Google Gemini) לחילוץ מצרכים, שלבים, מנות, תגיות והערכת ערכים תזונתיים. אנחנו שולחים רק את מה שנדרש לאותה בקשה.",
+     "לתרגום התוכן שלכם כשאתם מחליפים שפה, באמצעות אותו שירות AI.",
+     "לשיתוף: כשאתם משתפים מתכון, ספר או תוכנית, או מפרסמים בקהילה, מי ששיתפתם איתו (או הקהילה) רואה את התוכן, את שם התצוגה ואת תמונת הפרופיל שלכם.",
+     "לשיפור האפליקציה, הבנת השימוש, תיקון באגים ושמירה על אבטחה.",
+     "להצגת פרסומות בחשבונות חינמיים ולעיבוד מנויים.",
+     "למענה לפניותיכם לתמיכה."
+    ]
+   },
+   {
+    "h": "5. בינה מלאכותית",
+    "p": [
+     "חילוץ מתכונים, הערכות תזונה, בקשות \"בקשו מתכון\" ותרגום תוכן מתבצעים על ידי מודלי Gemini של Google דרך Google Cloud. התוכן שאתם מגישים למטרה זו מעובד לפי תנאי ה-API של Google ואיננו משתמשים בו כדי לזהות אתכם. פלט AI עלול להיות שגוי: בדקו תמיד בעצמכם כמויות, טמפרטורות בישול, אלרגנים וערכים תזונתיים, במיוחד כשמדובר בבריאות או באלרגיות.",
+     "העוזר בצ׳אט שבאפליקציה שולח את ההודעות שלכם, יחד עם תמונת מצב קצרה של החשבון שהוא זקוק לה כדי לפעול (ההעדפות, שמות המתכונים השמורים, הפריטים ברשימת הקניות הפעילה, מה מתבשל), לאותו שירות Google Gemini, ומבצע את הפעולות שביקשתם דרך האפליקציה עצמה. השיחות נשמרות אצל Google למשך השיחה בלבד ואיננו משתמשים בהן כדי לזהות אתכם."
+    ]
+   },
+   {
+    "h": "6. פרסומות",
+    "p": [
+     "חשבונות חינמיים רואים פרסומות בפידים הקהילתיים ויכולים לבחור לצפות בסרטון מתגמל כדי להרחיב מכסה יומית. הפרסומות מוגשות על ידי Google AdMob, שעשויה להשתמש במזהה הפרסום של המכשיר ובנתוני מכשיר מוגבלים כדי לבחור ולמדוד פרסומות. אפשר להגביל התאמה אישית של פרסומות בהגדרות המכשיר (iOS: הגדרות › פרטיות › מעקב / פרסום של Apple; Android: הגדרות › Google › מודעות). EasyPlate Premium מסיר את כל הפרסומות."
+    ]
+   },
+   {
+    "h": "7. מנויים ותשלומים",
+    "p": [
+     "EasyPlate Premium נמכר דרך App Store של Apple ו-Google Play. איננו רואים לעולם את מספר הכרטיס שלכם. הרכישות מנוהלות באמצעות RevenueCat, שמקבלת מזהה משתמש אנונימי של האפליקציה, את קבלת החנות ואת מצב המנוי כדי שהפרימיום ייפתח בכל המכשירים שלכם. החזרים ושאלות חיוב מטופלים על ידי החנות שממנה רכשתם."
+    ]
+   },
+   {
+    "h": "8. עם מי אנחנו חולקים מידע",
+    "p": [
+     "ספקי שירות שמעבדים מידע עבורנו: Google Firebase (אימות, מסד נתונים, אחסון, אנליטיקה, דיווח קריסות, התראות, תצורה מרחוק), Google Cloud ו-Gemini (עיבוד AI), Google AdMob (פרסומות), RevenueCat (מנויים), Apple ו-Google (התחברות וחיוב).",
+     "משתמשים אחרים: רק התוכן שבחרתם לשתף או לפרסם, עם שם התצוגה והתמונה שלכם.",
+     "סיבות משפטיות: כשנדרש על פי חוק, צו בית משפט, או כדי להגן על הזכויות, הבטיחות והרכוש של המשתמשים שלנו או של EasyPlate.",
+     "איננו מוכרים את המידע האישי שלכם.",
+     "קודי שיתוף וקישורים. מלבד הזמנה של איש קשר במייל או בטלפון, אפשר לשתף מתכון, ספר או תפריט באמצעות קוד קצר, קישור (aieasyplate.app/s/…) או תמונת QR שנושאת אותו. יצירת קוד שומרת רשומה קטנה עם שם הפריט, מזהה החשבון שלכם, רמת הגישה שבחרתם ומועד תפוגה (30 יום, אלא אם ביטלתם קודם). כל מי שיש לו את הקוד יכול להצטרף עד אז, לכן התייחסו אליו כאל הזמנה: כשמממשים אותו רואים את שם התצוגה שלכם ואת הפריט המשותף בדיוק כמו איש קשר שהוזמן, ואפשר להסיר אותם ממסך הגישה המשותפת בכל עת. סריקת QR משתמשת במצלמה רק בזמן שהסורק פתוח; שום תמונה לא נשמרת ולא נשלחת. גיליון השיתוף של המערכת מעביר את הקוד והקישור לאפליקציה שתבחרו (הודעות, מייל); מה שהיא עושה בו כפוף למדיניות שלה.",
+     "חשבונות משותפים (Pro Duo, Pro Family). מנוי Pro Duo או Pro Family יכול לפתוח חשבון משותף ולהזמין בקוד עד חשבון אחד נוסף (Duo) או חמישה (Family). בתוך חשבון משותף, מתכונים, ספרים, תפריטים, רשימות קניות, קבלות ורשומות מחירים נשמרים תחת החשבון המשותף ולא תחת כל חבר, כך שכל חבר רואה אותם ויכול לשנותם, והשינויים משתקפים למכשירי החברים בזמן אמת. החברים רואים זה את שם התצוגה של זה. ההעדפות, המכסות היומיות והפרופיל נשארים אישיים. מעמד הפרימיום של הבעלים מועתק לחברים כל עוד המנוי פעיל. כשעוזבים או מוסרים, המידע המשותף נשאר בחשבון המשותף ונמחק מהמכשיר שלכם; כשהבעלים סוגרים את החשבון המשותף, המידע שלו נמחק מהשרתים שלנו ורק המכשיר של הבעלים שומר עותק."
+    ]
+   },
+   {
+    "h": "9. היכן המידע מאוחסן",
+    "p": [
+     "המידע שלכם מאוחסן בשרתי Google Cloud, שעשויים להימצא מחוץ לישראל, לרבות באיחוד האירופי ובארצות הברית. Google מקיימת אמצעי הגנה מתאימים להעברות אלה. עותק של התוכן נשמר גם במכשיר שלכם כדי שהאפליקציה תעבוד בלי אינטרנט."
+    ]
+   },
+   {
+    "h": "10. שמירה ומחיקה",
+    "p": [
+     "אנחנו שומרים את החשבון והתוכן שלכם כל עוד החשבון קיים. אפשר למחוק כל מתכון, ספר, תוכנית, רשימה או קבלה מתוך האפליקציה בכל עת; תוכן משותף נמחק גם אצל מי ששיתפתם איתו.",
+     "למחיקת החשבון כולו כתבו ל-support@aieasyplate.app מהאימייל או הטלפון של החשבון, או השתמשו באפשרות מחיקת החשבון באפליקציה היכן שזמינה. נמחק את החשבון, התוכן והתמונות שלכם בתוך 30 יום, למעט רשומות שעלינו לשמור על פי חוק (למשל רשומות רכישה) וסטטיסטיקות אנונימיות.",
+     "נתוני קריסות ואנליטיקה נשמרים אצל Google לתקופות שנקבעו ב-Firebase (עד 14 חודשים) ואינם מקושרים לחשבונכם לאחר מכן."
+    ]
+   },
+   {
+    "h": "11. מצב בישול, טיימרים והתראות במכשיר שלכם",
+    "p": [
+     "מצב בישול שומר את המתכון שאתם מבשלים, השלב שבו אתם נמצאים והטיימרים שלכם במכשיר בלבד, כדי שתוכלו לצאת מהאפליקציה ולחזור. מידע זה אינו נשלח אלינו או לאף אחד אחר ונמחק כשלוחצים \"סיימתי\".",
+     "הטיימרים משתמשים בהתראות מקומיות: התראה שמצלצלת כשטיימר נגמר, ובאנדרואיד גם התראה מתמשכת עם הספירה לאחור כשהאפליקציה ברקע. לשם כך האפליקציה מבקשת הרשאת התראות, ובאנדרואיד 14 ומעלה גם הרשאה לתזמון תזכורות מדויקות כדי שהצלצול יהיה בזמן; בלעדיה הצלצול עלול להתעכב.",
+     "באנדרואיד, בזמן שטיימר רץ, האפליקציה מפעילה שירות רקע (foreground service) כדי שהספירה תמשיך לזוז גם כשהאפליקציה לא על המסך. אנדרואיד מציג עבורו התראה קבועה, והוא צורך מעט סוללה עד שהטיימר האחרון נעצר או שמסיימים את הבישול. כשמסך מצב הבישול פתוח, המסך נשאר דולק."
+    ]
+   },
+   {
+    "h": "12. אבטחה",
+    "p": [
+     "המידע מוצפן בהעברה (TLS) ובמנוחה ב-Google Cloud. הגישה לתוכן שלכם נאכפת בכללי אבטחה בצד השרת: רק אתם והחשבונות ששיתפתם איתם יכולים לקרוא אותו. אין שיטת העברה או אחסון מאובטחת לחלוטין, לכן שמרו על אמצעי ההתחברות שלכם."
+    ]
+   },
+   {
+    "h": "13. ילדים",
+    "p": [
+     "EasyPlate אינה מיועדת לילדים מתחת לגיל 13 (או הגיל המינימלי הגבוה יותר במדינתכם) ואיננו אוספים ביודעין מידע אישי מהם. אם אתם סבורים שילד פתח חשבון, פנו אלינו ונמחק אותו."
+    ]
+   },
+   {
+    "h": "14. הזכויות שלכם",
+    "p": [
+     "בהתאם למקום מגוריכם (לרבות לפי חוק הגנת הפרטיות הישראלי, ובמקרים הרלוונטיים ה-GDPR האירופי) יש לכם זכות לעיין במידע האישי שאנחנו מחזיקים עליכם, לתקן אותו, למחוק אותו, להתנגד לעיבוד מסוים או להגבילו, לקבל עותק של המידע בפורמט נייד ולבטל הסכמה. אפשר לשנות בחירות התראות, פרסום ושיתוף באפליקציה, ולפנות אלינו ל-support@aieasyplate.app לכל עניין אחר. אתם רשאים גם להגיש תלונה לרשות הגנת הפרטיות במדינתכם."
+    ]
+   },
+   {
+    "h": "15. שינויים במדיניות",
+    "p": [
+     "אנחנו עשויים לעדכן מדיניות זו מעת לעת. תאריך \"עודכן לאחרונה\" בראש העמוד מציין את הגרסה הנוכחית. על שינויים מהותיים נודיע באפליקציה או בפרטי הקשר שבחשבונכם."
+    ]
+   },
+   {
+    "h": "16. יצירת קשר",
+    "p": [
+     "שאלות, בקשות ותלונות: support@aieasyplate.app."
+    ]
+   }
+  ]
+ },
+ "ar": {
+  "title": "سياسة الخصوصية",
+  "updated": "آخر تحديث: 6 أكتوبر 2026",
+  "toc": "المحتويات",
+  "intro": "EasyPlate (\"EasyPlate\"، \"نحن\") هو تطبيق للهاتف المحمول لجمع الوصفات وتخطيط الوجبات الأسبوعية وإدارة قوائم التسوّق. توضّح هذه السياسة المعلومات التي نجمعها عند استخدامك للتطبيق، وسبب جمعها، ومع من نشاركها، والخيارات المتاحة لك. باستخدامك EasyPlate فإنك توافق على الممارسات الموصوفة هنا.",
+  "sections": [
+   {
+    "h": "1. من نحن",
+    "p": [
+     "يُشغَّل EasyPlate بواسطة فريق EasyPlate (معرّف الناشر في المتاجر: \"KH Easy Dev\")، ومقره إسرائيل. لأي أمر يتعلق بهذه السياسة راسلنا على support@aieasyplate.app."
+    ]
+   },
+   {
+    "h": "2. المعلومات التي تقدّمها لنا",
+    "p": [
+     "بيانات الحساب. يُفتح كل حساب برقم هاتف موثّق، وهو الهوية الأساسية للحساب. يمكنك أيضًا ربط حساب Google أو Apple ID (على iOS فقط) أو بريد إلكتروني وكلمة مرور لتسجيل الدخول مجددًا. نحفظ اسمك، وصورة ملفك الشخصي إن اخترت ذلك.",
+     "التفضيلات. لغتك، ويوم التسوّق الأسبوعي، والتفضيلات الغذائية ومسببات الحساسية، وإعدادات الإشعارات ووضع العرض.",
+     "المحتوى الذي تنشئه. الوصفات، وكتب الوصفات، وخطط الوجبات الأسبوعية، وقوائم التسوّق، والصور التي ترفقها بالوصفات، ومواضيع المنتدى وردوده، والإعجابات، ورسائل الملاحظات التي ترسلها لنا.",
+     "المحتوى الذي تستورده. النصوص التي تلصقها، والروابط التي تشاركها، والملفات (PDF، صوت)، ومقاطع الفيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك أو مواقع أخرى تطلب من التطبيق تحويلها إلى وصفة.",
+     "الفواتير. عند مسح فاتورة نحتفظ بأسماء المنتجات والكميات والأسعار فقط. لا نحتفظ بالمتجر أو التاريخ أو طريقة الدفع أو من دفع. إذا وافقت، قد تُساهم أسعار منتجات مجهولة المصدر في متوسطات أسعار المجتمع.",
+     "رسائل الدعم. ما تكتبه لنا عبر البريد الإلكتروني أو واتساب أو نموذج الملاحظات داخل التطبيق، مع اسمك ومعرّف حسابك لنتمكن من الرد."
+    ]
+   },
+   {
+    "h": "3. المعلومات التي تُجمع تلقائيًا",
+    "p": [
+     "الاستخدام والتشخيص. نستخدم Firebase Analytics وFirebase Crashlytics (من Google) لفهم المزايا المستخدمة وإصلاح الأعطال. يشمل ذلك طراز الجهاز وإصدار نظام التشغيل وإصدار التطبيق واللغة والمنطقة التقريبية وأحداث الجلسة وتقارير الأعطال. هذه معرّفات مستعارة، وليست اسمك أو رقم هاتفك.",
+     "رموز الإشعارات. رمز جهاز من Firebase Cloud Messaging لإيصال الإشعارات التي فعّلتها (دعوات المشاركة، الردود على مواضيعك، تذكيرات يوم التسوّق).",
+     "حساب استخدام الذكاء الاصطناعي. عدد استخراجات الذكاء الاصطناعي التي تجريها يوميًا واستهلاكها من الرموز، لتطبيق الحصة اليومية المجانية وحدود بريميوم ولمراقبة تكاليفنا.",
+     "معرّفات الإعلانات. في الحسابات المجانية، قد تجمع Google AdMob معرّف الإعلانات الخاص بجهازك لعرض الإعلانات وقياسها (انظر القسم 6)."
+    ]
+   },
+   {
+    "h": "4. كيف نستخدم المعلومات",
+    "p": [
+     "لتشغيل التطبيق: تسجيل دخولك، وحفظ محتواك ومزامنته بين أجهزتك، وإيصال الإشعارات التي طلبتها، وتطبيق الحصص اليومية واستحقاقات بريميوم.",
+     "لبناء الوصفات بالذكاء الاصطناعي: يُرسل النص أو الرابط أو الملف أو الفيديو الذي تقدّمه إلى نموذج ذكاء اصطناعي (Google Gemini) لاستخراج المكوّنات والخطوات والحصص والوسوم والقيم الغذائية التقديرية. نرسل فقط ما يلزم لذلك الطلب.",
+     "لترجمة محتواك عند تغيير اللغة، باستخدام خدمة الذكاء الاصطناعي نفسها.",
+     "للمشاركة: عندما تشارك وصفة أو كتابًا أو خطة، أو تنشر في المجتمع، يرى من تشاركهم (أو المجتمع) ذلك المحتوى واسمك المعروض وصورة ملفك الشخصي.",
+     "لتحسين التطبيق وفهم الاستخدام وإصلاح الأخطاء والحفاظ على الأمان.",
+     "لعرض الإعلانات في الحسابات المجانية ومعالجة الاشتراكات.",
+     "للرد عليك عند التواصل مع الدعم."
+    ]
+   },
+   {
+    "h": "5. الذكاء الاصطناعي",
+    "p": [
+     "يتم استخراج الوصفات وتقدير القيم الغذائية وطلبات \"اطلب وصفة\" وترجمة المحتوى بواسطة نماذج Gemini من Google عبر Google Cloud. يُعالج المحتوى الذي تقدّمه لهذا الغرض وفق شروط واجهة برمجة تطبيقات Google ولا نستخدمه للتعرّف عليك. قد يكون ناتج الذكاء الاصطناعي خاطئًا: تحقق دائمًا بنفسك من الكميات ودرجات حرارة الطهي ومسببات الحساسية والقيم الغذائية، خاصةً عندما يتعلق الأمر بالصحة أو الحساسية.",
+     "يرسل المساعد داخل التطبيق (الدردشة) رسائلك، مع لمحة قصيرة عن حسابك يحتاجها للتصرف (تفضيلاتك، وعناوين وصفاتك المحفوظة، وعناصر قائمة التسوّق النشطة، وما يُطبخ الآن)، إلى خدمة Google Gemini نفسها، وينفّذ الإجراءات التي تطلبها عبر التطبيق نفسه. تُحتفظ المحادثات لدى Google لمدة الجلسة فقط ولا نستخدمها للتعرّف عليك."
+    ]
+   },
+   {
+    "h": "6. الإعلانات",
+    "p": [
+     "ترى الحسابات المجانية إعلانات في خلاصات المجتمع ويمكنها اختيار مشاهدة فيديو مكافأة لتمديد حصة يومية. تُقدَّم الإعلانات بواسطة Google AdMob التي قد تستخدم معرّف الإعلانات الخاص بجهازك وبيانات جهاز محدودة لاختيار الإعلانات وقياسها. يمكنك الحد من تخصيص الإعلانات في إعدادات جهازك (iOS: الإعدادات › الخصوصية › التتبع / إعلانات Apple؛ Android: الإعدادات › Google › الإعلانات). يزيل EasyPlate Premium جميع الإعلانات."
+    ]
+   },
+   {
+    "h": "7. الاشتراكات والمدفوعات",
+    "p": [
+     "يُباع EasyPlate Premium عبر App Store من Apple وGoogle Play. لا نرى رقم بطاقتك أبدًا. تُدار المشتريات بواسطة RevenueCat التي تتلقى معرّف مستخدم مجهولًا للتطبيق وإيصال المتجر وحالة الاشتراك لتفعيل بريميوم على جميع أجهزتك. تتولى المتجر الذي اشتريت منه أسئلة الاسترداد والفوترة."
+    ]
+   },
+   {
+    "h": "8. مع من نشارك المعلومات",
+    "p": [
+     "مقدمو الخدمات الذين يعالجون البيانات نيابةً عنا: Google Firebase (المصادقة، قاعدة البيانات، التخزين، التحليلات، تقارير الأعطال، الإشعارات، الإعدادات عن بُعد)، Google Cloud وGemini (معالجة الذكاء الاصطناعي)، Google AdMob (الإعلانات)، RevenueCat (الاشتراكات)، Apple وGoogle (تسجيل الدخول والفوترة).",
+     "المستخدمون الآخرون: فقط المحتوى الذي تختار مشاركته أو نشره، مع اسمك المعروض وصورتك.",
+     "الأسباب القانونية: عندما يقتضي القانون أو أمر قضائي ذلك، أو لحماية حقوق وسلامة وممتلكات مستخدمينا أو EasyPlate.",
+     "نحن لا نبيع معلوماتك الشخصية.",
+     "رموز وروابط المشاركة. إلى جانب دعوة جهة اتصال بالبريد الإلكتروني أو الهاتف، يمكنك مشاركة وصفة أو كتاب أو خطة وجبات برمز قصير أو رابط (aieasyplate.app/s/…) أو صورة QR تحمله. يحفظ إنشاء الرمز سجلًا صغيرًا يتضمن عنوان العنصر ومعرّف حسابك ومستوى الوصول الذي اخترته وتاريخ انتهاء (30 يومًا ما لم تلغه قبل ذلك). يمكن لأي شخص لديه الرمز الانضمام حتى ذلك الحين، فتعامل معه كدعوة: عند استخدامه يرى اسمك المعروض والعنصر المشترك تمامًا كجهة اتصال مدعوّة، ويمكنك إزالته من شاشة الوصول المشترك في أي وقت. يستخدم مسح QR الكاميرا فقط أثناء فتح الماسح؛ ولا تُحفظ أي صورة ولا تُرسل إلى أي مكان. تسلّم ورقة المشاركة في النظام الرمز والرابط إلى التطبيق الذي تختاره (الرسائل، البريد)؛ وما يفعله به يخضع لسياسته الخاصة.",
+     "الحسابات المشتركة (Pro Duo وPro Family). يمكن لمشترك Pro Duo أو Pro Family فتح حساب مشترك ودعوة حساب آخر (Duo) أو حتى خمسة (Family) برمز. داخل الحساب المشترك تُخزَّن الوصفات والكتب وخطط الوجبات وقوائم التسوّق والإيصالات وسجلات الأسعار تحت الحساب المشترك لا تحت كل عضو، فيراها كل عضو ويستطيع تعديلها، وتنعكس التغييرات على أجهزة الأعضاء فور حدوثها. يرى الأعضاء أسماء بعضهم المعروضة. تبقى التفضيلات والحصص اليومية وملفك الشخصي خاصة بك. تُنسخ حالة بريميوم للمالك إلى الأعضاء ما دام الاشتراك نشطًا. عند مغادرتك أو إزالتك تبقى البيانات المشتركة في الحساب المشترك وتُحذف من جهازك؛ وعندما يغلق المالك الحساب المشترك تُحذف بياناته من خوادمنا ويحتفظ جهاز المالك وحده بنسخة."
+    ]
+   },
+   {
+    "h": "9. مكان تخزين البيانات",
+    "p": [
+     "تُخزَّن بياناتك على خوادم Google Cloud التي قد تقع خارج إسرائيل، بما في ذلك في الاتحاد الأوروبي والولايات المتحدة. تحافظ Google على ضمانات مناسبة لعمليات النقل هذه. تُحفظ نسخة من محتواك أيضًا على جهازك ليعمل التطبيق دون اتصال."
+    ]
+   },
+   {
+    "h": "10. الاحتفاظ والحذف",
+    "p": [
+     "نحتفظ بحسابك ومحتواك ما دام الحساب موجودًا. يمكنك حذف أي وصفة أو كتاب أو خطة أو قائمة أو فاتورة من داخل التطبيق في أي وقت؛ ويُزال المحتوى المشترك أيضًا من الأشخاص الذين شاركته معهم.",
+     "لحذف حسابك بالكامل، راسلنا على support@aieasyplate.app من البريد الإلكتروني أو الهاتف المرتبط بالحساب، أو استخدم خيار حذف الحساب في التطبيق حيثما توفّر. نحذف حسابك ومحتواك وصورك خلال 30 يومًا، باستثناء السجلات التي يلزمنا القانون بحفظها (مثل سجلات الشراء) والإحصاءات المجهولة.",
+     "تحتفظ Google ببيانات الأعطال والتحليلات للمدد المحددة في Firebase (حتى 14 شهرًا) ولا تُربط بحسابك بعد ذلك."
+    ]
+   },
+   {
+    "h": "11. وضع الطبخ والمؤقتات والإشعارات على جهازك",
+    "p": [
+     "يحتفظ وضع الطبخ بالوصفة التي تطبخها والخطوة التي وصلت إليها ومؤقتاتك على جهازك فقط، لتتمكن من مغادرة التطبيق والعودة إليه. لا تُرسل هذه المعلومات إلينا أو إلى أي جهة أخرى، وتُحذف عند الضغط على \"انتهيت\".",
+     "تستخدم المؤقتات إشعارات محلية: إشعار يرن عند انتهاء المؤقت، وعلى أندرويد إشعار مستمر بالعد التنازلي بينما التطبيق في الخلفية. لذلك يطلب التطبيق إذن الإشعارات، وعلى أندرويد 14 وما بعده إذن جدولة المنبهات الدقيقة ليكون الرنين في وقته؛ وبدونه قد يتأخر الرنين.",
+     "على أندرويد، أثناء تشغيل مؤقت، يبقي التطبيق خدمة أمامية (foreground service) تعمل ليستمر العد التنازلي عندما لا يكون التطبيق على الشاشة. يعرض أندرويد إشعارًا دائمًا لها، وتستهلك بعض البطارية حتى يتوقف آخر مؤقت أو تنهي الطبخ. وأثناء فتح شاشة وضع الطبخ تبقى الشاشة مضاءة."
+    ]
+   },
+   {
+    "h": "12. الأمان",
+    "p": [
+     "تُشفَّر البيانات أثناء النقل (TLS) وأثناء التخزين على Google Cloud. يُفرض الوصول إلى محتواك بقواعد أمان على جانب الخادم: أنت والحسابات التي شاركتها معها فقط يمكنها قراءته. لا توجد طريقة نقل أو تخزين آمنة تمامًا، لذا حافظ على أمان طرق تسجيل الدخول الخاصة بك."
+    ]
+   },
+   {
+    "h": "13. الأطفال",
+    "p": [
+     "لا يستهدف EasyPlate الأطفال دون 13 عامًا (أو الحد الأدنى الأعلى للسن في بلدك) ولا نجمع عن علم معلومات شخصية منهم. إذا كنت تعتقد أن طفلًا أنشأ حسابًا، تواصل معنا وسنحذفه."
+    ]
+   },
+   {
+    "h": "14. حقوقك",
+    "p": [
+     "بحسب مكان إقامتك (بما في ذلك بموجب قانون حماية الخصوصية الإسرائيلي، وحيثما ينطبق اللائحة الأوروبية العامة لحماية البيانات GDPR) يحق لك الاطلاع على معلوماتك الشخصية التي نحتفظ بها وتصحيحها وحذفها والاعتراض على معالجة معينة أو تقييدها والحصول على نسخة من بياناتك بصيغة قابلة للنقل وسحب الموافقة. يمكنك تغيير خيارات الإشعارات والإعلانات والمشاركة في التطبيق، والتواصل معنا على support@aieasyplate.app لأي أمر آخر. ويمكنك أيضًا تقديم شكوى إلى سلطة حماية البيانات المحلية."
+    ]
+   },
+   {
+    "h": "15. التغييرات على هذه السياسة",
+    "p": [
+     "قد نحدّث هذه السياسة من وقت لآخر. يوضّح تاريخ \"آخر تحديث\" في الأعلى الإصدار الحالي. سنخطرك بالتغييرات الجوهرية داخل التطبيق أو عبر بيانات الاتصال المرتبطة بحسابك."
+    ]
+   },
+   {
+    "h": "16. التواصل",
+    "p": [
+     "الأسئلة والطلبات والشكاوى: support@aieasyplate.app."
+    ]
+   }
+  ]
+ },
+ "fr": {
+  "title": "Politique de confidentialité",
+  "updated": "Dernière mise à jour : 6 octobre 2026",
+  "toc": "Sommaire",
+  "intro": "EasyPlate (« EasyPlate », « nous ») est une application mobile pour collecter des recettes, planifier les repas de la semaine et gérer des listes de courses. Cette politique explique quelles informations nous collectons lorsque vous utilisez l’application, pourquoi, avec qui nous les partageons et quels choix vous avez. En utilisant EasyPlate, vous acceptez les pratiques décrites ici.",
+  "sections": [
+   {
+    "h": "1. Qui nous sommes",
+    "p": [
+     "EasyPlate est exploité par l’équipe EasyPlate (identifiant éditeur « KH Easy Dev » sur les boutiques d’applications), basée en Israël. Pour toute question relative à cette politique, écrivez à support@aieasyplate.app."
+    ]
+   },
+   {
+    "h": "2. Informations que vous nous fournissez",
+    "p": [
+     "Données de compte. Chaque compte est ouvert avec un numéro de téléphone vérifié, qui constitue l’identité de base du compte. Vous pouvez également lier un compte Google, un identifiant Apple (iOS uniquement) ou une adresse e-mail et un mot de passe pour vous reconnecter. Nous conservons votre nom et, si vous le souhaitez, une photo de profil.",
+     "Préférences. Votre langue, votre jour de courses hebdomadaire, vos préférences alimentaires et allergènes, vos réglages de notifications et le mode d’affichage.",
+     "Contenu que vous créez. Recettes, livres de recettes, plans de repas hebdomadaires, listes de courses, photos jointes aux recettes, fils et réponses du forum, mentions « j’aime » et messages de retour que vous nous envoyez.",
+     "Contenu que vous importez. Textes collés, liens partagés, fichiers (PDF, audio) et vidéos TikTok, Instagram, YouTube, Facebook ou d’autres sites que vous demandez à l’application de transformer en recette.",
+     "Tickets de caisse. Lorsque vous scannez un ticket, nous ne conservons que les noms de produits, les quantités et les prix. Nous ne conservons ni le magasin, ni la date, ni le moyen de paiement, ni le payeur. Si vous l’acceptez, des prix de produits anonymes peuvent alimenter les prix médians de la communauté.",
+     "Messages au support. Ce que vous nous écrivez par e-mail, WhatsApp ou le formulaire de retour de l’application, avec votre nom et l’identifiant de votre compte afin que nous puissions répondre."
+    ]
+   },
+   {
+    "h": "3. Informations collectées automatiquement",
+    "p": [
+     "Usage et diagnostic. Nous utilisons Firebase Analytics et Firebase Crashlytics (Google) pour comprendre quelles fonctionnalités sont utilisées et corriger les plantages : modèle d’appareil, version du système, version de l’application, langue, région approximative, événements de session et rapports de plantage. Ce sont des identifiants pseudonymes, pas votre nom ni votre numéro.",
+     "Jetons de notification. Un jeton d’appareil Firebase Cloud Messaging pour délivrer les notifications que vous avez activées (invitations de partage, réponses à vos fils, rappels du jour de courses).",
+     "Comptabilité de l’IA. Le nombre d’extractions IA que vous lancez par jour et leur consommation de jetons, pour appliquer le quota quotidien gratuit et les limites Premium, et pour suivre nos propres coûts.",
+     "Identifiants publicitaires. Sur les comptes gratuits, Google AdMob peut collecter l’identifiant publicitaire de votre appareil pour diffuser et mesurer des publicités (voir section 6)."
+    ]
+   },
+   {
+    "h": "4. Comment nous utilisons les informations",
+    "p": [
+     "Pour faire fonctionner l’application : vous connecter, stocker et synchroniser votre contenu entre vos appareils, délivrer les notifications demandées, appliquer les quotas quotidiens et les droits Premium.",
+     "Pour créer des recettes avec l’IA : le texte, le lien, le fichier ou la vidéo que vous soumettez est envoyé à un modèle d’IA (Google Gemini) pour extraire ingrédients, étapes, portions, tags et nutrition estimée. Nous n’envoyons que ce qui est nécessaire à cette demande.",
+     "Pour traduire votre contenu lorsque vous changez de langue, avec le même service d’IA.",
+     "Pour partager : lorsque vous partagez une recette, un livre ou un plan, ou publiez dans la communauté, les personnes concernées (ou la communauté) voient ce contenu, votre nom d’affichage et votre photo de profil.",
+     "Pour améliorer l’application, comprendre l’usage, corriger les bugs et assurer la sécurité.",
+     "Pour afficher des publicités sur les comptes gratuits et traiter les abonnements.",
+     "Pour vous répondre lorsque vous contactez le support."
+    ]
+   },
+   {
+    "h": "5. Intelligence artificielle",
+    "p": [
+     "L’extraction de recettes, les estimations nutritionnelles, les demandes « demander une recette » et la traduction du contenu sont réalisées par les modèles Gemini de Google via Google Cloud. Le contenu soumis à cette fin est traité selon les conditions d’API de Google et nous ne l’utilisons pas pour vous identifier. Les résultats de l’IA peuvent être erronés : vérifiez toujours vous-même quantités, températures de cuisson, allergènes et valeurs nutritionnelles, surtout lorsque la santé ou des allergies sont en jeu.",
+     "L’assistant intégré (chat) envoie vos messages, avec un bref instantané de votre compte dont il a besoin pour agir (vos préférences, les titres de vos recettes enregistrées, les articles de votre liste de courses active, ce qui cuit), au même service Google Gemini, et effectue les actions demandées via l’app elle-même. Les conversations ne sont conservées par Google que le temps de la session et nous ne les utilisons pas pour vous identifier."
+    ]
+   },
+   {
+    "h": "6. Publicité",
+    "p": [
+     "Les comptes gratuits voient des publicités dans les flux communautaires et peuvent choisir de regarder une vidéo récompensée pour étendre un quota quotidien. Les publicités sont diffusées par Google AdMob, qui peut utiliser l’identifiant publicitaire de votre appareil et des données d’appareil limitées pour sélectionner et mesurer les publicités. Vous pouvez limiter la personnalisation dans les réglages de votre appareil (iOS : Réglages › Confidentialité › Suivi / Publicité Apple ; Android : Paramètres › Google › Annonces). EasyPlate Premium supprime toutes les publicités."
+    ]
+   },
+   {
+    "h": "7. Abonnements et paiements",
+    "p": [
+     "EasyPlate Premium est vendu via l’App Store d’Apple et Google Play. Nous ne voyons jamais votre numéro de carte. Les achats sont gérés avec RevenueCat, qui reçoit un identifiant utilisateur anonyme, votre reçu de boutique et l’état de l’abonnement afin de débloquer Premium sur tous vos appareils. Les remboursements et questions de facturation sont traités par la boutique où vous avez acheté."
+    ]
+   },
+   {
+    "h": "8. Avec qui nous partageons les informations",
+    "p": [
+     "Prestataires qui traitent des données pour nous : Google Firebase (authentification, base de données, stockage, analyse, rapports de plantage, notifications, configuration à distance), Google Cloud et Gemini (traitement IA), Google AdMob (publicité), RevenueCat (abonnements), Apple et Google (connexion et facturation).",
+     "Autres utilisateurs : uniquement le contenu que vous choisissez de partager ou de publier, avec votre nom d’affichage et votre photo.",
+     "Raisons légales : lorsque la loi ou une décision de justice l’exige, ou pour protéger les droits, la sécurité et les biens de nos utilisateurs ou d’EasyPlate.",
+     "Nous ne vendons pas vos informations personnelles.",
+     "Codes et liens de partage. Outre l’invitation d’un contact par e-mail ou téléphone, vous pouvez partager une recette, un livre ou un plan de repas avec un code court, un lien (aieasyplate.app/s/…) ou une image QR qui le porte. La création enregistre une petite fiche avec le titre de l’élément, l’identifiant de votre compte, le niveau d’accès choisi et une expiration (30 jours, sauf annulation anticipée). Toute personne disposant du code peut rejoindre jusque-là ; traitez-le donc comme une invitation : en l’utilisant, elle voit votre nom affiché et l’élément partagé exactement comme un contact invité, et vous pouvez la retirer à tout moment depuis l’écran d’accès partagé. Le scan d’un QR n’utilise la caméra que pendant que le lecteur est ouvert ; aucune image n’est stockée ni envoyée. La feuille de partage du système transmet le code et le lien à l’app que vous choisissez (messagerie, mail) ; ce qu’elle en fait relève de sa propre politique.",
+     "Comptes partagés (Pro Duo, Pro Family). Un abonné Pro Duo ou Pro Family peut ouvrir un compte partagé et inviter avec un code jusqu’à un (Duo) ou cinq (Family) autres comptes. Dans un compte partagé, les recettes, livres, plans de repas, listes de courses, tickets et relevés de prix sont stockés sous le compte partagé et non sous chaque membre : chaque membre les voit et peut les modifier, et les changements sont répercutés sur les appareils des membres au fil de l’eau. Les membres voient leurs noms affichés respectifs. Les préférences, les quotas quotidiens et votre profil restent les vôtres. Le statut Premium du propriétaire est copié aux membres tant que l’abonnement est actif. Si vous quittez le compte ou en êtes retiré, les données partagées restent dans le compte partagé et sont supprimées de votre appareil ; si le propriétaire ferme le compte partagé, ses données sont supprimées de nos serveurs et seul l’appareil du propriétaire en garde une copie."
+    ]
+   },
+   {
+    "h": "9. Où les données sont stockées",
+    "p": [
+     "Vos données sont stockées sur les serveurs Google Cloud, qui peuvent se trouver hors d’Israël, notamment dans l’Union européenne et aux États-Unis. Google maintient des garanties appropriées pour ces transferts. Une copie de votre contenu est aussi conservée sur votre appareil pour que l’application fonctionne hors ligne."
+    ]
+   },
+   {
+    "h": "10. Conservation et suppression",
+    "p": [
+     "Nous conservons votre compte et votre contenu tant que le compte existe. Vous pouvez supprimer à tout moment toute recette, livre, plan, liste ou ticket depuis l’application ; le contenu partagé est également retiré chez les personnes avec qui vous l’aviez partagé.",
+     "Pour supprimer tout votre compte, écrivez à support@aieasyplate.app depuis l’e-mail ou le téléphone du compte, ou utilisez l’option de suppression de compte dans l’application lorsqu’elle est disponible. Nous supprimons votre compte, votre contenu et vos photos sous 30 jours, sauf les enregistrements que la loi nous oblige à conserver (par exemple les enregistrements d’achat) et les statistiques anonymes.",
+     "Les données de plantage et d’analyse sont conservées par Google pour les durées définies dans Firebase (jusqu’à 14 mois) et ne sont ensuite plus liées à votre compte."
+    ]
+   },
+   {
+    "h": "11. Mode cuisine, minuteurs et notifications sur votre appareil",
+    "p": [
+     "Le mode cuisine conserve la recette en cours, l’étape où vous êtes et vos minuteurs uniquement sur votre appareil, pour que vous puissiez quitter l’app et y revenir. Ces informations ne nous sont pas envoyées, ni à personne d’autre, et sont supprimées quand vous touchez « J’ai fini ».",
+     "Les minuteurs utilisent des notifications locales : une notification qui sonne à la fin d’un minuteur et, sur Android, une notification persistante avec le compte à rebours quand l’app est en arrière-plan. L’app demande pour cela l’autorisation d’envoyer des notifications et, sur Android 14 et plus, celle de programmer des alarmes exactes pour que la sonnerie soit à l’heure ; sans elle, la sonnerie peut être retardée.",
+     "Sur Android, pendant qu’un minuteur tourne, l’app maintient un service de premier plan (foreground service) pour que le compte à rebours continue quand l’app n’est pas à l’écran. Android affiche une notification permanente pour ce service, qui consomme un peu de batterie jusqu’à l’arrêt du dernier minuteur ou la fin de la cuisine. Quand l’écran du mode cuisine est ouvert, l’écran reste allumé."
+    ]
+   },
+   {
+    "h": "12. Sécurité",
+    "p": [
+     "Les données sont chiffrées en transit (TLS) et au repos sur Google Cloud. L’accès à votre contenu est appliqué par des règles de sécurité côté serveur : seuls vous et les comptes avec lesquels vous avez partagé peuvent le lire. Aucune méthode de transmission ou de stockage n’est parfaitement sûre ; protégez vos moyens de connexion."
+    ]
+   },
+   {
+    "h": "13. Enfants",
+    "p": [
+     "EasyPlate ne s’adresse pas aux enfants de moins de 13 ans (ou de l’âge minimum supérieur applicable dans votre pays) et nous ne collectons pas sciemment d’informations personnelles les concernant. Si vous pensez qu’un enfant a créé un compte, contactez-nous et nous le supprimerons."
+    ]
+   },
+   {
+    "h": "14. Vos droits",
+    "p": [
+     "Selon votre lieu de résidence (notamment en vertu de la loi israélienne sur la protection de la vie privée et, le cas échéant, du RGPD), vous avez le droit d’accéder aux informations personnelles que nous détenons, de les rectifier, de les supprimer, de vous opposer à certains traitements ou de les limiter, de recevoir une copie de vos données dans un format portable et de retirer votre consentement. Vous pouvez modifier vos choix de notifications, de publicité et de partage dans l’application, et nous contacter à support@aieasyplate.app pour le reste. Vous pouvez également déposer une réclamation auprès de votre autorité de protection des données."
+    ]
+   },
+   {
+    "h": "15. Modifications de cette politique",
+    "p": [
+     "Nous pouvons mettre à jour cette politique de temps à autre. La date de « dernière mise à jour » en haut indique la version en vigueur. En cas de changement important, nous vous en informerons dans l’application ou via les coordonnées de votre compte."
+    ]
+   },
+   {
+    "h": "16. Contact",
+    "p": [
+     "Questions, demandes et réclamations : support@aieasyplate.app."
+    ]
+   }
+  ]
+ },
+ "ru": {
+  "title": "Политика конфиденциальности",
+  "updated": "Последнее обновление: 6 октября 2026",
+  "toc": "Содержание",
+  "intro": "EasyPlate («EasyPlate», «мы») — мобильное приложение для сбора рецептов, планирования недельного меню и ведения списков покупок. Эта политика объясняет, какую информацию мы собираем при использовании приложения, зачем, с кем делимся и какие у вас есть возможности. Используя EasyPlate, вы соглашаетесь с описанными здесь правилами.",
+  "sections": [
+   {
+    "h": "1. Кто мы",
+    "p": [
+     "EasyPlate управляется командой EasyPlate (идентификатор издателя в магазинах приложений: «KH Easy Dev»), базирующейся в Израиле. По любым вопросам, связанным с этой политикой, пишите на support@aieasyplate.app."
+    ]
+   },
+   {
+    "h": "2. Информация, которую вы нам передаёте",
+    "p": [
+     "Данные аккаунта. Каждый аккаунт открывается с подтверждённым номером телефона, который является основной идентичностью аккаунта. Вы также можете привязать аккаунт Google, Apple ID (только iOS) или адрес электронной почты и пароль для повторного входа. Мы храним ваше имя и, по вашему желанию, фото профиля.",
+     "Предпочтения. Язык, день еженедельных покупок, пищевые предпочтения и аллергены, настройки уведомлений и режим отображения.",
+     "Контент, который вы создаёте. Рецепты, кулинарные книги, недельные планы питания, списки покупок, фото к рецептам, темы и ответы на форуме, лайки и сообщения обратной связи, которые вы нам отправляете.",
+     "Контент, который вы импортируете. Вставленный текст, ссылки, файлы (PDF, аудио) и видео из TikTok, Instagram, YouTube, Facebook или других сайтов, которые вы просите приложение превратить в рецепт.",
+     "Чеки. При сканировании чека мы сохраняем только названия продуктов, количество и цены. Мы не сохраняем магазин, дату, способ оплаты и плательщика. Если вы согласитесь, анонимные цены продуктов могут участвовать в расчёте медианных цен сообщества.",
+     "Обращения в поддержку. То, что вы пишете нам по электронной почте, в WhatsApp или через форму обратной связи в приложении, вместе с вашим именем и ID аккаунта, чтобы мы могли ответить."
+    ]
+   },
+   {
+    "h": "3. Информация, собираемая автоматически",
+    "p": [
+     "Использование и диагностика. Мы используем Firebase Analytics и Firebase Crashlytics (Google), чтобы понимать, какие функции используются, и исправлять сбои: модель устройства, версия ОС, версия приложения, язык, приблизительный регион, события сессии и отчёты о сбоях. Это псевдонимные идентификаторы, а не ваше имя или номер телефона.",
+     "Токены уведомлений. Токен устройства Firebase Cloud Messaging для доставки включённых вами уведомлений (приглашения к совместному доступу, ответы в ваших темах, напоминания о дне покупок).",
+     "Учёт использования ИИ. Количество извлечений ИИ в день и расход токенов, чтобы применять бесплатный дневной лимит и лимиты Премиум и отслеживать наши расходы.",
+     "Рекламные идентификаторы. В бесплатных аккаунтах Google AdMob может собирать рекламный идентификатор устройства для показа и измерения рекламы (см. раздел 6)."
+    ]
+   },
+   {
+    "h": "4. Как мы используем информацию",
+    "p": [
+     "Для работы приложения: вход, хранение и синхронизация контента между вашими устройствами, доставка запрошенных уведомлений, применение дневных лимитов и прав Премиум.",
+     "Для создания рецептов с помощью ИИ: текст, ссылка, файл или видео, которые вы отправляете, передаются модели ИИ (Google Gemini) для извлечения ингредиентов, шагов, порций, тегов и оценочной пищевой ценности. Мы отправляем только то, что нужно для этого запроса.",
+     "Для перевода вашего контента при смене языка с помощью того же сервиса ИИ.",
+     "Для совместного доступа: когда вы делитесь рецептом, книгой или планом либо публикуете в сообществе, получатели (или сообщество) видят этот контент, ваше отображаемое имя и фото профиля.",
+     "Для улучшения приложения, понимания использования, исправления ошибок и обеспечения безопасности.",
+     "Для показа рекламы в бесплатных аккаунтах и обработки подписок.",
+     "Для ответа на ваши обращения в поддержку."
+    ]
+   },
+   {
+    "h": "5. Искусственный интеллект",
+    "p": [
+     "Извлечение рецептов, оценка пищевой ценности, запросы «попросить рецепт» и перевод контента выполняются моделями Gemini от Google через Google Cloud. Контент, отправленный для этого, обрабатывается по условиям API Google и не используется нами для вашей идентификации. Результаты ИИ могут быть ошибочными: всегда сами проверяйте количества, температуры приготовления, аллергены и пищевую ценность, особенно когда речь идёт о здоровье или аллергии.",
+     "Встроенный ассистент (чат) отправляет ваши сообщения вместе с коротким снимком аккаунта, нужным ему для действий (предпочтения, названия сохранённых рецептов, позиции активного списка покупок, что готовится), в тот же сервис Google Gemini и выполняет запрошенные действия через само приложение. Google хранит переписку только на время сеанса, и мы не используем её для вашей идентификации."
+    ]
+   },
+   {
+    "h": "6. Реклама",
+    "p": [
+     "Бесплатные аккаунты видят рекламу в лентах сообщества и могут посмотреть видео с вознаграждением, чтобы расширить дневной лимит. Реклама показывается через Google AdMob, который может использовать рекламный идентификатор устройства и ограниченные данные устройства для подбора и измерения рекламы. Ограничить персонализацию можно в настройках устройства (iOS: Настройки › Конфиденциальность › Отслеживание / Реклама Apple; Android: Настройки › Google › Реклама). EasyPlate Premium убирает всю рекламу."
+    ]
+   },
+   {
+    "h": "7. Подписки и платежи",
+    "p": [
+     "EasyPlate Premium продаётся через App Store от Apple и Google Play. Мы никогда не видим номер вашей карты. Покупки обрабатываются через RevenueCat, который получает анонимный ID пользователя приложения, чек магазина и статус подписки, чтобы Премиум был доступен на всех ваших устройствах. Возвраты и вопросы оплаты решает магазин, в котором вы совершили покупку."
+    ]
+   },
+   {
+    "h": "8. С кем мы делимся информацией",
+    "p": [
+     "Поставщики услуг, обрабатывающие данные для нас: Google Firebase (аутентификация, база данных, хранилище, аналитика, отчёты о сбоях, push-уведомления, удалённая конфигурация), Google Cloud и Gemini (обработка ИИ), Google AdMob (реклама), RevenueCat (подписки), Apple и Google (вход и оплата).",
+     "Другие пользователи: только контент, которым вы решили поделиться или который опубликовали, с вашим отображаемым именем и фото.",
+     "Юридические основания: когда этого требует закон, судебное решение или защита прав, безопасности и имущества наших пользователей или EasyPlate.",
+     "Мы не продаём вашу личную информацию.",
+     "Коды и ссылки для общего доступа. Помимо приглашения контакта по e-mail или телефону, рецептом, книгой или планом питания можно поделиться коротким кодом, ссылкой (aieasyplate.app/s/…) или QR-изображением с ней. При создании сохраняется небольшая запись: название элемента, идентификатор вашего аккаунта, выбранный уровень доступа и срок действия (30 дней, если вы не отмените раньше). До этого момента присоединиться может любой, у кого есть код, поэтому относитесь к нему как к приглашению: при использовании он увидит ваше отображаемое имя и элемент точно так же, как приглашённый контакт, и вы в любой момент можете удалить его на экране общего доступа. Сканирование QR использует камеру только пока открыт сканер; изображения не сохраняются и никуда не отправляются. Системное окно «Поделиться» передаёт код и ссылку выбранному вами приложению (мессенджер, почта); что оно с ними делает, определяет его собственная политика.",
+     "Общие аккаунты (Pro Duo, Pro Family). Подписчик Pro Duo или Pro Family может открыть общий аккаунт и пригласить кодом ещё один (Duo) или до пяти (Family) аккаунтов. Внутри общего аккаунта рецепты, книги, планы питания, списки покупок, чеки и записи цен хранятся под общим аккаунтом, а не под каждым участником: все участники их видят и могут менять, а изменения зеркалируются на устройства участников по мере внесения. Участники видят отображаемые имена друг друга. Предпочтения, дневные лимиты и ваш профиль остаются вашими. Статус Premium владельца копируется участникам, пока подписка активна. Если вы покидаете аккаунт или вас удаляют, общие данные остаются в общем аккаунте и удаляются с вашего устройства; если владелец закрывает общий аккаунт, его данные удаляются с наших серверов, и копия остаётся только на устройстве владельца."
+    ]
+   },
+   {
+    "h": "9. Где хранятся данные",
+    "p": [
+     "Ваши данные хранятся на серверах Google Cloud, которые могут находиться за пределами Израиля, в том числе в Европейском союзе и США. Google обеспечивает надлежащие гарантии для таких передач. Копия контента также хранится на вашем устройстве, чтобы приложение работало офлайн."
+    ]
+   },
+   {
+    "h": "10. Хранение и удаление",
+    "p": [
+     "Мы храним аккаунт и контент, пока аккаунт существует. Вы можете в любой момент удалить любой рецепт, книгу, план, список или чек из приложения; общий контент удаляется и у тех, с кем вы им делились.",
+     "Чтобы удалить аккаунт целиком, напишите на support@aieasyplate.app с электронной почты или телефона аккаунта либо используйте опцию удаления аккаунта в приложении, где она доступна. Мы удаляем аккаунт, контент и фото в течение 30 дней, за исключением записей, которые обязаны хранить по закону (например, записей о покупках), и анонимной статистики.",
+     "Данные о сбоях и аналитика хранятся Google в течение сроков, заданных в Firebase (до 14 месяцев), и после этого не связаны с вашим аккаунтом."
+    ]
+   },
+   {
+    "h": "11. Режим готовки, таймеры и уведомления на вашем устройстве",
+    "p": [
+     "Режим готовки хранит рецепт, который вы готовите, текущий шаг и ваши таймеры только на устройстве, чтобы вы могли выйти из приложения и вернуться. Эти данные не отправляются нам или кому-либо ещё и удаляются при нажатии «Готово».",
+     "Таймеры используют локальные уведомления: уведомление, которое звонит по окончании таймера, а на Android — постоянное уведомление с обратным отсчётом, пока приложение в фоне. Для этого приложение запрашивает разрешение на уведомления, а на Android 14 и новее — разрешение на точные будильники, чтобы звонок был вовремя; без него звонок может задержаться.",
+     "На Android, пока идёт таймер, приложение держит запущенным фоновый сервис (foreground service), чтобы отсчёт продолжался, когда приложение не на экране. Android показывает для него постоянное уведомление, и он расходует немного батареи, пока не остановится последний таймер или вы не завершите готовку. Пока открыт экран режима готовки, экран не гаснет."
+    ]
+   },
+   {
+    "h": "12. Безопасность",
+    "p": [
+     "Данные шифруются при передаче (TLS) и при хранении в Google Cloud. Доступ к вашему контенту обеспечивается серверными правилами безопасности: читать его можете только вы и аккаунты, с которыми вы поделились. Ни один способ передачи или хранения не является абсолютно безопасным, поэтому берегите свои способы входа."
+    ]
+   },
+   {
+    "h": "13. Дети",
+    "p": [
+     "EasyPlate не предназначен для детей младше 13 лет (или более высокого минимального возраста в вашей стране), и мы сознательно не собираем их личные данные. Если вы считаете, что ребёнок создал аккаунт, свяжитесь с нами, и мы его удалим."
+    ]
+   },
+   {
+    "h": "14. Ваши права",
+    "p": [
+     "В зависимости от места проживания (включая израильский Закон о защите частной жизни и, где применимо, GDPR ЕС) вы имеете право получить доступ к своим личным данным, исправить их, удалить, возразить против определённой обработки или ограничить её, получить копию данных в переносимом формате и отозвать согласие. Настройки уведомлений, рекламы и совместного доступа можно изменить в приложении; по остальным вопросам пишите на support@aieasyplate.app. Вы также можете подать жалобу в местный орган по защите данных."
+    ]
+   },
+   {
+    "h": "15. Изменения политики",
+    "p": [
+     "Мы можем время от времени обновлять эту политику. Дата «последнего обновления» вверху показывает текущую версию. О существенных изменениях мы сообщим в приложении или по контактным данным вашего аккаунта."
+    ]
+   },
+   {
+    "h": "16. Контакты",
+    "p": [
+     "Вопросы, запросы и жалобы: support@aieasyplate.app."
+    ]
+   }
+  ]
+ }
+};
+  const OTHER_KEY = 'other_terms';
+
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/privacy","he":"/he/privacy","ar":"/ar/privacy","fr":"/fr/privacy","ru":"/ru/privacy"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/privacy","he":"/he/privacy","ar":"/ar/privacy","fr":"/fr/privacy","ru":"/ru/privacy"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/privacy","he":"/he/privacy","ar":"/ar/privacy","fr":"/fr/privacy","ru":"/ru/privacy"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/privacy","he":"/he/privacy","ar":"/ar/privacy","fr":"/fr/privacy","ru":"/ru/privacy"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/privacy","he":"/he/privacy","ar":"/ar/privacy","fr":"/fr/privacy","ru":"/ru/privacy"};
+  const PAGE_LANG = 'ru';
+  const LEGAL_URLS = {"en":"/privacy","he":"/he/privacy","ar":"/ar/privacy","fr":"/fr/privacy","ru":"/ru/privacy"};
+  function pickLang() {
+    const p = new URLSearchParams(location.search).get('lang');
+    let saved = null; try { saved = localStorage.getItem('ep-lang'); } catch (_) {}
+    const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+    return [p, saved, nav].find(l => l && DOCS[l]) || 'en';
+  }
+  function linkify(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/support@aieasyplate\.app/g, '<a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a>');
+  }
+  function render(lang) {
+    const d = DOCS[lang], m = META[lang];
+    document.documentElement.lang = lang; document.documentElement.dir = m.dir;
+    document.title = d.title + ' — EasyPlate';
+    document.getElementById('title').textContent = d.title;
+    document.getElementById('updated').textContent = d.updated;
+    document.getElementById('intro').textContent = d.intro;
+    document.getElementById('tocTitle').textContent = d.toc;
+    document.getElementById('navHome').textContent = m.home;
+    document.getElementById('navOther').textContent = m[OTHER_KEY];
+    document.getElementById('footOther').textContent = m[OTHER_KEY];
+    document.getElementById('copyright').textContent = m.copyright;
+    const q = '?lang=' + lang;
+    for (const id of ['homeLink', 'navHome']) document.getElementById(id).href = '/ru';
+    for (const id of ['navOther', 'footOther']) document.getElementById(id).href = '/ru/terms';
+    const toc = document.getElementById('toc'), secs = document.getElementById('sections');
+    toc.innerHTML = ''; secs.innerHTML = '';
+    d.sections.forEach((s, i) => {
+      const id = 's' + (i + 1);
+      const li = document.createElement('li'); li.innerHTML = `<a href="#${id}">${s.h.replace(/</g, '&lt;')}</a>`; toc.appendChild(li);
+      const sec = document.createElement('section'); sec.id = id;
+      sec.innerHTML = `<h2>${s.h.replace(/</g, '&lt;')}</h2>` + s.p.map(p => {
+        const m2 = p.match(/^([^.]{2,60}\.)\s/);  // lead-in like "Account details." in bold
+        return m2 && m2[1].split(' ').length <= 5 ? `<p><b>${linkify(m2[1])}</b> ${linkify(p.slice(m2[0].length))}</p>` : `<p>${linkify(p)}</p>`;
+      }).join('');
+      secs.appendChild(sec);
+    });
+    const sel = document.getElementById('langSel');
+    sel.innerHTML = Object.keys(META).map(k => `<option value="${k}" ${k === lang ? 'selected' : ''}>${META[k].name}</option>`).join('');
+    observe();
+  }
+  function observe() {
+    if (!('IntersectionObserver' in window)) return;
+    const links = [...document.querySelectorAll('#toc a')];
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id)); } }), { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('section').forEach(s => io.observe(s));
+  }
+  document.getElementById('langSel').addEventListener('change', e => {
+    const l = e.target.value; try { localStorage.setItem('ep-lang', l); } catch (_) {}
+    location.href = LEGAL_URLS[l] || LEGAL_URLS.en;
+  });
+  render(PAGE_LANG);
+  </script>
+</body>
+</html>

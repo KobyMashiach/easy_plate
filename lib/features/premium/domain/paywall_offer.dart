@@ -1,5 +1,7 @@
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../../household/domain/household_entity.dart';
+
 /// How often a package bills, in the app's own terms so the paywall does not
 /// depend on the store SDK's enum.
 enum PaywallPeriod {
@@ -90,6 +92,19 @@ class PaywallOffer {
   );
 
   bool get isLifetime => period == PaywallPeriod.lifetime;
+
+  /// Null for plain Pro; duo or family by the product id.
+  HouseholdTier? get tier => HouseholdTier.fromProductId(productId);
+
+  /// The tiers on offer, in paywall order, when more than Pro is sold.
+  static List<HouseholdTier?> tiersIn(List<PaywallOffer> offers) {
+    final present = offers.map((o) => o.tier).toSet();
+    return [
+      null,
+      if (present.contains(HouseholdTier.duo)) HouseholdTier.duo,
+      if (present.contains(HouseholdTier.family)) HouseholdTier.family,
+    ];
+  }
 
   static PaywallOffer fromPackage(Package package) => PaywallOffer(
     id: package.identifier,

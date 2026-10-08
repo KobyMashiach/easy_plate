@@ -75,6 +75,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminBilling$ru adminBilling = _Translations$adminBilling$ru._(_root);
 	@override late final _Translations$adminDashboard$ru adminDashboard = _Translations$adminDashboard$ru._(_root);
 	@override late final _Translations$assistant$ru assistant = _Translations$assistant$ru._(_root);
+	@override late final _Translations$shareCode$ru shareCode = _Translations$shareCode$ru._(_root);
+	@override late final _Translations$household$ru household = _Translations$household$ru._(_root);
 }
 
 // Path: common
@@ -1208,6 +1210,13 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get perThreeMonth => 'раз в 3 месяца';
 	@override String get perSixMonth => 'раз в 6 месяцев';
 	@override String get perAnnual => 'в год';
+	@override String get tierPro => 'Pro';
+	@override String get tierDuo => 'Pro Duo';
+	@override String get tierFamily => 'Pro Family';
+	@override String get tierProHint => 'Один аккаунт';
+	@override String get tierDuoHint => '2 аккаунта, всё синхронизировано';
+	@override String get tierFamilyHint => 'До 6 аккаунтов, всё синхронизировано';
+	@override String benefitHousehold({required Object n}) => 'Общий аккаунт на ${n} человек: рецепты, планы и списки синхронизированы';
 }
 
 // Path: walkthrough
@@ -1478,7 +1487,7 @@ class _Translations$assistant$ru extends Translations$assistant$he {
 	@override String get send => 'Отправить';
 	@override String get thinking => 'Думаю…';
 	@override String working({required Object tool}) => 'Выполняю: ${tool}';
-	@override String get welcome => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?';
+	@override String welcome({required Object name}) => 'Привет, ${name}! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?';
 	@override String get error => 'Что-то пошло не так. Попробуйте снова.';
 	@override String get quotaReached => 'Дневной лимит ИИ исчерпан. Откроется завтра.';
 	@override String get premiumOnly => 'Ассистент входит в EasyPlate Premium';
@@ -1502,6 +1511,88 @@ class _Translations$assistant$ru extends Translations$assistant$he {
 	@override late final _Translations$assistant$suggest$ru suggest = _Translations$assistant$suggest$ru._(_root);
 	@override String get whichList => 'В какой список?';
 	@override String get listCreated => 'Список создан';
+	@override String get offTopic => 'Я здесь для готовки, рецептов, планов питания и покупок. Спросите что угодно про кухню, и я помогу!';
+	@override String get welcomeAnon => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?';
+}
+
+// Path: shareCode
+class _Translations$shareCode$ru extends Translations$shareCode$he {
+	_Translations$shareCode$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Код и ссылка';
+	@override String get tabContact => 'Контакт';
+	@override String get tabCode => 'Код или ссылка';
+	@override String explain({required Object role}) => 'Любой с этим кодом может присоединиться как ${role}. Действует 30 дней.';
+	@override String get create => 'Создать код';
+	@override String get code => 'Код';
+	@override String get link => 'Ссылка';
+	@override String get copy => 'Копировать';
+	@override String get copied => 'Скопировано';
+	@override String get share => 'Поделиться';
+	@override String get showQr => 'Показать QR';
+	@override String get scanQr => 'Сканировать QR';
+	@override String get enterCode => 'Ввести код';
+	@override String get join => 'Присоединиться';
+	@override String get joinTitle => 'Присоединиться по коду';
+	@override String get joinHint => 'Вставьте полученный код или отсканируйте его QR.';
+	@override String get joinPlaceholder => 'XXXXXXXX';
+	@override String joined({required Object title}) => 'Готово: ${title}';
+	@override String get alreadyMember => 'У вас это уже есть.';
+	@override String get invalid => 'Код недействителен.';
+	@override String get expired => 'Срок кода истёк.';
+	@override String get revoked => 'Код отменён.';
+	@override String get usedUp => 'Код исчерпан.';
+	@override String get self => 'Это ваш собственный код.';
+	@override String get gone => 'То, чем делился этот код, больше не существует.';
+	@override String get failed => 'Не удалось присоединиться. Попробуйте снова.';
+	@override String messageText({required Object name, required Object title, required Object code, required Object link}) => '${name} поделился «${title}» с вами в EasyPlate. Код: ${code}\n${link}';
+	@override String get revoke => 'Отменить код';
+	@override String limitRecipes({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} рецептов в неделю.';
+	@override String limitBooks({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} книг.';
+	@override String limitPlans({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} планов.';
+	@override String get upgrade => 'Открыть Premium';
+	@override String get scanHint => 'Наведите камеру на QR-код';
+	@override String householdMessage({required Object name, required Object code, required Object link}) => '${name} приглашает вас в общий аккаунт EasyPlate. Код: ${code}\n${link}';
+}
+
+// Path: household
+class _Translations$household$ru extends Translations$household$he {
+	_Translations$household$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Общий аккаунт';
+	@override String get duo => 'Pro Duo';
+	@override String get family => 'Pro Family';
+	@override String seats({required Object used, required Object total}) => 'Занято мест: ${used} из ${total}';
+	@override String get intro => 'Откройте общий аккаунт: рецепты, книги, планы и списки синхронизируются у всех участников, и они получают Premium вместе с вами.';
+	@override String get create => 'Открыть общий аккаунт';
+	@override String get nameHint => 'Название, например семья Ивановых';
+	@override String get notEligible => 'Общий аккаунт входит в Pro Duo (2 аккаунта) или Pro Family (до 6 аккаунтов).';
+	@override String get seePlans => 'Смотреть тарифы';
+	@override String get members => 'Участники';
+	@override String get owner => 'Владелец';
+	@override String get you => 'Вы';
+	@override String get invite => 'Пригласить участника';
+	@override String inviteExplain({required Object free}) => 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.';
+	@override String get noSeats => 'Все места заняты.';
+	@override String get remove => 'Удалить';
+	@override String removeConfirm({required Object name}) => 'Удалить ${name} из общего аккаунта? Доступ и Premium пропадут.';
+	@override String get leave => 'Покинуть общий аккаунт';
+	@override String get leaveConfirm => 'Покинуть? Сохранённое здесь остаётся в общем аккаунте; ваш аккаунт вернётся к тому, что было раньше.';
+	@override String get dissolve => 'Закрыть общий аккаунт';
+	@override String get dissolveConfirm => 'Закрыть общий аккаунт? Участники потеряют доступ и Premium. Ваши данные вернутся в ваш аккаунт.';
+	@override String get joined => 'Добро пожаловать в общий аккаунт!';
+	@override String inheritedNote({required Object name}) => 'Premium предоставлен подпиской ${name}.';
+	@override String get failed => 'Не получилось. Попробуйте ещё раз.';
+	@override String get full => 'В общем аккаунте нет мест.';
+	@override String get inHousehold => 'Вы уже в общем аккаунте.';
+	@override String get notEligibleCode => 'Тариф владельца больше не включает общий аккаунт.';
+	@override String get lapsed => 'Подписка владельца закончилась; Premium участников приостановлен.';
 }
 
 // Path: walkthrough.topics
@@ -2621,6 +2712,13 @@ extension on TranslationsRu {
 			'premium.perThreeMonth' => 'раз в 3 месяца',
 			'premium.perSixMonth' => 'раз в 6 месяцев',
 			'premium.perAnnual' => 'в год',
+			'premium.tierPro' => 'Pro',
+			'premium.tierDuo' => 'Pro Duo',
+			'premium.tierFamily' => 'Pro Family',
+			'premium.tierProHint' => 'Один аккаунт',
+			'premium.tierDuoHint' => '2 аккаунта, всё синхронизировано',
+			'premium.tierFamilyHint' => 'До 6 аккаунтов, всё синхронизировано',
+			'premium.benefitHousehold' => ({required Object n}) => 'Общий аккаунт на ${n} человек: рецепты, планы и списки синхронизированы',
 			'walkthrough.title' => 'Обучение',
 			'walkthrough.start' => 'Запустить обучение',
 			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
@@ -2786,6 +2884,8 @@ extension on TranslationsRu {
 			'adminDashboard.unknownModel' => 'нет в прайсе',
 			'adminDashboard.usersCost' => 'Стоимость по пользователям',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} пользователей',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'Поиск по имени, почте или uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'Показать всех (${count})',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} запросов',
@@ -2793,8 +2893,6 @@ extension on TranslationsRu {
 			'adminDashboard.sharedRecipes' => 'Общие рецепты',
 			'adminDashboard.forumPosts' => 'Темы форума',
 			'adminDashboard.withPush' => 'Устройств с push',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.cacheEntries' => 'Ссылок в кэше',
 			'adminDashboard.cacheHits' => 'Попаданий в кэш (сэкономлено запросов)',
 			'adminDashboard.config' => 'Удалённые настройки',
@@ -2899,7 +2997,7 @@ extension on TranslationsRu {
 			'assistant.send' => 'Отправить',
 			'assistant.thinking' => 'Думаю…',
 			'assistant.working' => ({required Object tool}) => 'Выполняю: ${tool}',
-			'assistant.welcome' => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?',
+			'assistant.welcome' => ({required Object name}) => 'Привет, ${name}! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?',
 			'assistant.error' => 'Что-то пошло не так. Попробуйте снова.',
 			'assistant.quotaReached' => 'Дневной лимит ИИ исчерпан. Откроется завтра.',
 			'assistant.premiumOnly' => 'Ассистент входит в EasyPlate Premium',
@@ -3009,6 +3107,70 @@ extension on TranslationsRu {
 			'assistant.suggest.diet.3' => 'молочные',
 			'assistant.whichList' => 'В какой список?',
 			'assistant.listCreated' => 'Список создан',
+			'assistant.offTopic' => 'Я здесь для готовки, рецептов, планов питания и покупок. Спросите что угодно про кухню, и я помогу!',
+			'assistant.welcomeAnon' => 'Привет! Я могу добавить покупки, спланировать неделю, импортировать рецепты по ссылке, запустить режим готовки и не только. Что делаем?',
+			'shareCode.title' => 'Код и ссылка',
+			'shareCode.tabContact' => 'Контакт',
+			'shareCode.tabCode' => 'Код или ссылка',
+			'shareCode.explain' => ({required Object role}) => 'Любой с этим кодом может присоединиться как ${role}. Действует 30 дней.',
+			'shareCode.create' => 'Создать код',
+			'shareCode.code' => 'Код',
+			'shareCode.link' => 'Ссылка',
+			'shareCode.copy' => 'Копировать',
+			'shareCode.copied' => 'Скопировано',
+			'shareCode.share' => 'Поделиться',
+			'shareCode.showQr' => 'Показать QR',
+			'shareCode.scanQr' => 'Сканировать QR',
+			'shareCode.enterCode' => 'Ввести код',
+			'shareCode.join' => 'Присоединиться',
+			'shareCode.joinTitle' => 'Присоединиться по коду',
+			'shareCode.joinHint' => 'Вставьте полученный код или отсканируйте его QR.',
+			'shareCode.joinPlaceholder' => 'XXXXXXXX',
+			'shareCode.joined' => ({required Object title}) => 'Готово: ${title}',
+			'shareCode.alreadyMember' => 'У вас это уже есть.',
+			'shareCode.invalid' => 'Код недействителен.',
+			'shareCode.expired' => 'Срок кода истёк.',
+			'shareCode.revoked' => 'Код отменён.',
+			'shareCode.usedUp' => 'Код исчерпан.',
+			'shareCode.self' => 'Это ваш собственный код.',
+			'shareCode.gone' => 'То, чем делился этот код, больше не существует.',
+			'shareCode.failed' => 'Не удалось присоединиться. Попробуйте снова.',
+			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} поделился «${title}» с вами в EasyPlate. Код: ${code}\n${link}',
+			'shareCode.revoke' => 'Отменить код',
+			'shareCode.limitRecipes' => ({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} рецептов в неделю.',
+			'shareCode.limitBooks' => ({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} книг.',
+			'shareCode.limitPlans' => ({required Object count}) => 'Бесплатный аккаунт может делиться до ${count} планов.',
+			'shareCode.upgrade' => 'Открыть Premium',
+			'shareCode.scanHint' => 'Наведите камеру на QR-код',
+			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} приглашает вас в общий аккаунт EasyPlate. Код: ${code}\n${link}',
+			'household.title' => 'Общий аккаунт',
+			'household.duo' => 'Pro Duo',
+			'household.family' => 'Pro Family',
+			'household.seats' => ({required Object used, required Object total}) => 'Занято мест: ${used} из ${total}',
+			'household.intro' => 'Откройте общий аккаунт: рецепты, книги, планы и списки синхронизируются у всех участников, и они получают Premium вместе с вами.',
+			'household.create' => 'Открыть общий аккаунт',
+			'household.nameHint' => 'Название, например семья Ивановых',
+			'household.notEligible' => 'Общий аккаунт входит в Pro Duo (2 аккаунта) или Pro Family (до 6 аккаунтов).',
+			'household.seePlans' => 'Смотреть тарифы',
+			'household.members' => 'Участники',
+			'household.owner' => 'Владелец',
+			'household.you' => 'Вы',
+			'household.invite' => 'Пригласить участника',
+			'household.inviteExplain' => ({required Object free}) => 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.',
+			'household.noSeats' => 'Все места заняты.',
+			'household.remove' => 'Удалить',
+			'household.removeConfirm' => ({required Object name}) => 'Удалить ${name} из общего аккаунта? Доступ и Premium пропадут.',
+			'household.leave' => 'Покинуть общий аккаунт',
+			'household.leaveConfirm' => 'Покинуть? Сохранённое здесь остаётся в общем аккаунте; ваш аккаунт вернётся к тому, что было раньше.',
+			'household.dissolve' => 'Закрыть общий аккаунт',
+			'household.dissolveConfirm' => 'Закрыть общий аккаунт? Участники потеряют доступ и Premium. Ваши данные вернутся в ваш аккаунт.',
+			'household.joined' => 'Добро пожаловать в общий аккаунт!',
+			'household.inheritedNote' => ({required Object name}) => 'Premium предоставлен подпиской ${name}.',
+			'household.failed' => 'Не получилось. Попробуйте ещё раз.',
+			'household.full' => 'В общем аккаунте нет мест.',
+			'household.inHousehold' => 'Вы уже в общем аккаунте.',
+			'household.notEligibleCode' => 'Тариф владельца больше не включает общий аккаунт.',
+			'household.lapsed' => 'Подписка владельца закончилась; Premium участников приостановлен.',
 			_ => null,
 		};
 	}

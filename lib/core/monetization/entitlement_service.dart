@@ -49,6 +49,13 @@ class EntitlementService extends ChangeNotifier {
   /// of the default `false`: a paying account would see the paywall for the
   /// first second after launch.
   bool get resolved => _resolved;
+
+  /// The store product behind the verdict, for the household tier.
+  String? get productId => _lastData?['productId'] as String?;
+
+  /// True when premium comes from a household owner's subscription rather
+  /// than this account's own purchase.
+  bool get inherited => _lastData?['source'] == 'household';
   bool _resolved = false;
 
   bool? _remembered;

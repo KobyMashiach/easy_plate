@@ -113,6 +113,27 @@
       },
       "description": "העוזר החכם בצ׳אט (ביצוע פעולות באפליקציה בשפה חופשית) זמין רק לפרימיום. false פותח אותו לכולם.",
       "valueType": "BOOLEAN"
+    },
+    "share_free_recipes_weekly": {
+      "defaultValue": {
+        "value": "5"
+      },
+      "description": "כמה מתכונים חשבון חינמי יכול לשתף בשבוע קלנדרי (בכל דרך: איש קשר או קוד). פרימיום ללא הגבלה.",
+      "valueType": "NUMBER"
+    },
+    "share_free_books_total": {
+      "defaultValue": {
+        "value": "2"
+      },
+      "description": "כמה ספרים משותפים חשבון חינמי יכול להחזיק בו-זמנית.",
+      "valueType": "NUMBER"
+    },
+    "share_free_plans_total": {
+      "defaultValue": {
+        "value": "2"
+      },
+      "description": "כמה תפריטים משותפים חשבון חינמי יכול להחזיק בו-זמנית.",
+      "valueType": "NUMBER"
     }
   }
 }

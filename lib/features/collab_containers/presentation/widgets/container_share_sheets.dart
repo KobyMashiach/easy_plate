@@ -5,6 +5,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../recipe_sharing/presentation/widgets/share_sheet.dart';
+import '../../../share_codes/presentation/share_code_hooks.dart';
 import '../../domain/container_sharing_service.dart';
 
 /// Share a book: the same sheet as a recipe, sending through the container
@@ -24,6 +25,7 @@ Future<bool?> showBookShareSheet(BuildContext context, RecipeBookEntity book) {
           ownerUid: uid,
           senderContacts: senderContacts,
         ),
+    codes: ShareCodeHooks.book(context, book),
   );
 }
 
@@ -42,5 +44,6 @@ Future<bool?> showPlanShareSheet(BuildContext context, MealPlanEntity plan) {
           ownerUid: uid,
           senderContacts: senderContacts,
         ),
+    codes: ShareCodeHooks.plan(context, plan),
   );
 }

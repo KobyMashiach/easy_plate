@@ -79,6 +79,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$adminBilling$he adminBilling = Translations$adminBilling$he.internal(_root);
 	late final Translations$adminDashboard$he adminDashboard = Translations$adminDashboard$he.internal(_root);
 	late final Translations$assistant$he assistant = Translations$assistant$he.internal(_root);
+	late final Translations$shareCode$he shareCode = Translations$shareCode$he.internal(_root);
+	late final Translations$household$he household = Translations$household$he.internal(_root);
 }
 
 // Path: common
@@ -2914,6 +2916,27 @@ class Translations$premium$he {
 
 	/// he: 'לשנה'
 	String get perAnnual => 'לשנה';
+
+	/// he: 'Pro'
+	String get tierPro => 'Pro';
+
+	/// he: 'Pro Duo'
+	String get tierDuo => 'Pro Duo';
+
+	/// he: 'Pro Family'
+	String get tierFamily => 'Pro Family';
+
+	/// he: 'חשבון אחד'
+	String get tierProHint => 'חשבון אחד';
+
+	/// he: '2 חשבונות, הכל משתקף'
+	String get tierDuoHint => '2 חשבונות, הכל משתקף';
+
+	/// he: 'עד 6 חשבונות, הכל משתקף'
+	String get tierFamilyHint => 'עד 6 חשבונות, הכל משתקף';
+
+	/// he: 'חשבון משותף ל-$n אנשים: מתכונים, תפריטים ורשימות מסונכרנים'
+	String benefitHousehold({required Object n}) => 'חשבון משותף ל-${n} אנשים: מתכונים, תפריטים ורשימות מסונכרנים';
 }
 
 // Path: walkthrough
@@ -3632,8 +3655,8 @@ class Translations$assistant$he {
 	/// he: 'מבצע: $tool'
 	String working({required Object tool}) => 'מבצע: ${tool}';
 
-	/// he: 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?'
-	String get welcome => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?';
+	/// he: 'היי $name! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?'
+	String welcome({required Object name}) => 'היי ${name}! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?';
 
 	/// he: 'משהו השתבש. נסו שוב.'
 	String get error => 'משהו השתבש. נסו שוב.';
@@ -3702,6 +3725,216 @@ class Translations$assistant$he {
 
 	/// he: 'הרשימה נוצרה'
 	String get listCreated => 'הרשימה נוצרה';
+
+	/// he: 'אני כאן בשביל בישול, מתכונים, תכנון ארוחות וקניות. שאלו אותי כל דבר שקשור למטבח ואני על זה!'
+	String get offTopic => 'אני כאן בשביל בישול, מתכונים, תכנון ארוחות וקניות. שאלו אותי כל דבר שקשור למטבח ואני על זה!';
+
+	/// he: 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?'
+	String get welcomeAnon => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?';
+}
+
+// Path: shareCode
+class Translations$shareCode$he {
+	Translations$shareCode$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'קוד וקישור'
+	String get title => 'קוד וקישור';
+
+	/// he: 'איש קשר'
+	String get tabContact => 'איש קשר';
+
+	/// he: 'קוד או קישור'
+	String get tabCode => 'קוד או קישור';
+
+	/// he: 'כל מי שיש לו את הקוד יכול להצטרף כ$role. הקוד תקף 30 יום.'
+	String explain({required Object role}) => 'כל מי שיש לו את הקוד יכול להצטרף כ${role}. הקוד תקף 30 יום.';
+
+	/// he: 'ליצור קוד'
+	String get create => 'ליצור קוד';
+
+	/// he: 'קוד'
+	String get code => 'קוד';
+
+	/// he: 'קישור'
+	String get link => 'קישור';
+
+	/// he: 'העתקה'
+	String get copy => 'העתקה';
+
+	/// he: 'הועתק'
+	String get copied => 'הועתק';
+
+	/// he: 'שיתוף'
+	String get share => 'שיתוף';
+
+	/// he: 'להציג QR'
+	String get showQr => 'להציג QR';
+
+	/// he: 'לסרוק QR'
+	String get scanQr => 'לסרוק QR';
+
+	/// he: 'להזין קוד'
+	String get enterCode => 'להזין קוד';
+
+	/// he: 'הצטרפות'
+	String get join => 'הצטרפות';
+
+	/// he: 'הצטרפות עם קוד'
+	String get joinTitle => 'הצטרפות עם קוד';
+
+	/// he: 'הדביקו את הקוד שקיבלתם, או סרקו את ה-QR שלו.'
+	String get joinHint => 'הדביקו את הקוד שקיבלתם, או סרקו את ה-QR שלו.';
+
+	/// he: 'XXXXXXXX'
+	String get joinPlaceholder => 'XXXXXXXX';
+
+	/// he: 'הצטרפתם: $title'
+	String joined({required Object title}) => 'הצטרפתם: ${title}';
+
+	/// he: 'זה כבר אצלכם.'
+	String get alreadyMember => 'זה כבר אצלכם.';
+
+	/// he: 'הקוד לא תקין.'
+	String get invalid => 'הקוד לא תקין.';
+
+	/// he: 'תוקף הקוד פג.'
+	String get expired => 'תוקף הקוד פג.';
+
+	/// he: 'הקוד בוטל.'
+	String get revoked => 'הקוד בוטל.';
+
+	/// he: 'הקוד נוצל עד תום.'
+	String get usedUp => 'הקוד נוצל עד תום.';
+
+	/// he: 'זה הקוד שלכם.'
+	String get self => 'זה הקוד שלכם.';
+
+	/// he: 'מה שהקוד שיתף כבר לא קיים.'
+	String get gone => 'מה שהקוד שיתף כבר לא קיים.';
+
+	/// he: 'ההצטרפות נכשלה. נסו שוב.'
+	String get failed => 'ההצטרפות נכשלה. נסו שוב.';
+
+	/// he: '$name שיתף איתך את "$title" ב-EasyPlate. קוד: $code $link'
+	String messageText({required Object name, required Object title, required Object code, required Object link}) => '${name} שיתף איתך את "${title}" ב-EasyPlate. קוד: ${code}\n${link}';
+
+	/// he: 'לבטל קוד'
+	String get revoke => 'לבטל קוד';
+
+	/// he: 'חשבון חינמי יכול לשתף עד $count מתכונים בשבוע.'
+	String limitRecipes({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} מתכונים בשבוע.';
+
+	/// he: 'חשבון חינמי יכול לשתף עד $count ספרים.'
+	String limitBooks({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} ספרים.';
+
+	/// he: 'חשבון חינמי יכול לשתף עד $count תפריטים.'
+	String limitPlans({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} תפריטים.';
+
+	/// he: 'לפרימיום'
+	String get upgrade => 'לפרימיום';
+
+	/// he: 'כוונו את המצלמה ל-QR של השיתוף'
+	String get scanHint => 'כוונו את המצלמה ל-QR של השיתוף';
+
+	/// he: '$name הזמין אתכם לחשבון המשותף שלו ב-EasyPlate. קוד: $code $link'
+	String householdMessage({required Object name, required Object code, required Object link}) => '${name} הזמין אתכם לחשבון המשותף שלו ב-EasyPlate. קוד: ${code}\n${link}';
+}
+
+// Path: household
+class Translations$household$he {
+	Translations$household$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'חשבון משותף'
+	String get title => 'חשבון משותף';
+
+	/// he: 'Pro Duo'
+	String get duo => 'Pro Duo';
+
+	/// he: 'Pro Family'
+	String get family => 'Pro Family';
+
+	/// he: '$used מתוך $total מקומות בשימוש'
+	String seats({required Object used, required Object total}) => '${used} מתוך ${total} מקומות בשימוש';
+
+	/// he: 'פתחו חשבון משותף: מתכונים, ספרים, תפריטים ורשימות משתקפים לכל מי שבו, וכולם מקבלים פרימיום יחד איתכם.'
+	String get intro => 'פתחו חשבון משותף: מתכונים, ספרים, תפריטים ורשימות משתקפים לכל מי שבו, וכולם מקבלים פרימיום יחד איתכם.';
+
+	/// he: 'לפתוח חשבון משותף'
+	String get create => 'לפתוח חשבון משותף';
+
+	/// he: 'שם, למשל משפחת כהן'
+	String get nameHint => 'שם, למשל משפחת כהן';
+
+	/// he: 'חשבון משותף מגיע עם Pro Duo (2 חשבונות) או Pro Family (עד 6 חשבונות).'
+	String get notEligible => 'חשבון משותף מגיע עם Pro Duo (2 חשבונות) או Pro Family (עד 6 חשבונות).';
+
+	/// he: 'לתוכניות'
+	String get seePlans => 'לתוכניות';
+
+	/// he: 'חברים'
+	String get members => 'חברים';
+
+	/// he: 'בעלים'
+	String get owner => 'בעלים';
+
+	/// he: 'אתם'
+	String get you => 'אתם';
+
+	/// he: 'להזמין חבר'
+	String get invite => 'להזמין חבר';
+
+	/// he: 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותרו $free מקומות.'
+	String inviteExplain({required Object free}) => 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותרו ${free} מקומות.';
+
+	/// he: 'כל המקומות תפוסים.'
+	String get noSeats => 'כל המקומות תפוסים.';
+
+	/// he: 'להסיר'
+	String get remove => 'להסיר';
+
+	/// he: 'להסיר את $name מהחשבון המשותף? הגישה והפרימיום שלהם יפסקו.'
+	String removeConfirm({required Object name}) => 'להסיר את ${name} מהחשבון המשותף? הגישה והפרימיום שלהם יפסקו.';
+
+	/// he: 'לעזוב את החשבון המשותף'
+	String get leave => 'לעזוב את החשבון המשותף';
+
+	/// he: 'לעזוב? מה שנשמר כאן נשאר בחשבון המשותף; החשבון שלכם חוזר למה שהיה לכם קודם.'
+	String get leaveConfirm => 'לעזוב? מה שנשמר כאן נשאר בחשבון המשותף; החשבון שלכם חוזר למה שהיה לכם קודם.';
+
+	/// he: 'לסגור את החשבון המשותף'
+	String get dissolve => 'לסגור את החשבון המשותף';
+
+	/// he: 'לסגור את החשבון המשותף? החברים יאבדו גישה ופרימיום. המידע שלכם חוזר לחשבון האישי.'
+	String get dissolveConfirm => 'לסגור את החשבון המשותף? החברים יאבדו גישה ופרימיום. המידע שלכם חוזר לחשבון האישי.';
+
+	/// he: 'ברוכים הבאים לחשבון המשותף!'
+	String get joined => 'ברוכים הבאים לחשבון המשותף!';
+
+	/// he: 'הפרימיום מגיע מהמנוי של $name.'
+	String inheritedNote({required Object name}) => 'הפרימיום מגיע מהמנוי של ${name}.';
+
+	/// he: 'זה לא הצליח. נסו שוב.'
+	String get failed => 'זה לא הצליח. נסו שוב.';
+
+	/// he: 'החשבון המשותף מלא.'
+	String get full => 'החשבון המשותף מלא.';
+
+	/// he: 'אתם כבר בחשבון משותף.'
+	String get inHousehold => 'אתם כבר בחשבון משותף.';
+
+	/// he: 'התוכנית של הבעלים כבר לא כוללת חשבון משותף.'
+	String get notEligibleCode => 'התוכנית של הבעלים כבר לא כוללת חשבון משותף.';
+
+	/// he: 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.'
+	String get lapsed => 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.';
 }
 
 // Path: walkthrough.topics
@@ -4927,6 +5160,13 @@ extension on Translations {
 			'premium.perThreeMonth' => 'ל-3 חודשים',
 			'premium.perSixMonth' => 'ל-6 חודשים',
 			'premium.perAnnual' => 'לשנה',
+			'premium.tierPro' => 'Pro',
+			'premium.tierDuo' => 'Pro Duo',
+			'premium.tierFamily' => 'Pro Family',
+			'premium.tierProHint' => 'חשבון אחד',
+			'premium.tierDuoHint' => '2 חשבונות, הכל משתקף',
+			'premium.tierFamilyHint' => 'עד 6 חשבונות, הכל משתקף',
+			'premium.benefitHousehold' => ({required Object n}) => 'חשבון משותף ל-${n} אנשים: מתכונים, תפריטים ורשימות מסונכרנים',
 			'walkthrough.title' => 'הדרכה',
 			'walkthrough.start' => 'הפעל הדרכה',
 			'walkthrough.startHint' => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד',
@@ -5092,6 +5332,8 @@ extension on Translations {
 			'adminDashboard.unknownModel' => 'לא במחירון',
 			'adminDashboard.usersCost' => 'עלות לפי משתמש',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} משתמשים',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'חיפוש לפי שם, מייל או uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'הצגת כל ${count} המשתמשים',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} קריאות',
@@ -5099,8 +5341,6 @@ extension on Translations {
 			'adminDashboard.sharedRecipes' => 'מתכונים משותפים',
 			'adminDashboard.forumPosts' => 'שרשורי פורום',
 			'adminDashboard.withPush' => 'מכשירים עם התראות',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.cacheEntries' => 'קישורים במטמון',
 			'adminDashboard.cacheHits' => 'פגיעות מטמון (קריאות שנחסכו)',
 			'adminDashboard.config' => 'הגדרות מרחוק',
@@ -5205,7 +5445,7 @@ extension on Translations {
 			'assistant.send' => 'שליחה',
 			'assistant.thinking' => 'חושב…',
 			'assistant.working' => ({required Object tool}) => 'מבצע: ${tool}',
-			'assistant.welcome' => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?',
+			'assistant.welcome' => ({required Object name}) => 'היי ${name}! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?',
 			'assistant.error' => 'משהו השתבש. נסו שוב.',
 			'assistant.quotaReached' => 'מכסת ה-AI להיום נגמרה. היא נפתחת מחר.',
 			'assistant.premiumOnly' => 'העוזר הוא חלק מ-EasyPlate Premium',
@@ -5315,6 +5555,70 @@ extension on Translations {
 			'assistant.suggest.diet.3' => 'חלביים',
 			'assistant.whichList' => 'לאיזו רשימה?',
 			'assistant.listCreated' => 'הרשימה נוצרה',
+			'assistant.offTopic' => 'אני כאן בשביל בישול, מתכונים, תכנון ארוחות וקניות. שאלו אותי כל דבר שקשור למטבח ואני על זה!',
+			'assistant.welcomeAnon' => 'היי! אני יכול להוסיף לרשימת הקניות, לתכנן את השבוע, לייבא מתכונים מקישורים, להתחיל מצב בישול ועוד. מה עושים?',
+			'shareCode.title' => 'קוד וקישור',
+			'shareCode.tabContact' => 'איש קשר',
+			'shareCode.tabCode' => 'קוד או קישור',
+			'shareCode.explain' => ({required Object role}) => 'כל מי שיש לו את הקוד יכול להצטרף כ${role}. הקוד תקף 30 יום.',
+			'shareCode.create' => 'ליצור קוד',
+			'shareCode.code' => 'קוד',
+			'shareCode.link' => 'קישור',
+			'shareCode.copy' => 'העתקה',
+			'shareCode.copied' => 'הועתק',
+			'shareCode.share' => 'שיתוף',
+			'shareCode.showQr' => 'להציג QR',
+			'shareCode.scanQr' => 'לסרוק QR',
+			'shareCode.enterCode' => 'להזין קוד',
+			'shareCode.join' => 'הצטרפות',
+			'shareCode.joinTitle' => 'הצטרפות עם קוד',
+			'shareCode.joinHint' => 'הדביקו את הקוד שקיבלתם, או סרקו את ה-QR שלו.',
+			'shareCode.joinPlaceholder' => 'XXXXXXXX',
+			'shareCode.joined' => ({required Object title}) => 'הצטרפתם: ${title}',
+			'shareCode.alreadyMember' => 'זה כבר אצלכם.',
+			'shareCode.invalid' => 'הקוד לא תקין.',
+			'shareCode.expired' => 'תוקף הקוד פג.',
+			'shareCode.revoked' => 'הקוד בוטל.',
+			'shareCode.usedUp' => 'הקוד נוצל עד תום.',
+			'shareCode.self' => 'זה הקוד שלכם.',
+			'shareCode.gone' => 'מה שהקוד שיתף כבר לא קיים.',
+			'shareCode.failed' => 'ההצטרפות נכשלה. נסו שוב.',
+			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} שיתף איתך את "${title}" ב-EasyPlate. קוד: ${code}\n${link}',
+			'shareCode.revoke' => 'לבטל קוד',
+			'shareCode.limitRecipes' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} מתכונים בשבוע.',
+			'shareCode.limitBooks' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} ספרים.',
+			'shareCode.limitPlans' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} תפריטים.',
+			'shareCode.upgrade' => 'לפרימיום',
+			'shareCode.scanHint' => 'כוונו את המצלמה ל-QR של השיתוף',
+			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} הזמין אתכם לחשבון המשותף שלו ב-EasyPlate. קוד: ${code}\n${link}',
+			'household.title' => 'חשבון משותף',
+			'household.duo' => 'Pro Duo',
+			'household.family' => 'Pro Family',
+			'household.seats' => ({required Object used, required Object total}) => '${used} מתוך ${total} מקומות בשימוש',
+			'household.intro' => 'פתחו חשבון משותף: מתכונים, ספרים, תפריטים ורשימות משתקפים לכל מי שבו, וכולם מקבלים פרימיום יחד איתכם.',
+			'household.create' => 'לפתוח חשבון משותף',
+			'household.nameHint' => 'שם, למשל משפחת כהן',
+			'household.notEligible' => 'חשבון משותף מגיע עם Pro Duo (2 חשבונות) או Pro Family (עד 6 חשבונות).',
+			'household.seePlans' => 'לתוכניות',
+			'household.members' => 'חברים',
+			'household.owner' => 'בעלים',
+			'household.you' => 'אתם',
+			'household.invite' => 'להזמין חבר',
+			'household.inviteExplain' => ({required Object free}) => 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותרו ${free} מקומות.',
+			'household.noSeats' => 'כל המקומות תפוסים.',
+			'household.remove' => 'להסיר',
+			'household.removeConfirm' => ({required Object name}) => 'להסיר את ${name} מהחשבון המשותף? הגישה והפרימיום שלהם יפסקו.',
+			'household.leave' => 'לעזוב את החשבון המשותף',
+			'household.leaveConfirm' => 'לעזוב? מה שנשמר כאן נשאר בחשבון המשותף; החשבון שלכם חוזר למה שהיה לכם קודם.',
+			'household.dissolve' => 'לסגור את החשבון המשותף',
+			'household.dissolveConfirm' => 'לסגור את החשבון המשותף? החברים יאבדו גישה ופרימיום. המידע שלכם חוזר לחשבון האישי.',
+			'household.joined' => 'ברוכים הבאים לחשבון המשותף!',
+			'household.inheritedNote' => ({required Object name}) => 'הפרימיום מגיע מהמנוי של ${name}.',
+			'household.failed' => 'זה לא הצליח. נסו שוב.',
+			'household.full' => 'החשבון המשותף מלא.',
+			'household.inHousehold' => 'אתם כבר בחשבון משותף.',
+			'household.notEligibleCode' => 'התוכנית של הבעלים כבר לא כוללת חשבון משותף.',
+			'household.lapsed' => 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.',
 			_ => null,
 		};
 	}

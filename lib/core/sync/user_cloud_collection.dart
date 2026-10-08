@@ -1,9 +1,40 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive_ce/hive.dart';
 
 import '../hive/user_scope.dart';
+
+/// Where the mirrors write: the account's own document, or the household's
+/// once the account belongs to one (Pro Duo / Pro Family). Set by the
+/// household service; read by every mirror on every write, so a switch takes
+/// effect at once.
+abstract class CloudRoot {
+  static const usersCollection = 'users';
+  static const householdsCollection = 'households';
+
+  static String? householdId;
+
+  /// The document the shared mirrors hang beneath, or null before an
+  /// account is resolved.
+  static DocumentReference<Map<String, dynamic>>? sharedRoot(
+    FirebaseFirestore firestore,
+  ) {
+    final hid = householdId;
+    if (hid != null) return firestore.collection(householdsCollection).doc(hid);
+    return personalRoot(firestore);
+  }
+
+  static DocumentReference<Map<String, dynamic>>? personalRoot(
+    FirebaseFirestore firestore,
+  ) {
+    final uid = UserScope().uid;
+    if (uid == null) return null;
+    return firestore.collection(usersCollection).doc(uid);
+  }
+}
 
 /// A local box that also lives in the cloud, without saying at what type.
 ///
@@ -13,6 +44,19 @@ import '../hive/user_scope.dart';
 /// be asked for a `Box<dynamic>` it never opened.
 abstract class CloudMirror {
   Future<void> hydrate();
+
+  /// Whether the mirror follows the household root (recipes, plans…) or
+  /// stays the account's own (preferences, daily usage).
+  bool get shared;
+
+  /// Keeps the box following the cloud copy while a household is active,
+  /// so what one member changes shows up for the others.
+  Future<void> listen();
+  Future<void> stopListening();
+
+  /// Empties the local box: a member leaving a household must not carry
+  /// its data into their own root.
+  Future<void> clearLocal();
 }
 
 /// Mirrors one Hive box into `users/{uid}/{collection}` in Firestore.
@@ -28,7 +72,10 @@ abstract class CloudMirror {
 class UserCloudCollection<T> implements CloudMirror {
   /// The account documents already written by the profile repository. The
   /// mirrored data hangs beneath them, so one Firestore rule covers it all.
-  static const usersCollection = 'users';
+  static const usersCollection = CloudRoot.usersCollection;
+
+  @override
+  final bool shared;
 
   /// Base name of the local box, as passed to [UserScope.open].
   final String boxName;
@@ -48,19 +95,90 @@ class UserCloudCollection<T> implements CloudMirror {
     required this.idOf,
     required this.toJson,
     required this.fromJson,
+    this.shared = true,
     FirebaseFirestore? firestore,
   }) : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _subscription;
 
   /// Null until an account is resolved. Writing to a guessed path would put one
   /// account's recipes in another's subtree, so callers skip instead.
   CollectionReference<Map<String, dynamic>>? _ref() {
-    final uid = UserScope().uid;
-    if (uid == null) return null;
-    return _firestore
-        .collection(usersCollection)
-        .doc(uid)
-        .collection(collection);
+    final root = shared
+        ? CloudRoot.sharedRoot(_firestore)
+        : CloudRoot.personalRoot(_firestore);
+    return root?.collection(collection);
   }
+
+  @override
+  Future<void> listen() async {
+    await stopListening();
+    final ref = _ref();
+    if (ref == null) return;
+    final box = await UserScope().open<T>(boxName);
+    _subscription = ref.snapshots().listen(
+      (snapshot) => _apply(snapshot, box),
+      onError: (Object e) =>
+          debugPrint('Cloud listen on $collection failed: $e'),
+    );
+  }
+
+  @override
+  Future<void> stopListening() async {
+    await _subscription?.cancel();
+    _subscription = null;
+  }
+
+  @override
+  Future<void> clearLocal() async {
+    final box = await UserScope().open<T>(boxName);
+    await box.clear();
+  }
+
+  /// Applies what changed on the server. This device's own writes come
+  /// back through the same stream: first as pending, then acknowledged; both
+  /// are skipped when the box already holds the value, so a save never
+  /// rebuilds the screens twice.
+  Future<void> _apply(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+    Box<T> box,
+  ) async {
+    if (!box.isOpen) return;
+    final puts = <String, T>{};
+    final deletes = <String>[];
+    for (final change in snapshot.docChanges) {
+      final id = change.doc.id;
+      if (change.type == DocumentChangeType.removed) {
+        if (box.containsKey(id)) deletes.add(id);
+        continue;
+      }
+      if (change.doc.metadata.hasPendingWrites) continue;
+      final data = change.doc.data();
+      if (data == null) continue;
+      final current = box.get(id);
+      if (current != null && _sameJson(toJson(current), data)) continue;
+      try {
+        puts[id] = fromJson(data);
+      } catch (e) {
+        debugPrint('Cloud change on $collection/$id skipped: $e');
+      }
+    }
+    if (puts.isNotEmpty) await box.putAll(puts);
+    if (deletes.isNotEmpty) await box.deleteAll(deletes);
+  }
+
+  static bool _sameJson(Map<String, dynamic> a, Map<String, dynamic> b) =>
+      const DeepCollectionEquality().equals(_plain(a), _plain(b));
+
+  /// Firestore hands timestamps back as [Timestamp]; the model may encode
+  /// them as strings or millis. Comparing through a plain encoding keeps the
+  /// echo check honest without knowing each model's choice.
+  static Object? _plain(Object? value) => switch (value) {
+    Timestamp() => value.millisecondsSinceEpoch,
+    Map() => {for (final e in value.entries) e.key.toString(): _plain(e.value)},
+    List() => value.map(_plain).toList(),
+    _ => value,
+  };
 
   /// Sends one record up.
   ///

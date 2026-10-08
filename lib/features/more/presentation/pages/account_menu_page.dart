@@ -149,6 +149,12 @@ class AccountMenuPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
+                _MenuRow(
+                  icon: Icons.family_restroom_rounded,
+                  label: t.household.title,
+                  onTap: () => context.pushNamed(Routing.household),
+                ),
+                const SizedBox(height: AppSpacing.sm),
                 // Two doors, kept apart on purpose: הגדרות is the account
                 // and the app (profile, notifications, language, look);
                 // העדפות is how the app behaves for you (shopping day,

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -9,6 +10,7 @@ import '../../../../core/services/firebase_service.dart';
 import '../../../../core/navigation/main_tabs.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -17,6 +19,7 @@ import '../../../grocery_list/presentation/pages/grocery_list_page.dart';
 import '../../../meal_planner/presentation/pages/meal_planner_page.dart';
 import '../../../my_recipes/presentation/pages/my_recipes_page.dart';
 import '../../../recipe_books/presentation/pages/library_page.dart';
+import '../../../share_codes/domain/pending_share_code.dart';
 import '../../../user_profile/domain/repositories/user_preferences_repository.dart';
 
 class MainNavBar extends StatefulWidget {
@@ -44,7 +47,17 @@ class _MainNavBarState extends State<MainNavBar> {
     // The main screen is where a signed-in session lands: the token goes
     // to the log each time, so a test push always has a fresh one to use.
     FirebaseService().logPushToken();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _offerFirstRunTour());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openPendingShareCode();
+      _offerFirstRunTour();
+    });
+  }
+
+  /// A share link that arrived while the session was not ready for it.
+  void _openPendingShareCode() {
+    final code = PendingShareCode.take();
+    if (code == null || !mounted) return;
+    context.pushNamed(Routing.joinCode, queryParameters: {'code': code});
   }
 
   List<Widget> _pagesFor(AppLocale locale) {

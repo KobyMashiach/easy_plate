@@ -72,6 +72,9 @@ class ContainerSharingService {
         CollabKind.recipe => throw ArgumentError(
           'recipe invites go through RespondToShareInviteUseCase',
         ),
+        CollabKind.household => throw ArgumentError(
+          'a household is joined by code, never by invite',
+        ),
       };
 
   Future<void> decline(ShareInviteEntity invite) =>

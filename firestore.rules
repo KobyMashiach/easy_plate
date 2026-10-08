@@ -354,6 +354,37 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // A share code is written by the owner and redeemed by the server (the
+    // shareCodes function), which creates the invite on the owner's behalf.
+    match /share_codes/{code} {
+      allow read: if signedIn() && resource.data.ownerUid == request.auth.uid;
+      allow create: if signedIn()
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.kind in ['recipe', 'book', 'mealPlan', 'household']
+                    && request.resource.data.role in ['viewer', 'editor']
+                    && request.resource.data.uses == 0
+                    && request.resource.data.revoked == false;
+      allow update: if signedIn()
+                    && resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revoked']);
+      allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    // A household (Pro Duo / Pro Family): the document is written by the
+    // households function only; members read it, and read and write the
+    // mirrored collections beneath it — the same shape as users/{uid}/…
+    match /households/{hid} {
+      function isHouseholdMember() {
+        return signedIn()
+               && request.auth.uid in get(/databases/$(database)/documents/households/$(hid)).data.memberUids;
+      }
+      allow read: if signedIn() && request.auth.uid in resource.data.memberUids;
+      allow write: if false;
+      match /{collection}/{doc} {
+        allow read, write: if isHouseholdMember();
+      }
+    }
+
     // Nothing else is reachable until it has a rule of its own.
     match /{document=**} {
       allow read, write: if false;

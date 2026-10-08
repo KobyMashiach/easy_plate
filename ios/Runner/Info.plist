@@ -24,6 +24,8 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -32,6 +34,16 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.1012123687685-id8k9oj4o27f4frmpd2tfh0n7jsu4tds</string>
+			</array>
+		</dict>
+		<dict>
+			<!-- Share links (easyplate://open/s/CODE): the router reads the
+			     path and opens the join screen. -->
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>easyplate</string>
 			</array>
 		</dict>
 		<dict>
@@ -233,7 +245,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Take photos of your recipes, book covers and receipts.</string>
+	<string>Take photos of your recipes, book covers and receipts, and scan share codes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose photos for your recipes and book covers.</string>
 	<key>UIApplicationSceneManifest</key>

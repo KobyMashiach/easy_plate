@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://aieasyplate.app/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/" />
+    <image:image><image:loc>https://aieasyplate.app/screens/01_recipes.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/02_recipe_details.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/03_ai_import.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/04_library.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/05_book_flip.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/06_meal_plan.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/07_nutrition.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/08_grocery.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/09_community.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/10_premium.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/" />
+    <image:image><image:loc>https://aieasyplate.app/screens/01_recipes.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/02_recipe_details.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/03_ai_import.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/04_library.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/05_book_flip.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/06_meal_plan.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/07_nutrition.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/08_grocery.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/09_community.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/10_premium.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/" />
+    <image:image><image:loc>https://aieasyplate.app/screens/01_recipes.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/02_recipe_details.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/03_ai_import.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/04_library.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/05_book_flip.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/06_meal_plan.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/07_nutrition.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/08_grocery.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/09_community.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/10_premium.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/" />
+    <image:image><image:loc>https://aieasyplate.app/screens/01_recipes.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/02_recipe_details.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/03_ai_import.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/04_library.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/05_book_flip.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/06_meal_plan.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/07_nutrition.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/08_grocery.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/09_community.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/10_premium.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/" />
+    <image:image><image:loc>https://aieasyplate.app/screens/01_recipes.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/02_recipe_details.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/03_ai_import.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/04_library.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/05_book_flip.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/06_meal_plan.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/07_nutrition.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/08_grocery.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/09_community.jpg</image:loc></image:image>
+    <image:image><image:loc>https://aieasyplate.app/screens/10_premium.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/recipe-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/recipe-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he/recipe-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/recipe-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar/recipe-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/recipe-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr/recipe-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/recipe-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru/recipe-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/recipe-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/recipe-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/grocery-list-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/grocery-list-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he/grocery-list-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/grocery-list-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar/grocery-list-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/grocery-list-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr/grocery-list-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/grocery-list-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru/grocery-list-app</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/grocery-list-app" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/grocery-list-app" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/meal-planner</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/meal-planner" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he/meal-planner</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/meal-planner" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar/meal-planner</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/meal-planner" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr/meal-planner</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/meal-planner" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru/meal-planner</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/meal-planner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/meal-planner" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/save-tiktok-recipes</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/save-tiktok-recipes" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he/save-tiktok-recipes</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/save-tiktok-recipes" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar/save-tiktok-recipes</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/save-tiktok-recipes" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr/save-tiktok-recipes</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/save-tiktok-recipes" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru/save-tiktok-recipes</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/save-tiktok-recipes" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/save-tiktok-recipes" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/privacy</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/privacy" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/privacy" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he/privacy</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/privacy" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/privacy" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar/privacy</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/privacy" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/privacy" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr/privacy</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/privacy" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/privacy" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru/privacy</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/privacy" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/privacy" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/terms</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/terms" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/terms" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/he/terms</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/terms" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/terms" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ar/terms</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/terms" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/terms" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/fr/terms</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/terms" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/terms" />
+  </url>
+  <url>
+    <loc>https://aieasyplate.app/ru/terms</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://aieasyplate.app/terms" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/terms" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/terms" />
+  </url>
+</urlset>

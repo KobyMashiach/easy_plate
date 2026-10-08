@@ -62,6 +62,9 @@ import '../../features/price_book/data/datasources/community_prices_remote_datas
 import '../../features/price_book/data/datasources/price_records_local_datasource.dart';
 import '../../features/price_book/data/repositories_impl/price_book_repository_impl.dart';
 import '../../features/price_book/domain/repositories/price_book_repository.dart';
+import '../../features/share_codes/data/share_codes_remote_datasource.dart';
+import '../../features/share_codes/domain/share_code_service.dart';
+import '../../features/share_codes/domain/share_codes_repository.dart';
 
 /// Data sources first, then the repositories that read them — order matters,
 /// `create:` resolves earlier entries with `context.read`.
@@ -207,6 +210,19 @@ List<SingleChildWidget> buildRepositoryProviders() {
         profiles: context.read(),
         booksRepository: context.read(),
         plansRepository: context.read(),
+      ),
+    ),
+    RepositoryProvider<ShareCodesRepository>(
+      create: (_) => ShareCodesFirestoreRepository(),
+    ),
+    // Share codes sit on the invite machinery: after the container service.
+    RepositoryProvider<ShareCodeService>(
+      create: (context) => ShareCodeService(
+        codes: context.read(),
+        containers: context.read(),
+        sharing: context.read(),
+        recipes: context.read(),
+        profiles: context.read(),
       ),
     ),
     RepositoryProvider<GroceryListsRepository>(

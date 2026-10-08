@@ -2,13 +2,40 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
+  <!-- The Firebase default hosts serve the same files; keep one address for users and search engines. -->
+  <script>
+  if (window.location.hostname.endsWith('web.app') || window.location.hostname.endsWith('firebaseapp.com')) {
+    window.location.replace('https://aieasyplate.app' + window.location.pathname + window.location.search);
+  }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terms of Service — EasyPlate</title>
-  <meta name="description" content="The terms that govern your use of the EasyPlate app, including subscriptions and AI content. Available in English, Hebrew, Arabic, French and Russian." />
+  <meta name="description" content="These Terms of Service (&quot;Terms&quot;) govern your use of the EasyPlate mobile application and related services (&quot;EasyPlate&quot;, the &quot;Service&quot;), operated by the…" />
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://aieasyplate.app/terms" />
+  <link rel="alternate" hreflang="en" href="https://aieasyplate.app/terms" />
+  <link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/terms" />
+  <link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/terms" />
+  <link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/terms" />
+  <link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/terms" />
+  <link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/terms" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="EasyPlate" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://aieasyplate.app/terms" />
+  <meta property="og:title" content="Terms of Service — EasyPlate" />
+  <meta property="og:description" content="These Terms of Service (&quot;Terms&quot;) govern your use of the EasyPlate mobile application and related services (&quot;EasyPlate&quot;, the &quot;Service&quot;), operated by the…" />
+  <meta property="og:image" content="https://aieasyplate.app/og/en.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://aieasyplate.app/og/en.png" />
+  <!-- seo:end -->
   <meta name="theme-color" content="#0c0a1f" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Heebo:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -63,27 +90,27 @@
   <div class="bg"></div>
   <header>
     <div class="bar">
-      <a class="logo" href="index.html" id="homeLink"><img class="mark" src="icon-64.png" alt="" width="32" height="32" /><span>Easy<span class="grad">Plate</span></span></a>
+      <a class="logo" href="/" id="homeLink"><img class="mark" src="/icon-64.png" alt="" width="32" height="32" /><span>Easy<span class="grad">Plate</span></span></a>
       <nav class="nav">
-        <a href="index.html" id="navHome"></a>
-        <a href="privacy.html" id="navOther"></a>
-        <select id="langSel" aria-label="Language"></select>
+        <a href="/" id="navHome">Home</a>
+        <a href="/privacy" id="navOther">Privacy Policy</a>
+        <select id="langSel" aria-label="Language"><option value="en" selected>English</option><option value="he">עברית</option><option value="ar">العربية</option><option value="fr">Français</option><option value="ru">Русский</option></select>
       </nav>
     </div>
   </header>
   <main>
-    <aside><nav class="toc"><h2 id="tocTitle"></h2><ol id="toc"></ol></nav></aside>
+    <aside><nav class="toc"><h2 id="tocTitle">Contents</h2><ol id="toc"><li><a href="#s1">1. Eligibility and accounts</a></li><li><a href="#s2">2. The Service</a></li><li><a href="#s3">3. AI-generated content</a></li><li><a href="#s4">4. Your content</a></li><li><a href="#s5">5. Community and sharing rules</a></li><li><a href="#s6">6. Free use, allowances and advertising</a></li><li><a href="#s7">7. EasyPlate Premium (subscriptions)</a></li><li><a href="#s8">8. Cook mode and timers</a></li><li><a href="#s9">9. Acceptable use</a></li><li><a href="#s10">10. Intellectual property</a></li><li><a href="#s11">11. Third-party services</a></li><li><a href="#s12">12. Disclaimer of warranties</a></li><li><a href="#s13">13. Limitation of liability</a></li><li><a href="#s14">14. Indemnity</a></li><li><a href="#s15">15. Termination</a></li><li><a href="#s16">16. Changes to these Terms</a></li><li><a href="#s17">17. Governing law and disputes</a></li><li><a href="#s18">18. Contact</a></li></ol></nav></aside>
     <article>
       <div class="eyebrow">EasyPlate</div>
-      <h1 id="title"></h1>
-      <p class="updated" id="updated"></p>
-      <p class="intro" id="intro"></p>
-      <div id="sections"></div>
+      <h1 id="title">Terms of Service</h1>
+      <p class="updated" id="updated">Last updated: October 6, 2026</p>
+      <p class="intro" id="intro">These Terms of Service (&quot;Terms&quot;) govern your use of the EasyPlate mobile application and related services (&quot;EasyPlate&quot;, the &quot;Service&quot;), operated by the EasyPlate team (&quot;we&quot;, &quot;us&quot;). By creating an account or using the Service you agree to these Terms and to our Privacy Policy. If you do not agree, do not use the Service.</p>
+      <div id="sections"><section id="s1"><h2>1. Eligibility and accounts</h2><p>You must be at least 13 years old (or the minimum age required in your country) to use EasyPlate. Every account is opened with a verified phone number; you may additionally link Google, Apple (iOS) or email sign-in. You are responsible for keeping your sign-in methods secure and for everything that happens under your account. One person, one account: do not create accounts for others or transfer yours.</p><p>We may suspend or block an account that violates these Terms. A blocked account can contact us from the support screen.</p></section><section id="s2"><h2>2. The Service</h2><p>EasyPlate lets you collect recipes (written by hand, pasted, imported from websites, social-media videos, files or generated on request), organise them into books, plan weekly meals, build grocery lists, scan receipts, estimate nutrition, share with other accounts and take part in a community forum. The Service works offline for content you saved; AI and community features require an internet connection.</p><p>We may change, add or remove features at any time. We try to give notice of material changes in the app.</p></section><section id="s3"><h2>3. AI-generated content</h2><p>Recipes, ingredient lists, quantities, cooking steps, tags, translations, prices and nutrition values produced by EasyPlate's AI features are automatic estimates. They can be incomplete or wrong. You are solely responsible for checking them before cooking, shopping or relying on them, in particular for allergens, dietary restrictions, food safety, cooking temperatures and medical or nutritional needs. EasyPlate is not medical, dietary or nutritional advice.</p><p>The in-app assistant acts on your instructions through the same tools you use yourself (it can add groceries, plan meals, import, edit or delete recipes, start timers); review what it did, since a misunderstood request leads to a real change in your data, and deletions ask for your confirmation. It is a Premium feature while the plan says so.</p></section><section id="s4"><h2>4. Your content</h2><p>You keep ownership of the recipes, photos, books, plans, lists, posts and other content you add ("Your Content"). You grant us a worldwide, non-exclusive, royalty-free licence to host, store, copy, translate, process (including with AI providers), display and transmit Your Content as needed to run the Service, including to the people you share it with and, for content you post publicly, to other users.</p><p>You confirm that you have the rights needed for Your Content and that it does not infringe anyone's rights or the law. When you import a recipe from a website or video you are responsible for respecting that source's terms and copyright. EasyPlate retrieves only what you ask it to and keeps it in your own account.</p><p>Deleting content removes it from the Service and from the people you shared it with, subject to backups that expire in the ordinary course and to records we must keep by law.</p></section><section id="s5"><h2>5. Community and sharing rules</h2><p>When you share or post you must not publish content that is illegal, hateful, harassing, sexually explicit, violent, misleading, spam, advertising, or that infringes privacy or intellectual property. Do not impersonate anyone, scrape the Service, or post other people's personal data. We may remove content and restrict accounts that break these rules, with or without notice.</p><p>A share code or link grants access to anyone who has it until it expires (30 days) or you cancel it. You are responsible for whom you give it to; if it reaches someone you did not intend, cancel it from the share sheet and remove that person from the shared-access screen. Redeeming a code gives the same access an invitation would, under the same rules above.</p></section><section id="s6"><h2>6. Free use, allowances and advertising</h2><p>A free account includes a daily allowance of AI extractions and of shared recipes. Reaching the allowance pauses that feature until the next day; watching a rewarded video may extend it. Free accounts see advertising served by Google AdMob. Allowances and the way they are extended may change.</p><p>Some features are reserved for Premium and may change over time; at present these include cook mode (step-by-step cooking with timers) and push notifications, shopping-day reminders and in-app alerts. The inbox and share invites stay available on the free plan.</p><p>The free plan also limits how much you can share: a number of recipe shares per week (by contact or by code) and a number of books and meal plans kept shared at once. The current numbers are shown in the app when a limit is reached; they may change over time and do not apply to Premium.</p></section><section id="s7"><h2>7. EasyPlate Premium (subscriptions)</h2><p>EasyPlate Premium removes ads and daily limits and is sold as an auto-renewing subscription through the Apple App Store or Google Play. The current price is 20 ILS per month (local currency and taxes shown in the store); other periods or introductory offers may be shown in the app.</p><p>Payment is charged to your store account at confirmation of purchase. The subscription renews automatically at the end of each period unless you cancel at least 24 hours before it ends. You can manage or cancel it in your store account settings; cancelling turns off renewal and Premium stays active until the end of the paid period. Fees already paid are not refunded, except where the store's policy or applicable law requires a refund. Price changes are announced through the store before they apply.</p><p>Premium is tied to the account that bought it and can be restored on your other devices with the same store account.</p><p>Pro Duo (2 accounts) and Pro Family (up to 6 accounts) include a shared account. The subscriber who opens it is its owner: they alone invite, remove members and close it, and their subscription is what grants members Premium. Members may be removed by the owner at any time and may leave at any time; a member who leaves does not keep the shared data. If the owner's subscription ends, members lose Premium until it is renewed, while the shared data remains until the owner closes the shared account. Each account may belong to one shared account at a time, and shared accounts are meant for people in one household; selling or publicly offering seats is not allowed.</p></section><section id="s8"><h2>8. Cook mode and timers</h2><p>Cook mode timers are a convenience, not a safety device. They depend on your device’s notification and alarm settings, battery optimisation, and the operating system, and a ring may be late or missed if the device is restarted, the app is force-stopped, notifications are disabled or exact alarms are not allowed. Never rely on them alone for anything where timing matters to safety; watch what is on the stove or in the oven.</p><p>On Android, a running timer keeps a foreground service and its permanent notification active, and the cook-mode screen keeps your display on; both use battery. You can stop them at any time by pausing the timers or ending the cooking.</p></section><section id="s9"><h2>9. Acceptable use</h2><p>You must not: break or bypass security, rate limits or allowances; use automated tools to access the Service; reverse engineer the app except where the law allows; use the Service to train AI models or to build a competing product; resell or redistribute the Service; or use it for any unlawful purpose.</p></section><section id="s10"><h2>10. Intellectual property</h2><p>The EasyPlate app, its design, logo, text, code and the content we create (including the tutorial book and sample recipes) belong to us or our licensors and are protected by copyright and trademark law. These Terms grant you a personal, limited, non-transferable, revocable licence to use the app on devices you own for personal, non-commercial purposes.</p></section><section id="s11"><h2>11. Third-party services</h2><p>The Service relies on third parties such as Google (Firebase, Gemini, AdMob), Apple, RevenueCat and the websites and platforms you import from. Their availability and terms are outside our control, and an import may fail if a source blocks it or a video is private.</p></section><section id="s12"><h2>12. Disclaimer of warranties</h2><p>The Service is provided "as is" and "as available". To the fullest extent permitted by law we disclaim all warranties, express or implied, including fitness for a particular purpose, accuracy, availability and non-infringement. We do not warrant that the Service will be uninterrupted, error-free or that content will not be lost; keep your own copies of anything important.</p></section><section id="s13"><h2>13. Limitation of liability</h2><p>To the fullest extent permitted by law, EasyPlate and its team will not be liable for any indirect, incidental, special, consequential or punitive damages, or for loss of data, profits or goodwill, arising from your use of the Service, from AI-generated content or from food prepared using it. Our total liability for any claim is limited to the amount you paid us in the 12 months before the claim, or 100 ILS if you paid nothing. Nothing in these Terms limits liability that cannot be limited by law.</p></section><section id="s14"><h2>14. Indemnity</h2><p>You agree to indemnify EasyPlate against claims, losses and expenses (including reasonable legal fees) arising from Your Content, your breach of these Terms or your violation of any law or third-party right.</p></section><section id="s15"><h2>15. Termination</h2><p>You can stop using the Service and delete your account at any time (see the Privacy Policy). We may suspend or terminate your access if you breach these Terms, if required by law, or if we discontinue the Service, with reasonable notice where possible. Sections that by their nature should survive (ownership, disclaimers, limitation of liability, governing law) survive termination.</p></section><section id="s16"><h2>16. Changes to these Terms</h2><p><b>We may update these Terms.</b> The date at the top shows the current version. Material changes will be announced in the app; continuing to use the Service after they take effect means you accept them.</p></section><section id="s17"><h2>17. Governing law and disputes</h2><p>These Terms are governed by the laws of the State of Israel, without regard to conflict-of-law rules. The competent courts of Tel Aviv-Jaffa have exclusive jurisdiction over any dispute, without prejudice to mandatory consumer-protection rights you may have in your country of residence. If you downloaded the app from Apple's App Store, Apple is a third-party beneficiary of these Terms and may enforce them.</p></section><section id="s18"><h2>18. Contact</h2><p><a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a></p></section></div>
     </article>
   </main>
   <footer>
-    <span id="copyright"></span>
-    <span><a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a> · <a href="privacy.html" id="footOther"></a></span>
+    <span id="copyright">© 2026 EasyPlate. All rights reserved.</span>
+    <span><a href="mailto:support@aieasyplate.app">support@aieasyplate.app</a> · <a href="/privacy" id="footOther">Privacy Policy</a></span>
   </footer>
 
   <script>
@@ -127,14 +154,16 @@
    {
     "h": "5. Community and sharing rules",
     "p": [
-     "When you share or post you must not publish content that is illegal, hateful, harassing, sexually explicit, violent, misleading, spam, advertising, or that infringes privacy or intellectual property. Do not impersonate anyone, scrape the Service, or post other people's personal data. We may remove content and restrict accounts that break these rules, with or without notice."
+     "When you share or post you must not publish content that is illegal, hateful, harassing, sexually explicit, violent, misleading, spam, advertising, or that infringes privacy or intellectual property. Do not impersonate anyone, scrape the Service, or post other people's personal data. We may remove content and restrict accounts that break these rules, with or without notice.",
+     "A share code or link grants access to anyone who has it until it expires (30 days) or you cancel it. You are responsible for whom you give it to; if it reaches someone you did not intend, cancel it from the share sheet and remove that person from the shared-access screen. Redeeming a code gives the same access an invitation would, under the same rules above."
     ]
    },
    {
     "h": "6. Free use, allowances and advertising",
     "p": [
      "A free account includes a daily allowance of AI extractions and of shared recipes. Reaching the allowance pauses that feature until the next day; watching a rewarded video may extend it. Free accounts see advertising served by Google AdMob. Allowances and the way they are extended may change.",
-     "Some features are reserved for Premium and may change over time; at present these include cook mode (step-by-step cooking with timers) and push notifications, shopping-day reminders and in-app alerts. The inbox and share invites stay available on the free plan."
+     "Some features are reserved for Premium and may change over time; at present these include cook mode (step-by-step cooking with timers) and push notifications, shopping-day reminders and in-app alerts. The inbox and share invites stay available on the free plan.",
+     "The free plan also limits how much you can share: a number of recipe shares per week (by contact or by code) and a number of books and meal plans kept shared at once. The current numbers are shown in the app when a limit is reached; they may change over time and do not apply to Premium."
     ]
    },
    {
@@ -142,7 +171,8 @@
     "p": [
      "EasyPlate Premium removes ads and daily limits and is sold as an auto-renewing subscription through the Apple App Store or Google Play. The current price is 20 ILS per month (local currency and taxes shown in the store); other periods or introductory offers may be shown in the app.",
      "Payment is charged to your store account at confirmation of purchase. The subscription renews automatically at the end of each period unless you cancel at least 24 hours before it ends. You can manage or cancel it in your store account settings; cancelling turns off renewal and Premium stays active until the end of the paid period. Fees already paid are not refunded, except where the store's policy or applicable law requires a refund. Price changes are announced through the store before they apply.",
-     "Premium is tied to the account that bought it and can be restored on your other devices with the same store account."
+     "Premium is tied to the account that bought it and can be restored on your other devices with the same store account.",
+     "Pro Duo (2 accounts) and Pro Family (up to 6 accounts) include a shared account. The subscriber who opens it is its owner: they alone invite, remove members and close it, and their subscription is what grants members Premium. Members may be removed by the owner at any time and may leave at any time; a member who leaves does not keep the shared data. If the owner's subscription ends, members lose Premium until it is renewed, while the shared data remains until the owner closes the shared account. Each account may belong to one shared account at a time, and shared accounts are meant for people in one household; selling or publicly offering seats is not allowed."
     ]
    },
    {
@@ -252,14 +282,16 @@
    {
     "h": "5. כללי קהילה ושיתוף",
     "p": [
-     "כשאתם משתפים או מפרסמים אסור לכם לפרסם תוכן לא חוקי, מסית, מטריד, מיני בוטה, אלים, מטעה, ספאם, פרסומת, או תוכן שמפר פרטיות או קניין רוחני. אל תתחזו לאחרים, אל תגרדו (scrape) את השירות ואל תפרסמו מידע אישי של אחרים. אנחנו רשאים להסיר תוכן ולהגביל חשבונות שמפרים כללים אלה, עם או בלי הודעה מוקדמת."
+     "כשאתם משתפים או מפרסמים אסור לכם לפרסם תוכן לא חוקי, מסית, מטריד, מיני בוטה, אלים, מטעה, ספאם, פרסומת, או תוכן שמפר פרטיות או קניין רוחני. אל תתחזו לאחרים, אל תגרדו (scrape) את השירות ואל תפרסמו מידע אישי של אחרים. אנחנו רשאים להסיר תוכן ולהגביל חשבונות שמפרים כללים אלה, עם או בלי הודעה מוקדמת.",
+     "קוד או קישור שיתוף מעניקים גישה לכל מי שמחזיק בהם עד שתוקפם פג (30 יום) או עד שתבטלו אותם. האחריות למי אתם מוסרים אותם היא שלכם; אם הגיעו למי שלא התכוונתם, בטלו אותם מגיליון השיתוף והסירו את אותו אדם ממסך הגישה המשותפת. מימוש קוד מעניק את אותה גישה שהזמנה מעניקה, לפי אותם כללים שלעיל."
     ]
    },
    {
     "h": "6. שימוש חינמי, מכסות ופרסומות",
     "p": [
      "חשבון חינמי כולל מכסה יומית של חילוצי AI ושל מתכונים משותפים. הגעה למכסה משהה את היכולה עד למחרת; צפייה בסרטון מתגמל עשויה להרחיב אותה. חשבונות חינמיים רואים פרסומות המוגשות על ידי Google AdMob. המכסות ואופן הרחבתן עשויים להשתנות.",
-     "חלק מהיכולות שמורות לפרימיום ועשויות להשתנות מעת לעת; כיום אלה מצב בישול (בישול שלב-שלב עם טיימרים) והתראות פוש, תזכורות ליום הקניות והתראות קופצות באפליקציה. תיבת ההתראות והזמנות השיתוף נשארות זמינות גם בחשבון חינמי."
+     "חלק מהיכולות שמורות לפרימיום ועשויות להשתנות מעת לעת; כיום אלה מצב בישול (בישול שלב-שלב עם טיימרים) והתראות פוש, תזכורות ליום הקניות והתראות קופצות באפליקציה. תיבת ההתראות והזמנות השיתוף נשארות זמינות גם בחשבון חינמי.",
+     "התוכנית החינמית מגבילה גם כמה אפשר לשתף: מספר שיתופי מתכונים בשבוע (לאיש קשר או בקוד) ומספר ספרים ותפריטים שמשותפים בו-זמנית. המספרים העדכניים מוצגים באפליקציה כשמגיעים למגבלה; הם עשויים להשתנות מעת לעת ואינם חלים על פרימיום."
     ]
    },
    {
@@ -267,7 +299,8 @@
     "p": [
      "EasyPlate Premium מסיר פרסומות ומגבלות יומיות ונמכר כמנוי מתחדש אוטומטית דרך App Store של Apple או Google Play. המחיר הנוכחי הוא 20 ₪ לחודש (מטבע מקומי ומסים מוצגים בחנות); תקופות אחרות או הצעות היכרות עשויות להופיע באפליקציה.",
      "התשלום נגבה מחשבון החנות שלכם עם אישור הרכישה. המנוי מתחדש אוטומטית בסוף כל תקופה אלא אם ביטלתם לפחות 24 שעות לפני סיומה. אפשר לנהל או לבטל אותו בהגדרות חשבון החנות; ביטול מכבה את החידוש והפרימיום נשאר פעיל עד תום התקופה ששולמה. דמי מנוי ששולמו אינם מוחזרים, אלא אם מדיניות החנות או הדין החל מחייבים החזר. שינויי מחיר מוכרזים דרך החנות לפני כניסתם לתוקף.",
-     "הפרימיום צמוד לחשבון שרכש אותו וניתן לשחזור במכשירים אחרים שלכם עם אותו חשבון חנות."
+     "הפרימיום צמוד לחשבון שרכש אותו וניתן לשחזור במכשירים אחרים שלכם עם אותו חשבון חנות.",
+     "Pro Duo (2 חשבונות) ו-Pro Family (עד 6 חשבונות) כוללים חשבון משותף. המנוי שפותח אותו הוא הבעלים: רק הוא מזמין, מסיר חברים וסוגר אותו, והמנוי שלו הוא שמעניק לחברים פרימיום. הבעלים רשאים להסיר חבר בכל עת, וחבר רשאי לעזוב בכל עת; חבר שעוזב אינו שומר את המידע המשותף. אם המנוי של הבעלים מסתיים, החברים מאבדים את הפרימיום עד לחידושו, והמידע המשותף נשאר עד שהבעלים סוגרים את החשבון המשותף. כל חשבון יכול להשתייך לחשבון משותף אחד בלבד בכל זמן, והחשבונות המשותפים מיועדים לבני אותו משק בית; מכירה או הצעה פומבית של מקומות אסורה."
     ]
    },
    {
@@ -377,14 +410,16 @@
    {
     "h": "5. قواعد المجتمع والمشاركة",
     "p": [
-     "عند المشاركة أو النشر يجب ألا تنشر محتوى غير قانوني أو يحض على الكراهية أو مضايقًا أو جنسيًا صريحًا أو عنيفًا أو مضللًا أو مزعجًا أو إعلانيًا أو ينتهك الخصوصية أو الملكية الفكرية. لا تنتحل شخصية أحد، ولا تجمع بيانات الخدمة آليًا، ولا تنشر بيانات شخصية لآخرين. يجوز لنا إزالة المحتوى وتقييد الحسابات التي تخالف هذه القواعد، بإشعار أو بدونه."
+     "عند المشاركة أو النشر يجب ألا تنشر محتوى غير قانوني أو يحض على الكراهية أو مضايقًا أو جنسيًا صريحًا أو عنيفًا أو مضللًا أو مزعجًا أو إعلانيًا أو ينتهك الخصوصية أو الملكية الفكرية. لا تنتحل شخصية أحد، ولا تجمع بيانات الخدمة آليًا، ولا تنشر بيانات شخصية لآخرين. يجوز لنا إزالة المحتوى وتقييد الحسابات التي تخالف هذه القواعد، بإشعار أو بدونه.",
+     "يمنح رمز أو رابط المشاركة الوصول لأي شخص يملكه حتى انتهاء صلاحيته (30 يومًا) أو إلغائه من قبلك. أنت مسؤول عمّن تعطيه له؛ وإذا وصل إلى شخص لم تقصده فألغِه من ورقة المشاركة وأزل ذلك الشخص من شاشة الوصول المشترك. يمنح استخدام الرمز الوصول نفسه الذي تمنحه الدعوة، وفق القواعد ذاتها أعلاه."
     ]
    },
    {
     "h": "6. الاستخدام المجاني والحصص والإعلانات",
     "p": [
      "يتضمن الحساب المجاني حصة يومية من استخراجات الذكاء الاصطناعي ومن الوصفات المشتركة. يؤدي بلوغ الحصة إلى إيقاف تلك الميزة حتى اليوم التالي؛ وقد تمددها مشاهدة فيديو مكافأة. ترى الحسابات المجانية إعلانات تقدمها Google AdMob. قد تتغير الحصص وطريقة تمديدها.",
-     "بعض المزايا محجوزة لبريميوم وقد تتغير مع الوقت؛ وتشمل حاليًا وضع الطبخ (طبخ خطوة بخطوة مع مؤقتات) وإشعارات الدفع وتذكيرات يوم التسوّق والتنبيهات داخل التطبيق. يبقى صندوق الإشعارات ودعوات المشاركة متاحين في الخطة المجانية."
+     "بعض المزايا محجوزة لبريميوم وقد تتغير مع الوقت؛ وتشمل حاليًا وضع الطبخ (طبخ خطوة بخطوة مع مؤقتات) وإشعارات الدفع وتذكيرات يوم التسوّق والتنبيهات داخل التطبيق. يبقى صندوق الإشعارات ودعوات المشاركة متاحين في الخطة المجانية.",
+     "تحدّ الخطة المجانية أيضًا من حجم المشاركة: عدد مشاركات الوصفات في الأسبوع (بجهة اتصال أو برمز) وعدد الكتب وخطط الوجبات المشتركة في الوقت نفسه. تُعرض الأرقام الحالية في التطبيق عند بلوغ الحد؛ وقد تتغير مع الوقت ولا تنطبق على بريميوم."
     ]
    },
    {
@@ -392,7 +427,8 @@
     "p": [
      "يزيل EasyPlate Premium الإعلانات والحدود اليومية ويُباع كاشتراك متجدد تلقائيًا عبر App Store من Apple أو Google Play. السعر الحالي 20 شيكلًا شهريًا (تُعرض العملة المحلية والضرائب في المتجر)؛ وقد تُعرض فترات أخرى أو عروض تمهيدية في التطبيق.",
      "يُحصَّل الدفع من حساب المتجر الخاص بك عند تأكيد الشراء. يتجدد الاشتراك تلقائيًا في نهاية كل فترة ما لم تلغه قبل انتهائها بـ24 ساعة على الأقل. يمكنك إدارته أو إلغاؤه في إعدادات حساب المتجر؛ ويوقف الإلغاء التجديد ويبقى بريميوم فعالًا حتى نهاية الفترة المدفوعة. لا تُسترد الرسوم المدفوعة إلا حيث تقتضي سياسة المتجر أو القانون المعمول به ذلك. تُعلن تغييرات الأسعار عبر المتجر قبل سريانها.",
-     "يرتبط بريميوم بالحساب الذي اشتراه ويمكن استعادته على أجهزتك الأخرى بنفس حساب المتجر."
+     "يرتبط بريميوم بالحساب الذي اشتراه ويمكن استعادته على أجهزتك الأخرى بنفس حساب المتجر.",
+     "يتضمن Pro Duo (حسابان) وPro Family (حتى 6 حسابات) حسابًا مشتركًا. المشترك الذي يفتحه هو مالكه: هو وحده يدعو الأعضاء ويزيلهم ويغلقه، واشتراكه هو ما يمنح الأعضاء بريميوم. يجوز للمالك إزالة أي عضو في أي وقت، ويجوز للعضو المغادرة في أي وقت؛ ولا يحتفظ العضو المغادر بالبيانات المشتركة. إذا انتهى اشتراك المالك يفقد الأعضاء بريميوم حتى تجديده، وتبقى البيانات المشتركة حتى يغلق المالك الحساب المشترك. لا يجوز للحساب الانتماء إلا إلى حساب مشترك واحد في الوقت نفسه، والحسابات المشتركة مخصصة لأفراد الأسرة الواحدة؛ ولا يُسمح ببيع المقاعد أو عرضها علنًا."
     ]
    },
    {
@@ -502,14 +538,16 @@
    {
     "h": "5. Règles de la communauté et du partage",
     "p": [
-     "Lorsque vous partagez ou publiez, vous ne devez pas diffuser de contenu illégal, haineux, harcelant, sexuellement explicite, violent, trompeur, de spam, de publicité, ou portant atteinte à la vie privée ou à la propriété intellectuelle. N’usurpez l’identité de personne, n’aspirez pas le Service et ne publiez pas les données personnelles d’autrui. Nous pouvons retirer du contenu et restreindre les comptes qui enfreignent ces règles, avec ou sans préavis."
+     "Lorsque vous partagez ou publiez, vous ne devez pas diffuser de contenu illégal, haineux, harcelant, sexuellement explicite, violent, trompeur, de spam, de publicité, ou portant atteinte à la vie privée ou à la propriété intellectuelle. N’usurpez l’identité de personne, n’aspirez pas le Service et ne publiez pas les données personnelles d’autrui. Nous pouvons retirer du contenu et restreindre les comptes qui enfreignent ces règles, avec ou sans préavis.",
+     "Un code ou un lien de partage donne accès à quiconque le détient jusqu’à son expiration (30 jours) ou son annulation. Vous êtes responsable des personnes à qui vous le remettez ; s’il parvient à quelqu’un que vous ne vouliez pas, annulez-le depuis la feuille de partage et retirez cette personne depuis l’écran d’accès partagé. Utiliser un code donne le même accès qu’une invitation, selon les mêmes règles ci-dessus."
     ]
    },
    {
     "h": "6. Usage gratuit, quotas et publicité",
     "p": [
      "Un compte gratuit comprend un quota quotidien d’extractions IA et de recettes partagées. Atteindre le quota suspend la fonction jusqu’au lendemain ; regarder une vidéo récompensée peut l’étendre. Les comptes gratuits voient des publicités diffusées par Google AdMob. Les quotas et leur mode d’extension peuvent évoluer.",
-     "Certaines fonctionnalités sont réservées à Premium et peuvent évoluer ; il s’agit actuellement du mode cuisine (cuisson pas à pas avec minuteurs) et des notifications push, rappels du jour de courses et alertes dans l’app. La boîte de réception et les invitations de partage restent disponibles avec l’offre gratuite."
+     "Certaines fonctionnalités sont réservées à Premium et peuvent évoluer ; il s’agit actuellement du mode cuisine (cuisson pas à pas avec minuteurs) et des notifications push, rappels du jour de courses et alertes dans l’app. La boîte de réception et les invitations de partage restent disponibles avec l’offre gratuite.",
+     "L’offre gratuite limite aussi le partage : un nombre de partages de recettes par semaine (par contact ou par code) et un nombre de livres et de plans de repas partagés en même temps. Les chiffres en vigueur s’affichent dans l’app lorsqu’une limite est atteinte ; ils peuvent évoluer et ne s’appliquent pas à Premium."
     ]
    },
    {
@@ -517,7 +555,8 @@
     "p": [
      "EasyPlate Premium supprime les publicités et les limites quotidiennes ; il est vendu sous forme d’abonnement à renouvellement automatique via l’App Store d’Apple ou Google Play. Le prix actuel est de 20 ILS par mois (devise locale et taxes affichées dans la boutique) ; d’autres périodes ou offres de lancement peuvent être proposées dans l’application.",
      "Le paiement est débité de votre compte de boutique à la confirmation de l’achat. L’abonnement se renouvelle automatiquement à la fin de chaque période sauf annulation au moins 24 heures avant son terme. Vous pouvez le gérer ou l’annuler dans les réglages de votre compte de boutique ; l’annulation désactive le renouvellement et Premium reste actif jusqu’à la fin de la période payée. Les sommes déjà payées ne sont pas remboursées, sauf si la politique de la boutique ou la loi applicable l’exige. Les changements de prix sont annoncés via la boutique avant leur application.",
-     "Premium est lié au compte qui l’a acheté et peut être restauré sur vos autres appareils avec le même compte de boutique."
+     "Premium est lié au compte qui l’a acheté et peut être restauré sur vos autres appareils avec le même compte de boutique.",
+     "Pro Duo (2 comptes) et Pro Family (jusqu’à 6 comptes) incluent un compte partagé. L’abonné qui l’ouvre en est le propriétaire : lui seul invite, retire des membres et le ferme, et c’est son abonnement qui donne Premium aux membres. Le propriétaire peut retirer un membre à tout moment et un membre peut partir à tout moment ; un membre qui part ne conserve pas les données partagées. Si l’abonnement du propriétaire prend fin, les membres perdent Premium jusqu’à son renouvellement, et les données partagées restent jusqu’à ce que le propriétaire ferme le compte partagé. Un compte ne peut appartenir qu’à un seul compte partagé à la fois, et les comptes partagés sont destinés aux personnes d’un même foyer ; vendre ou proposer publiquement des places est interdit."
     ]
    },
    {
@@ -627,14 +666,16 @@
    {
     "h": "5. Правила сообщества и совместного доступа",
     "p": [
-     "Делясь или публикуя, вы не должны размещать незаконный, разжигающий ненависть, оскорбительный, сексуально откровенный, жестокий, вводящий в заблуждение, спам-, рекламный контент или контент, нарушающий приватность или интеллектуальную собственность. Не выдавайте себя за других, не собирайте данные Сервиса автоматически и не публикуйте чужие личные данные. Мы можем удалять контент и ограничивать аккаунты, нарушающие эти правила, с уведомлением или без него."
+     "Делясь или публикуя, вы не должны размещать незаконный, разжигающий ненависть, оскорбительный, сексуально откровенный, жестокий, вводящий в заблуждение, спам-, рекламный контент или контент, нарушающий приватность или интеллектуальную собственность. Не выдавайте себя за других, не собирайте данные Сервиса автоматически и не публикуйте чужие личные данные. Мы можем удалять контент и ограничивать аккаунты, нарушающие эти правила, с уведомлением или без него.",
+     "Код или ссылка общего доступа даёт доступ любому, у кого они есть, до истечения срока (30 дней) или до отмены вами. Вы отвечаете за то, кому их передаёте; если они попали не к тому человеку, отмените их в окне «Поделиться» и удалите этого человека на экране общего доступа. Использование кода даёт тот же доступ, что и приглашение, по тем же правилам выше."
     ]
    },
    {
     "h": "6. Бесплатное использование, лимиты и реклама",
     "p": [
      "Бесплатный аккаунт включает дневной лимит извлечений ИИ и общих рецептов. По достижении лимита функция приостанавливается до следующего дня; просмотр видео с вознаграждением может его расширить. Бесплатные аккаунты видят рекламу Google AdMob. Лимиты и способы их расширения могут меняться.",
-     "Некоторые функции доступны только в Premium, и их набор может меняться; сейчас это режим готовки (пошаговая готовка с таймерами) и push-уведомления, напоминания о дне покупок и всплывающие оповещения в приложении. Входящие и приглашения к совместному доступу остаются доступными на бесплатном тарифе."
+     "Некоторые функции доступны только в Premium, и их набор может меняться; сейчас это режим готовки (пошаговая готовка с таймерами) и push-уведомления, напоминания о дне покупок и всплывающие оповещения в приложении. Входящие и приглашения к совместному доступу остаются доступными на бесплатном тарифе.",
+     "Бесплатный тариф также ограничивает объём общего доступа: число рецептов, которыми можно поделиться за неделю (контакту или кодом), и число книг и планов питания, открытых одновременно. Актуальные значения показываются в приложении при достижении лимита; они могут меняться и не действуют для Premium."
     ]
    },
    {
@@ -642,7 +683,8 @@
     "p": [
      "EasyPlate Premium убирает рекламу и дневные лимиты и продаётся как автоматически продлеваемая подписка через App Store от Apple или Google Play. Текущая цена — 20 ILS в месяц (местная валюта и налоги отображаются в магазине); в приложении могут предлагаться другие периоды или вводные предложения.",
      "Оплата списывается с вашего аккаунта в магазине при подтверждении покупки. Подписка продлевается автоматически в конце каждого периода, если вы не отмените её не позднее чем за 24 часа до окончания. Управлять подпиской или отменить её можно в настройках аккаунта магазина; отмена отключает продление, а Премиум остаётся активным до конца оплаченного периода. Уже уплаченные суммы не возвращаются, кроме случаев, когда возврат требуется политикой магазина или применимым законом. Об изменении цен сообщается через магазин до вступления в силу.",
-     "Премиум привязан к купившему аккаунту и может быть восстановлен на других ваших устройствах с тем же аккаунтом магазина."
+     "Премиум привязан к купившему аккаунту и может быть восстановлен на других ваших устройствах с тем же аккаунтом магазина.",
+     "Pro Duo (2 аккаунта) и Pro Family (до 6 аккаунтов) включают общий аккаунт. Подписчик, который его открывает, является владельцем: только он приглашает и удаляет участников и закрывает аккаунт, и именно его подписка даёт участникам Premium. Владелец может удалить участника в любой момент, участник может уйти в любой момент; ушедший участник не сохраняет общие данные. Если подписка владельца закончилась, участники теряют Premium до её продления, а общие данные остаются, пока владелец не закроет общий аккаунт. Аккаунт может состоять только в одном общем аккаунте одновременно; общие аккаунты предназначены для членов одного домохозяйства, продажа или публичное предложение мест запрещены."
     ]
    },
    {
@@ -717,6 +759,18 @@
 };
   const OTHER_KEY = 'other_privacy';
 
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/terms","he":"/he/terms","ar":"/ar/terms","fr":"/fr/terms","ru":"/ru/terms"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/terms","he":"/he/terms","ar":"/ar/terms","fr":"/fr/terms","ru":"/ru/terms"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/terms","he":"/he/terms","ar":"/ar/terms","fr":"/fr/terms","ru":"/ru/terms"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/terms","he":"/he/terms","ar":"/ar/terms","fr":"/fr/terms","ru":"/ru/terms"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/terms","he":"/he/terms","ar":"/ar/terms","fr":"/fr/terms","ru":"/ru/terms"};
+  const PAGE_LANG = 'en';
+  const LEGAL_URLS = {"en":"/terms","he":"/he/terms","ar":"/ar/terms","fr":"/fr/terms","ru":"/ru/terms"};
   function pickLang() {
     const p = new URLSearchParams(location.search).get('lang');
     let saved = null; try { saved = localStorage.getItem('ep-lang'); } catch (_) {}
@@ -740,8 +794,8 @@
     document.getElementById('footOther').textContent = m[OTHER_KEY];
     document.getElementById('copyright').textContent = m.copyright;
     const q = '?lang=' + lang;
-    for (const id of ['homeLink', 'navHome']) document.getElementById(id).href = 'index.html' + q;
-    for (const id of ['navOther', 'footOther']) document.getElementById(id).href = 'privacy.html' + q;
+    for (const id of ['homeLink', 'navHome']) document.getElementById(id).href = '/';
+    for (const id of ['navOther', 'footOther']) document.getElementById(id).href = '/privacy';
     const toc = document.getElementById('toc'), secs = document.getElementById('sections');
     toc.innerHTML = ''; secs.innerHTML = '';
     d.sections.forEach((s, i) => {
@@ -766,9 +820,9 @@
   }
   document.getElementById('langSel').addEventListener('change', e => {
     const l = e.target.value; try { localStorage.setItem('ep-lang', l); } catch (_) {}
-    history.replaceState(null, '', '?lang=' + l); render(l);
+    location.href = LEGAL_URLS[l] || LEGAL_URLS.en;
   });
-  render(pickLang());
+  render(PAGE_LANG);
   </script>
 </body>
 </html>

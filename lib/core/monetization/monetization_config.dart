@@ -55,6 +55,14 @@ abstract class MonetizationConfig {
   static bool get assistantLocked =>
       _remote.remoteBool(FirebaseService.assistantPremiumOnlyKey) && !isPremium;
 
+  /// Free-tier sharing allowances (Premium: unlimited).
+  static int get freeRecipeSharesWeekly =>
+      _remote.remoteInt(FirebaseService.shareFreeRecipesWeeklyKey);
+  static int get freeSharedBooks =>
+      _remote.remoteInt(FirebaseService.shareFreeBooksKey);
+  static int get freeSharedPlans =>
+      _remote.remoteInt(FirebaseService.shareFreePlansKey);
+
   /// Pushes, reminders and popups are Premium while the console says so.
   /// The inbox itself stays: share invites must still be answerable.
   static bool get notificationsLocked =>

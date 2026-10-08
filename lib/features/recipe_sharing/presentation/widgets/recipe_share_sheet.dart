@@ -7,6 +7,7 @@ import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../domain/repositories/recipe_sharing_repository.dart';
 import '../../domain/usecases/share_recipe_usecase.dart';
+import '../../../share_codes/presentation/share_code_hooks.dart';
 import 'share_sheet.dart';
 
 /// Who to share a recipe with and what they may do. Resolves true when an
@@ -29,5 +30,6 @@ Future<bool?> showRecipeShareSheet(BuildContext context, RecipeEntity recipe) {
           ownerUid: uid,
           senderContacts: senderContacts,
         ),
+    codes: ShareCodeHooks.recipe(context, recipe),
   );
 }

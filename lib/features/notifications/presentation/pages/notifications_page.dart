@@ -117,6 +117,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
             // on it.
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.mealPlan;
+          case CollabKind.household:
+            // Never an invite: a household is joined by code.
+            break;
         }
       } else {
         if (invite.kind == CollabKind.recipe) {
@@ -208,6 +211,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return ClayScaffold(
+      // The timers are listed in the body below; no banner on top as well.
+      showCookTimers: false,
       appBar: ClayTopAppBar(
         title: t.notifications.title,
         leadingIcon: Icons.arrow_back_rounded,
@@ -245,64 +250,67 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       ],
                     )
                   : ListView.separated(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                  // The cooking card when there is one, then the "mark all
-                  // read" row, then the items, each swipeable away.
-                  itemCount: items.length + 1 + cooking.length,
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(height: AppSpacing.sm),
-                  itemBuilder: (context, index) {
-                    if (index < cooking.length) {
-                      return _CookSessionCard(session: cooking[index]);
-                    }
-                    index -= cooking.length;
-                    if (index == 0) {
-                      return Row(
-                        children: [
-                          // The switches for what reaches this inbox, one
-                          // tap away from it.
-                          TextButton.icon(
-                            onPressed: () => context.pushNamed(
-                              Routing.notificationSettings,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                      // The cooking card when there is one, then the "mark all
+                      // read" row, then the items, each swipeable away.
+                      itemCount: items.length + 1 + cooking.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.sm),
+                      itemBuilder: (context, index) {
+                        if (index < cooking.length) {
+                          return _CookSessionCard(session: cooking[index]);
+                        }
+                        index -= cooking.length;
+                        if (index == 0) {
+                          return Row(
+                            children: [
+                              // The switches for what reaches this inbox, one
+                              // tap away from it.
+                              TextButton.icon(
+                                onPressed: () => context.pushNamed(
+                                  Routing.notificationSettings,
+                                ),
+                                icon: const Icon(Icons.tune_rounded, size: 18),
+                                label: Text(t.notifications.settings),
+                              ),
+                              const Spacer(),
+                              TextButton.icon(
+                                onPressed: () => MarkNotificationReadUseCase(
+                                  context.read<NotificationsRepository>(),
+                                ).all(_uid),
+                                icon: const Icon(
+                                  Icons.done_all_rounded,
+                                  size: 18,
+                                ),
+                                label: Text(t.notifications.markAllRead),
+                              ),
+                            ],
+                          );
+                        }
+                        final item = items[index - 1];
+                        return Dismissible(
+                          key: ValueKey(item.id),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (_) => _delete(item),
+                          background: Container(
+                            alignment: AlignmentDirectional.centerEnd,
+                            padding: const EdgeInsetsDirectional.only(
+                              end: AppSpacing.md,
                             ),
-                            icon: const Icon(Icons.tune_rounded, size: 18),
-                            label: Text(t.notifications.settings),
+                            decoration: BoxDecoration(
+                              color: AppColors.errorContainer,
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                            ),
+                            child: Icon(
+                              Icons.delete_rounded,
+                              color: AppColors.onErrorContainer,
+                            ),
                           ),
-                          const Spacer(),
-                          TextButton.icon(
-                            onPressed: () => MarkNotificationReadUseCase(
-                              context.read<NotificationsRepository>(),
-                            ).all(_uid),
-                            icon: const Icon(Icons.done_all_rounded, size: 18),
-                            label: Text(t.notifications.markAllRead),
-                          ),
-                        ],
-                      );
-                    }
-                    final item = items[index - 1];
-                    return Dismissible(
-                      key: ValueKey(item.id),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (_) => _delete(item),
-                      background: Container(
-                        alignment: AlignmentDirectional.centerEnd,
-                        padding: const EdgeInsetsDirectional.only(
-                          end: AppSpacing.md,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.errorContainer,
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                        ),
-                        child: Icon(
-                          Icons.delete_rounded,
-                          color: AppColors.onErrorContainer,
-                        ),
-                      ),
-                      child: _card(item),
-                    );
-                  },
-                ),
+                          child: _card(item),
+                        );
+                      },
+                    ),
             );
           },
         ),
@@ -344,7 +352,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 name: item.fromName ?? '',
                 recipe: item.recipeTitle ?? '',
               ),
-              CollabKind.recipe => t.notifications.sharedRecipe(
+              CollabKind.recipe ||
+              CollabKind.household => t.notifications.sharedRecipe(
                 name: item.fromName ?? '',
                 recipe: item.recipeTitle ?? '',
               ),
@@ -583,10 +592,11 @@ class _CookSessionCard extends StatelessWidget {
     RecipeEntity recipe,
     List<MapEntry<int, CookTimer>> timers,
   ) {
+    // The plain light card, not the active (primary-tinted) one: the rows
+    // and buttons inside carry the colour, and the clock has to stay legible.
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
-      isActive: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

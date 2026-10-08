@@ -62,6 +62,27 @@ class ContainerCollab<T> {
     }
     if (targetUid == ownerUid) throw const ShareFailure(ShareFailure.self);
 
+    final prepared = await ensureContainer(item, ownerUid: ownerUid);
+    await containers.invite(
+      container: prepared.container,
+      targetUid: targetUid,
+      role: role,
+      recipes: prepared.linked.owned,
+    );
+    return prepared.owned;
+  }
+
+  /// Makes the item shareable without inviting anyone: every owned recipe
+  /// in it becomes a collab document and the container document is created
+  /// or brought up to date. The contact flow and share codes both start
+  /// here.
+  Future<PreparedContainer<T>> ensureContainer(
+    T item, {
+    required String ownerUid,
+  }) async {
+    if (!adapter.isMine(item)) {
+      throw StateError('Only what this account owns can be shared');
+    }
     final linked = await linker.ensureCollabs(
       adapter.recipeIdsOf(item),
       uid: ownerUid,
@@ -101,7 +122,9 @@ class ContainerCollab<T> {
       );
     }
 
-    await containers.invite(
+    return PreparedContainer(
+      owned: owned,
+      linked: linked,
       container: CollabContainerEntity(
         id: collabId,
         kind: adapter.kind,
@@ -111,11 +134,7 @@ class ContainerCollab<T> {
         content: content,
         updatedAt: DateTime.now(),
       ),
-      targetUid: targetUid,
-      role: role,
-      recipes: linked.owned,
     );
-    return owned;
   }
 
   Future<bool> _anyResolves(List<String> contacts) async {
@@ -309,4 +328,18 @@ class ContainerCollab<T> {
       debugPrint('Shared ${adapter.kind.name} $collabId retire failed: $e');
     }
   }
+}
+
+/// A container ready to be shared: the local item (now an owner copy), its
+/// linked recipes, and the remote document's identity.
+class PreparedContainer<T> {
+  final T owned;
+  final LinkedRecipes linked;
+  final CollabContainerEntity container;
+
+  const PreparedContainer({
+    required this.owned,
+    required this.linked,
+    required this.container,
+  });
 }

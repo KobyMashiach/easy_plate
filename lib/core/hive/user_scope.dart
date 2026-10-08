@@ -33,6 +33,7 @@ class UserScope {
     'receiptsBox',
     'productPricingBox',
     'contentVariantsBox',
+    'shareUsageBox',
   ];
 
   String? _uid;

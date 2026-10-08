@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../domain/assistant_agent.dart';
 import '../../domain/assistant_dispatcher.dart';
@@ -69,7 +70,7 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
             AssistantMessage(
               id: _uuid.v4(),
               role: AssistantRole.assistant,
-              text: t.assistant.welcome,
+              text: _welcome(),
             ),
           ],
         ),
@@ -77,6 +78,15 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
     on<AssistantSend>(_onSend);
     on<AssistantToggleGroceryItem>(_onToggle);
     on<AssistantReset>(_onReset);
+  }
+
+  /// "Hi Koby!" when the profile has a name, a plain hello otherwise.
+  static String _welcome() {
+    final full = AuthSessionService().profile?.fullName.trim() ?? '';
+    final first = full.split(RegExp(r'\s+')).first;
+    return first.isEmpty
+        ? t.assistant.welcomeAnon
+        : t.assistant.welcome(name: first);
   }
 
   Future<void> _onSend(
@@ -239,7 +249,7 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
           AssistantMessage(
             id: _uuid.v4(),
             role: AssistantRole.assistant,
-            text: t.assistant.welcome,
+            text: _welcome(),
           ),
         ],
       ),

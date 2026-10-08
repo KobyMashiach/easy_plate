@@ -11,5 +11,5 @@ abstract class LegalLinks {
 
   /// There is no privacy policy page yet (see the release audit): this is the
   /// address it has to end up at, on the same domain as the support mailbox.
-  static final privacy = Uri.parse('https://easyplate.app/privacy');
+  static final privacy = Uri.parse('https://aieasyplate.app/privacy');
 }

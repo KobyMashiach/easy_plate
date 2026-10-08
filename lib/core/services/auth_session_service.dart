@@ -26,6 +26,7 @@ import 'cook_session_service.dart';
 import 'shopping_reminder_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
+import '../../features/household/domain/household_service.dart';
 
 /// Where the user stands in the gate: signed out, phone not yet proved, email
 /// not yet confirmed, signed in but without a profile document, profile filled
@@ -162,6 +163,7 @@ class AuthSessionService extends ChangeNotifier {
       // Neither may outlive the account: a premium flag would carry into the
       // next sign-in, and a quota count would be charged to the wrong person.
       EntitlementService().clear();
+      HouseholdService().clear();
       DailyUsageService().reset();
       unawaited(PurchasesService().logOut());
       _set(AuthStage.signedOut);
@@ -199,6 +201,9 @@ class AuthSessionService extends ChangeNotifier {
     // A different account than the one whose usage is in memory, if any.
     DailyUsageService().reset();
     EntitlementService().watch(user.uid);
+    // Which root the shared mirrors read from: the household's, if the
+    // account is in one. Waited for, so the hydrate below is the right one.
+    await HouseholdService().resolve(user.uid);
     // Then fill those boxes from the account's own cloud copy, before the
     // preferences read below: a phone that has never run the app has empty
     // boxes, and reading them first would show an account with no recipes and

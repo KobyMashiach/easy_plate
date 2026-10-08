@@ -75,6 +75,8 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminBilling$en adminBilling = _Translations$adminBilling$en._(_root);
 	@override late final _Translations$adminDashboard$en adminDashboard = _Translations$adminDashboard$en._(_root);
 	@override late final _Translations$assistant$en assistant = _Translations$assistant$en._(_root);
+	@override late final _Translations$shareCode$en shareCode = _Translations$shareCode$en._(_root);
+	@override late final _Translations$household$en household = _Translations$household$en._(_root);
 }
 
 // Path: common
@@ -1208,6 +1210,13 @@ class _Translations$premium$en extends Translations$premium$he {
 	@override String get perThreeMonth => 'every 3 months';
 	@override String get perSixMonth => 'every 6 months';
 	@override String get perAnnual => 'per year';
+	@override String get tierPro => 'Pro';
+	@override String get tierDuo => 'Pro Duo';
+	@override String get tierFamily => 'Pro Family';
+	@override String get tierProHint => 'One account';
+	@override String get tierDuoHint => '2 accounts, everything mirrored';
+	@override String get tierFamilyHint => 'Up to 6 accounts, everything mirrored';
+	@override String benefitHousehold({required Object n}) => 'Shared account for ${n} people: recipes, plans and lists in sync';
 }
 
 // Path: walkthrough
@@ -1478,7 +1487,7 @@ class _Translations$assistant$en extends Translations$assistant$he {
 	@override String get send => 'Send';
 	@override String get thinking => 'Thinking…';
 	@override String working({required Object tool}) => 'Working: ${tool}';
-	@override String get welcome => 'Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?';
+	@override String welcome({required Object name}) => 'Hi ${name}! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?';
 	@override String get error => 'Something went wrong. Try again.';
 	@override String get quotaReached => 'Today\'s AI allowance is used up. It reopens tomorrow.';
 	@override String get premiumOnly => 'The assistant is part of EasyPlate Premium';
@@ -1502,6 +1511,88 @@ class _Translations$assistant$en extends Translations$assistant$he {
 	@override late final _Translations$assistant$suggest$en suggest = _Translations$assistant$suggest$en._(_root);
 	@override String get whichList => 'Which list?';
 	@override String get listCreated => 'List created';
+	@override String get offTopic => 'I\'m here for cooking, recipes, meal plans and groceries. Ask me anything in the kitchen and I\'m on it!';
+	@override String get welcomeAnon => 'Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?';
+}
+
+// Path: shareCode
+class _Translations$shareCode$en extends Translations$shareCode$he {
+	_Translations$shareCode$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Code & link';
+	@override String get tabContact => 'Contact';
+	@override String get tabCode => 'Code or link';
+	@override String explain({required Object role}) => 'Anyone with this code can join as ${role}. It works for 30 days.';
+	@override String get create => 'Create code';
+	@override String get code => 'Code';
+	@override String get link => 'Link';
+	@override String get copy => 'Copy';
+	@override String get copied => 'Copied';
+	@override String get share => 'Share';
+	@override String get showQr => 'Show QR';
+	@override String get scanQr => 'Scan QR';
+	@override String get enterCode => 'Enter a code';
+	@override String get join => 'Join';
+	@override String get joinTitle => 'Join with a code';
+	@override String get joinHint => 'Paste the code you received, or scan its QR.';
+	@override String get joinPlaceholder => 'XXXXXXXX';
+	@override String joined({required Object title}) => 'Joined: ${title}';
+	@override String get alreadyMember => 'You already have this.';
+	@override String get invalid => 'That code is not valid.';
+	@override String get expired => 'This code has expired.';
+	@override String get revoked => 'This code was cancelled.';
+	@override String get usedUp => 'This code has been used up.';
+	@override String get self => 'That is your own code.';
+	@override String get gone => 'What this code shared no longer exists.';
+	@override String get failed => 'Could not join. Try again.';
+	@override String messageText({required Object name, required Object title, required Object code, required Object link}) => '${name} shared "${title}" with you on EasyPlate. Code: ${code}\n${link}';
+	@override String get revoke => 'Cancel code';
+	@override String limitRecipes({required Object count}) => 'Free accounts can share up to ${count} recipes a week.';
+	@override String limitBooks({required Object count}) => 'Free accounts can share up to ${count} books.';
+	@override String limitPlans({required Object count}) => 'Free accounts can share up to ${count} meal plans.';
+	@override String get upgrade => 'See Premium';
+	@override String get scanHint => 'Point the camera at a share QR';
+	@override String householdMessage({required Object name, required Object code, required Object link}) => '${name} invited you to their shared EasyPlate account. Code: ${code}\n${link}';
+}
+
+// Path: household
+class _Translations$household$en extends Translations$household$he {
+	_Translations$household$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Shared account';
+	@override String get duo => 'Pro Duo';
+	@override String get family => 'Pro Family';
+	@override String seats({required Object used, required Object total}) => '${used} of ${total} seats in use';
+	@override String get intro => 'Open a shared account: recipes, books, plans and lists are mirrored for everyone in it, and they get Premium with you.';
+	@override String get create => 'Open shared account';
+	@override String get nameHint => 'Name, e.g. the Cohens';
+	@override String get notEligible => 'A shared account comes with Pro Duo (2 accounts) or Pro Family (up to 6 accounts).';
+	@override String get seePlans => 'See plans';
+	@override String get members => 'Members';
+	@override String get owner => 'Owner';
+	@override String get you => 'You';
+	@override String get invite => 'Invite a member';
+	@override String inviteExplain({required Object free}) => 'Anyone with this code joins the shared account. ${free} seats left.';
+	@override String get noSeats => 'All seats are taken.';
+	@override String get remove => 'Remove';
+	@override String removeConfirm({required Object name}) => 'Remove ${name} from the shared account? They lose access and Premium.';
+	@override String get leave => 'Leave shared account';
+	@override String get leaveConfirm => 'Leave? What was saved here stays with the shared account; your own account goes back to what you had before.';
+	@override String get dissolve => 'Close shared account';
+	@override String get dissolveConfirm => 'Close the shared account? Members lose access and Premium. Your data comes back to your own account.';
+	@override String get joined => 'Welcome to the shared account!';
+	@override String inheritedNote({required Object name}) => 'Premium comes from ${name}\'s subscription.';
+	@override String get failed => 'That did not work. Try again.';
+	@override String get full => 'The shared account is full.';
+	@override String get inHousehold => 'You are already in a shared account.';
+	@override String get notEligibleCode => 'The owner\'s plan no longer includes a shared account.';
+	@override String get lapsed => 'The owner\'s subscription has ended; Premium is paused for members.';
 }
 
 // Path: walkthrough.topics
@@ -2621,6 +2712,13 @@ extension on TranslationsEn {
 			'premium.perThreeMonth' => 'every 3 months',
 			'premium.perSixMonth' => 'every 6 months',
 			'premium.perAnnual' => 'per year',
+			'premium.tierPro' => 'Pro',
+			'premium.tierDuo' => 'Pro Duo',
+			'premium.tierFamily' => 'Pro Family',
+			'premium.tierProHint' => 'One account',
+			'premium.tierDuoHint' => '2 accounts, everything mirrored',
+			'premium.tierFamilyHint' => 'Up to 6 accounts, everything mirrored',
+			'premium.benefitHousehold' => ({required Object n}) => 'Shared account for ${n} people: recipes, plans and lists in sync',
 			'walkthrough.title' => 'Guide',
 			'walkthrough.start' => 'Start the guide',
 			'walkthrough.startHint' => 'A guided tour of everything in the app, step by step',
@@ -2786,6 +2884,8 @@ extension on TranslationsEn {
 			'adminDashboard.unknownModel' => 'not in price list',
 			'adminDashboard.usersCost' => 'Cost per user',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} users',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'Search by name, email or uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'Show all ${count} users',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} calls',
@@ -2793,8 +2893,6 @@ extension on TranslationsEn {
 			'adminDashboard.sharedRecipes' => 'Shared recipes',
 			'adminDashboard.forumPosts' => 'Forum threads',
 			'adminDashboard.withPush' => 'Devices with push',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.cacheEntries' => 'Cached links',
 			'adminDashboard.cacheHits' => 'Cache hits (calls saved)',
 			'adminDashboard.config' => 'Remote config',
@@ -2899,7 +2997,7 @@ extension on TranslationsEn {
 			'assistant.send' => 'Send',
 			'assistant.thinking' => 'Thinking…',
 			'assistant.working' => ({required Object tool}) => 'Working: ${tool}',
-			'assistant.welcome' => 'Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?',
+			'assistant.welcome' => ({required Object name}) => 'Hi ${name}! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?',
 			'assistant.error' => 'Something went wrong. Try again.',
 			'assistant.quotaReached' => 'Today\'s AI allowance is used up. It reopens tomorrow.',
 			'assistant.premiumOnly' => 'The assistant is part of EasyPlate Premium',
@@ -3009,6 +3107,70 @@ extension on TranslationsEn {
 			'assistant.suggest.diet.3' => 'dairy',
 			'assistant.whichList' => 'Which list?',
 			'assistant.listCreated' => 'List created',
+			'assistant.offTopic' => 'I\'m here for cooking, recipes, meal plans and groceries. Ask me anything in the kitchen and I\'m on it!',
+			'assistant.welcomeAnon' => 'Hi! I can add groceries, plan your week, import recipes from links, start cook mode and more. What shall we do?',
+			'shareCode.title' => 'Code & link',
+			'shareCode.tabContact' => 'Contact',
+			'shareCode.tabCode' => 'Code or link',
+			'shareCode.explain' => ({required Object role}) => 'Anyone with this code can join as ${role}. It works for 30 days.',
+			'shareCode.create' => 'Create code',
+			'shareCode.code' => 'Code',
+			'shareCode.link' => 'Link',
+			'shareCode.copy' => 'Copy',
+			'shareCode.copied' => 'Copied',
+			'shareCode.share' => 'Share',
+			'shareCode.showQr' => 'Show QR',
+			'shareCode.scanQr' => 'Scan QR',
+			'shareCode.enterCode' => 'Enter a code',
+			'shareCode.join' => 'Join',
+			'shareCode.joinTitle' => 'Join with a code',
+			'shareCode.joinHint' => 'Paste the code you received, or scan its QR.',
+			'shareCode.joinPlaceholder' => 'XXXXXXXX',
+			'shareCode.joined' => ({required Object title}) => 'Joined: ${title}',
+			'shareCode.alreadyMember' => 'You already have this.',
+			'shareCode.invalid' => 'That code is not valid.',
+			'shareCode.expired' => 'This code has expired.',
+			'shareCode.revoked' => 'This code was cancelled.',
+			'shareCode.usedUp' => 'This code has been used up.',
+			'shareCode.self' => 'That is your own code.',
+			'shareCode.gone' => 'What this code shared no longer exists.',
+			'shareCode.failed' => 'Could not join. Try again.',
+			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} shared "${title}" with you on EasyPlate. Code: ${code}\n${link}',
+			'shareCode.revoke' => 'Cancel code',
+			'shareCode.limitRecipes' => ({required Object count}) => 'Free accounts can share up to ${count} recipes a week.',
+			'shareCode.limitBooks' => ({required Object count}) => 'Free accounts can share up to ${count} books.',
+			'shareCode.limitPlans' => ({required Object count}) => 'Free accounts can share up to ${count} meal plans.',
+			'shareCode.upgrade' => 'See Premium',
+			'shareCode.scanHint' => 'Point the camera at a share QR',
+			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => '${name} invited you to their shared EasyPlate account. Code: ${code}\n${link}',
+			'household.title' => 'Shared account',
+			'household.duo' => 'Pro Duo',
+			'household.family' => 'Pro Family',
+			'household.seats' => ({required Object used, required Object total}) => '${used} of ${total} seats in use',
+			'household.intro' => 'Open a shared account: recipes, books, plans and lists are mirrored for everyone in it, and they get Premium with you.',
+			'household.create' => 'Open shared account',
+			'household.nameHint' => 'Name, e.g. the Cohens',
+			'household.notEligible' => 'A shared account comes with Pro Duo (2 accounts) or Pro Family (up to 6 accounts).',
+			'household.seePlans' => 'See plans',
+			'household.members' => 'Members',
+			'household.owner' => 'Owner',
+			'household.you' => 'You',
+			'household.invite' => 'Invite a member',
+			'household.inviteExplain' => ({required Object free}) => 'Anyone with this code joins the shared account. ${free} seats left.',
+			'household.noSeats' => 'All seats are taken.',
+			'household.remove' => 'Remove',
+			'household.removeConfirm' => ({required Object name}) => 'Remove ${name} from the shared account? They lose access and Premium.',
+			'household.leave' => 'Leave shared account',
+			'household.leaveConfirm' => 'Leave? What was saved here stays with the shared account; your own account goes back to what you had before.',
+			'household.dissolve' => 'Close shared account',
+			'household.dissolveConfirm' => 'Close the shared account? Members lose access and Premium. Your data comes back to your own account.',
+			'household.joined' => 'Welcome to the shared account!',
+			'household.inheritedNote' => ({required Object name}) => 'Premium comes from ${name}\'s subscription.',
+			'household.failed' => 'That did not work. Try again.',
+			'household.full' => 'The shared account is full.',
+			'household.inHousehold' => 'You are already in a shared account.',
+			'household.notEligibleCode' => 'The owner\'s plan no longer includes a shared account.',
+			'household.lapsed' => 'The owner\'s subscription has ended; Premium is paused for members.',
 			_ => null,
 		};
 	}

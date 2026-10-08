@@ -130,6 +130,24 @@ function createLauncherIcons() {
   dart run flutter_launcher_icons
 }
 
+# === WEBSITE (landing/) ===
+# Rebuilds everything the site derives from index.html: the compiled Tailwind
+# CSS, the five language pages (/, /he/, /ar/, /fr/, /ru/) with their SEO head
+# and translated text, sitemap.xml, robots.txt and the og/<lang>.png share
+# images. Edit copy only inside I18N in landing/index.html, then run this.
+function buildWebsite() {
+  echo "Build website (CSS + 5 language pages + sitemap + og images)"
+  (cd landing && [ -d node_modules ] || npm install --no-audit --no-fund) &&   (cd landing && npm run build)
+}
+
+# Build, then publish to Firebase Hosting (only hosting: functions, rules and
+# Remote Config are untouched). Refreshes the live site at easyplate.app.
+function deployWebsite() {
+  buildWebsite || { echo "❌ Website build failed, nothing deployed."; return 1; }
+  echo "Deploy website to Firebase Hosting"
+  firebase deploy --only hosting
+}
+
 # === INTERACTIVE MENU ===
 function menu() {
   echo ""
@@ -162,12 +180,17 @@ function menu() {
   echo "27. Create Launcher Icons"
   echo "28. Store Screenshots (paywall review image)"
   echo ""
+  echo "🌐 WEBSITE"
+  echo "--------------------------------------"
+  echo "41. Build website (CSS, 5 languages, sitemap, og images)"
+  echo "42. Build + deploy website (firebase hosting)"
+  echo ""
   echo "📜 LOGS"
   echo "--------------------------------------"
   echo "31. Android LOGS"
   echo "32. IOS LOGS"
   echo "======================================"
-  read -p "Enter your choice (01–32): " choice
+  read -p "Enter your choice (01–42): " choice
 
   case $choice in
     1|01) androidRun ;;
@@ -194,7 +217,10 @@ function menu() {
     31) androidLogs ;;
     32) iosLogs ;;
 
-    *) echo "❌ Invalid option. Please select between 01–32." ;;
+    41) buildWebsite ;;
+    42) deployWebsite ;;
+
+    *) echo "❌ Invalid option. Please select between 01–42." ;;
   esac
 }
 

@@ -108,11 +108,16 @@ class ClayScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget? floatingActionButton;
 
+  /// False on a screen that already lists the running cook-mode timers in
+  /// its body (the notifications screen), so they are not shown twice.
+  final bool showCookTimers;
+
   const ClayScaffold({
     super.key,
     required this.body,
     this.appBar,
     this.floatingActionButton,
+    this.showCookTimers = true,
   });
 
   @override
@@ -121,8 +126,11 @@ class ClayScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: appBar,
       floatingActionButton: floatingActionButton,
-      // Running cook-mode timers sit right under the bar, on every screen.
-      body: CookTimerBanner(insetTop: appBar == null, child: body),
+      // Running cook-mode timers sit right under the bar, on every screen
+      // except one that lists them itself.
+      body: showCookTimers
+          ? CookTimerBanner(insetTop: appBar == null, child: body)
+          : body,
     );
   }
 }

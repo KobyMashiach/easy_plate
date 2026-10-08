@@ -150,7 +150,11 @@ enum CollabRole { owner, editor, viewer }
 enum CollabKind {
   recipe,
   book,
-  mealPlan
+  mealPlan,
+
+  /// A Pro Duo / Pro Family household; only share codes carry this kind.
+  /// Redeeming one adds a member directly, so no invite ever has it.
+  household
   ;
 
   static CollabKind fromName(String? name) =>

@@ -276,3 +276,10 @@ exports.onForumReplyCreated = onDocumentCreated(
     logger.info("forum reply told", { postId, replyId, recipients: uids.length, written });
   },
 );
+
+exports.shareCodes = require("./shareCodes").shareCodes;
+
+// Pro Duo / Pro Family: membership, inherited entitlement, the owner's
+// subscription following to every member.
+exports.households = require("./households").households;
+exports.onOwnerEntitlementChanged = require("./households").onOwnerEntitlementChanged;

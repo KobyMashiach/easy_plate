@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <!-- The Firebase default hosts serve the same files; keep one address for users and search engines. -->
+  <script>
+  if (window.location.hostname.endsWith('web.app') || window.location.hostname.endsWith('firebaseapp.com')) {
+    window.location.replace('https://aieasyplate.app' + window.location.pathname + window.location.search);
+  }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>אפליקציית מתכונים בעברית עם AI – שומרים, מסדרים ומבשלים | EasyPlate</title>
+  <meta name="description" content="EasyPlate היא אפליקציית מתכונים בעברית ששומרת מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות קוליות, מסדרת אותם בספרי מתכונים עם ערכים תזונתיים למנה, והופכת אותם לתפריט שבועי ולרשימת קניות. חינם לאייפון ולאנדרואיד." />
+  <meta name="keywords" content="אפליקציית מתכונים, אפליקציית מתכונים בעברית, אפליקציה לשמירת מתכונים, ספר מתכונים דיגיטלי, ניהול מתכונים, אפליקציית מתכונים עם ערכים תזונתיים, ספר מתכונים משפחתי, אפליקציה לבישול" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="author" content="EasyPlate (KH Easy Dev)" />
+  <link rel="canonical" href="https://aieasyplate.app/he/recipe-app" />
+  <link rel="alternate" hreflang="en" href="https://aieasyplate.app/recipe-app" />
+  <link rel="alternate" hreflang="he" href="https://aieasyplate.app/he/recipe-app" />
+  <link rel="alternate" hreflang="ar" href="https://aieasyplate.app/ar/recipe-app" />
+  <link rel="alternate" hreflang="fr" href="https://aieasyplate.app/fr/recipe-app" />
+  <link rel="alternate" hreflang="ru" href="https://aieasyplate.app/ru/recipe-app" />
+  <link rel="alternate" hreflang="x-default" href="https://aieasyplate.app/recipe-app" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="EasyPlate" />
+  <meta property="og:locale" content="he_IL" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="ar_AR" />
+  <meta property="og:locale:alternate" content="fr_FR" />
+  <meta property="og:locale:alternate" content="ru_RU" />
+  <meta property="og:url" content="https://aieasyplate.app/he/recipe-app" />
+  <meta property="og:title" content="אפליקציית המתכונים ששומרת כל מתכון שאהבתם" />
+  <meta property="og:description" content="EasyPlate היא אפליקציית מתכונים בעברית ששומרת מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות קוליות, מסדרת אותם בספרי מתכונים עם ערכים תזונתיים למנה, והופכת אותם לתפריט שבועי ולרשימת קניות. חינם לאייפון ולאנדרואיד." />
+  <meta property="og:image" content="https://aieasyplate.app/og/he.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="אפליקציית המתכונים ששומרת כל מתכון שאהבתם" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="אפליקציית המתכונים ששומרת כל מתכון שאהבתם" />
+  <meta name="twitter:description" content="EasyPlate היא אפליקציית מתכונים בעברית ששומרת מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות קוליות, מסדרת אותם בספרי מתכונים עם ערכים תזונתיים למנה, והופכת אותם לתפריט שבועי ולרשימת קניות. חינם לאייפון ולאנדרואיד." />
+  <meta name="twitter:image" content="https://aieasyplate.app/og/he.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://aieasyplate.app/he/recipe-app","url":"https://aieasyplate.app/he/recipe-app","name":"אפליקציית מתכונים בעברית עם AI – שומרים, מסדרים ומבשלים | EasyPlate","description":"EasyPlate היא אפליקציית מתכונים בעברית ששומרת מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות קוליות, מסדרת אותם בספרי מתכונים עם ערכים תזונתיים למנה, והופכת אותם לתפריט שבועי ולרשימת קניות. חינם לאייפון ולאנדרואיד.","inLanguage":"he","isPartOf":{"@id":"https://aieasyplate.app/#website"},"about":{"@id":"https://aieasyplate.app/#app"},"primaryImageOfPage":{"@type":"ImageObject","url":"https://aieasyplate.app/og/he.png","width":1200,"height":630},"breadcrumb":{"@id":"https://aieasyplate.app/he/recipe-app#breadcrumb"},"dateModified":"2026-10-06"},{"@type":"BreadcrumbList","@id":"https://aieasyplate.app/he/recipe-app#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"דף הבית","item":"https://aieasyplate.app/he"},{"@type":"ListItem","position":2,"name":"מדריכים","item":"https://aieasyplate.app/he#guides"},{"@type":"ListItem","position":3,"name":"אפליקציית מתכונים","item":"https://aieasyplate.app/he/recipe-app"}]},{"@type":"Article","@id":"https://aieasyplate.app/he/recipe-app#article","headline":"אפליקציית המתכונים ששומרת כל מתכון שאהבתם","description":"EasyPlate היא אפליקציית מתכונים בעברית ששומרת מתכונים מטיקטוק, אינסטגרם, יוטיוב, אתרים, PDF והקלטות קוליות, מסדרת אותם בספרי מתכונים עם ערכים תזונתיים למנה, והופכת אותם לתפריט שבועי ולרשימת קניות. חינם לאייפון ולאנדרואיד.","inLanguage":"he","mainEntityOfPage":{"@id":"https://aieasyplate.app/he/recipe-app"},"image":["https://aieasyplate.app/og/he.png","https://aieasyplate.app/screens/01_recipes.jpg","https://aieasyplate.app/screens/02_recipe_details.jpg"],"author":{"@id":"https://aieasyplate.app/#organization"},"publisher":{"@id":"https://aieasyplate.app/#organization"},"datePublished":"2026-10-06","dateModified":"2026-10-06","about":{"@id":"https://aieasyplate.app/#app"},"wordCount":502},{"@type":"HowTo","@id":"https://aieasyplate.app/he/recipe-app#how","name":"אפליקציית המתכונים ששומרת כל מתכון שאהבתם","inLanguage":"he","step":[{"@type":"HowToStep","position":1,"name":"משתפים או מדביקים","text":"מצאתם מתכון? לוחצים על כפתור השיתוף בטיקטוק, באינסטגרם או בדפדפן ובוחרים EasyPlate, או מדביקים את הקישור, הטקסט או הקובץ בשורת החיפוש."},{"@type":"HowToStep","position":2,"name":"עוברים על המתכון","text":"ה-AI מחזיר מצרכים, כמויות, שלבים, מנות, תגיות וערכים תזונתיים תוך שניות. עורכים מה שרוצים ושומרים לספר."},{"@type":"HowToStep","position":3,"name":"מתכננים, קונים, מבשלים","text":"גוררים את המתכון ליום בשבוע. רשימת הקניות נבנית לבד לפי מחלקות בסופר, ומצב בישול מוביל אתכם שלב אחרי שלב."}]},{"@type":"FAQPage","@id":"https://aieasyplate.app/he/recipe-app#faq","inLanguage":"he","mainEntity":[{"@type":"Question","name":"האם EasyPlate חינמית?","acceptedAnswer":{"@type":"Answer","text":"כן. חשבון חינמי כולל מתכונים וספרים ידניים ללא הגבלה, תפריט שבועי ורשימת קניות, ומכסה יומית של חילוצי AI. EasyPlate Pro מסירה את המגבלה ואת הפרסומות ב-20 ₪ לחודש, בחיוב דרך App Store או Google Play."}},{"@type":"Question","name":"מאילו מקורות אפשר לשמור מתכונים?","acceptedAnswer":{"@type":"Answer","text":"טיקטוק, אינסטגרם, יוטיוב, פייסבוק, כל אתר מתכונים, טקסט מודבק, חיפוש ברשת לפי שם מנה, בקשות כתובות, הקלטות קוליות וקובצי PDF."}},{"@type":"Question","name":"אפשר לערוך מתכון אחרי שה-AI חילץ אותו?","acceptedAnswer":{"@type":"Answer","text":"הכול ניתן לעריכה: מצרכים, כמויות, שלבים, מנות, תגיות, תמונה וערכים תזונתיים. הפלט של ה-AI הוא נקודת התחלה, לא נעילה."}},{"@type":"Question","name":"האפליקציה עובדת בעברית?","acceptedAnswer":{"@type":"Answer","text":"כן. EasyPlate עובדת בעברית, ערבית, אנגלית, צרפתית ורוסית עם פריסה מימין לשמאל, והחלפת שפה גם מתרגמת את המתכונים, הספרים, התפריטים והרשימות ששמרתם."}},{"@type":"Question","name":"המשפחה יכולה להשתמש באותם מתכונים?","acceptedAnswer":{"@type":"Answer","text":"משתפים מתכון בודד, ספר שלם או תפריט שבועי עם חשבון אחר כצופה או כעורך. שינויים מסתנכרנים לכולם בזמן אמת."}}]},{"@type":"Organization","@id":"https://aieasyplate.app/#organization","name":"EasyPlate","legalName":"KH Easy Dev","url":"https://aieasyplate.app","logo":{"@type":"ImageObject","url":"https://aieasyplate.app/icon-192.png","width":192,"height":192},"email":"support@aieasyplate.app"},{"@type":"WebSite","@id":"https://aieasyplate.app/#website","url":"https://aieasyplate.app","name":"EasyPlate","inLanguage":["en","he","ar","fr","ru"]},{"@type":["SoftwareApplication","MobileApplication"],"@id":"https://aieasyplate.app/#app","name":"EasyPlate","url":"https://aieasyplate.app","operatingSystem":"iOS, Android","applicationCategory":"LifestyleApplication","installUrl":["https://apps.apple.com/us/app/easy-plate-ai/id6809243199","https://play.google.com/store/apps/details?id=com.KHEasyDev.easy_plate"]}]}</script>
+  <meta name="theme-color" content="#0c0a1f" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Heebo:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <style>
+    :root { --bg: #0c0a1f; --fg: #f3eeff; }
+    html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+    body { background: var(--bg); color: var(--fg); font-feature-settings: "cv11", "ss01"; overflow-x: clip; }
+    html[dir="rtl"] body { font-family: Heebo, "Noto Sans Arabic", "Plus Jakarta Sans", Inter, system-ui, sans-serif; }
+    html[lang="ar"] body { font-family: "Noto Sans Arabic", Heebo, Inter, system-ui, sans-serif; }
+    html[lang="ru"] body { font-family: Inter, "Plus Jakarta Sans", system-ui, sans-serif; }
+    [x-cloak] { display: none !important; }
+    ::selection { background: rgba(116,89,247,.45); color: #fff; }
+
+    /* ---------- Background texture ---------- */
+    .grid-bg {
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 100%);
+    }
+    .noise::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .035; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ---------- Glass & cards ---------- */
+    .glass { background: rgba(255,255,255,.04); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid rgba(255,255,255,.08); }
+    .card {
+      position: relative; background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+      border: 1px solid rgba(255,255,255,.08); border-radius: 28px; overflow: hidden;
+      transition: transform .5s cubic-bezier(.2,.8,.2,1), border-color .4s, box-shadow .5s;
+    }
+    .card::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .5s;
+      background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(140,107,255,.16), transparent 40%);
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(140,107,255,.35); box-shadow: 0 30px 70px -30px rgba(116,89,247,.5); }
+    .card:hover::before { opacity: 1; }
+
+    /* ---------- Pill badge with border shine ---------- */
+    .pill { position: relative; isolation: isolate; border-radius: 9999px; padding: 1px; background: linear-gradient(120deg, rgba(255,255,255,.14), rgba(255,255,255,.04)); overflow: hidden; }
+    .pill::before {
+      content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit;
+      background: conic-gradient(from 0deg, transparent 0 60%, rgba(140,107,255,.9) 75%, rgba(98,250,227,.9) 85%, transparent 95%);
+      animation: spin 4s linear infinite;
+    }
+    .pill > span { display: inline-flex; align-items: center; gap: .5rem; border-radius: inherit; background: #110e2b; padding: .45rem 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- Buttons ---------- */
+    .btn-primary {
+      position: relative; overflow: hidden; isolation: isolate;
+      background: linear-gradient(135deg, #7459f7 0%, #5b3cdd 55%, #441cc8 100%);
+      box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 12px 30px -10px rgba(116,89,247,.8);
+      transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s, filter .3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 1px 0 rgba(255,255,255,.3) inset, 0 20px 40px -12px rgba(116,89,247,1); filter: saturate(1.1); }
+    .btn-primary:active { transform: translateY(0) scale(.98); }
+    .btn-primary::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); transform: translateX(-150%); animation: shine 3.5s ease-in-out infinite; }
+    .btn-ghost { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); transition: all .3s; }
+    .btn-ghost:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.2); transform: translateY(-2px); }
+
+    /* ---------- Store badges ---------- */
+    .store-badge { display: inline-flex; align-items: center; gap: .65rem; border-radius: 14px; padding: .55rem 1.1rem .55rem .9rem; background: #0b0a16; border: 1px solid rgba(255,255,255,.14); color: #fff; transition: all .3s cubic-bezier(.2,.8,.2,1); direction: ltr; }
+    .store-badge:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.35); box-shadow: 0 16px 40px -16px rgba(255,255,255,.25); }
+
+    /* ---------- Gradient text ---------- */
+    .text-gradient { background: linear-gradient(92deg, #c9bfff 0%, #8c6bff 35%, #62fae3 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .text-gradient-warm { background: linear-gradient(92deg, #f2a93b, #ff7a59); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    /* ---------- iPhone 16 Pro, pure CSS ---------- */
+    .iphone {
+      --w: 300px; --h: 620px; --r: 54px;
+      position: relative; width: var(--w); height: var(--h); border-radius: var(--r); direction: ltr;
+      background: linear-gradient(160deg, #3a3650 0%, #15131f 35%, #0c0b14 65%, #2a2740 100%);
+      padding: 3px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.08),
+        0 0 0 6px #0f0e18,
+        0 0 0 7px rgba(255,255,255,.14),
+        0 0 0 8px #08070f,
+        0 60px 120px -30px rgba(0,0,0,.8),
+        0 40px 100px -40px rgba(116,89,247,.6);
+    }
+    .iphone::before { /* glossy titanium rim */
+      content: ""; position: absolute; inset: -7px; border-radius: calc(var(--r) + 7px); pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0) 70%, rgba(255,255,255,.25) 100%);
+      mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000); -webkit-mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000); -webkit-mask-composite: xor; mask-composite: exclude; padding: 2px;
+    }
+    .iphone .btn-side { position: absolute; background: linear-gradient(90deg, #2b2840, #0d0c15); border-radius: 2px; }
+    .iphone .btn-side.action { left: -10px; top: 110px; width: 3px; height: 26px; }
+    .iphone .btn-side.vol1 { left: -10px; top: 160px; width: 3px; height: 54px; }
+    .iphone .btn-side.vol2 { left: -10px; top: 224px; width: 3px; height: 54px; }
+    .iphone .btn-side.power { right: -10px; top: 190px; width: 3px; height: 84px; background: linear-gradient(270deg, #2b2840, #0d0c15); }
+    .iphone .screen { position: relative; width: 100%; height: 100%; border-radius: calc(var(--r) - 3px); overflow: hidden; background: #0f0d1f; color: #f3eeff; }
+    .iphone .island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 104px; height: 30px; border-radius: 20px; background: #000; z-index: 30; box-shadow: 0 0 0 1px rgba(255,255,255,.04); }
+    .iphone .island::after { content: ""; position: absolute; right: 12px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #2a2f5a, #05060e 70%); }
+    .iphone .status { position: absolute; top: 16px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 28px; font-size: 12px; font-weight: 700; z-index: 20; }
+    .iphone .home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 110px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.75); z-index: 30; }
+    .iphone .glare { position: absolute; inset: 0; pointer-events: none; z-index: 25; background: linear-gradient(115deg, rgba(255,255,255,.09) 0%, rgba(255,255,255,.02) 30%, transparent 50%); }
+    .iphone .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    .iphone.photo .status { color: #181445; }
+    .iphone.photo .screen { background: #fcf8ff; }
+    .iphone.photo .shot { top: 48px; height: calc(100% - 48px); }
+    .iphone.photo.sm .shot { top: 38px; height: calc(100% - 38px); }
+    .shot-fade { transition: opacity .6s cubic-bezier(.2,.8,.2,1); }
+    .bento-shot { position: relative; border-radius: 18px 18px 0 0; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-bottom: 0; box-shadow: 0 -10px 40px -20px rgba(116,89,247,.6); }
+    .bento-shot img { display: block; width: 100%; }
+    .bento-shot::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(17,14,43,.95)); }
+    .iphone.sm { --w: 230px; --h: 476px; --r: 42px; }
+    .iphone.sm .island { width: 80px; height: 24px; top: 10px; }
+    .iphone.sm .status { font-size: 10px; padding: 0 22px; top: 13px; }
+    .app-screen { position: absolute; inset: 0; padding: 56px 16px 28px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
+    .iphone.sm .app-screen { padding: 44px 12px 22px; font-size: 10px; gap: 8px; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 9999px; font-size: 10px; font-weight: 600; }
+    .macro { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 14px; background: rgba(255,255,255,.05); }
+    .check { width: 16px; height: 16px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,.25); display: grid; place-items: center; flex: none; }
+    .check.on { background: #2dd4bf; border-color: #2dd4bf; color: #00201c; }
+
+    /* ---------- Typing search line ---------- */
+    .search-line { position: relative; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); transition: all .35s; }
+    .search-line:focus-within, .search-line:hover { border-color: rgba(140,107,255,.6); box-shadow: 0 0 0 4px rgba(116,89,247,.15), 0 20px 50px -25px rgba(116,89,247,.7); }
+    .search-line input::placeholder { color: rgba(243,238,255,.4); }
+
+    /* ---------- Accordion ---------- */
+    .faq-item { border-bottom: 1px solid rgba(255,255,255,.08); }
+    .faq-item [data-chevron] { transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+    .faq-item.open [data-chevron] { transform: rotate(180deg); }
+
+    /* ---------- Reveal on scroll ---------- */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal[data-delay="1"] { transition-delay: .1s; } .reveal[data-delay="2"] { transition-delay: .2s; } .reveal[data-delay="3"] { transition-delay: .3s; } .reveal[data-delay="4"] { transition-delay: .4s; }
+
+    /* ---------- Steps progress ---------- */
+    .step-bar { height: 3px; border-radius: 3px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .step-bar > i { display: block; height: 100%; background: linear-gradient(90deg, #7459f7, #62fae3); width: 0; }
+    .step-bar.active > i { animation: progress 6s linear forwards; }
+
+
+    /* ---------- Marquee ---------- */
+    .marquee-mask { mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); }
+
+    /* RTL flips */
+    @keyframes marqueeRtl { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+    html[dir="rtl"] .animate-marquee { animation-name: marqueeRtl; }
+    html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+    html[dir="rtl"] .hero-phone { transform: rotate(6deg); }
+    @media (prefers-reduced-transparency: reduce) { .glass, .card { backdrop-filter: none; -webkit-backdrop-filter: none; background: #15122f; } }
+    @media (prefers-contrast: more) { .glass, .card, .pill > span { border-color: rgba(255,255,255,.45); } .text-white\/60, .text-white\/65, .text-white\/55, .text-white\/50 { color: rgba(255,255,255,.85) !important; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
+  </style>
+  <style>
+    .reveal { opacity: 1; transform: none; }
+    .prose-guide p { color: rgba(243,238,255,.72); line-height: 1.75; }
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .chev { transform: rotate(180deg); }
+    .chev { transition: transform .3s; }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen relative">
+  <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute inset-0 grid-bg"></div>
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 h-[700px] w-[900px] rounded-full bg-brand-600/30 blur-[140px]"></div>
+    <div class="absolute top-[50%] -left-40 h-[500px] w-[500px] rounded-full bg-mint-500/15 blur-[120px]"></div>
+  </div>
+
+  <header class="sticky top-0 z-50 py-3">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+      <nav class="glass flex items-center justify-between rounded-2xl px-4 py-2.5 shadow-card">
+        <a href="/he" class="flex items-center gap-3" aria-label="EasyPlate דף הבית"><img src="/icon-64.png" alt="" width="36" height="36" class="h-9 w-9 rounded-xl shadow-glow" /><span class="text-lg font-extrabold tracking-tight">Easy<span class="text-gradient">Plate</span></span></a>
+        <div class="hidden md:flex items-center gap-1 text-sm font-medium text-white/70">
+          <a href="/he#features" class="px-3.5 py-2 rounded-xl hover:text-white hover:bg-white/5 transition">יכולות</a>
+          <a href="/he#guides" class="px-3.5 py-2 rounded-xl hover:text-white hover:bg-white/5 transition">מדריכים</a>
+          <a href="/he#pricing" class="px-3.5 py-2 rounded-xl hover:text-white hover:bg-white/5 transition">מחירים</a>
+        </div>
+        <a href="#download" class="btn-primary inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white"><span>להורדת האפליקציה</span><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rtl-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <article>
+      <section class="relative pt-10 pb-16 sm:pt-16 lg:pb-24 noise">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 grid lg:grid-cols-12 gap-12 items-center">
+          <div class="lg:col-span-7 relative z-10">
+            <nav aria-label="breadcrumb" class="flex flex-wrap items-center gap-2 text-xs text-white/50">
+              <a href="/he" class="hover:text-white">דף הבית</a><span>›</span>
+              <a href="/he#guides" class="hover:text-white">מדריכים</a><span>›</span>
+              <span class="text-white/80">אפליקציית מתכונים</span>
+            </nav>
+            <h1 class="mt-6 text-4xl sm:text-5xl lg:text-[3.6rem] font-extrabold leading-[1.08] tracking-tight">אפליקציית המתכונים ששומרת כל מתכון שאהבתם</h1>
+            <div class="prose-guide mt-6 max-w-2xl space-y-4 text-base sm:text-lg">
+              <p>מתכונים היום נמצאים בכל מקום: ריל שאהבתם, צילום מסך בגלריה, בלוג עם שתים-עשרה פסקאות לפני רשימת המצרכים, פתק מאמא. EasyPlate היא אפליקציית מתכונים בעברית שנבנתה כדי לאסוף את כולם לספר מתכונים אחד מסודר וניתן לחיפוש, באותו פורמט נקי לכל מתכון: מצרכים עם כמויות, שלבים ממוספרים, מספר מנות, תגיות וערכים תזונתיים משוערים למנה.</p>
+              <p>במקום להקליד, מדביקים או משתפים. ה-AI קורא את הסרטון, העמוד, הטקסט, ה-PDF או ההקלטה ומחזיר מתכון שאפשר לערוך. משם כל מתכון יכול לעלות לתפריט השבועי, להיכנס לספר משותף עם המשפחה ולהגיע לרשימת הקניות.</p>
+            </div>
+            <p class="mt-4 text-xs text-white/40">3 דקות קריאה</p>
+            <div class="mt-8"><div class="flex flex-wrap items-center gap-3">
+            <a href="https://apps.apple.com/us/app/easy-plate-ai/id6809243199" target="_blank" rel="noopener" class="store-badge"><svg viewBox="0 0 24 24" class="h-7 w-7 fill-white" aria-hidden="true"><path d="M16.37 12.72c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.29-1.27 3.14-2.52.99-1.45 1.4-2.85 1.42-2.92-.03-.01-2.72-1.04-2.73-4.14zM13.78 5.08c.71-.86 1.19-2.06 1.06-3.26-1.03.04-2.27.68-3 1.54-.66.76-1.24 1.98-1.08 3.15 1.14.09 2.31-.58 3.02-1.43z"/></svg><span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">הורידו מ-</span><span class="text-lg font-bold -mt-0.5">App Store</span></span></a>
+            <a href="https://play.google.com/store/apps/details?id=com.KHEasyDev.easy_plate" target="_blank" rel="noopener" class="store-badge"><svg viewBox="0 0 24 24" class="h-7 w-7" aria-hidden="true"><path fill="#34A853" d="M3.6 2.4 13 12l-9.4 9.6c-.4-.2-.6-.6-.6-1.1V3.5c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="M16.3 15.3 13 12l3.3-3.3 3.9 2.2c1.1.6 1.1 1.6 0 2.2z"/><path fill="#4285F4" d="M16.3 8.7 13 12 3.6 2.4c.4-.2.9-.2 1.4.1z"/><path fill="#EA4335" d="M16.3 15.3 5 21.5c-.5.3-1 .3-1.4.1L13 12z"/></svg><span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">זמין ב-</span><span class="text-lg font-bold -mt-0.5">Google Play</span></span></a>
+          </div></div>
+            <p class="mt-5 flex items-center gap-2 text-sm text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-mint-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span>חינם להתחלה. בלי כרטיס אשראי.</span></p>
+          </div>
+          <div class="lg:col-span-5 flex justify-center lg:justify-end">
+            <div class="absolute -z-10 h-[420px] w-[420px] rounded-full bg-brand-500/25 blur-3xl"></div>
+            <div class="iphone photo hero-phone">
+              <span class="btn-side action"></span><span class="btn-side vol1"></span><span class="btn-side vol2"></span><span class="btn-side power"></span>
+              <div class="screen"><div class="island"></div><div class="status"><span>9:41</span><span></span></div><div class="glare"></div>
+                <img class="shot" src="/screens/01_recipes.jpg" alt="אפליקציית המתכונים ששומרת כל מתכון שאהבתם" width="540" height="1129" loading="lazy" decoding="async" />
+                <div class="home" style="background: rgba(24,20,69,.7)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-6 border-y border-white/5 bg-white/[.02]">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 flex flex-wrap items-center gap-2">
+          <span class="text-xs text-white/40 me-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
+            <a href="/recipe-app" hreflang="en" lang="en" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">English</a>
+            <a href="/he/recipe-app" hreflang="he" lang="he" class="rounded-full border px-3 py-1 text-xs font-medium transition border-brand-400/60 bg-brand-600/30 text-white">עברית</a>
+            <a href="/ar/recipe-app" hreflang="ar" lang="ar" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">العربية</a>
+            <a href="/fr/recipe-app" hreflang="fr" lang="fr" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">Français</a>
+            <a href="/ru/recipe-app" hreflang="ru" lang="ru" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">Русский</a>
+        </div>
+      </section>
+
+      <section class="py-20 lg:py-28">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 grid lg:grid-cols-12 gap-12">
+          <div class="lg:col-span-7 space-y-6">
+            <div class="card p-7 lg:p-9">
+              <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">שומרים מתכון מכל מקום</h2>
+              <div class="prose-guide mt-4"><p>EasyPlate מקבלת שמונה סוגי קלט, וכולם מסתיימים באותו מתכון מובנה:</p></div>
+              <ul class="mt-5 space-y-3 text-sm sm:text-base">
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">קישור מטיקטוק, אינסטגרם, יוטיוב, פייסבוק או כל אתר מתכונים.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">טקסט מודבק, למשל הודעת וואטסאפ או כיתוב של פוסט.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">חיפוש ברשת לפי שם המנה: EasyPlate מוצאת מתכון ומחזירה אותו מסודר.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">בקשה במילים שלכם (&quot;מרק עדשים לארבעה, בלי בצל&quot;).</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">הקלטה קולית שמתומללת והופכת למתכון.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">קובץ PDF או צילום של מתכון מודפס.</span></li>
+              </ul>
+            </div>
+            <div class="card p-7 lg:p-9">
+              <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">מסדרים מתכונים בספרים</h2>
+              <div class="prose-guide mt-4"><p>המתכונים מקובצים לספרים שאתם קוראים להם בשם: ארוחות ערב של אמצע שבוע, תפריטי חג, המועדפים של הילדים. לכל ספר יש דפדוף בכפולת עמודים, תמונת שער, ותגיות וחיפוש על הכול. ספר אפשר לשתף עם חשבון אחר כצופה או כעורך, ועריכות מגיעות לכולם בזמן אמת.</p></div>
+              <ul class="mt-5 space-y-3 text-sm sm:text-base">
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">תגיות, מנות, זמן הכנה ואלרגנים בכל מתכון.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">חיפוש טקסט מלא בכל הספרייה.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">ספרי מתכונים משפחתיים משותפים עם עריכה חיה.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">עובד גם בלי אינטרנט: כל מה ששמרתם נפתח גם בלי חיבור.</span></li>
+              </ul>
+            </div>
+            <div class="card p-7 lg:p-9">
+              <h2 class="text-2xl lg:text-3xl font-extrabold tracking-tight">מבשלים בלי ידיים</h2>
+              <div class="prose-guide mt-4"><p>מצב בישול הופך מתכון למסכים גדולים, שלב אחרי שלב, עם כמויות המצרכים בדיוק איפה שצריך אותן וטיימרים שממשיכים לרוץ ברקע. לכל מתכון מחושבים ערכים תזונתיים משוערים למנה, והם מסתכמים ללוח שבועי, כך שתכנון ארוחות בריאות יותר לא דורש אפליקציה שנייה.</p></div>
+              <ul class="mt-5 space-y-3 text-sm sm:text-base">
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">מצב בישול שלב אחרי שלב עם טיימרים ברקע.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">קלוריות, חלבון, פחמימות ושומן למנה.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">משנים את מספר המנות והכמויות מתעדכנות.</span></li>
+                <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-gradient-to-br from-brand-400 to-mint-400 grid place-items-center flex-none text-ink-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="text-white/80">חמש שפות, כולל עברית וערבית מימין לשמאל.</span></li>
+              </ul>
+            </div>
+          </div>
+          <aside class="lg:col-span-5">
+            <div class="lg:sticky lg:top-28 flex flex-col items-center gap-8">
+              <div class="iphone photo ">
+              <span class="btn-side action"></span><span class="btn-side vol1"></span><span class="btn-side vol2"></span><span class="btn-side power"></span>
+              <div class="screen"><div class="island"></div><div class="status"><span>9:41</span><span></span></div><div class="glare"></div>
+                <img class="shot" src="/screens/02_recipe_details.jpg" alt="מסדרים מתכונים בספרים" width="540" height="1129" loading="lazy" decoding="async" />
+                <div class="home" style="background: rgba(24,20,69,.7)"></div>
+              </div>
+            </div>
+              <div class="glass rounded-3xl p-6 w-full max-w-sm">
+                <p class="text-sm font-semibold text-brand-300 uppercase tracking-wide">מדריכים נוספים</p>
+                <ul class="mt-3 space-y-2 text-sm">
+                  <li><a href="/he/grocery-list-app" class="flex items-center gap-2 text-white/75 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m5 11 4-7"/><path d="m9 11 1 9"/></svg><span>רשימת קניות משותפת</span></a></li>
+                  <li><a href="/he/meal-planner" class="flex items-center gap-2 text-white/75 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg><span>תפריט שבועי</span></a></li>
+                  <li><a href="/he/save-tiktok-recipes" class="flex items-center gap-2 text-white/75 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg><span>מתכונים מטיקטוק</span></a></li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="how" class="py-20 lg:py-24 border-t border-white/5">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-center">איך זה עובד</h2>
+          <ol class="mt-12 grid md:grid-cols-3 gap-5">
+            <li class="card p-7">
+              <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 grid place-items-center font-extrabold text-sm text-white">01</span>
+              <h3 class="mt-4 font-bold text-lg">משתפים או מדביקים</h3>
+              <p class="mt-2 text-sm text-white/60 leading-relaxed">מצאתם מתכון? לוחצים על כפתור השיתוף בטיקטוק, באינסטגרם או בדפדפן ובוחרים EasyPlate, או מדביקים את הקישור, הטקסט או הקובץ בשורת החיפוש.</p>
+            </li>
+            <li class="card p-7">
+              <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 grid place-items-center font-extrabold text-sm text-white">02</span>
+              <h3 class="mt-4 font-bold text-lg">עוברים על המתכון</h3>
+              <p class="mt-2 text-sm text-white/60 leading-relaxed">ה-AI מחזיר מצרכים, כמויות, שלבים, מנות, תגיות וערכים תזונתיים תוך שניות. עורכים מה שרוצים ושומרים לספר.</p>
+            </li>
+            <li class="card p-7">
+              <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 grid place-items-center font-extrabold text-sm text-white">03</span>
+              <h3 class="mt-4 font-bold text-lg">מתכננים, קונים, מבשלים</h3>
+              <p class="mt-2 text-sm text-white/60 leading-relaxed">גוררים את המתכון ליום בשבוע. רשימת הקניות נבנית לבד לפי מחלקות בסופר, ומצב בישול מוביל אתכם שלב אחרי שלב.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="faq" class="py-20 lg:py-24 border-t border-white/5">
+        <div class="mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-center">שאלות נפוצות</h2>
+          <div class="mt-10 glass rounded-3xl px-6 sm:px-8 divide-y divide-white/8">
+            <details class="group py-5" open>
+              <summary class="flex items-center justify-between gap-6 font-semibold text-base sm:text-lg text-white/90"><span>האם EasyPlate חינמית?</span><span class="chev flex-none h-8 w-8 rounded-full grid place-items-center bg-white/8 text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+              <p class="mt-3 text-white/60 leading-relaxed">כן. חשבון חינמי כולל מתכונים וספרים ידניים ללא הגבלה, תפריט שבועי ורשימת קניות, ומכסה יומית של חילוצי AI. EasyPlate Pro מסירה את המגבלה ואת הפרסומות ב-20 ₪ לחודש, בחיוב דרך App Store או Google Play.</p>
+            </details>
+            <details class="group py-5">
+              <summary class="flex items-center justify-between gap-6 font-semibold text-base sm:text-lg text-white/90"><span>מאילו מקורות אפשר לשמור מתכונים?</span><span class="chev flex-none h-8 w-8 rounded-full grid place-items-center bg-white/8 text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+              <p class="mt-3 text-white/60 leading-relaxed">טיקטוק, אינסטגרם, יוטיוב, פייסבוק, כל אתר מתכונים, טקסט מודבק, חיפוש ברשת לפי שם מנה, בקשות כתובות, הקלטות קוליות וקובצי PDF.</p>
+            </details>
+            <details class="group py-5">
+              <summary class="flex items-center justify-between gap-6 font-semibold text-base sm:text-lg text-white/90"><span>אפשר לערוך מתכון אחרי שה-AI חילץ אותו?</span><span class="chev flex-none h-8 w-8 rounded-full grid place-items-center bg-white/8 text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+              <p class="mt-3 text-white/60 leading-relaxed">הכול ניתן לעריכה: מצרכים, כמויות, שלבים, מנות, תגיות, תמונה וערכים תזונתיים. הפלט של ה-AI הוא נקודת התחלה, לא נעילה.</p>
+            </details>
+            <details class="group py-5">
+              <summary class="flex items-center justify-between gap-6 font-semibold text-base sm:text-lg text-white/90"><span>האפליקציה עובדת בעברית?</span><span class="chev flex-none h-8 w-8 rounded-full grid place-items-center bg-white/8 text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+              <p class="mt-3 text-white/60 leading-relaxed">כן. EasyPlate עובדת בעברית, ערבית, אנגלית, צרפתית ורוסית עם פריסה מימין לשמאל, והחלפת שפה גם מתרגמת את המתכונים, הספרים, התפריטים והרשימות ששמרתם.</p>
+            </details>
+            <details class="group py-5">
+              <summary class="flex items-center justify-between gap-6 font-semibold text-base sm:text-lg text-white/90"><span>המשפחה יכולה להשתמש באותם מתכונים?</span><span class="chev flex-none h-8 w-8 rounded-full grid place-items-center bg-white/8 text-white/60"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+              <p class="mt-3 text-white/60 leading-relaxed">משתפים מתכון בודד, ספר שלם או תפריט שבועי עם חשבון אחר כצופה או כעורך. שינויים מסתנכרנים לכולם בזמן אמת.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-16 border-t border-white/5">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6">
+          <h2 class="text-2xl font-extrabold tracking-tight">מדריכים נוספים</h2>
+          <div class="mt-6 grid md:grid-cols-3 gap-5">
+          <a href="/he/grocery-list-app" class="card p-6 flex flex-col gap-3 hover:border-brand-400/40">
+            <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 grid place-items-center text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/><path d="M4.5 15.5h15"/><path d="m5 11 4-7"/><path d="m9 11 1 9"/></svg></span>
+            <span class="font-bold text-lg">רשימת קניות משותפת</span>
+            <span class="text-sm text-white/60 leading-relaxed">רשימת קניות משותפת שנבנית לבד מהתפריט, מסודרת לפי מחלקות, עם הערכת מחיר.</span>
+            <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-brand-300">מדריכים <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rtl-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+          </a>
+          <a href="/he/meal-planner" class="card p-6 flex flex-col gap-3 hover:border-brand-400/40">
+            <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 grid place-items-center text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></span>
+            <span class="font-bold text-lg">תפריט שבועי</span>
+            <span class="text-sm text-white/60 leading-relaxed">גוררים מתכונים לשבוע ומקבלים רשימת קניות וערכים תזונתיים בחינם.</span>
+            <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-brand-300">מדריכים <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rtl-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+          </a>
+          <a href="/he/save-tiktok-recipes" class="card p-6 flex flex-col gap-3 hover:border-brand-400/40">
+            <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 grid place-items-center text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span>
+            <span class="font-bold text-lg">מתכונים מטיקטוק</span>
+            <span class="text-sm text-white/60 leading-relaxed">איך סרטון מטיקטוק, ריל או יוטיוב הופך למתכון עם כמויות, שלבים וערכים תזונתיים.</span>
+            <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-brand-300">מדריכים <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rtl-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+          </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="download" class="py-20 lg:py-28">
+        <div class="mx-auto max-w-5xl px-4 sm:px-6">
+          <div class="relative overflow-hidden rounded-[40px] border border-white/10 p-10 sm:p-16 text-center" style="background: radial-gradient(120% 140% at 50% 0%, rgba(116,89,247,.45), rgba(12,10,31,.6) 60%)">
+            <div class="absolute inset-0 grid-bg opacity-60"></div>
+            <div class="relative">
+              <img src="/icon-192.png" alt="EasyPlate app icon" width="72" height="72" loading="lazy" class="mx-auto h-[72px] w-[72px] rounded-[20px] shadow-glow" />
+              <h2 class="mt-6 text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">המתכונים שלכם, סוף סוף במקום אחד.</h2>
+              <p class="mt-4 text-white/65 text-lg">הורידו את EasyPlate ושמרו את המתכון הבא שתראו.</p>
+              <div class="mt-8 flex justify-center"><div class="flex flex-wrap items-center gap-3">
+            <a href="https://apps.apple.com/us/app/easy-plate-ai/id6809243199" target="_blank" rel="noopener" class="store-badge"><svg viewBox="0 0 24 24" class="h-7 w-7 fill-white" aria-hidden="true"><path d="M16.37 12.72c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.29-1.27 3.14-2.52.99-1.45 1.4-2.85 1.42-2.92-.03-.01-2.72-1.04-2.73-4.14zM13.78 5.08c.71-.86 1.19-2.06 1.06-3.26-1.03.04-2.27.68-3 1.54-.66.76-1.24 1.98-1.08 3.15 1.14.09 2.31-.58 3.02-1.43z"/></svg><span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">הורידו מ-</span><span class="text-lg font-bold -mt-0.5">App Store</span></span></a>
+            <a href="https://play.google.com/store/apps/details?id=com.KHEasyDev.easy_plate" target="_blank" rel="noopener" class="store-badge"><svg viewBox="0 0 24 24" class="h-7 w-7" aria-hidden="true"><path fill="#34A853" d="M3.6 2.4 13 12l-9.4 9.6c-.4-.2-.6-.6-.6-1.1V3.5c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="M16.3 15.3 13 12l3.3-3.3 3.9 2.2c1.1.6 1.1 1.6 0 2.2z"/><path fill="#4285F4" d="M16.3 8.7 13 12 3.6 2.4c.4-.2.9-.2 1.4.1z"/><path fill="#EA4335" d="M16.3 15.3 5 21.5c-.5.3-1 .3-1.4.1L13 12z"/></svg><span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">זמין ב-</span><span class="text-lg font-bold -mt-0.5">Google Play</span></span></a>
+          </div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="border-t border-white/8 py-14">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 grid gap-10 md:grid-cols-12">
+      <div class="md:col-span-5">
+        <a href="/he" class="flex items-center gap-3"><img src="/icon-64.png" alt="" width="36" height="36" loading="lazy" class="h-9 w-9 rounded-xl" /><span class="text-lg font-extrabold tracking-tight">Easy<span class="text-gradient">Plate</span></span></a>
+        <div class="mt-6 flex flex-wrap gap-2">
+            <a href="/recipe-app" hreflang="en" lang="en" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">English</a>
+            <a href="/he/recipe-app" hreflang="he" lang="he" class="rounded-full border px-3 py-1 text-xs font-medium transition border-brand-400/60 bg-brand-600/30 text-white">עברית</a>
+            <a href="/ar/recipe-app" hreflang="ar" lang="ar" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">العربية</a>
+            <a href="/fr/recipe-app" hreflang="fr" lang="fr" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">Français</a>
+            <a href="/ru/recipe-app" hreflang="ru" lang="ru" class="rounded-full border px-3 py-1 text-xs font-medium transition border-white/10 text-white/60 hover:text-white hover:border-white/30">Русский</a>
+        </div>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="text-sm font-bold text-white/80">מדריכים</h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/55">
+          <li><a href="/he/recipe-app" class="hover:text-white transition">אפליקציית מתכונים</a></li>
+          <li><a href="/he/grocery-list-app" class="hover:text-white transition">רשימת קניות משותפת</a></li>
+          <li><a href="/he/meal-planner" class="hover:text-white transition">תפריט שבועי</a></li>
+          <li><a href="/he/save-tiktok-recipes" class="hover:text-white transition">מתכונים מטיקטוק</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <h4 class="text-sm font-bold text-white/80">EasyPlate</h4>
+        <ul class="mt-4 space-y-2.5 text-sm text-white/55">
+          <li><a href="/he#features" class="hover:text-white transition">יכולות</a></li>
+          <li><a href="/he#pricing" class="hover:text-white transition">מחירים</a></li>
+          <li><a href="/he/privacy" class="hover:text-white transition">מדיניות פרטיות</a></li>
+          <li><a href="/he/terms" class="hover:text-white transition">תנאי שימוש</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-3">
+        <h4 class="text-sm font-bold text-white/80">תמיכה</h4>
+        <a href="mailto:support@aieasyplate.app" class="mt-4 inline-flex items-center gap-2 rounded-xl btn-ghost px-3.5 py-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-brand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span dir="ltr">support@aieasyplate.app</span></a>
+      </div>
+    </div>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 mt-12 pt-6 border-t border-white/5 text-xs text-white/40">© 2026 EasyPlate. כל הזכויות שמורות.</div>
+  </footer>
+</body>
+</html>

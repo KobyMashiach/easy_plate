@@ -75,6 +75,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminBilling$ar adminBilling = _Translations$adminBilling$ar._(_root);
 	@override late final _Translations$adminDashboard$ar adminDashboard = _Translations$adminDashboard$ar._(_root);
 	@override late final _Translations$assistant$ar assistant = _Translations$assistant$ar._(_root);
+	@override late final _Translations$shareCode$ar shareCode = _Translations$shareCode$ar._(_root);
+	@override late final _Translations$household$ar household = _Translations$household$ar._(_root);
 }
 
 // Path: common
@@ -1208,6 +1210,13 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get perThreeMonth => 'كل 3 أشهر';
 	@override String get perSixMonth => 'كل 6 أشهر';
 	@override String get perAnnual => 'في السنة';
+	@override String get tierPro => 'Pro';
+	@override String get tierDuo => 'Pro Duo';
+	@override String get tierFamily => 'Pro Family';
+	@override String get tierProHint => 'حساب واحد';
+	@override String get tierDuoHint => 'حسابان، كل شيء متزامن';
+	@override String get tierFamilyHint => 'حتى 6 حسابات، كل شيء متزامن';
+	@override String benefitHousehold({required Object n}) => 'حساب مشترك لـ ${n} أشخاص: الوصفات والخطط والقوائم متزامنة';
 }
 
 // Path: walkthrough
@@ -1478,7 +1487,7 @@ class _Translations$assistant$ar extends Translations$assistant$he {
 	@override String get send => 'إرسال';
 	@override String get thinking => 'أفكّر…';
 	@override String working({required Object tool}) => 'أنفّذ: ${tool}';
-	@override String get welcome => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟';
+	@override String welcome({required Object name}) => 'مرحبًا ${name}! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟';
 	@override String get error => 'حدث خطأ ما. حاول مجددًا.';
 	@override String get quotaReached => 'استُهلكت حصة الذكاء الاصطناعي لليوم. تُفتح غدًا.';
 	@override String get premiumOnly => 'المساعد جزء من EasyPlate Premium';
@@ -1502,6 +1511,88 @@ class _Translations$assistant$ar extends Translations$assistant$he {
 	@override late final _Translations$assistant$suggest$ar suggest = _Translations$assistant$suggest$ar._(_root);
 	@override String get whichList => 'أي قائمة؟';
 	@override String get listCreated => 'أُنشئت القائمة';
+	@override String get offTopic => 'أنا هنا للطبخ والوصفات وتخطيط الوجبات والمشتريات. اسألني أي شيء يخص المطبخ وسأتولاه!';
+	@override String get welcomeAnon => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟';
+}
+
+// Path: shareCode
+class _Translations$shareCode$ar extends Translations$shareCode$he {
+	_Translations$shareCode$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'رمز ورابط';
+	@override String get tabContact => 'جهة اتصال';
+	@override String get tabCode => 'رمز أو رابط';
+	@override String explain({required Object role}) => 'كل من لديه هذا الرمز يمكنه الانضمام كـ${role}. صالح لمدة 30 يومًا.';
+	@override String get create => 'إنشاء رمز';
+	@override String get code => 'الرمز';
+	@override String get link => 'الرابط';
+	@override String get copy => 'نسخ';
+	@override String get copied => 'تم النسخ';
+	@override String get share => 'مشاركة';
+	@override String get showQr => 'عرض QR';
+	@override String get scanQr => 'مسح QR';
+	@override String get enterCode => 'إدخال رمز';
+	@override String get join => 'انضمام';
+	@override String get joinTitle => 'الانضمام برمز';
+	@override String get joinHint => 'الصق الرمز الذي تلقيته، أو امسح رمز QR الخاص به.';
+	@override String get joinPlaceholder => 'XXXXXXXX';
+	@override String joined({required Object title}) => 'انضممت: ${title}';
+	@override String get alreadyMember => 'لديك هذا بالفعل.';
+	@override String get invalid => 'الرمز غير صالح.';
+	@override String get expired => 'انتهت صلاحية الرمز.';
+	@override String get revoked => 'أُلغي الرمز.';
+	@override String get usedUp => 'استُنفد الرمز.';
+	@override String get self => 'هذا رمزك أنت.';
+	@override String get gone => 'ما شاركه هذا الرمز لم يعد موجودًا.';
+	@override String get failed => 'تعذّر الانضمام. حاول مجددًا.';
+	@override String messageText({required Object name, required Object title, required Object code, required Object link}) => 'شارك ${name} معك "${title}" على EasyPlate. الرمز: ${code}\n${link}';
+	@override String get revoke => 'إلغاء الرمز';
+	@override String limitRecipes({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} وصفات أسبوعيًا.';
+	@override String limitBooks({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} كتب.';
+	@override String limitPlans({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} خطط.';
+	@override String get upgrade => 'عرض بريميوم';
+	@override String get scanHint => 'وجّه الكاميرا نحو رمز QR للمشاركة';
+	@override String householdMessage({required Object name, required Object code, required Object link}) => 'دعاك ${name} إلى حسابه المشترك في EasyPlate. الرمز: ${code}\n${link}';
+}
+
+// Path: household
+class _Translations$household$ar extends Translations$household$he {
+	_Translations$household$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'حساب مشترك';
+	@override String get duo => 'Pro Duo';
+	@override String get family => 'Pro Family';
+	@override String seats({required Object used, required Object total}) => '${used} من ${total} مقاعد مستخدمة';
+	@override String get intro => 'افتح حسابًا مشتركًا: الوصفات والكتب والخطط والقوائم تظهر لكل من فيه، ويحصلون على بريميوم معك.';
+	@override String get create => 'فتح حساب مشترك';
+	@override String get nameHint => 'الاسم، مثلًا عائلة أحمد';
+	@override String get notEligible => 'يأتي الحساب المشترك مع Pro Duo (حسابان) أو Pro Family (حتى 6 حسابات).';
+	@override String get seePlans => 'عرض الخطط';
+	@override String get members => 'الأعضاء';
+	@override String get owner => 'المالك';
+	@override String get you => 'أنت';
+	@override String get invite => 'دعوة عضو';
+	@override String inviteExplain({required Object free}) => 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.';
+	@override String get noSeats => 'كل المقاعد مشغولة.';
+	@override String get remove => 'إزالة';
+	@override String removeConfirm({required Object name}) => 'إزالة ${name} من الحساب المشترك؟ سيفقد الوصول وبريميوم.';
+	@override String get leave => 'مغادرة الحساب المشترك';
+	@override String get leaveConfirm => 'المغادرة؟ ما حُفظ هنا يبقى في الحساب المشترك؛ ويعود حسابك إلى ما كان لديك من قبل.';
+	@override String get dissolve => 'إغلاق الحساب المشترك';
+	@override String get dissolveConfirm => 'إغلاق الحساب المشترك؟ يفقد الأعضاء الوصول وبريميوم. وتعود بياناتك إلى حسابك الخاص.';
+	@override String get joined => 'مرحبًا بك في الحساب المشترك!';
+	@override String inheritedNote({required Object name}) => 'بريميوم يأتي من اشتراك ${name}.';
+	@override String get failed => 'لم ينجح ذلك. حاول مجددًا.';
+	@override String get full => 'الحساب المشترك ممتلئ.';
+	@override String get inHousehold => 'أنت بالفعل في حساب مشترك.';
+	@override String get notEligibleCode => 'خطة المالك لم تعد تشمل حسابًا مشتركًا.';
+	@override String get lapsed => 'انتهى اشتراك المالك؛ بريميوم متوقف مؤقتًا للأعضاء.';
 }
 
 // Path: walkthrough.topics
@@ -2621,6 +2712,13 @@ extension on TranslationsAr {
 			'premium.perThreeMonth' => 'كل 3 أشهر',
 			'premium.perSixMonth' => 'كل 6 أشهر',
 			'premium.perAnnual' => 'في السنة',
+			'premium.tierPro' => 'Pro',
+			'premium.tierDuo' => 'Pro Duo',
+			'premium.tierFamily' => 'Pro Family',
+			'premium.tierProHint' => 'حساب واحد',
+			'premium.tierDuoHint' => 'حسابان، كل شيء متزامن',
+			'premium.tierFamilyHint' => 'حتى 6 حسابات، كل شيء متزامن',
+			'premium.benefitHousehold' => ({required Object n}) => 'حساب مشترك لـ ${n} أشخاص: الوصفات والخطط والقوائم متزامنة',
 			'walkthrough.title' => 'الدليل',
 			'walkthrough.start' => 'تشغيل الدليل',
 			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
@@ -2786,6 +2884,8 @@ extension on TranslationsAr {
 			'adminDashboard.unknownModel' => 'ليس في قائمة الأسعار',
 			'adminDashboard.usersCost' => 'التكلفة حسب المستخدم',
 			'adminDashboard.usersCount' => ({required Object count}) => '${count} مستخدمين',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.searchUser' => 'بحث بالاسم أو البريد أو uid',
 			'adminDashboard.showAll' => ({required Object count}) => 'عرض كل ${count} المستخدمين',
 			'adminDashboard.callsCount' => ({required Object count}) => '${count} طلبات',
@@ -2793,8 +2893,6 @@ extension on TranslationsAr {
 			'adminDashboard.sharedRecipes' => 'وصفات مشتركة',
 			'adminDashboard.forumPosts' => 'مواضيع المنتدى',
 			'adminDashboard.withPush' => 'أجهزة مع إشعارات',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.cacheEntries' => 'روابط محفوظة',
 			'adminDashboard.cacheHits' => 'إصابات الذاكرة (طلبات موفّرة)',
 			'adminDashboard.config' => 'الإعدادات عن بُعد',
@@ -2899,7 +2997,7 @@ extension on TranslationsAr {
 			'assistant.send' => 'إرسال',
 			'assistant.thinking' => 'أفكّر…',
 			'assistant.working' => ({required Object tool}) => 'أنفّذ: ${tool}',
-			'assistant.welcome' => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟',
+			'assistant.welcome' => ({required Object name}) => 'مرحبًا ${name}! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟',
 			'assistant.error' => 'حدث خطأ ما. حاول مجددًا.',
 			'assistant.quotaReached' => 'استُهلكت حصة الذكاء الاصطناعي لليوم. تُفتح غدًا.',
 			'assistant.premiumOnly' => 'المساعد جزء من EasyPlate Premium',
@@ -3009,6 +3107,70 @@ extension on TranslationsAr {
 			'assistant.suggest.diet.3' => 'ألبان',
 			'assistant.whichList' => 'أي قائمة؟',
 			'assistant.listCreated' => 'أُنشئت القائمة',
+			'assistant.offTopic' => 'أنا هنا للطبخ والوصفات وتخطيط الوجبات والمشتريات. اسألني أي شيء يخص المطبخ وسأتولاه!',
+			'assistant.welcomeAnon' => 'مرحبًا! أستطيع إضافة مشتريات، تخطيط أسبوعك، استيراد وصفات من روابط، بدء وضع الطبخ والمزيد. ماذا نفعل؟',
+			'shareCode.title' => 'رمز ورابط',
+			'shareCode.tabContact' => 'جهة اتصال',
+			'shareCode.tabCode' => 'رمز أو رابط',
+			'shareCode.explain' => ({required Object role}) => 'كل من لديه هذا الرمز يمكنه الانضمام كـ${role}. صالح لمدة 30 يومًا.',
+			'shareCode.create' => 'إنشاء رمز',
+			'shareCode.code' => 'الرمز',
+			'shareCode.link' => 'الرابط',
+			'shareCode.copy' => 'نسخ',
+			'shareCode.copied' => 'تم النسخ',
+			'shareCode.share' => 'مشاركة',
+			'shareCode.showQr' => 'عرض QR',
+			'shareCode.scanQr' => 'مسح QR',
+			'shareCode.enterCode' => 'إدخال رمز',
+			'shareCode.join' => 'انضمام',
+			'shareCode.joinTitle' => 'الانضمام برمز',
+			'shareCode.joinHint' => 'الصق الرمز الذي تلقيته، أو امسح رمز QR الخاص به.',
+			'shareCode.joinPlaceholder' => 'XXXXXXXX',
+			'shareCode.joined' => ({required Object title}) => 'انضممت: ${title}',
+			'shareCode.alreadyMember' => 'لديك هذا بالفعل.',
+			'shareCode.invalid' => 'الرمز غير صالح.',
+			'shareCode.expired' => 'انتهت صلاحية الرمز.',
+			'shareCode.revoked' => 'أُلغي الرمز.',
+			'shareCode.usedUp' => 'استُنفد الرمز.',
+			'shareCode.self' => 'هذا رمزك أنت.',
+			'shareCode.gone' => 'ما شاركه هذا الرمز لم يعد موجودًا.',
+			'shareCode.failed' => 'تعذّر الانضمام. حاول مجددًا.',
+			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => 'شارك ${name} معك "${title}" على EasyPlate. الرمز: ${code}\n${link}',
+			'shareCode.revoke' => 'إلغاء الرمز',
+			'shareCode.limitRecipes' => ({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} وصفات أسبوعيًا.',
+			'shareCode.limitBooks' => ({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} كتب.',
+			'shareCode.limitPlans' => ({required Object count}) => 'يمكن للحساب المجاني مشاركة حتى ${count} خطط.',
+			'shareCode.upgrade' => 'عرض بريميوم',
+			'shareCode.scanHint' => 'وجّه الكاميرا نحو رمز QR للمشاركة',
+			'shareCode.householdMessage' => ({required Object name, required Object code, required Object link}) => 'دعاك ${name} إلى حسابه المشترك في EasyPlate. الرمز: ${code}\n${link}',
+			'household.title' => 'حساب مشترك',
+			'household.duo' => 'Pro Duo',
+			'household.family' => 'Pro Family',
+			'household.seats' => ({required Object used, required Object total}) => '${used} من ${total} مقاعد مستخدمة',
+			'household.intro' => 'افتح حسابًا مشتركًا: الوصفات والكتب والخطط والقوائم تظهر لكل من فيه، ويحصلون على بريميوم معك.',
+			'household.create' => 'فتح حساب مشترك',
+			'household.nameHint' => 'الاسم، مثلًا عائلة أحمد',
+			'household.notEligible' => 'يأتي الحساب المشترك مع Pro Duo (حسابان) أو Pro Family (حتى 6 حسابات).',
+			'household.seePlans' => 'عرض الخطط',
+			'household.members' => 'الأعضاء',
+			'household.owner' => 'المالك',
+			'household.you' => 'أنت',
+			'household.invite' => 'دعوة عضو',
+			'household.inviteExplain' => ({required Object free}) => 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.',
+			'household.noSeats' => 'كل المقاعد مشغولة.',
+			'household.remove' => 'إزالة',
+			'household.removeConfirm' => ({required Object name}) => 'إزالة ${name} من الحساب المشترك؟ سيفقد الوصول وبريميوم.',
+			'household.leave' => 'مغادرة الحساب المشترك',
+			'household.leaveConfirm' => 'المغادرة؟ ما حُفظ هنا يبقى في الحساب المشترك؛ ويعود حسابك إلى ما كان لديك من قبل.',
+			'household.dissolve' => 'إغلاق الحساب المشترك',
+			'household.dissolveConfirm' => 'إغلاق الحساب المشترك؟ يفقد الأعضاء الوصول وبريميوم. وتعود بياناتك إلى حسابك الخاص.',
+			'household.joined' => 'مرحبًا بك في الحساب المشترك!',
+			'household.inheritedNote' => ({required Object name}) => 'بريميوم يأتي من اشتراك ${name}.',
+			'household.failed' => 'لم ينجح ذلك. حاول مجددًا.',
+			'household.full' => 'الحساب المشترك ممتلئ.',
+			'household.inHousehold' => 'أنت بالفعل في حساب مشترك.',
+			'household.notEligibleCode' => 'خطة المالك لم تعد تشمل حسابًا مشتركًا.',
+			'household.lapsed' => 'انتهى اشتراك المالك؛ بريميوم متوقف مؤقتًا للأعضاء.',
 			_ => null,
 		};
 	}

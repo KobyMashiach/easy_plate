@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/legal_links.dart';
 import '../../../../core/monetization/entitlement_service.dart';
+import '../../../household/domain/household_entity.dart';
 import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/monetization/purchases_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -31,6 +32,7 @@ class PaywallPage extends StatefulWidget {
 class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   final _entitlement = EntitlementService();
   Map<String, Package> _packages = const {};
+  HouseholdTier? _tier;
   List<PaywallOffer> _offers = const [];
   String? _selectedId;
   bool _loading = true;
@@ -104,10 +106,24 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
     setState(() {
       _packages = {for (final p in packages) p.identifier: p};
       _offers = offers;
-      _selectedId = PaywallOffer.defaultSelection(_offers);
+      _tier = null;
+      _selectedId = PaywallOffer.defaultSelection(_visible(_offers, null));
       _loading = false;
     });
   }
+
+  static List<PaywallOffer> _visible(
+    List<PaywallOffer> offers,
+    HouseholdTier? tier,
+  ) => [
+    for (final offer in offers)
+      if (offer.tier == tier) offer,
+  ];
+
+  void _selectTier(HouseholdTier? tier) => setState(() {
+    _tier = tier;
+    _selectedId = PaywallOffer.defaultSelection(_visible(_offers, tier));
+  });
 
   Future<void> _purchase() async {
     final package = _packages[_selectedId];
@@ -156,7 +172,10 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return PaywallView(
-      offers: _offers,
+      offers: _visible(_offers, _tier),
+      tiers: PaywallOffer.tiersIn(_offers),
+      tier: _tier,
+      onSelectTier: _selectTier,
       selectedId: _selectedId,
       aiPerDay: MonetizationConfig.limits.premiumAiExtractions,
       isPremium: _entitlement.isPremium,
@@ -178,6 +197,12 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
 class PaywallView extends StatelessWidget {
   final List<PaywallOffer> offers;
   final String? selectedId;
+
+  /// The tiers on sale (null = Pro) and the one being looked at. One
+  /// entry hides the picker.
+  final List<HouseholdTier?> tiers;
+  final HouseholdTier? tier;
+  final ValueChanged<HouseholdTier?>? onSelectTier;
 
   /// The premium AI allowance quoted in the benefits list — a Remote Config
   /// value, passed in so the screen stays renderable without Firebase.
@@ -202,6 +227,9 @@ class PaywallView extends StatelessWidget {
     super.key,
     required this.offers,
     required this.selectedId,
+    this.tiers = const [null],
+    this.tier,
+    this.onSelectTier,
     required this.aiPerDay,
     required this.isPremium,
     required this.loading,
@@ -220,6 +248,18 @@ class PaywallView extends StatelessWidget {
     }
     return null;
   }
+
+  String _tierLabel(HouseholdTier? tier) => switch (tier) {
+    null => t.premium.tierPro,
+    HouseholdTier.duo => t.premium.tierDuo,
+    HouseholdTier.family => t.premium.tierFamily,
+  };
+
+  String _tierHint(HouseholdTier? tier) => switch (tier) {
+    null => t.premium.tierProHint,
+    HouseholdTier.duo => t.premium.tierDuoHint,
+    HouseholdTier.family => t.premium.tierFamilyHint,
+  };
 
   String _periodLabel(PaywallPeriod period) => switch (period) {
     PaywallPeriod.weekly => t.premium.periodWeekly,
@@ -334,10 +374,43 @@ class PaywallView extends StatelessWidget {
                     icon: Icons.auto_awesome_rounded,
                     label: t.premium.benefitAi(count: aiPerDay),
                   ),
+                  if (tier case final tier?) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    _Benefit(
+                      icon: Icons.family_restroom_rounded,
+                      label: t.premium.benefitHousehold(n: tier.seats),
+                    ),
+                  ],
                 ],
               ),
             ),
             const SizedBox(height: AppSpacing.md),
+            if (!isPremium && !loading && tiers.length > 1) ...[
+              ClaySegmentedControl(
+                segments: [
+                  for (final option in tiers)
+                    ClaySegment(
+                      label: _tierLabel(option),
+                      icon: switch (option) {
+                        null => Icons.person_rounded,
+                        HouseholdTier.duo => Icons.people_rounded,
+                        HouseholdTier.family => Icons.family_restroom_rounded,
+                      },
+                    ),
+                ],
+                selectedIndex: tiers.indexOf(tier).clamp(0, tiers.length - 1),
+                onSelected: (index) => onSelectTier?.call(tiers[index]),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                _tierHint(tier),
+                textAlign: TextAlign.center,
+                style: AppTextStyles.labelSm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
             if (isPremium)
               _ActiveCard(onCancel: busy ? null : onManage)
             else if (loading)

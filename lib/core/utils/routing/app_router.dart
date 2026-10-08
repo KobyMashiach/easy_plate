@@ -42,6 +42,10 @@ import '../../monetization/monetization_config.dart';
 import '../../../features/more/presentation/pages/tutorial_book_page.dart';
 import '../../../features/admin_dashboard/presentation/pages/admin_dashboard_page.dart';
 import '../../../features/auth/presentation/pages/blocked_page.dart';
+import '../../../features/household/presentation/pages/household_page.dart';
+import '../../../features/share_codes/domain/pending_share_code.dart';
+import '../../../features/share_codes/presentation/pages/join_by_code_page.dart';
+import '../../../features/share_codes/presentation/pages/scan_share_code_page.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
 /// whatever the current [AuthStage] demands.
@@ -93,12 +97,32 @@ GoRouter buildRouter() {
       if (FirebaseService().analytics case final analytics?)
         FirebaseAnalyticsObserver(analytics: analytics),
     ],
-    redirect: (context, state) =>
-        gateRedirect(stage: session.stage, location: state.matchedLocation),
+    redirect: (context, state) {
+      // A share link is remembered before the gate can bounce it, so the
+      // code survives a sign-in the link itself does not.
+      PendingShareCode.capture(state.uri);
+      return gateRedirect(
+        stage: session.stage,
+        location: state.matchedLocation,
+      );
+    },
     routes: [
       GoRoute(
         path: Routing.splash,
         name: Routing.splash,
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: Routing.shareLink,
+        // Reached only once the gate let it through, so the session is
+        // ready: straight to the join screen, under the home shell.
+        redirect: (context, state) => state.namedLocation(
+          Routing.joinCode,
+          queryParameters: {
+            'code':
+                PendingShareCode.take() ?? state.pathParameters['code'] ?? '',
+          },
+        ),
         builder: (context, state) => const SplashPage(),
       ),
       GoRoute(
@@ -258,6 +282,23 @@ GoRouter buildRouter() {
             path: Routing.sharing,
             name: Routing.sharing,
             builder: (context, state) => const SharingManagementPage(),
+          ),
+          GoRoute(
+            path: Routing.household,
+            name: Routing.household,
+            builder: (context, state) => const HouseholdPage(),
+          ),
+          GoRoute(
+            path: Routing.joinCode,
+            name: Routing.joinCode,
+            // `?code=` joins at once; absent, the screen asks for one.
+            builder: (context, state) =>
+                JoinByCodePage(initialCode: state.uri.queryParameters['code']),
+          ),
+          GoRoute(
+            path: Routing.scanCode,
+            name: Routing.scanCode,
+            builder: (context, state) => const ScanShareCodePage(),
           ),
           GoRoute(
             path: Routing.support,

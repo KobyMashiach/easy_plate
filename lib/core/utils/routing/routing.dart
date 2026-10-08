@@ -32,6 +32,12 @@ class Routing {
   static const support = 'support';
   static const premium = 'premium';
   static const sharing = 'sharing';
+  static const joinCode = 'join_code';
+  static const household = 'household';
+  static const scanCode = 'scan_code';
+
+  /// A share link, `/s/CODE`: the web link's path and the app scheme's.
+  static const shareLink = '/s/:code';
   static const notifications = 'notifications';
   static const profileEdit = 'profile_edit';
   static const forumThread = 'forum_thread';

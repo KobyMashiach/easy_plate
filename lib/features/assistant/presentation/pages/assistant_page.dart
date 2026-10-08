@@ -157,6 +157,7 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
     _system = AssistantPrompt.system(
       snapshot: snapshot,
       language: LocaleSettings.currentLocale.languageCode,
+      offTopicReply: t.assistant.offTopic,
     );
   }
 

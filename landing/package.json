@@ -1,0 +1,15 @@
+{
+  "name": "easyplate-landing",
+  "private": true,
+  "description": "Static marketing site for EasyPlate. `npm run build` compiles Tailwind, pre-renders one page per language, and regenerates sitemap, robots and og images.",
+  "scripts": {
+    "build": "npm run build:pages && npm run build:css",
+    "build:css": "tailwindcss -c tailwind.config.js -i tailwind.input.css -o assets/tailwind.css --minify",
+    "build:pages": "node build.mjs",
+    "build:og": "node build.mjs og",
+    "serve": "python3 -m http.server 8765 --bind 127.0.0.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
