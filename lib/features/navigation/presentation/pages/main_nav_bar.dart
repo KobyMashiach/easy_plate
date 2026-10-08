@@ -186,11 +186,12 @@ class _MainNavBarState extends State<MainNavBar> {
               body: Stack(
                 children: [
                   IndexedStack(index: current, children: children),
-                  // The copilot, on every tab, in the corner above the dock.
+                  // The copilot, on every tab, in the end corner above the
+                  // dock. A page's own floating button takes the start
+                  // corner, on the same baseline, so neither hides the other.
                   PositionedDirectional(
                     end: AppSpacing.marginMobile,
-                    bottom:
-                        ClayNavDock.bottomPadding(context) + AppSpacing.base,
+                    bottom: ClayNavDock.fabBottom(context),
                     // Drawn only when the assistant is open to this account:
                     // a greyed pill with a tag sat on top of whatever the
                     // page had in that corner. The account menu's row keeps

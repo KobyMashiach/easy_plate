@@ -75,9 +75,10 @@ class SharedRecipesPage extends StatelessWidget {
                         ),
                       ),
                     },
+                    // Start corner: the copilot's pill holds the end one.
                     PositionedDirectional(
-                      end: AppSpacing.marginMobile,
-                      bottom: ClayNavDock.bottomPadding(context),
+                      start: AppSpacing.marginMobile,
+                      bottom: ClayNavDock.fabBottom(context),
                       child: WalkthroughTarget(
                         id: WalkthroughIds.communityShare,
                         child: FloatingActionButton(

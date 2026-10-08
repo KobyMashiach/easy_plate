@@ -31,8 +31,11 @@ service cloud.firestore {
       // Rules do not cascade into subcollections, so this match is what makes
       // the subtree reachable at all; it stays owner-only, which is the whole
       // point of hanging it under /users/{uid}.
+      // The administrator reads it too (the web console's account view);
+      // writes there go through the adminPanel function, never from a page.
       match /{document=**} {
-        allow read, write: if signedIn() && request.auth.uid == uid;
+        allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+        allow write: if signedIn() && request.auth.uid == uid;
       }
     }
 
@@ -198,7 +201,7 @@ service cloud.firestore {
         return get(/databases/$(database)/documents/share_invites/$(collabId + '_' + request.auth.uid)).data;
       }
 
-      allow read: if isOwner() || isMember();
+      allow read: if isOwner() || isMember() || isAdmin();
       allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
       allow delete: if isOwner();
       allow update: if
@@ -242,7 +245,7 @@ service cloud.firestore {
         return get(/databases/$(database)/documents/share_invites/$(collabId + '_' + request.auth.uid)).data;
       }
 
-      allow read: if isOwner() || isMember();
+      allow read: if isOwner() || isMember() || isAdmin();
       allow create: if signedIn()
                     && request.resource.data.ownerUid == request.auth.uid
                     && request.resource.data.kind in ['book', 'mealPlan', 'groceryList'];
@@ -266,7 +269,8 @@ service cloud.firestore {
     match /share_invites/{inviteId} {
       allow read: if signedIn()
                   && (resource.data.ownerUid == request.auth.uid
-                      || resource.data.targetUid == request.auth.uid);
+                      || resource.data.targetUid == request.auth.uid
+                      || isAdmin());
       allow create: if signedIn()
                     && request.resource.data.ownerUid == request.auth.uid
                     && request.resource.data.status == 'pending';
@@ -283,7 +287,7 @@ service cloud.firestore {
     // else's inbox as long as they sign it as themselves; only the inbox
     // owner reads it or marks it read.
     match /notifications/{uid}/items/{itemId} {
-      allow read: if signedIn() && request.auth.uid == uid;
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
       allow update: if signedIn()
                     && request.auth.uid == uid
@@ -365,7 +369,7 @@ service cloud.firestore {
     // A share code is written by the owner and redeemed by the server (the
     // shareCodes function), which creates the invite on the owner's behalf.
     match /share_codes/{code} {
-      allow read: if signedIn() && resource.data.ownerUid == request.auth.uid;
+      allow read: if signedIn() && (resource.data.ownerUid == request.auth.uid || isAdmin());
       allow create: if signedIn()
                     && request.resource.data.ownerUid == request.auth.uid
                     && request.resource.data.kind in ['recipe', 'book', 'mealPlan', 'groceryList', 'household']
@@ -386,11 +390,28 @@ service cloud.firestore {
         return signedIn()
                && request.auth.uid in get(/databases/$(database)/documents/households/$(hid)).data.memberUids;
       }
-      allow read: if signedIn() && request.auth.uid in resource.data.memberUids;
+      allow read: if signedIn() && (request.auth.uid in resource.data.memberUids || isAdmin());
       allow write: if false;
       match /{collection}/{doc} {
-        allow read, write: if isHouseholdMember();
+        allow read: if isHouseholdMember() || isAdmin();
+        allow write: if isHouseholdMember();
       }
+    }
+
+    // The invented community members the web console posts as (seed_… ids,
+    // no Auth user behind them). Written by the adminPanel function alone;
+    // their public half lives in public_profiles like everyone else's.
+    match /seed_personas/{uid} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // One row per action taken from the web console, written by the
+    // adminPanel function. The administrator reads the trail; nobody
+    // edits it.
+    match /admin_audit/{rowId} {
+      allow read: if isAdmin();
+      allow write: if false;
     }
 
     // Nothing else is reachable until it has a rule of its own.

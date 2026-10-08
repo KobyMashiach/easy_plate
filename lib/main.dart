@@ -20,6 +20,7 @@ import 'core/services/connectivity_service.dart';
 import 'core/services/device_locale_store.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/foreground_push_service.dart';
+import 'core/services/presence_service.dart';
 import 'core/services/share_intent_service.dart';
 import 'core/services/image_storage_service.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -362,6 +363,19 @@ class _EasyPlateAppState extends State<EasyPlateApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The console's online column: in use while in front, not while away.
+    // Inactive is the brief moment of a call or the app switcher — not a
+    // reason to flicker.
+    switch (state) {
+      case AppLifecycleState.resumed:
+        PresenceService().setForeground(true);
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        PresenceService().setForeground(false);
+      case AppLifecycleState.inactive:
+        break;
+    }
     // Remote Config keeps its last activated values on disk, so coming back to
     // a session that started before a console change would otherwise run on
     // stale flags for as long as the app stays alive.

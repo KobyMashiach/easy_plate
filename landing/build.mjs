@@ -334,13 +334,33 @@ ${entries.join('\n').replace(/\n\n/g, '\n')}
 const robots = `User-agent: *
 Allow: /
 Disallow: /.og/
+Disallow: /admin
 
 Sitemap: ${SITE}/sitemap.xml
 `;
 
+// ---------- admin console ----------
+// The console at /admin shows each Remote Config parameter under the same
+// heading the app's תצורה tab uses: the feature names and the
+// adminConfig.labels from assets/i18n, copied out as one JSON the page
+// fetches. Languages without a label fall back to English in the page.
+function adminLabels() {
+  const out = {};
+  for (const lang of LANGS) {
+    const file = path.join(ROOT, '..', 'assets', 'i18n', `${lang}.i18n.json`);
+    if (!fs.existsSync(file)) continue;
+    const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+    out[lang] = { featureName: json.featureName || {}, labels: (json.adminConfig && json.adminConfig.labels) || {} };
+  }
+  write('admin/labels.json', JSON.stringify(out));
+  console.log('admin/labels.json written');
+}
+
 // ---------- run ----------
 const only = process.argv.slice(2);
 const want = s => only.length === 0 || only.includes(s);
+
+if (want('pages') || want('admin')) adminLabels();
 
 if (want('pages')) {
   for (const lang of LANGS) {

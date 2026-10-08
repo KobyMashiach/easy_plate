@@ -1,0 +1,9 @@
+0.02 recipe
+5.2 cook_mode
+27.53 timer_step
+35.54 timer_started
+39.92 home
+43.1 shade
+52.63 back_in_app
+59.63 finished
+66.78 shade_clear

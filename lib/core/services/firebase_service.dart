@@ -77,6 +77,9 @@ class FirebaseService {
     // Shefi's replies read out by Google's cloud voice (the `speak`
     // function); false falls back to the device's own engine.
     ttsCloudEnabledKey: true,
+    // How often an open app reports that it is in use (PresenceService);
+    // 0 switches the report off.
+    presenceHeartbeatKey: 60,
     // Feature switches (`ff_*`: 0 hidden / 1 coming soon / 2 on / 3 Premium
     // only), read by FeaturesFlags. All on, as asked, so a failed fetch
     // never hides a feature.
@@ -95,6 +98,7 @@ class FirebaseService {
   static const shareFreePlansKey = 'share_free_plans_total';
   static const shareFreeListsKey = 'share_free_lists_total';
   static const ttsCloudEnabledKey = 'tts_cloud_enabled';
+  static const presenceHeartbeatKey = 'presence_heartbeat_seconds';
 
   static const isProdKey = 'isProd';
 

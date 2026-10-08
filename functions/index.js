@@ -31,6 +31,10 @@ exports.speak = require("./speak").speak;
 // The administrator's account actions: block, delete, push to one or all.
 exports.adminUsers = require("./adminUsers").adminUsers;
 
+// The web console at aieasyplate.app/admin: every privileged action it
+// takes, behind the same administrator check, with an audit row each.
+exports.adminPanel = require("./adminPanel").adminPanel;
+
 // Translates the account's own content into the language it picked.
 exports.translateContent = require("./translateContent").translateContent;
 

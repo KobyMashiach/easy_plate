@@ -107,4 +107,4 @@ exports.adminRemoteConfig = onRequest(
   },
 );
 
-exports.internals = { flattenTemplate, findParam, applyValue };
+exports.internals = { flattenTemplate, findParam, applyValue, publish };

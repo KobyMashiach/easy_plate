@@ -169,6 +169,13 @@
       },
       "description": "כמה ימים נמשכת התחברות במכשיר אחד. בסוף התקופה השרת מבטל את הטוקנים והמשתמש מתחבר מחדש (ריצה יומית 04:10). 0 = בלי תפוגה.",
       "valueType": "NUMBER"
+    },
+    "presence_heartbeat_seconds": {
+      "defaultValue": {
+        "value": "60"
+      },
+      "description": "כל כמה שניות האפליקציה מדווחת שהיא פתוחה (users/{uid}.online + lastSeenAt), בשביל עמודת ה-online בקונסולת הניהול aieasyplate.app/admin. 0 = כבוי. מומלץ 60–120; כל דיווח = כתיבה אחת ל-Firestore.",
+      "valueType": "NUMBER"
     }
   },
   "parameterGroups": {

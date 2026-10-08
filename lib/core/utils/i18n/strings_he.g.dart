@@ -4639,6 +4639,9 @@ class Translations$adminConfig$labels$he {
 
 	/// he: 'ימי התחברות למכשיר'
 	String get session_days => 'ימי התחברות למכשיר';
+
+	/// he: 'דיווח נוכחות (שניות)'
+	String get presence_heartbeat_seconds => 'דיווח נוכחות (שניות)';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -6421,6 +6424,7 @@ extension on Translations {
 			'adminConfig.labels.gemini_maxInstances' => 'מקסימום שרתים',
 			'adminConfig.labels.gemini_timeoutSeconds' => 'זמן קצוב לקריאה (שניות)',
 			'adminConfig.labels.session_days' => 'ימי התחברות למכשיר',
+			'adminConfig.labels.presence_heartbeat_seconds' => 'דיווח נוכחות (שניות)',
 			_ => null,
 		};
 	}

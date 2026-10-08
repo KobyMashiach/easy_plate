@@ -1637,7 +1637,8 @@
       "gemini_minInstances": "Minimum instances",
       "gemini_maxInstances": "Maximum instances",
       "gemini_timeoutSeconds": "Call timeout (seconds)",
-      "session_days": "Session length (days)"
+      "session_days": "Session length (days)",
+      "presence_heartbeat_seconds": "Presence heartbeat (seconds)"
     }
   }
 }

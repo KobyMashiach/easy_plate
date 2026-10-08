@@ -144,9 +144,10 @@ class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
               ),
             ),
           ),
+          // Start corner: the copilot's pill holds the end one.
           PositionedDirectional(
-            end: AppSpacing.marginMobile,
-            bottom: ClayNavDock.bottomPadding(context),
+            start: AppSpacing.marginMobile,
+            bottom: ClayNavDock.fabBottom(context),
             child: FloatingActionButton(
               heroTag: 'forum-new-post',
               backgroundColor: AppColors.primary,

@@ -278,4 +278,6 @@ exports.adminUsers = onRequest(
   },
 );
 
-exports.internals = { parseRequest, isAdmin, remove };
+// The account actions are shared with adminPanel.js (the web console), which
+// adds its own actions on top of the same checks.
+exports.internals = { parseRequest, isAdmin, remove, disable, enable, releaseSession, notifyOne, notifyAll, ADMIN_EMAIL };

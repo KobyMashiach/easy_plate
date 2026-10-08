@@ -8,6 +8,7 @@ import '../../constants/app_colors.dart';
 import '../../constants/app_motion.dart';
 import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
+import '../../features/features_flags.dart';
 import '../../walkthrough/walkthrough_targets.dart';
 
 class ClayNavDestination {
@@ -34,21 +35,33 @@ class ClayNavDock extends StatelessWidget {
   /// before the system's own inset is counted.
   static const reservedHeight = 96.0;
 
-  /// A floating action button's height plus the gap that keeps it off the
-  /// last card, for pages that carry one above the dock.
-  static const fabClearance = 56.0 + AppSpacing.gutter;
+  /// A floating button's height plus the gap that keeps it off the last
+  /// card, for pages that carry one above the dock.
+  static const fabClearance = 56.0 + AppSpacing.md;
+
+  /// Where a button floating above the dock sits: the copilot's pill in the
+  /// end corner and a page's own button in the start corner share this
+  /// baseline, so the two never stack on each other.
+  static double fabBottom(BuildContext context) => _dockPadding(context);
 
   /// Bottom padding for a page under the dock, so its last item scrolls all
   /// the way out from under it. On Android the dock floats above the gesture
   /// bar (see [MainNavBar]), so that inset is added; on iOS the dock's own
-  /// margin already covers the home indicator. [withFab] adds room for a
-  /// button floating above the dock, which would otherwise sit on the last
-  /// card once the list is scrolled to its end.
+  /// margin already covers the home indicator. Room for a floating button
+  /// is added when the page carries one ([withFab]) and whenever the
+  /// copilot's pill is on, since that one floats over every main tab and
+  /// would otherwise sit on the last card, or on an empty state's button,
+  /// once the list is scrolled to its end.
   static double bottomPadding(BuildContext context, {bool withFab = false}) {
+    final fab = withFab || FeaturesFlags.assistant.isEnabled;
+    return _dockPadding(context) + (fab ? fabClearance : 0);
+  }
+
+  static double _dockPadding(BuildContext context) {
     final inset = defaultTargetPlatform == TargetPlatform.android
         ? MediaQuery.paddingOf(context).bottom
         : 0.0;
-    return reservedHeight + inset + (withFab ? fabClearance : 0);
+    return reservedHeight + inset;
   }
 
   const ClayNavDock({

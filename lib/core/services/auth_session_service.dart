@@ -24,6 +24,7 @@ import '../monetization/purchases_service.dart';
 import '../sync/cloud_sync_service.dart';
 import 'cook_session_service.dart';
 import 'device_session_service.dart';
+import 'presence_service.dart';
 import 'shopping_reminder_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
@@ -177,6 +178,9 @@ class AuthSessionService extends ChangeNotifier {
       _blockMessage = null;
       _sessionRefusal = null;
       DeviceSessionService().unwatch();
+      // The offline mark was written by the sign-out path while the token
+      // was still valid; here the report only has to stop.
+      unawaited(PresenceService().stop());
       // Neither may outlive the account: a premium flag would carry into the
       // next sign-in, and a quota count would be charged to the wrong person.
       EntitlementService().clear();
@@ -315,6 +319,9 @@ class AuthSessionService extends ChangeNotifier {
     _set(_onboardingComplete ? AuthStage.ready : AuthStage.needsOnboarding);
     unawaited(_registerPush(user.uid));
     unawaited(_touchDevice(user.uid));
+    // From here the account reports that it is in use, for the console's
+    // online column; stopped by the sign-out path.
+    PresenceService().start(user.uid);
     unawaited(_publishPublicProfile());
     if (_notifications case final repository?) {
       NotificationsService().bind(user.uid, repository);

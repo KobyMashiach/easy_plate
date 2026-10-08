@@ -1637,7 +1637,8 @@
       "gemini_minInstances": "מינימום שרתים",
       "gemini_maxInstances": "מקסימום שרתים",
       "gemini_timeoutSeconds": "זמן קצוב לקריאה (שניות)",
-      "session_days": "ימי התחברות למכשיר"
+      "session_days": "ימי התחברות למכשיר",
+      "presence_heartbeat_seconds": "דיווח נוכחות (שניות)"
     }
   }
 }

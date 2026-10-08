@@ -1981,6 +1981,7 @@ class _Translations$adminConfig$labels$en extends Translations$adminConfig$label
 	@override String get gemini_maxInstances => 'Maximum instances';
 	@override String get gemini_timeoutSeconds => 'Call timeout (seconds)';
 	@override String get session_days => 'Session length (days)';
+	@override String get presence_heartbeat_seconds => 'Presence heartbeat (seconds)';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -3629,6 +3630,7 @@ extension on TranslationsEn {
 			'adminConfig.labels.gemini_maxInstances' => 'Maximum instances',
 			'adminConfig.labels.gemini_timeoutSeconds' => 'Call timeout (seconds)',
 			'adminConfig.labels.session_days' => 'Session length (days)',
+			'adminConfig.labels.presence_heartbeat_seconds' => 'Presence heartbeat (seconds)',
 			_ => null,
 		};
 	}

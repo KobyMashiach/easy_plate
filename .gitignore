@@ -55,3 +55,6 @@ functions/node_modules/
 # Landing site build
 landing/node_modules/
 landing/.og/
+
+# raw phone capture for the Play foreground-service video (47 MB); the composed cut is kept
+store_assets/play/fgs_special_use_raw.mp4
