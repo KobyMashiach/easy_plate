@@ -28,6 +28,7 @@ import 'presence_service.dart';
 import 'shopping_reminder_service.dart';
 import 'notifications_service.dart';
 import 'firebase_service.dart';
+import '../utils/i18n/strings.g.dart';
 import '../../features/household/domain/household_service.dart';
 import '../theme/theme_controller.dart';
 import '../features/features_flags.dart';
@@ -178,6 +179,8 @@ class AuthSessionService extends ChangeNotifier {
       _blockMessage = null;
       _sessionRefusal = null;
       DeviceSessionService().unwatch();
+      DeviceSessionService().stopWaiting();
+      releaseRequest.value = null;
       // The offline mark was written by the sign-out path while the token
       // was still valid; here the report only has to stop.
       unawaited(PresenceService().stop());
@@ -357,19 +360,43 @@ class AuthSessionService extends ChangeNotifier {
   SessionRefusal? _sessionRefusal;
   SessionRefusal? get sessionRefusal => _sessionRefusal;
 
+  /// On the holder: another device asked it to sign out. The app shows the
+  /// question and clears this.
+  final releaseRequest = ValueNotifier<ReleaseRequest?>(null);
+
+  /// On a refused device: the holder chose to stay signed in.
+  final releaseDeclined = ValueNotifier<bool>(false);
+
   /// Claims the account's device session and starts following it. False
   /// when another device holds it, with the stage set to say so.
   Future<bool> _claimSession(String uid) async {
     final sessions = DeviceSessionService();
     if (!FeaturesFlags.singleSession.isVisible) return true;
-    final refusal = await sessions.claim();
+    final refusal = await sessions.claim(
+      pushToken: await FirebaseService().currentPushToken(),
+    );
     if (refusal != null) {
       _sessionRefusal = refusal;
+      releaseDeclined.value = false;
+      // The holder may sign out (asked or not): move on by itself then.
+      sessions.waitForRelease(
+        uid,
+        onFree: () => unawaited(retrySession()),
+        onDeclined: () => releaseDeclined.value = true,
+      );
       _set(AuthStage.otherDevice);
       return false;
     }
+    sessions.stopWaiting();
     _sessionRefusal = null;
-    sessions.watch(uid, _onSessionEnded);
+    // The store review account is exempt: no record exists to follow.
+    if (!sessions.exempt) {
+      sessions.watch(
+        uid,
+        _onSessionEnded,
+        onReleaseRequest: (request) => releaseRequest.value = request,
+      );
+    }
     return true;
   }
 
@@ -389,6 +416,22 @@ class AuthSessionService extends ChangeNotifier {
           ? AuthStage.otherDevice
           : AuthStage.sessionExpired,
     );
+  }
+
+  /// From the session screen: asks the device holding the account to sign
+  /// out, with a push in this user's language.
+  Future<ReleaseOutcome> requestRelease() async {
+    if (_user == null || _stage != AuthStage.otherDevice) {
+      return ReleaseOutcome.failed;
+    }
+    releaseDeclined.value = false;
+    final outcome = await DeviceSessionService().requestRelease(
+      title: t.auth.sessionReleasePushTitle,
+      body: t.auth.sessionReleasePushBody,
+      pushToken: await FirebaseService().currentPushToken(),
+    );
+    if (outcome == ReleaseOutcome.free) await retrySession();
+    return outcome;
   }
 
   /// From the session screen, after the other device signed out: asks

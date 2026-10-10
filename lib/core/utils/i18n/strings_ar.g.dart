@@ -80,6 +80,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$homeWidgets$ar homeWidgets = _Translations$homeWidgets$ar._(_root);
 	@override late final _Translations$feature$ar feature = _Translations$feature$ar._(_root);
 	@override late final _Translations$featureName$ar featureName = _Translations$featureName$ar._(_root);
+	@override late final _Translations$wakeWord$ar wakeWord = _Translations$wakeWord$ar._(_root);
+	@override late final _Translations$voiceAssistants$ar voiceAssistants = _Translations$voiceAssistants$ar._(_root);
 }
 
 // Path: common
@@ -197,6 +199,17 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get platformIos => 'آيفون';
 	@override String get platformAndroid => 'هاتف أندرويد';
 	@override String get platformOther => 'جهاز آخر';
+	@override String get sessionRequestRelease => 'طلب قطع الاتصال';
+	@override String get sessionRequestSent => 'أرسلنا طلبًا إلى الجهاز المتصل. بمجرد أن يسجّل الخروج ستدخل هنا تلقائيًا.';
+	@override String get sessionRequestQueued => 'تعذّر إرسال إشعار إلى الجهاز الآخر. سيظهر الطلب هناك في المرة القادمة التي يُفتح فيها التطبيق.';
+	@override String get sessionRequestFailed => 'تعذّر إرسال الطلب. حاول بعد قليل.';
+	@override String get sessionRequestDeclined => 'اختار الجهاز الآخر البقاء متصلًا.';
+	@override String get sessionReleaseTitle => 'جهاز آخر يريد تسجيل الدخول';
+	@override String sessionReleaseBody({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟';
+	@override String get sessionReleaseConfirm => 'تسجيل الخروج هنا';
+	@override String get sessionReleaseStay => 'البقاء متصلًا';
+	@override String get sessionReleasePushTitle => 'طلب قطع الاتصال';
+	@override String get sessionReleasePushBody => 'جهاز آخر يريد الدخول إلى حسابك. انقر لتقرر.';
 }
 
 // Path: profile
@@ -1780,6 +1793,82 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get assistantVoice => 'التحدث مع شيفي';
 	@override String get singleSession => 'جهاز واحد لكل حساب';
 	@override String get homeWidgets => 'أدوات الشاشة الرئيسية';
+	@override String get wakeWord => 'هاي شيفي';
+	@override String get voiceAssistants => 'شيفي عبر Siri وGemini';
+}
+
+// Path: wakeWord
+class _Translations$wakeWord$ar extends Translations$wakeWord$he {
+	_Translations$wakeWord$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'هاي شيفي';
+	@override String get hint => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف';
+	@override String get intro => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.';
+	@override List<String> get examples => [
+		'هاي شيفي',
+		'هاي شيفي، ماذا أطبخ اليوم؟',
+		'هاي شيفي، أضف الحليب إلى قائمة التسوق',
+		'هاي شيفي، شغّل مؤقتًا لعشر دقائق',
+	];
+	@override String get enable => 'الاستماع إلى "هاي شيفي"';
+	@override String get enableHint => 'الميكروفون مفتوح لالتقاط كلمات التنبيه فقط. لا يُسجَّل أي شيء ولا يُحفظ.';
+	@override String get closedTitle => 'عندما يكون التطبيق مغلقًا';
+	@override String get background => 'حتى عندما يكون التطبيق مغلقًا';
+	@override String get backgroundHint => 'يستمر الاستماع في الخلفية مع إشعار دائم، ويظهر الميكروفون قيد الاستخدام. يجري الالتقاط داخل الهاتف ويستهلك القليل من البطارية. يتوقف الاستماع عندما تكون الشاشة مطفأة، وبعد إعادة تشغيل الهاتف يجب فتح التطبيق مرة واحدة.';
+	@override String get openDirectly => 'الفتح مباشرة من الخلفية';
+	@override String get openDirectlyHint => 'بدون إذن "الظهور فوق التطبيقات الأخرى" يظهر شيفي كإشعار تنقر عليه. انقر هنا للسماح.';
+	@override String get openDirectlyGranted => 'مسموح: يفتح شيفي فورًا حتى من تطبيق آخر';
+	@override String get siriBody => 'في iOS لا يمكن لتطبيق مغلق استخدام الميكروفون. عندما يكون التطبيق مغلقًا، قل لسيري:';
+	@override List<String> get siriPhrases => [
+		'هاي سيري، هاي شيفي',
+		'هاي سيري، تحدث مع شيفي في Easy Plate',
+	];
+	@override String get privacyAndroid => 'على Android يُلتقط "هاي شيفي" داخل الهاتف بنموذج صغير ودون إنترنت: إلى أن يُسمع، لا يغادر أي صوت الجهاز. فقط الطلب الذي تقوله بعده يُرسل إلى التعرف على الكلام من Google. لا يسجّل EasyPlate الصوت ولا يحفظه.';
+	@override String get privacyIos => 'يتم التعرف على الجهاز عندما يكون ذلك ممكنًا، وإلا عبر خدمة الكلام من Apple. لا يسجّل EasyPlate الصوت ولا يحفظه.';
+	@override String get permissionTitle => 'الميكروفون مطلوب';
+	@override String get permissionDenied => 'لسماع "هاي شيفي" يحتاج التطبيق إلى الميكروفون (وفي iOS أيضًا إلى التعرف على الكلام).';
+	@override String get openSettings => 'فتح الإعدادات';
+	@override String get notificationTitle => 'شيفي يستمع';
+	@override String get notificationBody => 'قل "هاي شيفي" لبدء محادثة';
+	@override String get notificationStop => 'إيقاف';
+	@override String get heardTitle => 'شيفي هنا';
+	@override String get heardBody => 'انقر للتحدث مع شيفي';
+	@override String get channelListening => 'الاستماع إلى "هاي شيفي"';
+	@override String get channelHeard => 'شيفي سمعك';
+	@override String get overlayListening => 'شيفي يستمع…';
+	@override String get overlayThinking => 'شيفي يفكر…';
+	@override String get overlayNoSpeech => 'لم أسمع. حاول مرة أخرى.';
+	@override String get overlayHint => 'اكتب إلى شيفي…';
+	@override String get overlayTapToTalk => 'انقر على الميكروفون أو اكتب';
+}
+
+// Path: voiceAssistants
+class _Translations$voiceAssistants$ar extends Translations$voiceAssistants$he {
+	_Translations$voiceAssistants$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'شيفي عبر Siri وGemini';
+	@override String get intro => 'اطلب من شيفي عبر مساعد هاتفك، وفي السيارة أيضًا، دون فتح التطبيق. ينفّذ شيفي الطلب ويقرأ المساعد الإجابة.';
+	@override String get iosHow => 'قل "هاي سيري، هاي شيفي". تسألك سيري عمّا تريد، ثم قل طلبك. يعمل أيضًا في CarPlay بزر الصوت على المقود.';
+	@override List<String> get iosExamples => [
+		'أضف الحليب والبيض إلى قائمة التسوق',
+		'ما قائمة طعام اليوم؟',
+		'ماذا بقي للشراء؟',
+		'كم من الوقت أطبخ الأرز؟',
+	];
+	@override String get androidHow => 'في Android Auto وGemini: لم تفتح Google بعد Gemini لتطبيقات مثل EasyPlate. الاتصال جاهز في التطبيق وسيبدأ العمل فور فتحه من Google.';
+	@override String get limits => 'بالصوت لا يمكن الحذف أو الاستيراد من رابط أو فتح الشاشات. افعل ذلك في التطبيق.';
+	@override String get signedOut => 'للتحدث مع شيفي، سجّل الدخول إلى تطبيق EasyPlate أولًا.';
+	@override String get empty => 'لم أسمع طلبًا. حاول مرة أخرى.';
+	@override String get premiumOnly => 'شيفي متاح مع بريميوم. يمكنك الترقية في تطبيق EasyPlate.';
+	@override String get unavailable => 'شيفي غير متاح حاليًا.';
+	@override String get failed => 'لم يتمكن شيفي من الإجابة الآن. حاول بعد قليل.';
+	@override String get goodbye => 'بكل سرور! أنا هنا متى احتجتني.';
 }
 
 // Path: walkthrough.topics
@@ -2204,6 +2293,17 @@ extension on TranslationsAr {
 			'auth.platformIos' => 'آيفون',
 			'auth.platformAndroid' => 'هاتف أندرويد',
 			'auth.platformOther' => 'جهاز آخر',
+			'auth.sessionRequestRelease' => 'طلب قطع الاتصال',
+			'auth.sessionRequestSent' => 'أرسلنا طلبًا إلى الجهاز المتصل. بمجرد أن يسجّل الخروج ستدخل هنا تلقائيًا.',
+			'auth.sessionRequestQueued' => 'تعذّر إرسال إشعار إلى الجهاز الآخر. سيظهر الطلب هناك في المرة القادمة التي يُفتح فيها التطبيق.',
+			'auth.sessionRequestFailed' => 'تعذّر إرسال الطلب. حاول بعد قليل.',
+			'auth.sessionRequestDeclined' => 'اختار الجهاز الآخر البقاء متصلًا.',
+			'auth.sessionReleaseTitle' => 'جهاز آخر يريد تسجيل الدخول',
+			'auth.sessionReleaseBody' => ({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟',
+			'auth.sessionReleaseConfirm' => 'تسجيل الخروج هنا',
+			'auth.sessionReleaseStay' => 'البقاء متصلًا',
+			'auth.sessionReleasePushTitle' => 'طلب قطع الاتصال',
+			'auth.sessionReleasePushBody' => 'جهاز آخر يريد الدخول إلى حسابك. انقر لتقرر.',
 			'profile.setupTitle' => 'تفاصيل أخيرة',
 			'profile.setupSubtitle' => 'لكي نعرف كيف نخاطبكم',
 			'profile.fullName' => 'الاسم الكامل',
@@ -2605,6 +2705,8 @@ extension on TranslationsAr {
 			'editor.addStep' => 'إضافة خطوة',
 			'editor.removeIngredient' => 'إزالة المكوّن',
 			'editor.removeStep' => 'إزالة الخطوة',
+			_ => null,
+		} ?? switch (path) {
 			'editor.reorderStep' => 'إعادة ترتيب الخطوة',
 			'editor.fixSpelling' => 'تصحيح الإملاء',
 			'editor.refining' => 'جارٍ تصحيح الوصفة...',
@@ -2616,8 +2718,6 @@ extension on TranslationsAr {
 			'editor.discardBody' => 'لن يتم حفظ تعديلاتك.',
 			'editor.discard' => 'تجاهل',
 			'editor.saveOptionsTitle' => 'كيف تريدون الحفظ؟',
-			_ => null,
-		} ?? switch (path) {
 			'editor.savePlainHint' => 'حفظ التغييرات كما هي، بدون انتظار',
 			'editor.saveWithAi' => 'حفظ مع مراجعة AI',
 			'editor.saveWithAiHint' => 'تصحيح الإملاء ومطابقة الأوقات المذكورة في الخطوات',
@@ -3119,6 +3219,8 @@ extension on TranslationsAr {
 			'feedback.notAllowed' => 'هذه الشاشة للمدير فقط',
 			'adminBilling.title' => 'الاشتراكات',
 			'adminBilling.all' => 'الكل',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.paying' => 'يدفعون',
 			'adminBilling.problems' => 'مشاكل',
 			'adminBilling.searchHint' => 'بحث بالاسم أو البريد أو الهاتف أو uid',
@@ -3130,8 +3232,6 @@ extension on TranslationsAr {
 			'adminBilling.viaRevenueCat' => 'من RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'المنتج: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} أحداث',
 			'adminBilling.grant' => 'منح بريميوم',
@@ -3607,6 +3707,60 @@ extension on TranslationsAr {
 			'featureName.assistantVoice' => 'التحدث مع شيفي',
 			'featureName.singleSession' => 'جهاز واحد لكل حساب',
 			'featureName.homeWidgets' => 'أدوات الشاشة الرئيسية',
+			'featureName.wakeWord' => 'هاي شيفي',
+			'featureName.voiceAssistants' => 'شيفي عبر Siri وGemini',
+			'wakeWord.title' => 'هاي شيفي',
+			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
+			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
+			'wakeWord.examples.0' => 'هاي شيفي',
+			'wakeWord.examples.1' => 'هاي شيفي، ماذا أطبخ اليوم؟',
+			'wakeWord.examples.2' => 'هاي شيفي، أضف الحليب إلى قائمة التسوق',
+			'wakeWord.examples.3' => 'هاي شيفي، شغّل مؤقتًا لعشر دقائق',
+			'wakeWord.enable' => 'الاستماع إلى "هاي شيفي"',
+			'wakeWord.enableHint' => 'الميكروفون مفتوح لالتقاط كلمات التنبيه فقط. لا يُسجَّل أي شيء ولا يُحفظ.',
+			'wakeWord.closedTitle' => 'عندما يكون التطبيق مغلقًا',
+			'wakeWord.background' => 'حتى عندما يكون التطبيق مغلقًا',
+			'wakeWord.backgroundHint' => 'يستمر الاستماع في الخلفية مع إشعار دائم، ويظهر الميكروفون قيد الاستخدام. يجري الالتقاط داخل الهاتف ويستهلك القليل من البطارية. يتوقف الاستماع عندما تكون الشاشة مطفأة، وبعد إعادة تشغيل الهاتف يجب فتح التطبيق مرة واحدة.',
+			'wakeWord.openDirectly' => 'الفتح مباشرة من الخلفية',
+			'wakeWord.openDirectlyHint' => 'بدون إذن "الظهور فوق التطبيقات الأخرى" يظهر شيفي كإشعار تنقر عليه. انقر هنا للسماح.',
+			'wakeWord.openDirectlyGranted' => 'مسموح: يفتح شيفي فورًا حتى من تطبيق آخر',
+			'wakeWord.siriBody' => 'في iOS لا يمكن لتطبيق مغلق استخدام الميكروفون. عندما يكون التطبيق مغلقًا، قل لسيري:',
+			'wakeWord.siriPhrases.0' => 'هاي سيري، هاي شيفي',
+			'wakeWord.siriPhrases.1' => 'هاي سيري، تحدث مع شيفي في Easy Plate',
+			'wakeWord.privacyAndroid' => 'على Android يُلتقط "هاي شيفي" داخل الهاتف بنموذج صغير ودون إنترنت: إلى أن يُسمع، لا يغادر أي صوت الجهاز. فقط الطلب الذي تقوله بعده يُرسل إلى التعرف على الكلام من Google. لا يسجّل EasyPlate الصوت ولا يحفظه.',
+			'wakeWord.privacyIos' => 'يتم التعرف على الجهاز عندما يكون ذلك ممكنًا، وإلا عبر خدمة الكلام من Apple. لا يسجّل EasyPlate الصوت ولا يحفظه.',
+			'wakeWord.permissionTitle' => 'الميكروفون مطلوب',
+			'wakeWord.permissionDenied' => 'لسماع "هاي شيفي" يحتاج التطبيق إلى الميكروفون (وفي iOS أيضًا إلى التعرف على الكلام).',
+			'wakeWord.openSettings' => 'فتح الإعدادات',
+			'wakeWord.notificationTitle' => 'شيفي يستمع',
+			_ => null,
+		} ?? switch (path) {
+			'wakeWord.notificationBody' => 'قل "هاي شيفي" لبدء محادثة',
+			'wakeWord.notificationStop' => 'إيقاف',
+			'wakeWord.heardTitle' => 'شيفي هنا',
+			'wakeWord.heardBody' => 'انقر للتحدث مع شيفي',
+			'wakeWord.channelListening' => 'الاستماع إلى "هاي شيفي"',
+			'wakeWord.channelHeard' => 'شيفي سمعك',
+			'wakeWord.overlayListening' => 'شيفي يستمع…',
+			'wakeWord.overlayThinking' => 'شيفي يفكر…',
+			'wakeWord.overlayNoSpeech' => 'لم أسمع. حاول مرة أخرى.',
+			'wakeWord.overlayHint' => 'اكتب إلى شيفي…',
+			'wakeWord.overlayTapToTalk' => 'انقر على الميكروفون أو اكتب',
+			'voiceAssistants.title' => 'شيفي عبر Siri وGemini',
+			'voiceAssistants.intro' => 'اطلب من شيفي عبر مساعد هاتفك، وفي السيارة أيضًا، دون فتح التطبيق. ينفّذ شيفي الطلب ويقرأ المساعد الإجابة.',
+			'voiceAssistants.iosHow' => 'قل "هاي سيري، هاي شيفي". تسألك سيري عمّا تريد، ثم قل طلبك. يعمل أيضًا في CarPlay بزر الصوت على المقود.',
+			'voiceAssistants.iosExamples.0' => 'أضف الحليب والبيض إلى قائمة التسوق',
+			'voiceAssistants.iosExamples.1' => 'ما قائمة طعام اليوم؟',
+			'voiceAssistants.iosExamples.2' => 'ماذا بقي للشراء؟',
+			'voiceAssistants.iosExamples.3' => 'كم من الوقت أطبخ الأرز؟',
+			'voiceAssistants.androidHow' => 'في Android Auto وGemini: لم تفتح Google بعد Gemini لتطبيقات مثل EasyPlate. الاتصال جاهز في التطبيق وسيبدأ العمل فور فتحه من Google.',
+			'voiceAssistants.limits' => 'بالصوت لا يمكن الحذف أو الاستيراد من رابط أو فتح الشاشات. افعل ذلك في التطبيق.',
+			'voiceAssistants.signedOut' => 'للتحدث مع شيفي، سجّل الدخول إلى تطبيق EasyPlate أولًا.',
+			'voiceAssistants.empty' => 'لم أسمع طلبًا. حاول مرة أخرى.',
+			'voiceAssistants.premiumOnly' => 'شيفي متاح مع بريميوم. يمكنك الترقية في تطبيق EasyPlate.',
+			'voiceAssistants.unavailable' => 'شيفي غير متاح حاليًا.',
+			'voiceAssistants.failed' => 'لم يتمكن شيفي من الإجابة الآن. حاول بعد قليل.',
+			'voiceAssistants.goodbye' => 'بكل سرور! أنا هنا متى احتجتني.',
 			_ => null,
 		};
 	}

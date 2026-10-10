@@ -342,6 +342,18 @@ class FirebaseService {
     }
   }
 
+  /// This device's push token without asking for permission, or null.
+  /// Bounded: a slow APNs registration must not hold up a sign-in.
+  Future<String?> currentPushToken() async {
+    try {
+      return await _fetchToken(
+        FirebaseMessaging.instance,
+      ).timeout(const Duration(seconds: 6));
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Prints the device's current FCM token. Called whenever the main screen
   /// is reached after sign-in, so it is always in the latest log.
   Future<void> logPushToken() async {

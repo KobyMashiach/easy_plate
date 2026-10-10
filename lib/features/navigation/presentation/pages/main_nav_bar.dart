@@ -73,13 +73,22 @@ class _MainNavBarState extends State<MainNavBar> {
   void _openPendingWidgetLaunch() {
     final launch = PendingHomeWidgetLaunch.take();
     if (launch == null || !mounted) return;
-    if (!guardFeature(context, FeaturesFlags.homeWidgets)) return;
+    // "Hey Shefi" comes through here too, with its own flag instead of the
+    // widgets'.
+    final door = launch.fromWakeWord
+        ? FeaturesFlags.wakeWord
+        : FeaturesFlags.homeWidgets;
+    if (!guardFeature(context, door)) return;
     switch (launch.action) {
       case HomeWidgetAction.assistant:
         if (!guardFeature(context, FeaturesFlags.assistant)) return;
         context.pushNamed(
           Routing.assistant,
-          extra: AssistantLaunch(prompt: launch.prompt, voice: launch.voice),
+          extra: AssistantLaunch(
+            prompt: launch.prompt,
+            voice: launch.voice,
+            spokenPrompt: launch.fromWakeWord,
+          ),
         );
       case HomeWidgetAction.grocery:
         MainTabs.index.value = MainTabs.groceries;

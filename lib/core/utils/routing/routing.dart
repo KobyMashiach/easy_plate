@@ -38,6 +38,7 @@ class Routing {
   static const household = 'household';
   static const scanCode = 'scan_code';
   static const homeWidgets = 'home_widgets';
+  static const wakeWord = 'wake_word';
 
   /// A home-screen widget's tap, `/widget/<action>`: see HomeWidgetLaunch.
   static const widgetLaunch = '/widget/:action';

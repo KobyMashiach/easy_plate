@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import com.KHEasyDev.easy_plate.wakeword.WakeWordController
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -142,6 +143,19 @@ class WidgetQuickAddActivity : Activity() {
     }
 
     @Deprecated("Deprecated in Java")
+    // The dialog dictates through the system recognizer: "Hey Shefi" gives
+    // the microphone up while it is open.
+    override fun onResume() {
+        super.onResume()
+        WakeWordController.init(this)
+        WakeWordController.hold(WAKE_HOLD)
+    }
+
+    override fun onPause() {
+        WakeWordController.release(WAKE_HOLD)
+        super.onPause()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != REQUEST_SPEECH || resultCode != RESULT_OK) return
@@ -164,6 +178,7 @@ class WidgetQuickAddActivity : Activity() {
     private fun dp(value: Float) = value * resources.displayMetrics.density
 
     companion object {
+        private const val WAKE_HOLD = "widget_quick_add"
         const val EXTRA_WIDGET_ID = "widgetId"
         const val EXTRA_LIST_ID = "listId"
         const val EXTRA_VOICE = "voice"

@@ -1,0 +1,12 @@
+0.03 settings
+3.15 enabled
+12.07 shade_service
+17.78 bounds_shade_service 294 622
+24.95 left_app
+29.18 wake
+36.17 thinking
+43.25 answer
+63.91 still_listening
+69.77 bounds_still_listening 294 622
+77.35 stopped
+83.83 shade_clear

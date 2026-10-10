@@ -32,6 +32,10 @@ class HomeWidgetLaunch {
   String? get prompt => _text('prompt');
   bool get voice => params['voice'] == '1' || params['voice'] == 'true';
 
+  /// Opened by "Hey Shefi" rather than by a widget: gated by the wake-word
+  /// flag, and a command said after the wake words is a spoken turn.
+  bool get fromWakeWord => params['source'] == 'wake';
+
   /// `grocery`: which list, and whether the add sheet opens.
   String? get listId => _text('list');
   bool get add => params['add'] == '1' || params['add'] == 'true';

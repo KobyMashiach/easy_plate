@@ -4,6 +4,17 @@
 //                                   session; refused (200, ok:false) while
 //                                   another device holds a live one
 //   release { deviceId }            the device signs out and frees it
+//   requestRelease { deviceId, platform, pushToken?, title, body }
+//                                   a refused device asks the holder to
+//                                   sign out: the request lands on the
+//                                   record (the holder's app listens) and a
+//                                   push goes to the holder's own token
+//   declineRelease { deviceId }     the holder chose to stay signed in
+//
+// Accounts whose phone number is in `session_exempt_phones` (Remote Config,
+// comma separated; the App Store review account by default) are never
+// refused and keep no record: a record naming another device would sign
+// the older builds out, which still watch it.
 //
 // The record is sessions/{uid}: deviceId, platform, startedAt, expiresAt,
 // lastSeenAt. Only this function writes it; the app reads its own (and
@@ -25,16 +36,36 @@ const remoteFlags = require("./remoteFlags");
 const DEFAULT_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const PLATFORMS = new Set(["ios", "android", "web", "macos", "windows", "linux", "other"]);
+// Apple's reviewers sign in on several devices with the review account.
+const DEFAULT_EXEMPT = "+972501564465";
+const MAX_TEXT = 200;
+
+function text(value, max = MAX_TEXT) {
+  return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
 
 function parseRequest(body) {
   const action = String((body && body.action) || "").trim();
   const deviceId = String((body && body.deviceId) || "").trim();
   if (!deviceId || deviceId.length > 128) return { error: "deviceId is required" };
-  if (action === "claim") {
+  const platformOf = () => {
     const platform = String((body && body.platform) || "other").trim().toLowerCase();
-    return { action, deviceId, platform: PLATFORMS.has(platform) ? platform : "other" };
+    return PLATFORMS.has(platform) ? platform : "other";
+  };
+  if (action === "claim") {
+    return { action, deviceId, platform: platformOf(), pushToken: text(body && body.pushToken, 4096) || null };
   }
-  if (action === "release") return { action, deviceId };
+  if (action === "release" || action === "declineRelease") return { action, deviceId };
+  if (action === "requestRelease") {
+    return {
+      action,
+      deviceId,
+      platform: platformOf(),
+      pushToken: text(body && body.pushToken, 4096) || null,
+      title: text(body && body.title) || "Easy Plate",
+      body: text(body && body.body),
+    };
+  }
   return { error: "unknown action" };
 }
 
@@ -43,7 +74,7 @@ function parseRequest(body) {
 //   days      0 = sessions never expire
 //   enforce   false = other devices never refuse
 // Returns { ok: true, record } to write, or { ok: false, refusal }.
-function decide({ existing, deviceId, platform, now, days, enforce }) {
+function decide({ existing, deviceId, platform, now, days, enforce, pushToken = null }) {
   const live = existing && (existing.expiresAt === null || existing.expiresAt > now);
   if (live && existing.deviceId !== deviceId && enforce) {
     return {
@@ -54,12 +85,23 @@ function decide({ existing, deviceId, platform, now, days, enforce }) {
   if (live && existing.deviceId === deviceId) {
     // The same device again: the month keeps counting from the first
     // sign-in, only the last-seen stamp moves.
-    return { ok: true, record: { ...existing, platform, lastSeenAt: now } };
+    return {
+      ok: true,
+      sameDevice: true,
+      record: { ...existing, platform, lastSeenAt: now, pushToken: pushToken || existing.pushToken || null },
+    };
   }
   // No session, an expired one, or a takeover allowed by the console.
   return {
     ok: true,
-    record: { deviceId, platform, startedAt: now, expiresAt: days > 0 ? now + days * DAY_MS : null, lastSeenAt: now },
+    record: {
+      deviceId,
+      platform,
+      startedAt: now,
+      expiresAt: days > 0 ? now + days * DAY_MS : null,
+      lastSeenAt: now,
+      pushToken: pushToken || null,
+    },
   };
 }
 
@@ -78,6 +120,7 @@ function fromDoc(snapshot) {
     platform: String(d.platform || "other"),
     startedAt: toMillis(d.startedAt),
     expiresAt: toMillis(d.expiresAt),
+    pushToken: d.pushToken ? String(d.pushToken) : null,
   };
 }
 
@@ -89,7 +132,19 @@ function toDoc(record) {
     startedAt: ts(record.startedAt),
     expiresAt: ts(record.expiresAt),
     lastSeenAt: ts(record.lastSeenAt),
+    pushToken: record.pushToken || null,
   };
+}
+
+// Pure: whether the caller's phone number is on the exempt list.
+function isExempt(phone, list) {
+  const wanted = String(phone || "").replace(/[^+\d]/g, "");
+  if (!wanted) return false;
+  return String(list || "")
+    .split(/[,;\n]+/)
+    .map((p) => p.replace(/[^+\d]/g, ""))
+    .filter(Boolean)
+    .includes(wanted);
 }
 
 async function knobs() {
@@ -97,19 +152,83 @@ async function knobs() {
   return {
     days: remoteFlags.intFrom(params, "session_days", DEFAULT_DAYS),
     enforce: remoteFlags.intFrom(params, "ff_single_session", 2) === 2,
+    exempt: (params?.session_exempt_phones?.defaultValue?.value ?? DEFAULT_EXEMPT),
   };
 }
 
-async function claim(uid, request) {
+async function claim(caller, request) {
+  const uid = caller.uid;
   const db = admin.firestore();
   const ref = db.doc(`sessions/${uid}`);
-  const { days, enforce } = await knobs();
+  const { days, enforce, exempt } = await knobs();
+  if (isExempt(caller.phone_number, exempt)) {
+    // No record at all: nothing to refuse with, nothing for an older
+    // build's watcher to read as "another device".
+    await ref.delete().catch(() => {});
+    return { ok: true, exempt: true, record: { startedAt: null, expiresAt: null } };
+  }
   const now = Date.now();
   return db.runTransaction(async (tx) => {
     const existing = fromDoc(await tx.get(ref));
-    const outcome = decide({ existing, deviceId: request.deviceId, platform: request.platform, now, days, enforce });
-    if (outcome.ok) tx.set(ref, toDoc(outcome.record));
+    const outcome = decide({
+      existing, deviceId: request.deviceId, platform: request.platform, now, days, enforce, pushToken: request.pushToken,
+    });
+    // The same device again merges, so a pending release request survives
+    // the holder's own app start (it is what that app is about to show).
+    if (outcome.ok) tx.set(ref, toDoc(outcome.record), outcome.sameDevice ? { merge: true } : {});
     return outcome;
+  });
+}
+
+// A refused device asks the holder to sign out.
+async function requestRelease(uid, request) {
+  const db = admin.firestore();
+  const ref = db.doc(`sessions/${uid}`);
+  const now = Date.now();
+  const snapshot = await ref.get();
+  const existing = fromDoc(snapshot);
+  const live = existing && (existing.expiresAt === null || existing.expiresAt > now);
+  if (!live || existing.deviceId === request.deviceId) return { ok: true, free: true };
+  await ref.set({
+    releaseRequest: {
+      at: admin.firestore.Timestamp.fromMillis(now),
+      deviceId: request.deviceId,
+      platform: request.platform,
+      declinedAt: null,
+    },
+  }, { merge: true });
+
+  // The holder's own token, saved with its claim. An older build saved
+  // none: then the account's last token, unless that is the asker's.
+  let token = existing.pushToken;
+  if (!token) {
+    const user = await db.doc(`users/${uid}`).get();
+    const last = user.exists ? user.get("pushToken") : null;
+    if (last && last !== request.pushToken) token = last;
+  }
+  if (!token) return { ok: true, notified: false };
+  try {
+    await admin.messaging().send({
+      token,
+      notification: { title: request.title, body: request.body },
+      data: { type: "session_release", platform: request.platform },
+      android: { priority: "high" },
+      apns: { payload: { aps: { sound: "default" } } },
+    });
+    return { ok: true, notified: true };
+  } catch (err) {
+    logger.warn("release push failed", { uid, reason: err.code || err.message });
+    return { ok: true, notified: false };
+  }
+}
+
+async function declineRelease(uid, request) {
+  const db = admin.firestore();
+  const ref = db.doc(`sessions/${uid}`);
+  await db.runTransaction(async (tx) => {
+    const existing = fromDoc(await tx.get(ref));
+    if (!existing || existing.deviceId !== request.deviceId) return;
+    tx.set(ref, { releaseRequest: { declinedAt: admin.firestore.Timestamp.now() } }, { merge: true });
   });
 }
 
@@ -133,13 +252,25 @@ exports.sessions = onRequest(
     const request = parseRequest(req.body);
     if (request.error) return res.status(400).json({ error: { message: request.error } });
     try {
+      if (request.action === "requestRelease") {
+        return res.status(200).json(await requestRelease(caller.uid, request));
+      }
+      if (request.action === "declineRelease") {
+        await declineRelease(caller.uid, request);
+        return res.status(200).json({ ok: true });
+      }
       if (request.action === "claim") {
-        const outcome = await claim(caller.uid, request);
+        const outcome = await claim(caller, request);
         if (!outcome.ok) {
           logger.info("session refused", { uid: caller.uid, platform: outcome.refusal.platform });
           return res.status(200).json({ ok: false, refusal: outcome.refusal });
         }
-        return res.status(200).json({ ok: true, startedAt: outcome.record.startedAt, expiresAt: outcome.record.expiresAt });
+        return res.status(200).json({
+          ok: true,
+          exempt: outcome.exempt === true,
+          startedAt: outcome.record.startedAt,
+          expiresAt: outcome.record.expiresAt,
+        });
       }
       await release(caller.uid, request);
       return res.status(200).json({ ok: true });
@@ -177,4 +308,4 @@ exports.expireSessions = onSchedule(
   },
 );
 
-exports.internals = { parseRequest, decide, DEFAULT_DAYS, DAY_MS, expire };
+exports.internals = { parseRequest, decide, isExempt, DEFAULT_DAYS, DAY_MS, expire };

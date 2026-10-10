@@ -10,6 +10,9 @@ import google_mobile_ads
   /// The home-screen widgets' channel; see HomeWidgetsChannel.swift.
   private var homeWidgets: HomeWidgetsChannel?
 
+  /// "Hey Shefi"; see WakeWordChannel.swift.
+  private var wakeWord: WakeWordChannel?
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -26,5 +29,12 @@ import google_mobile_ads
       nativeAdFactory: EasyPlateNativeAdFactory()
     )
     homeWidgets = HomeWidgetsChannel(messenger: engineBridge.applicationRegistrar.messenger())
+    wakeWord = WakeWordChannel(messenger: engineBridge.applicationRegistrar.messenger())
+    // Siri's background requests reach Shefi through this engine while it
+    // is alive; see ShefiVoiceBridge.swift.
+    ShefiVoiceBridge.mainChannel = FlutterMethodChannel(
+      name: ShefiVoiceBridge.channelName,
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
   }
 }

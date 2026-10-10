@@ -27,6 +27,28 @@ class SessionRefusal {
   const SessionRefusal({required this.platform, this.since});
 }
 
+/// Another device asked this one, the holder, to sign out.
+class ReleaseRequest {
+  final String platform;
+  final DateTime at;
+  const ReleaseRequest({required this.platform, required this.at});
+}
+
+/// What became of a request to the holder.
+enum ReleaseOutcome {
+  /// The holder got a push and is being asked.
+  notified,
+
+  /// No push could reach it; it is asked the next time it opens the app.
+  queued,
+
+  /// Nobody holds the account any more: claim again.
+  free,
+
+  /// The request could not be sent.
+  failed,
+}
+
 /// One device per account, a month at a time.
 ///
 /// The device carries an id minted once per install (device-wide Hive box,
@@ -47,6 +69,13 @@ class DeviceSessionService {
   String? _deviceId;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _watch;
   DateTime? _expiresAt;
+  bool _exempt = false;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _waitWatch;
+  DateTime? _handledRequest;
+
+  /// The server exempted this account from the one-device rule (the store
+  /// review account): there is no record to follow.
+  bool get exempt => _exempt;
 
   /// Tests only: swap the network and the database.
   @visibleForTesting
@@ -97,7 +126,7 @@ class DeviceSessionService {
   /// Asks the server for the account's session. Null when this device holds
   /// it; the refusal when another device does. A network failure counts as
   /// held: an offline phone must still open the account it already has.
-  Future<SessionRefusal?> claim() async {
+  Future<SessionRefusal?> claim({String? pushToken}) async {
     if (!ApiConfig.usesProxy) return null;
     try {
       final response = await _http.post(
@@ -106,11 +135,15 @@ class DeviceSessionService {
           'action': 'claim',
           'deviceId': await deviceId(),
           'platform': platform,
+          // Kept with the session, so a refused device can ask exactly this
+          // one to sign out.
+          'pushToken': ?pushToken,
         },
       );
       final data = response?.data;
       if (data is! Map) return null;
       if (data['ok'] == true) {
+        _exempt = data['exempt'] == true;
         final expires = data['expiresAt'];
         _expiresAt = expires is num
             ? DateTime.fromMillisecondsSinceEpoch(expires.toInt())
@@ -130,6 +163,108 @@ class DeviceSessionService {
       debugPrint('Session claim failed: $e');
       return null;
     }
+  }
+
+  /// From a refused device: asks the holder to sign out, with the push's
+  /// [title] and [body] already in the user's language.
+  Future<ReleaseOutcome> requestRelease({
+    required String title,
+    required String body,
+    String? pushToken,
+  }) async {
+    if (!ApiConfig.usesProxy) return ReleaseOutcome.failed;
+    try {
+      final response = await _http.post(
+        '',
+        data: {
+          'action': 'requestRelease',
+          'deviceId': await deviceId(),
+          'platform': platform,
+          'title': title,
+          'body': body,
+          'pushToken': ?pushToken,
+        },
+      );
+      final data = response?.data;
+      if (data is! Map || data['ok'] != true) return ReleaseOutcome.failed;
+      if (data['free'] == true) return ReleaseOutcome.free;
+      return data['notified'] == true
+          ? ReleaseOutcome.notified
+          : ReleaseOutcome.queued;
+    } catch (e) {
+      debugPrint('Release request failed: $e');
+      return ReleaseOutcome.failed;
+    }
+  }
+
+  /// From the holder: stays signed in, and the asker is told.
+  Future<void> declineRelease() async {
+    if (!ApiConfig.usesProxy) return;
+    try {
+      await _http.post(
+        '',
+        data: {'action': 'declineRelease', 'deviceId': await deviceId()},
+      );
+    } catch (e) {
+      debugPrint('Release decline failed: $e');
+    }
+  }
+
+  /// From a refused device: follows the record so the gate can move on by
+  /// itself the moment the holder signs out ([onFree]), or say the holder
+  /// declined ([onDeclined]).
+  void waitForRelease(
+    String uid, {
+    required VoidCallback onFree,
+    required VoidCallback onDeclined,
+  }) {
+    stopWaiting();
+    if (!ApiConfig.usesProxy && _firestore == null) return;
+    final db = _firestore ?? FirebaseFirestore.instance;
+    _waitWatch = db.doc('sessions/$uid').snapshots().listen((snapshot) async {
+      final data = snapshot.data();
+      final expires = (data?['expiresAt'] as Timestamp?)?.toDate();
+      if (!snapshot.exists ||
+          (expires != null && !expires.isAfter(DateTime.now()))) {
+        onFree();
+        return;
+      }
+      final request = data?['releaseRequest'];
+      if (request is Map &&
+          request['deviceId'] == await deviceId() &&
+          request['declinedAt'] != null) {
+        onDeclined();
+      }
+    }, onError: (Object e) => debugPrint('Release wait failed: $e'));
+  }
+
+  void stopWaiting() {
+    _waitWatch?.cancel();
+    _waitWatch = null;
+  }
+
+  /// Pure: the request on a record this device holds that it has not shown
+  /// yet, or null.
+  @visibleForTesting
+  static ReleaseRequest? pendingRequest(
+    Map<String, dynamic>? data, {
+    required String mine,
+    required DateTime? handled,
+  }) {
+    if (data == null || data['deviceId'] != mine) return null;
+    final request = data['releaseRequest'];
+    if (request is! Map || request['declinedAt'] != null) return null;
+    if (request['deviceId'] == mine) return null;
+    final at = (request['at'] as Timestamp?)?.toDate();
+    if (at == null || (handled != null && !at.isAfter(handled))) return null;
+    // An old request is not worth a dialog.
+    if (DateTime.now().difference(at) > const Duration(minutes: 30)) {
+      return null;
+    }
+    return ReleaseRequest(
+      platform: (request['platform'] as String?) ?? 'other',
+      at: at,
+    );
   }
 
   /// Frees the account's session if this device holds it. Best effort,
@@ -154,7 +289,11 @@ class DeviceSessionService {
   /// device stops being its holder. A document that is missing right after
   /// a successful claim is the write still landing, so only a document that
   /// names another device, or one that disappears later, counts.
-  void watch(String uid, void Function(SessionEnd end) onEnd) {
+  void watch(
+    String uid,
+    void Function(SessionEnd end) onEnd, {
+    void Function(ReleaseRequest request)? onReleaseRequest,
+  }) {
     unwatch();
     // No proxy, no session service (and in tests, no Firestore to open).
     if (!ApiConfig.usesProxy && _firestore == null) return;
@@ -172,7 +311,19 @@ class DeviceSessionService {
           seenBefore: seen,
         );
         seen = seen || snapshot.exists;
-        if (end != null) onEnd(end);
+        if (end != null) {
+          onEnd(end);
+          return;
+        }
+        final request = pendingRequest(
+          snapshot.data(),
+          mine: mine,
+          handled: _handledRequest,
+        );
+        if (request != null && onReleaseRequest != null) {
+          _handledRequest = request.at;
+          onReleaseRequest(request);
+        }
       },
       onError: (Object e) => debugPrint('Session watch failed: $e'),
     );
@@ -211,5 +362,8 @@ class DeviceSessionService {
     _firestore = null;
     _deviceId = null;
     _expiresAt = null;
+    _exempt = false;
+    stopWaiting();
+    _handledRequest = null;
   }
 }

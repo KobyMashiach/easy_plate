@@ -1,0 +1,6 @@
+/* Siri phrases for the Shefi shortcuts (ShefiShortcuts.swift). */
+"Hey ${applicationName}" = "היי ${applicationName}";
+"Ask ${applicationName}" = "לשאול את ${applicationName}";
+"Ask Shefi in ${applicationName}" = "לשאול את שפי באפליקציית ${applicationName}";
+"Talk to Shefi in ${applicationName}" = "לדבר עם שפי באפליקציית ${applicationName}";
+"Open Shefi in ${applicationName}" = "לפתוח את שפי באפליקציית ${applicationName}";

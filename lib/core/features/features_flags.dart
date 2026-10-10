@@ -117,7 +117,18 @@ enum FeaturesFlags {
   /// The home-screen widgets (Shefi button, quick add, the list, today's
   /// menu) and the settings screen that places them. Hidden, the widgets
   /// on the phone show only a way into the app.
-  homeWidgets('ff_home_widgets')
+  homeWidgets('ff_home_widgets'),
+
+  /// "Hey Shefi": the wake words open a spoken Shefi conversation, while
+  /// the app is open and (Android) after it is closed. Rides on
+  /// [assistant] and [assistantVoice]: listening needs all three.
+  wakeWord('ff_wake_word'),
+
+  /// Shefi through the system assistants: Siri (CarPlay included) runs a
+  /// request in the background and reads the answer out; the Android side
+  /// is ready for Gemini once Google opens app functions. Rides on
+  /// [assistant].
+  voiceAssistants('ff_voice_assistants')
   ;
 
   /// The Remote Config parameter name.

@@ -101,7 +101,18 @@
     "sessionRetry": "Try again",
     "platformIos": "an iPhone",
     "platformAndroid": "an Android phone",
-    "platformOther": "another device"
+    "platformOther": "another device",
+    "sessionRequestRelease": "Ask to disconnect",
+    "sessionRequestSent": "We asked the connected device. As soon as it signs out, you're in here automatically.",
+    "sessionRequestQueued": "We couldn't send a notification to the other device. It will see the request the next time the app opens there.",
+    "sessionRequestFailed": "The request couldn't be sent. Please try again in a moment.",
+    "sessionRequestDeclined": "The other device chose to stay signed in.",
+    "sessionReleaseTitle": "Another device wants to sign in",
+    "sessionReleaseBody": "A device ($platform) wants to sign in to your account. Sign out on this device?",
+    "sessionReleaseConfirm": "Sign out here",
+    "sessionReleaseStay": "Stay signed in",
+    "sessionReleasePushTitle": "Disconnect request",
+    "sessionReleasePushBody": "Another device wants to sign in to your account. Tap to decide."
   },
   "profile": {
     "setupTitle": "A few last details",
@@ -1639,7 +1650,9 @@
     "assistantScoped": "Shefi inside an item",
     "assistantVoice": "Voice with Shefi",
     "singleSession": "One device per account",
-    "homeWidgets": "Home screen widgets"
+    "homeWidgets": "Home screen widgets",
+    "wakeWord": "Hey Shefi",
+    "voiceAssistants": "Shefi in Siri and Gemini"
   },
   "adminConfig": {
     "intro": "Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).",
@@ -1693,7 +1706,68 @@
       "gemini_maxInstances": "Maximum instances",
       "gemini_timeoutSeconds": "Call timeout (seconds)",
       "session_days": "Session length (days)",
-      "presence_heartbeat_seconds": "Presence heartbeat (seconds)"
+      "presence_heartbeat_seconds": "Presence heartbeat (seconds)",
+      "session_exempt_phones": "Numbers exempt from one device"
     }
+  },
+  "wakeWord": {
+    "title": "Hey Shefi",
+    "hint": "Start talking to Shefi by voice, hands-free",
+    "intro": "Say \"Hey Shefi\" and Shefi opens and listens. You can keep going in the same sentence and Shefi answers right away.",
+    "examples": [
+      "Hey Shefi",
+      "Hey Shefi, what should I cook today?",
+      "Hey Shefi, add milk to the grocery list",
+      "Hey Shefi, set a ten-minute timer"
+    ],
+    "enable": "Listen for \"Hey Shefi\"",
+    "enableHint": "The microphone is open only to catch the wake words. Nothing is recorded or kept.",
+    "closedTitle": "When the app is closed",
+    "background": "Also when the app is closed",
+    "backgroundHint": "Keeps listening in the background with a permanent notification, and the microphone shows as in use. Spotting runs on the phone and uses little battery. Listening pauses while the screen is off, and after a phone restart the app has to be opened once.",
+    "openDirectly": "Open straight from the background",
+    "openDirectlyHint": "Without \"Display over other apps\", Shefi appears as a notification you tap. Tap here to allow it.",
+    "openDirectlyGranted": "Allowed: Shefi opens at once, even from another app",
+    "siriBody": "On iOS a closed app cannot use the microphone. When the app is closed, just tell Siri:",
+    "siriPhrases": [
+      "Hey Siri, hey Shefi",
+      "Hey Siri, talk to Shefi in Easy Plate"
+    ],
+    "privacyAndroid": "On Android, \"Hey Shefi\" is spotted on the phone by a small model, with no internet: until it is heard, no audio leaves the device. Only the request you say after it goes to Google's speech recognition. EasyPlate does not record or keep audio.",
+    "privacyIos": "Recognition runs on the device when it can, otherwise on Apple's speech service. EasyPlate does not record or keep audio.",
+    "permissionTitle": "Microphone needed",
+    "permissionDenied": "To hear \"Hey Shefi\" the app needs the microphone (and, on iOS, speech recognition).",
+    "openSettings": "Open settings",
+    "notificationTitle": "Shefi is listening",
+    "notificationBody": "Say \"Hey Shefi\" to start a conversation",
+    "notificationStop": "Stop",
+    "heardTitle": "Shefi is here",
+    "heardBody": "Tap to talk to Shefi",
+    "channelListening": "Listening for \"Hey Shefi\"",
+    "channelHeard": "Shefi heard you",
+    "overlayListening": "Shefi is listening…",
+    "overlayThinking": "Shefi is thinking…",
+    "overlayNoSpeech": "I didn't catch that. Try again.",
+    "overlayHint": "Write to Shefi…",
+    "overlayTapToTalk": "Tap the mic or type"
+  },
+  "voiceAssistants": {
+    "title": "Shefi in Siri and Gemini",
+    "intro": "Ask Shefi through your phone's assistant, in the car too, without opening the app. Shefi does it and the assistant reads the answer out.",
+    "iosHow": "Say \"Hey Siri, hey Shefi\". Siri asks what you want, then say your request. Works in CarPlay too with the steering-wheel voice button.",
+    "iosExamples": [
+      "Add milk and eggs to the grocery list",
+      "What's on today's menu?",
+      "What's left to buy?",
+      "How long do I cook rice?"
+    ],
+    "androidHow": "Android Auto and Gemini: Google has not opened Gemini to apps like EasyPlate yet. The connection is already in the app and starts working as soon as Google opens it.",
+    "limits": "By voice you cannot delete, import from a link or open screens. Do those in the app.",
+    "signedOut": "To talk to Shefi, sign in to the EasyPlate app first.",
+    "empty": "I didn't hear a request. Please try again.",
+    "premiumOnly": "Shefi is available with Premium. You can upgrade in the EasyPlate app.",
+    "unavailable": "Shefi is not available right now.",
+    "failed": "Shefi couldn't answer right now. Please try again in a moment.",
+    "goodbye": "Happy to help! I'm here whenever you need me."
   }
 }

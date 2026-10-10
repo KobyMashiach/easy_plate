@@ -51,6 +51,7 @@ import '../../features/features_flags.dart';
 import '../../../features/more/presentation/pages/help_menu_page.dart';
 import '../../../features/assistant/domain/assistant_scope.dart';
 import '../../../features/settings/presentation/pages/home_widgets_page.dart';
+import '../../../features/settings/presentation/pages/wake_word_page.dart';
 import '../../home_widgets/home_widget_launch.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
@@ -366,6 +367,12 @@ GoRouter buildRouter() {
             name: Routing.homeWidgets,
             redirect: featureRedirect(FeaturesFlags.homeWidgets),
             builder: (context, state) => const HomeWidgetsPage(),
+          ),
+          GoRoute(
+            path: Routing.wakeWord,
+            name: Routing.wakeWord,
+            redirect: featureRedirect(FeaturesFlags.wakeWord),
+            builder: (context, state) => const WakeWordPage(),
           ),
           GoRoute(
             path: Routing.support,

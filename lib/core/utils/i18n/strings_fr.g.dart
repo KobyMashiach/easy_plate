@@ -80,6 +80,8 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$homeWidgets$fr homeWidgets = _Translations$homeWidgets$fr._(_root);
 	@override late final _Translations$feature$fr feature = _Translations$feature$fr._(_root);
 	@override late final _Translations$featureName$fr featureName = _Translations$featureName$fr._(_root);
+	@override late final _Translations$wakeWord$fr wakeWord = _Translations$wakeWord$fr._(_root);
+	@override late final _Translations$voiceAssistants$fr voiceAssistants = _Translations$voiceAssistants$fr._(_root);
 }
 
 // Path: common
@@ -197,6 +199,17 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get platformIos => 'un iPhone';
 	@override String get platformAndroid => 'un téléphone Android';
 	@override String get platformOther => 'un autre appareil';
+	@override String get sessionRequestRelease => 'Demander la déconnexion';
+	@override String get sessionRequestSent => 'Nous avons prévenu l\'appareil connecté. Dès qu\'il se déconnecte, vous entrez ici automatiquement.';
+	@override String get sessionRequestQueued => 'Impossible d\'envoyer une notification à l\'autre appareil. Il verra la demande à la prochaine ouverture de l\'app.';
+	@override String get sessionRequestFailed => 'La demande n\'a pas pu être envoyée. Réessayez dans un instant.';
+	@override String get sessionRequestDeclined => 'L\'autre appareil a choisi de rester connecté.';
+	@override String get sessionReleaseTitle => 'Un autre appareil veut se connecter';
+	@override String sessionReleaseBody({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?';
+	@override String get sessionReleaseConfirm => 'Me déconnecter ici';
+	@override String get sessionReleaseStay => 'Rester connecté';
+	@override String get sessionReleasePushTitle => 'Demande de déconnexion';
+	@override String get sessionReleasePushBody => 'Un autre appareil veut se connecter à votre compte. Touchez pour décider.';
 }
 
 // Path: profile
@@ -1780,6 +1793,82 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get assistantVoice => 'Voix avec Shefi';
 	@override String get singleSession => 'Un appareil par compte';
 	@override String get homeWidgets => 'Widgets d\'écran d\'accueil';
+	@override String get wakeWord => 'Hé Shefi';
+	@override String get voiceAssistants => 'Shefi dans Siri et Gemini';
+}
+
+// Path: wakeWord
+class _Translations$wakeWord$fr extends Translations$wakeWord$he {
+	_Translations$wakeWord$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Hé Shefi';
+	@override String get hint => 'Parlez à Shefi à la voix, sans toucher le téléphone';
+	@override String get intro => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.';
+	@override List<String> get examples => [
+		'Hé Shefi',
+		'Hé Shefi, qu\'est-ce que je cuisine aujourd\'hui ?',
+		'Hé Shefi, ajoute du lait à la liste de courses',
+		'Hé Shefi, lance un minuteur de dix minutes',
+	];
+	@override String get enable => 'Écouter « Hé Shefi »';
+	@override String get enableHint => 'Le micro n\'est ouvert que pour reconnaître les mots d\'activation. Rien n\'est enregistré ni conservé.';
+	@override String get closedTitle => 'Quand l\'app est fermée';
+	@override String get background => 'Aussi quand l\'app est fermée';
+	@override String get backgroundHint => 'L’écoute continue en arrière-plan avec une notification permanente, et le micro apparaît comme utilisé. Le repérage se fait sur le téléphone et consomme peu de batterie. Elle s’arrête écran éteint, et après un redémarrage il faut ouvrir l’app une fois.';
+	@override String get openDirectly => 'Ouvrir directement depuis l\'arrière-plan';
+	@override String get openDirectlyHint => 'Sans « Afficher par-dessus les autres apps », Shefi apparaît sous forme de notification à toucher. Touchez ici pour l\'autoriser.';
+	@override String get openDirectlyGranted => 'Autorisé : Shefi s\'ouvre tout de suite, même depuis une autre app';
+	@override String get siriBody => 'Sur iOS, une app fermée ne peut pas utiliser le micro. Quand l\'app est fermée, dites simplement à Siri :';
+	@override List<String> get siriPhrases => [
+		'Dis Siri, hé Shefi',
+		'Dis Siri, parler à Shefi dans Easy Plate',
+	];
+	@override String get privacyAndroid => 'Sur Android, « Hé Shefi » est repéré sur le téléphone par un petit modèle, sans internet : tant qu’il n’est pas entendu, aucun son ne quitte l’appareil. Seule la demande dite ensuite part vers la reconnaissance vocale de Google. EasyPlate n’enregistre ni ne conserve aucun son.';
+	@override String get privacyIos => 'La reconnaissance se fait sur l\'appareil quand c\'est possible, sinon via le service vocal d\'Apple. EasyPlate n\'enregistre ni ne conserve aucun son.';
+	@override String get permissionTitle => 'Micro nécessaire';
+	@override String get permissionDenied => 'Pour entendre « Hé Shefi », l\'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).';
+	@override String get openSettings => 'Ouvrir les réglages';
+	@override String get notificationTitle => 'Shefi écoute';
+	@override String get notificationBody => 'Dites « Hé Shefi » pour commencer une conversation';
+	@override String get notificationStop => 'Arrêter';
+	@override String get heardTitle => 'Shefi est là';
+	@override String get heardBody => 'Touchez pour parler à Shefi';
+	@override String get channelListening => 'Écoute de « Hé Shefi »';
+	@override String get channelHeard => 'Shefi vous a entendu';
+	@override String get overlayListening => 'Shefi écoute…';
+	@override String get overlayThinking => 'Shefi réfléchit…';
+	@override String get overlayNoSpeech => 'Je n\'ai pas compris. Réessayez.';
+	@override String get overlayHint => 'Écrivez à Shefi…';
+	@override String get overlayTapToTalk => 'Touchez le micro ou écrivez';
+}
+
+// Path: voiceAssistants
+class _Translations$voiceAssistants$fr extends Translations$voiceAssistants$he {
+	_Translations$voiceAssistants$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Shefi dans Siri et Gemini';
+	@override String get intro => 'Demandez à Shefi via l\'assistant du téléphone, en voiture aussi, sans ouvrir l\'app. Shefi s\'en charge et l\'assistant lit la réponse.';
+	@override String get iosHow => 'Dites « Dis Siri, hé Shefi ». Siri demande ce que vous voulez, puis dites votre demande. Fonctionne aussi dans CarPlay avec le bouton vocal du volant.';
+	@override List<String> get iosExamples => [
+		'Ajoute du lait et des œufs à la liste de courses',
+		'Qu\'est-ce qu\'il y a au menu aujourd\'hui ?',
+		'Qu\'est-ce qu\'il reste à acheter ?',
+		'Combien de temps cuire le riz ?',
+	];
+	@override String get androidHow => 'Android Auto et Gemini : Google n\'a pas encore ouvert Gemini aux apps comme EasyPlate. La connexion est déjà dans l\'app et fonctionnera dès que Google l\'ouvrira.';
+	@override String get limits => 'À la voix, impossible de supprimer, d\'importer depuis un lien ou d\'ouvrir des écrans. Faites-le dans l\'app.';
+	@override String get signedOut => 'Pour parler à Shefi, connectez-vous d\'abord à l\'app EasyPlate.';
+	@override String get empty => 'Je n\'ai pas entendu de demande. Réessayez.';
+	@override String get premiumOnly => 'Shefi est disponible avec Premium. Vous pouvez passer à Premium dans l\'app EasyPlate.';
+	@override String get unavailable => 'Shefi n\'est pas disponible pour le moment.';
+	@override String get failed => 'Shefi n\'a pas pu répondre. Réessayez dans un instant.';
+	@override String get goodbye => 'Avec plaisir ! Je suis là quand vous voulez.';
 }
 
 // Path: walkthrough.topics
@@ -2204,6 +2293,17 @@ extension on TranslationsFr {
 			'auth.platformIos' => 'un iPhone',
 			'auth.platformAndroid' => 'un téléphone Android',
 			'auth.platformOther' => 'un autre appareil',
+			'auth.sessionRequestRelease' => 'Demander la déconnexion',
+			'auth.sessionRequestSent' => 'Nous avons prévenu l\'appareil connecté. Dès qu\'il se déconnecte, vous entrez ici automatiquement.',
+			'auth.sessionRequestQueued' => 'Impossible d\'envoyer une notification à l\'autre appareil. Il verra la demande à la prochaine ouverture de l\'app.',
+			'auth.sessionRequestFailed' => 'La demande n\'a pas pu être envoyée. Réessayez dans un instant.',
+			'auth.sessionRequestDeclined' => 'L\'autre appareil a choisi de rester connecté.',
+			'auth.sessionReleaseTitle' => 'Un autre appareil veut se connecter',
+			'auth.sessionReleaseBody' => ({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?',
+			'auth.sessionReleaseConfirm' => 'Me déconnecter ici',
+			'auth.sessionReleaseStay' => 'Rester connecté',
+			'auth.sessionReleasePushTitle' => 'Demande de déconnexion',
+			'auth.sessionReleasePushBody' => 'Un autre appareil veut se connecter à votre compte. Touchez pour décider.',
 			'profile.setupTitle' => 'Encore quelques détails',
 			'profile.setupSubtitle' => 'Pour savoir comment vous appeler',
 			'profile.fullName' => 'Nom complet',
@@ -2605,6 +2705,8 @@ extension on TranslationsFr {
 			'editor.addStep' => 'Ajouter une étape',
 			'editor.removeIngredient' => 'Retirer l\'ingrédient',
 			'editor.removeStep' => 'Retirer l\'étape',
+			_ => null,
+		} ?? switch (path) {
 			'editor.reorderStep' => 'Réordonner l\'étape',
 			'editor.fixSpelling' => 'Corriger l\'orthographe',
 			'editor.refining' => 'Correction de la recette...',
@@ -2616,8 +2718,6 @@ extension on TranslationsFr {
 			'editor.discardBody' => 'Vos modifications ne seront pas enregistrées.',
 			'editor.discard' => 'Abandonner',
 			'editor.saveOptionsTitle' => 'Comment enregistrer ?',
-			_ => null,
-		} ?? switch (path) {
 			'editor.savePlainHint' => 'Enregistrer tel quel, sans attendre',
 			'editor.saveWithAi' => 'Enregistrer avec relecture IA',
 			'editor.saveWithAiHint' => 'Corriger l\'orthographe et aligner les durées des étapes',
@@ -3119,6 +3219,8 @@ extension on TranslationsFr {
 			'feedback.notAllowed' => 'Cet écran est réservé à l\'administrateur',
 			'adminBilling.title' => 'Abonnements',
 			'adminBilling.all' => 'Tous',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.paying' => 'Payants',
 			'adminBilling.problems' => 'Problèmes',
 			'adminBilling.searchHint' => 'Rechercher par nom, e-mail, téléphone ou uid',
@@ -3130,8 +3232,6 @@ extension on TranslationsFr {
 			'adminBilling.viaRevenueCat' => 'Via RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'Produit : ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} événements',
 			'adminBilling.grant' => 'Accorder premium',
@@ -3607,6 +3707,60 @@ extension on TranslationsFr {
 			'featureName.assistantVoice' => 'Voix avec Shefi',
 			'featureName.singleSession' => 'Un appareil par compte',
 			'featureName.homeWidgets' => 'Widgets d\'écran d\'accueil',
+			'featureName.wakeWord' => 'Hé Shefi',
+			'featureName.voiceAssistants' => 'Shefi dans Siri et Gemini',
+			'wakeWord.title' => 'Hé Shefi',
+			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
+			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',
+			'wakeWord.examples.0' => 'Hé Shefi',
+			'wakeWord.examples.1' => 'Hé Shefi, qu\'est-ce que je cuisine aujourd\'hui ?',
+			'wakeWord.examples.2' => 'Hé Shefi, ajoute du lait à la liste de courses',
+			'wakeWord.examples.3' => 'Hé Shefi, lance un minuteur de dix minutes',
+			'wakeWord.enable' => 'Écouter « Hé Shefi »',
+			'wakeWord.enableHint' => 'Le micro n\'est ouvert que pour reconnaître les mots d\'activation. Rien n\'est enregistré ni conservé.',
+			'wakeWord.closedTitle' => 'Quand l\'app est fermée',
+			'wakeWord.background' => 'Aussi quand l\'app est fermée',
+			'wakeWord.backgroundHint' => 'L’écoute continue en arrière-plan avec une notification permanente, et le micro apparaît comme utilisé. Le repérage se fait sur le téléphone et consomme peu de batterie. Elle s’arrête écran éteint, et après un redémarrage il faut ouvrir l’app une fois.',
+			'wakeWord.openDirectly' => 'Ouvrir directement depuis l\'arrière-plan',
+			'wakeWord.openDirectlyHint' => 'Sans « Afficher par-dessus les autres apps », Shefi apparaît sous forme de notification à toucher. Touchez ici pour l\'autoriser.',
+			'wakeWord.openDirectlyGranted' => 'Autorisé : Shefi s\'ouvre tout de suite, même depuis une autre app',
+			'wakeWord.siriBody' => 'Sur iOS, une app fermée ne peut pas utiliser le micro. Quand l\'app est fermée, dites simplement à Siri :',
+			'wakeWord.siriPhrases.0' => 'Dis Siri, hé Shefi',
+			'wakeWord.siriPhrases.1' => 'Dis Siri, parler à Shefi dans Easy Plate',
+			'wakeWord.privacyAndroid' => 'Sur Android, « Hé Shefi » est repéré sur le téléphone par un petit modèle, sans internet : tant qu’il n’est pas entendu, aucun son ne quitte l’appareil. Seule la demande dite ensuite part vers la reconnaissance vocale de Google. EasyPlate n’enregistre ni ne conserve aucun son.',
+			'wakeWord.privacyIos' => 'La reconnaissance se fait sur l\'appareil quand c\'est possible, sinon via le service vocal d\'Apple. EasyPlate n\'enregistre ni ne conserve aucun son.',
+			'wakeWord.permissionTitle' => 'Micro nécessaire',
+			'wakeWord.permissionDenied' => 'Pour entendre « Hé Shefi », l\'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).',
+			'wakeWord.openSettings' => 'Ouvrir les réglages',
+			'wakeWord.notificationTitle' => 'Shefi écoute',
+			_ => null,
+		} ?? switch (path) {
+			'wakeWord.notificationBody' => 'Dites « Hé Shefi » pour commencer une conversation',
+			'wakeWord.notificationStop' => 'Arrêter',
+			'wakeWord.heardTitle' => 'Shefi est là',
+			'wakeWord.heardBody' => 'Touchez pour parler à Shefi',
+			'wakeWord.channelListening' => 'Écoute de « Hé Shefi »',
+			'wakeWord.channelHeard' => 'Shefi vous a entendu',
+			'wakeWord.overlayListening' => 'Shefi écoute…',
+			'wakeWord.overlayThinking' => 'Shefi réfléchit…',
+			'wakeWord.overlayNoSpeech' => 'Je n\'ai pas compris. Réessayez.',
+			'wakeWord.overlayHint' => 'Écrivez à Shefi…',
+			'wakeWord.overlayTapToTalk' => 'Touchez le micro ou écrivez',
+			'voiceAssistants.title' => 'Shefi dans Siri et Gemini',
+			'voiceAssistants.intro' => 'Demandez à Shefi via l\'assistant du téléphone, en voiture aussi, sans ouvrir l\'app. Shefi s\'en charge et l\'assistant lit la réponse.',
+			'voiceAssistants.iosHow' => 'Dites « Dis Siri, hé Shefi ». Siri demande ce que vous voulez, puis dites votre demande. Fonctionne aussi dans CarPlay avec le bouton vocal du volant.',
+			'voiceAssistants.iosExamples.0' => 'Ajoute du lait et des œufs à la liste de courses',
+			'voiceAssistants.iosExamples.1' => 'Qu\'est-ce qu\'il y a au menu aujourd\'hui ?',
+			'voiceAssistants.iosExamples.2' => 'Qu\'est-ce qu\'il reste à acheter ?',
+			'voiceAssistants.iosExamples.3' => 'Combien de temps cuire le riz ?',
+			'voiceAssistants.androidHow' => 'Android Auto et Gemini : Google n\'a pas encore ouvert Gemini aux apps comme EasyPlate. La connexion est déjà dans l\'app et fonctionnera dès que Google l\'ouvrira.',
+			'voiceAssistants.limits' => 'À la voix, impossible de supprimer, d\'importer depuis un lien ou d\'ouvrir des écrans. Faites-le dans l\'app.',
+			'voiceAssistants.signedOut' => 'Pour parler à Shefi, connectez-vous d\'abord à l\'app EasyPlate.',
+			'voiceAssistants.empty' => 'Je n\'ai pas entendu de demande. Réessayez.',
+			'voiceAssistants.premiumOnly' => 'Shefi est disponible avec Premium. Vous pouvez passer à Premium dans l\'app EasyPlate.',
+			'voiceAssistants.unavailable' => 'Shefi n\'est pas disponible pour le moment.',
+			'voiceAssistants.failed' => 'Shefi n\'a pas pu répondre. Réessayez dans un instant.',
+			'voiceAssistants.goodbye' => 'Avec plaisir ! Je suis là quand vous voulez.',
 			_ => null,
 		};
 	}

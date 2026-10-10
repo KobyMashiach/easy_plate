@@ -36,6 +36,7 @@ import '../../domain/assistant_scope.dart';
 import '../../domain/assistant_text.dart';
 import '../../domain/assistant_tools.dart';
 import '../assistant_voice.dart';
+import '../../../../core/wake_word/wake_word_service.dart';
 
 /// The chat with the copilot. A Premium feature while the console says so:
 /// a free account sees what it does and a way to the paywall.
@@ -166,6 +167,9 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       cooking: CookSessionService(),
       ui: this,
     );
+    // The chat uses the microphone itself: "Hey Shefi" waits until it
+    // closes.
+    WakeWordService().hold(_wakeHold);
     final scope = _scope;
     _bloc = AssistantBloc(
       dispatcher: dispatcher,
@@ -191,7 +195,7 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         if (launch.prompt case final prompt?) {
-          _send(prompt);
+          _send(prompt, spoken: launch.spokenPrompt);
         } else if (launch.voice) {
           _toggleMic();
         }
@@ -227,9 +231,15 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
     _bloc.close();
     _input.dispose();
     _scroll.dispose();
-    _voice.dispose();
+    // Released only once the voice has let go of the microphone.
+    _voice.dispose().whenComplete(
+      () => WakeWordService().release(_wakeHold),
+    );
     super.dispose();
   }
+
+  /// One per open chat, so two stacked chats each keep their own hold.
+  late final String _wakeHold = 'assistant_${identityHashCode(this)}';
 
   /// Whether the turn in flight was spoken. A spoken turn gets a spoken
   /// reply, and when that reply asks something the microphone opens again

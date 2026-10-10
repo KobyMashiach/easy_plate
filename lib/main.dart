@@ -18,6 +18,7 @@ import 'core/services/app_update_service.dart';
 import 'core/services/auth_session_service.dart';
 import 'core/services/connectivity_service.dart';
 import 'core/services/device_locale_store.dart';
+import 'core/services/device_session_service.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/foreground_push_service.dart';
 import 'core/services/presence_service.dart';
@@ -46,10 +47,37 @@ import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 import 'core/features/feature_gate.dart';
 import 'features/recipe_ingestion/presentation/pages/ingestion_page.dart';
 import 'core/home_widgets/home_widgets_service.dart';
+import 'core/wake_word/wake_word_service.dart';
+import 'features/assistant/voice/shefi_voice_channel.dart';
+import 'features/assistant/voice/shefi_voice_headless.dart';
+import 'features/assistant/voice/shefi_voice_runner.dart';
 import 'features/grocery_list/data/datasources/active_grocery_list_store.dart';
+
+/// A system assistant's request with the app not running: a headless
+/// engine runs this instead of [main]. Here rather than in its own file so
+/// release builds keep it (only what `main.dart` reaches is compiled in).
+@pragma('vm:entry-point')
+Future<void> shefiVoiceMain() => runShefiVoiceHeadless();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Native code the Dart license list does not see: the on-device
+  // "Hey Shefi" spotter on Android (sherpa-onnx and its model, Apache 2.0).
+  LicenseRegistry.addLicense(() async* {
+    yield const LicenseEntryWithLineBreaks(
+      ['sherpa-onnx', 'sherpa-onnx-kws-zipformer-zh-en-3M'],
+      'Copyright (c) 2022-2026 Xiaomi Corporation and the k2-fsa authors.\n\n'
+      'Licensed under the Apache License, Version 2.0 (the "License"); you '
+      'may not use this file except in compliance with the License. You may '
+      'obtain a copy of the License at\n\n'
+      '    http://www.apache.org/licenses/LICENSE-2.0\n\n'
+      'Unless required by applicable law or agreed to in writing, software '
+      'distributed under the License is distributed on an "AS IS" BASIS, '
+      'WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or '
+      'implied. See the License for the specific language governing '
+      'permissions and limitations under the License.',
+    );
+  });
   // The cook-timer foreground service talks to the UI over this port;
   // Android only, the web engine has no isolate ports.
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
@@ -185,6 +213,8 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // a new subscriber gets them at once, a lapsed one loses them.
     EntitlementService().addListener(_reapplyReminders);
     FirebaseService().configRevision.addListener(_reapplyReminders);
+    // Another device asked this one to sign out.
+    AuthSessionService().releaseRequest.addListener(_onReleaseRequest);
     // A cooking left mid-way by the previous run (back out of the app, a
     // process Android reclaimed) comes back with its timers.
     AuthSessionService().addListener(_restoreCookSession);
@@ -198,6 +228,47 @@ class _EasyPlateAppState extends State<EasyPlateApp>
       sharing: context.read(),
       activeList: HiveActiveGroceryListStore.instance,
     );
+    // "Hey Shefi": the native listener, started and stopped by the
+    // session, the flags, the user's switch and the app's lifecycle.
+    unawaited(WakeWordService().bind());
+    // Siri (and later Gemini) asking Shefi while this engine is alive.
+    ShefiVoiceChannel.bind(
+      ShefiVoiceRunner(
+        recipes: context.read(),
+        books: context.read(),
+        plans: context.read(),
+        groceries: context.read(),
+        activeList: HiveActiveGroceryListStore.instance,
+        ingestion: context.read(),
+        preferences: context.read(),
+      ),
+    );
+  }
+
+  Future<void> _onReleaseRequest() async {
+    final session = AuthSessionService();
+    final request = session.releaseRequest.value;
+    final context = _router.routerDelegate.navigatorKey.currentContext;
+    if (request == null || context == null) return;
+    session.releaseRequest.value = null;
+    final platform = switch (request.platform) {
+      'ios' || 'macos' => t.auth.platformIos,
+      'android' => t.auth.platformAndroid,
+      _ => t.auth.platformOther,
+    };
+    final auth = context.read<AuthRepository>();
+    final leave = await AppDialog.warning(
+      title: t.auth.sessionReleaseTitle,
+      message: t.auth.sessionReleaseBody(platform: platform),
+      icon: Icons.devices_other_rounded,
+      confirmLabel: t.auth.sessionReleaseConfirm,
+      cancelLabel: t.auth.sessionReleaseStay,
+    ).show(context);
+    if (leave == true) {
+      await auth.signOut();
+    } else {
+      await DeviceSessionService().declineRelease();
+    }
   }
 
   /// The service itself skips a reschedule that would change nothing.
@@ -221,6 +292,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   void dispose() {
     EntitlementService().removeListener(_reapplyReminders);
     FirebaseService().configRevision.removeListener(_reapplyReminders);
+    AuthSessionService().releaseRequest.removeListener(_onReleaseRequest);
     AuthSessionService().removeListener(_restoreCookSession);
     ShareIntentService().latest.removeListener(_onShared);
     ForegroundPushService().latest.removeListener(_onForegroundPush);
@@ -235,6 +307,8 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   Map<String, String>? _pendingPush;
 
   void _openFromPush(Map<String, String> data) {
+    // A release request is shown by the session listener, from the record.
+    if (data['type'] == 'session_release') return;
     if (AuthSessionService().stage == AuthStage.ready) {
       _navigateForPush(data);
     } else {
@@ -333,6 +407,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   /// before sending, so this catches only the push that was in flight
   /// when a switch went off — and the popup switch itself.
   bool _wantsPopup(PushBanner push) {
+    if (push.data['type'] == 'session_release') return false;
     if (MonetizationConfig.notificationsLocked) return false;
     if (!FeaturesFlags.notifications.isEnabled) return false;
     final preferences = AuthSessionService().preferencesListenable.value;

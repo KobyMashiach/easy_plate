@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/device_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -18,6 +19,25 @@ import '../../domain/repositories/auth_repository.dart';
 /// [AuthStage.sessionExpired].
 class SessionGatePage extends StatelessWidget {
   const SessionGatePage({super.key});
+
+  Future<void> _requestRelease(BuildContext context) async {
+    final outcome = await AppDialog.busy(
+      context,
+      AuthSessionService().requestRelease,
+    );
+    if (!context.mounted) return;
+    final message = switch (outcome) {
+      ReleaseOutcome.notified => t.auth.sessionRequestSent,
+      ReleaseOutcome.queued => t.auth.sessionRequestQueued,
+      ReleaseOutcome.free => null,
+      ReleaseOutcome.failed => t.auth.sessionRequestFailed,
+    };
+    if (message == null) return;
+    final dialog = outcome == ReleaseOutcome.failed
+        ? AppDialog.error(message: message)
+        : AppDialog.info(message: message);
+    await dialog.show(context);
+  }
 
   String _platformName(String platform) => switch (platform) {
     'ios' || 'macos' => t.auth.platformIos,
@@ -89,6 +109,32 @@ class SessionGatePage extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   if (other) ...[
+                    // Asks the device holding the account to sign out; the
+                    // gate moves on by itself once it does.
+                    ClayButton(
+                      label: t.auth.sessionRequestRelease,
+                      icon: Icons.phonelink_erase_rounded,
+                      expanded: true,
+                      onPressed: () => _requestRelease(context),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: session.releaseDeclined,
+                      builder: (context, declined, _) => declined
+                          ? Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.sm,
+                              ),
+                              child: Text(
+                                t.auth.sessionRequestDeclined,
+                                style: AppTextStyles.labelMd.copyWith(
+                                  color: AppColors.error,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     // The other device signed out: claim again, and the gate
                     // moves on by itself when the server says yes.
                     ClayButton(

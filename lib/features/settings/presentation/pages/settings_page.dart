@@ -134,6 +134,23 @@ class _SettingsBody extends StatelessWidget {
             onTap: () => context.pushNamed(Routing.homeWidgets),
           ),
         ),
+        // "Hey Shefi": device-wide, and only where Shefi and talking to it
+        // are both open (a locked Shefi shows its tag and leads to it).
+        FeatureGate(
+          feature: FeaturesFlags.wakeWord,
+          child: FeatureGate(
+            feature: FeaturesFlags.assistantVoice,
+            child: FeatureGate(
+              feature: FeaturesFlags.assistant,
+              child: SettingsNavRow(
+                icon: Icons.record_voice_over_rounded,
+                label: t.wakeWord.title,
+                hint: t.wakeWord.hint,
+                onTap: () => context.pushNamed(Routing.wakeWord),
+              ),
+            ),
+          ),
+        ),
         // Device-wide, not part of the account's preferences: see ThemeController.
         FeatureGate(
           feature: FeaturesFlags.theming,

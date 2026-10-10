@@ -80,6 +80,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$homeWidgets$ru homeWidgets = _Translations$homeWidgets$ru._(_root);
 	@override late final _Translations$feature$ru feature = _Translations$feature$ru._(_root);
 	@override late final _Translations$featureName$ru featureName = _Translations$featureName$ru._(_root);
+	@override late final _Translations$wakeWord$ru wakeWord = _Translations$wakeWord$ru._(_root);
+	@override late final _Translations$voiceAssistants$ru voiceAssistants = _Translations$voiceAssistants$ru._(_root);
 }
 
 // Path: common
@@ -197,6 +199,17 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get platformIos => 'iPhone';
 	@override String get platformAndroid => 'телефоне Android';
 	@override String get platformOther => 'другом устройстве';
+	@override String get sessionRequestRelease => 'Запросить отключение';
+	@override String get sessionRequestSent => 'Мы отправили запрос подключённому устройству. Как только оно выйдет, вы войдёте здесь автоматически.';
+	@override String get sessionRequestQueued => 'Не удалось отправить уведомление на другое устройство. Запрос появится там при следующем открытии приложения.';
+	@override String get sessionRequestFailed => 'Не удалось отправить запрос. Попробуйте чуть позже.';
+	@override String get sessionRequestDeclined => 'Другое устройство решило остаться в аккаунте.';
+	@override String get sessionReleaseTitle => 'Другое устройство хочет войти';
+	@override String sessionReleaseBody({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?';
+	@override String get sessionReleaseConfirm => 'Выйти здесь';
+	@override String get sessionReleaseStay => 'Остаться';
+	@override String get sessionReleasePushTitle => 'Запрос на отключение';
+	@override String get sessionReleasePushBody => 'Другое устройство хочет войти в ваш аккаунт. Нажмите, чтобы решить.';
 }
 
 // Path: profile
@@ -1780,6 +1793,82 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get assistantVoice => 'Голос с Шефи';
 	@override String get singleSession => 'Одно устройство на аккаунт';
 	@override String get homeWidgets => 'Виджеты главного экрана';
+	@override String get wakeWord => 'Эй, Шефи';
+	@override String get voiceAssistants => 'Шефи в Siri и Gemini';
+}
+
+// Path: wakeWord
+class _Translations$wakeWord$ru extends Translations$wakeWord$he {
+	_Translations$wakeWord$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Эй, Шефи';
+	@override String get hint => 'Начните разговор с Шефи голосом, не касаясь телефона';
+	@override String get intro => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.';
+	@override List<String> get examples => [
+		'Эй, Шефи',
+		'Эй, Шефи, что приготовить сегодня?',
+		'Эй, Шефи, добавь молоко в список покупок',
+		'Эй, Шефи, поставь таймер на десять минут',
+	];
+	@override String get enable => 'Слушать «Эй, Шефи»';
+	@override String get enableHint => 'Микрофон открыт только для распознавания слов активации. Ничего не записывается и не сохраняется.';
+	@override String get closedTitle => 'Когда приложение закрыто';
+	@override String get background => 'Даже когда приложение закрыто';
+	@override String get backgroundHint => 'Прослушивание продолжается в фоне с постоянным уведомлением, а микрофон отображается как используемый. Распознавание идёт на телефоне и расходует мало батареи. Оно приостанавливается при выключенном экране, а после перезагрузки приложение нужно открыть один раз.';
+	@override String get openDirectly => 'Открывать сразу из фона';
+	@override String get openDirectlyHint => 'Без разрешения «Поверх других приложений» Шефи появится уведомлением, на которое нужно нажать. Нажмите, чтобы разрешить.';
+	@override String get openDirectlyGranted => 'Разрешено: Шефи открывается сразу, даже из другого приложения';
+	@override String get siriBody => 'В iOS закрытое приложение не может пользоваться микрофоном. Когда приложение закрыто, просто скажите Siri:';
+	@override List<String> get siriPhrases => [
+		'Привет, Siri, эй, Шефи',
+		'Привет, Siri, поговорить с Шефи в Easy Plate',
+	];
+	@override String get privacyAndroid => 'На Android «Эй, Шефи» распознаётся на самом телефоне небольшой моделью, без интернета: пока фраза не прозвучала, звук не покидает устройство. В распознавание речи Google уходит только просьба, сказанная после неё. EasyPlate не записывает и не хранит звук.';
+	@override String get privacyIos => 'Распознавание выполняется на устройстве, когда это возможно, иначе через речевой сервис Apple. EasyPlate не записывает и не хранит звук.';
+	@override String get permissionTitle => 'Нужен микрофон';
+	@override String get permissionDenied => 'Чтобы слышать «Эй, Шефи», приложению нужен микрофон (а в iOS ещё и распознавание речи).';
+	@override String get openSettings => 'Открыть настройки';
+	@override String get notificationTitle => 'Шефи слушает';
+	@override String get notificationBody => 'Скажите «Эй, Шефи», чтобы начать разговор';
+	@override String get notificationStop => 'Остановить';
+	@override String get heardTitle => 'Шефи здесь';
+	@override String get heardBody => 'Нажмите, чтобы поговорить с Шефи';
+	@override String get channelListening => 'Прослушивание «Эй, Шефи»';
+	@override String get channelHeard => 'Шефи вас услышал';
+	@override String get overlayListening => 'Шефи слушает…';
+	@override String get overlayThinking => 'Шефи думает…';
+	@override String get overlayNoSpeech => 'Не расслышал. Попробуйте ещё раз.';
+	@override String get overlayHint => 'Напишите Шефи…';
+	@override String get overlayTapToTalk => 'Нажмите на микрофон или напишите';
+}
+
+// Path: voiceAssistants
+class _Translations$voiceAssistants$ru extends Translations$voiceAssistants$he {
+	_Translations$voiceAssistants$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Шефи в Siri и Gemini';
+	@override String get intro => 'Обращайтесь к Шефи через ассистента телефона, и в машине тоже, не открывая приложение. Шефи выполнит просьбу, а ассистент прочитает ответ.';
+	@override String get iosHow => 'Скажите «Привет, Siri, эй, Шефи». Siri спросит, что нужно, и вы скажете просьбу. Работает и в CarPlay с голосовой кнопкой на руле.';
+	@override List<String> get iosExamples => [
+		'Добавь молоко и яйца в список покупок',
+		'Что сегодня в меню?',
+		'Что осталось купить?',
+		'Сколько варить рис?',
+	];
+	@override String get androidHow => 'Android Auto и Gemini: Google ещё не открыла Gemini для приложений вроде EasyPlate. Подключение уже есть в приложении и заработает, как только Google его откроет.';
+	@override String get limits => 'Голосом нельзя удалять, импортировать по ссылке или открывать экраны. Это делается в приложении.';
+	@override String get signedOut => 'Чтобы поговорить с Шефи, сначала войдите в приложение EasyPlate.';
+	@override String get empty => 'Я не услышал просьбу. Попробуйте ещё раз.';
+	@override String get premiumOnly => 'Шефи доступен с Премиум. Обновиться можно в приложении EasyPlate.';
+	@override String get unavailable => 'Шефи сейчас недоступен.';
+	@override String get failed => 'Шефи не смог ответить. Попробуйте чуть позже.';
+	@override String get goodbye => 'С удовольствием! Я здесь, когда понадоблюсь.';
 }
 
 // Path: walkthrough.topics
@@ -2204,6 +2293,17 @@ extension on TranslationsRu {
 			'auth.platformIos' => 'iPhone',
 			'auth.platformAndroid' => 'телефоне Android',
 			'auth.platformOther' => 'другом устройстве',
+			'auth.sessionRequestRelease' => 'Запросить отключение',
+			'auth.sessionRequestSent' => 'Мы отправили запрос подключённому устройству. Как только оно выйдет, вы войдёте здесь автоматически.',
+			'auth.sessionRequestQueued' => 'Не удалось отправить уведомление на другое устройство. Запрос появится там при следующем открытии приложения.',
+			'auth.sessionRequestFailed' => 'Не удалось отправить запрос. Попробуйте чуть позже.',
+			'auth.sessionRequestDeclined' => 'Другое устройство решило остаться в аккаунте.',
+			'auth.sessionReleaseTitle' => 'Другое устройство хочет войти',
+			'auth.sessionReleaseBody' => ({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?',
+			'auth.sessionReleaseConfirm' => 'Выйти здесь',
+			'auth.sessionReleaseStay' => 'Остаться',
+			'auth.sessionReleasePushTitle' => 'Запрос на отключение',
+			'auth.sessionReleasePushBody' => 'Другое устройство хочет войти в ваш аккаунт. Нажмите, чтобы решить.',
 			'profile.setupTitle' => 'Последние детали',
 			'profile.setupSubtitle' => 'Чтобы знать, как к вам обращаться',
 			'profile.fullName' => 'Полное имя',
@@ -2605,6 +2705,8 @@ extension on TranslationsRu {
 			'editor.addStep' => 'Добавить шаг',
 			'editor.removeIngredient' => 'Удалить ингредиент',
 			'editor.removeStep' => 'Удалить шаг',
+			_ => null,
+		} ?? switch (path) {
 			'editor.reorderStep' => 'Изменить порядок шага',
 			'editor.fixSpelling' => 'Исправить орфографию',
 			'editor.refining' => 'Исправляем рецепт...',
@@ -2616,8 +2718,6 @@ extension on TranslationsRu {
 			'editor.discardBody' => 'Ваши правки не будут сохранены.',
 			'editor.discard' => 'Отменить',
 			'editor.saveOptionsTitle' => 'Как сохранить?',
-			_ => null,
-		} ?? switch (path) {
 			'editor.savePlainHint' => 'Сохранить изменения как есть, без ожидания',
 			'editor.saveWithAi' => 'Сохранить с проверкой AI',
 			'editor.saveWithAiHint' => 'Исправить орфографию и согласовать время в шагах',
@@ -3119,6 +3219,8 @@ extension on TranslationsRu {
 			'feedback.notAllowed' => 'Этот экран только для администратора',
 			'adminBilling.title' => 'Подписки',
 			'adminBilling.all' => 'Все',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.paying' => 'Платят',
 			'adminBilling.problems' => 'Проблемы',
 			'adminBilling.searchHint' => 'Поиск по имени, почте, телефону или uid',
@@ -3130,8 +3232,6 @@ extension on TranslationsRu {
 			'adminBilling.viaRevenueCat' => 'Из RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'Продукт: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} событий',
 			'adminBilling.grant' => 'Дать премиум',
@@ -3607,6 +3707,60 @@ extension on TranslationsRu {
 			'featureName.assistantVoice' => 'Голос с Шефи',
 			'featureName.singleSession' => 'Одно устройство на аккаунт',
 			'featureName.homeWidgets' => 'Виджеты главного экрана',
+			'featureName.wakeWord' => 'Эй, Шефи',
+			'featureName.voiceAssistants' => 'Шефи в Siri и Gemini',
+			'wakeWord.title' => 'Эй, Шефи',
+			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
+			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
+			'wakeWord.examples.0' => 'Эй, Шефи',
+			'wakeWord.examples.1' => 'Эй, Шефи, что приготовить сегодня?',
+			'wakeWord.examples.2' => 'Эй, Шефи, добавь молоко в список покупок',
+			'wakeWord.examples.3' => 'Эй, Шефи, поставь таймер на десять минут',
+			'wakeWord.enable' => 'Слушать «Эй, Шефи»',
+			'wakeWord.enableHint' => 'Микрофон открыт только для распознавания слов активации. Ничего не записывается и не сохраняется.',
+			'wakeWord.closedTitle' => 'Когда приложение закрыто',
+			'wakeWord.background' => 'Даже когда приложение закрыто',
+			'wakeWord.backgroundHint' => 'Прослушивание продолжается в фоне с постоянным уведомлением, а микрофон отображается как используемый. Распознавание идёт на телефоне и расходует мало батареи. Оно приостанавливается при выключенном экране, а после перезагрузки приложение нужно открыть один раз.',
+			'wakeWord.openDirectly' => 'Открывать сразу из фона',
+			'wakeWord.openDirectlyHint' => 'Без разрешения «Поверх других приложений» Шефи появится уведомлением, на которое нужно нажать. Нажмите, чтобы разрешить.',
+			'wakeWord.openDirectlyGranted' => 'Разрешено: Шефи открывается сразу, даже из другого приложения',
+			'wakeWord.siriBody' => 'В iOS закрытое приложение не может пользоваться микрофоном. Когда приложение закрыто, просто скажите Siri:',
+			'wakeWord.siriPhrases.0' => 'Привет, Siri, эй, Шефи',
+			'wakeWord.siriPhrases.1' => 'Привет, Siri, поговорить с Шефи в Easy Plate',
+			'wakeWord.privacyAndroid' => 'На Android «Эй, Шефи» распознаётся на самом телефоне небольшой моделью, без интернета: пока фраза не прозвучала, звук не покидает устройство. В распознавание речи Google уходит только просьба, сказанная после неё. EasyPlate не записывает и не хранит звук.',
+			'wakeWord.privacyIos' => 'Распознавание выполняется на устройстве, когда это возможно, иначе через речевой сервис Apple. EasyPlate не записывает и не хранит звук.',
+			'wakeWord.permissionTitle' => 'Нужен микрофон',
+			'wakeWord.permissionDenied' => 'Чтобы слышать «Эй, Шефи», приложению нужен микрофон (а в iOS ещё и распознавание речи).',
+			'wakeWord.openSettings' => 'Открыть настройки',
+			'wakeWord.notificationTitle' => 'Шефи слушает',
+			_ => null,
+		} ?? switch (path) {
+			'wakeWord.notificationBody' => 'Скажите «Эй, Шефи», чтобы начать разговор',
+			'wakeWord.notificationStop' => 'Остановить',
+			'wakeWord.heardTitle' => 'Шефи здесь',
+			'wakeWord.heardBody' => 'Нажмите, чтобы поговорить с Шефи',
+			'wakeWord.channelListening' => 'Прослушивание «Эй, Шефи»',
+			'wakeWord.channelHeard' => 'Шефи вас услышал',
+			'wakeWord.overlayListening' => 'Шефи слушает…',
+			'wakeWord.overlayThinking' => 'Шефи думает…',
+			'wakeWord.overlayNoSpeech' => 'Не расслышал. Попробуйте ещё раз.',
+			'wakeWord.overlayHint' => 'Напишите Шефи…',
+			'wakeWord.overlayTapToTalk' => 'Нажмите на микрофон или напишите',
+			'voiceAssistants.title' => 'Шефи в Siri и Gemini',
+			'voiceAssistants.intro' => 'Обращайтесь к Шефи через ассистента телефона, и в машине тоже, не открывая приложение. Шефи выполнит просьбу, а ассистент прочитает ответ.',
+			'voiceAssistants.iosHow' => 'Скажите «Привет, Siri, эй, Шефи». Siri спросит, что нужно, и вы скажете просьбу. Работает и в CarPlay с голосовой кнопкой на руле.',
+			'voiceAssistants.iosExamples.0' => 'Добавь молоко и яйца в список покупок',
+			'voiceAssistants.iosExamples.1' => 'Что сегодня в меню?',
+			'voiceAssistants.iosExamples.2' => 'Что осталось купить?',
+			'voiceAssistants.iosExamples.3' => 'Сколько варить рис?',
+			'voiceAssistants.androidHow' => 'Android Auto и Gemini: Google ещё не открыла Gemini для приложений вроде EasyPlate. Подключение уже есть в приложении и заработает, как только Google его откроет.',
+			'voiceAssistants.limits' => 'Голосом нельзя удалять, импортировать по ссылке или открывать экраны. Это делается в приложении.',
+			'voiceAssistants.signedOut' => 'Чтобы поговорить с Шефи, сначала войдите в приложение EasyPlate.',
+			'voiceAssistants.empty' => 'Я не услышал просьбу. Попробуйте ещё раз.',
+			'voiceAssistants.premiumOnly' => 'Шефи доступен с Премиум. Обновиться можно в приложении EasyPlate.',
+			'voiceAssistants.unavailable' => 'Шефи сейчас недоступен.',
+			'voiceAssistants.failed' => 'Шефи не смог ответить. Попробуйте чуть позже.',
+			'voiceAssistants.goodbye' => 'С удовольствием! Я здесь, когда понадоблюсь.',
 			_ => null,
 		};
 	}

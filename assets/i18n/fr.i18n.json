@@ -101,7 +101,18 @@
     "sessionRetry": "Réessayer",
     "platformIos": "un iPhone",
     "platformAndroid": "un téléphone Android",
-    "platformOther": "un autre appareil"
+    "platformOther": "un autre appareil",
+    "sessionRequestRelease": "Demander la déconnexion",
+    "sessionRequestSent": "Nous avons prévenu l'appareil connecté. Dès qu'il se déconnecte, vous entrez ici automatiquement.",
+    "sessionRequestQueued": "Impossible d'envoyer une notification à l'autre appareil. Il verra la demande à la prochaine ouverture de l'app.",
+    "sessionRequestFailed": "La demande n'a pas pu être envoyée. Réessayez dans un instant.",
+    "sessionRequestDeclined": "L'autre appareil a choisi de rester connecté.",
+    "sessionReleaseTitle": "Un autre appareil veut se connecter",
+    "sessionReleaseBody": "Un appareil ($platform) veut se connecter à votre compte. Se déconnecter sur cet appareil ?",
+    "sessionReleaseConfirm": "Me déconnecter ici",
+    "sessionReleaseStay": "Rester connecté",
+    "sessionReleasePushTitle": "Demande de déconnexion",
+    "sessionReleasePushBody": "Un autre appareil veut se connecter à votre compte. Touchez pour décider."
   },
   "profile": {
     "setupTitle": "Encore quelques détails",
@@ -1636,6 +1647,68 @@
     "assistantScoped": "Shefi dans un élément",
     "assistantVoice": "Voix avec Shefi",
     "singleSession": "Un appareil par compte",
-    "homeWidgets": "Widgets d'écran d'accueil"
+    "homeWidgets": "Widgets d'écran d'accueil",
+    "wakeWord": "Hé Shefi",
+    "voiceAssistants": "Shefi dans Siri et Gemini"
+  },
+  "wakeWord": {
+    "title": "Hé Shefi",
+    "hint": "Parlez à Shefi à la voix, sans toucher le téléphone",
+    "intro": "Dites « Hé Shefi » : Shefi s'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.",
+    "examples": [
+      "Hé Shefi",
+      "Hé Shefi, qu'est-ce que je cuisine aujourd'hui ?",
+      "Hé Shefi, ajoute du lait à la liste de courses",
+      "Hé Shefi, lance un minuteur de dix minutes"
+    ],
+    "enable": "Écouter « Hé Shefi »",
+    "enableHint": "Le micro n'est ouvert que pour reconnaître les mots d'activation. Rien n'est enregistré ni conservé.",
+    "closedTitle": "Quand l'app est fermée",
+    "background": "Aussi quand l'app est fermée",
+    "backgroundHint": "L’écoute continue en arrière-plan avec une notification permanente, et le micro apparaît comme utilisé. Le repérage se fait sur le téléphone et consomme peu de batterie. Elle s’arrête écran éteint, et après un redémarrage il faut ouvrir l’app une fois.",
+    "openDirectly": "Ouvrir directement depuis l'arrière-plan",
+    "openDirectlyHint": "Sans « Afficher par-dessus les autres apps », Shefi apparaît sous forme de notification à toucher. Touchez ici pour l'autoriser.",
+    "openDirectlyGranted": "Autorisé : Shefi s'ouvre tout de suite, même depuis une autre app",
+    "siriBody": "Sur iOS, une app fermée ne peut pas utiliser le micro. Quand l'app est fermée, dites simplement à Siri :",
+    "siriPhrases": [
+      "Dis Siri, hé Shefi",
+      "Dis Siri, parler à Shefi dans Easy Plate"
+    ],
+    "privacyAndroid": "Sur Android, « Hé Shefi » est repéré sur le téléphone par un petit modèle, sans internet : tant qu’il n’est pas entendu, aucun son ne quitte l’appareil. Seule la demande dite ensuite part vers la reconnaissance vocale de Google. EasyPlate n’enregistre ni ne conserve aucun son.",
+    "privacyIos": "La reconnaissance se fait sur l'appareil quand c'est possible, sinon via le service vocal d'Apple. EasyPlate n'enregistre ni ne conserve aucun son.",
+    "permissionTitle": "Micro nécessaire",
+    "permissionDenied": "Pour entendre « Hé Shefi », l'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).",
+    "openSettings": "Ouvrir les réglages",
+    "notificationTitle": "Shefi écoute",
+    "notificationBody": "Dites « Hé Shefi » pour commencer une conversation",
+    "notificationStop": "Arrêter",
+    "heardTitle": "Shefi est là",
+    "heardBody": "Touchez pour parler à Shefi",
+    "channelListening": "Écoute de « Hé Shefi »",
+    "channelHeard": "Shefi vous a entendu",
+    "overlayListening": "Shefi écoute…",
+    "overlayThinking": "Shefi réfléchit…",
+    "overlayNoSpeech": "Je n'ai pas compris. Réessayez.",
+    "overlayHint": "Écrivez à Shefi…",
+    "overlayTapToTalk": "Touchez le micro ou écrivez"
+  },
+  "voiceAssistants": {
+    "title": "Shefi dans Siri et Gemini",
+    "intro": "Demandez à Shefi via l'assistant du téléphone, en voiture aussi, sans ouvrir l'app. Shefi s'en charge et l'assistant lit la réponse.",
+    "iosHow": "Dites « Dis Siri, hé Shefi ». Siri demande ce que vous voulez, puis dites votre demande. Fonctionne aussi dans CarPlay avec le bouton vocal du volant.",
+    "iosExamples": [
+      "Ajoute du lait et des œufs à la liste de courses",
+      "Qu'est-ce qu'il y a au menu aujourd'hui ?",
+      "Qu'est-ce qu'il reste à acheter ?",
+      "Combien de temps cuire le riz ?"
+    ],
+    "androidHow": "Android Auto et Gemini : Google n'a pas encore ouvert Gemini aux apps comme EasyPlate. La connexion est déjà dans l'app et fonctionnera dès que Google l'ouvrira.",
+    "limits": "À la voix, impossible de supprimer, d'importer depuis un lien ou d'ouvrir des écrans. Faites-le dans l'app.",
+    "signedOut": "Pour parler à Shefi, connectez-vous d'abord à l'app EasyPlate.",
+    "empty": "Je n'ai pas entendu de demande. Réessayez.",
+    "premiumOnly": "Shefi est disponible avec Premium. Vous pouvez passer à Premium dans l'app EasyPlate.",
+    "unavailable": "Shefi n'est pas disponible pour le moment.",
+    "failed": "Shefi n'a pas pu répondre. Réessayez dans un instant.",
+    "goodbye": "Avec plaisir ! Je suis là quand vous voulez."
   }
 }

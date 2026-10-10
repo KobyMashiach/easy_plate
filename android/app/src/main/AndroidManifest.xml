@@ -19,6 +19,14 @@
          moving. Special use: a kitchen timer, declared as such to Play. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- "Hey Shefi" with the app closed: a microphone foreground service
+         (WakeWordService), started only while the app is visible, with a
+         permanent notification and a Stop action. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <!-- Optional, granted by the user in system settings: lets a "Hey
+         Shefi" heard while another app is open bring Easy Plate to the
+         front. Without it a notification asks for a tap instead. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
         android:label="Easy Plate"
         android:name="${applicationName}"
@@ -179,6 +187,13 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+        <!-- "Hey Shefi" (wakeword/): keeps listening after the task is
+             swiped away, hence stopWithTask false. -->
+        <service
+            android:name=".wakeword.WakeWordService"
+            android:foregroundServiceType="microphone"
+            android:stopWithTask="false"
+            android:exported="false" />
         <!-- flutter_foreground_task: the name must stay exactly this. -->
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundService"

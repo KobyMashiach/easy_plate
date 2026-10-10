@@ -1,0 +1,8 @@
+/* The Shefi shortcuts' titles, descriptions and Siri prompts (ShefiShortcuts.swift, ShefiVoiceBridge.swift). */
+"Ask Shefi" = "Demander à Shefi";
+"Shefi does it for you: adds to the grocery list, tells you today's menu, answers a cooking question." = "Shefi s'en charge : ajoute à la liste de courses, donne le menu du jour, répond à une question de cuisine.";
+"Request" = "Demande";
+"What should Shefi do?" = "Que doit faire Shefi ?";
+"Talk to Shefi" = "Parler à Shefi";
+"Opens Shefi, listening." = "Ouvre Shefi, à l'écoute.";
+"Shefi couldn't answer right now. Please try again in a moment." = "Shefi n'a pas pu répondre. Réessayez dans un instant.";

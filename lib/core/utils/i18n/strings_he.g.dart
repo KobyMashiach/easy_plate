@@ -85,6 +85,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$feature$he feature = Translations$feature$he.internal(_root);
 	late final Translations$featureName$he featureName = Translations$featureName$he.internal(_root);
 	late final Translations$adminConfig$he adminConfig = Translations$adminConfig$he.internal(_root);
+	late final Translations$wakeWord$he wakeWord = Translations$wakeWord$he.internal(_root);
+	late final Translations$voiceAssistants$he voiceAssistants = Translations$voiceAssistants$he.internal(_root);
 }
 
 // Path: common
@@ -400,6 +402,39 @@ class Translations$auth$he {
 
 	/// he: 'מכשיר אחר'
 	String get platformOther => 'מכשיר אחר';
+
+	/// he: 'בקשת התנתקות'
+	String get sessionRequestRelease => 'בקשת התנתקות';
+
+	/// he: 'שלחנו בקשה למכשיר המחובר. ברגע שיתנתק, תיכנסו כאן לבד.'
+	String get sessionRequestSent => 'שלחנו בקשה למכשיר המחובר. ברגע שיתנתק, תיכנסו כאן לבד.';
+
+	/// he: 'לא הצלחנו לשלוח התראה למכשיר השני. הבקשה תופיע בו בפעם הבאה שהאפליקציה תיפתח שם.'
+	String get sessionRequestQueued => 'לא הצלחנו לשלוח התראה למכשיר השני. הבקשה תופיע בו בפעם הבאה שהאפליקציה תיפתח שם.';
+
+	/// he: 'לא הצלחנו לשלוח את הבקשה. נסו שוב בעוד רגע.'
+	String get sessionRequestFailed => 'לא הצלחנו לשלוח את הבקשה. נסו שוב בעוד רגע.';
+
+	/// he: 'המכשיר השני בחר להישאר מחובר.'
+	String get sessionRequestDeclined => 'המכשיר השני בחר להישאר מחובר.';
+
+	/// he: 'מכשיר אחר מבקש להתחבר'
+	String get sessionReleaseTitle => 'מכשיר אחר מבקש להתחבר';
+
+	/// he: 'מכשיר $platform מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?'
+	String sessionReleaseBody({required Object platform}) => 'מכשיר ${platform} מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?';
+
+	/// he: 'להתנתק כאן'
+	String get sessionReleaseConfirm => 'להתנתק כאן';
+
+	/// he: 'להישאר מחובר'
+	String get sessionReleaseStay => 'להישאר מחובר';
+
+	/// he: 'בקשת התנתקות'
+	String get sessionReleasePushTitle => 'בקשת התנתקות';
+
+	/// he: 'מכשיר אחר מבקש להיכנס לחשבון שלך. הקישו כדי להחליט.'
+	String get sessionReleasePushBody => 'מכשיר אחר מבקש להיכנס לחשבון שלך. הקישו כדי להחליט.';
 }
 
 // Path: profile
@@ -4445,6 +4480,12 @@ class Translations$featureName$he {
 
 	/// he: 'ווידג'טים למסך הבית'
 	String get homeWidgets => 'ווידג\'טים למסך הבית';
+
+	/// he: 'היי שפי'
+	String get wakeWord => 'היי שפי';
+
+	/// he: 'שפי דרך Siri ו-Gemini'
+	String get voiceAssistants => 'שפי דרך Siri ו-Gemini';
 }
 
 // Path: adminConfig
@@ -4491,6 +4532,163 @@ class Translations$adminConfig$he {
 	late final Translations$adminConfig$groups$he groups = Translations$adminConfig$groups$he.internal(_root);
 	late final Translations$adminConfig$flag$he flag = Translations$adminConfig$flag$he.internal(_root);
 	late final Translations$adminConfig$labels$he labels = Translations$adminConfig$labels$he.internal(_root);
+}
+
+// Path: wakeWord
+class Translations$wakeWord$he {
+	Translations$wakeWord$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'היי שפי'
+	String get title => 'היי שפי';
+
+	/// he: 'פותחים שיחה עם שפי בקול, בלי לגעת בטלפון'
+	String get hint => 'פותחים שיחה עם שפי בקול, בלי לגעת בטלפון';
+
+	/// he: 'אומרים "היי שפי" ושפי נפתח ומקשיב. אפשר גם להמשיך באותו משפט, ושפי יענה ישר.'
+	String get intro => 'אומרים "היי שפי" ושפי נפתח ומקשיב. אפשר גם להמשיך באותו משפט, ושפי יענה ישר.';
+
+	List<String> get examples => [
+		'היי שפי',
+		'היי שפי, מה לבשל היום?',
+		'היי שפי, תוסיף חלב לרשימת הקניות',
+		'היי שפי, תפעיל טיימר לעשר דקות',
+	];
+
+	/// he: 'להקשיב ל"היי שפי"'
+	String get enable => 'להקשיב ל"היי שפי"';
+
+	/// he: 'המיקרופון פתוח לזיהוי מילות ההפעלה בלבד. שום הקלטה לא נשמרת.'
+	String get enableHint => 'המיקרופון פתוח לזיהוי מילות ההפעלה בלבד. שום הקלטה לא נשמרת.';
+
+	/// he: 'כשהאפליקציה סגורה'
+	String get closedTitle => 'כשהאפליקציה סגורה';
+
+	/// he: 'גם כשהאפליקציה סגורה'
+	String get background => 'גם כשהאפליקציה סגורה';
+
+	/// he: 'ממשיכים להקשיב ברקע עם התראה קבועה, והמיקרופון מסומן כפעיל. הזיהוי נעשה בטלפון וצורך מעט סוללה. ההאזנה נעצרת כשהמסך כבוי, ואחרי הפעלה מחדש של הטלפון צריך לפתוח את האפליקציה פעם אחת.'
+	String get backgroundHint => 'ממשיכים להקשיב ברקע עם התראה קבועה, והמיקרופון מסומן כפעיל. הזיהוי נעשה בטלפון וצורך מעט סוללה. ההאזנה נעצרת כשהמסך כבוי, ואחרי הפעלה מחדש של הטלפון צריך לפתוח את האפליקציה פעם אחת.';
+
+	/// he: 'פתיחה ישירה מהרקע'
+	String get openDirectly => 'פתיחה ישירה מהרקע';
+
+	/// he: 'בלי ההרשאה "הצגה מעל אפליקציות אחרות" שפי יופיע כהתראה שצריך ללחוץ עליה. לחצו כדי לאשר.'
+	String get openDirectlyHint => 'בלי ההרשאה "הצגה מעל אפליקציות אחרות" שפי יופיע כהתראה שצריך ללחוץ עליה. לחצו כדי לאשר.';
+
+	/// he: 'מאושר: שפי נפתח מיד, גם מתוך אפליקציה אחרת'
+	String get openDirectlyGranted => 'מאושר: שפי נפתח מיד, גם מתוך אפליקציה אחרת';
+
+	/// he: 'ב-iOS אפליקציה סגורה לא יכולה להקשיב למיקרופון. כשהאפליקציה סגורה, פשוט אומרים לסירי:'
+	String get siriBody => 'ב-iOS אפליקציה סגורה לא יכולה להקשיב למיקרופון. כשהאפליקציה סגורה, פשוט אומרים לסירי:';
+
+	List<String> get siriPhrases => [
+		'היי סירי, היי שפי',
+		'היי סירי, לדבר עם שפי ב-Easy Plate',
+	];
+
+	/// he: 'באנדרואיד "היי שפי" מזוהה בתוך הטלפון על ידי מודל קטן, בלי אינטרנט: עד שהוא נשמע, שום שמע לא יוצא מהמכשיר. רק הבקשה שאומרים אחריו עוברת לזיהוי הדיבור של Google. EasyPlate לא מקליטה ולא שומרת שמע.'
+	String get privacyAndroid => 'באנדרואיד "היי שפי" מזוהה בתוך הטלפון על ידי מודל קטן, בלי אינטרנט: עד שהוא נשמע, שום שמע לא יוצא מהמכשיר. רק הבקשה שאומרים אחריו עוברת לזיהוי הדיבור של Google. EasyPlate לא מקליטה ולא שומרת שמע.';
+
+	/// he: 'הזיהוי נעשה במכשיר כשהוא תומך בכך, אחרת בשירות הזיהוי של Apple. EasyPlate לא מקליטה ולא שומרת שמע.'
+	String get privacyIos => 'הזיהוי נעשה במכשיר כשהוא תומך בכך, אחרת בשירות הזיהוי של Apple. EasyPlate לא מקליטה ולא שומרת שמע.';
+
+	/// he: 'צריך את המיקרופון'
+	String get permissionTitle => 'צריך את המיקרופון';
+
+	/// he: 'כדי לשמוע "היי שפי" צריך לאשר גישה למיקרופון (וב-iOS גם לזיהוי דיבור).'
+	String get permissionDenied => 'כדי לשמוע "היי שפי" צריך לאשר גישה למיקרופון (וב-iOS גם לזיהוי דיבור).';
+
+	/// he: 'פתיחת ההגדרות'
+	String get openSettings => 'פתיחת ההגדרות';
+
+	/// he: 'שפי מקשיב'
+	String get notificationTitle => 'שפי מקשיב';
+
+	/// he: 'אמרו "היי שפי" כדי להתחיל שיחה'
+	String get notificationBody => 'אמרו "היי שפי" כדי להתחיל שיחה';
+
+	/// he: 'להפסיק'
+	String get notificationStop => 'להפסיק';
+
+	/// he: 'שפי כאן'
+	String get heardTitle => 'שפי כאן';
+
+	/// he: 'הקישו כדי לדבר עם שפי'
+	String get heardBody => 'הקישו כדי לדבר עם שפי';
+
+	/// he: 'האזנה ל"היי שפי"'
+	String get channelListening => 'האזנה ל"היי שפי"';
+
+	/// he: 'שפי שמע אתכם'
+	String get channelHeard => 'שפי שמע אתכם';
+
+	/// he: 'שפי מקשיב…'
+	String get overlayListening => 'שפי מקשיב…';
+
+	/// he: 'שפי חושב…'
+	String get overlayThinking => 'שפי חושב…';
+
+	/// he: 'לא שמעתי. נסו שוב.'
+	String get overlayNoSpeech => 'לא שמעתי. נסו שוב.';
+
+	/// he: 'כתבו לשפי…'
+	String get overlayHint => 'כתבו לשפי…';
+
+	/// he: 'הקישו על המיקרופון או כתבו'
+	String get overlayTapToTalk => 'הקישו על המיקרופון או כתבו';
+}
+
+// Path: voiceAssistants
+class Translations$voiceAssistants$he {
+	Translations$voiceAssistants$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'שפי דרך Siri ו-Gemini'
+	String get title => 'שפי דרך Siri ו-Gemini';
+
+	/// he: 'אפשר לבקש משפי דברים דרך העוזר של הטלפון, גם ברכב, בלי לפתוח את האפליקציה. שפי עושה את הפעולה והעוזר מקריא את התשובה.'
+	String get intro => 'אפשר לבקש משפי דברים דרך העוזר של הטלפון, גם ברכב, בלי לפתוח את האפליקציה. שפי עושה את הפעולה והעוזר מקריא את התשובה.';
+
+	/// he: 'אומרים "היי סירי, היי שפי". סירי שואלת מה לבקש, ואז אומרים את הבקשה. עובד גם ב-CarPlay בלחיצה על כפתור המיקרופון בהגה.'
+	String get iosHow => 'אומרים "היי סירי, היי שפי". סירי שואלת מה לבקש, ואז אומרים את הבקשה. עובד גם ב-CarPlay בלחיצה על כפתור המיקרופון בהגה.';
+
+	List<String> get iosExamples => [
+		'תוסיף חלב וביצים לרשימת הקניות',
+		'מה בתפריט היום?',
+		'מה נשאר לקנות?',
+		'כמה זמן מבשלים אורז?',
+	];
+
+	/// he: 'ב-Android Auto וב-Gemini: Google עדיין לא פתחה את Gemini לאפליקציות כמו EasyPlate. החיבור כבר מוכן באפליקציה, והוא יתחיל לעבוד ברגע ש-Google תפתח אותו.'
+	String get androidHow => 'ב-Android Auto וב-Gemini: Google עדיין לא פתחה את Gemini לאפליקציות כמו EasyPlate. החיבור כבר מוכן באפליקציה, והוא יתחיל לעבוד ברגע ש-Google תפתח אותו.';
+
+	/// he: 'בקול אי אפשר למחוק, לייבא מקישור או לפתוח מסכים. את אלה עושים באפליקציה.'
+	String get limits => 'בקול אי אפשר למחוק, לייבא מקישור או לפתוח מסכים. את אלה עושים באפליקציה.';
+
+	/// he: 'כדי לדבר עם שפי צריך קודם להתחבר לאפליקציית EasyPlate.'
+	String get signedOut => 'כדי לדבר עם שפי צריך קודם להתחבר לאפליקציית EasyPlate.';
+
+	/// he: 'לא שמעתי בקשה. נסו שוב.'
+	String get empty => 'לא שמעתי בקשה. נסו שוב.';
+
+	/// he: 'שפי זמין לחשבון פרימיום. אפשר לשדרג באפליקציה EasyPlate.'
+	String get premiumOnly => 'שפי זמין לחשבון פרימיום. אפשר לשדרג באפליקציה EasyPlate.';
+
+	/// he: 'שפי לא זמין כרגע.'
+	String get unavailable => 'שפי לא זמין כרגע.';
+
+	/// he: 'שפי לא הצליח לענות כרגע. נסו שוב בעוד רגע.'
+	String get failed => 'שפי לא הצליח לענות כרגע. נסו שוב בעוד רגע.';
+
+	/// he: 'בשמחה! אני כאן כשתצטרכו.'
+	String get goodbye => 'בשמחה! אני כאן כשתצטרכו.';
 }
 
 // Path: walkthrough.topics
@@ -4811,6 +5009,9 @@ class Translations$adminConfig$labels$he {
 
 	/// he: 'דיווח נוכחות (שניות)'
 	String get presence_heartbeat_seconds => 'דיווח נוכחות (שניות)';
+
+	/// he: 'מספרים פטורים ממכשיר אחד'
+	String get session_exempt_phones => 'מספרים פטורים ממכשיר אחד';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -5194,6 +5395,17 @@ extension on Translations {
 			'auth.platformIos' => 'אייפון',
 			'auth.platformAndroid' => 'אנדרואיד',
 			'auth.platformOther' => 'מכשיר אחר',
+			'auth.sessionRequestRelease' => 'בקשת התנתקות',
+			'auth.sessionRequestSent' => 'שלחנו בקשה למכשיר המחובר. ברגע שיתנתק, תיכנסו כאן לבד.',
+			'auth.sessionRequestQueued' => 'לא הצלחנו לשלוח התראה למכשיר השני. הבקשה תופיע בו בפעם הבאה שהאפליקציה תיפתח שם.',
+			'auth.sessionRequestFailed' => 'לא הצלחנו לשלוח את הבקשה. נסו שוב בעוד רגע.',
+			'auth.sessionRequestDeclined' => 'המכשיר השני בחר להישאר מחובר.',
+			'auth.sessionReleaseTitle' => 'מכשיר אחר מבקש להתחבר',
+			'auth.sessionReleaseBody' => ({required Object platform}) => 'מכשיר ${platform} מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?',
+			'auth.sessionReleaseConfirm' => 'להתנתק כאן',
+			'auth.sessionReleaseStay' => 'להישאר מחובר',
+			'auth.sessionReleasePushTitle' => 'בקשת התנתקות',
+			'auth.sessionReleasePushBody' => 'מכשיר אחר מבקש להיכנס לחשבון שלך. הקישו כדי להחליט.',
 			'profile.setupTitle' => 'כמה פרטים אחרונים',
 			'profile.setupSubtitle' => 'כדי שנדע איך לפנות אליכם',
 			'profile.fullName' => 'שם מלא',
@@ -5595,6 +5807,8 @@ extension on Translations {
 			'editor.addStep' => 'הוספת שלב',
 			'editor.removeIngredient' => 'הסרת מצרך',
 			'editor.removeStep' => 'הסרת שלב',
+			_ => null,
+		} ?? switch (path) {
 			'editor.reorderStep' => 'שינוי סדר השלב',
 			'editor.fixSpelling' => 'תיקון שגיאות כתיב',
 			'editor.refining' => 'מתקן את המתכון...',
@@ -5606,8 +5820,6 @@ extension on Translations {
 			'editor.discardBody' => 'השינויים שביצעתם לא יישמרו.',
 			'editor.discard' => 'בטל שינויים',
 			'editor.saveOptionsTitle' => 'איך לשמור?',
-			_ => null,
-		} ?? switch (path) {
 			'editor.savePlainHint' => 'שמירת השינויים כפי שהם, ללא המתנה',
 			'editor.saveWithAi' => 'שמירה עם עיבוד AI',
 			'editor.saveWithAiHint' => 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה',
@@ -6109,6 +6321,8 @@ extension on Translations {
 			'feedback.notAllowed' => 'המסך הזה זמין למנהל בלבד',
 			'adminBilling.title' => 'מנויים',
 			'adminBilling.all' => 'הכל',
+			_ => null,
+		} ?? switch (path) {
 			'adminBilling.paying' => 'משלמים',
 			'adminBilling.problems' => 'בעיות',
 			'adminBilling.searchHint' => 'חיפוש לפי שם, מייל, טלפון או uid',
@@ -6120,8 +6334,6 @@ extension on Translations {
 			'adminBilling.viaRevenueCat' => 'מ-RevenueCat',
 			'adminBilling.sandbox' => 'Sandbox',
 			'adminBilling.lastEvent' => ({required Object type, required Object date}) => '${type} · ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.product' => ({required Object id}) => 'מוצר: ${id}',
 			'adminBilling.eventsCount' => ({required Object count}) => '${count} אירועים',
 			'adminBilling.grant' => 'תן פרימיום',
@@ -6600,6 +6812,8 @@ extension on Translations {
 			'featureName.assistantVoice' => 'דיבור עם שפי',
 			'featureName.singleSession' => 'מכשיר אחד לחשבון',
 			'featureName.homeWidgets' => 'ווידג\'טים למסך הבית',
+			'featureName.wakeWord' => 'היי שפי',
+			'featureName.voiceAssistants' => 'שפי דרך Siri ו-Gemini',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -6621,6 +6835,8 @@ extension on Translations {
 			'adminConfig.flag.hidden' => 'לא מוצג',
 			'adminConfig.flag.comingSoon' => 'בקרוב',
 			'adminConfig.flag.everyone' => 'חינמי',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.flag.premium' => 'פרימיום',
 			'adminConfig.labels.ads_enabled' => 'פרסומות פעילות',
 			'adminConfig.labels.ads_fail_open' => 'פתיחה כשאין סרטון',
@@ -6634,8 +6850,6 @@ extension on Translations {
 			'adminConfig.labels.share_free_lists_total' => 'רשימות קניות משותפות בו-זמנית',
 			'adminConfig.labels.tts_cloud_enabled' => 'קול ענן (Google)',
 			'adminConfig.labels.tts_voice_he' => 'קול בעברית',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.labels.tts_voice_en' => 'קול באנגלית',
 			'adminConfig.labels.tts_voice_ar' => 'קול בערבית',
 			'adminConfig.labels.tts_voice_fr' => 'קול בצרפתית',
@@ -6649,6 +6863,57 @@ extension on Translations {
 			'adminConfig.labels.gemini_timeoutSeconds' => 'זמן קצוב לקריאה (שניות)',
 			'adminConfig.labels.session_days' => 'ימי התחברות למכשיר',
 			'adminConfig.labels.presence_heartbeat_seconds' => 'דיווח נוכחות (שניות)',
+			'adminConfig.labels.session_exempt_phones' => 'מספרים פטורים ממכשיר אחד',
+			'wakeWord.title' => 'היי שפי',
+			'wakeWord.hint' => 'פותחים שיחה עם שפי בקול, בלי לגעת בטלפון',
+			'wakeWord.intro' => 'אומרים "היי שפי" ושפי נפתח ומקשיב. אפשר גם להמשיך באותו משפט, ושפי יענה ישר.',
+			'wakeWord.examples.0' => 'היי שפי',
+			'wakeWord.examples.1' => 'היי שפי, מה לבשל היום?',
+			'wakeWord.examples.2' => 'היי שפי, תוסיף חלב לרשימת הקניות',
+			'wakeWord.examples.3' => 'היי שפי, תפעיל טיימר לעשר דקות',
+			'wakeWord.enable' => 'להקשיב ל"היי שפי"',
+			'wakeWord.enableHint' => 'המיקרופון פתוח לזיהוי מילות ההפעלה בלבד. שום הקלטה לא נשמרת.',
+			'wakeWord.closedTitle' => 'כשהאפליקציה סגורה',
+			'wakeWord.background' => 'גם כשהאפליקציה סגורה',
+			'wakeWord.backgroundHint' => 'ממשיכים להקשיב ברקע עם התראה קבועה, והמיקרופון מסומן כפעיל. הזיהוי נעשה בטלפון וצורך מעט סוללה. ההאזנה נעצרת כשהמסך כבוי, ואחרי הפעלה מחדש של הטלפון צריך לפתוח את האפליקציה פעם אחת.',
+			'wakeWord.openDirectly' => 'פתיחה ישירה מהרקע',
+			'wakeWord.openDirectlyHint' => 'בלי ההרשאה "הצגה מעל אפליקציות אחרות" שפי יופיע כהתראה שצריך ללחוץ עליה. לחצו כדי לאשר.',
+			'wakeWord.openDirectlyGranted' => 'מאושר: שפי נפתח מיד, גם מתוך אפליקציה אחרת',
+			'wakeWord.siriBody' => 'ב-iOS אפליקציה סגורה לא יכולה להקשיב למיקרופון. כשהאפליקציה סגורה, פשוט אומרים לסירי:',
+			'wakeWord.siriPhrases.0' => 'היי סירי, היי שפי',
+			'wakeWord.siriPhrases.1' => 'היי סירי, לדבר עם שפי ב-Easy Plate',
+			'wakeWord.privacyAndroid' => 'באנדרואיד "היי שפי" מזוהה בתוך הטלפון על ידי מודל קטן, בלי אינטרנט: עד שהוא נשמע, שום שמע לא יוצא מהמכשיר. רק הבקשה שאומרים אחריו עוברת לזיהוי הדיבור של Google. EasyPlate לא מקליטה ולא שומרת שמע.',
+			'wakeWord.privacyIos' => 'הזיהוי נעשה במכשיר כשהוא תומך בכך, אחרת בשירות הזיהוי של Apple. EasyPlate לא מקליטה ולא שומרת שמע.',
+			'wakeWord.permissionTitle' => 'צריך את המיקרופון',
+			'wakeWord.permissionDenied' => 'כדי לשמוע "היי שפי" צריך לאשר גישה למיקרופון (וב-iOS גם לזיהוי דיבור).',
+			'wakeWord.openSettings' => 'פתיחת ההגדרות',
+			'wakeWord.notificationTitle' => 'שפי מקשיב',
+			'wakeWord.notificationBody' => 'אמרו "היי שפי" כדי להתחיל שיחה',
+			'wakeWord.notificationStop' => 'להפסיק',
+			'wakeWord.heardTitle' => 'שפי כאן',
+			'wakeWord.heardBody' => 'הקישו כדי לדבר עם שפי',
+			'wakeWord.channelListening' => 'האזנה ל"היי שפי"',
+			'wakeWord.channelHeard' => 'שפי שמע אתכם',
+			'wakeWord.overlayListening' => 'שפי מקשיב…',
+			'wakeWord.overlayThinking' => 'שפי חושב…',
+			'wakeWord.overlayNoSpeech' => 'לא שמעתי. נסו שוב.',
+			'wakeWord.overlayHint' => 'כתבו לשפי…',
+			'wakeWord.overlayTapToTalk' => 'הקישו על המיקרופון או כתבו',
+			'voiceAssistants.title' => 'שפי דרך Siri ו-Gemini',
+			'voiceAssistants.intro' => 'אפשר לבקש משפי דברים דרך העוזר של הטלפון, גם ברכב, בלי לפתוח את האפליקציה. שפי עושה את הפעולה והעוזר מקריא את התשובה.',
+			'voiceAssistants.iosHow' => 'אומרים "היי סירי, היי שפי". סירי שואלת מה לבקש, ואז אומרים את הבקשה. עובד גם ב-CarPlay בלחיצה על כפתור המיקרופון בהגה.',
+			'voiceAssistants.iosExamples.0' => 'תוסיף חלב וביצים לרשימת הקניות',
+			'voiceAssistants.iosExamples.1' => 'מה בתפריט היום?',
+			'voiceAssistants.iosExamples.2' => 'מה נשאר לקנות?',
+			'voiceAssistants.iosExamples.3' => 'כמה זמן מבשלים אורז?',
+			'voiceAssistants.androidHow' => 'ב-Android Auto וב-Gemini: Google עדיין לא פתחה את Gemini לאפליקציות כמו EasyPlate. החיבור כבר מוכן באפליקציה, והוא יתחיל לעבוד ברגע ש-Google תפתח אותו.',
+			'voiceAssistants.limits' => 'בקול אי אפשר למחוק, לייבא מקישור או לפתוח מסכים. את אלה עושים באפליקציה.',
+			'voiceAssistants.signedOut' => 'כדי לדבר עם שפי צריך קודם להתחבר לאפליקציית EasyPlate.',
+			'voiceAssistants.empty' => 'לא שמעתי בקשה. נסו שוב.',
+			'voiceAssistants.premiumOnly' => 'שפי זמין לחשבון פרימיום. אפשר לשדרג באפליקציה EasyPlate.',
+			'voiceAssistants.unavailable' => 'שפי לא זמין כרגע.',
+			'voiceAssistants.failed' => 'שפי לא הצליח לענות כרגע. נסו שוב בעוד רגע.',
+			'voiceAssistants.goodbye' => 'בשמחה! אני כאן כשתצטרכו.',
 			_ => null,
 		};
 	}

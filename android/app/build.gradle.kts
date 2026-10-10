@@ -19,6 +19,12 @@ plugins {
 }
 
 android {
+    // 32-bit x86 has no phones left; its sherpa-onnx native code only adds size.
+    packaging {
+        jniLibs {
+            excludes += "lib/x86/**"
+        }
+    }
     namespace = "com.KHEasyDev.easy_plate"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -92,4 +98,7 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // "Hey Shefi" spotted on the phone: sherpa-onnx (Apache 2.0) with its
+    // English keyword-spotting model in assets/kws. Release v1.13.8 AAR.
+    implementation(files("libs/sherpa-onnx-1.13.8.aar"))
 }

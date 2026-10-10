@@ -8,6 +8,31 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>he</string>
+		<string>ar</string>
+		<string>fr</string>
+		<string>ru</string>
+	</array>
+	<!-- Other names Siri knows the app by: what lets "Hey Siri, hey Shefi"
+	     match the shortcut phrase "Hey ${applicationName}". -->
+	<key>INAlternativeAppNames</key>
+	<array>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>Shefi</string>
+			<key>INAlternativeAppNamePronunciationHint</key>
+			<string>Shefi</string>
+		</dict>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>שפי</string>
+			<key>INAlternativeAppNamePronunciationHint</key>
+			<string>שפי</string>
+		</dict>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Easy Plate</string>
 	<key>CFBundleExecutable</key>

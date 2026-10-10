@@ -96,5 +96,15 @@ class AssistantLaunch {
   final String? prompt;
   final bool voice;
 
-  const AssistantLaunch({this.scope, this.prompt, this.voice = false});
+  /// The prompt was said out loud ("Hey Shefi, what's for dinner?"), so it
+  /// is a spoken turn: the reply is read out and the conversation goes on
+  /// by voice. A widget's quick question stays a typed one.
+  final bool spokenPrompt;
+
+  const AssistantLaunch({
+    this.scope,
+    this.prompt,
+    this.voice = false,
+    this.spokenPrompt = false,
+  });
 }
