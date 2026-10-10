@@ -77,6 +77,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$fr assistant = _Translations$assistant$fr._(_root);
 	@override late final _Translations$shareCode$fr shareCode = _Translations$shareCode$fr._(_root);
 	@override late final _Translations$household$fr household = _Translations$household$fr._(_root);
+	@override late final _Translations$homeWidgets$fr homeWidgets = _Translations$homeWidgets$fr._(_root);
 	@override late final _Translations$feature$fr feature = _Translations$feature$fr._(_root);
 	@override late final _Translations$featureName$fr featureName = _Translations$featureName$fr._(_root);
 }
@@ -1651,6 +1652,67 @@ class _Translations$household$fr extends Translations$household$he {
 	@override String get lapsed => 'L’abonnement du propriétaire est terminé ; Premium est suspendu pour les membres.';
 }
 
+// Path: homeWidgets
+class _Translations$homeWidgets$fr extends Translations$homeWidgets$he {
+	_Translations$homeWidgets$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Widgets d\'écran d\'accueil';
+	@override String get hint => 'Shefi, une liste de courses et le menu du jour, directement sur l\'écran d\'accueil';
+	@override String get intro => 'Ajoutez les widgets EasyPlate à votre écran d\'accueil : demandez à Shefi, ajoutez à une liste de courses, voyez votre liste et le menu du jour sans ouvrir l\'app.';
+	@override String get howToIos => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, touchez +, cherchez EasyPlate et choisissez un widget. Les mêmes widgets conviennent à l\'écran verrouillé.';
+	@override String get howToAndroid => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, choisissez Widgets et trouvez EasyPlate, ou touchez « Ajouter à l\'écran d\'accueil » ci-dessous.';
+	@override String get addToHome => 'Ajouter à l\'écran d\'accueil';
+	@override String installed({required Object count}) => '${count} sur l\'écran d\'accueil';
+	@override String get pinFailed => 'Le lanceur n\'a pas proposé d\'ajouter le widget. Ajoutez-le depuis la liste des widgets de l\'écran d\'accueil.';
+	@override String get defaults => 'Valeurs par défaut des nouveaux widgets';
+	@override String get defaultsHint => 'Chaque widget peut être modifié ensuite depuis ses propres réglages (appui long sur le widget).';
+	@override String get defaultList => 'Liste de courses';
+	@override String get openList => 'La liste ouverte';
+	@override String get defaultPlan => 'Plan de repas';
+	@override String get firstPlan => 'Le premier plan';
+	@override String get noLists => 'Pas encore de liste de courses';
+	@override String get noPlans => 'Pas encore de plan de repas';
+	@override String get followApp => 'Comme l\'app';
+	@override String get voiceOpen => 'Shefi s\'ouvre à l\'écoute';
+	@override String get voiceOpenHint => 'Le bouton Shefi lance le micro immédiatement';
+	@override String get widgetAssistant => 'Demander à Shefi';
+	@override String get widgetAssistantHint => 'Un bouton qui ouvre Shefi, avec le micro si vous voulez, et des questions rapides.';
+	@override String get widgetGroceryAdd => 'Ajout rapide à la liste';
+	@override String get widgetGroceryAddHint => 'Tapez ou dictez un article directement dans la liste de votre choix.';
+	@override String get widgetGroceryList => 'Liste de courses';
+	@override String get widgetGroceryListHint => 'Ce qu\'il reste à acheter ; cochez les articles depuis le widget.';
+	@override String get widgetTodayMenu => 'Menu du jour';
+	@override String get widgetTodayMenuHint => 'Les repas du jour d\'un plan de votre choix, chaque jour.';
+	@override String get askShefi => 'Demander à Shefi';
+	@override String get tapToAsk => 'On cuisine quoi ?';
+	@override String get speak => 'Parler';
+	@override String get quickAdd => 'Ajout rapide';
+	@override String get addItem => 'Ajouter un article';
+	@override String get itemHint => 'Quoi acheter ?';
+	@override String get add => 'Ajouter';
+	@override String get todayMenu => 'Menu du jour';
+	@override String get today => 'Aujourd\'hui';
+	@override String get noMeals => 'Rien de prévu aujourd\'hui';
+	@override String get noPlan => 'Pas encore de plan de repas';
+	@override String get emptyList => 'La liste est vide';
+	@override String get allDone => 'Tout est acheté';
+	@override String get remainingNative => '{n} à acheter';
+	@override String get signIn => 'Connectez-vous à EasyPlate pour voir vos listes';
+	@override String get openApp => 'Ouvrir EasyPlate';
+	@override String get showChecked => 'Afficher aussi les articles cochés';
+	@override String get pendingSync => 'Synchronisé à l\'ouverture de l\'app';
+	@override String get configTitle => 'Réglages du widget';
+	@override String get prompt1 => 'Je cuisine quoi aujourd\'hui ?';
+	@override String get prompt2 => 'Que manque-t-il sur la liste ?';
+	@override String get prompt3 => 'Planifie ma semaine';
+	@override String get demo1 => 'Lait';
+	@override String get demo2 => 'Pain';
+	@override String get demo3 => 'Œufs';
+}
+
 // Path: feature
 class _Translations$feature$fr extends Translations$feature$he {
 	_Translations$feature$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1717,6 +1779,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get assistantScoped => 'Shefi dans un élément';
 	@override String get assistantVoice => 'Voix avec Shefi';
 	@override String get singleSession => 'Un appareil par compte';
+	@override String get homeWidgets => 'Widgets d\'écran d\'accueil';
 }
 
 // Path: walkthrough.topics
@@ -3441,6 +3504,58 @@ extension on TranslationsFr {
 			'household.inHousehold' => 'Vous êtes déjà dans un compte partagé.',
 			'household.notEligibleCode' => 'L’offre du propriétaire n’inclut plus de compte partagé.',
 			'household.lapsed' => 'L’abonnement du propriétaire est terminé ; Premium est suspendu pour les membres.',
+			'homeWidgets.title' => 'Widgets d\'écran d\'accueil',
+			'homeWidgets.hint' => 'Shefi, une liste de courses et le menu du jour, directement sur l\'écran d\'accueil',
+			'homeWidgets.intro' => 'Ajoutez les widgets EasyPlate à votre écran d\'accueil : demandez à Shefi, ajoutez à une liste de courses, voyez votre liste et le menu du jour sans ouvrir l\'app.',
+			'homeWidgets.howToIos' => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, touchez +, cherchez EasyPlate et choisissez un widget. Les mêmes widgets conviennent à l\'écran verrouillé.',
+			'homeWidgets.howToAndroid' => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, choisissez Widgets et trouvez EasyPlate, ou touchez « Ajouter à l\'écran d\'accueil » ci-dessous.',
+			'homeWidgets.addToHome' => 'Ajouter à l\'écran d\'accueil',
+			'homeWidgets.installed' => ({required Object count}) => '${count} sur l\'écran d\'accueil',
+			'homeWidgets.pinFailed' => 'Le lanceur n\'a pas proposé d\'ajouter le widget. Ajoutez-le depuis la liste des widgets de l\'écran d\'accueil.',
+			'homeWidgets.defaults' => 'Valeurs par défaut des nouveaux widgets',
+			'homeWidgets.defaultsHint' => 'Chaque widget peut être modifié ensuite depuis ses propres réglages (appui long sur le widget).',
+			'homeWidgets.defaultList' => 'Liste de courses',
+			'homeWidgets.openList' => 'La liste ouverte',
+			'homeWidgets.defaultPlan' => 'Plan de repas',
+			'homeWidgets.firstPlan' => 'Le premier plan',
+			'homeWidgets.noLists' => 'Pas encore de liste de courses',
+			'homeWidgets.noPlans' => 'Pas encore de plan de repas',
+			'homeWidgets.followApp' => 'Comme l\'app',
+			'homeWidgets.voiceOpen' => 'Shefi s\'ouvre à l\'écoute',
+			'homeWidgets.voiceOpenHint' => 'Le bouton Shefi lance le micro immédiatement',
+			'homeWidgets.widgetAssistant' => 'Demander à Shefi',
+			'homeWidgets.widgetAssistantHint' => 'Un bouton qui ouvre Shefi, avec le micro si vous voulez, et des questions rapides.',
+			'homeWidgets.widgetGroceryAdd' => 'Ajout rapide à la liste',
+			'homeWidgets.widgetGroceryAddHint' => 'Tapez ou dictez un article directement dans la liste de votre choix.',
+			'homeWidgets.widgetGroceryList' => 'Liste de courses',
+			'homeWidgets.widgetGroceryListHint' => 'Ce qu\'il reste à acheter ; cochez les articles depuis le widget.',
+			'homeWidgets.widgetTodayMenu' => 'Menu du jour',
+			'homeWidgets.widgetTodayMenuHint' => 'Les repas du jour d\'un plan de votre choix, chaque jour.',
+			'homeWidgets.askShefi' => 'Demander à Shefi',
+			'homeWidgets.tapToAsk' => 'On cuisine quoi ?',
+			'homeWidgets.speak' => 'Parler',
+			'homeWidgets.quickAdd' => 'Ajout rapide',
+			'homeWidgets.addItem' => 'Ajouter un article',
+			'homeWidgets.itemHint' => 'Quoi acheter ?',
+			'homeWidgets.add' => 'Ajouter',
+			'homeWidgets.todayMenu' => 'Menu du jour',
+			'homeWidgets.today' => 'Aujourd\'hui',
+			'homeWidgets.noMeals' => 'Rien de prévu aujourd\'hui',
+			'homeWidgets.noPlan' => 'Pas encore de plan de repas',
+			'homeWidgets.emptyList' => 'La liste est vide',
+			'homeWidgets.allDone' => 'Tout est acheté',
+			'homeWidgets.remainingNative' => '{n} à acheter',
+			'homeWidgets.signIn' => 'Connectez-vous à EasyPlate pour voir vos listes',
+			'homeWidgets.openApp' => 'Ouvrir EasyPlate',
+			'homeWidgets.showChecked' => 'Afficher aussi les articles cochés',
+			'homeWidgets.pendingSync' => 'Synchronisé à l\'ouverture de l\'app',
+			'homeWidgets.configTitle' => 'Réglages du widget',
+			'homeWidgets.prompt1' => 'Je cuisine quoi aujourd\'hui ?',
+			'homeWidgets.prompt2' => 'Que manque-t-il sur la liste ?',
+			'homeWidgets.prompt3' => 'Planifie ma semaine',
+			'homeWidgets.demo1' => 'Lait',
+			'homeWidgets.demo2' => 'Pain',
+			'homeWidgets.demo3' => 'Œufs',
 			'feature.comingSoon' => 'Bientôt',
 			'feature.comingSoonMessage' => 'Cette fonctionnalité arrive bientôt',
 			'feature.unavailable' => 'Cette fonctionnalité n’est pas disponible pour le moment',
@@ -3491,6 +3606,7 @@ extension on TranslationsFr {
 			'featureName.assistantScoped' => 'Shefi dans un élément',
 			'featureName.assistantVoice' => 'Voix avec Shefi',
 			'featureName.singleSession' => 'Un appareil par compte',
+			'featureName.homeWidgets' => 'Widgets d\'écran d\'accueil',
 			_ => null,
 		};
 	}

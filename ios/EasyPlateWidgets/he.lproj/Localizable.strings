@@ -1,0 +1,29 @@
+/* The widget picker and Edit Widget sheet. Everything inside a placed
+   widget comes from the app's snapshot, in the app's own language. */
+"Ask Shefi" = "לשאול את שפי";
+"Open Shefi, EasyPlate's assistant, with a question or the microphone." = "פתיחת שפי, העוזר של EasyPlate, עם שאלה או עם המיקרופון.";
+"Quick add to the list" = "הוספה מהירה לרשימה";
+"Add an item to a grocery list of your choice." = "הוספת פריט לרשימת קניות שבחרתם.";
+"Grocery list" = "רשימת קניות";
+"What is left to buy; tick items off from the widget." = "מה שנשאר לקנות; מסמנים פריטים מהווידג'ט.";
+"Today's menu" = "התפריט של היום";
+"Today's meals from a plan of your choice." = "הארוחות של היום מתפריט שבחרתם.";
+"Appearance" = "מראה";
+"Like the app" = "כמו האפליקציה";
+"Like the phone" = "כמו הטלפון";
+"Light" = "בהיר";
+"Dark" = "כהה";
+"Microphone" = "מיקרופון";
+"Like the app's setting" = "כמו ההגדרה באפליקציה";
+"Opens listening" = "נפתח בהאזנה";
+"Opens the keyboard" = "נפתח עם המקלדת";
+"List" = "רשימה";
+"Meal plan" = "תפריט";
+"Show ticked items" = "להציג פריטים שסומנו";
+"Quick add" = "הוספה מהירה";
+"Add an item to a grocery list." = "הוספת פריט לרשימת קניות שבחרתם.";
+"What is left to buy." = "מה שנשאר לקנות; מסמנים פריטים מהווידג'ט.";
+"Today's meals from a plan." = "הארוחות של היום מתפריט שבחרתם.";
+"Open Shefi with a question or the microphone." = "פתיחת שפי, העוזר של EasyPlate, עם שאלה או עם המיקרופון.";
+"Tick item" = "סימון פריט";
+"Sign in to EasyPlate" = "התחברו ל-EasyPlate";

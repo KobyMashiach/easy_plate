@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/account_avatar_button.dart';
 import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/home_widgets/home_widget_launch.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_list_entity.dart';
@@ -31,7 +33,6 @@ import '../../../price_book/presentation/widgets/price_widgets.dart';
 import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
 import '../../../../core/constants/app_motion.dart';
 import '../../../../core/features/feature_gate.dart';
-import '../../../assistant/domain/assistant_scope.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -61,7 +62,8 @@ class GroceryListPage extends StatelessWidget {
               leading: const AccountAvatarButton(),
               actions: const [NotificationBellButton()],
             ),
-            body: BlocBuilder<GroceryListBloc, GroceryListState>(
+            body: _HomeWidgetAddListener(
+              child: BlocBuilder<GroceryListBloc, GroceryListState>(
               builder: (context, state) {
                 return switch (state) {
                   GroceryListLoading() => const Center(
@@ -81,12 +83,72 @@ class GroceryListPage extends StatelessWidget {
                   ),
                 };
               },
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
+
+/// A home-screen widget asked for the add sheet: the list it named is
+/// opened first, then the sheet, once the bloc has that list loaded. The
+/// request waits in [HomeWidgetRequests] while the tab is not yet built.
+class _HomeWidgetAddListener extends StatefulWidget {
+  final Widget child;
+  const _HomeWidgetAddListener({required this.child});
+
+  @override
+  State<_HomeWidgetAddListener> createState() => _HomeWidgetAddListenerState();
+}
+
+class _HomeWidgetAddListenerState extends State<_HomeWidgetAddListener> {
+  StreamSubscription<GroceryListState>? _waiting;
+
+  @override
+  void initState() {
+    super.initState();
+    HomeWidgetRequests.groceryAdd.addListener(_onRequest);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onRequest());
+  }
+
+  @override
+  void dispose() {
+    HomeWidgetRequests.groceryAdd.removeListener(_onRequest);
+    _waiting?.cancel();
+    super.dispose();
+  }
+
+  void _onRequest() {
+    final request = HomeWidgetRequests.groceryAdd.value;
+    if (request == null || !mounted) return;
+    HomeWidgetRequests.groceryAdd.value = null;
+    final bloc = context.read<GroceryListBloc>();
+    final wanted = request.listId;
+    final current = bloc.state;
+    final ready =
+        current is GroceryListLoaded &&
+        (wanted == null || current.list.id == wanted);
+    if (ready) {
+      showAddGroceryItemSheet(context);
+      return;
+    }
+    if (wanted != null) bloc.add(GroceryListEvent.selectList(wanted));
+    _waiting?.cancel();
+    _waiting = bloc.stream
+        .where(
+          (s) => s is GroceryListLoaded && (wanted == null || s.list.id == wanted),
+        )
+        .take(1)
+        .timeout(const Duration(seconds: 5), onTimeout: (sink) => sink.close())
+        .listen((_) {
+          if (mounted) showAddGroceryItemSheet(context);
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 /// Scans a receipt and, when prices were saved, refreshes the estimates.
@@ -284,10 +346,9 @@ Widget _scroll(
     title: t.groceryList.title,
     trailing: _actions(context, bloc, list),
     // Three buttons and the gaps between them; a viewer gets only the
-    // price book. The copilot's button, when the console shows it.
-    trailingWidth:
-        (list.canEdit ? 48 * 3 + AppSpacing.base * 2 : 48) +
-        (FeaturesFlags.assistantScoped.isVisible ? 48 + AppSpacing.base : 0),
+    // price book. The copilot floats over every tab, so it has no button
+    // here.
+    trailingWidth: list.canEdit ? 48 * 3 + AppSpacing.base * 2 : 48,
     bottomGap: AppSpacing.lg,
     slivers: [
       SliverPadding(
@@ -313,25 +374,6 @@ Widget _actions(
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      // The copilot, locked to this list.
-      FeatureGate(
-        feature: FeaturesFlags.assistantScoped,
-        compact: true,
-        axis: Axis.horizontal,
-        gapAfter: AppSpacing.base,
-        child: WalkthroughTarget(
-          id: WalkthroughIds.groceriesAssistant,
-          child: ClayIconButton(
-            icon: Icons.auto_awesome_rounded,
-            size: 48,
-            tooltip: t.assistant.askAboutList,
-            onTap: () => context.pushNamed(
-              Routing.assistant,
-              extra: AssistantScope.groceryList(id: list.id, title: list.name),
-            ),
-          ),
-        ),
-      ),
       FeatureGate(
         feature: FeaturesFlags.priceBook,
         compact: true,

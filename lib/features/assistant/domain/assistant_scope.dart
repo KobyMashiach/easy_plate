@@ -87,3 +87,14 @@ $details
 
 You answer questions about this $noun and perform actions on it (its tools are the only ones you have). Use id "$id" for it; never ask the user for an id. Anything that is not about this $noun — another recipe, list or plan, general cooking questions not tied to it, anything else — you do NOT answer, not even briefly; reply with exactly this sentence and nothing more: "$offTopicReply". A question that uses this $noun as its subject (substitutions in it, scaling it, its nutrition, what to serve with it, when to cook it, what is still to buy on it) is in scope.''';
 }
+
+/// How the copilot is opened from outside its own screen — a home-screen
+/// widget: locked to [scope] or not, saying [prompt] first, and with the
+/// microphone already open when [voice] is set.
+class AssistantLaunch {
+  final AssistantScope? scope;
+  final String? prompt;
+  final bool voice;
+
+  const AssistantLaunch({this.scope, this.prompt, this.voice = false});
+}

@@ -55,6 +55,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="easyplate" android:host="open" android:pathPrefix="/s/" />
             </intent-filter>
+            <!-- A home-screen widget's tap: easyplate://open/widget/<action>,
+                 handled by the router like any other link. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="easyplate" android:host="open" android:pathPrefix="/widget/" />
+            </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -104,6 +111,74 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
+        <!-- Home-screen widgets (widgets/): four providers, the two
+             services that feed their scrolling rows, the receiver a tick
+             on a row broadcasts to, the quick-add dialog and the per-widget
+             settings dialog. Data flows through a SharedPreferences file
+             the Dart side fills over the easy_plate/home_widgets channel. -->
+        <receiver
+            android:name=".widgets.AssistantWidgetProvider"
+            android:exported="true"
+            android:label="@string/epw_assistant_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/epw_assistant_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.GroceryAddWidgetProvider"
+            android:exported="true"
+            android:label="@string/epw_grocery_add_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/epw_grocery_add_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.GroceryListWidgetProvider"
+            android:exported="true"
+            android:label="@string/epw_grocery_list_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/epw_grocery_list_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.TodayMenuWidgetProvider"
+            android:exported="true"
+            android:label="@string/epw_today_menu_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/epw_today_menu_info" />
+        </receiver>
+        <receiver android:name=".widgets.WidgetActionReceiver" android:exported="false" />
+        <service
+            android:name=".widgets.GroceryItemsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service
+            android:name=".widgets.TodayMealsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <activity
+            android:name=".widgets.WidgetQuickAddActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/EasyPlateWidgetDialog"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
+        <activity
+            android:name=".widgets.WidgetConfigActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/EasyPlateWidgetDialog">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
         <!-- flutter_foreground_task: the name must stay exactly this. -->
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
@@ -124,6 +199,11 @@
              are other packages, invisible unless declared. -->
         <intent>
             <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <!-- The widgets' quick-add dialog dictates through the system's
+             speech activity, another package on Android 11+. -->
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />

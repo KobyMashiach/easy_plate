@@ -1,0 +1,29 @@
+/* The widget picker and Edit Widget sheet. Everything inside a placed
+   widget comes from the app's snapshot, in the app's own language. */
+"Ask Shefi" = "Спросить Шефи";
+"Open Shefi, EasyPlate's assistant, with a question or the microphone." = "Открыть Шефи, помощника EasyPlate, с вопросом или микрофоном.";
+"Quick add to the list" = "Быстрое добавление в список";
+"Add an item to a grocery list of your choice." = "Добавить продукт в выбранный список покупок.";
+"Grocery list" = "Список покупок";
+"What is left to buy; tick items off from the widget." = "Что осталось купить; отмечайте продукты прямо в виджете.";
+"Today's menu" = "Меню на сегодня";
+"Today's meals from a plan of your choice." = "Блюда на сегодня из выбранного плана.";
+"Appearance" = "Оформление";
+"Like the app" = "Как в приложении";
+"Like the phone" = "Как в телефоне";
+"Light" = "Светлое";
+"Dark" = "Тёмное";
+"Microphone" = "Микрофон";
+"Like the app's setting" = "Как в настройках приложения";
+"Opens listening" = "Открывается и слушает";
+"Opens the keyboard" = "Открывается с клавиатурой";
+"List" = "Список";
+"Meal plan" = "План питания";
+"Show ticked items" = "Показывать отмеченные";
+"Quick add" = "Быстрое добавление";
+"Add an item to a grocery list." = "Добавить продукт в выбранный список покупок.";
+"What is left to buy." = "Что осталось купить; отмечайте продукты прямо в виджете.";
+"Today's meals from a plan." = "Блюда на сегодня из выбранного плана.";
+"Open Shefi with a question or the microphone." = "Открыть Шефи, помощника EasyPlate, с вопросом или микрофоном.";
+"Tick item" = "Отметить продукт";
+"Sign in to EasyPlate" = "Войдите в EasyPlate";

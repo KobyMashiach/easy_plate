@@ -77,6 +77,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$en assistant = _Translations$assistant$en._(_root);
 	@override late final _Translations$shareCode$en shareCode = _Translations$shareCode$en._(_root);
 	@override late final _Translations$household$en household = _Translations$household$en._(_root);
+	@override late final _Translations$homeWidgets$en homeWidgets = _Translations$homeWidgets$en._(_root);
 	@override late final _Translations$feature$en feature = _Translations$feature$en._(_root);
 	@override late final _Translations$featureName$en featureName = _Translations$featureName$en._(_root);
 	@override late final _Translations$adminConfig$en adminConfig = _Translations$adminConfig$en._(_root);
@@ -1655,6 +1656,67 @@ class _Translations$household$en extends Translations$household$he {
 	@override String get lapsed => 'The owner\'s subscription has ended; Premium is paused for members.';
 }
 
+// Path: homeWidgets
+class _Translations$homeWidgets$en extends Translations$homeWidgets$he {
+	_Translations$homeWidgets$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Home screen widgets';
+	@override String get hint => 'Shefi, a grocery list and today\'s menu, right on the home screen';
+	@override String get intro => 'Add EasyPlate widgets to your home screen: ask Shefi, add to a grocery list, see your list and today\'s menu without opening the app.';
+	@override String get howToIos => 'Long-press an empty spot on the home screen, tap +, search for EasyPlate and pick a widget. The same widgets fit the lock screen.';
+	@override String get howToAndroid => 'Long-press an empty spot on the home screen, choose Widgets and find EasyPlate, or tap "Add to home screen" below.';
+	@override String get addToHome => 'Add to home screen';
+	@override String installed({required Object count}) => '${count} on the home screen';
+	@override String get pinFailed => 'The launcher did not offer to add the widget. Add it from the home screen\'s widget list instead.';
+	@override String get defaults => 'Defaults for new widgets';
+	@override String get defaultsHint => 'Each widget can be changed afterwards from its own settings (long-press the widget).';
+	@override String get defaultList => 'Grocery list';
+	@override String get openList => 'The open list';
+	@override String get defaultPlan => 'Meal plan';
+	@override String get firstPlan => 'The first plan';
+	@override String get noLists => 'No grocery list yet';
+	@override String get noPlans => 'No meal plan yet';
+	@override String get followApp => 'Like the app';
+	@override String get voiceOpen => 'Shefi opens listening';
+	@override String get voiceOpenHint => 'The Shefi button starts the microphone right away';
+	@override String get widgetAssistant => 'Ask Shefi';
+	@override String get widgetAssistantHint => 'A button that opens Shefi, with the microphone if you like, plus quick questions.';
+	@override String get widgetGroceryAdd => 'Quick add to the list';
+	@override String get widgetGroceryAddHint => 'Type or dictate an item straight into a list of your choice.';
+	@override String get widgetGroceryList => 'Grocery list';
+	@override String get widgetGroceryListHint => 'What is left to buy; tick items off from the widget.';
+	@override String get widgetTodayMenu => 'Today\'s menu';
+	@override String get widgetTodayMenuHint => 'Today\'s meals from a plan of your choice, every day.';
+	@override String get askShefi => 'Ask Shefi';
+	@override String get tapToAsk => 'What shall we cook?';
+	@override String get speak => 'Speak';
+	@override String get quickAdd => 'Quick add';
+	@override String get addItem => 'Add an item';
+	@override String get itemHint => 'What to buy?';
+	@override String get add => 'Add';
+	@override String get todayMenu => 'Today\'s menu';
+	@override String get today => 'Today';
+	@override String get noMeals => 'Nothing planned for today';
+	@override String get noPlan => 'No meal plan yet';
+	@override String get emptyList => 'The list is empty';
+	@override String get allDone => 'Everything is bought';
+	@override String get remainingNative => '{n} left to buy';
+	@override String get signIn => 'Sign in to EasyPlate to see your lists';
+	@override String get openApp => 'Open EasyPlate';
+	@override String get showChecked => 'Show ticked items too';
+	@override String get pendingSync => 'Will sync when the app opens';
+	@override String get configTitle => 'Widget settings';
+	@override String get prompt1 => 'What shall I cook today?';
+	@override String get prompt2 => 'What is missing from the list?';
+	@override String get prompt3 => 'Plan my week';
+	@override String get demo1 => 'Milk';
+	@override String get demo2 => 'Bread';
+	@override String get demo3 => 'Eggs';
+}
+
 // Path: feature
 class _Translations$feature$en extends Translations$feature$he {
 	_Translations$feature$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1721,6 +1783,7 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get assistantScoped => 'Shefi inside an item';
 	@override String get assistantVoice => 'Voice with Shefi';
 	@override String get singleSession => 'One device per account';
+	@override String get homeWidgets => 'Home screen widgets';
 }
 
 // Path: adminConfig
@@ -3534,6 +3597,58 @@ extension on TranslationsEn {
 			'household.inHousehold' => 'You are already in a shared account.',
 			'household.notEligibleCode' => 'The owner\'s plan no longer includes a shared account.',
 			'household.lapsed' => 'The owner\'s subscription has ended; Premium is paused for members.',
+			'homeWidgets.title' => 'Home screen widgets',
+			'homeWidgets.hint' => 'Shefi, a grocery list and today\'s menu, right on the home screen',
+			'homeWidgets.intro' => 'Add EasyPlate widgets to your home screen: ask Shefi, add to a grocery list, see your list and today\'s menu without opening the app.',
+			'homeWidgets.howToIos' => 'Long-press an empty spot on the home screen, tap +, search for EasyPlate and pick a widget. The same widgets fit the lock screen.',
+			'homeWidgets.howToAndroid' => 'Long-press an empty spot on the home screen, choose Widgets and find EasyPlate, or tap "Add to home screen" below.',
+			'homeWidgets.addToHome' => 'Add to home screen',
+			'homeWidgets.installed' => ({required Object count}) => '${count} on the home screen',
+			'homeWidgets.pinFailed' => 'The launcher did not offer to add the widget. Add it from the home screen\'s widget list instead.',
+			'homeWidgets.defaults' => 'Defaults for new widgets',
+			'homeWidgets.defaultsHint' => 'Each widget can be changed afterwards from its own settings (long-press the widget).',
+			'homeWidgets.defaultList' => 'Grocery list',
+			'homeWidgets.openList' => 'The open list',
+			'homeWidgets.defaultPlan' => 'Meal plan',
+			'homeWidgets.firstPlan' => 'The first plan',
+			'homeWidgets.noLists' => 'No grocery list yet',
+			'homeWidgets.noPlans' => 'No meal plan yet',
+			'homeWidgets.followApp' => 'Like the app',
+			'homeWidgets.voiceOpen' => 'Shefi opens listening',
+			'homeWidgets.voiceOpenHint' => 'The Shefi button starts the microphone right away',
+			'homeWidgets.widgetAssistant' => 'Ask Shefi',
+			'homeWidgets.widgetAssistantHint' => 'A button that opens Shefi, with the microphone if you like, plus quick questions.',
+			'homeWidgets.widgetGroceryAdd' => 'Quick add to the list',
+			'homeWidgets.widgetGroceryAddHint' => 'Type or dictate an item straight into a list of your choice.',
+			'homeWidgets.widgetGroceryList' => 'Grocery list',
+			'homeWidgets.widgetGroceryListHint' => 'What is left to buy; tick items off from the widget.',
+			'homeWidgets.widgetTodayMenu' => 'Today\'s menu',
+			'homeWidgets.widgetTodayMenuHint' => 'Today\'s meals from a plan of your choice, every day.',
+			'homeWidgets.askShefi' => 'Ask Shefi',
+			'homeWidgets.tapToAsk' => 'What shall we cook?',
+			'homeWidgets.speak' => 'Speak',
+			'homeWidgets.quickAdd' => 'Quick add',
+			'homeWidgets.addItem' => 'Add an item',
+			'homeWidgets.itemHint' => 'What to buy?',
+			'homeWidgets.add' => 'Add',
+			'homeWidgets.todayMenu' => 'Today\'s menu',
+			'homeWidgets.today' => 'Today',
+			'homeWidgets.noMeals' => 'Nothing planned for today',
+			'homeWidgets.noPlan' => 'No meal plan yet',
+			'homeWidgets.emptyList' => 'The list is empty',
+			'homeWidgets.allDone' => 'Everything is bought',
+			'homeWidgets.remainingNative' => '{n} left to buy',
+			'homeWidgets.signIn' => 'Sign in to EasyPlate to see your lists',
+			'homeWidgets.openApp' => 'Open EasyPlate',
+			'homeWidgets.showChecked' => 'Show ticked items too',
+			'homeWidgets.pendingSync' => 'Will sync when the app opens',
+			'homeWidgets.configTitle' => 'Widget settings',
+			'homeWidgets.prompt1' => 'What shall I cook today?',
+			'homeWidgets.prompt2' => 'What is missing from the list?',
+			'homeWidgets.prompt3' => 'Plan my week',
+			'homeWidgets.demo1' => 'Milk',
+			'homeWidgets.demo2' => 'Bread',
+			'homeWidgets.demo3' => 'Eggs',
 			'feature.comingSoon' => 'Coming soon',
 			'feature.comingSoonMessage' => 'This feature is coming soon',
 			'feature.unavailable' => 'This feature is not available right now',
@@ -3584,6 +3699,7 @@ extension on TranslationsEn {
 			'featureName.assistantScoped' => 'Shefi inside an item',
 			'featureName.assistantVoice' => 'Voice with Shefi',
 			'featureName.singleSession' => 'One device per account',
+			'featureName.homeWidgets' => 'Home screen widgets',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
@@ -3618,6 +3734,8 @@ extension on TranslationsEn {
 			'adminConfig.labels.share_free_lists_total' => 'Shared grocery lists at once',
 			'adminConfig.labels.tts_cloud_enabled' => 'Cloud voice (Google)',
 			'adminConfig.labels.tts_voice_he' => 'Hebrew voice',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.labels.tts_voice_en' => 'English voice',
 			'adminConfig.labels.tts_voice_ar' => 'Arabic voice',
 			'adminConfig.labels.tts_voice_fr' => 'French voice',

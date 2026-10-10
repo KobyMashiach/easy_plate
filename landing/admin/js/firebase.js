@@ -1,6 +1,9 @@
 // Firebase for the console: the EasyPlate Admin web app of project
 // easy-plate. The web config is public by design (it names the project; the
-// rules and the ID-token checks are what guard the data).
+// rules and the ID-token checks are what guard the data), but it is not kept
+// in the repo: Firebase Hosting serves it at the reserved /__/firebase/init.json
+// URL, so the page loads it from there. Locally that URL only exists behind the
+// Hosting emulator (`npm run serve:hosting`), not a plain static server.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
@@ -12,14 +15,24 @@ export const ADMIN_EMAIL = "koby9779@gmail.com";
 export const PANEL_URL = "https://europe-west1-easy-plate.cloudfunctions.net/adminPanel";
 export const PERSONA_PREFIX = "seed_";
 
-const app = initializeApp({
-  apiKey: "AIzaSyANLorHTE5XVS3PFizLQDDlejY0W4V1OPs",
-  authDomain: "easy-plate.firebaseapp.com",
-  projectId: "easy-plate",
-  storageBucket: "easy-plate.firebasestorage.app",
-  messagingSenderId: "1012123687685",
-  appId: "1:1012123687685:web:1fb6b5c6b0686222adb56c",
-});
+async function loadConfig() {
+  const url = "/__/firebase/init.json";
+  let res;
+  try {
+    res = await fetch(url, { cache: "no-store" });
+  } catch (err) {
+    throw new Error(`Firebase config unreachable at ${url}: ${err.message}`);
+  }
+  if (!res.ok) {
+    throw new Error(
+      `Firebase config missing at ${url} (${res.status}). The admin console must be served by ` +
+      `Firebase Hosting or its emulator (cd landing && npm run serve:hosting).`,
+    );
+  }
+  return res.json();
+}
+
+const app = initializeApp(await loadConfig());
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);

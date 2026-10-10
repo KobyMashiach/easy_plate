@@ -59,6 +59,18 @@ exports.weeklyPricing = onSchedule(
   },
 );
 
+// Once a day, after Apple's daily report is out (about 5am Pacific): the
+// exact store install counts for the console's Downloads page. A platform
+// that is not configured yet is skipped, not failed.
+const storeStats = require("./storeStats");
+exports.dailyStoreStats = onSchedule(
+  { schedule: "every day 16:30", timeZone: "Asia/Jerusalem", region: "europe-west1", retryCount: 1, timeoutSeconds: 540, memory: "512MiB" },
+  async () => {
+    const result = await storeStats.sync({ db: admin.firestore(), platform: "all" });
+    logger.info("daily store stats", { android: result.android, ios: result.ios, errors: result.errors });
+  },
+);
+
 // The recipient's locale is not known here; Hebrew is the app's primary
 // language, and the in-app inbox is localised properly once they open it.
 const bodyFor = (data, fromName) => {

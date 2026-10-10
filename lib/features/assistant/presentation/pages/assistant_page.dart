@@ -43,7 +43,11 @@ class AssistantPage extends StatelessWidget {
   /// Null is the general copilot; set, the conversation is about one item.
   final AssistantScope? scope;
 
-  const AssistantPage({super.key, this.scope});
+  /// From a home-screen widget: something to say first, or the
+  /// microphone open on arrival.
+  final AssistantLaunch? launch;
+
+  const AssistantPage({super.key, this.scope, this.launch});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +58,7 @@ class AssistantPage extends StatelessWidget {
       ]),
       builder: (context, _) => MonetizationConfig.assistantLocked
           ? const _LockedView()
-          : _ChatView(scope: scope),
+          : _ChatView(scope: scope ?? launch?.scope, launch: launch),
     );
   }
 }
@@ -121,8 +125,9 @@ class _LockedView extends StatelessWidget {
 
 class _ChatView extends StatefulWidget {
   final AssistantScope? scope;
+  final AssistantLaunch? launch;
 
-  const _ChatView({this.scope});
+  const _ChatView({this.scope, this.launch});
 
   @override
   State<_ChatView> createState() => _ChatViewState();
@@ -179,6 +184,19 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       onReply: _onReply,
     );
     _refreshSnapshot();
+    // A widget tap arrives with a question, or with the microphone: the
+    // conversation starts on its own once the screen is up.
+    final launch = widget.launch;
+    if (launch != null && (launch.prompt != null || launch.voice)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (launch.prompt case final prompt?) {
+          _send(prompt);
+        } else if (launch.voice) {
+          _toggleMic();
+        }
+      });
+    }
   }
 
   // The snapshot is gathered once per conversation and after every turn,

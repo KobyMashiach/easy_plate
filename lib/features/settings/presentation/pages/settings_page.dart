@@ -124,6 +124,16 @@ class _SettingsBody extends StatelessWidget {
             ),
           ),
         ),
+        // The home-screen widgets and their defaults; device-wide too.
+        FeatureGate(
+          feature: FeaturesFlags.homeWidgets,
+          child: SettingsNavRow(
+            icon: Icons.widgets_rounded,
+            label: t.homeWidgets.title,
+            hint: t.homeWidgets.hint,
+            onTap: () => context.pushNamed(Routing.homeWidgets),
+          ),
+        ),
         // Device-wide, not part of the account's preferences: see ThemeController.
         FeatureGate(
           feature: FeaturesFlags.theming,

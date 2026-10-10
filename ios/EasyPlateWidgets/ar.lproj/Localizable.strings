@@ -1,0 +1,29 @@
+/* The widget picker and Edit Widget sheet. Everything inside a placed
+   widget comes from the app's snapshot, in the app's own language. */
+"Ask Shefi" = "اسأل شيفي";
+"Open Shefi, EasyPlate's assistant, with a question or the microphone." = "افتح شيفي، مساعد EasyPlate، بسؤال أو بالميكروفون.";
+"Quick add to the list" = "إضافة سريعة إلى القائمة";
+"Add an item to a grocery list of your choice." = "أضف عنصرًا إلى قائمة تسوق تختارها.";
+"Grocery list" = "قائمة التسوق";
+"What is left to buy; tick items off from the widget." = "ما تبقى لشرائه؛ علّم العناصر من الأداة.";
+"Today's menu" = "قائمة طعام اليوم";
+"Today's meals from a plan of your choice." = "وجبات اليوم من خطة تختارها.";
+"Appearance" = "المظهر";
+"Like the app" = "مثل التطبيق";
+"Like the phone" = "مثل الهاتف";
+"Light" = "فاتح";
+"Dark" = "داكن";
+"Microphone" = "الميكروفون";
+"Like the app's setting" = "مثل إعداد التطبيق";
+"Opens listening" = "يفتح وهو يستمع";
+"Opens the keyboard" = "يفتح مع لوحة المفاتيح";
+"List" = "القائمة";
+"Meal plan" = "خطة الوجبات";
+"Show ticked items" = "إظهار العناصر المعلّمة";
+"Quick add" = "إضافة سريعة";
+"Add an item to a grocery list." = "أضف عنصرًا إلى قائمة تسوق تختارها.";
+"What is left to buy." = "ما تبقى لشرائه؛ علّم العناصر من الأداة.";
+"Today's meals from a plan." = "وجبات اليوم من خطة تختارها.";
+"Open Shefi with a question or the microphone." = "افتح شيفي، مساعد EasyPlate، بسؤال أو بالميكروفون.";
+"Tick item" = "تعليم عنصر";
+"Sign in to EasyPlate" = "سجّل الدخول إلى EasyPlate";

@@ -1,0 +1,29 @@
+/* The widget picker and Edit Widget sheet. Everything inside a placed
+   widget comes from the app's snapshot, in the app's own language. */
+"Ask Shefi" = "Ask Shefi";
+"Open Shefi, EasyPlate's assistant, with a question or the microphone." = "Open Shefi, EasyPlate's assistant, with a question or the microphone.";
+"Quick add to the list" = "Quick add to the list";
+"Add an item to a grocery list of your choice." = "Add an item to a grocery list of your choice.";
+"Grocery list" = "Grocery list";
+"What is left to buy; tick items off from the widget." = "What is left to buy; tick items off from the widget.";
+"Today's menu" = "Today's menu";
+"Today's meals from a plan of your choice." = "Today's meals from a plan of your choice.";
+"Appearance" = "Appearance";
+"Like the app" = "Like the app";
+"Like the phone" = "Like the phone";
+"Light" = "Light";
+"Dark" = "Dark";
+"Microphone" = "Microphone";
+"Like the app's setting" = "Like the app's setting";
+"Opens listening" = "Opens listening";
+"Opens the keyboard" = "Opens the keyboard";
+"List" = "List";
+"Meal plan" = "Meal plan";
+"Show ticked items" = "Show ticked items";
+"Quick add" = "Quick add";
+"Add an item to a grocery list." = "Add an item to a grocery list of your choice.";
+"What is left to buy." = "What is left to buy; tick items off from the widget.";
+"Today's meals from a plan." = "Today's meals from a plan of your choice.";
+"Open Shefi with a question or the microphone." = "Open Shefi, EasyPlate's assistant, with a question or the microphone.";
+"Tick item" = "Tick item";
+"Sign in to EasyPlate" = "Sign in to EasyPlate";

@@ -50,6 +50,8 @@ import '../../../features/share_codes/presentation/pages/scan_share_code_page.da
 import '../../features/features_flags.dart';
 import '../../../features/more/presentation/pages/help_menu_page.dart';
 import '../../../features/assistant/domain/assistant_scope.dart';
+import '../../../features/settings/presentation/pages/home_widgets_page.dart';
+import '../../home_widgets/home_widget_launch.dart';
 
 /// The screen each unfinished stage owns. Everything else redirects to
 /// whatever the current [AuthStage] demands.
@@ -133,6 +135,8 @@ GoRouter buildRouter() {
       // A share link is remembered before the gate can bounce it, so the
       // code survives a sign-in the link itself does not.
       PendingShareCode.capture(state.uri);
+      // Same for a home-screen widget's tap.
+      PendingHomeWidgetLaunch.capture(state.uri);
       return gateRedirect(
         stage: session.stage,
         location: state.matchedLocation,
@@ -155,6 +159,13 @@ GoRouter buildRouter() {
                 PendingShareCode.take() ?? state.pathParameters['code'] ?? '',
           },
         ),
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: Routing.widgetLaunch,
+        // Captured above; the main screen acts on it once it is up. The
+        // router itself only has to land on home.
+        redirect: (context, state) => Routing.home,
         builder: (context, state) => const SplashPage(),
       ),
       GoRoute(
@@ -238,9 +249,13 @@ GoRouter buildRouter() {
             path: Routing.assistant,
             name: Routing.assistant,
             redirect: featureRedirect(FeaturesFlags.assistant),
-            // `extra` scopes the conversation to one recipe, plan or list.
-            builder: (context, state) =>
-                AssistantPage(scope: state.extra as AssistantScope?),
+            // `extra` scopes the conversation to one recipe, plan or list —
+            // or, from a widget, carries the first question too.
+            builder: (context, state) => switch (state.extra) {
+              final AssistantLaunch launch => AssistantPage(launch: launch),
+              final AssistantScope scope => AssistantPage(scope: scope),
+              _ => const AssistantPage(),
+            },
           ),
           GoRoute(
             path: Routing.priceBook,
@@ -345,6 +360,12 @@ GoRouter buildRouter() {
             name: Routing.scanCode,
             redirect: featureRedirect(FeaturesFlags.shareCodes),
             builder: (context, state) => const ScanShareCodePage(),
+          ),
+          GoRoute(
+            path: Routing.homeWidgets,
+            name: Routing.homeWidgets,
+            redirect: featureRedirect(FeaturesFlags.homeWidgets),
+            builder: (context, state) => const HomeWidgetsPage(),
           ),
           GoRoute(
             path: Routing.support,

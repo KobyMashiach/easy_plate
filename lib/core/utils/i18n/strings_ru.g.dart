@@ -77,6 +77,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$ru assistant = _Translations$assistant$ru._(_root);
 	@override late final _Translations$shareCode$ru shareCode = _Translations$shareCode$ru._(_root);
 	@override late final _Translations$household$ru household = _Translations$household$ru._(_root);
+	@override late final _Translations$homeWidgets$ru homeWidgets = _Translations$homeWidgets$ru._(_root);
 	@override late final _Translations$feature$ru feature = _Translations$feature$ru._(_root);
 	@override late final _Translations$featureName$ru featureName = _Translations$featureName$ru._(_root);
 }
@@ -1651,6 +1652,67 @@ class _Translations$household$ru extends Translations$household$he {
 	@override String get lapsed => 'Подписка владельца закончилась; Premium участников приостановлен.';
 }
 
+// Path: homeWidgets
+class _Translations$homeWidgets$ru extends Translations$homeWidgets$he {
+	_Translations$homeWidgets$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Виджеты главного экрана';
+	@override String get hint => 'Шефи, список покупок и меню на сегодня прямо на главном экране';
+	@override String get intro => 'Добавьте виджеты EasyPlate на главный экран: спросите Шефи, добавьте в список покупок, смотрите список и меню на сегодня, не открывая приложение.';
+	@override String get howToIos => 'Нажмите и удерживайте пустое место на главном экране, нажмите +, найдите EasyPlate и выберите виджет. Те же виджеты подходят для экрана блокировки.';
+	@override String get howToAndroid => 'Нажмите и удерживайте пустое место на главном экране, выберите «Виджеты» и найдите EasyPlate, или нажмите «Добавить на главный экран» ниже.';
+	@override String get addToHome => 'Добавить на главный экран';
+	@override String installed({required Object count}) => '${count} на главном экране';
+	@override String get pinFailed => 'Лаунчер не предложил добавить виджет. Добавьте его из списка виджетов главного экрана.';
+	@override String get defaults => 'Значения по умолчанию для новых виджетов';
+	@override String get defaultsHint => 'Каждый виджет можно потом изменить в его настройках (долгое нажатие на виджет).';
+	@override String get defaultList => 'Список покупок';
+	@override String get openList => 'Открытый список';
+	@override String get defaultPlan => 'План питания';
+	@override String get firstPlan => 'Первый план';
+	@override String get noLists => 'Списка покупок пока нет';
+	@override String get noPlans => 'Плана питания пока нет';
+	@override String get followApp => 'Как в приложении';
+	@override String get voiceOpen => 'Шефи открывается и слушает';
+	@override String get voiceOpenHint => 'Кнопка Шефи сразу включает микрофон';
+	@override String get widgetAssistant => 'Спросить Шефи';
+	@override String get widgetAssistantHint => 'Кнопка, открывающая Шефи, при желании с микрофоном, и быстрые вопросы.';
+	@override String get widgetGroceryAdd => 'Быстрое добавление в список';
+	@override String get widgetGroceryAddHint => 'Введите или продиктуйте продукт прямо в выбранный список.';
+	@override String get widgetGroceryList => 'Список покупок';
+	@override String get widgetGroceryListHint => 'Что осталось купить; отмечайте продукты прямо в виджете.';
+	@override String get widgetTodayMenu => 'Меню на сегодня';
+	@override String get widgetTodayMenuHint => 'Блюда на сегодня из выбранного плана, каждый день.';
+	@override String get askShefi => 'Спросить Шефи';
+	@override String get tapToAsk => 'Что готовим?';
+	@override String get speak => 'Говорить';
+	@override String get quickAdd => 'Быстрое добавление';
+	@override String get addItem => 'Добавить продукт';
+	@override String get itemHint => 'Что купить?';
+	@override String get add => 'Добавить';
+	@override String get todayMenu => 'Меню на сегодня';
+	@override String get today => 'Сегодня';
+	@override String get noMeals => 'На сегодня ничего не запланировано';
+	@override String get noPlan => 'Плана питания пока нет';
+	@override String get emptyList => 'Список пуст';
+	@override String get allDone => 'Всё куплено';
+	@override String get remainingNative => '{n} осталось купить';
+	@override String get signIn => 'Войдите в EasyPlate, чтобы увидеть списки';
+	@override String get openApp => 'Открыть EasyPlate';
+	@override String get showChecked => 'Показывать и отмеченные';
+	@override String get pendingSync => 'Синхронизируется при открытии приложения';
+	@override String get configTitle => 'Настройки виджета';
+	@override String get prompt1 => 'Что приготовить сегодня?';
+	@override String get prompt2 => 'Чего не хватает в списке?';
+	@override String get prompt3 => 'Спланируй мою неделю';
+	@override String get demo1 => 'Молоко';
+	@override String get demo2 => 'Хлеб';
+	@override String get demo3 => 'Яйца';
+}
+
 // Path: feature
 class _Translations$feature$ru extends Translations$feature$he {
 	_Translations$feature$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1717,6 +1779,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get assistantScoped => 'Шефи внутри элемента';
 	@override String get assistantVoice => 'Голос с Шефи';
 	@override String get singleSession => 'Одно устройство на аккаунт';
+	@override String get homeWidgets => 'Виджеты главного экрана';
 }
 
 // Path: walkthrough.topics
@@ -3441,6 +3504,58 @@ extension on TranslationsRu {
 			'household.inHousehold' => 'Вы уже в общем аккаунте.',
 			'household.notEligibleCode' => 'Тариф владельца больше не включает общий аккаунт.',
 			'household.lapsed' => 'Подписка владельца закончилась; Premium участников приостановлен.',
+			'homeWidgets.title' => 'Виджеты главного экрана',
+			'homeWidgets.hint' => 'Шефи, список покупок и меню на сегодня прямо на главном экране',
+			'homeWidgets.intro' => 'Добавьте виджеты EasyPlate на главный экран: спросите Шефи, добавьте в список покупок, смотрите список и меню на сегодня, не открывая приложение.',
+			'homeWidgets.howToIos' => 'Нажмите и удерживайте пустое место на главном экране, нажмите +, найдите EasyPlate и выберите виджет. Те же виджеты подходят для экрана блокировки.',
+			'homeWidgets.howToAndroid' => 'Нажмите и удерживайте пустое место на главном экране, выберите «Виджеты» и найдите EasyPlate, или нажмите «Добавить на главный экран» ниже.',
+			'homeWidgets.addToHome' => 'Добавить на главный экран',
+			'homeWidgets.installed' => ({required Object count}) => '${count} на главном экране',
+			'homeWidgets.pinFailed' => 'Лаунчер не предложил добавить виджет. Добавьте его из списка виджетов главного экрана.',
+			'homeWidgets.defaults' => 'Значения по умолчанию для новых виджетов',
+			'homeWidgets.defaultsHint' => 'Каждый виджет можно потом изменить в его настройках (долгое нажатие на виджет).',
+			'homeWidgets.defaultList' => 'Список покупок',
+			'homeWidgets.openList' => 'Открытый список',
+			'homeWidgets.defaultPlan' => 'План питания',
+			'homeWidgets.firstPlan' => 'Первый план',
+			'homeWidgets.noLists' => 'Списка покупок пока нет',
+			'homeWidgets.noPlans' => 'Плана питания пока нет',
+			'homeWidgets.followApp' => 'Как в приложении',
+			'homeWidgets.voiceOpen' => 'Шефи открывается и слушает',
+			'homeWidgets.voiceOpenHint' => 'Кнопка Шефи сразу включает микрофон',
+			'homeWidgets.widgetAssistant' => 'Спросить Шефи',
+			'homeWidgets.widgetAssistantHint' => 'Кнопка, открывающая Шефи, при желании с микрофоном, и быстрые вопросы.',
+			'homeWidgets.widgetGroceryAdd' => 'Быстрое добавление в список',
+			'homeWidgets.widgetGroceryAddHint' => 'Введите или продиктуйте продукт прямо в выбранный список.',
+			'homeWidgets.widgetGroceryList' => 'Список покупок',
+			'homeWidgets.widgetGroceryListHint' => 'Что осталось купить; отмечайте продукты прямо в виджете.',
+			'homeWidgets.widgetTodayMenu' => 'Меню на сегодня',
+			'homeWidgets.widgetTodayMenuHint' => 'Блюда на сегодня из выбранного плана, каждый день.',
+			'homeWidgets.askShefi' => 'Спросить Шефи',
+			'homeWidgets.tapToAsk' => 'Что готовим?',
+			'homeWidgets.speak' => 'Говорить',
+			'homeWidgets.quickAdd' => 'Быстрое добавление',
+			'homeWidgets.addItem' => 'Добавить продукт',
+			'homeWidgets.itemHint' => 'Что купить?',
+			'homeWidgets.add' => 'Добавить',
+			'homeWidgets.todayMenu' => 'Меню на сегодня',
+			'homeWidgets.today' => 'Сегодня',
+			'homeWidgets.noMeals' => 'На сегодня ничего не запланировано',
+			'homeWidgets.noPlan' => 'Плана питания пока нет',
+			'homeWidgets.emptyList' => 'Список пуст',
+			'homeWidgets.allDone' => 'Всё куплено',
+			'homeWidgets.remainingNative' => '{n} осталось купить',
+			'homeWidgets.signIn' => 'Войдите в EasyPlate, чтобы увидеть списки',
+			'homeWidgets.openApp' => 'Открыть EasyPlate',
+			'homeWidgets.showChecked' => 'Показывать и отмеченные',
+			'homeWidgets.pendingSync' => 'Синхронизируется при открытии приложения',
+			'homeWidgets.configTitle' => 'Настройки виджета',
+			'homeWidgets.prompt1' => 'Что приготовить сегодня?',
+			'homeWidgets.prompt2' => 'Чего не хватает в списке?',
+			'homeWidgets.prompt3' => 'Спланируй мою неделю',
+			'homeWidgets.demo1' => 'Молоко',
+			'homeWidgets.demo2' => 'Хлеб',
+			'homeWidgets.demo3' => 'Яйца',
 			'feature.comingSoon' => 'Скоро',
 			'feature.comingSoonMessage' => 'Эта функция скоро появится',
 			'feature.unavailable' => 'Эта функция сейчас недоступна',
@@ -3491,6 +3606,7 @@ extension on TranslationsRu {
 			'featureName.assistantScoped' => 'Шефи внутри элемента',
 			'featureName.assistantVoice' => 'Голос с Шефи',
 			'featureName.singleSession' => 'Одно устройство на аккаунт',
+			'featureName.homeWidgets' => 'Виджеты главного экрана',
 			_ => null,
 		};
 	}

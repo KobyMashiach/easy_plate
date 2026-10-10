@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's labels and the layouts' preview text. These follow
+     the phone's language (they are read by the launcher); everything the
+     widgets draw once placed comes from the app's snapshot, in the app's
+     own language. -->
+<resources>
+    <string name="epw_assistant_label">Ask Shefi</string>
+    <string name="epw_assistant_desc">Open Shefi, EasyPlate\'s assistant, with a question or the microphone</string>
+    <string name="epw_grocery_add_label">Quick add to the list</string>
+    <string name="epw_grocery_add_desc">Type or dictate an item into a grocery list</string>
+    <string name="epw_grocery_list_label">Grocery list</string>
+    <string name="epw_grocery_list_desc">What is left to buy, tick items off from the widget</string>
+    <string name="epw_today_menu_label">Today\'s menu</string>
+    <string name="epw_today_menu_desc">Today\'s meals from your meal plan</string>
+    <string name="epw_ask_shefi">Ask Shefi</string>
+    <string name="epw_tap_to_ask">What shall we cook?</string>
+    <string name="epw_speak">Speak</string>
+    <string name="epw_quick_add">Quick add</string>
+    <string name="epw_item_hint">What to buy?</string>
+    <string name="epw_add">Add</string>
+    <string name="epw_cancel">Cancel</string>
+    <string name="epw_save">Save</string>
+    <string name="epw_today_menu">Today\'s menu</string>
+    <string name="epw_today">Today</string>
+    <string name="epw_no_meals">Nothing planned for today</string>
+    <string name="epw_empty_list">The list is empty</string>
+    <string name="epw_sign_in">Sign in to EasyPlate to see your lists</string>
+    <string name="epw_config_title">Widget settings</string>
+    <string name="epw_list">Grocery list</string>
+    <string name="epw_plan">Meal plan</string>
+    <string name="epw_appearance">Appearance</string>
+    <string name="epw_follow_app">Like the app</string>
+    <string name="epw_system">Like the phone</string>
+    <string name="epw_light">Light</string>
+    <string name="epw_dark">Dark</string>
+    <string name="epw_voice_open">Shefi opens listening</string>
+    <string name="epw_show_checked">Show ticked items too</string>
+    <string name="epw_prompt_sample">What shall I cook today?</string>
+    <string name="epw_item_sample1">Milk · 2</string>
+    <string name="epw_item_sample2">Bread · 1</string>
+    <string name="epw_item_sample3">Eggs · 12</string>
+    <string name="epw_meal_sample1">Breakfast: Shakshuka</string>
+    <string name="epw_meal_sample2">Lunch: Pasta</string>
+    <string name="epw_meal_sample3">Dinner: Salad</string>
+</resources>

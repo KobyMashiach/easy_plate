@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The home-screen widgets' palette: lib/core/constants/app_palette.dart,
+     light and dark, side by side. The widgets are RemoteViews drawn by the
+     launcher, so they cannot read the Dart tokens; keep these in step. A
+     widget set to light or dark picks a set regardless of the phone's
+     night mode, which is why both live here rather than in values-night. -->
+<resources>
+    <!-- Light -->
+    <color name="epw_light_surface">#FFFFFF</color>
+    <color name="epw_light_surface_low">#F6F2FF</color>
+    <color name="epw_light_surface_container">#EFEBFF</color>
+    <color name="epw_light_on_surface">#181445</color>
+    <color name="epw_light_on_surface_variant">#484555</color>
+    <color name="epw_light_outline">#797587</color>
+    <color name="epw_light_outline_variant">#C9C4D8</color>
+    <color name="epw_light_primary">#5B3CDD</color>
+    <color name="epw_light_on_primary">#FFFFFF</color>
+    <color name="epw_light_primary_fixed">#E5DEFF</color>
+    <color name="epw_light_on_primary_fixed">#1A0063</color>
+    <color name="epw_light_secondary_container">#62FAE3</color>
+    <color name="epw_light_on_secondary_container">#007165</color>
+    <color name="epw_light_mint">#2DD4BF</color>
+
+    <!-- Dark -->
+    <color name="epw_dark_surface">#1C1B20</color>
+    <color name="epw_dark_surface_low">#201F25</color>
+    <color name="epw_dark_surface_container">#2B292F</color>
+    <color name="epw_dark_on_surface">#E5E1E9</color>
+    <color name="epw_dark_on_surface_variant">#C9C4D3</color>
+    <color name="epw_dark_outline">#938F9C</color>
+    <color name="epw_dark_outline_variant">#484551</color>
+    <color name="epw_dark_primary">#C9BFFF</color>
+    <color name="epw_dark_on_primary">#2E009C</color>
+    <color name="epw_dark_primary_fixed">#451CC8</color>
+    <color name="epw_dark_on_primary_fixed">#E5DEFF</color>
+    <color name="epw_dark_secondary_container">#005047</color>
+    <color name="epw_dark_on_secondary_container">#9FF2E2</color>
+    <color name="epw_dark_mint">#2DD4BF</color>
+
+    <!-- The Shefi gradient is the same in both looks. -->
+    <color name="epw_glow">#7B61FF</color>
+    <color name="epw_glow_deep">#441CC8</color>
+    <color name="epw_white_22">#38FFFFFF</color>
+    <color name="epw_transparent">#00000000</color>
+</resources>

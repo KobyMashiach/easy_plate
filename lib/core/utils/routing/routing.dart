@@ -37,6 +37,10 @@ class Routing {
   static const joinCode = 'join_code';
   static const household = 'household';
   static const scanCode = 'scan_code';
+  static const homeWidgets = 'home_widgets';
+
+  /// A home-screen widget's tap, `/widget/<action>`: see HomeWidgetLaunch.
+  static const widgetLaunch = '/widget/:action';
 
   /// A share link, `/s/CODE`: the web link's path and the app scheme's.
   static const shareLink = '/s/:code';

@@ -17,7 +17,6 @@ abstract class WalkthroughIds {
   static const mealPlanAdd = 'mealPlan.add';
   static const groceriesRegenerate = 'groceries.regenerate';
   static const groceriesAdd = 'groceries.add';
-  static const groceriesAssistant = 'groceries.assistant';
   static const assistantFab = 'assistant.fab';
   static const communitySegments = 'community.segments';
   static const communityShare = 'community.share';
@@ -234,7 +233,8 @@ List<WalkthroughTopic> appWalkthroughTopics() {
         WalkthroughStep(
           title: w.groceries.title,
           body: w.groceries.shefi,
-          targetId: WalkthroughIds.groceriesAssistant,
+          // The floating pill: the list's own Shefi button is gone.
+          targetId: WalkthroughIds.assistantFab,
           tab: MainTabs.groceries,
           advanceOnTap: false,
         ),

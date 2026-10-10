@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's labels and the layouts' preview text. These follow
+     the phone's language (they are read by the launcher); everything the
+     widgets draw once placed comes from the app's snapshot, in the app's
+     own language. -->
+<resources>
+    <string name="epw_assistant_label">Demander à Shefi</string>
+    <string name="epw_assistant_desc">Ouvrir Shefi, l\'assistant d\'EasyPlate, avec une question ou le micro</string>
+    <string name="epw_grocery_add_label">Ajout rapide à la liste</string>
+    <string name="epw_grocery_add_desc">Taper ou dicter un article dans une liste de courses</string>
+    <string name="epw_grocery_list_label">Liste de courses</string>
+    <string name="epw_grocery_list_desc">Ce qu\'il reste à acheter, à cocher depuis le widget</string>
+    <string name="epw_today_menu_label">Menu du jour</string>
+    <string name="epw_today_menu_desc">Les repas du jour de votre plan</string>
+    <string name="epw_ask_shefi">Demander à Shefi</string>
+    <string name="epw_tap_to_ask">On cuisine quoi ?</string>
+    <string name="epw_speak">Parler</string>
+    <string name="epw_quick_add">Ajout rapide</string>
+    <string name="epw_item_hint">Quoi acheter ?</string>
+    <string name="epw_add">Ajouter</string>
+    <string name="epw_cancel">Annuler</string>
+    <string name="epw_save">Enregistrer</string>
+    <string name="epw_today_menu">Menu du jour</string>
+    <string name="epw_today">Aujourd\'hui</string>
+    <string name="epw_no_meals">Rien de prévu aujourd\'hui</string>
+    <string name="epw_empty_list">La liste est vide</string>
+    <string name="epw_sign_in">Connectez-vous à EasyPlate pour voir vos listes</string>
+    <string name="epw_config_title">Réglages du widget</string>
+    <string name="epw_list">Liste de courses</string>
+    <string name="epw_plan">Plan de repas</string>
+    <string name="epw_appearance">Apparence</string>
+    <string name="epw_follow_app">Comme l\'app</string>
+    <string name="epw_system">Comme le téléphone</string>
+    <string name="epw_light">Clair</string>
+    <string name="epw_dark">Sombre</string>
+    <string name="epw_voice_open">Shefi s\'ouvre à l\'écoute</string>
+    <string name="epw_show_checked">Afficher aussi les articles cochés</string>
+    <string name="epw_prompt_sample">Je cuisine quoi aujourd\'hui ?</string>
+    <string name="epw_item_sample1">Lait · 2</string>
+    <string name="epw_item_sample2">Pain · 1</string>
+    <string name="epw_item_sample3">Œufs · 12</string>
+    <string name="epw_meal_sample1">Petit-déjeuner : Chakchouka</string>
+    <string name="epw_meal_sample2">Déjeuner : Pâtes</string>
+    <string name="epw_meal_sample3">Dîner : Salade</string>
+</resources>

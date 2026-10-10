@@ -7,6 +7,9 @@ import google_mobile_ads
   /// Must match `AdsConfig.nativeFactoryId` on the Dart side.
   private let nativeAdFactoryId = "easyPlateCard"
 
+  /// The home-screen widgets' channel; see HomeWidgetsChannel.swift.
+  private var homeWidgets: HomeWidgetsChannel?
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -22,5 +25,6 @@ import google_mobile_ads
       factoryId: nativeAdFactoryId,
       nativeAdFactory: EasyPlateNativeAdFactory()
     )
+    homeWidgets = HomeWidgetsChannel(messenger: engineBridge.applicationRegistrar.messenger())
   }
 }

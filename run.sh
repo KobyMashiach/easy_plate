@@ -21,12 +21,12 @@ function androidRunDebug() {
 }
 
 function androidBuildApk() {
-  echo "Build (Dev) Android"
+  echo "Build Android APK"
   flutter build apk --release $DEFINES
 }
 
 function androidBuildAab() {
-  echo "Build (Test) Android"
+  echo "Build Android App Bundle"
   flutter build appbundle --release $DEFINES
 }
 

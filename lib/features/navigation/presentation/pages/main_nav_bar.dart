@@ -20,6 +20,10 @@ import '../../../meal_planner/presentation/pages/meal_planner_page.dart';
 import '../../../my_recipes/presentation/pages/my_recipes_page.dart';
 import '../../../recipe_books/presentation/pages/library_page.dart';
 import '../../../share_codes/domain/pending_share_code.dart';
+import '../../../../core/home_widgets/home_widget_launch.dart';
+import '../../../../core/home_widgets/home_widgets_snapshot.dart';
+import '../../../assistant/domain/assistant_scope.dart';
+import '../../../grocery_list/data/datasources/active_grocery_list_store.dart';
 import '../../../user_profile/domain/repositories/user_preferences_repository.dart';
 import '../../../../core/features/feature_gate.dart';
 
@@ -48,10 +52,53 @@ class _MainNavBarState extends State<MainNavBar> {
     // The main screen is where a signed-in session lands: the token goes
     // to the log each time, so a test push always has a fresh one to use.
     FirebaseService().logPushToken();
+    PendingHomeWidgetLaunch.notifier.addListener(_openPendingWidgetLaunch);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _openPendingShareCode();
+      _openPendingWidgetLaunch();
       _offerFirstRunTour();
     });
+  }
+
+  @override
+  void dispose() {
+    PendingHomeWidgetLaunch.notifier.removeListener(_openPendingWidgetLaunch);
+    super.dispose();
+  }
+
+  /// A home-screen widget's tap: the copilot, the groceries tab with the
+  /// add sheet, the planner on today, or the widgets screen. Gated like
+  /// every other door: a widget left on the phone after the console hid
+  /// the feature only says so.
+  void _openPendingWidgetLaunch() {
+    final launch = PendingHomeWidgetLaunch.take();
+    if (launch == null || !mounted) return;
+    if (!guardFeature(context, FeaturesFlags.homeWidgets)) return;
+    switch (launch.action) {
+      case HomeWidgetAction.assistant:
+        if (!guardFeature(context, FeaturesFlags.assistant)) return;
+        context.pushNamed(
+          Routing.assistant,
+          extra: AssistantLaunch(prompt: launch.prompt, voice: launch.voice),
+        );
+      case HomeWidgetAction.grocery:
+        MainTabs.index.value = MainTabs.groceries;
+        if (launch.add) {
+          HomeWidgetRequests.groceryAdd.value = GroceryAddRequest(
+            listId: launch.listId,
+          );
+        } else if (launch.listId case final id?) {
+          HiveActiveGroceryListStore.instance.write(id);
+        }
+      case HomeWidgetAction.plan:
+        MainTabs.index.value = MainTabs.mealPlan;
+        HomeWidgetRequests.planner.value = PlannerRequest(
+          planId: launch.planId,
+          weekday: HomeWidgetsSnapshot.weekdayIndex(DateTime.now()),
+        );
+      case HomeWidgetAction.settings:
+        context.pushNamed(Routing.homeWidgets);
+    }
   }
 
   /// A share link that arrived while the session was not ready for it.

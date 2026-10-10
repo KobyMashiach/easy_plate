@@ -14,6 +14,7 @@ import * as tickets from "./views/tickets.js";
 import * as config from "./views/config.js";
 import * as audit from "./views/audit.js";
 import * as seed from "./views/seed.js";
+import * as stores from "./views/stores.js";
 
 const ICONS = {
   dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
@@ -25,6 +26,7 @@ const ICONS = {
   tickets: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
   config: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h8M16 18h4"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="14" cy="18" r="2"/></svg>',
   seed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>',
+  stores: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>',
   audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>',
 };
 
@@ -39,6 +41,7 @@ const ROUTES = [
   { key: "households", path: /^\/households$/, view: households },
   { key: "tickets", path: /^\/tickets$/, view: tickets },
   { key: "config", path: /^\/config$/, view: config },
+  { key: "stores", path: /^\/stores$/, view: stores },
   { key: "audit", path: /^\/audit$/, view: audit },
 ];
 
@@ -61,7 +64,7 @@ function renderNav() {
   const { nav } = els();
   clear(nav);
   const route = location.hash.slice(1) || "/dashboard";
-  for (const key of ["dashboard", "users", "seed", "community", "recipes", "personas", "households", "tickets", "config", "audit"]) {
+  for (const key of ["dashboard", "stores", "users", "seed", "community", "recipes", "personas", "households", "tickets", "config", "audit"]) {
     const a = h(`a${route.startsWith("/" + key) ? ".active" : ""}`, { href: `#/${key}`, html: ICONS[key] });
     a.append(h("span", t(`nav.${key}`)));
     if (key === "tickets") a.append(h("span.badge.brand", { id: "ticketsBadge", hidden: true }));

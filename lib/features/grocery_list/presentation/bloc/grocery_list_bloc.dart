@@ -267,11 +267,17 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final lists = _ordered(event.lists);
     final fresh = lists.where((l) => l.id == current.list.id).firstOrNull;
     if (fresh != null || current.list.id == defaultListId) {
-      // The open list keeps the version on screen: the box echoes every
-      // write back, and taking it would revert a tap made in the meantime.
-      // The one exception is the share itself, which gave the list its
-      // collab id; remote edits land through the sync on open/select.
-      final open = fresh != null && fresh.collabId != current.list.collabId
+      // The open list keeps the version on screen while a write of this
+      // bloc's own is in flight: the box echoes every write back, and taking
+      // an older echo would revert a tap made in the meantime. Once nothing
+      // is in flight, a box that differs from the screen was written by
+      // someone else — a home-screen widget's quick add or tick, the share
+      // itself giving the list its collab id — and is taken.
+      final open =
+          fresh != null &&
+              (fresh.collabId != current.list.collabId ||
+                  (_inflight == 0 &&
+                      _signature(fresh) != _signature(current.list)))
           ? fresh
           : current.list;
       emit(current.copyWith(list: open, lists: _withList(lists, open)));
@@ -313,7 +319,12 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   /// Every write goes through here: the box, then — for a shared list —
   /// the shared document, so the other accounts see the change.
   Future<void> _save(GroceryListEntity list) async {
-    await saveGroceryListUseCase(list);
+    _inflight++;
+    try {
+      await saveGroceryListUseCase(list);
+    } finally {
+      _inflight--;
+    }
     final uid = UserScope().uid;
     if (!list.isShared || uid == null) return;
     try {
@@ -322,6 +333,25 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       debugPrint('Shared list publish failed: $e');
     }
   }
+
+  /// Writes of this bloc's own that the box has not echoed yet. While one
+  /// is in flight an echo may be older than the screen, so the screen wins.
+  int _inflight = 0;
+
+  /// What the box holds versus what is on screen: the lines, their ticks,
+  /// their amounts. Equal means the echo is this bloc's own write.
+  static String _signature(GroceryListEntity l) => [
+    l.name,
+    l.recipeScale,
+    for (final item in l.items) ...[
+      item.id,
+      item.name,
+      item.isChecked,
+      item.unit.name,
+      item.category,
+      for (final source in item.sources) ...[source.label, source.amount],
+    ],
+  ].join('\u0001');
 
   /// [syncShared] pulls the open list's shared document first, when it has
   /// one: opening a list is when another account's changes should show.

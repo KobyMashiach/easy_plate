@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's labels and the layouts' preview text. These follow
+     the phone's language (they are read by the launcher); everything the
+     widgets draw once placed comes from the app's snapshot, in the app's
+     own language. -->
+<resources>
+    <string name="epw_assistant_label">Спросить Шефи</string>
+    <string name="epw_assistant_desc">Открыть Шефи, помощника EasyPlate, с вопросом или микрофоном</string>
+    <string name="epw_grocery_add_label">Быстрое добавление в список</string>
+    <string name="epw_grocery_add_desc">Введите или продиктуйте продукт в список покупок</string>
+    <string name="epw_grocery_list_label">Список покупок</string>
+    <string name="epw_grocery_list_desc">Что осталось купить, отмечайте прямо в виджете</string>
+    <string name="epw_today_menu_label">Меню на сегодня</string>
+    <string name="epw_today_menu_desc">Блюда на сегодня из вашего плана</string>
+    <string name="epw_ask_shefi">Спросить Шефи</string>
+    <string name="epw_tap_to_ask">Что готовим?</string>
+    <string name="epw_speak">Говорить</string>
+    <string name="epw_quick_add">Быстрое добавление</string>
+    <string name="epw_item_hint">Что купить?</string>
+    <string name="epw_add">Добавить</string>
+    <string name="epw_cancel">Отмена</string>
+    <string name="epw_save">Сохранить</string>
+    <string name="epw_today_menu">Меню на сегодня</string>
+    <string name="epw_today">Сегодня</string>
+    <string name="epw_no_meals">На сегодня ничего не запланировано</string>
+    <string name="epw_empty_list">Список пуст</string>
+    <string name="epw_sign_in">Войдите в EasyPlate, чтобы увидеть списки</string>
+    <string name="epw_config_title">Настройки виджета</string>
+    <string name="epw_list">Список покупок</string>
+    <string name="epw_plan">План питания</string>
+    <string name="epw_appearance">Оформление</string>
+    <string name="epw_follow_app">Как в приложении</string>
+    <string name="epw_system">Как в телефоне</string>
+    <string name="epw_light">Светлое</string>
+    <string name="epw_dark">Тёмное</string>
+    <string name="epw_voice_open">Шефи открывается и слушает</string>
+    <string name="epw_show_checked">Показывать и отмеченные</string>
+    <string name="epw_prompt_sample">Что приготовить сегодня?</string>
+    <string name="epw_item_sample1">Молоко · 2</string>
+    <string name="epw_item_sample2">Хлеб · 1</string>
+    <string name="epw_item_sample3">Яйца · 12</string>
+    <string name="epw_meal_sample1">Завтрак: Шакшука</string>
+    <string name="epw_meal_sample2">Обед: Паста</string>
+    <string name="epw_meal_sample3">Ужин: Салат</string>
+</resources>

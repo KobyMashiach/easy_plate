@@ -45,6 +45,8 @@ import 'features/notifications/domain/repositories/notifications_repository.dart
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 import 'core/features/feature_gate.dart';
 import 'features/recipe_ingestion/presentation/pages/ingestion_page.dart';
+import 'core/home_widgets/home_widgets_service.dart';
+import 'features/grocery_list/data/datasources/active_grocery_list_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -187,6 +189,15 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // process Android reclaimed) comes back with its timers.
     AuthSessionService().addListener(_restoreCookSession);
     _restoreCookSession();
+    // The home-screen widgets: fed from the same repositories the tabs
+    // read, and what they wrote while the app was away is applied.
+    HomeWidgetsService().bind(
+      groceries: context.read(),
+      plans: context.read(),
+      recipes: context.read(),
+      sharing: context.read(),
+      activeList: HiveActiveGroceryListStore.instance,
+    );
   }
 
   /// The service itself skips a reschedule that would change nothing.
@@ -389,6 +400,9 @@ class _EasyPlateAppState extends State<EasyPlateApp>
       // And for the date: an app left open across midnight must not keep
       // charging today's openings to yesterday's allowance.
       TrustedClock().sync();
+      // And for the widgets: a line added or ticked from the home screen
+      // while the app was in the background.
+      HomeWidgetsService().onResumed();
     }
   }
 

@@ -22,6 +22,8 @@
 //   households household.removeMember / household.dissolve
 //   console    config.get / config.set / config.add / config.delete /
 //              pricing.sync
+//   stores     stores.stats / stores.status / stores.config / stores.sync —
+//              the exact install counts behind the listings' "500+" tags
 //
 // Every call writes one admin_audit row: who, what, with which fields
 // (pictures and long texts cut down), and whether it worked.
@@ -38,6 +40,7 @@ const imageSearch = require("./imageSearch").internals;
 const aiUsage = require("./aiUsage");
 const households = require("./households").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
+const storeStats = require("./storeStats");
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 const serperApiKey = defineSecret("SERPER_API_KEY");
@@ -121,6 +124,10 @@ const ACTIONS = {
   "config.add": { name: str(120, true), valueType: anyOf([...RC_TYPES], true), value: str(20000), description: str(1000), group: str(120) },
   "config.delete": { name: str(120, true) },
   "pricing.sync": {},
+  "stores.stats": {},
+  "stores.status": {},
+  "stores.config": { playBucket: str(200), playPackage: str(200), appleVendor: str(40), appleIssuerId: str(80), appleKeyId: str(40), appleAppId: str(40), iosSince: str(10), applePrivateKey: str(8000) },
+  "stores.sync": { platform: anyOf(["all", "android", "ios"]), backfill: bool() },
 };
 
 function parseRequest(body) {
@@ -270,6 +277,8 @@ function summarize(request) {
     if (key === "action") continue;
     if (key === "photoDataUrl" || key === "data") {
       out[key] = typeof value === "string" ? `<${value.length} chars>` : "<object>";
+    } else if (key === "applePrivateKey") {
+      out[key] = "<secret>";
     } else if (key === "image" && value && typeof value === "object") {
       out[key] = value.storagePath ? { storagePath: value.storagePath } : value.url ? { url: String(value.url).slice(0, 300) } : value.dataUrl ? { dataUrl: `<${String(value.dataUrl).length} chars>` } : {};
     } else if (key === "recipe" && value && typeof value === "object") {
@@ -1055,6 +1064,19 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     }
     case "pricing.sync":
       return { ...(await aiUsage.repairUsage()), ...(await syncRate()), ...(await syncPricing()) };
+
+    // --- store downloads --------------------------------------------------
+    case "stores.stats":
+      return storeStats.stats(db, fetchImpl);
+    case "stores.status":
+      return storeStats.status(db, fetchImpl);
+    case "stores.config": {
+      const { action, ...patch } = request;
+      const saved = await storeStats.saveConfig(db, patch);
+      return { config: saved.config, keyPresent: saved.keyPresent };
+    }
+    case "stores.sync":
+      return storeStats.sync({ db, platform: request.platform || "all", backfill: request.backfill === true, fetchImpl });
 
     default:
       throw refused("unknown action");

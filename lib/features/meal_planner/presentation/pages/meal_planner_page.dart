@@ -12,6 +12,7 @@ import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/weekday_selector.dart';
+import '../../../../core/home_widgets/home_widget_launch.dart';
 import '../../domain/entities/meal_plan_entity.dart';
 import '../bloc/meal_planner_bloc.dart';
 import '../widgets/meal_card.dart';
@@ -423,6 +424,33 @@ class _PlanBoard extends StatefulWidget {
 
 class _PlanBoardState extends State<_PlanBoard> {
   int _weekday = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    HomeWidgetRequests.planner.addListener(_onWidgetRequest);
+    _onWidgetRequest();
+  }
+
+  @override
+  void dispose() {
+    HomeWidgetRequests.planner.removeListener(_onWidgetRequest);
+    super.dispose();
+  }
+
+  /// A home-screen widget asked for a day (today) of a plan: the plan is
+  /// selected through the bloc, the day is this board's own state.
+  void _onWidgetRequest() {
+    final request = HomeWidgetRequests.planner.value;
+    if (request == null) return;
+    HomeWidgetRequests.planner.value = null;
+    final planId = request.planId;
+    if (planId != null && planId != widget.plan.id) {
+      context.read<MealPlannerBloc>().add(.selectPlan(planId));
+    }
+    if (!mounted) return;
+    setState(() => _weekday = request.weekday.clamp(0, 6));
+  }
 
   @override
   Widget build(BuildContext context) {

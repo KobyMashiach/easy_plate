@@ -112,7 +112,12 @@ enum FeaturesFlags {
 
   /// One device per account: not a screen but a policy the server enforces;
   /// 2 refuses a second device, anything else lets them share.
-  singleSession('ff_single_session')
+  singleSession('ff_single_session'),
+
+  /// The home-screen widgets (Shefi button, quick add, the list, today's
+  /// menu) and the settings screen that places them. Hidden, the widgets
+  /// on the phone show only a way into the app.
+  homeWidgets('ff_home_widgets')
   ;
 
   /// The Remote Config parameter name.

@@ -1,0 +1,29 @@
+/* The widget picker and Edit Widget sheet. Everything inside a placed
+   widget comes from the app's snapshot, in the app's own language. */
+"Ask Shefi" = "Demander à Shefi";
+"Open Shefi, EasyPlate's assistant, with a question or the microphone." = "Ouvrir Shefi, l'assistant d'EasyPlate, avec une question ou le micro.";
+"Quick add to the list" = "Ajout rapide à la liste";
+"Add an item to a grocery list of your choice." = "Ajouter un article à la liste de courses de votre choix.";
+"Grocery list" = "Liste de courses";
+"What is left to buy; tick items off from the widget." = "Ce qu'il reste à acheter ; cochez les articles depuis le widget.";
+"Today's menu" = "Menu du jour";
+"Today's meals from a plan of your choice." = "Les repas du jour d'un plan de votre choix.";
+"Appearance" = "Apparence";
+"Like the app" = "Comme l'app";
+"Like the phone" = "Comme le téléphone";
+"Light" = "Clair";
+"Dark" = "Sombre";
+"Microphone" = "Micro";
+"Like the app's setting" = "Comme le réglage de l'app";
+"Opens listening" = "S'ouvre à l'écoute";
+"Opens the keyboard" = "S'ouvre avec le clavier";
+"List" = "Liste";
+"Meal plan" = "Plan de repas";
+"Show ticked items" = "Afficher les articles cochés";
+"Quick add" = "Ajout rapide";
+"Add an item to a grocery list." = "Ajouter un article à la liste de courses de votre choix.";
+"What is left to buy." = "Ce qu'il reste à acheter ; cochez les articles depuis le widget.";
+"Today's meals from a plan." = "Les repas du jour d'un plan de votre choix.";
+"Open Shefi with a question or the microphone." = "Ouvrir Shefi, l'assistant d'EasyPlate, avec une question ou le micro.";
+"Tick item" = "Cocher l'article";
+"Sign in to EasyPlate" = "Connectez-vous à EasyPlate";

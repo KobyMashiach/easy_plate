@@ -45,12 +45,26 @@ class ShareIntentService {
 
   Future<void> _receive(List<SharedMediaFile> files) async {
     if (files.isEmpty) return;
+    // The plugin also sees the app's own deep links (a widget tap, a share
+    // link) as a "shared URL"; those belong to the router, not to the
+    // ingestion screen.
+    if (files.every((f) => isOwnLink(f.path))) return;
     try {
       final launch = await launchFor(files);
       if (launch != null) latest.value = launch;
     } catch (e) {
       debugPrint('Shared content unreadable: $e');
     }
+  }
+
+  /// `easyplate://…` and `https://aieasyplate.app/s/…`: links the app opens
+  /// itself, never recipe sources.
+  @visibleForTesting
+  static bool isOwnLink(String text) {
+    final uri = Uri.tryParse(text.trim());
+    if (uri == null) return false;
+    if (uri.scheme == 'easyplate') return true;
+    return uri.host == 'aieasyplate.app' && uri.path.startsWith('/s/');
   }
 
   /// The ingestion launch a share maps to. Text and links fill the matching

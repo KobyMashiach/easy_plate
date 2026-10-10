@@ -81,6 +81,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$assistant$he assistant = Translations$assistant$he.internal(_root);
 	late final Translations$shareCode$he shareCode = Translations$shareCode$he.internal(_root);
 	late final Translations$household$he household = Translations$household$he.internal(_root);
+	late final Translations$homeWidgets$he homeWidgets = Translations$homeWidgets$he.internal(_root);
 	late final Translations$feature$he feature = Translations$feature$he.internal(_root);
 	late final Translations$featureName$he featureName = Translations$featureName$he.internal(_root);
 	late final Translations$adminConfig$he adminConfig = Translations$adminConfig$he.internal(_root);
@@ -4110,6 +4111,171 @@ class Translations$household$he {
 	String get lapsed => 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.';
 }
 
+// Path: homeWidgets
+class Translations$homeWidgets$he {
+	Translations$homeWidgets$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ווידג'טים למסך הבית'
+	String get title => 'ווידג\'טים למסך הבית';
+
+	/// he: 'שפי, רשימת קניות ותפריט היום, ישר במסך הבית'
+	String get hint => 'שפי, רשימת קניות ותפריט היום, ישר במסך הבית';
+
+	/// he: 'הוסיפו ווידג'טים של EasyPlate למסך הבית: לשאול את שפי, להוסיף לרשימת הקניות, לראות את הרשימה ואת תפריט היום בלי לפתוח את האפליקציה.'
+	String get intro => 'הוסיפו ווידג\'טים של EasyPlate למסך הבית: לשאול את שפי, להוסיף לרשימת הקניות, לראות את הרשימה ואת תפריט היום בלי לפתוח את האפליקציה.';
+
+	/// he: 'לחיצה ארוכה על מקום ריק במסך הבית, לחיצה על +, חיפוש EasyPlate ובחירת ווידג'ט. אותם ווידג'טים מתאימים גם למסך הנעילה.'
+	String get howToIos => 'לחיצה ארוכה על מקום ריק במסך הבית, לחיצה על +, חיפוש EasyPlate ובחירת ווידג\'ט. אותם ווידג\'טים מתאימים גם למסך הנעילה.';
+
+	/// he: 'לחיצה ארוכה על מקום ריק במסך הבית, בחירת "ווידג'טים" ומציאת EasyPlate, או לחיצה על "הוספה למסך הבית" למטה.'
+	String get howToAndroid => 'לחיצה ארוכה על מקום ריק במסך הבית, בחירת "ווידג\'טים" ומציאת EasyPlate, או לחיצה על "הוספה למסך הבית" למטה.';
+
+	/// he: 'הוספה למסך הבית'
+	String get addToHome => 'הוספה למסך הבית';
+
+	/// he: '$count במסך הבית'
+	String installed({required Object count}) => '${count} במסך הבית';
+
+	/// he: 'המשגר לא הציע להוסיף את הווידג'ט. הוסיפו אותו מרשימת הווידג'טים של מסך הבית.'
+	String get pinFailed => 'המשגר לא הציע להוסיף את הווידג\'ט. הוסיפו אותו מרשימת הווידג\'טים של מסך הבית.';
+
+	/// he: 'ברירות מחדל לווידג'טים חדשים'
+	String get defaults => 'ברירות מחדל לווידג\'טים חדשים';
+
+	/// he: 'כל ווידג'ט אפשר לשנות אחר כך מההגדרות שלו (לחיצה ארוכה על הווידג'ט).'
+	String get defaultsHint => 'כל ווידג\'ט אפשר לשנות אחר כך מההגדרות שלו (לחיצה ארוכה על הווידג\'ט).';
+
+	/// he: 'רשימת קניות'
+	String get defaultList => 'רשימת קניות';
+
+	/// he: 'הרשימה הפתוחה'
+	String get openList => 'הרשימה הפתוחה';
+
+	/// he: 'תפריט'
+	String get defaultPlan => 'תפריט';
+
+	/// he: 'התפריט הראשון'
+	String get firstPlan => 'התפריט הראשון';
+
+	/// he: 'עדיין אין רשימת קניות'
+	String get noLists => 'עדיין אין רשימת קניות';
+
+	/// he: 'עדיין אין תפריט'
+	String get noPlans => 'עדיין אין תפריט';
+
+	/// he: 'כמו האפליקציה'
+	String get followApp => 'כמו האפליקציה';
+
+	/// he: 'שפי נפתח בהאזנה'
+	String get voiceOpen => 'שפי נפתח בהאזנה';
+
+	/// he: 'כפתור שפי מפעיל את המיקרופון מיד'
+	String get voiceOpenHint => 'כפתור שפי מפעיל את המיקרופון מיד';
+
+	/// he: 'לשאול את שפי'
+	String get widgetAssistant => 'לשאול את שפי';
+
+	/// he: 'כפתור שפותח את שפי, עם מיקרופון אם תרצו, ושאלות מהירות.'
+	String get widgetAssistantHint => 'כפתור שפותח את שפי, עם מיקרופון אם תרצו, ושאלות מהירות.';
+
+	/// he: 'הוספה מהירה לרשימה'
+	String get widgetGroceryAdd => 'הוספה מהירה לרשימה';
+
+	/// he: 'מקלידים או מכתיבים פריט ישר לרשימה שבחרתם.'
+	String get widgetGroceryAddHint => 'מקלידים או מכתיבים פריט ישר לרשימה שבחרתם.';
+
+	/// he: 'רשימת קניות'
+	String get widgetGroceryList => 'רשימת קניות';
+
+	/// he: 'מה שנשאר לקנות; מסמנים פריטים מהווידג'ט.'
+	String get widgetGroceryListHint => 'מה שנשאר לקנות; מסמנים פריטים מהווידג\'ט.';
+
+	/// he: 'התפריט של היום'
+	String get widgetTodayMenu => 'התפריט של היום';
+
+	/// he: 'הארוחות של היום מתפריט שבחרתם, כל יום.'
+	String get widgetTodayMenuHint => 'הארוחות של היום מתפריט שבחרתם, כל יום.';
+
+	/// he: 'לשאול את שפי'
+	String get askShefi => 'לשאול את שפי';
+
+	/// he: 'מה מבשלים?'
+	String get tapToAsk => 'מה מבשלים?';
+
+	/// he: 'לדבר'
+	String get speak => 'לדבר';
+
+	/// he: 'הוספה מהירה'
+	String get quickAdd => 'הוספה מהירה';
+
+	/// he: 'הוספת פריט'
+	String get addItem => 'הוספת פריט';
+
+	/// he: 'מה לקנות?'
+	String get itemHint => 'מה לקנות?';
+
+	/// he: 'הוספה'
+	String get add => 'הוספה';
+
+	/// he: 'התפריט של היום'
+	String get todayMenu => 'התפריט של היום';
+
+	/// he: 'היום'
+	String get today => 'היום';
+
+	/// he: 'אין ארוחות מתוכננות להיום'
+	String get noMeals => 'אין ארוחות מתוכננות להיום';
+
+	/// he: 'עדיין אין תפריט'
+	String get noPlan => 'עדיין אין תפריט';
+
+	/// he: 'הרשימה ריקה'
+	String get emptyList => 'הרשימה ריקה';
+
+	/// he: 'הכול נקנה'
+	String get allDone => 'הכול נקנה';
+
+	/// he: '{n} נשארו לקנות'
+	String get remainingNative => '{n} נשארו לקנות';
+
+	/// he: 'התחברו ל-EasyPlate כדי לראות את הרשימות'
+	String get signIn => 'התחברו ל-EasyPlate כדי לראות את הרשימות';
+
+	/// he: 'פתיחת EasyPlate'
+	String get openApp => 'פתיחת EasyPlate';
+
+	/// he: 'להציג גם פריטים שסומנו'
+	String get showChecked => 'להציג גם פריטים שסומנו';
+
+	/// he: 'יסונכרן כשהאפליקציה תיפתח'
+	String get pendingSync => 'יסונכרן כשהאפליקציה תיפתח';
+
+	/// he: 'הגדרות הווידג'ט'
+	String get configTitle => 'הגדרות הווידג\'ט';
+
+	/// he: 'מה לבשל היום?'
+	String get prompt1 => 'מה לבשל היום?';
+
+	/// he: 'מה חסר ברשימה?'
+	String get prompt2 => 'מה חסר ברשימה?';
+
+	/// he: 'תכנן לי את השבוע'
+	String get prompt3 => 'תכנן לי את השבוע';
+
+	/// he: 'חלב'
+	String get demo1 => 'חלב';
+
+	/// he: 'לחם'
+	String get demo2 => 'לחם';
+
+	/// he: 'ביצים'
+	String get demo3 => 'ביצים';
+}
+
 // Path: feature
 class Translations$feature$he {
 	Translations$feature$he.internal(this._root);
@@ -4276,6 +4442,9 @@ class Translations$featureName$he {
 
 	/// he: 'מכשיר אחד לחשבון'
 	String get singleSession => 'מכשיר אחד לחשבון';
+
+	/// he: 'ווידג'טים למסך הבית'
+	String get homeWidgets => 'ווידג\'טים למסך הבית';
 }
 
 // Path: adminConfig
@@ -6328,6 +6497,58 @@ extension on Translations {
 			'household.inHousehold' => 'אתם כבר בחשבון משותף.',
 			'household.notEligibleCode' => 'התוכנית של הבעלים כבר לא כוללת חשבון משותף.',
 			'household.lapsed' => 'המנוי של הבעלים הסתיים; הפרימיום של החברים מושהה.',
+			'homeWidgets.title' => 'ווידג\'טים למסך הבית',
+			'homeWidgets.hint' => 'שפי, רשימת קניות ותפריט היום, ישר במסך הבית',
+			'homeWidgets.intro' => 'הוסיפו ווידג\'טים של EasyPlate למסך הבית: לשאול את שפי, להוסיף לרשימת הקניות, לראות את הרשימה ואת תפריט היום בלי לפתוח את האפליקציה.',
+			'homeWidgets.howToIos' => 'לחיצה ארוכה על מקום ריק במסך הבית, לחיצה על +, חיפוש EasyPlate ובחירת ווידג\'ט. אותם ווידג\'טים מתאימים גם למסך הנעילה.',
+			'homeWidgets.howToAndroid' => 'לחיצה ארוכה על מקום ריק במסך הבית, בחירת "ווידג\'טים" ומציאת EasyPlate, או לחיצה על "הוספה למסך הבית" למטה.',
+			'homeWidgets.addToHome' => 'הוספה למסך הבית',
+			'homeWidgets.installed' => ({required Object count}) => '${count} במסך הבית',
+			'homeWidgets.pinFailed' => 'המשגר לא הציע להוסיף את הווידג\'ט. הוסיפו אותו מרשימת הווידג\'טים של מסך הבית.',
+			'homeWidgets.defaults' => 'ברירות מחדל לווידג\'טים חדשים',
+			'homeWidgets.defaultsHint' => 'כל ווידג\'ט אפשר לשנות אחר כך מההגדרות שלו (לחיצה ארוכה על הווידג\'ט).',
+			'homeWidgets.defaultList' => 'רשימת קניות',
+			'homeWidgets.openList' => 'הרשימה הפתוחה',
+			'homeWidgets.defaultPlan' => 'תפריט',
+			'homeWidgets.firstPlan' => 'התפריט הראשון',
+			'homeWidgets.noLists' => 'עדיין אין רשימת קניות',
+			'homeWidgets.noPlans' => 'עדיין אין תפריט',
+			'homeWidgets.followApp' => 'כמו האפליקציה',
+			'homeWidgets.voiceOpen' => 'שפי נפתח בהאזנה',
+			'homeWidgets.voiceOpenHint' => 'כפתור שפי מפעיל את המיקרופון מיד',
+			'homeWidgets.widgetAssistant' => 'לשאול את שפי',
+			'homeWidgets.widgetAssistantHint' => 'כפתור שפותח את שפי, עם מיקרופון אם תרצו, ושאלות מהירות.',
+			'homeWidgets.widgetGroceryAdd' => 'הוספה מהירה לרשימה',
+			'homeWidgets.widgetGroceryAddHint' => 'מקלידים או מכתיבים פריט ישר לרשימה שבחרתם.',
+			'homeWidgets.widgetGroceryList' => 'רשימת קניות',
+			'homeWidgets.widgetGroceryListHint' => 'מה שנשאר לקנות; מסמנים פריטים מהווידג\'ט.',
+			'homeWidgets.widgetTodayMenu' => 'התפריט של היום',
+			'homeWidgets.widgetTodayMenuHint' => 'הארוחות של היום מתפריט שבחרתם, כל יום.',
+			'homeWidgets.askShefi' => 'לשאול את שפי',
+			'homeWidgets.tapToAsk' => 'מה מבשלים?',
+			'homeWidgets.speak' => 'לדבר',
+			'homeWidgets.quickAdd' => 'הוספה מהירה',
+			'homeWidgets.addItem' => 'הוספת פריט',
+			'homeWidgets.itemHint' => 'מה לקנות?',
+			'homeWidgets.add' => 'הוספה',
+			'homeWidgets.todayMenu' => 'התפריט של היום',
+			'homeWidgets.today' => 'היום',
+			'homeWidgets.noMeals' => 'אין ארוחות מתוכננות להיום',
+			'homeWidgets.noPlan' => 'עדיין אין תפריט',
+			'homeWidgets.emptyList' => 'הרשימה ריקה',
+			'homeWidgets.allDone' => 'הכול נקנה',
+			'homeWidgets.remainingNative' => '{n} נשארו לקנות',
+			'homeWidgets.signIn' => 'התחברו ל-EasyPlate כדי לראות את הרשימות',
+			'homeWidgets.openApp' => 'פתיחת EasyPlate',
+			'homeWidgets.showChecked' => 'להציג גם פריטים שסומנו',
+			'homeWidgets.pendingSync' => 'יסונכרן כשהאפליקציה תיפתח',
+			'homeWidgets.configTitle' => 'הגדרות הווידג\'ט',
+			'homeWidgets.prompt1' => 'מה לבשל היום?',
+			'homeWidgets.prompt2' => 'מה חסר ברשימה?',
+			'homeWidgets.prompt3' => 'תכנן לי את השבוע',
+			'homeWidgets.demo1' => 'חלב',
+			'homeWidgets.demo2' => 'לחם',
+			'homeWidgets.demo3' => 'ביצים',
 			'feature.comingSoon' => 'בקרוב',
 			'feature.comingSoonMessage' => 'הפיצ׳ר הזה יגיע בקרוב',
 			'feature.unavailable' => 'הפיצ׳ר הזה לא זמין כרגע',
@@ -6378,6 +6599,7 @@ extension on Translations {
 			'featureName.assistantScoped' => 'שפי בתוך פריט',
 			'featureName.assistantVoice' => 'דיבור עם שפי',
 			'featureName.singleSession' => 'מכשיר אחד לחשבון',
+			'featureName.homeWidgets' => 'ווידג\'טים למסך הבית',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -6412,6 +6634,8 @@ extension on Translations {
 			'adminConfig.labels.share_free_lists_total' => 'רשימות קניות משותפות בו-זמנית',
 			'adminConfig.labels.tts_cloud_enabled' => 'קול ענן (Google)',
 			'adminConfig.labels.tts_voice_he' => 'קול בעברית',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.labels.tts_voice_en' => 'קול באנגלית',
 			'adminConfig.labels.tts_voice_ar' => 'קול בערבית',
 			'adminConfig.labels.tts_voice_fr' => 'קול בצרפתית',

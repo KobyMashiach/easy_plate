@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's labels and the layouts' preview text. These follow
+     the phone's language (they are read by the launcher); everything the
+     widgets draw once placed comes from the app's snapshot, in the app's
+     own language. -->
+<resources>
+    <string name="epw_assistant_label">לשאול את שפי</string>
+    <string name="epw_assistant_desc">פתיחת שפי, העוזר של EasyPlate, עם שאלה או עם המיקרופון</string>
+    <string name="epw_grocery_add_label">הוספה מהירה לרשימה</string>
+    <string name="epw_grocery_add_desc">הקלדה או הכתבה של פריט לרשימת קניות</string>
+    <string name="epw_grocery_list_label">רשימת קניות</string>
+    <string name="epw_grocery_list_desc">מה שנשאר לקנות, מסמנים פריטים מהווידג\'ט</string>
+    <string name="epw_today_menu_label">התפריט של היום</string>
+    <string name="epw_today_menu_desc">הארוחות של היום מהתפריט שלכם</string>
+    <string name="epw_ask_shefi">לשאול את שפי</string>
+    <string name="epw_tap_to_ask">מה מבשלים?</string>
+    <string name="epw_speak">לדבר</string>
+    <string name="epw_quick_add">הוספה מהירה</string>
+    <string name="epw_item_hint">מה לקנות?</string>
+    <string name="epw_add">הוספה</string>
+    <string name="epw_cancel">ביטול</string>
+    <string name="epw_save">שמירה</string>
+    <string name="epw_today_menu">התפריט של היום</string>
+    <string name="epw_today">היום</string>
+    <string name="epw_no_meals">אין ארוחות מתוכננות להיום</string>
+    <string name="epw_empty_list">הרשימה ריקה</string>
+    <string name="epw_sign_in">התחברו ל-EasyPlate כדי לראות את הרשימות</string>
+    <string name="epw_config_title">הגדרות הווידג\'ט</string>
+    <string name="epw_list">רשימת קניות</string>
+    <string name="epw_plan">תפריט</string>
+    <string name="epw_appearance">מראה</string>
+    <string name="epw_follow_app">כמו האפליקציה</string>
+    <string name="epw_system">כמו הטלפון</string>
+    <string name="epw_light">בהיר</string>
+    <string name="epw_dark">כהה</string>
+    <string name="epw_voice_open">שפי נפתח בהאזנה</string>
+    <string name="epw_show_checked">להציג גם פריטים שסומנו</string>
+    <string name="epw_prompt_sample">מה לבשל היום?</string>
+    <string name="epw_item_sample1">חלב · 2</string>
+    <string name="epw_item_sample2">לחם · 1</string>
+    <string name="epw_item_sample3">ביצים · 12</string>
+    <string name="epw_meal_sample1">ארוחת בוקר: שקשוקה</string>
+    <string name="epw_meal_sample2">צהריים: פסטה</string>
+    <string name="epw_meal_sample3">ערב: סלט</string>
+</resources>

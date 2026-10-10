@@ -1,0 +1,3 @@
+// The widget extension is pure SwiftUI — no Flutter, no pods — and only
+// needs the version numbers Flutter generates.
+#include "../Flutter/Generated.xcconfig"

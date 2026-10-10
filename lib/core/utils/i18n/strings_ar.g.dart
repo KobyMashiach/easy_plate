@@ -77,6 +77,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$assistant$ar assistant = _Translations$assistant$ar._(_root);
 	@override late final _Translations$shareCode$ar shareCode = _Translations$shareCode$ar._(_root);
 	@override late final _Translations$household$ar household = _Translations$household$ar._(_root);
+	@override late final _Translations$homeWidgets$ar homeWidgets = _Translations$homeWidgets$ar._(_root);
 	@override late final _Translations$feature$ar feature = _Translations$feature$ar._(_root);
 	@override late final _Translations$featureName$ar featureName = _Translations$featureName$ar._(_root);
 }
@@ -1651,6 +1652,67 @@ class _Translations$household$ar extends Translations$household$he {
 	@override String get lapsed => 'انتهى اشتراك المالك؛ بريميوم متوقف مؤقتًا للأعضاء.';
 }
 
+// Path: homeWidgets
+class _Translations$homeWidgets$ar extends Translations$homeWidgets$he {
+	_Translations$homeWidgets$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'أدوات الشاشة الرئيسية';
+	@override String get hint => 'شيفي وقائمة التسوق وقائمة طعام اليوم، مباشرة على الشاشة الرئيسية';
+	@override String get intro => 'أضيفوا أدوات EasyPlate إلى الشاشة الرئيسية: اسألوا شيفي، أضيفوا إلى قائمة التسوق، وشاهدوا القائمة وقائمة طعام اليوم دون فتح التطبيق.';
+	@override String get howToIos => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، ثم على +، ابحثوا عن EasyPlate واختاروا أداة. الأدوات نفسها تناسب شاشة القفل.';
+	@override String get howToAndroid => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، اختاروا "الأدوات" وابحثوا عن EasyPlate، أو اضغطوا "إضافة إلى الشاشة الرئيسية" أدناه.';
+	@override String get addToHome => 'إضافة إلى الشاشة الرئيسية';
+	@override String installed({required Object count}) => '${count} على الشاشة الرئيسية';
+	@override String get pinFailed => 'لم يعرض المشغّل إضافة الأداة. أضيفوها من قائمة أدوات الشاشة الرئيسية.';
+	@override String get defaults => 'الإعدادات الافتراضية للأدوات الجديدة';
+	@override String get defaultsHint => 'يمكن تغيير كل أداة لاحقًا من إعداداتها (ضغطة مطولة على الأداة).';
+	@override String get defaultList => 'قائمة التسوق';
+	@override String get openList => 'القائمة المفتوحة';
+	@override String get defaultPlan => 'خطة الوجبات';
+	@override String get firstPlan => 'الخطة الأولى';
+	@override String get noLists => 'لا توجد قائمة تسوق بعد';
+	@override String get noPlans => 'لا توجد خطة وجبات بعد';
+	@override String get followApp => 'مثل التطبيق';
+	@override String get voiceOpen => 'يفتح شيفي وهو يستمع';
+	@override String get voiceOpenHint => 'زر شيفي يشغّل الميكروفون فورًا';
+	@override String get widgetAssistant => 'اسأل شيفي';
+	@override String get widgetAssistantHint => 'زر يفتح شيفي، مع الميكروفون إن أردتم، وأسئلة سريعة.';
+	@override String get widgetGroceryAdd => 'إضافة سريعة إلى القائمة';
+	@override String get widgetGroceryAddHint => 'اكتبوا أو أملوا عنصرًا مباشرة إلى القائمة التي تختارونها.';
+	@override String get widgetGroceryList => 'قائمة التسوق';
+	@override String get widgetGroceryListHint => 'ما تبقى لشرائه؛ علّموا العناصر من الأداة.';
+	@override String get widgetTodayMenu => 'قائمة طعام اليوم';
+	@override String get widgetTodayMenuHint => 'وجبات اليوم من خطة تختارونها، كل يوم.';
+	@override String get askShefi => 'اسأل شيفي';
+	@override String get tapToAsk => 'ماذا نطبخ؟';
+	@override String get speak => 'تحدّث';
+	@override String get quickAdd => 'إضافة سريعة';
+	@override String get addItem => 'إضافة عنصر';
+	@override String get itemHint => 'ماذا نشتري؟';
+	@override String get add => 'إضافة';
+	@override String get todayMenu => 'قائمة طعام اليوم';
+	@override String get today => 'اليوم';
+	@override String get noMeals => 'لا وجبات مخططة لليوم';
+	@override String get noPlan => 'لا توجد خطة وجبات بعد';
+	@override String get emptyList => 'القائمة فارغة';
+	@override String get allDone => 'تم شراء كل شيء';
+	@override String get remainingNative => '{n} بقي للشراء';
+	@override String get signIn => 'سجّلوا الدخول إلى EasyPlate لرؤية قوائمكم';
+	@override String get openApp => 'فتح EasyPlate';
+	@override String get showChecked => 'إظهار العناصر المعلّمة أيضًا';
+	@override String get pendingSync => 'سيتم المزامنة عند فتح التطبيق';
+	@override String get configTitle => 'إعدادات الأداة';
+	@override String get prompt1 => 'ماذا أطبخ اليوم؟';
+	@override String get prompt2 => 'ما الناقص في القائمة؟';
+	@override String get prompt3 => 'خطّط أسبوعي';
+	@override String get demo1 => 'حليب';
+	@override String get demo2 => 'خبز';
+	@override String get demo3 => 'بيض';
+}
+
 // Path: feature
 class _Translations$feature$ar extends Translations$feature$he {
 	_Translations$feature$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1717,6 +1779,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get assistantScoped => 'شيفي داخل عنصر';
 	@override String get assistantVoice => 'التحدث مع شيفي';
 	@override String get singleSession => 'جهاز واحد لكل حساب';
+	@override String get homeWidgets => 'أدوات الشاشة الرئيسية';
 }
 
 // Path: walkthrough.topics
@@ -3441,6 +3504,58 @@ extension on TranslationsAr {
 			'household.inHousehold' => 'أنت بالفعل في حساب مشترك.',
 			'household.notEligibleCode' => 'خطة المالك لم تعد تشمل حسابًا مشتركًا.',
 			'household.lapsed' => 'انتهى اشتراك المالك؛ بريميوم متوقف مؤقتًا للأعضاء.',
+			'homeWidgets.title' => 'أدوات الشاشة الرئيسية',
+			'homeWidgets.hint' => 'شيفي وقائمة التسوق وقائمة طعام اليوم، مباشرة على الشاشة الرئيسية',
+			'homeWidgets.intro' => 'أضيفوا أدوات EasyPlate إلى الشاشة الرئيسية: اسألوا شيفي، أضيفوا إلى قائمة التسوق، وشاهدوا القائمة وقائمة طعام اليوم دون فتح التطبيق.',
+			'homeWidgets.howToIos' => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، ثم على +، ابحثوا عن EasyPlate واختاروا أداة. الأدوات نفسها تناسب شاشة القفل.',
+			'homeWidgets.howToAndroid' => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، اختاروا "الأدوات" وابحثوا عن EasyPlate، أو اضغطوا "إضافة إلى الشاشة الرئيسية" أدناه.',
+			'homeWidgets.addToHome' => 'إضافة إلى الشاشة الرئيسية',
+			'homeWidgets.installed' => ({required Object count}) => '${count} على الشاشة الرئيسية',
+			'homeWidgets.pinFailed' => 'لم يعرض المشغّل إضافة الأداة. أضيفوها من قائمة أدوات الشاشة الرئيسية.',
+			'homeWidgets.defaults' => 'الإعدادات الافتراضية للأدوات الجديدة',
+			'homeWidgets.defaultsHint' => 'يمكن تغيير كل أداة لاحقًا من إعداداتها (ضغطة مطولة على الأداة).',
+			'homeWidgets.defaultList' => 'قائمة التسوق',
+			'homeWidgets.openList' => 'القائمة المفتوحة',
+			'homeWidgets.defaultPlan' => 'خطة الوجبات',
+			'homeWidgets.firstPlan' => 'الخطة الأولى',
+			'homeWidgets.noLists' => 'لا توجد قائمة تسوق بعد',
+			'homeWidgets.noPlans' => 'لا توجد خطة وجبات بعد',
+			'homeWidgets.followApp' => 'مثل التطبيق',
+			'homeWidgets.voiceOpen' => 'يفتح شيفي وهو يستمع',
+			'homeWidgets.voiceOpenHint' => 'زر شيفي يشغّل الميكروفون فورًا',
+			'homeWidgets.widgetAssistant' => 'اسأل شيفي',
+			'homeWidgets.widgetAssistantHint' => 'زر يفتح شيفي، مع الميكروفون إن أردتم، وأسئلة سريعة.',
+			'homeWidgets.widgetGroceryAdd' => 'إضافة سريعة إلى القائمة',
+			'homeWidgets.widgetGroceryAddHint' => 'اكتبوا أو أملوا عنصرًا مباشرة إلى القائمة التي تختارونها.',
+			'homeWidgets.widgetGroceryList' => 'قائمة التسوق',
+			'homeWidgets.widgetGroceryListHint' => 'ما تبقى لشرائه؛ علّموا العناصر من الأداة.',
+			'homeWidgets.widgetTodayMenu' => 'قائمة طعام اليوم',
+			'homeWidgets.widgetTodayMenuHint' => 'وجبات اليوم من خطة تختارونها، كل يوم.',
+			'homeWidgets.askShefi' => 'اسأل شيفي',
+			'homeWidgets.tapToAsk' => 'ماذا نطبخ؟',
+			'homeWidgets.speak' => 'تحدّث',
+			'homeWidgets.quickAdd' => 'إضافة سريعة',
+			'homeWidgets.addItem' => 'إضافة عنصر',
+			'homeWidgets.itemHint' => 'ماذا نشتري؟',
+			'homeWidgets.add' => 'إضافة',
+			'homeWidgets.todayMenu' => 'قائمة طعام اليوم',
+			'homeWidgets.today' => 'اليوم',
+			'homeWidgets.noMeals' => 'لا وجبات مخططة لليوم',
+			'homeWidgets.noPlan' => 'لا توجد خطة وجبات بعد',
+			'homeWidgets.emptyList' => 'القائمة فارغة',
+			'homeWidgets.allDone' => 'تم شراء كل شيء',
+			'homeWidgets.remainingNative' => '{n} بقي للشراء',
+			'homeWidgets.signIn' => 'سجّلوا الدخول إلى EasyPlate لرؤية قوائمكم',
+			'homeWidgets.openApp' => 'فتح EasyPlate',
+			'homeWidgets.showChecked' => 'إظهار العناصر المعلّمة أيضًا',
+			'homeWidgets.pendingSync' => 'سيتم المزامنة عند فتح التطبيق',
+			'homeWidgets.configTitle' => 'إعدادات الأداة',
+			'homeWidgets.prompt1' => 'ماذا أطبخ اليوم؟',
+			'homeWidgets.prompt2' => 'ما الناقص في القائمة؟',
+			'homeWidgets.prompt3' => 'خطّط أسبوعي',
+			'homeWidgets.demo1' => 'حليب',
+			'homeWidgets.demo2' => 'خبز',
+			'homeWidgets.demo3' => 'بيض',
 			'feature.comingSoon' => 'قريباً',
 			'feature.comingSoonMessage' => 'هذه الميزة ستصل قريباً',
 			'feature.unavailable' => 'هذه الميزة غير متاحة حالياً',
@@ -3491,6 +3606,7 @@ extension on TranslationsAr {
 			'featureName.assistantScoped' => 'شيفي داخل عنصر',
 			'featureName.assistantVoice' => 'التحدث مع شيفي',
 			'featureName.singleSession' => 'جهاز واحد لكل حساب',
+			'featureName.homeWidgets' => 'أدوات الشاشة الرئيسية',
 			_ => null,
 		};
 	}
