@@ -896,6 +896,27 @@ class Translations$more$he {
 	/// he: 'לא הצלחנו לפתוח את האפליקציה'
 	String get supportUnavailable => 'לא הצלחנו לפתוח את האפליקציה';
 
+	/// he: 'גרסה $version'
+	String appVersion({required Object version}) => 'גרסה ${version}';
+
+	/// he: 'פרטים לצוות התמיכה'
+	String get signatureTitle => 'פרטים לצוות התמיכה';
+
+	/// he: 'שם'
+	String get signatureName => 'שם';
+
+	/// he: 'אימייל'
+	String get signatureEmail => 'אימייל';
+
+	/// he: 'טלפון'
+	String get signaturePhone => 'טלפון';
+
+	/// he: 'מזהה חשבון'
+	String get signatureId => 'מזהה חשבון';
+
+	/// he: 'גרסה'
+	String get signatureVersion => 'גרסה';
+
 	/// he: 'העדפות'
 	String get preferences => 'העדפות';
 
@@ -2852,14 +2873,14 @@ class Translations$update$he {
 	/// he: 'נדרש עדכון'
 	String get forcedTitle => 'נדרש עדכון';
 
-	/// he: 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה $version כדי להמשיך.'
-	String forcedBody({required Object version}) => 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה ${version} כדי להמשיך.';
+	/// he: 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו את האפליקציה כדי להמשיך.'
+	String get forcedBody => 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו את האפליקציה כדי להמשיך.';
 
 	/// he: 'יש גרסה חדשה'
 	String get optionalTitle => 'יש גרסה חדשה';
 
-	/// he: 'גרסה $version של EasyPlate כבר בחנות, עם השיפורים האחרונים.'
-	String optionalBody({required Object version}) => 'גרסה ${version} של EasyPlate כבר בחנות, עם השיפורים האחרונים.';
+	/// he: 'עדכנו כדי לקבל את השיפורים האחרונים.'
+	String get optionalBody => 'עדכנו כדי לקבל את השיפורים האחרונים.';
 
 	/// he: 'עדכון עכשיו'
 	String get updateNow => 'עדכון עכשיו';
@@ -4545,6 +4566,15 @@ class Translations$adminConfig$he {
 	/// he: 'הפרסום נכשל. בדקו את הערך ונסו שוב'
 	String get saveFailed => 'הפרסום נכשל. בדקו את הערך ונסו שוב';
 
+	/// he: 'לחייב עדכון?'
+	String get minVersionTitle => 'לחייב עדכון?';
+
+	/// he: 'גרסה מינימלית $value גבוהה מהגרסה שמותקנת כאן ($current). כל מכשיר עם גרסה נמוכה ממנה, כולל זה, יקבל מסך עדכון בלי אפשרות לדלג. ודאו שהגרסה הזו כבר בחנויות.'
+	String minVersionBody({required Object value, required Object current}) => 'גרסה מינימלית ${value} גבוהה מהגרסה שמותקנת כאן (${current}). כל מכשיר עם גרסה נמוכה ממנה, כולל זה, יקבל מסך עדכון בלי אפשרות לדלג. ודאו שהגרסה הזו כבר בחנויות.';
+
+	/// he: 'לחייב עדכון'
+	String get minVersionConfirm => 'לחייב עדכון';
+
 	/// he: '״$name״ פורסם'
 	String saved({required Object name}) => '״${name}״ פורסם';
 
@@ -5990,6 +6020,13 @@ extension on Translations {
 			'more.whatsapp' => 'שליחת הודעה בוואטסאפ',
 			'more.email' => 'שליחת מייל',
 			'more.supportUnavailable' => 'לא הצלחנו לפתוח את האפליקציה',
+			'more.appVersion' => ({required Object version}) => 'גרסה ${version}',
+			'more.signatureTitle' => 'פרטים לצוות התמיכה',
+			'more.signatureName' => 'שם',
+			'more.signatureEmail' => 'אימייל',
+			'more.signaturePhone' => 'טלפון',
+			'more.signatureId' => 'מזהה חשבון',
+			'more.signatureVersion' => 'גרסה',
 			'more.preferences' => 'העדפות',
 			'more.help' => 'תמיכה ומידע',
 			'more.helpHint' => 'תמיכה, מדיניות פרטיות ותנאי שימוש',
@@ -6258,6 +6295,8 @@ extension on Translations {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את רשימת הקניות "${recipe}"',
 			'editor.title' => 'עריכת מתכון',
 			'editor.recipeTitle' => 'שם המתכון',
+			_ => null,
+		} ?? switch (path) {
 			'editor.titleHint' => 'לדוגמה: שקשוקה ירושלמית',
 			'editor.topics' => 'נושאים',
 			'editor.titleRequired' => 'חובה להזין שם למתכון',
@@ -6265,8 +6304,6 @@ extension on Translations {
 			'editor.cookMinutes' => 'זמן בישול (דק׳)',
 			'editor.amount' => 'כמות',
 			'editor.unit' => 'יחידה',
-			_ => null,
-		} ?? switch (path) {
 			'editor.ingredientName' => 'שם המצרך',
 			'editor.stepHint' => 'תארו את השלב',
 			'editor.addIngredient' => 'הוספת מצרך',
@@ -6593,9 +6630,9 @@ extension on Translations {
 			'nav.settings' => 'הגדרות',
 			'nav.community' => 'קהילה',
 			'update.forcedTitle' => 'נדרש עדכון',
-			'update.forcedBody' => ({required Object version}) => 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו לגרסה ${version} כדי להמשיך.',
+			'update.forcedBody' => 'הגרסה הזו של EasyPlate כבר לא נתמכת. עדכנו את האפליקציה כדי להמשיך.',
 			'update.optionalTitle' => 'יש גרסה חדשה',
-			'update.optionalBody' => ({required Object version}) => 'גרסה ${version} של EasyPlate כבר בחנות, עם השיפורים האחרונים.',
+			'update.optionalBody' => 'עדכנו כדי לקבל את השיפורים האחרונים.',
 			'update.updateNow' => 'עדכון עכשיו',
 			'update.later' => 'דלג',
 			'ads.badge' => 'מודעה',
@@ -6772,6 +6809,8 @@ extension on Translations {
 			'walkthrough.demoRecipesHint' => 'כך נראים מתכונים באפליקציה. לחצו על מתכון כדי לראות את העמוד המלא: זמנים, נושאים, אלרגנים, מצרכים ושלבים.',
 			'walkthrough.demoBooks' => 'ספרים לדוגמה',
 			'walkthrough.demoBooksHint' => 'כך נראה ספר מתכונים. לחצו על ספר כדי לפתוח אותו, לדפדף בין העמודים ולקפוץ מתוכן העניינים.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'דוגמה בלבד, לא נשמר',
 			'feedback.title' => 'דיווח והצעות',
 			'feedback.subtitle' => 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.',
@@ -6779,8 +6818,6 @@ extension on Translations {
 			'feedback.suggestion' => 'הצעה לשיפור',
 			'feedback.bugHint' => 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...',
 			'feedback.suggestionHint' => 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...',
-			_ => null,
-		} ?? switch (path) {
 			'feedback.send' => 'שליחה',
 			'feedback.sent' => 'תודה! הפנייה נשלחה.',
 			'feedback.failed' => 'השליחה נכשלה, נסו שוב מאוחר יותר',
@@ -7286,15 +7323,18 @@ extension on Translations {
 			'featureName.voiceAssistants' => 'שפי דרך Siri ו-Gemini',
 			'featureName.shefiLauncher' => 'אייקון שפי',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
+			'adminConfig.minVersionTitle' => 'לחייב עדכון?',
+			'adminConfig.minVersionBody' => ({required Object value, required Object current}) => 'גרסה מינימלית ${value} גבוהה מהגרסה שמותקנת כאן (${current}). כל מכשיר עם גרסה נמוכה ממנה, כולל זה, יקבל מסך עדכון בלי אפשרות לדלג. ודאו שהגרסה הזו כבר בחנויות.',
+			'adminConfig.minVersionConfirm' => 'לחייב עדכון',
 			'adminConfig.saved' => ({required Object name}) => '״${name}״ פורסם',
 			'adminConfig.count' => ({required Object n}) => '${n} הגדרות',
 			'adminConfig.searchAll' => 'חיפוש בכל ההגדרות',
 			'adminConfig.searchIn' => ({required Object section}) => 'חיפוש ב${section}',
 			'adminConfig.noResults' => ({required Object query}) => 'אין הגדרה שמתאימה ל״${query}״',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.filterAll' => 'הכל',
 			'adminConfig.clearSearch' => 'ניקוי החיפוש',
 			'adminConfig.noFlagsInState' => 'אין פיצ׳רים במצב הזה',

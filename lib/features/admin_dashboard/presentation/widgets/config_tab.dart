@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -141,7 +142,9 @@ class _ConfigTabState extends State<ConfigTab> {
     param: p,
     label: _ConfigStore.label(p.name),
     saving: _store.saving == p.name,
-    onChanged: (v) => _publish(context, _store, p, v),
+    // The tab's own context, not the row's: the row is rebuilt (its spinner)
+    // while it saves, and a message for a gone context was silently dropped.
+    onChanged: (v) => _publish(this.context, _store, p, v),
   );
 }
 
@@ -152,15 +155,54 @@ Future<void> _publish(
   RemoteParam param,
   String value,
 ) async {
+  final host = context;
+  // A minimum above this build locks every older device, this one included,
+  // behind an update screen with no way past it: ask first.
+  if (param.name == FirebaseService.minimumVersionKey) {
+    final current = (await PackageInfo.fromPlatform()).version;
+    if (_versionBelow(current, value)) {
+      if (!host.mounted) return;
+      final go = await AppDialog.general(
+        title: t.adminConfig.minVersionTitle,
+        message: t.adminConfig.minVersionBody(value: value, current: current),
+        confirmLabel: t.adminConfig.minVersionConfirm,
+        destructive: true,
+        icon: Icons.system_update_rounded,
+      ).show(host);
+      if (go != true) return;
+    }
+  }
   final ok = await store.set(param, value);
-  if (!context.mounted) return;
+  if (!host.mounted) return;
   if (ok) {
     AppDialog.success(
       message: t.adminConfig.saved(name: _ConfigStore.label(param.name)),
-    ).notify(context);
+    ).notify(host);
   } else {
-    AppDialog.error(message: t.adminConfig.saveFailed).show(context);
+    AppDialog.error(message: t.adminConfig.saveFailed).show(host);
   }
+}
+
+/// Whether dotted version [a] is below [b] ("1.0.0" < "1.0.1"); anything
+/// unreadable compares as not below, so it never asks for nothing.
+bool _versionBelow(String a, String b) {
+  List<int>? parts(String v) {
+    final out = <int>[];
+    for (final p in v.trim().split('+').first.split('.')) {
+      final n = int.tryParse(p);
+      if (n == null) return null;
+      out.add(n);
+    }
+    return out;
+  }
+
+  final x = parts(a), y = parts(b);
+  if (x == null || y == null) return false;
+  for (var i = 0; i < 3; i++) {
+    final l = i < x.length ? x[i] : 0, r = i < y.length ? y[i] : 0;
+    if (l != r) return l < r;
+  }
+  return false;
 }
 
 /// The search box above a list, in the shape of the other admin tabs'.

@@ -417,6 +417,13 @@ class _Translations$more$ru extends Translations$more$he {
 	@override String get whatsapp => 'Написать в WhatsApp';
 	@override String get email => 'Отправить письмо';
 	@override String get supportUnavailable => 'Не удалось открыть приложение';
+	@override String appVersion({required Object version}) => 'Версия ${version}';
+	@override String get signatureTitle => 'Данные для службы поддержки';
+	@override String get signatureName => 'Имя';
+	@override String get signatureEmail => 'Эл. почта';
+	@override String get signaturePhone => 'Телефон';
+	@override String get signatureId => 'ID аккаунта';
+	@override String get signatureVersion => 'Версия';
 	@override String get preferences => 'Предпочтения';
 	@override String get help => 'Поддержка и документы';
 	@override String get helpHint => 'Поддержка, политика конфиденциальности и условия';
@@ -1171,9 +1178,9 @@ class _Translations$update$ru extends Translations$update$he {
 
 	// Translations
 	@override String get forcedTitle => 'Требуется обновление';
-	@override String forcedBody({required Object version}) => 'Эта версия EasyPlate больше не поддерживается. Обновитесь до версии ${version}, чтобы продолжить.';
+	@override String get forcedBody => 'Эта версия EasyPlate больше не поддерживается. Обновите приложение, чтобы продолжить.';
 	@override String get optionalTitle => 'Вышла новая версия';
-	@override String optionalBody({required Object version}) => 'EasyPlate ${version} уже в магазине — с последними улучшениями.';
+	@override String get optionalBody => 'Обновите приложение, чтобы получить последние улучшения.';
 	@override String get updateNow => 'Обновить';
 	@override String get later => 'Пропустить';
 }
@@ -2443,6 +2450,13 @@ extension on TranslationsRu {
 			'more.whatsapp' => 'Написать в WhatsApp',
 			'more.email' => 'Отправить письмо',
 			'more.supportUnavailable' => 'Не удалось открыть приложение',
+			'more.appVersion' => ({required Object version}) => 'Версия ${version}',
+			'more.signatureTitle' => 'Данные для службы поддержки',
+			'more.signatureName' => 'Имя',
+			'more.signatureEmail' => 'Эл. почта',
+			'more.signaturePhone' => 'Телефон',
+			'more.signatureId' => 'ID аккаунта',
+			'more.signatureVersion' => 'Версия',
 			'more.preferences' => 'Предпочтения',
 			'more.help' => 'Поддержка и документы',
 			'more.helpHint' => 'Поддержка, политика конфиденциальности и условия',
@@ -2711,6 +2725,8 @@ extension on TranslationsRu {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} поделился/лась с вами списком покупок «${recipe}»',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
+			_ => null,
+		} ?? switch (path) {
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
 			'editor.topics' => 'Темы',
 			'editor.titleRequired' => 'Укажите название рецепта',
@@ -2718,8 +2734,6 @@ extension on TranslationsRu {
 			'editor.cookMinutes' => 'Готовка (мин)',
 			'editor.amount' => 'Количество',
 			'editor.unit' => 'Единица',
-			_ => null,
-		} ?? switch (path) {
 			'editor.ingredientName' => 'Название ингредиента',
 			'editor.stepHint' => 'Опишите шаг',
 			'editor.addIngredient' => 'Добавить ингредиент',
@@ -3046,9 +3060,9 @@ extension on TranslationsRu {
 			'nav.settings' => 'Настройки',
 			'nav.community' => 'Сообщество',
 			'update.forcedTitle' => 'Требуется обновление',
-			'update.forcedBody' => ({required Object version}) => 'Эта версия EasyPlate больше не поддерживается. Обновитесь до версии ${version}, чтобы продолжить.',
+			'update.forcedBody' => 'Эта версия EasyPlate больше не поддерживается. Обновите приложение, чтобы продолжить.',
 			'update.optionalTitle' => 'Вышла новая версия',
-			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} уже в магазине — с последними улучшениями.',
+			'update.optionalBody' => 'Обновите приложение, чтобы получить последние улучшения.',
 			'update.updateNow' => 'Обновить',
 			'update.later' => 'Пропустить',
 			'ads.badge' => 'Реклама',
@@ -3225,6 +3239,8 @@ extension on TranslationsRu {
 			'walkthrough.demoRecipesHint' => 'Так выглядят рецепты в приложении. Нажмите на рецепт, чтобы увидеть его страницу целиком: время, темы, аллергены, ингредиенты и шаги.',
 			'walkthrough.demoBooks' => 'Примеры книг',
 			'walkthrough.demoBooksHint' => 'Так выглядит книга рецептов. Нажмите на книгу, чтобы открыть её, листать страницы и переходить из оглавления.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Только пример, не сохраняется',
 			'feedback.title' => 'Сообщить и предложить',
 			'feedback.subtitle' => 'Нашли ошибку? Есть идея? Напишите нам здесь; мы читаем каждое сообщение.',
@@ -3232,8 +3248,6 @@ extension on TranslationsRu {
 			'feedback.suggestion' => 'Предложение',
 			'feedback.bugHint' => 'Опишите ошибку: что вы сделали, что произошло и чего ожидали...',
 			'feedback.suggestionHint' => 'Расскажите, что вы хотели бы видеть в приложении и чем это поможет...',
-			_ => null,
-		} ?? switch (path) {
 			'feedback.send' => 'Отправить',
 			'feedback.sent' => 'Спасибо! Сообщение отправлено.',
 			'feedback.failed' => 'Не удалось отправить, попробуйте позже',
@@ -3739,6 +3753,8 @@ extension on TranslationsRu {
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
 			'wakeWord.examples.0' => 'Эй, Шефи',
+			_ => null,
+		} ?? switch (path) {
 			'wakeWord.examples.1' => 'Эй, Шефи, что приготовить сегодня?',
 			'wakeWord.examples.2' => 'Эй, Шефи, добавь молоко в список покупок',
 			'wakeWord.examples.3' => 'Эй, Шефи, поставь таймер на десять минут',
@@ -3746,8 +3762,6 @@ extension on TranslationsRu {
 			'wakeWord.enableHint' => 'Микрофон открыт только для распознавания слов активации. Ничего не записывается и не сохраняется.',
 			'wakeWord.closedTitle' => 'Когда приложение закрыто',
 			'wakeWord.background' => 'Даже когда приложение закрыто',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.backgroundHint' => 'Прослушивание продолжается в фоне с постоянным уведомлением, а микрофон отображается как используемый. Распознавание идёт на телефоне и расходует мало батареи. Оно приостанавливается при выключенном экране, а после перезагрузки приложение нужно открыть один раз.',
 			'wakeWord.openDirectly' => 'Открывать сразу из фона',
 			'wakeWord.openDirectlyHint' => 'Без разрешения «Поверх других приложений» Шефи появится уведомлением, на которое нужно нажать. Нажмите, чтобы разрешить.',

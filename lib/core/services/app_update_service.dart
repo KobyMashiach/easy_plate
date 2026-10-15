@@ -1,11 +1,9 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart';
-import 'package:hive_ce/hive.dart';
+import 'package:flutter/widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'device_locale_store.dart';
 import 'firebase_service.dart';
 
 /// What the running build owes the store, per Remote Config.
@@ -37,16 +35,17 @@ class AppUpdateService {
   factory AppUpdateService() => _instance;
   AppUpdateService._internal();
 
-  /// Shares [DeviceLocaleStore]'s device-wide box: a skipped update belongs to
-  /// the install, not to whoever happens to be signed in, and it has to be
-  /// readable before auth resolves.
-  static const _skippedKey = 'skippedUpdateVersion';
 
   /// The gate widget listens; every activation of Remote Config re-publishes.
   final requirement = ValueNotifier<UpdateRequirement>(UpdateRequirement.none);
 
   String _current = '';
+
+  /// The release "Skip" was tapped on, until the app is next opened. Kept in
+  /// memory only: every launch and every return from the background asks
+  /// again (Koby's choice).
   String? _skipped;
+  AppLifecycleListener? _lifecycle;
 
   /// The version being offered, for the prompt's own copy.
   String get latestVersion =>
@@ -57,7 +56,13 @@ class AppUpdateService {
   /// in-app defaults, and the listener re-runs it once a fetch activates.
   Future<void> init() async {
     _current = await _readCurrentVersion();
-    _skipped = await _readSkipped();
+    _lifecycle ??= AppLifecycleListener(
+      onResume: () {
+        if (_skipped == null) return;
+        _skipped = null;
+        evaluate();
+      },
+    );
     FirebaseService().configRevision.addListener(evaluate);
     evaluate();
   }
@@ -92,10 +97,11 @@ class AppUpdateService {
     }
 
     final behindStore = (compareVersions(current, latest) ?? 0) < 0;
-    if (behindStore && compareVersions(skipped ?? '', latest) != 0) {
-      return UpdateRequirement.optional;
-    }
-    return UpdateRequirement.none;
+    if (!behindStore) return UpdateRequirement.none;
+    // [skipped] lives only until the app is next opened (see [_skipped]).
+    return compareVersions(skipped ?? '', latest) == 0
+        ? UpdateRequirement.none
+        : UpdateRequirement.optional;
   }
 
   /// Compares dotted version names numerically, so `1.10.0` is above `1.9.0`
@@ -137,18 +143,11 @@ class AppUpdateService {
     return segments;
   }
 
-  /// Dismisses the optional prompt for [latestVersion] only. The next release
-  /// asks again, and a raised floor overrides this outright.
-  Future<void> skip() async {
-    final latest = latestVersion;
-    _skipped = latest;
+  /// Dismisses the optional prompt for [latestVersion] until the app is
+  /// next opened. A raised floor overrides this outright.
+  void skip() {
+    _skipped = latestVersion;
     requirement.value = UpdateRequirement.none;
-    try {
-      await (await _box()).put(_skippedKey, latest);
-    } catch (e) {
-      // Losing the record only costs one extra prompt next launch.
-      debugPrint('Skipped-update write failed: $e');
-    }
   }
 
   /// The listing for this platform, or null when there is nothing to open —
@@ -182,7 +181,6 @@ class AppUpdateService {
     }
   }
 
-  Future<Box<String>> _box() => Hive.openBox<String>(DeviceLocaleStore.boxName);
 
   Future<String> _readCurrentVersion() async {
     try {
@@ -195,12 +193,4 @@ class AppUpdateService {
     }
   }
 
-  Future<String?> _readSkipped() async {
-    try {
-      return (await _box()).get(_skippedKey);
-    } catch (e) {
-      debugPrint('Skipped-update read failed: $e');
-      return null;
-    }
-  }
 }

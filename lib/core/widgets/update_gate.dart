@@ -49,8 +49,9 @@ class _UpdatePrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // No version number in the text: the console may name only a minimum,
+    // and "update to 0.0.0" said nothing useful.
     final service = AppUpdateService();
-    final version = service.latestVersion;
 
     return Positioned.fill(
       // The gate sits in MaterialApp.builder, above the Navigator, so no
@@ -102,8 +103,8 @@ class _UpdatePrompt extends StatelessWidget {
                         const SizedBox(height: AppSpacing.base),
                         Text(
                           forced
-                              ? t.update.forcedBody(version: version)
-                              : t.update.optionalBody(version: version),
+                              ? t.update.forcedBody
+                              : t.update.optionalBody,
                           style: AppTextStyles.bodyMd.copyWith(
                             color: AppColors.onSurfaceVariant,
                           ),

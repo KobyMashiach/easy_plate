@@ -419,6 +419,13 @@ class _Translations$more$en extends Translations$more$he {
 	@override String get whatsapp => 'Message us on WhatsApp';
 	@override String get email => 'Send an email';
 	@override String get supportUnavailable => 'We could not open that app';
+	@override String appVersion({required Object version}) => 'Version ${version}';
+	@override String get signatureTitle => 'Details for the support team';
+	@override String get signatureName => 'Name';
+	@override String get signatureEmail => 'Email';
+	@override String get signaturePhone => 'Phone';
+	@override String get signatureId => 'Account ID';
+	@override String get signatureVersion => 'Version';
 	@override String get preferences => 'Preferences';
 	@override String get help => 'Support & legal';
 	@override String get helpHint => 'Support, privacy policy and terms of service';
@@ -1173,9 +1180,9 @@ class _Translations$update$en extends Translations$update$he {
 
 	// Translations
 	@override String get forcedTitle => 'Update required';
-	@override String forcedBody({required Object version}) => 'This version of EasyPlate is no longer supported. Update to ${version} to continue.';
+	@override String get forcedBody => 'This version of EasyPlate is no longer supported. Update the app to continue.';
 	@override String get optionalTitle => 'A new version is out';
-	@override String optionalBody({required Object version}) => 'EasyPlate ${version} is in the store, with the latest improvements.';
+	@override String get optionalBody => 'Update to get the latest improvements.';
 	@override String get updateNow => 'Update now';
 	@override String get later => 'Skip';
 }
@@ -1825,6 +1832,9 @@ class _Translations$adminConfig$en extends Translations$adminConfig$he {
 	@override String get intro => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).';
 	@override String get loadFailed => 'Could not load the configuration';
 	@override String get saveFailed => 'Publishing failed. Check the value and try again';
+	@override String get minVersionTitle => 'Force an update?';
+	@override String minVersionBody({required Object value, required Object current}) => 'Minimum version ${value} is above the version installed here (${current}). Every device below it, this one included, gets an update screen it cannot skip. Make sure that version is already in the stores.';
+	@override String get minVersionConfirm => 'Force update';
 	@override String saved({required Object name}) => '"${name}" published';
 	@override String count({required Object n}) => '${n} settings';
 	@override String get searchAll => 'Search all settings';
@@ -2713,6 +2723,13 @@ extension on TranslationsEn {
 			'more.whatsapp' => 'Message us on WhatsApp',
 			'more.email' => 'Send an email',
 			'more.supportUnavailable' => 'We could not open that app',
+			'more.appVersion' => ({required Object version}) => 'Version ${version}',
+			'more.signatureTitle' => 'Details for the support team',
+			'more.signatureName' => 'Name',
+			'more.signatureEmail' => 'Email',
+			'more.signaturePhone' => 'Phone',
+			'more.signatureId' => 'Account ID',
+			'more.signatureVersion' => 'Version',
 			'more.preferences' => 'Preferences',
 			'more.help' => 'Support & legal',
 			'more.helpHint' => 'Support, privacy policy and terms of service',
@@ -2981,6 +2998,8 @@ extension on TranslationsEn {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} shared the grocery list "${recipe}" with you',
 			'editor.title' => 'Edit recipe',
 			'editor.recipeTitle' => 'Recipe name',
+			_ => null,
+		} ?? switch (path) {
 			'editor.titleHint' => 'For example: Jerusalem shakshuka',
 			'editor.topics' => 'Topics',
 			'editor.titleRequired' => 'A recipe name is required',
@@ -2988,8 +3007,6 @@ extension on TranslationsEn {
 			'editor.cookMinutes' => 'Cook time (min)',
 			'editor.amount' => 'Amount',
 			'editor.unit' => 'Unit',
-			_ => null,
-		} ?? switch (path) {
 			'editor.ingredientName' => 'Ingredient name',
 			'editor.stepHint' => 'Describe the step',
 			'editor.addIngredient' => 'Add ingredient',
@@ -3316,9 +3333,9 @@ extension on TranslationsEn {
 			'nav.settings' => 'Settings',
 			'nav.community' => 'Community',
 			'update.forcedTitle' => 'Update required',
-			'update.forcedBody' => ({required Object version}) => 'This version of EasyPlate is no longer supported. Update to ${version} to continue.',
+			'update.forcedBody' => 'This version of EasyPlate is no longer supported. Update the app to continue.',
 			'update.optionalTitle' => 'A new version is out',
-			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} is in the store, with the latest improvements.',
+			'update.optionalBody' => 'Update to get the latest improvements.',
 			'update.updateNow' => 'Update now',
 			'update.later' => 'Skip',
 			'ads.badge' => 'Ad',
@@ -3495,6 +3512,8 @@ extension on TranslationsEn {
 			'walkthrough.demoRecipesHint' => 'This is what recipes look like in the app. Tap one to see its full page: times, topics, allergens, ingredients and steps.',
 			'walkthrough.demoBooks' => 'Sample books',
 			'walkthrough.demoBooksHint' => 'This is what a recipe book looks like. Tap one to open it, turn its pages and jump from the contents.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Sample only, not saved',
 			'feedback.title' => 'Report and suggest',
 			'feedback.subtitle' => 'Found a bug? Have an idea? Write to us here; every message is read.',
@@ -3502,8 +3521,6 @@ extension on TranslationsEn {
 			'feedback.suggestion' => 'Suggestion',
 			'feedback.bugHint' => 'Describe the bug: what you did, what happened, and what you expected...',
 			'feedback.suggestionHint' => 'Tell us what you would like the app to do, and how it would help you...',
-			_ => null,
-		} ?? switch (path) {
 			'feedback.send' => 'Send',
 			'feedback.sent' => 'Thanks! Your message was sent.',
 			'feedback.failed' => 'Sending failed, please try again later',
@@ -4009,15 +4026,18 @@ extension on TranslationsEn {
 			'featureName.voiceAssistants' => 'Shefi in Siri and Gemini',
 			'featureName.shefiLauncher' => 'Shefi icon',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
+			'adminConfig.minVersionTitle' => 'Force an update?',
+			'adminConfig.minVersionBody' => ({required Object value, required Object current}) => 'Minimum version ${value} is above the version installed here (${current}). Every device below it, this one included, gets an update screen it cannot skip. Make sure that version is already in the stores.',
+			'adminConfig.minVersionConfirm' => 'Force update',
 			'adminConfig.saved' => ({required Object name}) => '"${name}" published',
 			'adminConfig.count' => ({required Object n}) => '${n} settings',
 			'adminConfig.searchAll' => 'Search all settings',
 			'adminConfig.searchIn' => ({required Object section}) => 'Search in ${section}',
 			'adminConfig.noResults' => ({required Object query}) => 'No setting matches "${query}"',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.filterAll' => 'All',
 			'adminConfig.clearSearch' => 'Clear search',
 			'adminConfig.noFlagsInState' => 'No features in this state',

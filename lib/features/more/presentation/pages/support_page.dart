@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -21,18 +23,43 @@ class SupportPage extends StatelessWidget {
 
   /// From Remote Config (`support_phone`, `support_email`), so the console
   /// can change where help goes without a release. wa.me wants digits only.
-  static String get supportPhone =>
-      FirebaseService().remoteString(FirebaseService.supportPhoneKey).replaceAll(RegExp(r'\D'), '');
-  static String get supportEmail => FirebaseService().remoteString(FirebaseService.supportEmailKey);
+  static String get supportPhone => FirebaseService()
+      .remoteString(FirebaseService.supportPhoneKey)
+      .replaceAll(RegExp(r'\D'), '');
+  static String get supportEmail =>
+      FirebaseService().remoteString(FirebaseService.supportEmailKey);
 
-  /// The signed-in identity goes in the message body so a reply does not have
-  /// to start by asking who is writing.
-  String get _signature {
+  /// Who is writing and from which build, under the space the user types
+  /// in, so a reply does not have to start by asking. Only the lines that
+  /// have a value; the labels in the user's language.
+  Future<String> _signature() async {
     final session = AuthSessionService();
-    final name = session.profile?.fullName ?? '';
-    final uid = session.user?.uid ?? '';
-    final userEmail = session.user?.email ?? '';
-    return '\n\n---\n$name\nID: $uid\nEMAIL: $userEmail';
+    final s = t.more;
+    String? version;
+    try {
+      final info = await PackageInfo.fromPlatform();
+      version = '${info.version} (${info.buildNumber})';
+    } catch (_) {}
+    final device = switch (defaultTargetPlatform) {
+      TargetPlatform.iOS => 'iOS',
+      TargetPlatform.android => 'Android',
+      _ => null,
+    };
+    final lines = <String>[
+      for (final (label, value) in [
+        (s.signatureName, session.profile?.fullName),
+        (s.signatureEmail, session.user?.email),
+        (s.signaturePhone, session.user?.phoneNumber),
+        (s.signatureId, session.user?.uid),
+        (
+          s.signatureVersion,
+          [version, device].whereType<String>().join(' · '),
+        ),
+      ])
+        if (value != null && value.trim().isNotEmpty)
+          '▪️ $label: ${value.trim()}',
+    ];
+    return '\n\n\n━━━━━━━━━━━━\n📋 ${s.signatureTitle}\n${lines.join('\n')}';
   }
 
   Future<void> _open(BuildContext context, Uri uri) async {
@@ -125,30 +152,36 @@ class SupportPage extends StatelessWidget {
               label: t.more.whatsapp,
               icon: Icons.chat_rounded,
               expanded: true,
-              onPressed: () => _open(
-                context,
-                Uri.https('wa.me', '/$supportPhone', {
-                  'text': _signature,
-                }),
-              ),
+              onPressed: () async {
+                final signature = await _signature();
+                if (!context.mounted) return;
+                await _open(
+                  context,
+                  Uri.https('wa.me', '/$supportPhone', {'text': signature}),
+                );
+              },
             ),
             const SizedBox(height: AppSpacing.sm),
             ClayButton(
               label: t.more.email,
               icon: Icons.mail_rounded,
               expanded: true,
-              onPressed: () => _open(
-                context,
-                Uri(
-                  scheme: 'mailto',
-                  path: supportEmail,
-                  // Built by hand rather than with queryParameters, which
-                  // encodes spaces as '+' — mail clients show that literally.
-                  query:
-                      'subject=${Uri.encodeComponent(t.appName)}'
-                      '&body=${Uri.encodeComponent(_signature)}',
-                ),
-              ),
+              onPressed: () async {
+                final signature = await _signature();
+                if (!context.mounted) return;
+                await _open(
+                  context,
+                  Uri(
+                    scheme: 'mailto',
+                    path: supportEmail,
+                    // Built by hand rather than with queryParameters, which
+                    // encodes spaces as '+' — mail clients show that literally.
+                    query:
+                        'subject=${Uri.encodeComponent(t.appName)}'
+                        '&body=${Uri.encodeComponent(signature)}',
+                  ),
+                );
+              },
             ),
             const FeatureGate(
               feature: FeaturesFlags.feedback,

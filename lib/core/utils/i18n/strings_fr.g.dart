@@ -417,6 +417,13 @@ class _Translations$more$fr extends Translations$more$he {
 	@override String get whatsapp => 'Nous écrire sur WhatsApp';
 	@override String get email => 'Envoyer un e-mail';
 	@override String get supportUnavailable => 'Impossible d\'ouvrir cette application';
+	@override String appVersion({required Object version}) => 'Version ${version}';
+	@override String get signatureTitle => 'Informations pour l’équipe d’assistance';
+	@override String get signatureName => 'Nom';
+	@override String get signatureEmail => 'E-mail';
+	@override String get signaturePhone => 'Téléphone';
+	@override String get signatureId => 'ID du compte';
+	@override String get signatureVersion => 'Version';
 	@override String get preferences => 'Préférences';
 	@override String get help => 'Support et mentions légales';
 	@override String get helpHint => 'Support, politique de confidentialité et conditions';
@@ -1171,9 +1178,9 @@ class _Translations$update$fr extends Translations$update$he {
 
 	// Translations
 	@override String get forcedTitle => 'Mise à jour requise';
-	@override String forcedBody({required Object version}) => 'Cette version d\'EasyPlate n\'est plus prise en charge. Installez la version ${version} pour continuer.';
+	@override String get forcedBody => 'Cette version d’EasyPlate n’est plus prise en charge. Mettez l’application à jour pour continuer.';
 	@override String get optionalTitle => 'Une nouvelle version est disponible';
-	@override String optionalBody({required Object version}) => 'EasyPlate ${version} est dans le store, avec les dernières améliorations.';
+	@override String get optionalBody => 'Mettez à jour pour profiter des dernières améliorations.';
 	@override String get updateNow => 'Mettre à jour';
 	@override String get later => 'Ignorer';
 }
@@ -2443,6 +2450,13 @@ extension on TranslationsFr {
 			'more.whatsapp' => 'Nous écrire sur WhatsApp',
 			'more.email' => 'Envoyer un e-mail',
 			'more.supportUnavailable' => 'Impossible d\'ouvrir cette application',
+			'more.appVersion' => ({required Object version}) => 'Version ${version}',
+			'more.signatureTitle' => 'Informations pour l’équipe d’assistance',
+			'more.signatureName' => 'Nom',
+			'more.signatureEmail' => 'E-mail',
+			'more.signaturePhone' => 'Téléphone',
+			'more.signatureId' => 'ID du compte',
+			'more.signatureVersion' => 'Version',
 			'more.preferences' => 'Préférences',
 			'more.help' => 'Support et mentions légales',
 			'more.helpHint' => 'Support, politique de confidentialité et conditions',
@@ -2711,6 +2725,8 @@ extension on TranslationsFr {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} a partagé la liste de courses « ${recipe} » avec vous',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
+			_ => null,
+		} ?? switch (path) {
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
 			'editor.topics' => 'Thèmes',
 			'editor.titleRequired' => 'Un nom de recette est requis',
@@ -2718,8 +2734,6 @@ extension on TranslationsFr {
 			'editor.cookMinutes' => 'Cuisson (min)',
 			'editor.amount' => 'Quantité',
 			'editor.unit' => 'Unité',
-			_ => null,
-		} ?? switch (path) {
 			'editor.ingredientName' => 'Nom de l\'ingrédient',
 			'editor.stepHint' => 'Décrivez l\'étape',
 			'editor.addIngredient' => 'Ajouter un ingrédient',
@@ -3046,9 +3060,9 @@ extension on TranslationsFr {
 			'nav.settings' => 'Réglages',
 			'nav.community' => 'Communauté',
 			'update.forcedTitle' => 'Mise à jour requise',
-			'update.forcedBody' => ({required Object version}) => 'Cette version d\'EasyPlate n\'est plus prise en charge. Installez la version ${version} pour continuer.',
+			'update.forcedBody' => 'Cette version d’EasyPlate n’est plus prise en charge. Mettez l’application à jour pour continuer.',
 			'update.optionalTitle' => 'Une nouvelle version est disponible',
-			'update.optionalBody' => ({required Object version}) => 'EasyPlate ${version} est dans le store, avec les dernières améliorations.',
+			'update.optionalBody' => 'Mettez à jour pour profiter des dernières améliorations.',
 			'update.updateNow' => 'Mettre à jour',
 			'update.later' => 'Ignorer',
 			'ads.badge' => 'Publicité',
@@ -3225,6 +3239,8 @@ extension on TranslationsFr {
 			'walkthrough.demoRecipesHint' => 'Voici à quoi ressemblent les recettes dans l\'application. Touchez-en une pour voir sa page complète : temps, thèmes, allergènes, ingrédients et étapes.',
 			'walkthrough.demoBooks' => 'Livres d\'exemple',
 			'walkthrough.demoBooksHint' => 'Voici à quoi ressemble un livre de recettes. Touchez-en un pour l\'ouvrir, tourner ses pages et naviguer depuis le sommaire.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Exemple seulement, rien n\'est enregistré',
 			'feedback.title' => 'Signaler et suggérer',
 			'feedback.subtitle' => 'Un bug ? Une idée ? Écrivez-nous ici ; chaque message est lu.',
@@ -3232,8 +3248,6 @@ extension on TranslationsFr {
 			'feedback.suggestion' => 'Suggestion',
 			'feedback.bugHint' => 'Décrivez le bug : ce que vous avez fait, ce qui s\'est passé et ce que vous attendiez...',
 			'feedback.suggestionHint' => 'Dites-nous ce que vous aimeriez que l\'application fasse, et en quoi cela vous aiderait...',
-			_ => null,
-		} ?? switch (path) {
 			'feedback.send' => 'Envoyer',
 			'feedback.sent' => 'Merci ! Votre message a été envoyé.',
 			'feedback.failed' => 'L\'envoi a échoué, réessayez plus tard',
@@ -3739,6 +3753,8 @@ extension on TranslationsFr {
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',
 			'wakeWord.examples.0' => 'Hé Shefi',
+			_ => null,
+		} ?? switch (path) {
 			'wakeWord.examples.1' => 'Hé Shefi, qu\'est-ce que je cuisine aujourd\'hui ?',
 			'wakeWord.examples.2' => 'Hé Shefi, ajoute du lait à la liste de courses',
 			'wakeWord.examples.3' => 'Hé Shefi, lance un minuteur de dix minutes',
@@ -3746,8 +3762,6 @@ extension on TranslationsFr {
 			'wakeWord.enableHint' => 'Le micro n\'est ouvert que pour reconnaître les mots d\'activation. Rien n\'est enregistré ni conservé.',
 			'wakeWord.closedTitle' => 'Quand l\'app est fermée',
 			'wakeWord.background' => 'Aussi quand l\'app est fermée',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.backgroundHint' => 'L’écoute continue en arrière-plan avec une notification permanente, et le micro apparaît comme utilisé. Le repérage se fait sur le téléphone et consomme peu de batterie. Elle s’arrête écran éteint, et après un redémarrage il faut ouvrir l’app une fois.',
 			'wakeWord.openDirectly' => 'Ouvrir directement depuis l\'arrière-plan',
 			'wakeWord.openDirectlyHint' => 'Sans « Afficher par-dessus les autres apps », Shefi apparaît sous forme de notification à toucher. Touchez ici pour l\'autoriser.',

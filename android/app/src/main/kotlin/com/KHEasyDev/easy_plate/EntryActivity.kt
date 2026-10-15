@@ -44,7 +44,12 @@ class EntryActivity : Activity() {
             return
         }
 
+        // A copy of the launcher's intent, minus what this trampoline's own
+        // manifest added to it: excludeFromRecents puts
+        // FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS on the intent, and carried over it
+        // hid the app's real task from the recent apps screen.
         val forward = Intent(intent).setClass(this, MainActivity::class.java)
+        forward.removeFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or Intent.FLAG_ACTIVITY_NO_HISTORY)
         if (viaGemini) {
             forward.action = Intent.ACTION_VIEW
             forward.data = Uri.parse("easyplate://open/widget/assistant?voice=1&source=launcher")

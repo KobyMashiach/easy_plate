@@ -417,6 +417,13 @@ class _Translations$more$ar extends Translations$more$he {
 	@override String get whatsapp => 'راسلونا على واتساب';
 	@override String get email => 'إرسال بريد';
 	@override String get supportUnavailable => 'تعذّر فتح التطبيق';
+	@override String appVersion({required Object version}) => 'الإصدار ${version}';
+	@override String get signatureTitle => 'تفاصيل لفريق الدعم';
+	@override String get signatureName => 'الاسم';
+	@override String get signatureEmail => 'البريد الإلكتروني';
+	@override String get signaturePhone => 'الهاتف';
+	@override String get signatureId => 'معرّف الحساب';
+	@override String get signatureVersion => 'الإصدار';
 	@override String get preferences => 'التفضيلات';
 	@override String get help => 'الدعم والمعلومات';
 	@override String get helpHint => 'الدعم وسياسة الخصوصية وشروط الخدمة';
@@ -1171,9 +1178,9 @@ class _Translations$update$ar extends Translations$update$he {
 
 	// Translations
 	@override String get forcedTitle => 'التحديث مطلوب';
-	@override String forcedBody({required Object version}) => 'لم تعد هذه النسخة من EasyPlate مدعومة. حدِّث إلى ${version} للمتابعة.';
+	@override String get forcedBody => 'هذا الإصدار من EasyPlate لم يعد مدعومًا. حدّث التطبيق للمتابعة.';
 	@override String get optionalTitle => 'صدرت نسخة جديدة';
-	@override String optionalBody({required Object version}) => 'النسخة ${version} من EasyPlate متوفرة في المتجر مع آخر التحسينات.';
+	@override String get optionalBody => 'حدّث التطبيق للحصول على أحدث التحسينات.';
 	@override String get updateNow => 'تحديث الآن';
 	@override String get later => 'تخطٍ';
 }
@@ -2443,6 +2450,13 @@ extension on TranslationsAr {
 			'more.whatsapp' => 'راسلونا على واتساب',
 			'more.email' => 'إرسال بريد',
 			'more.supportUnavailable' => 'تعذّر فتح التطبيق',
+			'more.appVersion' => ({required Object version}) => 'الإصدار ${version}',
+			'more.signatureTitle' => 'تفاصيل لفريق الدعم',
+			'more.signatureName' => 'الاسم',
+			'more.signatureEmail' => 'البريد الإلكتروني',
+			'more.signaturePhone' => 'الهاتف',
+			'more.signatureId' => 'معرّف الحساب',
+			'more.signatureVersion' => 'الإصدار',
 			'more.preferences' => 'التفضيلات',
 			'more.help' => 'الدعم والمعلومات',
 			'more.helpHint' => 'الدعم وسياسة الخصوصية وشروط الخدمة',
@@ -2711,6 +2725,8 @@ extension on TranslationsAr {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك قائمة التسوق "${recipe}"',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
+			_ => null,
+		} ?? switch (path) {
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
 			'editor.topics' => 'المواضيع',
 			'editor.titleRequired' => 'يجب إدخال اسم للوصفة',
@@ -2718,8 +2734,6 @@ extension on TranslationsAr {
 			'editor.cookMinutes' => 'وقت الطهي (دقيقة)',
 			'editor.amount' => 'الكمية',
 			'editor.unit' => 'الوحدة',
-			_ => null,
-		} ?? switch (path) {
 			'editor.ingredientName' => 'اسم المكوّن',
 			'editor.stepHint' => 'صف الخطوة',
 			'editor.addIngredient' => 'إضافة مكوّن',
@@ -3046,9 +3060,9 @@ extension on TranslationsAr {
 			'nav.settings' => 'الإعدادات',
 			'nav.community' => 'المجتمع',
 			'update.forcedTitle' => 'التحديث مطلوب',
-			'update.forcedBody' => ({required Object version}) => 'لم تعد هذه النسخة من EasyPlate مدعومة. حدِّث إلى ${version} للمتابعة.',
+			'update.forcedBody' => 'هذا الإصدار من EasyPlate لم يعد مدعومًا. حدّث التطبيق للمتابعة.',
 			'update.optionalTitle' => 'صدرت نسخة جديدة',
-			'update.optionalBody' => ({required Object version}) => 'النسخة ${version} من EasyPlate متوفرة في المتجر مع آخر التحسينات.',
+			'update.optionalBody' => 'حدّث التطبيق للحصول على أحدث التحسينات.',
 			'update.updateNow' => 'تحديث الآن',
 			'update.later' => 'تخطٍ',
 			'ads.badge' => 'إعلان',
@@ -3225,6 +3239,8 @@ extension on TranslationsAr {
 			'walkthrough.demoRecipesHint' => 'هكذا تبدو الوصفات في التطبيق. اضغط على وصفة لرؤية صفحتها الكاملة: الأوقات، المواضيع، مسببات الحساسية، المكونات والخطوات.',
 			'walkthrough.demoBooks' => 'كتب نموذجية',
 			'walkthrough.demoBooksHint' => 'هكذا يبدو كتاب الوصفات. اضغط على كتاب لفتحه وتقليب صفحاته والانتقال من الفهرس.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'نموذج فقط، لا يُحفظ',
 			'feedback.title' => 'إبلاغ واقتراحات',
 			'feedback.subtitle' => 'وجدت خللاً؟ لديك فكرة؟ اكتب لنا هنا، ونقرأ كل رسالة.',
@@ -3232,8 +3248,6 @@ extension on TranslationsAr {
 			'feedback.suggestion' => 'اقتراح تحسين',
 			'feedback.bugHint' => 'صف الخلل: ماذا فعلت، ماذا حدث، وماذا توقعت أن يحدث...',
 			'feedback.suggestionHint' => 'أخبرنا بما تودّ أن يوفره التطبيق، وكيف سيساعدك...',
-			_ => null,
-		} ?? switch (path) {
 			'feedback.send' => 'إرسال',
 			'feedback.sent' => 'شكراً! تم إرسال رسالتك.',
 			'feedback.failed' => 'فشل الإرسال، حاول لاحقاً',
@@ -3739,6 +3753,8 @@ extension on TranslationsAr {
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
 			'wakeWord.examples.0' => 'هاي شيفي',
+			_ => null,
+		} ?? switch (path) {
 			'wakeWord.examples.1' => 'هاي شيفي، ماذا أطبخ اليوم؟',
 			'wakeWord.examples.2' => 'هاي شيفي، أضف الحليب إلى قائمة التسوق',
 			'wakeWord.examples.3' => 'هاي شيفي، شغّل مؤقتًا لعشر دقائق',
@@ -3746,8 +3762,6 @@ extension on TranslationsAr {
 			'wakeWord.enableHint' => 'الميكروفون مفتوح لالتقاط كلمات التنبيه فقط. لا يُسجَّل أي شيء ولا يُحفظ.',
 			'wakeWord.closedTitle' => 'عندما يكون التطبيق مغلقًا',
 			'wakeWord.background' => 'حتى عندما يكون التطبيق مغلقًا',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.backgroundHint' => 'يستمر الاستماع في الخلفية مع إشعار دائم، ويظهر الميكروفون قيد الاستخدام. يجري الالتقاط داخل الهاتف ويستهلك القليل من البطارية. يتوقف الاستماع عندما تكون الشاشة مطفأة، وبعد إعادة تشغيل الهاتف يجب فتح التطبيق مرة واحدة.',
 			'wakeWord.openDirectly' => 'الفتح مباشرة من الخلفية',
 			'wakeWord.openDirectlyHint' => 'بدون إذن "الظهور فوق التطبيقات الأخرى" يظهر شيفي كإشعار تنقر عليه. انقر هنا للسماح.',

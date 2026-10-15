@@ -122,12 +122,14 @@
              Shefi, listening. It is also what lets the system assistant's
              own wake word reach Shefi with no microphone of ours open:
              "Hey Google, open Shefi" launches it. Enabled or hidden at run
-             time by ff_shefi_launcher (WakeWordController.setLauncherIcon). -->
+             time by ff_shefi_launcher (WakeWordController.setLauncherIcon); off unless
+             the flag turns it on, since a second icon reads as a second app. -->
         <activity-alias
             android:name=".ShefiLauncher"
             android:targetActivity=".MainActivity"
             android:label="@string/shefi_launcher_label"
             android:icon="@mipmap/ic_launcher"
+            android:enabled="false"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

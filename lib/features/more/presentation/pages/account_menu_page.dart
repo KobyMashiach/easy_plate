@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -235,6 +236,25 @@ class AccountMenuPage extends StatelessWidget {
                   icon: Icons.logout_rounded,
                   expanded: true,
                   onPressed: () => _confirmSignOut(context),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                // The installed version, for support and for knowing whether
+                // the store's update has landed.
+                FutureBuilder<PackageInfo>(
+                  future: PackageInfo.fromPlatform(),
+                  builder: (context, snapshot) {
+                    final info = snapshot.data;
+                    if (info == null) return const SizedBox.shrink();
+                    return Text(
+                      t.more.appVersion(
+                        version: '${info.version} (${info.buildNumber})',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.labelSm.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
