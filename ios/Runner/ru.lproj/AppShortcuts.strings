@@ -4,3 +4,9 @@
 "Ask Shefi in ${applicationName}" = "Спросить Шефи в ${applicationName}";
 "Talk to Shefi in ${applicationName}" = "Поговорить с Шефи в ${applicationName}";
 "Open Shefi in ${applicationName}" = "Открыть Шефи в ${applicationName}";
+"Hey ${applicationName} add to the grocery list" = "Эй ${applicationName} добавь в список покупок";
+"Hey ${applicationName} add to the shopping list" = "Привет ${applicationName} добавь в список покупок";
+"Add to the grocery list in ${applicationName}" = "Добавить в список покупок в ${applicationName}";
+"Hey ${applicationName} what's on today's menu" = "Эй ${applicationName} что в меню сегодня";
+"Hey ${applicationName} what's for dinner today" = "Эй ${applicationName} что мы едим сегодня";
+"Today's menu in ${applicationName}" = "Меню на сегодня в ${applicationName}";

@@ -6,3 +6,12 @@
 "Talk to Shefi" = "Talk to Shefi";
 "Opens Shefi, listening." = "Opens Shefi, listening.";
 "Shefi couldn't answer right now. Please try again in a moment." = "Shefi couldn't answer right now. Please try again in a moment.";
+"How can I help?" = "How can I help?";
+"Add to the grocery list" = "Add to the grocery list";
+"Shefi adds items to your grocery list." = "Shefi adds items to your grocery list.";
+"Items" = "Items";
+"What should I add to the grocery list?" = "What should I add to the grocery list?";
+"Add to the grocery list: %@" = "Add to the grocery list: %@";
+"Today's menu" = "Today's menu";
+"Shefi tells you what is on today's menu." = "Shefi tells you what is on today's menu.";
+"What is on today's menu?" = "What is on today's menu?";

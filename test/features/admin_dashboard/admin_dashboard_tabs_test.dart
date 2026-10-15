@@ -318,7 +318,7 @@ void main() {
     expect(find.textContaining(DashboardFormat.usd(cost)), findsWidgets);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text(s.rangeToday));
+    await tester.tap(find.byTooltip(s.rangeToday));
     await tester.pumpAndSettle();
     expect(dashboard.loadedPeriod, DashboardPeriod.today);
   });
@@ -347,7 +347,7 @@ void main() {
     expect(tester.takeException(), isNull);
 
     // The blocked filter keeps only Bob.
-    await tester.tap(find.text(t.adminDashboard.blocked).first);
+    await tester.tap(find.byTooltip(t.adminDashboard.blocked).first);
     await tester.pumpAndSettle();
     expect(find.text('Bob'), findsOneWidget);
     expect(find.text('Ann'), findsNothing);

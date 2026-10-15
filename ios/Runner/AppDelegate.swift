@@ -36,5 +36,50 @@ import google_mobile_ads
       name: ShefiVoiceBridge.channelName,
       binaryMessenger: engineBridge.applicationRegistrar.messenger()
     )
+    let device = FlutterMethodChannel(
+      name: "easy_plate/device",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    device.setMethodCallHandler { call, result in
+      if call.method == "hardwareId" {
+        result(DeviceKeychainId.value())
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+}
+
+/// The device's own id for the one-device rule. A Keychain item outlives
+/// the app being deleted and installed again, unlike the id the app keeps
+/// in Hive (and unlike identifierForVendor, which resets when no app of
+/// ours is left). "ThisDeviceOnly": a backup restored on another iPhone
+/// does not carry it over. Dart hashes it before it leaves the phone.
+enum DeviceKeychainId {
+  private static let service = "com.KHEasyDev.easyPlate.device"
+  private static let account = "hardware_id"
+
+  static func value() -> String? {
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassGenericPassword,
+      kSecAttrService as String: service,
+      kSecAttrAccount as String: account,
+      kSecReturnData as String: true,
+      kSecMatchLimit as String: kSecMatchLimitOne,
+    ]
+    var item: CFTypeRef?
+    if SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+       let data = item as? Data, let stored = String(data: data, encoding: .utf8), !stored.isEmpty {
+      return stored
+    }
+    let minted = UUID().uuidString
+    let add: [String: Any] = [
+      kSecClass as String: kSecClassGenericPassword,
+      kSecAttrService as String: service,
+      kSecAttrAccount as String: account,
+      kSecValueData as String: Data(minted.utf8),
+      kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+    ]
+    return SecItemAdd(add as CFDictionary, nil) == errSecSuccess ? minted : nil
   }
 }

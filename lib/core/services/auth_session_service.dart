@@ -434,6 +434,17 @@ class AuthSessionService extends ChangeNotifier {
     return outcome;
   }
 
+  /// From the session screen, once the phone was confirmed again by SMS:
+  /// this device becomes the account's session, then the gate opens.
+  Future<bool> takeoverSession() async {
+    if (_user == null || _stage != AuthStage.otherDevice) return false;
+    final ok = await DeviceSessionService().takeover(
+      pushToken: await FirebaseService().currentPushToken(),
+    );
+    if (ok) await retrySession();
+    return ok;
+  }
+
   /// From the session screen, after the other device signed out: asks
   /// again, and the gate opens if the server now says yes.
   Future<void> retrySession() async {

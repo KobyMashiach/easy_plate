@@ -12,7 +12,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
 const proxy = require("./aiProxy").internals;
-const { isAdmin } = require("./adminUsers").internals;
+const { isAdmin } = require("./permissions");
 
 const FLAG_RE = /^ff_/;
 
@@ -81,7 +81,7 @@ exports.adminRemoteConfig = onRequest(
     if (req.method !== "POST") return res.status(405).json({ error: { message: "Method not allowed" } });
     const caller = await proxy.verifyCaller(req);
     if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
-    if (!isAdmin(caller)) return res.status(403).json({ error: { message: "Administrator only" } });
+    if (!(await isAdmin(caller))) return res.status(403).json({ error: { message: "Administrator only" } });
     const action = req.body && req.body.action;
     try {
       const rc = admin.remoteConfig();

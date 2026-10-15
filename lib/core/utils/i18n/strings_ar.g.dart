@@ -204,6 +204,12 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get sessionRequestQueued => 'تعذّر إرسال إشعار إلى الجهاز الآخر. سيظهر الطلب هناك في المرة القادمة التي يُفتح فيها التطبيق.';
 	@override String get sessionRequestFailed => 'تعذّر إرسال الطلب. حاول بعد قليل.';
 	@override String get sessionRequestDeclined => 'اختار الجهاز الآخر البقاء متصلًا.';
+	@override String sessionRequestTakeover({required Object when}) => 'إذا لم يرد الجهاز الآخر، فستدخل هنا تلقائيًا في ${when} وسيُسجَّل خروجه.';
+	@override String get sessionTakeover => 'لا أستطيع الوصول إلى الجهاز الآخر – الدخول من هنا';
+	@override String get sessionTakeoverTitle => 'الدخول من هذا الجهاز';
+	@override String sessionTakeoverBody({required Object phone}) => 'سنرسل رمزًا جديدًا إلى ${phone}. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.';
+	@override String get sessionTakeoverNoPhone => 'لا يوجد رقم هاتف في الحساب، لذا لا يمكن التأكيد من هنا. اطلب تسجيل الخروج أو تواصل مع الدعم.';
+	@override String get sessionTakeoverFailed => 'تعذّر نقل الحساب إلى هذا الجهاز. حاول مرة أخرى.';
 	@override String get sessionReleaseTitle => 'جهاز آخر يريد تسجيل الدخول';
 	@override String sessionReleaseBody({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟';
 	@override String get sessionReleaseConfirm => 'تسجيل الخروج هنا';
@@ -1273,6 +1279,12 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get tierDuoHint => 'حسابان، كل شيء متزامن';
 	@override String get tierFamilyHint => 'حتى 6 حسابات، كل شيء متزامن';
 	@override String benefitHousehold({required Object n}) => 'حساب مشترك لـ ${n} أشخاص: الوصفات والخطط والقوائم متزامنة';
+	@override String get switchTitle => 'التبديل بين الباقات';
+	@override String get switchHint => 'يمكنك الانتقال إلى باقة أخرى في أي وقت. يسري التبديل فورًا، ويُحتسب الوقت المتبقي من باقتك الحالية.';
+	@override String get switchInherited => 'باقتك تأتي من الأسرة. فقط من يدفع للأسرة يمكنه تغييرها.';
+	@override String get currentPlan => 'باقتك';
+	@override String switchTo({required Object price}) => 'الانتقال مقابل ${price}';
+	@override String get switched => 'تم تغيير الباقة';
 }
 
 // Path: walkthrough
@@ -1342,7 +1354,7 @@ class _Translations$adminBilling$ar extends Translations$adminBilling$he {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'الاشتراكات';
+	@override String get title => 'المستخدمون';
 	@override String get all => 'الكل';
 	@override String get paying => 'يدفعون';
 	@override String get problems => 'مشاكل';
@@ -1382,7 +1394,7 @@ class _Translations$adminDashboard$ar extends Translations$adminDashboard$he {
 	// Translations
 	@override String get title => 'لوحة التحكم';
 	@override String get tabDashboard => 'لوحة';
-	@override String get tabSubscriptions => 'الاشتراكات';
+	@override String get tabSubscriptions => 'المستخدمون';
 	@override String get tabTickets => 'الرسائل';
 	@override String get rangeToday => 'اليوم';
 	@override String get rangeMonth => '30 يومًا';
@@ -1795,6 +1807,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get homeWidgets => 'أدوات الشاشة الرئيسية';
 	@override String get wakeWord => 'هاي شيفي';
 	@override String get voiceAssistants => 'شيفي عبر Siri وGemini';
+	@override String get shefiLauncher => 'أيقونة شيفي';
 }
 
 // Path: wakeWord
@@ -1861,7 +1874,7 @@ class _Translations$voiceAssistants$ar extends Translations$voiceAssistants$he {
 		'ماذا بقي للشراء؟',
 		'كم من الوقت أطبخ الأرز؟',
 	];
-	@override String get androidHow => 'في Android Auto وGemini: لم تفتح Google بعد Gemini لتطبيقات مثل EasyPlate. الاتصال جاهز في التطبيق وسيبدأ العمل فور فتحه من Google.';
+	@override String get androidHow => 'على Android عبر Gemini: قل "افتح Easy Plate" (أو انقر على أيقونة "شيفي") فيُفتح شيفي جاهزًا للاستماع. يبقى ميكروفون EasyPlate مغلقًا حتى ذلك الحين.';
 	@override String get limits => 'بالصوت لا يمكن الحذف أو الاستيراد من رابط أو فتح الشاشات. افعل ذلك في التطبيق.';
 	@override String get signedOut => 'للتحدث مع شيفي، سجّل الدخول إلى تطبيق EasyPlate أولًا.';
 	@override String get empty => 'لم أسمع طلبًا. حاول مرة أخرى.';
@@ -2298,6 +2311,12 @@ extension on TranslationsAr {
 			'auth.sessionRequestQueued' => 'تعذّر إرسال إشعار إلى الجهاز الآخر. سيظهر الطلب هناك في المرة القادمة التي يُفتح فيها التطبيق.',
 			'auth.sessionRequestFailed' => 'تعذّر إرسال الطلب. حاول بعد قليل.',
 			'auth.sessionRequestDeclined' => 'اختار الجهاز الآخر البقاء متصلًا.',
+			'auth.sessionRequestTakeover' => ({required Object when}) => 'إذا لم يرد الجهاز الآخر، فستدخل هنا تلقائيًا في ${when} وسيُسجَّل خروجه.',
+			'auth.sessionTakeover' => 'لا أستطيع الوصول إلى الجهاز الآخر – الدخول من هنا',
+			'auth.sessionTakeoverTitle' => 'الدخول من هذا الجهاز',
+			'auth.sessionTakeoverBody' => ({required Object phone}) => 'سنرسل رمزًا جديدًا إلى ${phone}. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.',
+			'auth.sessionTakeoverNoPhone' => 'لا يوجد رقم هاتف في الحساب، لذا لا يمكن التأكيد من هنا. اطلب تسجيل الخروج أو تواصل مع الدعم.',
+			'auth.sessionTakeoverFailed' => 'تعذّر نقل الحساب إلى هذا الجهاز. حاول مرة أخرى.',
 			'auth.sessionReleaseTitle' => 'جهاز آخر يريد تسجيل الدخول',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟',
 			'auth.sessionReleaseConfirm' => 'تسجيل الخروج هنا',
@@ -2699,14 +2718,14 @@ extension on TranslationsAr {
 			'editor.cookMinutes' => 'وقت الطهي (دقيقة)',
 			'editor.amount' => 'الكمية',
 			'editor.unit' => 'الوحدة',
+			_ => null,
+		} ?? switch (path) {
 			'editor.ingredientName' => 'اسم المكوّن',
 			'editor.stepHint' => 'صف الخطوة',
 			'editor.addIngredient' => 'إضافة مكوّن',
 			'editor.addStep' => 'إضافة خطوة',
 			'editor.removeIngredient' => 'إزالة المكوّن',
 			'editor.removeStep' => 'إزالة الخطوة',
-			_ => null,
-		} ?? switch (path) {
 			'editor.reorderStep' => 'إعادة ترتيب الخطوة',
 			'editor.fixSpelling' => 'تصحيح الإملاء',
 			'editor.refining' => 'جارٍ تصحيح الوصفة...',
@@ -3105,6 +3124,12 @@ extension on TranslationsAr {
 			'premium.tierDuoHint' => 'حسابان، كل شيء متزامن',
 			'premium.tierFamilyHint' => 'حتى 6 حسابات، كل شيء متزامن',
 			'premium.benefitHousehold' => ({required Object n}) => 'حساب مشترك لـ ${n} أشخاص: الوصفات والخطط والقوائم متزامنة',
+			'premium.switchTitle' => 'التبديل بين الباقات',
+			'premium.switchHint' => 'يمكنك الانتقال إلى باقة أخرى في أي وقت. يسري التبديل فورًا، ويُحتسب الوقت المتبقي من باقتك الحالية.',
+			'premium.switchInherited' => 'باقتك تأتي من الأسرة. فقط من يدفع للأسرة يمكنه تغييرها.',
+			'premium.currentPlan' => 'باقتك',
+			'premium.switchTo' => ({required Object price}) => 'الانتقال مقابل ${price}',
+			'premium.switched' => 'تم تغيير الباقة',
 			'walkthrough.title' => 'الدليل',
 			'walkthrough.start' => 'تشغيل الدليل',
 			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
@@ -3207,6 +3232,8 @@ extension on TranslationsAr {
 			'feedback.suggestion' => 'اقتراح تحسين',
 			'feedback.bugHint' => 'صف الخلل: ماذا فعلت، ماذا حدث، وماذا توقعت أن يحدث...',
 			'feedback.suggestionHint' => 'أخبرنا بما تودّ أن يوفره التطبيق، وكيف سيساعدك...',
+			_ => null,
+		} ?? switch (path) {
 			'feedback.send' => 'إرسال',
 			'feedback.sent' => 'شكراً! تم إرسال رسالتك.',
 			'feedback.failed' => 'فشل الإرسال، حاول لاحقاً',
@@ -3217,10 +3244,8 @@ extension on TranslationsAr {
 			'feedback.none' => 'لا توجد رسائل بعد',
 			'feedback.version' => ({required Object version}) => 'الإصدار ${version}',
 			'feedback.notAllowed' => 'هذه الشاشة للمدير فقط',
-			'adminBilling.title' => 'الاشتراكات',
+			'adminBilling.title' => 'المستخدمون',
 			'adminBilling.all' => 'الكل',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.paying' => 'يدفعون',
 			'adminBilling.problems' => 'مشاكل',
 			'adminBilling.searchHint' => 'بحث بالاسم أو البريد أو الهاتف أو uid',
@@ -3250,7 +3275,7 @@ extension on TranslationsAr {
 			'adminBilling.noEntitlementTag' => 'بدون entitlement',
 			'adminDashboard.title' => 'لوحة التحكم',
 			'adminDashboard.tabDashboard' => 'لوحة',
-			'adminDashboard.tabSubscriptions' => 'الاشتراكات',
+			'adminDashboard.tabSubscriptions' => 'المستخدمون',
 			'adminDashboard.tabTickets' => 'الرسائل',
 			'adminDashboard.rangeToday' => 'اليوم',
 			'adminDashboard.rangeMonth' => '30 يومًا',
@@ -3709,6 +3734,7 @@ extension on TranslationsAr {
 			'featureName.homeWidgets' => 'أدوات الشاشة الرئيسية',
 			'featureName.wakeWord' => 'هاي شيفي',
 			'featureName.voiceAssistants' => 'شيفي عبر Siri وGemini',
+			'featureName.shefiLauncher' => 'أيقونة شيفي',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
@@ -3720,6 +3746,8 @@ extension on TranslationsAr {
 			'wakeWord.enableHint' => 'الميكروفون مفتوح لالتقاط كلمات التنبيه فقط. لا يُسجَّل أي شيء ولا يُحفظ.',
 			'wakeWord.closedTitle' => 'عندما يكون التطبيق مغلقًا',
 			'wakeWord.background' => 'حتى عندما يكون التطبيق مغلقًا',
+			_ => null,
+		} ?? switch (path) {
 			'wakeWord.backgroundHint' => 'يستمر الاستماع في الخلفية مع إشعار دائم، ويظهر الميكروفون قيد الاستخدام. يجري الالتقاط داخل الهاتف ويستهلك القليل من البطارية. يتوقف الاستماع عندما تكون الشاشة مطفأة، وبعد إعادة تشغيل الهاتف يجب فتح التطبيق مرة واحدة.',
 			'wakeWord.openDirectly' => 'الفتح مباشرة من الخلفية',
 			'wakeWord.openDirectlyHint' => 'بدون إذن "الظهور فوق التطبيقات الأخرى" يظهر شيفي كإشعار تنقر عليه. انقر هنا للسماح.',
@@ -3733,8 +3761,6 @@ extension on TranslationsAr {
 			'wakeWord.permissionDenied' => 'لسماع "هاي شيفي" يحتاج التطبيق إلى الميكروفون (وفي iOS أيضًا إلى التعرف على الكلام).',
 			'wakeWord.openSettings' => 'فتح الإعدادات',
 			'wakeWord.notificationTitle' => 'شيفي يستمع',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.notificationBody' => 'قل "هاي شيفي" لبدء محادثة',
 			'wakeWord.notificationStop' => 'إيقاف',
 			'wakeWord.heardTitle' => 'شيفي هنا',
@@ -3753,7 +3779,7 @@ extension on TranslationsAr {
 			'voiceAssistants.iosExamples.1' => 'ما قائمة طعام اليوم؟',
 			'voiceAssistants.iosExamples.2' => 'ماذا بقي للشراء؟',
 			'voiceAssistants.iosExamples.3' => 'كم من الوقت أطبخ الأرز؟',
-			'voiceAssistants.androidHow' => 'في Android Auto وGemini: لم تفتح Google بعد Gemini لتطبيقات مثل EasyPlate. الاتصال جاهز في التطبيق وسيبدأ العمل فور فتحه من Google.',
+			'voiceAssistants.androidHow' => 'على Android عبر Gemini: قل "افتح Easy Plate" (أو انقر على أيقونة "شيفي") فيُفتح شيفي جاهزًا للاستماع. يبقى ميكروفون EasyPlate مغلقًا حتى ذلك الحين.',
 			'voiceAssistants.limits' => 'بالصوت لا يمكن الحذف أو الاستيراد من رابط أو فتح الشاشات. افعل ذلك في التطبيق.',
 			'voiceAssistants.signedOut' => 'للتحدث مع شيفي، سجّل الدخول إلى تطبيق EasyPlate أولًا.',
 			'voiceAssistants.empty' => 'لم أسمع طلبًا. حاول مرة أخرى.',

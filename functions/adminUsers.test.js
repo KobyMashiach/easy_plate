@@ -5,13 +5,17 @@ process.env.GCLOUD_PROJECT = process.env.GCLOUD_PROJECT || "easy-plate";
 process.env.FIREBASE_CONFIG =
   process.env.FIREBASE_CONFIG || JSON.stringify({ projectId: "easy-plate" });
 
-const { parseRequest, isAdmin } = require("./adminUsers").internals;
+const { parseRequest } = require("./adminUsers").internals;
+const { permissionOf, isAdmin, PERMISSIONS } = require("./permissions");
 
-test("only the administrator's email passes", () => {
-  assert.equal(isAdmin({ email: "koby9779@gmail.com" }), true);
-  assert.equal(isAdmin({ email: "Koby9779@Gmail.com " }), true);
-  assert.equal(isAdmin({ email: "someone@gmail.com" }), false);
-  assert.equal(isAdmin(null), false);
+test("only permission \"admin\" on the users document makes an administrator", async () => {
+  assert.equal(permissionOf({ permission: "admin" }), PERMISSIONS.ADMIN);
+  assert.equal(permissionOf({ permission: "user" }), PERMISSIONS.USER);
+  assert.equal(permissionOf({ permission: "Admin" }), PERMISSIONS.USER);
+  assert.equal(permissionOf({ email: "koby9779@gmail.com" }), PERMISSIONS.USER);
+  assert.equal(permissionOf(null), PERMISSIONS.USER);
+  assert.equal(await isAdmin(null), false);
+  assert.equal(await isAdmin({ email: "koby9779@gmail.com" }), false);
 });
 
 test("disable carries the block message", () => {
@@ -44,4 +48,16 @@ test("long texts are cut, unknown actions refused", () => {
 
 test("a price sync takes nothing", () => {
   assert.deepEqual(parseRequest({ action: "syncPricing" }), { action: "syncPricing" });
+});
+
+test("a broadcast reaches exactly its audience", () => {
+  const { inAudience } = require("./adminUsers").internals;
+  const picked = new Set(["a", "b"]);
+  assert.equal(inAudience({ audience: "all", uid: "x" }), true);
+  assert.equal(inAudience({ audience: "premium", uid: "x", premium: true }), true);
+  assert.equal(inAudience({ audience: "premium", uid: "x", premium: false }), false);
+  assert.equal(inAudience({ audience: "free", uid: "x", premium: false }), true);
+  assert.equal(inAudience({ audience: "free", uid: "x", premium: true }), false);
+  assert.equal(inAudience({ audience: "users", uid: "a", uidSet: picked }), true);
+  assert.equal(inAudience({ audience: "users", uid: "c", uidSet: picked }), false);
 });

@@ -1,3 +1,4 @@
+import 'package:easy_plate/core/monetization/purchases_service.dart';
 import 'package:easy_plate/core/utils/i18n/strings.g.dart';
 import 'package:easy_plate/features/premium/domain/paywall_offer.dart';
 import 'package:easy_plate/features/premium/presentation/pages/paywall_page.dart';
@@ -156,5 +157,89 @@ void main() {
     );
     expect(find.text(t.premium.subscribeFor(price: '₪20.00')), findsOneWidget);
     expect(find.text(t.premium.redeem), findsNothing);
+  });
+
+  testWidgets('a subscriber can switch packages, with the current one marked', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 5000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    var bought = 0;
+    Widget view(String selected) => _app(
+      PaywallView(
+        offers: const [
+          PaywallOffer(
+            id: 'monthly',
+            priceString: '₪20.00',
+            period: PaywallPeriod.monthly,
+            productId: 'pro:monthly',
+          ),
+          PaywallOffer(
+            id: 'yearly',
+            priceString: '₪200.00',
+            period: PaywallPeriod.annual,
+            productId: 'pro:yearly',
+          ),
+        ],
+        selectedId: selected,
+        aiPerDay: 10,
+        isPremium: true,
+        currentProductId: const ActivePlan(
+          productId: 'pro',
+          basePlan: 'monthly',
+        ),
+        loading: false,
+        busy: false,
+        onSelect: (_) {},
+        onPurchase: () => bought++,
+        onRestore: () {},
+        onManage: () {},
+        onBack: () {},
+      ),
+    );
+
+    await tester.pumpWidget(view('monthly'));
+    expect(find.text(t.premium.switchTitle), findsOneWidget);
+    expect(find.text(t.premium.currentPlan), findsOneWidget);
+    // The package already held cannot be bought again.
+    await tester.tap(find.text(t.premium.switchTo(price: '₪20.00')));
+    expect(bought, 0);
+
+    await tester.pumpWidget(view('yearly'));
+    await tester.tap(find.text(t.premium.switchTo(price: '₪200.00')));
+    expect(bought, 1);
+  });
+
+  testWidgets('a household member is told the owner switches', (tester) async {
+    tester.view.physicalSize = const Size(1080, 5000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      _app(
+        PaywallView(
+          offers: const [
+            PaywallOffer(
+              id: 'monthly',
+              priceString: '₪20.00',
+              period: PaywallPeriod.monthly,
+            ),
+          ],
+          selectedId: 'monthly',
+          aiPerDay: 10,
+          isPremium: true,
+          canSwitch: false,
+          loading: false,
+          busy: false,
+          onSelect: (_) {},
+          onPurchase: () {},
+          onRestore: () {},
+          onManage: () {},
+          onBack: () {},
+        ),
+      ),
+    );
+    expect(find.text(t.premium.switchInherited), findsOneWidget);
+    expect(find.text(t.premium.switchTo(price: '₪20.00')), findsNothing);
   });
 }

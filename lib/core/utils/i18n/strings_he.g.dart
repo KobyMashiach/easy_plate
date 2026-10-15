@@ -87,6 +87,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$adminConfig$he adminConfig = Translations$adminConfig$he.internal(_root);
 	late final Translations$wakeWord$he wakeWord = Translations$wakeWord$he.internal(_root);
 	late final Translations$voiceAssistants$he voiceAssistants = Translations$voiceAssistants$he.internal(_root);
+	late final Translations$adminUser$he adminUser = Translations$adminUser$he.internal(_root);
 }
 
 // Path: common
@@ -417,6 +418,24 @@ class Translations$auth$he {
 
 	/// he: 'המכשיר השני בחר להישאר מחובר.'
 	String get sessionRequestDeclined => 'המכשיר השני בחר להישאר מחובר.';
+
+	/// he: 'אם המכשיר השני לא יענה, תיכנסו כאן לבד ב-$when, והוא יתנתק.'
+	String sessionRequestTakeover({required Object when}) => 'אם המכשיר השני לא יענה, תיכנסו כאן לבד ב-${when}, והוא יתנתק.';
+
+	/// he: 'אין לי גישה למכשיר השני – התחברות מכאן'
+	String get sessionTakeover => 'אין לי גישה למכשיר השני – התחברות מכאן';
+
+	/// he: 'התחברות מהמכשיר הזה'
+	String get sessionTakeoverTitle => 'התחברות מהמכשיר הזה';
+
+	/// he: 'נשלח קוד חדש ל-$phone. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.'
+	String sessionTakeoverBody({required Object phone}) => 'נשלח קוד חדש ל-${phone}. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.';
+
+	/// he: 'אין מספר טלפון בחשבון, אז אי אפשר לאמת מכאן. אפשר לבקש התנתקות או לפנות לתמיכה.'
+	String get sessionTakeoverNoPhone => 'אין מספר טלפון בחשבון, אז אי אפשר לאמת מכאן. אפשר לבקש התנתקות או לפנות לתמיכה.';
+
+	/// he: 'לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.'
+	String get sessionTakeoverFailed => 'לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.';
 
 	/// he: 'מכשיר אחר מבקש להתחבר'
 	String get sessionReleaseTitle => 'מכשיר אחר מבקש להתחבר';
@@ -3096,6 +3115,24 @@ class Translations$premium$he {
 
 	/// he: 'חשבון משותף ל-$n אנשים: מתכונים, תפריטים ורשימות מסונכרנים'
 	String benefitHousehold({required Object n}) => 'חשבון משותף ל-${n} אנשים: מתכונים, תפריטים ורשימות מסונכרנים';
+
+	/// he: 'מעבר בין חבילות'
+	String get switchTitle => 'מעבר בין חבילות';
+
+	/// he: 'אפשר לעבור לחבילה אחרת בכל רגע. המעבר נכנס לתוקף מיד, והזמן שנשאר בחבילה הנוכחית מזוכה.'
+	String get switchHint => 'אפשר לעבור לחבילה אחרת בכל רגע. המעבר נכנס לתוקף מיד, והזמן שנשאר בחבילה הנוכחית מזוכה.';
+
+	/// he: 'החבילה שלך מגיעה ממשק הבית. רק מי שמשלם על משק הבית יכול להחליף אותה.'
+	String get switchInherited => 'החבילה שלך מגיעה ממשק הבית. רק מי שמשלם על משק הבית יכול להחליף אותה.';
+
+	/// he: 'החבילה שלך'
+	String get currentPlan => 'החבילה שלך';
+
+	/// he: 'מעבר לחבילה ב-$price'
+	String switchTo({required Object price}) => 'מעבר לחבילה ב-${price}';
+
+	/// he: 'החבילה הוחלפה'
+	String get switched => 'החבילה הוחלפה';
 }
 
 // Path: walkthrough
@@ -3247,8 +3284,8 @@ class Translations$adminBilling$he {
 
 	// Translations
 
-	/// he: 'מנויים'
-	String get title => 'מנויים';
+	/// he: 'משתמשים'
+	String get title => 'משתמשים';
 
 	/// he: 'הכל'
 	String get all => 'הכל';
@@ -3349,8 +3386,8 @@ class Translations$adminDashboard$he {
 	/// he: 'סקירה'
 	String get tabDashboard => 'סקירה';
 
-	/// he: 'מנויים'
-	String get tabSubscriptions => 'מנויים';
+	/// he: 'משתמשים'
+	String get tabSubscriptions => 'משתמשים';
 
 	/// he: 'פניות'
 	String get tabTickets => 'פניות';
@@ -4486,6 +4523,9 @@ class Translations$featureName$he {
 
 	/// he: 'שפי דרך Siri ו-Gemini'
 	String get voiceAssistants => 'שפי דרך Siri ו-Gemini';
+
+	/// he: 'אייקון שפי'
+	String get shefiLauncher => 'אייקון שפי';
 }
 
 // Path: adminConfig
@@ -4666,8 +4706,8 @@ class Translations$voiceAssistants$he {
 		'כמה זמן מבשלים אורז?',
 	];
 
-	/// he: 'ב-Android Auto וב-Gemini: Google עדיין לא פתחה את Gemini לאפליקציות כמו EasyPlate. החיבור כבר מוכן באפליקציה, והוא יתחיל לעבוד ברגע ש-Google תפתח אותו.'
-	String get androidHow => 'ב-Android Auto וב-Gemini: Google עדיין לא פתחה את Gemini לאפליקציות כמו EasyPlate. החיבור כבר מוכן באפליקציה, והוא יתחיל לעבוד ברגע ש-Google תפתח אותו.';
+	/// he: 'באנדרואיד, דרך Gemini: אומרים "פתח את Easy Plate" (או לוחצים על האייקון "שפי"), ושפי נפתח מוכן להקשיב. המיקרופון של EasyPlate סגור עד אז.'
+	String get androidHow => 'באנדרואיד, דרך Gemini: אומרים "פתח את Easy Plate" (או לוחצים על האייקון "שפי"), ושפי נפתח מוכן להקשיב. המיקרופון של EasyPlate סגור עד אז.';
 
 	/// he: 'בקול אי אפשר למחוק, לייבא מקישור או לפתוח מסכים. את אלה עושים באפליקציה.'
 	String get limits => 'בקול אי אפשר למחוק, לייבא מקישור או לפתוח מסכים. את אלה עושים באפליקציה.';
@@ -4689,6 +4729,208 @@ class Translations$voiceAssistants$he {
 
 	/// he: 'בשמחה! אני כאן כשתצטרכו.'
 	String get goodbye => 'בשמחה! אני כאן כשתצטרכו.';
+
+	/// he: 'פתיחה דרך Gemini נכנסת לשפי'
+	String get geminiOpensShefi => 'פתיחה דרך Gemini נכנסת לשפי';
+
+	/// he: 'אומרים ל-Gemini "פתח את Easy Plate", והאפליקציה נפתחת ישר בשיחה עם שפי, מוכן להקשיב. המיקרופון של EasyPlate לא פתוח לפני כן. פתיחה רגילה מהאייקון נשארת למסך הבית.'
+	String get geminiOpensShefiHint => 'אומרים ל-Gemini "פתח את Easy Plate", והאפליקציה נפתחת ישר בשיחה עם שפי, מוכן להקשיב. המיקרופון של EasyPlate לא פתוח לפני כן. פתיחה רגילה מהאייקון נשארת למסך הבית.';
+
+	/// he: 'כחלון צף'
+	String get geminiPanel => 'כחלון צף';
+
+	/// he: 'שפי נפתח כחלון צף בתחתית המסך, מעל מה שהיה פתוח, ולא כאפליקציה. לחיצה מחוץ לחלון מחזירה אותך למה שהיית בו.'
+	String get geminiPanelHint => 'שפי נפתח כחלון צף בתחתית המסך, מעל מה שהיה פתוח, ולא כאפליקציה. לחיצה מחוץ לחלון מחזירה אותך למה שהיית בו.';
+}
+
+// Path: adminUser
+class Translations$adminUser$he {
+	Translations$adminUser$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'פרטים מלאים'
+	String get open => 'פרטים מלאים';
+
+	/// he: 'סקירה'
+	String get tabOverview => 'סקירה';
+
+	/// he: 'פעילות'
+	String get tabActivity => 'פעילות';
+
+	/// he: 'תוכן'
+	String get tabContent => 'תוכן';
+
+	/// he: 'פרסומים'
+	String get tabPublished => 'פרסומים';
+
+	/// he: 'עוד'
+	String get tabMore => 'עוד';
+
+	/// he: 'אוסף את כל המידע…'
+	String get loading => 'אוסף את כל המידע…';
+
+	/// he: 'לא הצלחנו לטעון את המשתמש'
+	String get failed => 'לא הצלחנו לטעון את המשתמש';
+
+	/// he: 'חלק מהמידע לא נטען: $names'
+	String partial({required Object names}) => 'חלק מהמידע לא נטען: ${names}';
+
+	/// he: 'העתקת uid'
+	String get copyUid => 'העתקת uid';
+
+	/// he: 'הועתק'
+	String get copied => 'הועתק';
+
+	/// he: 'מחובר עכשיו'
+	String get online => 'מחובר עכשיו';
+
+	/// he: 'חסום'
+	String get blocked => 'חסום';
+
+	/// he: 'משק בית'
+	String get household => 'משק בית';
+
+	/// he: 'פרופיל'
+	String get profile => 'פרופיל';
+
+	/// he: 'מייל'
+	String get email => 'מייל';
+
+	/// he: 'טלפון'
+	String get phone => 'טלפון';
+
+	/// he: 'uid'
+	String get uid => 'uid';
+
+	/// he: 'הרשאה'
+	String get permission => 'הרשאה';
+
+	/// he: 'מנהל'
+	String get permissionAdmin => 'מנהל';
+
+	/// he: 'משתמש'
+	String get permissionUser => 'משתמש';
+
+	/// he: 'משתנה רק בקונסול של Firebase (users › permission)'
+	String get permissionHint => 'משתנה רק בקונסול של Firebase (users › permission)';
+
+	/// he: 'הצטרף'
+	String get joined => 'הצטרף';
+
+	/// he: 'נראה לאחרונה'
+	String get lastSeen => 'נראה לאחרונה';
+
+	/// he: 'מכשיר'
+	String get device => 'מכשיר';
+
+	/// he: 'גרסה'
+	String get version => 'גרסה';
+
+	/// he: 'שפה'
+	String get language => 'שפה';
+
+	/// he: 'יום קניות'
+	String get shoppingDay => 'יום קניות';
+
+	/// he: 'העדפות תזונה'
+	String get diet => 'העדפות תזונה';
+
+	/// he: 'מנוי'
+	String get plan => 'מנוי';
+
+	/// he: 'מקור'
+	String get planSource => 'מקור';
+
+	/// he: 'בתוקף עד'
+	String get planUntil => 'בתוקף עד';
+
+	/// he: 'נעול ידנית'
+	String get planLocked => 'נעול ידנית';
+
+	/// he: 'אין'
+	String get none => 'אין';
+
+	/// he: 'חיבור למכשיר'
+	String get session => 'חיבור למכשיר';
+
+	/// he: 'מחובר מאז'
+	String get sessionSince => 'מחובר מאז';
+
+	/// he: 'עד'
+	String get sessionUntil => 'עד';
+
+	/// he: 'אין חיבור פעיל'
+	String get noSession => 'אין חיבור פעיל';
+
+	/// he: 'משק בית'
+	String get householdTitle => 'משק בית';
+
+	/// he: '$count חברים'
+	String householdMembers({required Object count}) => '${count} חברים';
+
+	/// he: 'בעלים'
+	String get householdOwner => 'בעלים';
+
+	/// he: 'הודעת החסימה'
+	String get statusMessage => 'הודעת החסימה';
+
+	/// he: 'שימוש ב-AI'
+	String get ai => 'שימוש ב-AI';
+
+	/// he: '$count קריאות'
+	String aiCalls({required Object count}) => '${count} קריאות';
+
+	/// he: '$count טוקנים'
+	String aiTokens({required Object count}) => '${count} טוקנים';
+
+	/// he: 'קריאה אחרונה'
+	String get aiLast => 'קריאה אחרונה';
+
+	/// he: 'שימוש היום'
+	String get today => 'שימוש היום';
+
+	/// he: 'אין שימוש היום'
+	String get todayEmpty => 'אין שימוש היום';
+
+	/// he: 'סיכום'
+	String get counts => 'סיכום';
+
+	/// he: 'הכל'
+	String get all => 'הכל';
+
+	/// he: 'אין פעילות להצגה'
+	String get noActivity => 'אין פעילות להצגה';
+
+	/// he: 'אין פריטים'
+	String get noItems => 'אין פריטים';
+
+	/// he: '$count פריטים'
+	String items({required Object count}) => '${count} פריטים';
+
+	late final Translations$adminUser$groups$he groups = Translations$adminUser$groups$he.internal(_root);
+	late final Translations$adminUser$kinds$he kinds = Translations$adminUser$kinds$he.internal(_root);
+	late final Translations$adminUser$collections$he collections = Translations$adminUser$collections$he.internal(_root);
+	late final Translations$adminUser$sections$he sections = Translations$adminUser$sections$he.internal(_root);
+
+	/// he: '$count לייקים'
+	String likes({required Object count}) => '${count} לייקים';
+
+	/// he: '$count תגובות'
+	String replies({required Object count}) => '${count} תגובות';
+
+	/// he: 'התוכן נשמר במשק הבית המשותף'
+	String get householdData => 'התוכן נשמר במשק הבית המשותף';
+
+	/// he: 'פעולות'
+	String get actions => 'פעולות';
+
+	/// he: 'שיתופים'
+	String get tabShares => 'שיתופים';
+
+	late final Translations$adminUser$shares$he shares = Translations$adminUser$shares$he.internal(_root);
 }
 
 // Path: walkthrough.topics
@@ -5012,6 +5254,222 @@ class Translations$adminConfig$labels$he {
 
 	/// he: 'מספרים פטורים ממכשיר אחד'
 	String get session_exempt_phones => 'מספרים פטורים ממכשיר אחד';
+
+	/// he: 'מספר WhatsApp לתמיכה'
+	String get support_phone => 'מספר WhatsApp לתמיכה';
+
+	/// he: 'מייל תמיכה'
+	String get support_email => 'מייל תמיכה';
+}
+
+// Path: adminUser.groups
+class Translations$adminUser$groups$he {
+	Translations$adminUser$groups$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'תוכן'
+	String get content => 'תוכן';
+
+	/// he: 'קהילה'
+	String get community => 'קהילה';
+
+	/// he: 'AI'
+	String get ai => 'AI';
+
+	/// he: 'רכישות'
+	String get money => 'רכישות';
+
+	/// he: 'שיתופים'
+	String get sharing => 'שיתופים';
+
+	/// he: 'פניות והתראות'
+	String get support => 'פניות והתראות';
+}
+
+// Path: adminUser.kinds
+class Translations$adminUser$kinds$he {
+	Translations$adminUser$kinds$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'הצטרף לאפליקציה'
+	String get joined => 'הצטרף לאפליקציה';
+
+	/// he: 'נראה לאחרונה'
+	String get seen => 'נראה לאחרונה';
+
+	/// he: 'מתכון'
+	String get recipe => 'מתכון';
+
+	/// he: 'ספר מתכונים'
+	String get book => 'ספר מתכונים';
+
+	/// he: 'תפריט'
+	String get mealPlan => 'תפריט';
+
+	/// he: 'רשימת קניות'
+	String get groceryList => 'רשימת קניות';
+
+	/// he: 'קבלה'
+	String get receipt => 'קבלה';
+
+	/// he: 'פוסט בפורום'
+	String get forumPost => 'פוסט בפורום';
+
+	/// he: 'תגובה בפורום'
+	String get forumReply => 'תגובה בפורום';
+
+	/// he: 'מתכון משותף לקהילה'
+	String get sharedRecipe => 'מתכון משותף לקהילה';
+
+	/// he: 'פנייה'
+	String get feedback => 'פנייה';
+
+	/// he: 'קריאת AI'
+	String get aiCall => 'קריאת AI';
+
+	/// he: 'אירוע רכישה'
+	String get purchase => 'אירוע רכישה';
+
+	/// he: 'קוד שיתוף'
+	String get shareCode => 'קוד שיתוף';
+
+	/// he: 'הזמנה שנשלחה'
+	String get inviteSent => 'הזמנה שנשלחה';
+
+	/// he: 'הזמנה שהתקבלה'
+	String get inviteReceived => 'הזמנה שהתקבלה';
+
+	/// he: 'התראה'
+	String get notification => 'התראה';
+
+	/// he: 'שיתף פריט'
+	String get sharedByMe => 'שיתף פריט';
+}
+
+// Path: adminUser.collections
+class Translations$adminUser$collections$he {
+	Translations$adminUser$collections$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'מתכונים'
+	String get recipes => 'מתכונים';
+
+	/// he: 'ספרי מתכונים'
+	String get books => 'ספרי מתכונים';
+
+	/// he: 'תפריטים'
+	String get meal_plans => 'תפריטים';
+
+	/// he: 'רשימות קניות'
+	String get grocery_lists => 'רשימות קניות';
+
+	/// he: 'קבלות'
+	String get receipts => 'קבלות';
+
+	/// he: 'רשומות מחיר'
+	String get price_records => 'רשומות מחיר';
+}
+
+// Path: adminUser.sections
+class Translations$adminUser$sections$he {
+	Translations$adminUser$sections$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'פוסטים בפורום'
+	String get forumPosts => 'פוסטים בפורום';
+
+	/// he: 'תגובות בפורום'
+	String get forumReplies => 'תגובות בפורום';
+
+	/// he: 'מתכונים ששיתף לקהילה'
+	String get sharedRecipes => 'מתכונים ששיתף לקהילה';
+
+	/// he: 'לייקים שנתן לא נשמרים לפי משתמש, ולכן לא מוצגים.'
+	String get likesNote => 'לייקים שנתן לא נשמרים לפי משתמש, ולכן לא מוצגים.';
+
+	/// he: 'קודי שיתוף'
+	String get shareCodes => 'קודי שיתוף';
+
+	/// he: 'הזמנות שנשלחו'
+	String get invitesSent => 'הזמנות שנשלחו';
+
+	/// he: 'הזמנות שהתקבלו'
+	String get invitesReceived => 'הזמנות שהתקבלו';
+
+	/// he: 'פריטים משותפים'
+	String get collabs => 'פריטים משותפים';
+
+	/// he: 'פניות'
+	String get feedback => 'פניות';
+
+	/// he: 'התראות שקיבל'
+	String get notifications => 'התראות שקיבל';
+
+	/// he: 'אירועי רכישה'
+	String get purchases => 'אירועי רכישה';
+
+	/// he: 'קריאות AI אחרונות'
+	String get aiCalls => 'קריאות AI אחרונות';
+}
+
+// Path: adminUser.shares
+class Translations$adminUser$shares$he {
+	Translations$adminUser$shares$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'שיתף עם אחרים'
+	String get sharedByMe => 'שיתף עם אחרים';
+
+	/// he: 'שותפו איתו'
+	String get sharedWithMe => 'שותפו איתו';
+
+	/// he: 'מאת: $name'
+	String from({required Object name}) => 'מאת: ${name}';
+
+	/// he: 'עוד אף אחד לא הצטרף'
+	String get nobodyYet => 'עוד אף אחד לא הצטרף';
+
+	/// he: 'בעלים'
+	String get roleOwner => 'בעלים';
+
+	/// he: 'עורך'
+	String get roleEditor => 'עורך';
+
+	/// he: 'צופה'
+	String get roleViewer => 'צופה';
+
+	/// he: 'מתכון'
+	String get kindRecipe => 'מתכון';
+
+	/// he: 'ספר מתכונים'
+	String get kindBook => 'ספר מתכונים';
+
+	/// he: 'תפריט'
+	String get kindMealPlan => 'תפריט';
+
+	/// he: 'רשימת קניות'
+	String get kindGroceryList => 'רשימת קניות';
+
+	/// he: 'משק בית'
+	String get kindHousehold => 'משק בית';
+
+	/// he: 'עם: $names'
+	String withNames({required Object names}) => 'עם: ${names}';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -5400,6 +5858,12 @@ extension on Translations {
 			'auth.sessionRequestQueued' => 'לא הצלחנו לשלוח התראה למכשיר השני. הבקשה תופיע בו בפעם הבאה שהאפליקציה תיפתח שם.',
 			'auth.sessionRequestFailed' => 'לא הצלחנו לשלוח את הבקשה. נסו שוב בעוד רגע.',
 			'auth.sessionRequestDeclined' => 'המכשיר השני בחר להישאר מחובר.',
+			'auth.sessionRequestTakeover' => ({required Object when}) => 'אם המכשיר השני לא יענה, תיכנסו כאן לבד ב-${when}, והוא יתנתק.',
+			'auth.sessionTakeover' => 'אין לי גישה למכשיר השני – התחברות מכאן',
+			'auth.sessionTakeoverTitle' => 'התחברות מהמכשיר הזה',
+			'auth.sessionTakeoverBody' => ({required Object phone}) => 'נשלח קוד חדש ל-${phone}. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.',
+			'auth.sessionTakeoverNoPhone' => 'אין מספר טלפון בחשבון, אז אי אפשר לאמת מכאן. אפשר לבקש התנתקות או לפנות לתמיכה.',
+			'auth.sessionTakeoverFailed' => 'לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.',
 			'auth.sessionReleaseTitle' => 'מכשיר אחר מבקש להתחבר',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'מכשיר ${platform} מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?',
 			'auth.sessionReleaseConfirm' => 'להתנתק כאן',
@@ -5801,14 +6265,14 @@ extension on Translations {
 			'editor.cookMinutes' => 'זמן בישול (דק׳)',
 			'editor.amount' => 'כמות',
 			'editor.unit' => 'יחידה',
+			_ => null,
+		} ?? switch (path) {
 			'editor.ingredientName' => 'שם המצרך',
 			'editor.stepHint' => 'תארו את השלב',
 			'editor.addIngredient' => 'הוספת מצרך',
 			'editor.addStep' => 'הוספת שלב',
 			'editor.removeIngredient' => 'הסרת מצרך',
 			'editor.removeStep' => 'הסרת שלב',
-			_ => null,
-		} ?? switch (path) {
 			'editor.reorderStep' => 'שינוי סדר השלב',
 			'editor.fixSpelling' => 'תיקון שגיאות כתיב',
 			'editor.refining' => 'מתקן את המתכון...',
@@ -6207,6 +6671,12 @@ extension on Translations {
 			'premium.tierDuoHint' => '2 חשבונות, הכל משתקף',
 			'premium.tierFamilyHint' => 'עד 6 חשבונות, הכל משתקף',
 			'premium.benefitHousehold' => ({required Object n}) => 'חשבון משותף ל-${n} אנשים: מתכונים, תפריטים ורשימות מסונכרנים',
+			'premium.switchTitle' => 'מעבר בין חבילות',
+			'premium.switchHint' => 'אפשר לעבור לחבילה אחרת בכל רגע. המעבר נכנס לתוקף מיד, והזמן שנשאר בחבילה הנוכחית מזוכה.',
+			'premium.switchInherited' => 'החבילה שלך מגיעה ממשק הבית. רק מי שמשלם על משק הבית יכול להחליף אותה.',
+			'premium.currentPlan' => 'החבילה שלך',
+			'premium.switchTo' => ({required Object price}) => 'מעבר לחבילה ב-${price}',
+			'premium.switched' => 'החבילה הוחלפה',
 			'walkthrough.title' => 'הדרכה',
 			'walkthrough.start' => 'הפעל הדרכה',
 			'walkthrough.startHint' => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד',
@@ -6309,6 +6779,8 @@ extension on Translations {
 			'feedback.suggestion' => 'הצעה לשיפור',
 			'feedback.bugHint' => 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...',
 			'feedback.suggestionHint' => 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...',
+			_ => null,
+		} ?? switch (path) {
 			'feedback.send' => 'שליחה',
 			'feedback.sent' => 'תודה! הפנייה נשלחה.',
 			'feedback.failed' => 'השליחה נכשלה, נסו שוב מאוחר יותר',
@@ -6319,10 +6791,8 @@ extension on Translations {
 			'feedback.none' => 'אין פניות עדיין',
 			'feedback.version' => ({required Object version}) => 'גרסה ${version}',
 			'feedback.notAllowed' => 'המסך הזה זמין למנהל בלבד',
-			'adminBilling.title' => 'מנויים',
+			'adminBilling.title' => 'משתמשים',
 			'adminBilling.all' => 'הכל',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.paying' => 'משלמים',
 			'adminBilling.problems' => 'בעיות',
 			'adminBilling.searchHint' => 'חיפוש לפי שם, מייל, טלפון או uid',
@@ -6352,7 +6822,7 @@ extension on Translations {
 			'adminBilling.noEntitlementTag' => 'בלי entitlement',
 			'adminDashboard.title' => 'לוח בקרה',
 			'adminDashboard.tabDashboard' => 'סקירה',
-			'adminDashboard.tabSubscriptions' => 'מנויים',
+			'adminDashboard.tabSubscriptions' => 'משתמשים',
 			'adminDashboard.tabTickets' => 'פניות',
 			'adminDashboard.rangeToday' => 'היום',
 			'adminDashboard.rangeMonth' => '30 יום',
@@ -6814,6 +7284,7 @@ extension on Translations {
 			'featureName.homeWidgets' => 'ווידג\'טים למסך הבית',
 			'featureName.wakeWord' => 'היי שפי',
 			'featureName.voiceAssistants' => 'שפי דרך Siri ו-Gemini',
+			'featureName.shefiLauncher' => 'אייקון שפי',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -6822,6 +7293,8 @@ extension on Translations {
 			'adminConfig.searchAll' => 'חיפוש בכל ההגדרות',
 			'adminConfig.searchIn' => ({required Object section}) => 'חיפוש ב${section}',
 			'adminConfig.noResults' => ({required Object query}) => 'אין הגדרה שמתאימה ל״${query}״',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.filterAll' => 'הכל',
 			'adminConfig.clearSearch' => 'ניקוי החיפוש',
 			'adminConfig.noFlagsInState' => 'אין פיצ׳רים במצב הזה',
@@ -6835,8 +7308,6 @@ extension on Translations {
 			'adminConfig.flag.hidden' => 'לא מוצג',
 			'adminConfig.flag.comingSoon' => 'בקרוב',
 			'adminConfig.flag.everyone' => 'חינמי',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.flag.premium' => 'פרימיום',
 			'adminConfig.labels.ads_enabled' => 'פרסומות פעילות',
 			'adminConfig.labels.ads_fail_open' => 'פתיחה כשאין סרטון',
@@ -6864,6 +7335,8 @@ extension on Translations {
 			'adminConfig.labels.session_days' => 'ימי התחברות למכשיר',
 			'adminConfig.labels.presence_heartbeat_seconds' => 'דיווח נוכחות (שניות)',
 			'adminConfig.labels.session_exempt_phones' => 'מספרים פטורים ממכשיר אחד',
+			'adminConfig.labels.support_phone' => 'מספר WhatsApp לתמיכה',
+			'adminConfig.labels.support_email' => 'מייל תמיכה',
 			'wakeWord.title' => 'היי שפי',
 			'wakeWord.hint' => 'פותחים שיחה עם שפי בקול, בלי לגעת בטלפון',
 			'wakeWord.intro' => 'אומרים "היי שפי" ושפי נפתח ומקשיב. אפשר גם להמשיך באותו משפט, ושפי יענה ישר.',
@@ -6906,7 +7379,7 @@ extension on Translations {
 			'voiceAssistants.iosExamples.1' => 'מה בתפריט היום?',
 			'voiceAssistants.iosExamples.2' => 'מה נשאר לקנות?',
 			'voiceAssistants.iosExamples.3' => 'כמה זמן מבשלים אורז?',
-			'voiceAssistants.androidHow' => 'ב-Android Auto וב-Gemini: Google עדיין לא פתחה את Gemini לאפליקציות כמו EasyPlate. החיבור כבר מוכן באפליקציה, והוא יתחיל לעבוד ברגע ש-Google תפתח אותו.',
+			'voiceAssistants.androidHow' => 'באנדרואיד, דרך Gemini: אומרים "פתח את Easy Plate" (או לוחצים על האייקון "שפי"), ושפי נפתח מוכן להקשיב. המיקרופון של EasyPlate סגור עד אז.',
 			'voiceAssistants.limits' => 'בקול אי אפשר למחוק, לייבא מקישור או לפתוח מסכים. את אלה עושים באפליקציה.',
 			'voiceAssistants.signedOut' => 'כדי לדבר עם שפי צריך קודם להתחבר לאפליקציית EasyPlate.',
 			'voiceAssistants.empty' => 'לא שמעתי בקשה. נסו שוב.',
@@ -6914,6 +7387,123 @@ extension on Translations {
 			'voiceAssistants.unavailable' => 'שפי לא זמין כרגע.',
 			'voiceAssistants.failed' => 'שפי לא הצליח לענות כרגע. נסו שוב בעוד רגע.',
 			'voiceAssistants.goodbye' => 'בשמחה! אני כאן כשתצטרכו.',
+			'voiceAssistants.geminiOpensShefi' => 'פתיחה דרך Gemini נכנסת לשפי',
+			'voiceAssistants.geminiOpensShefiHint' => 'אומרים ל-Gemini "פתח את Easy Plate", והאפליקציה נפתחת ישר בשיחה עם שפי, מוכן להקשיב. המיקרופון של EasyPlate לא פתוח לפני כן. פתיחה רגילה מהאייקון נשארת למסך הבית.',
+			'voiceAssistants.geminiPanel' => 'כחלון צף',
+			'voiceAssistants.geminiPanelHint' => 'שפי נפתח כחלון צף בתחתית המסך, מעל מה שהיה פתוח, ולא כאפליקציה. לחיצה מחוץ לחלון מחזירה אותך למה שהיית בו.',
+			'adminUser.open' => 'פרטים מלאים',
+			'adminUser.tabOverview' => 'סקירה',
+			'adminUser.tabActivity' => 'פעילות',
+			'adminUser.tabContent' => 'תוכן',
+			'adminUser.tabPublished' => 'פרסומים',
+			'adminUser.tabMore' => 'עוד',
+			'adminUser.loading' => 'אוסף את כל המידע…',
+			'adminUser.failed' => 'לא הצלחנו לטעון את המשתמש',
+			'adminUser.partial' => ({required Object names}) => 'חלק מהמידע לא נטען: ${names}',
+			'adminUser.copyUid' => 'העתקת uid',
+			'adminUser.copied' => 'הועתק',
+			'adminUser.online' => 'מחובר עכשיו',
+			'adminUser.blocked' => 'חסום',
+			'adminUser.household' => 'משק בית',
+			'adminUser.profile' => 'פרופיל',
+			'adminUser.email' => 'מייל',
+			'adminUser.phone' => 'טלפון',
+			'adminUser.uid' => 'uid',
+			'adminUser.permission' => 'הרשאה',
+			'adminUser.permissionAdmin' => 'מנהל',
+			'adminUser.permissionUser' => 'משתמש',
+			'adminUser.permissionHint' => 'משתנה רק בקונסול של Firebase (users › permission)',
+			'adminUser.joined' => 'הצטרף',
+			'adminUser.lastSeen' => 'נראה לאחרונה',
+			'adminUser.device' => 'מכשיר',
+			'adminUser.version' => 'גרסה',
+			'adminUser.language' => 'שפה',
+			'adminUser.shoppingDay' => 'יום קניות',
+			'adminUser.diet' => 'העדפות תזונה',
+			'adminUser.plan' => 'מנוי',
+			'adminUser.planSource' => 'מקור',
+			'adminUser.planUntil' => 'בתוקף עד',
+			'adminUser.planLocked' => 'נעול ידנית',
+			'adminUser.none' => 'אין',
+			'adminUser.session' => 'חיבור למכשיר',
+			'adminUser.sessionSince' => 'מחובר מאז',
+			'adminUser.sessionUntil' => 'עד',
+			'adminUser.noSession' => 'אין חיבור פעיל',
+			'adminUser.householdTitle' => 'משק בית',
+			'adminUser.householdMembers' => ({required Object count}) => '${count} חברים',
+			'adminUser.householdOwner' => 'בעלים',
+			'adminUser.statusMessage' => 'הודעת החסימה',
+			'adminUser.ai' => 'שימוש ב-AI',
+			'adminUser.aiCalls' => ({required Object count}) => '${count} קריאות',
+			'adminUser.aiTokens' => ({required Object count}) => '${count} טוקנים',
+			'adminUser.aiLast' => 'קריאה אחרונה',
+			'adminUser.today' => 'שימוש היום',
+			'adminUser.todayEmpty' => 'אין שימוש היום',
+			'adminUser.counts' => 'סיכום',
+			'adminUser.all' => 'הכל',
+			'adminUser.noActivity' => 'אין פעילות להצגה',
+			'adminUser.noItems' => 'אין פריטים',
+			'adminUser.items' => ({required Object count}) => '${count} פריטים',
+			'adminUser.groups.content' => 'תוכן',
+			'adminUser.groups.community' => 'קהילה',
+			'adminUser.groups.ai' => 'AI',
+			'adminUser.groups.money' => 'רכישות',
+			'adminUser.groups.sharing' => 'שיתופים',
+			'adminUser.groups.support' => 'פניות והתראות',
+			'adminUser.kinds.joined' => 'הצטרף לאפליקציה',
+			'adminUser.kinds.seen' => 'נראה לאחרונה',
+			'adminUser.kinds.recipe' => 'מתכון',
+			'adminUser.kinds.book' => 'ספר מתכונים',
+			'adminUser.kinds.mealPlan' => 'תפריט',
+			'adminUser.kinds.groceryList' => 'רשימת קניות',
+			'adminUser.kinds.receipt' => 'קבלה',
+			'adminUser.kinds.forumPost' => 'פוסט בפורום',
+			'adminUser.kinds.forumReply' => 'תגובה בפורום',
+			'adminUser.kinds.sharedRecipe' => 'מתכון משותף לקהילה',
+			'adminUser.kinds.feedback' => 'פנייה',
+			'adminUser.kinds.aiCall' => 'קריאת AI',
+			'adminUser.kinds.purchase' => 'אירוע רכישה',
+			'adminUser.kinds.shareCode' => 'קוד שיתוף',
+			'adminUser.kinds.inviteSent' => 'הזמנה שנשלחה',
+			'adminUser.kinds.inviteReceived' => 'הזמנה שהתקבלה',
+			'adminUser.kinds.notification' => 'התראה',
+			'adminUser.kinds.sharedByMe' => 'שיתף פריט',
+			'adminUser.collections.recipes' => 'מתכונים',
+			'adminUser.collections.books' => 'ספרי מתכונים',
+			'adminUser.collections.meal_plans' => 'תפריטים',
+			'adminUser.collections.grocery_lists' => 'רשימות קניות',
+			'adminUser.collections.receipts' => 'קבלות',
+			'adminUser.collections.price_records' => 'רשומות מחיר',
+			'adminUser.sections.forumPosts' => 'פוסטים בפורום',
+			'adminUser.sections.forumReplies' => 'תגובות בפורום',
+			'adminUser.sections.sharedRecipes' => 'מתכונים ששיתף לקהילה',
+			'adminUser.sections.likesNote' => 'לייקים שנתן לא נשמרים לפי משתמש, ולכן לא מוצגים.',
+			'adminUser.sections.shareCodes' => 'קודי שיתוף',
+			'adminUser.sections.invitesSent' => 'הזמנות שנשלחו',
+			'adminUser.sections.invitesReceived' => 'הזמנות שהתקבלו',
+			'adminUser.sections.collabs' => 'פריטים משותפים',
+			'adminUser.sections.feedback' => 'פניות',
+			'adminUser.sections.notifications' => 'התראות שקיבל',
+			'adminUser.sections.purchases' => 'אירועי רכישה',
+			'adminUser.sections.aiCalls' => 'קריאות AI אחרונות',
+			'adminUser.likes' => ({required Object count}) => '${count} לייקים',
+			'adminUser.replies' => ({required Object count}) => '${count} תגובות',
+			'adminUser.householdData' => 'התוכן נשמר במשק הבית המשותף',
+			'adminUser.actions' => 'פעולות',
+			'adminUser.tabShares' => 'שיתופים',
+			'adminUser.shares.sharedByMe' => 'שיתף עם אחרים',
+			'adminUser.shares.sharedWithMe' => 'שותפו איתו',
+			'adminUser.shares.from' => ({required Object name}) => 'מאת: ${name}',
+			'adminUser.shares.nobodyYet' => 'עוד אף אחד לא הצטרף',
+			'adminUser.shares.roleOwner' => 'בעלים',
+			'adminUser.shares.roleEditor' => 'עורך',
+			'adminUser.shares.roleViewer' => 'צופה',
+			'adminUser.shares.kindRecipe' => 'מתכון',
+			'adminUser.shares.kindBook' => 'ספר מתכונים',
+			'adminUser.shares.kindMealPlan' => 'תפריט',
+			'adminUser.shares.kindGroceryList' => 'רשימת קניות',
+			'adminUser.shares.kindHousehold' => 'משק בית',
+			'adminUser.shares.withNames' => ({required Object names}) => 'עם: ${names}',
 			_ => null,
 		};
 	}

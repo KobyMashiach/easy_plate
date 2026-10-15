@@ -129,6 +129,36 @@ class _WakeWordPageState extends State<WakeWordPage>
                 children: [
                   SettingsGroupLabel(t.voiceAssistants.title),
                   _VoiceAssistantsCard(android: _android),
+                  if (_android)
+                    FeatureGate(
+                      feature: FeaturesFlags.shefiLauncher,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.sm),
+                        child: SettingsToggle(
+                          title: t.voiceAssistants.geminiOpensShefi,
+                          description: t.voiceAssistants.geminiOpensShefiHint,
+                          value: settings.assistantOpensShefi,
+                          onChanged: _service.setAssistantOpensShefi,
+                        ),
+                      ),
+                    ),
+                  if (_android)
+                    FeatureGate(
+                      feature: FeaturesFlags.shefiLauncher,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.sm),
+                        child: SettingsToggle(
+                          title: t.voiceAssistants.geminiPanel,
+                          description: t.voiceAssistants.geminiPanelHint,
+                          value:
+                              settings.assistantOpensShefi &&
+                              settings.assistantPanel,
+                          onChanged: settings.assistantOpensShefi
+                              ? _service.setAssistantPanel
+                              : null,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

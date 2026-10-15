@@ -339,7 +339,7 @@ async function syncAndroid({ db, config, storage = admin.storage() }) {
   try {
     [files] = await bucket.getFiles({ prefix: "stats/installs/" });
   } catch (err) {
-    const reason = err.code === 403 ? `no access to gs://${config.playBucket} — invite the function's service account in Play Console → Users and permissions` : err.message;
+    const reason = err.code === 403 ? `no access to gs://${config.playBucket} — in Play Console → Users and permissions, give the service account the ACCOUNT permission "View app information and download bulk reports (read-only)" (app permissions are not enough); it can take up to 24 hours to apply` : err.message;
     await markSync(db, "android", { error: reason });
     throw Object.assign(new Error(reason), { status: 502, code: "play_access" });
   }
@@ -392,7 +392,7 @@ async function fetchAppleDay({ config, token, date, fetchImpl = fetch }) {
       const json = await res.json();
       detail = json && json.errors && json.errors[0] ? `${json.errors[0].title || ""} ${json.errors[0].detail || ""}`.trim() : "";
     } catch (_) {}
-    const hint = res.status === 401 ? "the key, key id or issuer id is wrong" : res.status === 403 ? "the key has no Sales and Reports access, or the vendor number is not yours" : "";
+    const hint = res.status === 401 ? "the key, key id or issuer id is wrong" : res.status === 403 ? "the key has no Sales (or Admin) role, or the vendor number is not yours" : "";
     throw Object.assign(new Error(`App Store Connect ${res.status}${detail ? `: ${detail}` : ""}${hint ? ` (${hint})` : ""}`), { status: 502, code: "apple_access" });
   }
   const bytes = Buffer.from(await res.arrayBuffer());

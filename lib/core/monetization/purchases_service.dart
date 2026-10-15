@@ -160,13 +160,48 @@ class PurchasesService {
     }
   }
 
+  /// The store product behind the account's active premium (and, on Google
+  /// Play, its base plan), or null when premium does not come from a store
+  /// purchase on this account (granted by hand, inherited from a household,
+  /// or none at all).
+  Future<ActivePlan?> activePlan() async {
+    if (!_configured) return null;
+    try {
+      final info = await Purchases.getCustomerInfo();
+      final entitlement =
+          info.entitlements.active[PurchasesConfig.premiumEntitlementId];
+      if (entitlement == null) return null;
+      return ActivePlan(
+        productId: entitlement.productIdentifier,
+        basePlan: entitlement.productPlanIdentifier,
+      );
+    } catch (e) {
+      debugPrint('Active plan lookup failed: $e');
+      return null;
+    }
+  }
+
   /// Buys [package]. Returns true when the account holds premium afterwards.
   /// A cancelled purchase sheet is not an error and reads as false; anything
   /// else is rethrown so the paywall can say what went wrong.
-  Future<bool> purchase(Package package) async {
+  ///
+  /// [replacing] switches an active subscription to this package. Google
+  /// Play needs to be told which subscription is replaced (or it would sell
+  /// a second one alongside); the remaining time is credited at once.
+  /// The App Store switches within the subscription group by itself.
+  Future<bool> purchase(Package package, {ActivePlan? replacing}) async {
     if (!_configured) return false;
     try {
-      final result = await Purchases.purchase(PurchaseParams.package(package));
+      final change =
+          replacing != null && defaultTargetPlatform == TargetPlatform.android
+          ? StoreProductChangeInfo(
+              replacing.subscriptionId,
+              replacementMode: StoreReplacementMode.withTimeProration,
+            )
+          : null;
+      final result = await Purchases.purchase(
+        PurchaseParams.package(package, productChangeInfo: change),
+      );
       _onCustomerInfo(result.customerInfo);
       return hasPremium(result.customerInfo);
     } on PlatformException catch (e) {
@@ -233,4 +268,32 @@ class PurchasesService {
 
   static bool hasPremium(CustomerInfo info) => info.entitlements.active
       .containsKey(PurchasesConfig.premiumEntitlementId);
+}
+
+/// The store product an active subscription was bought as.
+class ActivePlan {
+  /// As RevenueCat reports it: a Play subscription id (sometimes with
+  /// `:basePlan` attached) or an App Store product id.
+  final String productId;
+
+  /// Google Play's base plan, when there is one.
+  final String? basePlan;
+
+  const ActivePlan({required this.productId, this.basePlan});
+
+  /// The Play subscription id alone, as a product change wants it.
+  String get subscriptionId => productId.split(':').first;
+
+  /// Whether the paywall offer for [offerProductId] (Play: `sub:basePlan`)
+  /// is this plan.
+  bool matches(String offerProductId) {
+    if (offerProductId == productId) return true;
+    final parts = offerProductId.split(':');
+    if (parts.first != subscriptionId) return false;
+    // One subscription can carry several base plans (monthly, yearly):
+    // only the same one is the same plan.
+    final plan =
+        basePlan ?? (productId.contains(':') ? productId.split(':')[1] : null);
+    return parts.length < 2 || plan == null || parts[1] == plan;
+  }
 }

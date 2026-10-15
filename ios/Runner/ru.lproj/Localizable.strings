@@ -6,3 +6,12 @@
 "Talk to Shefi" = "Поговорить с Шефи";
 "Opens Shefi, listening." = "Открывает Шефи в режиме прослушивания.";
 "Shefi couldn't answer right now. Please try again in a moment." = "Шефи не смог ответить. Попробуйте чуть позже.";
+"How can I help?" = "Чем помочь?";
+"Add to the grocery list" = "Добавить в список покупок";
+"Shefi adds items to your grocery list." = "Шефи добавляет продукты в список покупок.";
+"Items" = "Продукты";
+"What should I add to the grocery list?" = "Что добавить в список покупок?";
+"Add to the grocery list: %@" = "Добавь в список покупок: %@";
+"Today's menu" = "Меню на сегодня";
+"Shefi tells you what is on today's menu." = "Шефи расскажет, что в меню сегодня.";
+"What is on today's menu?" = "Что в меню сегодня?";

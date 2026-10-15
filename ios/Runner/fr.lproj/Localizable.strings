@@ -6,3 +6,12 @@
 "Talk to Shefi" = "Parler à Shefi";
 "Opens Shefi, listening." = "Ouvre Shefi, à l'écoute.";
 "Shefi couldn't answer right now. Please try again in a moment." = "Shefi n'a pas pu répondre. Réessayez dans un instant.";
+"How can I help?" = "Comment puis-je aider ?";
+"Add to the grocery list" = "Ajouter à la liste de courses";
+"Shefi adds items to your grocery list." = "Shefi ajoute des articles à votre liste de courses.";
+"Items" = "Articles";
+"What should I add to the grocery list?" = "Qu'est-ce que j'ajoute à la liste de courses ?";
+"Add to the grocery list: %@" = "Ajoute à la liste de courses : %@";
+"Today's menu" = "Le menu du jour";
+"Shefi tells you what is on today's menu." = "Shefi vous dit ce qu'il y a au menu aujourd'hui.";
+"What is on today's menu?" = "Qu'y a-t-il au menu aujourd'hui ?";

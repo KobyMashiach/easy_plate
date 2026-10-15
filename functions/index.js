@@ -309,6 +309,12 @@ exports.adminRemoteConfig = require("./adminRemoteConfig").adminRemoteConfig;
 
 // One signed-in device per account, a month at a time; the daily sweep
 // revokes the tokens of sessions that ran out.
+// users/{uid}.permission ("admin" | "user"): who the administrator is.
+exports.onUserCreated = require("./permissions").onUserCreated;
+
+// Notification templates on a schedule (adminNotifications.js).
+exports.runNotificationTemplates = require("./adminNotifications").runNotificationTemplates;
+
 exports.sessions = require("./sessions").sessions;
 exports.expireSessions = require("./sessions").expireSessions;
 

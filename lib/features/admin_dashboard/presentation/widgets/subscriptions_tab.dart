@@ -13,6 +13,7 @@ import '../../../../core/widgets/refreshable_empty_state.dart';
 import '../../../admin_billing/domain/entities/billing_entities.dart';
 import '../../../admin_billing/domain/repositories/admin_billing_repository.dart';
 import 'compose_sheet.dart';
+import '../pages/admin_user_page.dart';
 import 'dashboard_format.dart';
 
 /// Every account against what RevenueCat said about it: who pays, who paid
@@ -493,6 +494,17 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                             _AccountCard(
                               account: account,
                               now: now,
+                              // The whole account: activity, content,
+                              // publications, sharing, tickets, AI.
+                              onOpen: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => AdminUserPage(
+                                    uid: account.uid,
+                                    name: account.name,
+                                    onActions: () => _actions(account),
+                                  ),
+                                ),
+                              ),
                               onSetPremium: (premium) =>
                                   _setPremium(account, premium),
                               onRelease: () => _release(account),
@@ -519,6 +531,7 @@ class _AccountCard extends StatelessWidget {
   final ValueChanged<bool> onSetPremium;
   final VoidCallback onRelease;
   final VoidCallback onActions;
+  final VoidCallback onOpen;
 
   const _AccountCard({
     required this.account,
@@ -526,6 +539,7 @@ class _AccountCard extends StatelessWidget {
     required this.onSetPremium,
     required this.onRelease,
     required this.onActions,
+    required this.onOpen,
   });
 
   @override
@@ -542,6 +556,7 @@ class _AccountCard extends StatelessWidget {
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
+      onTap: onOpen,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

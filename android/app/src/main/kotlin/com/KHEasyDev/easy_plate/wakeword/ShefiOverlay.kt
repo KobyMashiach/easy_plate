@@ -52,7 +52,18 @@ import java.util.Locale
  * it back after sending. Samsung stops animations for a background app, so
  * nothing here relies on one. Needs "display over other apps".
  */
-class ShefiOverlay(context: Context, private val onClosed: () -> Unit) {
+class ShefiOverlay(
+    context: Context,
+    private val onClosed: () -> Unit,
+    /**
+     * A transparent activity to draw the panel in, instead of a window over
+     * other apps: the Gemini route (EntryActivity). The panel then needs no
+     * "display over other apps", the microphone is the foreground app's,
+     * and a tap outside the card closes it and returns to where the user
+     * was.
+     */
+    private val host: android.app.Activity? = null,
+) {
     private val ctx = context.applicationContext
     private val handler = Handler(Looper.getMainLooper())
     private val windows = ctx.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -112,13 +123,22 @@ class ShefiOverlay(context: Context, private val onClosed: () -> Unit) {
         session.close()
         root?.let { view ->
             hideKeyboard(view)
-            try {
-                windows.removeView(view)
-            } catch (_: Exception) {
+            if (host == null) {
+                try {
+                    windows.removeView(view)
+                } catch (_: Exception) {
+                }
             }
         }
         root = null
         onClosed()
+        host?.let {
+            if (!it.isFinishing) {
+                it.finish()
+                @Suppress("DEPRECATION")
+                it.overridePendingTransition(0, 0)
+            }
+        }
     }
 
     // ---- conversation ----------------------------------------------------
@@ -304,6 +324,8 @@ class ShefiOverlay(context: Context, private val onClosed: () -> Unit) {
      * (an overlay is not resized for the keyboard on its own).
      */
     private fun setFocusable(focusable: Boolean) {
+        // An activity's window takes focus and the keyboard by itself.
+        if (host != null) return
         val view = root ?: return
         params.height = if (focusable) {
             WindowManager.LayoutParams.MATCH_PARENT
@@ -595,6 +617,11 @@ class ShefiOverlay(context: Context, private val onClosed: () -> Unit) {
             // Back while typing closes the keyboard and hands focus back.
             override fun dispatchKeyEvent(event: KeyEvent): Boolean {
                 if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                    // In its own screen, back with no keyboard up ends it.
+                    if (host != null && !input.hasFocus()) {
+                        close()
+                        return true
+                    }
                     input.clearFocus()
                     hideKeyboard(this)
                     setFocusable(false)
@@ -624,6 +651,26 @@ class ShefiOverlay(context: Context, private val onClosed: () -> Unit) {
                 view.setPadding(side, 0, side, maxOf(bottom, ime + dp(8f).toInt()))
                 insets
             }
+        }
+
+        host?.let { activity ->
+            // A light dim, only now that the panel is up (the entry theme
+            // has none, so an ordinary launch never flashes grey).
+            activity.window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            activity.window.setDimAmount(0.25f)
+            // The whole screen is the host's; a tap beside the card closes it.
+            frame.isClickable = true
+            frame.setOnClickListener { close() }
+            card.isClickable = true
+            activity.setContentView(
+                frame,
+                android.view.ViewGroup.LayoutParams(
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                ),
+            )
+            root = frame
+            return
         }
 
         val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

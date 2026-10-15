@@ -204,6 +204,12 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get sessionRequestQueued => 'Impossible d\'envoyer une notification à l\'autre appareil. Il verra la demande à la prochaine ouverture de l\'app.';
 	@override String get sessionRequestFailed => 'La demande n\'a pas pu être envoyée. Réessayez dans un instant.';
 	@override String get sessionRequestDeclined => 'L\'autre appareil a choisi de rester connecté.';
+	@override String sessionRequestTakeover({required Object when}) => 'Si l’autre appareil ne répond pas, vous serez connecté ici le ${when} et il sera déconnecté.';
+	@override String get sessionTakeover => 'Pas d’accès à l’autre appareil – se connecter ici';
+	@override String get sessionTakeoverTitle => 'Se connecter sur cet appareil';
+	@override String sessionTakeoverBody({required Object phone}) => 'Nous enverrons un nouveau code au ${phone}. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.';
+	@override String get sessionTakeoverNoPhone => 'Ce compte n’a pas de numéro de téléphone, il ne peut donc pas être confirmé ici. Demandez la déconnexion ou contactez le support.';
+	@override String get sessionTakeoverFailed => 'Impossible de transférer le compte sur cet appareil. Réessayez.';
 	@override String get sessionReleaseTitle => 'Un autre appareil veut se connecter';
 	@override String sessionReleaseBody({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?';
 	@override String get sessionReleaseConfirm => 'Me déconnecter ici';
@@ -1273,6 +1279,12 @@ class _Translations$premium$fr extends Translations$premium$he {
 	@override String get tierDuoHint => '2 comptes, tout synchronisé';
 	@override String get tierFamilyHint => 'Jusqu’à 6 comptes, tout synchronisé';
 	@override String benefitHousehold({required Object n}) => 'Compte partagé pour ${n} personnes : recettes, plans et listes synchronisés';
+	@override String get switchTitle => 'Changer de formule';
+	@override String get switchHint => 'Passez à une autre formule à tout moment. Le changement est immédiat et le temps restant sur votre formule actuelle est crédité.';
+	@override String get switchInherited => 'Votre formule vient de votre foyer. Seule la personne qui paie le foyer peut la changer.';
+	@override String get currentPlan => 'Votre formule';
+	@override String switchTo({required Object price}) => 'Changer pour ${price}';
+	@override String get switched => 'Formule modifiée';
 }
 
 // Path: walkthrough
@@ -1342,7 +1354,7 @@ class _Translations$adminBilling$fr extends Translations$adminBilling$he {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Abonnements';
+	@override String get title => 'Utilisateurs';
 	@override String get all => 'Tous';
 	@override String get paying => 'Payants';
 	@override String get problems => 'Problèmes';
@@ -1382,7 +1394,7 @@ class _Translations$adminDashboard$fr extends Translations$adminDashboard$he {
 	// Translations
 	@override String get title => 'Tableau de bord';
 	@override String get tabDashboard => 'Tableau';
-	@override String get tabSubscriptions => 'Abonnements';
+	@override String get tabSubscriptions => 'Utilisateurs';
 	@override String get tabTickets => 'Messages';
 	@override String get rangeToday => 'Aujourd\'hui';
 	@override String get rangeMonth => '30 jours';
@@ -1795,6 +1807,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get homeWidgets => 'Widgets d\'écran d\'accueil';
 	@override String get wakeWord => 'Hé Shefi';
 	@override String get voiceAssistants => 'Shefi dans Siri et Gemini';
+	@override String get shefiLauncher => 'Icône Shefi';
 }
 
 // Path: wakeWord
@@ -1861,7 +1874,7 @@ class _Translations$voiceAssistants$fr extends Translations$voiceAssistants$he {
 		'Qu\'est-ce qu\'il reste à acheter ?',
 		'Combien de temps cuire le riz ?',
 	];
-	@override String get androidHow => 'Android Auto et Gemini : Google n\'a pas encore ouvert Gemini aux apps comme EasyPlate. La connexion est déjà dans l\'app et fonctionnera dès que Google l\'ouvrira.';
+	@override String get androidHow => 'Sur Android, via Gemini : dites « ouvre Easy Plate » (ou touchez l\'icône « Shefi ») et Shefi s\'ouvre, prêt à écouter. Le micro d\'EasyPlate reste fermé jusque-là.';
 	@override String get limits => 'À la voix, impossible de supprimer, d\'importer depuis un lien ou d\'ouvrir des écrans. Faites-le dans l\'app.';
 	@override String get signedOut => 'Pour parler à Shefi, connectez-vous d\'abord à l\'app EasyPlate.';
 	@override String get empty => 'Je n\'ai pas entendu de demande. Réessayez.';
@@ -2298,6 +2311,12 @@ extension on TranslationsFr {
 			'auth.sessionRequestQueued' => 'Impossible d\'envoyer une notification à l\'autre appareil. Il verra la demande à la prochaine ouverture de l\'app.',
 			'auth.sessionRequestFailed' => 'La demande n\'a pas pu être envoyée. Réessayez dans un instant.',
 			'auth.sessionRequestDeclined' => 'L\'autre appareil a choisi de rester connecté.',
+			'auth.sessionRequestTakeover' => ({required Object when}) => 'Si l’autre appareil ne répond pas, vous serez connecté ici le ${when} et il sera déconnecté.',
+			'auth.sessionTakeover' => 'Pas d’accès à l’autre appareil – se connecter ici',
+			'auth.sessionTakeoverTitle' => 'Se connecter sur cet appareil',
+			'auth.sessionTakeoverBody' => ({required Object phone}) => 'Nous enverrons un nouveau code au ${phone}. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.',
+			'auth.sessionTakeoverNoPhone' => 'Ce compte n’a pas de numéro de téléphone, il ne peut donc pas être confirmé ici. Demandez la déconnexion ou contactez le support.',
+			'auth.sessionTakeoverFailed' => 'Impossible de transférer le compte sur cet appareil. Réessayez.',
 			'auth.sessionReleaseTitle' => 'Un autre appareil veut se connecter',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?',
 			'auth.sessionReleaseConfirm' => 'Me déconnecter ici',
@@ -2699,14 +2718,14 @@ extension on TranslationsFr {
 			'editor.cookMinutes' => 'Cuisson (min)',
 			'editor.amount' => 'Quantité',
 			'editor.unit' => 'Unité',
+			_ => null,
+		} ?? switch (path) {
 			'editor.ingredientName' => 'Nom de l\'ingrédient',
 			'editor.stepHint' => 'Décrivez l\'étape',
 			'editor.addIngredient' => 'Ajouter un ingrédient',
 			'editor.addStep' => 'Ajouter une étape',
 			'editor.removeIngredient' => 'Retirer l\'ingrédient',
 			'editor.removeStep' => 'Retirer l\'étape',
-			_ => null,
-		} ?? switch (path) {
 			'editor.reorderStep' => 'Réordonner l\'étape',
 			'editor.fixSpelling' => 'Corriger l\'orthographe',
 			'editor.refining' => 'Correction de la recette...',
@@ -3105,6 +3124,12 @@ extension on TranslationsFr {
 			'premium.tierDuoHint' => '2 comptes, tout synchronisé',
 			'premium.tierFamilyHint' => 'Jusqu’à 6 comptes, tout synchronisé',
 			'premium.benefitHousehold' => ({required Object n}) => 'Compte partagé pour ${n} personnes : recettes, plans et listes synchronisés',
+			'premium.switchTitle' => 'Changer de formule',
+			'premium.switchHint' => 'Passez à une autre formule à tout moment. Le changement est immédiat et le temps restant sur votre formule actuelle est crédité.',
+			'premium.switchInherited' => 'Votre formule vient de votre foyer. Seule la personne qui paie le foyer peut la changer.',
+			'premium.currentPlan' => 'Votre formule',
+			'premium.switchTo' => ({required Object price}) => 'Changer pour ${price}',
+			'premium.switched' => 'Formule modifiée',
 			'walkthrough.title' => 'Guide',
 			'walkthrough.start' => 'Lancer le guide',
 			'walkthrough.startHint' => 'Une visite guidée de toutes les fonctions de l\'application, pas à pas',
@@ -3207,6 +3232,8 @@ extension on TranslationsFr {
 			'feedback.suggestion' => 'Suggestion',
 			'feedback.bugHint' => 'Décrivez le bug : ce que vous avez fait, ce qui s\'est passé et ce que vous attendiez...',
 			'feedback.suggestionHint' => 'Dites-nous ce que vous aimeriez que l\'application fasse, et en quoi cela vous aiderait...',
+			_ => null,
+		} ?? switch (path) {
 			'feedback.send' => 'Envoyer',
 			'feedback.sent' => 'Merci ! Votre message a été envoyé.',
 			'feedback.failed' => 'L\'envoi a échoué, réessayez plus tard',
@@ -3217,10 +3244,8 @@ extension on TranslationsFr {
 			'feedback.none' => 'Aucun message pour l\'instant',
 			'feedback.version' => ({required Object version}) => 'Version ${version}',
 			'feedback.notAllowed' => 'Cet écran est réservé à l\'administrateur',
-			'adminBilling.title' => 'Abonnements',
+			'adminBilling.title' => 'Utilisateurs',
 			'adminBilling.all' => 'Tous',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.paying' => 'Payants',
 			'adminBilling.problems' => 'Problèmes',
 			'adminBilling.searchHint' => 'Rechercher par nom, e-mail, téléphone ou uid',
@@ -3250,7 +3275,7 @@ extension on TranslationsFr {
 			'adminBilling.noEntitlementTag' => 'Sans entitlement',
 			'adminDashboard.title' => 'Tableau de bord',
 			'adminDashboard.tabDashboard' => 'Tableau',
-			'adminDashboard.tabSubscriptions' => 'Abonnements',
+			'adminDashboard.tabSubscriptions' => 'Utilisateurs',
 			'adminDashboard.tabTickets' => 'Messages',
 			'adminDashboard.rangeToday' => 'Aujourd\'hui',
 			'adminDashboard.rangeMonth' => '30 jours',
@@ -3709,6 +3734,7 @@ extension on TranslationsFr {
 			'featureName.homeWidgets' => 'Widgets d\'écran d\'accueil',
 			'featureName.wakeWord' => 'Hé Shefi',
 			'featureName.voiceAssistants' => 'Shefi dans Siri et Gemini',
+			'featureName.shefiLauncher' => 'Icône Shefi',
 			'wakeWord.title' => 'Hé Shefi',
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',
@@ -3720,6 +3746,8 @@ extension on TranslationsFr {
 			'wakeWord.enableHint' => 'Le micro n\'est ouvert que pour reconnaître les mots d\'activation. Rien n\'est enregistré ni conservé.',
 			'wakeWord.closedTitle' => 'Quand l\'app est fermée',
 			'wakeWord.background' => 'Aussi quand l\'app est fermée',
+			_ => null,
+		} ?? switch (path) {
 			'wakeWord.backgroundHint' => 'L’écoute continue en arrière-plan avec une notification permanente, et le micro apparaît comme utilisé. Le repérage se fait sur le téléphone et consomme peu de batterie. Elle s’arrête écran éteint, et après un redémarrage il faut ouvrir l’app une fois.',
 			'wakeWord.openDirectly' => 'Ouvrir directement depuis l\'arrière-plan',
 			'wakeWord.openDirectlyHint' => 'Sans « Afficher par-dessus les autres apps », Shefi apparaît sous forme de notification à toucher. Touchez ici pour l\'autoriser.',
@@ -3733,8 +3761,6 @@ extension on TranslationsFr {
 			'wakeWord.permissionDenied' => 'Pour entendre « Hé Shefi », l\'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).',
 			'wakeWord.openSettings' => 'Ouvrir les réglages',
 			'wakeWord.notificationTitle' => 'Shefi écoute',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.notificationBody' => 'Dites « Hé Shefi » pour commencer une conversation',
 			'wakeWord.notificationStop' => 'Arrêter',
 			'wakeWord.heardTitle' => 'Shefi est là',
@@ -3753,7 +3779,7 @@ extension on TranslationsFr {
 			'voiceAssistants.iosExamples.1' => 'Qu\'est-ce qu\'il y a au menu aujourd\'hui ?',
 			'voiceAssistants.iosExamples.2' => 'Qu\'est-ce qu\'il reste à acheter ?',
 			'voiceAssistants.iosExamples.3' => 'Combien de temps cuire le riz ?',
-			'voiceAssistants.androidHow' => 'Android Auto et Gemini : Google n\'a pas encore ouvert Gemini aux apps comme EasyPlate. La connexion est déjà dans l\'app et fonctionnera dès que Google l\'ouvrira.',
+			'voiceAssistants.androidHow' => 'Sur Android, via Gemini : dites « ouvre Easy Plate » (ou touchez l\'icône « Shefi ») et Shefi s\'ouvre, prêt à écouter. Le micro d\'EasyPlate reste fermé jusque-là.',
 			'voiceAssistants.limits' => 'À la voix, impossible de supprimer, d\'importer depuis un lien ou d\'ouvrir des écrans. Faites-le dans l\'app.',
 			'voiceAssistants.signedOut' => 'Pour parler à Shefi, connectez-vous d\'abord à l\'app EasyPlate.',
 			'voiceAssistants.empty' => 'Je n\'ai pas entendu de demande. Réessayez.',

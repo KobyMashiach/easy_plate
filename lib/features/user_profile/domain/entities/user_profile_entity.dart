@@ -1,3 +1,7 @@
+import 'user_permission.dart';
+
+export 'user_permission.dart';
+
 /// The account profile stored in Firestore, separate from the local
 /// [UserPreferencesEntity] which stays device-side.
 class UserProfileEntity {
@@ -12,6 +16,10 @@ class UserProfileEntity {
   final String? pushToken;
   final DateTime createdAt;
 
+  /// What the account may do, from `users/{uid}.permission`. Set only in
+  /// the Firebase console (the rules refuse it from the app).
+  final UserPermission permission;
+
   const UserProfileEntity({
     required this.uid,
     required this.fullName,
@@ -20,6 +28,7 @@ class UserProfileEntity {
     this.phoneNumber,
     this.photoUrl,
     this.pushToken,
+    this.permission = UserPermission.user,
   });
 
   /// A profile the user has actually filled in. Google gives us a name for
@@ -41,6 +50,7 @@ class UserProfileEntity {
       photoUrl: photoUrl ?? this.photoUrl,
       pushToken: pushToken ?? this.pushToken,
       createdAt: createdAt,
+      permission: permission,
     );
   }
 }

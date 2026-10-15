@@ -1,10 +1,10 @@
-import '../constants/app_constants.dart';
+import '../../features/user_profile/domain/entities/user_profile_entity.dart';
 import 'auth_session_service.dart';
 
-/// Whether the signed-in account is the app's administrator: the one email
-/// in [kAdminEmail], compared case-insensitively. The server enforces the
-/// same address in the Firestore rules, so this only decides what is shown.
+/// Whether the signed-in account is an administrator: its users document
+/// says `permission: "admin"` (see [UserPermission]). The Firestore rules and
+/// the functions read the same field, so this only decides what is shown.
 abstract class AdminAccess {
   static bool get isAdmin =>
-      AuthSessionService().user?.email?.trim().toLowerCase() == kAdminEmail;
+      AuthSessionService().profile?.permission == UserPermission.admin;
 }

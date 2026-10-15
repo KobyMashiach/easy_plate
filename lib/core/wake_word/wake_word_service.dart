@@ -151,8 +151,42 @@ class WakeWordService with WidgetsBindingObserver {
       FeaturesFlags.assistant.isEnabled &&
       FeaturesFlags.assistantVoice.isEnabled;
 
+  bool? _launcherSent;
+  bool? _assistantSent;
+  bool? _panelSent;
+
+  /// The "שפי" icon follows its flag and whether Shefi is open to this
+  /// account (a locked Shefi behind an icon would only lead to a paywall).
+  void _applyLauncher() {
+    if (!_isAndroid) return;
+    final on =
+        FeaturesFlags.shefiLauncher.isEnabled &&
+        FeaturesFlags.assistant.isEnabled &&
+        AuthSessionService().stage == AuthStage.ready;
+    if (on != _launcherSent) {
+      _launcherSent = on;
+      unawaited(_channel.setLauncherIcon(on));
+    }
+    // The same door, reached by voice: Gemini opens apps by name only, so
+    // its launch of Easy Plate is taken as "open Shefi".
+    final viaGemini = on && _settings.value.assistantOpensShefi;
+    final panel = _settings.value.assistantPanel;
+    if (viaGemini != _assistantSent || panel != _panelSent) {
+      _assistantSent = viaGemini;
+      _panelSent = panel;
+      unawaited(_channel.setAssistantOpensShefi(viaGemini, panel: panel));
+    }
+  }
+
+  Future<void> setAssistantPanel(bool on) =>
+      _settings.write(_settings.value.copyWith(assistantPanel: on));
+
+  Future<void> setAssistantOpensShefi(bool on) =>
+      _settings.write(_settings.value.copyWith(assistantOpensShefi: on));
+
   void _apply({bool force = false}) {
     if (!_bound) return;
+    _applyLauncher();
     final settings = _settings.value;
     final decision = decide(
       enabled: settings.enabled,

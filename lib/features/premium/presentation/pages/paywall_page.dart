@@ -38,6 +38,11 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   bool _loading = true;
   bool _busy = false;
 
+  /// The store plan behind an active premium: what the switch section marks
+  /// as current and what a switch replaces. Null for premium that was not
+  /// bought on this account.
+  ActivePlan? _active;
+
   /// Set when the store's redeem screen was opened: the purchase it makes
   /// happens outside the app, so the receipts are re-read on the way back.
   bool _awaitingRedeem = false;
@@ -102,8 +107,10 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
           ineligible.contains(o.productId) ? o.withoutIntro() : o,
       ];
     }
+    final active = await PurchasesService().activePlan();
     if (!mounted) return;
     setState(() {
+      _active = active;
       _packages = {for (final p in packages) p.identifier: p};
       _offers = offers;
       _tier = null;
@@ -128,11 +135,18 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   Future<void> _purchase() async {
     final package = _packages[_selectedId];
     if (package == null) return;
+    final switching = _entitlement.isPremium && _active != null;
     setState(() => _busy = true);
     try {
-      final premium = await PurchasesService().purchase(package);
+      final premium = await PurchasesService().purchase(
+        package,
+        replacing: switching ? _active : null,
+      );
       if (!mounted) return;
-      if (premium) _notify(t.premium.purchased);
+      if (premium) {
+        _notify(switching ? t.premium.switched : t.premium.purchased);
+        _active = await PurchasesService().activePlan();
+      }
     } catch (e) {
       debugPrint('Purchase failed: $e');
       if (mounted) _fail(t.premium.purchaseFailed);
@@ -179,6 +193,9 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
       selectedId: _selectedId,
       aiPerDay: MonetizationConfig.limits.premiumAiExtractions,
       isPremium: _entitlement.isPremium,
+      // A household member's premium is paid by the owner: nothing to switch.
+      canSwitch: !_entitlement.inherited,
+      currentProductId: _active,
       loading: _loading,
       busy: _busy,
       onSelect: (id) => setState(() => _selectedId = id),
@@ -208,6 +225,13 @@ class PaywallView extends StatelessWidget {
   /// value, passed in so the screen stays renderable without Firebase.
   final int aiPerDay;
   final bool isPremium;
+
+  /// A premium account may move to another package (another tier or
+  /// period). False for a household member, whose plan is the owner's.
+  final bool canSwitch;
+
+  /// The package the account is on now, marked in the switch section.
+  final ActivePlan? currentProductId;
   final bool loading;
   final bool busy;
   final ValueChanged<String> onSelect;
@@ -232,6 +256,8 @@ class PaywallView extends StatelessWidget {
     this.onSelectTier,
     required this.aiPerDay,
     required this.isPremium,
+    this.canSwitch = true,
+    this.currentProductId,
     required this.loading,
     required this.busy,
     required this.onSelect,
@@ -385,7 +411,25 @@ class PaywallView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            if (!isPremium && !loading && tiers.length > 1) ...[
+            if (isPremium) ...[
+              _ActiveCard(onCancel: busy ? null : onManage),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                t.premium.switchTitle,
+                style: AppTextStyles.headlineMd,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                canSwitch ? t.premium.switchHint : t.premium.switchInherited,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            if ((!isPremium || canSwitch) && !loading && tiers.length > 1) ...[
               ClaySegmentedControl(
                 segments: [
                   for (final option in tiers)
@@ -411,8 +455,8 @@ class PaywallView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.md),
             ],
-            if (isPremium)
-              _ActiveCard(onCancel: busy ? null : onManage)
+            if (isPremium && !canSwitch)
+              const SizedBox.shrink()
             else if (loading)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
@@ -430,6 +474,9 @@ class PaywallView extends StatelessWidget {
               for (final offer in offers) ...[
                 _OfferCard(
                   offer: offer,
+                  current:
+                      isPremium &&
+                      (currentProductId?.matches(offer.productId) ?? false),
                   periodLabel: _periodLabel(offer.period),
                   selected: offer.id == selectedId,
                   highlighted:
@@ -446,6 +493,8 @@ class PaywallView extends StatelessWidget {
               ClayButton(
                 label: selected == null
                     ? ''
+                    : isPremium
+                    ? t.premium.switchTo(price: selected.priceString)
                     : selected.isLifetime
                     ? t.premium.buyFor(price: selected.priceString)
                     : selected.intro == null
@@ -455,7 +504,14 @@ class PaywallView extends StatelessWidget {
                     : t.premium.startFor(price: selected.intro!.priceString),
                 icon: Icons.lock_open_rounded,
                 expanded: true,
-                onPressed: busy || selected == null ? null : onPurchase,
+                onPressed:
+                    busy ||
+                        selected == null ||
+                        (isPremium &&
+                            (currentProductId?.matches(selected.productId) ??
+                                false))
+                    ? null
+                    : onPurchase,
               ),
               if (selected?.intro != null) ...[
                 const SizedBox(height: AppSpacing.sm),
@@ -550,8 +606,12 @@ class _OfferCard extends StatelessWidget {
   final String? introTerms;
   final VoidCallback? onTap;
 
+  /// The package the account is on now.
+  final bool current;
+
   const _OfferCard({
     required this.offer,
+    this.current = false,
     required this.periodLabel,
     required this.selected,
     required this.highlighted,
@@ -584,7 +644,15 @@ class _OfferCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(periodLabel, style: AppTextStyles.bodyLg),
-                if (highlighted)
+                if (current)
+                  Text(
+                    t.premium.currentPlan,
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                else if (highlighted)
                   Text(
                     t.premium.bestValue,
                     style: AppTextStyles.labelSm.copyWith(

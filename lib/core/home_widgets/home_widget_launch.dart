@@ -36,6 +36,9 @@ class HomeWidgetLaunch {
   /// flag, and a command said after the wake words is a spoken turn.
   bool get fromWakeWord => params['source'] == 'wake';
 
+  /// Opened from the "שפי" app-drawer icon (or "Hey Google, open Shefi").
+  bool get fromLauncher => params['source'] == 'launcher';
+
   /// `grocery`: which list, and whether the add sheet opens.
   String? get listId => _text('list');
   bool get add => params['add'] == '1' || params['add'] == 'true';

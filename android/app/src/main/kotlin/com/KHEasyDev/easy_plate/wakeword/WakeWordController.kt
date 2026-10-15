@@ -29,7 +29,13 @@ import org.json.JSONObject
  */
 object WakeWordController {
     private const val TAG = "WakeWord"
-    private const val PREFS = "easy_plate_wake_word"
+    const val PREFS = "easy_plate_wake_word"
+
+    /** Whether a launch by Gemini opens on Shefi (read by MainActivity). */
+    const val ASSISTANT_OPENS_SHEFI = "assistantOpensShefi"
+
+    /** …as the floating panel (true) or the app's chat (false). */
+    const val ASSISTANT_PANEL = "assistantPanel"
     private const val HEARD_PAUSE_MS = 90_000L
     const val CHANNEL_LISTENING = "wake_word"
     const val CHANNEL_HEARD = "wake_word_heard"
@@ -202,10 +208,10 @@ object WakeWordController {
         // allowed "display over other apps".
         if (Settings.canDrawOverlays(appContext)) {
             overlay?.close()
-            overlay = ShefiOverlay(appContext) {
+            overlay = ShefiOverlay(appContext, onClosed = {
                 overlay = null
                 resumeAfterDetection()
-            }.also { it.start(command) }
+            }).also { it.start(command) }
             return
         }
         val open = launchIntent(command)

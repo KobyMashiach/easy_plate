@@ -80,6 +80,8 @@ class FirebaseService {
     // How often an open app reports that it is in use (PresenceService);
     // 0 switches the report off.
     presenceHeartbeatKey: 60,
+    supportPhoneKey: '972508247743',
+    supportEmailKey: 'support@aieasyplate.app',
     // Feature switches (`ff_*`: 0 hidden / 1 coming soon / 2 on / 3 Premium
     // only), read by FeaturesFlags. All on, as asked, so a failed fetch
     // never hides a feature.
@@ -99,6 +101,11 @@ class FirebaseService {
   static const shareFreeListsKey = 'share_free_lists_total';
   static const ttsCloudEnabledKey = 'tts_cloud_enabled';
   static const presenceHeartbeatKey = 'presence_heartbeat_seconds';
+
+  /// The support page's WhatsApp number (digits, with the country code) and
+  /// address, editable from the console without a release.
+  static const supportPhoneKey = 'support_phone';
+  static const supportEmailKey = 'support_email';
 
   static const isProdKey = 'isProd';
 

@@ -43,6 +43,10 @@ abstract class AuthRepository {
   Future<String> startPhoneLink(String phoneNumber);
   Future<void> linkPhone(String verificationId, String smsCode);
 
+  /// The SMS round trip of [startPhoneLink] used to confirm the account's own
+  /// number again (the "no access to the other device" takeover).
+  Future<void> reauthenticatePhone(String verificationId, String smsCode);
+
   /// The mirror of [startPhoneLink] for an account created by phone.
   Future<void> linkEmailPassword(String email, String password);
 

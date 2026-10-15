@@ -32,8 +32,16 @@ test("fields are trimmed, capped and typed; strangers are dropped", () => {
 test("every action has a spec, and none reads the request body blindly", () => {
   for (const [name, spec] of Object.entries(ACTIONS)) {
     assert.ok(/^[a-z]+(\.[a-zA-Z]+)*$/.test(name), name);
-    for (const rule of Object.values(spec)) assert.ok(["string", "number", "boolean", "object", "enum"].includes(rule.kind), name);
+    for (const rule of Object.values(spec)) assert.ok(["string", "number", "boolean", "object", "enum", "stringList"].includes(rule.kind), name);
   }
+});
+
+test("a list field keeps distinct trimmed strings and refuses too many", () => {
+  const ok = parseRequest({ action: "user.notifyAudience", audience: "users", uids: [" a ", "a", "b", 3, ""], body: "hi" });
+  assert.deepEqual(ok.uids, ["a", "b"]);
+  assert.ok(parseRequest({ action: "user.notifyAudience", audience: "users", uids: "a", body: "hi" }).error);
+  assert.ok(parseRequest({ action: "user.notifyAudience", audience: "users", uids: Array.from({ length: 501 }, (_, i) => `u${i}`), body: "hi" }).error);
+  assert.ok(parseRequest({ action: "user.notifyAudience", audience: "vip", body: "hi" }).error);
 });
 
 test("persona uids are marked and random", () => {

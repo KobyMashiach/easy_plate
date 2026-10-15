@@ -107,6 +107,12 @@
     "sessionRequestQueued": "تعذّر إرسال إشعار إلى الجهاز الآخر. سيظهر الطلب هناك في المرة القادمة التي يُفتح فيها التطبيق.",
     "sessionRequestFailed": "تعذّر إرسال الطلب. حاول بعد قليل.",
     "sessionRequestDeclined": "اختار الجهاز الآخر البقاء متصلًا.",
+    "sessionRequestTakeover": "إذا لم يرد الجهاز الآخر، فستدخل هنا تلقائيًا في $when وسيُسجَّل خروجه.",
+    "sessionTakeover": "لا أستطيع الوصول إلى الجهاز الآخر – الدخول من هنا",
+    "sessionTakeoverTitle": "الدخول من هذا الجهاز",
+    "sessionTakeoverBody": "سنرسل رمزًا جديدًا إلى $phone. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.",
+    "sessionTakeoverNoPhone": "لا يوجد رقم هاتف في الحساب، لذا لا يمكن التأكيد من هنا. اطلب تسجيل الخروج أو تواصل مع الدعم.",
+    "sessionTakeoverFailed": "تعذّر نقل الحساب إلى هذا الجهاز. حاول مرة أخرى.",
     "sessionReleaseTitle": "جهاز آخر يريد تسجيل الدخول",
     "sessionReleaseBody": "جهاز ($platform) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟",
     "sessionReleaseConfirm": "تسجيل الخروج هنا",
@@ -979,7 +985,13 @@
     "tierProHint": "حساب واحد",
     "tierDuoHint": "حسابان، كل شيء متزامن",
     "tierFamilyHint": "حتى 6 حسابات، كل شيء متزامن",
-    "benefitHousehold": "حساب مشترك لـ $n أشخاص: الوصفات والخطط والقوائم متزامنة"
+    "benefitHousehold": "حساب مشترك لـ $n أشخاص: الوصفات والخطط والقوائم متزامنة",
+    "switchTitle": "التبديل بين الباقات",
+    "switchHint": "يمكنك الانتقال إلى باقة أخرى في أي وقت. يسري التبديل فورًا، ويُحتسب الوقت المتبقي من باقتك الحالية.",
+    "switchInherited": "باقتك تأتي من الأسرة. فقط من يدفع للأسرة يمكنه تغييرها.",
+    "currentPlan": "باقتك",
+    "switchTo": "الانتقال مقابل $price",
+    "switched": "تم تغيير الباقة"
   },
   "walkthrough": {
     "title": "الدليل",
@@ -1118,7 +1130,7 @@
     "notAllowed": "هذه الشاشة للمدير فقط"
   },
   "adminBilling": {
-    "title": "الاشتراكات",
+    "title": "المستخدمون",
     "all": "الكل",
     "paying": "يدفعون",
     "problems": "مشاكل",
@@ -1151,7 +1163,7 @@
   "adminDashboard": {
     "title": "لوحة التحكم",
     "tabDashboard": "لوحة",
-    "tabSubscriptions": "الاشتراكات",
+    "tabSubscriptions": "المستخدمون",
     "tabTickets": "الرسائل",
     "rangeToday": "اليوم",
     "rangeMonth": "30 يومًا",
@@ -1649,7 +1661,8 @@
     "singleSession": "جهاز واحد لكل حساب",
     "homeWidgets": "أدوات الشاشة الرئيسية",
     "wakeWord": "هاي شيفي",
-    "voiceAssistants": "شيفي عبر Siri وGemini"
+    "voiceAssistants": "شيفي عبر Siri وGemini",
+    "shefiLauncher": "أيقونة شيفي"
   },
   "wakeWord": {
     "title": "هاي شيفي",
@@ -1702,7 +1715,7 @@
       "ماذا بقي للشراء؟",
       "كم من الوقت أطبخ الأرز؟"
     ],
-    "androidHow": "في Android Auto وGemini: لم تفتح Google بعد Gemini لتطبيقات مثل EasyPlate. الاتصال جاهز في التطبيق وسيبدأ العمل فور فتحه من Google.",
+    "androidHow": "على Android عبر Gemini: قل \"افتح Easy Plate\" (أو انقر على أيقونة \"شيفي\") فيُفتح شيفي جاهزًا للاستماع. يبقى ميكروفون EasyPlate مغلقًا حتى ذلك الحين.",
     "limits": "بالصوت لا يمكن الحذف أو الاستيراد من رابط أو فتح الشاشات. افعل ذلك في التطبيق.",
     "signedOut": "للتحدث مع شيفي، سجّل الدخول إلى تطبيق EasyPlate أولًا.",
     "empty": "لم أسمع طلبًا. حاول مرة أخرى.",

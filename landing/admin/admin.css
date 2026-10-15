@@ -250,3 +250,10 @@ details.card summary { cursor: pointer; font-weight: 600; }
 .chart-tip .tip-row { display: flex; align-items: center; gap: 6px; }
 .chart-tip .tip-row i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
 .chart-tip .tip-row.muted { color: #bbb; }
+
+/* Ids, e-mails, keys and paths read left to right as one block, also inside
+   a Hebrew or Arabic line (otherwise "123-name@host" is shown reordered). */
+.mono, code {
+  direction: ltr;
+  unicode-bidi: isolate;
+}

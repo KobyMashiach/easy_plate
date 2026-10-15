@@ -23,7 +23,8 @@ class HomeWidgetDefaultsStore {
 
   HomeWidgetDefaults get value => listenable.value;
 
-  Future<Box<String>> _open() => Hive.openBox<String>(DeviceLocaleStore.boxName);
+  Future<Box<String>> _open() =>
+      Hive.openBox<String>(DeviceLocaleStore.boxName);
 
   Future<HomeWidgetDefaults> read() async {
     try {

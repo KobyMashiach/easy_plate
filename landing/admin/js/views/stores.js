@@ -3,7 +3,7 @@
 // sales reports (one document per day each). Everything here reads from
 // those documents; "Sync now" asks the server to fetch again.
 import { t, fmtNumber, fmtAgo, fmtDate, currentLang } from "../i18n.js";
-import { h, clear, spinner, button, busy, chips, hbars, table, toast, toastError, modal, field, input, textarea, kv, badge, copyText } from "../ui.js";
+import { h, clear, spinner, button, busy, chips, hbars, table, toast, toastError, modal, field, input, textarea, select, kv, badge, copyText } from "../ui.js";
 import { call } from "../api.js";
 
 const RANGES = [["7", "stores.range.d7"], ["30", "stores.range.d30"], ["90", "stores.range.d90"], ["365", "stores.range.y1"], ["all", "stores.range.all"]];
@@ -11,6 +11,81 @@ const RANGES = [["7", "stores.range.d7"], ["30", "stores.range.d30"], ["90", "st
 // lightness, chroma, CVD separation and contrast.
 const COLORS = { android: "#22b06a", ios: "#8c6bff" };
 const DAY_MS = 86400000;
+
+// The menu names the store consoles show, per interface language, as the
+// official help pages print them (Play Console Help answers 6135870 and
+// 9844686; App Store Connect Help, published in English only). A language
+// whose names are not published has a free translation instead, listed in
+// FREE_TRANSLATIONS, and the settings say so under the instructions.
+// Play Console has no Arabic interface; Apple publishes no list at all.
+const STORE_LABELS = {
+  play: {
+    en: { downloadReports: "Download reports", statistics: "Statistics", copyUri: "Copy Cloud Storage URI", users: "Users and permissions", invite: "Invite user", perm: "View app information and download bulk reports (read-only)" },
+    fr: { downloadReports: "Télécharger des rapports", statistics: "Statistiques", copyUri: "Copier l'URI Cloud Storage", users: "Utilisateurs et autorisations", invite: "Inviter un utilisateur", perm: "Afficher les informations sur les applications et télécharger les rapports groupés (lecture seule)" },
+    ru: { downloadReports: "Скачивание отчетов", statistics: "Статистика", copyUri: "Копировать Cloud Storage URI", users: "Пользователи и разрешения", invite: "Пригласить пользователя", perm: "Просмотр информации о приложении и массовое скачивание отчетов (только чтение)" },
+    // Free translation: Google publishes no Hebrew menu names.
+    he: { downloadReports: "הורדת דוחות", statistics: "סטטיסטיקה", copyUri: "העתקת ה-URI של Cloud Storage", users: "משתמשים והרשאות", invite: "הזמנת משתמש", perm: "הצגת פרטי האפליקציה והורדת דוחות בכמות גדולה (לקריאה בלבד)" },
+  },
+  apple: {
+    en: { usersAccess: "Users and Access", integrations: "Integrations", api: "App Store Connect API", teamKeys: "Team Keys", generate: "Generate API Key", sales: "Sales", admin: "Admin", vendor: "Vendor Number", payments: "Payments and Financial Reports" },
+    // Free translations: Apple publishes its menu names in English only.
+    he: { usersAccess: "משתמשים וגישה", integrations: "שילובים", api: "App Store Connect API", teamKeys: "מפתחות צוות", generate: "יצירת מפתח API", sales: "מכירות", admin: "מנהל", vendor: "מספר ספק (Vendor Number)", payments: "תשלומים ודוחות כספיים" },
+    ar: { usersAccess: "المستخدمون والوصول", integrations: "عمليات التكامل", api: "App Store Connect API", teamKeys: "مفاتيح الفريق", generate: "إنشاء مفتاح API", sales: "المبيعات", admin: "المسؤول", vendor: "رقم المورّد (Vendor Number)", payments: "المدفوعات والتقارير المالية" },
+    fr: { usersAccess: "Utilisateurs et accès", integrations: "Intégrations", api: "App Store Connect API", teamKeys: "Clés d’équipe", generate: "Générer une clé API", sales: "Ventes", admin: "Admin", vendor: "numéro de fournisseur (Vendor Number)", payments: "Paiements et rapports financiers" },
+    ru: { usersAccess: "Пользователи и доступ", integrations: "Интеграции", api: "App Store Connect API", teamKeys: "Ключи команды", generate: "Создать ключ API", sales: "Продажи", admin: "Администратор", vendor: "Номер поставщика (Vendor Number)", payments: "Платежи и финансовые отчеты" },
+  },
+};
+const FREE_TRANSLATIONS = { play: new Set(["he"]), apple: new Set(["he", "ar", "fr", "ru"]) };
+// The interface languages each console offers.
+const STORE_LANGS = {
+  play: ["en", "he", "fr", "ru"],
+  apple: ["en", "he", "ar", "fr", "ru"],
+};
+const LANG_NAMES = { en: "English", he: "עברית", ar: "العربية", fr: "Français", ru: "Русский" };
+
+function storeLang(store) {
+  try {
+    const saved = localStorage.getItem(`ep-admin-store-lang-${store}`);
+    if (saved && STORE_LANGS[store].includes(saved)) return saved;
+  } catch (_) {}
+  return STORE_LANGS[store].includes(currentLang()) ? currentLang() : "en";
+}
+
+function setStoreLang(store, lang) {
+  try {
+    localStorage.setItem(`ep-admin-store-lang-${store}`, lang);
+  } catch (_) {}
+}
+
+// The instructions for one store: the sentence in the console's language,
+// the menu names in the store's.
+function storeHelp(store, key) {
+  const lang = storeLang(store);
+  const labels = STORE_LABELS[store][lang] || STORE_LABELS[store].en;
+  // Each name is a bidi island (FSI…PDI), so an English name inside a
+  // Hebrew sentence keeps its place; and the path's arrows follow the
+  // reading direction.
+  const isolated = Object.fromEntries(Object.entries(labels).map(([k, v]) => [k, `\u2068${v}\u2069`]));
+  let text = t(key, isolated);
+  if (document.documentElement.dir === "rtl") text = text.split("→").join("←");
+  return { text, verified: Boolean(STORE_LABELS[store][lang]) && !FREE_TRANSLATIONS[store].has(lang) };
+}
+
+function storeHelpBlock(store, key) {
+  const box = h("div.stack");
+  const render = () => {
+    clear(box);
+    const { text, verified } = storeHelp(store, key);
+    // One bullet per action (where the value comes from, what to grant).
+    box.append(h("ul.small.muted", { dir: document.documentElement.dir || "auto", style: { margin: "0", paddingInlineStart: "1.2em" } },
+      text.split("\n").map((line) => h("li", line))));
+    if (!verified) box.append(h("p.small.muted", "ⓘ ", t("stores.storeLangUnverified")));
+  };
+  const picker = select(STORE_LANGS[store].map((l) => [l, LANG_NAMES[l]]), { value: storeLang(store), dir: "auto" });
+  picker.addEventListener("change", () => { setStoreLang(store, picker.value); render(); });
+  render();
+  return h("div.stack", field(t("stores.storeLang"), picker, t("stores.storeLangHint")), box);
+}
 
 function dayKey(d) {
   return d.toISOString().slice(0, 10);
@@ -192,14 +267,14 @@ function openSettings(state, onSaved) {
   const body = h("div.stack",
     h("div.card.stack",
       h("h3", t("stores.android")),
-      h("p.small.muted", t("stores.playHelp")),
-      sa ? h("div.row", h("span.small.muted", t("stores.serviceAccount")), h("code.mono", sa), button(t("common.copy"), { kind: "small ghost", onclick: () => copyText(sa) })) : null,
+      storeHelpBlock("play", "stores.playHelp"),
+      sa ? h("div.row", h("span.small.muted", t("stores.serviceAccount")), h("code.mono", { dir: "ltr", style: { unicodeBidi: "isolate" } }, sa), button(t("common.copy"), { kind: "small ghost", onclick: () => copyText(sa) })) : null,
       field(t("stores.playBucket"), f.playBucket, t("stores.playBucketHint")),
       field(t("stores.playPackage"), f.playPackage),
     ),
     h("div.card.stack",
       h("h3", t("stores.ios")),
-      h("p.small.muted", t("stores.appleHelp")),
+      storeHelpBlock("apple", "stores.appleHelp"),
       field(t("stores.appleVendor"), f.appleVendor, t("stores.appleVendorHint")),
       field(t("stores.appleIssuerId"), f.appleIssuerId),
       field(t("stores.appleKeyId"), f.appleKeyId),

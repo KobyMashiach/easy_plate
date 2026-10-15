@@ -87,6 +87,14 @@ class WakeWordChannel {
   /// good.
   Future<void> openAppSettings() => _invoke('openAppSettings');
 
+  /// Android: whether the app opened by Gemini opens on Shefi.
+  Future<void> setAssistantOpensShefi(bool enabled, {bool panel = true}) =>
+      _invoke('setAssistantOpensShefi', {'enabled': enabled, 'panel': panel});
+
+  /// Android: shows or hides the "שפי" app-drawer icon.
+  Future<void> setLauncherIcon(bool enabled) =>
+      _invoke('setLauncherIcon', {'enabled': enabled});
+
   /// iOS: a Siri run that opened the app before Dart was listening.
   Future<bool> takePendingLaunch() async =>
       await _invoke<bool>('takePendingLaunch') ?? false;

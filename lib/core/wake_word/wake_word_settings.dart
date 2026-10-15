@@ -19,33 +19,59 @@ class WakeWordSettings {
   /// thing; there Siri covers the closed app.
   final bool background;
 
-  const WakeWordSettings({this.enabled = false, this.background = true});
+  /// Android: the app opened by voice through Gemini ("פתח את Easy Plate")
+  /// opens on Shefi, listening, with no microphone of ours open before.
+  final bool assistantOpensShefi;
 
-  WakeWordSettings copyWith({bool? enabled, bool? background}) =>
-      WakeWordSettings(
-        enabled: enabled ?? this.enabled,
-        background: background ?? this.background,
-      );
+  /// …as the floating panel over the screen the user was on (true), or as
+  /// the app opened on the chat (false).
+  final bool assistantPanel;
+
+  const WakeWordSettings({
+    this.enabled = false,
+    this.background = true,
+    this.assistantOpensShefi = true,
+    this.assistantPanel = true,
+  });
+
+  WakeWordSettings copyWith({
+    bool? enabled,
+    bool? background,
+    bool? assistantOpensShefi,
+    bool? assistantPanel,
+  }) => WakeWordSettings(
+    enabled: enabled ?? this.enabled,
+    background: background ?? this.background,
+    assistantOpensShefi: assistantOpensShefi ?? this.assistantOpensShefi,
+    assistantPanel: assistantPanel ?? this.assistantPanel,
+  );
 
   Map<String, Object> toJson() => {
     'enabled': enabled,
     'background': background,
+    'assistantOpensShefi': assistantOpensShefi,
+    'assistantPanel': assistantPanel,
   };
 
   factory WakeWordSettings.fromJson(Map<String, Object?> json) =>
       WakeWordSettings(
         enabled: json['enabled'] == true,
         background: json['background'] != false,
+        assistantOpensShefi: json['assistantOpensShefi'] != false,
+        assistantPanel: json['assistantPanel'] != false,
       );
 
   @override
   bool operator ==(Object other) =>
       other is WakeWordSettings &&
       other.enabled == enabled &&
-      other.background == background;
+      other.background == background &&
+      other.assistantOpensShefi == assistantOpensShefi &&
+      other.assistantPanel == assistantPanel;
 
   @override
-  int get hashCode => Object.hash(enabled, background);
+  int get hashCode =>
+      Object.hash(enabled, background, assistantOpensShefi, assistantPanel);
 }
 
 class WakeWordSettingsStore {

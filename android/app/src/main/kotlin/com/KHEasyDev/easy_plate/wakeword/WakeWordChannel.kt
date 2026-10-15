@@ -63,8 +63,40 @@ class WakeWordChannel(private val activity: Activity, engine: FlutterEngine) {
                 }
                 "takePendingLaunch" -> result.success(false)
                 "takeBackgroundStop" -> result.success(WakeWordController.takeBackgroundStop())
+                "setAssistantOpensShefi" -> {
+                    activity.getSharedPreferences(WakeWordController.PREFS, Activity.MODE_PRIVATE).edit()
+                        .putBoolean(
+                            WakeWordController.ASSISTANT_OPENS_SHEFI,
+                            call.argument<Boolean>("enabled") == true,
+                        )
+                        .putBoolean(
+                            WakeWordController.ASSISTANT_PANEL,
+                            call.argument<Boolean>("panel") != false,
+                        ).apply()
+                    result.success(null)
+                }
+                "setLauncherIcon" -> {
+                    setLauncherIcon(call.argument<Boolean>("enabled") == true)
+                    result.success(null)
+                }
                 else -> result.notImplemented()
             }
+        }
+    }
+
+    /** Shows or hides the "שפי" app-drawer icon (ff_shefi_launcher). */
+    private fun setLauncherIcon(enabled: Boolean) {
+        val component = android.content.ComponentName(activity, "${activity.packageName}.ShefiLauncher")
+        val wanted = if (enabled) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+        val pm = activity.packageManager
+        if (pm.getComponentEnabledSetting(component) == wanted) return
+        try {
+            pm.setComponentEnabledSetting(component, wanted, PackageManager.DONT_KILL_APP)
+        } catch (_: Exception) {
         }
     }
 

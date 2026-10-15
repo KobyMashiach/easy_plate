@@ -4,3 +4,9 @@
 "Ask Shefi in ${applicationName}" = "Ask Shefi in ${applicationName}";
 "Talk to Shefi in ${applicationName}" = "Talk to Shefi in ${applicationName}";
 "Open Shefi in ${applicationName}" = "Open Shefi in ${applicationName}";
+"Hey ${applicationName} add to the grocery list" = "Hey ${applicationName} add to the grocery list";
+"Hey ${applicationName} add to the shopping list" = "Hey ${applicationName} add to the shopping list";
+"Add to the grocery list in ${applicationName}" = "Add to the grocery list in ${applicationName}";
+"Hey ${applicationName} what's on today's menu" = "Hey ${applicationName} what's on today's menu";
+"Hey ${applicationName} what's for dinner today" = "Hey ${applicationName} what's for dinner today";
+"Today's menu in ${applicationName}" = "Today's menu in ${applicationName}";

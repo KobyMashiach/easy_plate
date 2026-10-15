@@ -73,7 +73,7 @@ export async function mount({ view, params, setTitle }) {
         h("h3", h("span.row", dot(online), name, persona ? badge(t("users.persona"), "brand") : null)),
         h("div.small.muted", [user && user.email, user && user.phoneNumber].filter(Boolean).join(" · ") || "—"),
         h("div.row.small", h("span.mono.muted", uid), button(t("common.copy"), { kind: "ghost small", onclick: () => copyText(uid) })),
-        h("div.row", premiumActive(ent, now) ? badge(t("users.premium"), "mint") : badge(t("users.free")), status && status.disabled ? badge(t("users.disabled"), "red") : null, online ? badge(t("users.online"), "green") : h("span.small.muted", `${t("users.lastSeen")}: `, when(user && user.lastSeenAt))),
+        h("div.row", premiumActive(ent, now) ? badge(t("users.premium"), "mint") : badge(t("users.free")), user && user.permission === "admin" ? badge(t("users.permissionAdmin"), "brand") : null, status && status.disabled ? badge(t("users.disabled"), "red") : null, online ? badge(t("users.online"), "green") : h("span.small.muted", `${t("users.lastSeen")}: `, when(user && user.lastSeenAt))),
       )),
       persona ? null : h("div.row",
         button(t("user.notify"), { kind: "small", onclick: notify }),
@@ -142,6 +142,7 @@ export async function mount({ view, params, setTitle }) {
 
     const profileCard = h("div.card", h("h2", t("user.profile")), kv([
       [t("user.fullName"), user && user.fullName], [t("common.email"), user && user.email], [t("common.phone"), user && user.phoneNumber],
+      [t("users.permission"), h("span", user && user.permission === "admin" ? t("users.permissionAdmin") : t("users.permissionUser"), h("div.small.muted", t("users.permissionHint", { uid })))],
       [t("user.created"), user && fmtDate(user.createdAt)], [t("common.platform"), user && platformLabel(user.platform)], [t("user.appVersion"), user && user.appVersion],
       [t("users.lastSeen"), user && fmtDate(user.lastSeenAt)], [t("user.pushToken"), user && user.pushToken ? h("span.mono.small", String(user.pushToken).slice(0, 24) + "…") : "—"],
       persona ? [t("personas.bio"), publicProfile && publicProfile.bio] : undefined,
@@ -158,8 +159,9 @@ export async function mount({ view, params, setTitle }) {
     ]), h("p.small.muted", t("user.tokenHint"))) : h("p.muted", t("user.noAuth")));
 
     const sessionCard = persona ? null : h("div.card", h("h2", t("users.session")), session ? kv([
-      [t("users.device"), platformLabel(session.platform)], ["Device id", h("span.mono.small", session.deviceId)], [t("user.created"), fmtDate(session.startedAt)], [t("user.expires"), session.expiresAt ? fmtDate(session.expiresAt) : "∞"], [t("users.lastSeen"), fmtDate(session.lastSeenAt)],
-    ]) : h("p.muted", t("users.noSession")));
+      [t("users.device"), platformLabel(session.platform)], ["Device id", h("span.mono.small", session.deviceId)], [t("users.hardwareId"), session.hardwareId ? h("span.mono.small", String(session.hardwareId).slice(0, 16) + "…") : "—"], [t("user.created"), fmtDate(session.startedAt)], [t("user.expires"), session.expiresAt ? fmtDate(session.expiresAt) : "∞"], [t("users.lastSeen"), fmtDate(session.lastSeenAt)],
+      session.releaseRequest ? [t("users.releaseRequest"), h("span", platformLabel(session.releaseRequest.platform), " · ", fmtDate(session.releaseRequest.at), " · ", session.releaseRequest.declinedAt ? badge(t("users.declined"), "amber") : session.releaseRequest.takeoverAt ? t("users.takeoverAt", { date: fmtDate(session.releaseRequest.takeoverAt) }) : "")] : null,
+    ].filter(Boolean)) : h("p.muted", t("users.noSession")));
 
     return h("div.cards", profileCard, entCard, authCard, sessionCard);
   }

@@ -204,6 +204,12 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get sessionRequestQueued => 'Не удалось отправить уведомление на другое устройство. Запрос появится там при следующем открытии приложения.';
 	@override String get sessionRequestFailed => 'Не удалось отправить запрос. Попробуйте чуть позже.';
 	@override String get sessionRequestDeclined => 'Другое устройство решило остаться в аккаунте.';
+	@override String sessionRequestTakeover({required Object when}) => 'Если другое устройство не ответит, вы войдёте здесь ${when}, а оно выйдет из аккаунта.';
+	@override String get sessionTakeover => 'Нет доступа к другому устройству – войти здесь';
+	@override String get sessionTakeoverTitle => 'Вход на этом устройстве';
+	@override String sessionTakeoverBody({required Object phone}) => 'Мы отправим новый код на ${phone}. После подтверждения аккаунт перейдёт на это устройство, а другое выйдет из аккаунта.';
+	@override String get sessionTakeoverNoPhone => 'В аккаунте нет номера телефона, поэтому подтвердить здесь нельзя. Попросите выйти или напишите в поддержку.';
+	@override String get sessionTakeoverFailed => 'Не удалось перенести аккаунт на это устройство. Попробуйте ещё раз.';
 	@override String get sessionReleaseTitle => 'Другое устройство хочет войти';
 	@override String sessionReleaseBody({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?';
 	@override String get sessionReleaseConfirm => 'Выйти здесь';
@@ -1273,6 +1279,12 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get tierDuoHint => '2 аккаунта, всё синхронизировано';
 	@override String get tierFamilyHint => 'До 6 аккаунтов, всё синхронизировано';
 	@override String benefitHousehold({required Object n}) => 'Общий аккаунт на ${n} человек: рецепты, планы и списки синхронизированы';
+	@override String get switchTitle => 'Смена пакета';
+	@override String get switchHint => 'Перейти на другой пакет можно в любой момент. Смена вступает в силу сразу, а оставшееся время текущего пакета засчитывается.';
+	@override String get switchInherited => 'Ваш пакет предоставлен семьёй. Сменить его может только тот, кто платит за семью.';
+	@override String get currentPlan => 'Ваш пакет';
+	@override String switchTo({required Object price}) => 'Перейти за ${price}';
+	@override String get switched => 'Пакет изменён';
 }
 
 // Path: walkthrough
@@ -1342,7 +1354,7 @@ class _Translations$adminBilling$ru extends Translations$adminBilling$he {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Подписки';
+	@override String get title => 'Пользователи';
 	@override String get all => 'Все';
 	@override String get paying => 'Платят';
 	@override String get problems => 'Проблемы';
@@ -1382,7 +1394,7 @@ class _Translations$adminDashboard$ru extends Translations$adminDashboard$he {
 	// Translations
 	@override String get title => 'Панель управления';
 	@override String get tabDashboard => 'Обзор';
-	@override String get tabSubscriptions => 'Подписки';
+	@override String get tabSubscriptions => 'Пользователи';
 	@override String get tabTickets => 'Обращения';
 	@override String get rangeToday => 'Сегодня';
 	@override String get rangeMonth => '30 дней';
@@ -1795,6 +1807,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get homeWidgets => 'Виджеты главного экрана';
 	@override String get wakeWord => 'Эй, Шефи';
 	@override String get voiceAssistants => 'Шефи в Siri и Gemini';
+	@override String get shefiLauncher => 'Значок Шефи';
 }
 
 // Path: wakeWord
@@ -1861,7 +1874,7 @@ class _Translations$voiceAssistants$ru extends Translations$voiceAssistants$he {
 		'Что осталось купить?',
 		'Сколько варить рис?',
 	];
-	@override String get androidHow => 'Android Auto и Gemini: Google ещё не открыла Gemini для приложений вроде EasyPlate. Подключение уже есть в приложении и заработает, как только Google его откроет.';
+	@override String get androidHow => 'На Android через Gemini: скажите «открой Easy Plate» (или нажмите значок «Шефи»), и Шефи откроется, готовый слушать. Микрофон EasyPlate до этого закрыт.';
 	@override String get limits => 'Голосом нельзя удалять, импортировать по ссылке или открывать экраны. Это делается в приложении.';
 	@override String get signedOut => 'Чтобы поговорить с Шефи, сначала войдите в приложение EasyPlate.';
 	@override String get empty => 'Я не услышал просьбу. Попробуйте ещё раз.';
@@ -2298,6 +2311,12 @@ extension on TranslationsRu {
 			'auth.sessionRequestQueued' => 'Не удалось отправить уведомление на другое устройство. Запрос появится там при следующем открытии приложения.',
 			'auth.sessionRequestFailed' => 'Не удалось отправить запрос. Попробуйте чуть позже.',
 			'auth.sessionRequestDeclined' => 'Другое устройство решило остаться в аккаунте.',
+			'auth.sessionRequestTakeover' => ({required Object when}) => 'Если другое устройство не ответит, вы войдёте здесь ${when}, а оно выйдет из аккаунта.',
+			'auth.sessionTakeover' => 'Нет доступа к другому устройству – войти здесь',
+			'auth.sessionTakeoverTitle' => 'Вход на этом устройстве',
+			'auth.sessionTakeoverBody' => ({required Object phone}) => 'Мы отправим новый код на ${phone}. После подтверждения аккаунт перейдёт на это устройство, а другое выйдет из аккаунта.',
+			'auth.sessionTakeoverNoPhone' => 'В аккаунте нет номера телефона, поэтому подтвердить здесь нельзя. Попросите выйти или напишите в поддержку.',
+			'auth.sessionTakeoverFailed' => 'Не удалось перенести аккаунт на это устройство. Попробуйте ещё раз.',
 			'auth.sessionReleaseTitle' => 'Другое устройство хочет войти',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?',
 			'auth.sessionReleaseConfirm' => 'Выйти здесь',
@@ -2699,14 +2718,14 @@ extension on TranslationsRu {
 			'editor.cookMinutes' => 'Готовка (мин)',
 			'editor.amount' => 'Количество',
 			'editor.unit' => 'Единица',
+			_ => null,
+		} ?? switch (path) {
 			'editor.ingredientName' => 'Название ингредиента',
 			'editor.stepHint' => 'Опишите шаг',
 			'editor.addIngredient' => 'Добавить ингредиент',
 			'editor.addStep' => 'Добавить шаг',
 			'editor.removeIngredient' => 'Удалить ингредиент',
 			'editor.removeStep' => 'Удалить шаг',
-			_ => null,
-		} ?? switch (path) {
 			'editor.reorderStep' => 'Изменить порядок шага',
 			'editor.fixSpelling' => 'Исправить орфографию',
 			'editor.refining' => 'Исправляем рецепт...',
@@ -3105,6 +3124,12 @@ extension on TranslationsRu {
 			'premium.tierDuoHint' => '2 аккаунта, всё синхронизировано',
 			'premium.tierFamilyHint' => 'До 6 аккаунтов, всё синхронизировано',
 			'premium.benefitHousehold' => ({required Object n}) => 'Общий аккаунт на ${n} человек: рецепты, планы и списки синхронизированы',
+			'premium.switchTitle' => 'Смена пакета',
+			'premium.switchHint' => 'Перейти на другой пакет можно в любой момент. Смена вступает в силу сразу, а оставшееся время текущего пакета засчитывается.',
+			'premium.switchInherited' => 'Ваш пакет предоставлен семьёй. Сменить его может только тот, кто платит за семью.',
+			'premium.currentPlan' => 'Ваш пакет',
+			'premium.switchTo' => ({required Object price}) => 'Перейти за ${price}',
+			'premium.switched' => 'Пакет изменён',
 			'walkthrough.title' => 'Обучение',
 			'walkthrough.start' => 'Запустить обучение',
 			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
@@ -3207,6 +3232,8 @@ extension on TranslationsRu {
 			'feedback.suggestion' => 'Предложение',
 			'feedback.bugHint' => 'Опишите ошибку: что вы сделали, что произошло и чего ожидали...',
 			'feedback.suggestionHint' => 'Расскажите, что вы хотели бы видеть в приложении и чем это поможет...',
+			_ => null,
+		} ?? switch (path) {
 			'feedback.send' => 'Отправить',
 			'feedback.sent' => 'Спасибо! Сообщение отправлено.',
 			'feedback.failed' => 'Не удалось отправить, попробуйте позже',
@@ -3217,10 +3244,8 @@ extension on TranslationsRu {
 			'feedback.none' => 'Обращений пока нет',
 			'feedback.version' => ({required Object version}) => 'Версия ${version}',
 			'feedback.notAllowed' => 'Этот экран только для администратора',
-			'adminBilling.title' => 'Подписки',
+			'adminBilling.title' => 'Пользователи',
 			'adminBilling.all' => 'Все',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.paying' => 'Платят',
 			'adminBilling.problems' => 'Проблемы',
 			'adminBilling.searchHint' => 'Поиск по имени, почте, телефону или uid',
@@ -3250,7 +3275,7 @@ extension on TranslationsRu {
 			'adminBilling.noEntitlementTag' => 'Без entitlement',
 			'adminDashboard.title' => 'Панель управления',
 			'adminDashboard.tabDashboard' => 'Обзор',
-			'adminDashboard.tabSubscriptions' => 'Подписки',
+			'adminDashboard.tabSubscriptions' => 'Пользователи',
 			'adminDashboard.tabTickets' => 'Обращения',
 			'adminDashboard.rangeToday' => 'Сегодня',
 			'adminDashboard.rangeMonth' => '30 дней',
@@ -3709,6 +3734,7 @@ extension on TranslationsRu {
 			'featureName.homeWidgets' => 'Виджеты главного экрана',
 			'featureName.wakeWord' => 'Эй, Шефи',
 			'featureName.voiceAssistants' => 'Шефи в Siri и Gemini',
+			'featureName.shefiLauncher' => 'Значок Шефи',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
@@ -3720,6 +3746,8 @@ extension on TranslationsRu {
 			'wakeWord.enableHint' => 'Микрофон открыт только для распознавания слов активации. Ничего не записывается и не сохраняется.',
 			'wakeWord.closedTitle' => 'Когда приложение закрыто',
 			'wakeWord.background' => 'Даже когда приложение закрыто',
+			_ => null,
+		} ?? switch (path) {
 			'wakeWord.backgroundHint' => 'Прослушивание продолжается в фоне с постоянным уведомлением, а микрофон отображается как используемый. Распознавание идёт на телефоне и расходует мало батареи. Оно приостанавливается при выключенном экране, а после перезагрузки приложение нужно открыть один раз.',
 			'wakeWord.openDirectly' => 'Открывать сразу из фона',
 			'wakeWord.openDirectlyHint' => 'Без разрешения «Поверх других приложений» Шефи появится уведомлением, на которое нужно нажать. Нажмите, чтобы разрешить.',
@@ -3733,8 +3761,6 @@ extension on TranslationsRu {
 			'wakeWord.permissionDenied' => 'Чтобы слышать «Эй, Шефи», приложению нужен микрофон (а в iOS ещё и распознавание речи).',
 			'wakeWord.openSettings' => 'Открыть настройки',
 			'wakeWord.notificationTitle' => 'Шефи слушает',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.notificationBody' => 'Скажите «Эй, Шефи», чтобы начать разговор',
 			'wakeWord.notificationStop' => 'Остановить',
 			'wakeWord.heardTitle' => 'Шефи здесь',
@@ -3753,7 +3779,7 @@ extension on TranslationsRu {
 			'voiceAssistants.iosExamples.1' => 'Что сегодня в меню?',
 			'voiceAssistants.iosExamples.2' => 'Что осталось купить?',
 			'voiceAssistants.iosExamples.3' => 'Сколько варить рис?',
-			'voiceAssistants.androidHow' => 'Android Auto и Gemini: Google ещё не открыла Gemini для приложений вроде EasyPlate. Подключение уже есть в приложении и заработает, как только Google его откроет.',
+			'voiceAssistants.androidHow' => 'На Android через Gemini: скажите «открой Easy Plate» (или нажмите значок «Шефи»), и Шефи откроется, готовый слушать. Микрофон EasyPlate до этого закрыт.',
 			'voiceAssistants.limits' => 'Голосом нельзя удалять, импортировать по ссылке или открывать экраны. Это делается в приложении.',
 			'voiceAssistants.signedOut' => 'Чтобы поговорить с Шефи, сначала войдите в приложение EasyPlate.',
 			'voiceAssistants.empty' => 'Я не услышал просьбу. Попробуйте ещё раз.',

@@ -6,12 +6,11 @@
 // Hosting emulator (`npm run serve:hosting`), not a plain static server.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getFirestore, doc as fsDoc, getDoc as fsGetDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 import { getStorage, ref as storageRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
 
 export * from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
-export const ADMIN_EMAIL = "koby9779@gmail.com";
 export const PANEL_URL = "https://europe-west1-easy-plate.cloudfunctions.net/adminPanel";
 export const PERSONA_PREFIX = "seed_";
 
@@ -45,7 +44,7 @@ export function watchAuth(onChange) {
 export async function signInWithGoogle() {
   await setPersistence(auth, browserLocalPersistence);
   const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account", login_hint: ADMIN_EMAIL });
+  provider.setCustomParameters({ prompt: "select_account" });
   const result = await signInWithPopup(auth, provider);
   return result.user;
 }
@@ -54,8 +53,17 @@ export function signOut() {
   return fbSignOut(auth);
 }
 
-export function isAdminUser(user) {
-  return !!user && String(user.email || "").trim().toLowerCase() === ADMIN_EMAIL;
+// An administrator is an account whose users document says
+// permission "admin" (set only in the Firebase console; the rules refuse it
+// from any client). The functions check the same field on every call.
+export async function isAdminUser(user) {
+  if (!user) return false;
+  try {
+    const snapshot = await fsGetDoc(fsDoc(db, "users", user.uid));
+    return snapshot.exists() && snapshot.data().permission === "admin";
+  } catch (_) {
+    return false;
+  }
 }
 
 // A Storage path (the way recipes carry their picture) to something an

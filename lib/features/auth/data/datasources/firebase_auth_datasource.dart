@@ -42,6 +42,11 @@ abstract class AuthDataSource {
     void Function(Object error)? onFailed,
   });
   Future<void> linkPhone(String verificationId, String smsCode);
+
+  /// Confirms the signed-in account's own phone again with an SMS code, so
+  /// the next ID token proves a fresh phone sign-in (the session takeover
+  /// asks for that).
+  Future<void> reauthenticatePhone(String verificationId, String smsCode);
   Future<void> linkEmailPassword(String email, String password);
   Future<void> linkGoogle();
   Future<void> linkApple();
@@ -369,6 +374,21 @@ class FirebaseAuthDataSource implements AuthDataSource {
       await _requireUser.linkWithCredential(credential);
       // The linked number only appears on the cached user after a reload.
       await _auth.currentUser?.reload();
+    } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  @override
+  Future<void> reauthenticatePhone(String verificationId, String smsCode) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      await _requireUser.reauthenticateWithCredential(credential);
+      // A new token now, so the server sees the fresh phone sign-in.
+      await _auth.currentUser?.getIdToken(true);
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }

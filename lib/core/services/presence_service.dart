@@ -120,10 +120,14 @@ class PresenceService {
   Future<void> _write(String uid, {required bool online}) async {
     try {
       final db = _firestore ?? FirebaseFirestore.instance;
-      await db.collection('users').doc(uid).set({
-        'online': online,
-        'lastSeenAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true)).timeout(const Duration(seconds: 8));
+      await db
+          .collection('users')
+          .doc(uid)
+          .set({
+            'online': online,
+            'lastSeenAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true))
+          .timeout(const Duration(seconds: 8));
     } catch (e) {
       debugPrint('Presence write failed: $e');
     }

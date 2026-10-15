@@ -21,16 +21,17 @@ const proxy = require("./aiProxy").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
 const { repairUsage } = require("./aiUsage");
 
-const ADMIN_EMAIL = "koby9779@gmail.com";
 const MAX_TITLE = 80;
 const MAX_BODY = 1000;
 const FCM_BATCH = 500;
 // How many preference documents are read at once for a broadcast.
 const PREFS_BATCH = 50;
 
-function isAdmin(caller) {
-  return !!caller && String(caller.email || "").trim().toLowerCase() === ADMIN_EMAIL;
-}
+// The administrator is whoever has `permission: "admin"` on their users
+// document (see permissions.js), never an address in the code.
+const { isAdmin } = require("./permissions");
+// Every send is logged for the web console's notifications page.
+const notificationLog = require("./adminNotifications");
 
 function text(value, max) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -159,14 +160,29 @@ async function notifyOne({ fromUid, uid, title, message }) {
 
 /// An inbox item for every account, written silent, and one multicast to
 /// every registered device. Accounts with no push token still get the item.
-async function notifyAll({ fromUid, title, message }) {
+// Pure: whether an account is in a broadcast's audience.
+//   all      every account
+//   premium  accounts whose plan is active now
+//   free     every other account
+//   users    the uids picked by hand
+const AUDIENCES = ["all", "premium", "free", "users"];
+function inAudience({ audience = "all", uid, uidSet = null, premium = false }) {
+  if (audience === "premium") return premium;
+  if (audience === "free") return !premium;
+  if (audience === "users") return !!uidSet && uidSet.has(uid);
+  return true;
+}
+
+async function notifyAll({ fromUid, title, message, audience = "all", uids = null }) {
   const db = admin.firestore();
   const users = await db.collection("users").select("pushToken").get();
   // Plans are in entitlements/{uid}: read once, keyed by uid, and only when
-  // the gate is on, since with it off the answer is never consulted.
+  // the push gate or the audience needs them.
   const pushFlag = remoteFlags.intFrom(await remoteFlags.params(), remoteFlags.NOTIFICATIONS_FLAG, 2);
   const entitlementByUid = new Map();
-  if (pushFlag === 3) {
+  const uidSet = audience === "users" ? new Set(uids || []) : null;
+  const audienceDocs = (premiumOf) => users.docs.filter((doc) => inAudience({ audience, uid: doc.id, uidSet, premium: premiumOf(doc.id) }));
+  if (pushFlag === 3 || audience === "premium" || audience === "free") {
     const entitlements = await db.collection("entitlements").select("premium", "premiumFrom", "premiumUntil").get();
     for (const d of entitlements.docs) entitlementByUid.set(d.id, d);
   }
@@ -177,13 +193,14 @@ async function notifyAll({ fromUid, title, message }) {
   // Each account's notification choices, read in bounded parallel groups:
   // the item is written for everyone (an announcement has to be readable),
   // the push only to those who left announcements on.
+  const targets = audienceDocs((uid) => remoteFlags.isPremium(entitlementByUid.get(uid)));
   const prefsByUid = new Map();
-  for (let i = 0; i < users.docs.length; i += PREFS_BATCH) {
-    const chunk = users.docs.slice(i, i + PREFS_BATCH);
+  for (let i = 0; i < targets.length; i += PREFS_BATCH) {
+    const chunk = targets.slice(i, i + PREFS_BATCH);
     const loaded = await Promise.all(chunk.map((doc) => notificationPrefs.load(db, doc.id)));
     chunk.forEach((doc, j) => prefsByUid.set(doc.id, loaded[j]));
   }
-  for (const doc of users.docs) {
+  for (const doc of targets) {
     batch.set(
       db.collection("notifications").doc(doc.id).collection("items").doc(),
       inboxItem({ fromUid, title, message, silent: true }),
@@ -234,7 +251,7 @@ exports.adminUsers = onRequest(
     if (req.method !== "POST") return res.status(405).json({ error: { message: "POST only" } });
     const caller = await proxy.verifyCaller(req);
     if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
-    if (!isAdmin(caller)) return res.status(403).json({ error: { message: "Administrator only" } });
+    if (!(await isAdmin(caller))) return res.status(403).json({ error: { message: "Administrator only" } });
 
     const request = parseRequest(req.body);
     if (request.error) return res.status(400).json({ error: { message: request.error } });
@@ -259,9 +276,11 @@ exports.adminUsers = onRequest(
           break;
         case "notify":
           await notifyOne({ fromUid: caller.uid, ...request });
+          await notificationLog.log(admin.firestore(), { by: caller.uid, target: "user", uid: request.uid, title: request.title, body: request.message, source: "app" });
           break;
         case "notifyAll":
           result = await notifyAll({ fromUid: caller.uid, ...request });
+          await notificationLog.log(admin.firestore(), { by: caller.uid, target: "all", title: request.title, body: request.message, source: "app", result });
           break;
         case "syncPricing":
           // The repair rides along: both exist to make the cost figure
@@ -280,4 +299,4 @@ exports.adminUsers = onRequest(
 
 // The account actions are shared with adminPanel.js (the web console), which
 // adds its own actions on top of the same checks.
-exports.internals = { parseRequest, isAdmin, remove, disable, enable, releaseSession, notifyOne, notifyAll, ADMIN_EMAIL };
+exports.internals = { parseRequest, isAdmin, remove, disable, enable, releaseSession, notifyOne, notifyAll, inAudience, AUDIENCES };

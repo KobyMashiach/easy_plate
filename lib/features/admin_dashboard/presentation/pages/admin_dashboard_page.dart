@@ -72,7 +72,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           ),
                           ClaySegment(
                             label: s.tabSubscriptions,
-                            icon: Icons.workspace_premium_rounded,
+                            icon: Icons.people_alt_rounded,
                           ),
                           ClaySegment(
                             label: s.tabTickets,

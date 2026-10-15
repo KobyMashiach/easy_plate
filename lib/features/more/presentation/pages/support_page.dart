@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/app_dialog.dart';
@@ -18,8 +19,11 @@ import '../../../../core/features/feature_gate.dart';
 class SupportPage extends StatelessWidget {
   const SupportPage({super.key});
 
-  static const supportPhone = '972508247743';
-  static const supportEmail = 'support@aieasyplate.app';
+  /// From Remote Config (`support_phone`, `support_email`), so the console
+  /// can change where help goes without a release. wa.me wants digits only.
+  static String get supportPhone =>
+      FirebaseService().remoteString(FirebaseService.supportPhoneKey).replaceAll(RegExp(r'\D'), '');
+  static String get supportEmail => FirebaseService().remoteString(FirebaseService.supportEmailKey);
 
   /// The signed-in identity goes in the message body so a reply does not have
   /// to start by asking who is writing.
@@ -27,7 +31,8 @@ class SupportPage extends StatelessWidget {
     final session = AuthSessionService();
     final name = session.profile?.fullName ?? '';
     final uid = session.user?.uid ?? '';
-    return '\n\n---\n$name\nID: $uid';
+    final userEmail = session.user?.email ?? '';
+    return '\n\n---\n$name\nID: $uid\nEMAIL: $userEmail';
   }
 
   Future<void> _open(BuildContext context, Uri uri) async {
@@ -123,7 +128,7 @@ class SupportPage extends StatelessWidget {
               onPressed: () => _open(
                 context,
                 Uri.https('wa.me', '/$supportPhone', {
-                  'text': _signature.trim(),
+                  'text': _signature,
                 }),
               ),
             ),

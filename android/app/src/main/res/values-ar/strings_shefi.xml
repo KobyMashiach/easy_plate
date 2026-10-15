@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The "شيفي" launcher icon (activity-alias ShefiLauncher): its name in the
+     app drawer, and what "Hey Google, open شيفي" matches. -->
+<resources>
+    <string name="shefi_launcher_label">شيفي</string>
+</resources>

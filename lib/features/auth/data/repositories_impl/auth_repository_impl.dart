@@ -73,6 +73,10 @@ class AuthRepositoryImpl implements AuthRepository {
       dataSource.linkPhone(verificationId, smsCode);
 
   @override
+  Future<void> reauthenticatePhone(String verificationId, String smsCode) =>
+      dataSource.reauthenticatePhone(verificationId, smsCode);
+
+  @override
   Future<void> linkEmailPassword(String email, String password) =>
       dataSource.linkEmailPassword(email, password);
 

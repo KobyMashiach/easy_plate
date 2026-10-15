@@ -83,6 +83,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminConfig$en adminConfig = _Translations$adminConfig$en._(_root);
 	@override late final _Translations$wakeWord$en wakeWord = _Translations$wakeWord$en._(_root);
 	@override late final _Translations$voiceAssistants$en voiceAssistants = _Translations$voiceAssistants$en._(_root);
+	@override late final _Translations$adminUser$en adminUser = _Translations$adminUser$en._(_root);
 }
 
 // Path: common
@@ -205,6 +206,12 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get sessionRequestQueued => 'We couldn\'t send a notification to the other device. It will see the request the next time the app opens there.';
 	@override String get sessionRequestFailed => 'The request couldn\'t be sent. Please try again in a moment.';
 	@override String get sessionRequestDeclined => 'The other device chose to stay signed in.';
+	@override String sessionRequestTakeover({required Object when}) => 'If the other device doesn\'t answer, you\'ll be signed in here on ${when} and it will be signed out.';
+	@override String get sessionTakeover => 'No access to the other device – sign in here';
+	@override String get sessionTakeoverTitle => 'Sign in on this device';
+	@override String sessionTakeoverBody({required Object phone}) => 'We\'ll send a new code to ${phone}. Once it\'s confirmed, the account moves to this device and the other one is signed out.';
+	@override String get sessionTakeoverNoPhone => 'This account has no phone number, so it can\'t be confirmed here. Ask to disconnect or contact support.';
+	@override String get sessionTakeoverFailed => 'We couldn\'t move the account to this device. Please try again.';
 	@override String get sessionReleaseTitle => 'Another device wants to sign in';
 	@override String sessionReleaseBody({required Object platform}) => 'A device (${platform}) wants to sign in to your account. Sign out on this device?';
 	@override String get sessionReleaseConfirm => 'Sign out here';
@@ -1274,6 +1281,12 @@ class _Translations$premium$en extends Translations$premium$he {
 	@override String get tierDuoHint => '2 accounts, everything mirrored';
 	@override String get tierFamilyHint => 'Up to 6 accounts, everything mirrored';
 	@override String benefitHousehold({required Object n}) => 'Shared account for ${n} people: recipes, plans and lists in sync';
+	@override String get switchTitle => 'Switch packages';
+	@override String get switchHint => 'Move to another package at any time. The switch takes effect at once, and the time left on your current package is credited.';
+	@override String get switchInherited => 'Your package comes from your household. Only the person paying for the household can change it.';
+	@override String get currentPlan => 'Your package';
+	@override String switchTo({required Object price}) => 'Switch for ${price}';
+	@override String get switched => 'Package changed';
 }
 
 // Path: walkthrough
@@ -1343,7 +1356,7 @@ class _Translations$adminBilling$en extends Translations$adminBilling$he {
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Subscriptions';
+	@override String get title => 'Users';
 	@override String get all => 'All';
 	@override String get paying => 'Paying';
 	@override String get problems => 'Problems';
@@ -1383,7 +1396,7 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 	// Translations
 	@override String get title => 'Admin dashboard';
 	@override String get tabDashboard => 'Overview';
-	@override String get tabSubscriptions => 'Subscriptions';
+	@override String get tabSubscriptions => 'Users';
 	@override String get tabTickets => 'Tickets';
 	@override String get rangeToday => 'Today';
 	@override String get rangeMonth => '30 days';
@@ -1799,6 +1812,7 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get homeWidgets => 'Home screen widgets';
 	@override String get wakeWord => 'Hey Shefi';
 	@override String get voiceAssistants => 'Shefi in Siri and Gemini';
+	@override String get shefiLauncher => 'Shefi icon';
 }
 
 // Path: adminConfig
@@ -1888,7 +1902,7 @@ class _Translations$voiceAssistants$en extends Translations$voiceAssistants$he {
 		'What\'s left to buy?',
 		'How long do I cook rice?',
 	];
-	@override String get androidHow => 'Android Auto and Gemini: Google has not opened Gemini to apps like EasyPlate yet. The connection is already in the app and starts working as soon as Google opens it.';
+	@override String get androidHow => 'On Android, through Gemini: say "open Easy Plate" (or tap the "Shefi" icon) and Shefi opens ready to listen. EasyPlate\'s microphone stays closed until then.';
 	@override String get limits => 'By voice you cannot delete, import from a link or open screens. Do those in the app.';
 	@override String get signedOut => 'To talk to Shefi, sign in to the EasyPlate app first.';
 	@override String get empty => 'I didn\'t hear a request. Please try again.';
@@ -1896,6 +1910,82 @@ class _Translations$voiceAssistants$en extends Translations$voiceAssistants$he {
 	@override String get unavailable => 'Shefi is not available right now.';
 	@override String get failed => 'Shefi couldn\'t answer right now. Please try again in a moment.';
 	@override String get goodbye => 'Happy to help! I\'m here whenever you need me.';
+	@override String get geminiOpensShefi => 'Opening through Gemini goes to Shefi';
+	@override String get geminiOpensShefiHint => 'Tell Gemini "open Easy Plate" and the app opens straight on a conversation with Shefi, ready to listen. EasyPlate\'s microphone stays closed until then. Opening from the app\'s icon still goes to the home screen.';
+	@override String get geminiPanel => 'As a floating panel';
+	@override String get geminiPanelHint => 'Shefi opens as a floating panel at the bottom of the screen, over whatever was open, instead of opening the app. Tap outside it to go back.';
+}
+
+// Path: adminUser
+class _Translations$adminUser$en extends Translations$adminUser$he {
+	_Translations$adminUser$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get open => 'Full details';
+	@override String get tabOverview => 'Overview';
+	@override String get tabActivity => 'Activity';
+	@override String get tabContent => 'Content';
+	@override String get tabPublished => 'Published';
+	@override String get tabMore => 'More';
+	@override String get loading => 'Gathering everything…';
+	@override String get failed => 'Couldn\'t load this user';
+	@override String partial({required Object names}) => 'Some data couldn\'t be loaded: ${names}';
+	@override String get copyUid => 'Copy uid';
+	@override String get copied => 'Copied';
+	@override String get online => 'Online now';
+	@override String get blocked => 'Blocked';
+	@override String get household => 'Household';
+	@override String get profile => 'Profile';
+	@override String get email => 'Email';
+	@override String get phone => 'Phone';
+	@override String get uid => 'uid';
+	@override String get permission => 'Permission';
+	@override String get permissionAdmin => 'Admin';
+	@override String get permissionUser => 'User';
+	@override String get permissionHint => 'Changed only in the Firebase console (users › permission)';
+	@override String get joined => 'Joined';
+	@override String get lastSeen => 'Last seen';
+	@override String get device => 'Device';
+	@override String get version => 'Version';
+	@override String get language => 'Language';
+	@override String get shoppingDay => 'Shopping day';
+	@override String get diet => 'Dietary preferences';
+	@override String get plan => 'Plan';
+	@override String get planSource => 'Source';
+	@override String get planUntil => 'Valid until';
+	@override String get planLocked => 'Locked by hand';
+	@override String get none => 'None';
+	@override String get session => 'Device session';
+	@override String get sessionSince => 'Signed in since';
+	@override String get sessionUntil => 'Until';
+	@override String get noSession => 'No active session';
+	@override String get householdTitle => 'Household';
+	@override String householdMembers({required Object count}) => '${count} members';
+	@override String get householdOwner => 'Owner';
+	@override String get statusMessage => 'Block message';
+	@override String get ai => 'AI usage';
+	@override String aiCalls({required Object count}) => '${count} calls';
+	@override String aiTokens({required Object count}) => '${count} tokens';
+	@override String get aiLast => 'Last call';
+	@override String get today => 'Today\'s usage';
+	@override String get todayEmpty => 'No usage today';
+	@override String get counts => 'Summary';
+	@override String get all => 'All';
+	@override String get noActivity => 'No activity to show';
+	@override String get noItems => 'No items';
+	@override String items({required Object count}) => '${count} items';
+	@override late final _Translations$adminUser$groups$en groups = _Translations$adminUser$groups$en._(_root);
+	@override late final _Translations$adminUser$kinds$en kinds = _Translations$adminUser$kinds$en._(_root);
+	@override late final _Translations$adminUser$collections$en collections = _Translations$adminUser$collections$en._(_root);
+	@override late final _Translations$adminUser$sections$en sections = _Translations$adminUser$sections$en._(_root);
+	@override String likes({required Object count}) => '${count} likes';
+	@override String replies({required Object count}) => '${count} replies';
+	@override String get householdData => 'Content is kept in the shared household';
+	@override String get actions => 'Actions';
+	@override String get tabShares => 'Shares';
+	@override late final _Translations$adminUser$shares$en shares = _Translations$adminUser$shares$en._(_root);
 }
 
 // Path: walkthrough.topics
@@ -2135,6 +2225,108 @@ class _Translations$adminConfig$labels$en extends Translations$adminConfig$label
 	@override String get session_days => 'Session length (days)';
 	@override String get presence_heartbeat_seconds => 'Presence heartbeat (seconds)';
 	@override String get session_exempt_phones => 'Numbers exempt from one device';
+	@override String get support_phone => 'Support WhatsApp number';
+	@override String get support_email => 'Support email';
+}
+
+// Path: adminUser.groups
+class _Translations$adminUser$groups$en extends Translations$adminUser$groups$he {
+	_Translations$adminUser$groups$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get content => 'Content';
+	@override String get community => 'Community';
+	@override String get ai => 'AI';
+	@override String get money => 'Purchases';
+	@override String get sharing => 'Sharing';
+	@override String get support => 'Tickets & notifications';
+}
+
+// Path: adminUser.kinds
+class _Translations$adminUser$kinds$en extends Translations$adminUser$kinds$he {
+	_Translations$adminUser$kinds$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get joined => 'Joined the app';
+	@override String get seen => 'Last seen';
+	@override String get recipe => 'Recipe';
+	@override String get book => 'Recipe book';
+	@override String get mealPlan => 'Meal plan';
+	@override String get groceryList => 'Grocery list';
+	@override String get receipt => 'Receipt';
+	@override String get forumPost => 'Forum post';
+	@override String get forumReply => 'Forum reply';
+	@override String get sharedRecipe => 'Recipe shared with the community';
+	@override String get feedback => 'Ticket';
+	@override String get aiCall => 'AI call';
+	@override String get purchase => 'Purchase event';
+	@override String get shareCode => 'Share code';
+	@override String get inviteSent => 'Invite sent';
+	@override String get inviteReceived => 'Invite received';
+	@override String get notification => 'Notification';
+	@override String get sharedByMe => 'Shared an item';
+}
+
+// Path: adminUser.collections
+class _Translations$adminUser$collections$en extends Translations$adminUser$collections$he {
+	_Translations$adminUser$collections$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipes => 'Recipes';
+	@override String get books => 'Recipe books';
+	@override String get meal_plans => 'Meal plans';
+	@override String get grocery_lists => 'Grocery lists';
+	@override String get receipts => 'Receipts';
+	@override String get price_records => 'Price records';
+}
+
+// Path: adminUser.sections
+class _Translations$adminUser$sections$en extends Translations$adminUser$sections$he {
+	_Translations$adminUser$sections$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get forumPosts => 'Forum posts';
+	@override String get forumReplies => 'Forum replies';
+	@override String get sharedRecipes => 'Recipes shared with the community';
+	@override String get likesNote => 'Likes given are not stored per user, so they are not shown.';
+	@override String get shareCodes => 'Share codes';
+	@override String get invitesSent => 'Invites sent';
+	@override String get invitesReceived => 'Invites received';
+	@override String get collabs => 'Shared items';
+	@override String get feedback => 'Tickets';
+	@override String get notifications => 'Notifications received';
+	@override String get purchases => 'Purchase events';
+	@override String get aiCalls => 'Recent AI calls';
+}
+
+// Path: adminUser.shares
+class _Translations$adminUser$shares$en extends Translations$adminUser$shares$he {
+	_Translations$adminUser$shares$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get sharedByMe => 'Shared with others';
+	@override String get sharedWithMe => 'Shared with them';
+	@override String from({required Object name}) => 'From: ${name}';
+	@override String get nobodyYet => 'Nobody has joined yet';
+	@override String get roleOwner => 'Owner';
+	@override String get roleEditor => 'Editor';
+	@override String get roleViewer => 'Viewer';
+	@override String get kindRecipe => 'Recipe';
+	@override String get kindBook => 'Recipe book';
+	@override String get kindMealPlan => 'Meal plan';
+	@override String get kindGroceryList => 'Grocery list';
+	@override String get kindHousehold => 'Household';
+	@override String withNames({required Object names}) => 'With: ${names}';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -2389,6 +2581,12 @@ extension on TranslationsEn {
 			'auth.sessionRequestQueued' => 'We couldn\'t send a notification to the other device. It will see the request the next time the app opens there.',
 			'auth.sessionRequestFailed' => 'The request couldn\'t be sent. Please try again in a moment.',
 			'auth.sessionRequestDeclined' => 'The other device chose to stay signed in.',
+			'auth.sessionRequestTakeover' => ({required Object when}) => 'If the other device doesn\'t answer, you\'ll be signed in here on ${when} and it will be signed out.',
+			'auth.sessionTakeover' => 'No access to the other device – sign in here',
+			'auth.sessionTakeoverTitle' => 'Sign in on this device',
+			'auth.sessionTakeoverBody' => ({required Object phone}) => 'We\'ll send a new code to ${phone}. Once it\'s confirmed, the account moves to this device and the other one is signed out.',
+			'auth.sessionTakeoverNoPhone' => 'This account has no phone number, so it can\'t be confirmed here. Ask to disconnect or contact support.',
+			'auth.sessionTakeoverFailed' => 'We couldn\'t move the account to this device. Please try again.',
 			'auth.sessionReleaseTitle' => 'Another device wants to sign in',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'A device (${platform}) wants to sign in to your account. Sign out on this device?',
 			'auth.sessionReleaseConfirm' => 'Sign out here',
@@ -2790,14 +2988,14 @@ extension on TranslationsEn {
 			'editor.cookMinutes' => 'Cook time (min)',
 			'editor.amount' => 'Amount',
 			'editor.unit' => 'Unit',
+			_ => null,
+		} ?? switch (path) {
 			'editor.ingredientName' => 'Ingredient name',
 			'editor.stepHint' => 'Describe the step',
 			'editor.addIngredient' => 'Add ingredient',
 			'editor.addStep' => 'Add step',
 			'editor.removeIngredient' => 'Remove ingredient',
 			'editor.removeStep' => 'Remove step',
-			_ => null,
-		} ?? switch (path) {
 			'editor.reorderStep' => 'Reorder step',
 			'editor.fixSpelling' => 'Fix spelling',
 			'editor.refining' => 'Correcting the recipe...',
@@ -3196,6 +3394,12 @@ extension on TranslationsEn {
 			'premium.tierDuoHint' => '2 accounts, everything mirrored',
 			'premium.tierFamilyHint' => 'Up to 6 accounts, everything mirrored',
 			'premium.benefitHousehold' => ({required Object n}) => 'Shared account for ${n} people: recipes, plans and lists in sync',
+			'premium.switchTitle' => 'Switch packages',
+			'premium.switchHint' => 'Move to another package at any time. The switch takes effect at once, and the time left on your current package is credited.',
+			'premium.switchInherited' => 'Your package comes from your household. Only the person paying for the household can change it.',
+			'premium.currentPlan' => 'Your package',
+			'premium.switchTo' => ({required Object price}) => 'Switch for ${price}',
+			'premium.switched' => 'Package changed',
 			'walkthrough.title' => 'Guide',
 			'walkthrough.start' => 'Start the guide',
 			'walkthrough.startHint' => 'A guided tour of everything in the app, step by step',
@@ -3298,6 +3502,8 @@ extension on TranslationsEn {
 			'feedback.suggestion' => 'Suggestion',
 			'feedback.bugHint' => 'Describe the bug: what you did, what happened, and what you expected...',
 			'feedback.suggestionHint' => 'Tell us what you would like the app to do, and how it would help you...',
+			_ => null,
+		} ?? switch (path) {
 			'feedback.send' => 'Send',
 			'feedback.sent' => 'Thanks! Your message was sent.',
 			'feedback.failed' => 'Sending failed, please try again later',
@@ -3308,10 +3514,8 @@ extension on TranslationsEn {
 			'feedback.none' => 'No messages yet',
 			'feedback.version' => ({required Object version}) => 'Version ${version}',
 			'feedback.notAllowed' => 'This screen is for the administrator only',
-			'adminBilling.title' => 'Subscriptions',
+			'adminBilling.title' => 'Users',
 			'adminBilling.all' => 'All',
-			_ => null,
-		} ?? switch (path) {
 			'adminBilling.paying' => 'Paying',
 			'adminBilling.problems' => 'Problems',
 			'adminBilling.searchHint' => 'Search by name, email, phone or uid',
@@ -3341,7 +3545,7 @@ extension on TranslationsEn {
 			'adminBilling.noEntitlementTag' => 'No entitlement',
 			'adminDashboard.title' => 'Admin dashboard',
 			'adminDashboard.tabDashboard' => 'Overview',
-			'adminDashboard.tabSubscriptions' => 'Subscriptions',
+			'adminDashboard.tabSubscriptions' => 'Users',
 			'adminDashboard.tabTickets' => 'Tickets',
 			'adminDashboard.rangeToday' => 'Today',
 			'adminDashboard.rangeMonth' => '30 days',
@@ -3803,6 +4007,7 @@ extension on TranslationsEn {
 			'featureName.homeWidgets' => 'Home screen widgets',
 			'featureName.wakeWord' => 'Hey Shefi',
 			'featureName.voiceAssistants' => 'Shefi in Siri and Gemini',
+			'featureName.shefiLauncher' => 'Shefi icon',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
@@ -3811,6 +4016,8 @@ extension on TranslationsEn {
 			'adminConfig.searchAll' => 'Search all settings',
 			'adminConfig.searchIn' => ({required Object section}) => 'Search in ${section}',
 			'adminConfig.noResults' => ({required Object query}) => 'No setting matches "${query}"',
+			_ => null,
+		} ?? switch (path) {
 			'adminConfig.filterAll' => 'All',
 			'adminConfig.clearSearch' => 'Clear search',
 			'adminConfig.noFlagsInState' => 'No features in this state',
@@ -3824,8 +4031,6 @@ extension on TranslationsEn {
 			'adminConfig.flag.hidden' => 'Hidden',
 			'adminConfig.flag.comingSoon' => 'Coming soon',
 			'adminConfig.flag.everyone' => 'Free',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.flag.premium' => 'Premium',
 			'adminConfig.labels.ads_enabled' => 'Ads enabled',
 			'adminConfig.labels.ads_fail_open' => 'Open when no video',
@@ -3853,6 +4058,8 @@ extension on TranslationsEn {
 			'adminConfig.labels.session_days' => 'Session length (days)',
 			'adminConfig.labels.presence_heartbeat_seconds' => 'Presence heartbeat (seconds)',
 			'adminConfig.labels.session_exempt_phones' => 'Numbers exempt from one device',
+			'adminConfig.labels.support_phone' => 'Support WhatsApp number',
+			'adminConfig.labels.support_email' => 'Support email',
 			'wakeWord.title' => 'Hey Shefi',
 			'wakeWord.hint' => 'Start talking to Shefi by voice, hands-free',
 			'wakeWord.intro' => 'Say "Hey Shefi" and Shefi opens and listens. You can keep going in the same sentence and Shefi answers right away.',
@@ -3895,7 +4102,7 @@ extension on TranslationsEn {
 			'voiceAssistants.iosExamples.1' => 'What\'s on today\'s menu?',
 			'voiceAssistants.iosExamples.2' => 'What\'s left to buy?',
 			'voiceAssistants.iosExamples.3' => 'How long do I cook rice?',
-			'voiceAssistants.androidHow' => 'Android Auto and Gemini: Google has not opened Gemini to apps like EasyPlate yet. The connection is already in the app and starts working as soon as Google opens it.',
+			'voiceAssistants.androidHow' => 'On Android, through Gemini: say "open Easy Plate" (or tap the "Shefi" icon) and Shefi opens ready to listen. EasyPlate\'s microphone stays closed until then.',
 			'voiceAssistants.limits' => 'By voice you cannot delete, import from a link or open screens. Do those in the app.',
 			'voiceAssistants.signedOut' => 'To talk to Shefi, sign in to the EasyPlate app first.',
 			'voiceAssistants.empty' => 'I didn\'t hear a request. Please try again.',
@@ -3903,6 +4110,123 @@ extension on TranslationsEn {
 			'voiceAssistants.unavailable' => 'Shefi is not available right now.',
 			'voiceAssistants.failed' => 'Shefi couldn\'t answer right now. Please try again in a moment.',
 			'voiceAssistants.goodbye' => 'Happy to help! I\'m here whenever you need me.',
+			'voiceAssistants.geminiOpensShefi' => 'Opening through Gemini goes to Shefi',
+			'voiceAssistants.geminiOpensShefiHint' => 'Tell Gemini "open Easy Plate" and the app opens straight on a conversation with Shefi, ready to listen. EasyPlate\'s microphone stays closed until then. Opening from the app\'s icon still goes to the home screen.',
+			'voiceAssistants.geminiPanel' => 'As a floating panel',
+			'voiceAssistants.geminiPanelHint' => 'Shefi opens as a floating panel at the bottom of the screen, over whatever was open, instead of opening the app. Tap outside it to go back.',
+			'adminUser.open' => 'Full details',
+			'adminUser.tabOverview' => 'Overview',
+			'adminUser.tabActivity' => 'Activity',
+			'adminUser.tabContent' => 'Content',
+			'adminUser.tabPublished' => 'Published',
+			'adminUser.tabMore' => 'More',
+			'adminUser.loading' => 'Gathering everything…',
+			'adminUser.failed' => 'Couldn\'t load this user',
+			'adminUser.partial' => ({required Object names}) => 'Some data couldn\'t be loaded: ${names}',
+			'adminUser.copyUid' => 'Copy uid',
+			'adminUser.copied' => 'Copied',
+			'adminUser.online' => 'Online now',
+			'adminUser.blocked' => 'Blocked',
+			'adminUser.household' => 'Household',
+			'adminUser.profile' => 'Profile',
+			'adminUser.email' => 'Email',
+			'adminUser.phone' => 'Phone',
+			'adminUser.uid' => 'uid',
+			'adminUser.permission' => 'Permission',
+			'adminUser.permissionAdmin' => 'Admin',
+			'adminUser.permissionUser' => 'User',
+			'adminUser.permissionHint' => 'Changed only in the Firebase console (users › permission)',
+			'adminUser.joined' => 'Joined',
+			'adminUser.lastSeen' => 'Last seen',
+			'adminUser.device' => 'Device',
+			'adminUser.version' => 'Version',
+			'adminUser.language' => 'Language',
+			'adminUser.shoppingDay' => 'Shopping day',
+			'adminUser.diet' => 'Dietary preferences',
+			'adminUser.plan' => 'Plan',
+			'adminUser.planSource' => 'Source',
+			'adminUser.planUntil' => 'Valid until',
+			'adminUser.planLocked' => 'Locked by hand',
+			'adminUser.none' => 'None',
+			'adminUser.session' => 'Device session',
+			'adminUser.sessionSince' => 'Signed in since',
+			'adminUser.sessionUntil' => 'Until',
+			'adminUser.noSession' => 'No active session',
+			'adminUser.householdTitle' => 'Household',
+			'adminUser.householdMembers' => ({required Object count}) => '${count} members',
+			'adminUser.householdOwner' => 'Owner',
+			'adminUser.statusMessage' => 'Block message',
+			'adminUser.ai' => 'AI usage',
+			'adminUser.aiCalls' => ({required Object count}) => '${count} calls',
+			'adminUser.aiTokens' => ({required Object count}) => '${count} tokens',
+			'adminUser.aiLast' => 'Last call',
+			'adminUser.today' => 'Today\'s usage',
+			'adminUser.todayEmpty' => 'No usage today',
+			'adminUser.counts' => 'Summary',
+			'adminUser.all' => 'All',
+			'adminUser.noActivity' => 'No activity to show',
+			'adminUser.noItems' => 'No items',
+			'adminUser.items' => ({required Object count}) => '${count} items',
+			'adminUser.groups.content' => 'Content',
+			'adminUser.groups.community' => 'Community',
+			'adminUser.groups.ai' => 'AI',
+			'adminUser.groups.money' => 'Purchases',
+			'adminUser.groups.sharing' => 'Sharing',
+			'adminUser.groups.support' => 'Tickets & notifications',
+			'adminUser.kinds.joined' => 'Joined the app',
+			'adminUser.kinds.seen' => 'Last seen',
+			'adminUser.kinds.recipe' => 'Recipe',
+			'adminUser.kinds.book' => 'Recipe book',
+			'adminUser.kinds.mealPlan' => 'Meal plan',
+			'adminUser.kinds.groceryList' => 'Grocery list',
+			'adminUser.kinds.receipt' => 'Receipt',
+			'adminUser.kinds.forumPost' => 'Forum post',
+			'adminUser.kinds.forumReply' => 'Forum reply',
+			'adminUser.kinds.sharedRecipe' => 'Recipe shared with the community',
+			'adminUser.kinds.feedback' => 'Ticket',
+			'adminUser.kinds.aiCall' => 'AI call',
+			'adminUser.kinds.purchase' => 'Purchase event',
+			'adminUser.kinds.shareCode' => 'Share code',
+			'adminUser.kinds.inviteSent' => 'Invite sent',
+			'adminUser.kinds.inviteReceived' => 'Invite received',
+			'adminUser.kinds.notification' => 'Notification',
+			'adminUser.kinds.sharedByMe' => 'Shared an item',
+			'adminUser.collections.recipes' => 'Recipes',
+			'adminUser.collections.books' => 'Recipe books',
+			'adminUser.collections.meal_plans' => 'Meal plans',
+			'adminUser.collections.grocery_lists' => 'Grocery lists',
+			'adminUser.collections.receipts' => 'Receipts',
+			'adminUser.collections.price_records' => 'Price records',
+			'adminUser.sections.forumPosts' => 'Forum posts',
+			'adminUser.sections.forumReplies' => 'Forum replies',
+			'adminUser.sections.sharedRecipes' => 'Recipes shared with the community',
+			'adminUser.sections.likesNote' => 'Likes given are not stored per user, so they are not shown.',
+			'adminUser.sections.shareCodes' => 'Share codes',
+			'adminUser.sections.invitesSent' => 'Invites sent',
+			'adminUser.sections.invitesReceived' => 'Invites received',
+			'adminUser.sections.collabs' => 'Shared items',
+			'adminUser.sections.feedback' => 'Tickets',
+			'adminUser.sections.notifications' => 'Notifications received',
+			'adminUser.sections.purchases' => 'Purchase events',
+			'adminUser.sections.aiCalls' => 'Recent AI calls',
+			'adminUser.likes' => ({required Object count}) => '${count} likes',
+			'adminUser.replies' => ({required Object count}) => '${count} replies',
+			'adminUser.householdData' => 'Content is kept in the shared household',
+			'adminUser.actions' => 'Actions',
+			'adminUser.tabShares' => 'Shares',
+			'adminUser.shares.sharedByMe' => 'Shared with others',
+			'adminUser.shares.sharedWithMe' => 'Shared with them',
+			'adminUser.shares.from' => ({required Object name}) => 'From: ${name}',
+			'adminUser.shares.nobodyYet' => 'Nobody has joined yet',
+			'adminUser.shares.roleOwner' => 'Owner',
+			'adminUser.shares.roleEditor' => 'Editor',
+			'adminUser.shares.roleViewer' => 'Viewer',
+			'adminUser.shares.kindRecipe' => 'Recipe',
+			'adminUser.shares.kindBook' => 'Recipe book',
+			'adminUser.shares.kindMealPlan' => 'Meal plan',
+			'adminUser.shares.kindGroceryList' => 'Grocery list',
+			'adminUser.shares.kindHousehold' => 'Household',
+			'adminUser.shares.withNames' => ({required Object names}) => 'With: ${names}',
 			_ => null,
 		};
 	}

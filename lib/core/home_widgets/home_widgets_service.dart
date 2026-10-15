@@ -180,8 +180,7 @@ class HomeWidgetsService {
     final rtl = locale == AppLocale.he || locale == AppLocale.ar;
     final theme = ThemeController();
     final dark = theme.resolvesDark(theme.mode);
-    final signedIn =
-        AuthSessionService().stage == AuthStage.ready && _ready;
+    final signedIn = AuthSessionService().stage == AuthStage.ready && _ready;
     if (!signedIn) {
       return HomeWidgetsSnapshot.signedOut(
         language: locale.languageCode,

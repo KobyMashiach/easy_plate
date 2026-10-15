@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -67,10 +71,19 @@ class DeviceSessionService {
   HttpCalls? _calls;
   FirebaseFirestore? _firestore;
   String? _deviceId;
+  String? _hardwareId;
+  bool _hardwareRead = false;
+  static const _device = MethodChannel('easy_plate/device');
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _watch;
   DateTime? _expiresAt;
   bool _exempt = false;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _waitWatch;
+  Timer? _takeoverTimer;
+
+  /// On a refused device: when its waiting release request lets it in if
+  /// the holder never answers (the phone may be lost or wiped). Null when
+  /// there is no such request or the console turned the wait off.
+  final takeoverAt = ValueNotifier<DateTime?>(null);
   DateTime? _handledRequest;
 
   /// The server exempted this account from the one-device rule (the store
@@ -83,10 +96,13 @@ class DeviceSessionService {
     HttpCalls? calls,
     FirebaseFirestore? firestore,
     String? deviceId,
+    String? hardwareId,
   }) {
     _calls = calls;
     _firestore = firestore;
     _deviceId = deviceId;
+    _hardwareId = hardwareId;
+    _hardwareRead = hardwareId != null;
   }
 
   HttpCalls get _http => _calls ??= HttpCalls(
@@ -123,6 +139,26 @@ class DeviceSessionService {
     }
   }
 
+  /// The phone's own id, hashed: the same after the app is deleted and
+  /// installed again (ANDROID_ID on Android, a Keychain item on iOS), which
+  /// [deviceId] is not, since Hive goes with the app. The server takes a
+  /// claim with the holder's hardware id as the same device, so a reinstall
+  /// does not lock the account out. Null where the platform has none.
+  Future<String?> hardwareId() async {
+    if (_hardwareRead) return _hardwareId;
+    _hardwareRead = true;
+    try {
+      final raw = await _device.invokeMethod<String>('hardwareId');
+      if (raw == null || raw.isEmpty) return null;
+      return _hardwareId = sha256
+          .convert(utf8.encode('easy_plate_device:$raw'))
+          .toString();
+    } catch (e) {
+      debugPrint('Hardware id failed: $e');
+      return null;
+    }
+  }
+
   /// Asks the server for the account's session. Null when this device holds
   /// it; the refusal when another device does. A network failure counts as
   /// held: an offline phone must still open the account it already has.
@@ -134,6 +170,7 @@ class DeviceSessionService {
         data: {
           'action': 'claim',
           'deviceId': await deviceId(),
+          'hardwareId': ?await hardwareId(),
           'platform': platform,
           // Kept with the session, so a refused device can ask exactly this
           // one to sign out.
@@ -179,6 +216,7 @@ class DeviceSessionService {
         data: {
           'action': 'requestRelease',
           'deviceId': await deviceId(),
+          'hardwareId': ?await hardwareId(),
           'platform': platform,
           'title': title,
           'body': body,
@@ -188,12 +226,41 @@ class DeviceSessionService {
       final data = response?.data;
       if (data is! Map || data['ok'] != true) return ReleaseOutcome.failed;
       if (data['free'] == true) return ReleaseOutcome.free;
+      final takeover = data['takeoverAt'];
+      takeoverAt.value = takeover is num
+          ? DateTime.fromMillisecondsSinceEpoch(takeover.toInt())
+          : null;
       return data['notified'] == true
           ? ReleaseOutcome.notified
           : ReleaseOutcome.queued;
     } catch (e) {
       debugPrint('Release request failed: $e');
       return ReleaseOutcome.failed;
+    }
+  }
+
+  /// "No access to the other device": right after the account's phone was
+  /// confirmed again by SMS (the token now proves a fresh phone sign-in),
+  /// this device takes the session and the other one is signed out by its
+  /// own watcher. False when the server refused or could not be reached.
+  Future<bool> takeover({String? pushToken}) async {
+    if (!ApiConfig.usesProxy) return false;
+    try {
+      final response = await _http.post(
+        '',
+        data: {
+          'action': 'takeover',
+          'deviceId': await deviceId(),
+          'hardwareId': ?await hardwareId(),
+          'platform': platform,
+          'pushToken': ?pushToken,
+        },
+      );
+      final data = response?.data;
+      return data is Map && data['ok'] == true;
+    } catch (e) {
+      debugPrint('Session takeover failed: $e');
+      return false;
     }
   }
 
@@ -230,17 +297,36 @@ class DeviceSessionService {
         return;
       }
       final request = data?['releaseRequest'];
-      if (request is Map &&
-          request['deviceId'] == await deviceId() &&
-          request['declinedAt'] != null) {
+      if (request is! Map || request['deviceId'] != await deviceId()) return;
+      if (request['declinedAt'] != null) {
+        _scheduleTakeover(null, onFree);
         onDeclined();
+        return;
       }
+      _scheduleTakeover((request['takeoverAt'] as Timestamp?)?.toDate(), onFree);
     }, onError: (Object e) => debugPrint('Release wait failed: $e'));
+  }
+
+  /// The holder never answered: at [at] a claim takes the account over, so
+  /// the gate asks again by itself then.
+  void _scheduleTakeover(DateTime? at, VoidCallback onFree) {
+    _takeoverTimer?.cancel();
+    _takeoverTimer = null;
+    takeoverAt.value = at;
+    if (at == null) return;
+    final wait = at.difference(DateTime.now());
+    _takeoverTimer = Timer(
+      wait.isNegative ? Duration.zero : wait + const Duration(seconds: 2),
+      onFree,
+    );
   }
 
   void stopWaiting() {
     _waitWatch?.cancel();
     _waitWatch = null;
+    _takeoverTimer?.cancel();
+    _takeoverTimer = null;
+    takeoverAt.value = null;
   }
 
   /// Pure: the request on a record this device holds that it has not shown
@@ -277,6 +363,7 @@ class DeviceSessionService {
         data: {
           'action': 'release',
           'deviceId': await deviceId(),
+          'hardwareId': ?await hardwareId(),
         },
       );
     } catch (e) {
@@ -361,6 +448,8 @@ class DeviceSessionService {
     _calls = null;
     _firestore = null;
     _deviceId = null;
+    _hardwareId = null;
+    _hardwareRead = false;
     _expiresAt = null;
     _exempt = false;
     stopWaiting();

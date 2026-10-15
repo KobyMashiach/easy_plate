@@ -5,8 +5,8 @@ import UIKit
 ///
 /// If the app's own engine is alive (the app is open or suspended in the
 /// background), the request goes to it. Otherwise a headless engine is
-/// started on the `shefiVoiceMain` entry point in main.dart, asked once and
-/// destroyed, so it never outlives the request or sits beside the app's
+/// started on the `shefiVoiceMain` entry point in main.dart and kept only for
+/// the length of one Siri conversation, so it never sits beside the app's
 /// engine on the same Hive files for long.
 @MainActor
 enum ShefiVoiceBridge {
@@ -17,53 +17,90 @@ enum ShefiVoiceBridge {
 
   nonisolated static let timeout: UInt64 = 28_000_000_000
 
-  static func ask(_ text: String) async -> String {
-    if let channel = mainChannel {
-      return await withTimeout { await invoke(channel, text) }
-    }
-    return await withTimeout { await askHeadless(text) }
-  }
+  /// One Siri conversation: every turn goes to the same Dart session, so
+  /// Shefi remembers what it just asked ("What should I add?").
+  @MainActor
+  final class Conversation {
+    private let sessionId = "siri-" + UUID().uuidString
+    private var engine: FlutterEngine?
+    private var channel: FlutterMethodChannel?
 
-  private static func invoke(_ channel: FlutterMethodChannel, _ text: String) async -> String? {
-    await withCheckedContinuation { continuation in
-      channel.invokeMethod("ask", arguments: ["text": text]) { result in
-        continuation.resume(returning: result as? String)
+    /// Shefi's reply, and whether the conversation is over.
+    func turn(_ text: String) async -> (reply: String, end: Bool) {
+      await ShefiVoiceBridge.withTimeout { [self] in
+        guard let channel = await self.connect() else { return nil }
+        return await ShefiVoiceBridge.invoke(channel, text, sessionId: self.sessionId)
       }
     }
-  }
 
-  private static func askHeadless(_ text: String) async -> String? {
-    let engine = FlutterEngine(name: "shefi_voice", project: nil, allowHeadlessExecution: true)
-    let channel = FlutterMethodChannel(name: channelName, binaryMessenger: engine.binaryMessenger)
-    defer {
-      channel.setMethodCallHandler(nil)
-      engine.destroyContext()
+    /// Forgets the session and stops a headless engine.
+    func close() {
+      channel?.invokeMethod("end", arguments: ["sessionId": sessionId])
+      if let engine {
+        channel?.setMethodCallHandler(nil)
+        engine.destroyContext()
+      }
+      engine = nil
+      channel = nil
     }
-    let ready: Bool = await withCheckedContinuation { continuation in
-      var resumed = false
-      channel.setMethodCallHandler { call, result in
-        if call.method == "ready", !resumed {
-          resumed = true
-          continuation.resume(returning: true)
+
+    private func connect() async -> FlutterMethodChannel? {
+      if let channel { return channel }
+      if let main = ShefiVoiceBridge.mainChannel {
+        channel = main
+        return main
+      }
+      let engine = FlutterEngine(name: "shefi_voice", project: nil, allowHeadlessExecution: true)
+      let headless = FlutterMethodChannel(
+        name: ShefiVoiceBridge.channelName, binaryMessenger: engine.binaryMessenger)
+      let ready: Bool = await withCheckedContinuation { continuation in
+        var resumed = false
+        headless.setMethodCallHandler { call, result in
+          if call.method == "ready", !resumed {
+            resumed = true
+            continuation.resume(returning: true)
+          }
+          result(nil)
         }
-        result(nil)
+        guard engine.run(withEntrypoint: "shefiVoiceMain") else {
+          resumed = true
+          continuation.resume(returning: false)
+          return
+        }
+        GeneratedPluginRegistrant.register(with: engine)
       }
-      guard engine.run(withEntrypoint: "shefiVoiceMain") else {
-        resumed = true
-        continuation.resume(returning: false)
-        return
+      guard ready else {
+        headless.setMethodCallHandler(nil)
+        engine.destroyContext()
+        return nil
       }
-      GeneratedPluginRegistrant.register(with: engine)
+      self.engine = engine
+      channel = headless
+      return headless
     }
-    guard ready else { return nil }
-    return await invoke(channel, text)
   }
 
-  /// The answer, or a fallback sentence when Dart is too slow or silent.
-  private static func withTimeout(_ work: @escaping @MainActor () async -> String?) async -> String {
+  private static func invoke(
+    _ channel: FlutterMethodChannel, _ text: String, sessionId: String
+  ) async -> (reply: String, end: Bool)? {
+    await withCheckedContinuation { continuation in
+      channel.invokeMethod("ask", arguments: ["text": text, "sessionId": sessionId]) { result in
+        guard let map = result as? [String: Any], let reply = map["reply"] as? String else {
+          continuation.resume(returning: nil)
+          return
+        }
+        continuation.resume(returning: (reply, map["end"] as? Bool ?? false))
+      }
+    }
+  }
+
+  /// The turn, or a closing fallback sentence when Dart is too slow or silent.
+  private static func withTimeout(
+    _ work: @escaping @MainActor () async -> (reply: String, end: Bool)?
+  ) async -> (reply: String, end: Bool) {
     let fallback = NSLocalizedString(
       "Shefi couldn't answer right now. Please try again in a moment.", comment: "")
-    return await withTaskGroup(of: String?.self) { group in
+    return await withTaskGroup(of: (reply: String, end: Bool)?.self) { group in
       group.addTask { await work() }
       group.addTask {
         try? await Task.sleep(nanoseconds: timeout)
@@ -71,7 +108,7 @@ enum ShefiVoiceBridge {
       }
       let first = await group.next() ?? nil
       group.cancelAll()
-      return first ?? fallback
+      return first ?? (fallback, true)
     }
   }
 }

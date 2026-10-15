@@ -181,7 +181,8 @@ enum HomeWidgetKind {
   assistant('assistant'),
   groceryAdd('grocery_add'),
   groceryList('grocery_list'),
-  todayMenu('today_menu');
+  todayMenu('today_menu')
+  ;
 
   final String id;
   const HomeWidgetKind(this.id);
@@ -582,7 +583,10 @@ class _TodayMenuPreview extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.base),
-        _mealRow(t.walkthrough.demo.mealName, t.walkthrough.demo.recipeText.split('\n').first),
+        _mealRow(
+          t.walkthrough.demo.mealName,
+          t.walkthrough.demo.recipeText.split('\n').first,
+        ),
       ],
     );
   }

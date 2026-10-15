@@ -6,3 +6,12 @@
 "Talk to Shefi" = "לדבר עם שפי";
 "Opens Shefi, listening." = "פותח את שפי בהאזנה.";
 "Shefi couldn't answer right now. Please try again in a moment." = "שפי לא הצליח לענות כרגע. נסו שוב בעוד רגע.";
+"How can I help?" = "במה אפשר לעזור?";
+"Add to the grocery list" = "הוספה לרשימת הקניות";
+"Shefi adds items to your grocery list." = "שפי מוסיף פריטים לרשימת הקניות.";
+"Items" = "פריטים";
+"What should I add to the grocery list?" = "מה להוסיף לרשימת הקניות?";
+"Add to the grocery list: %@" = "תוסיף לרשימת הקניות: %@";
+"Today's menu" = "התפריט של היום";
+"Shefi tells you what is on today's menu." = "שפי אומר מה בתפריט היום.";
+"What is on today's menu?" = "מה בתפריט היום?";

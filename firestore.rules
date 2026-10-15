@@ -8,10 +8,18 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // The one administrator account, by the email on the token. Mirrors
-    // kAdminEmail in the app, which only decides what is shown.
+    // An administrator is an account whose users document says
+    // permission "admin". Nobody can grant it from a client (see
+    // /users/{uid} below): it is set in the Firebase console. The app reads
+    // the same field, which only decides what it shows.
     function isAdmin() {
-      return signedIn() && request.auth.token.email == 'koby9779@gmail.com';
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('permission', 'user') == 'admin';
+    }
+
+    // The permission a write leaves on a users document ("user" if none).
+    function permissionAfter() {
+      return request.resource.data.get('permission', 'user');
     }
 
     // The author is asserted by the client, so it has to be checked against the
@@ -24,7 +32,12 @@ service cloud.firestore {
     // uid, so ownership is the document path itself.
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-      allow write: if signedIn() && request.auth.uid == uid;
+      // The owner writes their profile, but `permission` is never theirs:
+      // created only as "user" (or left out), and never changed or dropped.
+      allow create: if signedIn() && request.auth.uid == uid && permissionAfter() == 'user';
+      allow update: if signedIn() && request.auth.uid == uid
+                    && permissionAfter() == resource.data.get('permission', 'user');
+      allow delete: if signedIn() && request.auth.uid == uid;
 
       // The account's own data — preferences, recipes, books, meal plans and
       // grocery lists — mirrored from the device so it survives a reinstall.
@@ -33,7 +46,10 @@ service cloud.firestore {
       // point of hanging it under /users/{uid}.
       // The administrator reads it too (the web console's account view);
       // writes there go through the adminPanel function, never from a page.
-      match /{document=**} {
+      // `{collection}` first: in rules v2 a bare `{document=**}` also matches
+      // zero segments, i.e. /users/{uid} itself, and its owner write would
+      // override the permission lock above.
+      match /{collection}/{document=**} {
         allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
         allow write: if signedIn() && request.auth.uid == uid;
       }
@@ -170,6 +186,13 @@ service cloud.firestore {
           allow delete: if signedIn() && (request.auth.uid == uid || threadAuthoredByCaller());
         }
       }
+    }
+
+    // Every reply one account wrote, across threads: a collection-group
+    // query, which needs a rule on the wildcard path. The administrator's
+    // user screen only (reading single replies stays as above).
+    match /{path=**}/replies/{replyId} {
+      allow read: if isAdmin();
     }
 
     // Hash of a contact → uid. Anyone signed in may look a hash up; only the
@@ -410,6 +433,18 @@ service cloud.firestore {
     // adminPanel function. The administrator reads the trail; nobody
     // edits it.
     match /admin_audit/{rowId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Every notification the administrator sent, and the templates that
+    // send on a schedule. Written only by the functions (adminPanel,
+    // adminUsers, the scheduled runner); the web console reads them.
+    match /admin_notifications/{rowId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /notification_templates/{templateId} {
       allow read: if isAdmin();
       allow write: if false;
     }

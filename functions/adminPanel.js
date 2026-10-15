@@ -35,6 +35,7 @@ const crypto = require("node:crypto");
 
 const proxy = require("./aiProxy").internals;
 const accounts = require("./adminUsers").internals;
+const notifications = require("./adminNotifications");
 const remoteConfig = require("./adminRemoteConfig").internals;
 const imageSearch = require("./imageSearch").internals;
 const aiUsage = require("./aiUsage");
@@ -82,6 +83,7 @@ const num = (required = false) => ({ kind: "number", required });
 const bool = () => ({ kind: "boolean" });
 const obj = (required = false) => ({ kind: "object", required });
 const anyOf = (values, required = false) => ({ kind: "enum", values, required });
+const strList = (maxItems, maxLen, required = false) => ({ kind: "stringList", maxItems, max: maxLen, required });
 
 const ACTIONS = {
   "ping": {},
@@ -91,6 +93,10 @@ const ACTIONS = {
   "user.kick": { uid: str(128, true) },
   "user.notify": { uid: str(128, true), title: str(80), body: str(1000, true) },
   "user.notifyAll": { title: str(80), body: str(1000, true) },
+  "user.notifyAudience": { audience: anyOf(["all", "premium", "free", "users"], true), uids: strList(500, 128), title: str(80), body: str(1000, true) },
+  "notify.template.save": { id: str(128), name: str(80), title: str(80), body: str(1000, true), target: anyOf(["all", "user", "users", "premium", "free"], true), uid: str(128), uids: strList(500, 128), schedule: obj(true), enabled: bool() },
+  "notify.template.delete": { id: str(128, true) },
+  "notify.template.send": { id: str(128, true) },
   "user.auth": { uid: str(128, true) },
   "user.entitlement": { uid: str(128, true), premium: bool(), premiumUntil: num(), adminLock: bool() },
   "user.profile": { uid: str(128, true), fullName: str(80), photoUrl: str(2000) },
@@ -165,6 +171,14 @@ function parseRequest(body) {
         if (!rule.values.includes(raw)) return { error: `${field} is not one of ${rule.values.join(", ")}` };
         out[field] = raw;
         break;
+      case "stringList": {
+        if (!Array.isArray(raw)) return { error: `${field} must be a list` };
+        const list = [...new Set(raw.filter((v) => typeof v === "string").map((v) => v.trim().slice(0, rule.max)).filter(Boolean))];
+        if (list.length > rule.maxItems) return { error: `${field} has more than ${rule.maxItems} items` };
+        if (rule.required && !list.length) return { error: `${field} is required` };
+        out[field] = list;
+        break;
+      }
       default:
         break;
     }
@@ -283,6 +297,9 @@ function summarize(request) {
       out[key] = value.storagePath ? { storagePath: value.storagePath } : value.url ? { url: String(value.url).slice(0, 300) } : value.dataUrl ? { dataUrl: `<${String(value.dataUrl).length} chars>` } : {};
     } else if (key === "recipe" && value && typeof value === "object") {
       out[key] = { title: typeof value.title === "string" ? value.title.slice(0, 200) : "" };
+    } else if (Array.isArray(value)) {
+      // A picked list of users can be long; the audit keeps the first few.
+      out[key] = value.length > 20 ? [...value.slice(0, 20), `+${value.length - 20}`] : value;
     } else if (typeof value === "string") {
       out[key] = value.length > 300 ? `${value.slice(0, 300)}…` : value;
     } else {
@@ -627,9 +644,28 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       return {};
     case "user.notify":
       await accounts.notifyOne({ fromUid: caller.uid, uid: request.uid, title: request.title || "", message: request.body });
+      await notifications.log(db, { by: caller.uid, target: "user", uid: request.uid, title: request.title, body: request.body, source: "console" });
       return {};
-    case "user.notifyAll":
-      return accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body });
+    case "user.notifyAll": {
+      const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body });
+      await notifications.log(db, { by: caller.uid, target: "all", title: request.title, body: request.body, source: "console", result });
+      return result;
+    }
+
+    case "user.notifyAudience": {
+      if (request.audience === "users" && !(request.uids || []).length) throw Object.assign(new Error("pick at least one user"), { status: 400 });
+      const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body, audience: request.audience, uids: request.uids });
+      await notifications.log(db, { by: caller.uid, target: request.audience, uids: request.uids, title: request.title, body: request.body, source: "console", result });
+      return result;
+    }
+
+    // --- notification templates --------------------------------------------
+    case "notify.template.save":
+      return notifications.saveTemplate(db, request, caller.uid);
+    case "notify.template.delete":
+      return notifications.deleteTemplate(db, request.id);
+    case "notify.template.send":
+      return notifications.sendTemplateNow(db, request.id, { by: caller.uid, send: { one: accounts.notifyOne, all: accounts.notifyAll } });
     case "user.auth": {
       try {
         const user = await admin.auth().getUser(request.uid);
@@ -1167,7 +1203,7 @@ exports.adminPanel = onRequest(
     if (req.method !== "POST") return res.status(405).json({ error: { message: "POST only" } });
     const caller = await proxy.verifyCaller(req);
     if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
-    if (!accounts.isAdmin(caller)) return res.status(403).json({ error: { message: "Administrator only" } });
+    if (!(await accounts.isAdmin(caller))) return res.status(403).json({ error: { message: "Administrator only" } });
 
     const request = parseRequest(req.body || {});
     if (request.error) return res.status(400).json({ error: { code: "invalid", message: request.error } });

@@ -252,7 +252,8 @@ class HomeWidgetDefaults {
         listId: json['listId'] as String?,
         planId: json['planId'] as String?,
         voice: json['voice'] == true,
-        appearance: HomeWidgetAppearance.values
+        appearance:
+            HomeWidgetAppearance.values
                 .where((a) => a.name == json['appearance'])
                 .firstOrNull ??
             HomeWidgetAppearance.app,

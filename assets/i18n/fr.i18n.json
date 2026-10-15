@@ -107,6 +107,12 @@
     "sessionRequestQueued": "Impossible d'envoyer une notification à l'autre appareil. Il verra la demande à la prochaine ouverture de l'app.",
     "sessionRequestFailed": "La demande n'a pas pu être envoyée. Réessayez dans un instant.",
     "sessionRequestDeclined": "L'autre appareil a choisi de rester connecté.",
+    "sessionRequestTakeover": "Si l’autre appareil ne répond pas, vous serez connecté ici le $when et il sera déconnecté.",
+    "sessionTakeover": "Pas d’accès à l’autre appareil – se connecter ici",
+    "sessionTakeoverTitle": "Se connecter sur cet appareil",
+    "sessionTakeoverBody": "Nous enverrons un nouveau code au $phone. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.",
+    "sessionTakeoverNoPhone": "Ce compte n’a pas de numéro de téléphone, il ne peut donc pas être confirmé ici. Demandez la déconnexion ou contactez le support.",
+    "sessionTakeoverFailed": "Impossible de transférer le compte sur cet appareil. Réessayez.",
     "sessionReleaseTitle": "Un autre appareil veut se connecter",
     "sessionReleaseBody": "Un appareil ($platform) veut se connecter à votre compte. Se déconnecter sur cet appareil ?",
     "sessionReleaseConfirm": "Me déconnecter ici",
@@ -979,7 +985,13 @@
     "tierProHint": "Un compte",
     "tierDuoHint": "2 comptes, tout synchronisé",
     "tierFamilyHint": "Jusqu’à 6 comptes, tout synchronisé",
-    "benefitHousehold": "Compte partagé pour $n personnes : recettes, plans et listes synchronisés"
+    "benefitHousehold": "Compte partagé pour $n personnes : recettes, plans et listes synchronisés",
+    "switchTitle": "Changer de formule",
+    "switchHint": "Passez à une autre formule à tout moment. Le changement est immédiat et le temps restant sur votre formule actuelle est crédité.",
+    "switchInherited": "Votre formule vient de votre foyer. Seule la personne qui paie le foyer peut la changer.",
+    "currentPlan": "Votre formule",
+    "switchTo": "Changer pour $price",
+    "switched": "Formule modifiée"
   },
   "walkthrough": {
     "title": "Guide",
@@ -1118,7 +1130,7 @@
     "notAllowed": "Cet écran est réservé à l'administrateur"
   },
   "adminBilling": {
-    "title": "Abonnements",
+    "title": "Utilisateurs",
     "all": "Tous",
     "paying": "Payants",
     "problems": "Problèmes",
@@ -1151,7 +1163,7 @@
   "adminDashboard": {
     "title": "Tableau de bord",
     "tabDashboard": "Tableau",
-    "tabSubscriptions": "Abonnements",
+    "tabSubscriptions": "Utilisateurs",
     "tabTickets": "Messages",
     "rangeToday": "Aujourd'hui",
     "rangeMonth": "30 jours",
@@ -1649,7 +1661,8 @@
     "singleSession": "Un appareil par compte",
     "homeWidgets": "Widgets d'écran d'accueil",
     "wakeWord": "Hé Shefi",
-    "voiceAssistants": "Shefi dans Siri et Gemini"
+    "voiceAssistants": "Shefi dans Siri et Gemini",
+    "shefiLauncher": "Icône Shefi"
   },
   "wakeWord": {
     "title": "Hé Shefi",
@@ -1702,7 +1715,7 @@
       "Qu'est-ce qu'il reste à acheter ?",
       "Combien de temps cuire le riz ?"
     ],
-    "androidHow": "Android Auto et Gemini : Google n'a pas encore ouvert Gemini aux apps comme EasyPlate. La connexion est déjà dans l'app et fonctionnera dès que Google l'ouvrira.",
+    "androidHow": "Sur Android, via Gemini : dites « ouvre Easy Plate » (ou touchez l'icône « Shefi ») et Shefi s'ouvre, prêt à écouter. Le micro d'EasyPlate reste fermé jusque-là.",
     "limits": "À la voix, impossible de supprimer, d'importer depuis un lien ou d'ouvrir des écrans. Faites-le dans l'app.",
     "signedOut": "Pour parler à Shefi, connectez-vous d'abord à l'app EasyPlate.",
     "empty": "Je n'ai pas entendu de demande. Réessayez.",

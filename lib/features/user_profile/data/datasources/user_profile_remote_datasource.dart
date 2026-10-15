@@ -67,6 +67,7 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
       photoUrl: data['photoUrl'] as String?,
       pushToken: data['pushToken'] as String?,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      permission: UserPermission.fromName(data['permission']),
     );
   }
 

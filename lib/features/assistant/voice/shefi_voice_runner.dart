@@ -206,7 +206,8 @@ class ShefiVoiceRunner {
   static String voiceRules(String language, {bool conversation = false}) =>
       conversation
       ? '''
-VOICE CONVERSATION MODE (overrides the formatting rules above): the user is talking to you from a small floating panel over another app; your replies are read out loud and shown as plain text. The conversation goes on turn after turn until the user ends it.
+VOICE CONVERSATION MODE (overrides the formatting rules above): the user is talking to you from a small floating panel over another app or through Siri; your replies are read out loud and shown as plain text. The conversation goes on turn after turn until the user ends it.
+- When something you need is missing, ask for exactly that in one short question, the way the in-app chat does ("What should I add to the grocery list?"). The user's next turn is the answer.
 - Reply in 1 to 3 short spoken sentences, in the language with code "$language". No lists, no markdown, no emoji, no URLs.
 - Do the action first with the tools, then say briefly what you did.
 - When a request is done, close with a short question such as "Can I help with anything else?" (in the user's language).

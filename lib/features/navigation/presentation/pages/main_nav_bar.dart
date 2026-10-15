@@ -77,6 +77,8 @@ class _MainNavBarState extends State<MainNavBar> {
     // widgets'.
     final door = launch.fromWakeWord
         ? FeaturesFlags.wakeWord
+        : launch.fromLauncher
+        ? FeaturesFlags.shefiLauncher
         : FeaturesFlags.homeWidgets;
     if (!guardFeature(context, door)) return;
     switch (launch.action) {

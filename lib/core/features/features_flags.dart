@@ -128,7 +128,12 @@ enum FeaturesFlags {
   /// request in the background and reads the answer out; the Android side
   /// is ready for Gemini once Google opens app functions. Rides on
   /// [assistant].
-  voiceAssistants('ff_voice_assistants')
+  voiceAssistants('ff_voice_assistants'),
+
+  /// Android: the "שפי" app-drawer icon that opens Shefi listening, which
+  /// also lets "Hey Google, open Shefi" start a conversation with no
+  /// microphone of ours open. Shown only where [assistant] is open too.
+  shefiLauncher('ff_shefi_launcher')
   ;
 
   /// The Remote Config parameter name.

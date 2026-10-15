@@ -11,6 +11,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../widgets/session_takeover_sheet.dart';
 
 /// Where a device that may not hold the account is kept: another device
 /// has the session (with a way to try again once it signed out), or the
@@ -33,10 +34,26 @@ class SessionGatePage extends StatelessWidget {
       ReleaseOutcome.failed => t.auth.sessionRequestFailed,
     };
     if (message == null) return;
+    final takeover = DeviceSessionService().takeoverAt.value;
     final dialog = outcome == ReleaseOutcome.failed
         ? AppDialog.error(message: message)
-        : AppDialog.info(message: message);
+        : AppDialog.info(
+            message: takeover == null
+                ? message
+                : '$message ${_takeoverText(takeover)}',
+          );
     await dialog.show(context);
+  }
+
+  /// "If the other device doesn't answer, you're in here on …": a phone
+  /// that was lost or wiped cannot answer, and the account must not stay
+  /// locked for the rest of its month.
+  static String _takeoverText(DateTime at) {
+    final locale = LocaleSettings.currentLocale.languageCode;
+    final local = at.toLocal();
+    return t.auth.sessionRequestTakeover(
+      when: '${DateFormat.MMMd(locale).format(local)} ${DateFormat.Hm(locale).format(local)}',
+    );
   }
 
   String _platformName(String platform) => switch (platform) {
@@ -118,6 +135,16 @@ class SessionGatePage extends StatelessWidget {
                       onPressed: () => _requestRelease(context),
                     ),
                     const SizedBox(height: AppSpacing.sm),
+                    // The other phone is lost, wiped or out of reach: a new
+                    // SMS code to the account's number, and this device takes
+                    // the session over (the other one is signed out).
+                    ClayButton(
+                      label: t.auth.sessionTakeover,
+                      icon: Icons.sms_rounded,
+                      expanded: true,
+                      onPressed: () => showSessionTakeoverSheet(context),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
                     ValueListenableBuilder<bool>(
                       valueListenable: session.releaseDeclined,
                       builder: (context, declined, _) => declined
@@ -134,6 +161,23 @@ class SessionGatePage extends StatelessWidget {
                               ),
                             )
                           : const SizedBox.shrink(),
+                    ),
+                    ValueListenableBuilder<DateTime?>(
+                      valueListenable: DeviceSessionService().takeoverAt,
+                      builder: (context, at, _) => at == null
+                          ? const SizedBox.shrink()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.sm,
+                              ),
+                              child: Text(
+                                _takeoverText(at),
+                                style: AppTextStyles.labelMd.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                     ),
                     // The other device signed out: claim again, and the gate
                     // moves on by itself when the server says yes.
