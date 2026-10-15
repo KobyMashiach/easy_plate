@@ -166,6 +166,7 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       preferences: context.read(),
       cooking: CookSessionService(),
       ui: this,
+      feedback: context.read(),
     );
     // The chat uses the microphone itself: "Hey Shefi" waits until it
     // closes.

@@ -15,6 +15,7 @@ import '../../user_profile/domain/repositories/user_preferences_repository.dart'
 import '../data/assistant_remote_datasource.dart';
 import '../domain/assistant_agent.dart';
 import '../domain/assistant_dispatcher.dart';
+import '../../feedback/domain/repositories/feedback_repository.dart';
 import '../domain/assistant_prompt.dart';
 import '../domain/assistant_text.dart';
 import '../domain/assistant_ui_bridge.dart';
@@ -37,6 +38,9 @@ class ShefiVoiceRunner {
   final RecipeIngestionRepository ingestion;
   final UserPreferencesRepository preferences;
 
+  /// For contact_support; a host without it gets "unavailable".
+  final FeedbackRepository? feedback;
+
   ShefiVoiceRunner({
     required this.recipes,
     required this.books,
@@ -45,6 +49,7 @@ class ShefiVoiceRunner {
     required this.activeList,
     required this.ingestion,
     required this.preferences,
+    this.feedback,
   });
 
   /// How long the system assistant is kept waiting before it is told to
@@ -99,6 +104,7 @@ class ShefiVoiceRunner {
       preferences: preferences,
       cooking: CookSessionService(),
       ui: _VoiceBridge(),
+      feedback: feedback,
     );
     final snapshot = await dispatcher.snapshot();
     final language = LocaleSettings.currentLocale.languageCode;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +27,7 @@ import '../../../../core/home_widgets/home_widgets_snapshot.dart';
 import '../../../assistant/domain/assistant_scope.dart';
 import '../../../grocery_list/data/datasources/active_grocery_list_store.dart';
 import '../../../user_profile/domain/repositories/user_preferences_repository.dart';
+import '../../../whats_new/presentation/whats_new_service.dart';
 import '../../../../core/features/feature_gate.dart';
 
 class MainNavBar extends StatefulWidget {
@@ -145,11 +148,18 @@ class _MainNavBarState extends State<MainNavBar> {
 
     final preferences = context.read<UserPreferencesRepository>();
     final current = await preferences.getPreferences();
-    if (current.walkthroughSeen || !mounted) return;
+    if (!mounted) return;
+    // A returning account gets the release highlights instead of the tour
+    // (which stamps nothing: the onboarding stamped the build it joined on).
+    if (current.walkthroughSeen) {
+      unawaited(WhatsNewService().offer(context, preferences));
+      return;
+    }
     // Switched off in the console: the tour waits, unmarked, for the day it
     // is switched back on.
     if (!FeaturesFlags.walkthrough.isEnabled) {
       _tourOfferedTo = null;
+      unawaited(WhatsNewService().offer(context, preferences));
       return;
     }
 

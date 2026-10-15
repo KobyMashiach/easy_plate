@@ -71,6 +71,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ads$ar ads = _Translations$ads$ar._(_root);
 	@override late final _Translations$premium$ar premium = _Translations$premium$ar._(_root);
 	@override late final _Translations$walkthrough$ar walkthrough = _Translations$walkthrough$ar._(_root);
+	@override late final _Translations$whatsNew$ar whatsNew = _Translations$whatsNew$ar._(_root);
 	@override late final _Translations$feedback$ar feedback = _Translations$feedback$ar._(_root);
 	@override late final _Translations$adminBilling$ar adminBilling = _Translations$adminBilling$ar._(_root);
 	@override late final _Translations$adminDashboard$ar adminDashboard = _Translations$adminDashboard$ar._(_root);
@@ -82,6 +83,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$featureName$ar featureName = _Translations$featureName$ar._(_root);
 	@override late final _Translations$wakeWord$ar wakeWord = _Translations$wakeWord$ar._(_root);
 	@override late final _Translations$voiceAssistants$ar voiceAssistants = _Translations$voiceAssistants$ar._(_root);
+	@override late final _Translations$adminConfig$ar adminConfig = _Translations$adminConfig$ar._(_root);
 }
 
 // Path: common
@@ -1329,6 +1331,26 @@ class _Translations$walkthrough$ar extends Translations$walkthrough$he {
 	@override String get demoOnly => 'نموذج فقط، لا يُحفظ';
 }
 
+// Path: whatsNew
+class _Translations$whatsNew$ar extends Translations$whatsNew$he {
+	_Translations$whatsNew$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'ما الجديد في EasyPlate';
+	@override String pageOf({required Object current, required Object total}) => '${current} من ${total}';
+	@override String releasedIn({required Object version}) => 'الإصدار ${version}';
+	@override String get next => 'التالي';
+	@override String get gotIt => 'فهمت';
+	@override String get tryIt => 'جرّب';
+	@override String get close => 'إغلاق';
+	@override String get premiumTag => 'بريميوم';
+	@override String get supportTitle => 'ما الجديد';
+	@override String get supportHint => 'أبرز ما في الإصدار الأخير، صفحة بعد صفحة';
+	@override String get nothingYet => 'لا توجد ملاحظات إصدار بعد';
+}
+
 // Path: feedback
 class _Translations$feedback$ar extends Translations$feedback$he {
 	_Translations$feedback$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1336,22 +1358,40 @@ class _Translations$feedback$ar extends Translations$feedback$he {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'إبلاغ واقتراحات';
-	@override String get subtitle => 'وجدت خللاً؟ لديك فكرة؟ اكتب لنا هنا، ونقرأ كل رسالة.';
-	@override String get bug => 'خلل';
-	@override String get suggestion => 'اقتراح تحسين';
-	@override String get bugHint => 'صف الخلل: ماذا فعلت، ماذا حدث، وماذا توقعت أن يحدث...';
-	@override String get suggestionHint => 'أخبرنا بما تودّ أن يوفره التطبيق، وكيف سيساعدك...';
+	@override String get title => 'التواصل مع الدعم';
+	@override String get subtitle => 'خلل أو فكرة أو سؤال؟ اختر السبب واكتب لنا، ونرد هنا في الدردشة.';
+	@override String get reasonLabel => 'سبب التواصل';
+	@override String get reasonHint => 'اختر سببًا…';
+	@override late final _Translations$feedback$reasons$ar reasons = _Translations$feedback$reasons$ar._(_root);
+	@override String get messageLabel => 'الرسالة';
+	@override String get messageHint => 'أخبرنا بما حدث أو بما تريده…';
 	@override String get send => 'إرسال';
-	@override String get sent => 'شكراً! تم إرسال رسالتك.';
-	@override String get failed => 'فشل الإرسال، حاول لاحقاً';
-	@override String get admin => 'إدارة الرسائل';
+	@override String get sent => 'شكرًا! أُرسلت رسالتك وسنرد قريبًا.';
+	@override String get failed => 'فشل الإرسال، حاول لاحقًا';
+	@override String get myConversations => 'محادثاتي';
+	@override String get noConversations => 'لا محادثات بعد';
+	@override String get chatTitle => 'دردشة الدعم';
+	@override String get team => 'فريق EasyPlate';
+	@override String get you => 'أنت';
+	@override String get replyHint => 'اكتب ردًا…';
+	@override String get waitingForReply => 'استلمنا رسالتك وسنعود إليك هنا.';
+	@override String get viaShefi => 'عبر شيفي';
+	@override String get details => 'التفاصيل';
+	@override String get conversationGone => 'هذه المحادثة لم تعد موجودة';
+	@override String get admin => 'صندوق الملاحظات';
 	@override String get all => 'الكل';
 	@override String get bugs => 'أخطاء';
 	@override String get suggestions => 'اقتراحات';
-	@override String get none => 'لا توجد رسائل بعد';
+	@override String get none => 'لا رسائل بعد';
 	@override String version({required Object version}) => 'الإصدار ${version}';
-	@override String get notAllowed => 'هذه الشاشة للمدير فقط';
+	@override String get notAllowed => 'هذه الشاشة للمسؤول فقط';
+	@override String userWrote({required Object date}) => 'المستخدم · ${date}';
+	@override String get bug => 'خلل';
+	@override String get suggestion => 'اقتراح';
+	@override String get closedNotice => 'أغلق الفريق هذه المحادثة. يمكنك قراءتها لكن لا الكتابة فيها؛ افتح محادثة جديدة لموضوع جديد.';
+	@override String closedConversations({required Object n}) => 'محادثات مغلقة (${n})';
+	@override String get noOpenConversations => 'لا محادثات مفتوحة';
+	@override String get closedTag => 'مغلقة';
 }
 
 // Path: adminBilling
@@ -1815,6 +1855,8 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get wakeWord => 'هاي شيفي';
 	@override String get voiceAssistants => 'شيفي عبر Siri وGemini';
 	@override String get shefiLauncher => 'أيقونة شيفي';
+	@override String get whatsNew => 'ما الجديد';
+	@override String get supportChat => 'دردشة الدعم';
 }
 
 // Path: wakeWord
@@ -1891,6 +1933,16 @@ class _Translations$voiceAssistants$ar extends Translations$voiceAssistants$he {
 	@override String get goodbye => 'بكل سرور! أنا هنا متى احتجتني.';
 }
 
+// Path: adminConfig
+class _Translations$adminConfig$ar extends Translations$adminConfig$he {
+	_Translations$adminConfig$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$adminConfig$labels$ar labels = _Translations$adminConfig$labels$ar._(_root);
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ar extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -1920,6 +1972,22 @@ class _Translations$walkthrough$demo$ar extends Translations$walkthrough$demo$he
 	@override String get mealName => 'عشاء';
 	@override String get groceryItem => 'طماطم';
 	@override String get recipeText => 'شكشوكة مقدسية\n\nالمكوّنات:\n400 غرام طماطم مهروسة\n4 بيضات\nبصلة واحدة\nملعقتا طعام زيت زيتون\nملعقة صغيرة بابريكا حلوة\nرشّة ملح\n\nالطريقة:\n1. سخّن زيت الزيتون في مقلاة وقلّب البصل حتى يذهبّ.\n2. أضف الطماطم والبابريكا واطبخ 10 دقائق على نار هادئة.\n3. اكسر البيض فوق الصلصة، غطِّ المقلاة واطبخ حتى يتماسك البياض.';
+}
+
+// Path: feedback.reasons
+class _Translations$feedback$reasons$ar extends Translations$feedback$reasons$he {
+	_Translations$feedback$reasons$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get bug => 'خلل';
+	@override String get suggestion => 'اقتراح';
+	@override String get account => 'الحساب وتسجيل الدخول';
+	@override String get billing => 'بريميوم والدفع';
+	@override String get sharing => 'المشاركة والشركاء';
+	@override String get recipes => 'إضافة الوصفات والذكاء الاصطناعي';
+	@override String get other => 'أخرى';
 }
 
 // Path: assistant.suggest
@@ -2064,6 +2132,16 @@ class _Translations$assistant$scopedPrompts$ar extends Translations$assistant$sc
 		'احذف ما اشتريته بالفعل',
 		'كم يساوي كوبان من الدقيق بالغرام؟',
 	];
+}
+
+// Path: adminConfig.labels
+class _Translations$adminConfig$labels$ar extends Translations$adminConfig$labels$he {
+	_Translations$adminConfig$labels$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get admin_all_features => 'إظهار كل الميزات للمسؤول';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -3242,22 +3320,57 @@ extension on TranslationsAr {
 			_ => null,
 		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'نموذج فقط، لا يُحفظ',
-			'feedback.title' => 'إبلاغ واقتراحات',
-			'feedback.subtitle' => 'وجدت خللاً؟ لديك فكرة؟ اكتب لنا هنا، ونقرأ كل رسالة.',
-			'feedback.bug' => 'خلل',
-			'feedback.suggestion' => 'اقتراح تحسين',
-			'feedback.bugHint' => 'صف الخلل: ماذا فعلت، ماذا حدث، وماذا توقعت أن يحدث...',
-			'feedback.suggestionHint' => 'أخبرنا بما تودّ أن يوفره التطبيق، وكيف سيساعدك...',
+			'whatsNew.title' => 'ما الجديد في EasyPlate',
+			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} من ${total}',
+			'whatsNew.releasedIn' => ({required Object version}) => 'الإصدار ${version}',
+			'whatsNew.next' => 'التالي',
+			'whatsNew.gotIt' => 'فهمت',
+			'whatsNew.tryIt' => 'جرّب',
+			'whatsNew.close' => 'إغلاق',
+			'whatsNew.premiumTag' => 'بريميوم',
+			'whatsNew.supportTitle' => 'ما الجديد',
+			'whatsNew.supportHint' => 'أبرز ما في الإصدار الأخير، صفحة بعد صفحة',
+			'whatsNew.nothingYet' => 'لا توجد ملاحظات إصدار بعد',
+			'feedback.title' => 'التواصل مع الدعم',
+			'feedback.subtitle' => 'خلل أو فكرة أو سؤال؟ اختر السبب واكتب لنا، ونرد هنا في الدردشة.',
+			'feedback.reasonLabel' => 'سبب التواصل',
+			'feedback.reasonHint' => 'اختر سببًا…',
+			'feedback.reasons.bug' => 'خلل',
+			'feedback.reasons.suggestion' => 'اقتراح',
+			'feedback.reasons.account' => 'الحساب وتسجيل الدخول',
+			'feedback.reasons.billing' => 'بريميوم والدفع',
+			'feedback.reasons.sharing' => 'المشاركة والشركاء',
+			'feedback.reasons.recipes' => 'إضافة الوصفات والذكاء الاصطناعي',
+			'feedback.reasons.other' => 'أخرى',
+			'feedback.messageLabel' => 'الرسالة',
+			'feedback.messageHint' => 'أخبرنا بما حدث أو بما تريده…',
 			'feedback.send' => 'إرسال',
-			'feedback.sent' => 'شكراً! تم إرسال رسالتك.',
-			'feedback.failed' => 'فشل الإرسال، حاول لاحقاً',
-			'feedback.admin' => 'إدارة الرسائل',
+			'feedback.sent' => 'شكرًا! أُرسلت رسالتك وسنرد قريبًا.',
+			'feedback.failed' => 'فشل الإرسال، حاول لاحقًا',
+			'feedback.myConversations' => 'محادثاتي',
+			'feedback.noConversations' => 'لا محادثات بعد',
+			'feedback.chatTitle' => 'دردشة الدعم',
+			'feedback.team' => 'فريق EasyPlate',
+			'feedback.you' => 'أنت',
+			'feedback.replyHint' => 'اكتب ردًا…',
+			'feedback.waitingForReply' => 'استلمنا رسالتك وسنعود إليك هنا.',
+			'feedback.viaShefi' => 'عبر شيفي',
+			'feedback.details' => 'التفاصيل',
+			'feedback.conversationGone' => 'هذه المحادثة لم تعد موجودة',
+			'feedback.admin' => 'صندوق الملاحظات',
 			'feedback.all' => 'الكل',
 			'feedback.bugs' => 'أخطاء',
 			'feedback.suggestions' => 'اقتراحات',
-			'feedback.none' => 'لا توجد رسائل بعد',
+			'feedback.none' => 'لا رسائل بعد',
 			'feedback.version' => ({required Object version}) => 'الإصدار ${version}',
-			'feedback.notAllowed' => 'هذه الشاشة للمدير فقط',
+			'feedback.notAllowed' => 'هذه الشاشة للمسؤول فقط',
+			'feedback.userWrote' => ({required Object date}) => 'المستخدم · ${date}',
+			'feedback.bug' => 'خلل',
+			'feedback.suggestion' => 'اقتراح',
+			'feedback.closedNotice' => 'أغلق الفريق هذه المحادثة. يمكنك قراءتها لكن لا الكتابة فيها؛ افتح محادثة جديدة لموضوع جديد.',
+			'feedback.closedConversations' => ({required Object n}) => 'محادثات مغلقة (${n})',
+			'feedback.noOpenConversations' => 'لا محادثات مفتوحة',
+			'feedback.closedTag' => 'مغلقة',
 			'adminBilling.title' => 'المستخدمون',
 			'adminBilling.all' => 'الكل',
 			'adminBilling.paying' => 'يدفعون',
@@ -3718,6 +3831,8 @@ extension on TranslationsAr {
 			'featureName.cookMode' => 'وضع الطهي',
 			'featureName.cookTimers' => 'مؤقتات الطهي',
 			'featureName.nutrition' => 'القيم الغذائية',
+			_ => null,
+		} ?? switch (path) {
 			'featureName.recipeImageAi' => 'صورة بالذكاء الاصطناعي',
 			'featureName.recipeImageSearch' => 'بحث الصور في جوجل',
 			'featureName.groceryFromRecipe' => 'قائمة تسوق من وصفة',
@@ -3749,12 +3864,12 @@ extension on TranslationsAr {
 			'featureName.wakeWord' => 'هاي شيفي',
 			'featureName.voiceAssistants' => 'شيفي عبر Siri وGemini',
 			'featureName.shefiLauncher' => 'أيقونة شيفي',
+			'featureName.whatsNew' => 'ما الجديد',
+			'featureName.supportChat' => 'دردشة الدعم',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
 			'wakeWord.examples.0' => 'هاي شيفي',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.examples.1' => 'هاي شيفي، ماذا أطبخ اليوم؟',
 			'wakeWord.examples.2' => 'هاي شيفي، أضف الحليب إلى قائمة التسوق',
 			'wakeWord.examples.3' => 'هاي شيفي، شغّل مؤقتًا لعشر دقائق',
@@ -3801,6 +3916,7 @@ extension on TranslationsAr {
 			'voiceAssistants.unavailable' => 'شيفي غير متاح حاليًا.',
 			'voiceAssistants.failed' => 'لم يتمكن شيفي من الإجابة الآن. حاول بعد قليل.',
 			'voiceAssistants.goodbye' => 'بكل سرور! أنا هنا متى احتجتني.',
+			'adminConfig.labels.admin_all_features' => 'إظهار كل الميزات للمسؤول',
 			_ => null,
 		};
 	}

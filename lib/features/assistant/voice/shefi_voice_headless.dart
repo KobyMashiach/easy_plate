@@ -23,6 +23,8 @@ import '../../recipe_books/data/repositories_impl/recipe_books_repository_impl.d
 import '../../recipe_ingestion/data/datasources/recipe_ai_datasource.dart';
 import '../../recipe_ingestion/data/datasources/web_page_datasource.dart';
 import '../../recipe_ingestion/data/repositories_impl/recipe_ingestion_repository_impl.dart';
+import '../../feedback/data/datasources/feedback_remote_datasource.dart';
+import '../../feedback/data/repositories_impl/feedback_repository_impl.dart';
 import '../../user_profile/data/datasources/user_preferences_local_datasource.dart';
 import '../../user_profile/data/repositories_impl/user_preferences_repository_impl.dart';
 import 'shefi_voice_channel.dart';
@@ -74,6 +76,9 @@ Future<void> runShefiVoiceHeadless() async {
         webPageDataSource: WebPageDataSourceImpl(),
       ),
       preferences: preferencesRepository,
+      feedback: FeedbackRepositoryImpl(
+        remoteDataSource: FeedbackFirestoreDataSource(),
+      ),
     );
 
     final user =

@@ -425,6 +425,12 @@ class _Overview extends StatelessWidget {
                         ClayTag(
                           label: s.permissionAdmin,
                           icon: Icons.admin_panel_settings_rounded,
+                        )
+                      else if (p['permission'] ==
+                          UserPermission.superuser.name)
+                        ClayTag(
+                          label: s.permissionSuperuser,
+                          icon: Icons.star_rounded,
                         ),
                       if (online)
                         ClayTag(
@@ -467,10 +473,15 @@ class _Overview extends StatelessWidget {
             _date(AdminUserDetailDataSource.asTime(p['createdAt'])),
           ),
           _Field(s.lastSeen, _date(lastSeen)),
-          // Read only: the permission is set in the Firebase console.
+          // Read only here: admin is set in the Firebase console, superuser
+          // from the accounts tab's actions sheet.
           _Field(
             s.permission,
-            '${UserPermission.fromName(p['permission']) == UserPermission.admin ? s.permissionAdmin : s.permissionUser} · ${s.permissionHint}',
+            '${switch (UserPermission.fromName(p['permission'])) {
+              UserPermission.admin => s.permissionAdmin,
+              UserPermission.superuser => s.permissionSuperuser,
+              UserPermission.user => s.permissionUser,
+            }} · ${s.permissionHint}',
           ),
           _Field(
             s.device,

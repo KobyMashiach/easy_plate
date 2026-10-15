@@ -18,7 +18,18 @@ const en = {
     failed: "Sign-in failed: {reason}",
     unauthorizedDomain: "This domain is not authorized for sign-in yet. Add aieasyplate.app under Firebase Console → Authentication → Settings → Authorized domains.",
   },
-  nav: { dashboard: "Dashboard", users: "Accounts", community: "Community", recipes: "Shared recipes", personas: "Personas", households: "Households", tickets: "Tickets", config: "Configuration", seed: "Activity", audit: "Audit log", stores: "Downloads", notifications: "Notifications" },
+  nav: { dashboard: "Dashboard", users: "Accounts", community: "Community", recipes: "Shared recipes", personas: "Personas", households: "Households", tickets: "Tickets", config: "Configuration", seed: "Activity", audit: "Audit log", stores: "Downloads", notifications: "Notifications" , whatsnew: "What's new" },
+  whatsnew: {
+    intro: "One release per build. After an update the app shows a returning account the pages of every published release between the build it last acknowledged and the one it runs — a fresh install sees none. A page is dropped on the phone when its flag is hidden or “coming soon”.",
+    none: "No releases yet.", newRelease: "New release", editRelease: "Edit release {v}", deleteRelease: "Delete release {v}?",
+    versionCode: "Build number", versionCodeHint: "The integer after + in pubspec (1.2.0+12 → 12). The document id.", version: "Version", versionHint: "The marketing version, 1.2.0", releasedAt: "Released on",
+    published: "Published", publishedHint: "Only a published release reaches the app.", publishedBadge: "Published", draft: "Draft", publishedNow: "Published", unpublishedNow: "Unpublished", unpublish: "Unpublish",
+    features: "Features", featuresHint: "Tick the features this release highlights; each becomes one page, in the order below.", pickHint: "Tick features above to add pages.", pages: "{n} pages", build: "build {n}",
+    featureTitle: "Headline", featureTitleHint: "Short; empty falls back to the feature's name in the app.", featureDescription: "Description", translate: "Translate with AI", translated: "Translated into the other languages", needText: "Write the text in one language first.",
+    icon: "Icon", target: "“Try it” opens", targetHint: "Optional. A tab or a screen the app can open directly.", noTarget: "No button", image: "Picture URL", imageHint: "Optional, https. Shown above the text instead of the icon.",
+    moveUp: "Move up", moveDown: "Move down", badCode: "The build number must be a positive integer.", badVersion: "The version must look like 1.2.0.", needFeatures: "Pick at least one feature.", needTitle: "“{name}” needs a headline in at least one language.", codeExists: "A release with this build number exists — edit it instead.",
+    targets: { "tab:recipes": "Recipes tab", "tab:library": "Library tab", "tab:mealPlan": "Meal plan tab", "tab:groceries": "Groceries tab", "tab:community": "Community tab", ingestion: "Add a recipe", assistant: "Shefi", price_book: "Price book", settings: "Settings", preferences: "Preferences", notification_settings: "Notification settings", account_menu: "Account", notifications: "Inbox", profile_edit: "Profile", sharing: "Sharing", household: "Household", join_code: "Join with a code", scan_code: "Scan a code", home_widgets: "Home widgets", wake_word: "Hey Shefi", support: "Support", help: "Help", premium: "Premium", tutorial: "Guide" },
+  },
   notif: {
     tabSent: "Sent", tabTemplates: "Templates", filterAll: "All", toAll: "Everyone", toUser: "One user", user: "User", pickUser: "Pick a user", target: "Send to",
     sendNow: "Send a notification", sendNowShort: "Send now", newTemplate: "New template", editTemplate: "Edit template", deleteTemplate: "Delete this template?",
@@ -58,7 +69,7 @@ const en = {
   },
   users: {
     filter: { all: "All", online: "Online", premium: "Premium", disabled: "Blocked", session: "With device session" },
-    online: "Online", offline: "Offline", lastSeen: "Last seen", device: "Device", session: "Session", sessionUntil: "until {date}", permission: "Permission", permissionAdmin: "Admin", permissionUser: "User", permissionHint: "Changed only in the Firebase console: users › {uid} › permission (\"admin\" or \"user\"). Admins have no device limit.", hardwareId: "Phone id (hash)", releaseRequest: "Sign-out request", takeoverAt: "New device gets in at {date}", declined: "declined",
+    online: "Online", offline: "Offline", lastSeen: "Last seen", device: "Device", session: "Session", sessionUntil: "until {date}", permission: "Permission", permissionAdmin: "Admin", permissionUser: "User", permissionHint: "An administrator is set only in the Firebase console: users › {uid} › permission = \"admin\". Admins have no device limit.", permissionSuperuser: "Superuser", permissionSuperuserHint: "A superuser sees every feature, Premium ones included, whatever the flags say, and has no device limit. No administrator powers.", hardwareId: "Phone id (hash)", releaseRequest: "Sign-out request", takeoverAt: "New device gets in at {date}", declined: "declined",
     noSession: "no session", premium: "Premium", free: "Free", disabled: "Blocked", broadcast: "Broadcast", broadcastTitle: "Message to every account",
     broadcastSent: "{items} inbox items, {sent} pushes sent, {failed} failed", count: "{n} accounts", joined: "Joined", persona: "Persona",
     hint: "Online = the app is open on a phone right now (reported every minute). Kick = frees the device session, the app signs out at once.",
@@ -127,8 +138,9 @@ const en = {
   hh: { tier: "Plan", seats: "Seats", owner: "Owner", members: "Members", remove: "Remove member", dissolve: "Dissolve household", dissolveHint: "Members lose the inherited Premium; the shared data is deleted from the server. The owner's phone keeps its copy.", none: "No households yet.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} households", created: "Created", removed: "Member removed", dissolved: "Household dissolved" },
   tickets: {
     unread: "Unread", read: "Read", markRead: "Mark read", markUnread: "Mark unread", reply: "Reply", replied: "Replied", replies: "Your replies",
-    types: { bug: "Bug", suggestion: "Suggestion" }, delete: "Delete ticket", none: "No tickets.", from: "From", appVersion: "App", yourReply: "Your reply",
+    delete: "Delete ticket", none: "No tickets.", from: "From", appVersion: "App", yourReply: "Your reply",
     all: "All", sent: "Reply sent (inbox + push)", count: "{n} tickets",
+    types: { bug: "Bug", suggestion: "Suggestion", account: "Account and sign-in", billing: "Premium and billing", sharing: "Sharing and partners", recipes: "Adding recipes and AI", other: "Other" }, details: "Details (not shown to the user)", detailKeys: { name: "Name", email: "Email", phone: "Phone", uid: "Account id", version: "Version", device: "Device", language: "Language" }, viaShefi: "via Shefi", updated: "Updated", you: "You", user: "User", closed: "Closed", close: "Close conversation", closeConfirm: "Close {name}'s conversation? They can read it under \"closed\" but not write in it.", reopen: "Reopen", closedNow: "Conversation closed", reopenedNow: "Conversation reopened", closedBadge: "Closed",
   },
   config: {
     search: "Search parameters…", groups: { features: "Features", ads: "Ads & quotas", share: "Free-tier sharing", tts: "Voice", versions: "Versions", gemini: "Gemini (needs deploy)", other: "Other" },
@@ -172,7 +184,18 @@ const he = {
     failed: "הכניסה נכשלה: {reason}",
     unauthorizedDomain: "הדומיין עדיין לא מאושר לכניסה. יש להוסיף את aieasyplate.app ב-Firebase Console → Authentication → Settings → Authorized domains.",
   },
-  nav: { dashboard: "סקירה", users: "חשבונות", community: "קהילה", recipes: "מתכונים משותפים", personas: "דמויות", households: "חשבונות משותפים", tickets: "פניות", config: "תצורה", seed: "תנועה", audit: "יומן פעולות", stores: "הורדות", notifications: "התראות" },
+  nav: { dashboard: "סקירה", users: "חשבונות", community: "קהילה", recipes: "מתכונים משותפים", personas: "דמויות", households: "חשבונות משותפים", tickets: "פניות", config: "תצורה", seed: "תנועה", audit: "יומן פעולות", stores: "הורדות", notifications: "התראות" , whatsnew: "מה חדש" },
+  whatsnew: {
+    intro: "שחרור אחד לכל מספר build. אחרי עדכון, האפליקציה מציגה לחשבון חוזר את העמודים של כל שחרור מפורסם בין ה-build שאושר לאחרונה ל-build שרץ — התקנה חדשה לא רואה כלום. עמוד שהדגל שלו מוסתר או \"בקרוב\" לא מוצג בטלפון.",
+    none: "אין שחרורים עדיין.", newRelease: "שחרור חדש", editRelease: "עריכת שחרור {v}", deleteRelease: "למחוק את שחרור {v}?",
+    versionCode: "מספר build", versionCodeHint: "המספר אחרי + ב-pubspec (1.2.0+12 → 12). זה מזהה המסמך.", version: "גרסה", versionHint: "גרסת השיווק, 1.2.0", releasedAt: "תאריך שחרור",
+    published: "מפורסם", publishedHint: "רק שחרור מפורסם מגיע לאפליקציה.", publishedBadge: "מפורסם", draft: "טיוטה", publishedNow: "פורסם", unpublishedNow: "הפרסום בוטל", unpublish: "ביטול פרסום",
+    features: "פיצ'רים", featuresHint: "סמנו את הפיצ'רים שהשחרור הזה מדגיש; כל אחד הופך לעמוד, בסדר שלמטה.", pickHint: "סמנו פיצ'רים למעלה כדי להוסיף עמודים.", pages: "{n} עמודים", build: "build {n}",
+    featureTitle: "כותרת", featureTitleHint: "קצרה; ריק נופל לשם הפיצ'ר באפליקציה.", featureDescription: "תיאור", translate: "תרגום עם AI", translated: "תורגם לשאר השפות", needText: "כתבו קודם את הטקסט בשפה אחת.",
+    icon: "אייקון", target: "\"לנסות\" פותח", targetHint: "לא חובה. טאב או מסך שהאפליקציה יכולה לפתוח ישירות.", noTarget: "בלי כפתור", image: "כתובת תמונה", imageHint: "לא חובה, https. מוצגת מעל הטקסט במקום האייקון.",
+    moveUp: "הזזה למעלה", moveDown: "הזזה למטה", badCode: "מספר ה-build חייב להיות מספר שלם חיובי.", badVersion: "הגרסה צריכה להיראות כמו 1.2.0.", needFeatures: "בחרו לפחות פיצ'ר אחד.", needTitle: "ל\"{name}\" חסרה כותרת בשפה אחת לפחות.", codeExists: "כבר יש שחרור עם מספר ה-build הזה — ערכו אותו במקום.",
+    targets: { "tab:recipes": "טאב מתכונים", "tab:library": "טאב ספרייה", "tab:mealPlan": "טאב תפריטים", "tab:groceries": "טאב קניות", "tab:community": "טאב קהילה", ingestion: "הוספת מתכון", assistant: "שפי", price_book: "ספר מחירים", settings: "הגדרות", preferences: "העדפות", notification_settings: "הגדרות התראות", account_menu: "חשבון", notifications: "תיבת הודעות", profile_edit: "פרופיל", sharing: "שיתוף", household: "חשבון משותף", join_code: "הצטרפות עם קוד", scan_code: "סריקת קוד", home_widgets: "ווידג'טים", wake_word: "היי שפי", support: "תמיכה", help: "עזרה", premium: "פרימיום", tutorial: "מדריך" },
+  },
   notif: {
     tabSent: "נשלחו", tabTemplates: "תבניות", filterAll: "הכול", toAll: "לכולם", toUser: "למשתמש", user: "משתמש", pickUser: "בחירת משתמש", target: "למי",
     sendNow: "שליחת התראה", sendNowShort: "שלח עכשיו", newTemplate: "תבנית חדשה", editTemplate: "עריכת תבנית", deleteTemplate: "למחוק את התבנית?",
@@ -212,7 +235,7 @@ const he = {
   },
   users: {
     filter: { all: "הכול", online: "מחוברים", premium: "פרימיום", disabled: "חסומים", session: "עם סשן מכשיר" },
-    online: "מחובר", offline: "לא מחובר", lastSeen: "נראה לאחרונה", device: "מכשיר", session: "סשן", sessionUntil: "עד {date}", permission: "הרשאה", permissionAdmin: "מנהל", permissionUser: "משתמש", permissionHint: "משתנה רק בקונסול של Firebase: users › {uid} › permission (\"admin\" או \"user\"). למנהל אין הגבלת מכשירים.", hardwareId: "מזהה טלפון (hash)", releaseRequest: "בקשת התנתקות", takeoverAt: "המכשיר החדש ייכנס ב-{date}", declined: "נדחתה",
+    online: "מחובר", offline: "לא מחובר", lastSeen: "נראה לאחרונה", device: "מכשיר", session: "סשן", sessionUntil: "עד {date}", permission: "הרשאה", permissionAdmin: "מנהל", permissionUser: "משתמש", permissionHint: "מנהל נקבע רק בקונסול של Firebase: users › {uid} › permission = \"admin\". למנהל אין הגבלת מכשירים.", permissionSuperuser: "סופר-משתמש", permissionSuperuserHint: "סופר-משתמש רואה את כל הפיצ'רים, כולל פרימיום, בלי קשר לדגלים, ובלי הגבלת מכשירים. בלי סמכויות מנהל.", hardwareId: "מזהה טלפון (hash)", releaseRequest: "בקשת התנתקות", takeoverAt: "המכשיר החדש ייכנס ב-{date}", declined: "נדחתה",
     noSession: "אין סשן", premium: "פרימיום", free: "חינמי", disabled: "חסום", broadcast: "הודעה לכולם", broadcastTitle: "הודעה לכל החשבונות",
     broadcastSent: "{items} הודעות בתיבה, {sent} פושים נשלחו, {failed} נכשלו", count: "{n} חשבונות", joined: "הצטרף", persona: "דמות",
     hint: "מחובר = האפליקציה פתוחה על הטלפון כרגע (דיווח כל דקה). ניתוק = משחרר את סשן המכשיר, האפליקציה מתנתקת מיד.",
@@ -281,8 +304,9 @@ const he = {
   hh: { tier: "תוכנית", seats: "מקומות", owner: "בעלים", members: "חברים", remove: "הסרת חבר", dissolve: "פירוק החשבון המשותף", dissolveHint: "החברים מאבדים את הפרימיום שירשו; המידע המשותף נמחק מהשרת. הטלפון של הבעלים שומר עותק.", none: "אין חשבונות משותפים עדיין.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} חשבונות משותפים", created: "נוצר", removed: "החבר הוסר", dissolved: "החשבון המשותף פורק" },
   tickets: {
     unread: "לא נקראו", read: "נקראו", markRead: "סימון כנקרא", markUnread: "סימון כלא נקרא", reply: "תגובה", replied: "נענה", replies: "התשובות שלך",
-    types: { bug: "באג", suggestion: "הצעה" }, delete: "מחיקת הפנייה", none: "אין פניות.", from: "מאת", appVersion: "אפליקציה", yourReply: "התשובה שלך",
+    delete: "מחיקת הפנייה", none: "אין פניות.", from: "מאת", appVersion: "אפליקציה", yourReply: "התשובה שלך",
     all: "הכול", sent: "התשובה נשלחה (תיבה + פוש)", count: "{n} פניות",
+    types: { bug: "תקלה", suggestion: "הצעה", account: "חשבון והתחברות", billing: "פרימיום ותשלום", sharing: "שיתוף ושותפים", recipes: "הוספת מתכונים ו-AI", other: "אחר" }, details: "פרטי הפנייה (לא מוצגים למשתמש)", detailKeys: { name: "שם", email: "מייל", phone: "טלפון", uid: "מזהה חשבון", version: "גרסה", device: "מכשיר", language: "שפה" }, viaShefi: "דרך שפי", updated: "עודכן", you: "אתה", user: "המשתמש", closed: "סגורות", close: "סגירת פנייה", closeConfirm: "לסגור את הפנייה של {name}? המשתמש יוכל לקרוא אותה ב\"פניות סגורות\" אבל לא לכתוב בה.", reopen: "פתיחה מחדש", closedNow: "הפנייה נסגרה", reopenedNow: "הפנייה נפתחה מחדש", closedBadge: "סגורה",
   },
   config: {
     search: "חיפוש פרמטרים…", groups: { features: "פיצ׳רים", ads: "פרסומות ומכסות", share: "שיתוף בחינם", tts: "קול", versions: "גרסאות", gemini: "Gemini (דורש deploy)", other: "אחר" },
@@ -319,7 +343,18 @@ const ar = {
   lang: "اللغة",
   signOut: "تسجيل الخروج",
   gate: { title: "EasyPlate Admin", intro: "لوحة الإدارة. سجّل الدخول بحساب Google الخاص بالمسؤول.", google: "تسجيل الدخول عبر Google", notAdmin: "هذا الحساب ليس المسؤول. تم تسجيل خروجك.", failed: "فشل تسجيل الدخول: {reason}", unauthorizedDomain: "هذا النطاق غير مصرّح به بعد لتسجيل الدخول. أضف aieasyplate.app في Firebase Console → Authentication → Settings → Authorized domains." },
-  nav: { dashboard: "نظرة عامة", users: "الحسابات", community: "المجتمع", recipes: "الوصفات المشتركة", personas: "الشخصيات", households: "الحسابات المشتركة", tickets: "الرسائل", config: "الإعدادات", seed: "النشاط", audit: "سجل الإجراءات", stores: "التنزيلات", notifications: "الإشعارات" },
+  nav: { dashboard: "نظرة عامة", users: "الحسابات", community: "المجتمع", recipes: "الوصفات المشتركة", personas: "الشخصيات", households: "الحسابات المشتركة", tickets: "الرسائل", config: "الإعدادات", seed: "النشاط", audit: "سجل الإجراءات", stores: "التنزيلات", notifications: "الإشعارات" , whatsnew: "ما الجديد" },
+  whatsnew: {
+    intro: "إصدار واحد لكل رقم build. بعد التحديث يعرض التطبيق للحساب العائد صفحات كل إصدار منشور بين آخر build أقرّ به والـ build الذي يعمل — التثبيت الجديد لا يرى شيئًا. الصفحة التي علمها مخفي أو «قريبًا» لا تُعرض على الهاتف.",
+    none: "لا إصدارات بعد.", newRelease: "إصدار جديد", editRelease: "تعديل الإصدار {v}", deleteRelease: "حذف الإصدار {v}؟",
+    versionCode: "رقم build", versionCodeHint: "الرقم بعد + في pubspec ‏(1.2.0+12 ← 12). هو معرّف المستند.", version: "الإصدار", versionHint: "إصدار التسويق، 1.2.0", releasedAt: "تاريخ الإصدار",
+    published: "منشور", publishedHint: "الإصدار المنشور فقط يصل إلى التطبيق.", publishedBadge: "منشور", draft: "مسودة", publishedNow: "نُشر", unpublishedNow: "أُلغي النشر", unpublish: "إلغاء النشر",
+    features: "الميزات", featuresHint: "حدّد الميزات التي يبرزها هذا الإصدار؛ كل واحدة تصبح صفحة بالترتيب أدناه.", pickHint: "حدّد ميزات أعلاه لإضافة صفحات.", pages: "{n} صفحات", build: "build {n}",
+    featureTitle: "العنوان", featureTitleHint: "قصير؛ الفارغ يعود إلى اسم الميزة في التطبيق.", featureDescription: "الوصف", translate: "ترجمة بالذكاء الاصطناعي", translated: "تُرجم إلى باقي اللغات", needText: "اكتب النص بلغة واحدة أولًا.",
+    icon: "الأيقونة", target: "«جرّب» يفتح", targetHint: "اختياري. تبويب أو شاشة يمكن للتطبيق فتحها مباشرة.", noTarget: "بدون زر", image: "رابط الصورة", imageHint: "اختياري، https. تُعرض فوق النص بدل الأيقونة.",
+    moveUp: "تحريك لأعلى", moveDown: "تحريك لأسفل", badCode: "رقم build يجب أن يكون عددًا صحيحًا موجبًا.", badVersion: "الإصدار يجب أن يبدو مثل 1.2.0.", needFeatures: "اختر ميزة واحدة على الأقل.", needTitle: "«{name}» يحتاج عنوانًا بلغة واحدة على الأقل.", codeExists: "يوجد إصدار بهذا الرقم — عدّله بدلًا من ذلك.",
+    targets: { "tab:recipes": "تبويب الوصفات", "tab:library": "تبويب المكتبة", "tab:mealPlan": "تبويب القوائم", "tab:groceries": "تبويب المشتريات", "tab:community": "تبويب المجتمع", ingestion: "إضافة وصفة", assistant: "شيفي", price_book: "دفتر الأسعار", settings: "الإعدادات", preferences: "التفضيلات", notification_settings: "إعدادات الإشعارات", account_menu: "الحساب", notifications: "صندوق الوارد", profile_edit: "الملف الشخصي", sharing: "المشاركة", household: "الحساب المشترك", join_code: "الانضمام برمز", scan_code: "مسح رمز", home_widgets: "ودجات الشاشة الرئيسية", wake_word: "هاي شيفي", support: "الدعم", help: "المساعدة", premium: "بريميوم", tutorial: "الدليل" },
+  },
   notif: {
     tabSent: "المُرسلة", tabTemplates: "القوالب", filterAll: "الكل", toAll: "للجميع", toUser: "لمستخدم", user: "المستخدم", pickUser: "اختر مستخدمًا", target: "إلى",
     sendNow: "إرسال إشعار", sendNowShort: "أرسل الآن", newTemplate: "قالب جديد", editTemplate: "تعديل القالب", deleteTemplate: "حذف هذا القالب؟",
@@ -359,7 +394,7 @@ const ar = {
   },
   users: {
     filter: { all: "الكل", online: "متصل", premium: "بريميوم", disabled: "محظور", session: "بجلسة جهاز" },
-    online: "متصل", offline: "غير متصل", lastSeen: "آخر ظهور", device: "الجهاز", session: "الجلسة", sessionUntil: "حتى {date}", permission: "الصلاحية", permissionAdmin: "مسؤول", permissionUser: "مستخدم", permissionHint: "تُغيَّر فقط في وحدة تحكم Firebase: users › {uid} › permission (\"admin\" أو \"user\"). لا حد لأجهزة المسؤول.", hardwareId: "معرّف الهاتف (hash)", releaseRequest: "طلب تسجيل خروج", takeoverAt: "يدخل الجهاز الجديد في {date}", declined: "مرفوض",
+    online: "متصل", offline: "غير متصل", lastSeen: "آخر ظهور", device: "الجهاز", session: "الجلسة", sessionUntil: "حتى {date}", permission: "الصلاحية", permissionAdmin: "مسؤول", permissionUser: "مستخدم", permissionHint: "تُغيَّر فقط في وحدة تحكم Firebase: users › {uid} › permission (\"admin\" أو \"user\"). لا حد لأجهزة المسؤول.", permissionSuperuser: "مستخدم خارق", permissionSuperuserHint: "المستخدم الخارق يرى كل الميزات بما فيها بريميوم مهما كانت الأعلام، وبلا حد للأجهزة. بلا صلاحيات مسؤول.", hardwareId: "معرّف الهاتف (hash)", releaseRequest: "طلب تسجيل خروج", takeoverAt: "يدخل الجهاز الجديد في {date}", declined: "مرفوض",
     noSession: "لا جلسة", premium: "بريميوم", free: "مجاني", disabled: "محظور", broadcast: "رسالة للجميع", broadcastTitle: "رسالة إلى كل الحسابات",
     broadcastSent: "{items} في صناديق الوارد، {sent} إشعارًا أُرسل، {failed} فشل", count: "{n} حسابات", joined: "انضم", persona: "شخصية",
     hint: "متصل = التطبيق مفتوح على الهاتف الآن (يُبلّغ كل دقيقة). فصل = يحرر جلسة الجهاز ويخرج التطبيق فورًا.",
@@ -428,8 +463,9 @@ const ar = {
   hh: { tier: "الخطة", seats: "المقاعد", owner: "المالك", members: "الأعضاء", remove: "إزالة عضو", dissolve: "حل الحساب المشترك", dissolveHint: "يفقد الأعضاء البريميوم الموروث؛ تُحذف البيانات المشتركة من الخادم. يحتفظ هاتف المالك بنسخته.", none: "لا حسابات مشتركة بعد.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} حسابات مشتركة", created: "أُنشئ", removed: "أُزيل العضو", dissolved: "تم حل الحساب المشترك" },
   tickets: {
     unread: "غير مقروءة", read: "مقروءة", markRead: "تعليم كمقروء", markUnread: "تعليم كغير مقروء", reply: "رد", replied: "تم الرد", replies: "ردودك",
-    types: { bug: "خلل", suggestion: "اقتراح" }, delete: "حذف الرسالة", none: "لا رسائل.", from: "من", appVersion: "التطبيق", yourReply: "ردك",
+    delete: "حذف الرسالة", none: "لا رسائل.", from: "من", appVersion: "التطبيق", yourReply: "ردك",
     all: "الكل", sent: "أُرسل الرد (صندوق الوارد + إشعار)", count: "{n} رسائل",
+    types: { bug: "خلل", suggestion: "اقتراح", account: "الحساب وتسجيل الدخول", billing: "بريميوم والدفع", sharing: "المشاركة والشركاء", recipes: "إضافة الوصفات والذكاء الاصطناعي", other: "أخرى" }, details: "التفاصيل (لا تُعرض للمستخدم)", detailKeys: { name: "الاسم", email: "البريد", phone: "الهاتف", uid: "معرّف الحساب", version: "الإصدار", device: "الجهاز", language: "اللغة" }, viaShefi: "عبر شيفي", updated: "حُدّث", you: "أنت", user: "المستخدم", closed: "مغلقة", close: "إغلاق المحادثة", closeConfirm: "إغلاق محادثة {name}؟ يمكنه قراءتها ضمن \"المغلقة\" لكن لا الكتابة فيها.", reopen: "إعادة فتح", closedNow: "أُغلقت المحادثة", reopenedNow: "أُعيد فتح المحادثة", closedBadge: "مغلقة",
   },
   config: {
     search: "بحث في المعاملات…", groups: { features: "الميزات", ads: "الإعلانات والحصص", share: "المشاركة المجانية", tts: "الصوت", versions: "الإصدارات", gemini: "Gemini (يتطلب نشرًا)", other: "أخرى" },
@@ -466,7 +502,18 @@ const fr = {
   lang: "Langue",
   signOut: "Se déconnecter",
   gate: { title: "EasyPlate Admin", intro: "La console d’administration. Connectez-vous avec le compte Google de l’administrateur.", google: "Se connecter avec Google", notAdmin: "Ce compte n’est pas l’administrateur. Vous avez été déconnecté.", failed: "Connexion échouée : {reason}", unauthorizedDomain: "Ce domaine n’est pas encore autorisé pour la connexion. Ajoutez aieasyplate.app dans Firebase Console → Authentication → Settings → Authorized domains." },
-  nav: { dashboard: "Tableau de bord", users: "Comptes", community: "Communauté", recipes: "Recettes partagées", personas: "Personas", households: "Comptes partagés", tickets: "Tickets", config: "Configuration", seed: "Activité", audit: "Journal", stores: "Téléchargements", notifications: "Notifications" },
+  nav: { dashboard: "Tableau de bord", users: "Comptes", community: "Communauté", recipes: "Recettes partagées", personas: "Personas", households: "Comptes partagés", tickets: "Tickets", config: "Configuration", seed: "Activité", audit: "Journal", stores: "Téléchargements", notifications: "Notifications" , whatsnew: "Nouveautés" },
+  whatsnew: {
+    intro: "Une version par numéro de build. Après une mise à jour, l'app montre à un compte qui revient les pages de chaque version publiée entre le build qu'il a validé en dernier et celui qu'il exécute — une installation neuve n'en voit aucune. Une page dont le flag est masqué ou « bientôt » n'est pas affichée sur le téléphone.",
+    none: "Pas encore de version.", newRelease: "Nouvelle version", editRelease: "Modifier la version {v}", deleteRelease: "Supprimer la version {v} ?",
+    versionCode: "Numéro de build", versionCodeHint: "L'entier après + dans pubspec (1.2.0+12 → 12). C'est l'identifiant du document.", version: "Version", versionHint: "La version marketing, 1.2.0", releasedAt: "Date de sortie",
+    published: "Publiée", publishedHint: "Seule une version publiée atteint l'app.", publishedBadge: "Publiée", draft: "Brouillon", publishedNow: "Publiée", unpublishedNow: "Dépubliée", unpublish: "Dépublier",
+    features: "Fonctionnalités", featuresHint: "Cochez les fonctionnalités mises en avant ; chacune devient une page, dans l'ordre ci-dessous.", pickHint: "Cochez des fonctionnalités ci-dessus pour ajouter des pages.", pages: "{n} pages", build: "build {n}",
+    featureTitle: "Titre", featureTitleHint: "Court ; vide, l'app utilise le nom de la fonctionnalité.", featureDescription: "Description", translate: "Traduire avec l'IA", translated: "Traduit dans les autres langues", needText: "Écrivez d'abord le texte dans une langue.",
+    icon: "Icône", target: "« Essayer » ouvre", targetHint: "Facultatif. Un onglet ou un écran que l'app peut ouvrir directement.", noTarget: "Pas de bouton", image: "URL de l'image", imageHint: "Facultatif, https. Affichée au-dessus du texte à la place de l'icône.",
+    moveUp: "Monter", moveDown: "Descendre", badCode: "Le numéro de build doit être un entier positif.", badVersion: "La version doit ressembler à 1.2.0.", needFeatures: "Choisissez au moins une fonctionnalité.", needTitle: "« {name} » a besoin d'un titre dans au moins une langue.", codeExists: "Une version avec ce numéro existe déjà — modifiez-la.",
+    targets: { "tab:recipes": "Onglet Recettes", "tab:library": "Onglet Bibliothèque", "tab:mealPlan": "Onglet Menus", "tab:groceries": "Onglet Courses", "tab:community": "Onglet Communauté", ingestion: "Ajouter une recette", assistant: "Shefi", price_book: "Carnet de prix", settings: "Réglages", preferences: "Préférences", notification_settings: "Réglages des notifications", account_menu: "Compte", notifications: "Boîte de réception", profile_edit: "Profil", sharing: "Partage", household: "Compte partagé", join_code: "Rejoindre avec un code", scan_code: "Scanner un code", home_widgets: "Widgets", wake_word: "Hey Shefi", support: "Support", help: "Aide", premium: "Premium", tutorial: "Guide" },
+  },
   notif: {
     tabSent: "Envoyées", tabTemplates: "Modèles", filterAll: "Toutes", toAll: "Tout le monde", toUser: "Un utilisateur", user: "Utilisateur", pickUser: "Choisir un utilisateur", target: "Destinataires",
     sendNow: "Envoyer une notification", sendNowShort: "Envoyer", newTemplate: "Nouveau modèle", editTemplate: "Modifier le modèle", deleteTemplate: "Supprimer ce modèle ?",
@@ -506,7 +553,7 @@ const fr = {
   },
   users: {
     filter: { all: "Tous", online: "En ligne", premium: "Premium", disabled: "Bloqués", session: "Avec session" },
-    online: "En ligne", offline: "Hors ligne", lastSeen: "Vu", device: "Appareil", session: "Session", sessionUntil: "jusqu’au {date}", permission: "Permission", permissionAdmin: "Admin", permissionUser: "Utilisateur", permissionHint: "Modifiable uniquement dans la console Firebase : users › {uid} › permission (« admin » ou « user »). Un admin n’a pas de limite d’appareils.", hardwareId: "Id du téléphone (hash)", releaseRequest: "Demande de déconnexion", takeoverAt: "Le nouvel appareil entre le {date}", declined: "refusée",
+    online: "En ligne", offline: "Hors ligne", lastSeen: "Vu", device: "Appareil", session: "Session", sessionUntil: "jusqu’au {date}", permission: "Permission", permissionAdmin: "Admin", permissionUser: "Utilisateur", permissionHint: "Modifiable uniquement dans la console Firebase : users › {uid} › permission (« admin » ou « user »). Un admin n’a pas de limite d’appareils.", permissionSuperuser: "Super-utilisateur", permissionSuperuserHint: "Un super-utilisateur voit toutes les fonctionnalités, Premium comprises, quels que soient les flags, sans limite d'appareils. Sans pouvoirs d'administrateur.", hardwareId: "Id du téléphone (hash)", releaseRequest: "Demande de déconnexion", takeoverAt: "Le nouvel appareil entre le {date}", declined: "refusée",
     noSession: "pas de session", premium: "Premium", free: "Gratuit", disabled: "Bloqué", broadcast: "Message à tous", broadcastTitle: "Message à tous les comptes",
     broadcastSent: "{items} messages, {sent} push envoyés, {failed} échecs", count: "{n} comptes", joined: "Inscrit", persona: "Persona",
     hint: "En ligne = l’app est ouverte sur un téléphone en ce moment (signalé chaque minute). Déconnecter libère la session ; l’app se déconnecte aussitôt.",
@@ -575,8 +622,9 @@ const fr = {
   hh: { tier: "Formule", seats: "Places", owner: "Propriétaire", members: "Membres", remove: "Retirer le membre", dissolve: "Dissoudre le compte partagé", dissolveHint: "Les membres perdent le Premium hérité ; les données partagées sont supprimées du serveur. Le téléphone du propriétaire garde sa copie.", none: "Pas encore de comptes partagés.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} comptes partagés", created: "Créé", removed: "Membre retiré", dissolved: "Compte partagé dissous" },
   tickets: {
     unread: "Non lus", read: "Lus", markRead: "Marquer lu", markUnread: "Marquer non lu", reply: "Répondre", replied: "Répondu", replies: "Vos réponses",
-    types: { bug: "Bug", suggestion: "Suggestion" }, delete: "Supprimer le ticket", none: "Aucun ticket.", from: "De", appVersion: "App", yourReply: "Votre réponse",
+    delete: "Supprimer le ticket", none: "Aucun ticket.", from: "De", appVersion: "App", yourReply: "Votre réponse",
     all: "Tous", sent: "Réponse envoyée (boîte + push)", count: "{n} tickets",
+    types: { bug: "Bug", suggestion: "Suggestion", account: "Compte et connexion", billing: "Premium et paiement", sharing: "Partage et partenaires", recipes: "Ajout de recettes et IA", other: "Autre" }, details: "Détails (non montrés à l'utilisateur)", detailKeys: { name: "Nom", email: "E-mail", phone: "Téléphone", uid: "Id du compte", version: "Version", device: "Appareil", language: "Langue" }, viaShefi: "via Shefi", updated: "Mis à jour", you: "Vous", user: "Utilisateur", closed: "Closes", close: "Clore la conversation", closeConfirm: "Clore la conversation de {name} ? Il pourra la lire sous « closes » mais plus y écrire.", reopen: "Rouvrir", closedNow: "Conversation close", reopenedNow: "Conversation rouverte", closedBadge: "Close",
   },
   config: {
     search: "Rechercher un paramètre…", groups: { features: "Fonctions", ads: "Pubs et quotas", share: "Partage gratuit", tts: "Voix", versions: "Versions", gemini: "Gemini (déploiement requis)", other: "Autres" },
@@ -613,7 +661,18 @@ const ru = {
   lang: "Язык",
   signOut: "Выйти",
   gate: { title: "EasyPlate Admin", intro: "Консоль администратора. Войдите через Google-аккаунт администратора.", google: "Войти через Google", notAdmin: "Этот аккаунт не администратор. Вы вышли.", failed: "Вход не удался: {reason}", unauthorizedDomain: "Домен ещё не разрешён для входа. Добавьте aieasyplate.app в Firebase Console → Authentication → Settings → Authorized domains." },
-  nav: { dashboard: "Обзор", users: "Аккаунты", community: "Сообщество", recipes: "Общие рецепты", personas: "Персонажи", households: "Общие аккаунты", tickets: "Обращения", config: "Настройки", seed: "Активность", audit: "Журнал", stores: "Загрузки", notifications: "Уведомления" },
+  nav: { dashboard: "Обзор", users: "Аккаунты", community: "Сообщество", recipes: "Общие рецепты", personas: "Персонажи", households: "Общие аккаунты", tickets: "Обращения", config: "Настройки", seed: "Активность", audit: "Журнал", stores: "Загрузки", notifications: "Уведомления" , whatsnew: "Что нового" },
+  whatsnew: {
+    intro: "Один выпуск на номер build. После обновления приложение показывает вернувшемуся аккаунту страницы каждого опубликованного выпуска между последним подтверждённым build и текущим — новая установка не видит ничего. Страница, флаг которой скрыт или «скоро», на телефоне не показывается.",
+    none: "Выпусков пока нет.", newRelease: "Новый выпуск", editRelease: "Изменить выпуск {v}", deleteRelease: "Удалить выпуск {v}?",
+    versionCode: "Номер build", versionCodeHint: "Число после + в pubspec (1.2.0+12 → 12). Это идентификатор документа.", version: "Версия", versionHint: "Маркетинговая версия, 1.2.0", releasedAt: "Дата выпуска",
+    published: "Опубликован", publishedHint: "В приложение попадает только опубликованный выпуск.", publishedBadge: "Опубликован", draft: "Черновик", publishedNow: "Опубликован", unpublishedNow: "Публикация снята", unpublish: "Снять с публикации",
+    features: "Функции", featuresHint: "Отметьте функции, которые выделяет этот выпуск; каждая становится страницей в порядке ниже.", pickHint: "Отметьте функции выше, чтобы добавить страницы.", pages: "Страниц: {n}", build: "build {n}",
+    featureTitle: "Заголовок", featureTitleHint: "Коротко; пустой заменяется названием функции в приложении.", featureDescription: "Описание", translate: "Перевести с ИИ", translated: "Переведено на остальные языки", needText: "Сначала напишите текст на одном языке.",
+    icon: "Значок", target: "«Попробовать» открывает", targetHint: "Необязательно. Вкладка или экран, который приложение может открыть напрямую.", noTarget: "Без кнопки", image: "URL картинки", imageHint: "Необязательно, https. Показывается над текстом вместо значка.",
+    moveUp: "Выше", moveDown: "Ниже", badCode: "Номер build должен быть положительным целым числом.", badVersion: "Версия должна выглядеть как 1.2.0.", needFeatures: "Выберите хотя бы одну функцию.", needTitle: "«{name}» нужен заголовок хотя бы на одном языке.", codeExists: "Выпуск с таким номером уже есть — измените его.",
+    targets: { "tab:recipes": "Вкладка «Рецепты»", "tab:library": "Вкладка «Библиотека»", "tab:mealPlan": "Вкладка «Меню»", "tab:groceries": "Вкладка «Покупки»", "tab:community": "Вкладка «Сообщество»", ingestion: "Добавить рецепт", assistant: "Шефи", price_book: "Книга цен", settings: "Настройки", preferences: "Предпочтения", notification_settings: "Настройки уведомлений", account_menu: "Аккаунт", notifications: "Входящие", profile_edit: "Профиль", sharing: "Общий доступ", household: "Общий аккаунт", join_code: "Присоединиться по коду", scan_code: "Сканировать код", home_widgets: "Виджеты", wake_word: "Hey Shefi", support: "Поддержка", help: "Помощь", premium: "Премиум", tutorial: "Справочник" },
+  },
   notif: {
     tabSent: "Отправленные", tabTemplates: "Шаблоны", filterAll: "Все", toAll: "Всем", toUser: "Пользователю", user: "Пользователь", pickUser: "Выберите пользователя", target: "Кому",
     sendNow: "Отправить уведомление", sendNowShort: "Отправить", newTemplate: "Новый шаблон", editTemplate: "Изменить шаблон", deleteTemplate: "Удалить шаблон?",
@@ -653,7 +712,7 @@ const ru = {
   },
   users: {
     filter: { all: "Все", online: "Онлайн", premium: "Premium", disabled: "Заблокированы", session: "С сессией устройства" },
-    online: "Онлайн", offline: "Не в сети", lastSeen: "Был(а)", device: "Устройство", session: "Сессия", sessionUntil: "до {date}", permission: "Права", permissionAdmin: "Администратор", permissionUser: "Пользователь", permissionHint: "Меняется только в консоли Firebase: users › {uid} › permission («admin» или «user»). У администратора нет лимита устройств.", hardwareId: "Id телефона (hash)", releaseRequest: "Запрос на выход", takeoverAt: "Новое устройство войдёт {date}", declined: "отклонён",
+    online: "Онлайн", offline: "Не в сети", lastSeen: "Был(а)", device: "Устройство", session: "Сессия", sessionUntil: "до {date}", permission: "Права", permissionAdmin: "Администратор", permissionUser: "Пользователь", permissionHint: "Меняется только в консоли Firebase: users › {uid} › permission («admin» или «user»). У администратора нет лимита устройств.", permissionSuperuser: "Суперпользователь", permissionSuperuserHint: "Суперпользователь видит все функции, включая Премиум, независимо от флагов, и без лимита устройств. Без прав администратора.", hardwareId: "Id телефона (hash)", releaseRequest: "Запрос на выход", takeoverAt: "Новое устройство войдёт {date}", declined: "отклонён",
     noSession: "нет сессии", premium: "Premium", free: "Бесплатно", disabled: "Заблокирован", broadcast: "Сообщение всем", broadcastTitle: "Сообщение всем аккаунтам",
     broadcastSent: "{items} сообщений, {sent} push отправлено, {failed} не удалось", count: "{n} аккаунтов", joined: "Зарегистрирован", persona: "Персонаж",
     hint: "Онлайн = приложение сейчас открыто на телефоне (отчёт каждую минуту). Отключить = освобождает сессию устройства, приложение сразу выходит.",
@@ -722,8 +781,9 @@ const ru = {
   hh: { tier: "Тариф", seats: "Мест", owner: "Владелец", members: "Участники", remove: "Удалить участника", dissolve: "Расформировать общий аккаунт", dissolveHint: "Участники теряют унаследованный Premium; общие данные удаляются с сервера. Телефон владельца сохраняет копию.", none: "Общих аккаунтов пока нет.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} общих аккаунтов", created: "Создан", removed: "Участник удалён", dissolved: "Общий аккаунт расформирован" },
   tickets: {
     unread: "Непрочитанные", read: "Прочитанные", markRead: "Отметить прочитанным", markUnread: "Отметить непрочитанным", reply: "Ответить", replied: "Отвечено", replies: "Ваши ответы",
-    types: { bug: "Ошибка", suggestion: "Предложение" }, delete: "Удалить обращение", none: "Обращений нет.", from: "От", appVersion: "Приложение", yourReply: "Ваш ответ",
+    delete: "Удалить обращение", none: "Обращений нет.", from: "От", appVersion: "Приложение", yourReply: "Ваш ответ",
     all: "Все", sent: "Ответ отправлен (входящие + push)", count: "{n} обращений",
+    types: { bug: "Ошибка", suggestion: "Предложение", account: "Аккаунт и вход", billing: "Премиум и оплата", sharing: "Общий доступ и партнёры", recipes: "Добавление рецептов и ИИ", other: "Другое" }, details: "Детали (пользователю не показываются)", detailKeys: { name: "Имя", email: "Почта", phone: "Телефон", uid: "ID аккаунта", version: "Версия", device: "Устройство", language: "Язык" }, viaShefi: "через Шефи", updated: "Обновлено", you: "Вы", user: "Пользователь", closed: "Закрытые", close: "Закрыть обращение", closeConfirm: "Закрыть обращение {name}? Он сможет читать его в «закрытых», но не писать.", reopen: "Открыть снова", closedNow: "Обращение закрыто", reopenedNow: "Обращение открыто снова", closedBadge: "Закрыто",
   },
   config: {
     search: "Поиск параметров…", groups: { features: "Функции", ads: "Реклама и квоты", share: "Бесплатный шеринг", tts: "Голос", versions: "Версии", gemini: "Gemini (нужен деплой)", other: "Прочее" },

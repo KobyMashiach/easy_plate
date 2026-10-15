@@ -502,6 +502,27 @@ void main() {
     });
   });
 
+  group('support', () {
+    test('contact_support checks its arguments, then needs a signed-in '
+        'account and a repository', () async {
+      final noMessage = await dispatcher.execute(
+        const ToolCall(id: '1', name: 'contact_support', arguments: {'reason': 'bug', 'message': ' '}),
+      );
+      expect(noMessage.data['error'], 'invalid');
+      final badReason = await dispatcher.execute(
+        const ToolCall(id: '2', name: 'contact_support', arguments: {'reason': 'weather', 'message': 'hi'}),
+      );
+      expect(badReason.data['error'], 'invalid');
+      // No feedback repository on this dispatcher, and no session in a test:
+      // the tool says so instead of pretending.
+      final unavailable = await dispatcher.execute(
+        const ToolCall(id: '3', name: 'contact_support', arguments: {'reason': 'bug', 'message': 'the timer stops'}),
+      );
+      expect(unavailable.data['ok'], isFalse);
+      expect(unavailable.data['error'], 'unavailable');
+    });
+  });
+
   test('kitchen conversions are exact and density-aware', () async {
     final cups = await run(AssistantTools.convertMeasurement, {
       'amount': 2,

@@ -1118,23 +1118,62 @@
     "demoBooksHint": "Voici à quoi ressemble un livre de recettes. Touchez-en un pour l'ouvrir, tourner ses pages et naviguer depuis le sommaire.",
     "demoOnly": "Exemple seulement, rien n'est enregistré"
   },
+  "whatsNew": {
+    "title": "Nouveautés d'EasyPlate",
+    "pageOf": "$current sur $total",
+    "releasedIn": "Version $version",
+    "next": "Suivant",
+    "gotIt": "Compris",
+    "tryIt": "Essayer",
+    "close": "Fermer",
+    "premiumTag": "Premium",
+    "supportTitle": "Nouveautés",
+    "supportHint": "Les nouveautés de la dernière version, page par page",
+    "nothingYet": "Pas encore de nouveautés"
+  },
   "feedback": {
-    "title": "Signaler et suggérer",
-    "subtitle": "Un bug ? Une idée ? Écrivez-nous ici ; chaque message est lu.",
-    "bug": "Bug",
-    "suggestion": "Suggestion",
-    "bugHint": "Décrivez le bug : ce que vous avez fait, ce qui s'est passé et ce que vous attendiez...",
-    "suggestionHint": "Dites-nous ce que vous aimeriez que l'application fasse, et en quoi cela vous aiderait...",
+    "title": "Contacter le support",
+    "subtitle": "Un bug, une idée, une question ? Choisissez un motif, écrivez-nous, et nous répondons ici même dans le chat.",
+    "reasonLabel": "Motif",
+    "reasonHint": "Choisir un motif…",
+    "reasons": {
+      "bug": "Bug",
+      "suggestion": "Suggestion",
+      "account": "Compte et connexion",
+      "billing": "Premium et paiement",
+      "sharing": "Partage et partenaires",
+      "recipes": "Ajout de recettes et IA",
+      "other": "Autre"
+    },
+    "messageLabel": "Message",
+    "messageHint": "Dites-nous ce qui s'est passé ou ce que vous souhaitez…",
     "send": "Envoyer",
-    "sent": "Merci ! Votre message a été envoyé.",
+    "sent": "Merci ! Votre message est envoyé, nous répondrons bientôt.",
     "failed": "L'envoi a échoué, réessayez plus tard",
-    "admin": "Messages reçus",
-    "all": "Tous",
+    "myConversations": "Mes conversations",
+    "noConversations": "Pas encore de conversation",
+    "chatTitle": "Chat avec le support",
+    "team": "Équipe EasyPlate",
+    "you": "Vous",
+    "replyHint": "Écrire une réponse…",
+    "waitingForReply": "Message bien reçu, nous vous répondrons ici.",
+    "viaShefi": "via Shefi",
+    "details": "Détails",
+    "conversationGone": "Cette conversation n'existe plus",
+    "admin": "Boîte de retours",
+    "all": "Tout",
     "bugs": "Bugs",
     "suggestions": "Suggestions",
-    "none": "Aucun message pour l'instant",
+    "none": "Aucun message",
     "version": "Version $version",
-    "notAllowed": "Cet écran est réservé à l'administrateur"
+    "notAllowed": "Cet écran est réservé à l'administrateur",
+    "userWrote": "Utilisateur · $date",
+    "bug": "Bug",
+    "suggestion": "Suggestion",
+    "closedNotice": "L'équipe a clos cette conversation. Vous pouvez la lire mais plus y écrire ; ouvrez-en une nouvelle pour un autre sujet.",
+    "closedConversations": "Conversations closes ($n)",
+    "noOpenConversations": "Aucune conversation ouverte",
+    "closedTag": "Close"
   },
   "adminBilling": {
     "title": "Utilisateurs",
@@ -1669,7 +1708,9 @@
     "homeWidgets": "Widgets d'écran d'accueil",
     "wakeWord": "Hé Shefi",
     "voiceAssistants": "Shefi dans Siri et Gemini",
-    "shefiLauncher": "Icône Shefi"
+    "shefiLauncher": "Icône Shefi",
+    "whatsNew": "Nouveautés",
+    "supportChat": "Chat support"
   },
   "wakeWord": {
     "title": "Hé Shefi",
@@ -1730,5 +1771,10 @@
     "unavailable": "Shefi n'est pas disponible pour le moment.",
     "failed": "Shefi n'a pas pu répondre. Réessayez dans un instant.",
     "goodbye": "Avec plaisir ! Je suis là quand vous voulez."
+  },
+  "adminConfig": {
+    "labels": {
+      "admin_all_features": "Montrer toutes les fonctionnalités à l'admin"
+    }
   }
 }

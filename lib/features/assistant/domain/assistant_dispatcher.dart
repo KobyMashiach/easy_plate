@@ -2,10 +2,15 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/constants/app_enums.dart';
 import '../../../core/errors/app_exception.dart';
+import '../../../core/features/features_flags.dart';
 import '../../../core/monetization/monetization_config.dart';
 import '../../../core/services/auth_session_service.dart';
 import '../../../core/services/cook_session_service.dart';
 import '../../../core/utils/i18n/strings.g.dart';
+import '../../feedback/domain/entities/feedback_entity.dart';
+import '../../feedback/domain/repositories/feedback_repository.dart';
+import '../../feedback/domain/support_details.dart';
+import '../../feedback/domain/usecases/send_feedback_usecase.dart';
 import '../../grocery_list/data/datasources/active_grocery_list_store.dart';
 import '../../grocery_list/domain/entities/grocery_item_entity.dart';
 import '../../grocery_list/domain/entities/grocery_item_source_entity.dart';
@@ -46,6 +51,10 @@ class AssistantDispatcher {
   final CookSessionService cooking;
   final AssistantUiBridge ui;
 
+  /// Where `contact_support` writes; without it the tool answers that
+  /// support is unavailable (tests, a host with no Firestore).
+  final FeedbackRepository? feedback;
+
   static const _uuid = Uuid();
 
   AssistantDispatcher({
@@ -58,6 +67,7 @@ class AssistantDispatcher {
     required this.preferences,
     required this.cooking,
     required this.ui,
+    this.feedback,
   });
 
   Future<ToolResult> execute(ToolCall call) async {
@@ -124,6 +134,8 @@ class AssistantDispatcher {
         return _startTimer(a);
       case AssistantTools.cookingStatus:
         return _cookingStatus();
+      case AssistantTools.contactSupport:
+        return _contactSupport(a);
       case AssistantTools.getPreferences:
         return _getPreferences();
       case AssistantTools.setShoppingDay:
@@ -1089,6 +1101,51 @@ class AssistantDispatcher {
     'cook_mode_locked': MonetizationConfig.cookModeLocked,
     'notifications_locked': MonetizationConfig.notificationsLocked,
   });
+
+  /// Opens a support conversation as the support screen's form would:
+  /// reason + message, signed with the same details, marked as coming
+  /// through Shefi. Gated by the same two flags as the form and the chat.
+  Future<ToolResult> _contactSupport(Map<String, dynamic> a) async {
+    final message = (a['message'] as String? ?? '').trim();
+    if (message.isEmpty) {
+      return ToolResult.error('invalid', 'message is required');
+    }
+    final reason = FeedbackType.values
+        .where((type) => type.name == a['reason'])
+        .firstOrNull;
+    if (reason == null) {
+      return ToolResult.error('invalid', 'reason is not one of the list');
+    }
+    final repository = feedback;
+    final session = AuthSessionService();
+    final uid = session.user?.uid;
+    if (repository == null ||
+        uid == null ||
+        !FeaturesFlags.feedback.isEnabled ||
+        !FeaturesFlags.supportChat.isEnabled) {
+      return ToolResult.error(
+        'unavailable',
+        'Support messages cannot be sent from here right now.',
+      );
+    }
+    final details = await SupportDetails.collect();
+    final id = await SendFeedbackUseCase(repository)(
+      type: reason,
+      message: message,
+      authorUid: uid,
+      authorName: session.profile?.fullName ?? '',
+      authorEmail: session.profile?.email ?? session.user?.email,
+      appVersion: details['version'],
+      details: details,
+      source: FeedbackSource.shefi,
+    );
+    return ToolResult.ok({
+      'ticket_id': id,
+      'reason': reason.name,
+      'note':
+          'Sent. The team answers in the app: support screen → my conversations, and a notification when they do.',
+    });
+  }
 
   Future<ToolResult> _openScreen(Map<String, dynamic> a) async {
     final screen = a['screen'] as String? ?? '';

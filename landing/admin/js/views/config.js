@@ -5,7 +5,7 @@ import { h, clear, spinner, button, busy, chips, select, input, textarea, field,
 import { call } from "../api.js";
 
 const GROUPS = [
-  ["features", (n) => /^ff_/.test(n)],
+  ["features", (n) => /^ff_/.test(n) || n === "admin_all_features"],
   ["ads", (n) => /^(ads_|quota_)/.test(n)],
   ["share", (n) => /^share_free_/.test(n)],
   ["tts", (n) => /^tts_/.test(n)],

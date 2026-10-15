@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.KHEasyDev.easy_plate.EntryActivity
 import com.KHEasyDev.easy_plate.MainActivity
 
 /**
@@ -31,8 +32,26 @@ object WidgetIntents {
         )
     }
 
-    fun assistant(context: Context, voice: Boolean, prompt: String? = null) =
-        open(context, "assistant", "voice" to if (voice) "1" else null, "prompt" to prompt)
+    /**
+     * The Shefi widget opens the floating panel over the home screen (the
+     * same one "Hey Shefi" and the Gemini route show, hosted by
+     * EntryActivity so it needs no "display over other apps"), not the
+     * app's chat: the panel's header is the way into the full chat.
+     */
+    fun assistant(context: Context, voice: Boolean, prompt: String? = null): PendingIntent {
+        val intent = Intent(context, EntryActivity::class.java).apply {
+            action = EntryActivity.ACTION_SHEFI_PANEL
+            putExtra(EntryActivity.EXTRA_VOICE, voice)
+            if (!prompt.isNullOrBlank()) putExtra(EntryActivity.EXTRA_PROMPT, prompt)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        return PendingIntent.getActivity(
+            context,
+            ("shefi_panel:$voice:${prompt ?: ""}").hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
 
     fun grocery(context: Context, listId: String?, add: Boolean = false) =
         open(context, "grocery", "list" to listId, "add" to if (add) "1" else null)

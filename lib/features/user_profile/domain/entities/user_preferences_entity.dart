@@ -60,6 +60,13 @@ class UserPreferencesEntity {
   /// look. Null: never chosen on this account, the device keeps its own.
   final String? themeMode;
 
+  /// The highest build number whose "what's new" book this account has
+  /// acknowledged (closed or finished). Mirrored like the rest, so a second
+  /// device or a reinstall does not show the same release twice. Null:
+  /// never acknowledged — an account from before the book existed, which
+  /// is then shown the current release only.
+  final int? whatsNewSeenBuild;
+
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
@@ -79,6 +86,7 @@ class UserPreferencesEntity {
     this.notifyAnnouncements = true,
     this.foregroundPopupsEnabled = true,
     this.themeMode,
+    this.whatsNewSeenBuild,
   });
 
   /// Whether an alert of [type] should be shown on this device right now:
@@ -116,6 +124,7 @@ class UserPreferencesEntity {
     bool? notifyAnnouncements,
     bool? foregroundPopupsEnabled,
     String? themeMode,
+    int? whatsNewSeenBuild,
   }) {
     return UserPreferencesEntity(
       shoppingDay: shoppingDay ?? this.shoppingDay,
@@ -142,6 +151,7 @@ class UserPreferencesEntity {
       foregroundPopupsEnabled:
           foregroundPopupsEnabled ?? this.foregroundPopupsEnabled,
       themeMode: themeMode ?? this.themeMode,
+      whatsNewSeenBuild: whatsNewSeenBuild ?? this.whatsNewSeenBuild,
     );
   }
 }

@@ -12,6 +12,10 @@ abstract class AdminUsersRemoteDataSource {
 
   /// Frees the account's device session and signs that device out.
   Future<void> releaseSession(String uid);
+
+  /// `user` or `superuser`; the function refuses `admin` and the caller's
+  /// own account.
+  Future<void> setPermission(String uid, String permission);
   Future<void> enable(String uid);
   Future<void> delete(String uid);
   Future<void> notify(
@@ -56,6 +60,10 @@ class AdminUsersHttpDataSource implements AdminUsersRemoteDataSource {
   @override
   Future<void> releaseSession(String uid) =>
       _post({'action': 'releaseSession', 'uid': uid});
+
+  @override
+  Future<void> setPermission(String uid, String permission) =>
+      _post({'action': 'setPermission', 'uid': uid, 'permission': permission});
 
   @override
   Future<void> enable(String uid) => _post({'action': 'enable', 'uid': uid});

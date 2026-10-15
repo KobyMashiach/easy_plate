@@ -1,3 +1,4 @@
+import '../../../user_profile/domain/entities/user_permission.dart';
 import '../../domain/entities/billing_entities.dart';
 import '../../domain/repositories/admin_billing_repository.dart';
 import '../datasources/admin_billing_remote_datasource.dart';
@@ -36,6 +37,10 @@ class AdminBillingRepositoryImpl implements AdminBillingRepository {
   @override
   Future<void> releaseSession(String uid) =>
       usersDataSource.releaseSession(uid);
+
+  @override
+  Future<void> setPermission(String uid, UserPermission permission) =>
+      usersDataSource.setPermission(uid, permission.name);
 
   @override
   Future<void> deleteAccount(String uid) => usersDataSource.delete(uid);

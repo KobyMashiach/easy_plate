@@ -40,6 +40,9 @@ import '../../services/firebase_service.dart';
 import 'routing.dart';
 import '../../monetization/entitlement_service.dart';
 import '../../../features/more/presentation/pages/tutorial_book_page.dart';
+import '../../../features/feedback/presentation/pages/support_chat_page.dart';
+import '../../../features/whats_new/presentation/pages/whats_new_book_page.dart';
+import '../../../features/whats_new/presentation/whats_new_service.dart';
 import '../../../features/admin_dashboard/presentation/pages/admin_dashboard_page.dart';
 import '../../../features/auth/presentation/pages/blocked_page.dart';
 import '../../../features/auth/presentation/pages/session_gate_page.dart';
@@ -412,6 +415,32 @@ GoRouter buildRouter() {
             name: Routing.tutorial,
             redirect: featureRedirect(FeaturesFlags.tutorialBook),
             builder: (context, state) => const TutorialBookPage(),
+          ),
+          GoRoute(
+            path: Routing.supportChat,
+            name: Routing.supportChat,
+            // `extra` is the conversation id; the rules let only its writer
+            // (and the administrator) read it.
+            redirect: (context, state) async => state.extra is String
+                ? await featureRedirect(FeaturesFlags.supportChat)(
+                    context,
+                    state,
+                  )
+                : Routing.home,
+            builder: (context, state) =>
+                SupportChatPage(feedbackId: state.extra! as String),
+          ),
+          GoRoute(
+            path: Routing.whatsNew,
+            name: Routing.whatsNew,
+            // `extra` carries the pages; a deep link without them has no
+            // book to show and lands back on home, like a hidden flag.
+            redirect: (context, state) async =>
+                state.extra is WhatsNewArgs
+                ? await featureRedirect(FeaturesFlags.whatsNew)(context, state)
+                : Routing.home,
+            builder: (context, state) =>
+                WhatsNewBookPage(args: state.extra! as WhatsNewArgs),
           ),
           GoRoute(
             path: Routing.adminDashboard,

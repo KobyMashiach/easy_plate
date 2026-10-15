@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../user_profile/domain/entities/user_permission.dart';
+
 import '../../domain/entities/billing_entities.dart';
 
 abstract class AdminBillingRemoteDataSource {
@@ -170,6 +172,7 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
       lastSeenAt: (profile?['lastSeenAt'] as Timestamp?)?.toDate(),
       createdAt: (profile?['createdAt'] as Timestamp?)?.toDate(),
       hasPushToken: (profile?['pushToken'] as String?)?.isNotEmpty == true,
+      permission: UserPermission.fromName(profile?['permission']),
     );
   }
 

@@ -82,6 +82,9 @@ class FirebaseService {
     presenceHeartbeatKey: 60,
     supportPhoneKey: '972508247743',
     supportEmailKey: 'support@aieasyplate.app',
+    // The administrator sees every feature on, whatever the flags say; off,
+    // the administrator is an ordinary (free or Premium) account.
+    adminAllFeaturesKey: false,
     // Feature switches (`ff_*`: 0 hidden / 1 coming soon / 2 on / 3 Premium
     // only), read by FeaturesFlags. All on, as asked, so a failed fetch
     // never hides a feature.
@@ -106,6 +109,10 @@ class FirebaseService {
   /// address, editable from the console without a release.
   static const supportPhoneKey = 'support_phone';
   static const supportEmailKey = 'support_email';
+
+  /// BOOLEAN: every feature flag reads as on for the administrator's own
+  /// account (a superuser always has this). See `AdminAccess.hasAllFeatures`.
+  static const adminAllFeaturesKey = 'admin_all_features';
 
   static const isProdKey = 'isProd';
 
@@ -144,6 +151,23 @@ class FirebaseService {
       return raw.isEmpty ? remoteDefaults[key]! as String : raw;
     } catch (e) {
       // Firebase not up yet; the default is the honest answer.
+      return remoteDefaults[key]! as String;
+    }
+  }
+
+  /// A string parameter where a blank in the console means "none", not
+  /// "use the default": the console's value as it is (trimmed, possibly
+  /// empty) once a fetch has brought it, the in-app default before that.
+  /// For the support contacts, which the console may switch off by
+  /// clearing.
+  String remoteStringOrBlank(String key) {
+    try {
+      final value = FirebaseRemoteConfig.instance.getValue(key);
+      if (value.source == ValueSource.valueRemote) {
+        return value.asString().trim();
+      }
+      return remoteDefaults[key]! as String;
+    } catch (e) {
       return remoteDefaults[key]! as String;
     }
   }

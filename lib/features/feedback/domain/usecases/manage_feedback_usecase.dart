@@ -21,6 +21,13 @@ class ManageFeedbackUseCase {
   Future<void> delete(FeedbackEntity feedback) =>
       repository.delete(feedback.id);
 
+  /// Ends the conversation; [reopen] undoes it.
+  Future<void> close(FeedbackEntity feedback) =>
+      repository.setClosed(feedback.id, true);
+
+  Future<void> reopen(FeedbackEntity feedback) =>
+      repository.setClosed(feedback.id, false);
+
   Future<void> reply(
     FeedbackEntity feedback,
     String text, {

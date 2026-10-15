@@ -75,6 +75,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$ads$he ads = Translations$ads$he.internal(_root);
 	late final Translations$premium$he premium = Translations$premium$he.internal(_root);
 	late final Translations$walkthrough$he walkthrough = Translations$walkthrough$he.internal(_root);
+	late final Translations$whatsNew$he whatsNew = Translations$whatsNew$he.internal(_root);
 	late final Translations$feedback$he feedback = Translations$feedback$he.internal(_root);
 	late final Translations$adminBilling$he adminBilling = Translations$adminBilling$he.internal(_root);
 	late final Translations$adminDashboard$he adminDashboard = Translations$adminDashboard$he.internal(_root);
@@ -3240,6 +3241,48 @@ class Translations$walkthrough$he {
 	String get demoOnly => 'דוגמה בלבד, לא נשמר';
 }
 
+// Path: whatsNew
+class Translations$whatsNew$he {
+	Translations$whatsNew$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'מה חדש ב-EasyPlate'
+	String get title => 'מה חדש ב-EasyPlate';
+
+	/// he: '$current מתוך $total'
+	String pageOf({required Object current, required Object total}) => '${current} מתוך ${total}';
+
+	/// he: 'גרסה $version'
+	String releasedIn({required Object version}) => 'גרסה ${version}';
+
+	/// he: 'הבא'
+	String get next => 'הבא';
+
+	/// he: 'הבנתי'
+	String get gotIt => 'הבנתי';
+
+	/// he: 'לנסות'
+	String get tryIt => 'לנסות';
+
+	/// he: 'סגירה'
+	String get close => 'סגירה';
+
+	/// he: 'פרימיום'
+	String get premiumTag => 'פרימיום';
+
+	/// he: 'מה חדש'
+	String get supportTitle => 'מה חדש';
+
+	/// he: 'החידושים של הגרסה האחרונה, עמוד אחרי עמוד'
+	String get supportHint => 'החידושים של הגרסה האחרונה, עמוד אחרי עמוד';
+
+	/// he: 'עדיין אין חידושים לגרסה הזו'
+	String get nothingYet => 'עדיין אין חידושים לגרסה הזו';
+}
+
 // Path: feedback
 class Translations$feedback$he {
 	Translations$feedback$he.internal(this._root);
@@ -3248,32 +3291,64 @@ class Translations$feedback$he {
 
 	// Translations
 
-	/// he: 'דיווח והצעות'
-	String get title => 'דיווח והצעות';
+	/// he: 'פנייה לתמיכה'
+	String get title => 'פנייה לתמיכה';
 
-	/// he: 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.'
-	String get subtitle => 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.';
+	/// he: 'תקלה, רעיון או שאלה? בחרו סיבה, כתבו לנו, ונענה כאן בצ'אט.'
+	String get subtitle => 'תקלה, רעיון או שאלה? בחרו סיבה, כתבו לנו, ונענה כאן בצ\'אט.';
 
-	/// he: 'תקלה (באג)'
-	String get bug => 'תקלה (באג)';
+	/// he: 'סיבת הפנייה'
+	String get reasonLabel => 'סיבת הפנייה';
 
-	/// he: 'הצעה לשיפור'
-	String get suggestion => 'הצעה לשיפור';
+	/// he: 'בחרו סיבה…'
+	String get reasonHint => 'בחרו סיבה…';
 
-	/// he: 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...'
-	String get bugHint => 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...';
+	late final Translations$feedback$reasons$he reasons = Translations$feedback$reasons$he.internal(_root);
 
-	/// he: 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...'
-	String get suggestionHint => 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...';
+	/// he: 'תוכן ההודעה'
+	String get messageLabel => 'תוכן ההודעה';
+
+	/// he: 'ספרו לנו מה קרה או מה הייתם רוצים…'
+	String get messageHint => 'ספרו לנו מה קרה או מה הייתם רוצים…';
 
 	/// he: 'שליחה'
 	String get send => 'שליחה';
 
-	/// he: 'תודה! הפנייה נשלחה.'
-	String get sent => 'תודה! הפנייה נשלחה.';
+	/// he: 'תודה! הפנייה נשלחה, נענה בהקדם.'
+	String get sent => 'תודה! הפנייה נשלחה, נענה בהקדם.';
 
 	/// he: 'השליחה נכשלה, נסו שוב מאוחר יותר'
 	String get failed => 'השליחה נכשלה, נסו שוב מאוחר יותר';
+
+	/// he: 'הפניות שלי'
+	String get myConversations => 'הפניות שלי';
+
+	/// he: 'עדיין אין פניות'
+	String get noConversations => 'עדיין אין פניות';
+
+	/// he: 'שיחה עם התמיכה'
+	String get chatTitle => 'שיחה עם התמיכה';
+
+	/// he: 'צוות EasyPlate'
+	String get team => 'צוות EasyPlate';
+
+	/// he: 'אתם'
+	String get you => 'אתם';
+
+	/// he: 'כתבו תשובה…'
+	String get replyHint => 'כתבו תשובה…';
+
+	/// he: 'קיבלנו את הפנייה, נחזור אליכם כאן.'
+	String get waitingForReply => 'קיבלנו את הפנייה, נחזור אליכם כאן.';
+
+	/// he: 'דרך שפי'
+	String get viaShefi => 'דרך שפי';
+
+	/// he: 'פרטי הפנייה'
+	String get details => 'פרטי הפנייה';
+
+	/// he: 'הפנייה הזו כבר לא קיימת'
+	String get conversationGone => 'הפנייה הזו כבר לא קיימת';
 
 	/// he: 'ניהול פניות'
 	String get admin => 'ניהול פניות';
@@ -3295,6 +3370,27 @@ class Translations$feedback$he {
 
 	/// he: 'המסך הזה זמין למנהל בלבד'
 	String get notAllowed => 'המסך הזה זמין למנהל בלבד';
+
+	/// he: 'המשתמש · $date'
+	String userWrote({required Object date}) => 'המשתמש · ${date}';
+
+	/// he: 'תקלה (באג)'
+	String get bug => 'תקלה (באג)';
+
+	/// he: 'הצעה לשיפור'
+	String get suggestion => 'הצעה לשיפור';
+
+	/// he: 'הפנייה נסגרה על ידי הצוות. אפשר לקרוא אותה, אבל לא לכתוב בה. לפנייה חדשה, פתחו שיחה חדשה.'
+	String get closedNotice => 'הפנייה נסגרה על ידי הצוות. אפשר לקרוא אותה, אבל לא לכתוב בה. לפנייה חדשה, פתחו שיחה חדשה.';
+
+	/// he: 'פניות סגורות ($n)'
+	String closedConversations({required Object n}) => 'פניות סגורות (${n})';
+
+	/// he: 'אין פניות פתוחות'
+	String get noOpenConversations => 'אין פניות פתוחות';
+
+	/// he: 'סגורה'
+	String get closedTag => 'סגורה';
 }
 
 // Path: adminBilling
@@ -3853,6 +3949,42 @@ class Translations$adminDashboard$he {
 
 	/// he: 'המכשיר נותק; המשתמש יתבקש להתחבר מחדש'
 	String get releaseSessionDone => 'המכשיר נותק; המשתמש יתבקש להתחבר מחדש';
+
+	/// he: 'סגירת פנייה'
+	String get closeTicket => 'סגירת פנייה';
+
+	/// he: 'לסגור את הפנייה של $name? המשתמש יוכל לקרוא אותה ב"פניות סגורות" אבל לא לכתוב בה.'
+	String closeTicketConfirm({required Object name}) => 'לסגור את הפנייה של ${name}? המשתמש יוכל לקרוא אותה ב"פניות סגורות" אבל לא לכתוב בה.';
+
+	/// he: 'פתיחה מחדש'
+	String get reopenTicket => 'פתיחה מחדש';
+
+	/// he: 'הפנייה נסגרה'
+	String get ticketClosed => 'הפנייה נסגרה';
+
+	/// he: 'הפנייה נפתחה מחדש'
+	String get ticketReopened => 'הפנייה נפתחה מחדש';
+
+	/// he: 'סגורות'
+	String get closedTickets => 'סגורות';
+
+	/// he: 'סגורה'
+	String get closedTag => 'סגורה';
+
+	/// he: 'נסגרה · $date'
+	String closedAt({required Object date}) => 'נסגרה · ${date}';
+
+	/// he: 'הפוך לסופר-משתמש'
+	String get makeSuperuser => 'הפוך לסופר-משתמש';
+
+	/// he: 'בטל סופר-משתמש'
+	String get removeSuperuser => 'בטל סופר-משתמש';
+
+	/// he: 'כל הפיצ'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים'
+	String get superuserHint => 'כל הפיצ\'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים';
+
+	/// he: 'ההרשאה עודכנה'
+	String get permissionDone => 'ההרשאה עודכנה';
 }
 
 // Path: assistant
@@ -4547,6 +4679,12 @@ class Translations$featureName$he {
 
 	/// he: 'אייקון שפי'
 	String get shefiLauncher => 'אייקון שפי';
+
+	/// he: 'מה חדש'
+	String get whatsNew => 'מה חדש';
+
+	/// he: 'צ'אט תמיכה'
+	String get supportChat => 'צ\'אט תמיכה';
 }
 
 // Path: adminConfig
@@ -4844,8 +4982,8 @@ class Translations$adminUser$he {
 	/// he: 'משתמש'
 	String get permissionUser => 'משתמש';
 
-	/// he: 'משתנה רק בקונסול של Firebase (users › permission)'
-	String get permissionHint => 'משתנה רק בקונסול של Firebase (users › permission)';
+	/// he: 'מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות'
+	String get permissionHint => 'מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות';
 
 	/// he: 'הצטרף'
 	String get joined => 'הצטרף';
@@ -4961,6 +5099,9 @@ class Translations$adminUser$he {
 	String get tabShares => 'שיתופים';
 
 	late final Translations$adminUser$shares$he shares = Translations$adminUser$shares$he.internal(_root);
+
+	/// he: 'סופר-משתמש'
+	String get permissionSuperuser => 'סופר-משתמש';
 }
 
 // Path: walkthrough.topics
@@ -5002,6 +5143,36 @@ class Translations$walkthrough$demo$he {
 
 	/// he: 'שקשוקה ירושלמית מצרכים: 400 גרם עגבניות מרוסקות 4 ביצים בצל אחד 2 כפות שמן זית כפית פפריקה מתוקה קורט מלח הכנה: 1. מחממים שמן זית במחבת ומטגנים את הבצל עד להזהבה. 2. מוסיפים את העגבניות והפפריקה ומבשלים 10 דקות על אש נמוכה. 3. שוברים את הביצים לתוך הרוטב, מכסים ומבשלים עד שהחלבון מתקשה.'
 	String get recipeText => 'שקשוקה ירושלמית\n\nמצרכים:\n400 גרם עגבניות מרוסקות\n4 ביצים\nבצל אחד\n2 כפות שמן זית\nכפית פפריקה מתוקה\nקורט מלח\n\nהכנה:\n1. מחממים שמן זית במחבת ומטגנים את הבצל עד להזהבה.\n2. מוסיפים את העגבניות והפפריקה ומבשלים 10 דקות על אש נמוכה.\n3. שוברים את הביצים לתוך הרוטב, מכסים ומבשלים עד שהחלבון מתקשה.';
+}
+
+// Path: feedback.reasons
+class Translations$feedback$reasons$he {
+	Translations$feedback$reasons$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'תקלה (באג)'
+	String get bug => 'תקלה (באג)';
+
+	/// he: 'הצעה לשיפור'
+	String get suggestion => 'הצעה לשיפור';
+
+	/// he: 'חשבון והתחברות'
+	String get account => 'חשבון והתחברות';
+
+	/// he: 'פרימיום ותשלום'
+	String get billing => 'פרימיום ותשלום';
+
+	/// he: 'שיתוף ושותפים'
+	String get sharing => 'שיתוף ושותפים';
+
+	/// he: 'הוספת מתכונים ו-AI'
+	String get recipes => 'הוספת מתכונים ו-AI';
+
+	/// he: 'אחר'
+	String get other => 'אחר';
 }
 
 // Path: assistant.suggest
@@ -5290,6 +5461,9 @@ class Translations$adminConfig$labels$he {
 
 	/// he: 'מייל תמיכה'
 	String get support_email => 'מייל תמיכה';
+
+	/// he: 'להציג למנהל את כל הפיצ'רים'
+	String get admin_all_features => 'להציג למנהל את כל הפיצ\'רים';
 }
 
 // Path: adminUser.groups
@@ -6812,15 +6986,43 @@ extension on Translations {
 			_ => null,
 		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'דוגמה בלבד, לא נשמר',
-			'feedback.title' => 'דיווח והצעות',
-			'feedback.subtitle' => 'מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.',
-			'feedback.bug' => 'תקלה (באג)',
-			'feedback.suggestion' => 'הצעה לשיפור',
-			'feedback.bugHint' => 'תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...',
-			'feedback.suggestionHint' => 'ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...',
+			'whatsNew.title' => 'מה חדש ב-EasyPlate',
+			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} מתוך ${total}',
+			'whatsNew.releasedIn' => ({required Object version}) => 'גרסה ${version}',
+			'whatsNew.next' => 'הבא',
+			'whatsNew.gotIt' => 'הבנתי',
+			'whatsNew.tryIt' => 'לנסות',
+			'whatsNew.close' => 'סגירה',
+			'whatsNew.premiumTag' => 'פרימיום',
+			'whatsNew.supportTitle' => 'מה חדש',
+			'whatsNew.supportHint' => 'החידושים של הגרסה האחרונה, עמוד אחרי עמוד',
+			'whatsNew.nothingYet' => 'עדיין אין חידושים לגרסה הזו',
+			'feedback.title' => 'פנייה לתמיכה',
+			'feedback.subtitle' => 'תקלה, רעיון או שאלה? בחרו סיבה, כתבו לנו, ונענה כאן בצ\'אט.',
+			'feedback.reasonLabel' => 'סיבת הפנייה',
+			'feedback.reasonHint' => 'בחרו סיבה…',
+			'feedback.reasons.bug' => 'תקלה (באג)',
+			'feedback.reasons.suggestion' => 'הצעה לשיפור',
+			'feedback.reasons.account' => 'חשבון והתחברות',
+			'feedback.reasons.billing' => 'פרימיום ותשלום',
+			'feedback.reasons.sharing' => 'שיתוף ושותפים',
+			'feedback.reasons.recipes' => 'הוספת מתכונים ו-AI',
+			'feedback.reasons.other' => 'אחר',
+			'feedback.messageLabel' => 'תוכן ההודעה',
+			'feedback.messageHint' => 'ספרו לנו מה קרה או מה הייתם רוצים…',
 			'feedback.send' => 'שליחה',
-			'feedback.sent' => 'תודה! הפנייה נשלחה.',
+			'feedback.sent' => 'תודה! הפנייה נשלחה, נענה בהקדם.',
 			'feedback.failed' => 'השליחה נכשלה, נסו שוב מאוחר יותר',
+			'feedback.myConversations' => 'הפניות שלי',
+			'feedback.noConversations' => 'עדיין אין פניות',
+			'feedback.chatTitle' => 'שיחה עם התמיכה',
+			'feedback.team' => 'צוות EasyPlate',
+			'feedback.you' => 'אתם',
+			'feedback.replyHint' => 'כתבו תשובה…',
+			'feedback.waitingForReply' => 'קיבלנו את הפנייה, נחזור אליכם כאן.',
+			'feedback.viaShefi' => 'דרך שפי',
+			'feedback.details' => 'פרטי הפנייה',
+			'feedback.conversationGone' => 'הפנייה הזו כבר לא קיימת',
 			'feedback.admin' => 'ניהול פניות',
 			'feedback.all' => 'הכל',
 			'feedback.bugs' => 'תקלות',
@@ -6828,6 +7030,13 @@ extension on Translations {
 			'feedback.none' => 'אין פניות עדיין',
 			'feedback.version' => ({required Object version}) => 'גרסה ${version}',
 			'feedback.notAllowed' => 'המסך הזה זמין למנהל בלבד',
+			'feedback.userWrote' => ({required Object date}) => 'המשתמש · ${date}',
+			'feedback.bug' => 'תקלה (באג)',
+			'feedback.suggestion' => 'הצעה לשיפור',
+			'feedback.closedNotice' => 'הפנייה נסגרה על ידי הצוות. אפשר לקרוא אותה, אבל לא לכתוב בה. לפנייה חדשה, פתחו שיחה חדשה.',
+			'feedback.closedConversations' => ({required Object n}) => 'פניות סגורות (${n})',
+			'feedback.noOpenConversations' => 'אין פניות פתוחות',
+			'feedback.closedTag' => 'סגורה',
 			'adminBilling.title' => 'משתמשים',
 			'adminBilling.all' => 'הכל',
 			'adminBilling.paying' => 'משלמים',
@@ -7008,6 +7217,18 @@ extension on Translations {
 			'adminDashboard.tabConfig' => 'תצורה',
 			'adminDashboard.releaseSession' => 'ניתוק מהמכשיר המחובר',
 			'adminDashboard.releaseSessionDone' => 'המכשיר נותק; המשתמש יתבקש להתחבר מחדש',
+			'adminDashboard.closeTicket' => 'סגירת פנייה',
+			'adminDashboard.closeTicketConfirm' => ({required Object name}) => 'לסגור את הפנייה של ${name}? המשתמש יוכל לקרוא אותה ב"פניות סגורות" אבל לא לכתוב בה.',
+			'adminDashboard.reopenTicket' => 'פתיחה מחדש',
+			'adminDashboard.ticketClosed' => 'הפנייה נסגרה',
+			'adminDashboard.ticketReopened' => 'הפנייה נפתחה מחדש',
+			'adminDashboard.closedTickets' => 'סגורות',
+			'adminDashboard.closedTag' => 'סגורה',
+			'adminDashboard.closedAt' => ({required Object date}) => 'נסגרה · ${date}',
+			'adminDashboard.makeSuperuser' => 'הפוך לסופר-משתמש',
+			'adminDashboard.removeSuperuser' => 'בטל סופר-משתמש',
+			'adminDashboard.superuserHint' => 'כל הפיצ\'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים',
+			'adminDashboard.permissionDone' => 'ההרשאה עודכנה',
 			'assistant.title' => 'שפי',
 			'assistant.subtitle' => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול',
 			'assistant.placeholder' => 'שאלו או אמרו לי מה לעשות…',
@@ -7276,6 +7497,8 @@ extension on Translations {
 			'feature.premiumOnlyTitle' => 'לפרימיום בלבד',
 			'feature.premiumOnlyFor' => ({required Object name}) => 'האפשרות "${name}" פתוחה רק למשתמשי פרימיום',
 			'feature.goPremium' => 'עבור לפרימיום',
+			_ => null,
+		} ?? switch (path) {
 			'featureName.books' => 'ספרי מתכונים',
 			'featureName.mealPlans' => 'תפריטים',
 			'featureName.groceryLists' => 'רשימות קניות',
@@ -7322,9 +7545,9 @@ extension on Translations {
 			'featureName.wakeWord' => 'היי שפי',
 			'featureName.voiceAssistants' => 'שפי דרך Siri ו-Gemini',
 			'featureName.shefiLauncher' => 'אייקון שפי',
+			'featureName.whatsNew' => 'מה חדש',
+			'featureName.supportChat' => 'צ\'אט תמיכה',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
 			'adminConfig.minVersionTitle' => 'לחייב עדכון?',
@@ -7377,6 +7600,7 @@ extension on Translations {
 			'adminConfig.labels.session_exempt_phones' => 'מספרים פטורים ממכשיר אחד',
 			'adminConfig.labels.support_phone' => 'מספר WhatsApp לתמיכה',
 			'adminConfig.labels.support_email' => 'מייל תמיכה',
+			'adminConfig.labels.admin_all_features' => 'להציג למנהל את כל הפיצ\'רים',
 			'wakeWord.title' => 'היי שפי',
 			'wakeWord.hint' => 'פותחים שיחה עם שפי בקול, בלי לגעת בטלפון',
 			'wakeWord.intro' => 'אומרים "היי שפי" ושפי נפתח ומקשיב. אפשר גם להמשיך באותו משפט, ושפי יענה ישר.',
@@ -7452,7 +7676,7 @@ extension on Translations {
 			'adminUser.permission' => 'הרשאה',
 			'adminUser.permissionAdmin' => 'מנהל',
 			'adminUser.permissionUser' => 'משתמש',
-			'adminUser.permissionHint' => 'משתנה רק בקונסול של Firebase (users › permission)',
+			'adminUser.permissionHint' => 'מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות',
 			'adminUser.joined' => 'הצטרף',
 			'adminUser.lastSeen' => 'נראה לאחרונה',
 			'adminUser.device' => 'מכשיר',
@@ -7544,6 +7768,7 @@ extension on Translations {
 			'adminUser.shares.kindGroceryList' => 'רשימת קניות',
 			'adminUser.shares.kindHousehold' => 'משק בית',
 			'adminUser.shares.withNames' => ({required Object names}) => 'עם: ${names}',
+			'adminUser.permissionSuperuser' => 'סופר-משתמש',
 			_ => null,
 		};
 	}

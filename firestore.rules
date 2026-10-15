@@ -321,18 +321,40 @@ service cloud.firestore {
     // Bug reports and suggestions from the support screen. Anyone signed in
     // may leave one, signed as themselves; only the administrator reads them,
     // and nothing is ever edited or removed from here.
+    // A support conversation: opened by the account with a reason and a
+    // message (plus the signature details the mail/WhatsApp routes carry),
+    // continued by the same account with follow-ups and by the
+    // administrator with replies. The writer reads their own; the
+    // administrator reads all.
     match /feedback/{feedbackId} {
+      function isWriter() {
+        return signedIn() && resource.data.authorUid == request.auth.uid;
+      }
       allow create: if authoredByCaller()
-                    && request.resource.data.type in ['bug', 'suggestion']
+                    && request.resource.data.type in ['bug', 'suggestion', 'account', 'billing', 'sharing', 'recipes', 'other']
                     && request.resource.data.message is string
                     && request.resource.data.message.size() > 0
                     && request.resource.data.message.size() <= 4000;
-      allow read: if isAdmin();
+      allow read: if isAdmin() || isWriter();
       // The administrator marks a message read (and unread again), answers
       // it and removes it; the message itself and who wrote it never change.
       allow update: if isAdmin()
                     && request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['read', 'readAt', 'replies', 'repliedAt']);
+                         .hasOnly(['read', 'readAt', 'replies', 'repliedAt', 'updatedAt', 'userUnread', 'status', 'closedAt']);
+      // The writer adds follow-ups (never removes one), which puts the
+      // conversation back among the unread, and marks an answer as seen.
+      // A closed conversation takes only the seen mark.
+      allow update: if isWriter()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['followUps', 'updatedAt', 'read', 'userUnread'])
+                    && (resource.data.get('status', 'open') == 'open'
+                        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['userUnread']))
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['read'])
+                        || request.resource.data.read == false)
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['userUnread'])
+                        || request.resource.data.userUnread == false)
+                    && request.resource.data.get('followUps', []).size() >= resource.data.get('followUps', []).size()
+                    && request.resource.data.get('followUps', []).size() <= 200;
       allow delete: if isAdmin();
     }
 
@@ -419,6 +441,15 @@ service cloud.firestore {
         allow read: if isHouseholdMember() || isAdmin();
         allow write: if isHouseholdMember();
       }
+    }
+
+    // The "what's new" releases: one document per build, with the pages a
+    // returning account is shown after an update. Written by the adminPanel
+    // function alone (the web console's "What's new" page); every signed-in
+    // account reads them.
+    match /whats_new_releases/{versionCode} {
+      allow read: if signedIn();
+      allow write: if false;
     }
 
     // The invented community members the web console posts as (seed_… ids,

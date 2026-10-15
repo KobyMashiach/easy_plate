@@ -1118,23 +1118,62 @@
     "demoBooksHint": "This is what a recipe book looks like. Tap one to open it, turn its pages and jump from the contents.",
     "demoOnly": "Sample only, not saved"
   },
+  "whatsNew": {
+    "title": "What's New in EasyPlate",
+    "pageOf": "$current of $total",
+    "releasedIn": "Version $version",
+    "next": "Next",
+    "gotIt": "Got it",
+    "tryIt": "Try it",
+    "close": "Close",
+    "premiumTag": "Premium",
+    "supportTitle": "What's new",
+    "supportHint": "The highlights of the latest version, page by page",
+    "nothingYet": "No release notes yet"
+  },
   "feedback": {
-    "title": "Report and suggest",
-    "subtitle": "Found a bug? Have an idea? Write to us here; every message is read.",
-    "bug": "Bug",
-    "suggestion": "Suggestion",
-    "bugHint": "Describe the bug: what you did, what happened, and what you expected...",
-    "suggestionHint": "Tell us what you would like the app to do, and how it would help you...",
+    "title": "Contact support",
+    "subtitle": "A bug, an idea or a question? Pick a reason, write to us, and we answer right here in the chat.",
+    "reasonLabel": "Reason",
+    "reasonHint": "Pick a reason…",
+    "reasons": {
+      "bug": "Bug",
+      "suggestion": "Suggestion",
+      "account": "Account and sign-in",
+      "billing": "Premium and billing",
+      "sharing": "Sharing and partners",
+      "recipes": "Adding recipes and AI",
+      "other": "Other"
+    },
+    "messageLabel": "Message",
+    "messageHint": "Tell us what happened or what you would like…",
     "send": "Send",
-    "sent": "Thanks! Your message was sent.",
+    "sent": "Thanks! Your message was sent; we will answer soon.",
     "failed": "Sending failed, please try again later",
+    "myConversations": "My conversations",
+    "noConversations": "No conversations yet",
+    "chatTitle": "Support chat",
+    "team": "EasyPlate team",
+    "you": "You",
+    "replyHint": "Write a reply…",
+    "waitingForReply": "We got your message and will get back to you here.",
+    "viaShefi": "via Shefi",
+    "details": "Details",
+    "conversationGone": "This conversation no longer exists",
     "admin": "Feedback inbox",
     "all": "All",
     "bugs": "Bugs",
     "suggestions": "Suggestions",
     "none": "No messages yet",
     "version": "Version $version",
-    "notAllowed": "This screen is for the administrator only"
+    "notAllowed": "This screen is for the administrator only",
+    "userWrote": "User · $date",
+    "bug": "Bug",
+    "suggestion": "Suggestion",
+    "closedNotice": "The team closed this conversation. You can read it but not write in it; open a new one for a new matter.",
+    "closedConversations": "Closed conversations ($n)",
+    "noOpenConversations": "No open conversations",
+    "closedTag": "Closed"
   },
   "adminBilling": {
     "title": "Users",
@@ -1318,7 +1357,19 @@
     "grantStarts": "Starts $date",
     "tabConfig": "Config",
     "releaseSession": "Disconnect the signed-in device",
-    "releaseSessionDone": "Device disconnected; the user will be asked to sign in again"
+    "releaseSessionDone": "Device disconnected; the user will be asked to sign in again",
+    "closeTicket": "Close conversation",
+    "closeTicketConfirm": "Close $name's conversation? They can still read it under \"closed\" but not write in it.",
+    "reopenTicket": "Reopen",
+    "ticketClosed": "Conversation closed",
+    "ticketReopened": "Conversation reopened",
+    "closedTickets": "Closed",
+    "closedTag": "Closed",
+    "closedAt": "Closed · $date",
+    "makeSuperuser": "Make superuser",
+    "removeSuperuser": "Remove superuser",
+    "superuserHint": "Every feature on, Premium included, no device limit",
+    "permissionDone": "Permission updated"
   },
   "assistant": {
     "title": "Shefi",
@@ -1672,7 +1723,9 @@
     "homeWidgets": "Home screen widgets",
     "wakeWord": "Hey Shefi",
     "voiceAssistants": "Shefi in Siri and Gemini",
-    "shefiLauncher": "Shefi icon"
+    "shefiLauncher": "Shefi icon",
+    "whatsNew": "What's new",
+    "supportChat": "Support chat"
   },
   "adminConfig": {
     "intro": "Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).",
@@ -1732,7 +1785,8 @@
       "presence_heartbeat_seconds": "Presence heartbeat (seconds)",
       "session_exempt_phones": "Numbers exempt from one device",
       "support_phone": "Support WhatsApp number",
-      "support_email": "Support email"
+      "support_email": "Support email",
+      "admin_all_features": "Show the admin every feature"
     }
   },
   "wakeWord": {
@@ -1821,7 +1875,7 @@
     "permission": "Permission",
     "permissionAdmin": "Admin",
     "permissionUser": "User",
-    "permissionHint": "Changed only in the Firebase console (users › permission)",
+    "permissionHint": "Admin is set in the Firebase console only; superuser from the accounts tab's actions",
     "joined": "Joined",
     "lastSeen": "Last seen",
     "device": "Device",
@@ -1922,6 +1976,7 @@
       "kindGroceryList": "Grocery list",
       "kindHousehold": "Household",
       "withNames": "With: $names"
-    }
+    },
+    "permissionSuperuser": "Superuser"
   }
 }

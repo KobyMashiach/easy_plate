@@ -1,3 +1,4 @@
+import '../../../user_profile/domain/entities/user_permission.dart';
 import '../entities/billing_entities.dart';
 
 abstract class AdminBillingRepository {
@@ -24,6 +25,10 @@ abstract class AdminBillingRepository {
 
   /// Frees the account's device session and signs that device out.
   Future<void> releaseSession(String uid);
+
+  /// Makes the account a superuser (every flag on, no device limit) or a
+  /// plain user again. An administrator's permission is not changed here.
+  Future<void> setPermission(String uid, UserPermission permission);
   Future<void> enableAccount(String uid);
 
   /// Removes the Auth user and every trace of the account. Irreversible.

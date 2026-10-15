@@ -19,8 +19,28 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
       remoteDataSource.watchAll(limit: limit);
 
   @override
+  Stream<List<FeedbackEntity>> watchMine(String uid) =>
+      remoteDataSource.watchMine(uid);
+
+  @override
+  Stream<FeedbackEntity?> watchOne(String feedbackId) =>
+      remoteDataSource.watchOne(feedbackId);
+
+  @override
+  Future<void> addFollowUp(String feedbackId, String text) =>
+      remoteDataSource.addFollowUp(feedbackId, text);
+
+  @override
+  Future<void> markSeenByUser(String feedbackId) =>
+      remoteDataSource.markSeenByUser(feedbackId);
+
+  @override
   Future<void> setRead(String feedbackId, bool read) =>
       remoteDataSource.setRead(feedbackId, read);
+
+  @override
+  Future<void> setClosed(String feedbackId, bool closed) =>
+      remoteDataSource.setClosed(feedbackId, closed);
 
   @override
   Future<void> markAllRead(Iterable<String> feedbackIds) =>

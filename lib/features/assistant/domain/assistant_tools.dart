@@ -43,6 +43,8 @@ abstract class AssistantTools {
   static const premiumStatus = 'premium_status';
   // Navigation
   static const openScreen = 'open_screen';
+  // Support
+  static const contactSupport = 'contact_support';
 
   static const _weekday = {
     'type': 'string',
@@ -422,6 +424,29 @@ abstract class AssistantTools {
         'recipe_id': {'type': 'string'},
       },
       required: ['recipe_id'],
+    ),
+    _tool(
+      contactSupport,
+      "Send a message to the EasyPlate support team on the user's behalf: a bug report, a suggestion, or a question about their account, Premium, sharing or recipe import. Opens a support conversation the team answers in the app. Ask for the reason and the message if they are not clear; never send without the user's words.",
+      {
+        'reason': {
+          'type': 'string',
+          'enum': [
+            'bug',
+            'suggestion',
+            'account',
+            'billing',
+            'sharing',
+            'recipes',
+            'other',
+          ],
+        },
+        'message': {
+          'type': 'string',
+          'description': "The user's message, in their own words",
+        },
+      },
+      required: ['reason', 'message'],
     ),
     _tool(
       openScreen,

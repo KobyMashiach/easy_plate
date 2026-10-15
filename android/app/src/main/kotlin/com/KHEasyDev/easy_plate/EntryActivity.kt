@@ -28,11 +28,15 @@ class EntryActivity : Activity() {
         val prefs = getSharedPreferences(WakeWordController.PREFS, MODE_PRIVATE)
         val viaGemini = openedByAssistant(intent) &&
             prefs.getBoolean(WakeWordController.ASSISTANT_OPENS_SHEFI, false)
+        // The home-screen Shefi widget asks for the panel outright (Koby:
+        // the widget must not open the app's chat).
+        val viaWidget = intent?.action == ACTION_SHEFI_PANEL
 
-        if (viaGemini && prefs.getBoolean(WakeWordController.ASSISTANT_PANEL, true)) {
+        if (viaWidget || (viaGemini && prefs.getBoolean(WakeWordController.ASSISTANT_PANEL, true))) {
             WakeWordController.init(this)
             // Our own "Hey Shefi" listener, if on, gives up the microphone.
             WakeWordController.hold(PANEL_HOLD)
+            val prompt = intent?.getStringExtra(EXTRA_PROMPT).orEmpty()
             panel = ShefiOverlay(
                 this,
                 onClosed = {
@@ -40,7 +44,7 @@ class EntryActivity : Activity() {
                     WakeWordController.release(PANEL_HOLD)
                 },
                 host = this,
-            ).also { it.start("") }
+            ).also { it.start(prompt) }
             return
         }
 
@@ -72,6 +76,11 @@ class EntryActivity : Activity() {
     }
 
     companion object {
+        /** From the Shefi home-screen widget: the floating panel, here. */
+        const val ACTION_SHEFI_PANEL = "com.KHEasyDev.easy_plate.SHEFI_PANEL"
+        const val EXTRA_VOICE = "voice"
+        const val EXTRA_PROMPT = "prompt"
+
         private const val PANEL_HOLD = "gemini_panel"
 
         /** The packages Gemini (and the Google app before it) launch apps from. */

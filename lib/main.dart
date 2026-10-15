@@ -241,6 +241,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         activeList: HiveActiveGroceryListStore.instance,
         ingestion: context.read(),
         preferences: context.read(),
+        feedback: context.read(),
       ),
     );
   }

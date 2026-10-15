@@ -29,7 +29,8 @@ const PREFS_BATCH = 50;
 
 // The administrator is whoever has `permission: "admin"` on their users
 // document (see permissions.js), never an address in the code.
-const { isAdmin } = require("./permissions");
+const permissions = require("./permissions");
+const { isAdmin } = permissions;
 // Every send is logged for the web console's notifications page.
 const notificationLog = require("./adminNotifications");
 
@@ -59,6 +60,12 @@ function parseRequest(body) {
       return { action, title, message };
     case "syncPricing":
       return { action };
+    case "setPermission": {
+      if (!uid) return { error: "uid is required" };
+      const permission = text(body && body.permission, 20);
+      if (!permissions.GRANTABLE.includes(permission)) return { error: "permission must be user or superuser" };
+      return { action, uid, permission };
+    }
     default:
       return { error: "unknown action" };
   }
@@ -286,6 +293,9 @@ exports.adminUsers = onRequest(
           // The repair rides along: both exist to make the cost figure
           // right, and both are idempotent.
           result = { ...(await repairUsage()), ...(await syncRate()), ...(await syncPricing()) };
+          break;
+        case "setPermission":
+          result = { permission: await permissions.setPermission(request.uid, request.permission) };
           break;
       }
       logger.info("admin action", { action: request.action, uid: request.uid || null, ...result });

@@ -243,7 +243,9 @@ async function claim(caller, request) {
   const db = admin.firestore();
   const ref = db.doc(`sessions/${uid}`);
   const { days, enforce, exempt } = await knobs();
-  if (isExempt(caller.phone_number, exempt) || (await permissions.isAdmin(caller))) {
+  // The administrator and a superuser have no device limit (ff_single_session
+  // is a flag, and flags do not apply to them).
+  if (isExempt(caller.phone_number, exempt) || permissions.hasAllFeatures(await permissions.permissionFor(caller.uid))) {
     // No record at all: nothing to refuse with, nothing for an older
     // build's watcher to read as "another device".
     await ref.delete().catch(() => {});

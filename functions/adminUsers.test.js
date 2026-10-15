@@ -61,3 +61,18 @@ test("a broadcast reaches exactly its audience", () => {
   assert.equal(inAudience({ audience: "users", uid: "a", uidSet: picked }), true);
   assert.equal(inAudience({ audience: "users", uid: "c", uidSet: picked }), false);
 });
+
+test("setPermission takes user or superuser, never admin", () => {
+  assert.deepEqual(parseRequest({ action: "setPermission", uid: "u1", permission: "superuser" }), { action: "setPermission", uid: "u1", permission: "superuser" });
+  assert.equal(parseRequest({ action: "setPermission", uid: "u1", permission: "admin" }).error, "permission must be user or superuser");
+  assert.equal(parseRequest({ action: "setPermission", permission: "user" }).error, "uid is required");
+});
+
+test("a superuser is read as such and is exempt like the administrator", () => {
+  const { permissionOf, hasAllFeatures } = require("./permissions");
+  assert.equal(permissionOf({ permission: "superuser" }), "superuser");
+  assert.equal(permissionOf({ permission: "boss" }), "user");
+  assert.ok(hasAllFeatures("superuser"));
+  assert.ok(hasAllFeatures("admin"));
+  assert.ok(!hasAllFeatures("user"));
+});

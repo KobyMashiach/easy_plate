@@ -88,6 +88,28 @@ void main() {
       );
     });
 
+    test('after the app was in the background no optional prompt is raised', () {
+      expect(
+        AppUpdateService.decide(
+          current: '1.2.0',
+          minimum: '0.0.0',
+          latest: '1.3.0',
+          optionalAllowed: false,
+        ),
+        UpdateRequirement.none,
+      );
+      // A forced update still is.
+      expect(
+        AppUpdateService.decide(
+          current: '1.2.0',
+          minimum: '1.2.5',
+          latest: '1.3.0',
+          optionalAllowed: false,
+        ),
+        UpdateRequirement.forced,
+      );
+    });
+
     test('skipping does not survive the floor being raised', () {
       expect(
         decide(

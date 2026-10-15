@@ -15,6 +15,7 @@ import '../../../community/presentation/widgets/author_row.dart';
 import '../../../feedback/domain/entities/feedback_entity.dart';
 import '../../../feedback/domain/repositories/feedback_repository.dart';
 import '../../../feedback/domain/usecases/manage_feedback_usecase.dart';
+import '../../../feedback/presentation/widgets/feedback_form.dart';
 import 'compose_sheet.dart';
 
 /// Every message users left on the support screen, live, newest first.
@@ -28,7 +29,7 @@ class TicketsTab extends StatefulWidget {
   State<TicketsTab> createState() => _TicketsTabState();
 }
 
-enum _Filter { unread, all, bugs, suggestions }
+enum _Filter { unread, all, bugs, suggestions, closed }
 
 class _TicketsTabState extends State<TicketsTab> {
   _Filter _filter = _Filter.unread;
@@ -46,13 +47,39 @@ class _TicketsTabState extends State<TicketsTab> {
     }
   }
 
-  List<FeedbackEntity> _visible(List<FeedbackEntity> all) => switch (_filter) {
-    _Filter.unread => all.where((f) => !f.read).toList(),
-    _Filter.all => all,
-    _Filter.bugs => all.where((f) => f.type == FeedbackType.bug).toList(),
-    _Filter.suggestions =>
-      all.where((f) => f.type == FeedbackType.suggestion).toList(),
-  };
+  /// Closed conversations live under their own filter; every other view
+  /// is the open inbox.
+  List<FeedbackEntity> _visible(List<FeedbackEntity> all) {
+    final open = all.where((f) => !f.closed);
+    return switch (_filter) {
+      _Filter.unread => open.where((f) => !f.read).toList(),
+      _Filter.all => open.toList(),
+      _Filter.bugs => open.where((f) => f.type == FeedbackType.bug).toList(),
+      _Filter.suggestions =>
+        open.where((f) => f.type == FeedbackType.suggestion).toList(),
+      _Filter.closed => all.where((f) => f.closed).toList(),
+    };
+  }
+
+  Future<void> _toggleClosed(FeedbackEntity f) async {
+    final s = t.adminDashboard;
+    if (!f.closed) {
+      final ok = await AppDialog.warning(
+        title: s.closeTicket,
+        message: s.closeTicketConfirm(
+          name: f.authorName.isEmpty ? f.authorUid : f.authorName,
+        ),
+        confirmLabel: s.closeTicket,
+        cancelLabel: t.common.cancel,
+      ).show(context);
+      if (ok != true || !mounted) return;
+    }
+    final manage = _manage;
+    await _run(
+      () => f.closed ? manage.reopen(f) : manage.close(f),
+      done: f.closed ? s.ticketReopened : s.ticketClosed,
+    );
+  }
 
   Future<void> _run(Future<void> Function() work, {String? done}) async {
     try {
@@ -152,6 +179,10 @@ class _TicketsTabState extends State<TicketsTab> {
                         label: t.feedback.suggestions,
                         icon: Icons.lightbulb_rounded,
                       ),
+                      ClaySegment(
+                        label: s.closedTickets,
+                        icon: Icons.archive_rounded,
+                      ),
                     ],
                     selectedIndex: _filter.index,
                     onSelected: (index) =>
@@ -196,6 +227,7 @@ class _TicketsTabState extends State<TicketsTab> {
                         onToggleRead: () => _toggleRead(items[index]),
                         onReply: () => _reply(items[index]),
                         onDelete: () => _delete(items[index]),
+                        onToggleClosed: () => _toggleClosed(items[index]),
                       ),
                     ),
             ),
@@ -211,12 +243,14 @@ class _TicketCard extends StatelessWidget {
   final VoidCallback onToggleRead;
   final VoidCallback onReply;
   final VoidCallback onDelete;
+  final VoidCallback onToggleClosed;
 
   const _TicketCard({
     required this.feedback,
     required this.onToggleRead,
     required this.onReply,
     required this.onDelete,
+    required this.onToggleClosed,
   });
 
   @override
@@ -227,6 +261,7 @@ class _TicketCard extends StatelessWidget {
     final muted = AppTextStyles.labelSm.copyWith(
       color: AppColors.onSurfaceVariant,
     );
+    final stamp = intl.DateFormat('dd/MM/yyyy HH:mm');
 
     return ClayCard(
       radius: AppRadius.md,
@@ -241,10 +276,8 @@ class _TicketCard extends StatelessWidget {
             trailing: Padding(
               padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
               child: ClayTag(
-                label: isBug ? t.feedback.bug : t.feedback.suggestion,
-                icon: isBug
-                    ? Icons.bug_report_rounded
-                    : Icons.lightbulb_rounded,
+                label: feedbackTypeLabel(f.type),
+                icon: feedbackTypeIcon(f.type),
                 background: isBug
                     ? AppColors.errorContainer
                     : AppColors.infoContainer,
@@ -254,12 +287,56 @@ class _TicketCard extends StatelessWidget {
               ),
             ),
           ),
+          if (f.source == FeedbackSource.shefi) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(t.feedback.viaShefi, style: muted),
+          ],
+          if (f.closed) ...[
+            const SizedBox(height: AppSpacing.xs),
+            ClayTag(
+              label: f.closedAt == null
+                  ? s.closedTag
+                  : s.closedAt(date: stamp.format(f.closedAt!)),
+              icon: Icons.archive_rounded,
+            ),
+          ],
           if (f.authorEmail case final email?) ...[
             const SizedBox(height: AppSpacing.xs),
             Text(email, textDirection: TextDirection.ltr, style: muted),
           ],
-          const SizedBox(height: AppSpacing.sm),
-          SelectableText(f.message, style: AppTextStyles.bodyMd),
+          // The whole conversation in order: the user's lines plain, the
+          // administrator's own answers boxed.
+          for (final line in f.thread) ...[
+            const SizedBox(height: AppSpacing.sm),
+            if (line.fromAdmin)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      s.yourReply(date: stamp.format(line.at)),
+                      style: muted,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(line.text, style: AppTextStyles.labelMd),
+                  ],
+                ),
+              )
+            else ...[
+              if (line.at != f.createdAt)
+                Text(
+                  t.feedback.userWrote(date: stamp.format(line.at)),
+                  style: muted,
+                ),
+              SelectableText(line.text, style: AppTextStyles.bodyMd),
+            ],
+          ],
           if (f.appVersion case final version?) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -267,30 +344,25 @@ class _TicketCard extends StatelessWidget {
               style: AppTextStyles.labelSm.copyWith(color: AppColors.tertiary),
             ),
           ],
-          for (final reply in f.replies) ...[
+          // The signature the mail and WhatsApp routes carry, kept on the
+          // message for the administrator; the writer's chat never shows it.
+          if (f.details.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.sm),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceContainer,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    s.yourReply(
-                      date: intl.DateFormat(
-                        'dd/MM/yyyy HH:mm',
-                      ).format(reply.at),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              dense: true,
+              title: Text(t.feedback.details, style: muted),
+              children: [
+                for (final e in f.details.entries)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: SelectableText(
+                      '${e.key}: ${e.value}',
+                      textDirection: TextDirection.ltr,
+                      style: AppTextStyles.labelSm,
                     ),
-                    style: muted,
                   ),
-                  const SizedBox(height: 2),
-                  Text(reply.text, style: AppTextStyles.labelMd),
-                ],
-              ),
+              ],
             ),
           ],
           const SizedBox(height: AppSpacing.sm),
@@ -301,10 +373,20 @@ class _TicketCard extends StatelessWidget {
                   label: s.reply,
                   icon: Icons.reply_rounded,
                   expanded: true,
-                  onPressed: onReply,
+                  // A closed conversation is read only for both sides;
+                  // reopen it to answer again.
+                  onPressed: f.closed ? null : onReply,
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
+              ClayIconButton(
+                icon: f.closed
+                    ? Icons.unarchive_rounded
+                    : Icons.archive_rounded,
+                tooltip: f.closed ? s.reopenTicket : s.closeTicket,
+                onTap: onToggleClosed,
+              ),
+              const SizedBox(width: AppSpacing.xs),
               ClayIconButton(
                 icon: f.read
                     ? Icons.mark_email_unread_rounded

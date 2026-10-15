@@ -71,6 +71,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ads$fr ads = _Translations$ads$fr._(_root);
 	@override late final _Translations$premium$fr premium = _Translations$premium$fr._(_root);
 	@override late final _Translations$walkthrough$fr walkthrough = _Translations$walkthrough$fr._(_root);
+	@override late final _Translations$whatsNew$fr whatsNew = _Translations$whatsNew$fr._(_root);
 	@override late final _Translations$feedback$fr feedback = _Translations$feedback$fr._(_root);
 	@override late final _Translations$adminBilling$fr adminBilling = _Translations$adminBilling$fr._(_root);
 	@override late final _Translations$adminDashboard$fr adminDashboard = _Translations$adminDashboard$fr._(_root);
@@ -82,6 +83,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$featureName$fr featureName = _Translations$featureName$fr._(_root);
 	@override late final _Translations$wakeWord$fr wakeWord = _Translations$wakeWord$fr._(_root);
 	@override late final _Translations$voiceAssistants$fr voiceAssistants = _Translations$voiceAssistants$fr._(_root);
+	@override late final _Translations$adminConfig$fr adminConfig = _Translations$adminConfig$fr._(_root);
 }
 
 // Path: common
@@ -1329,6 +1331,26 @@ class _Translations$walkthrough$fr extends Translations$walkthrough$he {
 	@override String get demoOnly => 'Exemple seulement, rien n\'est enregistré';
 }
 
+// Path: whatsNew
+class _Translations$whatsNew$fr extends Translations$whatsNew$he {
+	_Translations$whatsNew$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Nouveautés d\'EasyPlate';
+	@override String pageOf({required Object current, required Object total}) => '${current} sur ${total}';
+	@override String releasedIn({required Object version}) => 'Version ${version}';
+	@override String get next => 'Suivant';
+	@override String get gotIt => 'Compris';
+	@override String get tryIt => 'Essayer';
+	@override String get close => 'Fermer';
+	@override String get premiumTag => 'Premium';
+	@override String get supportTitle => 'Nouveautés';
+	@override String get supportHint => 'Les nouveautés de la dernière version, page par page';
+	@override String get nothingYet => 'Pas encore de nouveautés';
+}
+
 // Path: feedback
 class _Translations$feedback$fr extends Translations$feedback$he {
 	_Translations$feedback$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1336,22 +1358,40 @@ class _Translations$feedback$fr extends Translations$feedback$he {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Signaler et suggérer';
-	@override String get subtitle => 'Un bug ? Une idée ? Écrivez-nous ici ; chaque message est lu.';
-	@override String get bug => 'Bug';
-	@override String get suggestion => 'Suggestion';
-	@override String get bugHint => 'Décrivez le bug : ce que vous avez fait, ce qui s\'est passé et ce que vous attendiez...';
-	@override String get suggestionHint => 'Dites-nous ce que vous aimeriez que l\'application fasse, et en quoi cela vous aiderait...';
+	@override String get title => 'Contacter le support';
+	@override String get subtitle => 'Un bug, une idée, une question ? Choisissez un motif, écrivez-nous, et nous répondons ici même dans le chat.';
+	@override String get reasonLabel => 'Motif';
+	@override String get reasonHint => 'Choisir un motif…';
+	@override late final _Translations$feedback$reasons$fr reasons = _Translations$feedback$reasons$fr._(_root);
+	@override String get messageLabel => 'Message';
+	@override String get messageHint => 'Dites-nous ce qui s\'est passé ou ce que vous souhaitez…';
 	@override String get send => 'Envoyer';
-	@override String get sent => 'Merci ! Votre message a été envoyé.';
+	@override String get sent => 'Merci ! Votre message est envoyé, nous répondrons bientôt.';
 	@override String get failed => 'L\'envoi a échoué, réessayez plus tard';
-	@override String get admin => 'Messages reçus';
-	@override String get all => 'Tous';
+	@override String get myConversations => 'Mes conversations';
+	@override String get noConversations => 'Pas encore de conversation';
+	@override String get chatTitle => 'Chat avec le support';
+	@override String get team => 'Équipe EasyPlate';
+	@override String get you => 'Vous';
+	@override String get replyHint => 'Écrire une réponse…';
+	@override String get waitingForReply => 'Message bien reçu, nous vous répondrons ici.';
+	@override String get viaShefi => 'via Shefi';
+	@override String get details => 'Détails';
+	@override String get conversationGone => 'Cette conversation n\'existe plus';
+	@override String get admin => 'Boîte de retours';
+	@override String get all => 'Tout';
 	@override String get bugs => 'Bugs';
 	@override String get suggestions => 'Suggestions';
-	@override String get none => 'Aucun message pour l\'instant';
+	@override String get none => 'Aucun message';
 	@override String version({required Object version}) => 'Version ${version}';
 	@override String get notAllowed => 'Cet écran est réservé à l\'administrateur';
+	@override String userWrote({required Object date}) => 'Utilisateur · ${date}';
+	@override String get bug => 'Bug';
+	@override String get suggestion => 'Suggestion';
+	@override String get closedNotice => 'L\'équipe a clos cette conversation. Vous pouvez la lire mais plus y écrire ; ouvrez-en une nouvelle pour un autre sujet.';
+	@override String closedConversations({required Object n}) => 'Conversations closes (${n})';
+	@override String get noOpenConversations => 'Aucune conversation ouverte';
+	@override String get closedTag => 'Close';
 }
 
 // Path: adminBilling
@@ -1815,6 +1855,8 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get wakeWord => 'Hé Shefi';
 	@override String get voiceAssistants => 'Shefi dans Siri et Gemini';
 	@override String get shefiLauncher => 'Icône Shefi';
+	@override String get whatsNew => 'Nouveautés';
+	@override String get supportChat => 'Chat support';
 }
 
 // Path: wakeWord
@@ -1891,6 +1933,16 @@ class _Translations$voiceAssistants$fr extends Translations$voiceAssistants$he {
 	@override String get goodbye => 'Avec plaisir ! Je suis là quand vous voulez.';
 }
 
+// Path: adminConfig
+class _Translations$adminConfig$fr extends Translations$adminConfig$he {
+	_Translations$adminConfig$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$adminConfig$labels$fr labels = _Translations$adminConfig$labels$fr._(_root);
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$fr extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -1920,6 +1972,22 @@ class _Translations$walkthrough$demo$fr extends Translations$walkthrough$demo$he
 	@override String get mealName => 'Dîner';
 	@override String get groceryItem => 'Tomates';
 	@override String get recipeText => 'Chakchouka de Jérusalem\n\nIngrédients :\n400 g de tomates concassées\n4 œufs\n1 oignon\n2 c. à s. d\'huile d\'olive\n1 c. à c. de paprika doux\nUne pincée de sel\n\nPréparation :\n1. Chauffer l\'huile d\'olive dans une poêle et faire dorer l\'oignon.\n2. Ajouter les tomates et le paprika, laisser mijoter 10 minutes.\n3. Casser les œufs dans la sauce, couvrir et cuire jusqu\'à ce que le blanc prenne.';
+}
+
+// Path: feedback.reasons
+class _Translations$feedback$reasons$fr extends Translations$feedback$reasons$he {
+	_Translations$feedback$reasons$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get bug => 'Bug';
+	@override String get suggestion => 'Suggestion';
+	@override String get account => 'Compte et connexion';
+	@override String get billing => 'Premium et paiement';
+	@override String get sharing => 'Partage et partenaires';
+	@override String get recipes => 'Ajout de recettes et IA';
+	@override String get other => 'Autre';
 }
 
 // Path: assistant.suggest
@@ -2064,6 +2132,16 @@ class _Translations$assistant$scopedPrompts$fr extends Translations$assistant$sc
 		'Supprime ce que j’ai déjà acheté',
 		'Combien font 2 tasses de farine en grammes ?',
 	];
+}
+
+// Path: adminConfig.labels
+class _Translations$adminConfig$labels$fr extends Translations$adminConfig$labels$he {
+	_Translations$adminConfig$labels$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get admin_all_features => 'Montrer toutes les fonctionnalités à l\'admin';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -3242,22 +3320,57 @@ extension on TranslationsFr {
 			_ => null,
 		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Exemple seulement, rien n\'est enregistré',
-			'feedback.title' => 'Signaler et suggérer',
-			'feedback.subtitle' => 'Un bug ? Une idée ? Écrivez-nous ici ; chaque message est lu.',
-			'feedback.bug' => 'Bug',
-			'feedback.suggestion' => 'Suggestion',
-			'feedback.bugHint' => 'Décrivez le bug : ce que vous avez fait, ce qui s\'est passé et ce que vous attendiez...',
-			'feedback.suggestionHint' => 'Dites-nous ce que vous aimeriez que l\'application fasse, et en quoi cela vous aiderait...',
+			'whatsNew.title' => 'Nouveautés d\'EasyPlate',
+			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} sur ${total}',
+			'whatsNew.releasedIn' => ({required Object version}) => 'Version ${version}',
+			'whatsNew.next' => 'Suivant',
+			'whatsNew.gotIt' => 'Compris',
+			'whatsNew.tryIt' => 'Essayer',
+			'whatsNew.close' => 'Fermer',
+			'whatsNew.premiumTag' => 'Premium',
+			'whatsNew.supportTitle' => 'Nouveautés',
+			'whatsNew.supportHint' => 'Les nouveautés de la dernière version, page par page',
+			'whatsNew.nothingYet' => 'Pas encore de nouveautés',
+			'feedback.title' => 'Contacter le support',
+			'feedback.subtitle' => 'Un bug, une idée, une question ? Choisissez un motif, écrivez-nous, et nous répondons ici même dans le chat.',
+			'feedback.reasonLabel' => 'Motif',
+			'feedback.reasonHint' => 'Choisir un motif…',
+			'feedback.reasons.bug' => 'Bug',
+			'feedback.reasons.suggestion' => 'Suggestion',
+			'feedback.reasons.account' => 'Compte et connexion',
+			'feedback.reasons.billing' => 'Premium et paiement',
+			'feedback.reasons.sharing' => 'Partage et partenaires',
+			'feedback.reasons.recipes' => 'Ajout de recettes et IA',
+			'feedback.reasons.other' => 'Autre',
+			'feedback.messageLabel' => 'Message',
+			'feedback.messageHint' => 'Dites-nous ce qui s\'est passé ou ce que vous souhaitez…',
 			'feedback.send' => 'Envoyer',
-			'feedback.sent' => 'Merci ! Votre message a été envoyé.',
+			'feedback.sent' => 'Merci ! Votre message est envoyé, nous répondrons bientôt.',
 			'feedback.failed' => 'L\'envoi a échoué, réessayez plus tard',
-			'feedback.admin' => 'Messages reçus',
-			'feedback.all' => 'Tous',
+			'feedback.myConversations' => 'Mes conversations',
+			'feedback.noConversations' => 'Pas encore de conversation',
+			'feedback.chatTitle' => 'Chat avec le support',
+			'feedback.team' => 'Équipe EasyPlate',
+			'feedback.you' => 'Vous',
+			'feedback.replyHint' => 'Écrire une réponse…',
+			'feedback.waitingForReply' => 'Message bien reçu, nous vous répondrons ici.',
+			'feedback.viaShefi' => 'via Shefi',
+			'feedback.details' => 'Détails',
+			'feedback.conversationGone' => 'Cette conversation n\'existe plus',
+			'feedback.admin' => 'Boîte de retours',
+			'feedback.all' => 'Tout',
 			'feedback.bugs' => 'Bugs',
 			'feedback.suggestions' => 'Suggestions',
-			'feedback.none' => 'Aucun message pour l\'instant',
+			'feedback.none' => 'Aucun message',
 			'feedback.version' => ({required Object version}) => 'Version ${version}',
 			'feedback.notAllowed' => 'Cet écran est réservé à l\'administrateur',
+			'feedback.userWrote' => ({required Object date}) => 'Utilisateur · ${date}',
+			'feedback.bug' => 'Bug',
+			'feedback.suggestion' => 'Suggestion',
+			'feedback.closedNotice' => 'L\'équipe a clos cette conversation. Vous pouvez la lire mais plus y écrire ; ouvrez-en une nouvelle pour un autre sujet.',
+			'feedback.closedConversations' => ({required Object n}) => 'Conversations closes (${n})',
+			'feedback.noOpenConversations' => 'Aucune conversation ouverte',
+			'feedback.closedTag' => 'Close',
 			'adminBilling.title' => 'Utilisateurs',
 			'adminBilling.all' => 'Tous',
 			'adminBilling.paying' => 'Payants',
@@ -3718,6 +3831,8 @@ extension on TranslationsFr {
 			'featureName.cookMode' => 'Mode cuisine',
 			'featureName.cookTimers' => 'Minuteurs de cuisson',
 			'featureName.nutrition' => 'Nutrition',
+			_ => null,
+		} ?? switch (path) {
 			'featureName.recipeImageAi' => 'Image par IA',
 			'featureName.recipeImageSearch' => 'Recherche d’image Google',
 			'featureName.groceryFromRecipe' => 'Liste de courses depuis une recette',
@@ -3749,12 +3864,12 @@ extension on TranslationsFr {
 			'featureName.wakeWord' => 'Hé Shefi',
 			'featureName.voiceAssistants' => 'Shefi dans Siri et Gemini',
 			'featureName.shefiLauncher' => 'Icône Shefi',
+			'featureName.whatsNew' => 'Nouveautés',
+			'featureName.supportChat' => 'Chat support',
 			'wakeWord.title' => 'Hé Shefi',
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',
 			'wakeWord.examples.0' => 'Hé Shefi',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.examples.1' => 'Hé Shefi, qu\'est-ce que je cuisine aujourd\'hui ?',
 			'wakeWord.examples.2' => 'Hé Shefi, ajoute du lait à la liste de courses',
 			'wakeWord.examples.3' => 'Hé Shefi, lance un minuteur de dix minutes',
@@ -3801,6 +3916,7 @@ extension on TranslationsFr {
 			'voiceAssistants.unavailable' => 'Shefi n\'est pas disponible pour le moment.',
 			'voiceAssistants.failed' => 'Shefi n\'a pas pu répondre. Réessayez dans un instant.',
 			'voiceAssistants.goodbye' => 'Avec plaisir ! Je suis là quand vous voulez.',
+			'adminConfig.labels.admin_all_features' => 'Montrer toutes les fonctionnalités à l\'admin',
 			_ => null,
 		};
 	}

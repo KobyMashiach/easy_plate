@@ -38,6 +38,21 @@ void main() {
     }
   });
 
+  test('a superuser (or the admin with all features) sees everything on', () {
+    for (final value in FeatureFlagValue.values) {
+      expect(
+        FeaturesFlags.resolve(value, false, allFeatures: true),
+        FeatureAccess.enabled,
+        reason: value.name,
+      );
+    }
+    // Without the grant the rule is unchanged.
+    expect(
+      FeaturesFlags.resolve(FeatureFlagValue.hidden, true),
+      FeatureAccess.hidden,
+    );
+  });
+
   test('access answers what a screen asks', () {
     expect(FeatureAccess.hidden.isVisible, isFalse);
     expect(FeatureAccess.comingSoon.isVisible, isTrue);

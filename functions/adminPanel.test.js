@@ -5,7 +5,7 @@ process.env.GCLOUD_PROJECT = process.env.GCLOUD_PROJECT || "easy-plate";
 process.env.FIREBASE_CONFIG = process.env.FIREBASE_CONFIG || JSON.stringify({ projectId: "easy-plate" });
 
 const {
-  ACTIONS, parseRequest, isPersona, personaUid, backdated, normalizeRecipe, portraitUrl, summarize, decodeDataUrl, sniffImage, textPrompt, dishesPrompt, threadPrompt, peoplePrompt, ORIGINS,
+  ACTIONS, parseRequest, normalizeRelease, langTexts, translatePrompt, isPersona, personaUid, backdated, normalizeRecipe, portraitUrl, summarize, decodeDataUrl, sniffImage, textPrompt, dishesPrompt, threadPrompt, peoplePrompt, ORIGINS,
 } = require("./adminPanel").internals;
 
 test("an unknown action, and a missing required field, are refused before any work", () => {
@@ -32,7 +32,7 @@ test("fields are trimmed, capped and typed; strangers are dropped", () => {
 test("every action has a spec, and none reads the request body blindly", () => {
   for (const [name, spec] of Object.entries(ACTIONS)) {
     assert.ok(/^[a-z]+(\.[a-zA-Z]+)*$/.test(name), name);
-    for (const rule of Object.values(spec)) assert.ok(["string", "number", "boolean", "object", "enum", "stringList"].includes(rule.kind), name);
+    for (const rule of Object.values(spec)) assert.ok(["string", "number", "boolean", "object", "enum", "stringList", "objectList"].includes(rule.kind), name);
   }
 });
 
@@ -155,4 +155,66 @@ test("names come in the language's own script, and a thread names its cast", () 
   assert.match(p, /by דנה/);
   assert.match(p, /יוסי, מיכל/);
   assert.equal(parseRequest({ action: "forum.seedThread", lang: "he", replies: "3", days: 20, likes: 4 }).replies, 3);
+});
+
+test("a list of objects is typed, capped and required", () => {
+  const ok = parseRequest({ action: "whatsnew.save", versionCode: "12", version: "1.2.0", features: [{ featureKey: "ff_a" }] });
+  assert.equal(ok.versionCode, 12);
+  assert.deepEqual(ok.features, [{ featureKey: "ff_a" }]);
+  assert.equal(parseRequest({ action: "whatsnew.save", versionCode: 12, version: "1.2.0" }).error, "features is required");
+  assert.equal(parseRequest({ action: "whatsnew.save", versionCode: 12, version: "1.2.0", features: [] }).error, "features is required");
+  assert.equal(parseRequest({ action: "whatsnew.save", versionCode: 12, version: "1.2.0", features: ["x"] }).error, "features must be a list of objects");
+  assert.ok(parseRequest({ action: "whatsnew.save", versionCode: 12, version: "1.2.0", features: Array.from({ length: 41 }, () => ({})) }).error);
+  assert.equal(parseRequest({ action: "whatsnew.translate", title: "x", from: "jp" }).error, "from is not one of he, en, ar, fr, ru");
+});
+
+test("a release is reduced to the document the app reads", () => {
+  const now = 1_800_000_000_000;
+  const { release, error } = normalizeRelease({
+    versionCode: 12,
+    version: " 1.2.0 ",
+    releasedAt: now + 48 * 3600 * 1000,
+    isPublished: true,
+    features: [
+      { featureKey: "ff_b", title: { he: "ב", en: "B", jp: "no" }, description: "desc", sortOrder: 1, iconName: "timer", targetRoute: "tab:groceries", imageUrl: "https://x/y.png" },
+      { featureKey: "ff_a", title: "A", sortOrder: 0 },
+    ],
+  }, now);
+  assert.equal(error, undefined);
+  assert.equal(release.version, "1.2.0");
+  assert.equal(release.versionCode, 12);
+  assert.equal(release.releasedAt, now, "a future date falls back to now");
+  assert.equal(release.isPublished, true);
+  assert.deepEqual(release.features.map((f) => f.featureKey), ["ff_a", "ff_b"]);
+  assert.deepEqual(release.features[1].title, { he: "ב", en: "B" });
+  assert.deepEqual(release.features[1].description, { he: "desc" });
+  assert.deepEqual(release.features[0].title, { he: "A" });
+  assert.equal(release.features[1].targetRoute, "tab:groceries");
+  assert.equal(release.features[1].imageUrl, "https://x/y.png");
+});
+
+test("a release with a bad build, version, picture or duplicate flag is refused", () => {
+  assert.ok(normalizeRelease({ versionCode: 0, version: "1.0.0", features: [] }).error);
+  assert.ok(normalizeRelease({ versionCode: 1.5, version: "1.0.0", features: [] }).error);
+  assert.ok(normalizeRelease({ versionCode: 3, version: "v1", features: [] }).error);
+  assert.ok(normalizeRelease({ versionCode: 3, version: "1.0.0", features: [{ featureKey: "ff_a" }, { featureKey: "ff_a" }] }).error);
+  assert.ok(normalizeRelease({ versionCode: 3, version: "1.0.0", features: [{ featureKey: "ff_a", imageUrl: "http://plain" }] }).error);
+  assert.ok(normalizeRelease({ versionCode: 3, version: "1.0.0", features: [{ featureKey: "ff a" }] }).error);
+  assert.ok(normalizeRelease({ versionCode: 3, version: "1.0.0", features: [{ featureKey: "ff_a", targetRoute: "../x" }] }).error);
+  assert.equal(normalizeRelease({ versionCode: 3, version: "1.0.0", isPublished: "true", features: [] }).release.isPublished, false);
+});
+
+test("language texts keep the five languages and the source string", () => {
+  assert.deepEqual(langTexts({ he: " א ", en: "", ru: "р", xx: "no" }, 10), { he: "א", ru: "р" });
+  assert.deepEqual(langTexts("hello", 3, "en"), { en: "hel" });
+  assert.deepEqual(langTexts(null, 3), {});
+  const prompt = translatePrompt({ title: "Cook mode", description: "Hands-free steps", from: "en" });
+  assert.match(prompt, /he \(Hebrew\)/);
+  assert.doesNotMatch(prompt, /en \(English\)/);
+  assert.match(prompt, /"Cook mode"/);
+});
+
+test("user.permission grants user or superuser only", () => {
+  assert.equal(parseRequest({ action: "user.permission", uid: "u", permission: "superuser" }).permission, "superuser");
+  assert.ok(parseRequest({ action: "user.permission", uid: "u", permission: "admin" }).error);
 });

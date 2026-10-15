@@ -8,6 +8,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/services/shopping_reminder_service.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../../../user_profile/domain/usecases/save_user_preferences_usecase.dart';
+import '../../../whats_new/presentation/whats_new_service.dart';
 
 part 'onboarding_bloc.freezed.dart';
 
@@ -78,11 +79,15 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     final current = state;
     if (current is! Editing) return;
     emit(.saving(current.shoppingDay, current.selectedPreferences));
+    // The build a new account joins on is its "what's new" baseline: the
+    // highlights start with the next update, never with this one.
+    final build = await WhatsNewService().currentBuild();
     await saveUserPreferencesUseCase(
       UserPreferencesEntity(
         shoppingDay: current.shoppingDay,
         dietaryPreferences: current.selectedPreferences,
         onboardingComplete: true,
+        whatsNewSeenBuild: build,
       ),
     );
     await ShoppingReminderService().scheduleForShoppingDay(current.shoppingDay);

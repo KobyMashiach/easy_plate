@@ -71,6 +71,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ads$ru ads = _Translations$ads$ru._(_root);
 	@override late final _Translations$premium$ru premium = _Translations$premium$ru._(_root);
 	@override late final _Translations$walkthrough$ru walkthrough = _Translations$walkthrough$ru._(_root);
+	@override late final _Translations$whatsNew$ru whatsNew = _Translations$whatsNew$ru._(_root);
 	@override late final _Translations$feedback$ru feedback = _Translations$feedback$ru._(_root);
 	@override late final _Translations$adminBilling$ru adminBilling = _Translations$adminBilling$ru._(_root);
 	@override late final _Translations$adminDashboard$ru adminDashboard = _Translations$adminDashboard$ru._(_root);
@@ -82,6 +83,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$featureName$ru featureName = _Translations$featureName$ru._(_root);
 	@override late final _Translations$wakeWord$ru wakeWord = _Translations$wakeWord$ru._(_root);
 	@override late final _Translations$voiceAssistants$ru voiceAssistants = _Translations$voiceAssistants$ru._(_root);
+	@override late final _Translations$adminConfig$ru adminConfig = _Translations$adminConfig$ru._(_root);
 }
 
 // Path: common
@@ -1329,6 +1331,26 @@ class _Translations$walkthrough$ru extends Translations$walkthrough$he {
 	@override String get demoOnly => 'Только пример, не сохраняется';
 }
 
+// Path: whatsNew
+class _Translations$whatsNew$ru extends Translations$whatsNew$he {
+	_Translations$whatsNew$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Что нового в EasyPlate';
+	@override String pageOf({required Object current, required Object total}) => '${current} из ${total}';
+	@override String releasedIn({required Object version}) => 'Версия ${version}';
+	@override String get next => 'Далее';
+	@override String get gotIt => 'Понятно';
+	@override String get tryIt => 'Попробовать';
+	@override String get close => 'Закрыть';
+	@override String get premiumTag => 'Премиум';
+	@override String get supportTitle => 'Что нового';
+	@override String get supportHint => 'Главное в последней версии, страница за страницей';
+	@override String get nothingYet => 'Пока нет заметок о выпуске';
+}
+
 // Path: feedback
 class _Translations$feedback$ru extends Translations$feedback$he {
 	_Translations$feedback$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1336,22 +1358,40 @@ class _Translations$feedback$ru extends Translations$feedback$he {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Сообщить и предложить';
-	@override String get subtitle => 'Нашли ошибку? Есть идея? Напишите нам здесь; мы читаем каждое сообщение.';
-	@override String get bug => 'Ошибка';
-	@override String get suggestion => 'Предложение';
-	@override String get bugHint => 'Опишите ошибку: что вы сделали, что произошло и чего ожидали...';
-	@override String get suggestionHint => 'Расскажите, что вы хотели бы видеть в приложении и чем это поможет...';
+	@override String get title => 'Связаться с поддержкой';
+	@override String get subtitle => 'Ошибка, идея или вопрос? Выберите причину, напишите нам, и мы ответим прямо здесь, в чате.';
+	@override String get reasonLabel => 'Причина обращения';
+	@override String get reasonHint => 'Выберите причину…';
+	@override late final _Translations$feedback$reasons$ru reasons = _Translations$feedback$reasons$ru._(_root);
+	@override String get messageLabel => 'Сообщение';
+	@override String get messageHint => 'Расскажите, что случилось или чего вы хотите…';
 	@override String get send => 'Отправить';
-	@override String get sent => 'Спасибо! Сообщение отправлено.';
+	@override String get sent => 'Спасибо! Сообщение отправлено, скоро ответим.';
 	@override String get failed => 'Не удалось отправить, попробуйте позже';
-	@override String get admin => 'Обращения';
+	@override String get myConversations => 'Мои обращения';
+	@override String get noConversations => 'Обращений пока нет';
+	@override String get chatTitle => 'Чат с поддержкой';
+	@override String get team => 'Команда EasyPlate';
+	@override String get you => 'Вы';
+	@override String get replyHint => 'Написать ответ…';
+	@override String get waitingForReply => 'Мы получили сообщение и ответим здесь.';
+	@override String get viaShefi => 'через Шефи';
+	@override String get details => 'Детали';
+	@override String get conversationGone => 'Этого обращения больше нет';
+	@override String get admin => 'Входящие отзывы';
 	@override String get all => 'Все';
 	@override String get bugs => 'Ошибки';
 	@override String get suggestions => 'Предложения';
-	@override String get none => 'Обращений пока нет';
+	@override String get none => 'Сообщений пока нет';
 	@override String version({required Object version}) => 'Версия ${version}';
 	@override String get notAllowed => 'Этот экран только для администратора';
+	@override String userWrote({required Object date}) => 'Пользователь · ${date}';
+	@override String get bug => 'Ошибка';
+	@override String get suggestion => 'Предложение';
+	@override String get closedNotice => 'Команда закрыла это обращение. Его можно читать, но не писать в нём; для нового вопроса откройте новое.';
+	@override String closedConversations({required Object n}) => 'Закрытые обращения (${n})';
+	@override String get noOpenConversations => 'Нет открытых обращений';
+	@override String get closedTag => 'Закрыто';
 }
 
 // Path: adminBilling
@@ -1815,6 +1855,8 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get wakeWord => 'Эй, Шефи';
 	@override String get voiceAssistants => 'Шефи в Siri и Gemini';
 	@override String get shefiLauncher => 'Значок Шефи';
+	@override String get whatsNew => 'Что нового';
+	@override String get supportChat => 'Чат поддержки';
 }
 
 // Path: wakeWord
@@ -1891,6 +1933,16 @@ class _Translations$voiceAssistants$ru extends Translations$voiceAssistants$he {
 	@override String get goodbye => 'С удовольствием! Я здесь, когда понадоблюсь.';
 }
 
+// Path: adminConfig
+class _Translations$adminConfig$ru extends Translations$adminConfig$he {
+	_Translations$adminConfig$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override late final _Translations$adminConfig$labels$ru labels = _Translations$adminConfig$labels$ru._(_root);
+}
+
 // Path: walkthrough.topics
 class _Translations$walkthrough$topics$ru extends Translations$walkthrough$topics$he {
 	_Translations$walkthrough$topics$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -1920,6 +1972,22 @@ class _Translations$walkthrough$demo$ru extends Translations$walkthrough$demo$he
 	@override String get mealName => 'Ужин';
 	@override String get groceryItem => 'Помидоры';
 	@override String get recipeText => 'Иерусалимская шакшука\n\nИнгредиенты:\n400 г протёртых томатов\n4 яйца\n1 луковица\n2 ст. л. оливкового масла\n1 ч. л. сладкой паприки\nЩепотка соли\n\nПриготовление:\n1. Разогреть оливковое масло на сковороде и обжарить лук до золотистого цвета.\n2. Добавить томаты и паприку, тушить 10 минут на слабом огне.\n3. Разбить яйца в соус, накрыть крышкой и готовить, пока белок не схватится.';
+}
+
+// Path: feedback.reasons
+class _Translations$feedback$reasons$ru extends Translations$feedback$reasons$he {
+	_Translations$feedback$reasons$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get bug => 'Ошибка';
+	@override String get suggestion => 'Предложение';
+	@override String get account => 'Аккаунт и вход';
+	@override String get billing => 'Премиум и оплата';
+	@override String get sharing => 'Общий доступ и партнёры';
+	@override String get recipes => 'Добавление рецептов и ИИ';
+	@override String get other => 'Другое';
 }
 
 // Path: assistant.suggest
@@ -2064,6 +2132,16 @@ class _Translations$assistant$scopedPrompts$ru extends Translations$assistant$sc
 		'Удали то, что я уже купил',
 		'Сколько граммов в 2 стаканах муки?',
 	];
+}
+
+// Path: adminConfig.labels
+class _Translations$adminConfig$labels$ru extends Translations$adminConfig$labels$he {
+	_Translations$adminConfig$labels$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get admin_all_features => 'Показывать администратору все функции';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -3242,22 +3320,57 @@ extension on TranslationsRu {
 			_ => null,
 		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Только пример, не сохраняется',
-			'feedback.title' => 'Сообщить и предложить',
-			'feedback.subtitle' => 'Нашли ошибку? Есть идея? Напишите нам здесь; мы читаем каждое сообщение.',
-			'feedback.bug' => 'Ошибка',
-			'feedback.suggestion' => 'Предложение',
-			'feedback.bugHint' => 'Опишите ошибку: что вы сделали, что произошло и чего ожидали...',
-			'feedback.suggestionHint' => 'Расскажите, что вы хотели бы видеть в приложении и чем это поможет...',
+			'whatsNew.title' => 'Что нового в EasyPlate',
+			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} из ${total}',
+			'whatsNew.releasedIn' => ({required Object version}) => 'Версия ${version}',
+			'whatsNew.next' => 'Далее',
+			'whatsNew.gotIt' => 'Понятно',
+			'whatsNew.tryIt' => 'Попробовать',
+			'whatsNew.close' => 'Закрыть',
+			'whatsNew.premiumTag' => 'Премиум',
+			'whatsNew.supportTitle' => 'Что нового',
+			'whatsNew.supportHint' => 'Главное в последней версии, страница за страницей',
+			'whatsNew.nothingYet' => 'Пока нет заметок о выпуске',
+			'feedback.title' => 'Связаться с поддержкой',
+			'feedback.subtitle' => 'Ошибка, идея или вопрос? Выберите причину, напишите нам, и мы ответим прямо здесь, в чате.',
+			'feedback.reasonLabel' => 'Причина обращения',
+			'feedback.reasonHint' => 'Выберите причину…',
+			'feedback.reasons.bug' => 'Ошибка',
+			'feedback.reasons.suggestion' => 'Предложение',
+			'feedback.reasons.account' => 'Аккаунт и вход',
+			'feedback.reasons.billing' => 'Премиум и оплата',
+			'feedback.reasons.sharing' => 'Общий доступ и партнёры',
+			'feedback.reasons.recipes' => 'Добавление рецептов и ИИ',
+			'feedback.reasons.other' => 'Другое',
+			'feedback.messageLabel' => 'Сообщение',
+			'feedback.messageHint' => 'Расскажите, что случилось или чего вы хотите…',
 			'feedback.send' => 'Отправить',
-			'feedback.sent' => 'Спасибо! Сообщение отправлено.',
+			'feedback.sent' => 'Спасибо! Сообщение отправлено, скоро ответим.',
 			'feedback.failed' => 'Не удалось отправить, попробуйте позже',
-			'feedback.admin' => 'Обращения',
+			'feedback.myConversations' => 'Мои обращения',
+			'feedback.noConversations' => 'Обращений пока нет',
+			'feedback.chatTitle' => 'Чат с поддержкой',
+			'feedback.team' => 'Команда EasyPlate',
+			'feedback.you' => 'Вы',
+			'feedback.replyHint' => 'Написать ответ…',
+			'feedback.waitingForReply' => 'Мы получили сообщение и ответим здесь.',
+			'feedback.viaShefi' => 'через Шефи',
+			'feedback.details' => 'Детали',
+			'feedback.conversationGone' => 'Этого обращения больше нет',
+			'feedback.admin' => 'Входящие отзывы',
 			'feedback.all' => 'Все',
 			'feedback.bugs' => 'Ошибки',
 			'feedback.suggestions' => 'Предложения',
-			'feedback.none' => 'Обращений пока нет',
+			'feedback.none' => 'Сообщений пока нет',
 			'feedback.version' => ({required Object version}) => 'Версия ${version}',
 			'feedback.notAllowed' => 'Этот экран только для администратора',
+			'feedback.userWrote' => ({required Object date}) => 'Пользователь · ${date}',
+			'feedback.bug' => 'Ошибка',
+			'feedback.suggestion' => 'Предложение',
+			'feedback.closedNotice' => 'Команда закрыла это обращение. Его можно читать, но не писать в нём; для нового вопроса откройте новое.',
+			'feedback.closedConversations' => ({required Object n}) => 'Закрытые обращения (${n})',
+			'feedback.noOpenConversations' => 'Нет открытых обращений',
+			'feedback.closedTag' => 'Закрыто',
 			'adminBilling.title' => 'Пользователи',
 			'adminBilling.all' => 'Все',
 			'adminBilling.paying' => 'Платят',
@@ -3718,6 +3831,8 @@ extension on TranslationsRu {
 			'featureName.cookMode' => 'Режим готовки',
 			'featureName.cookTimers' => 'Таймеры готовки',
 			'featureName.nutrition' => 'Питательная ценность',
+			_ => null,
+		} ?? switch (path) {
 			'featureName.recipeImageAi' => 'Картинка от ИИ',
 			'featureName.recipeImageSearch' => 'Поиск картинок Google',
 			'featureName.groceryFromRecipe' => 'Список покупок из рецепта',
@@ -3749,12 +3864,12 @@ extension on TranslationsRu {
 			'featureName.wakeWord' => 'Эй, Шефи',
 			'featureName.voiceAssistants' => 'Шефи в Siri и Gemini',
 			'featureName.shefiLauncher' => 'Значок Шефи',
+			'featureName.whatsNew' => 'Что нового',
+			'featureName.supportChat' => 'Чат поддержки',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
 			'wakeWord.examples.0' => 'Эй, Шефи',
-			_ => null,
-		} ?? switch (path) {
 			'wakeWord.examples.1' => 'Эй, Шефи, что приготовить сегодня?',
 			'wakeWord.examples.2' => 'Эй, Шефи, добавь молоко в список покупок',
 			'wakeWord.examples.3' => 'Эй, Шефи, поставь таймер на десять минут',
@@ -3801,6 +3916,7 @@ extension on TranslationsRu {
 			'voiceAssistants.unavailable' => 'Шефи сейчас недоступен.',
 			'voiceAssistants.failed' => 'Шефи не смог ответить. Попробуйте чуть позже.',
 			'voiceAssistants.goodbye' => 'С удовольствием! Я здесь, когда понадоблюсь.',
+			'adminConfig.labels.admin_all_features' => 'Показывать администратору все функции',
 			_ => null,
 		};
 	}

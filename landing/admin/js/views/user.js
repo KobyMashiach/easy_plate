@@ -2,7 +2,7 @@
 // own, what they wrote, what the AI cost — and every lever on it.
 import { db, doc, collection, getDoc, getDocs, onSnapshot, query, where, orderBy, limit, Timestamp } from "../firebase.js";
 import { t, fmtNumber, fmtMoney, fmtDate } from "../i18n.js";
-import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, tabs, input, textarea, field, toggle, modal, confirmDialog, promptDialog, toast, toastError, copyText, empty } from "../ui.js";
+import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, tabs, input, textarea, select, field, toggle, modal, confirmDialog, promptDialog, toast, toastError, copyText, empty } from "../ui.js";
 import { isOnline, premiumActive, platformLabel, pricing, tally, costIls, isPersona, profiles } from "../data.js";
 import { call } from "../api.js";
 
@@ -73,7 +73,7 @@ export async function mount({ view, params, setTitle }) {
         h("h3", h("span.row", dot(online), name, persona ? badge(t("users.persona"), "brand") : null)),
         h("div.small.muted", [user && user.email, user && user.phoneNumber].filter(Boolean).join(" · ") || "—"),
         h("div.row.small", h("span.mono.muted", uid), button(t("common.copy"), { kind: "ghost small", onclick: () => copyText(uid) })),
-        h("div.row", premiumActive(ent, now) ? badge(t("users.premium"), "mint") : badge(t("users.free")), user && user.permission === "admin" ? badge(t("users.permissionAdmin"), "brand") : null, status && status.disabled ? badge(t("users.disabled"), "red") : null, online ? badge(t("users.online"), "green") : h("span.small.muted", `${t("users.lastSeen")}: `, when(user && user.lastSeenAt))),
+        h("div.row", premiumActive(ent, now) ? badge(t("users.premium"), "mint") : badge(t("users.free")), user && user.permission === "admin" ? badge(t("users.permissionAdmin"), "brand") : user && user.permission === "superuser" ? badge(t("users.permissionSuperuser"), "amber") : null, status && status.disabled ? badge(t("users.disabled"), "red") : null, online ? badge(t("users.online"), "green") : h("span.small.muted", `${t("users.lastSeen")}: `, when(user && user.lastSeenAt))),
       )),
       persona ? null : h("div.row",
         button(t("user.notify"), { kind: "small", onclick: notify }),
@@ -140,9 +140,28 @@ export async function mount({ view, params, setTitle }) {
     ]));
     if (!persona) entCard.append(h("div.row", button(t("user.setPremium"), { kind: "small primary", onclick: grantPremium }), ent && ent.premium ? button(t("user.removePremium"), { kind: "small danger", onclick: removePremium }) : null));
 
+    // The administrator's own permission stays a Firebase-console edit;
+    // anyone else can be made a superuser (every flag on, no device limit)
+    // or a plain user from here, through the function.
+    const permissionControl = () => {
+      const current = (user && user.permission) || "user";
+      if (current === "admin") return h("span", t("users.permissionAdmin"), h("div.small.muted", t("users.permissionHint", { uid })));
+      const sel = select([["user", t("users.permissionUser")], ["superuser", t("users.permissionSuperuser")]], { value: current });
+      const save = button(t("common.save"), { kind: "small primary" });
+      save.addEventListener("click", busy(save, async () => {
+        if (sel.value === current) return;
+        try {
+          await call("user.permission", { uid, permission: sel.value });
+          user = { ...(user || {}), permission: sel.value };
+          toast(t("common.saved"), "ok");
+          renderHead(); renderTab();
+        } catch (e) { toastError(e); }
+      }));
+      return h("div.stack", h("div.row", sel, save), h("div.small.muted", t("users.permissionSuperuserHint")));
+    };
     const profileCard = h("div.card", h("h2", t("user.profile")), kv([
       [t("user.fullName"), user && user.fullName], [t("common.email"), user && user.email], [t("common.phone"), user && user.phoneNumber],
-      [t("users.permission"), h("span", user && user.permission === "admin" ? t("users.permissionAdmin") : t("users.permissionUser"), h("div.small.muted", t("users.permissionHint", { uid })))],
+      [t("users.permission"), permissionControl()],
       [t("user.created"), user && fmtDate(user.createdAt)], [t("common.platform"), user && platformLabel(user.platform)], [t("user.appVersion"), user && user.appVersion],
       [t("users.lastSeen"), user && fmtDate(user.lastSeenAt)], [t("user.pushToken"), user && user.pushToken ? h("span.mono.small", String(user.pushToken).slice(0, 24) + "…") : "—"],
       persona ? [t("personas.bio"), publicProfile && publicProfile.bio] : undefined,

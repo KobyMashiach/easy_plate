@@ -1,16 +1,25 @@
 /// What an account may do, stored as `users/{uid}.permission`.
 ///
-/// Only the Firebase console (or a server) sets it: the Firestore rules let
-/// the app create it as [user] and never change it. A missing or unknown
+/// Only a server sets it: the Firestore rules let the app create it as
+/// [user] and never change it. [admin] is a Firebase-console edit; the
+/// administrator grants and removes [superuser] from the admin screens
+/// (through the adminUsers / adminPanel functions). A missing or unknown
 /// value is [user].
 enum UserPermission {
   /// The console, the support inbox, every account's data, and no limit on
   /// devices.
   admin,
 
+  /// Every feature switched on — Premium ones included, whatever the flags
+  /// say — and no device limit; none of the administrator's powers.
+  superuser,
+
   /// Everyone else.
   user;
 
-  static UserPermission fromName(Object? name) =>
-      name == admin.name ? admin : user;
+  static UserPermission fromName(Object? name) => switch (name) {
+    'admin' => admin,
+    'superuser' => superuser,
+    _ => user,
+  };
 }

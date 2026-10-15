@@ -23,6 +23,10 @@ class AppNotificationEntity {
   /// [AppNotificationType.adminMessage] (with its [title]).
   final String? message;
   final String? feedbackExcerpt;
+
+  /// The support conversation an [AppNotificationType.adminReply] answers
+  /// in: what a tap opens.
+  final String? feedbackId;
   final String? title;
 
   /// The thread and the reply, for [AppNotificationType.forumReply]: what
@@ -53,6 +57,7 @@ class AppNotificationEntity {
     this.sharedId,
     this.message,
     this.feedbackExcerpt,
+    this.feedbackId,
     this.title,
     this.postId,
     this.replyId,
@@ -74,6 +79,7 @@ class AppNotificationEntity {
     sharedId: sharedId,
     message: message,
     feedbackExcerpt: feedbackExcerpt,
+    feedbackId: feedbackId,
     title: title,
     postId: postId,
     replyId: replyId,

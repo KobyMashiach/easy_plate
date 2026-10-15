@@ -41,6 +41,10 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
 
     /// An `AppThemeMode` name; see the entity.
     @HiveField(17) String? themeMode,
+
+    /// The build number whose "what's new" book was acknowledged; null
+    /// (older records) reads as "never".
+    @HiveField(18) int? whatsNewSeenBuild,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -69,6 +73,7 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
     notifyAnnouncements: notifyAnnouncements,
     foregroundPopupsEnabled: foregroundPopupsEnabled,
     themeMode: themeMode,
+    whatsNewSeenBuild: whatsNewSeenBuild,
   );
 }
 
@@ -92,5 +97,6 @@ extension UserPreferencesEntityMapper on UserPreferencesEntity {
     notifyAnnouncements: notifyAnnouncements,
     foregroundPopupsEnabled: foregroundPopupsEnabled,
     themeMode: themeMode,
+    whatsNewSeenBuild: whatsNewSeenBuild,
   );
 }

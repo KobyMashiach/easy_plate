@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../user_profile/domain/entities/user_permission.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
@@ -334,6 +335,23 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
               title: Text(s.releaseSession),
               onTap: () => Navigator.of(sheetContext).pop('releaseSession'),
             ),
+            // An administrator's permission is a Firebase-console edit.
+            if (account.permission != UserPermission.admin)
+              ListTile(
+                leading: Icon(
+                  account.permission == UserPermission.superuser
+                      ? Icons.star_outline_rounded
+                      : Icons.star_rounded,
+                  color: AppColors.primary,
+                ),
+                title: Text(
+                  account.permission == UserPermission.superuser
+                      ? s.removeSuperuser
+                      : s.makeSuperuser,
+                ),
+                subtitle: Text(s.superuserHint, style: AppTextStyles.labelSm),
+                onTap: () => Navigator.of(sheetContext).pop('permission'),
+              ),
             ListTile(
               leading: Icon(
                 Icons.delete_forever_rounded,
@@ -362,6 +380,16 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
         await _delete(account);
       case 'releaseSession':
         await _releaseSession(account);
+      case 'permission':
+        await _act(
+          () => _repository.setPermission(
+            account.uid,
+            account.permission == UserPermission.superuser
+                ? UserPermission.user
+                : UserPermission.superuser,
+          ),
+          t.adminDashboard.permissionDone,
+        );
     }
   }
 
@@ -608,6 +636,18 @@ class _AccountCard extends StatelessWidget {
                   icon: Icons.block_rounded,
                   background: AppColors.errorContainer,
                   foreground: AppColors.onErrorContainer,
+                ),
+              if (a.permission == UserPermission.admin)
+                ClayTag(
+                  label: t.adminUser.permissionAdmin,
+                  icon: Icons.admin_panel_settings_rounded,
+                )
+              else if (a.permission == UserPermission.superuser)
+                ClayTag(
+                  label: t.adminUser.permissionSuperuser,
+                  icon: Icons.star_rounded,
+                  background: AppColors.infoContainer,
+                  foreground: AppColors.onInfoContainer,
                 ),
               if (a.platform.isNotEmpty)
                 ClayTag(

@@ -45,6 +45,7 @@ class NotificationsFirestoreDataSource
               sharedId: data['sharedId'] as String?,
               message: data['message'] as String?,
               feedbackExcerpt: data['feedbackExcerpt'] as String?,
+              feedbackId: data['feedbackId'] as String?,
               title: data['title'] as String?,
               postId: data['postId'] as String?,
               replyId: data['replyId'] as String?,

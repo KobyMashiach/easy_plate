@@ -41,10 +41,15 @@ class AppUpdateService {
 
   String _current = '';
 
-  /// The release "Skip" was tapped on, until the app is next opened. Kept in
-  /// memory only: every launch and every return from the background asks
-  /// again (Koby's choice).
+  /// The release "Skip" was tapped on. Kept in memory only, so every fresh
+  /// launch asks again — but a return from the background does not.
   String? _skipped;
+
+  /// Set once the app has been in the background: from then on, in this
+  /// process, no optional prompt is raised. The prompt belongs to a fresh
+  /// entry into the app, not to coming back to it mid-task (Koby, after
+  /// it kept popping up on every return). A forced update is never held.
+  bool _wentToBackground = false;
   AppLifecycleListener? _lifecycle;
 
   /// The version being offered, for the prompt's own copy.
@@ -57,11 +62,8 @@ class AppUpdateService {
   Future<void> init() async {
     _current = await _readCurrentVersion();
     _lifecycle ??= AppLifecycleListener(
-      onResume: () {
-        if (_skipped == null) return;
-        _skipped = null;
-        evaluate();
-      },
+      onHide: () => _wentToBackground = true,
+      onPause: () => _wentToBackground = true,
     );
     FirebaseService().configRevision.addListener(evaluate);
     evaluate();
@@ -76,29 +78,34 @@ class AppUpdateService {
       minimum: firebase.remoteString(FirebaseService.minimumVersionKey),
       latest: firebase.remoteString(FirebaseService.latestVersionKey),
       skipped: _skipped,
+      optionalAllowed: !_wentToBackground,
     );
   }
 
   /// The whole rule, as a pure function so both branches can be exercised
   /// without a console or a package on disk.
   ///
-  /// The forced check comes first and ignores [skipped] entirely — dismissing
-  /// an optional prompt must not buy immunity from a floor that is raised
-  /// afterwards.
+  /// The forced check comes first and ignores [skipped] and
+  /// [optionalAllowed] entirely — dismissing an optional prompt, or being
+  /// mid-task, must not buy immunity from a floor that is raised afterwards.
+  /// [optionalAllowed] is false once the app has been in the background
+  /// (see [_wentToBackground]).
   @visibleForTesting
   static UpdateRequirement decide({
     required String current,
     required String minimum,
     required String latest,
     String? skipped,
+    bool optionalAllowed = true,
   }) {
     if ((compareVersions(current, minimum) ?? 0) < 0) {
       return UpdateRequirement.forced;
     }
 
+    if (!optionalAllowed) return UpdateRequirement.none;
     final behindStore = (compareVersions(current, latest) ?? 0) < 0;
     if (!behindStore) return UpdateRequirement.none;
-    // [skipped] lives only until the app is next opened (see [_skipped]).
+    // [skipped] lives until the app is next launched (see [_skipped]).
     return compareVersions(skipped ?? '', latest) == 0
         ? UpdateRequirement.none
         : UpdateRequirement.optional;
@@ -144,7 +151,7 @@ class AppUpdateService {
   }
 
   /// Dismisses the optional prompt for [latestVersion] until the app is
-  /// next opened. A raised floor overrides this outright.
+  /// next launched. A raised floor overrides this outright.
   void skip() {
     _skipped = latestVersion;
     requirement.value = UpdateRequirement.none;

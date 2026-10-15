@@ -38,6 +38,16 @@ class _FakeFeedback implements FeedbackRepository {
   Future<void> delete(String feedbackId) async => deleted.add(feedbackId);
 
   @override
+  Stream<List<FeedbackEntity>> watchMine(String uid) => const Stream.empty();
+  @override
+  Stream<FeedbackEntity?> watchOne(String feedbackId) => const Stream.empty();
+  @override
+  Future<void> addFollowUp(String feedbackId, String text) async {}
+  @override
+  Future<void> markSeenByUser(String feedbackId) async {}
+  @override
+  Future<void> setClosed(String feedbackId, bool closed) async {}
+  @override
   Future<void> reply({
     required FeedbackEntity feedback,
     required String text,

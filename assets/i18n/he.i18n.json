@@ -1118,23 +1118,62 @@
     "demoBooksHint": "כך נראה ספר מתכונים. לחצו על ספר כדי לפתוח אותו, לדפדף בין העמודים ולקפוץ מתוכן העניינים.",
     "demoOnly": "דוגמה בלבד, לא נשמר"
   },
+  "whatsNew": {
+    "title": "מה חדש ב-EasyPlate",
+    "pageOf": "$current מתוך $total",
+    "releasedIn": "גרסה $version",
+    "next": "הבא",
+    "gotIt": "הבנתי",
+    "tryIt": "לנסות",
+    "close": "סגירה",
+    "premiumTag": "פרימיום",
+    "supportTitle": "מה חדש",
+    "supportHint": "החידושים של הגרסה האחרונה, עמוד אחרי עמוד",
+    "nothingYet": "עדיין אין חידושים לגרסה הזו"
+  },
   "feedback": {
-    "title": "דיווח והצעות",
-    "subtitle": "מצאתם תקלה? יש רעיון? כתבו לנו כאן, ונקרא כל פנייה.",
-    "bug": "תקלה (באג)",
-    "suggestion": "הצעה לשיפור",
-    "bugHint": "תארו את התקלה: מה עשיתם, מה קרה ומה ציפיתם שיקרה...",
-    "suggestionHint": "ספרו לנו מה הייתם רוצים שיהיה באפליקציה, ואיך זה יעזור לכם...",
+    "title": "פנייה לתמיכה",
+    "subtitle": "תקלה, רעיון או שאלה? בחרו סיבה, כתבו לנו, ונענה כאן בצ'אט.",
+    "reasonLabel": "סיבת הפנייה",
+    "reasonHint": "בחרו סיבה…",
+    "reasons": {
+      "bug": "תקלה (באג)",
+      "suggestion": "הצעה לשיפור",
+      "account": "חשבון והתחברות",
+      "billing": "פרימיום ותשלום",
+      "sharing": "שיתוף ושותפים",
+      "recipes": "הוספת מתכונים ו-AI",
+      "other": "אחר"
+    },
+    "messageLabel": "תוכן ההודעה",
+    "messageHint": "ספרו לנו מה קרה או מה הייתם רוצים…",
     "send": "שליחה",
-    "sent": "תודה! הפנייה נשלחה.",
+    "sent": "תודה! הפנייה נשלחה, נענה בהקדם.",
     "failed": "השליחה נכשלה, נסו שוב מאוחר יותר",
+    "myConversations": "הפניות שלי",
+    "noConversations": "עדיין אין פניות",
+    "chatTitle": "שיחה עם התמיכה",
+    "team": "צוות EasyPlate",
+    "you": "אתם",
+    "replyHint": "כתבו תשובה…",
+    "waitingForReply": "קיבלנו את הפנייה, נחזור אליכם כאן.",
+    "viaShefi": "דרך שפי",
+    "details": "פרטי הפנייה",
+    "conversationGone": "הפנייה הזו כבר לא קיימת",
     "admin": "ניהול פניות",
     "all": "הכל",
     "bugs": "תקלות",
     "suggestions": "הצעות",
     "none": "אין פניות עדיין",
     "version": "גרסה $version",
-    "notAllowed": "המסך הזה זמין למנהל בלבד"
+    "notAllowed": "המסך הזה זמין למנהל בלבד",
+    "userWrote": "המשתמש · $date",
+    "bug": "תקלה (באג)",
+    "suggestion": "הצעה לשיפור",
+    "closedNotice": "הפנייה נסגרה על ידי הצוות. אפשר לקרוא אותה, אבל לא לכתוב בה. לפנייה חדשה, פתחו שיחה חדשה.",
+    "closedConversations": "פניות סגורות ($n)",
+    "noOpenConversations": "אין פניות פתוחות",
+    "closedTag": "סגורה"
   },
   "adminBilling": {
     "title": "משתמשים",
@@ -1318,7 +1357,19 @@
     "grantStarts": "מתחיל ב-$date",
     "tabConfig": "תצורה",
     "releaseSession": "ניתוק מהמכשיר המחובר",
-    "releaseSessionDone": "המכשיר נותק; המשתמש יתבקש להתחבר מחדש"
+    "releaseSessionDone": "המכשיר נותק; המשתמש יתבקש להתחבר מחדש",
+    "closeTicket": "סגירת פנייה",
+    "closeTicketConfirm": "לסגור את הפנייה של $name? המשתמש יוכל לקרוא אותה ב\"פניות סגורות\" אבל לא לכתוב בה.",
+    "reopenTicket": "פתיחה מחדש",
+    "ticketClosed": "הפנייה נסגרה",
+    "ticketReopened": "הפנייה נפתחה מחדש",
+    "closedTickets": "סגורות",
+    "closedTag": "סגורה",
+    "closedAt": "נסגרה · $date",
+    "makeSuperuser": "הפוך לסופר-משתמש",
+    "removeSuperuser": "בטל סופר-משתמש",
+    "superuserHint": "כל הפיצ'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים",
+    "permissionDone": "ההרשאה עודכנה"
   },
   "assistant": {
     "title": "שפי",
@@ -1672,7 +1723,9 @@
     "homeWidgets": "ווידג'טים למסך הבית",
     "wakeWord": "היי שפי",
     "voiceAssistants": "שפי דרך Siri ו-Gemini",
-    "shefiLauncher": "אייקון שפי"
+    "shefiLauncher": "אייקון שפי",
+    "whatsNew": "מה חדש",
+    "supportChat": "צ'אט תמיכה"
   },
   "adminConfig": {
     "intro": "כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).",
@@ -1732,7 +1785,8 @@
       "presence_heartbeat_seconds": "דיווח נוכחות (שניות)",
       "session_exempt_phones": "מספרים פטורים ממכשיר אחד",
       "support_phone": "מספר WhatsApp לתמיכה",
-      "support_email": "מייל תמיכה"
+      "support_email": "מייל תמיכה",
+      "admin_all_features": "להציג למנהל את כל הפיצ'רים"
     }
   },
   "wakeWord": {
@@ -1821,7 +1875,7 @@
     "permission": "הרשאה",
     "permissionAdmin": "מנהל",
     "permissionUser": "משתמש",
-    "permissionHint": "משתנה רק בקונסול של Firebase (users › permission)",
+    "permissionHint": "מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות",
     "joined": "הצטרף",
     "lastSeen": "נראה לאחרונה",
     "device": "מכשיר",
@@ -1922,6 +1976,7 @@
       "kindGroceryList": "רשימת קניות",
       "kindHousehold": "משק בית",
       "withNames": "עם: $names"
-    }
+    },
+    "permissionSuperuser": "סופר-משתמש"
   }
 }

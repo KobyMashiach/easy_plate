@@ -49,5 +49,7 @@ class Routing {
   static const profileEdit = 'profile_edit';
   static const forumThread = 'forum_thread';
   static const tutorial = 'tutorial';
+  static const whatsNew = 'whats_new';
+  static const supportChat = 'support_chat';
   static const adminDashboard = 'admin_dashboard';
 }

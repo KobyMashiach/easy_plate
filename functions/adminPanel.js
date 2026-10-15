@@ -24,6 +24,9 @@
 //              pricing.sync
 //   stores     stores.stats / stores.status / stores.config / stores.sync —
 //              the exact install counts behind the listings' "500+" tags
+//   what's new whatsnew.save / whatsnew.delete / whatsnew.translate — the
+//              release highlights (whats_new_releases/{versionCode}) the app
+//              shows a returning account once after an update
 //
 // Every call writes one admin_audit row: who, what, with which fields
 // (pictures and long texts cut down), and whether it worked.
@@ -35,6 +38,7 @@ const crypto = require("node:crypto");
 
 const proxy = require("./aiProxy").internals;
 const accounts = require("./adminUsers").internals;
+const permissions = require("./permissions");
 const notifications = require("./adminNotifications");
 const remoteConfig = require("./adminRemoteConfig").internals;
 const imageSearch = require("./imageSearch").internals;
@@ -71,6 +75,9 @@ const DIETS = new Set(["meat", "dairy", "vegetarian", "vegan", "kosher", "gluten
 const ALLERGENS = new Set(["gluten", "milk", "eggs", "fish", "shellfish", "peanuts", "treeNuts", "sesame", "soy"]);
 const LANG_NAMES = { he: "Hebrew", en: "English", ar: "Arabic", fr: "French", ru: "Russian" };
 const RC_TYPES = new Set(["STRING", "NUMBER", "BOOLEAN", "JSON"]);
+const WHATS_NEW_COLLECTION = "whats_new_releases";
+const WHATS_NEW_LANGS = ["he", "en", "ar", "fr", "ru"];
+const WHATS_NEW_MAX_FEATURES = 40;
 
 // ---------------------------------------------------------------------------
 // Pure: request shapes. Each action names the fields it takes; anything
@@ -84,6 +91,7 @@ const bool = () => ({ kind: "boolean" });
 const obj = (required = false) => ({ kind: "object", required });
 const anyOf = (values, required = false) => ({ kind: "enum", values, required });
 const strList = (maxItems, maxLen, required = false) => ({ kind: "stringList", maxItems, max: maxLen, required });
+const objList = (maxItems, required = false) => ({ kind: "objectList", maxItems, required });
 
 const ACTIONS = {
   "ping": {},
@@ -99,6 +107,7 @@ const ACTIONS = {
   "notify.template.send": { id: str(128, true) },
   "user.auth": { uid: str(128, true) },
   "user.entitlement": { uid: str(128, true), premium: bool(), premiumUntil: num(), adminLock: bool() },
+  "user.permission": { uid: str(128, true), permission: anyOf(["user", "superuser"], true) },
   "user.profile": { uid: str(128, true), fullName: str(80), photoUrl: str(2000) },
   "user.content.set": { root: anyOf([...CONTENT_ROOTS], true), rootId: str(128, true), collection: anyOf([...CONTENT_COLLECTIONS], true), id: str(128, true), data: obj(true) },
   "user.content.delete": { root: anyOf([...CONTENT_ROOTS], true), rootId: str(128, true), collection: anyOf([...CONTENT_COLLECTIONS], true), id: str(128, true) },
@@ -134,6 +143,9 @@ const ACTIONS = {
   "stores.status": {},
   "stores.config": { playBucket: str(200), playPackage: str(200), appleVendor: str(40), appleIssuerId: str(80), appleKeyId: str(40), appleAppId: str(40), iosSince: str(10), applePrivateKey: str(8000) },
   "stores.sync": { platform: anyOf(["all", "android", "ios"]), backfill: bool() },
+  "whatsnew.save": { versionCode: num(true), version: str(40, true), releasedAt: num(), isPublished: bool(), features: objList(WHATS_NEW_MAX_FEATURES, true) },
+  "whatsnew.delete": { versionCode: num(true) },
+  "whatsnew.translate": { title: str(200), description: str(2000), from: anyOf(WHATS_NEW_LANGS, true) },
 };
 
 function parseRequest(body) {
@@ -171,6 +183,14 @@ function parseRequest(body) {
         if (!rule.values.includes(raw)) return { error: `${field} is not one of ${rule.values.join(", ")}` };
         out[field] = raw;
         break;
+      case "objectList": {
+        if (!Array.isArray(raw)) return { error: `${field} must be a list` };
+        if (raw.some((v) => !v || typeof v !== "object" || Array.isArray(v))) return { error: `${field} must be a list of objects` };
+        if (raw.length > rule.maxItems) return { error: `${field} has more than ${rule.maxItems} items` };
+        if (rule.required && !raw.length) return { error: `${field} is required` };
+        out[field] = raw;
+        break;
+      }
       case "stringList": {
         if (!Array.isArray(raw)) return { error: `${field} must be a list` };
         const list = [...new Set(raw.filter((v) => typeof v === "string").map((v) => v.trim().slice(0, rule.max)).filter(Boolean))];
@@ -189,6 +209,89 @@ function parseRequest(body) {
 // ---------------------------------------------------------------------------
 // Pure: content shapes.
 // ---------------------------------------------------------------------------
+
+// A per-language text map from whatever the console sent: a map of the
+// five languages (others dropped), or one string under the source
+// language. Every value trimmed and capped.
+function langTexts(raw, max, from = "he") {
+  const out = {};
+  if (typeof raw === "string") {
+    const text = raw.trim().slice(0, max);
+    if (text) out[from] = text;
+    return out;
+  }
+  if (!raw || typeof raw !== "object") return out;
+  for (const lang of WHATS_NEW_LANGS) {
+    const text = typeof raw[lang] === "string" ? raw[lang].trim().slice(0, max) : "";
+    if (text) out[lang] = text;
+  }
+  return out;
+}
+
+// The document the app reads, reduced from the console's request: a
+// marketing version, a positive integer build, a date never in the future,
+// and the pages in the order they were sent. An icon or a target the app
+// has no list entry for is kept as sent (the app ignores what it cannot
+// draw), but every value is typed, trimmed and capped so a document can
+// never carry a payload.
+function normalizeRelease(request, now = Date.now()) {
+  const versionCode = Number(request.versionCode);
+  if (!Number.isInteger(versionCode) || versionCode < 1 || versionCode > 1e9) return { error: "versionCode must be a positive integer" };
+  const version = String(request.version || "").trim();
+  if (!/^\d+(\.\d+){0,3}$/.test(version)) return { error: "version must look like 1.2.0" };
+  let releasedAt = Number(request.releasedAt);
+  if (!Number.isFinite(releasedAt) || releasedAt <= 0) releasedAt = now;
+  if (releasedAt > now + 24 * 3600 * 1000) releasedAt = now;
+  const raw = Array.isArray(request.features) ? request.features : [];
+  if (raw.length > WHATS_NEW_MAX_FEATURES) return { error: `at most ${WHATS_NEW_MAX_FEATURES} features` };
+  const features = [];
+  const seen = new Set();
+  for (const [i, f] of raw.entries()) {
+    if (!f || typeof f !== "object") continue;
+    const featureKey = String(f.featureKey || "").trim();
+    if (!/^[A-Za-z][A-Za-z0-9_]{0,60}$/.test(featureKey)) return { error: `feature ${i + 1}: featureKey is not a flag name` };
+    if (seen.has(featureKey)) return { error: `feature ${i + 1}: ${featureKey} is listed twice` };
+    seen.add(featureKey);
+    const imageUrl = String(f.imageUrl || "").trim().slice(0, 2000);
+    if (imageUrl && !/^https:\/\//.test(imageUrl)) return { error: `feature ${i + 1}: imageUrl must be https` };
+    const iconName = String(f.iconName || "").trim().slice(0, 40);
+    if (iconName && !/^[a-z][a-z0-9_]*$/.test(iconName)) return { error: `feature ${i + 1}: iconName is not an icon name` };
+    const targetRoute = String(f.targetRoute || "").trim().slice(0, 60);
+    if (targetRoute && !/^[A-Za-z][A-Za-z0-9_:]*$/.test(targetRoute)) return { error: `feature ${i + 1}: targetRoute is not a route` };
+    const sortOrder = Number.isInteger(Number(f.sortOrder)) ? Number(f.sortOrder) : i;
+    features.push({
+      featureKey,
+      title: langTexts(f.title, 200),
+      description: langTexts(f.description, 2000),
+      imageUrl,
+      iconName,
+      targetRoute,
+      sortOrder,
+    });
+  }
+  features.sort((a, b) => a.sortOrder - b.sortOrder);
+  return { release: { version, versionCode, releasedAt, isPublished: request.isPublished === true, features } };
+}
+
+const WHATS_NEW_TRANSLATION_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    title: { type: "OBJECT", properties: Object.fromEntries(WHATS_NEW_LANGS.map((l) => [l, { type: "STRING" }])) },
+    description: { type: "OBJECT", properties: Object.fromEntries(WHATS_NEW_LANGS.map((l) => [l, { type: "STRING" }])) },
+  },
+  required: ["title", "description"],
+};
+
+function translatePrompt({ title, description, from }) {
+  const others = WHATS_NEW_LANGS.filter((l) => l !== from).map((l) => `${l} (${LANG_NAMES[l]})`).join(", ");
+  return [
+    `You localise release notes for EasyPlate, a recipes, meal-planning and grocery app. The administrator wrote a feature headline and a short value-focused description in ${LANG_NAMES[from]} (${from}).`,
+    `Translate both into ${others}. Keep the ${from} text exactly as given under its own key. Keep product names (EasyPlate, Shefi) as they are. Headlines stay short (under 8 words); descriptions stay one or two sentences, natural in each language, no quotation marks, no emoji.`,
+    `Headline: ${JSON.stringify(title || "")}`,
+    `Description: ${JSON.stringify(description || "")}`,
+    "Answer with JSON: {title: {he, en, ar, fr, ru}, description: {he, en, ar, fr, ru}}.",
+  ].join("\n\n");
+}
 
 function isPersona(uid) {
   return typeof uid === "string" && uid.startsWith(PERSONA_PREFIX);
@@ -297,6 +400,8 @@ function summarize(request) {
       out[key] = value.storagePath ? { storagePath: value.storagePath } : value.url ? { url: String(value.url).slice(0, 300) } : value.dataUrl ? { dataUrl: `<${String(value.dataUrl).length} chars>` } : {};
     } else if (key === "recipe" && value && typeof value === "object") {
       out[key] = { title: typeof value.title === "string" ? value.title.slice(0, 200) : "" };
+    } else if (key === "features" && Array.isArray(value)) {
+      out[key] = value.map((f) => (f && typeof f === "object" ? String(f.featureKey || "?") : "?"));
     } else if (Array.isArray(value)) {
       // A picked list of users can be long; the audit keeps the first few.
       out[key] = value.length > 20 ? [...value.slice(0, 20), `+${value.length - 20}`] : value;
@@ -695,6 +800,10 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       data.premiumFrom = request.premium ? admin.firestore.Timestamp.now() : null;
       await db.doc(`entitlements/${request.uid}`).set(data, { merge: true });
       return {};
+    }
+    case "user.permission": {
+      if (request.uid === caller.uid) throw refused("not on your own account", "self", 400);
+      return { permission: await permissions.setPermission(request.uid, request.permission) };
     }
     case "user.profile": {
       const patch = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
@@ -1114,6 +1223,37 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     case "stores.sync":
       return storeStats.sync({ db, platform: request.platform || "all", backfill: request.backfill === true, fetchImpl });
 
+    // --- what's new -------------------------------------------------------
+    case "whatsnew.save": {
+      const { release, error } = normalizeRelease(request, now);
+      if (error) throw refused(error, "invalid_release");
+      const ref = db.collection(WHATS_NEW_COLLECTION).doc(String(release.versionCode));
+      await ref.set({
+        ...release,
+        releasedAt: admin.firestore.Timestamp.fromMillis(release.releasedAt),
+        updatedAt: admin.firestore.Timestamp.fromMillis(now),
+        updatedBy: caller.uid,
+      });
+      return { release };
+    }
+    case "whatsnew.delete": {
+      const code = Number(request.versionCode);
+      if (!Number.isInteger(code) || code < 1) throw refused("versionCode must be a positive integer", "invalid_release");
+      await db.collection(WHATS_NEW_COLLECTION).doc(String(code)).delete();
+      return {};
+    }
+    case "whatsnew.translate": {
+      const title = request.title || "";
+      const description = request.description || "";
+      if (!title && !description) throw refused("nothing to translate", "invalid");
+      const answer = await gemini({ key: keys.gemini, prompt: translatePrompt({ title, description, from: request.from }), schema: WHATS_NEW_TRANSLATION_SCHEMA, uid: caller.uid, kind: "text", fetchImpl });
+      const out = { title: langTexts(answer && answer.title, 200), description: langTexts(answer && answer.description, 2000) };
+      // The source text is the administrator's, whatever the model echoed.
+      if (title) out.title[request.from] = title;
+      if (description) out.description[request.from] = description;
+      return out;
+    }
+
     default:
       throw refused("unknown action");
   }
@@ -1230,6 +1370,11 @@ exports.adminPanel = onRequest(
 exports.internals = {
   ACTIONS,
   parseRequest,
+  normalizeRelease,
+  langTexts,
+  translatePrompt,
+  WHATS_NEW_COLLECTION,
+  WHATS_NEW_LANGS,
   isPersona,
   personaUid,
   backdated,

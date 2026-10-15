@@ -16,6 +16,7 @@ import * as audit from "./views/audit.js";
 import * as seed from "./views/seed.js";
 import * as stores from "./views/stores.js";
 import * as notifications from "./views/notifications.js";
+import * as whatsnew from "./views/whatsnew.js";
 
 const ICONS = {
   dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
@@ -30,6 +31,7 @@ const ICONS = {
   stores: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>',
   notifications: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
   audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>',
+  whatsnew: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z"/></svg>',
 };
 
 const ROUTES = [
@@ -43,6 +45,7 @@ const ROUTES = [
   { key: "households", path: /^\/households$/, view: households },
   { key: "tickets", path: /^\/tickets$/, view: tickets },
   { key: "notifications", path: /^\/notifications$/, view: notifications },
+  { key: "whatsnew", path: /^\/whatsnew$/, view: whatsnew },
   { key: "config", path: /^\/config$/, view: config },
   { key: "stores", path: /^\/stores$/, view: stores },
   { key: "audit", path: /^\/audit$/, view: audit },
@@ -67,7 +70,7 @@ function renderNav() {
   const { nav } = els();
   clear(nav);
   const route = location.hash.slice(1) || "/dashboard";
-  for (const key of ["dashboard", "stores", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "config", "audit"]) {
+  for (const key of ["dashboard", "stores", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "whatsnew", "config", "audit"]) {
     const a = h(`a${route.startsWith("/" + key) ? ".active" : ""}`, { href: `#/${key}`, html: ICONS[key] });
     a.append(h("span", t(`nav.${key}`)));
     if (key === "tickets") a.append(h("span.badge.brand", { id: "ticketsBadge", hidden: true }));

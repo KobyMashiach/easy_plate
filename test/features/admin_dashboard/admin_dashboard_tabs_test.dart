@@ -15,6 +15,7 @@ import 'package:easy_plate/features/feedback/domain/repositories/feedback_reposi
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:easy_plate/features/user_profile/domain/entities/user_permission.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _flash = 'gemini-3_8-flash';
@@ -197,6 +198,9 @@ class _FakeBilling implements AdminBillingRepository {
   Future<void> releaseSession(String uid) async =>
       actions.add('releaseSession:$uid');
   @override
+  Future<void> setPermission(String uid, UserPermission permission) async =>
+      actions.add('permission:$uid:${permission.name}');
+  @override
   Future<void> deleteAccount(String uid) async => actions.add('delete:$uid');
   @override
   Future<void> notifyAccount(
@@ -230,6 +234,16 @@ class _FakeFeedback implements FeedbackRepository {
       markedAll = feedbackIds.toList();
   @override
   Future<void> delete(String feedbackId) async {}
+  @override
+  Stream<List<FeedbackEntity>> watchMine(String uid) => const Stream.empty();
+  @override
+  Stream<FeedbackEntity?> watchOne(String feedbackId) => const Stream.empty();
+  @override
+  Future<void> addFollowUp(String feedbackId, String text) async {}
+  @override
+  Future<void> markSeenByUser(String feedbackId) async {}
+  @override
+  Future<void> setClosed(String feedbackId, bool closed) async {}
   @override
   Future<void> reply({
     required FeedbackEntity feedback,

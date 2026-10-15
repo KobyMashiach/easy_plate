@@ -71,6 +71,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$ads$en ads = _Translations$ads$en._(_root);
 	@override late final _Translations$premium$en premium = _Translations$premium$en._(_root);
 	@override late final _Translations$walkthrough$en walkthrough = _Translations$walkthrough$en._(_root);
+	@override late final _Translations$whatsNew$en whatsNew = _Translations$whatsNew$en._(_root);
 	@override late final _Translations$feedback$en feedback = _Translations$feedback$en._(_root);
 	@override late final _Translations$adminBilling$en adminBilling = _Translations$adminBilling$en._(_root);
 	@override late final _Translations$adminDashboard$en adminDashboard = _Translations$adminDashboard$en._(_root);
@@ -1331,6 +1332,26 @@ class _Translations$walkthrough$en extends Translations$walkthrough$he {
 	@override String get demoOnly => 'Sample only, not saved';
 }
 
+// Path: whatsNew
+class _Translations$whatsNew$en extends Translations$whatsNew$he {
+	_Translations$whatsNew$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'What\'s New in EasyPlate';
+	@override String pageOf({required Object current, required Object total}) => '${current} of ${total}';
+	@override String releasedIn({required Object version}) => 'Version ${version}';
+	@override String get next => 'Next';
+	@override String get gotIt => 'Got it';
+	@override String get tryIt => 'Try it';
+	@override String get close => 'Close';
+	@override String get premiumTag => 'Premium';
+	@override String get supportTitle => 'What\'s new';
+	@override String get supportHint => 'The highlights of the latest version, page by page';
+	@override String get nothingYet => 'No release notes yet';
+}
+
 // Path: feedback
 class _Translations$feedback$en extends Translations$feedback$he {
 	_Translations$feedback$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -1338,15 +1359,26 @@ class _Translations$feedback$en extends Translations$feedback$he {
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Report and suggest';
-	@override String get subtitle => 'Found a bug? Have an idea? Write to us here; every message is read.';
-	@override String get bug => 'Bug';
-	@override String get suggestion => 'Suggestion';
-	@override String get bugHint => 'Describe the bug: what you did, what happened, and what you expected...';
-	@override String get suggestionHint => 'Tell us what you would like the app to do, and how it would help you...';
+	@override String get title => 'Contact support';
+	@override String get subtitle => 'A bug, an idea or a question? Pick a reason, write to us, and we answer right here in the chat.';
+	@override String get reasonLabel => 'Reason';
+	@override String get reasonHint => 'Pick a reason…';
+	@override late final _Translations$feedback$reasons$en reasons = _Translations$feedback$reasons$en._(_root);
+	@override String get messageLabel => 'Message';
+	@override String get messageHint => 'Tell us what happened or what you would like…';
 	@override String get send => 'Send';
-	@override String get sent => 'Thanks! Your message was sent.';
+	@override String get sent => 'Thanks! Your message was sent; we will answer soon.';
 	@override String get failed => 'Sending failed, please try again later';
+	@override String get myConversations => 'My conversations';
+	@override String get noConversations => 'No conversations yet';
+	@override String get chatTitle => 'Support chat';
+	@override String get team => 'EasyPlate team';
+	@override String get you => 'You';
+	@override String get replyHint => 'Write a reply…';
+	@override String get waitingForReply => 'We got your message and will get back to you here.';
+	@override String get viaShefi => 'via Shefi';
+	@override String get details => 'Details';
+	@override String get conversationGone => 'This conversation no longer exists';
 	@override String get admin => 'Feedback inbox';
 	@override String get all => 'All';
 	@override String get bugs => 'Bugs';
@@ -1354,6 +1386,13 @@ class _Translations$feedback$en extends Translations$feedback$he {
 	@override String get none => 'No messages yet';
 	@override String version({required Object version}) => 'Version ${version}';
 	@override String get notAllowed => 'This screen is for the administrator only';
+	@override String userWrote({required Object date}) => 'User · ${date}';
+	@override String get bug => 'Bug';
+	@override String get suggestion => 'Suggestion';
+	@override String get closedNotice => 'The team closed this conversation. You can read it but not write in it; open a new one for a new matter.';
+	@override String closedConversations({required Object n}) => 'Closed conversations (${n})';
+	@override String get noOpenConversations => 'No open conversations';
+	@override String get closedTag => 'Closed';
 }
 
 // Path: adminBilling
@@ -1552,6 +1591,18 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 	@override String get tabConfig => 'Config';
 	@override String get releaseSession => 'Disconnect the signed-in device';
 	@override String get releaseSessionDone => 'Device disconnected; the user will be asked to sign in again';
+	@override String get closeTicket => 'Close conversation';
+	@override String closeTicketConfirm({required Object name}) => 'Close ${name}\'s conversation? They can still read it under "closed" but not write in it.';
+	@override String get reopenTicket => 'Reopen';
+	@override String get ticketClosed => 'Conversation closed';
+	@override String get ticketReopened => 'Conversation reopened';
+	@override String get closedTickets => 'Closed';
+	@override String get closedTag => 'Closed';
+	@override String closedAt({required Object date}) => 'Closed · ${date}';
+	@override String get makeSuperuser => 'Make superuser';
+	@override String get removeSuperuser => 'Remove superuser';
+	@override String get superuserHint => 'Every feature on, Premium included, no device limit';
+	@override String get permissionDone => 'Permission updated';
 }
 
 // Path: assistant
@@ -1820,6 +1871,8 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get wakeWord => 'Hey Shefi';
 	@override String get voiceAssistants => 'Shefi in Siri and Gemini';
 	@override String get shefiLauncher => 'Shefi icon';
+	@override String get whatsNew => 'What\'s new';
+	@override String get supportChat => 'Support chat';
 }
 
 // Path: adminConfig
@@ -1954,7 +2007,7 @@ class _Translations$adminUser$en extends Translations$adminUser$he {
 	@override String get permission => 'Permission';
 	@override String get permissionAdmin => 'Admin';
 	@override String get permissionUser => 'User';
-	@override String get permissionHint => 'Changed only in the Firebase console (users › permission)';
+	@override String get permissionHint => 'Admin is set in the Firebase console only; superuser from the accounts tab\'s actions';
 	@override String get joined => 'Joined';
 	@override String get lastSeen => 'Last seen';
 	@override String get device => 'Device';
@@ -1996,6 +2049,7 @@ class _Translations$adminUser$en extends Translations$adminUser$he {
 	@override String get actions => 'Actions';
 	@override String get tabShares => 'Shares';
 	@override late final _Translations$adminUser$shares$en shares = _Translations$adminUser$shares$en._(_root);
+	@override String get permissionSuperuser => 'Superuser';
 }
 
 // Path: walkthrough.topics
@@ -2027,6 +2081,22 @@ class _Translations$walkthrough$demo$en extends Translations$walkthrough$demo$he
 	@override String get mealName => 'Dinner';
 	@override String get groceryItem => 'Tomatoes';
 	@override String get recipeText => 'Jerusalem shakshuka\n\nIngredients:\n400 g crushed tomatoes\n4 eggs\n1 onion\n2 tbsp olive oil\n1 tsp sweet paprika\nA pinch of salt\n\nMethod:\n1. Heat the olive oil in a pan and fry the onion until golden.\n2. Add the tomatoes and paprika and simmer for 10 minutes.\n3. Crack the eggs into the sauce, cover, and cook until the whites set.';
+}
+
+// Path: feedback.reasons
+class _Translations$feedback$reasons$en extends Translations$feedback$reasons$he {
+	_Translations$feedback$reasons$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get bug => 'Bug';
+	@override String get suggestion => 'Suggestion';
+	@override String get account => 'Account and sign-in';
+	@override String get billing => 'Premium and billing';
+	@override String get sharing => 'Sharing and partners';
+	@override String get recipes => 'Adding recipes and AI';
+	@override String get other => 'Other';
 }
 
 // Path: assistant.suggest
@@ -2237,6 +2307,7 @@ class _Translations$adminConfig$labels$en extends Translations$adminConfig$label
 	@override String get session_exempt_phones => 'Numbers exempt from one device';
 	@override String get support_phone => 'Support WhatsApp number';
 	@override String get support_email => 'Support email';
+	@override String get admin_all_features => 'Show the admin every feature';
 }
 
 // Path: adminUser.groups
@@ -3515,15 +3586,43 @@ extension on TranslationsEn {
 			_ => null,
 		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Sample only, not saved',
-			'feedback.title' => 'Report and suggest',
-			'feedback.subtitle' => 'Found a bug? Have an idea? Write to us here; every message is read.',
-			'feedback.bug' => 'Bug',
-			'feedback.suggestion' => 'Suggestion',
-			'feedback.bugHint' => 'Describe the bug: what you did, what happened, and what you expected...',
-			'feedback.suggestionHint' => 'Tell us what you would like the app to do, and how it would help you...',
+			'whatsNew.title' => 'What\'s New in EasyPlate',
+			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} of ${total}',
+			'whatsNew.releasedIn' => ({required Object version}) => 'Version ${version}',
+			'whatsNew.next' => 'Next',
+			'whatsNew.gotIt' => 'Got it',
+			'whatsNew.tryIt' => 'Try it',
+			'whatsNew.close' => 'Close',
+			'whatsNew.premiumTag' => 'Premium',
+			'whatsNew.supportTitle' => 'What\'s new',
+			'whatsNew.supportHint' => 'The highlights of the latest version, page by page',
+			'whatsNew.nothingYet' => 'No release notes yet',
+			'feedback.title' => 'Contact support',
+			'feedback.subtitle' => 'A bug, an idea or a question? Pick a reason, write to us, and we answer right here in the chat.',
+			'feedback.reasonLabel' => 'Reason',
+			'feedback.reasonHint' => 'Pick a reason…',
+			'feedback.reasons.bug' => 'Bug',
+			'feedback.reasons.suggestion' => 'Suggestion',
+			'feedback.reasons.account' => 'Account and sign-in',
+			'feedback.reasons.billing' => 'Premium and billing',
+			'feedback.reasons.sharing' => 'Sharing and partners',
+			'feedback.reasons.recipes' => 'Adding recipes and AI',
+			'feedback.reasons.other' => 'Other',
+			'feedback.messageLabel' => 'Message',
+			'feedback.messageHint' => 'Tell us what happened or what you would like…',
 			'feedback.send' => 'Send',
-			'feedback.sent' => 'Thanks! Your message was sent.',
+			'feedback.sent' => 'Thanks! Your message was sent; we will answer soon.',
 			'feedback.failed' => 'Sending failed, please try again later',
+			'feedback.myConversations' => 'My conversations',
+			'feedback.noConversations' => 'No conversations yet',
+			'feedback.chatTitle' => 'Support chat',
+			'feedback.team' => 'EasyPlate team',
+			'feedback.you' => 'You',
+			'feedback.replyHint' => 'Write a reply…',
+			'feedback.waitingForReply' => 'We got your message and will get back to you here.',
+			'feedback.viaShefi' => 'via Shefi',
+			'feedback.details' => 'Details',
+			'feedback.conversationGone' => 'This conversation no longer exists',
 			'feedback.admin' => 'Feedback inbox',
 			'feedback.all' => 'All',
 			'feedback.bugs' => 'Bugs',
@@ -3531,6 +3630,13 @@ extension on TranslationsEn {
 			'feedback.none' => 'No messages yet',
 			'feedback.version' => ({required Object version}) => 'Version ${version}',
 			'feedback.notAllowed' => 'This screen is for the administrator only',
+			'feedback.userWrote' => ({required Object date}) => 'User · ${date}',
+			'feedback.bug' => 'Bug',
+			'feedback.suggestion' => 'Suggestion',
+			'feedback.closedNotice' => 'The team closed this conversation. You can read it but not write in it; open a new one for a new matter.',
+			'feedback.closedConversations' => ({required Object n}) => 'Closed conversations (${n})',
+			'feedback.noOpenConversations' => 'No open conversations',
+			'feedback.closedTag' => 'Closed',
 			'adminBilling.title' => 'Users',
 			'adminBilling.all' => 'All',
 			'adminBilling.paying' => 'Paying',
@@ -3711,6 +3817,18 @@ extension on TranslationsEn {
 			'adminDashboard.tabConfig' => 'Config',
 			'adminDashboard.releaseSession' => 'Disconnect the signed-in device',
 			'adminDashboard.releaseSessionDone' => 'Device disconnected; the user will be asked to sign in again',
+			'adminDashboard.closeTicket' => 'Close conversation',
+			'adminDashboard.closeTicketConfirm' => ({required Object name}) => 'Close ${name}\'s conversation? They can still read it under "closed" but not write in it.',
+			'adminDashboard.reopenTicket' => 'Reopen',
+			'adminDashboard.ticketClosed' => 'Conversation closed',
+			'adminDashboard.ticketReopened' => 'Conversation reopened',
+			'adminDashboard.closedTickets' => 'Closed',
+			'adminDashboard.closedTag' => 'Closed',
+			'adminDashboard.closedAt' => ({required Object date}) => 'Closed · ${date}',
+			'adminDashboard.makeSuperuser' => 'Make superuser',
+			'adminDashboard.removeSuperuser' => 'Remove superuser',
+			'adminDashboard.superuserHint' => 'Every feature on, Premium included, no device limit',
+			'adminDashboard.permissionDone' => 'Permission updated',
 			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Your sous-chef: ask, plan, shop, cook',
 			'assistant.placeholder' => 'Ask or tell me what to do…',
@@ -3979,6 +4097,8 @@ extension on TranslationsEn {
 			'feature.premiumOnlyTitle' => 'Premium only',
 			'feature.premiumOnlyFor' => ({required Object name}) => '"${name}" is open to Premium subscribers only',
 			'feature.goPremium' => 'Go Premium',
+			_ => null,
+		} ?? switch (path) {
 			'featureName.books' => 'Recipe books',
 			'featureName.mealPlans' => 'Meal plans',
 			'featureName.groceryLists' => 'Grocery lists',
@@ -4025,9 +4145,9 @@ extension on TranslationsEn {
 			'featureName.wakeWord' => 'Hey Shefi',
 			'featureName.voiceAssistants' => 'Shefi in Siri and Gemini',
 			'featureName.shefiLauncher' => 'Shefi icon',
+			'featureName.whatsNew' => 'What\'s new',
+			'featureName.supportChat' => 'Support chat',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
-			_ => null,
-		} ?? switch (path) {
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
 			'adminConfig.minVersionTitle' => 'Force an update?',
@@ -4080,6 +4200,7 @@ extension on TranslationsEn {
 			'adminConfig.labels.session_exempt_phones' => 'Numbers exempt from one device',
 			'adminConfig.labels.support_phone' => 'Support WhatsApp number',
 			'adminConfig.labels.support_email' => 'Support email',
+			'adminConfig.labels.admin_all_features' => 'Show the admin every feature',
 			'wakeWord.title' => 'Hey Shefi',
 			'wakeWord.hint' => 'Start talking to Shefi by voice, hands-free',
 			'wakeWord.intro' => 'Say "Hey Shefi" and Shefi opens and listens. You can keep going in the same sentence and Shefi answers right away.',
@@ -4155,7 +4276,7 @@ extension on TranslationsEn {
 			'adminUser.permission' => 'Permission',
 			'adminUser.permissionAdmin' => 'Admin',
 			'adminUser.permissionUser' => 'User',
-			'adminUser.permissionHint' => 'Changed only in the Firebase console (users › permission)',
+			'adminUser.permissionHint' => 'Admin is set in the Firebase console only; superuser from the accounts tab\'s actions',
 			'adminUser.joined' => 'Joined',
 			'adminUser.lastSeen' => 'Last seen',
 			'adminUser.device' => 'Device',
@@ -4247,6 +4368,7 @@ extension on TranslationsEn {
 			'adminUser.shares.kindGroceryList' => 'Grocery list',
 			'adminUser.shares.kindHousehold' => 'Household',
 			'adminUser.shares.withNames' => ({required Object names}) => 'With: ${names}',
+			'adminUser.permissionSuperuser' => 'Superuser',
 			_ => null,
 		};
 	}

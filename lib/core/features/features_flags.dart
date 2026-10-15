@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import '../monetization/entitlement_service.dart';
+import '../services/admin_access.dart';
+import '../services/auth_session_service.dart';
 import '../services/firebase_service.dart';
 import '../utils/i18n/strings.g.dart';
 
@@ -133,7 +135,19 @@ enum FeaturesFlags {
   /// Android: the "שפי" app-drawer icon that opens Shefi listening, which
   /// also lets "Hey Google, open Shefi" start a conversation with no
   /// microphone of ours open. Shown only where [assistant] is open too.
-  shefiLauncher('ff_shefi_launcher')
+  shefiLauncher('ff_shefi_launcher'),
+
+  /// "What's new": the book of release highlights a returning account is
+  /// shown once after an update, drawn from the `whats_new_releases`
+  /// collection the web console edits. Hidden, nothing is shown and the
+  /// seen-build pointer is left where it is.
+  whatsNew('ff_whats_new'),
+
+  /// The support conversation: the user's follow-ups and the chat screen
+  /// behind a message from the support form, the list of their
+  /// conversations, and Shefi's contact_support tool. Hidden, the form
+  /// still sends a one-off message that is answered through the inbox.
+  supportChat('ff_support_chat')
   ;
 
   /// The Remote Config parameter name.
@@ -165,6 +179,9 @@ enum FeaturesFlags {
   static final Listenable listenable = Listenable.merge([
     FirebaseService().configRevision,
     EntitlementService(),
+    // The permission (superuser, admin with "all features") rides on the
+    // profile the session resolves.
+    AuthSessionService(),
   ]);
 
   /// The console's value, resolved on every read in the manner of
@@ -176,11 +193,23 @@ enum FeaturesFlags {
   }
 
   /// [value] with this account's plan applied: the answer a screen draws.
-  FeatureAccess get access => resolve(value, EntitlementService().isPremium);
+  FeatureAccess get access => resolve(
+    value,
+    EntitlementService().isPremium,
+    allFeatures: AdminAccess.hasAllFeatures,
+  );
 
-  /// The rule on its own, for tests.
-  static FeatureAccess resolve(FeatureFlagValue value, bool premium) =>
-      switch (value) {
+  /// The rule on its own, for tests. [allFeatures] is the superuser (or the
+  /// administrator with `admin_all_features`): nothing is hidden, coming
+  /// soon or locked for them.
+  static FeatureAccess resolve(
+    FeatureFlagValue value,
+    bool premium, {
+    bool allFeatures = false,
+  }) =>
+      allFeatures
+      ? FeatureAccess.enabled
+      : switch (value) {
         FeatureFlagValue.hidden => FeatureAccess.hidden,
         FeatureFlagValue.comingSoon => FeatureAccess.comingSoon,
         FeatureFlagValue.enabled => FeatureAccess.enabled,

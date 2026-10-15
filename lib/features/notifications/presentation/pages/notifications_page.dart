@@ -9,6 +9,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/cook_session_service.dart';
 import '../../../../core/services/notifications_service.dart';
+import '../../../../core/features/features_flags.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -499,11 +500,21 @@ extension on _NotificationsPageState {
         : (item.title?.trim().isNotEmpty == true
               ? item.title!.trim()
               : t.notifications.adminMessage);
+    // An answer opens the conversation it belongs to, when the chat is on;
+    // otherwise (or for an announcement) a tap only marks it read.
+    final conversation = isReply && FeaturesFlags.supportChat.isEnabled
+        ? item.feedbackId
+        : null;
     return ClayCard(
       radius: AppRadius.md,
       padding: const EdgeInsets.all(AppSpacing.md),
       color: item.read ? null : AppColors.primaryFixed,
-      onTap: () => _markRead(item),
+      onTap: () {
+        _markRead(item);
+        if (conversation != null) {
+          context.pushNamed(Routing.supportChat, extra: conversation);
+        }
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

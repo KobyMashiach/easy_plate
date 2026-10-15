@@ -1,3 +1,5 @@
+import '../../../user_profile/domain/entities/user_permission.dart';
+
 /// One RevenueCat event, as the webhook recorded it in `purchase_events`.
 class PurchaseEventEntity {
   final String id;
@@ -95,6 +97,10 @@ class BillingAccountEntity {
   final DateTime? createdAt;
   final bool hasPushToken;
 
+  /// `users/{uid}.permission`: admin (console-set), superuser (granted
+  /// from the admin screens) or user.
+  final UserPermission permission;
+
   const BillingAccountEntity({
     required this.uid,
     required this.name,
@@ -118,6 +124,7 @@ class BillingAccountEntity {
     this.lastSeenAt,
     this.createdAt,
     this.hasPushToken = false,
+    this.permission = UserPermission.user,
   });
 
   bool get hasEvents => events.isNotEmpty;
