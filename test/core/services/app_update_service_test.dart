@@ -1,16 +1,22 @@
 import 'package:easy_plate/core/services/app_update_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// A store answer newer than the running build unless said otherwise.
+StoreRelease store(String version, {bool newer = true}) =>
+    StoreRelease(version: version, newer: newer);
+
 UpdateRequirement decide({
   String current = '1.2.0',
   String minimum = '0.0.0',
-  String latest = '0.0.0',
+  StoreRelease? store,
   String? skipped,
+  bool optionalAllowed = true,
 }) => AppUpdateService.decide(
   current: current,
   minimum: minimum,
-  latest: latest,
+  store: store,
   skipped: skipped,
+  optionalAllowed: optionalAllowed,
 );
 
 void main() {
@@ -29,117 +35,152 @@ void main() {
       expect(AppUpdateService.compareVersions('1.2.0+94', '1.2.0+3'), 0);
     });
 
-    test('an unparseable version has no opinion at all', () {
+    test('a side with no digits has no ordering', () {
       expect(AppUpdateService.compareVersions('', '1.0.0'), isNull);
-      expect(AppUpdateService.compareVersions('1.0.0', 'soon'), isNull);
+      expect(AppUpdateService.compareVersions('1.0.0', 'v-next'), isNull);
     });
   });
 
-  group('the verdict', () {
-    test('a build above both floors is left alone', () {
+  group('the rule', () {
+    test('a current build with nothing newer in the store is left alone', () {
       expect(
-        decide(current: '1.2.0', minimum: '1.0.0', latest: '1.2.0'),
+        decide(
+          current: '1.2.0',
+          minimum: '1.0.0',
+          store: store('1.2.0', newer: false),
+        ),
         UpdateRequirement.none,
       );
     });
 
-    test('below the minimum is forced', () {
+    test('below the floor the update is forced', () {
       expect(
-        decide(current: '1.0.0', minimum: '1.1.0', latest: '1.3.0'),
+        decide(current: '1.0.0', minimum: '1.1.0', store: store('1.3.0')),
         UpdateRequirement.forced,
       );
     });
 
-    test('exactly at the minimum is not forced', () {
+    test('exactly on the floor is allowed', () {
       expect(
-        decide(current: '1.1.0', minimum: '1.1.0', latest: '1.1.0'),
+        decide(
+          current: '1.1.0',
+          minimum: '1.1.0',
+          store: store('1.1.0', newer: false),
+        ),
         UpdateRequirement.none,
       );
     });
 
-    test('behind the store but above the minimum is only offered', () {
+    test('a newer store build above the floor is offered, not forced', () {
       expect(
-        decide(current: '1.1.0', minimum: '1.0.0', latest: '1.3.0'),
+        decide(current: '1.1.0', minimum: '1.0.0', store: store('1.3.0')),
         UpdateRequirement.optional,
       );
     });
 
-    test('a skipped version is not offered again', () {
+    test('a store that did not answer offers nothing', () {
+      expect(
+        decide(current: '1.1.0', minimum: '1.0.0', store: null),
+        UpdateRequirement.none,
+      );
+    });
+
+    test('the store decides what counts as newer, not the version text', () {
+      // Play reports a version code, so "newer" is its verdict, and the
+      // label is only an identity for the skip.
+      expect(
+        decide(current: '1.1.0', minimum: '1.0.0', store: store('build 12')),
+        UpdateRequirement.optional,
+      );
+    });
+
+    test('a skipped store release is not offered again', () {
       expect(
         decide(
           current: '1.1.0',
           minimum: '1.0.0',
-          latest: '1.3.0',
+          store: store('1.3.0'),
           skipped: '1.3.0',
         ),
         UpdateRequirement.none,
       );
     });
 
-    test('the release after a skipped one is offered', () {
+    test('a skip on one release does not cover the next', () {
       expect(
         decide(
           current: '1.1.0',
           minimum: '1.0.0',
-          latest: '1.4.0',
+          store: store('1.4.0'),
           skipped: '1.3.0',
         ),
         UpdateRequirement.optional,
       );
     });
 
-    test('after the app was in the background no optional prompt is raised', () {
-      expect(
-        AppUpdateService.decide(
-          current: '1.2.0',
-          minimum: '0.0.0',
-          latest: '1.3.0',
-          optionalAllowed: false,
-        ),
-        UpdateRequirement.none,
-      );
-      // A forced update still is.
-      expect(
-        AppUpdateService.decide(
-          current: '1.2.0',
-          minimum: '1.2.5',
-          latest: '1.3.0',
-          optionalAllowed: false,
-        ),
-        UpdateRequirement.forced,
-      );
-    });
-
-    test('skipping does not survive the floor being raised', () {
+    test('a skip does not survive the floor being raised', () {
       expect(
         decide(
           current: '1.1.0',
-          minimum: '1.3.0',
-          latest: '1.3.0',
+          minimum: '1.2.0',
+          store: store('1.3.0'),
           skipped: '1.3.0',
         ),
         UpdateRequirement.forced,
       );
     });
 
-    test('the in-app defaults never lock anyone out', () {
-      // What a build that cannot reach the console is left holding.
+    test(
+      'after the app was in the background no optional prompt is raised',
+      () {
+        expect(
+          decide(
+            current: '1.1.0',
+            minimum: '1.0.0',
+            store: store('1.3.0'),
+            optionalAllowed: false,
+          ),
+          UpdateRequirement.none,
+        );
+      },
+    );
+
+    test('the floor ignores the background hold', () {
       expect(
-        decide(current: '0.1.0', minimum: '0.0.0', latest: '0.0.0'),
+        decide(
+          current: '1.1.0',
+          minimum: '1.2.0',
+          store: store('1.3.0'),
+          optionalAllowed: false,
+        ),
+        UpdateRequirement.forced,
+      );
+    });
+
+    test('the shipped defaults never lock anyone out', () {
+      expect(
+        decide(current: '0.1.0', minimum: '0.0.0'),
         UpdateRequirement.none,
       );
     });
 
-    test('a console typo is ignored rather than treated as a floor', () {
+    test('a console typo is no opinion rather than a lockout', () {
       expect(
-        decide(current: '1.0.0', minimum: 'v-next', latest: 'v-next'),
+        decide(current: '1.0.0', minimum: 'v-next'),
         UpdateRequirement.none,
       );
     });
 
-    test('an unreadable running version blocks nothing', () {
+    test('an unreadable installed version cannot be below the floor', () {
+      // The iOS probe compares the installed version itself and answers
+      // "not newer" when there is nothing to compare; here only the floor
+      // is in question.
       expect(
-        decide(current: '', minimum: '9.9.9', latest: '9.9.9'),
+        decide(
+          current: '',
+          minimum: '9.9.9',
+          store: store('9.9.9', newer: false),
+        ),
         UpdateRequirement.none,
       );
     });

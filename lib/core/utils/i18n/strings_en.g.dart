@@ -1506,7 +1506,7 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 	@override String get quotaAiRewarded => 'Video AI per day';
 	@override String get quotaAiPremium => 'Premium AI per day';
 	@override String get minVersion => 'Minimum version';
-	@override String get latestVersion => 'Latest version';
+	@override String get latestVersion => 'Store version';
 	@override String get thisBuild => 'This build';
 	@override String get pricing => 'Token price list';
 	@override String get pricingHint => 'US dollars per million tokens. The defaults are an estimate — update them from Google\'s price list.';
@@ -3732,7 +3732,7 @@ extension on TranslationsEn {
 			'adminDashboard.quotaAiRewarded' => 'Video AI per day',
 			'adminDashboard.quotaAiPremium' => 'Premium AI per day',
 			'adminDashboard.minVersion' => 'Minimum version',
-			'adminDashboard.latestVersion' => 'Latest version',
+			'adminDashboard.latestVersion' => 'Store version',
 			'adminDashboard.thisBuild' => 'This build',
 			'adminDashboard.pricing' => 'Token price list',
 			'adminDashboard.pricingHint' => 'US dollars per million tokens. The defaults are an estimate — update them from Google\'s price list.',

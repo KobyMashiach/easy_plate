@@ -85,6 +85,7 @@ dependencies:
   flutter_tts: ^4.2.5
   # Plays Shefi's cloud voice (MP3 from the speak function).
   just_audio: ^0.10.6
+  in_app_update: ^4.2.5
 
 dev_dependencies:
   flutter_test:

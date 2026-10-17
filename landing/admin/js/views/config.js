@@ -42,7 +42,7 @@ export async function mount({ view, actions }) {
 
   const apply = (result) => { params = result.parameters || []; version = result.version; info.textContent = `${t("config.version", { v: version || "?" })} · ${t("config.count", { n: params.length })}`; };
   const set = async (name, value) => {
-    try { apply(await call("config.set", { name, value: String(value) })); toast(t("config.saved", { v: version }), "ok"); render(); } catch (e) { toastError(e); }
+    try { apply(await call("config.set", { name, value: String(value) })); toast(t("config.saved"), "ok"); render(); } catch (e) { toastError(e); }
   };
 
   const row = (p) => {
@@ -85,7 +85,7 @@ export async function mount({ view, actions }) {
     const groupCtl = input({ placeholder: "featureFlags", style: { direction: "ltr" } });
     modal({ title: t("config.add"), body: h("div.stack", h("p.small.muted", t("config.addHint")), field(t("config.name"), name), h("div.grid2", field(t("config.type"), type), field(t("config.value"), value)), field(t("config.description"), description), field(t("config.group"), groupCtl)), actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.add"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => {
       if (!name.value.trim()) return;
-      try { apply(await call("config.add", { name: name.value.trim(), valueType: type.value, value: value.value, description: description.value.trim(), group: groupCtl.value.trim() })); toast(t("config.saved", { v: version }), "ok"); c(); render(); } catch (e) { toastError(e); }
+      try { apply(await call("config.add", { name: name.value.trim(), valueType: type.value, value: value.value, description: description.value.trim(), group: groupCtl.value.trim() })); toast(t("config.saved"), "ok"); c(); render(); } catch (e) { toastError(e); }
     })); return b; }] });
   };
   actions.append(button(t("config.add"), { kind: "small", onclick: add }), button(t("common.refresh"), { kind: "small", onclick: () => load() }));

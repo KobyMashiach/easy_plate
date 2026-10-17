@@ -1505,7 +1505,7 @@ class _Translations$adminDashboard$ru extends Translations$adminDashboard$he {
 	@override String get quotaAiRewarded => 'ИИ за видео в день';
 	@override String get quotaAiPremium => 'ИИ для премиум в день';
 	@override String get minVersion => 'Минимальная версия';
-	@override String get latestVersion => 'Последняя версия';
+	@override String get latestVersion => 'Версия в магазине';
 	@override String get thisBuild => 'Эта сборка';
 	@override String get pricing => 'Прайс на токены';
 	@override String get pricingHint => 'Доллары США за миллион токенов. Значения по умолчанию — оценка, обновите их по прайсу Google.';
@@ -3466,7 +3466,7 @@ extension on TranslationsRu {
 			'adminDashboard.quotaAiRewarded' => 'ИИ за видео в день',
 			'adminDashboard.quotaAiPremium' => 'ИИ для премиум в день',
 			'adminDashboard.minVersion' => 'Минимальная версия',
-			'adminDashboard.latestVersion' => 'Последняя версия',
+			'adminDashboard.latestVersion' => 'Версия в магазине',
 			'adminDashboard.thisBuild' => 'Эта сборка',
 			'adminDashboard.pricing' => 'Прайс на токены',
 			'adminDashboard.pricingHint' => 'Доллары США за миллион токенов. Значения по умолчанию — оценка, обновите их по прайсу Google.',

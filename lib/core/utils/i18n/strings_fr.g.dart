@@ -1505,7 +1505,7 @@ class _Translations$adminDashboard$fr extends Translations$adminDashboard$he {
 	@override String get quotaAiRewarded => 'IA vidéo par jour';
 	@override String get quotaAiPremium => 'IA premium par jour';
 	@override String get minVersion => 'Version minimale';
-	@override String get latestVersion => 'Dernière version';
+	@override String get latestVersion => 'Version en boutique';
 	@override String get thisBuild => 'Cette version';
 	@override String get pricing => 'Tarifs des jetons';
 	@override String get pricingHint => 'Dollars US par million de jetons. Les valeurs par défaut sont une estimation — à mettre à jour d\'après les tarifs de Google.';
@@ -3466,7 +3466,7 @@ extension on TranslationsFr {
 			'adminDashboard.quotaAiRewarded' => 'IA vidéo par jour',
 			'adminDashboard.quotaAiPremium' => 'IA premium par jour',
 			'adminDashboard.minVersion' => 'Version minimale',
-			'adminDashboard.latestVersion' => 'Dernière version',
+			'adminDashboard.latestVersion' => 'Version en boutique',
 			'adminDashboard.thisBuild' => 'Cette version',
 			'adminDashboard.pricing' => 'Tarifs des jetons',
 			'adminDashboard.pricingHint' => 'Dollars US par million de jetons. Les valeurs par défaut sont une estimation — à mettre à jour d\'après les tarifs de Google.',

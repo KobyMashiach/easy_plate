@@ -3695,8 +3695,8 @@ class Translations$adminDashboard$he {
 	/// he: 'גרסה מינימלית'
 	String get minVersion => 'גרסה מינימלית';
 
-	/// he: 'גרסה אחרונה'
-	String get latestVersion => 'גרסה אחרונה';
+	/// he: 'גרסה בחנות'
+	String get latestVersion => 'גרסה בחנות';
 
 	/// he: 'הבנייה הזו'
 	String get thisBuild => 'הבנייה הזו';
@@ -7132,7 +7132,7 @@ extension on Translations {
 			'adminDashboard.quotaAiRewarded' => 'AI בווידאו ביום',
 			'adminDashboard.quotaAiPremium' => 'AI לפרימיום ביום',
 			'adminDashboard.minVersion' => 'גרסה מינימלית',
-			'adminDashboard.latestVersion' => 'גרסה אחרונה',
+			'adminDashboard.latestVersion' => 'גרסה בחנות',
 			'adminDashboard.thisBuild' => 'הבנייה הזו',
 			'adminDashboard.pricing' => 'מחירון טוקנים',
 			'adminDashboard.pricingHint' => 'דולר למיליון טוקנים. מחירי ברירת המחדל הם הערכה — כדאי לעדכן לפי המחירון של Google.',

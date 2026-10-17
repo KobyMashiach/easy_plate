@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/services/admin_inbox_service.dart';
+import '../../../../core/services/app_update_service.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
@@ -778,7 +779,7 @@ class _ConfigRows extends StatelessWidget {
         ),
         StatRow(
           label: s.latestVersion,
-          value: remote.remoteString(FirebaseService.latestVersionKey),
+          value: AppUpdateService().storeRelease?.version ?? '—',
         ),
         FutureBuilder<PackageInfo>(
           future: PackageInfo.fromPlatform(),

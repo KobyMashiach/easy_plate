@@ -1505,7 +1505,7 @@ class _Translations$adminDashboard$ar extends Translations$adminDashboard$he {
 	@override String get quotaAiRewarded => 'ذكاء اصطناعي بالفيديو يوميًا';
 	@override String get quotaAiPremium => 'ذكاء اصطناعي للمميز يوميًا';
 	@override String get minVersion => 'الحد الأدنى للإصدار';
-	@override String get latestVersion => 'أحدث إصدار';
+	@override String get latestVersion => 'الإصدار في المتجر';
 	@override String get thisBuild => 'هذا الإصدار';
 	@override String get pricing => 'قائمة أسعار الرموز';
 	@override String get pricingHint => 'دولار أمريكي لكل مليون رمز. القيم الافتراضية تقديرية — حدّثها من قائمة أسعار Google.';
@@ -3466,7 +3466,7 @@ extension on TranslationsAr {
 			'adminDashboard.quotaAiRewarded' => 'ذكاء اصطناعي بالفيديو يوميًا',
 			'adminDashboard.quotaAiPremium' => 'ذكاء اصطناعي للمميز يوميًا',
 			'adminDashboard.minVersion' => 'الحد الأدنى للإصدار',
-			'adminDashboard.latestVersion' => 'أحدث إصدار',
+			'adminDashboard.latestVersion' => 'الإصدار في المتجر',
 			'adminDashboard.thisBuild' => 'هذا الإصدار',
 			'adminDashboard.pricing' => 'قائمة أسعار الرموز',
 			'adminDashboard.pricingHint' => 'دولار أمريكي لكل مليون رمز. القيم الافتراضية تقديرية — حدّثها من قائمة أسعار Google.',

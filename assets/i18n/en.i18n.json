@@ -1273,7 +1273,7 @@
     "quotaAiRewarded": "Video AI per day",
     "quotaAiPremium": "Premium AI per day",
     "minVersion": "Minimum version",
-    "latestVersion": "Latest version",
+    "latestVersion": "Store version",
     "thisBuild": "This build",
     "pricing": "Token price list",
     "pricingHint": "US dollars per million tokens. The defaults are an estimate — update them from Google's price list.",

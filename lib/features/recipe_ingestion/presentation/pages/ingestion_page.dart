@@ -38,13 +38,21 @@ import '../../../../core/services/share_intent_service.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/features/feature_gate.dart';
 
-/// The channels whose analysis is a heavy AI call — a link fetched, a video
-/// watched, a recording listened to — the ones behind the daily quota.
-/// Pasted text and a hand-written recipe are not.
-bool _isLinkExtraction(RecipeIngestionChannel channel) =>
+/// The channels whose submit is an AI call — text read, a link fetched, a
+/// video watched, a recording listened to, a recipe written — the ones
+/// behind the daily quota. A hand-written recipe is not, and a web search
+/// pays when a result is opened, not when the search runs.
+bool _isAiExtraction(RecipeIngestionChannel channel) =>
+    channel == RecipeIngestionChannel.rawText ||
     channel == RecipeIngestionChannel.urlScrape ||
     channel == RecipeIngestionChannel.socialVideo ||
-    channel == RecipeIngestionChannel.file;
+    channel == RecipeIngestionChannel.file ||
+    channel == RecipeIngestionChannel.aiRequest;
+
+/// Every channel that ends in an AI call shows the day's allowance — the web
+/// search too, since opening one of its results spends from it.
+bool _showsAiQuota(RecipeIngestionChannel channel) =>
+    channel != RecipeIngestionChannel.manual;
 
 /// Starts a link extraction once the quota gate has let it through. Every
 /// path that hands a URL to the model goes through here, so the gate can never
@@ -292,9 +300,9 @@ class _ChannelFormState extends State<_ChannelForm> {
     final value = _controller.text.trim();
     if (value.isEmpty) return;
     final bloc = context.read<IngestionBloc>();
-    // The link channels cost a daily extraction, and a video: asked for
+    // The AI channels cost a daily extraction, and a video: asked for
     // before the model is touched, so a refused gate costs nothing.
-    if (_isLinkExtraction(widget.channel)) {
+    if (_isAiExtraction(widget.channel)) {
       if (!await QuotaGates.extractWithAi(context)) return;
     }
     switch (widget.channel) {
@@ -420,7 +428,7 @@ class _ChannelFormState extends State<_ChannelForm> {
     );
   }
 
-  /// What the analyse button says on a link channel: the plain label while
+  /// What the analyse button says on an AI channel: the plain label while
   /// nothing is counted, "watch a video and parse" while a free account has
   /// extractions left, and a disabled "locked for today" once the day's
   /// allowance — free or premium — is spent.
@@ -428,7 +436,7 @@ class _ChannelFormState extends State<_ChannelForm> {
     final isFile = widget.channel == RecipeIngestionChannel.file;
     final ready = isFile ? _files.isNotEmpty : _hasInput;
     final submit = isFile ? _submitFiles : _submit;
-    if (!_isLinkExtraction(widget.channel) || !MonetizationConfig.aiGated) {
+    if (!_isAiExtraction(widget.channel) || !MonetizationConfig.aiGated) {
       return ClayButton(
         // A request is not analysed, it is written — the button says so.
         label: widget.channel == RecipeIngestionChannel.aiRequest
@@ -537,6 +545,9 @@ class _ChannelFormState extends State<_ChannelForm> {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
+        // The day's allowance sits between the choice and the card it
+        // applies to, so it reads before the input, not after it.
+        if (_showsAiQuota(widget.channel)) const AiQuotaIndicator(),
         // The card for the chosen channel: what it is, in full, then its
         // input. The same shape for every channel, so switching between
         // them reads as turning a page rather than landing on a new form.
@@ -582,7 +593,6 @@ class _ChannelFormState extends State<_ChannelForm> {
               ),
             ),
           const SizedBox(height: AppSpacing.lg),
-          if (_isLinkExtraction(widget.channel)) const AiQuotaIndicator(),
           ListenableBuilder(
             listenable: Listenable.merge([
               DailyUsageService(),

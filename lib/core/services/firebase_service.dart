@@ -43,11 +43,11 @@ class FirebaseService {
     // DEV marker in front of a real user; a developer briefly not seeing one is
     // the cheaper mistake.
     isProdKey: true,
-    // Version gating, read by AppUpdateService. Both default to a version no
-    // build can be behind, so an app that cannot reach the console never
-    // decides on its own that it is out of date and locks the user out.
+    // The forced-update floor, read by AppUpdateService. Defaults to a
+    // version no build can be behind, so an app that cannot reach the console
+    // never decides on its own that it is out of date and locks the user out.
+    // (What is *live* in the stores is asked of the store itself.)
     minimumVersionKey: '0.0.0',
-    latestVersionKey: '0.0.0',
     // Set once the app has an App Store listing; the numeric id is the only
     // way to link to it. Empty means "no iOS listing yet".
     iosAppStoreIdKey: '',
@@ -118,10 +118,6 @@ class FirebaseService {
 
   /// The oldest build still allowed to run. Below this the update is forced.
   static const minimumVersionKey = 'minimumVersion';
-
-  /// The newest build available in the stores. Above the running one — and
-  /// with [minimumVersionKey] satisfied — the update is offered, not forced.
-  static const latestVersionKey = 'latestVersion';
 
   static const iosAppStoreIdKey = 'iosAppStoreId';
 

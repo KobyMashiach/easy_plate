@@ -10,9 +10,10 @@ import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 
-/// What the day's AI link extractions cost, and how many are left.
+/// What the day's AI extractions cost, and how many are left.
 ///
-/// Sits above the analyse button on the link and video channels. Two states:
+/// Sits between the channel chips and the channel's card, on every channel
+/// that ends in an AI call. Two states:
 /// a play icon with "2/2 left today" while extractions remain, and a lock
 /// once they are spent. Hidden for premium accounts and when ads are off.
 class AiQuotaIndicator extends StatefulWidget {
@@ -55,7 +56,7 @@ class _AiQuotaIndicatorState extends State<AiQuotaIndicator> {
             : AppColors.primary;
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          padding: const EdgeInsets.only(bottom: AppSpacing.md),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.sm,

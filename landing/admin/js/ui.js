@@ -207,8 +207,10 @@ export function confirmDialog({ title, text, danger = true, okLabel }) {
       title,
       body: h("div.stack", text ? h("p", text) : null, danger ? h("p.small.warn", t("common.irreversible")) : null),
       actions: [
-        button(t("common.cancel"), { onclick: () => { close(); resolve(false); } }),
-        button(okLabel || (danger ? t("common.yesDelete") : t("common.confirm")), { kind: danger ? "danger" : "primary", onclick: () => { close(); resolve(true); } }),
+        button(t("common.cancel"), { onclick: () => { resolve(false); close(); } }),
+        // Settle before closing: close() fires onClose, and a promise keeps
+        // its first value — the other order answered "cancel" to every OK.
+        button(okLabel || (danger ? t("common.yesDelete") : t("common.confirm")), { kind: danger ? "danger" : "primary", onclick: () => { resolve(true); close(); } }),
       ],
       onClose: () => resolve(false),
     });
