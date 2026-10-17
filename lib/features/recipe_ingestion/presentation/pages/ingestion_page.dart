@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -17,6 +18,7 @@ import '../../../../core/monetization/entitlement_service.dart';
 import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/monetization/quota_gates.dart';
 import '../../../../core/services/firebase_service.dart';
+import '../../../../core/services/store_review_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/allergen_chip_selector.dart';
@@ -130,7 +132,11 @@ class IngestionPage extends StatelessWidget {
       ),
       child: BlocConsumer<IngestionBloc, IngestionState>(
         listener: (context, state) {
-          if (state is IngestionSaved) Navigator.of(context).pop();
+          if (state is IngestionSaved) {
+            Navigator.of(context).pop();
+            // After the pop so the store's sheet lands on the recipes list.
+            unawaited(StoreReviewService().onSuccessMoment());
+          }
         },
         builder: (context, state) {
           return ClayScaffold(

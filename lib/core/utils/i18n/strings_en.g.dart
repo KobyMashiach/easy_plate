@@ -1602,6 +1602,9 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 	@override String get makeSuperuser => 'Make superuser';
 	@override String get removeSuperuser => 'Remove superuser';
 	@override String get superuserHint => 'Every feature on, Premium included, no device limit';
+	@override String get makeAdmin => 'Make admin';
+	@override String get removeAdmin => 'Remove admin';
+	@override String get adminHint => 'Full control: console, tickets, every account\'s data, no device limit';
 	@override String get permissionDone => 'Permission updated';
 }
 
@@ -1873,6 +1876,7 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get shefiLauncher => 'Shefi icon';
 	@override String get whatsNew => 'What\'s new';
 	@override String get supportChat => 'Support chat';
+	@override String get storeReview => 'Rate the app prompt';
 }
 
 // Path: adminConfig
@@ -2007,7 +2011,7 @@ class _Translations$adminUser$en extends Translations$adminUser$he {
 	@override String get permission => 'Permission';
 	@override String get permissionAdmin => 'Admin';
 	@override String get permissionUser => 'User';
-	@override String get permissionHint => 'Admin is set in the Firebase console only; superuser from the accounts tab\'s actions';
+	@override String get permissionHint => 'Admin and superuser are granted from the accounts tab\'s actions; never on your own account';
 	@override String get joined => 'Joined';
 	@override String get lastSeen => 'Last seen';
 	@override String get device => 'Device';
@@ -3828,6 +3832,9 @@ extension on TranslationsEn {
 			'adminDashboard.makeSuperuser' => 'Make superuser',
 			'adminDashboard.removeSuperuser' => 'Remove superuser',
 			'adminDashboard.superuserHint' => 'Every feature on, Premium included, no device limit',
+			'adminDashboard.makeAdmin' => 'Make admin',
+			'adminDashboard.removeAdmin' => 'Remove admin',
+			'adminDashboard.adminHint' => 'Full control: console, tickets, every account\'s data, no device limit',
 			'adminDashboard.permissionDone' => 'Permission updated',
 			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Your sous-chef: ask, plan, shop, cook',
@@ -4094,11 +4101,11 @@ extension on TranslationsEn {
 			'feature.unavailable' => 'This feature is not available right now',
 			'feature.premiumOnly' => 'Premium',
 			'feature.premiumOnlyMessage' => 'This feature is for Premium subscribers',
+			_ => null,
+		} ?? switch (path) {
 			'feature.premiumOnlyTitle' => 'Premium only',
 			'feature.premiumOnlyFor' => ({required Object name}) => '"${name}" is open to Premium subscribers only',
 			'feature.goPremium' => 'Go Premium',
-			_ => null,
-		} ?? switch (path) {
 			'featureName.books' => 'Recipe books',
 			'featureName.mealPlans' => 'Meal plans',
 			'featureName.groceryLists' => 'Grocery lists',
@@ -4147,6 +4154,7 @@ extension on TranslationsEn {
 			'featureName.shefiLauncher' => 'Shefi icon',
 			'featureName.whatsNew' => 'What\'s new',
 			'featureName.supportChat' => 'Support chat',
+			'featureName.storeReview' => 'Rate the app prompt',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
@@ -4276,7 +4284,7 @@ extension on TranslationsEn {
 			'adminUser.permission' => 'Permission',
 			'adminUser.permissionAdmin' => 'Admin',
 			'adminUser.permissionUser' => 'User',
-			'adminUser.permissionHint' => 'Admin is set in the Firebase console only; superuser from the accounts tab\'s actions',
+			'adminUser.permissionHint' => 'Admin and superuser are granted from the accounts tab\'s actions; never on your own account',
 			'adminUser.joined' => 'Joined',
 			'adminUser.lastSeen' => 'Last seen',
 			'adminUser.device' => 'Device',

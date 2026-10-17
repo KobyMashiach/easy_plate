@@ -22,4 +22,4 @@ export const SUPPORT = 'support@aieasyplate.app';
 
 // When the copy (home, guides, legal) last changed: the sitemap's lastmod and
 // the pages' dateModified. Bump it when you edit copy, not on every build.
-export const CONTENT_UPDATED = '2026-10-08';
+export const CONTENT_UPDATED = '2026-10-18';

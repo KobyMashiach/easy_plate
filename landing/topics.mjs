@@ -15,12 +15,13 @@
 import { MORE_TOPICS } from './topics_more.mjs';
 import { MORE_TOPICS_2 } from './topics_more2.mjs';
 import { MORE_TOPICS_3 } from './topics_more3.mjs';
+import { MORE_TOPICS_4 } from './topics_more4.mjs';
 
 export const SLUGS = [
   'recipe-app', 'grocery-list-app', 'meal-planner', 'save-tiktok-recipes',
   'save-instagram-recipes', 'recipe-calorie-calculator', 'grocery-prices-receipt-scanner',
   'family-cookbook', 'cook-mode-timers', 'recipe-from-pdf-or-voice', 'weekly-family-meal-plan',
-  'ai-cooking-assistant',
+  'ai-cooking-assistant', 'recipe-search', 'ai-recipes', 'receipt-scanner',
 ];
 
 // Labels shared by every guide page.
@@ -614,4 +615,4 @@ const BASE_TOPICS = {
   },
 };
 
-export const TOPICS = { ...BASE_TOPICS, ...MORE_TOPICS, ...MORE_TOPICS_2, ...MORE_TOPICS_3 };
+export const TOPICS = { ...BASE_TOPICS, ...MORE_TOPICS, ...MORE_TOPICS_2, ...MORE_TOPICS_3, ...MORE_TOPICS_4 };

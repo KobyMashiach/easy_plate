@@ -1857,6 +1857,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get shefiLauncher => 'Значок Шефи';
 	@override String get whatsNew => 'Что нового';
 	@override String get supportChat => 'Чат поддержки';
+	@override String get storeReview => 'Запрос оценки в магазине';
 }
 
 // Path: wakeWord
@@ -3866,6 +3867,7 @@ extension on TranslationsRu {
 			'featureName.shefiLauncher' => 'Значок Шефи',
 			'featureName.whatsNew' => 'Что нового',
 			'featureName.supportChat' => 'Чат поддержки',
+			'featureName.storeReview' => 'Запрос оценки в магазине',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',

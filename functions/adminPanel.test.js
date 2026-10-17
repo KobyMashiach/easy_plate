@@ -214,7 +214,8 @@ test("language texts keep the five languages and the source string", () => {
   assert.match(prompt, /"Cook mode"/);
 });
 
-test("user.permission grants user or superuser only", () => {
+test("user.permission grants user, superuser or admin", () => {
   assert.equal(parseRequest({ action: "user.permission", uid: "u", permission: "superuser" }).permission, "superuser");
-  assert.ok(parseRequest({ action: "user.permission", uid: "u", permission: "admin" }).error);
+  assert.equal(parseRequest({ action: "user.permission", uid: "u", permission: "admin" }).permission, "admin");
+  assert.ok(parseRequest({ action: "user.permission", uid: "u", permission: "boss" }).error);
 });

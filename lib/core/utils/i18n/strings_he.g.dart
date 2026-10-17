@@ -3983,6 +3983,15 @@ class Translations$adminDashboard$he {
 	/// he: 'כל הפיצ'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים'
 	String get superuserHint => 'כל הפיצ\'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים';
 
+	/// he: 'הפוך למנהל'
+	String get makeAdmin => 'הפוך למנהל';
+
+	/// he: 'בטל מנהל'
+	String get removeAdmin => 'בטל מנהל';
+
+	/// he: 'ניהול מלא: קונסולה, פניות, הנתונים של כל חשבון, בלי הגבלת מכשירים'
+	String get adminHint => 'ניהול מלא: קונסולה, פניות, הנתונים של כל חשבון, בלי הגבלת מכשירים';
+
 	/// he: 'ההרשאה עודכנה'
 	String get permissionDone => 'ההרשאה עודכנה';
 }
@@ -4685,6 +4694,9 @@ class Translations$featureName$he {
 
 	/// he: 'צ'אט תמיכה'
 	String get supportChat => 'צ\'אט תמיכה';
+
+	/// he: 'בקשת דירוג בחנות'
+	String get storeReview => 'בקשת דירוג בחנות';
 }
 
 // Path: adminConfig
@@ -4982,8 +4994,8 @@ class Translations$adminUser$he {
 	/// he: 'משתמש'
 	String get permissionUser => 'משתמש';
 
-	/// he: 'מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות'
-	String get permissionHint => 'מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות';
+	/// he: 'מנהל וסופר-משתמש ניתנים מתפריט הפעולות בטאב החשבונות; לא על החשבון שלך'
+	String get permissionHint => 'מנהל וסופר-משתמש ניתנים מתפריט הפעולות בטאב החשבונות; לא על החשבון שלך';
 
 	/// he: 'הצטרף'
 	String get joined => 'הצטרף';
@@ -7228,6 +7240,9 @@ extension on Translations {
 			'adminDashboard.makeSuperuser' => 'הפוך לסופר-משתמש',
 			'adminDashboard.removeSuperuser' => 'בטל סופר-משתמש',
 			'adminDashboard.superuserHint' => 'כל הפיצ\'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים',
+			'adminDashboard.makeAdmin' => 'הפוך למנהל',
+			'adminDashboard.removeAdmin' => 'בטל מנהל',
+			'adminDashboard.adminHint' => 'ניהול מלא: קונסולה, פניות, הנתונים של כל חשבון, בלי הגבלת מכשירים',
 			'adminDashboard.permissionDone' => 'ההרשאה עודכנה',
 			'assistant.title' => 'שפי',
 			'assistant.subtitle' => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול',
@@ -7494,11 +7509,11 @@ extension on Translations {
 			'feature.unavailable' => 'הפיצ׳ר הזה לא זמין כרגע',
 			'feature.premiumOnly' => 'לפרימיום',
 			'feature.premiumOnlyMessage' => 'הפיצ׳ר הזה זמין למנויי פרימיום',
+			_ => null,
+		} ?? switch (path) {
 			'feature.premiumOnlyTitle' => 'לפרימיום בלבד',
 			'feature.premiumOnlyFor' => ({required Object name}) => 'האפשרות "${name}" פתוחה רק למשתמשי פרימיום',
 			'feature.goPremium' => 'עבור לפרימיום',
-			_ => null,
-		} ?? switch (path) {
 			'featureName.books' => 'ספרי מתכונים',
 			'featureName.mealPlans' => 'תפריטים',
 			'featureName.groceryLists' => 'רשימות קניות',
@@ -7547,6 +7562,7 @@ extension on Translations {
 			'featureName.shefiLauncher' => 'אייקון שפי',
 			'featureName.whatsNew' => 'מה חדש',
 			'featureName.supportChat' => 'צ\'אט תמיכה',
+			'featureName.storeReview' => 'בקשת דירוג בחנות',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -7676,7 +7692,7 @@ extension on Translations {
 			'adminUser.permission' => 'הרשאה',
 			'adminUser.permissionAdmin' => 'מנהל',
 			'adminUser.permissionUser' => 'משתמש',
-			'adminUser.permissionHint' => 'מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות',
+			'adminUser.permissionHint' => 'מנהל וסופר-משתמש ניתנים מתפריט הפעולות בטאב החשבונות; לא על החשבון שלך',
 			'adminUser.joined' => 'הצטרף',
 			'adminUser.lastSeen' => 'נראה לאחרונה',
 			'adminUser.device' => 'מכשיר',

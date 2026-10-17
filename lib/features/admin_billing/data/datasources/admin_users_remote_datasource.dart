@@ -13,8 +13,8 @@ abstract class AdminUsersRemoteDataSource {
   /// Frees the account's device session and signs that device out.
   Future<void> releaseSession(String uid);
 
-  /// `user` or `superuser`; the function refuses `admin` and the caller's
-  /// own account.
+  /// `user`, `superuser` or `admin`; the function refuses the caller's own
+  /// account.
   Future<void> setPermission(String uid, String permission);
   Future<void> enable(String uid);
   Future<void> delete(String uid);

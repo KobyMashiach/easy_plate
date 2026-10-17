@@ -89,6 +89,27 @@ export const LABELS = {
     fr: { label: 'Assistant de cuisine IA', blurb: 'Shefi répond sur vos recettes, plans et listes, à la voix ou à l’écrit, et agit dessus.' },
     ru: { label: 'ИИ-помощник на кухне', blurb: 'Шефи отвечает о ваших рецептах, планах и списках голосом или текстом и действует.' },
   },
+  'recipe-search': {
+    en: { label: 'Recipe search', blurb: 'Search the web for a dish and save it in a tap, or search your own recipes by name and diet.' },
+    he: { label: 'חיפוש מתכונים', blurb: 'מחפשים מנה ברשת ושומרים בלחיצה, או מחפשים במתכונים שלכם לפי שם ותזונה.' },
+    ar: { label: 'البحث عن وصفات', blurb: 'ابحث في الإنترنت عن طبق واحفظه بلمسة، أو ابحث في وصفاتك بالاسم والنظام الغذائي.' },
+    fr: { label: 'Recherche de recettes', blurb: 'Cherchez un plat sur le web et enregistrez-le en un geste, ou cherchez dans vos recettes par nom et régime.' },
+    ru: { label: 'Поиск рецептов', blurb: 'Ищите блюдо в интернете и сохраняйте одним касанием, или ищите среди своих рецептов по названию и диете.' },
+  },
+  'ai-recipes': {
+    en: { label: 'AI recipes', blurb: 'Describe what you crave and get a full recipe with nutrition, or let the AI read a link, video, PDF or voice note.' },
+    he: { label: 'מתכונים AI', blurb: 'מתארים מה בא לכם ומקבלים מתכון מלא עם ערכים תזונתיים, או נותנים ל-AI לקרוא קישור, סרטון, PDF או הודעה קולית.' },
+    ar: { label: 'وصفات بالذكاء الاصطناعي', blurb: 'صِف ما تشتهيه واحصل على وصفة كاملة بالقيم الغذائية، أو دع الذكاء الاصطناعي يقرأ رابطًا أو فيديو أو PDF أو رسالة صوتية.' },
+    fr: { label: 'Recettes IA', blurb: 'Décrivez ce qui vous fait envie et obtenez une recette complète avec nutrition, ou laissez l’IA lire un lien, une vidéo, un PDF ou une note vocale.' },
+    ru: { label: 'ИИ-рецепты', blurb: 'Опишите, чего хочется, и получите полный рецепт с КБЖУ, или дайте ИИ прочитать ссылку, видео, PDF или голосовое.' },
+  },
+  'receipt-scanner': {
+    en: { label: 'Receipt scanner', blurb: 'Point the camera at a receipt; the AI reads every line into your price book and your next list shows what things cost.' },
+    he: { label: 'סריקת קבלות', blurb: 'מכוונים את המצלמה לקבלה; ה-AI קורא כל שורה לספר המחירים והרשימה הבאה מראה כמה הדברים עולים.' },
+    ar: { label: 'مسح الإيصالات', blurb: 'وجّه الكاميرا إلى الإيصال؛ يقرأ الذكاء الاصطناعي كل سطر في دفتر الأسعار وتعرض قائمتك التالية كم تكلّف الأشياء.' },
+    fr: { label: 'Scanner de tickets', blurb: 'Visez un ticket ; l’IA lit chaque ligne dans votre carnet de prix et la prochaine liste affiche ce que coûtent les choses.' },
+    ru: { label: 'Сканер чеков', blurb: 'Наведите камеру на чек; ИИ считает каждую строку в книгу цен, и следующий список покажет, сколько что стоит.' },
+  },
 };
 
 const HOME_GUIDES = {
@@ -114,6 +135,8 @@ const ICON_SVG = {
   'arrow': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
   'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
   'mail': '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  'search': '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  'scan': '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>',
   'mic': '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
   'shield': '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
 };

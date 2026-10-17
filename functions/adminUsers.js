@@ -63,7 +63,7 @@ function parseRequest(body) {
     case "setPermission": {
       if (!uid) return { error: "uid is required" };
       const permission = text(body && body.permission, 20);
-      if (!permissions.GRANTABLE.includes(permission)) return { error: "permission must be user or superuser" };
+      if (!permissions.GRANTABLE.includes(permission)) return { error: "permission must be user, superuser or admin" };
       return { action, uid, permission };
     }
     default:

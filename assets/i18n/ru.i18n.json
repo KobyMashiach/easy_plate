@@ -1710,7 +1710,8 @@
     "voiceAssistants": "Шефи в Siri и Gemini",
     "shefiLauncher": "Значок Шефи",
     "whatsNew": "Что нового",
-    "supportChat": "Чат поддержки"
+    "supportChat": "Чат поддержки",
+    "storeReview": "Запрос оценки в магазине"
   },
   "wakeWord": {
     "title": "Эй, Шефи",

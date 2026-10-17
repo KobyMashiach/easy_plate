@@ -1857,6 +1857,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get shefiLauncher => 'Icône Shefi';
 	@override String get whatsNew => 'Nouveautés';
 	@override String get supportChat => 'Chat support';
+	@override String get storeReview => 'Invitation à noter l’app';
 }
 
 // Path: wakeWord
@@ -3866,6 +3867,7 @@ extension on TranslationsFr {
 			'featureName.shefiLauncher' => 'Icône Shefi',
 			'featureName.whatsNew' => 'Nouveautés',
 			'featureName.supportChat' => 'Chat support',
+			'featureName.storeReview' => 'Invitation à noter l’app',
 			'wakeWord.title' => 'Hé Shefi',
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',

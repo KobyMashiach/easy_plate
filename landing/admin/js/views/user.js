@@ -140,13 +140,12 @@ export async function mount({ view, params, setTitle }) {
     ]));
     if (!persona) entCard.append(h("div.row", button(t("user.setPremium"), { kind: "small primary", onclick: grantPremium }), ent && ent.premium ? button(t("user.removePremium"), { kind: "small danger", onclick: removePremium }) : null));
 
-    // The administrator's own permission stays a Firebase-console edit;
-    // anyone else can be made a superuser (every flag on, no device limit)
-    // or a plain user from here, through the function.
+    // Anyone else can be made a user, a superuser (every flag on, no device
+    // limit) or an administrator from here, through the function; the
+    // function refuses the caller's own account, so the last admin stays.
     const permissionControl = () => {
       const current = (user && user.permission) || "user";
-      if (current === "admin") return h("span", t("users.permissionAdmin"), h("div.small.muted", t("users.permissionHint", { uid })));
-      const sel = select([["user", t("users.permissionUser")], ["superuser", t("users.permissionSuperuser")]], { value: current });
+      const sel = select([["user", t("users.permissionUser")], ["superuser", t("users.permissionSuperuser")], ["admin", t("users.permissionAdmin")]], { value: current });
       const save = button(t("common.save"), { kind: "small primary" });
       save.addEventListener("click", busy(save, async () => {
         if (sel.value === current) return;
@@ -157,7 +156,7 @@ export async function mount({ view, params, setTitle }) {
           renderHead(); renderTab();
         } catch (e) { toastError(e); }
       }));
-      return h("div.stack", h("div.row", sel, save), h("div.small.muted", t("users.permissionSuperuserHint")));
+      return h("div.stack", h("div.row", sel, save), h("div.small.muted", t("users.permissionSuperuserHint")), h("div.small.muted", t("users.permissionHint")));
     };
     const profileCard = h("div.card", h("h2", t("user.profile")), kv([
       [t("user.fullName"), user && user.fullName], [t("common.email"), user && user.email], [t("common.phone"), user && user.phoneNumber],

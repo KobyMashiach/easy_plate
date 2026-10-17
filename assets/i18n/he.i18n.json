@@ -1369,6 +1369,9 @@
     "makeSuperuser": "הפוך לסופר-משתמש",
     "removeSuperuser": "בטל סופר-משתמש",
     "superuserHint": "כל הפיצ'רים פתוחים, כולל פרימיום, בלי הגבלת מכשירים",
+    "makeAdmin": "הפוך למנהל",
+    "removeAdmin": "בטל מנהל",
+    "adminHint": "ניהול מלא: קונסולה, פניות, הנתונים של כל חשבון, בלי הגבלת מכשירים",
     "permissionDone": "ההרשאה עודכנה"
   },
   "assistant": {
@@ -1725,7 +1728,8 @@
     "voiceAssistants": "שפי דרך Siri ו-Gemini",
     "shefiLauncher": "אייקון שפי",
     "whatsNew": "מה חדש",
-    "supportChat": "צ'אט תמיכה"
+    "supportChat": "צ'אט תמיכה",
+    "storeReview": "בקשת דירוג בחנות"
   },
   "adminConfig": {
     "intro": "כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).",
@@ -1875,7 +1879,7 @@
     "permission": "הרשאה",
     "permissionAdmin": "מנהל",
     "permissionUser": "משתמש",
-    "permissionHint": "מנהל נקבע רק בקונסול של Firebase; סופר-משתמש ניתן מתפריט הפעולות בטאב החשבונות",
+    "permissionHint": "מנהל וסופר-משתמש ניתנים מתפריט הפעולות בטאב החשבונות; לא על החשבון שלך",
     "joined": "הצטרף",
     "lastSeen": "נראה לאחרונה",
     "device": "מכשיר",

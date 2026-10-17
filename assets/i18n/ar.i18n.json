@@ -1710,7 +1710,8 @@
     "voiceAssistants": "شيفي عبر Siri وGemini",
     "shefiLauncher": "أيقونة شيفي",
     "whatsNew": "ما الجديد",
-    "supportChat": "دردشة الدعم"
+    "supportChat": "دردشة الدعم",
+    "storeReview": "طلب تقييم التطبيق"
   },
   "wakeWord": {
     "title": "هاي شيفي",

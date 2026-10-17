@@ -107,7 +107,7 @@ const ACTIONS = {
   "notify.template.send": { id: str(128, true) },
   "user.auth": { uid: str(128, true) },
   "user.entitlement": { uid: str(128, true), premium: bool(), premiumUntil: num(), adminLock: bool() },
-  "user.permission": { uid: str(128, true), permission: anyOf(["user", "superuser"], true) },
+  "user.permission": { uid: str(128, true), permission: anyOf(["user", "superuser", "admin"], true) },
   "user.profile": { uid: str(128, true), fullName: str(80), photoUrl: str(2000) },
   "user.content.set": { root: anyOf([...CONTENT_ROOTS], true), rootId: str(128, true), collection: anyOf([...CONTENT_COLLECTIONS], true), id: str(128, true), data: obj(true) },
   "user.content.delete": { root: anyOf([...CONTENT_ROOTS], true), rootId: str(128, true), collection: anyOf([...CONTENT_COLLECTIONS], true), id: str(128, true) },
@@ -802,6 +802,7 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       return {};
     }
     case "user.permission": {
+      // Never on the caller's own account, so one administrator always stays.
       if (request.uid === caller.uid) throw refused("not on your own account", "self", 400);
       return { permission: await permissions.setPermission(request.uid, request.permission) };
     }

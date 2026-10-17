@@ -426,8 +426,7 @@ class _Overview extends StatelessWidget {
                           label: s.permissionAdmin,
                           icon: Icons.admin_panel_settings_rounded,
                         )
-                      else if (p['permission'] ==
-                          UserPermission.superuser.name)
+                      else if (p['permission'] == UserPermission.superuser.name)
                         ClayTag(
                           label: s.permissionSuperuser,
                           icon: Icons.star_rounded,

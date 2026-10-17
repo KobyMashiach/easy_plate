@@ -335,23 +335,38 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
               title: Text(s.releaseSession),
               onTap: () => Navigator.of(sheetContext).pop('releaseSession'),
             ),
-            // An administrator's permission is a Firebase-console edit.
-            if (account.permission != UserPermission.admin)
-              ListTile(
-                leading: Icon(
-                  account.permission == UserPermission.superuser
-                      ? Icons.star_outline_rounded
-                      : Icons.star_rounded,
-                  color: AppColors.primary,
-                ),
-                title: Text(
-                  account.permission == UserPermission.superuser
-                      ? s.removeSuperuser
-                      : s.makeSuperuser,
-                ),
-                subtitle: Text(s.superuserHint, style: AppTextStyles.labelSm),
-                onTap: () => Navigator.of(sheetContext).pop('permission'),
+            // Either grant toggles back to a plain user; the function refuses
+            // the administrator's own account, so the last admin stays.
+            ListTile(
+              leading: Icon(
+                account.permission == UserPermission.superuser
+                    ? Icons.star_outline_rounded
+                    : Icons.star_rounded,
+                color: AppColors.primary,
               ),
+              title: Text(
+                account.permission == UserPermission.superuser
+                    ? s.removeSuperuser
+                    : s.makeSuperuser,
+              ),
+              subtitle: Text(s.superuserHint, style: AppTextStyles.labelSm),
+              onTap: () => Navigator.of(sheetContext).pop('permission'),
+            ),
+            ListTile(
+              leading: Icon(
+                account.permission == UserPermission.admin
+                    ? Icons.remove_moderator_rounded
+                    : Icons.admin_panel_settings_rounded,
+                color: AppColors.primary,
+              ),
+              title: Text(
+                account.permission == UserPermission.admin
+                    ? s.removeAdmin
+                    : s.makeAdmin,
+              ),
+              subtitle: Text(s.adminHint, style: AppTextStyles.labelSm),
+              onTap: () => Navigator.of(sheetContext).pop('admin'),
+            ),
             ListTile(
               leading: Icon(
                 Icons.delete_forever_rounded,
@@ -387,6 +402,16 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
             account.permission == UserPermission.superuser
                 ? UserPermission.user
                 : UserPermission.superuser,
+          ),
+          t.adminDashboard.permissionDone,
+        );
+      case 'admin':
+        await _act(
+          () => _repository.setPermission(
+            account.uid,
+            account.permission == UserPermission.admin
+                ? UserPermission.user
+                : UserPermission.admin,
           ),
           t.adminDashboard.permissionDone,
         );

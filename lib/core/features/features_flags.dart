@@ -147,7 +147,12 @@ enum FeaturesFlags {
   /// behind a message from the support form, the list of their
   /// conversations, and Shefi's contact_support tool. Hidden, the form
   /// still sends a one-off message that is answered through the inbox.
-  supportChat('ff_support_chat')
+  supportChat('ff_support_chat'),
+
+  /// The store's own "rate this app" sheet (App Store / Google Play
+  /// in-app review), asked once after the second saved recipe and then
+  /// no more than once a season. Hidden, the sheet is never requested.
+  storeReview('ff_store_review')
   ;
 
   /// The Remote Config parameter name.

@@ -1857,6 +1857,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get shefiLauncher => 'أيقونة شيفي';
 	@override String get whatsNew => 'ما الجديد';
 	@override String get supportChat => 'دردشة الدعم';
+	@override String get storeReview => 'طلب تقييم التطبيق';
 }
 
 // Path: wakeWord
@@ -3866,6 +3867,7 @@ extension on TranslationsAr {
 			'featureName.shefiLauncher' => 'أيقونة شيفي',
 			'featureName.whatsNew' => 'ما الجديد',
 			'featureName.supportChat' => 'دردشة الدعم',
+			'featureName.storeReview' => 'طلب تقييم التطبيق',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',

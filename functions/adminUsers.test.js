@@ -62,9 +62,10 @@ test("a broadcast reaches exactly its audience", () => {
   assert.equal(inAudience({ audience: "users", uid: "c", uidSet: picked }), false);
 });
 
-test("setPermission takes user or superuser, never admin", () => {
+test("setPermission takes user, superuser or admin", () => {
   assert.deepEqual(parseRequest({ action: "setPermission", uid: "u1", permission: "superuser" }), { action: "setPermission", uid: "u1", permission: "superuser" });
-  assert.equal(parseRequest({ action: "setPermission", uid: "u1", permission: "admin" }).error, "permission must be user or superuser");
+  assert.deepEqual(parseRequest({ action: "setPermission", uid: "u1", permission: "admin" }), { action: "setPermission", uid: "u1", permission: "admin" });
+  assert.equal(parseRequest({ action: "setPermission", uid: "u1", permission: "boss" }).error, "permission must be user, superuser or admin");
   assert.equal(parseRequest({ action: "setPermission", permission: "user" }).error, "uid is required");
 });
 
