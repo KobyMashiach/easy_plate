@@ -1,8 +1,12 @@
+import '../../../../core/constants/app_enums.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../../../core/translation/translated_merge.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
+import '../../data/datasources/pending_accepts_store.dart';
 import '../repositories/recipe_sharing_repository.dart';
+import '../scope_check.dart';
+import 'respond_to_share_invite_usecase.dart';
 import 'sync_collab_recipe_usecase.dart';
 
 /// Brings every locally cached shared recipe up to date in one pass.
@@ -18,14 +22,37 @@ class RefreshCollabRecipesUseCase {
   final RecipeSharingRepository sharing;
   final RecipesRepository recipes;
 
+  /// The accepts this device still owes a copy for; the device store when
+  /// not given (tests pass their own).
+  final PendingAcceptsStore? pending;
+
+  /// Whether the account this pull started for is still the one signed in;
+  /// asked before every write (see [scopedTo]). Tests pass their own.
+  final ScopeCheck stillSignedIn;
+
   const RefreshCollabRecipesUseCase({
     required this.sharing,
     required this.recipes,
+    this.pending,
+    this.stillSignedIn = scopedTo,
   });
 
   /// Returns how many local copies were actually rewritten, so a caller can
   /// tell "nothing changed" from "nothing was shared".
   Future<int> call({required String uid}) async {
+    // First the copies an accept never got to write (it timed out offline,
+    // or the app was killed between the roster write and the save), so the
+    // pass below sees them too.
+    await RespondToShareInviteUseCase.repairPending(
+      sharing: sharing,
+      recipes: recipes,
+      pending: pending ?? HivePendingAcceptsStore.instance,
+      uid: uid,
+      stillSignedIn: stillSignedIn,
+    );
+    // The boxes are the signed-in account's: another account's pull must
+    // not read them, let alone write into them.
+    if (!stillSignedIn(uid)) return 0;
     final cached = (await recipes.getRecipes())
         .where((recipe) => recipe.isShared)
         .toList();
@@ -36,13 +63,14 @@ class RefreshCollabRecipesUseCase {
       sharing.collabsOwnedBy(uid),
       sharing.collabsSharedWith(uid),
     ]);
+    if (!stillSignedIn(uid)) return 0;
     final byId = {
       for (final collab in fetched.expand((list) => list)) collab.id: collab,
     };
 
     var rewritten = 0;
-    for (final recipe in cached) {
-      final collab = byId[recipe.collabId];
+    for (final cachedRecipe in cached) {
+      final collab = byId[cachedRecipe.collabId];
       // A recipe whose document is in neither answer is left exactly as it is,
       // rather than orphaned. Firestore serves a query from cache when offline,
       // so an empty answer is indistinguishable from having been removed from
@@ -50,6 +78,12 @@ class RefreshCollabRecipesUseCase {
       // recipes every time it opened the app on a plane. The direct document
       // read in SyncCollabRecipeUseCase can tell the two apart; this cannot.
       if (collab == null) continue;
+
+      // The queries and the saves before this one took a while: merge onto
+      // the copy as stored now, so an edit or a translation saved meanwhile
+      // is kept, and a copy deleted meanwhile is not brought back.
+      final recipe = await recipes.getRecipeById(cachedRecipe.id);
+      if (recipe == null || recipe.collabId != collab.id) continue;
 
       // The shared document holds the author's words; when this account reads
       // the recipe translated, those words must not pour back over it.
@@ -62,6 +96,9 @@ class RefreshCollabRecipesUseCase {
       // on every resume, for recipes nobody touched.
       if (!differs(recipe, mergedRecipe)) continue;
 
+      // Signed out, or another account in, while this loop ran: the copy
+      // in hand belongs to the account that left.
+      if (!stillSignedIn(uid)) return rewritten;
       await recipes.saveRecipe(
         mergedRecipe,
         stampLanguage: !kept.keptTranslation,
@@ -82,11 +119,15 @@ class RefreshCollabRecipesUseCase {
       a.imageFileName != b.imageFileName ||
       a.imageStoragePath != b.imageStoragePath ||
       a.collabRole != b.collabRole ||
+      a.servings != b.servings ||
+      a.nutrition != b.nutrition ||
       !_sameStrings(a.steps, b.steps) ||
       !_sameStrings(
         [for (final tag in a.dietaryTags) tag.name],
         [for (final tag in b.dietaryTags) tag.name],
       ) ||
+      !_sameStrings(a.allergens.names, b.allergens.names) ||
+      !_sameStrings(a.mayContain.names, b.mayContain.names) ||
       !_sameIngredients(a.ingredients, b.ingredients);
 
   static bool _sameStrings(List<String> a, List<String> b) {

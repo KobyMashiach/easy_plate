@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
@@ -14,6 +15,7 @@ import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_plate/core/widgets/clay/clay.dart';
+import 'package:easy_plate/core/utils/i18n/strings.g.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeIngestionRepository implements RecipeIngestionRepository {
@@ -23,6 +25,9 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
 
   /// Stands in for the model's rewrite of the free-text fields.
   RecipeEntity Function(RecipeEntity)? onRefine;
+
+  /// When set, a refine answers only once the test lets it through.
+  Completer<void>? gate;
 
   @override
   Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) async => recipe;
@@ -41,6 +46,7 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
     refineCalls++;
     refined = recipe;
     refinedTimesChanged = timesChanged;
+    if (gate != null) await gate!.future;
     return onRefine?.call(recipe) ?? recipe;
   }
 
@@ -354,6 +360,41 @@ void main() {
     expect(fields[_firstStep + 1].controller?.text, 'מבשלים 30 דקות');
   });
 
+  testWidgets(
+    'pass 10: save with AI tapped while a spelling fix runs waits for it '
+    'and still runs the pass',
+    (tester) async {
+      // Each pass marks the title, so two passes read as two marks.
+      repository.onRefine = (recipe) =>
+          recipe.copyWith(title: '${recipe.title}!');
+      repository.gate = Completer<void>();
+      await openEditor(tester, buildRecipe());
+
+      // Both taps in one frame: the second lands before the first greys
+      // the buttons.
+      await tester.tap(find.byIcon(Icons.spellcheck_rounded));
+      await tester.tap(find.widgetWithText(ClayButton, 'שמירה'));
+      // Not pumpAndSettle: the busy spinner turns while the fix is out.
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.tap(find.text('שמירה עם עיבוד AI'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      // The spelling fix is still out: nothing popped, no second call yet.
+      expect(repository.refineCalls, 1);
+      expect(popped, isNull);
+
+      repository.gate!.complete();
+      repository.gate = null;
+      await tester.pumpAndSettle();
+
+      // The fix landed, then the save's own pass ran over it — before, the
+      // pass stepped aside and the recipe was saved as typed, silently.
+      expect(repository.refineCalls, 2);
+      expect(popped?.title, 'שקשוקה!!');
+    },
+  );
+
   testWidgets('a refine failure leaves the edits intact and still saves', (
     tester,
   ) async {
@@ -516,5 +557,106 @@ void main() {
       expect(popped?.allergens, isEmpty);
       expect(popped?.mayContain, isEmpty);
     });
+  });
+
+  testWidgets('removing a step or an ingredient row throws nothing', (
+    tester,
+  ) async {
+    await openEditor(tester, buildRecipe());
+    await tester.tap(find.byTooltip(t.editor.removeStep).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.editor.removeIngredient).first);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+
+    await save(tester);
+    expect(popped!.steps, ['מבשלים 20 דקות']);
+    expect(popped!.ingredients, isEmpty);
+  });
+
+  testWidgets('removing an ingredient keeps each remaining row on its unit', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await openEditor(
+      tester,
+      buildRecipe().copyWith(
+        ingredients: const [
+          RecipeIngredientEntity(
+            name: 'עגבניות',
+            amount: 400,
+            unit: MeasurementUnit.gram,
+          ),
+          RecipeIngredientEntity(
+            name: 'שמן',
+            amount: 1,
+            unit: MeasurementUnit.cup,
+          ),
+        ],
+      ),
+    );
+
+    await tester.tap(find.byTooltip(t.editor.removeIngredient).first);
+    await tester.pumpAndSettle();
+
+    final shown = tester
+        .state<FormFieldState<MeasurementUnit>>(
+          find.byType(DropdownButtonFormField<MeasurementUnit>),
+        )
+        .value;
+    expect(shown, MeasurementUnit.cup);
+    await save(tester);
+    expect(popped?.ingredients.single.unit, MeasurementUnit.cup);
+  });
+
+  testWidgets('a long recipe builds only the rows on screen and saves all', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final long = buildRecipe().copyWith(
+      ingredients: [
+        for (var i = 0; i < 80; i++)
+          RecipeIngredientEntity(
+            name: 'מרכיב $i',
+            amount: 1,
+            unit: MeasurementUnit.gram,
+          ),
+      ],
+      steps: [for (var i = 0; i < 100; i++) 'שלב $i'],
+    );
+    await openEditor(tester, long);
+
+    // 180 rows' fields (plus the header cards) if built eagerly.
+    expect(find.byType(TextField).evaluate().length, lessThan(60));
+
+    // The last step is reachable by scrolling and is a real field.
+    await tester.scrollUntilVisible(
+      find.text('שלב 99'),
+      600,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('שלב 99'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await save(tester);
+    expect(popped!.ingredients.length, 80);
+    expect(popped!.steps.length, 100);
+    expect(popped!.steps.last, 'שלב 99');
+  });
+
+  testWidgets('the record keeps its content language and version', (
+    tester,
+  ) async {
+    await openEditor(
+      tester,
+      buildRecipe().copyWith(contentLang: 'he', contentVersion: 3),
+    );
+    await save(tester);
+    expect(popped?.contentLang, 'he');
+    expect(popped?.contentVersion, 3);
   });
 }

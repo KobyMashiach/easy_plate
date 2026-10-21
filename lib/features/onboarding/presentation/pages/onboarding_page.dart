@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -27,6 +28,9 @@ class OnboardingPage extends StatelessWidget {
             // Lets the auth gate stop redirecting back here before we navigate.
             AuthSessionService().markOnboardingComplete();
             context.go(Routing.home);
+          }
+          if (state case Editing(saveFailed: true)) {
+            AppDialog.error(message: t.onboarding.saveFailed).show(context);
           }
         },
         builder: (context, state) {

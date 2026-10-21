@@ -17,6 +17,7 @@
     "or": "or",
     "missingInfo": "[missing info]",
     "networkError": "No internet connection",
+    "loadFailed": "We could not load this. Check the connection and try again",
     "landscapeHint": "Works better in landscape",
     "rotateLandscape": "Rotate",
     "rotatePortrait": "Back to portrait"
@@ -41,6 +42,7 @@
     "codeSentTo": "We sent a verification code to $phone",
     "verify": "Verify",
     "resendCode": "Resend",
+    "resendIn": "Resend in ${seconds}s",
     "forgotPassword": "Forgot password",
     "resetSent": "Password reset email sent",
     "noAccount": "No account? Sign up",
@@ -48,6 +50,7 @@
     "invalidEmail": "Invalid email address",
     "passwordTooShort": "Password must be at least 6 characters",
     "invalidPhone": "Invalid phone number",
+    "phoneNeedsCountryCode": "Include the country code, e.g. +1 555 123 4567",
     "codeRequired": "Enter the code you received",
     "errorUnauthorized": "Those details are incorrect",
     "errorNetwork": "No internet connection",
@@ -141,7 +144,8 @@
     "shoppingDayTitle": "When is your weekly shopping day?",
     "dietaryTitle": "What are your dietary preferences?",
     "dietarySubtitle": "You can pick more than one",
-    "finish": "Let's get started"
+    "finish": "Let's get started",
+    "saveFailed": "Could not save your choices. Check your connection and try again."
   },
   "dietary": {
     "meat": "Meat",
@@ -203,6 +207,7 @@
     "translationPartialTitle": "Translation unfinished",
     "translationPartial": "$count items stayed in their own language. You can try again later.",
     "translationFailed": "Translation failed. Your content stayed in its own language.",
+    "saveFailed": "Could not save that change. Check your connection and try again.",
     "account": "Account",
     "notifications": "Notifications",
     "notificationsHint": "Which alerts reach you, and how",
@@ -240,6 +245,12 @@
     "foregroundPopups": "Show alerts as a popup",
     "foregroundPopupsHint": "A push that arrives while you are in the app opens a small card. Off, it only goes to the inbox.",
     "reminders": "Shopping reminders"
+  },
+  "shoppingReminder": {
+    "twoDaysBefore": "Shopping day is coming up — a good time to start planning the menu",
+    "dayBefore": "Shopping day is tomorrow — check that your menu is up to date",
+    "sameDayMorning": "Today is shopping day — finish the menu to get an accurate list",
+    "sameDayAfternoon": "Last reminder before the shop — your grocery list is waiting"
   },
   "preferences": {
     "title": "Preferences",
@@ -296,7 +307,10 @@
     "coverImage": "Cover photo",
     "bookOptions": "Book options",
     "renameBook": "Rename book",
-    "spineColor": "Spine colour"
+    "spineColor": "Spine colour",
+    "deleteConfirm": "Delete \"$title\"? The recipes in it stay in your library.",
+    "deleteSharedConfirm": "Delete \"$title\"? It also disappears for everyone you shared it with. The recipes stay in your library.",
+    "leaveConfirm": "Leave \"$title\"? It will no longer appear on your shelf."
   },
   "recipe": {
     "prepTime": "Prep time",
@@ -325,7 +339,8 @@
     "communityUpdateBoth": "Community too",
     "communityUpdateLocal": "Only mine",
     "communityUpdated": "The community copy was updated",
-    "communityGone": "The recipe is no longer in the community; saved only for you"
+    "communityGone": "The recipe is no longer in the community; saved only for you",
+    "communityUpdateFailed": "Saved for you. The community post was not updated; try again later."
   },
   "cookMode": {
     "title": "Cook mode",
@@ -458,7 +473,16 @@
     "removeSavedConfirm": "The recipe will be removed from your saved recipes. You can save it again from the community.",
     "oneNewPost": "1 new post",
     "newPosts": "$count new posts",
-    "replyFailed": "Your reply could not be sent"
+    "replyFailed": "Your reply could not be sent",
+    "postFailed": "Your post could not be published",
+    "deletePostFailed": "The post could not be deleted",
+    "shareFailed": "The recipe could not be shared",
+    "updateFailed": "The shared recipe could not be updated",
+    "unshareFailed": "The recipe could not be removed from the feed",
+    "importFailed": "The recipe could not be saved",
+    "ageMinutes": "${n}m",
+    "ageHours": "${n}h",
+    "ageDays": "${n}d"
   },
   "sharing": {
     "title": "Share recipe",
@@ -471,7 +495,7 @@
     "roleEditorHint": "Their changes show up for you too",
     "send": "Send invite",
     "sent": "Invite sent",
-    "invalidContact": "Enter a valid email or phone number",
+    "invalidContact": "Enter a valid email, or a phone number with its country code (+…)",
     "notFound": "No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.",
     "self": "You can't share with yourself",
     "failed": "Sharing failed, try again",
@@ -486,6 +510,8 @@
     "accepted": "The recipe was added to your recipes",
     "declined": "Invite declined",
     "acceptFailed": "Accepting failed, try again",
+    "acceptQueued": "No connection right now. You have joined; the copy will be added the next time you open the app online.",
+    "collabMissing": "This share is no longer available: its owner removed it",
     "members": "Members",
     "noMembersYet": "Nobody has accepted yet",
     "remove": "Remove",
@@ -514,7 +540,15 @@
     "shareList": "Share grocery list",
     "acceptedList": "The list was added to your grocery lists",
     "viewerCannotEditList": "This list is shared with you view-only",
-    "kindList": "grocery list"
+    "kindList": "grocery list",
+    "sharedBooksCount": {
+      "one": "1 shared book",
+      "other": "$n shared books"
+    },
+    "sharedListsCount": {
+      "one": "1 shared grocery list",
+      "other": "$n shared grocery lists"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -622,6 +656,7 @@
     "chooseFile": "Choose a file",
     "replaceFile": "Another file",
     "fileTooLarge": "The files are too large. The total limit is 10MB, about ten minutes of recording.",
+    "textTooLong": "The text is too long — up to $max characters.",
     "fileUnsupported": "Only audio files and PDFs can be analysed.",
     "sharedIn": "From $app",
     "addFile": "Add a file",
@@ -633,10 +668,15 @@
     "webSearchHint": "For example: shakshuka, cheesecake, beetroot kubbeh",
     "urlScrapeDescription": "Paste a link to a recipe page on a site or blog. We read the page, skip the ads and the stories around it, and extract only the recipe: ingredients, amounts and steps. On many sites this does not even use your daily allowance.",
     "urlScrapeHint": "https://www.example.com/recipe/...",
+    "invalidUrl": "That is not a valid link. Paste a full address that starts with http:// or https://",
     "socialVideoDescription": "Paste a link to a TikTok, Instagram, YouTube or Facebook video. We watch it for you, listen to what is said and read the captions and description, and turn it into a written, structured recipe. It takes about a minute.",
     "aiRequestDescription": "No recipe, just an idea? Describe the dish, who it is for and what matters to you, and the model writes a complete recipe that respects the dietary preferences you set.",
     "manualDescription": "Write the recipe yourself, straight into the structured editor: name, ingredients with amounts and units, and the steps. No AI, no waiting. Right for grandma’s recipe you know by heart.",
-    "fileDescription": "Pick an audio file in which someone reads or tells the recipe, a WhatsApp voice note, or a recipe PDF. We transcribe and read all of it and extract a tidy recipe. Several files can be attached; they are analysed together as one recipe."
+    "fileDescription": "Pick an audio file in which someone reads or tells the recipe, a WhatsApp voice note, or a recipe PDF. We transcribe and read all of it and extract a tidy recipe. Several files can be attached; they are analysed together as one recipe.",
+    "saveFailed": "Could not save the recipe. Try again.",
+    "recordingTag": "Recording",
+    "sizeKb": "$n KB",
+    "sizeMb": "$n MB"
   },
   "mealPlanner": {
     "title": "Meal planning",
@@ -752,6 +792,8 @@
     "scanning": "Reading the receipt…",
     "pagesCount": "$count photos",
     "scanFailed": "We could not read the receipt. Try a sharper photo or a PDF.",
+    "deleteFailed": "We could not delete this. Check the connection and try again.",
+    "renameFailed": "We could not rename the store. Check the connection and try again.",
     "reviewTitle": "What was captured",
     "reviewSubtitle": "Fix names and prices before saving",
     "store": "Store",
@@ -772,6 +814,9 @@
     "save": "Save prices",
     "saved": "$count prices saved",
     "savedShared": "$count prices saved and shared",
+    "savedShareQuota": "$count prices saved. You have shared the most prices allowed today, so these stayed private",
+    "savedShareFailed": "$count prices saved. Sharing them with the community failed",
+    "pdfTooLarge": "This PDF is too large. The limit is 10 MB.",
     "nothingToSave": "No products to save",
     "estimated": "Estimated from past data",
     "estimatedTotal": "Estimated cost",
@@ -885,6 +930,7 @@
     "webSearchHint": "What to search for? e.g. beet kubbeh",
     "webSearchEmpty": "No pictures found, try different words",
     "webSearchFailed": "The search failed, please try again",
+    "webSearchQuota": "You've reached today's image search limit. Try again tomorrow",
     "webSearchUnavailable": "Image search is not available right now",
     "webSearchEnd": "That is all the results",
     "webSearchDownloadFailed": "Could not download that picture, try another"
@@ -907,8 +953,14 @@
   },
   "ads": {
     "badge": "Ad",
-    "freeViewsLeft": "$count free recipes left today",
-    "rewardedViewsLeft": "$count unlocks with a short video left today",
+    "freeViewsLeft(param=count)": {
+      "one": "1 free recipe left today",
+      "other": "$count free recipes left today"
+    },
+    "rewardedViewsLeft(param=count)": {
+      "one": "1 unlock with a short video left today",
+      "other": "$count unlocks with a short video left today"
+    },
     "sharedQuotaReached": "You've reached today's limit of shared recipes. It resets tomorrow!",
     "unlockRecipeTitle": "Unlock a shared recipe",
     "unlockRecipeMessage": "Watch a short video to unlock this recipe ($count left today)",
@@ -998,7 +1050,15 @@
     "switchInherited": "Your package comes from your household. Only the person paying for the household can change it.",
     "currentPlan": "Your package",
     "switchTo": "Switch for $price",
-    "switched": "Package changed"
+    "switched": "Package changed",
+    "webRow": "Upgrade or manage on the web",
+    "webRowHint": "Card, Apple Pay or Google Pay, no store fee",
+    "webManagedTitle": "Your subscription was bought on the web",
+    "webManagedBody": "Switching plans, cancelling or changing the payment method is done in your account on the website.",
+    "otherStoreBody": "Your plan was bought in the other app store (App Store or Google Play). Switching or cancelling is done there.",
+    "paymentPending": "Your payment is pending. Premium turns on by itself once it clears, so there is no need to buy again.",
+    "webOpen": "Open the website",
+    "webLinkFailed": "Could not open the website. Try again."
   },
   "walkthrough": {
     "title": "Guide",
@@ -1171,6 +1231,7 @@
     "bug": "Bug",
     "suggestion": "Suggestion",
     "closedNotice": "The team closed this conversation. You can read it but not write in it; open a new one for a new matter.",
+    "threadFull": "This conversation is full. Open a new one to keep writing.",
     "closedConversations": "Closed conversations ($n)",
     "noOpenConversations": "No open conversations",
     "closedTag": "Closed"
@@ -1372,7 +1433,9 @@
     "makeAdmin": "Make admin",
     "removeAdmin": "Remove admin",
     "adminHint": "Full control: console, tickets, every account's data, no device limit",
-    "permissionDone": "Permission updated"
+    "permissionDone": "Permission updated",
+    "cappedAccounts": "Showing the first $count accounts only",
+    "cappedEvents": "Showing the first $count purchase events only"
   },
   "assistant": {
     "title": "Shefi",
@@ -1547,7 +1610,9 @@
     },
     "listening": "Listening…",
     "stop": "Stop",
-    "cancelled": "Cancelled."
+    "cancelled": "Cancelled.",
+    "toggleFailed": "Couldn't update the list. Try again.",
+    "roundsExhausted": "I ran out of steps before finishing. Try asking in smaller parts."
   },
   "shareCode": {
     "title": "Code & link",
@@ -1575,6 +1640,7 @@
     "usedUp": "This code has been used up.",
     "self": "That is your own code.",
     "gone": "What this code shared no longer exists.",
+    "tooManyRecipes": "This share holds too many recipes to join at once. Ask the owner to split it.",
     "failed": "Could not join. Try again.",
     "messageText": "$name shared \"$title\" with you on EasyPlate. Code: $code\n$link",
     "revoke": "Cancel code",
@@ -1600,7 +1666,10 @@
     "owner": "Owner",
     "you": "You",
     "invite": "Invite a member",
-    "inviteExplain": "Anyone with this code joins the shared account. $free seats left.",
+    "inviteExplain(param=free)": {
+      "one": "Anyone with this code joins the shared account. 1 seat left.",
+      "other": "Anyone with this code joins the shared account. $free seats left."
+    },
     "noSeats": "All seats are taken.",
     "remove": "Remove",
     "removeConfirm": "Remove $name from the shared account? They lose access and Premium.",
@@ -1729,7 +1798,8 @@
     "shefiLauncher": "Shefi icon",
     "whatsNew": "What's new",
     "supportChat": "Support chat",
-    "storeReview": "Rate the app prompt"
+    "storeReview": "Rate the app prompt",
+    "webCheckout": "Buy on the web"
   },
   "adminConfig": {
     "intro": "Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).",
@@ -1820,6 +1890,7 @@
     "privacyIos": "Recognition runs on the device when it can, otherwise on Apple's speech service. EasyPlate does not record or keep audio.",
     "permissionTitle": "Microphone needed",
     "permissionDenied": "To hear \"Hey Shefi\" the app needs the microphone (and, on iOS, speech recognition).",
+    "toggleFailed": "Could not change \"Hey Shefi\" right now. Try again.",
     "openSettings": "Open settings",
     "notificationTitle": "Shefi is listening",
     "notificationBody": "Say \"Hey Shefi\" to start a conversation",

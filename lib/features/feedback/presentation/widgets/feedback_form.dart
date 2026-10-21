@@ -54,6 +54,10 @@ class FeedbackForm extends StatefulWidget {
 class _FeedbackFormState extends State<FeedbackForm> {
   final _message = TextEditingController();
   FeedbackType? _type;
+
+  /// Bumped after each send: the reason dropdown reads its initial value
+  /// once, so clearing [_type] alone left the old reason on screen.
+  int _reasonGeneration = 0;
   bool _sending = false;
   bool _hasText = false;
 
@@ -104,7 +108,11 @@ class _FeedbackFormState extends State<FeedbackForm> {
       );
       if (!mounted) return;
       _message.clear();
-      setState(() => _type = null);
+      // The dropdown reads initialValue once; a new key rebuilds it empty.
+      setState(() {
+        _type = null;
+        _reasonGeneration++;
+      });
       FocusScope.of(context).unfocus();
       if (chatOn) {
         context.pushNamed(Routing.supportChat, extra: id);
@@ -141,7 +149,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
               ),
               const SizedBox(height: AppSpacing.gutter),
               DropdownButtonFormField<FeedbackType>(
-                key: const ValueKey('feedback.reason'),
+                key: ValueKey('feedback.reason.$_reasonGeneration'),
                 initialValue: _type,
                 isExpanded: true,
                 hint: Text(
@@ -217,20 +225,37 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
 /// The account's own conversations, newest activity first, with a mark on
 /// the ones the team answered since they were last opened.
-class _MyConversations extends StatelessWidget {
+class _MyConversations extends StatefulWidget {
   final String uid;
 
   const _MyConversations({required this.uid});
 
   @override
+  State<_MyConversations> createState() => _MyConversationsState();
+}
+
+class _MyConversationsState extends State<_MyConversations> {
+  /// Opened once: the form above rebuilds on every keystroke, and a stream
+  /// made in build would close and reopen the Firestore listener each time.
+  late final Stream<List<FeedbackEntity>> _mine = context
+      .read<FeedbackRepository>()
+      .watchMine(widget.uid);
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<FeedbackEntity>>(
-      stream: context.read<FeedbackRepository>().watchMine(uid),
+      stream: _mine,
       builder: (context, snapshot) {
         final items = snapshot.data ?? const <FeedbackEntity>[];
         if (items.isEmpty) return const SizedBox.shrink();
-        final open = [for (final i in items) if (!i.closed) i];
-        final closed = [for (final i in items) if (i.closed) i];
+        final open = [
+          for (final i in items)
+            if (!i.closed) i,
+        ];
+        final closed = [
+          for (final i in items)
+            if (i.closed) i,
+        ];
         return Padding(
           padding: const EdgeInsets.only(top: AppSpacing.lg),
           child: ClayCard(

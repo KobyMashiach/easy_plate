@@ -1,7 +1,7 @@
 // The forum: threads and replies live, written as the administrator or as
 // a persona, drafted by the model when asked, dated back when the feed
 // should not look like it was filled in one afternoon.
-import { db, collection, doc, onSnapshot, query, orderBy, limit } from "../firebase.js";
+import { db, collection, doc, onSnapshot, query, orderBy, limit, limitToLast } from "../firebase.js";
 import { t, fmtNumber, fmtDate, currentLang, LANGS } from "../i18n.js";
 import { h, clear, append, spinner, avatar, badge, when, button, busy, select, input, textarea, field, modal, confirmDialog, promptDialog, toast, toastError, empty, debounce } from "../ui.js";
 import { authorOptions, isPersona } from "../data.js";
@@ -117,6 +117,8 @@ export async function openForumSeeder() {
   modal({
     title: t("seedForum.title"),
     wide: true,
+    // Closing (✕, Escape, backdrop) stops a run in progress: no paid calls nobody sees.
+    onClose: () => { stop = true; },
     body: h("div.stack",
       h("div.grid3", field(t("seedForum.count"), count), field(t("recipes.language"), lang), field(t("seedForum.replies"), replies)),
       h("div.grid3", field(t("seed.theme"), topic), field(t("seed.days"), days), field(t("seed.likes"), likes)),
@@ -165,7 +167,7 @@ async function thread({ view, actions, postId, setTitle }) {
   let post = null, replies = [];
   const head = h("div.card");
   const list = h("div.list");
-  view.append(h("a", { href: "#/community" }, `← ${t("common.back")}`), head, h("h3", t("forum.replies", { n: "" }).trim()), list);
+  view.append(h("a", { href: "#/community" }, `${document.documentElement.dir === "rtl" ? "→" : "←"} ${t("common.back")}`), head, h("h3", t("forum.replies", { n: "" }).trim()), list);
   const likes = await likeControls({ kind: "post", postId });
 
   const renderHead = () => {
@@ -193,10 +195,15 @@ async function thread({ view, actions, postId, setTitle }) {
   };
   const context = () => [`${post.authorName}: ${post.title}\n${post.body}`, ...replies.map((r) => `${r.authorName}: ${r.body}`)].join("\n---\n").slice(0, 4000);
   const reply = async () => {
+    if (!post) return;
     const { form, submit } = await composer({ kind: "reply", context: context(), onSubmit: async (d) => { await call("forum.reply.create", { postId, as: d.as, body: d.body, createdAt: d.createdAt }); toast(t("forum.posted"), "ok"); } });
     modal({ title: t("forum.reply"), wide: true, body: form, actions: [(c) => button(t("common.cancel"), { onclick: c }), submit] });
   };
+  // Each reply awaits its like controls; a snapshot that lands meanwhile
+  // starts a newer pass and this one stops, or the list would double up.
+  let pass = 0;
   const renderReplies = async () => {
+    const mine = ++pass;
     clear(list);
     if (!replies.length) { list.append(empty()); return; }
     for (const r of replies) {
@@ -215,12 +222,13 @@ async function thread({ view, actions, postId, setTitle }) {
           } }))),
       ));
       item.querySelector(".body").append(await likeControls({ kind: "reply", postId, replyId: r.id }));
+      if (mine !== pass) return;
       list.append(item);
     }
   };
   const subs = [
     onSnapshot(doc(db, "forum_posts", postId), (snap) => { post = snap.exists() ? { id: snap.id, ...snap.data() } : null; renderHead(); }, toastError),
-    onSnapshot(query(collection(db, "forum_posts", postId, "replies"), orderBy("createdAt")), (snap) => { replies = snap.docs.map((d) => ({ id: d.id, ...d.data() })); renderReplies(); }, toastError),
+    onSnapshot(query(collection(db, "forum_posts", postId, "replies"), orderBy("createdAt"), limitToLast(500)), (snap) => { replies = snap.docs.map((d) => ({ id: d.id, ...d.data() })); renderReplies(); }, toastError),
   ];
   actions.append(button(t("forum.reply"), { kind: "primary small", onclick: reply }));
   return () => subs.forEach((u) => u());

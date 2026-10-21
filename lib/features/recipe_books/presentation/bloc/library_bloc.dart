@@ -11,6 +11,7 @@ import '../../../../core/hive/user_scope.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/sync/recipe_image_store.dart';
 import '../../../collab_containers/domain/container_sharing_service.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
 import '../../domain/entities/book_spine.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../../domain/usecases/delete_book_usecase.dart';
@@ -118,9 +119,32 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     await saveBookUseCase(book);
     final uid = UserScope().uid;
     if (book.isShared && uid != null) {
-      await sharing?.books.publish(book, uid: uid);
+      await _publish(await _readyForSharing(book), uid);
     }
   }
+
+  /// Best effort, as in the viewer: the local save stands. A refused or
+  /// offline publish used to land in [_emitBooks]'s catch and swap the whole
+  /// shelf for a "couldn't load" screen over a rename that had been saved.
+  Future<void> _publish(RecipeBookEntity book, String uid) async {
+    try {
+      await sharing?.books.publish(book, uid: uid);
+    } catch (e) {
+      debugPrint('Shared book publish failed: $e');
+    }
+  }
+
+  /// See `BookViewerBloc._readyForSharing`: the cover must have landed in
+  /// Storage before the shared document names it.
+  Future<RecipeBookEntity> _readyForSharing(RecipeBookEntity book) =>
+      saveBookUseCase.repository.readyForSharing(book);
+
+  /// The book as stored right now, for an edit to start from: the shelf's
+  /// copy may be older than a write from the website or a co-editor that
+  /// the box stream has not delivered yet, and saving that copy whole would
+  /// undo it. Null when it is gone — an edit must not bring it back.
+  Future<RecipeBookEntity?> _stored(String id) =>
+      saveBookUseCase.repository.getBookById(id);
 
   Future<void> _emitBooks(
     Emitter<LibraryState> emit, [
@@ -131,7 +155,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       emit(.loaded(await getBooksUseCase()));
     } catch (e) {
       debugPrint('Library error: $e');
-      emit(.errorMessage(e.toString()));
+      emit(.errorMessage(t.common.loadFailed));
     }
   }
 
@@ -169,9 +193,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
 
   Future<void> _renameBook(_RenameBook event, Emitter<LibraryState> emit) {
     return _emitBooks(emit, () async {
-      final current = state;
-      if (current is! LibraryLoaded) return;
-      final book = current.books.where((b) => b.id == event.id).firstOrNull;
+      final book = await _stored(event.id);
       if (book == null) return;
       await _saveAndPublish(book.copyWith(title: event.title));
     });
@@ -179,9 +201,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
 
   Future<void> _setSpine(_SetSpine event, Emitter<LibraryState> emit) {
     return _emitBooks(emit, () async {
-      final current = state;
-      if (current is! LibraryLoaded) return;
-      final book = current.books.where((b) => b.id == event.id).firstOrNull;
+      final book = await _stored(event.id);
       if (book == null) return;
       await _saveAndPublish(book.copyWith(spine: event.spine));
     });
@@ -194,12 +214,17 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     Emitter<LibraryState> emit,
   ) {
     return _emitBooks(emit, () async {
-      final current = state;
-      if (current is! LibraryLoaded) return;
-      final book = current.books.where((b) => b.id == event.id).firstOrNull;
+      final book = await _stored(event.id);
       if (book == null || !book.canEdit) return;
 
       final previous = book.coverImageFileName;
+      final updated = book.copyWith(
+        coverImageFileName: event.fileName,
+        removeCoverImage: event.fileName == null,
+      );
+      // Saved before the old file goes: a failed save used to leave the
+      // book naming a photo that had already been deleted.
+      await saveBookUseCase(updated);
       if (previous != null && previous != event.fileName) {
         await ImageStorageService().delete(previous);
         // A shared book's members still point at the uploaded cover; it stays.
@@ -212,18 +237,10 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
           );
         }
       }
-      final updated = book.copyWith(
-        coverImageFileName: event.fileName,
-        removeCoverImage: event.fileName == null,
-      );
-      await saveBookUseCase(updated);
       final uid = UserScope().uid;
       if (book.isShared && uid != null) {
         // The cover has to travel before the document says where it is.
-        final stored = await getBooksUseCase().then(
-          (all) => all.where((b) => b.id == book.id).firstOrNull,
-        );
-        await sharing?.books.publish(stored ?? updated, uid: uid);
+        await _publish(await _readyForSharing(updated), uid);
       }
     });
   }

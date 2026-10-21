@@ -77,6 +77,11 @@ abstract class ApiConfig {
   static String get householdsUrl =>
       aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/households');
 
+  /// One-time links that open the website signed in, on the pricing page
+  /// (Premium bought on the web through PayPlus / RevenueCat-Paddle), same deploy.
+  static String get upgradeLinksUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/upgradeLinks');
+
   static const model = String.fromEnvironment(
     'GEMINI_MODEL',
     defaultValue: 'gemini-3.8-flash',

@@ -27,10 +27,37 @@
          Shefi" heard while another app is open bring Easy Plate to the
          front. Without it a notification asks for a tap instead. -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Merged in by libraries, not used by the app's own code (for the Play
+         listing / Data safety review; read from
+         build/app/outputs/logs/manifest-merger-release-report.txt):
+           USE_BIOMETRIC, USE_FINGERPRINT   androidx.biometric 1.1.0, pulled in
+                                            by androidx.credentials 1.6.0
+                                            (google_sign_in_android). The
+                                            app never asks for a fingerprint.
+           READ_EXTERNAL_STORAGE            implied by camera_android_camerax's
+                                            WRITE_EXTERNAL_STORAGE (maxSdk 28);
+                                            the implied one has no maxSdk.
+           READ_GSERVICES                   com.google.android.recaptcha
+                                            (Firebase phone auth).
+         All are left in on purpose (Koby's call, 2026-10-18). To strip one,
+         add xmlns:tools="http://schemas.android.com/tools" to <manifest> and
+         declare it here as, for example:
+           <uses-permission android:name="android.permission.USE_BIOMETRIC"
+               tools:node="remove" />
+         then check the merged manifest of a release build, and that Google
+         sign-in (Credential Manager) still works on a phone with a passkey
+         or a fingerprint set up. -->
+    <!-- Auto Backup stays on, minus Hive, the Firebase Auth session, the
+         intent-trust token and the widgets' snapshot in the cloud copy, and
+         minus the intent-trust token in a phone-to-phone transfer
+         (res/xml/backup_rules.xml for Android 11-, data_extraction_rules.xml
+         for 12+). -->
     <application
         android:label="Easy Plate"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <!-- The launcher entry (see EntryActivity): transparent, passes every
              ordinary launch on to MainActivity, and turns a launch by Gemini
              into Shefi's floating panel. -->
@@ -199,11 +226,15 @@
             android:name=".widgets.TodayMealsService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <!-- No noHistory: the microphone button starts the system's speech
+             activity for a result, and a noHistory activity is finished as
+             soon as an opaque activity covers it, so the dictated text never
+             came back. Each widget tap still starts it afresh (NEW_TASK |
+             CLEAR_TASK) and it stays out of the recent apps. -->
         <activity
             android:name=".widgets.WidgetQuickAddActivity"
             android:exported="false"
             android:excludeFromRecents="true"
-            android:noHistory="true"
             android:taskAffinity=""
             android:theme="@style/EasyPlateWidgetDialog"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />

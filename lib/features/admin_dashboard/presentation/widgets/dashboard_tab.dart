@@ -108,8 +108,9 @@ class _DashboardTabState extends State<DashboardTab> {
       AppDialog.success(message: t.adminDashboard.pricingSaved).notify(context);
       await _refresh();
     } catch (e) {
+      debugPrint('Saving prices failed: $e');
       if (mounted) {
-        AppDialog.error(message: '${t.common.error}\n$e').show(context);
+        AppDialog.error(message: t.common.error).show(context);
       }
     }
   }
@@ -127,9 +128,10 @@ class _DashboardTabState extends State<DashboardTab> {
       ).notify(context);
       await _refresh();
     } catch (e) {
+      debugPrint('Pricing sync failed: $e');
       if (mounted) {
         AppDialog.error(
-          message: s.pricingSyncFailed(reason: '$e'),
+          message: s.pricingSyncFailed(reason: briefErrorReason(e)),
         ).show(context);
       }
       // The repair and the rate run before the catalog: whatever landed
@@ -196,7 +198,7 @@ class _DashboardTabState extends State<DashboardTab> {
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return ErrorRetryView(
-                  error: snapshot.error.toString(),
+                  error: t.common.loadFailed,
                   onRetry: _refresh,
                 );
               }
@@ -256,6 +258,18 @@ class _DashboardTabState extends State<DashboardTab> {
                 ),
                 textAlign: TextAlign.center,
                 style: muted,
+              ),
+            ),
+          for (final capped in [
+            if (o.usersCap case final cap?) s.cappedAccounts(count: cap),
+            if (o.eventsCap case final cap?) s.cappedEvents(count: cap),
+          ])
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: Text(
+                capped,
+                textAlign: TextAlign.center,
+                style: muted.copyWith(color: AppColors.error),
               ),
             ),
           // --- money ---------------------------------------------------
@@ -343,11 +357,11 @@ class _DashboardTabState extends State<DashboardTab> {
           // --- over time -----------------------------------------------
           DashboardSection(
             title: s.chartCost,
+            // The range's cost, the same figure as the tile above: the bars
+            // may show a wider window (a week behind a single day, 400 days
+            // behind all-time) and their sum used to disagree with the tile.
             trailing: Text(
-              DashboardFormat.cost(
-                o.days.fold(0.0, (a, d) => a + d.cost(pricing)),
-                pricing,
-              ),
+              DashboardFormat.cost(o.aiCostUsd, pricing),
               style: muted,
             ),
             child: ClayBarChart(
@@ -737,6 +751,10 @@ class _DashboardTabState extends State<DashboardTab> {
 /// The Remote Config knobs and the build, so a "why is the app doing X"
 /// can be answered from the same screen.
 class _ConfigRows extends StatelessWidget {
+  /// Read once: this widget is rebuilt on every search keystroke, and a new
+  /// future each time flickered the row back to "…".
+  static final _packageInfo = PackageInfo.fromPlatform();
+
   @override
   Widget build(BuildContext context) {
     final s = t.adminDashboard;
@@ -782,7 +800,7 @@ class _ConfigRows extends StatelessWidget {
           value: AppUpdateService().storeRelease?.version ?? '—',
         ),
         FutureBuilder<PackageInfo>(
-          future: PackageInfo.fromPlatform(),
+          future: _packageInfo,
           builder: (context, snapshot) => StatRow(
             label: s.thisBuild,
             value: snapshot.hasData
@@ -793,4 +811,16 @@ class _ConfigRows extends StatelessWidget {
       ],
     );
   }
+}
+
+/// The reason an admin is shown for a failure: the error's first non-blank
+/// line, at most [maxLength] characters. Enough to tell a timeout from a
+/// permission refusal; never a stack trace or a whole server response.
+String briefErrorReason(Object error, {int maxLength = 200}) {
+  final line = '$error'
+      .split('\n')
+      .map((l) => l.trim())
+      .firstWhere((l) => l.isNotEmpty, orElse: () => '');
+  if (line.length <= maxLength) return line;
+  return '${line.substring(0, maxLength - 1)}…';
 }

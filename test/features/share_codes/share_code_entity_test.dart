@@ -6,6 +6,7 @@ import 'package:easy_plate/core/monetization/share_usage_service.dart';
 import 'package:easy_plate/features/share_codes/data/share_codes_remote_datasource.dart';
 import 'package:easy_plate/features/share_codes/domain/pending_share_code.dart';
 import 'package:easy_plate/features/share_codes/domain/share_code_entity.dart';
+import 'package:easy_plate/features/share_codes/domain/share_codes_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ShareCodeEntity _code(
@@ -67,6 +68,25 @@ void main() {
       );
     });
 
+    test('strips EP only from the ten-letter display form', () {
+      // E and P are in the alphabet: a bare body may start with them.
+      expect(ShareCodeEntity.parse('EPAB2345'), 'EPAB2345');
+      expect(ShareCodeEntity.parse('epab2345'), 'EPAB2345');
+      expect(ShareCodeEntity.parse('EP-EPAB-2345'), 'EPAB2345');
+      expect(ShareCodeEntity.parse('EPEPAB2345'), 'EPAB2345');
+      // Nine letters is neither form.
+      expect(ShareCodeEntity.parse('EPAB23456'), isNull);
+    });
+
+    test('redraws a body that would start with EP', () {
+      // A source that spells E, P first, then a clean body.
+      final picks = [
+        ...'EPAAAAAA'.split(''),
+        ...'K7M3Q9X2'.split(''),
+      ].map(ShareCodeEntity.alphabet.indexOf).toList();
+      expect(ShareCodeEntity.generate(_Scripted(picks)), 'K7M3Q9X2');
+    });
+
     test('refuses what is not a code', () {
       expect(ShareCodeEntity.parse(''), isNull);
       expect(ShareCodeEntity.parse('abc'), isNull);
@@ -126,6 +146,22 @@ void main() {
       expect(
         ShareCodesFirestoreRepository.refusalIn('{error: {code: not_found}}'),
         'not_found',
+      );
+      expect(
+        ShareCodesFirestoreRepository.refusalIn(
+          '{error: {code: too_many_recipes, message: This share carries more '
+          'than 400 recipes; ask the owner to split it}}',
+        ),
+        'too_many_recipes',
+      );
+    });
+
+    test('a blocked account is a refusal of its own', () {
+      expect(
+        ShareCodesFirestoreRepository.refusalIn(
+          '{error: {code: account_disabled, message: This account is disabled}}',
+        ),
+        ShareCodeRefused.accountDisabled,
       );
     });
 
@@ -191,4 +227,17 @@ void main() {
       expect(ShareUsageService.weekKey(DateTime(2027, 1, 4)), '2027-W01');
     });
   });
+}
+
+/// Hands back a fixed sequence, for the redraw path.
+class _Scripted implements Random {
+  final List<int> values;
+  var _i = 0;
+  _Scripted(this.values);
+  @override
+  int nextInt(int max) => values[_i++];
+  @override
+  bool nextBool() => throw UnimplementedError();
+  @override
+  double nextDouble() => throw UnimplementedError();
 }

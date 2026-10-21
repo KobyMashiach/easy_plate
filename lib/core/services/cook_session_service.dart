@@ -590,6 +590,10 @@ class CookSessionService extends ChangeNotifier with WidgetsBindingObserver {
     // One read per process: the auth listener and initState both ask, and
     // a second pass would overwrite sessions started in between.
     if (_restored) return Future.value();
+    // A second ask during the read shares it; bumping the generation for it
+    // would make the read's own completion look stale, and the session
+    // would never count as restored (nor open the held notification tap).
+    if (_restoring case final running?) return running;
     final generation = ++_restoreGeneration;
     return _restoring ??= _restore().whenComplete(() {
       // A sign-out during the read belongs to the account that left.

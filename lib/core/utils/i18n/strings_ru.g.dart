@@ -49,6 +49,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$weekday$ru weekday = _Translations$weekday$ru._(_root);
 	@override late final _Translations$settings$ru settings = _Translations$settings$ru._(_root);
 	@override late final _Translations$notificationSettings$ru notificationSettings = _Translations$notificationSettings$ru._(_root);
+	@override late final _Translations$shoppingReminder$ru shoppingReminder = _Translations$shoppingReminder$ru._(_root);
 	@override late final _Translations$preferences$ru preferences = _Translations$preferences$ru._(_root);
 	@override late final _Translations$more$ru more = _Translations$more$ru._(_root);
 	@override late final _Translations$language$ru language = _Translations$language$ru._(_root);
@@ -109,6 +110,7 @@ class _Translations$common$ru extends Translations$common$he {
 	@override String get or => 'или';
 	@override String get missingInfo => '[нет данных]';
 	@override String get networkError => 'Нет подключения к интернету';
+	@override String get loadFailed => 'Не удалось загрузить. Проверьте подключение и попробуйте снова';
 	@override String get landscapeHint => 'Удобнее в горизонтальном режиме';
 	@override String get rotateLandscape => 'Повернуть';
 	@override String get rotatePortrait => 'Вернуть портрет';
@@ -140,6 +142,7 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String codeSentTo({required Object phone}) => 'Мы отправили код на ${phone}';
 	@override String get verify => 'Подтвердить';
 	@override String get resendCode => 'Отправить снова';
+	@override String resendIn({required Object seconds}) => 'Отправить снова через ${seconds} с';
 	@override String get forgotPassword => 'Забыли пароль';
 	@override String get resetSent => 'Письмо для сброса отправлено';
 	@override String get noAccount => 'Нет аккаунта? Зарегистрируйтесь';
@@ -147,6 +150,7 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get invalidEmail => 'Неверный адрес эл. почты';
 	@override String get passwordTooShort => 'Пароль должен содержать минимум 6 символов';
 	@override String get invalidPhone => 'Неверный номер телефона';
+	@override String get phoneNeedsCountryCode => 'Укажите код страны, например +7 912 345 67 89';
 	@override String get codeRequired => 'Введите полученный код';
 	@override String get errorUnauthorized => 'Введённые данные неверны';
 	@override String get errorNetwork => 'Нет подключения к интернету';
@@ -255,6 +259,7 @@ class _Translations$onboarding$ru extends Translations$onboarding$he {
 	@override String get dietaryTitle => 'Каковы ваши пищевые предпочтения?';
 	@override String get dietarySubtitle => 'Можно выбрать несколько';
 	@override String get finish => 'Начнём';
+	@override String get saveFailed => 'Не удалось сохранить ваш выбор. Проверьте подключение и попробуйте снова.';
 }
 
 // Path: dietary
@@ -344,6 +349,7 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get translationPartialTitle => 'Перевод не завершён';
 	@override String translationPartial({required Object count}) => '${count} элементов остались на своём языке. Попробуйте позже.';
 	@override String get translationFailed => 'Не удалось перевести. Содержимое осталось на своём языке.';
+	@override String get saveFailed => 'Не удалось сохранить изменение. Проверьте подключение и попробуйте снова.';
 	@override String get account => 'Аккаунт';
 	@override String get notifications => 'Уведомления';
 	@override String get notificationsHint => 'Какие оповещения вы получаете и как';
@@ -388,6 +394,19 @@ class _Translations$notificationSettings$ru extends Translations$notificationSet
 	@override String get foregroundPopups => 'Показывать оповещения всплывающей карточкой';
 	@override String get foregroundPopupsHint => 'Уведомление, пришедшее пока вы в приложении, открывает небольшую карточку. Если выключено, оно попадает только во входящие.';
 	@override String get reminders => 'Напоминания о покупках';
+}
+
+// Path: shoppingReminder
+class _Translations$shoppingReminder$ru extends Translations$shoppingReminder$he {
+	_Translations$shoppingReminder$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get twoDaysBefore => 'Приближается день покупок — пора начать планировать меню';
+	@override String get dayBefore => 'Завтра день покупок — проверьте, что меню актуально';
+	@override String get sameDayMorning => 'Сегодня день покупок — завершите меню, чтобы получить точный список';
+	@override String get sameDayAfternoon => 'Последнее напоминание перед покупками — список покупок ждёт вас';
 }
 
 // Path: preferences
@@ -473,6 +492,9 @@ class _Translations$books$ru extends Translations$books$he {
 	@override String get bookOptions => 'Параметры книги';
 	@override String get renameBook => 'Переименовать книгу';
 	@override String get spineColor => 'Цвет корешка';
+	@override String deleteConfirm({required Object title}) => 'Удалить «${title}»? Рецепты из неё останутся в вашей библиотеке.';
+	@override String deleteSharedConfirm({required Object title}) => 'Удалить «${title}»? Она исчезнет и у всех, с кем вы ею поделились. Рецепты останутся в вашей библиотеке.';
+	@override String leaveConfirm({required Object title}) => 'Покинуть «${title}»? Она больше не будет на вашей полке.';
 }
 
 // Path: recipe
@@ -509,6 +531,7 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'Только у меня';
 	@override String get communityUpdated => 'Копия в сообществе обновлена';
 	@override String get communityGone => 'Рецепта больше нет в сообществе; сохранено только у вас';
+	@override String get communityUpdateFailed => 'Сохранено у вас. Публикация в сообществе не обновлена, попробуйте позже.';
 }
 
 // Path: cookMode
@@ -663,6 +686,15 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String get oneNewPost => '1 новый пост';
 	@override String newPosts({required Object count}) => 'Новых постов: ${count}';
 	@override String get replyFailed => 'Не удалось отправить ваш ответ';
+	@override String get postFailed => 'Не удалось опубликовать ваш пост';
+	@override String get deletePostFailed => 'Не удалось удалить пост';
+	@override String get shareFailed => 'Не удалось поделиться рецептом';
+	@override String get updateFailed => 'Не удалось обновить общий рецепт';
+	@override String get unshareFailed => 'Не удалось убрать рецепт из ленты';
+	@override String get importFailed => 'Не удалось сохранить рецепт';
+	@override String ageMinutes({required Object n}) => '${n} мин';
+	@override String ageHours({required Object n}) => '${n} ч';
+	@override String ageDays({required Object n}) => '${n} д';
 }
 
 // Path: sharing
@@ -682,7 +714,7 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get roleEditorHint => 'Его изменения появятся и у вас';
 	@override String get send => 'Отправить приглашение';
 	@override String get sent => 'Приглашение отправлено';
-	@override String get invalidContact => 'Введите корректную почту или телефон';
+	@override String get invalidContact => 'Введите корректную почту или телефон с кодом страны (+…)';
 	@override String get notFound => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.';
 	@override String get self => 'Нельзя поделиться с самим собой';
 	@override String get failed => 'Не удалось поделиться, попробуйте снова';
@@ -697,6 +729,8 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get accepted => 'Рецепт добавлен к вашим';
 	@override String get declined => 'Приглашение отклонено';
 	@override String get acceptFailed => 'Не удалось принять, попробуйте снова';
+	@override String get acceptQueued => 'Сейчас нет соединения. Вы присоединились; копия появится при следующем открытии приложения с сетью.';
+	@override String get collabMissing => 'Этот доступ больше не действует: владелец удалил его';
 	@override String get members => 'Участники';
 	@override String get noMembersYet => 'Пока никто не принял';
 	@override String get remove => 'Удалить';
@@ -726,6 +760,18 @@ class _Translations$sharing$ru extends Translations$sharing$he {
 	@override String get acceptedList => 'Список добавлен в ваши списки покупок';
 	@override String get viewerCannotEditList => 'Этот список открыт вам только для просмотра';
 	@override String get kindList => 'список покупок';
+	@override String sharedBooksCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: '${n} общая книга',
+		few: '${n} общие книги',
+		many: '${n} общих книг',
+		other: '${n} общей книги',
+	);
+	@override String sharedListsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: '${n} общий список покупок',
+		few: '${n} общих списка покупок',
+		many: '${n} общих списков покупок',
+		other: '${n} общего списка покупок',
+	);
 }
 
 // Path: notifications
@@ -854,6 +900,7 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get chooseFile => 'Выбрать файл';
 	@override String get replaceFile => 'Другой файл';
 	@override String get fileTooLarge => 'Файлы слишком большие. Общий предел — 10 МБ, около десяти минут записи.';
+	@override String textTooLong({required Object max}) => 'Текст слишком длинный — не более ${max} символов.';
 	@override String get fileUnsupported => 'Анализировать можно только аудиофайлы и PDF.';
 	@override String sharedIn({required Object app}) => 'Из ${app}';
 	@override String get addFile => 'Добавить файл';
@@ -865,10 +912,15 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get webSearchHint => 'Например: шакшука, чизкейк, свекольная кубба';
 	@override String get urlScrapeDescription => 'Вставьте ссылку на страницу рецепта на сайте или в блоге. Мы прочитаем страницу, пропустим рекламу и истории вокруг и извлечём только рецепт: ингредиенты, количества и шаги. На многих сайтах это даже не расходует дневной лимит.';
 	@override String get urlScrapeHint => 'https://www.example.com/recipe/...';
+	@override String get invalidUrl => 'Это не похоже на ссылку. Вставьте полный адрес, начинающийся с http:// или https://';
 	@override String get socialVideoDescription => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook. Мы посмотрим его за вас, послушаем, что говорят, прочитаем субтитры и описание и превратим всё в записанный, структурированный рецепт. Это занимает около минуты.';
 	@override String get aiRequestDescription => 'Нет рецепта, есть только идея? Опишите блюдо, для кого оно и что для вас важно, и модель напишет полный рецепт с учётом ваших пищевых предпочтений.';
 	@override String get manualDescription => 'Напишите рецепт сами, прямо в структурированном редакторе: название, ингредиенты с количествами и единицами, шаги. Без ИИ и без ожидания. Для бабушкиного рецепта, который вы знаете наизусть.';
 	@override String get fileDescription => 'Выберите аудиофайл, где кто-то читает или рассказывает рецепт, голосовое сообщение из WhatsApp или PDF с рецептом. Мы расшифруем и прочитаем всё и извлечём аккуратный рецепт. Можно приложить несколько файлов — они анализируются вместе как один рецепт.';
+	@override String get saveFailed => 'Не удалось сохранить рецепт. Попробуйте ещё раз.';
+	@override String get recordingTag => 'Запись';
+	@override String sizeKb({required Object n}) => '${n} КБ';
+	@override String sizeMb({required Object n}) => '${n} МБ';
 }
 
 // Path: mealPlanner
@@ -1005,6 +1057,8 @@ class _Translations$receipt$ru extends Translations$receipt$he {
 	@override String get scanning => 'Читаем чек…';
 	@override String pagesCount({required Object count}) => '${count} фото';
 	@override String get scanFailed => 'Не удалось прочитать чек. Попробуйте более чёткое фото или PDF.';
+	@override String get deleteFailed => 'Не удалось удалить. Проверьте подключение и попробуйте снова.';
+	@override String get renameFailed => 'Не удалось переименовать магазин. Проверьте подключение и попробуйте снова.';
 	@override String get reviewTitle => 'Что распознано';
 	@override String get reviewSubtitle => 'Исправьте названия и цены перед сохранением';
 	@override String get store => 'Магазин';
@@ -1025,6 +1079,9 @@ class _Translations$receipt$ru extends Translations$receipt$he {
 	@override String get save => 'Сохранить цены';
 	@override String saved({required Object count}) => 'Сохранено цен: ${count}';
 	@override String savedShared({required Object count}) => 'Сохранено и отправлено цен: ${count}';
+	@override String savedShareQuota({required Object count}) => 'Сохранено цен: ${count}. Дневной лимит отправки исчерпан, поэтому они не отправлены';
+	@override String savedShareFailed({required Object count}) => 'Сохранено цен: ${count}. Не удалось поделиться ими с сообществом';
+	@override String get pdfTooLarge => 'Этот PDF слишком большой. Предел — 10 МБ.';
 	@override String get nothingToSave => 'Нет товаров для сохранения';
 	@override String get estimated => 'Оценка по прошлым данным';
 	@override String get estimatedTotal => 'Ориентировочная стоимость';
@@ -1152,6 +1209,7 @@ class _Translations$image$ru extends Translations$image$he {
 	@override String get webSearchHint => 'Что искать? например: кубе со свёклой';
 	@override String get webSearchEmpty => 'Картинки не найдены, попробуйте другие слова';
 	@override String get webSearchFailed => 'Поиск не удался, попробуйте ещё раз';
+	@override String get webSearchQuota => 'Дневной лимит поиска изображений исчерпан. Попробуйте завтра';
 	@override String get webSearchUnavailable => 'Поиск картинок сейчас недоступен';
 	@override String get webSearchEnd => 'Это все результаты';
 	@override String get webSearchDownloadFailed => 'Не удалось загрузить эту картинку, попробуйте другую';
@@ -1195,8 +1253,14 @@ class _Translations$ads$ru extends Translations$ads$he {
 
 	// Translations
 	@override String get badge => 'Реклама';
-	@override String freeViewsLeft({required Object count}) => 'На сегодня осталось бесплатных рецептов: ${count}';
-	@override String rewardedViewsLeft({required Object count}) => 'На сегодня осталось открытий за короткое видео: ${count}';
+	@override String freeViewsLeft({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count,
+		one: 'На сегодня осталось бесплатных рецептов: ${count}',
+		other: 'На сегодня осталось бесплатных рецептов: ${count}',
+	);
+	@override String rewardedViewsLeft({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count,
+		one: 'На сегодня осталось открытий за короткое видео: ${count}',
+		other: 'На сегодня осталось открытий за короткое видео: ${count}',
+	);
 	@override String get sharedQuotaReached => 'Вы достигли дневного лимита общих рецептов. Завтра он обнулится!';
 	@override String get unlockRecipeTitle => 'Открыть общий рецепт';
 	@override String unlockRecipeMessage({required Object count}) => 'Посмотрите короткое видео, чтобы открыть этот рецепт (осталось на сегодня: ${count})';
@@ -1294,6 +1358,14 @@ class _Translations$premium$ru extends Translations$premium$he {
 	@override String get currentPlan => 'Ваш пакет';
 	@override String switchTo({required Object price}) => 'Перейти за ${price}';
 	@override String get switched => 'Пакет изменён';
+	@override String get webRow => 'Оформить или управлять подпиской на сайте';
+	@override String get webRowHint => 'Карта, Apple Pay или Google Pay, без комиссии магазина';
+	@override String get webManagedTitle => 'Подписка куплена на сайте';
+	@override String get webManagedBody => 'Смена тарифа, отмена и способ оплаты — в вашем аккаунте на сайте.';
+	@override String get otherStoreBody => 'Ваш тариф куплен в другом магазине приложений (App Store или Google Play). Сменить или отменить его можно там.';
+	@override String get paymentPending => 'Платёж ожидает подтверждения. Премиум включится сам, когда он пройдёт, покупать заново не нужно.';
+	@override String get webOpen => 'Открыть сайт';
+	@override String get webLinkFailed => 'Не удалось открыть сайт. Попробуйте ещё раз.';
 }
 
 // Path: walkthrough
@@ -1389,6 +1461,7 @@ class _Translations$feedback$ru extends Translations$feedback$he {
 	@override String get bug => 'Ошибка';
 	@override String get suggestion => 'Предложение';
 	@override String get closedNotice => 'Команда закрыла это обращение. Его можно читать, но не писать в нём; для нового вопроса откройте новое.';
+	@override String get threadFull => 'Этот разговор заполнен. Начните новый, чтобы продолжить писать.';
 	@override String closedConversations({required Object n}) => 'Закрытые обращения (${n})';
 	@override String get noOpenConversations => 'Нет открытых обращений';
 	@override String get closedTag => 'Закрыто';
@@ -1587,6 +1660,8 @@ class _Translations$adminDashboard$ru extends Translations$adminDashboard$he {
 	@override String get grantRange => 'Точный диапазон дат';
 	@override String grantedUntil({required Object date}) => 'Премиум выдан до ${date}';
 	@override String grantStarts({required Object date}) => 'Начнётся ${date}';
+	@override String cappedAccounts({required Object count}) => 'Показаны только первые ${count} аккаунтов';
+	@override String cappedEvents({required Object count}) => 'Показаны только первые ${count} событий покупки';
 }
 
 // Path: assistant
@@ -1641,6 +1716,8 @@ class _Translations$assistant$ru extends Translations$assistant$he {
 	@override String get listening => 'Слушаю…';
 	@override String get stop => 'Стоп';
 	@override String get cancelled => 'Отменено.';
+	@override String get toggleFailed => 'Не удалось обновить список. Попробуйте ещё раз.';
+	@override String get roundsExhausted => 'Я не успел закончить за отведённые шаги. Попробуйте разбить просьбу на части.';
 }
 
 // Path: shareCode
@@ -1675,6 +1752,7 @@ class _Translations$shareCode$ru extends Translations$shareCode$he {
 	@override String get usedUp => 'Код исчерпан.';
 	@override String get self => 'Это ваш собственный код.';
 	@override String get gone => 'То, чем делился этот код, больше не существует.';
+	@override String get tooManyRecipes => 'В этом доступе слишком много рецептов, чтобы присоединиться сразу. Попросите владельца разделить его.';
 	@override String get failed => 'Не удалось присоединиться. Попробуйте снова.';
 	@override String messageText({required Object name, required Object title, required Object code, required Object link}) => '${name} поделился «${title}» с вами в EasyPlate. Код: ${code}\n${link}';
 	@override String get revoke => 'Отменить код';
@@ -1707,7 +1785,10 @@ class _Translations$household$ru extends Translations$household$he {
 	@override String get owner => 'Владелец';
 	@override String get you => 'Вы';
 	@override String get invite => 'Пригласить участника';
-	@override String inviteExplain({required Object free}) => 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.';
+	@override String inviteExplain({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(free,
+		one: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.',
+		other: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.',
+	);
 	@override String get noSeats => 'Все места заняты.';
 	@override String get remove => 'Удалить';
 	@override String removeConfirm({required Object name}) => 'Удалить ${name} из общего аккаунта? Доступ и Premium пропадут.';
@@ -1858,6 +1939,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get whatsNew => 'Что нового';
 	@override String get supportChat => 'Чат поддержки';
 	@override String get storeReview => 'Запрос оценки в магазине';
+	@override String get webCheckout => 'Покупка на сайте';
 }
 
 // Path: wakeWord
@@ -1893,6 +1975,7 @@ class _Translations$wakeWord$ru extends Translations$wakeWord$he {
 	@override String get privacyIos => 'Распознавание выполняется на устройстве, когда это возможно, иначе через речевой сервис Apple. EasyPlate не записывает и не хранит звук.';
 	@override String get permissionTitle => 'Нужен микрофон';
 	@override String get permissionDenied => 'Чтобы слышать «Эй, Шефи», приложению нужен микрофон (а в iOS ещё и распознавание речи).';
+	@override String get toggleFailed => 'Сейчас не удалось изменить «Эй, Шефи». Попробуйте снова.';
 	@override String get openSettings => 'Открыть настройки';
 	@override String get notificationTitle => 'Шефи слушает';
 	@override String get notificationBody => 'Скажите «Эй, Шефи», чтобы начать разговор';
@@ -2309,6 +2392,7 @@ extension on TranslationsRu {
 			'common.or' => 'или',
 			'common.missingInfo' => '[нет данных]',
 			'common.networkError' => 'Нет подключения к интернету',
+			'common.loadFailed' => 'Не удалось загрузить. Проверьте подключение и попробуйте снова',
 			'common.landscapeHint' => 'Удобнее в горизонтальном режиме',
 			'common.rotateLandscape' => 'Повернуть',
 			'common.rotatePortrait' => 'Вернуть портрет',
@@ -2331,6 +2415,7 @@ extension on TranslationsRu {
 			'auth.codeSentTo' => ({required Object phone}) => 'Мы отправили код на ${phone}',
 			'auth.verify' => 'Подтвердить',
 			'auth.resendCode' => 'Отправить снова',
+			'auth.resendIn' => ({required Object seconds}) => 'Отправить снова через ${seconds} с',
 			'auth.forgotPassword' => 'Забыли пароль',
 			'auth.resetSent' => 'Письмо для сброса отправлено',
 			'auth.noAccount' => 'Нет аккаунта? Зарегистрируйтесь',
@@ -2338,6 +2423,7 @@ extension on TranslationsRu {
 			'auth.invalidEmail' => 'Неверный адрес эл. почты',
 			'auth.passwordTooShort' => 'Пароль должен содержать минимум 6 символов',
 			'auth.invalidPhone' => 'Неверный номер телефона',
+			'auth.phoneNeedsCountryCode' => 'Укажите код страны, например +7 912 345 67 89',
 			'auth.codeRequired' => 'Введите полученный код',
 			'auth.errorUnauthorized' => 'Введённые данные неверны',
 			'auth.errorNetwork' => 'Нет подключения к интернету',
@@ -2428,6 +2514,7 @@ extension on TranslationsRu {
 			'onboarding.dietaryTitle' => 'Каковы ваши пищевые предпочтения?',
 			'onboarding.dietarySubtitle' => 'Можно выбрать несколько',
 			'onboarding.finish' => 'Начнём',
+			'onboarding.saveFailed' => 'Не удалось сохранить ваш выбор. Проверьте подключение и попробуйте снова.',
 			'dietary.meat' => 'Мясное',
 			'dietary.dairy' => 'Молочное',
 			'dietary.vegetarian' => 'Вегетарианское',
@@ -2481,6 +2568,7 @@ extension on TranslationsRu {
 			'settings.translationPartialTitle' => 'Перевод не завершён',
 			'settings.translationPartial' => ({required Object count}) => '${count} элементов остались на своём языке. Попробуйте позже.',
 			'settings.translationFailed' => 'Не удалось перевести. Содержимое осталось на своём языке.',
+			'settings.saveFailed' => 'Не удалось сохранить изменение. Проверьте подключение и попробуйте снова.',
 			'settings.account' => 'Аккаунт',
 			'settings.notifications' => 'Уведомления',
 			'settings.notificationsHint' => 'Какие оповещения вы получаете и как',
@@ -2516,6 +2604,10 @@ extension on TranslationsRu {
 			'notificationSettings.foregroundPopups' => 'Показывать оповещения всплывающей карточкой',
 			'notificationSettings.foregroundPopupsHint' => 'Уведомление, пришедшее пока вы в приложении, открывает небольшую карточку. Если выключено, оно попадает только во входящие.',
 			'notificationSettings.reminders' => 'Напоминания о покупках',
+			'shoppingReminder.twoDaysBefore' => 'Приближается день покупок — пора начать планировать меню',
+			'shoppingReminder.dayBefore' => 'Завтра день покупок — проверьте, что меню актуально',
+			'shoppingReminder.sameDayMorning' => 'Сегодня день покупок — завершите меню, чтобы получить точный список',
+			'shoppingReminder.sameDayAfternoon' => 'Последнее напоминание перед покупками — список покупок ждёт вас',
 			'preferences.title' => 'Предпочтения',
 			'preferences.hint' => 'Покупки, питание и поведение книг',
 			'preferences.shopping' => 'Покупки',
@@ -2565,6 +2657,9 @@ extension on TranslationsRu {
 			'books.bookOptions' => 'Параметры книги',
 			'books.renameBook' => 'Переименовать книгу',
 			'books.spineColor' => 'Цвет корешка',
+			'books.deleteConfirm' => ({required Object title}) => 'Удалить «${title}»? Рецепты из неё останутся в вашей библиотеке.',
+			'books.deleteSharedConfirm' => ({required Object title}) => 'Удалить «${title}»? Она исчезнет и у всех, с кем вы ею поделились. Рецепты останутся в вашей библиотеке.',
+			'books.leaveConfirm' => ({required Object title}) => 'Покинуть «${title}»? Она больше не будет на вашей полке.',
 			'recipe.prepTime' => 'Время подготовки',
 			'recipe.cookTime' => 'Время приготовления',
 			'recipe.ingredients' => 'Ингредиенты',
@@ -2592,6 +2687,7 @@ extension on TranslationsRu {
 			'recipe.communityUpdateLocal' => 'Только у меня',
 			'recipe.communityUpdated' => 'Копия в сообществе обновлена',
 			'recipe.communityGone' => 'Рецепта больше нет в сообществе; сохранено только у вас',
+			'recipe.communityUpdateFailed' => 'Сохранено у вас. Публикация в сообществе не обновлена, попробуйте позже.',
 			'cookMode.title' => 'Режим готовки',
 			'cookMode.start' => 'Начать готовить',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Шаг ${n} из ${total}',
@@ -2719,6 +2815,15 @@ extension on TranslationsRu {
 			'community.oneNewPost' => '1 новый пост',
 			'community.newPosts' => ({required Object count}) => 'Новых постов: ${count}',
 			'community.replyFailed' => 'Не удалось отправить ваш ответ',
+			'community.postFailed' => 'Не удалось опубликовать ваш пост',
+			'community.deletePostFailed' => 'Не удалось удалить пост',
+			'community.shareFailed' => 'Не удалось поделиться рецептом',
+			'community.updateFailed' => 'Не удалось обновить общий рецепт',
+			'community.unshareFailed' => 'Не удалось убрать рецепт из ленты',
+			'community.importFailed' => 'Не удалось сохранить рецепт',
+			'community.ageMinutes' => ({required Object n}) => '${n} мин',
+			'community.ageHours' => ({required Object n}) => '${n} ч',
+			'community.ageDays' => ({required Object n}) => '${n} д',
 			'sharing.title' => 'Поделиться рецептом',
 			'sharing.contactLabel' => 'Почта или телефон человека',
 			'sharing.contactHint' => 'name@example.com или 05…',
@@ -2729,7 +2834,7 @@ extension on TranslationsRu {
 			'sharing.roleEditorHint' => 'Его изменения появятся и у вас',
 			'sharing.send' => 'Отправить приглашение',
 			'sharing.sent' => 'Приглашение отправлено',
-			'sharing.invalidContact' => 'Введите корректную почту или телефон',
+			'sharing.invalidContact' => 'Введите корректную почту или телефон с кодом страны (+…)',
 			'sharing.notFound' => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.',
 			'sharing.self' => 'Нельзя поделиться с самим собой',
 			'sharing.failed' => 'Не удалось поделиться, попробуйте снова',
@@ -2744,6 +2849,8 @@ extension on TranslationsRu {
 			'sharing.accepted' => 'Рецепт добавлен к вашим',
 			'sharing.declined' => 'Приглашение отклонено',
 			'sharing.acceptFailed' => 'Не удалось принять, попробуйте снова',
+			'sharing.acceptQueued' => 'Сейчас нет соединения. Вы присоединились; копия появится при следующем открытии приложения с сетью.',
+			'sharing.collabMissing' => 'Этот доступ больше не действует: владелец удалил его',
 			'sharing.members' => 'Участники',
 			'sharing.noMembersYet' => 'Пока никто не принял',
 			'sharing.remove' => 'Удалить',
@@ -2773,11 +2880,15 @@ extension on TranslationsRu {
 			'sharing.acceptedList' => 'Список добавлен в ваши списки покупок',
 			'sharing.viewerCannotEditList' => 'Этот список открыт вам только для просмотра',
 			'sharing.kindList' => 'список покупок',
+			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} общая книга', few: '${n} общие книги', many: '${n} общих книг', other: '${n} общей книги', ), 
+			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} общий список покупок', few: '${n} общих списка покупок', many: '${n} общих списков покупок', other: '${n} общего списка покупок', ), 
 			'notifications.title' => 'Уведомления',
 			'notifications.empty' => 'Уведомлений нет',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»',
 			'notifications.asViewer' => 'только просмотр',
 			'notifications.asEditor' => 'для редактирования',
+			_ => null,
+		} ?? switch (path) {
 			'notifications.markAllRead' => 'Отметить все прочитанными',
 			'notifications.openRecipe' => 'Открыть рецепт',
 			'notifications.alreadyHandled' => 'Приглашение уже обработано',
@@ -2804,8 +2915,6 @@ extension on TranslationsRu {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} поделился/лась с вами списком покупок «${recipe}»',
 			'editor.title' => 'Редактирование рецепта',
 			'editor.recipeTitle' => 'Название рецепта',
-			_ => null,
-		} ?? switch (path) {
 			'editor.titleHint' => 'Например: иерусалимская шакшука',
 			'editor.topics' => 'Темы',
 			'editor.titleRequired' => 'Укажите название рецепта',
@@ -2876,6 +2985,7 @@ extension on TranslationsRu {
 			'ingestion.chooseFile' => 'Выбрать файл',
 			'ingestion.replaceFile' => 'Другой файл',
 			'ingestion.fileTooLarge' => 'Файлы слишком большие. Общий предел — 10 МБ, около десяти минут записи.',
+			'ingestion.textTooLong' => ({required Object max}) => 'Текст слишком длинный — не более ${max} символов.',
 			'ingestion.fileUnsupported' => 'Анализировать можно только аудиофайлы и PDF.',
 			'ingestion.sharedIn' => ({required Object app}) => 'Из ${app}',
 			'ingestion.addFile' => 'Добавить файл',
@@ -2887,10 +2997,15 @@ extension on TranslationsRu {
 			'ingestion.webSearchHint' => 'Например: шакшука, чизкейк, свекольная кубба',
 			'ingestion.urlScrapeDescription' => 'Вставьте ссылку на страницу рецепта на сайте или в блоге. Мы прочитаем страницу, пропустим рекламу и истории вокруг и извлечём только рецепт: ингредиенты, количества и шаги. На многих сайтах это даже не расходует дневной лимит.',
 			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
+			'ingestion.invalidUrl' => 'Это не похоже на ссылку. Вставьте полный адрес, начинающийся с http:// или https://',
 			'ingestion.socialVideoDescription' => 'Вставьте ссылку на видео из TikTok, Instagram, YouTube или Facebook. Мы посмотрим его за вас, послушаем, что говорят, прочитаем субтитры и описание и превратим всё в записанный, структурированный рецепт. Это занимает около минуты.',
 			'ingestion.aiRequestDescription' => 'Нет рецепта, есть только идея? Опишите блюдо, для кого оно и что для вас важно, и модель напишет полный рецепт с учётом ваших пищевых предпочтений.',
 			'ingestion.manualDescription' => 'Напишите рецепт сами, прямо в структурированном редакторе: название, ингредиенты с количествами и единицами, шаги. Без ИИ и без ожидания. Для бабушкиного рецепта, который вы знаете наизусть.',
 			'ingestion.fileDescription' => 'Выберите аудиофайл, где кто-то читает или рассказывает рецепт, голосовое сообщение из WhatsApp или PDF с рецептом. Мы расшифруем и прочитаем всё и извлечём аккуратный рецепт. Можно приложить несколько файлов — они анализируются вместе как один рецепт.',
+			'ingestion.saveFailed' => 'Не удалось сохранить рецепт. Попробуйте ещё раз.',
+			'ingestion.recordingTag' => 'Запись',
+			'ingestion.sizeKb' => ({required Object n}) => '${n} КБ',
+			'ingestion.sizeMb' => ({required Object n}) => '${n} МБ',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',
@@ -3000,6 +3115,8 @@ extension on TranslationsRu {
 			'receipt.scanning' => 'Читаем чек…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} фото',
 			'receipt.scanFailed' => 'Не удалось прочитать чек. Попробуйте более чёткое фото или PDF.',
+			'receipt.deleteFailed' => 'Не удалось удалить. Проверьте подключение и попробуйте снова.',
+			'receipt.renameFailed' => 'Не удалось переименовать магазин. Проверьте подключение и попробуйте снова.',
 			'receipt.reviewTitle' => 'Что распознано',
 			'receipt.reviewSubtitle' => 'Исправьте названия и цены перед сохранением',
 			'receipt.store' => 'Магазин',
@@ -3020,6 +3137,9 @@ extension on TranslationsRu {
 			'receipt.save' => 'Сохранить цены',
 			'receipt.saved' => ({required Object count}) => 'Сохранено цен: ${count}',
 			'receipt.savedShared' => ({required Object count}) => 'Сохранено и отправлено цен: ${count}',
+			'receipt.savedShareQuota' => ({required Object count}) => 'Сохранено цен: ${count}. Дневной лимит отправки исчерпан, поэтому они не отправлены',
+			'receipt.savedShareFailed' => ({required Object count}) => 'Сохранено цен: ${count}. Не удалось поделиться ими с сообществом',
+			'receipt.pdfTooLarge' => 'Этот PDF слишком большой. Предел — 10 МБ.',
 			'receipt.nothingToSave' => 'Нет товаров для сохранения',
 			'receipt.estimated' => 'Оценка по прошлым данным',
 			'receipt.estimatedTotal' => 'Ориентировочная стоимость',
@@ -3129,6 +3249,7 @@ extension on TranslationsRu {
 			'image.webSearchHint' => 'Что искать? например: кубе со свёклой',
 			'image.webSearchEmpty' => 'Картинки не найдены, попробуйте другие слова',
 			'image.webSearchFailed' => 'Поиск не удался, попробуйте ещё раз',
+			'image.webSearchQuota' => 'Дневной лимит поиска изображений исчерпан. Попробуйте завтра',
 			'image.webSearchUnavailable' => 'Поиск картинок сейчас недоступен',
 			'image.webSearchEnd' => 'Это все результаты',
 			'image.webSearchDownloadFailed' => 'Не удалось загрузить эту картинку, попробуйте другую',
@@ -3145,8 +3266,8 @@ extension on TranslationsRu {
 			'update.updateNow' => 'Обновить',
 			'update.later' => 'Пропустить',
 			'ads.badge' => 'Реклама',
-			'ads.freeViewsLeft' => ({required Object count}) => 'На сегодня осталось бесплатных рецептов: ${count}',
-			'ads.rewardedViewsLeft' => ({required Object count}) => 'На сегодня осталось открытий за короткое видео: ${count}',
+			'ads.freeViewsLeft' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count, one: 'На сегодня осталось бесплатных рецептов: ${count}', other: 'На сегодня осталось бесплатных рецептов: ${count}', ), 
+			'ads.rewardedViewsLeft' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(count, one: 'На сегодня осталось открытий за короткое видео: ${count}', other: 'На сегодня осталось открытий за короткое видео: ${count}', ), 
 			'ads.sharedQuotaReached' => 'Вы достигли дневного лимита общих рецептов. Завтра он обнулится!',
 			'ads.unlockRecipeTitle' => 'Открыть общий рецепт',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Посмотрите короткое видео, чтобы открыть этот рецепт (осталось на сегодня: ${count})',
@@ -3223,6 +3344,14 @@ extension on TranslationsRu {
 			'premium.currentPlan' => 'Ваш пакет',
 			'premium.switchTo' => ({required Object price}) => 'Перейти за ${price}',
 			'premium.switched' => 'Пакет изменён',
+			'premium.webRow' => 'Оформить или управлять подпиской на сайте',
+			'premium.webRowHint' => 'Карта, Apple Pay или Google Pay, без комиссии магазина',
+			'premium.webManagedTitle' => 'Подписка куплена на сайте',
+			'premium.webManagedBody' => 'Смена тарифа, отмена и способ оплаты — в вашем аккаунте на сайте.',
+			'premium.otherStoreBody' => 'Ваш тариф куплен в другом магазине приложений (App Store или Google Play). Сменить или отменить его можно там.',
+			'premium.paymentPending' => 'Платёж ожидает подтверждения. Премиум включится сам, когда он пройдёт, покупать заново не нужно.',
+			'premium.webOpen' => 'Открыть сайт',
+			'premium.webLinkFailed' => 'Не удалось открыть сайт. Попробуйте ещё раз.',
 			'walkthrough.title' => 'Обучение',
 			'walkthrough.start' => 'Запустить обучение',
 			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
@@ -3272,6 +3401,8 @@ extension on TranslationsRu {
 			'walkthrough.topics.groceries.summary' => 'Список, построенный из плана, с отметкой уже собранного, оценкой стоимости по вашим чекам и общим доступом для тех, кто ходит за покупками с вами.',
 			'walkthrough.topics.groceries.s1' => 'Нажмите «Покупки».',
 			'walkthrough.topics.groceries.s2' => 'Обновление заново собирает список из всех рецептов недельного плана.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'Нажмите плюс, чтобы добавить пункт вручную.',
 			'walkthrough.topics.groceries.s4' => 'Название пункта уже заполнено. Выберите количество и единицу, или начните с товара, который уже знают ваши чеки.',
 			'walkthrough.topics.groceries.s5' => 'Нажмите «Добавить», и пункт попадёт в список.',
@@ -3318,8 +3449,6 @@ extension on TranslationsRu {
 			'walkthrough.demoRecipesHint' => 'Так выглядят рецепты в приложении. Нажмите на рецепт, чтобы увидеть его страницу целиком: время, темы, аллергены, ингредиенты и шаги.',
 			'walkthrough.demoBooks' => 'Примеры книг',
 			'walkthrough.demoBooksHint' => 'Так выглядит книга рецептов. Нажмите на книгу, чтобы открыть её, листать страницы и переходить из оглавления.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Только пример, не сохраняется',
 			'whatsNew.title' => 'Что нового в EasyPlate',
 			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} из ${total}',
@@ -3369,6 +3498,7 @@ extension on TranslationsRu {
 			'feedback.bug' => 'Ошибка',
 			'feedback.suggestion' => 'Предложение',
 			'feedback.closedNotice' => 'Команда закрыла это обращение. Его можно читать, но не писать в нём; для нового вопроса откройте новое.',
+			'feedback.threadFull' => 'Этот разговор заполнен. Начните новый, чтобы продолжить писать.',
 			'feedback.closedConversations' => ({required Object n}) => 'Закрытые обращения (${n})',
 			'feedback.noOpenConversations' => 'Нет открытых обращений',
 			'feedback.closedTag' => 'Закрыто',
@@ -3549,6 +3679,8 @@ extension on TranslationsRu {
 			'adminDashboard.grantRange' => 'Точный диапазон дат',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Премиум выдан до ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Начнётся ${date}',
+			'adminDashboard.cappedAccounts' => ({required Object count}) => 'Показаны только первые ${count} аккаунтов',
+			'adminDashboard.cappedEvents' => ({required Object count}) => 'Показаны только первые ${count} событий покупки',
 			'assistant.title' => 'Шефи',
 			'assistant.subtitle' => 'Ваш су-шеф: вопросы, планы, покупки, готовка',
 			'assistant.placeholder' => 'Спросите или скажите, что сделать…',
@@ -3694,6 +3826,8 @@ extension on TranslationsRu {
 			'assistant.listening' => 'Слушаю…',
 			'assistant.stop' => 'Стоп',
 			'assistant.cancelled' => 'Отменено.',
+			'assistant.toggleFailed' => 'Не удалось обновить список. Попробуйте ещё раз.',
+			'assistant.roundsExhausted' => 'Я не успел закончить за отведённые шаги. Попробуйте разбить просьбу на части.',
 			'shareCode.title' => 'Код и ссылка',
 			'shareCode.tabContact' => 'Контакт',
 			'shareCode.tabCode' => 'Код или ссылка',
@@ -3719,6 +3853,7 @@ extension on TranslationsRu {
 			'shareCode.usedUp' => 'Код исчерпан.',
 			'shareCode.self' => 'Это ваш собственный код.',
 			'shareCode.gone' => 'То, чем делился этот код, больше не существует.',
+			'shareCode.tooManyRecipes' => 'В этом доступе слишком много рецептов, чтобы присоединиться сразу. Попросите владельца разделить его.',
 			'shareCode.failed' => 'Не удалось присоединиться. Попробуйте снова.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} поделился «${title}» с вами в EasyPlate. Код: ${code}\n${link}',
 			'shareCode.revoke' => 'Отменить код',
@@ -3742,7 +3877,7 @@ extension on TranslationsRu {
 			'household.owner' => 'Владелец',
 			'household.you' => 'Вы',
 			'household.invite' => 'Пригласить участника',
-			'household.inviteExplain' => ({required Object free}) => 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.',
+			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(free, one: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.', other: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.', ), 
 			'household.noSeats' => 'Все места заняты.',
 			'household.remove' => 'Удалить',
 			'household.removeConfirm' => ({required Object name}) => 'Удалить ${name} из общего аккаунта? Доступ и Premium пропадут.',
@@ -3780,6 +3915,8 @@ extension on TranslationsRu {
 			'homeWidgets.widgetAssistantHint' => 'Кнопка, открывающая Шефи, при желании с микрофоном, и быстрые вопросы.',
 			'homeWidgets.widgetGroceryAdd' => 'Быстрое добавление в список',
 			'homeWidgets.widgetGroceryAddHint' => 'Введите или продиктуйте продукт прямо в выбранный список.',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.widgetGroceryList' => 'Список покупок',
 			'homeWidgets.widgetGroceryListHint' => 'Что осталось купить; отмечайте продукты прямо в виджете.',
 			'homeWidgets.widgetTodayMenu' => 'Меню на сегодня',
@@ -3832,8 +3969,6 @@ extension on TranslationsRu {
 			'featureName.cookMode' => 'Режим готовки',
 			'featureName.cookTimers' => 'Таймеры готовки',
 			'featureName.nutrition' => 'Питательная ценность',
-			_ => null,
-		} ?? switch (path) {
 			'featureName.recipeImageAi' => 'Картинка от ИИ',
 			'featureName.recipeImageSearch' => 'Поиск картинок Google',
 			'featureName.groceryFromRecipe' => 'Список покупок из рецепта',
@@ -3868,6 +4003,7 @@ extension on TranslationsRu {
 			'featureName.whatsNew' => 'Что нового',
 			'featureName.supportChat' => 'Чат поддержки',
 			'featureName.storeReview' => 'Запрос оценки в магазине',
+			'featureName.webCheckout' => 'Покупка на сайте',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
@@ -3890,6 +4026,7 @@ extension on TranslationsRu {
 			'wakeWord.privacyIos' => 'Распознавание выполняется на устройстве, когда это возможно, иначе через речевой сервис Apple. EasyPlate не записывает и не хранит звук.',
 			'wakeWord.permissionTitle' => 'Нужен микрофон',
 			'wakeWord.permissionDenied' => 'Чтобы слышать «Эй, Шефи», приложению нужен микрофон (а в iOS ещё и распознавание речи).',
+			'wakeWord.toggleFailed' => 'Сейчас не удалось изменить «Эй, Шефи». Попробуйте снова.',
 			'wakeWord.openSettings' => 'Открыть настройки',
 			'wakeWord.notificationTitle' => 'Шефи слушает',
 			'wakeWord.notificationBody' => 'Скажите «Эй, Шефи», чтобы начать разговор',

@@ -1,0 +1,43 @@
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "name": "תפריט משותף",
+  "meals": [
+    {
+      "id": "m1",
+      "weekday": 2,
+      "name": "ערב",
+      "order": 0,
+      "items": [
+        {
+          "id": "i1",
+          "recipeId": "0b8c5b6e-2c1f-4a8e-9a1d-6a2f3c4d5e6f",
+          "freeText": null,
+          "ingredients": []
+        },
+        {
+          "id": "i2",
+          "recipeId": null,
+          "freeText": "Pasta",
+          "ingredients": []
+        },
+        {
+          "id": "i3",
+          "recipeId": null,
+          "freeText": "סלט",
+          "ingredients": [
+            {
+              "name": "עגבנייה",
+              "amount": 2,
+              "unit": "unit"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-10-18T09:00:00.000Z",
+  "collabId": "collab-plan-2",
+  "collabRole": "editor",
+  "contentLang": "he",
+  "contentVersion": 0
+}

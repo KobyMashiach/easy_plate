@@ -31,4 +31,25 @@ void main() {
     final json = spent.toJson();
     expect(DailyUsageModel.fromJson(json), spent);
   });
+
+  group('two copies of the day meeting', () {
+    test('the same day keeps the higher count and every id', () {
+      const other = DailyUsageModel(
+        day: '2026-09-09',
+        viewedSharedIds: ['c', 'd'],
+        aiExtractions: 5,
+      );
+      final merged = spent.mergedWith(other);
+      expect(merged.aiExtractions, 5);
+      expect(merged.viewedSharedIds, ['a', 'b', 'c', 'd']);
+      // A copy that knows nothing new changes nothing.
+      expect(spent.mergedWith(spent), spent);
+    });
+
+    test('across days the later day stands, whichever side holds it', () {
+      const later = DailyUsageModel(day: '2026-09-10', aiExtractions: 1);
+      expect(spent.mergedWith(later), later);
+      expect(later.mergedWith(spent), later);
+    });
+  });
 }

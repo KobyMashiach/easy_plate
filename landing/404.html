@@ -19,11 +19,43 @@
 <body>
   <div class="card">
     <img src="/icon-192.png" alt="" width="72" height="72" style="border-radius:20px" />
-    <h1>הדף הזה לא נמצא</h1>
-    <p>אולי הקישור השתנה. כל מה ש-EasyPlate עושה — מתכונים, תפריט שבועי ורשימת קניות — נמצא בדף הבית.</p>
-    <a class="btn" href="/he">לדף הבית</a>
-    <div><a class="link" href="/he/recipe-app">אפליקציית מתכונים</a><a class="link" href="/he/meal-planner">תפריט שבועי</a><a class="link" href="/he/grocery-list-app">רשימת קניות</a></div>
-    <p class="en">Page not found. <a class="link" href="/">EasyPlate home</a></p>
+    <h1 id="h">הדף הזה לא נמצא</h1>
+    <p id="p">אולי הקישור השתנה. כל מה ש-EasyPlate עושה — מתכונים, תפריט שבועי ורשימת קניות — נמצא בדף הבית.</p>
+    <a class="btn" id="home" href="/he">לדף הבית</a>
+    <div><a class="link" id="l1" href="/he/recipe-app">אפליקציית מתכונים</a><a class="link" id="l2" href="/he/meal-planner">תפריט שבועי</a><a class="link" id="l3" href="/he/grocery-list-app">רשימת קניות</a></div>
+    <p class="en" id="en">Page not found. <a class="link" href="/">EasyPlate home</a></p>
   </div>
+  <script>
+    // Hosting serves this one page for every miss, so the language comes
+    // from the path: /he/…, /ar/…, /fr/…, /ru/… keep theirs, anything else
+    // is the English site at the root. (/app/** never lands here: the SPA
+    // rewrite answers it.)
+    (function () {
+      var T = {
+        he: ["rtl", "הדף לא נמצא — EasyPlate", "הדף הזה לא נמצא", "אולי הקישור השתנה. כל מה ש-EasyPlate עושה — מתכונים, תפריט שבועי ורשימת קניות — נמצא בדף הבית.", "לדף הבית", "אפליקציית מתכונים", "תפריט שבועי", "רשימת קניות"],
+        en: ["ltr", "Page not found — EasyPlate", "This page wasn't found", "The link may have changed. Everything EasyPlate does — recipes, a weekly menu and a grocery list — is on the home page.", "Go to the home page", "Recipe app", "Meal planner", "Grocery list"],
+        ar: ["rtl", "الصفحة غير موجودة — EasyPlate", "لم نعثر على هذه الصفحة", "ربما تغيّر الرابط. كل ما يقدّمه EasyPlate — الوصفات وقائمة الطعام الأسبوعية وقائمة التسوّق — تجده في الصفحة الرئيسية.", "إلى الصفحة الرئيسية", "تطبيق وصفات", "تخطيط الوجبات", "قائمة التسوّق"],
+        fr: ["ltr", "Page introuvable — EasyPlate", "Cette page est introuvable", "Le lien a peut-être changé. Tout ce que fait EasyPlate — recettes, menu de la semaine et liste de courses — se trouve sur la page d’accueil.", "Retour à l’accueil", "Application de recettes", "Menu de la semaine", "Liste de courses"],
+        ru: ["ltr", "Страница не найдена — EasyPlate", "Такой страницы нет", "Возможно, ссылка изменилась. Всё, что умеет EasyPlate, — рецепты, меню на неделю и список покупок — на главной странице.", "На главную", "Приложение рецептов", "Меню на неделю", "Список покупок"]
+      };
+      var seg = (location.pathname.split("/")[1] || "").toLowerCase();
+      var lang = T[seg] && seg !== "en" ? seg : "en";
+      var s = T[lang], base = lang === "en" ? "" : "/" + lang;
+      var $ = function (id) { return document.getElementById(id); };
+      document.documentElement.lang = lang;
+      document.documentElement.dir = s[0];
+      document.title = s[1];
+      $("h").textContent = s[2];
+      $("p").textContent = s[3];
+      $("home").textContent = s[4];
+      $("home").href = base || "/";
+      ["recipe-app", "meal-planner", "grocery-list-app"].forEach(function (slug, i) {
+        var a = $("l" + (i + 1));
+        a.textContent = s[5 + i];
+        a.href = base + "/" + slug;
+      });
+      $("en").hidden = lang === "en";
+    })();
+  </script>
 </body>
 </html>

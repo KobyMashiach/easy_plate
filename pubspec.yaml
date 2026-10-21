@@ -122,8 +122,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # assets/i18n/*.json are not bundled: slang compiles them into
+  # lib/core/utils/i18n/*.g.dart and nothing reads them at runtime.
   assets:
-    - assets/i18n/
     - assets/app_icon.png
 
   fonts:

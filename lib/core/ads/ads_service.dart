@@ -28,7 +28,13 @@ class AdsService {
   Future<void> init() async {
     if (!AdsConfig.supported || _initialized) return;
     try {
-      await _gatherConsent();
+      // An SDK that never calls back would otherwise hold this forever;
+      // past the limit there is no consent answer, so ads stay off for this
+      // session and the next launch asks again.
+      if (!await withinConsentTimeout(_gatherConsent)) {
+        debugPrint('Ads: consent lookup timed out, ads off this session');
+        return;
+      }
       if (!await ConsentInformation.instance.canRequestAds()) {
         debugPrint('Ads: consent not given, SDK left uninitialised');
         return;
@@ -38,6 +44,24 @@ class AdsService {
       unawaited(RewardedAdService().preload());
     } catch (e) {
       debugPrint('Ads init failed: $e');
+    }
+  }
+
+  /// How long the consent lookup (and the form, when one is shown) may take.
+  static const consentTimeout = Duration(seconds: 15);
+
+  /// Runs [gather], true when it finished within [timeout]. A gather that
+  /// failed counts as finished: the SDK's own answer decides afterwards.
+  @visibleForTesting
+  static Future<bool> withinConsentTimeout(
+    Future<void> Function() gather, {
+    Duration timeout = consentTimeout,
+  }) async {
+    try {
+      await gather().timeout(timeout);
+      return true;
+    } on TimeoutException {
+      return false;
     }
   }
 

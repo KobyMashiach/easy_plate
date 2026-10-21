@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,7 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/notifications_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -15,6 +18,8 @@ import '../../../../core/navigation/main_tabs.dart';
 import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../../collab_containers/domain/entities/collab_container_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../notifications/domain/repositories/notifications_repository.dart';
+import '../../../notifications/domain/usecases/mark_notification_read_usecase.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../../my_recipes/presentation/pages/recipe_details_page.dart';
@@ -57,13 +62,32 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
 
   String get _uid => AuthSessionService().user?.uid ?? '';
 
+  /// Owns the book/list counts at the bottom. Held here, not created in
+  /// [build], so every reload re-reads them too: accepting a book or
+  /// leaving a list changes the counts, and they used to stay as they were
+  /// when the page opened.
+  late final SettingsBloc _settings;
+
   @override
   void initState() {
     super.initState();
+    _settings = SettingsBloc.fromContext(context);
     _load();
   }
 
+  @override
+  void dispose() {
+    _settings.close();
+    super.dispose();
+  }
+
+  /// Bumped per load: a pull-to-refresh that started before an accept and
+  /// finished after the accept's own reload must not put the answered
+  /// invite back.
+  int _loadGen = 0;
+
   Future<void> _load() async {
+    final gen = ++_loadGen;
     final sharing = context.read<RecipeSharingRepository>();
     final containers = context.read<ContainerSharingService>();
     final profiles = context.read<UserProfileRepository>();
@@ -93,7 +117,9 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
       };
       final people = await profiles.getPublicProfiles(uids);
 
-      if (!mounted) return;
+      if (!mounted || gen != _loadGen) return;
+      // The first load rides on the bloc's own init.
+      if (_loaded) _settings.add(const SettingsEvent.init());
       setState(() {
         _pending = pending;
         _owned = owned;
@@ -102,12 +128,23 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
         _containersWithMe = containersWithMe;
         _people = people;
         _loading = false;
+        _loaded = true;
       });
     } catch (e) {
       debugPrint('Sharing page load failed: $e');
-      if (mounted) setState(() => _loading = false);
+      if (!mounted || gen != _loadGen) return;
+      setState(() => _loading = false);
+      // Nothing on screen yet: the error view with a retry, not empty
+      // sections that read as "nothing shared". A failed refresh keeps
+      // what is shown and says so.
+      if (_loaded) {
+        AppDialog.error(message: t.common.loadFailed).notify(context);
+      }
     }
   }
+
+  /// Whether a load ever succeeded; until then a failure is the page.
+  bool _loaded = false;
 
   String _nameOf(String uid) => _people[uid]?.fullName ?? '';
 
@@ -120,12 +157,21 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
       recipes: context.read<RecipesRepository>(),
     );
     final containers = context.read<ContainerSharingService>();
+    final inbox = MarkNotificationReadUseCase(
+      context.read<NotificationsRepository>(),
+    );
+    // Answered here, the invite's inbox row is done as well.
+    void markRowRead() => unawaited(
+      inbox.invite(_uid, invite.id, inbox: NotificationsService().items.value),
+    );
+    if (_busy) return;
     setState(() => _busy = true);
     try {
       if (accept) {
         switch (invite.kind) {
           case CollabKind.recipe:
             final local = await useCase.accept(invite);
+            markRowRead();
             if (!mounted) return;
             _toast(t.sharing.accepted);
             context.pushNamed(
@@ -135,18 +181,23 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
           case CollabKind.book:
             final book =
                 await containers.accept(invite, uid: _uid) as RecipeBookEntity;
+            markRowRead();
             if (!mounted) return;
             _toast(t.sharing.acceptedBook);
             context.pushNamed(Routing.bookDetails, extra: book.id);
           case CollabKind.mealPlan:
             await containers.accept(invite, uid: _uid);
+            markRowRead();
             if (!mounted) return;
             _toast(t.sharing.acceptedPlan);
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.mealPlan;
+            // On the way out: nothing here to reload.
+            return;
           case CollabKind.groceryList:
             final list =
                 await containers.accept(invite, uid: _uid) as GroceryListEntity;
+            markRowRead();
             // The groceries tab opens on the list last chosen on this
             // device: make it this one before landing there.
             await HiveActiveGroceryListStore.instance.write(list.id);
@@ -154,6 +205,7 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
             _toast(t.sharing.acceptedList);
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.groceries;
+            return;
           case CollabKind.household:
             // Never an invite: a household is joined by code.
             break;
@@ -164,12 +216,29 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
         } else {
           await containers.decline(invite);
         }
+        markRowRead();
         if (mounted) _toast(t.sharing.declined);
       }
+      if (!mounted) return;
       await _load();
     } catch (e) {
       debugPrint('Invite response failed: $e');
-      if (mounted) _fail(t.sharing.acceptFailed);
+      if (!mounted) return;
+      if (RecipeSharingRepository.isCollabMissing(e)) {
+        // The invite was closed on the way: the list no longer has it.
+        markRowRead();
+        _fail(t.sharing.collabMissing);
+        await _load();
+      } else if (RecipeSharingRepository.isAcceptQueued(e)) {
+        // No answer from the server in time: the accept is queued, the copy
+        // follows with the next refresh online, and the invite is no longer
+        // pending — answered, as far as this list is concerned.
+        markRowRead();
+        _fail(t.sharing.acceptQueued);
+        await _load();
+      } else {
+        _fail(t.sharing.acceptFailed);
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -183,10 +252,12 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
     final useCase = RemoveCollabMemberUseCase(
       context.read<RecipeSharingRepository>(),
     );
+    if (_busy) return;
     setState(() => _busy = true);
     try {
-      await useCase(collab.id, memberUid);
+      await _queuedAfter(useCase(collab.id, memberUid, revokeInvite: !leaving));
       if (mounted) _toast(leaving ? t.sharing.left : t.sharing.removed);
+      if (!mounted) return;
       await _load();
     } catch (e) {
       debugPrint('Member removal failed: $e');
@@ -202,16 +273,32 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
     required bool leaving,
   }) async {
     final service = context.read<ContainerSharingService>();
+    if (_busy) return;
     setState(() => _busy = true);
     try {
-      await service.removeMember(container.id, memberUid);
+      await _queuedAfter(
+        service.removeMember(container.id, memberUid, revokeInvite: !leaving),
+      );
       if (mounted) _toast(leaving ? t.sharing.left : t.sharing.removed);
+      if (!mounted) return;
       await _load();
     } catch (e) {
       debugPrint('Container member removal failed: $e');
       if (mounted) _fail(t.sharing.failed);
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// [write], or done waiting once it is only queued: offline, Firestore
+  /// holds a write and completes it when a server takes it, and the page
+  /// sat behind a spinner until then. The roster change still lands later;
+  /// a refusal arrives well within the bound.
+  static Future<void> _queuedAfter(Future<void> write) async {
+    try {
+      await write.timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      debugPrint('Roster change queued offline');
     }
   }
 
@@ -224,8 +311,8 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SettingsBloc.fromContext(context),
+    return BlocProvider.value(
+      value: _settings,
       child: ClayScaffold(
         appBar: ClayTopAppBar(
           title: t.settings.sharedAccess,
@@ -242,6 +329,14 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
+            : !_loaded
+            ? ErrorRetryView(
+                error: t.common.loadFailed,
+                onRetry: () {
+                  setState(() => _loading = true);
+                  _load();
+                },
+              )
             : RefreshIndicator(
                 onRefresh: _load,
                 color: AppColors.primary,
@@ -635,12 +730,12 @@ class _BooksAndListsCard extends StatelessWidget {
                     children: [
                       if (books > 0)
                         ClayTag(
-                          label: '$books ${t.books.myLibrary}',
+                          label: t.sharing.sharedBooksCount(n: books),
                           icon: Icons.menu_book_rounded,
                         ),
                       if (lists > 0)
                         ClayTag(
-                          label: '$lists ${t.groceryList.title}',
+                          label: t.sharing.sharedListsCount(n: lists),
                           icon: Icons.shopping_cart_rounded,
                           background: AppColors.secondaryContainer,
                           foreground: AppColors.onSecondaryContainer,

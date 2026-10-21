@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/features/collab_containers/domain/container_adapter.dart';
 import 'package:easy_plate/features/collab_containers/domain/entities/collab_container_entity.dart';
@@ -13,6 +15,7 @@ import 'package:easy_plate/features/my_recipes/domain/repositories/recipes_repos
 import 'package:easy_plate/features/recipe_books/domain/entities/book_recipe_ref_entity.dart';
 import 'package:easy_plate/features/recipe_books/domain/entities/recipe_book_entity.dart';
 import 'package:easy_plate/features/recipe_books/domain/repositories/recipe_books_repository.dart';
+import 'package:easy_plate/features/recipe_sharing/data/datasources/pending_accepts_store.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/entities/collab_recipe_entity.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/entities/share_invite_entity.dart';
 import 'package:easy_plate/features/recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
@@ -40,8 +43,16 @@ class _Recipes implements RecipesRepository {
   _Recipes(Iterable<RecipeEntity> initial)
     : stored = {for (final r in initial) r.id: r};
 
+  /// Runs on a read of the box, standing in for something happening while
+  /// a shared item's recipes are being resolved.
+  void Function()? onRead;
+
   @override
-  Future<List<RecipeEntity>> getRecipes() async => stored.values.toList();
+  Future<List<RecipeEntity>> getRecipes() async {
+    onRead?.call();
+    return stored.values.toList();
+  }
+
   @override
   Future<RecipeEntity?> getRecipeById(String id) async => stored[id];
   @override
@@ -60,6 +71,10 @@ class _Recipes implements RecipesRepository {
 
 class _Sharing implements RecipeSharingRepository {
   final log = <String>[];
+
+  /// Runs while a recipe's document is written, standing in for a save
+  /// made meanwhile.
+  void Function()? onEnsure;
   var next = 0;
   final Map<String, CollabRecipeEntity> collabs = {};
 
@@ -69,6 +84,7 @@ class _Sharing implements RecipeSharingRepository {
     required String ownerUid,
   }) async {
     if (recipe.collabId case final id?) return id;
+    onEnsure?.call();
     final id = 'rc-${next++}';
     log.add('ensure:${recipe.id}->$id');
     collabs[id] = CollabRecipeEntity(
@@ -87,12 +103,23 @@ class _Sharing implements RecipeSharingRepository {
     return collabs[invite.collabId]!;
   }
 
+  /// Runs on a document read, standing in for something happening while
+  /// the recipes are fetched.
+  void Function()? onGetCollab;
+
   @override
-  Future<CollabRecipeEntity?> getCollab(String collabId) async =>
-      collabs[collabId];
+  Future<CollabRecipeEntity?> getCollab(String collabId) async {
+    onGetCollab?.call();
+    return collabs[collabId];
+  }
+
   @override
-  Future<void> removeMember(String collabId, String memberUid) async =>
-      log.add('rm:$collabId:$memberUid');
+  Future<void> removeMember(
+    String collabId,
+    String memberUid, {
+    bool revokeInvite = false,
+  }) async =>
+      log.add('rm:$collabId:$memberUid${revokeInvite ? ':revoke' : ''}');
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -100,7 +127,7 @@ class _Sharing implements RecipeSharingRepository {
 class _Containers implements CollabContainersRepository {
   final log = <String>[];
   final Map<String, CollabContainerEntity> docs = {};
-  final Map<String, ShareInviteEntity> recipeInvites = {};
+  final Map<String, ShareInviteEntity> invitesById = {};
   Object? getError;
 
   @override
@@ -151,8 +178,14 @@ class _Containers implements CollabContainersRepository {
     log.add('write:$id');
   }
 
+  /// A delete that never completes, as Firestore leaves one offline.
+  bool stallDelete = false;
+
   @override
-  Future<void> delete(String id) async => log.add('delete:$id');
+  Future<void> delete(String id) {
+    log.add('delete:$id');
+    return stallDelete ? Completer<void>().future : Future.value();
+  }
 
   @override
   Future<void> invite({
@@ -178,11 +211,31 @@ class _Containers implements CollabContainersRepository {
   Future<ShareInviteEntity?> recipeInvite({
     required String collabId,
     required String uid,
-  }) async => recipeInvites['${collabId}_$uid'];
+  }) async => invitesById['${collabId}_$uid'];
+
+  /// How many batched invite reads were asked for.
+  int inviteReads = 0;
+
+  @override
+  Future<Map<String, ShareInviteEntity>> recipeInvites({
+    required Set<String> collabIds,
+    required String uid,
+  }) async {
+    inviteReads++;
+    return {
+      for (final collabId in collabIds)
+        collabId: ?invitesById['${collabId}_$uid'],
+    };
+  }
+
+  /// An accept that never answers, as Firestore holds a queued write
+  /// offline.
+  bool stallAccept = false;
 
   @override
   Future<CollabContainerEntity> acceptInvite(ShareInviteEntity invite) async {
     log.add('accept:${invite.id}');
+    if (stallAccept) return Completer<CollabContainerEntity>().future;
     final old = docs[invite.collabId]!;
     return docs[invite.collabId] = CollabContainerEntity(
       id: old.id,
@@ -204,8 +257,13 @@ class _Containers implements CollabContainersRepository {
   Future<List<CollabContainerEntity>> sharedWith(String uid) async =>
       docs.values.where((d) => d.members.containsKey(uid)).toList();
   @override
-  Future<void> removeMember(String containerId, String memberUid) async =>
-      log.add('leave:$containerId:$memberUid');
+  Future<void> removeMember(
+    String containerId,
+    String memberUid, {
+    bool revokeInvite = false,
+  }) async => log.add(
+    'leave:$containerId:$memberUid${revokeInvite ? ':revoke' : ''}',
+  );
 }
 
 class _Profiles implements UserProfileRepository {
@@ -224,8 +282,9 @@ class _Profiles implements UserProfileRepository {
   Future<String?> findUidByContact(String contact) async => directory[contact];
   @override
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(
-    Set<String> uids,
-  ) async => const {};
+    Set<String> uids, {
+    bool refresh = false,
+  }) async => const {};
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -245,6 +304,26 @@ class _Books implements RecipeBooksRepository {
   }) async => stored[book.id] = book;
   @override
   Future<void> deleteBook(String id) async => stored.remove(id);
+
+  /// Runs while the cover travels, standing in for a save made meanwhile.
+  void Function()? onUpload;
+
+  /// Stands in for the cover upload: a picked cover gains its bucket path,
+  /// written onto the stored book as the real repository does.
+  @override
+  Future<RecipeBookEntity> readyForSharing(RecipeBookEntity book) async {
+    onUpload?.call();
+    if (book.coverImageFileName == null || book.coverImageStoragePath != null) {
+      return book;
+    }
+    final path = 'users/o/${book.coverImageFileName}';
+    final current = stored[book.id];
+    if (current != null &&
+        current.coverImageFileName == book.coverImageFileName) {
+      stored[book.id] = current.copyWith(coverImageStoragePath: path);
+    }
+    return book.copyWith(coverImageStoragePath: path);
+  }
 }
 
 class _Plans implements MealPlansRepository {
@@ -288,6 +367,10 @@ void main() {
   late _Books books;
   late _Plans plans;
 
+  /// The account the boxes belong to; a test switches it mid-pull.
+  var signedIn = friend;
+  bool stillSignedIn(String uid) => uid == signedIn || uid == owner;
+
   ContainerCollab<RecipeBookEntity> bookCollab() => ContainerCollab(
     adapter: BookContainerAdapter(books),
     containers: containers,
@@ -295,8 +378,11 @@ void main() {
       sharing: sharing,
       recipes: recipes,
       containers: containers,
+      pending: InMemoryPendingAcceptsStore(),
     ),
     profiles: profiles,
+    pending: InMemoryPendingAcceptsStore(),
+    stillSignedIn: stillSignedIn,
   );
   ContainerCollab<MealPlanEntity> planCollab() => ContainerCollab(
     adapter: PlanContainerAdapter(plans),
@@ -305,11 +391,15 @@ void main() {
       sharing: sharing,
       recipes: recipes,
       containers: containers,
+      pending: InMemoryPendingAcceptsStore(),
     ),
     profiles: profiles,
+    pending: InMemoryPendingAcceptsStore(),
+    stillSignedIn: stillSignedIn,
   );
 
   setUp(() {
+    signedIn = friend;
     recipes = _Recipes([
       recipe('r1'),
       recipe('r2', collabId: 'rc-old', role: CollabRole.owner),
@@ -350,6 +440,57 @@ void main() {
       },
     );
 
+    test(
+      'pass 8: a first share marks the book as stored now, keeping a save '
+      'made while the cover travelled',
+      () async {
+        books.stored['book-1'] = book();
+        books.onUpload = () => books.stored['book-1'] = books.stored['book-1']!
+            .copyWith(title: 'Renamed meanwhile');
+        await bookCollab().share(
+          book(),
+          contact: 'friend@x.com',
+          role: CollabRole.viewer,
+          ownerUid: owner,
+        );
+        expect(books.stored['book-1']!.title, 'Renamed meanwhile');
+        expect(books.stored['book-1']!.collabId, 'container-1');
+      },
+    );
+
+    test(
+      'pass 8: a recipe linked into a share keeps an edit saved while its '
+      'document was written',
+      () async {
+        books.stored['book-1'] = book();
+        sharing.onEnsure = () =>
+            recipes.stored['r1'] = recipe('r1').copyWith(title: 'Edited');
+        await bookCollab().share(
+          book(),
+          contact: 'friend@x.com',
+          role: CollabRole.viewer,
+          ownerUid: owner,
+        );
+        expect(recipes.stored['r1']!.title, 'Edited');
+        expect(recipes.stored['r1']!.collabId, 'rc-0');
+      },
+    );
+
+    test('a first share waits for the cover, so its path travels', () async {
+      final covered = book().copyWith(coverImageFileName: 'cover.jpg');
+      books.stored['book-1'] = covered;
+      final owned = await bookCollab().share(
+        covered,
+        contact: 'friend@x.com',
+        role: CollabRole.viewer,
+        ownerUid: owner,
+      );
+
+      final content = containers.docs['container-1']!.content;
+      expect(content['coverImageStoragePath'], 'users/o/cover.jpg');
+      expect(owned.coverImageStoragePath, 'users/o/cover.jpg');
+    });
+
     test('refuses a contact that is not found, and oneself', () async {
       expect(
         () => bookCollab().share(
@@ -380,6 +521,37 @@ void main() {
       );
     });
 
+    test(
+      'a copy from before the first share adopts the stored document rather '
+      'than creating a second one',
+      () async {
+        // The sheet holds the book as it opened it; a share code made in
+        // between already created the container and re-pointed the book.
+        books.stored['book-1'] = book(
+          collabId: 'container-1',
+          role: CollabRole.owner,
+        );
+        containers.docs['container-1'] = CollabContainerEntity(
+          id: 'container-1',
+          kind: CollabKind.book,
+          ownerUid: owner,
+          members: const {},
+          title: 'Weeknights',
+          content: const {},
+          updatedAt: DateTime(2026),
+        );
+        final owned = await bookCollab().share(
+          book(),
+          contact: 'friend@x.com',
+          role: CollabRole.viewer,
+          ownerUid: owner,
+        );
+        expect(owned.collabId, 'container-1');
+        expect(containers.docs.keys, ['container-1'], reason: 'no second doc');
+        expect(containers.log.where((l) => l.startsWith('create')), isEmpty);
+      },
+    );
+
     test('a member cannot share on', () async {
       expect(
         () => bookCollab().share(
@@ -392,6 +564,27 @@ void main() {
       );
     });
   });
+
+  test(
+    'ensureContainer writes the stored copy, not the one the sheet held',
+    () async {
+      containers.docs['container-1'] = CollabContainerEntity(
+        id: 'container-1',
+        kind: CollabKind.book,
+        ownerUid: owner,
+        members: const {friend: CollabRole.editor},
+        title: 'Weeknights',
+        content: const {},
+        updatedAt: DateTime(2026),
+      );
+      final held = book(collabId: 'container-1', role: CollabRole.owner);
+      // A co-editor's change pulled in after the sheet opened.
+      books.stored[held.id] = held.copyWith(title: 'Renamed by friend');
+
+      await bookCollab().ensureContainer(held, ownerUid: owner);
+      expect(containers.docs['container-1']!.title, 'Renamed by friend');
+    },
+  );
 
   group('publish', () {
     test(
@@ -484,7 +677,7 @@ void main() {
           },
           updatedAt: DateTime(2026),
         );
-        containers.recipeInvites['rc-a_$friend'] = ShareInviteEntity(
+        containers.invitesById['rc-a_$friend'] = ShareInviteEntity(
           id: 'rc-a_$friend',
           collabId: 'rc-a',
           recipeTitle: 'Recipe x',
@@ -513,8 +706,10 @@ void main() {
         expect(plan.collabRole, CollabRole.viewer);
         expect(plan.name, 'Week 1');
         expect(plans.stored[plan.id], isNotNull);
-        // The recipe was accepted and cached locally under a fresh id.
+        // The recipe was accepted and cached locally under a fresh id,
+        // after one batched read of the invites rather than one per recipe.
         expect(sharing.log, ['acceptRecipe:rc-a']);
+        expect(containers.inviteReads, 1);
         final local = recipes.stored.values.single;
         expect(local.collabId, 'rc-a');
         final items = plan.meals.single.items;
@@ -524,6 +719,82 @@ void main() {
         expect(items[1].freeText, 'Secret dish');
         expect(items[2].freeText, 'Salad');
         expect(items[2].ingredients.single.name, 'tomato');
+      },
+    );
+  });
+
+  group('accept bound', () {
+    final invite = ShareInviteEntity(
+      id: 'book-c_$friend',
+      collabId: 'book-c',
+      recipeTitle: 'Dinners',
+      ownerUid: owner,
+      targetUid: friend,
+      role: CollabRole.viewer,
+      status: ShareInviteStatus.pending,
+      createdAt: DateTime(2026),
+      kind: CollabKind.book,
+    );
+    CollabContainerEntity doc({Map<String, CollabRole> members = const {}}) =>
+        CollabContainerEntity(
+          id: 'book-c',
+          kind: CollabKind.book,
+          ownerUid: owner,
+          members: members,
+          title: 'Dinners',
+          content: const {'recipes': []},
+          updatedAt: DateTime(2026),
+        );
+    late InMemoryPendingAcceptsStore pending;
+    ContainerCollab<RecipeBookEntity> bound() => ContainerCollab(
+      adapter: BookContainerAdapter(books),
+      containers: containers,
+      linker: RecipeLinker(
+        sharing: sharing,
+        recipes: recipes,
+        containers: containers,
+        pending: pending,
+      ),
+      profiles: profiles,
+      pending: pending,
+      acceptTimeout: const Duration(milliseconds: 20),
+      stillSignedIn: stillSignedIn,
+    );
+
+    setUp(() {
+      pending = InMemoryPendingAcceptsStore();
+      containers.docs['book-c'] = doc();
+    });
+
+    test('a finished accept leaves no mark', () async {
+      final book = await bound().accept(invite, uid: friend);
+      expect(book.collabId, 'book-c');
+      expect(pending.entries, isEmpty);
+    });
+
+    test(
+      'a server that does not answer is reported as queued and the mark kept, '
+      'so the next refresh can write the copy',
+      () async {
+        containers.stallAccept = true;
+        await expectLater(
+          bound().accept(invite, uid: friend),
+          throwsA(predicate(RecipeSharingRepository.isAcceptQueued)),
+        );
+        expect(books.stored, isEmpty, reason: 'no copy without the document');
+        expect(pending.entries['book-c']!.kind, CollabKind.book);
+
+        // Later, online: the roster write landed and the document reads.
+        containers.docs['book-c'] = doc(members: {friend: CollabRole.viewer});
+        final collab = bound();
+        expect(await collab.holds('book-c'), isFalse);
+        final book = await collab.adopt(
+          containers.docs['book-c']!,
+          uid: friend,
+        );
+        expect(book.collabId, 'book-c');
+        expect(book.collabRole, CollabRole.viewer);
+        expect(await collab.holds('book-c'), isTrue);
       },
     );
   });
@@ -540,12 +811,23 @@ void main() {
 
     test('a refused read (removed from the share) orphans too', () async {
       final local = book(collabId: 'c', role: CollabRole.viewer);
+      books.stored[local.id] = local;
       containers.getError = Exception(
         '[cloud_firestore/permission-denied] Missing or insufficient permissions.',
       );
       final result = await bookCollab().sync(local, uid: friend);
       expect(result.collabId, isNull);
     });
+
+    test(
+      'pass 8: a copy deleted during the read is not brought back',
+      () async {
+        final local = book(collabId: 'gone', role: CollabRole.editor);
+        final result = await bookCollab().sync(local, uid: friend);
+        expect(identical(result, local), isTrue);
+        expect(books.stored, isEmpty);
+      },
+    );
 
     test('an unchanged document leaves the copy as it is', () async {
       final local = book(
@@ -570,6 +852,45 @@ void main() {
       final result = await bookCollab().sync(local, uid: owner);
       expect(identical(result, local), isTrue);
     });
+
+    test(
+      "a member's edit keeps the owner's recipes the document never had, "
+      'and drops a shared one the member removed',
+      () async {
+        recipes.stored['r3'] = recipe(
+          'r3',
+          collabId: 'rc-3',
+          role: CollabRole.owner,
+        );
+        // r1 has no collab id (it could not be shared), r2 and r3 do.
+        final local = book(
+          collabId: 'c',
+          role: CollabRole.owner,
+          recipeIds: const ['r1', 'r2', 'r3'],
+        );
+        books.stored[local.id] = local;
+        containers.docs['c'] = CollabContainerEntity(
+          id: 'c',
+          kind: CollabKind.book,
+          ownerUid: owner,
+          members: const {friend: CollabRole.editor},
+          title: 'Renamed by friend',
+          content: const {
+            'recipes': [
+              {'collabId': 'rc-old', 'order': 0},
+            ],
+          },
+          updatedAt: DateTime(2026),
+        );
+        final result = await bookCollab().sync(local, uid: owner);
+        expect(result.title, 'Renamed by friend');
+        expect(result.recipeRefs.map((r) => r.recipeId).toSet(), {'r1', 'r2'});
+        expect(
+          books.stored[local.id]!.recipeRefs.map((r) => r.recipeId).toSet(),
+          {'r1', 'r2'},
+        );
+      },
+    );
   });
 
   group('refresh', () {
@@ -610,6 +931,37 @@ void main() {
         expect(books.stored['book-2']!.collabId, 'not-in-answer');
       },
     );
+
+    test(
+      'a sign-in to another account mid-pull stops the pull before it writes',
+      () async {
+        books.stored['book-1'] = book(
+          collabId: 'c',
+          role: CollabRole.viewer,
+          recipeIds: const ['r2'],
+        );
+        final fetched = [
+          CollabContainerEntity(
+            id: 'c',
+            kind: CollabKind.book,
+            ownerUid: owner,
+            members: const {friend: CollabRole.viewer},
+            title: 'Renamed',
+            content: const {
+              'recipes': [
+                {'collabId': 'rc-old', 'order': 0},
+              ],
+            },
+            updatedAt: DateTime(2026),
+          ),
+        ];
+        // The other account signs in while the recipes are being resolved.
+        recipes.onRead = () => signedIn = 'account-b';
+        final rewritten = await bookCollab().refresh(fetched, uid: friend);
+        expect(rewritten, 0);
+        expect(books.stored['book-1']!.title, isNot('Renamed'));
+      },
+    );
   });
 
   group('retire', () {
@@ -624,6 +976,29 @@ void main() {
       );
       expect(containers.log, ['delete:c', 'leave:c:$friend']);
     });
+
+    test(
+      'pass 8: an offline delete does not hold the local delete up',
+      () async {
+        containers.stallDelete = true;
+        final collab = ContainerCollab<RecipeBookEntity>(
+          adapter: BookContainerAdapter(books),
+          containers: containers,
+          linker: RecipeLinker(
+            sharing: sharing,
+            recipes: recipes,
+            containers: containers,
+          ),
+          profiles: profiles,
+          remoteWriteTimeout: const Duration(milliseconds: 10),
+        );
+        await collab.retire(
+          book(collabId: 'c', role: CollabRole.owner),
+          uid: owner,
+        );
+        expect(containers.log, ['delete:c']);
+      },
+    );
   });
 
   test('plan codec round-trips through the adapter', () {
@@ -644,6 +1019,8 @@ void main() {
         ),
       ],
       createdAt: DateTime(2026),
+      contentLang: 'he',
+      contentVersion: 3,
     );
     final content = adapter.encode(
       plan,
@@ -666,9 +1043,66 @@ void main() {
       uid: owner,
     );
     expect(back.id, 'p');
+    expect(back.contentLang, 'he');
+    expect(back.contentVersion, 3);
     expect(back.meals.single.weekday, 2);
     expect(back.meals.single.items[0].recipeId, 'r2');
     expect(back.meals.single.items[1].freeText, 'Toast');
     expect(back.collabRole, CollabRole.owner);
+  });
+
+  test("plan decode keeps the owner's recipe that went across as a label", () {
+    final adapter = PlanContainerAdapter(plans);
+    final plan = MealPlanEntity(
+      id: 'p',
+      name: 'W',
+      meals: [
+        const MealEntity(
+          id: 'm',
+          weekday: 2,
+          name: 'Lunch',
+          order: 1,
+          items: [
+            MealItemEntity(id: 'a', recipeId: 'r1'),
+            MealItemEntity(id: 'b', recipeId: 'r2'),
+          ],
+        ),
+      ],
+      createdAt: DateTime(2026),
+    );
+    // r1 could not be shared: it travels as a quick entry under its title.
+    final content = adapter.encode(
+      plan,
+      collabIdByRecipeId: {'r2': 'rc-old'},
+      titles: {'r1': 'Recipe r1', 'r2': 'Recipe r2'},
+    );
+    final container = CollabContainerEntity(
+      id: 'c',
+      kind: CollabKind.mealPlan,
+      ownerUid: owner,
+      members: const {friend: CollabRole.editor},
+      title: 'W',
+      content: content,
+      updatedAt: DateTime(2026),
+    );
+    final back = adapter.decode(
+      container,
+      local: plan,
+      recipeIdByCollabId: {'rc-old': 'r2'},
+      uid: owner,
+    );
+    expect(back.meals.single.items[0].recipeId, 'r1');
+    expect(back.meals.single.items[0].freeText, isNull);
+    expect(back.meals.single.items[1].recipeId, 'r2');
+
+    // On the member's side (no local copy) the same entry is the label.
+    final theirs = adapter.decode(
+      container,
+      local: null,
+      recipeIdByCollabId: const {},
+      uid: friend,
+    );
+    expect(theirs.meals.single.items[0].recipeId, isNull);
+    expect(theirs.meals.single.items[0].freeText, 'Recipe r1');
   });
 }

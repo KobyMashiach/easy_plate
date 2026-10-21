@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["S7VQRAYPH2.com.KHEasyDev.easyPlate"],
+        "components": [
+          { "/": "/s/*", "comment": "Share codes: https://aieasyplate.app/s/CODE opens the join screen in the app" }
+        ]
+      }
+    ]
+  }
+}

@@ -68,16 +68,16 @@ _GroceryItemModel _$GroceryItemModelFromJson(Map<String, dynamic> json) =>
     _GroceryItemModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      unit:
-          $enumDecodeNullable(_$MeasurementUnitEnumMap, json['unit']) ??
-          MeasurementUnit.unspecified,
+      unit: json['unit'] == null
+          ? MeasurementUnit.unspecified
+          : readMeasurementUnit(json['unit']),
       sources: (json['sources'] as List<dynamic>)
           .map(
             (e) => GroceryItemSourceModel.fromJson(e as Map<String, dynamic>),
           )
           .toList(),
       isChecked: json['isChecked'] as bool? ?? false,
-      category: json['category'] as String? ?? 'כללי',
+      category: json['category'] as String? ?? kDefaultGroceryCategory,
       isAdHoc: json['isAdHoc'] as bool? ?? false,
     );
 

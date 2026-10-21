@@ -65,8 +65,17 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet> {
       _busy = true;
     });
     try {
-      final id = await context.read<AuthRepository>().startPhoneLink(phone);
-      if (mounted) setState(() => _verificationId = id);
+      final id = await context.read<AuthRepository>().startPhoneLink(
+        phone,
+        reauthenticate: true,
+      );
+      if (!mounted) return;
+      // Verified without a code: the number is already confirmed again.
+      if (id == AuthRepository.instantlyVerified) {
+        await _takeover();
+        return;
+      }
+      setState(() => _verificationId = id);
     } catch (e) {
       if (mounted) setState(() => _error = _messageFor(e));
     } finally {
@@ -89,13 +98,7 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet> {
         _verificationId!,
         code,
       );
-      final ok = await AuthSessionService().takeoverSession();
-      if (!mounted) return;
-      if (ok) {
-        Navigator.of(context).pop(true);
-      } else {
-        setState(() => _error = t.auth.sessionTakeoverFailed);
-      }
+      await _takeover();
     } catch (e) {
       if (mounted) setState(() => _error = _messageFor(e));
     } finally {
@@ -103,10 +106,23 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet> {
     }
   }
 
+  /// After a fresh phone proof: this device takes the session over.
+  Future<void> _takeover() async {
+    final ok = await AuthSessionService().takeoverSession();
+    if (!mounted) return;
+    if (ok) {
+      Navigator.of(context).pop(true);
+    } else {
+      setState(() => _error = t.auth.sessionTakeoverFailed);
+    }
+  }
+
   String _messageFor(Object e) {
     debugPrint('Session takeover failed: $e');
+    // The Firebase code when there is one, else the error type (a network
+    // failure has no code) — the same fallback as AuthBloc.
     return e is AppException
-        ? authErrorMessage(e.message)
+        ? authErrorMessage(e.message.isNotEmpty ? e.message : e.type.name)
         : t.auth.errorUnknown;
   }
 
@@ -126,7 +142,10 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ClaySectionHeader(title: t.auth.sessionTakeoverTitle, underline: true),
+            ClaySectionHeader(
+              title: t.auth.sessionTakeoverTitle,
+              underline: true,
+            ),
             const SizedBox(height: AppSpacing.gutter),
             if (phone == null || phone.isEmpty)
               Text(

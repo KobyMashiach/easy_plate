@@ -1,0 +1,129 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-on-surface font-sans text-body-md antialiased;
+    min-height: 100dvh;
+    /* The soft lavender wash behind every screen of the app. */
+    background-image:
+      radial-gradient(900px 500px at 50% -20%, rgb(var(--c-primary-fixed) / 0.55), transparent 70%),
+      radial-gradient(600px 400px at 100% 100%, rgb(var(--c-secondary-fixed) / 0.25), transparent 70%);
+    background-attachment: fixed;
+  }
+  /* Hebrew, Arabic and Russian read better in their own families; Plus
+     Jakarta Sans covers Latin only, exactly as in the app's font fallback
+     list (and the landing pages: Inter for Cyrillic). */
+  html[lang="he"] body { font-family: Heebo, "Plus Jakarta Sans", system-ui, sans-serif; }
+  html[lang="ar"] body { font-family: "Noto Sans Arabic", Heebo, system-ui, sans-serif; }
+  html[lang="ru"] body { font-family: Inter, "Plus Jakarta Sans", system-ui, sans-serif; }
+
+  :focus-visible {
+    outline: 3px solid rgb(var(--c-primary));
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+  ::selection { background: rgb(var(--c-primary-fixed)); color: rgb(var(--c-on-primary-fixed)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* One iteration: an infinite 0.01 ms animation (the spinner) would
+       repaint every frame instead of standing still. */
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+@layer components {
+  /* ClayCard: lifted lavender surface with the inflated top-left bevel. */
+  .clay {
+    @apply bg-surface-lowest rounded-md shadow-card;
+    box-shadow:
+      0 12px 32px rgb(var(--c-lavender-glow) / 0.08),
+      inset 1px 1px 0 rgb(255 255 255 / var(--bevel, 0.6));
+  }
+  :root[data-theme="dark"] .clay { --bevel: 0.15; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .clay { --bevel: 0.15; } }
+
+  /* ClayButton: pill, 4px extrusion underneath, pressed = sinks. */
+  .clay-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 font-bold select-none transition-[transform,box-shadow] duration-150;
+    min-height: 52px;
+    transform: translateY(0);
+  }
+  .clay-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none !important; }
+  .clay-btn:disabled { @apply opacity-60 cursor-not-allowed; }
+  .clay-btn-primary {
+    @apply clay-btn bg-primary text-on-primary shadow-button;
+    box-shadow: 0 4px 0 0 rgb(var(--c-on-primary-fixed) / 0.55), 0 8px 24px rgb(var(--c-primary) / 0.25);
+  }
+  .clay-btn-secondary {
+    @apply clay-btn bg-secondary-container text-on-secondary-container;
+    box-shadow: 0 4px 0 0 rgb(var(--c-secondary) / 0.55), 0 8px 24px rgb(var(--c-secondary) / 0.15);
+  }
+  .clay-btn-tonal {
+    @apply clay-btn bg-primary-fixed text-on-primary-fixed-variant;
+    box-shadow: 0 4px 0 0 rgb(var(--c-primary-fixed-dim) / 0.9), 0 4px 12px rgb(var(--c-lavender-glow) / 0.10);
+  }
+  .clay-btn-ghost { @apply clay-btn bg-transparent text-primary hover:bg-primary/10; min-height: 44px; }
+  .clay-btn-danger {
+    @apply clay-btn bg-error-container text-on-error-container;
+    box-shadow: 0 4px 0 0 rgb(var(--c-error) / 0.45);
+  }
+
+  .clay-input {
+    @apply w-full rounded-std bg-surface-low text-on-surface px-4 border-2 border-transparent placeholder:text-on-surface-variant/70;
+    min-height: 52px;
+    box-shadow: inset 0 2px 6px rgb(var(--c-lavender-glow) / 0.10);
+  }
+  .clay-input:focus { @apply border-primary outline-none; }
+  .clay-input[aria-invalid="true"] { @apply border-error; }
+
+  .pill { @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-label-sm; }
+  .pill-mint { @apply pill bg-secondary-fixed text-on-secondary-fixed; }
+  .pill-lavender { @apply pill bg-primary-fixed text-on-primary-fixed; }
+  .pill-grey { @apply pill bg-surface-high text-on-surface-variant; }
+  .pill-amber { @apply pill bg-warm-accent text-on-warm-accent; }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-50 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary;
+  }
+}
+
+/* ---- Live-view protection (recipes). Deterrents, not DRM: what the screen
+   shows can always be photographed with another device. ---- */
+.protected {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.protected img { pointer-events: none; -webkit-user-drag: none; }
+.protected.is-blurred .protected-body { filter: blur(14px); transition: filter .25s ease; }
+.protected .protected-body { transition: filter .25s ease; }
+/* Above the content (the card is opaque, so underneath it would never show),
+   pointer-events none so it never gets in the way. */
+.watermark {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 3;
+  background-repeat: repeat;
+  opacity: 0.9;
+}
+@media print {
+  .protected .protected-body { filter: blur(20px) !important; }
+  .watermark { opacity: 1; }
+}
+
+/* The theme switch (lib/theme.ts toggleTheme): the browser's default
+   cross-fade is replaced by the growing circle, drawn over the old page. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 1;
+}

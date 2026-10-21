@@ -11,6 +11,8 @@ import 'core/ads/ads_service.dart';
 import 'core/hive/adapters_controller.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'core/logger/memory_logger.dart';
+import 'core/network/ai_auth_header.dart';
+import 'core/network/http_calls.dart';
 import 'core/monetization/purchases_service.dart';
 import 'core/monetization/trusted_clock.dart';
 import 'core/main_imports/repository_providers.dart';
@@ -21,6 +23,8 @@ import 'core/services/device_locale_store.dart';
 import 'core/services/device_session_service.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/foreground_push_service.dart';
+import 'core/services/admin_inbox_service.dart';
+import 'core/services/notifications_service.dart';
 import 'core/services/presence_service.dart';
 import 'core/services/share_intent_service.dart';
 import 'core/services/image_storage_service.dart';
@@ -86,7 +90,16 @@ Future<void> main() async {
   await MemoryLogger.init();
   // Before anything that might throw, so Crashlytics captures startup failures.
   await FirebaseService().init();
-  await ConnectivityService().initialize();
+  // A paid endpoint refusing a phone that was linked after the cached ID
+  // token was minted gets one fresh token and one retry (HttpCalls).
+  HttpCalls.refreshIdentity = refreshPhoneClaim;
+  // An account the administrator switched off while it was signed in: the
+  // first server call it is refused holds it on the blocked screen.
+  HttpCalls.onAccountDisabled = () =>
+      unawaited(AuthSessionService().accountDisabled());
+  // Not awaited: nothing before the first frame reads it, it assumes online
+  // until it has an answer, and its own failures are caught inside.
+  unawaited(ConnectivityService().initialize());
   // Neither is awaited: consent and the first ad can take seconds, and the
   // daily quotas fall back to the device clock until the server time lands.
   unawaited(AdsService().init());
@@ -94,19 +107,25 @@ Future<void> main() async {
   // Same: the store SDK is slow to start, and the account is free until it
   // says otherwise — nothing on the splash depends on it.
   unawaited(PurchasesService().init());
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Started here, finished with the reads below: portrait has to be in force
+  // before the first frame, but nothing in between waits on it.
+  final portrait = SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   await Hive.initFlutter();
   await AdaptersController.registerAdapters();
   // Four independent reads — the theme (before the first frame, so the
   // splash is already in the chosen theme), the images directory (so
-  // ClayImage can resolve paths synchronously while building), the update
+  // ClayImage can build paths synchronously; the listing comes after the
+  // first frame), the update
   // verdict (after Hive, which holds the skipped-version record, and after
   // Firebase, so it sees whatever Remote Config had activated on the
   // previous run) and the device language — run together rather than one
   // after another: each is a platform channel or a disk read, and the
   // first frame waited on the sum of them.
-  final (_, _, _, deviceLanguage) = await (
+  final (_, _, _, _, deviceLanguage) = await (
+    portrait,
     ThemeController().init(),
     ImageStorageService().init(),
     AppUpdateService().init(),
@@ -129,6 +148,13 @@ Future<void> main() async {
   LocaleSettings.getLocaleStream().listen((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) => rebuildEverything());
   });
+
+  // The images directory is listed once the app is on screen: its cost
+  // grows with every photo, and until it lands each unseen name is checked
+  // on its own (ClayImage waits for that answer rather than showing a gap).
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => unawaited(ImageStorageService().listDirectory()),
+  );
 
   runApp(
     TranslationProvider(
@@ -242,6 +268,8 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         ingestion: context.read(),
         preferences: context.read(),
         feedback: context.read(),
+        sharing: context.read(),
+        recipeSharing: context.read(),
       ),
     );
   }
@@ -453,13 +481,19 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // The console's online column: in use while in front, not while away.
     // Inactive is the brief moment of a call or the app switcher — not a
     // reason to flicker.
+    // The inbox listeners follow the same switch: their queries are read
+    // whole, so the first snapshot after a return closes the gap.
     switch (state) {
       case AppLifecycleState.resumed:
         PresenceService().setForeground(true);
+        NotificationsService().setForeground(true);
+        AdminInboxService().setForeground(true);
       case AppLifecycleState.paused:
       case AppLifecycleState.hidden:
       case AppLifecycleState.detached:
         PresenceService().setForeground(false);
+        NotificationsService().setForeground(false);
+        AdminInboxService().setForeground(false);
       case AppLifecycleState.inactive:
         break;
     }
@@ -470,7 +504,9 @@ class _EasyPlateAppState extends State<EasyPlateApp>
       FirebaseService().refreshRemoteConfig();
       // Same reasoning, for the recipes other accounts may have edited while
       // this app was in the background.
-      AuthSessionService().refreshSharedRecipes();
+      AuthSessionService().refreshSharedRecipes(fromResume: true);
+      // And for the account's own records, which the website edits too.
+      unawaited(AuthSessionService().refreshFromCloud());
       // And for the device session: a month that ran out in the background.
       AuthSessionService().checkSession();
       // And for the date: an app left open across midnight must not keep

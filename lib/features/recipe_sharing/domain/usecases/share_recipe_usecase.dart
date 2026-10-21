@@ -97,6 +97,24 @@ class ShareRecipeUseCase {
     if (!recipe.isMine) {
       throw StateError('Only recipes this account wrote can be shared');
     }
+    // The caller may hold the recipe as it was when the sheet opened: before
+    // its first share (a code made a moment ago already created the
+    // document — a second one would strand whoever joined through the
+    // first), or before an edit, a translation or a nutrition estimate
+    // saved since. The document is written from the stored copy, or the
+    // next refresh would pull the sheet's stale content back over it.
+    final stored = await recipes.getRecipeById(recipe.id);
+    if (stored != null) {
+      recipe = stored.collabId != null || recipe.collabId == null
+          ? stored
+          : stored.copyWith(
+              collabId: recipe.collabId,
+              collabRole: recipe.collabRole ?? CollabRole.owner,
+            );
+      if (recipe.collabId != null && recipe.collabRole == null) {
+        recipe = recipe.copyWith(collabRole: CollabRole.owner);
+      }
+    }
     // Awaited, unlike the background upload a plain save does: the collab
     // document is written from this recipe, and one published a moment after
     // its photo was picked would carry no image path at all. The recipient's
@@ -108,7 +126,21 @@ class ShareRecipeUseCase {
       collabId: collabId,
       collabRole: CollabRole.owner,
     );
-    if (ready.collabId == null) await recipes.saveRecipe(owned);
+    if (ready.collabId == null) {
+      // Only the sharing marks, onto the record as stored now: the upload
+      // and the document write took a while, and an edit, a translation or
+      // a nutrition estimate saved meanwhile must not be undone by the copy
+      // the sheet opened with.
+      final current = await recipes.getRecipeById(recipe.id);
+      await recipes.saveRecipe(
+        current == null
+            ? owned
+            : current.copyWith(
+                collabId: collabId,
+                collabRole: CollabRole.owner,
+              ),
+      );
+    }
     return (owned, collabId);
   }
 

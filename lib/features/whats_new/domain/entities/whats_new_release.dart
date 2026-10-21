@@ -47,16 +47,23 @@ class WhatsNewFeature {
     return '';
   }
 
-  factory WhatsNewFeature.fromMap(Map<String, dynamic> map) =>
-      WhatsNewFeature(
-        featureKey: (map['featureKey'] as String?)?.trim() ?? '',
-        title: _texts(map['title']),
-        description: _texts(map['description']),
-        imageUrl: (map['imageUrl'] as String?)?.trim() ?? '',
-        iconName: (map['iconName'] as String?)?.trim() ?? '',
-        targetRoute: (map['targetRoute'] as String?)?.trim() ?? '',
-        sortOrder: (map['sortOrder'] as num?)?.toInt() ?? 0,
-      );
+  factory WhatsNewFeature.fromMap(Map<String, dynamic> map) => WhatsNewFeature(
+    featureKey: _str(map['featureKey']),
+    title: _texts(map['title']),
+    description: _texts(map['description']),
+    imageUrl: _str(map['imageUrl']),
+    iconName: _str(map['iconName']),
+    targetRoute: _str(map['targetRoute']),
+    sortOrder: _int(map['sortOrder']) ?? 0,
+  );
+
+  /// A field another writer may have left as a number or a list reads as
+  /// empty rather than throwing.
+  static String _str(Object? raw) => raw is String ? raw.trim() : '';
+
+  /// NaN and infinities (which `toInt` throws on) read as missing.
+  static int? _int(Object? raw) =>
+      raw is num && raw.isFinite ? raw.toInt() : null;
 
   /// A per-language map, or — for a document written with a plain string —
   /// that string under every language.
@@ -94,9 +101,11 @@ class WhatsNewRelease {
   factory WhatsNewRelease.fromMap(Map<String, dynamic> map, {String? id}) {
     final rawFeatures = map['features'];
     return WhatsNewRelease(
-      version: (map['version'] as String?)?.trim() ?? '',
+      version: WhatsNewFeature._str(map['version']),
       versionCode:
-          (map['versionCode'] as num?)?.toInt() ?? int.tryParse(id ?? '') ?? 0,
+          WhatsNewFeature._int(map['versionCode']) ??
+          int.tryParse(id ?? '') ??
+          0,
       releasedAt: _date(map['releasedAt']),
       isPublished: map['isPublished'] == true,
       features: [
@@ -110,7 +119,9 @@ class WhatsNewRelease {
 
   static DateTime? _date(Object? raw) {
     if (raw is DateTime) return raw;
-    if (raw is num) return DateTime.fromMillisecondsSinceEpoch(raw.toInt());
+    if (raw is num && raw.isFinite && raw.abs() <= 8.64e15) {
+      return DateTime.fromMillisecondsSinceEpoch(raw.toInt());
+    }
     // A Firestore Timestamp, without importing the package here.
     try {
       final dynamic value = raw;

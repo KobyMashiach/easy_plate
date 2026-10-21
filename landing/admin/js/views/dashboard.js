@@ -27,7 +27,7 @@ async function load(range) {
   const sinceTs = since ? Timestamp.fromDate(new Date(`${since}T00:00:00Z`)) : null;
 
   const events = sinceTs
-    ? query(collection(db, "purchase_events"), where("eventAt", ">=", sinceTs))
+    ? query(collection(db, "purchase_events"), where("eventAt", ">=", sinceTs), orderBy("eventAt", "desc"), limit(5000))
     : query(collection(db, "purchase_events"), orderBy("eventAt", "desc"), limit(2000));
   const daily = query(collection(db, "ai_daily"), where(documentId(), ">=", chartSince));
 
@@ -133,11 +133,15 @@ export async function mount({ view, actions }) {
   }));
   actions.append(sync);
 
+  // A slower range that answers after the next click must not replace it.
+  let seq = 0;
   async function render() {
+    const mine = ++seq;
     clear(body);
     body.append(spinner());
     try {
       const d = await load(range);
+      if (mine !== seq) return;
       clear(body);
       const totalCost = costIls(d.byModel, d.prices);
       body.append(h("div.tiles",
@@ -180,6 +184,7 @@ export async function mount({ view, actions }) {
         { label: t("dash.cost"), num: true, cell: (r) => fmtMoney(r.cost) },
       ], d.usersByCost, { onRow: (r) => { location.hash = `#/users/${r.uid}`; }, emptyText: t("dash.noData") })));
     } catch (err) {
+      if (mine !== seq) return;
       clear(body);
       body.append(h("div.card.error", err.message));
       console.error(err);

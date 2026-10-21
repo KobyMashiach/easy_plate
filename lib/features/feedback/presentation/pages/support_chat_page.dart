@@ -34,6 +34,13 @@ class _SupportChatPageState extends State<SupportChatPage> {
   bool _hasText = false;
   int _seenLength = -1;
 
+  /// Opened once. Every keystroke rebuilds this page (the send button
+  /// follows the text), and a stream made in build would close and reopen
+  /// the Firestore listener each time.
+  late final Stream<FeedbackEntity?> _thread = context
+      .read<FeedbackRepository>()
+      .watchOne(widget.feedbackId);
+
   ContinueFeedbackUseCase get _useCase =>
       ContinueFeedbackUseCase(context.read<FeedbackRepository>());
 
@@ -59,7 +66,11 @@ class _SupportChatPageState extends State<SupportChatPage> {
     final length = item.thread.length;
     if (length == _seenLength) return;
     _seenLength = length;
-    if (item.userUnread) _useCase.seen(item.id);
+    if (item.userUnread) {
+      _useCase.seen(item.id).catchError((Object e) {
+        debugPrint('Support thread seen failed: $e');
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_scroll.hasClients) return;
       _scroll.animateTo(
@@ -89,7 +100,7 @@ class _SupportChatPageState extends State<SupportChatPage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<FeedbackEntity?>(
-      stream: context.read<FeedbackRepository>().watchOne(widget.feedbackId),
+      stream: _thread,
       builder: (context, snapshot) {
         final item = snapshot.data;
         if (item != null) _onThread(item);
@@ -123,6 +134,8 @@ class _SupportChatPageState extends State<SupportChatPage> {
                 ),
                 if (item != null && item.closed)
                   const _ClosedNotice()
+                else if (item != null && item.followUps.length >= maxFollowUps)
+                  _ClosedNotice(message: t.feedback.threadFull)
                 else if (item != null)
                   _Composer(
                     controller: _input,
@@ -229,8 +242,13 @@ class _Bubble extends StatelessWidget {
 }
 
 /// In place of the composer once the team closed the conversation.
+/// The rules refuse a follow-up past this many in one conversation.
+const maxFollowUps = 200;
+
 class _ClosedNotice extends StatelessWidget {
-  const _ClosedNotice();
+  /// Null: the team closed the conversation.
+  final String? message;
+  const _ClosedNotice({this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +266,7 @@ class _ClosedNotice extends StatelessWidget {
           const SizedBox(width: AppSpacing.base),
           Flexible(
             child: Text(
-              t.feedback.closedNotice,
+              message ?? t.feedback.closedNotice,
               textAlign: TextAlign.center,
               style: AppTextStyles.labelMd.copyWith(
                 color: AppColors.onSurfaceVariant,

@@ -1,0 +1,31 @@
+{
+  "id": "9f8e7d6c-5b4a-4392-8170-6f5e4d3c2b1a",
+  "name": "תפריט שבועי",
+  "meals": [
+    {
+      "id": "meal-0-0",
+      "weekday": 0,
+      "name": "בוקר",
+      "order": 0,
+      "items": [
+        { "id": "item-1", "recipeId": "0b8c5b6e-2c1f-4a8e-9a1d-6a2f3c4d5e6f", "freeText": null, "ingredients": [] },
+        {
+          "id": "item-2",
+          "recipeId": null,
+          "freeText": "חביתה",
+          "ingredients": [
+            { "name": "ביצים", "amount": 2, "unit": "unit" },
+            { "name": "שמן", "amount": 1.5, "unit": "tablespoon" },
+            { "name": "מלח", "amount": null, "unit": "unspecified" }
+          ]
+        }
+      ]
+    },
+    { "id": "meal-6-0", "weekday": 6, "name": "ערב", "order": 0, "items": [] }
+  ],
+  "createdAt": "2026-10-18T09:00:00.000Z",
+  "collabId": "collab-plan-1",
+  "collabRole": "owner",
+  "contentLang": "he",
+  "contentVersion": 3
+}

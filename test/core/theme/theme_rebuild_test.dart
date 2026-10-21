@@ -61,4 +61,20 @@ void main() {
       reason: 'the whole tree is marked dirty on a switch',
     );
   });
+
+  testWidgets('a new mode with the same colours still tells its listeners', (
+    tester,
+  ) async {
+    await ThemeController().setMode(AppThemeMode.light);
+    // The test binding reports a light platform, so System resolves light.
+    var told = 0;
+    void listener() => told++;
+    ThemeController().addListener(listener);
+    addTearDown(() => ThemeController().removeListener(listener));
+
+    await ThemeController().setMode(AppThemeMode.system);
+    expect(ThemeController().mode, AppThemeMode.system);
+    expect(AppColors.isDark, isFalse);
+    expect(told, 1, reason: 'the selector moves to System');
+  });
 }

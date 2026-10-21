@@ -26,9 +26,16 @@ List<String> productTokens(String normalized) =>
 /// match "חלב" alone (the longer side has words the shorter lacks, but the
 /// shorter is a prefix of the longer — that is the containment we accept),
 /// while "שמן זית" against "זית ירוק" shares one word of two and scores 0.
-double productMatchScore(String query, String candidate) {
-  final q = normalizeProductName(query);
-  final c = normalizeProductName(candidate);
+double productMatchScore(String query, String candidate) =>
+    productMatchScoreNormalized(
+      normalizeProductName(query),
+      normalizeProductName(candidate),
+    );
+
+/// [productMatchScore] for names already through [normalizeProductName]:
+/// the estimator runs this once per grocery line against every stored
+/// record, in build, and the records carry their normalised name.
+double productMatchScoreNormalized(String q, String c) {
   if (q.isEmpty || c.isEmpty) return 0;
   if (q == c) return 1;
   final qt = productTokens(q).toSet();

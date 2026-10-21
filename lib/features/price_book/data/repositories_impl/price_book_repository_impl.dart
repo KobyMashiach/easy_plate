@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../../core/sync/user_cloud_collection.dart';
 import '../../domain/entities/price_record_entity.dart';
+import '../../domain/entities/price_unit.dart';
 import '../../domain/entities/product_pricing_entity.dart';
 import '../../domain/entities/receipt_entity.dart';
 import '../../domain/repositories/price_book_repository.dart';
@@ -130,18 +131,33 @@ class PriceBookRepositoryImpl implements PriceBookRepository {
   }
 
   @override
-  Future<CommunityPriceEntity?> communityPrice(String normalizedName) =>
-      _communityCache.putIfAbsent(
-        normalizedName,
-        () => remoteDataSource.lookup(normalizedName),
-      );
+  Future<CommunityPriceEntity?> communityPrice(
+    String normalizedName, {
+    PriceUnit? unit,
+  }) {
+    final cacheKey = '$normalizedName|${unit?.name ?? ''}';
+    return _communityCache.putIfAbsent(
+      cacheKey,
+      // A failed lookup (offline for a moment) is forgotten, so the next
+      // ask tries again instead of reading "no data" all session.
+      () => remoteDataSource.lookup(normalizedName, unit: unit).catchError((
+        Object e,
+        StackTrace stack,
+      ) {
+        _communityCache.remove(cacheKey);
+        Error.throwWithStackTrace(e, stack);
+      }),
+    );
+  }
 
   @override
   Future<void> sharePrices(List<PriceRecordEntity> records) async {
     await remoteDataSource.share(records);
     // What was just shared changes the aggregates; forget the cached answers.
     for (final r in records) {
-      _communityCache.remove(r.normalizedName);
+      _communityCache.removeWhere(
+        (key, _) => key.startsWith('${r.normalizedName}|'),
+      );
     }
   }
 }

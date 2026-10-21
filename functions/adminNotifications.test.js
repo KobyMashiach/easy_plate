@@ -54,3 +54,60 @@ test("schedules are checked before they are stored", () => {
   assert.ok(cleanSchedule({ kind: "yearly" }).error);
   assert.deepEqual(cleanSchedule(null), { schedule: { kind: "manual" } });
 });
+
+test("a run is resumable only once its lease lapsed", () => {
+  const { resumable, newRun, runKey } = require("./adminNotifications").internals;
+  const at = (ms) => ({ toMillis: () => ms });
+  assert.equal(resumable({ broadcast: {}, broadcastLeaseUntil: at(100) }, 100), true);
+  assert.equal(resumable({ broadcast: {}, broadcastLeaseUntil: at(101) }, 100), false);
+  assert.equal(resumable({ broadcastLeaseUntil: at(1) }, 100), false);
+  assert.equal(resumable({ broadcast: {}, broadcastLeaseUntil: null }, 100), false);
+  const run = newRun({ title: "T", body: "B", target: "premium", updatedBy: "a" }, 5);
+  assert.deepEqual([run.cursor, run.items, run.target, run.by, run.runAt], [null, 0, "premium", "a", 5]);
+  assert.equal(runKey("tpl1", run), "tpl_tpl1_5");
+});
+
+test("a run out of time keeps its progress and is not counted; a finished one is", async () => {
+  const { continueRun, newRun } = require("./adminNotifications").internals;
+  const patches = [];
+  const ref = { update: async (p) => patches.push(p) };
+  const db = { collection: () => ({ add: async () => {} }), doc: () => ({ get: async () => ({ exists: false }) }) };
+  const run = newRun({ title: "T", body: "B", target: "all" }, 1000);
+
+  let calls = 0;
+  const send = {
+    all: async ({ resume, onProgress, runKey }) => {
+      calls++;
+      assert.equal(runKey, "tpl_t1_1000");
+      if (calls === 1) {
+        await onProgress({ cursor: "u9", items: 10, sent: 8, failed: 0 });
+        return { items: 10, sent: 8, failed: 0, done: false, cursor: "u9" };
+      }
+      assert.equal(resume.cursor, "u9");
+      return { items: 15, sent: 12, failed: 0, done: true };
+    },
+  };
+  const partial = await continueRun(db, ref, "t1", run, { send, source: "schedule", deadline: 0 });
+  assert.equal(partial.done, false);
+  assert.ok(patches.every((p) => !("lastRunAt" in p) && !("runs" in p)), "not marked sent");
+  const saved = patches.find((p) => p.broadcast).broadcast;
+  assert.equal(saved.cursor, "u9");
+
+  patches.length = 0;
+  const done = await continueRun(db, ref, "t1", saved, { send, source: "schedule", deadline: 0 });
+  assert.equal(done.done, true);
+  assert.ok(patches.some((p) => "lastRunAt" in p && "runs" in p && p.broadcastLeaseUntil === null));
+});
+
+test("a template is not deleted while its broadcast is going out", async () => {
+  const { deleteTemplate } = require("./adminNotifications");
+  const deleted = [];
+  const dbWith = (data) => ({
+    collection: () => ({ doc: (id) => ({ get: async () => ({ exists: !!data, get: (f) => (data || {})[f] }), delete: async () => deleted.push(id) }) }),
+  });
+  await assert.rejects(deleteTemplate(dbWith({ broadcast: { cursor: "u9" } }), "t1"), (e) => e.status === 409 && e.code === "in_progress");
+  assert.deepEqual(deleted, []);
+  await deleteTemplate(dbWith({ name: "x" }), "t2");
+  await deleteTemplate(dbWith(null), "t3");
+  assert.deepEqual(deleted, ["t2", "t3"]);
+});

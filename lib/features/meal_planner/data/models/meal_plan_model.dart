@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../../my_recipes/data/models/json_readers.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/meal_plan_entity.dart';
 import 'meal_model.dart';
@@ -17,7 +19,7 @@ sealed class MealPlanModel with _$MealPlanModel {
     @HiveField(0) required String id,
     @HiveField(1) required String name,
     @HiveField(2) required List<MealModel> meals,
-    @HiveField(3) required DateTime createdAt,
+    @HiveField(3) @JsonKey(fromJson: readJsonDate) required DateTime createdAt,
     // Cross-account sharing, appended: the shared document and this
     // account's role in it. Null for a plan that was never shared.
     @HiveField(4) String? collabId,
@@ -45,6 +47,7 @@ extension MealPlanModelMapper on MealPlanModel {
         .where((r) => r.name == collabRole)
         .firstOrNull,
     contentLang: contentLang,
+    contentVersion: contentVersion,
   );
 }
 
@@ -57,5 +60,6 @@ extension MealPlanEntityMapper on MealPlanEntity {
     collabId: collabId,
     collabRole: collabRole?.name,
     contentLang: contentLang,
+    contentVersion: contentVersion,
   );
 }

@@ -28,7 +28,14 @@ class AccountDeletionRemoteDataSource {
       );
     }
     try {
-      await _calls.post(ApiConfig.deleteAccountUrl, data: {'confirm': true});
+      // The function may run for up to 300 s (it walks every mirrored box,
+      // photo and post); with the two-minute default a long deletion read
+      // here as a network error although it finished on the server.
+      await _calls.post(
+        ApiConfig.deleteAccountUrl,
+        data: {'confirm': true},
+        receiveTimeout: const Duration(seconds: 300),
+      );
     } on AppException catch (e) {
       final code = refusalIn(e.message);
       if (code != null) throw AccountDeletionRefused(code);

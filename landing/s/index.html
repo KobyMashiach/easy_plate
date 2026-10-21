@@ -41,31 +41,39 @@
     <p data-i18n="lead"></p>
     <div class="code" id="code"></div>
     <a class="btn primary" id="open" data-i18n="open" href="#"></a>
+    <a class="btn" id="web" data-i18n="web" href="/app/join"></a>
     <p class="hint" data-i18n="hint"></p>
     <div class="stores">
-      <a class="btn" href="https://apps.apple.com/app/easyplate" rel="noopener">App Store</a>
+      <a class="btn" href="https://apps.apple.com/us/app/easy-plate-ai/id6809243199" rel="noopener">App Store</a>
       <a class="btn" href="https://play.google.com/store/apps/details?id=com.KHEasyDev.easy_plate" rel="noopener">Google Play</a>
     </div>
     <div class="langs" id="langs"></div>
   </main>
   <script>
     const I18N = {
-      en: { title: 'Open in EasyPlate', lead: 'Someone shared a recipe, book or meal plan with you. Open the app to join it.', open: 'Open in EasyPlate', hint: 'No app yet? Install it, then enter this code under Shared access.' },
-      he: { title: 'לפתוח ב-EasyPlate', lead: 'מישהו שיתף איתכם מתכון, ספר או תפריט. פתחו את האפליקציה כדי להצטרף.', open: 'לפתוח ב-EasyPlate', hint: 'עדיין אין אפליקציה? התקינו, ואז הזינו את הקוד במסך ״גישה משותפת״.' },
-      ar: { title: 'افتح في EasyPlate', lead: 'شارك معك شخص ما وصفة أو كتابًا أو خطة وجبات. افتح التطبيق للانضمام.', open: 'افتح في EasyPlate', hint: 'لا تملك التطبيق بعد؟ ثبّته ثم أدخل هذا الرمز في شاشة «الوصول المشترك».' },
-      fr: { title: 'Ouvrir dans EasyPlate', lead: 'Quelqu’un a partagé avec vous une recette, un livre ou un plan de repas. Ouvrez l’app pour le rejoindre.', open: 'Ouvrir dans EasyPlate', hint: 'Pas encore l’app ? Installez-la, puis saisissez ce code sous « Accès partagé ».' },
-      ru: { title: 'Открыть в EasyPlate', lead: 'Кто-то поделился с вами рецептом, книгой или планом питания. Откройте приложение, чтобы присоединиться.', open: 'Открыть в EasyPlate', hint: 'Ещё нет приложения? Установите его и введите этот код на экране «Общий доступ».' },
+      en: { title: 'Open in EasyPlate', lead: 'Someone shared a recipe, book or meal plan with you. Open the app to join it.', open: 'Open in EasyPlate', hint: 'No app yet? Install it, then enter this code under Shared access.' , web: 'Join on the website' },
+      he: { title: 'לפתוח ב-EasyPlate', lead: 'מישהו שיתף איתכם מתכון, ספר או תפריט. פתחו את האפליקציה כדי להצטרף.', open: 'לפתוח ב-EasyPlate', hint: 'עדיין אין אפליקציה? התקינו, ואז הזינו את הקוד במסך ״גישה משותפת״.' , web: 'להצטרף דרך האתר' },
+      ar: { title: 'افتح في EasyPlate', lead: 'شارك معك شخص ما وصفة أو كتابًا أو خطة وجبات. افتح التطبيق للانضمام.', open: 'افتح في EasyPlate', hint: 'لا تملك التطبيق بعد؟ ثبّته ثم أدخل هذا الرمز في شاشة «الوصول المشترك».' , web: 'انضم عبر الموقع' },
+      fr: { title: 'Ouvrir dans EasyPlate', lead: 'Quelqu’un a partagé avec vous une recette, un livre ou un plan de repas. Ouvrez l’app pour le rejoindre.', open: 'Ouvrir dans EasyPlate', hint: 'Pas encore l’app ? Installez-la, puis saisissez ce code sous « Accès partagé ».' , web: 'Rejoindre sur le site' },
+      ru: { title: 'Открыть в EasyPlate', lead: 'Кто-то поделился с вами рецептом, книгой или планом питания. Откройте приложение, чтобы присоединиться.', open: 'Открыть в EasyPlate', hint: 'Ещё нет приложения? Установите его и введите этот код на экране «Общий доступ».' , web: 'Присоединиться на сайте' },
     };
     const RTL = new Set(['he', 'ar']);
     // The code is the last path segment (/s/CODE) or ?c= when the host
     // cannot rewrite paths to this page.
-    const raw = (new URLSearchParams(location.search).get('c') || location.pathname.split('/').filter(Boolean).pop() || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/^EP/, '');
+    // EP is the display prefix (EP-XXXX-XXXX → 10 characters once cleaned).
+    // The alphabet itself contains E and P, so a bare 8-character code that
+    // happens to start with EP keeps them: strip only from the 10-char form.
+    const cleaned = (new URLSearchParams(location.search).get('c') || location.pathname.split('/').filter(Boolean).pop() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const raw = cleaned.length === 10 && cleaned.startsWith('EP') ? cleaned.slice(2) : cleaned;
     const code = /^[A-HJ-NP-Z2-9]{8}$/.test(raw) ? raw : '';
     const display = code ? `EP-${code.slice(0, 4)}-${code.slice(4)}` : '';
     document.getElementById('code').textContent = display;
     document.getElementById('code').hidden = !code;
     const appLink = code ? `easyplate://open/s/${code}` : 'easyplate://open/s/';
     document.getElementById('open').href = appLink;
+    // The same code joins on the website too (aieasyplate.app/app/join/CODE),
+    // for a visitor on a computer or without the app.
+    document.getElementById('web').href = code ? `/app/join/${code}` : '/app/join';
     function setLang(lang) {
       const d = I18N[lang] || I18N.en;
       document.documentElement.lang = lang;
@@ -82,7 +90,7 @@
     let lang = new URLSearchParams(location.search).get('lang');
     try { lang = lang || localStorage.getItem('ep-lang'); } catch (_) {}
     lang = lang || (navigator.language || 'en').slice(0, 2);
-    setLang(I18N[lang] ? lang : 'en');
+    setLang(Object.prototype.hasOwnProperty.call(I18N, lang) ? lang : 'en');
     // Phones that have the app: try it straight away; the page stays as the fallback.
     if (code && /Android|iPhone|iPad/i.test(navigator.userAgent)) setTimeout(() => { location.href = appLink; }, 400);
   </script>

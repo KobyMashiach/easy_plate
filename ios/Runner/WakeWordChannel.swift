@@ -216,6 +216,11 @@ final class WakeWordListener {
   private var commandTimer: Timer?
   private var pending: String?
   private var failures = 0
+  /// Bumped by every end(): a cancelled task still reports (its
+  /// cancellation arrives as an error, often after the next begin()), and
+  /// only the current task's results may act, or that late error tore the
+  /// fresh session down and backed off again.
+  private var generation = 0
 
   func start() {
     guard !running else { return }
@@ -256,7 +261,7 @@ final class WakeWordListener {
       let session = AVAudioSession.sharedInstance()
       try session.setCategory(
         .playAndRecord, mode: .default,
-        options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth])
+        options: [.mixWithOthers, .defaultToSpeaker, .allowBluetoothHFP])
       try session.setActive(true)
 
       let request = SFSpeechAudioBufferRecognitionRequest()
@@ -277,8 +282,12 @@ final class WakeWordListener {
       engine.prepare()
       try engine.start()
 
+      let current = generation
       task = recognizer.recognitionTask(with: request) { [weak self] result, error in
-        DispatchQueue.main.async { self?.received(result, error: error) }
+        DispatchQueue.main.async {
+          guard let self, self.generation == current else { return }
+          self.received(result, error: error)
+        }
       }
       restartTimer?.invalidate()
       restartTimer = Timer.scheduledTimer(withTimeInterval: 50, repeats: false) { [weak self] _ in
@@ -326,6 +335,7 @@ final class WakeWordListener {
   }
 
   private func end() {
+    generation += 1
     restartTimer?.invalidate()
     commandTimer?.invalidate()
     pending = nil

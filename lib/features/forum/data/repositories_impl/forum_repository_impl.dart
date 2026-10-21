@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../user_profile/domain/entities/public_profile_entity.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../domain/entities/forum_post_entity.dart';
@@ -27,9 +29,13 @@ class ForumRepositoryImpl implements ForumRepository {
     required this.userProfileRepository,
   });
 
+  /// [refresh] re-reads past this repository's own cache (every one-shot
+  /// read); [pulled] (pull to refresh only) past the shared public-profile
+  /// cache too — not on every resume, which would re-read every author.
   Future<Map<String, PublicProfileEntity>> _profilesFor(
     Iterable<String> uids, {
     required bool refresh,
+    bool pulled = false,
   }) async {
     final now = DateTime.now();
     final wanted = uids.toSet();
@@ -41,7 +47,19 @@ class ForumRepositoryImpl implements ForumRepository {
           uid,
     };
     if (stale.isNotEmpty) {
-      final fetched = await userProfileRepository.getPublicProfiles(stale);
+      final Map<String, PublicProfileEntity> fetched;
+      try {
+        fetched = await userProfileRepository.getPublicProfiles(
+          stale,
+          refresh: pulled,
+        );
+      } catch (e) {
+        // Each row keeps the name stored on it (or the last one cached):
+        // the list shows rather than failing whole over a name lookup.
+        // Nothing is cached, so the next read asks again.
+        debugPrint('Author lookup failed: $e');
+        return {for (final uid in wanted) uid: ?_profiles[uid]?.profile};
+      }
       for (final uid in stale) {
         // An account without a public profile is remembered as such, so it
         // is not looked up again on every emission.
@@ -54,11 +72,13 @@ class ForumRepositoryImpl implements ForumRepository {
   Future<List<ForumPostEntity>> _withAuthors(
     List<ForumPostEntity> posts, {
     required bool refresh,
+    bool pulled = false,
   }) async {
     if (posts.isEmpty) return posts;
     final profiles = await _profilesFor(
       posts.map((p) => p.authorUid),
       refresh: refresh,
+      pulled: pulled,
     );
     return [
       for (final post in posts)
@@ -72,11 +92,13 @@ class ForumRepositoryImpl implements ForumRepository {
   Future<List<ForumReplyEntity>> _repliesWithAuthors(
     List<ForumReplyEntity> replies, {
     required bool refresh,
+    bool pulled = false,
   }) async {
     if (replies.isEmpty) return replies;
     final profiles = await _profilesFor(
       replies.map((r) => r.authorUid),
       refresh: refresh,
+      pulled: pulled,
     );
     return [
       for (final reply in replies)
@@ -91,12 +113,13 @@ class ForumRepositoryImpl implements ForumRepository {
   Future<List<ForumPostEntity>> getPosts({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   }) async {
     final posts = await remoteDataSource.getPosts(
       viewerUid: viewerUid,
       limit: limit,
     );
-    return _withAuthors(posts, refresh: true);
+    return _withAuthors(posts, refresh: true, pulled: refresh);
   }
 
   @override
@@ -138,12 +161,28 @@ class ForumRepositoryImpl implements ForumRepository {
   Future<List<ForumReplyEntity>> getReplies(
     String postId, {
     required String viewerUid,
+    bool refresh = false,
   }) async {
     final replies = await remoteDataSource.getReplies(
       postId,
       viewerUid: viewerUid,
     );
-    return _repliesWithAuthors(replies, refresh: true);
+    return _repliesWithAuthors(replies, refresh: true, pulled: refresh);
+  }
+
+  @override
+  Future<ForumReplyEntity?> getReply(
+    String postId,
+    String replyId, {
+    required String viewerUid,
+  }) async {
+    final reply = await remoteDataSource.getReply(
+      postId,
+      replyId,
+      viewerUid: viewerUid,
+    );
+    if (reply == null) return null;
+    return (await _repliesWithAuthors([reply], refresh: true)).first;
   }
 
   @override

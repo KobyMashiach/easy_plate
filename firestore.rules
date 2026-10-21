@@ -12,9 +12,13 @@ service cloud.firestore {
     // permission "admin". Nobody can grant it from a client (see
     // /users/{uid} below): it is set in the Firebase console. The app reads
     // the same field, which only decides what it shows.
+    // An administrator the console switched off (account_status disabled)
+    // loses the powers with the account, not only the app's screens.
     function isAdmin() {
       return signedIn()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('permission', 'user') == 'admin';
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('permission', 'user') == 'admin'
+        && !(exists(/databases/$(database)/documents/account_status/$(request.auth.uid))
+             && get(/databases/$(database)/documents/account_status/$(request.auth.uid)).data.get('disabled', false) == true);
     }
 
     // The permission a write leaves on a users document ("user" if none).
@@ -22,10 +26,140 @@ service cloud.firestore {
       return request.resource.data.get('permission', 'user');
     }
 
+    // An account the console switched off (account_status disabled) is held
+    // on the blocked screen by the app, but its token still works against
+    // these rules until it expires — and the website, or a script, never
+    // looked at the screen at all. So the writes that reach other people
+    // (posts, replies, community recipes, invites and their inbox items,
+    // share codes) check it here too. A support message stays open: a
+    // blocked account may still write to support.
+    function notDisabled() {
+      return !(exists(/databases/$(database)/documents/account_status/$(request.auth.uid))
+               && get(/databases/$(database)/documents/account_status/$(request.auth.uid)).data.get('disabled', false) == true);
+    }
+
     // The author is asserted by the client, so it has to be checked against the
     // token or anyone could post under someone else's name.
     function authoredByCaller() {
       return signedIn() && request.resource.data.authorUid == request.auth.uid;
+    }
+
+    // Whether the caller owns the shared recipe or container an invite or a
+    // share code names. Checked at creation, or a member who merely reads a
+    // document (and so knows its id) could invite anyone into it, or into
+    // the owner's household, at whatever role they chose. `getAfter`, so a
+    // document created in the same batch as its first invite still counts.
+    function ownsCollab(collabId) {
+      return (existsAfter(/databases/$(database)/documents/collab_recipes/$(collabId))
+              && getAfter(/databases/$(database)/documents/collab_recipes/$(collabId)).data.ownerUid == request.auth.uid)
+          || (existsAfter(/databases/$(database)/documents/collab_containers/$(collabId))
+              && getAfter(/databases/$(database)/documents/collab_containers/$(collabId)).data.ownerUid == request.auth.uid);
+    }
+    // A shared document's roster grows only by an invitee adding
+    // themselves (the accept rule) or through a function (a share code):
+    // created empty, and the owner may only take members out or change a
+    // role. Otherwise an owner could write any uid into `memberUids` and
+    // push a recipe, book or plan into a stranger's library — the app pulls
+    // everything shared with it — with no invite and no consent.
+    function rosterCreatedEmpty() {
+      return request.resource.data.get('members', {}).size() == 0
+             && request.resource.data.get('memberUids', []).size() == 0;
+    }
+    function rosterNotGrown() {
+      return request.resource.data.get('members', {}).keys().toSet()
+               .difference(resource.data.get('members', {}).keys().toSet()).size() == 0
+             && request.resource.data.get('memberUids', []).toSet()
+               .difference(resource.data.get('memberUids', []).toSet()).size() == 0;
+    }
+    // The only roster moves a non-owner makes: adding exactly yourself
+    // (accept) or removing exactly yourself (leave). Nothing else in
+    // `members` may change — not another member's role, not a stranger
+    // seated, not someone kicked — and `memberUids` must stay the mirror.
+    function rosterAddsOnlyCaller() {
+      return request.resource.data.get('members', {}).diff(resource.data.get('members', {})).affectedKeys().hasOnly([request.auth.uid])
+             && request.resource.data.get('memberUids', []).toSet()
+                  == resource.data.get('memberUids', []).toSet().union([request.auth.uid].toSet());
+    }
+    function rosterRemovesOnlyCaller() {
+      return request.resource.data.get('members', {}).diff(resource.data.get('members', {})).affectedKeys().hasOnly([request.auth.uid])
+             && !(request.auth.uid in request.resource.data.get('members', {}))
+             && request.resource.data.get('memberUids', []).toSet()
+                  == resource.data.get('memberUids', []).toSet().difference([request.auth.uid].toSet());
+    }
+    function ownsHousehold(hid) {
+      return existsAfter(/databases/$(database)/documents/households/$(hid))
+             && getAfter(/databases/$(database)/documents/households/$(hid)).data.ownerUid == request.auth.uid;
+    }
+
+    // Field checks for the community documents. Any client can write these
+    // with whatever values it likes (the website talks to the same rules as
+    // the app), and every reader — the app's feed and forum parsers cast
+    // with `as String?` / `as Timestamp?`, a live forum listener included —
+    // fails the whole list on one document of the wrong shape. So the fields
+    // a reader casts are held to their types here.
+    function optionalString(d, key, max) {
+      return !(key in d) || d[key] == null || (d[key] is string && d[key].size() <= max);
+    }
+    // A picture URL as both writers produce it — an upload to our Storage
+    // bucket (getDownloadURL: firebasestorage.googleapis.com, or the bucket's
+    // storage.googleapis.com form) or a Google account photo
+    // (*.googleusercontent.com), over https — or null. Length alone used to
+    // be checked, so any account could point its avatar at its own server:
+    // every community reader fetched it (their IP in that server's log) and
+    // the website showed whatever http(s) picture a profile named. The app
+    // renders these hosts only (AuthorRow.trustedPhotoUrl); the rule makes
+    // the document itself say no more than that. `matches` covers the whole
+    // string, and the host must end at the first "/" (no "@" or ".evil.com").
+    function trustedPhotoUrl(d, key) {
+      return !(key in d) || d[key] == null
+             || (d[key] is string && d[key].size() <= 2048
+                 && d[key].matches('https://(firebasestorage\\.googleapis\\.com|storage\\.googleapis\\.com|([a-z0-9-]+\\.)+googleusercontent\\.com)/.*'));
+    }
+    function optionalNumber(d, key) {
+      return !(key in d) || d[key] == null || d[key] is number;
+    }
+    function optionalList(d, key) {
+      return !(key in d) || d[key] == null || d[key] is list;
+    }
+    // A creation time the client stamps itself (Timestamp.now(), so a phone
+    // a little fast still passes) — but not one far in the future: the feeds
+    // are ordered by it, and a post dated next year stayed pinned on top of
+    // everyone's feed. A day of slack covers a clock on the wrong time zone.
+    function freshCreatedAt(d) {
+      return d.createdAt is timestamp && d.createdAt < request.time + duration.value(1, 'd');
+    }
+    // The same, bounded on the past side too, for what is written right now
+    // and never imported: a forum thread or reply, a support message. Both
+    // writers stamp Timestamp.now(); a day either way covers a phone set to
+    // the wrong time zone (and a write queued offline for a few hours).
+    function recentCreatedAt(d) {
+      return freshCreatedAt(d) && d.createdAt > request.time - duration.value(1, 'd');
+    }
+    // The author block every community document carries.
+    function validAuthorFields(d) {
+      return d.authorUid is string
+             && d.get('authorName', '') is string && d.get('authorName', '').size() <= 300
+             && trustedPhotoUrl(d, 'authorPhotoUrl');
+    }
+    // A like counter moves only with the caller's own like document: up when
+    // it is created in the same write, down when it is deleted. A bare ±1
+    // used to be enough, so a loop of updates could add any number of likes.
+    function counterFollowsLike(likePath) {
+      return request.resource.data.likeCount is int
+             && ((request.resource.data.likeCount - resource.data.get('likeCount', 0) == 1
+                  && !exists(likePath) && existsAfter(likePath))
+                 || (request.resource.data.likeCount - resource.data.get('likeCount', 0) == -1
+                     && exists(likePath) && !existsAfter(likePath)));
+    }
+    // The other side of the same move: a like document is created only with
+    // its counter going up by one, and removed by its owner only with it
+    // going down (or with the liked document gone in the same write).
+    function likeCreatedWithCounter(targetPath) {
+      return getAfter(targetPath).data.get('likeCount', 0) == get(targetPath).data.get('likeCount', 0) + 1;
+    }
+    function likeDeletedWithCounter(targetPath) {
+      return !existsAfter(targetPath)
+             || getAfter(targetPath).data.get('likeCount', 0) == get(targetPath).data.get('likeCount', 0) - 1;
     }
 
     // A profile document is private to its owner. The id is the Firebase Auth
@@ -79,41 +213,116 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // One row per RevenueCat event, written by the webhook for the
+    // One row per RevenueCat, PayPlus, Paddle (or dormant Stripe) event,
+    // written by the webhooks for the
     // administrator's subscriptions screen.
     match /purchase_events/{eventId} {
       allow read: if isAdmin();
       allow write: if false;
     }
 
+    // The Stripe customer behind an account's web subscription (customer id,
+    // subscription status, whether they ever subscribed). Written by the
+    // webBilling function and the Stripe webhook alone; the account reads its
+    // own so the website can show "manage" instead of "upgrade".
+    match /stripe_customers/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if false;
+    }
+
+    // The PayPlus (Israel) subscription behind an account's web Premium (and
+    // records of the retired direct-Paddle route): provider, status, period
+    // end, whether it cancels, the provider-side ids. A Paddle purchase made
+    // through RevenueCat lives on entitlements/{uid} only (store PADDLE).
+    // Written by webBilling and the payplusWebhook function alone; the account reads its own so the
+    // website can show "manage" instead of "upgrade". The per-event
+    // idempotency markers (billing_events) have no client rule on purpose.
+    match /web_customers/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if false;
+    }
+
+    // One-time "upgrade on the web" links (keyed by the token's hash), the
+    // rate-limit counters behind the anonymous "send me a link" box, and the
+    // `mail` queue the Trigger Email extension sends from: all written and
+    // read by the upgradeLinks function alone. No client rule on purpose —
+    // the catch-all below keeps them closed.
+
     // The display half of a profile, split out because rules grant or deny a
     // whole document: opening /users up so authors' names could be shown would
     // have exposed their email, phone and push token too.
+    //
+    // Every reader casts these two fields (the app's `as String?`, a batch
+    // lookup of up to 30 profiles at a time), so one profile with a number or
+    // a map for a name used to fail the authors of a whole feed page for
+    // everyone — and the push for an invite reads the sender's name too. Kept
+    // to their types and to sizes no real name or photo URL reaches.
     match /public_profiles/{uid} {
       allow read: if signedIn();
-      allow write: if signedIn() && request.auth.uid == uid;
+      // Only the three fields both writers (and the console) send: the
+      // document is world-readable, so nothing else rides along on it.
+      allow create, update: if signedIn() && request.auth.uid == uid
+                            && request.resource.data.diff(resource == null ? {} : resource.data).affectedKeys()
+                                 .hasOnly(['fullName', 'photoUrl', 'updatedAt'])
+                            && optionalString(request.resource.data, 'fullName', 300)
+                            && trustedPhotoUrl(request.resource.data, 'photoUrl');
+      allow delete: if signedIn() && request.auth.uid == uid;
     }
 
     // Community recipes: readable by every signed-in user, writable only by
     // whoever published them.
     match /shared_recipes/{postId} {
+      function likePath() {
+        return /databases/$(database)/documents/shared_recipes/$(postId)/likes/$(request.auth.uid);
+      }
+      function postPath() {
+        return /databases/$(database)/documents/shared_recipes/$(postId);
+      }
+      // The recipe body as SharedRecipesRemoteDataSource (and the website's
+      // publishRecipe / updateShared) write it; list elements are not
+      // reachable from rules, the top-level types are.
+      function validRecipe(d) {
+        return d.title is string && d.title.size() <= 500
+               && validAuthorFields(d)
+               && optionalString(d, 'sourceRecipeId', 256)
+               && optionalNumber(d, 'prepTimeMinutes')
+               && optionalNumber(d, 'cookTimeMinutes')
+               && optionalNumber(d, 'servings')
+               && optionalList(d, 'ingredients')
+               && optionalList(d, 'steps')
+               && optionalList(d, 'dietaryTags')
+               && optionalList(d, 'allergens')
+               && optionalList(d, 'mayContain')
+               && optionalString(d, 'imageFileName', 512)
+               && optionalString(d, 'imageStoragePath', 1024)
+               && (!('nutrition' in d) || d.nutrition == null || d.nutrition is map)
+               && d.createdAt is timestamp;
+      }
+
       allow read: if signedIn();
-      allow create: if authoredByCaller();
-      // The like counter is the one field a non-author may move, and only by
-      // one step, so a reader cannot rewrite someone else's recipe.
+      // Created with no likes, at about now, in the shape the readers parse.
+      allow create: if authoredByCaller()
+                    && notDisabled()
+                    && validRecipe(request.resource.data)
+                    && request.resource.data.likeCount == 0
+                    && freshCreatedAt(request.resource.data);
       allow update: if signedIn() && (
                       // Anyone signed in may move the like counter, one step,
-                      // and nothing else.
+                      // together with their own like document, and nothing
+                      // else.
                       (request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['likeCount'])
-                       && request.resource.data.likeCount is int
-                       && (request.resource.data.likeCount - resource.data.likeCount) in [1, -1])
+                       && counterFollowsLike(likePath()))
                       ||
                       // The author may rewrite the recipe itself, but cannot
-                      // hand it to someone else or inflate its likes.
+                      // hand it to someone else, inflate its likes or move
+                      // its date (the feed's order).
                       (resource.data.authorUid == request.auth.uid
+                       && notDisabled()
                        && request.resource.data.authorUid == resource.data.authorUid
-                       && request.resource.data.likeCount == resource.data.likeCount)
+                       && request.resource.data.get('likeCount', 0) == resource.data.get('likeCount', 0)
+                       && request.resource.data.createdAt == resource.data.createdAt
+                       && validRecipe(request.resource.data))
                     );
       allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
 
@@ -121,23 +330,22 @@ service cloud.firestore {
       // become two likes.
       match /likes/{uid} {
         allow read: if signedIn();
-        allow create, update: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid && likeCreatedWithCounter(postPath());
         // The author sweeps these when unsharing, so they may delete likes
         // that belong to other people — but only their own recipe's.
         allow delete: if signedIn()
-                      && (request.auth.uid == uid
-                          || get(/databases/$(database)/documents/shared_recipes/$(postId))
-                               .data.authorUid == request.auth.uid);
+                      && ((request.auth.uid == uid && likeDeletedWithCounter(postPath()))
+                          || get(postPath()).data.authorUid == request.auth.uid);
       }
     }
 
-    // A like moves the counter by exactly one step and touches nothing else.
-    // Threads and replies written before likes existed carry no counter, so
-    // the old value defaults to zero rather than failing the comparison.
-    function movesLikeCountByOne() {
+    // A like moves the counter by exactly one step, with the caller's own
+    // like document, and touches nothing else. Threads and replies written
+    // before likes existed carry no counter, so the old value defaults to
+    // zero rather than failing the comparison.
+    function movesLikeCountByOne(likePath) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
-             && request.resource.data.likeCount is int
-             && (request.resource.data.likeCount - resource.data.get('likeCount', 0)) in [1, -1];
+             && counterFollowsLike(likePath);
     }
 
     match /forum_posts/{postId} {
@@ -145,16 +353,61 @@ service cloud.firestore {
         return get(/databases/$(database)/documents/forum_posts/$(postId))
                  .data.authorUid == request.auth.uid;
       }
+      function postPath() {
+        return /databases/$(database)/documents/forum_posts/$(postId);
+      }
 
       allow read: if signedIn();
-      allow create: if authoredByCaller();
+      // Exactly the fields ForumRemoteDataSource.createPost (and the
+      // website's createPost) write, with both counters at zero.
+      allow create: if authoredByCaller()
+                    && notDisabled()
+                    && request.resource.data.keys().hasOnly(['title', 'body', 'authorUid', 'authorName', 'authorPhotoUrl', 'replyCount', 'likeCount', 'createdAt'])
+                    && request.resource.data.title is string && request.resource.data.title.size() <= 500
+                    && request.resource.data.body is string && request.resource.data.body.size() <= 20000
+                    && validAuthorFields(request.resource.data)
+                    && request.resource.data.replyCount == 0
+                    && request.resource.data.likeCount == 0
+                    && recentCreatedAt(request.resource.data);
       // After creation only the two counters move: replies upward by one, and
       // likes by one step either way — the same as on a shared recipe.
+      //
+      // NOT ENFORCED YET — a reply loop's rate limit (pass 10 design). The
+      // reply counter moves by a bare +1 that nothing ties to a reply, and a
+      // reply is a client write nothing limits (the fan-out budget only caps
+      // who is told). Once BOTH writers — ForumRemoteDataSource.addReply and
+      // the website's forum.ts addReply — send, in the one batch they already
+      // use:
+      //   replies/{replyId}:      the eight keys as today
+      //   forum_posts/{postId}:   { replyCount: increment(1),
+      //                             lastReplyId: replyId,
+      //                             lastReplyUid: <caller uid>,
+      //                             lastReplyAt: serverTimestamp() }
+      // the replyCount branch below becomes:
+      //   (request.resource.data.diff(resource.data).affectedKeys()
+      //      .hasOnly(['replyCount', 'lastReplyId', 'lastReplyUid', 'lastReplyAt'])
+      //    && request.resource.data.replyCount == resource.data.get('replyCount', 0) + 1
+      //    && request.resource.data.lastReplyUid == request.auth.uid
+      //    && request.resource.data.lastReplyAt == request.time
+      //    && request.resource.data.lastReplyId is string
+      //    // the counter moves only with a reply of the caller's, created in
+      //    // this very write — a bare increment no longer passes
+      //    && !exists(/databases/$(database)/documents/forum_posts/$(postId)/replies/$(request.resource.data.lastReplyId))
+      //    && existsAfter(/databases/$(database)/documents/forum_posts/$(postId)/replies/$(request.resource.data.lastReplyId))
+      //    && getAfter(/databases/$(database)/documents/forum_posts/$(postId)/replies/$(request.resource.data.lastReplyId)).data.authorUid == request.auth.uid
+      //    // the same account waits 20 s between two replies on one thread
+      //    && (resource.data.get('lastReplyUid', '') != request.auth.uid
+      //        || !('lastReplyAt' in resource.data)
+      //        || resource.data.lastReplyAt < request.time - duration.value(20, 's')))
+      // and the replies create rule gains:
+      //    && getAfter(/databases/$(database)/documents/forum_posts/$(postId)).data.get('lastReplyId', '') == replyId
+      // Switched on before both clients send the three fields, this refuses
+      // every reply from an older build — hence left as a comment.
       allow update: if signedIn() && (
                       (request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['replyCount'])
-                       && request.resource.data.replyCount == resource.data.replyCount + 1)
-                      || movesLikeCountByOne()
+                       && request.resource.data.replyCount == resource.data.get('replyCount', 0) + 1)
+                      || movesLikeCountByOne(/databases/$(database)/documents/forum_posts/$(postId)/likes/$(request.auth.uid))
                     );
       allow delete: if signedIn() && resource.data.authorUid == request.auth.uid;
 
@@ -162,18 +415,33 @@ service cloud.firestore {
       // become two likes.
       match /likes/{uid} {
         allow read: if signedIn();
-        allow create, update: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid && likeCreatedWithCounter(postPath());
         // The thread's author sweeps these when deleting it, so they may
         // delete likes that belong to other people — but only on their own
         // thread.
-        allow delete: if signedIn() && (request.auth.uid == uid || threadAuthoredByCaller());
+        allow delete: if signedIn()
+                      && ((request.auth.uid == uid && likeDeletedWithCounter(postPath()))
+                          || threadAuthoredByCaller());
       }
 
       match /replies/{replyId} {
+        function replyPath() {
+          return /databases/$(database)/documents/forum_posts/$(postId)/replies/$(replyId);
+        }
         allow read: if signedIn();
-        allow create: if authoredByCaller();
+        // Exactly the fields addReply writes, with no likes yet.
+        allow create: if authoredByCaller()
+                      && notDisabled()
+                      && request.resource.data.keys().hasOnly(['body', 'authorUid', 'authorName', 'authorPhotoUrl', 'sharedRecipeId', 'sharedRecipeTitle', 'likeCount', 'createdAt'])
+                      && request.resource.data.body is string && request.resource.data.body.size() <= 20000
+                      && validAuthorFields(request.resource.data)
+                      && optionalString(request.resource.data, 'sharedRecipeId', 256)
+                      && optionalString(request.resource.data, 'sharedRecipeTitle', 500)
+                      && request.resource.data.likeCount == 0
+                      && recentCreatedAt(request.resource.data);
         // Nothing on a reply moves after it is posted except its like counter.
-        allow update: if signedIn() && movesLikeCountByOne();
+        allow update: if signedIn()
+                      && movesLikeCountByOne(/databases/$(database)/documents/forum_posts/$(postId)/replies/$(replyId)/likes/$(request.auth.uid));
         // Deleting the thread deletes its replies, which is why a reply may be
         // removed by its own author or by the thread's.
         allow delete: if signedIn()
@@ -182,8 +450,10 @@ service cloud.firestore {
 
         match /likes/{uid} {
           allow read: if signedIn();
-          allow create, update: if signedIn() && request.auth.uid == uid;
-          allow delete: if signedIn() && (request.auth.uid == uid || threadAuthoredByCaller());
+          allow create: if signedIn() && request.auth.uid == uid && likeCreatedWithCounter(replyPath());
+          allow delete: if signedIn()
+                        && ((request.auth.uid == uid && likeDeletedWithCounter(replyPath()))
+                            || threadAuthoredByCaller());
         }
       }
     }
@@ -195,12 +465,40 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
-    // Hash of a contact → uid. Anyone signed in may look a hash up; only the
-    // account it points at may claim it, so nobody can register someone else's
-    // email as their own.
+    // Hash of a contact → uid. Anyone signed in may look a hash up. Writing
+    // one says "this phone / this email is mine", so the hash has to be the
+    // caller's own contact as the token proves it: sha256 of the token's
+    // phone number (E.164, with its "+") or of its email lower-cased, as
+    // lowercase hex — byte for byte what the app hashes (contact_hash.dart:
+    // a phone is normalised to E.164 keeping the "+", an email is trimmed and
+    // lower-cased, then sha256 → Digest.toString(), lowercase hex). Before
+    // this check any account could register any hash as its own and have
+    // every share meant for that contact land in its inbox.
+    // A number that moved to a new account is claimed by that account (its
+    // token carries the number now) and the old entry is overwritten: the
+    // check is on the caller, not on the previous owner. Nothing is deleted
+    // from a client; deleteAccount sweeps an account's entries server-side.
+    // An email counts only once the token says it is verified: an address
+    // typed at sign-up proves nothing until its link is clicked, and before
+    // that check anyone could sign up with someone else's address and catch
+    // the shares meant for it. The app refreshes the ID token right after
+    // verification so the first profile save carries the new claim.
     match /user_directory/{hash} {
-      allow read: if signedIn();
-      allow write: if signedIn() && request.resource.data.uid == request.auth.uid;
+      function hashOfOwnContact() {
+        return ('phone_number' in request.auth.token
+                && hashing.sha256(request.auth.token.phone_number).toHexString().lower() == hash)
+            || ('email' in request.auth.token
+                && request.auth.token.get('email_verified', false) == true
+                && hashing.sha256(request.auth.token.email.lower()).toHexString().lower() == hash);
+      }
+      // One hash at a time: listing the directory would hand out every
+      // user's phone/email hash (unsalted, brute-forceable) with their uid.
+      allow get: if signedIn();
+      allow list: if false;
+      allow create, update: if signedIn()
+                            && request.resource.data.uid == request.auth.uid
+                            && hashOfOwnContact();
+      allow delete: if false;
     }
 
     // A recipe shared between accounts: the source of truth the local copies
@@ -225,27 +523,33 @@ service cloud.firestore {
       }
 
       allow read: if isOwner() || isMember() || isAdmin();
-      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid
+                    && rosterCreatedEmpty();
       allow delete: if isOwner();
       allow update: if
-        // The owner may do anything but hand the recipe to someone else.
-        (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid)
+        // The owner may do anything but hand the recipe to someone else or
+        // seat someone who was not invited.
+        (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid && rosterNotGrown())
         // An editor rewrites the recipe but never the roster.
         || (isEditor()
             && request.resource.data.ownerUid == resource.data.ownerUid
             && request.resource.data.members == resource.data.members
             && request.resource.data.memberUids == resource.data.memberUids)
         // Accepting: add exactly yourself, with exactly the role you were
-        // offered, on an invite you have marked accepted.
+        // offered, on an invite you have marked accepted — one the owner of
+        // *this* document sent to *you*. Without the last two checks an
+        // invite anyone wrote for themselves under this id would do.
         || (signedIn()
             && changedOnly(['members', 'memberUids', 'updatedAt'])
-            && request.resource.data.members.diff(resource.data.members).addedKeys().hasOnly([request.auth.uid])
+            && rosterAddsOnlyCaller()
             && myInvite().status == 'accepted'
+            && myInvite().ownerUid == resource.data.ownerUid
+            && myInvite().targetUid == request.auth.uid
             && request.resource.data.members[request.auth.uid] == myInvite().role)
         // Leaving: remove exactly yourself.
         || (isMember()
             && changedOnly(['members', 'memberUids', 'updatedAt'])
-            && request.resource.data.members.diff(resource.data.members).removedKeys().hasOnly([request.auth.uid]));
+            && rosterRemovesOnlyCaller());
     }
 
     // A book or meal plan shared between accounts. Same roster, same invite
@@ -271,32 +575,57 @@ service cloud.firestore {
       allow read: if isOwner() || isMember() || isAdmin();
       allow create: if signedIn()
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.kind in ['book', 'mealPlan', 'groceryList'];
+                    && request.resource.data.kind in ['book', 'mealPlan', 'groceryList']
+                    && rosterCreatedEmpty();
       allow delete: if isOwner();
-      allow update: if
-        (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid)
+      // A book stays a book: the kind picks the parser every member's app
+      // runs on the content.
+      allow update: if request.resource.data.get('kind', null) == resource.data.get('kind', null) && (
+        (isOwner() && request.resource.data.ownerUid == resource.data.ownerUid && rosterNotGrown())
         || (isEditor()
             && request.resource.data.ownerUid == resource.data.ownerUid
             && request.resource.data.members == resource.data.members
             && request.resource.data.memberUids == resource.data.memberUids)
         || (signedIn()
             && changedOnly(['members', 'memberUids', 'updatedAt'])
-            && request.resource.data.members.diff(resource.data.members).addedKeys().hasOnly([request.auth.uid])
+            && rosterAddsOnlyCaller()
             && myInvite().status == 'accepted'
+            && myInvite().ownerUid == resource.data.ownerUid
+            && myInvite().targetUid == request.auth.uid
             && request.resource.data.members[request.auth.uid] == myInvite().role)
         || (isMember()
             && changedOnly(['members', 'memberUids', 'updatedAt'])
-            && request.resource.data.members.diff(resource.data.members).removedKeys().hasOnly([request.auth.uid]));
+            && rosterRemovesOnlyCaller()));
     }
 
     match /share_invites/{inviteId} {
-      allow read: if signedIn()
-                  && (resource.data.ownerUid == request.auth.uid
-                      || resource.data.targetUid == request.auth.uid
-                      || isAdmin());
+      function partyToInvite() {
+        return resource.data.ownerUid == request.auth.uid
+               || resource.data.targetUid == request.auth.uid
+               || isAdmin();
+      }
+      // A `get` of an invite that is not there answers "no invite" rather
+      // than "permission denied": the app probes its deterministic id
+      // ({collabId}_{uid}) before writing one, and a denial on a missing
+      // document read as a failure. Only `get` — a list never names a
+      // missing document, so it keeps the party check alone.
+      allow get: if signedIn() && (resource == null || partyToInvite());
+      allow list: if signedIn() && partyToInvite();
+      // Only the owner of the document named may send an invite for it.
       allow create: if signedIn()
+                    && notDisabled()
                     && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.status == 'pending';
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.collabId is string
+                    // The deterministic id the accept rule reads it back by,
+                    // a role an invitee may hold, and a title that fits a
+                    // notification (both writers send at most these keys).
+                    && inviteId == request.resource.data.collabId + '_' + request.resource.data.targetUid
+                    && request.resource.data.keys().hasOnly(['collabId', 'recipeTitle', 'ownerUid', 'targetUid', 'role', 'status', 'kind', 'via', 'createdAt'])
+                    && request.resource.data.role in ['viewer', 'editor']
+                    && request.resource.data.get('recipeTitle', '') is string
+                    && request.resource.data.get('recipeTitle', '').size() <= 500
+                    && ownsCollab(request.resource.data.collabId);
       // The target answers; nothing else on the invite moves.
       allow update: if signedIn()
                     && resource.data.targetUid == request.auth.uid
@@ -306,15 +635,45 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
     }
 
-    // Each account's inbox. Anyone signed in may drop an item into someone
-    // else's inbox as long as they sign it as themselves; only the inbox
-    // owner reads it or marks it read.
+    // Each account's inbox. A share invite's item is dropped into the
+    // target's inbox by the owner, signed as themselves, and only alongside
+    // the invite it announces: the app writes both in one batch, so the
+    // invite named by `inviteId` has to exist after this write, sent by the
+    // caller to this inbox. Without that, any signed-in account could ring
+    // any phone with "X shared a recipe with you" and nothing behind it.
+    // Only the inbox owner reads it or marks it read. Every other kind is
+    // written by a function (forum replies, recipe updates, announcements)
+    // or, for a support answer, by the administrator from the app — so a
+    // client may not create one, or anyone could ring another phone with a
+    // push that reads as a word from EasyPlate.
     match /notifications/{uid}/items/{itemId} {
+      function announcedInvite() {
+        return getAfter(/databases/$(database)/documents/share_invites/$(request.resource.data.inviteId)).data;
+      }
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
-      allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
+      allow create: if signedIn()
+                    && request.resource.data.fromUid == request.auth.uid
+                    && ((request.resource.data.type == 'shareInvite'
+                         && request.resource.data.keys().hasOnly(['type', 'kind', 'fromUid', 'inviteId', 'collabId', 'recipeTitle', 'role', 'read', 'createdAt'])
+                         && request.resource.data.get('recipeTitle', '') is string
+                         && request.resource.data.get('recipeTitle', '').size() <= 500
+                         && request.resource.data.read == false
+                         && recentCreatedAt(request.resource.data)
+                         && request.resource.data.inviteId is string
+                         && notDisabled()
+                         && announcedInvite().ownerUid == request.auth.uid
+                         && announcedInvite().targetUid == uid
+                         // The item says what it offers (the inbox row and
+                         // the accept read these): the invite's own
+                         // document and role, not another one's.
+                         && request.resource.data.get('collabId', null) == announcedInvite().collabId
+                         && request.resource.data.get('role', null) == announcedInvite().role)
+                        || (request.resource.data.type == 'adminReply' && isAdmin()));
+      // Marking read: the one field, as the boolean every reader casts.
       allow update: if signedIn()
                     && request.auth.uid == uid
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+                    && request.resource.data.read is bool;
       allow delete: if signedIn() && request.auth.uid == uid;
     }
 
@@ -330,11 +689,37 @@ service cloud.firestore {
       function isWriter() {
         return signedIn() && resource.data.authorUid == request.auth.uid;
       }
+      // A follow-up is exactly one new entry at the end — {text, at}, the
+      // text as long as a first message may be — with every earlier one
+      // left as it was. Both writers arrayUnion one such map. Only a size
+      // check used to stand here, so the writer could rewrite what they had
+      // said before, or drop a megabyte into one entry.
+      function followUpAppended() {
+        let before = resource.data.get('followUps', []);
+        let after = request.resource.data.followUps;
+        let added = after[after.size() - 1];
+        return after is list
+               && after.size() == before.size() + 1
+               // (a [0:0] slice is an evaluation error, hence the guard)
+               && (before.size() == 0 || after[0:before.size()] == before)
+               && added is map
+               && added.keys().hasOnly(['text', 'at'])
+               && added.text is string && added.text.size() > 0 && added.text.size() <= 4000
+               && added.at is timestamp;
+      }
       allow create: if authoredByCaller()
                     && request.resource.data.type in ['bug', 'suggestion', 'account', 'billing', 'sharing', 'recipes', 'other']
                     && request.resource.data.message is string
                     && request.resource.data.message.size() > 0
-                    && request.resource.data.message.size() <= 4000;
+                    && request.resource.data.message.size() <= 4000
+                    // What both writers send, a fresh conversation (no
+                    // follow-ups yet, unread for the console).
+                    && request.resource.data.keys().hasOnly(['type', 'message', 'authorUid', 'authorName', 'authorEmail', 'appVersion', 'details', 'source', 'followUps', 'userUnread', 'read', 'createdAt', 'updatedAt'])
+                    && request.resource.data.get('followUps', []) == []
+                    && request.resource.data.get('read', false) == false
+                    // The console's inbox is ordered by it: a date next year
+                    // stayed on top of every other conversation.
+                    && recentCreatedAt(request.resource.data);
       allow read: if isAdmin() || isWriter();
       // The administrator marks a message read (and unread again), answers
       // it and removes it; the message itself and who wrote it never change.
@@ -353,8 +738,11 @@ service cloud.firestore {
                         || request.resource.data.read == false)
                     && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['userUnread'])
                         || request.resource.data.userUnread == false)
-                    && request.resource.data.get('followUps', []).size() >= resource.data.get('followUps', []).size()
-                    && request.resource.data.get('followUps', []).size() <= 200;
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['updatedAt'])
+                        || request.resource.data.updatedAt == request.time)
+                    && request.resource.data.get('followUps', []).size() <= 200
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['followUps'])
+                        || followUpAppended());
       allow delete: if isAdmin();
     }
 
@@ -369,6 +757,12 @@ service cloud.firestore {
     match /ai_daily/{day} {
       allow read: if isAdmin();
       allow write: if false;
+      // One account's share of the day (aiUsage.js), moving out of the
+      // day document's `users` map.
+      match /users/{uid} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
     }
     match /ai_usage/{uid} {
       allow read: if isAdmin();
@@ -406,24 +800,49 @@ service cloud.firestore {
     }
 
     // The dashboard's own settings — the token price table and the exchange
-    // rate. The administrator's alone, both ways.
+    // rate. The administrator's alone, both ways. Not `stores_private`: the
+    // App Store Connect private key the storeStats function signs with is
+    // read only by the server (the console sends a new one through
+    // adminPanel and is shown "key present", never the key), so a script
+    // running in a signed-in admin page cannot lift it.
     match /admin_config/{name} {
-      allow read, write: if isAdmin();
+      allow read, write: if isAdmin() && name != 'stores_private';
     }
 
     // A share code is written by the owner and redeemed by the server (the
     // shareCodes function), which creates the invite on the owner's behalf.
     match /share_codes/{code} {
       allow read: if signedIn() && (resource.data.ownerUid == request.auth.uid || isAdmin());
+      // A code opens the document it names, so only that document's owner
+      // may write one (the redeem function checks the same, server-side).
+      // Both writers (ShareCodesFirestoreRepository.create and the
+      // website's createShareCode) stamp the client's clock and add exactly
+      // thirty days, so the code lives a month from about now and no longer:
+      // a code dated years ahead never expired, and `maxUses` (the server's
+      // field) is not the client's to set.
       allow create: if signedIn()
+                    && notDisabled()
+                    && request.resource.data.keys().hasOnly(['kind', 'targetId', 'ownerUid', 'role', 'title', 'createdAt', 'expiresAt', 'uses', 'revoked'])
                     && request.resource.data.ownerUid == request.auth.uid
                     && request.resource.data.kind in ['recipe', 'book', 'mealPlan', 'groceryList', 'household']
                     && request.resource.data.role in ['viewer', 'editor']
                     && request.resource.data.uses == 0
-                    && request.resource.data.revoked == false;
+                    && request.resource.data.revoked == false
+                    && request.resource.data.title is string && request.resource.data.title.size() <= 500
+                    && request.resource.data.createdAt is timestamp
+                    && request.resource.data.createdAt > request.time - duration.value(5, 'm')
+                    && request.resource.data.createdAt < request.time + duration.value(5, 'm')
+                    && request.resource.data.expiresAt == request.resource.data.createdAt + duration.value(30, 'd')
+                    && request.resource.data.targetId is string
+                    && (request.resource.data.kind == 'household'
+                          ? ownsHousehold(request.resource.data.targetId)
+                          : ownsCollab(request.resource.data.targetId));
       allow update: if signedIn()
                     && resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revoked']);
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revoked'])
+                    // Revoking is for good: a code switched back on would
+                    // reopen what the owner closed.
+                    && request.resource.data.revoked == true;
       allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
     }
 

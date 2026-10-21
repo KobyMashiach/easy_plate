@@ -11,6 +11,7 @@ import '../../features/user_profile/domain/entities/user_preferences_entity.dart
 import '../../features/user_profile/domain/repositories/user_preferences_repository.dart';
 import '../../features/notifications/domain/repositories/notifications_repository.dart';
 import '../../features/feedback/domain/repositories/feedback_repository.dart';
+import 'account_deletion_guard.dart';
 import 'admin_access.dart';
 import 'admin_inbox_service.dart';
 import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
@@ -18,6 +19,7 @@ import '../../features/recipe_sharing/domain/repositories/recipe_sharing_reposit
 import '../../features/recipe_sharing/domain/usecases/refresh_collab_recipes_usecase.dart';
 import '../../features/collab_containers/domain/container_sharing_service.dart';
 import '../hive/user_scope.dart';
+import '../network/ai_auth_header.dart';
 import '../monetization/daily_usage_service.dart';
 import '../monetization/entitlement_service.dart';
 import '../monetization/purchases_service.dart';
@@ -90,6 +92,7 @@ class AuthSessionService extends ChangeNotifier {
   RecipesRepository? _recipes;
   ContainerSharingService? _containers;
   StreamSubscription<AppUserEntity?>? _subscription;
+  StreamSubscription<String>? _tokenRefreshes;
 
   bool _bound = false;
   AuthStage _stage = AuthStage.unknown;
@@ -164,9 +167,22 @@ class AuthSessionService extends ChangeNotifier {
     _containers = containers;
     this.onPreferencesLoaded = onPreferencesLoaded;
     _subscription = auth.authStateChanges().listen(_onAuthChanged);
+    _tokenRefreshes = pushTokenRefreshSource().listen(
+      (token) => unawaited(_onPushTokenRefreshed(token)),
+      onError: (Object e) => debugPrint('Push token stream failed: $e'),
+    );
   }
 
+  /// Bumped by every auth event. The sign-in path below awaits the scope
+  /// switch, the household, the hydrate and the profile, and a sign-out (or
+  /// another sign-in) can land in any of those gaps: a stale run that kept
+  /// going would set the stage to `ready` for an account that has already
+  /// left, bind its notifications and start its presence report. Each await
+  /// is followed by a check that this run is still the latest.
+  int _generation = 0;
+
   Future<void> _onAuthChanged(AppUserEntity? user) async {
+    final generation = ++_generation;
     _user = user;
 
     if (user == null) {
@@ -180,6 +196,9 @@ class AuthSessionService extends ChangeNotifier {
       _sessionRefusal = null;
       DeviceSessionService().unwatch();
       DeviceSessionService().stopWaiting();
+      // Sent with the release already (the sign-out path runs it first);
+      // the next account, or this one again, gets a fresh secret.
+      unawaited(DeviceSessionService().forgetSecrets());
       releaseRequest.value = null;
       // The offline mark was written by the sign-out path while the token
       // was still valid; here the report only has to stop.
@@ -188,8 +207,15 @@ class AuthSessionService extends ChangeNotifier {
       // next sign-in, and a quota count would be charged to the wrong person.
       EntitlementService().clear();
       HouseholdService().clear();
+      // The household mirrors' live listeners go now, not with the delayed
+      // wipe: a quick switch to another account would otherwise keep them
+      // open on the old household's root under the new account's token.
+      if (CloudSyncService().isListening) {
+        unawaited(CloudSyncService().stopListening());
+      }
       DailyUsageService().reset();
       unawaited(PurchasesService().logOut());
+      _lastSharedRefresh = null;
       _set(AuthStage.signedOut);
       unawaited(FirebaseService().setAnalyticsUser(null));
       // The cooking belonged to the account that just left: its timers,
@@ -222,22 +248,26 @@ class AuthSessionService extends ChangeNotifier {
     // before anything reads a box — otherwise the previous account's recipes
     // are what comes back.
     await UserScope().switchTo(user.uid);
+    if (generation != _generation) return;
     // A different account than the one whose usage is in memory, if any.
     DailyUsageService().reset();
     EntitlementService().watch(user.uid);
     // Which root the shared mirrors read from: the household's, if the
     // account is in one. Waited for, so the hydrate below is the right one.
     await HouseholdService().resolve(user.uid);
+    if (generation != _generation) return;
     // Then fill those boxes from the account's own cloud copy, before the
     // preferences read below: a phone that has never run the app has empty
     // boxes, and reading them first would show an account with no recipes and
     // send it back through onboarding to pick a shopping day it already has.
     // It is a no-op for an account already hydrated in this session.
     await CloudSyncService().hydrate(user.uid);
+    if (generation != _generation) return;
     // Not awaited: the gate's stage does not depend on it, and a shared recipe
     // arriving a second late is not worth holding the splash for.
     unawaited(refreshSharedRecipes());
     await _loadPreferences();
+    if (generation != _generation) return;
     await _resolveProfile(user);
   }
 
@@ -287,8 +317,16 @@ class AuthSessionService extends ChangeNotifier {
   }
 
   Future<void> _resolveProfile(AppUserEntity user) async {
+    // Also reached from the retry on the session screen and from the
+    // registration screen, both of which sit next to a sign-out button: a
+    // sign-out during one of the lookups below must win over this run.
+    final generation = _generation;
+    bool stale() => generation != _generation;
+
     try {
-      _profile = await _profiles!.getProfile(user.uid);
+      final profile = await _profiles!.getProfile(user.uid);
+      if (stale()) return;
+      _profile = profile;
       profileListenable.value = _profile;
     } catch (e) {
       // Firestore serves a cached document when offline, so a throw here means
@@ -296,10 +334,13 @@ class AuthSessionService extends ChangeNotifier {
       // a returning user back through registration.
       debugPrint('Profile lookup failed: $e');
     }
+    if (stale()) return;
 
     // An account the administrator switched off is held on one screen with
     // the reason, whatever else it has finished.
-    if (await _profiles!.blockMessage(user.uid) case final message?) {
+    final blocked = await _profiles!.blockMessage(user.uid);
+    if (stale()) return;
+    if (blocked case final message?) {
       _blockMessage = message;
       _set(AuthStage.blocked);
       return;
@@ -307,9 +348,11 @@ class AuthSessionService extends ChangeNotifier {
 
     if (_profile == null || !_profile!.isComplete) {
       if (_profile == null && await _numberClaimedElsewhere(user)) {
+        if (stale()) return;
         _set(AuthStage.phoneClaimed);
         return;
       }
+      if (stale()) return;
       _set(AuthStage.needsProfile);
       return;
     }
@@ -317,7 +360,9 @@ class AuthSessionService extends ChangeNotifier {
     // One device at a time: the server hands the session to this device or
     // names the one that holds it. Only once the account is real (profile
     // written), so a half-made account never occupies a session.
-    if (!await _claimSession(user.uid)) return;
+    final claimed = await _claimSession(user.uid);
+    if (stale()) return;
+    if (!claimed) return;
 
     _set(_onboardingComplete ? AuthStage.ready : AuthStage.needsOnboarding);
     unawaited(_registerPush(user.uid));
@@ -343,7 +388,7 @@ class AuthSessionService extends ChangeNotifier {
   /// profile.
   Future<void> _publishPublicProfile() async {
     final profile = _profile;
-    if (profile == null) return;
+    if (profile == null || AccountDeletionGuard.blocks(profile.uid)) return;
     try {
       await _profiles!.publishPublicProfile(profile);
     } catch (e) {
@@ -367,14 +412,102 @@ class AuthSessionService extends ChangeNotifier {
   /// On a refused device: the holder chose to stay signed in.
   final releaseDeclined = ValueNotifier<bool>(false);
 
+  /// Where this device's push token comes from. A seam, because the real
+  /// one needs Firebase Messaging.
+  @visibleForTesting
+  static Future<String?> Function() pushTokenSource = () =>
+      FirebaseService().currentPushToken();
+
+  /// Forces the ID token to be re-minted, so a claim written by the console
+  /// (`disabled`) reaches the cached token. A seam like [pushTokenSource];
+  /// the real one needs Firebase Auth.
+  @visibleForTesting
+  static Future<void> Function() refreshClaims = refreshIdTokenClaims;
+
+  /// Where a rotated push token arrives from mid-session; a seam like
+  /// [pushTokenSource].
+  @visibleForTesting
+  static Stream<String> Function() pushTokenRefreshSource = () =>
+      FirebaseService().pushTokenRefreshes;
+
+  /// FCM rotated the token while an account was through the gate: the
+  /// saved token and the session record both name the old one, so a push
+  /// (a reply, a release request from another device) would reach nobody.
+  /// Both are brought up to date. A token arriving while no account is
+  /// through the gate is left to that account's sign-in registration,
+  /// which reads the current token anyway.
+  Future<void> _onPushTokenRefreshed(String token) async {
+    final uid = _user?.uid;
+    if (uid == null || token.isEmpty || _stage != AuthStage.ready) return;
+    if (AccountDeletionGuard.blocks(uid)) return;
+    final generation = _generation;
+    try {
+      await _profiles!.savePushToken(uid, token);
+    } catch (e) {
+      debugPrint('Push token save failed: $e');
+    }
+    if (generation != _generation || _user?.uid != uid) return;
+    final sessions = DeviceSessionService();
+    if (FeaturesFlags.singleSession.isVisible &&
+        !sessions.exempt &&
+        _sessionRefusal == null &&
+        _stage == AuthStage.ready) {
+      // A same-device claim merges the token into the record.
+      await sessions.claim(pushToken: token);
+    }
+  }
+
+  /// A server answered 403 `account_disabled` (`HttpCalls.onAccountDisabled`):
+  /// the administrator switched the account off while it was signed in.
+  /// The gate holds it on the blocked screen now, with the reason from the
+  /// console when it can be read, instead of at the next sign-in — the only
+  /// time `account_status` is otherwise consulted.
+  Future<void> accountDisabled() async {
+    final user = _user;
+    if (user == null) return;
+    if (_stage == AuthStage.blocked || _stage == AuthStage.signedOut) return;
+    final generation = _generation;
+    // The `disabled` claim into the cached token (or, the refresh tokens
+    // being revoked, a sign-out): either way nothing else is paid for.
+    unawaited(refreshClaims());
+    String? message;
+    try {
+      message = await _profiles?.blockMessage(user.uid);
+    } catch (e) {
+      debugPrint('Block message lookup failed: $e');
+    }
+    if (generation != _generation || _user?.uid != user.uid) return;
+    if (_stage == AuthStage.blocked || _stage == AuthStage.signedOut) return;
+    // The session record no longer matters to a blocked account, and its
+    // ending must not replace the blocked screen with the session one.
+    DeviceSessionService().unwatch();
+    _blockMessage = message ?? '';
+    _set(AuthStage.blocked);
+  }
+
+  /// How long the claim waits for a token that is already on hand before it
+  /// goes without one.
+  static const _tokenGrace = Duration(milliseconds: 300);
+
   /// Claims the account's device session and starts following it. False
   /// when another device holds it, with the stage set to say so.
+  ///
+  /// The push token is optional to the claim: the server keeps it with the
+  /// record so a refused device can ask this one to sign out, and falls back
+  /// to the account's last saved token without it. On iOS it can take
+  /// seconds to arrive (APNs first), which is not worth holding the gate
+  /// for: the claim goes with whatever is on hand, and a token that lands
+  /// later is sent after — a same-device claim merges into the record.
   Future<bool> _claimSession(String uid) async {
     final sessions = DeviceSessionService();
     if (!FeaturesFlags.singleSession.isVisible) return true;
-    final refusal = await sessions.claim(
-      pushToken: await FirebaseService().currentPushToken(),
-    );
+    final generation = _generation;
+    final (:token, :quick) = await tokenWithinGrace();
+    final refusal = await sessions.claim(pushToken: quick);
+    // Signed out (or into another account) while the claim was out: none
+    // of what follows belongs to the account now in front — no session
+    // screen over the login, no listener on the old uid's record.
+    if (generation != _generation) return false;
     if (refusal != null) {
       _sessionRefusal = refusal;
       releaseDeclined.value = false;
@@ -396,8 +529,40 @@ class AuthSessionService extends ChangeNotifier {
         _onSessionEnded,
         onReleaseRequest: (request) => releaseRequest.value = request,
       );
+      if (quick == null) unawaited(_attachPushToken(uid, token, generation));
     }
     return true;
+  }
+
+  /// This device's push token if it is on hand within [_tokenGrace], and
+  /// the lookup itself, for a caller that wants to send it once it lands.
+  /// On iOS the token can wait seconds for APNs; nothing on the session
+  /// screen is held for it.
+  @visibleForTesting
+  Future<({Future<String?> token, String? quick})> tokenWithinGrace() async {
+    final token = pushTokenSource();
+    final quick = await Future.any([
+      token,
+      Future<String?>.delayed(_tokenGrace),
+    ]);
+    return (token: token, quick: quick);
+  }
+
+  /// The token that was not ready when the session was claimed, added to
+  /// the record once it is — unless the account, or this device's hold on
+  /// it, has changed in the meantime.
+  Future<void> _attachPushToken(
+    String uid,
+    Future<String?> token,
+    int generation,
+  ) async {
+    final value = await token;
+    if (value == null || generation != _generation) return;
+    if (_user?.uid != uid || _sessionRefusal != null) return;
+    if (_stage == AuthStage.otherDevice || _stage == AuthStage.sessionExpired) {
+      return;
+    }
+    await DeviceSessionService().claim(pushToken: value);
   }
 
   /// The session document stopped naming this device, while signed in.
@@ -425,10 +590,13 @@ class AuthSessionService extends ChangeNotifier {
       return ReleaseOutcome.failed;
     }
     releaseDeclined.value = false;
+    // Only what is on hand: the server uses it to tell this device from the
+    // holder, and falls back to the account's saved token without it.
+    final (token: _, :quick) = await tokenWithinGrace();
     final outcome = await DeviceSessionService().requestRelease(
       title: t.auth.sessionReleasePushTitle,
       body: t.auth.sessionReleasePushBody,
-      pushToken: await FirebaseService().currentPushToken(),
+      pushToken: quick,
     );
     if (outcome == ReleaseOutcome.free) await retrySession();
     return outcome;
@@ -438,9 +606,10 @@ class AuthSessionService extends ChangeNotifier {
   /// this device becomes the account's session, then the gate opens.
   Future<bool> takeoverSession() async {
     if (_user == null || _stage != AuthStage.otherDevice) return false;
-    final ok = await DeviceSessionService().takeover(
-      pushToken: await FirebaseService().currentPushToken(),
-    );
+    // A token that is not ready yet reaches the record through the claim
+    // [retrySession] makes next, which attaches it once it lands.
+    final (token: _, :quick) = await tokenWithinGrace();
+    final ok = await DeviceSessionService().takeover(pushToken: quick);
     if (ok) await retrySession();
     return ok;
   }
@@ -466,6 +635,8 @@ class AuthSessionService extends ChangeNotifier {
     try {
       version = (await PackageInfo.fromPlatform()).version;
     } catch (_) {}
+    // A merge-set on users/{uid}: mid-deletion it would recreate it.
+    if (AccountDeletionGuard.blocks(uid)) return;
     try {
       await _profiles!.touchDevice(
         uid,
@@ -483,7 +654,8 @@ class AuthSessionService extends ChangeNotifier {
 
   Future<void> _registerPush(String uid) async {
     final token = await FirebaseService().registerPushToken();
-    if (token == null) return;
+    // The token can take seconds (APNs); the account may be going by then.
+    if (token == null || AccountDeletionGuard.blocks(uid)) return;
     try {
       await _profiles!.savePushToken(uid, token);
     } catch (e) {
@@ -534,26 +706,79 @@ class AuthSessionService extends ChangeNotifier {
     if (_stage == AuthStage.needsOnboarding) _set(AuthStage.ready);
   }
 
+  /// Resume-only pulls are spaced at least this far apart: every trip to
+  /// the app switcher used to run the whole collab pull (recipes, then
+  /// books, plans and lists) again. Sign-in and user-triggered refreshes
+  /// are never held back.
+  static const resumeRefreshInterval = Duration(minutes: 2);
+  DateTime? _lastSharedRefresh;
+
+  /// The throttle rule on its own, for tests.
+  @visibleForTesting
+  static bool shouldRefreshOnResume({
+    required DateTime? last,
+    required DateTime now,
+    Duration minInterval = resumeRefreshInterval,
+  }) => last == null || now.difference(last) >= minInterval;
+
   /// Pulls every shared recipe this account is part of into its local caches.
   ///
   /// Runs on sign-in and again on every resume, because a co-editor's change
   /// otherwise reached this device only when the recipe itself was opened —
   /// the list, the book and the planner all kept showing the stale copy. The
   /// recipe box is watched, so the screens update themselves once this writes.
-  Future<void> refreshSharedRecipes() async {
+  ///
+  /// [fromResume] marks the lifecycle call, which is the one that is
+  /// throttled (see [resumeRefreshInterval]).
+  Future<void> refreshSharedRecipes({bool fromResume = false}) async {
     final uid = _user?.uid;
     if (uid == null || _sharing == null || _recipes == null) return;
+    if (fromResume &&
+        !shouldRefreshOnResume(last: _lastSharedRefresh, now: DateTime.now())) {
+      return;
+    }
+    // Stamped before the pull, so a resume during a slow one does not start
+    // a second; a failed pull clears it below and the next resume retries.
+    _lastSharedRefresh = DateTime.now();
+    // The pull reads and writes the scoped boxes over several awaits, and a
+    // sign-out (or a switch to another account) can land in any of them:
+    // what follows must then stop, or the containers pass would run for an
+    // account that has left, into the boxes of the one now signed in.
+    final generation = _generation;
+    final scope = UserScope().generation;
+    bool stale() =>
+        generation != _generation || UserScope().generation != scope;
     try {
       await RefreshCollabRecipesUseCase(sharing: _sharing!, recipes: _recipes!)(
         uid: uid,
       );
+      if (stale()) return;
       // Books and plans after the recipes they point at, so a plan's items
       // resolve against copies that are already current.
       await _containers?.refreshAll(uid: uid);
     } catch (e) {
       // Offline, or the rules refused a query. The caches stay as they are and
-      // the next resume tries again.
+      // the next resume tries again. A failure of the account that left is
+      // not the next account's to retry.
+      if (!stale()) _lastSharedRefresh = null;
       debugPrint('Shared recipe refresh failed: $e');
+    }
+  }
+
+  /// Re-reads the account's mirrored records on a return to the app.
+  ///
+  /// Outside a household nothing listens to the account's own root, and the
+  /// website edits those same records: without this, a recipe changed on
+  /// the web reached the phone only on the next cold start. The boxes are
+  /// watched, so the tabs update themselves; the preferences are held here,
+  /// so they are re-applied when the pass changed them.
+  Future<void> refreshFromCloud() async {
+    final uid = _user?.uid;
+    if (uid == null || _stage != AuthStage.ready) return;
+    final changed = await CloudSyncService().refresh(uid);
+    if (_user?.uid != uid) return;
+    if (changed.contains(CloudSyncService.preferencesCollection)) {
+      await reloadPreferences();
     }
   }
 
@@ -569,6 +794,8 @@ class AuthSessionService extends ChangeNotifier {
   void resetForTest() {
     _subscription?.cancel();
     _subscription = null;
+    _tokenRefreshes?.cancel();
+    _tokenRefreshes = null;
     _splashHold?.cancel();
     _splashHold = null;
     _heldStage = null;
@@ -583,13 +810,35 @@ class AuthSessionService extends ChangeNotifier {
     preferencesListenable.value = null;
     _claimAcknowledgedBy = null;
     _sessionRefusal = null;
+    _lastSharedRefresh = null;
     _onboardingComplete = false;
+    pushTokenSource = () => FirebaseService().currentPushToken();
+    pushTokenRefreshSource = () => FirebaseService().pushTokenRefreshes;
+    refreshClaims = refreshIdTokenClaims;
     onPreferencesLoaded = null;
     _notifications = null;
     _feedback = null;
     _sharing = null;
     _recipes = null;
     _containers = null;
+  }
+
+  /// A signed-in, ready session without Firebase: the account, its profile
+  /// and preferences as given. Tests and the rendered previews only
+  /// (test/store_assets) — it skips every lookup the real sign-in makes.
+  @visibleForTesting
+  void signInForTest(
+    AppUserEntity user, {
+    UserProfileEntity? profile,
+    UserPreferencesEntity? preferences,
+  }) {
+    _user = user;
+    _profile = profile;
+    profileListenable.value = profile;
+    preferencesListenable.value = preferences;
+    _onboardingComplete = preferences?.onboardingComplete ?? true;
+    _stage = AuthStage.ready;
+    notifyListeners();
   }
 
   /// The first stage out of [AuthStage.unknown] waits out [minimumSplash];
@@ -621,6 +870,7 @@ class AuthSessionService extends ChangeNotifier {
   @override
   void dispose() {
     _subscription?.cancel();
+    _tokenRefreshes?.cancel();
     _splashHold?.cancel();
     super.dispose();
   }

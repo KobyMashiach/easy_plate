@@ -1,0 +1,19 @@
+{
+  "id": "00000000-0000-4000-8000-000000000000",
+  "title": "ספר משותף",
+  "recipeRefs": [
+    {
+      "recipeId": "0b8c5b6e-2c1f-4a8e-9a1d-6a2f3c4d5e6f",
+      "order": 0
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T09:00:00.000Z",
+  "coverImageFileName": "cover.jpg",
+  "coverImageStoragePath": "recipe_images/owner-uid/c.jpg",
+  "spine": "rose",
+  "collabId": "collab-book-2",
+  "collabRole": "viewer",
+  "contentLang": "he",
+  "contentVersion": 0
+}

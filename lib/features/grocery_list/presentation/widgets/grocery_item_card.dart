@@ -217,10 +217,29 @@ class _SourceBreakdown extends StatelessWidget {
               onPressed: () => showItemBreakdownSheet(
                 context,
                 item,
-                onAdjustSource: (sourceIndex, amount) =>
-                    bloc.add(.adjustSource(item.id, sourceIndex, amount)),
-                onRemoveSource: (sourceIndex) =>
-                    bloc.add(.removeSource(item.id, sourceIndex)),
+                onAdjustSource: (sourceIndex, source, amount) {
+                  if (bloc.isClosed) return;
+                  bloc.add(
+                    .adjustSource(
+                      item.id,
+                      sourceIndex,
+                      amount,
+                      recipeId: source.recipeId,
+                      label: source.label,
+                    ),
+                  );
+                },
+                onRemoveSource: (sourceIndex, source) {
+                  if (bloc.isClosed) return;
+                  bloc.add(
+                    .removeSource(
+                      item.id,
+                      sourceIndex,
+                      recipeId: source.recipeId,
+                      label: source.label,
+                    ),
+                  );
+                },
                 onChangeUnit: (unit) => bloc.add(.changeUnit(item.id, unit)),
                 onAddBuffer: (amount) => bloc.add(.addBuffer(item.id, amount)),
               ),

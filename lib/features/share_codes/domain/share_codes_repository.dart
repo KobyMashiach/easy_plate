@@ -38,6 +38,13 @@ class ShareCodeRefused implements Exception {
   static const full = 'full';
   static const inHousehold = 'in_household';
   static const notEligible = 'not_eligible';
+
+  /// A shared book or plan carries more recipes than one redeem may copy.
+  static const tooManyRecipes = 'too_many_recipes';
+
+  /// The caller's account was blocked by the administrator (403): every
+  /// action of the function refuses it, redeeming and creating alike.
+  static const accountDisabled = 'account_disabled';
   static const known = {
     invalid,
     notFound,
@@ -49,6 +56,8 @@ class ShareCodeRefused implements Exception {
     full,
     inHousehold,
     notEligible,
+    tooManyRecipes,
+    accountDisabled,
   };
 
   @override

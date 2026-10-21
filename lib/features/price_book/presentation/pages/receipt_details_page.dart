@@ -44,13 +44,19 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
       icon: Icons.storefront_rounded,
     );
     if (name == null || !mounted) return;
-    await AppDialog.busy(
-      context,
-      () => context.read<PriceBookRepository>().renameReceiptStore(
-        widget.receipt.id,
-        name,
-      ),
-    );
+    final repository = context.read<PriceBookRepository>();
+    try {
+      await AppDialog.busy(
+        context,
+        () => repository.renameReceiptStore(widget.receipt.id, name),
+      );
+    } catch (e) {
+      debugPrint('Receipt rename failed: $e');
+      if (mounted) {
+        AppDialog.error(message: t.receipt.renameFailed).show(context);
+      }
+      return;
+    }
     if (!mounted) return;
     setState(() => _store = name);
     _load();
@@ -76,15 +82,24 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
   Future<void> _delete() async {
     final keepRecords = await showDeleteReceiptSheet(context);
     if (keepRecords == null || !mounted) return;
-    await AppDialog.busy(context, () async {
-      await context.read<PriceBookRepository>().deleteReceipt(
-        widget.receipt.id,
-        keepRecords: keepRecords,
-      );
-      for (final f in widget.receipt.imageFileNames) {
-        await ImageStorageService().delete(f);
+    final repository = context.read<PriceBookRepository>();
+    try {
+      await AppDialog.busy(context, () async {
+        await repository.deleteReceipt(
+          widget.receipt.id,
+          keepRecords: keepRecords,
+        );
+        for (final f in widget.receipt.imageFileNames) {
+          await ImageStorageService().delete(f);
+        }
+      });
+    } catch (e) {
+      debugPrint('Receipt delete failed: $e');
+      if (mounted) {
+        AppDialog.error(message: t.receipt.deleteFailed).show(context);
       }
-    });
+      return;
+    }
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -172,7 +187,7 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
                             ),
                           ),
                           Text(
-                            '${line.quantity == line.quantity.roundToDouble() ? line.quantity.round() : line.quantity} × ${priceLabel(line.unitPrice)} ${priceUnitLabel(line.unit)}',
+                            '${line.quantity == line.quantity.roundToDouble() ? line.quantity.round() : line.quantity} × ${priceLabel(line.unitPrice, currency: line.currency)} ${priceUnitLabel(line.unit)}',
                             style: AppTextStyles.labelMd.copyWith(
                               color: AppColors.onSurfaceVariant,
                             ),

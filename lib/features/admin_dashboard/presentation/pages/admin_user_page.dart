@@ -26,7 +26,10 @@ import '../../../admin_billing/domain/entities/user_detail_entities.dart';
 class AdminUserPage extends StatefulWidget {
   final String uid;
   final String name;
-  final VoidCallback? onActions;
+
+  /// The users tab's actions sheet; the page reads the account again when
+  /// it returns, so a block, grant or release shows here at once.
+  final Future<void> Function()? onActions;
 
   /// Tests pass a fake; the app reads Firestore.
   final Future<AdminUserDetail> Function(String uid)? loader;
@@ -52,8 +55,22 @@ class _AdminUserPageState extends State<AdminUserPage> {
 
   Future<void> _refresh() async {
     final next = _load();
-    setState(() => _detail = next);
+    setState(() {
+      _detail = next;
+    });
     await next;
+  }
+
+  Future<void> _runActions() async {
+    final actions = widget.onActions;
+    if (actions == null) return;
+    await actions();
+    if (!mounted) return;
+    // The FutureBuilder shows a failed read; nothing to catch here.
+    final next = _load();
+    setState(() {
+      _detail = next;
+    });
   }
 
   @override
@@ -67,7 +84,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
         trailingIcon: widget.onActions == null
             ? null
             : Icons.more_horiz_rounded,
-        onTrailingTap: widget.onActions,
+        onTrailingTap: widget.onActions == null ? null : _runActions,
       ),
       body: FutureBuilder<AdminUserDetail>(
         future: _detail,
@@ -364,15 +381,27 @@ class _Overview extends StatelessWidget {
     final prefs = detail.preferences;
     final now = DateTime.now();
     final until = AdminUserDetailDataSource.asTime(ent?['premiumUntil']);
+    final from = AdminUserDetailDataSource.asTime(ent?['premiumFrom']);
+    // A grant dated ahead is not Premium yet: free until it starts, the
+    // same rule the accounts tab and the app apply.
+    final pending =
+        ent?['premium'] == true && from != null && from.isAfter(now);
     final premium =
-        ent?['premium'] == true && (until == null || until.isAfter(now));
+        ent?['premium'] == true &&
+        !pending &&
+        (until == null || until.isAfter(now));
+    final planLabel = premium
+        ? t.adminBilling.premium
+        : pending
+        ? '${t.adminBilling.free} · ${t.adminDashboard.grantStarts(date: _date(from))}'
+        : t.adminBilling.free;
     final lastSeen = AdminUserDetailDataSource.asTime(p['lastSeenAt']);
     final online =
         p['online'] == true &&
         lastSeen != null &&
         now.difference(lastSeen) < const Duration(minutes: 3);
     final blocked = detail.status?['disabled'] == true;
-    final photo = p['photoUrl'] as String?;
+    final photo = p['photoUrl'] is String ? p['photoUrl'] as String : null;
 
     int count(String c) => detail.content[c]?.length ?? 0;
 
@@ -394,7 +423,8 @@ class _Overview extends StatelessWidget {
               radius: 30,
               backgroundColor: AppColors.primaryFixed,
               backgroundImage: photo != null && photo.startsWith('http')
-                  ? NetworkImage(photo)
+                  // Decoded at the avatar's size, not the upload's.
+                  ? ResizeImage(NetworkImage(photo), width: 180)
                   : null,
               child: photo == null || !photo.startsWith('http')
                   ? Icon(Icons.person_rounded, color: AppColors.primary)
@@ -406,7 +436,8 @@ class _Overview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    (p['fullName'] as String?)?.trim().isNotEmpty == true
+                    p['fullName'] is String &&
+                            (p['fullName'] as String).trim().isNotEmpty
                         ? p['fullName'] as String
                         : detail.uid,
                     style: AppTextStyles.headlineMd,
@@ -416,11 +447,7 @@ class _Overview extends StatelessWidget {
                     spacing: AppSpacing.xs,
                     runSpacing: AppSpacing.xs,
                     children: [
-                      ClayTag(
-                        label: premium
-                            ? t.adminBilling.premium
-                            : t.adminBilling.free,
-                      ),
+                      ClayTag(label: planLabel),
                       if (p['permission'] == UserPermission.admin.name)
                         ClayTag(
                           label: s.permissionAdmin,
@@ -499,10 +526,7 @@ class _Overview extends StatelessWidget {
         children: ent == null
             ? [Text(s.none, style: AppTextStyles.bodyMd)]
             : [
-                _Field(
-                  s.plan,
-                  premium ? t.adminBilling.premium : t.adminBilling.free,
-                ),
+                _Field(s.plan, planLabel),
                 _Field(s.planSource, _str(ent['source'])),
                 _Field(s.planUntil, _date(until)),
                 if (ent['adminLock'] == true) _Field(s.planLocked, '✓'),
@@ -813,8 +837,8 @@ class _Published extends StatelessWidget {
     final s = t.adminUser;
     String counts(ContentItem i) => [
       s.likes(count: (i.data['likeCount'] as num?)?.toInt() ?? 0),
-      if (i.data['replyCount'] != null)
-        s.replies(count: (i.data['replyCount'] as num).toInt()),
+      if (i.data['replyCount'] case final num replies)
+        s.replies(count: replies.toInt()),
     ].join(' · ');
     return _list([
       _Expandable(

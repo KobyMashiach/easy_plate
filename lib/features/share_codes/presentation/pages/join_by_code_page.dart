@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,11 +10,15 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/services/notifications_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../notifications/domain/repositories/notifications_repository.dart';
+import '../../../notifications/domain/usecases/mark_notification_read_usecase.dart';
 import '../../domain/share_code_entity.dart';
+import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../domain/share_code_service.dart';
 import '../../domain/share_codes_repository.dart';
 
@@ -48,7 +54,9 @@ class _JoinByCodePageState extends State<JoinByCodePage> {
       if (_error != null) setState(() => _error = null);
     });
     if (ShareCodeEntity.parse(widget.initialCode ?? '') != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _join());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _join();
+      });
     }
   }
 
@@ -68,6 +76,9 @@ class _JoinByCodePageState extends State<JoinByCodePage> {
   Future<void> _join() async {
     final uid = AuthSessionService().user?.uid;
     if (uid == null || _busy) return;
+    final inbox = MarkNotificationReadUseCase(
+      context.read<NotificationsRepository>(),
+    );
     setState(() {
       _busy = true;
       _error = null;
@@ -77,6 +88,17 @@ class _JoinByCodePageState extends State<JoinByCodePage> {
         _input.text,
         uid: uid,
       );
+      // Redeeming wrote an invite with its inbox row, and the join just
+      // accepted it: the row is done, not a new unread invite.
+      if (result.inviteId case final inviteId?) {
+        unawaited(
+          inbox.invite(
+            uid,
+            inviteId,
+            inbox: NotificationsService().items.value,
+          ),
+        );
+      }
       if (!mounted) return;
       final dialog = result.alreadyMember
           ? AppDialog.info(message: t.shareCode.alreadyMember)
@@ -97,12 +119,21 @@ class _JoinByCodePageState extends State<JoinByCodePage> {
           ShareCodeRefused.full => t.household.full,
           ShareCodeRefused.inHousehold => t.household.inHousehold,
           ShareCodeRefused.notEligible => t.household.notEligibleCode,
+          ShareCodeRefused.tooManyRecipes => t.shareCode.tooManyRecipes,
+          ShareCodeRefused.accountDisabled => t.auth.blockedBody,
           _ => t.shareCode.invalid,
         },
       );
     } catch (e) {
       debugPrint('Join by code failed: $e');
-      if (mounted) setState(() => _error = t.shareCode.failed);
+      if (!mounted) return;
+      // The code was redeemed and the join is queued: not a failure to
+      // retry, the copy follows with the next refresh online.
+      setState(
+        () => _error = RecipeSharingRepository.isAcceptQueued(e)
+            ? t.sharing.acceptQueued
+            : t.shareCode.failed,
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }

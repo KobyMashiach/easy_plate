@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
@@ -10,6 +11,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:uuid/uuid.dart';
 
 import '../constants/api_config.dart';
+import '../hive/user_scope.dart';
 import '../network/ai_auth_header.dart';
 import '../network/http_calls.dart';
 import 'device_locale_store.dart';
@@ -53,6 +55,49 @@ enum ReleaseOutcome {
   failed,
 }
 
+/// Where this install's session secret is kept, per account. The device
+/// mints it; the server keeps only its hash.
+///
+/// The secret is what makes this install "the same device" to the server
+/// once the record carries its hash — the ids alone are readable by the
+/// account and could be replayed from another phone. It lives in the
+/// device-wide box (not the per-account one, which a sign-out deletes
+/// before the next claim), under `session_secret_<uid>`, inside the app's
+/// sandbox; it goes with an uninstall, which the server answers with the
+/// SMS takeover.
+abstract class SessionSecretStore {
+  Future<String?> read(String uid);
+  Future<void> write(String uid, String secret);
+
+  /// Drops every account's secret except [keep]'s (all when null).
+  Future<void> clear({String? keep});
+}
+
+class HiveSessionSecretStore implements SessionSecretStore {
+  static const prefix = 'session_secret_';
+
+  Future<Box<String>> _open() =>
+      Hive.openBox<String>(DeviceLocaleStore.boxName);
+
+  @override
+  Future<String?> read(String uid) async => (await _open()).get('$prefix$uid');
+
+  @override
+  Future<void> write(String uid, String secret) async =>
+      (await _open()).put('$prefix$uid', secret);
+
+  @override
+  Future<void> clear({String? keep}) async {
+    final box = await _open();
+    final stale = [
+      for (final key in box.keys)
+        if (key is String && key.startsWith(prefix) && key != '$prefix$keep')
+          key,
+    ];
+    if (stale.isNotEmpty) await box.deleteAll(stale);
+  }
+}
+
 /// One device per account, a month at a time.
 ///
 /// The device carries an id minted once per install (device-wide Hive box,
@@ -90,6 +135,16 @@ class DeviceSessionService {
   /// review account): there is no record to follow.
   bool get exempt => _exempt;
 
+  SessionSecretStore _secrets = HiveSessionSecretStore();
+  bool? _enabledOverride;
+
+  /// The account the secret belongs to: the scope is switched to the
+  /// signed-in account before any claim, and still on it during release.
+  @visibleForTesting
+  String? Function() uidSource = () => UserScope().uid;
+
+  bool get _enabled => _enabledOverride ?? ApiConfig.usesProxy;
+
   /// Tests only: swap the network and the database.
   @visibleForTesting
   void configure({
@@ -97,7 +152,11 @@ class DeviceSessionService {
     FirebaseFirestore? firestore,
     String? deviceId,
     String? hardwareId,
+    SessionSecretStore? secrets,
+    bool? enabled,
   }) {
+    if (secrets != null) _secrets = secrets;
+    _enabledOverride = enabled;
     _calls = calls;
     _firestore = firestore;
     _deviceId = deviceId;
@@ -163,7 +222,12 @@ class DeviceSessionService {
   /// it; the refusal when another device does. A network failure counts as
   /// held: an offline phone must still open the account it already has.
   Future<SessionRefusal?> claim({String? pushToken}) async {
-    if (!ApiConfig.usesProxy) return null;
+    if (!_enabled) return null;
+    final uid = uidSource();
+    // Another account's secret (a switch without a clean sign-out) is of
+    // no use to this one.
+    await _guarded(() => _secrets.clear(keep: uid));
+    final secret = await _secretToSend(uid);
     try {
       final response = await _http.post(
         '',
@@ -175,6 +239,8 @@ class DeviceSessionService {
           // Kept with the session, so a refused device can ask exactly this
           // one to sign out.
           'pushToken': ?pushToken,
+          if (secret != null) 'wantsSecret': true,
+          'secret': ?secret,
         },
       );
       final data = response?.data;
@@ -189,6 +255,10 @@ class DeviceSessionService {
       }
       final refusal = data['refusal'];
       if (refusal is! Map) return null;
+      // Refused — another device, or this phone after a reinstall lost its
+      // secret: the session screen offers the SMS takeover, which binds the
+      // record to this install's secret. The secret is kept: a retry, or
+      // that takeover, presents the same one.
       final since = refusal['since'];
       return SessionRefusal(
         platform: (refusal['platform'] as String?) ?? 'other',
@@ -209,7 +279,7 @@ class DeviceSessionService {
     required String body,
     String? pushToken,
   }) async {
-    if (!ApiConfig.usesProxy) return ReleaseOutcome.failed;
+    if (!_enabled) return ReleaseOutcome.failed;
     try {
       final response = await _http.post(
         '',
@@ -221,6 +291,7 @@ class DeviceSessionService {
           'title': title,
           'body': body,
           'pushToken': ?pushToken,
+          'secret': ?await _secret(uidSource()),
         },
       );
       final data = response?.data;
@@ -244,7 +315,8 @@ class DeviceSessionService {
   /// this device takes the session and the other one is signed out by its
   /// own watcher. False when the server refused or could not be reached.
   Future<bool> takeover({String? pushToken}) async {
-    if (!ApiConfig.usesProxy) return false;
+    if (!_enabled) return false;
+    final secret = await _secretToSend(uidSource());
     try {
       final response = await _http.post(
         '',
@@ -254,6 +326,8 @@ class DeviceSessionService {
           'hardwareId': ?await hardwareId(),
           'platform': platform,
           'pushToken': ?pushToken,
+          if (secret != null) 'wantsSecret': true,
+          'secret': ?secret,
         },
       );
       final data = response?.data;
@@ -266,11 +340,15 @@ class DeviceSessionService {
 
   /// From the holder: stays signed in, and the asker is told.
   Future<void> declineRelease() async {
-    if (!ApiConfig.usesProxy) return;
+    if (!_enabled) return;
     try {
       await _http.post(
         '',
-        data: {'action': 'declineRelease', 'deviceId': await deviceId()},
+        data: {
+          'action': 'declineRelease',
+          'deviceId': await deviceId(),
+          'secret': ?await _secret(uidSource()),
+        },
       );
     } catch (e) {
       debugPrint('Release decline failed: $e');
@@ -303,7 +381,10 @@ class DeviceSessionService {
         onDeclined();
         return;
       }
-      _scheduleTakeover((request['takeoverAt'] as Timestamp?)?.toDate(), onFree);
+      _scheduleTakeover(
+        (request['takeoverAt'] as Timestamp?)?.toDate(),
+        onFree,
+      );
     }, onError: (Object e) => debugPrint('Release wait failed: $e'));
   }
 
@@ -356,7 +437,7 @@ class DeviceSessionService {
   /// Frees the account's session if this device holds it. Best effort,
   /// run before the Firebase sign-out so the token is still valid.
   Future<void> release() async {
-    if (!ApiConfig.usesProxy) return;
+    if (!_enabled) return;
     try {
       await _http.post(
         '',
@@ -364,6 +445,7 @@ class DeviceSessionService {
           'action': 'release',
           'deviceId': await deviceId(),
           'hardwareId': ?await hardwareId(),
+          'secret': ?await _secret(uidSource()),
         },
       );
     } catch (e) {
@@ -416,6 +498,54 @@ class DeviceSessionService {
     );
   }
 
+  /// The secret this install holds for [uid], or null. Never throws: a
+  /// store that cannot be read is a claim without one, which the server
+  /// answers like any other.
+  Future<String?> _secret(String? uid) async {
+    if (uid == null) return null;
+    try {
+      return await _secrets.read(uid);
+    } catch (e) {
+      debugPrint('Session secret read failed: $e');
+      return null;
+    }
+  }
+
+  /// For a claim or a takeover: the secret this install holds for [uid],
+  /// minted (32 random bytes, base64url) and stored *before* it is sent the
+  /// first time, so an answer lost on the way back cannot leave the server
+  /// holding a hash this phone never kept — a retry presents the same one.
+  /// Null when it could not be stored: the request then goes without one
+  /// (the ids still match on a record that has no hash).
+  Future<String?> _secretToSend(String? uid) async {
+    if (uid == null) return null;
+    try {
+      final held = await _secrets.read(uid);
+      if (held != null && held.isNotEmpty) return held;
+      final random = Random.secure();
+      final minted = base64UrlEncode([
+        for (var i = 0; i < 32; i++) random.nextInt(256),
+      ]).replaceAll('=', '');
+      await _secrets.write(uid, minted);
+      return await _secrets.read(uid) == minted ? minted : null;
+    } catch (e) {
+      debugPrint('Session secret store failed: $e');
+      return null;
+    }
+  }
+
+  Future<void> _guarded(Future<void> Function() run) async {
+    try {
+      await run();
+    } catch (e) {
+      debugPrint('Session secret store failed: $e');
+    }
+  }
+
+  /// On sign-out: the session was released (or is abandoned), and the next
+  /// claim on this device starts a record with a fresh secret.
+  Future<void> forgetSecrets() => _guarded(() => _secrets.clear());
+
   /// Pure: whether the document means this device is out, and why.
   static SessionEnd? evaluate({
     required bool exists,
@@ -447,6 +577,9 @@ class DeviceSessionService {
     unwatch();
     _calls = null;
     _firestore = null;
+    _secrets = HiveSessionSecretStore();
+    _enabledOverride = null;
+    uidSource = () => UserScope().uid;
     _deviceId = null;
     _hardwareId = null;
     _hardwareRead = false;

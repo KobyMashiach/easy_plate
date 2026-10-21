@@ -1,0 +1,42 @@
+{
+  "id": "a551574a-0000-4000-8000-000000000001",
+  "title": "מרק עדשים מהיר",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 25,
+  "ingredients": [
+    {
+      "name": "עדשים כתומות",
+      "amount": 1.5,
+      "unit": "cup"
+    },
+    {
+      "name": "בצל",
+      "amount": null,
+      "unit": "unspecified"
+    }
+  ],
+  "steps": [
+    "מטגנים בצל",
+    "מוסיפים עדשים ומבשלים 20 דקות"
+  ],
+  "dietaryTags": [
+    "vegan",
+    "vegetarian"
+  ],
+  "sourceChannel": "manual",
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T10:15:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [],
+  "mayContain": [],
+  "servings": 4,
+  "nutrition": null,
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

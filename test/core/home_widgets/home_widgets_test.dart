@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:convert';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
@@ -34,10 +36,35 @@ class _Lists implements GroceryListsRepository {
   @override
   Future<GroceryListEntity?> getListById(String id) async => stored[id];
   @override
-  Future<void> saveList(GroceryListEntity list, {bool stampLanguage = true}) async =>
-      stored[list.id] = list;
+  Future<void> saveList(
+    GroceryListEntity list, {
+    bool stampLanguage = true,
+  }) async => stored[list.id] = list;
   @override
   Future<void> deleteList(String id) async => stored.remove(id);
+}
+
+/// Hands out the lists, then has a concurrent save land on `l1`.
+class _RacingLists extends _Lists {
+  _RacingLists(super.lists);
+  @override
+  Future<List<GroceryListEntity>> getLists() async {
+    final snapshot = stored.values.toList();
+    final l1 = stored['l1']!;
+    stored['l1'] = l1.copyWith(
+      items: [
+        ...l1.items,
+        const GroceryItemEntity(
+          id: 'synced',
+          name: 'Synced',
+          unit: MeasurementUnit.unit,
+          sources: [],
+          category: '',
+        ),
+      ],
+    );
+    return snapshot;
+  }
 }
 
 class _Plans implements MealPlansRepository {
@@ -48,7 +75,10 @@ class _Plans implements MealPlansRepository {
   @override
   Future<MealPlanEntity?> getPlanById(String id) async => null;
   @override
-  Future<void> savePlan(MealPlanEntity plan, {bool stampLanguage = true}) async {}
+  Future<void> savePlan(
+    MealPlanEntity plan, {
+    bool stampLanguage = true,
+  }) async {}
   @override
   Future<void> deletePlan(String id) async {}
 }
@@ -61,19 +91,25 @@ class _Recipes implements RecipesRepository {
   @override
   Future<RecipeEntity?> getRecipeById(String id) async => null;
   @override
-  Future<void> saveRecipe(RecipeEntity recipe, {bool stampLanguage = true}) async {}
+  Future<void> saveRecipe(
+    RecipeEntity recipe, {
+    bool stampLanguage = true,
+  }) async {}
   @override
   Future<void> deleteRecipe(String id) async {}
   @override
-  Future<RecipeEntity> readyForSharing(RecipeEntity recipe, {bool persist = true}) async =>
-      recipe;
+  Future<RecipeEntity> readyForSharing(
+    RecipeEntity recipe, {
+    bool persist = true,
+  }) async => recipe;
 }
 
 GroceryListEntity _list({String id = 'l1', List<GroceryItemEntity>? items}) =>
     GroceryListEntity(
       id: id,
       name: 'Shabbat',
-      items: items ??
+      items:
+          items ??
           const [
             GroceryItemEntity(
               id: 'a',
@@ -167,9 +203,15 @@ void main() {
     });
 
     test('a signed-out snapshot carries no account data', () {
-      final json = jsonDecode(
-        HomeWidgetsSnapshot.signedOut(language: 'he', rtl: true, dark: true).encode(),
-      ) as Map<String, Object?>;
+      final json =
+          jsonDecode(
+                HomeWidgetsSnapshot.signedOut(
+                  language: 'he',
+                  rtl: true,
+                  dark: true,
+                ).encode(),
+              )
+              as Map<String, Object?>;
       expect(json['signedIn'], isFalse);
       expect(json['lists'], isEmpty);
       expect(json['plans'], isEmpty);
@@ -178,8 +220,14 @@ void main() {
     });
 
     test('weekday index is Sunday-based like ShoppingDay', () {
-      expect(HomeWidgetsSnapshot.weekdayIndex(DateTime(2026, 10, 4)), 0); // Sunday
-      expect(HomeWidgetsSnapshot.weekdayIndex(DateTime(2026, 10, 10)), 6); // Saturday
+      expect(
+        HomeWidgetsSnapshot.weekdayIndex(DateTime(2026, 10, 4)),
+        0,
+      ); // Sunday
+      expect(
+        HomeWidgetsSnapshot.weekdayIndex(DateTime(2026, 10, 10)),
+        6,
+      ); // Saturday
       expect(HomeWidgetsSnapshot.weekdayIndex(DateTime(2026, 10, 7)), 3);
     });
 
@@ -195,7 +243,10 @@ void main() {
       expect(back.planId, 'p1');
       expect(back.voice, isTrue);
       expect(back.appearance, HomeWidgetAppearance.dark);
-      expect(HomeWidgetDefaults.fromJson(const {}).appearance, HomeWidgetAppearance.app);
+      expect(
+        HomeWidgetDefaults.fromJson(const {}).appearance,
+        HomeWidgetAppearance.app,
+      );
       expect(defaults.copyWith(clearListId: true).listId, isNull);
     });
   });
@@ -203,7 +254,9 @@ void main() {
   group('HomeWidgetLaunch', () {
     test('parses the widget scheme and ignores everything else', () {
       final launch = HomeWidgetLaunch.parse(
-        Uri.parse('easyplate://open/widget/assistant?voice=1&prompt=What%20now'),
+        Uri.parse(
+          'easyplate://open/widget/assistant?voice=1&prompt=What%20now',
+        ),
       )!;
       expect(launch.action, HomeWidgetAction.assistant);
       expect(launch.voice, isTrue);
@@ -216,29 +269,52 @@ void main() {
       expect(grocery.listId, 'l1');
       expect(grocery.add, isTrue);
 
-      final plan = HomeWidgetLaunch.parse(Uri.parse('easyplate://widget/plan'))!;
+      final plan = HomeWidgetLaunch.parse(
+        Uri.parse('easyplate://widget/plan'),
+      )!;
       expect(plan.action, HomeWidgetAction.plan);
       expect(plan.planId, isNull);
 
-      expect(HomeWidgetLaunch.parse(Uri.parse('easyplate://open/s/ABC')), isNull);
-      expect(HomeWidgetLaunch.parse(Uri.parse('/widget/plan'))?.action, HomeWidgetAction.plan);
-      expect(HomeWidgetLaunch.parse(Uri.parse('easyplate://widget/nope')), isNull);
+      expect(
+        HomeWidgetLaunch.parse(Uri.parse('easyplate://open/s/ABC')),
+        isNull,
+      );
+      expect(
+        HomeWidgetLaunch.parse(Uri.parse('/widget/plan'))?.action,
+        HomeWidgetAction.plan,
+      );
+      expect(
+        HomeWidgetLaunch.parse(Uri.parse('easyplate://widget/nope')),
+        isNull,
+      );
       expect(HomeWidgetLaunch.parse(Uri.parse('/home')), isNull);
     });
 
     test('the pending mailbox holds the latest launch until taken', () {
       PendingHomeWidgetLaunch.capture(Uri.parse('easyplate://widget/settings'));
-      expect(PendingHomeWidgetLaunch.notifier.value?.action, HomeWidgetAction.settings);
+      expect(
+        PendingHomeWidgetLaunch.notifier.value?.action,
+        HomeWidgetAction.settings,
+      );
       expect(PendingHomeWidgetLaunch.take()?.action, HomeWidgetAction.settings);
       expect(PendingHomeWidgetLaunch.take(), isNull);
     });
   });
 
   test('the app\'s own links are never taken for a shared recipe source', () {
-    expect(ShareIntentService.isOwnLink('easyplate://open/widget/assistant?voice=1'), isTrue);
+    expect(
+      ShareIntentService.isOwnLink('easyplate://open/widget/assistant?voice=1'),
+      isTrue,
+    );
     expect(ShareIntentService.isOwnLink('easyplate://open/s/7K3M9QX2'), isTrue);
-    expect(ShareIntentService.isOwnLink('https://aieasyplate.app/s/7K3M9QX2'), isTrue);
-    expect(ShareIntentService.isOwnLink('https://www.youtube.com/watch?v=x'), isFalse);
+    expect(
+      ShareIntentService.isOwnLink('https://aieasyplate.app/s/7K3M9QX2'),
+      isTrue,
+    );
+    expect(
+      ShareIntentService.isOwnLink('https://www.youtube.com/watch?v=x'),
+      isFalse,
+    );
     expect(ShareIntentService.isOwnLink('2 eggs, 1 cup flour'), isFalse);
   });
 
@@ -272,7 +348,13 @@ void main() {
 
     test('toggle sets the line to the state the widget asked for', () async {
       await service.applyPending(
-        {'id': 'q2', 'type': 'toggle', 'listId': 'l1', 'itemId': 'a', 'checked': true},
+        {
+          'id': 'q2',
+          'type': 'toggle',
+          'listId': 'l1',
+          'itemId': 'a',
+          'checked': true,
+        },
         lists,
       );
       expect(lists.stored['l1']!.items.first.isChecked, isTrue);
@@ -284,26 +366,117 @@ void main() {
       expect(lists.stored['l1']!.items[1].isChecked, isFalse);
     });
 
-    test('a missing list falls back to the oldest, and none at all creates one', () async {
-      await service.applyPending(
-        {'id': 'q4', 'type': 'add', 'listId': 'gone', 'name': 'Eggs'},
-        lists,
-      );
-      expect(lists.stored['l1']!.items.map((i) => i.name), contains('Eggs'));
+    test(
+      'a missing list falls back to the oldest, and none at all creates one',
+      () async {
+        await service.applyPending(
+          {'id': 'q4', 'type': 'add', 'listId': 'gone', 'name': 'Eggs'},
+          lists,
+        );
+        expect(lists.stored['l1']!.items.map((i) => i.name), contains('Eggs'));
 
-      final empty = _Lists();
-      await service.applyPending(
-        {'id': 'q5', 'type': 'add', 'name': 'Eggs'},
-        empty,
-      );
-      expect(empty.stored.keys.single, 'primary');
-      expect(empty.stored['primary']!.items.single.name, 'Eggs');
-    });
+        final empty = _Lists();
+        await service.applyPending(
+          {'id': 'q5', 'type': 'add', 'name': 'Eggs'},
+          empty,
+        );
+        expect(empty.stored.keys.single, 'primary');
+        expect(empty.stored['primary']!.items.single.name, 'Eggs');
+      },
+    );
+
+    test(
+      'the change lands on the list as stored at save time, not as resolved',
+      () async {
+        // Another save (a sync, the groceries tab) lands while the list is
+        // being resolved: the widget's line is added to that copy.
+        final racing = _RacingLists([_list()]);
+        await service.applyPending(
+          {'id': 'q8', 'type': 'add', 'listId': 'gone', 'name': 'Eggs'},
+          racing,
+        );
+        final names = racing.stored['l1']!.items.map((i) => i.name);
+        expect(names, containsAll(['Synced', 'Eggs']));
+        expect(names, hasLength(4));
+      },
+    );
+
+    test(
+      'a view-only shared list is never written: the line goes to the first editable one',
+      () async {
+        final viewer = _list(id: 'v1').copyWith(collabRole: CollabRole.viewer);
+        final both = _Lists([viewer, _list()]);
+        // Named explicitly: refused, falls through to the editable list.
+        await both.saveList(viewer);
+        await service.applyPending(
+          {'id': 'q9', 'type': 'add', 'listId': 'v1', 'name': 'Eggs'},
+          both,
+        );
+        expect(both.stored['v1']!.items.length, 2);
+        expect(both.stored['l1']!.items.map((i) => i.name), contains('Eggs'));
+        // A toggle on the viewer list changes nothing.
+        await service.applyPending(
+          {
+            'id': 'q10',
+            'type': 'toggle',
+            'listId': 'v1',
+            'itemId': 'a',
+            'checked': true,
+          },
+          both,
+        );
+        expect(both.stored['v1']!.items.first.isChecked, isFalse);
+      },
+    );
 
     test('blank names and unknown types change nothing', () async {
-      await service.applyPending({'id': 'q6', 'type': 'add', 'listId': 'l1', 'name': '  '}, lists);
-      await service.applyPending({'id': 'q7', 'type': 'rename', 'listId': 'l1'}, lists);
+      await service.applyPending({
+        'id': 'q6',
+        'type': 'add',
+        'listId': 'l1',
+        'name': '  ',
+      }, lists);
+      await service.applyPending({
+        'id': 'q7',
+        'type': 'rename',
+        'listId': 'l1',
+      }, lists);
       expect(lists.stored['l1']!.items.length, 2);
     });
   });
+
+  test('a nudge during a drain runs one more pass, not none', () async {
+    final channel = _QueueChannel();
+    final service = HomeWidgetsService.forTest(
+      channel: channel,
+      groceries: _Lists([_list()]),
+      plans: _Plans(),
+      recipes: _Recipes(),
+    )..markReadyForTest();
+
+    channel.gate = Completer<void>();
+    final first = service.drain();
+    await pumpEventQueue();
+    // The second quick-add's nudge lands while the first pass reads.
+    await service.drain();
+    expect(channel.reads, 1);
+
+    channel.gate!.complete();
+    channel.gate = null;
+    await first;
+    await pumpEventQueue();
+    expect(channel.reads, 2);
+  });
+}
+
+class _QueueChannel extends HomeWidgetsChannel {
+  int reads = 0;
+  Completer<void>? gate;
+
+  @override
+  Future<List<Map<String, Object?>>> readPending() async {
+    reads++;
+    if (gate case final held?) await held.future;
+    return const [];
+  }
 }

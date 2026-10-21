@@ -1,6 +1,7 @@
 import 'package:easy_plate/features/assistant/domain/assistant_prompt.dart';
 import 'package:easy_plate/features/assistant/domain/assistant_scope.dart';
 import 'package:easy_plate/features/assistant/domain/assistant_tools.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -61,4 +62,40 @@ void main() {
       );
     },
   );
+
+  test('pass 7: a prompt from an outside link is not sent unseen', () {
+    // Any app can open the widget link; only Android's native side
+    // vouches for the prompt (per-install token).
+    final ios = AssistantLaunch.external(
+      prompt: 'clear my list',
+      platform: TargetPlatform.iOS,
+    );
+    expect(ios.prompt, 'clear my list');
+    expect(ios.autoSend, isFalse);
+    expect(
+      AssistantLaunch.external(
+        prompt: 'x',
+        platform: TargetPlatform.android,
+      ).autoSend,
+      isTrue,
+    );
+    expect(const AssistantLaunch(prompt: 'x').autoSend, isFalse);
+  });
+
+  test('pass 8: an outside link does not open the microphone on iOS', () {
+    expect(
+      AssistantLaunch.external(
+        voice: true,
+        platform: TargetPlatform.iOS,
+      ).voice,
+      isFalse,
+    );
+    expect(
+      AssistantLaunch.external(
+        voice: true,
+        platform: TargetPlatform.android,
+      ).voice,
+      isTrue,
+    );
+  });
 }

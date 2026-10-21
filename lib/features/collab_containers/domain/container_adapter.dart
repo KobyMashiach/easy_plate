@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../core/constants/app_enums.dart';
+import '../../community/data/doc_fields.dart';
 import '../../grocery_list/domain/entities/grocery_item_entity.dart';
 import '../../grocery_list/domain/entities/grocery_item_source_entity.dart';
 import '../../grocery_list/domain/entities/grocery_list_entity.dart';
@@ -45,6 +46,11 @@ abstract class ContainerAdapter<T> {
   /// The shared document laid over [local] — its id, creation time and
   /// whatever is private to this copy are kept; everything shared is taken
   /// from the document. A null [local] builds a fresh item.
+  ///
+  /// [recipeIdByCollabId] covers every local recipe with a collab id (see
+  /// RecipeLinker.materialize). A recipe of [local] missing from its values
+  /// was never in the document (it could not be shared), so no member can
+  /// have removed it: [local] keeps it.
   T decode(
     CollabContainerEntity container, {
     required T? local,
@@ -55,6 +61,10 @@ abstract class ContainerAdapter<T> {
   Future<List<T>> all();
   Future<T?> byId(String id);
   Future<void> save(T item);
+
+  /// The item with whatever it carries for other accounts in place — a
+  /// book's cover uploaded — before its first document is written.
+  Future<T> readyForSharing(T item) async => item;
 
   bool isShared(T item) => collabIdOf(item) != null;
   bool isMine(T item) =>
@@ -71,11 +81,11 @@ List<Map<String, dynamic>> _encodeIngredients(
 ];
 
 List<RecipeIngredientEntity> _decodeIngredients(Object? raw) => [
-  for (final item in (raw as List?) ?? const [])
+  for (final item in docList(raw))
     if (item is Map)
       RecipeIngredientEntity(
-        name: (item['name'] as String?) ?? '',
-        amount: (item['amount'] as num?)?.toDouble(),
+        name: docString(item['name']),
+        amount: docDouble(item['amount']),
         unit: MeasurementUnit.values.firstWhere(
           (u) => u.name == item['unit'],
           orElse: () => MeasurementUnit.unspecified,
@@ -141,16 +151,21 @@ class BookContainerAdapter extends ContainerAdapter<RecipeBookEntity> {
     required String uid,
   }) {
     final content = container.content;
-    final remotePath = content['coverImageStoragePath'] as String?;
-    final refs = <BookRecipeRefEntity>[];
-    for (final raw in (content['recipes'] as List?) ?? const []) {
+    final remotePath = docStringOrNull(content['coverImageStoragePath']);
+    final linked = recipeIdByCollabId.values.toSet();
+    final refs = <BookRecipeRefEntity>[
+      // This copy's own recipes that never made it into the document.
+      for (final ref in local?.recipeRefs ?? const <BookRecipeRefEntity>[])
+        if (!linked.contains(ref.recipeId)) ref,
+    ];
+    for (final raw in docList(content['recipes'])) {
       if (raw is! Map) continue;
       final localId = recipeIdByCollabId[raw['collabId']];
       if (localId == null) continue;
       refs.add(
         BookRecipeRefEntity(
           recipeId: localId,
-          order: (raw['order'] as num?)?.toInt() ?? refs.length,
+          order: docInt(raw['order']) ?? refs.length,
         ),
       );
     }
@@ -162,13 +177,17 @@ class BookContainerAdapter extends ContainerAdapter<RecipeBookEntity> {
       // The shared cover wins when it has travelled; one this copy picked on
       // its own is kept when the document carries none — as with a recipe.
       coverImageFileName: remotePath != null
-          ? content['coverImageFileName'] as String?
+          ? docStringOrNull(content['coverImageFileName'])
           : local?.coverImageFileName,
       coverImageStoragePath: remotePath ?? local?.coverImageStoragePath,
-      spine: BookSpine.fromName(content['spine'] as String?) ?? local?.spine,
+      spine:
+          BookSpine.fromName(docStringOrNull(content['spine'])) ?? local?.spine,
       collabId: container.id,
       collabRole: container.roleOf(uid),
       createdAt: local?.createdAt ?? DateTime.now(),
+      // As the grocery list below: this copy's translation stamp survives.
+      contentLang: local?.contentLang,
+      contentVersion: local?.contentVersion ?? 0,
     );
   }
 
@@ -178,6 +197,12 @@ class BookContainerAdapter extends ContainerAdapter<RecipeBookEntity> {
   Future<RecipeBookEntity?> byId(String id) => books.getBookById(id);
   @override
   Future<void> save(RecipeBookEntity item) => books.saveBook(item);
+
+  /// A cover picked seconds ago may still be uploading; without the path
+  /// the members' copies would stay coverless.
+  @override
+  Future<RecipeBookEntity> readyForSharing(RecipeBookEntity item) =>
+      books.readyForSharing(item);
 }
 
 class PlanContainerAdapter extends ContainerAdapter<MealPlanEntity> {
@@ -253,24 +278,39 @@ class PlanContainerAdapter extends ContainerAdapter<MealPlanEntity> {
     required Map<String, String> recipeIdByCollabId,
     required String uid,
   }) {
+    final linked = recipeIdByCollabId.values.toSet();
+    // This copy's items pointing at a recipe that never made it into the
+    // document: it went across as a quick entry, and comes back as the
+    // recipe while the document still has it as one.
+    final unlinked = {
+      for (final meal in local?.meals ?? const <MealEntity>[])
+        for (final item in meal.items)
+          if (item.recipeId case final id? when !linked.contains(id))
+            item.id: item,
+    };
     final meals = <MealEntity>[];
-    for (final raw in (container.content['meals'] as List?) ?? const []) {
+    for (final raw in docList(container.content['meals'])) {
       if (raw is! Map) continue;
       final items = <MealItemEntity>[];
-      for (final rawItem in (raw['items'] as List?) ?? const []) {
+      for (final rawItem in docList(raw['items'])) {
         if (rawItem is! Map) continue;
+        if (unlinked[rawItem['id']] case final own?
+            when rawItem['recipeCollabId'] == null) {
+          items.add(own);
+          continue;
+        }
         final localId = recipeIdByCollabId[rawItem['recipeCollabId']];
         items.add(
           localId != null
               ? MealItemEntity(
-                  id: (rawItem['id'] as String?) ?? _uuid.v4(),
+                  id: docStringOrNull(rawItem['id']) ?? _uuid.v4(),
                   recipeId: localId,
                 )
               : MealItemEntity(
-                  id: (rawItem['id'] as String?) ?? _uuid.v4(),
+                  id: docStringOrNull(rawItem['id']) ?? _uuid.v4(),
                   freeText:
-                      (rawItem['freeText'] as String?) ??
-                      (rawItem['label'] as String?) ??
+                      docStringOrNull(rawItem['freeText']) ??
+                      docStringOrNull(rawItem['label']) ??
                       '',
                   ingredients: _decodeIngredients(rawItem['ingredients']),
                 ),
@@ -278,10 +318,11 @@ class PlanContainerAdapter extends ContainerAdapter<MealPlanEntity> {
       }
       meals.add(
         MealEntity(
-          id: (raw['id'] as String?) ?? _uuid.v4(),
-          weekday: (raw['weekday'] as num?)?.toInt() ?? 0,
-          name: (raw['name'] as String?) ?? '',
-          order: (raw['order'] as num?)?.toInt() ?? meals.length,
+          id: docStringOrNull(raw['id']) ?? _uuid.v4(),
+          // 0–6 everywhere else; an index past it crashed the week views.
+          weekday: (docInt(raw['weekday']) ?? 0).clamp(0, 6),
+          name: docString(raw['name']),
+          order: docInt(raw['order']) ?? meals.length,
           items: items,
         ),
       );
@@ -293,6 +334,8 @@ class PlanContainerAdapter extends ContainerAdapter<MealPlanEntity> {
       collabId: container.id,
       collabRole: container.roleOf(uid),
       createdAt: local?.createdAt ?? DateTime.now(),
+      contentLang: local?.contentLang,
+      contentVersion: local?.contentVersion ?? 0,
     );
   }
 
@@ -368,28 +411,28 @@ class GroceryListContainerAdapter extends ContainerAdapter<GroceryListEntity> {
     required String uid,
   }) {
     final items = <GroceryItemEntity>[];
-    for (final raw in (container.content['items'] as List?) ?? const []) {
+    for (final raw in docList(container.content['items'])) {
       if (raw is! Map) continue;
       final sources = <GroceryItemSourceEntity>[];
-      for (final rawSource in (raw['sources'] as List?) ?? const []) {
+      for (final rawSource in docList(raw['sources'])) {
         if (rawSource is! Map) continue;
         sources.add(
           GroceryItemSourceEntity(
-            label: (rawSource['label'] as String?) ?? '',
-            amount: (rawSource['amount'] as num?)?.toDouble() ?? 0,
+            label: docString(rawSource['label']),
+            amount: docDouble(rawSource['amount']) ?? 0,
           ),
         );
       }
       items.add(
         GroceryItemEntity(
-          id: (raw['id'] as String?) ?? _uuid.v4(),
-          name: (raw['name'] as String?) ?? '',
+          id: docStringOrNull(raw['id']) ?? _uuid.v4(),
+          name: docString(raw['name']),
           unit: MeasurementUnit.values.firstWhere(
             (u) => u.name == raw['unit'],
             orElse: () => MeasurementUnit.unspecified,
           ),
           sources: sources,
-          category: (raw['category'] as String?) ?? '',
+          category: docString(raw['category']),
           isChecked: raw['isChecked'] == true,
           isAdHoc: raw['isAdHoc'] == true,
         ),

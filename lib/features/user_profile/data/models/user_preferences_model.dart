@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../community/data/doc_fields.dart';
 import '../../domain/entities/user_preferences_entity.dart';
 
 part 'user_preferences_model.freezed.dart';
@@ -48,7 +49,59 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
-      _$UserPreferencesModelFromJson(json);
+      _$UserPreferencesModelFromJson(tolerantJson(json));
+
+  static const _flags = [
+    'soundEffectsEnabled',
+    'onboardingComplete',
+    'fastPageTurnEnabled',
+    'walkthroughSeen',
+    'communityPricesEnabled',
+    'pushEnabled',
+    'notifyRepliesOnMyPosts',
+    'notifyRepliesOnThreads',
+    'notifyShareInvites',
+    'notifySharedRecipeUpdates',
+    'notifyAdminReplies',
+    'notifyAnnouncements',
+    'foregroundPopupsEnabled',
+  ];
+
+  /// The cloud record with anything this build cannot decode put back to
+  /// its default. The website writes the same document, and the generated
+  /// decoder throws on an unknown enum name or a field of the wrong type —
+  /// which cost the device every preference in the record, not just the
+  /// odd field.
+  @visibleForTesting
+  static Map<String, dynamic> tolerantJson(Map<String, dynamic> json) {
+    final out = Map<String, dynamic>.of(json);
+    out['shoppingDay'] =
+        (docEnum(ShoppingDay.values, json['shoppingDay']) ?? ShoppingDay.sunday)
+            .name;
+    out['dietaryPreferences'] = [
+      for (final name in docStrings(json['dietaryPreferences']))
+        if (docEnum(DietaryPreference.values, name) != null) name,
+    ];
+    if (docEnum(AppLanguage.values, json['language']) == null) {
+      out.remove('language');
+    }
+    for (final key in _flags) {
+      if (out[key] is! bool) out.remove(key);
+    }
+    if (json['shoppingReminderSlots'] is List) {
+      out['shoppingReminderSlots'] = docStrings(json['shoppingReminderSlots']);
+    } else {
+      out.remove('shoppingReminderSlots');
+    }
+    if (json['themeMode'] is! String) out.remove('themeMode');
+    final seen = docInt(json['whatsNewSeenBuild']);
+    if (seen == null) {
+      out.remove('whatsNewSeenBuild');
+    } else {
+      out['whatsNewSeenBuild'] = seen;
+    }
+    return out;
+  }
 }
 
 extension UserPreferencesModelMapper on UserPreferencesModel {

@@ -1,0 +1,53 @@
+{
+  "id": "a551574a-0000-4000-8000-000000000002",
+  "name": "רשימת קניות",
+  "items": [
+    {
+      "id": "a551574a-0000-4000-8000-000000000003",
+      "name": "חלב",
+      "unit": "liter",
+      "sources": [
+        {
+          "recipeId": null,
+          "label": "חלב",
+          "amount": 2
+        },
+        {
+          "recipeId": null,
+          "label": "חלב",
+          "amount": 1
+        }
+      ],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": true
+    },
+    {
+      "id": "a551574a-0000-4000-8000-000000000004",
+      "name": "ביצים",
+      "unit": "unspecified",
+      "sources": [
+        {
+          "recipeId": null,
+          "label": "ביצים",
+          "amount": 1
+        }
+      ],
+      "isChecked": true,
+      "category": "כללי",
+      "isAdHoc": true
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T10:15:00.000Z",
+  "selectedPlanIds": [],
+  "contentLang": "he",
+  "contentVersion": 0,
+  "source": "manual",
+  "recipeId": null,
+  "recipeScale": 1,
+  "recipeServings": null,
+  "recipeTitle": null,
+  "collabId": null,
+  "collabRole": null
+}

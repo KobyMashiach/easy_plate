@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
@@ -28,7 +29,10 @@ class PreferencesPage extends StatelessWidget {
           leadingIcon: Icons.arrow_back_rounded,
           onLeadingTap: () => Navigator.of(context).maybePop(),
         ),
-        body: BlocBuilder<SettingsBloc, SettingsState>(
+        body: BlocConsumer<SettingsBloc, SettingsState>(
+          listenWhen: SettingsBloc.saveFailedBetween,
+          listener: (context, _) =>
+              AppDialog.error(message: t.settings.saveFailed).notify(context),
           builder: (context, state) {
             return switch (state) {
               SettingsLoading() => const Center(

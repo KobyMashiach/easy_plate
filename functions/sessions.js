@@ -45,6 +45,22 @@
 // whose session has run out, so the month is enforced by the server, not
 // by a clock on the phone.
 //
+// Replay: the record is readable by the account, so another device signed in
+// to the same account could copy deviceId + hardwareId out of it and claim
+// as "the same device". A device that can keep one draws its own random
+// secret, stores it, and sends it with `wantsSecret`; when its session
+// starts (or on its next claim, if the record has none yet) the server binds
+// it — only the secret's SHA-256 is stored (`secretHash`). The device drew
+// it before asking, so a response lost on the way back cannot leave the
+// record bound to a secret nobody holds (the server-drawn secret of the
+// first version could, locking the holder out). From then on the
+// record is the same device only for a caller that presents the secret —
+// claim, release and declineRelease alike. Records without a hash (older
+// builds, which never ask for one) keep matching on the ids, so nothing
+// changes for them. A reinstall loses the secret: that phone is then
+// "another device", and its request to the old install frees the record at
+// once (the old install's push token is gone), or the SMS takeover does.
+//
 // Two console knobs: `session_days` (how long a session lives, 0 = never
 // expires) and `ff_single_session` (2 = one device at a time, anything
 // else = several devices may share the account; sessions are still kept).
@@ -52,6 +68,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
+const crypto = require("crypto");
 const proxy = require("./aiProxy").internals;
 const permissions = require("./permissions");
 const remoteFlags = require("./remoteFlags");
@@ -76,7 +93,40 @@ function text(value, max = MAX_TEXT) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
+// The device-drawn secret the server binds: 32 random bytes, base64url
+// without padding — exactly 43 characters. Anything else is not bound.
+const DEVICE_SECRET = /^[A-Za-z0-9_-]{43}$/;
+
+// A session secret: 32 random bytes, base64url. Only its hash is stored.
+// (The device draws its own; this is for the tests and tools.)
+function newSecret() {
+  return crypto.randomBytes(32).toString("base64url");
+}
+
+function secretHash(secret) {
+  return crypto.createHash("sha256").update(String(secret)).digest("hex");
+}
+
+// Pure: whether a presented secret matches the stored hash (constant time).
+function secretMatches(storedHash, secret) {
+  if (typeof storedHash !== "string" || !storedHash || typeof secret !== "string" || !secret) return false;
+  const a = Buffer.from(secretHash(secret), "hex");
+  const b = Buffer.from(storedHash, "hex");
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 function parseRequest(body) {
+  const parsed = parseFields(body);
+  if (parsed.error) return parsed;
+  // Only when the device sent them, so older builds' requests read as before.
+  const secret = text(body && body.secret, 128);
+  if (secret) parsed.secret = secret;
+  // The ask counts only with a device-drawn secret worth binding.
+  if (body && body.wantsSecret === true && (parsed.action === "claim" || parsed.action === "takeover") && DEVICE_SECRET.test(secret)) parsed.wantsSecret = true;
+  return parsed;
+}
+
+function parseFields(body) {
   const action = String((body && body.action) || "").trim();
   const deviceId = String((body && body.deviceId) || "").trim();
   if (!deviceId || deviceId.length > 128) return { error: "deviceId is required" };
@@ -106,8 +156,12 @@ function parseRequest(body) {
 
 // Pure: whether the caller is the phone that holds the record: the same
 // app install, or the same phone after a reinstall.
-function sameDevice(existing, deviceId, hardwareId) {
+// A record that carries a secret hash is the same device only for the
+// holder of that secret: the ids are readable by the account, the secret
+// is not.
+function sameDevice(existing, deviceId, hardwareId, secret = null) {
   if (!existing) return false;
+  if (existing.secretHash) return secretMatches(existing.secretHash, secret);
   if (existing.deviceId === deviceId) return true;
   return Boolean(hardwareId) && existing.hardwareId === hardwareId;
 }
@@ -127,9 +181,12 @@ function takeoverDue(existing, deviceId, hardwareId, now) {
 //   days      0 = sessions never expire
 //   enforce   false = other devices never refuse
 // Returns { ok: true, record } to write, or { ok: false, refusal }.
-function decide({ existing, deviceId, hardwareId = null, platform, now, days, enforce, pushToken = null }) {
+// `secret` is what the caller presented, `bind` the device's own secret to
+// store the hash of when the caller asked (wantsSecret) and the record has
+// none yet (or is started afresh); the outcome's `secretBound` says so.
+function decide({ existing, deviceId, hardwareId = null, platform, now, days, enforce, pushToken = null, secret = null, bind = null }) {
   const live = existing && (existing.expiresAt === null || existing.expiresAt > now);
-  const same = sameDevice(existing, deviceId, hardwareId);
+  const same = sameDevice(existing, deviceId, hardwareId, secret);
   if (live && !same && enforce && !takeoverDue(existing, deviceId, hardwareId, now)) {
     return {
       ok: false,
@@ -140,32 +197,30 @@ function decide({ existing, deviceId, hardwareId = null, platform, now, days, en
     // The same device again: the month keeps counting from the first
     // sign-in, only the last-seen stamp moves. After a reinstall the
     // record takes the new install's deviceId, which the app now follows.
-    return {
-      ok: true,
-      sameDevice: true,
-      record: {
-        ...existing,
-        deviceId,
-        hardwareId: hardwareId || existing.hardwareId || null,
-        platform,
-        lastSeenAt: now,
-        pushToken: pushToken || existing.pushToken || null,
-      },
+    const minted = !existing.secretHash && bind ? bind : null;
+    const record = {
+      ...existing,
+      deviceId,
+      hardwareId: hardwareId || existing.hardwareId || null,
+      platform,
+      lastSeenAt: now,
+      pushToken: pushToken || existing.pushToken || null,
     };
+    if (minted) record.secretHash = secretHash(minted);
+    return { ok: true, sameDevice: true, record, ...(minted ? { secretBound: true } : {}) };
   }
   // No session, an expired one, or a takeover allowed by the console.
-  return {
-    ok: true,
-    record: {
-      deviceId,
-      hardwareId: hardwareId || null,
-      platform,
-      startedAt: now,
-      expiresAt: days > 0 ? now + days * DAY_MS : null,
-      lastSeenAt: now,
-      pushToken: pushToken || null,
-    },
+  const record = {
+    deviceId,
+    hardwareId: hardwareId || null,
+    platform,
+    startedAt: now,
+    expiresAt: days > 0 ? now + days * DAY_MS : null,
+    lastSeenAt: now,
+    pushToken: pushToken || null,
   };
+  if (bind) record.secretHash = secretHash(bind);
+  return { ok: true, record, ...(bind ? { secretBound: true } : {}) };
 }
 
 function toMillis(value) {
@@ -185,12 +240,14 @@ function fromDoc(snapshot) {
     startedAt: toMillis(d.startedAt),
     expiresAt: toMillis(d.expiresAt),
     pushToken: d.pushToken ? String(d.pushToken) : null,
+    secretHash: typeof d.secretHash === "string" && d.secretHash ? d.secretHash : null,
     releaseRequest: d.releaseRequest ? {
       deviceId: String(d.releaseRequest.deviceId || ""),
       hardwareId: d.releaseRequest.hardwareId ? String(d.releaseRequest.hardwareId) : null,
       at: toMillis(d.releaseRequest.at),
       takeoverAt: toMillis(d.releaseRequest.takeoverAt),
       declinedAt: toMillis(d.releaseRequest.declinedAt),
+      notifiedAt: toMillis(d.releaseRequest.notifiedAt),
     } : null,
   };
 }
@@ -205,6 +262,7 @@ function toDoc(record) {
     expiresAt: ts(record.expiresAt),
     lastSeenAt: ts(record.lastSeenAt),
     pushToken: record.pushToken || null,
+    secretHash: record.secretHash || null,
   };
 }
 
@@ -256,6 +314,7 @@ async function claim(caller, request) {
     const existing = fromDoc(await tx.get(ref));
     const outcome = decide({
       existing, deviceId: request.deviceId, hardwareId: request.hardwareId, platform: request.platform, now, days, enforce, pushToken: request.pushToken,
+      secret: request.secret || null, bind: request.wantsSecret ? request.secret : null,
     });
     // The same device again merges, so a pending release request survives
     // the holder's own app start (it is what that app is about to show).
@@ -275,35 +334,61 @@ async function takeover(caller, request) {
   const outcome = decide({
     existing: null, deviceId: request.deviceId, hardwareId: request.hardwareId,
     platform: request.platform, now, days, enforce: true, pushToken: request.pushToken,
+    bind: request.wantsSecret ? request.secret : null,
   });
   await admin.firestore().doc(`sessions/${caller.uid}`).set(toDoc(outcome.record));
   logger.info("session taken over after SMS", { uid: caller.uid, platform: request.platform });
   return outcome;
 }
 
+// One push to the holder per asker per this long: the request record is
+// still refreshed on every ask, but a refused device tapping "ask" in a loop
+// used to ring the holder's phone each time.
+const RELEASE_PUSH_GAP_MS = 10 * 60 * 1000;
+
+/// Pure: whether this ask may push the holder — not when the same asker's
+/// undeclined request already pushed within RELEASE_PUSH_GAP_MS.
+function releasePushDue(previous, request, now) {
+  if (!previous || previous.declinedAt || !previous.notifiedAt) return true;
+  const asker = previous.deviceId === request.deviceId ||
+    (Boolean(request.hardwareId) && previous.hardwareId === request.hardwareId);
+  return !asker || now - previous.notifiedAt >= RELEASE_PUSH_GAP_MS;
+}
+
 // A refused device asks the holder to sign out.
-async function requestRelease(uid, request) {
-  const db = admin.firestore();
+async function requestRelease(uid, request, { db = admin.firestore(), now = Date.now(), settings = knobs } = {}) {
   const ref = db.doc(`sessions/${uid}`);
-  const now = Date.now();
-  const snapshot = await ref.get();
-  const existing = fromDoc(snapshot);
-  const live = existing && (existing.expiresAt === null || existing.expiresAt > now);
-  if (!live || sameDevice(existing, request.deviceId, request.hardwareId)) return { ok: true, free: true };
-  const { waitHours } = await knobs();
-  const at = pendingSince(existing.releaseRequest, request, now);
-  const takeoverAt = waitHours > 0 ? at + waitHours * HOUR_MS : null;
+  const { waitHours } = await settings();
   const ts = (ms) => (ms === null ? null : admin.firestore.Timestamp.fromMillis(ms));
-  await ref.set({
-    releaseRequest: {
-      at: ts(at),
-      takeoverAt: ts(takeoverAt),
-      deviceId: request.deviceId,
-      hardwareId: request.hardwareId || null,
-      platform: request.platform,
-      declinedAt: null,
-    },
-  }, { merge: true });
+  // Read and write in one transaction: a decline the holder sends while this
+  // request is in flight must not be overwritten by a request computed from
+  // the record as it stood before the decline (the clock would restart from
+  // a stale `at` and the declinedAt would be wiped).
+  const pending = await db.runTransaction(async (tx) => {
+    const existing = fromDoc(await tx.get(ref));
+    const live = existing && (existing.expiresAt === null || existing.expiresAt > now);
+    if (!live || sameDevice(existing, request.deviceId, request.hardwareId, request.secret || null)) return null;
+    const at = pendingSince(existing.releaseRequest, request, now);
+    const takeoverAt = waitHours > 0 ? at + waitHours * HOUR_MS : null;
+    const push = releasePushDue(existing.releaseRequest, request, now);
+    const notifiedAt = push ? now : existing.releaseRequest.notifiedAt;
+    tx.set(ref, {
+      releaseRequest: {
+        at: ts(at),
+        takeoverAt: ts(takeoverAt),
+        deviceId: request.deviceId,
+        hardwareId: request.hardwareId || null,
+        platform: request.platform,
+        declinedAt: null,
+        notifiedAt: ts(notifiedAt),
+      },
+    }, { merge: true });
+    return { existing, takeoverAt, push };
+  });
+  if (!pending) return { ok: true, free: true };
+  const { existing, takeoverAt, push } = pending;
+  // The holder was told a moment ago; to the asker that is "sent".
+  if (!push) return { ok: true, notified: true, recentlyNotified: true, takeoverAt };
 
   // The holder's own token, saved with its claim. An older build saved
   // none: then the account's last token, unless that is the asker's.
@@ -357,7 +442,8 @@ async function declineRelease(uid, request) {
   const ref = db.doc(`sessions/${uid}`);
   await db.runTransaction(async (tx) => {
     const existing = fromDoc(await tx.get(ref));
-    if (!existing || existing.deviceId !== request.deviceId) return;
+    if (!existing) return;
+    if (existing.secretHash ? !secretMatches(existing.secretHash, request.secret) : existing.deviceId !== request.deviceId) return;
     tx.set(ref, { releaseRequest: { declinedAt: admin.firestore.Timestamp.now() } }, { merge: true });
   });
 }
@@ -368,7 +454,7 @@ async function release(uid, request) {
   await db.runTransaction(async (tx) => {
     const existing = fromDoc(await tx.get(ref));
     // Another device's session is not this device's to free.
-    if (existing && !sameDevice(existing, request.deviceId, request.hardwareId)) return;
+    if (existing && !sameDevice(existing, request.deviceId, request.hardwareId, request.secret || null)) return;
     tx.delete(ref);
   });
 }
@@ -396,6 +482,7 @@ exports.sessions = onRequest(
           ok: true,
           startedAt: outcome.record.startedAt,
           expiresAt: outcome.record.expiresAt,
+          ...(outcome.secretBound ? { secretBound: true } : {}),
         });
       }
       if (request.action === "claim") {
@@ -409,13 +496,16 @@ exports.sessions = onRequest(
           exempt: outcome.exempt === true,
           startedAt: outcome.record.startedAt,
           expiresAt: outcome.record.expiresAt,
+          ...(outcome.secretBound ? { secretBound: true } : {}),
         });
       }
       await release(caller.uid, request);
       return res.status(200).json({ ok: true });
     } catch (err) {
-      logger.error("session action failed", { action: request.action, reason: err.message });
-      return res.status(500).json({ error: { message: err.message } });
+      // The reason stays in the log: an SDK message can name a path or a
+      // project, which is nothing a phone needs to be told.
+      logger.error("session action failed", { uid: caller.uid, action: request.action, reason: err.message });
+      return res.status(500).json({ error: { message: "Session action failed" } });
     }
   },
 );
@@ -423,28 +513,55 @@ exports.sessions = onRequest(
 // Sessions past their month: the record goes and the refresh tokens are
 // revoked, so the device's ID token stops renewing within the hour and the
 // app's gate sends it back to sign in.
-async function expire(now = Date.now()) {
-  const db = admin.firestore();
-  const due = await db.collection("sessions").where("expiresAt", "<=", admin.firestore.Timestamp.fromMillis(now)).limit(500).get();
+// Pages of 500 until none is left or the time budget runs out (the next
+// day's run carries on): one page a day fell behind as soon as more than
+// 500 sessions ran out on the same day. Paged by cursor, so a session kept
+// because it was renewed is never read twice.
+const EXPIRE_PAGE = 500;
+const EXPIRE_BUDGET_MS = 8 * 60 * 1000;
+
+async function expire(now = Date.now(), { db = admin.firestore(), auth = admin.auth(), clock = Date.now, budgetMs = EXPIRE_BUDGET_MS, page = EXPIRE_PAGE } = {}) {
+  const started = clock();
   let count = 0;
-  for (const doc of due.docs) {
-    try {
-      await admin.auth().revokeRefreshTokens(doc.id);
-    } catch (err) {
-      logger.warn("revoke failed", { uid: doc.id, reason: err.message });
+  let cursor = null;
+  for (;;) {
+    let query = db.collection("sessions").where("expiresAt", "<=", admin.firestore.Timestamp.fromMillis(now)).orderBy("expiresAt").limit(page);
+    if (cursor) query = query.startAfter(cursor);
+    const due = await query.get();
+    for (const doc of due.docs) {
+      // Deleted only if untouched since the query read it: a device that
+      // claimed again in between holds a fresh month, and deleting (then
+      // revoking) it would have signed a just-renewed session out. Revoked
+      // after the delete, for the same reason.
+      try {
+        await doc.ref.delete({ lastUpdateTime: doc.updateTime });
+      } catch (err) {
+        logger.info("session renewed before expiry, kept", { uid: doc.id, reason: err.code || err.message });
+        continue;
+      }
+      try {
+        await auth.revokeRefreshTokens(doc.id);
+      } catch (err) {
+        logger.warn("revoke failed", { uid: doc.id, reason: err.message });
+      }
+      count++;
     }
-    await doc.ref.delete();
-    count++;
+    if (due.docs.length < page) break;
+    cursor = due.docs[due.docs.length - 1];
+    if (clock() - started > budgetMs) {
+      logger.warn("session expiry stopped at its time budget; tomorrow's run continues", { count });
+      break;
+    }
   }
   return count;
 }
 
 exports.expireSessions = onSchedule(
-  { schedule: "every day 04:10", timeZone: "Asia/Jerusalem", region: "europe-west1", retryCount: 1 },
+  { schedule: "every day 04:10", timeZone: "Asia/Jerusalem", region: "europe-west1", retryCount: 1, timeoutSeconds: 540 },
   async () => {
     const count = await expire();
     logger.info("sessions expired", { count });
   },
 );
 
-exports.internals = { parseRequest, decide, sameDevice, takeoverDue, pendingSince, freshPhoneProof, isExempt, DEFAULT_DAYS, DAY_MS, expire };
+exports.internals = { releasePushDue, RELEASE_PUSH_GAP_MS, secretHash, secretMatches, newSecret, release, declineRelease, requestRelease, parseRequest, decide, sameDevice, takeoverDue, pendingSince, freshPhoneProof, isExempt, DEFAULT_DAYS, DAY_MS, expire };

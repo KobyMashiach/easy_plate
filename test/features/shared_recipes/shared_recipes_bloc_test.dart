@@ -12,22 +12,27 @@ import 'package:easy_plate/features/shared_recipes/domain/usecases/toggle_shared
 import 'package:easy_plate/features/shared_recipes/domain/usecases/unshare_recipe_usecase.dart';
 import 'package:easy_plate/features/shared_recipes/domain/usecases/update_shared_recipe_usecase.dart';
 import 'package:easy_plate/features/shared_recipes/presentation/bloc/shared_recipes_bloc.dart';
+import 'package:easy_plate/features/shared_recipes/presentation/widgets/shared_feed_query.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeSharedRepository implements SharedRecipesRepository {
   List<SharedRecipeEntity> feed = [];
   bool feedThrows = false;
   int feedCalls = 0;
+  final feedRefresh = <bool>[];
   bool likeThrows = false;
   int likeCalls = 0;
+  bool unshareThrows = false;
   final unshared = <String>[];
 
   @override
   Future<List<SharedRecipeEntity>> getFeed({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   }) async {
     feedCalls++;
+    feedRefresh.add(refresh);
     if (feedThrows) throw Exception('offline');
     return feed;
   }
@@ -44,6 +49,36 @@ class _FakeSharedRepository implements SharedRecipesRepository {
     int limit = 200,
   }) async => feed.where((r) => r.authorUid == authorUid).toList();
 
+  /// Posts outside the newest window, for the "mine" and "saved" scopes.
+  List<SharedRecipeEntity> older = [];
+  int mineCalls = 0;
+  Completer<void>? mineGate;
+  final idsAskedFor = <Set<String>>[];
+
+  @override
+  Future<List<SharedRecipeEntity>> getMine({
+    required String viewerUid,
+    int limit = 200,
+    bool refresh = false,
+  }) async {
+    mineCalls++;
+    await mineGate?.future;
+    return [
+      ...feed,
+      ...older,
+    ].where((r) => r.authorUid == viewerUid).toList();
+  }
+
+  @override
+  Future<List<SharedRecipeEntity>> getByIds(
+    Set<String> ids, {
+    required String viewerUid,
+    bool refresh = false,
+  }) async {
+    idsAskedFor.add(ids);
+    return [...feed, ...older].where((r) => ids.contains(r.id)).toList();
+  }
+
   @override
   Future<bool> toggleLike(String id, {required String viewerUid}) async {
     likeCalls++;
@@ -52,7 +87,10 @@ class _FakeSharedRepository implements SharedRecipesRepository {
   }
 
   @override
-  Future<void> unshare(String id) async => unshared.add(id);
+  Future<void> unshare(String id) async {
+    if (unshareThrows) throw Exception('offline');
+    unshared.add(id);
+  }
 
   final updated = <String, RecipeEntity>{};
 
@@ -82,12 +120,18 @@ class _FakeRecipesRepository implements RecipesRepository {
   }) async => saved.add(recipe);
 
   /// Nothing to upload in a test, which is also what the real repository
-  /// returns for a recipe with no photo.
+  /// returns for a recipe with no photo. [persistAsked] records whether the
+  /// caller wanted the recipe saved locally as well.
+  final persistAsked = <bool>[];
+
   @override
   Future<RecipeEntity> readyForSharing(
     RecipeEntity recipe, {
     bool persist = true,
-  }) async => recipe;
+  }) async {
+    persistAsked.add(persist);
+    return recipe;
+  }
 
   final changes = StreamController<List<RecipeEntity>>.broadcast();
 
@@ -102,9 +146,10 @@ SharedRecipeEntity buildShared({
   String id = 's1',
   int likeCount = 3,
   bool likedByMe = false,
+  String authorUid = 'someone',
 }) => SharedRecipeEntity(
   id: id,
-  authorUid: 'someone',
+  authorUid: authorUid,
   authorName: 'דנה',
   createdAt: DateTime(2026, 1, 1),
   likeCount: likeCount,
@@ -161,6 +206,10 @@ void main() {
 
       expect(shared.feedCalls, callsBefore + 1);
       expect((bloc.state as SharedRecipesLoaded).recipes, hasLength(2));
+      // The first load trusts the caches; the pull reads past them, so a
+      // like from another device shows.
+      expect(shared.feedRefresh.first, isFalse);
+      expect(shared.feedRefresh.last, isTrue);
     });
 
     test('completes even when the reloaded data is identical', () async {
@@ -194,7 +243,10 @@ void main() {
         const Duration(seconds: 2),
         onTimeout: () => fail('refresh future never completed'),
       );
-      expect(bloc.state, isA<SharedRecipesError>());
+      // The feed on screen stays, flagged for the page to say so.
+      final state = bloc.state as SharedRecipesLoaded;
+      expect(state.recipes, isNotEmpty);
+      expect(state.notice, SharedFeedNotice.loadFailed);
     });
   });
 
@@ -302,6 +354,44 @@ void main() {
     expect((bloc.state as SharedRecipesLoaded).savedIds, {'s1'});
   });
 
+  test('a removal that failed keeps the feed and flags it', () async {
+    shared.feed = [buildShared()];
+    shared.unshareThrows = true;
+    final bloc = buildBloc();
+    await Future<void>.delayed(Duration.zero);
+
+    bloc.add(const SharedRecipesEvent.unshare('s1'));
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+
+    var state = bloc.state as SharedRecipesLoaded;
+    expect(state.recipes, hasLength(1));
+    expect(state.notice, SharedFeedNotice.unshareFailed);
+
+    bloc.add(const SharedRecipesEvent.dismissNotice());
+    await Future<void>.delayed(Duration.zero);
+    state = bloc.state as SharedRecipesLoaded;
+    expect(state.notice, isNull);
+  });
+
+  test(
+    'editing says so through the state and never saves the post as a recipe',
+    () async {
+      shared.feed = [buildShared()];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      final edited = shared.feed.single.recipe.copyWith(title: 'שקשוקה חריפה');
+      bloc.add(SharedRecipesEvent.updateShared('s1', edited));
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+
+      final state = bloc.state as SharedRecipesLoaded;
+      expect(state.notice, SharedFeedNotice.updated);
+      expect(state.recipes.single.recipe.title, 'שקשוקה חריפה');
+      expect(recipes.persistAsked, [false]);
+      expect(recipes.saved, isEmpty);
+    },
+  );
+
   test('unsharing drops the row from the feed', () async {
     shared.feed = [buildShared(id: 's1'), buildShared(id: 's2')];
     final bloc = buildBloc();
@@ -343,5 +433,141 @@ void main() {
         await bloc.close();
       },
     );
+  });
+
+  group('scopes past the newest window', () {
+    RecipeEntity savedCopy(String sharedId) => RecipeEntity(
+      id: 'local-$sharedId',
+      title: 'שקשוקה',
+      ingredients: const [],
+      steps: const [],
+      savedFromSharedId: sharedId,
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    test('"all" fetches nothing beyond the feed', () async {
+      shared.feed = [buildShared(id: 's1')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.all));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(shared.mineCalls, 0);
+      expect(shared.idsAskedFor, isEmpty);
+      expect((bloc.state as SharedRecipesLoaded).older, isEmpty);
+      await bloc.close();
+    });
+
+    test(
+      'two quick opens of "mine" read once and list each post once',
+      () async {
+        shared.feed = [buildShared(id: 's1')];
+        shared.older = [buildShared(id: 'old-mine', authorUid: '')];
+        final bloc = buildBloc();
+        await Future<void>.delayed(Duration.zero);
+
+        shared.mineGate = Completer<void>();
+        bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.mine));
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.all));
+        bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.mine));
+        await Future<void>.delayed(Duration.zero);
+        shared.mineGate!.complete();
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(shared.mineCalls, 1);
+        expect(
+          (bloc.state as SharedRecipesLoaded).older.map((r) => r.id),
+          ['old-mine'],
+        );
+        await bloc.close();
+      },
+    );
+
+    test('"mine" reads the viewer\'s posts once per load', () async {
+      // The viewer's uid is '' with no session in a test.
+      shared.feed = [buildShared(id: 's1')];
+      shared.older = [buildShared(id: 'old-mine', authorUid: '')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.mine));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.mine));
+      await Future<void>.delayed(Duration.zero);
+
+      final state = bloc.state as SharedRecipesLoaded;
+      expect(state.recipes.map((r) => r.id), ['s1']);
+      expect(state.older.map((r) => r.id), ['old-mine']);
+      expect(shared.mineCalls, 1);
+
+      // A reload starts over, and re-reads for the scope still open.
+      final done = Completer<void>();
+      bloc.add(SharedRecipesEvent.refresh(done));
+      await done.future;
+      expect(shared.mineCalls, 2);
+      expect((bloc.state as SharedRecipesLoaded).older, hasLength(1));
+      await bloc.close();
+    });
+
+    test('"saved" asks only for saved ids the window does not hold', () async {
+      shared.feed = [buildShared(id: 's1')];
+      shared.older = [buildShared(id: 'old-saved')];
+      recipes.saved
+        ..add(savedCopy('s1'))
+        ..add(savedCopy('old-saved'))
+        ..add(savedCopy('gone'));
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.saved));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(shared.idsAskedFor, [
+        {'old-saved', 'gone'},
+      ]);
+      final state = bloc.state as SharedRecipesLoaded;
+      expect(state.older.map((r) => r.id), ['old-saved']);
+
+      // An unshared post that came back empty is not asked for again.
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.saved));
+      await Future<void>.delayed(Duration.zero);
+      expect(shared.idsAskedFor, hasLength(1));
+      await bloc.close();
+    });
+
+    test('a like on an older post flips that row', () async {
+      shared.feed = [buildShared(id: 's1')];
+      shared.older = [buildShared(id: 'old-mine', authorUid: '')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.mine));
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const SharedRecipesEvent.toggleLike('old-mine'));
+      await Future<void>.delayed(Duration.zero);
+
+      final row = (bloc.state as SharedRecipesLoaded).older.single;
+      expect(row.likedByMe, isTrue);
+      expect(row.likeCount, 4);
+      await bloc.close();
+    });
+
+    test('unsharing an older post drops it', () async {
+      shared.feed = [buildShared(id: 's1')];
+      shared.older = [buildShared(id: 'old-mine', authorUid: '')];
+      final bloc = buildBloc();
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const SharedRecipesEvent.scopeOpened(SharedFeedScope.mine));
+      await Future<void>.delayed(Duration.zero);
+
+      bloc.add(const SharedRecipesEvent.unshare('old-mine'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect((bloc.state as SharedRecipesLoaded).older, isEmpty);
+      await bloc.close();
+    });
   });
 }

@@ -55,19 +55,24 @@ enum ShefiVoiceBridge {
         name: ShefiVoiceBridge.channelName, binaryMessenger: engine.binaryMessenger)
       let ready: Bool = await withCheckedContinuation { continuation in
         var resumed = false
+        let finish: (Bool) -> Void = { ok in
+          guard !resumed else { return }
+          resumed = true
+          continuation.resume(returning: ok)
+        }
         headless.setMethodCallHandler { call, result in
-          if call.method == "ready", !resumed {
-            resumed = true
-            continuation.resume(returning: true)
-          }
+          if call.method == "ready" { finish(true) }
           result(nil)
         }
         guard engine.run(withEntrypoint: "shefiVoiceMain") else {
-          resumed = true
-          continuation.resume(returning: false)
+          finish(false)
           return
         }
         GeneratedPluginRegistrant.register(with: engine)
+        // Dart never saying "ready" (a crash while starting, a stuck isolate)
+        // must not leave the request hanging: withTimeout waits for this task
+        // to finish before it can answer, so the continuation gives up first.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) { finish(false) }
       }
       guard ready else {
         headless.setMethodCallHandler(nil)
@@ -84,13 +89,23 @@ enum ShefiVoiceBridge {
     _ channel: FlutterMethodChannel, _ text: String, sessionId: String
   ) async -> (reply: String, end: Bool)? {
     await withCheckedContinuation { continuation in
+      // Resumed once: by Dart's answer, or by the deadline. withTimeout's
+      // task group waits for this child before it returns, so a Dart side
+      // that never answers would otherwise hold Siri past the fallback.
+      var resumed = false
+      let finish: ((reply: String, end: Bool)?) -> Void = { value in
+        guard !resumed else { return }
+        resumed = true
+        continuation.resume(returning: value)
+      }
       channel.invokeMethod("ask", arguments: ["text": text, "sessionId": sessionId]) { result in
         guard let map = result as? [String: Any], let reply = map["reply"] as? String else {
-          continuation.resume(returning: nil)
+          finish(nil)
           return
         }
-        continuation.resume(returning: (reply, map["end"] as? Bool ?? false))
+        finish((reply, map["end"] as? Bool ?? false))
       }
+      DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(timeout))) { finish(nil) }
     }
   }
 

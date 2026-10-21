@@ -650,11 +650,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<RecipeEntity> recipes,  String query,  List<DietaryPreference> dietaryFilters)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<RecipeEntity> recipes,  String query,  List<DietaryPreference> dietaryFilters,  String? notice)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MyRecipesLoading() when loading != null:
 return loading();case MyRecipesLoaded() when loaded != null:
-return loaded(_that.recipes,_that.query,_that.dietaryFilters);case MyRecipesError() when errorMessage != null:
+return loaded(_that.recipes,_that.query,_that.dietaryFilters,_that.notice);case MyRecipesError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return orElse();
 
@@ -673,11 +673,11 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<RecipeEntity> recipes,  String query,  List<DietaryPreference> dietaryFilters)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<RecipeEntity> recipes,  String query,  List<DietaryPreference> dietaryFilters,  String? notice)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case MyRecipesLoading():
 return loading();case MyRecipesLoaded():
-return loaded(_that.recipes,_that.query,_that.dietaryFilters);case MyRecipesError():
+return loaded(_that.recipes,_that.query,_that.dietaryFilters,_that.notice);case MyRecipesError():
 return errorMessage(_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -692,11 +692,11 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<RecipeEntity> recipes,  String query,  List<DietaryPreference> dietaryFilters)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<RecipeEntity> recipes,  String query,  List<DietaryPreference> dietaryFilters,  String? notice)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case MyRecipesLoading() when loading != null:
 return loading();case MyRecipesLoaded() when loaded != null:
-return loaded(_that.recipes,_that.query,_that.dietaryFilters);case MyRecipesError() when errorMessage != null:
+return loaded(_that.recipes,_that.query,_that.dietaryFilters,_that.notice);case MyRecipesError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return null;
 
@@ -747,7 +747,7 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 class MyRecipesLoaded with DiagnosticableTreeMixin implements MyRecipesState {
-  const MyRecipesLoaded(final  List<RecipeEntity> recipes, {this.query = '', final  List<DietaryPreference> dietaryFilters = const []}): _recipes = recipes,_dietaryFilters = dietaryFilters;
+  const MyRecipesLoaded(final  List<RecipeEntity> recipes, {this.query = '', final  List<DietaryPreference> dietaryFilters = const [], this.notice}): _recipes = recipes,_dietaryFilters = dietaryFilters;
   
 
  final  List<RecipeEntity> _recipes;
@@ -765,6 +765,9 @@ class MyRecipesLoaded with DiagnosticableTreeMixin implements MyRecipesState {
   return EqualUnmodifiableListView(_dietaryFilters);
 }
 
+/// A failed action (a delete) said over the list, which stays as it
+/// was — an error screen in its place lost the tab and the filters.
+ final  String? notice;
 
 /// Create a copy of MyRecipesState
 /// with the given fields replaced by the non-null parameter values.
@@ -777,21 +780,21 @@ $MyRecipesLoadedCopyWith<MyRecipesLoaded> get copyWith => _$MyRecipesLoadedCopyW
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'MyRecipesState.loaded'))
-    ..add(DiagnosticsProperty('recipes', recipes))..add(DiagnosticsProperty('query', query))..add(DiagnosticsProperty('dietaryFilters', dietaryFilters));
+    ..add(DiagnosticsProperty('recipes', recipes))..add(DiagnosticsProperty('query', query))..add(DiagnosticsProperty('dietaryFilters', dietaryFilters))..add(DiagnosticsProperty('notice', notice));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MyRecipesLoaded&&const DeepCollectionEquality().equals(other._recipes, _recipes)&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other._dietaryFilters, _dietaryFilters));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MyRecipesLoaded&&const DeepCollectionEquality().equals(other._recipes, _recipes)&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other._dietaryFilters, _dietaryFilters)&&(identical(other.notice, notice) || other.notice == notice));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes),query,const DeepCollectionEquality().hash(_dietaryFilters));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes),query,const DeepCollectionEquality().hash(_dietaryFilters),notice);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'MyRecipesState.loaded(recipes: $recipes, query: $query, dietaryFilters: $dietaryFilters)';
+  return 'MyRecipesState.loaded(recipes: $recipes, query: $query, dietaryFilters: $dietaryFilters, notice: $notice)';
 }
 
 
@@ -802,7 +805,7 @@ abstract mixin class $MyRecipesLoadedCopyWith<$Res> implements $MyRecipesStateCo
   factory $MyRecipesLoadedCopyWith(MyRecipesLoaded value, $Res Function(MyRecipesLoaded) _then) = _$MyRecipesLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<RecipeEntity> recipes, String query, List<DietaryPreference> dietaryFilters
+ List<RecipeEntity> recipes, String query, List<DietaryPreference> dietaryFilters, String? notice
 });
 
 
@@ -819,12 +822,13 @@ class _$MyRecipesLoadedCopyWithImpl<$Res>
 
 /// Create a copy of MyRecipesState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? recipes = null,Object? query = null,Object? dietaryFilters = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? recipes = null,Object? query = null,Object? dietaryFilters = null,Object? notice = freezed,}) {
   return _then(MyRecipesLoaded(
 null == recipes ? _self._recipes : recipes // ignore: cast_nullable_to_non_nullable
 as List<RecipeEntity>,query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
 as String,dietaryFilters: null == dietaryFilters ? _self._dietaryFilters : dietaryFilters // ignore: cast_nullable_to_non_nullable
-as List<DietaryPreference>,
+as List<DietaryPreference>,notice: freezed == notice ? _self.notice : notice // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

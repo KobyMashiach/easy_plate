@@ -112,4 +112,41 @@ void main() {
     await tester.pumpAndSettle();
     expect(result, contains('featuring המבורגר, gloriously indulgent'));
   });
+
+  testWidgets('a pasted page of text and a long title are capped', (
+    tester,
+  ) async {
+    String? result;
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: MaterialApp(
+          locale: const Locale('he'),
+          supportedLocales: AppLocaleUtils.supportedLocales,
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async => result = await showCoverPromptSheet(
+                context,
+                bookTitle: 'ש' * 500,
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'א' * 5000);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text.length,
+      200,
+    );
+    await tester.tap(find.text(t.image.coverGenerate));
+    await tester.pumpAndSettle();
+    expect(result, isNotNull);
+    expect(result, contains('titled "${'ש' * 120}"'));
+    expect(result!.length, lessThan(700));
+  });
 }

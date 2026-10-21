@@ -8,20 +8,35 @@ const CACHE_MS = 5 * 60 * 1000;
 // A failed read is retried soon, not after the full cache window.
 const RETRY_MS = 30 * 1000;
 let cache = { at: 0, params: null };
+// The read in flight, shared: a cold instance taking a burst of requests
+// used to fire one getTemplate per request until the first one landed.
+let inflight = null;
 
-async function params(now = Date.now()) {
+async function params(now = Date.now(), getTemplate = () => admin.remoteConfig().getTemplate()) {
   const ttl = cache.params === null ? RETRY_MS : CACHE_MS;
   if (now - cache.at < ttl) return cache.params || {};
-  try {
-    const template = await admin.remoteConfig().getTemplate();
-    cache = { at: now, params: flatten(template) };
-  } catch (error) {
-    // The last good read stays in force; with none, the in-code defaults
-    // apply (gated), and the outage is an error, not a whisper.
-    logger.error("remote config template unavailable; pushes gated by default", { reason: String(error?.message || error) });
-    cache = { at: now, params: cache.params };
+  if (!inflight) {
+    inflight = (async () => {
+      try {
+        const template = await getTemplate();
+        cache = { at: now, params: flatten(template) };
+      } catch (error) {
+        // The last good read stays in force; with none, the in-code defaults
+        // apply (gated), and the outage is an error, not a whisper.
+        logger.error("remote config template unavailable; in-code defaults apply (pushes gated, quotas at their fallbacks)", { reason: String(error?.message || error) });
+        cache = { at: now, params: cache.params };
+      } finally {
+        inflight = null;
+      }
+    })();
   }
+  await inflight;
   return cache.params || {};
+}
+
+function resetForTest() {
+  cache = { at: 0, params: null };
+  inflight = null;
 }
 
 // A parameter may sit in a parameter group in the console; groups are
@@ -77,14 +92,21 @@ function isPremium(userSnapOrData, nowMs = Date.now()) {
   return true;
 }
 
+// What the notifications flag reads as when Remote Config gave nothing (no
+// template read yet, or the parameter missing): gated. It used to be 2 —
+// everyone — so an outage at cold start opened pushes the console had
+// limited to Premium. The template always carries the flag, so a good read
+// never falls back.
+const NOTIFICATIONS_FALLBACK = 0;
+
 async function pushAllowedFor(userSnap) {
   const p = await params();
   return pushAllowed({
-    flag: intFrom(p, NOTIFICATIONS_FLAG, 2),
+    flag: intFrom(p, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK),
     premium: isPremium(userSnap),
   });
 }
 
 const NOTIFICATIONS_FLAG = "ff_notifications";
 
-module.exports = { pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG };
+module.exports = { resetForTest, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK };

@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import 'json_readers.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/recipe_entity.dart';
 import 'nutrition_model.dart';
@@ -21,10 +23,13 @@ sealed class RecipeModel with _$RecipeModel {
     @HiveField(3) int? cookTimeMinutes,
     @HiveField(4) required List<RecipeIngredientModel> ingredients,
     @HiveField(5) required List<String> steps,
-    @HiveField(6) @Default([]) List<DietaryPreference> dietaryTags,
+    @HiveField(6)
+    @JsonKey(fromJson: readDietaryTags)
+    @Default([])
+    List<DietaryPreference> dietaryTags,
     @HiveField(7) String? sourceChannel,
     @HiveField(8) String? sourceUrl,
-    @HiveField(9) required DateTime createdAt,
+    @HiveField(9) @JsonKey(fromJson: readJsonDate) required DateTime createdAt,
     @HiveField(10) String? imageFileName,
     // Appended, never reordered: recipes written before this existed decode
     // as null, which correctly reads as "mine".
@@ -77,11 +82,11 @@ extension RecipeModelMapper on RecipeModel {
     nutrition: nutrition?.toEntity(),
     allergens: Allergen.fromNames(allergens),
     mayContain: Allergen.fromNames(mayContain),
-    sourceChannel: sourceChannel == null
-        ? null
-        : RecipeIngestionChannel.values.firstWhere(
-            (c) => c.name == sourceChannel,
-          ),
+    // A name this build does not know (a mirror written by a newer one)
+    // reads as "unknown", not as a StateError that takes the whole tab down.
+    sourceChannel: RecipeIngestionChannel.values
+        .where((c) => c.name == sourceChannel)
+        .firstOrNull,
     sourceUrl: sourceUrl,
     imageFileName: imageFileName,
     imageStoragePath: imageStoragePath,
@@ -94,6 +99,7 @@ extension RecipeModelMapper on RecipeModel {
     sharedRecipeId: sharedRecipeId,
     createdAt: createdAt,
     contentLang: contentLang,
+    contentVersion: contentVersion,
   );
 }
 
@@ -121,5 +127,6 @@ extension RecipeEntityMapper on RecipeEntity {
     sharedRecipeId: sharedRecipeId,
     createdAt: createdAt,
     contentLang: contentLang,
+    contentVersion: contentVersion,
   );
 }

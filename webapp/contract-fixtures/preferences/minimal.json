@@ -1,0 +1,21 @@
+{
+  "shoppingDay": "sunday",
+  "dietaryPreferences": [],
+  "soundEffectsEnabled": true,
+  "onboardingComplete": false,
+  "language": "hebrew",
+  "fastPageTurnEnabled": true,
+  "walkthroughSeen": false,
+  "communityPricesEnabled": false,
+  "shoppingReminderSlots": ["dayBefore", "sameDayMorning"],
+  "pushEnabled": true,
+  "notifyRepliesOnMyPosts": true,
+  "notifyRepliesOnThreads": true,
+  "notifyShareInvites": true,
+  "notifySharedRecipeUpdates": true,
+  "notifyAdminReplies": true,
+  "notifyAnnouncements": true,
+  "foregroundPopupsEnabled": true,
+  "themeMode": null,
+  "whatsNewSeenBuild": null
+}

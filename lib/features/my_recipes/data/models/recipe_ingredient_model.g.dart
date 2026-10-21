@@ -57,9 +57,9 @@ _RecipeIngredientModel _$RecipeIngredientModelFromJson(
 ) => _RecipeIngredientModel(
   name: json['name'] as String,
   amount: (json['amount'] as num?)?.toDouble(),
-  unit:
-      $enumDecodeNullable(_$MeasurementUnitEnumMap, json['unit']) ??
-      MeasurementUnit.unspecified,
+  unit: json['unit'] == null
+      ? MeasurementUnit.unspecified
+      : readMeasurementUnit(json['unit']),
 );
 
 Map<String, dynamic> _$RecipeIngredientModelToJson(

@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeForumRepository implements ForumRepository {
   List<ForumReplyEntity> replies = [];
+  bool throwsOnRead = false;
   bool throwsOnLike = false;
   bool throwsOnReply = false;
 
@@ -32,13 +33,36 @@ class _FakeForumRepository implements ForumRepository {
   Future<List<ForumReplyEntity>> getReplies(
     String postId, {
     required String viewerUid,
-  }) async => replies;
+    bool refresh = false,
+  }) async {
+    if (throwsOnRead) throw Exception('offline');
+    return replies;
+  }
+
+  /// What a direct read of the opening post returns.
+  ForumPostEntity? freshPost;
+
+  @override
+  Future<ForumPostEntity?> getPost(
+    String postId, {
+    required String viewerUid,
+  }) async => freshPost;
 
   @override
   Stream<List<ForumReplyEntity>> watchReplies(
     String postId, {
     required String viewerUid,
   }) => live.stream;
+
+  /// Replies outside the window, fetchable one by one.
+  final older = <String, ForumReplyEntity>{};
+
+  @override
+  Future<ForumReplyEntity?> getReply(
+    String postId,
+    String replyId, {
+    required String viewerUid,
+  }) async => older[replyId];
 
   @override
   Future<String> addReply({
@@ -127,6 +151,45 @@ void main() {
   Future<void> settle() =>
       Future<void>.delayed(const Duration(milliseconds: 5));
 
+  group('reveal', () {
+    test('a reply older than the window is fetched and kept on top, also '
+        'across snapshots', () async {
+      repository.replies = [buildReply('r2')];
+      repository.older['r0'] = buildReply('r0');
+      final bloc = buildBloc();
+      await settle();
+
+      bloc.add(const ForumThreadEvent.reveal('r0'));
+      await settle();
+      expect(
+        (bloc.state as ForumThreadLoaded).replies.map((r) => r.id),
+        ['r0', 'r2'],
+      );
+
+      repository.live.add([buildReply('r2'), buildReply('r3')]);
+      await settle();
+      expect(
+        (bloc.state as ForumThreadLoaded).replies.map((r) => r.id),
+        ['r0', 'r2', 'r3'],
+      );
+      await bloc.close();
+    });
+
+    test('a reply that is gone leaves the thread as it was', () async {
+      repository.replies = [buildReply('r2')];
+      final bloc = buildBloc();
+      await settle();
+
+      bloc.add(const ForumThreadEvent.reveal('missing'));
+      await settle();
+      expect(
+        (bloc.state as ForumThreadLoaded).replies.map((r) => r.id),
+        ['r2'],
+      );
+      await bloc.close();
+    });
+  });
+
   group('live replies', () {
     test('a reply from someone else appears without a reload', () async {
       repository.replies = [buildReply('r1')];
@@ -191,6 +254,83 @@ void main() {
         await bloc.close();
       },
     );
+
+    test(
+      'with the listener closed (app in the background) the composer '
+      'unlocks once the reply is sent',
+      () async {
+        repository.replies = [buildReply('r1')];
+        repository.replyGate = Completer<void>();
+        final bloc = buildBloc();
+        await settle();
+
+        bloc.add(const ForumThreadEvent.setLive(false));
+        await settle();
+        bloc.add(const ForumThreadEvent.addReply('שלום'));
+        await Future<void>.delayed(Duration.zero);
+        expect((bloc.state as ForumThreadLoaded).sending, isTrue);
+
+        // No stream to draw the reply: it is read back once the write lands.
+        repository.replies = [
+          buildReply('r1'),
+          buildReply('r-new', body: 'שלום'),
+        ];
+        repository.replyGate!.complete();
+        await settle();
+
+        final state = bloc.state as ForumThreadLoaded;
+        expect(state.sending, isFalse);
+        expect(state.replies, hasLength(2));
+        await bloc.close();
+      },
+    );
+
+    test('coming back from a failed load re-reads and opens the listener '
+        'without a pull', () async {
+      repository.throwsOnRead = true;
+      final bloc = buildBloc();
+      await settle();
+      expect(bloc.state, isA<ForumThreadError>());
+      expect(repository.live.hasListener, isFalse);
+
+      repository.throwsOnRead = false;
+      repository.replies = [buildReply('r1')];
+      bloc.add(const ForumThreadEvent.setLive(true));
+      await settle();
+      expect((bloc.state as ForumThreadLoaded).replies, hasLength(1));
+      expect(repository.live.hasListener, isTrue);
+      await bloc.close();
+    });
+
+    test('a pull re-reads the opening post too', () async {
+      final bloc = buildBloc();
+      await settle();
+
+      repository.freshPost = post.withLikeToggled();
+      final done = Completer<void>();
+      bloc.add(ForumThreadEvent.refresh(done));
+      await done.future;
+
+      final state = bloc.state as ForumThreadLoaded;
+      expect(state.post.likedByMe, !post.likedByMe);
+      await bloc.close();
+    });
+
+    test('a failed pull keeps the replies and counts the failure', () async {
+      repository.replies = [buildReply('r1')];
+      final bloc = buildBloc();
+      await settle();
+
+      repository.throwsOnRead = true;
+      final done = Completer<void>();
+      bloc.add(ForumThreadEvent.refresh(done));
+      await done.future;
+
+      final state = bloc.state as ForumThreadLoaded;
+      expect(state.replies, hasLength(1));
+      expect(state.loadFailures, 1);
+      await bloc.close();
+    });
 
     test('a snapshot during a like in flight keeps the tapped heart', () async {
       repository.replies = [buildReply('r1', likeCount: 1)];

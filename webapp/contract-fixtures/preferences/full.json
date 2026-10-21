@@ -1,0 +1,21 @@
+{
+  "shoppingDay": "thursday",
+  "dietaryPreferences": ["kosher", "glutenFree", "allergy"],
+  "soundEffectsEnabled": false,
+  "onboardingComplete": true,
+  "language": "english",
+  "fastPageTurnEnabled": false,
+  "walkthroughSeen": true,
+  "communityPricesEnabled": true,
+  "shoppingReminderSlots": ["twoDaysBefore", "sameDayAfternoon"],
+  "pushEnabled": false,
+  "notifyRepliesOnMyPosts": false,
+  "notifyRepliesOnThreads": true,
+  "notifyShareInvites": false,
+  "notifySharedRecipeUpdates": true,
+  "notifyAdminReplies": true,
+  "notifyAnnouncements": false,
+  "foregroundPopupsEnabled": false,
+  "themeMode": "dark",
+  "whatsNewSeenBuild": 42
+}

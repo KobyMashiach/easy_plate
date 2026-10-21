@@ -1,0 +1,63 @@
+{
+  "id": "e129ac52-a447-45c0-8a70-2ddb627f140a",
+  "name": "שקשוקה של סבתא רחל",
+  "items": [
+    {
+      "id": "עגבניות|unspecified",
+      "name": "עגבניות",
+      "unit": "unspecified",
+      "sources": [
+        {
+          "recipeId": "5f400000-0000-4000-8000-000000000001",
+          "label": "שקשוקה של סבתא רחל",
+          "amount": 6
+        }
+      ],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": false
+    },
+    {
+      "id": "פלפל אדום|unspecified",
+      "name": "פלפל אדום",
+      "unit": "unspecified",
+      "sources": [
+        {
+          "recipeId": "5f400000-0000-4000-8000-000000000001",
+          "label": "שקשוקה של סבתא רחל",
+          "amount": 1
+        }
+      ],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": false
+    },
+    {
+      "id": "ביצים|unspecified",
+      "name": "ביצים",
+      "unit": "unspecified",
+      "sources": [
+        {
+          "recipeId": "5f400000-0000-4000-8000-000000000001",
+          "label": "שקשוקה של סבתא רחל",
+          "amount": 4
+        }
+      ],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": false
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T19:30:04.616Z",
+  "selectedPlanIds": [],
+  "contentLang": "he",
+  "contentVersion": 0,
+  "source": "recipe",
+  "recipeId": "5f400000-0000-4000-8000-000000000001",
+  "recipeScale": 1,
+  "recipeServings": 4,
+  "recipeTitle": "שקשוקה של סבתא רחל",
+  "collabId": null,
+  "collabRole": null
+}

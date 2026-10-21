@@ -171,6 +171,19 @@ void main() {
       );
     });
 
+    test('every move of the scope is a new generation', () async {
+      final scope = UserScope();
+      await scope.switchTo('user-1');
+      final first = scope.generation;
+      await scope.switchTo('user-1');
+      expect(scope.generation, first, reason: 'the same account is no move');
+      await scope.clearAccount();
+      expect(scope.generation, greaterThan(first));
+      final wiped = scope.generation;
+      await scope.switchTo('user-1');
+      expect(scope.generation, greaterThan(wiped));
+    });
+
     test('re-opening the same box for the same account is stable', () async {
       final scope = UserScope();
       await scope.switchTo('user-1');

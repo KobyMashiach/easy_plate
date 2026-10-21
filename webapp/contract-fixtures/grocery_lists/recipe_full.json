@@ -1,0 +1,39 @@
+{
+  "id": "0b7e4c55-8d2a-4f61-a7f0-aabbccddeeff",
+  "name": "שקשוקה",
+  "items": [
+    {
+      "id": "עגבניות|unit",
+      "name": "עגבניות",
+      "unit": "unit",
+      "sources": [
+        { "recipeId": "rec-1", "label": "שקשוקה", "amount": 6 },
+        { "recipeId": null, "label": "תוספת חופשית", "amount": 1.5 }
+      ],
+      "isChecked": true,
+      "category": "כללי",
+      "isAdHoc": false
+    },
+    {
+      "id": "1d2e3f40-1111-4222-8333-444455556666",
+      "name": "לחם",
+      "unit": "unit",
+      "sources": [{ "recipeId": null, "label": "לחם", "amount": 1 }],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": true
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T09:31:00.000Z",
+  "selectedPlanIds": [],
+  "contentLang": "he",
+  "contentVersion": 2,
+  "source": "recipe",
+  "recipeId": "rec-1",
+  "recipeScale": 1.5,
+  "recipeServings": 4,
+  "recipeTitle": "שקשוקה",
+  "collabId": "c0ffee00-0000-4000-8000-000000000001",
+  "collabRole": "owner"
+}

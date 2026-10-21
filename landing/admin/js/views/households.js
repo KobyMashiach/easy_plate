@@ -11,12 +11,26 @@ export async function mount({ view }) {
   const count = h("span.muted.small");
   view.append(h("div.toolbar", count), list);
 
+  // A Firestore failure shows the console's error card instead of a spinner
+  // for ever; a newer render (after an action) wins over a slower older one.
+  let seq = 0;
   const render = async () => {
+    const mine = ++seq;
     clear(list);
     list.append(spinner());
-    const snap = await getDocs(query(collection(db, "households"), limit(500)));
-    const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    const names = await profiles(rows.flatMap((r) => r.memberUids || []));
+    let rows, names;
+    try {
+      const snap = await getDocs(query(collection(db, "households"), limit(500)));
+      rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      names = await profiles(rows.flatMap((r) => r.memberUids || []));
+    } catch (err) {
+      if (mine !== seq) return;
+      clear(list);
+      list.append(h("div.card.error", err.message));
+      console.error(err);
+      return;
+    }
+    if (mine !== seq) return;
     clear(list);
     count.textContent = t("hh.count", { n: fmtNumber(rows.length) });
     if (!rows.length) { list.append(empty(t("hh.none"))); return; }
@@ -31,7 +45,7 @@ export async function mount({ view }) {
           } }));
       });
       list.append(h("div.card.stack",
-        h("div.row.between", h("h3", r.title || r.id), badge(t(`hh.tiers.${r.tier}`) || r.tier, "brand")),
+        h("div.row.between", h("h3", r.title || r.id), badge(((k) => (t(k) === k ? r.tier : t(k)))(`hh.tiers.${r.tier}`), "brand")),
         h("div.small.muted", `${t("hh.seats")}: ${(r.memberUids || []).length}/${r.seats || "?"} · ${t("hh.created")} ${fmtDate(r.createdAt, false)}`),
         h("div.stack", members),
         h("div.row", button(t("hh.dissolve"), { kind: "small danger", title: t("hh.dissolveHint"), onclick: async () => {

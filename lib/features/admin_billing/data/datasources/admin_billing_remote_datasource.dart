@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../user_profile/domain/entities/user_permission.dart';
 
@@ -23,6 +24,14 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
   static const eventsCollection = 'purchase_events';
   static const statusCollection = 'account_status';
 
+  /// The admin reads are capped, not paged: every account is held in memory
+  /// and these sit far above what the app has. The dashboard bounds its
+  /// reads by the same two numbers, so its totals and this tab's list cover
+  /// the same documents; past them both go silently short, and the next
+  /// step is paging, not a bigger number.
+  static const maxAccountDocs = 5000;
+  static const maxPurchaseEvents = 2000;
+
   final FirebaseFirestore _firestore;
 
   AdminBillingFirestoreDataSource({FirebaseFirestore? firestore})
@@ -31,14 +40,14 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
   @override
   Future<AdminBillingSnapshot> load() async {
     final results = await Future.wait([
-      _firestore.collection(usersCollection).limit(2000).get(),
-      _firestore.collection(entitlementsCollection).limit(2000).get(),
+      _firestore.collection(usersCollection).limit(maxAccountDocs).get(),
+      _firestore.collection(entitlementsCollection).limit(maxAccountDocs).get(),
       _firestore
           .collection(eventsCollection)
           .orderBy('eventAt', descending: true)
-          .limit(1000)
+          .limit(maxPurchaseEvents)
           .get(),
-      _firestore.collection(statusCollection).limit(2000).get(),
+      _firestore.collection(statusCollection).limit(maxAccountDocs).get(),
     ]);
     final users = results[0].docs;
     final entitlements = {for (final d in results[1].docs) d.id: d.data()};
@@ -67,7 +76,7 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
     final now = DateTime.now();
     final accounts = [
       for (final uid in uids)
-        _toAccount(
+        toAccount(
           uid,
           profiles[uid],
           entitlements[uid],
@@ -77,7 +86,19 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
         ),
     ];
     accounts.sort(_byInterest);
-    return AdminBillingSnapshot(accounts: accounts, orphanEvents: orphans);
+    return AdminBillingSnapshot(
+      accounts: accounts,
+      orphanEvents: orphans,
+      accountsCap:
+          [results[0], results[1], results[3]].any(
+            (r) => r.docs.length >= maxAccountDocs,
+          )
+          ? maxAccountDocs
+          : null,
+      eventsCap: results[2].docs.length >= maxPurchaseEvents
+          ? maxPurchaseEvents
+          : null,
+    );
   }
 
   /// Problems first, then paying accounts, then the rest — by most recent
@@ -127,7 +148,13 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
     }, SetOptions(merge: true));
   }
 
-  BillingAccountEntity _toAccount(
+  // users/{uid} is written by its owner: a field of the wrong type there
+  // must cost that one value, not the whole list for the administrator.
+  static String? _str(Object? v) => v is String ? v : null;
+  static DateTime? _time(Object? v) => v is Timestamp ? v.toDate() : null;
+
+  @visibleForTesting
+  static BillingAccountEntity toAccount(
     String uid,
     Map<String, dynamic>? profile,
     Map<String, dynamic>? entitlement,
@@ -144,11 +171,11 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
     final lastEventAt = entitlement?['lastEventAt'];
     return BillingAccountEntity(
       uid: uid,
-      name: (profile?['fullName'] as String?)?.trim().isNotEmpty == true
-          ? (profile!['fullName'] as String).trim()
+      name: _str(profile?['fullName'])?.trim().isNotEmpty == true
+          ? _str(profile!['fullName'])!.trim()
           : uid,
-      email: profile?['email'] as String?,
-      phone: profile?['phoneNumber'] as String?,
+      email: _str(profile?['email']),
+      phone: _str(profile?['phoneNumber']),
       premium: premium,
       premiumUntil: until,
       premiumFrom: from,
@@ -167,11 +194,11 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
       events: events,
       disabled: status?['disabled'] == true,
       blockMessage: (status?['message'] as String?) ?? '',
-      platform: (profile?['platform'] as String?) ?? '',
-      appVersion: (profile?['appVersion'] as String?) ?? '',
-      lastSeenAt: (profile?['lastSeenAt'] as Timestamp?)?.toDate(),
-      createdAt: (profile?['createdAt'] as Timestamp?)?.toDate(),
-      hasPushToken: (profile?['pushToken'] as String?)?.isNotEmpty == true,
+      platform: _str(profile?['platform']) ?? '',
+      appVersion: _str(profile?['appVersion']) ?? '',
+      lastSeenAt: _time(profile?['lastSeenAt']),
+      createdAt: _time(profile?['createdAt']),
+      hasPushToken: _str(profile?['pushToken'])?.isNotEmpty == true,
       permission: UserPermission.fromName(profile?['permission']),
     );
   }

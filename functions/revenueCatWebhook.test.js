@@ -100,3 +100,28 @@ test("every event is recorded, with whether it carried the entitlement", () => {
   const anon = eventRecord(event({ app_user_id: "$RCAnonymousID:1", aliases: [] }));
   assert.equal(anon.data.uid, null);
 });
+
+test("an app user id that cannot be a document id is treated as anonymous", () => {
+  const { decide, eventRecord, isAnonymous } = require("./revenueCatWebhook").internals;
+  for (const bad of ["a/b", "..", ".", "__x__", "x".repeat(129)]) assert.equal(isAnonymous(bad), true, bad);
+  assert.equal(isAnonymous("uid123"), false);
+  const event = { type: "INITIAL_PURCHASE", app_user_id: "users/victim", aliases: ["../x"], entitlement_ids: ["easy_plate_ai_pro"], expiration_at_ms: Date.now() + 1e9, id: "ev/1" };
+  assert.deepEqual(decide(event), []);
+  assert.equal(eventRecord(event).id, "ev_1");
+  assert.equal(eventRecord(event).data.uid, null);
+});
+
+test("one source's revocation does not end premium another source still holds", () => {
+  const { revokesAnotherSource } = require("./revenueCatWebhook").internals;
+  const now = 1_000_000;
+  const ts = (ms) => ({ toMillis: () => ms });
+  const off = (source) => ({ source, premium: false });
+  assert.equal(revokesAnotherSource({ premium: true, source: "revenuecat", premiumUntil: ts(now + 1) }, off("stripe"), now), true);
+  assert.equal(revokesAnotherSource({ premium: true, source: "stripe" }, off("revenuecat"), now), true);
+  assert.equal(revokesAnotherSource({ premium: true, source: "household" }, off("revenuecat"), now), true);
+  assert.equal(revokesAnotherSource({ premium: true, source: "revenuecat" }, off("revenuecat"), now), false, "a source ends its own");
+  assert.equal(revokesAnotherSource({ premium: true, source: "revenuecat", premiumUntil: ts(now - 1) }, off("stripe"), now), false, "already over");
+  assert.equal(revokesAnotherSource({ premium: false, source: "revenuecat" }, off("stripe"), now), false);
+  assert.equal(revokesAnotherSource({ premium: true, source: "revenuecat" }, { source: "stripe", premium: true }, now), false, "a grant is not a revocation");
+  assert.equal(revokesAnotherSource(undefined, off("stripe"), now), false);
+});

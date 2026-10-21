@@ -3,9 +3,12 @@ import '../entities/shared_recipe_entity.dart';
 
 abstract class SharedRecipesRepository {
   /// Newest first. [viewerUid] resolves each entry's `likedByMe`.
+  /// [refresh] (pull to refresh) reads likes and author profiles past their
+  /// caches, so another device's like or a rename shows up at once.
   Future<List<SharedRecipeEntity>> getFeed({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   });
 
   /// Null when the recipe has been unshared — a forum reply can outlive the
@@ -19,6 +22,22 @@ abstract class SharedRecipesRepository {
   Future<List<SharedRecipeEntity>> getByAuthor(
     String authorUid, {
     int limit = 200,
+  });
+
+  /// The viewer's own posts, `likedByMe` resolved, in no particular order:
+  /// the "mine" scope reaches past the newest-first feed window with these.
+  Future<List<SharedRecipeEntity>> getMine({
+    required String viewerUid,
+    int limit = 200,
+    bool refresh = false,
+  });
+
+  /// The posts among [ids] that still exist, in no particular order: the
+  /// "saved" scope's posts older than the feed window.
+  Future<List<SharedRecipeEntity>> getByIds(
+    Set<String> ids, {
+    required String viewerUid,
+    bool refresh = false,
   });
 
   /// Publishes [recipe]; resolves with the new post's id.

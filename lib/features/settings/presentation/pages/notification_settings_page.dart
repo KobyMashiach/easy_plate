@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
@@ -77,7 +78,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           leadingIcon: Icons.arrow_back_rounded,
           onLeadingTap: () => Navigator.of(context).maybePop(),
         ),
-        body: BlocBuilder<SettingsBloc, SettingsState>(
+        body: BlocConsumer<SettingsBloc, SettingsState>(
+          listenWhen: SettingsBloc.saveFailedBetween,
+          listener: (context, _) =>
+              AppDialog.error(message: t.settings.saveFailed).notify(context),
           builder: (context, state) {
             return switch (state) {
               SettingsLoading() => const Center(

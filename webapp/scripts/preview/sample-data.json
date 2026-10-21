@@ -1,0 +1,1863 @@
+{
+ "_comment": "Sample data for the preview harness (webapp/scripts/preview). seed.mjs writes it into the emulators; test/store_assets/web_parity_screens_test.dart renders the native screens from it. Collection records are exactly the Dart toJson shapes (see webapp/contract-fixtures).",
+ "user": {
+  "uid": "preview-user-0001",
+  "phoneNumber": "+972500000000",
+  "email": "preview@easyplate.test",
+  "password": "preview-pass-123",
+  "fullName": "קרן כהן",
+  "productId": "easy_plate_ai_pro_family_yearly",
+  "store": "APP_STORE"
+ },
+ "people": [
+  {
+   "uid": "cook-rachel",
+   "fullName": "רחל אברהמי"
+  },
+  {
+   "uid": "cook-yossi",
+   "fullName": "יוסי ממן"
+  },
+  {
+   "uid": "cook-maya",
+   "fullName": "מאיה לוי"
+  },
+  {
+   "uid": "cook-daniel",
+   "fullName": "דניאל כהן"
+  }
+ ],
+ "images": {
+  "pita_zaatar": "images/pita_zaatar.jpg",
+  "shakshuka": "images/shakshuka.jpg",
+  "ktzitzot": "images/ktzitzot.jpg",
+  "kubbeh_selek": "images/kubbeh_selek.jpg",
+  "lentil_soup": "images/lentil_soup.jpg",
+  "cover_chocolate": "images/cover_chocolate.jpg",
+  "cover_healthy": "images/cover_healthy.jpg"
+ },
+ "recipes": [
+  {
+   "id": "5a000000-0000-4000-8000-000000000001",
+   "title": "פיתה זעתר",
+   "prepTimeMinutes": 7,
+   "cookTimeMinutes": null,
+   "ingredients": [
+    {
+     "name": "פיתות",
+     "amount": 4,
+     "unit": "unit"
+    },
+    {
+     "name": "זעתר",
+     "amount": 3,
+     "unit": "tablespoon"
+    },
+    {
+     "name": "שמן זית",
+     "amount": 4,
+     "unit": "tablespoon"
+    },
+    {
+     "name": "מלח גס",
+     "amount": null,
+     "unit": "pinch"
+    }
+   ],
+   "steps": [
+    "מערבבים זעתר עם שמן זית",
+    "מורחים על הפיתות",
+    "אופים 5 דקות ב־220 מעלות"
+   ],
+   "dietaryTags": [
+    "vegetarian",
+    "kosher"
+   ],
+   "sourceChannel": "manual",
+   "sourceUrl": null,
+   "createdAt": "2026-10-17T08:00:00.000Z",
+   "imageFileName": "pita_zaatar.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": "recipe_images/preview-user-0001/pita_zaatar.jpg",
+   "allergens": [
+    "gluten",
+    "sesame"
+   ],
+   "mayContain": [],
+   "servings": 4,
+   "nutrition": {
+    "calories": 280,
+    "proteinGrams": 7,
+    "carbsGrams": 38,
+    "fatGrams": 11
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000002",
+   "title": "שקשוקה קלאסית",
+   "prepTimeMinutes": 10,
+   "cookTimeMinutes": 25,
+   "ingredients": [
+    {
+     "name": "ביצים",
+     "amount": 4,
+     "unit": "unit"
+    },
+    {
+     "name": "עגבניות",
+     "amount": 6,
+     "unit": "unit"
+    },
+    {
+     "name": "פלפל אדום",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "בצל",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "שום",
+     "amount": 3,
+     "unit": "unit"
+    },
+    {
+     "name": "רסק עגבניות",
+     "amount": 2,
+     "unit": "tablespoon"
+    },
+    {
+     "name": "פפריקה מתוקה",
+     "amount": 1,
+     "unit": "teaspoon"
+    },
+    {
+     "name": "כמון",
+     "amount": 0.5,
+     "unit": "teaspoon"
+    },
+    {
+     "name": "שמן זית",
+     "amount": 3,
+     "unit": "tablespoon"
+    }
+   ],
+   "steps": [
+    "מטגנים את הבצל והשום בשמן זית עד שהם מזהיבים",
+    "מוסיפים פלפל ועגבניות קצוצות ומבשלים 15 דקות",
+    "מתבלים בפפריקה, כמון ומלח",
+    "שוברים את הביצים לתוך הרוטב, מכסים ומבשלים 6–8 דקות",
+    "מפזרים פטרוזיליה ומגישים עם לחם טרי"
+   ],
+   "dietaryTags": [
+    "vegetarian",
+    "kosher",
+    "allergy"
+   ],
+   "sourceChannel": "urlScrape",
+   "sourceUrl": "https://example.com/shakshuka",
+   "createdAt": "2026-10-16T08:00:00.000Z",
+   "imageFileName": "shakshuka.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": "recipe_images/preview-user-0001/shakshuka.jpg",
+   "allergens": [
+    "eggs"
+   ],
+   "mayContain": [],
+   "servings": 4,
+   "nutrition": {
+    "calories": 290,
+    "proteinGrams": 14,
+    "carbsGrams": 16,
+    "fatGrams": 20
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000003",
+   "title": "קציצות עם אפונה ב10 דקות",
+   "prepTimeMinutes": 10,
+   "cookTimeMinutes": 20,
+   "ingredients": [
+    {
+     "name": "בשר טחון",
+     "amount": 500,
+     "unit": "gram"
+    },
+    {
+     "name": "אפונה קפואה",
+     "amount": 400,
+     "unit": "gram"
+    },
+    {
+     "name": "בצל",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "ביצה",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "פירורי לחם",
+     "amount": 0.5,
+     "unit": "cup"
+    },
+    {
+     "name": "כורכום",
+     "amount": 1,
+     "unit": "teaspoon"
+    }
+   ],
+   "steps": [
+    "מערבבים בשר, בצל מגורר, ביצה ופירורי לחם",
+    "יוצרים קציצות ומשחימים במחבת",
+    "מוסיפים אפונה, כורכום וכוס מים ומבשלים 15 דקות"
+   ],
+   "dietaryTags": [
+    "meat",
+    "kosher"
+   ],
+   "sourceChannel": "manual",
+   "sourceUrl": null,
+   "createdAt": "2026-10-15T08:00:00.000Z",
+   "imageFileName": "ktzitzot.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": "c0ab0000-0000-4000-8000-000000000001",
+   "collabRole": "owner",
+   "imageStoragePath": "recipe_images/preview-user-0001/ktzitzot.jpg",
+   "allergens": [
+    "eggs",
+    "gluten"
+   ],
+   "mayContain": [],
+   "servings": 5,
+   "nutrition": {
+    "calories": 410,
+    "proteinGrams": 28,
+    "carbsGrams": 18,
+    "fatGrams": 24
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000004",
+   "title": "קובה סלק",
+   "prepTimeMinutes": 50,
+   "cookTimeMinutes": 120,
+   "ingredients": [
+    {
+     "name": "סלק",
+     "amount": 4,
+     "unit": "unit"
+    },
+    {
+     "name": "סולת",
+     "amount": 2,
+     "unit": "cup"
+    },
+    {
+     "name": "בשר טחון",
+     "amount": 500,
+     "unit": "gram"
+    },
+    {
+     "name": "לימון",
+     "amount": 2,
+     "unit": "unit"
+    },
+    {
+     "name": "סוכר",
+     "amount": 1,
+     "unit": "tablespoon"
+    },
+    {
+     "name": "סלרי",
+     "amount": 2,
+     "unit": "unit"
+    }
+   ],
+   "steps": [
+    "לשים בצק מסולת ומים",
+    "ממלאים כדורי סולת בבשר מתובל",
+    "מבשלים מרק סלק חמוץ־מתוק",
+    "מבשלים את הקובה במרק 40 דקות"
+   ],
+   "dietaryTags": [
+    "meat",
+    "kosher"
+   ],
+   "sourceChannel": "manual",
+   "sourceUrl": null,
+   "createdAt": "2026-10-14T08:00:00.000Z",
+   "imageFileName": "kubbeh_selek.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": "recipe_images/preview-user-0001/kubbeh_selek.jpg",
+   "allergens": [
+    "gluten"
+   ],
+   "mayContain": [],
+   "servings": 6,
+   "nutrition": {
+    "calories": 780,
+    "proteinGrams": 32,
+    "carbsGrams": 85,
+    "fatGrams": 30
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000005",
+   "title": "מרק עדשים כתומות",
+   "prepTimeMinutes": 10,
+   "cookTimeMinutes": 35,
+   "ingredients": [
+    {
+     "name": "עדשים כתומות",
+     "amount": 2,
+     "unit": "cup"
+    },
+    {
+     "name": "בצל",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "גזר",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "שום",
+     "amount": 2,
+     "unit": "unit"
+    },
+    {
+     "name": "כמון",
+     "amount": 1,
+     "unit": "teaspoon"
+    },
+    {
+     "name": "כורכום",
+     "amount": 1,
+     "unit": "teaspoon"
+    },
+    {
+     "name": "מים",
+     "amount": 1.5,
+     "unit": "liter"
+    },
+    {
+     "name": "שמן זית",
+     "amount": 2,
+     "unit": "tablespoon"
+    },
+    {
+     "name": "לימון",
+     "amount": 0.5,
+     "unit": "unit"
+    }
+   ],
+   "steps": [
+    "מטגנים בצל, גזר ושום בשמן זית",
+    "מוסיפים עדשים, תבלינים ומים",
+    "מבשלים 30 דקות וטוחנים",
+    "מגישים עם לימון ושמן זית"
+   ],
+   "dietaryTags": [
+    "vegan",
+    "kosher",
+    "glutenFree"
+   ],
+   "sourceChannel": "manual",
+   "sourceUrl": null,
+   "createdAt": "2026-10-13T08:00:00.000Z",
+   "imageFileName": "lentil_soup.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": "recipe_images/preview-user-0001/lentil_soup.jpg",
+   "allergens": [],
+   "mayContain": [],
+   "servings": 6,
+   "nutrition": {
+    "calories": 240,
+    "proteinGrams": 13,
+    "carbsGrams": 36,
+    "fatGrams": 5
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000006",
+   "title": "סופלה שוקולד",
+   "prepTimeMinutes": 15,
+   "cookTimeMinutes": 12,
+   "ingredients": [
+    {
+     "name": "שוקולד מריר",
+     "amount": 200,
+     "unit": "gram"
+    },
+    {
+     "name": "חמאה",
+     "amount": 100,
+     "unit": "gram"
+    },
+    {
+     "name": "ביצים",
+     "amount": 4,
+     "unit": "unit"
+    },
+    {
+     "name": "סוכר",
+     "amount": 0.5,
+     "unit": "cup"
+    },
+    {
+     "name": "קמח",
+     "amount": 2,
+     "unit": "tablespoon"
+    }
+   ],
+   "steps": [
+    "ממיסים שוקולד וחמאה",
+    "טורפים ביצים וסוכר ומקפלים פנימה",
+    "אופים 12 דקות ב־200 מעלות"
+   ],
+   "dietaryTags": [
+    "dairy",
+    "kosher"
+   ],
+   "sourceChannel": "manual",
+   "sourceUrl": null,
+   "createdAt": "2026-10-12T08:00:00.000Z",
+   "imageFileName": "cover_chocolate.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": "recipe_images/preview-user-0001/cover_chocolate.jpg",
+   "allergens": [
+    "milk",
+    "eggs",
+    "gluten"
+   ],
+   "mayContain": [],
+   "servings": 6,
+   "nutrition": {
+    "calories": 420,
+    "proteinGrams": 7,
+    "carbsGrams": 38,
+    "fatGrams": 27
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000007",
+   "title": "קערת קינואה וירקות",
+   "prepTimeMinutes": 15,
+   "cookTimeMinutes": 15,
+   "ingredients": [
+    {
+     "name": "קינואה",
+     "amount": 1,
+     "unit": "cup"
+    },
+    {
+     "name": "אבוקדו",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "חומוס מבושל",
+     "amount": 1,
+     "unit": "cup"
+    },
+    {
+     "name": "בטטה",
+     "amount": 1,
+     "unit": "unit"
+    },
+    {
+     "name": "עלי תרד",
+     "amount": 2,
+     "unit": "cup"
+    },
+    {
+     "name": "טחינה",
+     "amount": 3,
+     "unit": "tablespoon"
+    }
+   ],
+   "steps": [
+    "מבשלים את הקינואה",
+    "צולים בטטה בתנור",
+    "מרכיבים קערה ומזלפים טחינה"
+   ],
+   "dietaryTags": [
+    "vegan",
+    "kosher",
+    "glutenFree"
+   ],
+   "sourceChannel": "manual",
+   "sourceUrl": null,
+   "createdAt": "2026-10-11T08:00:00.000Z",
+   "imageFileName": "cover_healthy.jpg",
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": "recipe_images/preview-user-0001/cover_healthy.jpg",
+   "allergens": [
+    "sesame"
+   ],
+   "mayContain": [],
+   "servings": 2,
+   "nutrition": {
+    "calories": 510,
+    "proteinGrams": 17,
+    "carbsGrams": 62,
+    "fatGrams": 21
+   },
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5a000000-0000-4000-8000-000000000008",
+   "title": "פסטה עגבניות ובזיליקום",
+   "prepTimeMinutes": 5,
+   "cookTimeMinutes": 15,
+   "ingredients": [
+    {
+     "name": "פסטה",
+     "amount": 500,
+     "unit": "gram"
+    },
+    {
+     "name": "עגבניות שרי",
+     "amount": 300,
+     "unit": "gram"
+    },
+    {
+     "name": "שום",
+     "amount": 3,
+     "unit": "unit"
+    },
+    {
+     "name": "בזיליקום",
+     "amount": 1,
+     "unit": "unit"
+    }
+   ],
+   "steps": [
+    "מבשלים פסטה",
+    "מקפיצים שרי ושום",
+    "מערבבים עם בזיליקום"
+   ],
+   "dietaryTags": [
+    "vegetarian",
+    "kosher"
+   ],
+   "sourceChannel": "rawText",
+   "sourceUrl": null,
+   "createdAt": "2026-10-09T08:00:00.000Z",
+   "imageFileName": null,
+   "savedFromSharedId": null,
+   "pendingAnalysis": false,
+   "collabId": null,
+   "collabRole": null,
+   "imageStoragePath": null,
+   "allergens": [
+    "gluten"
+   ],
+   "mayContain": [],
+   "servings": null,
+   "nutrition": null,
+   "sharedRecipeId": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  }
+ ],
+ "books": [
+  {
+   "id": "5b000000-0000-4000-8000-000000000001",
+   "title": "בריא לי אז כיף לי",
+   "recipeRefs": [
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000007",
+     "order": 0
+    },
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000005",
+     "order": 1
+    },
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000002",
+     "order": 2
+    },
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000001",
+     "order": 3
+    }
+   ],
+   "collaborators": {},
+   "createdAt": "2026-10-05T09:00:00.000Z",
+   "coverImageFileName": "cover_healthy.jpg",
+   "coverImageStoragePath": "recipe_images/preview-user-0001/cover_healthy.jpg",
+   "spine": "teal",
+   "collabId": null,
+   "collabRole": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5b000000-0000-4000-8000-000000000002",
+   "title": "שחיתות",
+   "recipeRefs": [
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000006",
+     "order": 0
+    },
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000004",
+     "order": 1
+    },
+    {
+     "recipeId": "5a000000-0000-4000-8000-000000000003",
+     "order": 2
+    }
+   ],
+   "collaborators": {},
+   "createdAt": "2026-10-06T09:00:00.000Z",
+   "coverImageFileName": "cover_chocolate.jpg",
+   "coverImageStoragePath": "recipe_images/preview-user-0001/cover_chocolate.jpg",
+   "spine": "rose",
+   "collabId": null,
+   "collabRole": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  }
+ ],
+ "meal_plans": [
+  {
+   "id": "5c000000-0000-4000-8000-000000000001",
+   "name": "התפריט השבועי",
+   "meals": [
+    {
+     "id": "5e000000-0000-4000-8000-000000000001",
+     "weekday": 0,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000010",
+       "recipeId": "5a000000-0000-4000-8000-000000000001",
+       "freeText": null,
+       "ingredients": []
+      },
+      {
+       "id": "5d000000-0000-4000-8000-000000000011",
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000002",
+     "weekday": 0,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000020",
+       "recipeId": null,
+       "freeText": "ביצה",
+       "ingredients": [
+        {
+         "name": "ביצים",
+         "amount": 2,
+         "unit": "unit"
+        }
+       ]
+      },
+      {
+       "id": "5d000000-0000-4000-8000-000000000021",
+       "recipeId": "5a000000-0000-4000-8000-000000000003",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000003",
+     "weekday": 0,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000030",
+       "recipeId": "5a000000-0000-4000-8000-000000000005",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000004",
+     "weekday": 1,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000040",
+       "recipeId": null,
+       "freeText": "יוגורט וגרנולה",
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000005",
+     "weekday": 1,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000050",
+       "recipeId": "5a000000-0000-4000-8000-000000000007",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000006",
+     "weekday": 1,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000060",
+       "recipeId": "5a000000-0000-4000-8000-000000000008",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000007",
+     "weekday": 2,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000070",
+       "recipeId": "5a000000-0000-4000-8000-000000000001",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000008",
+     "weekday": 2,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000080",
+       "recipeId": "5a000000-0000-4000-8000-000000000004",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000009",
+     "weekday": 2,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000090",
+       "recipeId": null,
+       "freeText": "סלט ירקות וחביתה",
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000010",
+     "weekday": 3,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000100",
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000011",
+     "weekday": 3,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000110",
+       "recipeId": "5a000000-0000-4000-8000-000000000003",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000012",
+     "weekday": 3,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000120",
+       "recipeId": "5a000000-0000-4000-8000-000000000005",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000013",
+     "weekday": 4,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000130",
+       "recipeId": null,
+       "freeText": "טוסט גבינה",
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000014",
+     "weekday": 4,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000140",
+       "recipeId": "5a000000-0000-4000-8000-000000000007",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000015",
+     "weekday": 4,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000150",
+       "recipeId": null,
+       "freeText": "פיצה ביתית",
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000016",
+     "weekday": 5,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000160",
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000017",
+     "weekday": 5,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000170",
+       "recipeId": null,
+       "freeText": "פלאפל בחוץ",
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000018",
+     "weekday": 5,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000180",
+       "recipeId": "5a000000-0000-4000-8000-000000000004",
+       "freeText": null,
+       "ingredients": []
+      },
+      {
+       "id": "5d000000-0000-4000-8000-000000000181",
+       "recipeId": "5a000000-0000-4000-8000-000000000006",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000019",
+     "weekday": 6,
+     "name": "בוקר",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000190",
+       "recipeId": "5a000000-0000-4000-8000-000000000001",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000020",
+     "weekday": 6,
+     "name": "צהריים",
+     "order": 1,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000200",
+       "recipeId": "5a000000-0000-4000-8000-000000000003",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    },
+    {
+     "id": "5e000000-0000-4000-8000-000000000021",
+     "weekday": 6,
+     "name": "ערב",
+     "order": 2,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000210",
+       "recipeId": "5a000000-0000-4000-8000-000000000008",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    }
+   ],
+   "createdAt": "2026-10-11T09:00:00.000Z",
+   "collabId": null,
+   "collabRole": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  },
+  {
+   "id": "5c000000-0000-4000-8000-000000000002",
+   "name": "ארוחות שישי",
+   "meals": [
+    {
+     "id": "5e000000-0000-4000-8000-000000000099",
+     "weekday": 5,
+     "name": "ערב",
+     "order": 0,
+     "items": [
+      {
+       "id": "5d000000-0000-4000-8000-000000000999",
+       "recipeId": "5a000000-0000-4000-8000-000000000004",
+       "freeText": null,
+       "ingredients": []
+      }
+     ]
+    }
+   ],
+   "createdAt": "2026-10-02T09:00:00.000Z",
+   "collabId": null,
+   "collabRole": null,
+   "contentLang": "he",
+   "contentVersion": 0
+  }
+ ],
+ "grocery_lists": [
+  {
+   "id": "5f100000-0000-4000-8000-000000000001",
+   "name": "קניות לשבוע",
+   "items": [
+    {
+     "id": "פרגיות|kilogram",
+     "name": "פרגיות",
+     "unit": "kilogram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000003",
+       "label": "קציצות",
+       "amount": 1
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "בצל|kilogram",
+     "name": "בצל",
+     "unit": "kilogram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 1
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "אנטריקוט|kilogram",
+     "name": "אנטריקוט",
+     "unit": "kilogram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000004",
+       "label": "קובה סלק",
+       "amount": 1
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "עגבניות|kilogram",
+     "name": "עגבניות",
+     "unit": "kilogram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 1
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "ביצים|unit",
+     "name": "ביצים",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 12
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "פיתות|unit",
+     "name": "פיתות",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000001",
+       "label": "פיתה זעתר",
+       "amount": 8
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "זעתר|gram",
+     "name": "זעתר",
+     "unit": "gram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000001",
+       "label": "פיתה זעתר",
+       "amount": 100
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "עדשים כתומות|gram",
+     "name": "עדשים כתומות",
+     "unit": "gram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000005",
+       "label": "מרק עדשים כתומות",
+       "amount": 500
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "אפונה קפואה|gram",
+     "name": "אפונה קפואה",
+     "unit": "gram",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000003",
+       "label": "קציצות",
+       "amount": 400
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "סלק|unit",
+     "name": "סלק",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000004",
+       "label": "קובה סלק",
+       "amount": 4
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "5f000000-0000-4000-8000-000000004604",
+     "name": "חלב 3%",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": null,
+       "label": "חלב",
+       "amount": 2
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": true
+    }
+   ],
+   "collaborators": {},
+   "createdAt": "2026-10-12T09:00:00.000Z",
+   "selectedPlanIds": [
+    "5c000000-0000-4000-8000-000000000001"
+   ],
+   "contentLang": "he",
+   "contentVersion": 0,
+   "source": "plans",
+   "recipeId": null,
+   "recipeScale": 1,
+   "recipeServings": null,
+   "recipeTitle": null,
+   "collabId": null,
+   "collabRole": null
+  },
+  {
+   "id": "5f100000-0000-4000-8000-000000000002",
+   "name": "שקשוקה קלאסית",
+   "items": [
+    {
+     "id": "ביצים|unit",
+     "name": "ביצים",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 4
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "עגבניות|unit",
+     "name": "עגבניות",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 6
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "פלפל אדום|unit",
+     "name": "פלפל אדום",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 1
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "שום|unit",
+     "name": "שום",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": "5a000000-0000-4000-8000-000000000002",
+       "label": "שקשוקה קלאסית",
+       "amount": 3
+      }
+     ],
+     "isChecked": true,
+     "category": "כללי",
+     "isAdHoc": false
+    },
+    {
+     "id": "5f000000-0000-4000-8000-000000004496",
+     "name": "לחם",
+     "unit": "unit",
+     "sources": [
+      {
+       "recipeId": null,
+       "label": "לחם",
+       "amount": 1
+      }
+     ],
+     "isChecked": false,
+     "category": "כללי",
+     "isAdHoc": true
+    }
+   ],
+   "collaborators": {},
+   "createdAt": "2026-10-16T09:00:00.000Z",
+   "selectedPlanIds": [],
+   "contentLang": "he",
+   "contentVersion": 0,
+   "source": "recipe",
+   "recipeId": "5a000000-0000-4000-8000-000000000002",
+   "recipeScale": 1,
+   "recipeServings": 4,
+   "recipeTitle": "שקשוקה קלאסית",
+   "collabId": null,
+   "collabRole": null
+  }
+ ],
+ "receipts": [
+  {
+   "id": "5f200000-0000-4000-8000-000000000001",
+   "store": "שופרסל",
+   "purchasedAt": "2026-10-12T00:00:00.000",
+   "currency": "ILS",
+   "total": 245.6,
+   "itemCount": 6,
+   "createdAt": "2026-10-12T18:05:00.000Z",
+   "imageFileNames": []
+  },
+  {
+   "id": "5f200000-0000-4000-8000-000000000002",
+   "store": "רמי לוי",
+   "purchasedAt": "2026-10-15T00:00:00.000",
+   "currency": "ILS",
+   "total": 132.4,
+   "itemCount": 4,
+   "createdAt": "2026-10-15T19:10:00.000Z",
+   "imageFileNames": []
+  }
+ ],
+ "price_records": [
+  {
+   "id": "5f300000-0000-4000-8000-000000000001",
+   "name": "פרגיות",
+   "normalizedName": "פרגיות",
+   "unitPrice": 59.9,
+   "quantity": 1.2,
+   "currency": "ILS",
+   "store": "שופרסל",
+   "purchasedAt": "2026-10-12T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000001",
+   "printedName": "פרגיות עוף טרי",
+   "unit": "kg"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000002",
+   "name": "אנטריקוט",
+   "normalizedName": "אנטריקוט",
+   "unitPrice": 119.05,
+   "quantity": 0.85,
+   "currency": "ILS",
+   "store": "שופרסל",
+   "purchasedAt": "2026-10-12T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000001",
+   "printedName": "אנטריקוט ח. טרי מיושן",
+   "unit": "kg"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000003",
+   "name": "עגבניות",
+   "normalizedName": "עגבניות",
+   "unitPrice": 2.92,
+   "quantity": 1.5,
+   "currency": "ILS",
+   "store": "שופרסל",
+   "purchasedAt": "2026-10-12T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000001",
+   "printedName": null,
+   "unit": "kg"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000004",
+   "name": "ביצים",
+   "normalizedName": "ביצים",
+   "unitPrice": 12.9,
+   "quantity": 1,
+   "currency": "ILS",
+   "store": "שופרסל",
+   "purchasedAt": "2026-10-12T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000001",
+   "printedName": "ביצים L 12",
+   "unit": "unit"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000005",
+   "name": "בצל",
+   "normalizedName": "בצל",
+   "unitPrice": 2.9,
+   "quantity": 1,
+   "currency": "ILS",
+   "store": "רמי לוי",
+   "purchasedAt": "2026-10-15T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000002",
+   "printedName": null,
+   "unit": "kg"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000006",
+   "name": "עגבניות",
+   "normalizedName": "עגבניות",
+   "unitPrice": 3.4,
+   "quantity": 2,
+   "currency": "ILS",
+   "store": "רמי לוי",
+   "purchasedAt": "2026-10-15T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000002",
+   "printedName": null,
+   "unit": "kg"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000007",
+   "name": "פיתות",
+   "normalizedName": "פיתות",
+   "unitPrice": 8.9,
+   "quantity": 1,
+   "currency": "ILS",
+   "store": "רמי לוי",
+   "purchasedAt": "2026-10-15T00:00:00.000",
+   "receiptId": "5f200000-0000-4000-8000-000000000002",
+   "printedName": null,
+   "unit": "unit"
+  },
+  {
+   "id": "5f300000-0000-4000-8000-000000000008",
+   "name": "חלב 3%",
+   "normalizedName": "חלב 3%",
+   "unitPrice": 6.9,
+   "quantity": 2,
+   "currency": "ILS",
+   "store": null,
+   "purchasedAt": "2026-10-16T10:00:00.000Z",
+   "receiptId": "manual",
+   "printedName": null,
+   "unit": "unit"
+  }
+ ],
+ "product_pricing": [
+  {
+   "key": "עגבניות|kg",
+   "mode": "store",
+   "store": "רמי לוי",
+   "receiptIds": []
+  }
+ ],
+ "preferences": {
+  "shoppingDay": "thursday",
+  "dietaryPreferences": [
+   "kosher"
+  ],
+  "soundEffectsEnabled": true,
+  "onboardingComplete": true,
+  "language": "hebrew",
+  "fastPageTurnEnabled": true,
+  "walkthroughSeen": true,
+  "communityPricesEnabled": false,
+  "shoppingReminderSlots": [
+   "dayBefore",
+   "sameDayMorning"
+  ],
+  "pushEnabled": true,
+  "notifyRepliesOnMyPosts": true,
+  "notifyRepliesOnThreads": true,
+  "notifyShareInvites": true,
+  "notifySharedRecipeUpdates": true,
+  "notifyAdminReplies": true,
+  "notifyAnnouncements": true,
+  "foregroundPopupsEnabled": true,
+  "themeMode": null,
+  "whatsNewSeenBuild": null
+ },
+ "usage": {
+  "day": "2026-10-18",
+  "viewedSharedIds": [],
+  "aiExtractions": 1
+ },
+ "shared_recipes": [
+  {
+   "id": "5f400000-0000-4000-8000-000000000001",
+   "title": "שקשוקה של סבתא רחל",
+   "authorUid": "cook-rachel",
+   "likeCount": 248,
+   "daysAgo": 2,
+   "likedByMe": false,
+   "ingredients": [
+    {
+     "name": "עגבניות",
+     "amount": 6,
+     "unit": "unspecified"
+    },
+    {
+     "name": "פלפל אדום",
+     "amount": 1,
+     "unit": "unspecified"
+    },
+    {
+     "name": "ביצים",
+     "amount": 4,
+     "unit": "unspecified"
+    }
+   ],
+   "steps": [
+    "מכינים את כל המרכיבים",
+    "מבשלים לפי הטעם",
+    "מגישים חם"
+   ],
+   "dietaryTags": [
+    "vegetarian",
+    "kosher"
+   ],
+   "imageKey": "shakshuka",
+   "servings": 4,
+   "nutrition": {
+    "calories": 290,
+    "proteinGrams": 12,
+    "carbsGrams": 30,
+    "fatGrams": 14
+   },
+   "prepTimeMinutes": 15,
+   "cookTimeMinutes": 30
+  },
+  {
+   "id": "5f400000-0000-4000-8000-000000000002",
+   "title": "קובה סלק סגולה",
+   "authorUid": "cook-yossi",
+   "likeCount": 173,
+   "daysAgo": 5,
+   "likedByMe": true,
+   "ingredients": [
+    {
+     "name": "סלק",
+     "amount": 4,
+     "unit": "unspecified"
+    },
+    {
+     "name": "סולת",
+     "amount": 2,
+     "unit": "cup"
+    },
+    {
+     "name": "בשר טחון",
+     "amount": 500,
+     "unit": "gram"
+    }
+   ],
+   "steps": [
+    "מכינים את כל המרכיבים",
+    "מבשלים לפי הטעם",
+    "מגישים חם"
+   ],
+   "dietaryTags": [
+    "meat",
+    "kosher"
+   ],
+   "imageKey": "kubbeh_selek",
+   "servings": 6,
+   "nutrition": {
+    "calories": 780,
+    "proteinGrams": 12,
+    "carbsGrams": 30,
+    "fatGrams": 14
+   },
+   "prepTimeMinutes": 15,
+   "cookTimeMinutes": 30
+  },
+  {
+   "id": "5f400000-0000-4000-8000-000000000003",
+   "title": "עוגת שוקולד ללא גלוטן",
+   "authorUid": "cook-maya",
+   "likeCount": 412,
+   "daysAgo": 9,
+   "likedByMe": false,
+   "ingredients": [
+    {
+     "name": "שוקולד מריר",
+     "amount": 200,
+     "unit": "gram"
+    },
+    {
+     "name": "קמח שקדים",
+     "amount": 1.5,
+     "unit": "cup"
+    },
+    {
+     "name": "ביצים",
+     "amount": 3,
+     "unit": "unspecified"
+    }
+   ],
+   "steps": [
+    "מכינים את כל המרכיבים",
+    "מבשלים לפי הטעם",
+    "מגישים חם"
+   ],
+   "dietaryTags": [
+    "dairy",
+    "glutenFree"
+   ],
+   "imageKey": "cover_chocolate",
+   "servings": 8,
+   "nutrition": {
+    "calories": 420,
+    "proteinGrams": 12,
+    "carbsGrams": 30,
+    "fatGrams": 14
+   },
+   "prepTimeMinutes": 15,
+   "cookTimeMinutes": 30
+  },
+  {
+   "id": "5f400000-0000-4000-8000-000000000004",
+   "title": "פסטה ברוטב שמנת ופטריות",
+   "authorUid": "cook-daniel",
+   "likeCount": 96,
+   "daysAgo": 14,
+   "likedByMe": false,
+   "ingredients": [
+    {
+     "name": "פטריות",
+     "amount": 300,
+     "unit": "gram"
+    },
+    {
+     "name": "שמנת מתוקה",
+     "amount": 250,
+     "unit": "milliliter"
+    }
+   ],
+   "steps": [
+    "מכינים את כל המרכיבים",
+    "מבשלים לפי הטעם",
+    "מגישים חם"
+   ],
+   "dietaryTags": [
+    "dairy",
+    "vegetarian"
+   ],
+   "imageKey": null,
+   "servings": null,
+   "nutrition": null,
+   "prepTimeMinutes": 15,
+   "cookTimeMinutes": 30
+  }
+ ],
+ "forum_posts": [
+  {
+   "id": "5f500000-0000-4000-8000-000000000001",
+   "title": "איך שומרים על קובה שלא תתפרק בבישול?",
+   "body": "כל פעם שאני מכינה קובה סלק חצי מהכדורים נפתחים בסיר. יש טיפים לבצק?",
+   "authorUid": "cook-maya",
+   "daysAgo": 1,
+   "likeCount": 12,
+   "likedByMe": true,
+   "replies": [
+    {
+     "id": "5f500000-0000-4000-8000-000000000101",
+     "body": "להרטיב ידיים במים קרים ולסגור טוב. וגם לא להרתיח חזק — רק בעבוע עדין.",
+     "authorUid": "cook-yossi",
+     "daysAgo": 0.8,
+     "likeCount": 5,
+     "sharedRecipeId": null,
+     "sharedRecipeTitle": null
+    },
+    {
+     "id": "5f500000-0000-4000-8000-000000000102",
+     "body": "הנה המתכון שלי, עובד בכל פעם:",
+     "authorUid": "cook-rachel",
+     "daysAgo": 0.5,
+     "likeCount": 3,
+     "sharedRecipeId": "5f400000-0000-4000-8000-000000000002",
+     "sharedRecipeTitle": "קובה סלק סגולה"
+    },
+    {
+     "id": "5f500000-0000-4000-8000-000000000103",
+     "body": "תודה רבה! אנסה בשבת 🙏",
+     "authorUid": "preview-user-0001",
+     "daysAgo": 0.3,
+     "likeCount": 0,
+     "sharedRecipeId": null,
+     "sharedRecipeTitle": null
+    }
+   ]
+  },
+  {
+   "id": "5f500000-0000-4000-8000-000000000002",
+   "title": "רעיונות לארוחות בוקר מהירות לילדים",
+   "body": "מחפשת רעיונות לבקרים עמוסים — משהו שמוכן בעשר דקות.",
+   "authorUid": "preview-user-0001",
+   "daysAgo": 3,
+   "likeCount": 7,
+   "likedByMe": false,
+   "replies": [
+    {
+     "id": "5f500000-0000-4000-8000-000000000201",
+     "body": "פיתה זעתר בטוסטר! שתי דקות והם מתים על זה.",
+     "authorUid": "cook-daniel",
+     "daysAgo": 2.5,
+     "likeCount": 4,
+     "sharedRecipeId": null,
+     "sharedRecipeTitle": null
+    }
+   ]
+  },
+  {
+   "id": "5f500000-0000-4000-8000-000000000003",
+   "title": "איזה סיר הכי טוב לשקשוקה?",
+   "body": "ברזל יצוק או נירוסטה? מה אתם ממליצים?",
+   "authorUid": "cook-daniel",
+   "daysAgo": 6,
+   "likeCount": 3,
+   "likedByMe": false,
+   "replies": []
+  }
+ ],
+ "notifications": [
+  {
+   "id": "5f600000-0000-4000-8000-000000000001",
+   "type": "forumReply",
+   "fromUid": "cook-daniel",
+   "postId": "5f500000-0000-4000-8000-000000000002",
+   "replyId": "5f500000-0000-4000-8000-000000000201",
+   "postTitle": "רעיונות לארוחות בוקר מהירות לילדים",
+   "excerpt": "פיתה זעתר בטוסטר! שתי דקות והם מתים על זה.",
+   "onMyPost": true,
+   "read": false,
+   "daysAgo": 0.2
+  },
+  {
+   "id": "5f600000-0000-4000-8000-000000000002",
+   "type": "shareInvite",
+   "fromUid": "cook-rachel",
+   "inviteId": "c0ab0000-0000-4000-8000-000000000002_preview-user-0001",
+   "collabId": "c0ab0000-0000-4000-8000-000000000002",
+   "recipeTitle": "עוגיות טחינה",
+   "role": "editor",
+   "kind": "recipe",
+   "read": false,
+   "daysAgo": 1
+  },
+  {
+   "id": "5f600000-0000-4000-8000-000000000003",
+   "type": "sharedRecipeUpdated",
+   "fromUid": "cook-yossi",
+   "sharedId": "5f400000-0000-4000-8000-000000000002",
+   "recipeTitle": "קובה סלק סגולה",
+   "read": true,
+   "daysAgo": 2
+  },
+  {
+   "id": "5f600000-0000-4000-8000-000000000004",
+   "type": "adminMessage",
+   "title": "ברוכים הבאים ל-Easy Plate",
+   "message": "שמחים שהצטרפת! נסו את שפי, העוזר החכם שלנו, כדי לתכנן את השבוע.",
+   "read": true,
+   "daysAgo": 4
+  }
+ ],
+ "collab_recipes": [
+  {
+   "id": "c0ab0000-0000-4000-8000-000000000001",
+   "recipeId": "5a000000-0000-4000-8000-000000000003",
+   "ownerUid": "preview-user-0001",
+   "members": {
+    "cook-rachel": "editor",
+    "cook-maya": "viewer"
+   },
+   "daysAgo": 3
+  },
+  {
+   "id": "c0ab0000-0000-4000-8000-000000000002",
+   "ownerUid": "cook-rachel",
+   "members": {},
+   "daysAgo": 1,
+   "inline": {
+    "title": "עוגיות טחינה",
+    "ingredients": [
+     {
+      "name": "טחינה גולמית",
+      "amount": 1,
+      "unit": "cup"
+     },
+     {
+      "name": "קמח",
+      "amount": 2,
+      "unit": "cup"
+     },
+     {
+      "name": "סוכר",
+      "amount": 0.5,
+      "unit": "cup"
+     }
+    ],
+    "steps": [
+     "מערבבים הכל",
+     "יוצרים כדורים",
+     "אופים 12 דקות"
+    ],
+    "dietaryTags": [
+     "vegan",
+     "kosher"
+    ]
+   }
+  }
+ ],
+ "share_invites": [
+  {
+   "collabId": "c0ab0000-0000-4000-8000-000000000001",
+   "title": "קציצות עם אפונה ב10 דקות",
+   "ownerUid": "preview-user-0001",
+   "targetUid": "cook-rachel",
+   "role": "editor",
+   "status": "accepted",
+   "kind": null,
+   "daysAgo": 3
+  },
+  {
+   "collabId": "c0ab0000-0000-4000-8000-000000000001",
+   "title": "קציצות עם אפונה ב10 דקות",
+   "ownerUid": "preview-user-0001",
+   "targetUid": "cook-maya",
+   "role": "viewer",
+   "status": "accepted",
+   "kind": null,
+   "daysAgo": 3
+  },
+  {
+   "collabId": "c0ab0000-0000-4000-8000-000000000002",
+   "title": "עוגיות טחינה",
+   "ownerUid": "cook-rachel",
+   "targetUid": "preview-user-0001",
+   "role": "editor",
+   "status": "pending",
+   "kind": "recipe",
+   "daysAgo": 1
+  }
+ ],
+ "feedback": [
+  {
+   "id": "5f700000-0000-4000-8000-000000000001",
+   "type": "suggestion",
+   "message": "אפשר להוסיף מצב כהה לספרים?",
+   "daysAgo": 5,
+   "followUps": [
+    {
+     "text": "וגם אפשרות להדפיס ספר",
+     "daysAgo": 4.9
+    }
+   ],
+   "replies": [
+    {
+     "text": "תודה! מצב כהה כבר בדרך בגרסה הבאה 🙂",
+     "daysAgo": 4
+    }
+   ],
+   "userUnread": true,
+   "status": "open",
+   "source": "app"
+  }
+ ],
+ "household": {
+  "id": "5f800000-0000-4000-8000-000000000001",
+  "title": "משפחת כהן",
+  "tier": "family",
+  "seats": 6,
+  "enabled": false
+ }
+}

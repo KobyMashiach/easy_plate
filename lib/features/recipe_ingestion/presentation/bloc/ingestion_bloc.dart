@@ -14,6 +14,7 @@ import '../../../my_recipes/domain/usecases/save_recipe_usecase.dart';
 import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/web_search_result_entity.dart';
+import '../../domain/paid_call_refusal.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../../domain/usecases/fetch_original_recipe_page_usecase.dart';
 import '../../domain/usecases/generate_recipe_usecase.dart';
@@ -55,6 +56,11 @@ sealed class IngestionEvent with _$IngestionEvent {
   /// Opens the review on a template so the user structures it by hand.
   const factory IngestionEvent.editManually(String text, {String? sourceUrl}) =
       _EditManually;
+
+  /// Retry from the error screen: the same request again with the same
+  /// inputs, or — when opening a search result failed — the paid results
+  /// back. Never an empty form.
+  const factory IngestionEvent.retry() = _Retry;
 }
 
 @freezed
@@ -67,10 +73,14 @@ sealed class IngestionState with _$IngestionState {
     RecipeIngestionChannel channel,
     List<WebSearchResultEntity> results,
   ) = IngestionSearchResults;
+
+  /// [notice] carries a failed save: the review stays, with what went wrong
+  /// said over it.
   const factory IngestionState.review(
     RecipeIngestionChannel channel,
-    RecipeEntity recipe,
-  ) = IngestionReview;
+    RecipeEntity recipe, {
+    String? notice,
+  }) = IngestionReview;
 
   /// The page as written, for reading. No model was involved in reaching it.
   const factory IngestionState.original(
@@ -87,6 +97,13 @@ sealed class IngestionState with _$IngestionState {
     String text, {
     String? sourceUrl,
     required bool timedOut,
+    String? notice,
+
+    /// False when the failure was a refusal that stands — out of quota, no
+    /// verified phone, a blocked account: the same analysis again would
+    /// hit the same wall, so Retry is not offered. The text can still be
+    /// saved or edited by hand.
+    @Default(true) bool retryable,
   }) = IngestionUnparsed;
   const factory IngestionState.errorMessage(
     RecipeIngestionChannel channel,
@@ -147,6 +164,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     on<_SaveRecipe>(_saveRecipe);
     on<_SaveAsTemplate>(_saveAsTemplate);
     on<_EditManually>(_editManually);
+    on<_Retry>(_retry);
   }
 
   factory IngestionBloc.fromContext(
@@ -171,6 +189,57 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     );
   }
 
+  /// The last request that reached the model or the network, so Retry runs
+  /// it again instead of dropping the user on an empty form.
+  IngestionEvent? _lastRequest;
+
+  /// The last web search's results: a grounded call already paid for, kept
+  /// so a failure opening one of them returns to the list.
+  List<WebSearchResultEntity>? _lastResults;
+
+  /// Set when the last failure was a refusal that stands — the daily
+  /// allowance, no verified phone, a blocked account: running the same
+  /// request again would only hit the same wall.
+  bool _lastRefused = false;
+
+  String? _draftText;
+  RecipeIngestionChannel? _draftChannel;
+  List<IngestionFile> _draftFiles = const [];
+
+  /// What the form on [channel] last submitted, to start it filled in
+  /// again after a failure.
+  String? draftText(RecipeIngestionChannel channel) =>
+      _draftChannel == channel ? _draftText : null;
+
+  /// The files last submitted on the file channel.
+  List<IngestionFile> get draftFiles => _draftFiles;
+
+  void _remember(IngestionEvent request, {String? text}) {
+    _lastRequest = request;
+    _lastRefused = false;
+    if (text != null) {
+      _draftText = text;
+      _draftChannel = _channel;
+    }
+  }
+
+  FutureOr<void> _retry(_Retry event, Emitter<IngestionState> emit) {
+    final last = _lastRequest;
+    // A failure opening a search result goes back to the results.
+    if (_channel == RecipeIngestionChannel.webSearch &&
+        last is! _SearchWeb &&
+        _lastResults != null) {
+      emit(.searchResults(_channel, _lastResults!));
+      return null;
+    }
+    if (last == null || _lastRefused) {
+      emit(.idle(_channel));
+      return null;
+    }
+    add(last);
+    return null;
+  }
+
   Future<List<DietaryPreference>> get _preferences async =>
       (await getUserPreferencesUseCase()).dietaryPreferences;
 
@@ -191,6 +260,10 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     required Future<String?> Function() fallbackText,
     String? sourceUrl,
   }) async {
+    // One analysis at a time: a second submit while the spinner is up (a
+    // double tap, a retry fired twice) would run a second model call and
+    // spend a second extraction from the allowance for the same text.
+    if (state is IngestionParsing) return;
     emit(.parsing(_channel));
     try {
       final timeout = _channel == RecipeIngestionChannel.socialVideo
@@ -208,6 +281,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       );
     } catch (e) {
       debugPrint('Ingestion error: $e');
+      _lastRefused = isStandingRefusal(e);
       await _offerText(
         emit,
         fallbackText,
@@ -235,12 +309,33 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       emit(.errorMessage(_channel, _describe(error)));
       return;
     }
-    emit(.unparsed(_channel, text, sourceUrl: sourceUrl, timedOut: timedOut));
+    // Out of quota, no phone, blocked, or offline: the text is still
+    // offered (it can be saved as it is), but with the reason — a bare
+    // "analysis failed" sent the user to a Retry that hits the same wall.
+    // Offline may clear on its own; the other three stand, so for them
+    // Retry is not offered at all.
+    final refused = isStandingRefusal(error);
+    final notice =
+        refused ||
+            error is AppException && error.type == AppErrorType.networkError
+        ? _describe(error)
+        : null;
+    emit(
+      .unparsed(
+        _channel,
+        text,
+        sourceUrl: sourceUrl,
+        timedOut: timedOut,
+        notice: notice,
+        retryable: !refused,
+      ),
+    );
   }
 
   /// A sentence the user can act on, for the failures that have one. The
-  /// rest keep their raw text — it is what a bug report needs.
-  String _describe(Object? error) {
+  /// rest get [fallback] — the raw text is in the debug log, never on screen.
+  String _describe(Object? error, [String? fallback]) {
+    if (isAccountDisabled(error)) return t.auth.blockedTitle;
     if (error is AppException) {
       switch (error.type) {
         case AppErrorType.unreadableSource:
@@ -249,11 +344,14 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
           return t.ads.aiQuotaReached;
         case AppErrorType.networkError:
           return t.common.networkError;
+        case AppErrorType.phoneRequired:
+          return t.auth.phoneGateTitle;
         default:
           break;
       }
     }
-    return (error ?? t.ingestion.analysisTimedOut).toString();
+    if (error == null) return t.ingestion.analysisTimedOut;
+    return fallback ?? t.ingestion.analysisFailed;
   }
 
   RecipeEntity _template(String text, String? sourceUrl) => buildTemplateRecipe(
@@ -264,13 +362,71 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     sourceUrl: sourceUrl,
   );
 
+  /// True while a save is on its way: a second tap would mint a second
+  /// template (each gets a new id) or save the same recipe twice.
+  bool _saving = false;
+
+  /// Saves [recipe] once; a failure keeps the screen as it was, with the
+  /// reason on it, instead of leaving the user on it with no word.
+  Future<void> _saveOnce(
+    RecipeEntity recipe,
+    Emitter<IngestionState> emit,
+  ) async {
+    if (_saving) return;
+    _saving = true;
+    try {
+      await saveRecipeUseCase(recipe);
+      emit(const IngestionState.saved());
+    } catch (e) {
+      debugPrint('Saving the recipe failed: $e');
+      final current = state;
+      final notice = t.ingestion.saveFailed;
+      // Cleared first, so a second failure in a row is still a change.
+      switch (current) {
+        case IngestionReview(:final channel, recipe: final shown):
+          emit(.review(channel, shown));
+          emit(.review(channel, shown, notice: notice));
+        case IngestionUnparsed(
+          :final channel,
+          :final text,
+          :final sourceUrl,
+          :final timedOut,
+          :final retryable,
+        ):
+          emit(
+            .unparsed(
+              channel,
+              text,
+              sourceUrl: sourceUrl,
+              timedOut: timedOut,
+              retryable: retryable,
+            ),
+          );
+          emit(
+            .unparsed(
+              channel,
+              text,
+              sourceUrl: sourceUrl,
+              timedOut: timedOut,
+              notice: notice,
+              retryable: retryable,
+            ),
+          );
+        default:
+          // Saved from the form (a hand-written recipe from the blank
+          // editor): an error screen would lose it, and its Retry would run
+          // some earlier request instead. The recipe stays up to save again.
+          emit(.review(_channel, recipe, notice: notice));
+      }
+    } finally {
+      _saving = false;
+    }
+  }
+
   Future<void> _saveAsTemplate(
     _SaveAsTemplate event,
     Emitter<IngestionState> emit,
-  ) async {
-    await saveRecipeUseCase(_template(event.text, event.sourceUrl));
-    emit(const IngestionState.saved());
-  }
+  ) => _saveOnce(_template(event.text, event.sourceUrl), emit);
 
   FutureOr<void> _editManually(
     _EditManually event,
@@ -283,6 +439,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _ParseRawText event,
     Emitter<IngestionState> emit,
   ) {
+    _remember(event, text: event.text);
     return _runParse(
       emit,
       (prefs) => parseRawTextUseCase(event.text, preferences: prefs),
@@ -296,7 +453,22 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   Future<String?> _pageText(String url) async =>
       (await fetchOriginalRecipePageUseCase(url)).text;
 
+  /// False, with the "not a link" error shown, for anything that is not an
+  /// http(s) address: the backstop behind the form's own check, and the
+  /// only check for a link that came from a search result or a share.
+  bool _acceptUrl(String url, Emitter<IngestionState> emit) {
+    if (IngestionLaunch.isWebUrl(url)) return true;
+    emit(.errorMessage(_channel, t.ingestion.invalidUrl));
+    return false;
+  }
+
   Future<void> _parseUrl(_ParseUrl event, Emitter<IngestionState> emit) {
+    if (!_acceptUrl(event.url, emit)) return Future.value();
+    // From a search result the form's query stays the draft, not the link.
+    _remember(
+      event,
+      text: _channel == RecipeIngestionChannel.webSearch ? null : event.url,
+    );
     return _runParse(
       emit,
       (prefs) => parseRecipeFromUrlUseCase(event.url, preferences: prefs),
@@ -311,6 +483,11 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _ViewOriginal event,
     Emitter<IngestionState> emit,
   ) async {
+    if (!_acceptUrl(event.url, emit)) return;
+    _remember(
+      event,
+      text: _channel == RecipeIngestionChannel.webSearch ? null : event.url,
+    );
     emit(.parsing(_channel));
     try {
       emit(
@@ -318,7 +495,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       );
     } catch (e) {
       debugPrint('Original page error: $e');
-      emit(.errorMessage(_channel, e.toString()));
+      emit(.errorMessage(_channel, _describe(e, t.ingestion.fetchFailed)));
     }
   }
 
@@ -326,6 +503,8 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _ParseSocialVideo event,
     Emitter<IngestionState> emit,
   ) {
+    if (!_acceptUrl(event.url, emit)) return Future.value();
+    _remember(event, text: event.url);
     return _runParse(
       emit,
       (prefs) =>
@@ -338,6 +517,8 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   /// A recording or a PDF has no text to fall back on: a failure is an
   /// error with a retry, not a template.
   Future<void> _parseFiles(_ParseFiles event, Emitter<IngestionState> emit) {
+    _remember(event);
+    _draftFiles = List.unmodifiable(event.files);
     return _runParse(
       emit,
       (prefs) => parseRecipeFromFileUseCase(event.files, preferences: prefs),
@@ -351,6 +532,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _GenerateRecipe event,
     Emitter<IngestionState> emit,
   ) {
+    _remember(event, text: event.request);
     return _runParse(
       emit,
       (prefs) => generateRecipeUseCase(event.request, preferences: prefs),
@@ -362,16 +544,22 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _SearchWeb event,
     Emitter<IngestionState> emit,
   ) async {
+    // Same rule as [_runParse]: a search is a grounded model call, and a
+    // second submit while the first is running would pay for it twice.
+    if (state is IngestionParsing) return;
+    _remember(event, text: event.query);
     emit(.parsing(_channel));
     try {
       final results = await searchWebRecipesUseCase(
         event.query,
         preferences: await _preferences,
       );
+      _lastResults = results;
       emit(.searchResults(_channel, results));
     } catch (e) {
       debugPrint('Web search error: $e');
-      emit(.errorMessage(_channel, e.toString()));
+      _lastRefused = isStandingRefusal(e);
+      emit(.errorMessage(_channel, _describe(e, t.common.loadFailed)));
     }
   }
 
@@ -387,8 +575,5 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   Future<void> _saveRecipe(
     _SaveRecipe event,
     Emitter<IngestionState> emit,
-  ) async {
-    await saveRecipeUseCase(event.recipe);
-    emit(const IngestionState.saved());
-  }
+  ) => _saveOnce(event.recipe, emit);
 }

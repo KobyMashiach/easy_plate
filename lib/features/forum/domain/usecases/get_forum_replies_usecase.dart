@@ -8,5 +8,6 @@ class GetForumRepliesUseCase {
   Future<List<ForumReplyEntity>> call(
     String postId, {
     required String viewerUid,
-  }) => repository.getReplies(postId, viewerUid: viewerUid);
+    bool refresh = false,
+  }) => repository.getReplies(postId, viewerUid: viewerUid, refresh: refresh);
 }

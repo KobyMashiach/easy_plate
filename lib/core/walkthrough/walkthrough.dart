@@ -223,7 +223,13 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
     _advancing = true;
     // The control's own handler runs on this same pointer-up; a beat later
     // the tour moves on, so the tap does what it always does first.
-    Future.delayed(const Duration(milliseconds: 220), _advance);
+    // Only from the step it was tapped on: a "Next" in the same beat has
+    // already moved on, and a second advance would skip a step (or end the
+    // tour twice).
+    final at = _index;
+    Future.delayed(const Duration(milliseconds: 220), () {
+      if (mounted && _index == at) _advance();
+    });
   }
 
   void _advance() {

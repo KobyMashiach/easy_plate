@@ -49,33 +49,96 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Map<String, ShareInviteEntity> _pending = const {};
   bool _busy = false;
 
+  /// Swiped away but not yet gone from the stream: the delete is a round
+  /// trip, and a rebuild in between (a cook timer ticking) would draw the
+  /// dismissed row again. Pruned once the stream no longer carries the id.
+  final _dismissed = <String>{};
+  bool _opening = false;
+
+  /// Read once, up front: the calls below run after awaits, by which time
+  /// the page may have been left and its context with it.
+  late final NotificationsRepository _notifications;
+  late final RecipeSharingRepository _sharing;
+
   String get _uid => AuthSessionService().user?.uid ?? '';
 
   @override
   void initState() {
     super.initState();
+    _notifications = context.read<NotificationsRepository>();
+    _sharing = context.read<RecipeSharingRepository>();
     _loadPending();
+    // The list is live, the invites behind its share items are not: one
+    // that arrived while the inbox was open drew as already answered (no
+    // invite to accept) until a pull. A share item not seen by the last
+    // read re-reads them.
+    NotificationsService().items.addListener(_onItems);
   }
 
-  Future<void> _loadPending() async {
+  @override
+  void dispose() {
+    NotificationsService().items.removeListener(_onItems);
+    super.dispose();
+  }
+
+  /// Invite ids of the share items present at the last pending read.
+  var _seenInviteIds = const <String>{};
+  bool _reloadingPending = false;
+
+  /// The last read of the pending invites failed (offline when the inbox
+  /// opened): an invite row then can't tell answered from unknown, and
+  /// "already handled" with no buttons read as gone for good.
+  bool _pendingFailed = false;
+
+  Set<String> _inviteIdsOf(List<AppNotificationEntity> items) => {
+    for (final i in items)
+      if (i.type == AppNotificationType.shareInvite) ?i.inviteId,
+  };
+
+  /// Bumped by every pending read: a pull and a listener reload can be out
+  /// together, and the older answer must not land over the newer one.
+  int _pendingGeneration = 0;
+
+  void _onItems() {
+    if (_reloadingPending || !mounted) return;
+    final current = _inviteIdsOf(NotificationsService().items.value);
+    if (current.difference(_seenInviteIds).isEmpty) return;
+    _reloadingPending = true;
+    _loadPending().then((ok) {
+      _reloadingPending = false;
+      // An invite that arrived during the read was skipped above; look
+      // again. Not after a failure: that would retry in a tight loop.
+      if (ok) _onItems();
+    });
+  }
+
+  /// False when the read failed.
+  Future<bool> _loadPending() async {
+    final generation = ++_pendingGeneration;
+    final seen = _inviteIdsOf(NotificationsService().items.value);
     try {
-      final invites = await GetShareInvitesUseCase(
-        context.read<RecipeSharingRepository>(),
-      ).incoming(_uid);
-      if (mounted) {
-        setState(() => _pending = {for (final i in invites) i.id: i});
+      final invites = await GetShareInvitesUseCase(_sharing).incoming(_uid);
+      if (mounted && generation == _pendingGeneration) {
+        setState(() {
+          _pending = {for (final i in invites) i.id: i};
+          _seenInviteIds = seen;
+          _pendingFailed = false;
+        });
       }
+      return true;
     } catch (e) {
       debugPrint('Pending invites load failed: $e');
+      if (mounted && generation == _pendingGeneration) {
+        setState(() => _pendingFailed = true);
+      }
+      return false;
     }
   }
 
   Future<void> _markRead(AppNotificationEntity item) async {
     if (item.read) return;
     try {
-      await MarkNotificationReadUseCase(
-        context.read<NotificationsRepository>(),
-      )(_uid, item.id);
+      await MarkNotificationReadUseCase(_notifications)(_uid, item.id);
     } catch (e) {
       debugPrint('Mark read failed: $e');
     }
@@ -87,7 +150,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     required bool accept,
   }) async {
     final useCase = RespondToShareInviteUseCase(
-      sharing: context.read<RecipeSharingRepository>(),
+      sharing: _sharing,
       recipes: context.read<RecipesRepository>(),
     );
     final containers = context.read<ContainerSharingService>();
@@ -120,6 +183,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
             // on it.
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.mealPlan;
+            // On the way out: nothing here to reload.
+            return;
           case CollabKind.groceryList:
             final list =
                 await containers.accept(invite, uid: _uid) as GroceryListEntity;
@@ -131,6 +196,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             _toast(t.sharing.acceptedList);
             Navigator.of(context).maybePop();
             MainTabs.index.value = MainTabs.groceries;
+            return;
           case CollabKind.household:
             // Never an invite: a household is joined by code.
             break;
@@ -147,7 +213,22 @@ class _NotificationsPageState extends State<NotificationsPage> {
       await _loadPending();
     } catch (e) {
       debugPrint('Invite response failed: $e');
-      if (mounted) _fail(t.sharing.acceptFailed);
+      if (!mounted) return;
+      if (RecipeSharingRepository.isCollabMissing(e)) {
+        // The invite was closed on the way: nothing left to answer here.
+        _fail(t.sharing.collabMissing);
+        await _markRead(item);
+        if (mounted) await _loadPending();
+      } else if (RecipeSharingRepository.isAcceptQueued(e)) {
+        // No answer from the server in time: the accept is queued and the
+        // copy follows with the next refresh online. Answered, as far as
+        // this inbox is concerned — the invite is no longer pending.
+        _fail(t.sharing.acceptQueued);
+        await _markRead(item);
+        if (mounted) await _loadPending();
+      } else {
+        _fail(t.sharing.acceptFailed);
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -163,6 +244,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
       final updated = await RefreshSavedCopyUseCase(
         shared: context.read<SharedRecipesRepository>(),
         recipes: context.read<RecipesRepository>(),
+        // A copy that sits in a shared book is a shared recipe of this
+        // account's: the new version goes to its document too, or the
+        // other members keep the old one.
+        sharing: _sharing,
       )(sharedId, viewerUid: _uid);
       await _markRead(item);
       if (!mounted) return;
@@ -190,9 +275,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   Future<void> _delete(AppNotificationEntity item) async {
     try {
-      await context.read<NotificationsRepository>().delete(_uid, item.id);
+      await _notifications.delete(_uid, item.id);
     } catch (e) {
       debugPrint('Delete notification failed: $e');
+      // Still on the server, so still counted on the bell: back into the
+      // list rather than hidden here and back on the next open.
+      if (!mounted) return;
+      setState(() => _dismissed.remove(item.id));
+      _fail(t.common.error);
     }
   }
 
@@ -208,10 +298,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
     try {
       await AppDialog.busy(
         context,
-        () => context.read<NotificationsRepository>().deleteAll(_uid),
+        () => _notifications.deleteAll(_uid),
       );
     } catch (e) {
       debugPrint('Delete all notifications failed: $e');
+      if (mounted) _fail(t.common.error);
     }
   }
 
@@ -236,98 +327,111 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ),
       body: ValueListenableBuilder<List<AppNotificationEntity>>(
         valueListenable: NotificationsService().items,
-        builder: (context, items, _) => AnimatedBuilder(
-          animation: CookSessionService(),
-          builder: (context, _) {
-            // Cooking in progress is the first thing here, inbox or no
-            // inbox: it is the way back into cook mode after leaving it.
-            // One card per recipe being cooked.
-            final cooking = CookSessionService().sessions;
-            return RefreshIndicator(
-              onRefresh: _loadPending,
-              color: AppColors.primary,
-              child: items.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                      children: [
-                        for (final s in cooking) ...[
-                          _CookSessionCard(session: s),
-                          const SizedBox(height: AppSpacing.sm),
-                        ],
-                        if (cooking.isNotEmpty)
-                          const SizedBox(height: AppSpacing.md),
-                        ClayEmptyState(
-                          icon: Icons.notifications_none_rounded,
-                          message: t.notifications.empty,
-                        ),
-                      ],
-                    )
-                  : ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                      // The cooking card when there is one, then the "mark all
-                      // read" row, then the items, each swipeable away.
-                      itemCount: items.length + 1 + cooking.length,
-                      separatorBuilder: (_, _) =>
-                          const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, index) {
-                        if (index < cooking.length) {
-                          return _CookSessionCard(session: cooking[index]);
-                        }
-                        index -= cooking.length;
-                        if (index == 0) {
-                          return Row(
-                            children: [
-                              // The switches for what reaches this inbox, one
-                              // tap away from it.
-                              TextButton.icon(
-                                onPressed: () => context.pushNamed(
-                                  Routing.notificationSettings,
-                                ),
-                                icon: const Icon(Icons.tune_rounded, size: 18),
-                                label: Text(t.notifications.settings),
-                              ),
-                              const Spacer(),
-                              TextButton.icon(
-                                onPressed: () => MarkNotificationReadUseCase(
-                                  context.read<NotificationsRepository>(),
-                                ).all(_uid),
-                                icon: const Icon(
-                                  Icons.done_all_rounded,
-                                  size: 18,
-                                ),
-                                label: Text(t.notifications.markAllRead),
-                              ),
-                            ],
-                          );
-                        }
-                        final item = items[index - 1];
-                        return Dismissible(
-                          key: ValueKey(item.id),
-                          direction: DismissDirection.endToStart,
-                          onDismissed: (_) => _delete(item),
-                          background: Container(
-                            alignment: AlignmentDirectional.centerEnd,
-                            padding: const EdgeInsetsDirectional.only(
-                              end: AppSpacing.md,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.errorContainer,
-                              borderRadius: BorderRadius.circular(AppRadius.md),
-                            ),
-                            child: Icon(
-                              Icons.delete_rounded,
-                              color: AppColors.onErrorContainer,
-                            ),
+        builder: (context, all, _) {
+          _dismissed.removeWhere((id) => !all.any((i) => i.id == id));
+          final items = [
+            for (final i in all)
+              if (!_dismissed.contains(i.id)) i,
+          ];
+          return AnimatedBuilder(
+            animation: CookSessionService(),
+            builder: (context, _) {
+              // Cooking in progress is the first thing here, inbox or no
+              // inbox: it is the way back into cook mode after leaving it.
+              // One card per recipe being cooked.
+              final cooking = CookSessionService().sessions;
+              return RefreshIndicator(
+                onRefresh: _loadPending,
+                color: AppColors.primary,
+                child: items.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                        children: [
+                          for (final s in cooking) ...[
+                            _CookSessionCard(session: s),
+                            const SizedBox(height: AppSpacing.sm),
+                          ],
+                          if (cooking.isNotEmpty)
+                            const SizedBox(height: AppSpacing.md),
+                          ClayEmptyState(
+                            icon: Icons.notifications_none_rounded,
+                            message: t.notifications.empty,
                           ),
-                          child: _card(item),
-                        );
-                      },
-                    ),
-            );
-          },
-        ),
+                        ],
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                        // The cooking card when there is one, then the "mark all
+                        // read" row, then the items, each swipeable away.
+                        itemCount: items.length + 1 + cooking.length,
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: AppSpacing.sm),
+                        itemBuilder: (context, index) {
+                          if (index < cooking.length) {
+                            return _CookSessionCard(session: cooking[index]);
+                          }
+                          index -= cooking.length;
+                          if (index == 0) {
+                            return Row(
+                              children: [
+                                // The switches for what reaches this inbox, one
+                                // tap away from it.
+                                TextButton.icon(
+                                  onPressed: () => context.pushNamed(
+                                    Routing.notificationSettings,
+                                  ),
+                                  icon: const Icon(
+                                    Icons.tune_rounded,
+                                    size: 18,
+                                  ),
+                                  label: Text(t.notifications.settings),
+                                ),
+                                const Spacer(),
+                                TextButton.icon(
+                                  onPressed: _markAllRead,
+                                  icon: const Icon(
+                                    Icons.done_all_rounded,
+                                    size: 18,
+                                  ),
+                                  label: Text(t.notifications.markAllRead),
+                                ),
+                              ],
+                            );
+                          }
+                          final item = items[index - 1];
+                          return Dismissible(
+                            key: ValueKey(item.id),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (_) {
+                              setState(() => _dismissed.add(item.id));
+                              _delete(item);
+                            },
+                            background: Container(
+                              alignment: AlignmentDirectional.centerEnd,
+                              padding: const EdgeInsetsDirectional.only(
+                                end: AppSpacing.md,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.errorContainer,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.md,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.delete_rounded,
+                                color: AppColors.onErrorContainer,
+                              ),
+                            ),
+                            child: _card(item),
+                          );
+                        },
+                      ),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -415,7 +519,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
             )
           else
             Text(
-              t.notifications.alreadyHandled,
+              // Pull to refresh reads them again.
+              _pendingFailed
+                  ? t.common.loadFailed
+                  : t.notifications.alreadyHandled,
               style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
             ),
         ],
@@ -485,10 +592,24 @@ extension on _NotificationsPageState {
 
   Future<void> _openThread(AppNotificationEntity item) async {
     final postId = item.postId;
-    if (postId == null || postId.isEmpty) return;
-    await _markRead(item);
-    if (!mounted) return;
-    await openForumThread(context, postId: postId, replyId: item.replyId);
+    if (postId == null || postId.isEmpty || _opening) return;
+    _opening = true;
+    try {
+      await _markRead(item);
+      if (!mounted) return;
+      await openForumThread(context, postId: postId, replyId: item.replyId);
+    } finally {
+      _opening = false;
+    }
+  }
+
+  Future<void> _markAllRead() async {
+    try {
+      await MarkNotificationReadUseCase(_notifications).all(_uid);
+    } catch (e) {
+      debugPrint('Mark all read failed: $e');
+      if (mounted) _fail(t.common.error);
+    }
   }
 
   /// A word from the administrator: the answer to a support message (with

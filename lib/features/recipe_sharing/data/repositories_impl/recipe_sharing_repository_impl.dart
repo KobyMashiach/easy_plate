@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
@@ -53,21 +56,52 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
       invite.id,
       ShareInviteStatus.accepted,
     );
-    await remoteDataSource.joinCollab(
-      invite.collabId,
-      uid: invite.targetUid,
-      role: invite.role,
-    );
-    final collab = await remoteDataSource.getCollab(invite.collabId);
-    if (collab == null) {
-      // The owner deleted the recipe between sending and accepting.
+    try {
+      await remoteDataSource.joinCollab(
+        invite.collabId,
+        uid: invite.targetUid,
+        role: invite.role,
+      );
+    } catch (e) {
+      if (!isCollabGone(e)) rethrow;
+      // The owner deleted the recipe between sending and accepting. It
+      // cannot be checked before joining — the rules let only members read
+      // the document, and a pending invitee is not one yet — so the join is
+      // where it shows. The invite is closed as declined, the one answer
+      // its target may still give, rather than left "accepted" on a share
+      // that admitted nobody.
+      try {
+        await remoteDataSource.setInviteStatus(
+          invite.id,
+          ShareInviteStatus.declined,
+        );
+      } catch (rollback) {
+        debugPrint('Dead invite ${invite.id} not closed: $rollback');
+      }
       throw const AppException(
         AppErrorType.notFound,
-        message: 'collab-missing',
+        message: RecipeSharingRepository.collabMissing,
+      );
+    }
+    final collab = await remoteDataSource.getCollab(invite.collabId);
+    if (collab == null) {
+      // Deleted in the moment between joining and reading back.
+      throw const AppException(
+        AppErrorType.notFound,
+        message: RecipeSharingRepository.collabMissing,
       );
     }
     return collab;
   }
+
+  /// Whether a failed join means the document is gone. Firestore answers an
+  /// update of a missing document with `not-found` — or, when the rules
+  /// look at the document first (they read its owner) and find nothing,
+  /// with `permission-denied`. Anything else (offline, unavailable) is a
+  /// retryable failure and stays what it was.
+  static bool isCollabGone(Object error) =>
+      error is FirebaseException &&
+      (error.code == 'not-found' || error.code == 'permission-denied');
 
   @override
   Future<void> declineInvite(ShareInviteEntity invite) =>
@@ -89,6 +123,13 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
       remoteDataSource.collabsSharedWith(uid);
 
   @override
-  Future<void> removeMember(String collabId, String memberUid) =>
-      remoteDataSource.removeMember(collabId, memberUid);
+  Future<void> removeMember(
+    String collabId,
+    String memberUid, {
+    bool revokeInvite = false,
+  }) => remoteDataSource.removeMember(
+    collabId,
+    memberUid,
+    revokeInvite: revokeInvite,
+  );
 }

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>EasyPlate</title>
+    <meta name="description" content="EasyPlate account: sign in, manage your Premium subscription and view your recipes." />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#FCF8FF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141318" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Heebo:wght@500;600;700;800&family=Noto+Sans+Arabic:wght@500;600;700;800&family=Inter:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- The app's Material Icons Round, phones only (below lg): the font file is
+         fetched only when a glyph is drawn, so a desktop never downloads it. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round&display=block" media="(max-width: 1023.98px)" />
+    <script>
+      // Theme before first paint, so a dark-mode visitor never sees a white
+      // flash. Same storage key the pages share; "system" leaves it to the
+      // media query in tokens.css.
+      try {
+        var t = localStorage.getItem("ep-theme");
+        if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+      } catch (_) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -69,4 +69,11 @@ void main() {
       isTrue,
     );
   });
+
+  test('an entity past the last code point is left as written', () {
+    expect(
+      decodeHtmlEntities('a &#1114112; b &#x110000; &#x41;'),
+      'a &#1114112; b &#x110000; A',
+    );
+  });
 }

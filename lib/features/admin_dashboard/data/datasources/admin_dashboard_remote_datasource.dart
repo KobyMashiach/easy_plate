@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../admin_billing/data/datasources/admin_billing_remote_datasource.dart'
+    show AdminBillingFirestoreDataSource;
 import '../../domain/entities/dashboard_entities.dart';
 import '../../domain/usecases/aggregate_usage_usecase.dart';
 
@@ -23,6 +25,10 @@ class AdminDashboardFirestoreDataSource
   static const dailyCollection = 'ai_daily';
   static const usageCollection = 'ai_usage';
   static const callsCollection = 'ai_calls';
+
+  /// users/{uid} is written by its owner: a field of the wrong type there
+  /// must cost that one value, not the whole dashboard.
+  static String? _str(Object? v) => v is String ? v : null;
   static const cacheCollection = 'ai_url_cache';
   static const configCollection = 'admin_config';
   static const pricingDoc = 'pricing';
@@ -62,18 +68,26 @@ class AdminDashboardFirestoreDataSource
     Query<Map<String, dynamic>> events = _firestore.collection(
       eventsCollection,
     );
-    events = since == null
-        ? events.orderBy('eventAt', descending: true).limit(2000)
-        : events.where(
-            'eventAt',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(since),
-          );
+    if (since != null) {
+      events = events.where(
+        'eventAt',
+        isGreaterThanOrEqualTo: Timestamp.fromDate(since),
+      );
+    }
     if (untilExclusive != null) {
       events = events.where(
         'eventAt',
         isLessThan: Timestamp.fromDate(untilExclusive),
       );
     }
+    // Newest first and capped, for a bounded period as for all-time: the
+    // payment totals are a sum over what is read, and an unbounded range
+    // read would grow with every renewal. Range and order share one field,
+    // so no composite index is needed. The caps are the subscriptions tab's.
+    const maxDocs = AdminBillingFirestoreDataSource.maxAccountDocs;
+    events = events
+        .orderBy('eventAt', descending: true)
+        .limit(AdminBillingFirestoreDataSource.maxPurchaseEvents);
 
     // The chart window for a bounded range; the last 400 days for all-time,
     // where the range's own totals come from ai_usage. Both are a range on
@@ -89,13 +103,13 @@ class AdminDashboardFirestoreDataSource
     }
 
     final results = await Future.wait<dynamic>([
-      _firestore.collection(usersCollection).limit(5000).get(),
-      _firestore.collection(entitlementsCollection).limit(5000).get(),
-      _firestore.collection(statusCollection).limit(5000).get(),
+      _firestore.collection(usersCollection).limit(maxDocs).get(),
+      _firestore.collection(entitlementsCollection).limit(maxDocs).get(),
+      _firestore.collection(statusCollection).limit(maxDocs).get(),
       events.get(),
       daily.get(),
       range == DashboardRange.all
-          ? _firestore.collection(usageCollection).limit(5000).get()
+          ? _firestore.collection(usageCollection).limit(maxDocs).get()
           : Future.value(null),
       _firestore
           .collection(dailyCollection)
@@ -157,14 +171,17 @@ class AdminDashboardFirestoreDataSource
       final p = d.data();
       if (premiumOf(d.id)) premiumCount++;
       if (statuses[d.id]?['disabled'] == true) disabledCount++;
-      if ((p['pushToken'] as String?)?.isNotEmpty == true) withPush++;
-      final platform = (p['platform'] as String?)?.trim() ?? '';
+      if (_str(p['pushToken'])?.isNotEmpty == true) withPush++;
+      final platform = _str(p['platform'])?.trim() ?? '';
       byPlatform[platform] = (byPlatform[platform] ?? 0) + 1;
-      final version = (p['appVersion'] as String?)?.trim() ?? '';
+      final version = _str(p['appVersion'])?.trim() ?? '';
       if (version.isNotEmpty) {
         byVersion[version] = (byVersion[version] ?? 0) + 1;
       }
-      final created = (p['createdAt'] as Timestamp?)?.toDate();
+      final created = switch (p['createdAt']) {
+        final Timestamp at => at.toDate(),
+        _ => null,
+      };
       if (created != null) {
         final day = AggregateUsageUseCase.dayOf(created);
         if (inPeriod(created)) newUsers++;
@@ -222,13 +239,13 @@ class AdminDashboardFirestoreDataSource
       DateTime? lastCallAt,
     }) {
       final p = profiles[uid];
-      final name = (p?['fullName'] as String?)?.trim();
+      final name = _str(p?['fullName'])?.trim();
       return UserAiUsage(
         uid: uid,
         name: name?.isNotEmpty == true ? name! : uid,
-        email: p?['email'] as String?,
+        email: _str(p?['email']),
         premium: premiumOf(uid),
-        platform: (p?['platform'] as String?) ?? '',
+        platform: _str(p?['platform']) ?? '',
         total: AggregateUsageUseCase.sumOf(byModel),
         byModel: byModel,
         byKind: byKind,
@@ -258,8 +275,18 @@ class AdminDashboardFirestoreDataSource
     }
     aiUsers.sort((a, b) => b.cost(pricing).compareTo(a.cost(pricing)));
 
+    // All-time keeps only the days with AI traffic in the chart; sign-ups
+    // on any other day (every day before the accounting deploy, for one)
+    // still have to show, so those days are added back for this series.
+    final signupDays = range == DashboardRange.all
+        ? ({for (final d in chartDays) d.day, ...signups.keys}.toList()..sort())
+        : [for (final d in chartDays) d.day];
     final signupsByDay = [
-      for (final day in chartDays) MapEntry(day.date, signups[day.day] ?? 0),
+      for (final day in signupDays)
+        MapEntry(
+          DateTime.tryParse('${day}T00:00:00Z') ?? DateTime(0),
+          signups[day] ?? 0,
+        ),
     ];
 
     return DashboardOverview(
@@ -288,6 +315,16 @@ class AdminDashboardFirestoreDataSource
       cacheEntries: cache.count ?? 0,
       cacheHits: (cache.getSum('hits') ?? 0).toInt(),
       pricing: pricing,
+      usersCap:
+          users.length >= maxDocs ||
+              entitlements.length >= maxDocs ||
+              statuses.length >= maxDocs
+          ? maxDocs
+          : null,
+      eventsCap:
+          eventDocs.length >= AdminBillingFirestoreDataSource.maxPurchaseEvents
+          ? AdminBillingFirestoreDataSource.maxPurchaseEvents
+          : null,
     );
   }
 
@@ -462,7 +499,11 @@ class AdminDashboardFirestoreDataSource
           fn: (doc.data()['fn'] as String?) ?? '',
           model: (doc.data()['model'] as String?) ?? '',
           kind: (doc.data()['kind'] as String?) ?? '',
-          status: (doc.data()['status'] as num?)?.toInt() ?? 0,
+          status: switch (doc.data()['status']) {
+            final num n => n.toInt(),
+            final String v => int.tryParse(v) ?? 0,
+            _ => 0,
+          },
           ms: (doc.data()['ms'] as num?)?.toInt() ?? 0,
           cacheHit: doc.data()['cacheHit'] == true,
           tokens: TokenTally(
@@ -472,6 +513,11 @@ class AdminDashboardFirestoreDataSource
             thoughts: (doc.data()['thoughtTokens'] as num?)?.toInt() ?? 0,
             cached: (doc.data()['cachedTokens'] as num?)?.toInt() ?? 0,
             total: (doc.data()['totalTokens'] as num?)?.toInt() ?? 0,
+            // Written per call by aiUsage.js; without them an image call
+            // would be costed at the text rate and grounding dropped.
+            imageOutput:
+                (doc.data()['imageOutputTokens'] as num?)?.toInt() ?? 0,
+            searches: (doc.data()['searchQueries'] as num?)?.toInt() ?? 0,
           ),
           at: (doc.data()['at'] as Timestamp?)?.toDate() ?? DateTime(0),
         ),

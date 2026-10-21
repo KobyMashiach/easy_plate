@@ -119,6 +119,35 @@ void main() {
     expect(CookSessionService().isActive, isFalse);
   });
 
+  testWidgets('the card follows a step changed outside the screen', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 3000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(app());
+    await tester.pumpAndSettle();
+    expect(find.text('Pat the salmon dry and season it.'), findsOneWidget);
+
+    // Shefi or a notification action moves the session on.
+    CookSessionService().setStep(recipe.id, 2);
+    await tester.pumpAndSettle();
+    expect(find.text('Step 3 of 3'), findsOneWidget);
+    expect(
+      find.text('Add the cream and spinach, simmer and serve.'),
+      findsOneWidget,
+    );
+    expect(find.text('Pat the salmon dry and season it.'), findsNothing);
+    expect(CookSessionService().session(recipe.id)!.stepIndex, 2);
+
+    // And back, while the screen is still open.
+    CookSessionService().setStep(recipe.id, 0);
+    await tester.pumpAndSettle();
+    expect(find.text('Step 1 of 3'), findsOneWidget);
+    expect(find.text('Pat the salmon dry and season it.'), findsOneWidget);
+  });
+
   testWidgets('a running timer shows as a banner on any other screen', (
     tester,
   ) async {

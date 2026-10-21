@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MealPlanModel {
 
-@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) List<MealModel> get meals;@HiveField(3) DateTime get createdAt;// Cross-account sharing, appended: the shared document and this
+@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) List<MealModel> get meals;@HiveField(3)@JsonKey(fromJson: readJsonDate) DateTime get createdAt;// Cross-account sharing, appended: the shared document and this
 // account's role in it. Null for a plan that was never shared.
 @HiveField(4) String? get collabId;@HiveField(5) String? get collabRole;/// The language the name and the meal names are written in.
 @HiveField(6) String? get contentLang;/// See [RecipeModel.contentVersion].
@@ -52,7 +52,7 @@ abstract mixin class $MealPlanModelCopyWith<$Res>  {
   factory $MealPlanModelCopyWith(MealPlanModel value, $Res Function(MealPlanModel) _then) = _$MealPlanModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion
 });
 
 
@@ -161,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MealPlanModel() when $default != null:
 return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);case _:
@@ -182,7 +182,7 @@ return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)  $default,) {final _that = this;
 switch (_that) {
 case _MealPlanModel():
 return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);}
@@ -199,7 +199,7 @@ return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<MealModel> meals, @HiveField(3)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(4)  String? collabId, @HiveField(5)  String? collabRole, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion)?  $default,) {final _that = this;
 switch (_that) {
 case _MealPlanModel() when $default != null:
 return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);case _:
@@ -214,7 +214,7 @@ return $default(_that.id,_that.name,_that.meals,_that.createdAt,_that.collabId,_
 @JsonSerializable()
 
 class _MealPlanModel implements MealPlanModel {
-  const _MealPlanModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<MealModel> meals, @HiveField(3) required this.createdAt, @HiveField(4) this.collabId, @HiveField(5) this.collabRole, @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0}): _meals = meals;
+  const _MealPlanModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<MealModel> meals, @HiveField(3)@JsonKey(fromJson: readJsonDate) required this.createdAt, @HiveField(4) this.collabId, @HiveField(5) this.collabRole, @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0}): _meals = meals;
   factory _MealPlanModel.fromJson(Map<String, dynamic> json) => _$MealPlanModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -226,7 +226,7 @@ class _MealPlanModel implements MealPlanModel {
   return EqualUnmodifiableListView(_meals);
 }
 
-@override@HiveField(3) final  DateTime createdAt;
+@override@HiveField(3)@JsonKey(fromJson: readJsonDate) final  DateTime createdAt;
 // Cross-account sharing, appended: the shared document and this
 // account's role in it. Null for a plan that was never shared.
 @override@HiveField(4) final  String? collabId;
@@ -269,7 +269,7 @@ abstract mixin class _$MealPlanModelCopyWith<$Res> implements $MealPlanModelCopy
   factory _$MealPlanModelCopyWith(_MealPlanModel value, $Res Function(_MealPlanModel) _then) = __$MealPlanModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<MealModel> meals,@HiveField(3)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(4) String? collabId,@HiveField(5) String? collabRole,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion
 });
 
 

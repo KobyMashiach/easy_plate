@@ -66,6 +66,13 @@ class ReceiptImagesPage extends StatelessWidget {
                               child: Image.file(
                                 File(path),
                                 fit: BoxFit.fitWidth,
+                                // Drawn at screen width, so decoded at it.
+                                cacheWidth:
+                                    (MediaQuery.sizeOf(context).width *
+                                            MediaQuery.devicePixelRatioOf(
+                                              context,
+                                            ))
+                                        .ceil(),
                               ),
                             ),
                         ],

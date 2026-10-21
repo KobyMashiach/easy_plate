@@ -3,9 +3,12 @@ import '../entities/forum_reply_entity.dart';
 
 abstract class ForumRepository {
   /// Newest thread first. [viewerUid] resolves each entry's `likedByMe`.
+  /// [refresh] (pull to refresh) also reads authors past the shared
+  /// public-profile cache, so a rename shows at once.
   Future<List<ForumPostEntity>> getPosts({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   });
 
   /// The same list, kept live: a new emission whenever any thread in the
@@ -31,14 +34,24 @@ abstract class ForumRepository {
 
   /// Oldest reply first, so a thread reads top to bottom. [viewerUid]
   /// resolves each reply's `likedByMe`.
+  /// [refresh] as in [getPosts].
   Future<List<ForumReplyEntity>> getReplies(
     String postId, {
     required String viewerUid,
+    bool refresh = false,
   });
 
   /// The replies of one thread, kept live, in the same order as [getReplies].
   Stream<List<ForumReplyEntity>> watchReplies(
     String postId, {
+    required String viewerUid,
+  });
+
+  /// One reply by id, or null when it is gone. For a notification pointing
+  /// at a reply older than the window [getReplies] returns.
+  Future<ForumReplyEntity?> getReply(
+    String postId,
+    String replyId, {
     required String viewerUid,
   });
 

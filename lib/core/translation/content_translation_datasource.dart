@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../constants/api_config.dart';
@@ -6,6 +7,7 @@ import '../errors/app_exception.dart';
 import '../hive/user_scope.dart';
 import '../network/ai_auth_header.dart';
 import '../network/http_calls.dart';
+import '../services/account_deletion_guard.dart';
 import 'content_translation.dart';
 
 /// Where an account's translated content lives and how fresh text is asked
@@ -49,6 +51,116 @@ class ContentTranslationRemoteDataSource
   /// one failure from costing a whole library.
   static const batchSize = 120;
 
+  /// The function refuses a call with more than 3000 distinct lines, or one
+  /// record with more than 200 (functions/translateContent.js). Batches are
+  /// cut by line count under those caps, with room to spare, so a library of
+  /// long recipes never has a whole call refused.
+  static const maxLinesPerCall = 2500;
+  static const maxLinesPerItem = 200;
+
+  /// The lines one record carries, counted the way the server counts them:
+  /// one per text field, one per list entry.
+  @visibleForTesting
+  static int linesIn(TranslatableItem item) {
+    var n = 0;
+    for (final value in item.fields.values) {
+      if (value is String) {
+        n += 1;
+      } else if (value is List) {
+        n += value.length;
+      }
+    }
+    return n;
+  }
+
+  /// What the day's budget counts (functions/translateContent.js
+  /// `unitsOf`): one unit per started [unitChars] characters of a trimmed
+  /// line, so an ingredient is one and a 2000-character step is seven. The
+  /// `quota` object of a refusal — `used`, `limit`, `requested` — is in
+  /// these, so a call cut to "what is left" has to count the same way:
+  /// counted in lines, a batch of long steps was sent again and refused
+  /// again until nothing fitted.
+  static const unitChars = 300;
+
+  @visibleForTesting
+  static int unitsOf(String text) {
+    final length = text.trim().length;
+    return length <= unitChars ? 1 : (length / unitChars).ceil();
+  }
+
+  /// The budget units one record costs, over the lines [linesIn] counts.
+  /// An upper bound: the server skips lines its cache already holds, and
+  /// counts a line repeated across records once; sending less than what
+  /// is left is the safe side.
+  @visibleForTesting
+  static int unitsIn(TranslatableItem item) {
+    var n = 0;
+    for (final value in item.fields.values) {
+      if (value is String) {
+        n += unitsOf(value);
+      } else if (value is List) {
+        for (final line in value) {
+          n += line is String ? unitsOf(line) : 1;
+        }
+      }
+    }
+    return n;
+  }
+
+  /// The calls a list of records is sent in: at most [batchSize] records and
+  /// [maxLinesPerCall] lines each. A record over [maxLinesPerItem] is left
+  /// out — the server would refuse the whole call for it — and stays in its
+  /// source language.
+  @visibleForTesting
+  static List<List<TranslatableItem>> batchesOf(List<TranslatableItem> items) {
+    final out = <List<TranslatableItem>>[];
+    var current = <TranslatableItem>[];
+    var lines = 0;
+    for (final item in items) {
+      final n = linesIn(item);
+      if (n > maxLinesPerItem) {
+        debugPrint('Not translating ${item.type}/${item.id}: $n lines');
+        continue;
+      }
+      if (current.isNotEmpty &&
+          (current.length >= batchSize || lines + n > maxLinesPerCall)) {
+        out.add(current);
+        current = <TranslatableItem>[];
+        lines = 0;
+      }
+      current.add(item);
+      lines += n;
+    }
+    if (current.isNotEmpty) out.add(current);
+    return out;
+  }
+
+  /// The leading part of [slice] that fits in what a `quota` refusal
+  /// ([body]) says is left of the day, or null when nothing smaller can be
+  /// sent: the refusal was not about this call's size, nothing is left, or
+  /// even the first record does not fit.
+  @visibleForTesting
+  static List<TranslatableItem>? fitting(
+    List<TranslatableItem> slice,
+    Object? body,
+  ) {
+    final quota = HttpCalls.quotaOf(body);
+    if (quota == null || quota.requested == null) return null;
+    final left = quota.limit - quota.used;
+    final fits = <TranslatableItem>[];
+    var units = 0;
+    for (final item in slice) {
+      final n = unitsIn(item);
+      if (units + n > left) break;
+      fits.add(item);
+      units += n;
+    }
+    // Strictly smaller, or a refusal the client counts differently would
+    // send the same call forever.
+    if (fits.isEmpty || fits.length >= slice.length) return null;
+    return fits;
+  }
+
   final FirebaseFirestore _firestore;
   late final HttpCalls _calls = HttpCalls(
     baseUrl: ApiConfig.translateContentUrl,
@@ -63,7 +175,7 @@ class ContentTranslationRemoteDataSource
     String type,
   ) {
     final uid = UserScope().uid;
-    if (uid == null) return null;
+    if (uid == null || AccountDeletionGuard.blocks(uid)) return null;
     return _firestore
         .collection(usersCollection)
         .doc(uid)
@@ -107,15 +219,35 @@ class ContentTranslationRemoteDataSource
       );
     }
     final out = <String, TranslatedFields>{};
-    for (var i = 0; i < items.length; i += batchSize) {
-      final slice = items.skip(i).take(batchSize).toList();
-      final response = await _calls.post(
-        '',
-        data: {
-          'targetLang': lang,
-          'items': [for (final item in slice) item.toJson()],
-        },
-      );
+    final queue = batchesOf(items);
+    for (var i = 0; i < queue.length; i++) {
+      final slice = queue[i];
+      final Response? response;
+      try {
+        response = await _calls.post(
+          '',
+          data: {
+            'targetLang': lang,
+            'items': [for (final item in slice) item.toJson()],
+          },
+        );
+      } on AppException catch (e) {
+        if (e.type != AppErrorType.quotaExceeded) rethrow;
+        // The day's allowance: a call larger than what is left is refused
+        // whole (the refusal says `requested`), though a smaller one still
+        // fits. Send what fits, then stop — nothing is left after it.
+        final fits = fitting(slice, e.data);
+        if (fits != null) {
+          queue
+            ..removeRange(i + 1, queue.length)
+            ..add(fits);
+          continue;
+        }
+        // Spent: what earlier calls brought back is kept (the server filed
+        // it too), the rest stays in its own language until tomorrow.
+        if (out.isNotEmpty) return out;
+        rethrow;
+      }
       final data = response?.data;
       if (data is! Map<String, dynamic>) {
         throw const AppException(AppErrorType.parsingFailed);

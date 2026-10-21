@@ -1,4 +1,5 @@
 import '../entities/price_record_entity.dart';
+import '../entities/price_unit.dart';
 import '../entities/product_pricing_entity.dart';
 import '../entities/receipt_entity.dart';
 
@@ -24,9 +25,14 @@ abstract class PriceBookRepository {
   /// it; with it true the prices stay and only the receipt goes.
   Future<void> deleteReceipt(String id, {bool keepRecords = false});
 
-  /// The community's figure for a normalised product name, or null when
-  /// nobody has shared one. Cached per name for the session.
-  Future<CommunityPriceEntity?> communityPrice(String normalizedName);
+  /// The community's figure for a normalised product name priced per
+  /// [unit] (the per-unit document first, then the legacy per-name one), or
+  /// null when nobody has shared one. Cached per name and unit for the
+  /// session.
+  Future<CommunityPriceEntity?> communityPrice(
+    String normalizedName, {
+    PriceUnit? unit,
+  });
 
   /// Adds these prices to the community aggregates. Names and prices only —
   /// never the store, the date or who paid.

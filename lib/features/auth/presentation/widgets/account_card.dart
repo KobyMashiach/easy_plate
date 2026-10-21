@@ -8,6 +8,7 @@ import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../bloc/auth_bloc.dart';
+import 'sign_out_action.dart';
 import '../../../../core/widgets/app_dialog.dart';
 
 /// The signed-in account and the way out of it. Lives in settings because that
@@ -27,16 +28,7 @@ class AccountCard extends StatelessWidget {
     ).show(context);
 
     if (!(confirmed ?? false) || !context.mounted) return;
-    // Signing out clears Firebase, Google/Apple and the local scope; the bloc
-    // reports through its stream, and the card stays up until it has.
-    await AppDialog.busy(context, () {
-      bloc.add(const AuthEvent.signOut());
-      return bloc.stream.firstWhere(
-        (state) => state is! AuthLoading,
-        // The gate's redirect disposes this page, and its bloc, mid-way.
-        orElse: () => const AuthState.idle(),
-      );
-    });
+    await signOutWithFeedback(context, bloc);
   }
 
   @override
@@ -62,6 +54,9 @@ class AccountCard extends StatelessWidget {
                       ? Image.network(
                           profile!.photoUrl!,
                           fit: BoxFit.cover,
+                          cacheWidth:
+                              (52 * MediaQuery.devicePixelRatioOf(context))
+                                  .round(),
                           errorBuilder: (_, _, _) => const _AvatarFallback(),
                         )
                       : const _AvatarFallback(),

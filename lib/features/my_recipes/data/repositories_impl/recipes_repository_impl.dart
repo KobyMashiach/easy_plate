@@ -66,10 +66,30 @@ class RecipesRepositoryImpl implements RecipesRepository {
   /// Uploads the photo if it has not travelled yet, then mirrors the recipe.
   Future<void> _publish(RecipeModel model) async {
     final uploaded = await _uploadImage(model);
+    if (uploaded == null) {
+      // No upload, or a failed one — which may have taken a while. What is
+      // pushed is the record as the box holds it now, not the snapshot from
+      // before: an edit saved, or a website change pulled in, meanwhile must
+      // not be overwritten in the mirror. Deleted meanwhile: nothing to push.
+      final current = await localDataSource.getRecipeById(model.id);
+      if (current != null) await (cloud?.push(current) ?? Future.value());
+      return;
+    }
     // Written back to the box as well, so the next save does not re-upload the
-    // same file and every screen reading the box can resolve the picture.
-    if (uploaded != null) await localDataSource.saveRecipe(uploaded);
-    await (cloud?.push(uploaded ?? model) ?? Future.value());
+    // same file and every screen reading the box can resolve the picture — but
+    // onto the record as it is now, not the snapshot taken before the upload:
+    // an edit saved meanwhile must not be undone by it. A recipe deleted, or
+    // given another photo, while the upload ran is left alone; the newer save
+    // carries its own upload.
+    final current = await localDataSource.getRecipeById(model.id);
+    if (current == null || current.imageFileName != model.imageFileName) {
+      return;
+    }
+    final merged = current.copyWith(
+      imageStoragePath: uploaded.imageStoragePath,
+    );
+    await localDataSource.saveRecipe(merged);
+    await (cloud?.push(merged) ?? Future.value());
   }
 
   /// The recipe with its photo's Storage path filled in, or null when there was
@@ -116,8 +136,18 @@ class RecipesRepositoryImpl implements RecipesRepository {
     if (uploaded == null) return recipe;
 
     if (persist) {
-      await localDataSource.saveRecipe(uploaded);
-      unawaited(cloud?.push(uploaded) ?? Future.value());
+      // Only the storage path, onto the record as it is stored now: the
+      // upload took a while, and a save or a pulled-in website edit made
+      // meanwhile must not be undone. A recipe deleted, or given another
+      // photo, meanwhile is left to its newer save.
+      final current = await localDataSource.getRecipeById(model.id);
+      if (current != null && current.imageFileName == model.imageFileName) {
+        final stored = current.copyWith(
+          imageStoragePath: uploaded.imageStoragePath,
+        );
+        await localDataSource.saveRecipe(stored);
+        unawaited(cloud?.push(stored) ?? Future.value());
+      }
     }
     return uploaded.toEntity();
   }
@@ -130,10 +160,17 @@ class RecipesRepositoryImpl implements RecipesRepository {
     final doomed = await localDataSource.getRecipeById(id);
     await localDataSource.deleteRecipe(id);
     unawaited(cloud?.remove(id) ?? Future.value());
-    unawaited(
-      images?.remove(doomed?.imageStoragePath, uid: UserScope().uid) ??
-          Future.value(),
-    );
+    // Not when the photo travels beyond this copy: a published recipe's
+    // community post, and a shared recipe's co-editors, point at the same
+    // upload, and deleting it here took the picture off theirs too.
+    final published =
+        doomed?.sharedRecipeId != null || doomed?.collabId != null;
+    if (!published) {
+      unawaited(
+        images?.remove(doomed?.imageStoragePath, uid: UserScope().uid) ??
+            Future.value(),
+      );
+    }
   }
 
   /// Marks a record with the language it is being written in, and moves its

@@ -20,9 +20,14 @@ plugins {
 
 android {
     // 32-bit x86 has no phones left; its sherpa-onnx native code only adds size.
+    // The sherpa-onnx AAR also ships its C and C++ APIs for FFI callers; the
+    // Kotlin KeywordSpotter loads only libsherpa-onnx-jni, which links
+    // onnxruntime directly, so those two cost ~5 MB per ABI for nothing.
     packaging {
         jniLibs {
             excludes += "lib/x86/**"
+            excludes += "lib/*/libsherpa-onnx-c-api.so"
+            excludes += "lib/*/libsherpa-onnx-cxx-api.so"
         }
     }
     namespace = "com.KHEasyDev.easy_plate"
@@ -71,8 +76,14 @@ android {
         release {
             // Play rejects anything signed with the debug key, so a release
             // build without credentials must fail loudly rather than quietly
-            // produce an artefact that cannot be uploaded.
-            if (keystoreProperties.getProperty("storeFile") == null) {
+            // produce an artefact that cannot be uploaded. Checked only when a
+            // release task was asked for: this block is evaluated at
+            // configuration time for every build, and a debug build on a
+            // machine without the key must still work (see the top of the file).
+            val releaseRequested = gradle.startParameter.taskNames.any {
+                it.contains("release", ignoreCase = true)
+            }
+            if (releaseRequested && keystoreProperties.getProperty("storeFile") == null) {
                 throw GradleException(
                     "Release build needs android/key.properties with storeFile, " +
                         "storePassword, keyAlias and keyPassword."

@@ -419,6 +419,11 @@ class DashboardOverview {
 
   final AiPricing pricing;
 
+  /// The cap the accounts or the purchase-event read came back at, or null
+  /// when it came back short of it; when set, the totals are partial.
+  final int? usersCap;
+  final int? eventsCap;
+
   const DashboardOverview({
     required this.period,
     required this.loadedAt,
@@ -445,6 +450,8 @@ class DashboardOverview {
     required this.cacheEntries,
     required this.cacheHits,
     required this.pricing,
+    this.usersCap,
+    this.eventsCap,
   });
 
   DashboardRange get range => period.range;

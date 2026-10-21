@@ -1,6 +1,6 @@
 // The console's shell: sign-in gate, language, navigation and the hash
 // router that mounts one view at a time.
-import { watchAuth, signInWithGoogle, signOut, isAdminUser } from "./firebase.js";
+import { watchAuth, signInWithGoogle, signOut, isAdminUser, db, collection, onSnapshot, query, where, limit } from "./firebase.js";
 import { LANGS, detectLang, setLang, currentLang, onLangChange, t } from "./i18n.js";
 import { h, clear, avatar, toast } from "./ui.js";
 import * as dashboard from "./views/dashboard.js";
@@ -53,6 +53,9 @@ const ROUTES = [
 
 let unmount = null;
 let currentUser = null;
+// Views mount asynchronously; a navigation that lands while an earlier one
+// is still awaiting must win, and the earlier view's listeners must stop.
+let mountSeq = 0;
 
 function els() {
   return {
@@ -66,14 +69,38 @@ function els() {
   };
 }
 
+// Open unread tickets, counted from their own bounded query (not the
+// tickets page's newest 500), so the badge is right on every page and
+// beyond 500 tickets. Shown as "99+" past the cap.
+const UNREAD_CAP = 100;
+let unreadTickets = 0;
+let unreadCapped = false;
+let stopUnread = null;
+const unreadText = () => (unreadCapped ? `${UNREAD_CAP - 1}+` : String(unreadTickets));
+function watchUnreadTickets() {
+  if (stopUnread) return;
+  stopUnread = onSnapshot(query(collection(db, "feedback"), where("read", "==", false), limit(UNREAD_CAP)), (snap) => {
+    unreadTickets = snap.docs.filter((d) => d.get("status") !== "closed").length;
+    unreadCapped = snap.size >= UNREAD_CAP && unreadTickets > 0;
+    const el = document.getElementById("ticketsBadge");
+    if (el) { el.hidden = !unreadTickets; el.textContent = unreadText(); }
+  }, () => {});
+}
+function stopUnreadTickets() {
+  if (stopUnread) { stopUnread(); stopUnread = null; }
+  unreadTickets = 0;
+  unreadCapped = false;
+}
+
 function renderNav() {
   const { nav } = els();
   clear(nav);
   const route = location.hash.slice(1) || "/dashboard";
   for (const key of ["dashboard", "stores", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "whatsnew", "config", "audit"]) {
-    const a = h(`a${route.startsWith("/" + key) ? ".active" : ""}`, { href: `#/${key}`, html: ICONS[key] });
+    const here = route.startsWith("/" + key);
+    const a = h(`a${here ? ".active" : ""}`, { href: `#/${key}`, html: ICONS[key], ...(here ? { "aria-current": "page" } : {}) });
     a.append(h("span", t(`nav.${key}`)));
-    if (key === "tickets") a.append(h("span.badge.brand", { id: "ticketsBadge", hidden: true }));
+    if (key === "tickets") a.append(h("span.badge.brand", { id: "ticketsBadge", hidden: !unreadTickets }, unreadText()));
     nav.append(a);
   }
 }
@@ -101,9 +128,17 @@ async function mount() {
   title.textContent = route.title ? route.title() : t(`nav.${route.key}`);
   renderNav();
   document.querySelector(".sidebar").classList.remove("open");
+  const seq = ++mountSeq;
   try {
-    unmount = await route.view.mount({ view, actions, params, user: currentUser, setTitle: (s) => { title.textContent = s; } });
+    const stop = await route.view.mount({ view, actions, params, user: currentUser, setTitle: (s) => { if (seq === mountSeq) title.textContent = s; } });
+    if (seq !== mountSeq) {
+      // Superseded while mounting: tear it down instead of leaking it.
+      if (typeof stop === "function") { try { stop(); } catch (_) {} }
+      return;
+    }
+    unmount = stop;
   } catch (err) {
+    if (seq !== mountSeq) return;
     console.error(err);
     view.append(h("div.card.error", err.message || t("common.error")));
   }
@@ -124,6 +159,7 @@ function showShell(user) {
   shell.hidden = false;
   clear(me);
   me.append(avatar(user.displayName || user.email, user.photoURL, "sm"), h("span.ellipsis", user.email));
+  watchUnreadTickets();
   mount();
 }
 
@@ -156,21 +192,42 @@ function init() {
     }
   });
   document.getElementById("signOut").addEventListener("click", () => signOut());
-  document.getElementById("navToggle").addEventListener("click", () => document.querySelector(".sidebar").classList.toggle("open"));
+  const navToggle = document.getElementById("navToggle");
+  navToggle.setAttribute("aria-expanded", "false");
+  navToggle.addEventListener("click", () => navToggle.setAttribute("aria-expanded", String(document.querySelector(".sidebar").classList.toggle("open"))));
   window.addEventListener("hashchange", () => { if (currentUser) mount(); });
 
+  let authGen = 0;
   watchAuth(async (user) => {
+    // A sign-out (or another account) while the admin check below is in
+    // flight makes this callback stale: it must not open the shell.
+    const gen = ++authGen;
     const splash = document.getElementById("splash");
     if (splash) splash.remove();
-    if (user && !(await isAdminUser(user))) {
-      await signOut();
-      currentUser = null;
-      showGate(t("gate.notAdmin"));
-      return;
+    if (user) {
+      let admin;
+      try {
+        admin = await isAdminUser(user);
+      } catch (err) {
+        if (gen !== authGen) return;
+        currentUser = null;
+        showGate(t("gate.failed", { reason: err?.code || "network" }));
+        return;
+      }
+      if (gen !== authGen) return;
+      if (!admin) {
+        await signOut();
+        currentUser = null;
+        showGate(t("gate.notAdmin"));
+        return;
+      }
     }
     currentUser = user;
     if (user) showShell(user);
     else {
+      // A mount still awaiting must not install listeners after sign-out.
+      mountSeq++;
+      stopUnreadTickets();
       if (unmount) { try { unmount(); } catch (_) {} unmount = null; }
       showGate();
     }

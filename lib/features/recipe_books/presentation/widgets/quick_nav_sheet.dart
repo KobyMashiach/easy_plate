@@ -7,17 +7,20 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 
-/// Jump list for the open book. Tapping an entry returns its index; dragging
-/// an entry reorders the book through [onReorder].
+/// Jump list for the open book. Tapping an entry returns its recipe id (not
+/// an index: a reorder made in the sheet may not have reached the book yet,
+/// so the caller looks the id up in the book's current order). Dragging an
+/// entry reorders the book through [onReorder]; a null [onReorder] (a
+/// read-only book) shows the list without drag handles.
 ///
 /// The order is mirrored locally so the drag lands immediately — the sheet sits
 /// on its own route and can't see the book bloc's rebuilt state.
-Future<int?> showQuickNavSheet(
+Future<String?> showQuickNavSheet(
   BuildContext context,
   List<RecipeEntity> recipes, {
-  required void Function(int oldIndex, int newIndex) onReorder,
+  void Function(int oldIndex, int newIndex)? onReorder,
 }) {
-  return showModalBottomSheet<int>(
+  return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     builder: (context) => DraggableScrollableSheet(
@@ -34,12 +37,12 @@ Future<int?> showQuickNavSheet(
 
 class _QuickNavBody extends StatefulWidget {
   final List<RecipeEntity> recipes;
-  final void Function(int oldIndex, int newIndex) onReorder;
+  final void Function(int oldIndex, int newIndex)? onReorder;
   final ScrollController scrollController;
 
   const _QuickNavBody({
     required this.recipes,
-    required this.onReorder,
+    this.onReorder,
     required this.scrollController,
   });
 
@@ -51,16 +54,19 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
   late final List<RecipeEntity> _recipes = [...widget.recipes];
 
   void _onReorder(int oldIndex, int newIndex) {
+    final onReorder = widget.onReorder;
+    if (onReorder == null) return;
     // ReorderableListView reports the insertion slot, which sits one past the
     // item once it's lifted out of the list above its destination.
     final target = newIndex > oldIndex ? newIndex - 1 : newIndex;
     if (target == oldIndex) return;
     setState(() => _recipes.insert(target, _recipes.removeAt(oldIndex)));
-    widget.onReorder(oldIndex, target);
+    onReorder(oldIndex, target);
   }
 
   @override
   Widget build(BuildContext context) {
+    final canReorder = widget.onReorder != null;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -73,11 +79,13 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(t.books.quickNav, style: AppTextStyles.headlineMd),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              t.books.reorderHint,
-              style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
-            ),
+            if (canReorder) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                t.books.reorderHint,
+                style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+              ),
+            ],
             const SizedBox(height: AppSpacing.gutter),
             // Expanded rather than a fixed height: a long book used to overflow
             // the sheet instead of scrolling.
@@ -99,7 +107,7 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
                     child: ClayCard(
                       radius: AppRadius.std,
                       padding: const EdgeInsets.all(AppSpacing.sm),
-                      onTap: () => Navigator.of(context).pop(index),
+                      onTap: () => Navigator.of(context).pop(recipe.id),
                       child: Row(
                         children: [
                           Container(
@@ -126,16 +134,17 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
                               style: AppTextStyles.bodyMd,
                             ),
                           ),
-                          ReorderableDragStartListener(
-                            index: index,
-                            child: Padding(
-                              padding: const EdgeInsets.all(AppSpacing.xs),
-                              child: Icon(
-                                Icons.drag_handle_rounded,
-                                color: AppColors.outline,
+                          if (canReorder)
+                            ReorderableDragStartListener(
+                              index: index,
+                              child: Padding(
+                                padding: const EdgeInsets.all(AppSpacing.xs),
+                                child: Icon(
+                                  Icons.drag_handle_rounded,
+                                  color: AppColors.outline,
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),

@@ -20,7 +20,10 @@ WhatsNewArgs args({int count = 3, String target = ''}) {
           release: release,
           feature: WhatsNewFeature(
             featureKey: i == 0 ? 'ff_cook_mode' : 'ff_feature_$i',
-            title: {'he': 'כותרת ארוכה למדי לפיצ׳ר מספר $i', 'en': 'Feature $i'},
+            title: {
+              'he': 'כותרת ארוכה למדי לפיצ׳ר מספר $i',
+              'en': 'Feature $i',
+            },
             description: {
               'he':
                   'תיאור ארוך של מה שהפיצ׳ר עושה ולמה הוא שימושי, שורה אחרי שורה.',
@@ -39,7 +42,9 @@ Widget host(Widget child, {Size? size}) => MaterialApp(
     textDirection: TextDirection.rtl,
     child: size == null
         ? child
-        : Center(child: SizedBox.fromSize(size: size, child: child)),
+        : Center(
+            child: SizedBox.fromSize(size: size, child: child),
+          ),
   ),
 );
 
@@ -142,6 +147,33 @@ void main() {
     expect(acknowledged, 12);
   });
 
+  testWidgets('pass 8: the system back acknowledges too', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    int? acknowledged;
+    final navigator = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      MaterialApp(navigatorKey: navigator, home: const SizedBox()),
+    );
+    navigator.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: WhatsNewBookPage(
+            args: args(),
+            onAcknowledged: (build) => acknowledged = build,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(WhatsNewBookPage), findsNothing);
+    expect(acknowledged, 12);
+  });
+
   testWidgets('"Try it" is drawn only for a target the app can open', (
     tester,
   ) async {
@@ -173,16 +205,19 @@ void main() {
     expect(find.byKey(const ValueKey('whatsNew.tryIt')), findsOneWidget);
   });
 
-  test('a page is shown for an open or Premium-only flag, not a hidden one', () {
-    FeaturesFlags.overrides = {
-      FeaturesFlags.cookMode: FeatureFlagValue.hidden,
-      FeaturesFlags.nutrition: FeatureFlagValue.comingSoon,
-      FeaturesFlags.assistant: FeatureFlagValue.premiumOnly,
-    };
-    expect(WhatsNewService.isFeatureShown('ff_cook_mode'), isFalse);
-    expect(WhatsNewService.isFeatureShown('ff_nutrition'), isFalse);
-    expect(WhatsNewService.isFeatureShown('ff_assistant'), isTrue);
-    expect(WhatsNewService.isFeatureShown('ff_books'), isTrue);
-    expect(WhatsNewService.isFeatureShown('not_a_flag'), isTrue);
-  });
+  test(
+    'a page is shown for an open or Premium-only flag, not a hidden one',
+    () {
+      FeaturesFlags.overrides = {
+        FeaturesFlags.cookMode: FeatureFlagValue.hidden,
+        FeaturesFlags.nutrition: FeatureFlagValue.comingSoon,
+        FeaturesFlags.assistant: FeatureFlagValue.premiumOnly,
+      };
+      expect(WhatsNewService.isFeatureShown('ff_cook_mode'), isFalse);
+      expect(WhatsNewService.isFeatureShown('ff_nutrition'), isFalse);
+      expect(WhatsNewService.isFeatureShown('ff_assistant'), isTrue);
+      expect(WhatsNewService.isFeatureShown('ff_books'), isTrue);
+      expect(WhatsNewService.isFeatureShown('not_a_flag'), isTrue);
+    },
+  );
 }

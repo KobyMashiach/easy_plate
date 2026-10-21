@@ -32,7 +32,8 @@ class HomeWidgetsPage extends StatefulWidget {
   State<HomeWidgetsPage> createState() => _HomeWidgetsPageState();
 }
 
-class _HomeWidgetsPageState extends State<HomeWidgetsPage> {
+class _HomeWidgetsPageState extends State<HomeWidgetsPage>
+    with WidgetsBindingObserver {
   final _channel = HomeWidgetsChannel();
   List<GroceryListEntity> _lists = const [];
   List<MealPlanEntity> _plans = const [];
@@ -44,33 +45,92 @@ class _HomeWidgetsPageState extends State<HomeWidgetsPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// A widget is added (or removed) on the home screen, outside the app:
+  /// the "installed" badges are read again on the way back.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshInstalled();
+  }
+
+  Future<void> _refreshInstalled() async {
+    try {
+      final installed = await _channel.installedCounts();
+      if (mounted) setState(() => _installed = installed);
+    } catch (e) {
+      debugPrint('Installed widgets unknown: $e');
+    }
+  }
+
   Future<void> _load() async {
-    final (lists, plans, installed, pin) = await (
-      context.read<GroceryListsRepository>().getLists(),
-      context.read<MealPlansRepository>().getPlans(),
-      _channel.installedCounts(),
-      _channel.pinSupported(),
-    ).wait;
+    final (
+      List<GroceryListEntity> lists,
+      List<MealPlanEntity> plans,
+      Map<String, int> installed,
+      bool pin,
+    )
+    record;
+    try {
+      // The native channel may have nothing to say on this device: each of
+      // its calls falls back on its own, so the page still shows what the
+      // app knows (the lists and plans), with no pin button.
+      record = await (
+        context.read<GroceryListsRepository>().getLists(),
+        context.read<MealPlansRepository>().getPlans(),
+        _channel.installedCounts().catchError((Object e) {
+          debugPrint('Installed widgets unknown: $e');
+          return <String, int>{};
+        }),
+        _channel.pinSupported().catchError((Object e) {
+          debugPrint('Widget pinning unknown: $e');
+          return false;
+        }),
+      ).wait;
+    } catch (e) {
+      debugPrint('Home widgets page load failed: $e');
+      return;
+    }
+    final (lists, plans, installed, pin) = record;
     if (!mounted) return;
     setState(() {
-      _lists = [...lists]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      _lists = widgetListChoices(lists);
       _plans = [...plans]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
       _installed = installed;
       _pinSupported = pin;
     });
   }
 
+  bool _pinning = false;
+
   Future<void> _pin(HomeWidgetKind kind) async {
-    // The snapshot first, so the widget that lands has something to show.
-    await HomeWidgetsService().publishNow();
-    final shown = await _channel.pinWidget(kind.id);
+    if (_pinning) return;
+    _pinning = true;
+    var shown = false;
+    try {
+      // The snapshot first, so the widget that lands has something to show.
+      await HomeWidgetsService().publishNow();
+      shown = await _channel.pinWidget(kind.id);
+    } catch (e) {
+      debugPrint('Pin widget failed: $e');
+    } finally {
+      _pinning = false;
+    }
     if (!mounted) return;
     if (!shown) {
       AppDialog.warning(message: t.homeWidgets.pinFailed).show(context);
+      return;
     }
+    // Some launchers place the widget without the app ever pausing.
+    await _refreshInstalled();
   }
 
   @override
@@ -171,6 +231,17 @@ class _HomeWidgetsPageState extends State<HomeWidgetsPage> {
     );
   }
 }
+
+/// The lists a widget may be pointed at, oldest first: only the ones this
+/// account can write to. A view-only shared list was offered too, and the
+/// quick-add widget's lines were dropped on the way in (the drain skips
+/// lists it may not write); a saved default that is now view-only is not
+/// among these, so the picker reads "automatic" for it.
+@visibleForTesting
+List<GroceryListEntity> widgetListChoices(List<GroceryListEntity> lists) => [
+  for (final list in lists)
+    if (list.canEdit) list,
+]..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
 /// `Platform` throws on the web; the page is never shown there, but the
 /// getter keeps the check in one place.

@@ -106,24 +106,25 @@ class _ShareSheetState extends State<_ShareSheet> {
     }
     final user = AuthSessionService().user;
     final uid = user?.uid;
-    if (uid == null) return;
+    if (uid == null || _busy) return;
 
-    if (widget.codes case final codes?) {
-      if (!await codes.gate(context, uid) || !mounted) return;
-    }
-
+    // Busy before the gate: it reads Firestore, and a second tap meanwhile
+    // sent the invite twice.
     setState(() {
       _error = null;
       _busy = true;
     });
     try {
+      if (widget.codes case final codes?) {
+        if (!await codes.gate(context, uid) || !mounted) return;
+      }
       await widget.onSend(
         _contact.text,
         role: _role,
         uid: uid,
         senderContacts: [user?.email, user?.phoneNumber].nonNulls.toList(),
       );
-      await widget.codes?.recordShare();
+      await _recordShare();
       if (mounted) Navigator.of(context).pop(true);
     } on ShareFailure catch (e) {
       if (!mounted) return;
@@ -140,6 +141,16 @@ class _ShareSheetState extends State<_ShareSheet> {
       if (mounted) setState(() => _error = t.sharing.failed);
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// The share already went out: a counter that fails to move must not
+  /// turn it into a reported failure (and a second code or invite).
+  Future<void> _recordShare() async {
+    try {
+      await widget.codes?.recordShare();
+    } catch (e) {
+      debugPrint('Share not counted: $e');
     }
   }
 
@@ -164,15 +175,15 @@ class _ShareSheetState extends State<_ShareSheet> {
   Future<void> _createCode() async {
     final uid = AuthSessionService().user?.uid;
     final codes = widget.codes;
-    if (uid == null || codes == null) return;
-    if (!await codes.gate(context, uid) || !mounted) return;
+    if (uid == null || codes == null || _busy) return;
     setState(() {
       _busy = true;
       _codeError = null;
     });
     try {
+      if (!await codes.gate(context, uid) || !mounted) return;
       final created = await codes.create(role: _role, uid: uid);
-      await codes.recordShare();
+      await _recordShare();
       if (mounted) {
         setState(() => _activeCodes = [created, ...?_activeCodes]);
       }

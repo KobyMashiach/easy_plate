@@ -5,7 +5,10 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../recipe_sharing/data/datasources/pending_accepts_store.dart';
 import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
+import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
+import '../../../recipe_sharing/domain/scope_check.dart';
 import '../../../recipe_sharing/domain/usecases/share_recipe_usecase.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../container_adapter.dart';
@@ -27,13 +30,31 @@ class ContainerCollab<T> {
   /// holds the write and the local save must not wait on it.
   final Duration remoteWriteTimeout;
 
+  /// How long the server is given for an accept (two writes and a read)
+  /// before it is reported as queued; see RespondToShareInviteUseCase.
+  final Duration acceptTimeout;
+
+  /// The accepts this device still owes a local copy for (see
+  /// [PendingAcceptsStore]); the device store when not given.
+  final PendingAcceptsStore? pending;
+
+  /// Whether [uid] is still the account signed in — asked before a copy is
+  /// written on its behalf (see [scopedTo]). Tests pass their own.
+  final ScopeCheck stillSignedIn;
+
   const ContainerCollab({
     required this.adapter,
     required this.containers,
     required this.linker,
     required this.profiles,
     this.remoteWriteTimeout = const Duration(seconds: 8),
+    this.acceptTimeout = const Duration(seconds: 15),
+    this.pending,
+    this.stillSignedIn = scopedTo,
   });
+
+  PendingAcceptsStore get _pending =>
+      pending ?? HivePendingAcceptsStore.instance;
 
   // ── Sharing ────────────────────────────────────────────────────────────
 
@@ -83,6 +104,24 @@ class ContainerCollab<T> {
     if (!adapter.isMine(item)) {
       throw StateError('Only what this account owns can be shared');
     }
+    // The caller may hold the item as it was when the sheet opened: before
+    // its first share, or before a co-editor's change was pulled in. The
+    // stored copy is the current one, and writing the held one would put
+    // the old content back over theirs. See ShareRecipeUseCase.prepare.
+    final stored = await adapter.byId(adapter.idOf(item));
+    if (stored != null) {
+      item =
+          adapter.collabIdOf(stored) != null || adapter.collabIdOf(item) == null
+          ? stored
+          : adapter.withCollab(
+              stored,
+              collabId: adapter.collabIdOf(item)!,
+              role: adapter.roleOf(item) ?? CollabRole.owner,
+            );
+    }
+    // The first share (sheet or code) is also the first time the cover has
+    // to be in the bucket: an encode before the upload lands carries no path.
+    item = await adapter.readyForSharing(item);
     final linked = await linker.ensureCollabs(
       adapter.recipeIdsOf(item),
       uid: ownerUid,
@@ -104,9 +143,13 @@ class ContainerCollab<T> {
         ownerUid: ownerUid,
       );
       // Saved before the invite goes out, so a crash between the two leaves
-      // a shareable item rather than an orphaned document.
+      // a shareable item rather than an orphaned document. Only the sharing
+      // marks, onto the item as stored now: the cover upload, the recipe
+      // links and the create took a while, and a save made meanwhile must
+      // not be undone.
+      final current = await adapter.byId(adapter.idOf(item));
       owned = adapter.withCollab(
-        item,
+        current ?? item,
         collabId: collabId,
         role: CollabRole.owner,
       );
@@ -212,9 +255,45 @@ class ContainerCollab<T> {
   // ── Receiving ──────────────────────────────────────────────────────────
 
   Future<T> accept(ShareInviteEntity invite, {required String uid}) async {
-    final container = await containers.acceptInvite(invite);
-    return _localFrom(container, uid: uid);
+    // Marked before the server is asked, cleared once the copy is saved: an
+    // accept that times out offline (the writes are queued and land later)
+    // or dies between the roster write and the save is finished by the next
+    // refresh (see [adopt]).
+    await _pending.add(
+      PendingAccept(
+        collabId: invite.collabId,
+        kind: adapter.kind,
+        at: DateTime.now(),
+      ),
+    );
+    final CollabContainerEntity container;
+    try {
+      container = await containers.acceptInvite(invite).timeout(acceptTimeout);
+    } on TimeoutException {
+      throw const AppException(
+        AppErrorType.networkError,
+        message: RecipeSharingRepository.acceptQueued,
+      );
+    } catch (e) {
+      if (RecipeSharingRepository.isCollabMissing(e)) {
+        await _pending.remove(invite.collabId);
+      }
+      rethrow;
+    }
+    final local = await _localFrom(container, uid: uid);
+    await _pending.remove(invite.collabId);
+    return local;
   }
+
+  /// Writes the local copy of a document this account is already on the
+  /// roster of — the second half of an accept that never got there. Returns
+  /// the copy, or the existing one when the document is already here.
+  Future<T> adopt(CollabContainerEntity container, {required String uid}) =>
+      _localFrom(container, uid: uid);
+
+  /// Whether a local copy of [collabId] exists on this device.
+  Future<bool> holds(String collabId) async =>
+      (await adapter.all()).any((i) => adapter.collabIdOf(i) == collabId);
 
   Future<void> decline(ShareInviteEntity invite) =>
       containers.declineInvite(invite);
@@ -230,6 +309,16 @@ class ContainerCollab<T> {
       container.recipeCollabIds,
       uid: uid,
     );
+    // The caller's copy was read before the recipes were fetched: lay the
+    // document over the copy as stored now, so a save made meanwhile is
+    // kept, and leave one deleted meanwhile deleted.
+    if (local != null) {
+      final current = await adapter.byId(adapter.idOf(local));
+      if (current == null || adapter.collabIdOf(current) != container.id) {
+        return local;
+      }
+      local = current;
+    }
     local ??= (await adapter.all())
         .where((i) => adapter.collabIdOf(i) == container.id)
         .firstOrNull;
@@ -240,6 +329,14 @@ class ContainerCollab<T> {
       uid: uid,
     );
     if (local != null && !_differs(local, decoded, byCollabId)) return local;
+    // The recipes were fetched for [uid]; the boxes open now may already
+    // be another account's.
+    if (!stillSignedIn(uid)) {
+      throw StateError(
+        'account changed while a shared ${adapter.kind.name} '
+        'was being written',
+      );
+    }
     await adapter.save(decoded);
     return decoded;
   }
@@ -274,7 +371,10 @@ class ContainerCollab<T> {
       if (!'$e'.contains('permission-denied')) rethrow;
     }
     if (container == null) {
-      final orphaned = adapter.withoutCollab(local);
+      // Onto the item as stored now; one deleted meanwhile stays deleted.
+      final current = await adapter.byId(adapter.idOf(local));
+      if (current == null) return local;
+      final orphaned = adapter.withoutCollab(current);
       await adapter.save(orphaned);
       return orphaned;
     }
@@ -298,6 +398,8 @@ class ContainerCollab<T> {
     for (final local in cached) {
       final container = byId[adapter.collabIdOf(local)];
       if (container == null) continue;
+      // Signed out, or another account in, while this loop ran.
+      if (!stillSignedIn(uid)) return rewritten;
       try {
         final result = await _localFrom(container, uid: uid, local: local);
         if (!identical(result, local)) rewritten++;
@@ -319,11 +421,14 @@ class ContainerCollab<T> {
     final collabId = adapter.collabIdOf(item);
     if (collabId == null) return;
     try {
-      if (adapter.isMine(item)) {
-        await containers.delete(collabId);
-      } else {
-        await containers.removeMember(collabId, uid);
-      }
+      // Bounded: offline, Firestore holds the write and never completes
+      // its future, and the delete or leave on screen waited with it (the
+      // planner then reported "deleted" with the plan still there). The
+      // queued write still lands once the network is back.
+      await (adapter.isMine(item)
+              ? containers.delete(collabId)
+              : containers.removeMember(collabId, uid))
+          .timeout(remoteWriteTimeout);
     } catch (e) {
       debugPrint('Shared ${adapter.kind.name} $collabId retire failed: $e');
     }

@@ -52,14 +52,15 @@
       <a class="brand" href="#/dashboard"><img src="/icon-64.png" alt="" width="28" height="28" /><span>EasyPlate <b>Admin</b></span></a>
       <nav id="nav" class="nav"></nav>
       <div class="sidebar-foot">
-        <select id="langSel" class="select" aria-label="Language"></select>
+        <select id="langSel" class="select" aria-label="Language" data-i18n-label="lang"></select>
         <div class="me" id="me"></div>
+        <a id="openApp" class="btn primary small" href="/app/recipes" data-i18n="openApp"></a>
         <button id="signOut" class="btn ghost small" type="button" data-i18n="signOut"></button>
       </div>
     </aside>
     <main class="main">
       <header class="topbar">
-        <button id="navToggle" class="btn ghost icon" type="button" aria-label="Menu">☰</button>
+        <button id="navToggle" class="btn ghost icon" type="button" aria-label="Menu" data-i18n-label="menu">☰</button>
         <h1 id="pageTitle"></h1>
         <div id="pageActions" class="page-actions"></div>
       </header>

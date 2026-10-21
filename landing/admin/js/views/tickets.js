@@ -5,7 +5,7 @@
 // follow-ups included — and the signature details the message carries
 // (name, email, phone, build, device, language) are shown here, never in
 // the user's chat.
-import { db, collection, doc, onSnapshot, query, orderBy, limit, updateDoc, deleteDoc, writeBatch, arrayUnion, serverTimestamp, Timestamp } from "../firebase.js";
+import { db, collection, doc, onSnapshot, query, orderBy, limit, where, updateDoc, deleteDoc, writeBatch, arrayUnion, serverTimestamp, Timestamp } from "../firebase.js";
 import { t, fmtNumber, fmtDate, toDate } from "../i18n.js";
 import { h, clear, badge, when, button, busy, chips, textarea, field, modal, confirmDialog, toast, toastError, empty } from "../ui.js";
 
@@ -75,8 +75,6 @@ export async function mount({ view, user }) {
     const isClosed = (tk) => tk.status === "closed";
     const rows = filter === "closed" ? tickets.filter(isClosed) : filter === "unread" ? tickets.filter((tk) => !tk.read && !isClosed(tk)) : tickets.filter((tk) => !isClosed(tk));
     count.textContent = t("tickets.count", { n: fmtNumber(rows.length) });
-    const badgeEl = document.getElementById("ticketsBadge");
-    if (badgeEl) { const unread = tickets.filter((tk) => !tk.read && !isClosed(tk)).length; badgeEl.hidden = !unread; badgeEl.textContent = String(unread); }
     clear(list);
     if (!rows.length) { list.append(empty(t("tickets.none"))); return; }
     for (const tk of rows) {
@@ -92,6 +90,18 @@ export async function mount({ view, user }) {
       )));
     }
   };
-  const unsub = onSnapshot(query(collection(db, "feedback"), orderBy("createdAt", "desc"), limit(500)), (snap) => { tickets = snap.docs.map((d) => ({ id: d.id, ...d.data() })); render(); }, toastError);
-  return unsub;
+  // The newest 500, plus every unread one even when it is older than that
+  // (the default "unread" filter must not lose a ticket past the window).
+  let recent = [], unread = [];
+  const merge = () => {
+    const byId = new Map(recent.map((tk) => [tk.id, tk]));
+    for (const tk of unread) if (!byId.has(tk.id)) byId.set(tk.id, tk);
+    tickets = [...byId.values()].sort((a, b) => (toDate(b.createdAt) || new Date(0)).getTime() - (toDate(a.createdAt) || new Date(0)).getTime());
+    render();
+  };
+  const subs = [
+    onSnapshot(query(collection(db, "feedback"), orderBy("createdAt", "desc"), limit(500)), (snap) => { recent = snap.docs.map((d) => ({ id: d.id, ...d.data() })); merge(); }, toastError),
+    onSnapshot(query(collection(db, "feedback"), where("read", "==", false), limit(500)), (snap) => { unread = snap.docs.map((d) => ({ id: d.id, ...d.data() })); merge(); }, () => {}),
+  ];
+  return () => subs.forEach((u) => u());
 }

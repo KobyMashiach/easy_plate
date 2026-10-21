@@ -158,9 +158,16 @@ class AdminBillingSnapshot {
   /// Events that resolved to no uid: receipts with no account to unlock.
   final List<PurchaseEventEntity> orphanEvents;
 
+  /// The cap a read came back at, or null when it came back short of it:
+  /// past the cap the list is partial, and the tab says so.
+  final int? accountsCap;
+  final int? eventsCap;
+
   const AdminBillingSnapshot({
     required this.accounts,
     required this.orphanEvents,
+    this.accountsCap,
+    this.eventsCap,
   });
 }
 

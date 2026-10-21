@@ -77,6 +77,25 @@ void main() {
       expect(events.first.kind, ActivityKind.forumReply);
       expect(events.last.kind, ActivityKind.joined);
     });
+
+    test('an AI call keeps its numeric status in the timeline', () {
+      final detail = AdminUserDetail(
+        uid: 'u1',
+        profile: const {},
+        aiCalls: [
+          ContentItem(
+            id: 'c1',
+            title: 'call',
+            at: DateTime(2026, 10, 1),
+            data: const {'kind': 'url', 'status': 429},
+          ),
+        ],
+      );
+      final call = AdminUserDetailDataSource.timelineOf(
+        detail,
+      ).firstWhere((e) => e.kind == ActivityKind.aiCall);
+      expect(call.detail, 'url · 429');
+    });
   });
 
   testWidgets(
@@ -135,6 +154,48 @@ void main() {
       await tester.tap(find.text(t.adminUser.sections.forumPosts));
       await tester.pumpAndSettle();
       expect(find.text('איך מכינים פיתות?'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'a grant dated ahead reads as free until it starts, and the page reads '
+    'the account again after an action',
+    (tester) async {
+      LocaleSettings.setLocaleSync(AppLocale.he);
+      final start = DateTime.now().add(const Duration(days: 3));
+      var loads = 0;
+      var actions = 0;
+      await tester.pumpWidget(
+        TranslationProvider(
+          child: MaterialApp(
+            home: AdminUserPage(
+              uid: 'u1',
+              name: 'Ann',
+              onActions: () async => actions++,
+              loader: (_) async {
+                loads++;
+                return AdminUserDetail(
+                  uid: 'u1',
+                  profile: const {'fullName': 'Ann'},
+                  entitlement: {'premium': true, 'premiumFrom': start},
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(t.adminBilling.premium), findsNothing);
+      expect(
+        find.textContaining(t.adminBilling.free, findRichText: true),
+        findsWidgets,
+      );
+      expect(loads, 1);
+
+      await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+      await tester.pumpAndSettle();
+      expect(actions, 1);
+      expect(loads, 2);
     },
   );
 }

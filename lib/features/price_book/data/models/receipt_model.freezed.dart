@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ReceiptModel {
 
-@HiveField(0) String get id;@HiveField(1) String? get store;@HiveField(2) DateTime get purchasedAt;@HiveField(3) String get currency;@HiveField(4) double get total;@HiveField(5) int get itemCount;@HiveField(6) DateTime get createdAt;@HiveField(7) List<String> get imageFileNames;
+@HiveField(0) String get id;@HiveField(1) String? get store;@HiveField(2)@JsonKey(fromJson: readJsonDate) DateTime get purchasedAt;@HiveField(3) String get currency;@HiveField(4) double get total;@HiveField(5) int get itemCount;@HiveField(6)@JsonKey(fromJson: readJsonDate) DateTime get createdAt;@HiveField(7) List<String> get imageFileNames;
 /// Create a copy of ReceiptModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $ReceiptModelCopyWith<$Res>  {
   factory $ReceiptModelCopyWith(ReceiptModel value, $Res Function(ReceiptModel) _then) = _$ReceiptModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String? store,@HiveField(2) DateTime purchasedAt,@HiveField(3) String currency,@HiveField(4) double total,@HiveField(5) int itemCount,@HiveField(6) DateTime createdAt,@HiveField(7) List<String> imageFileNames
+@HiveField(0) String id,@HiveField(1) String? store,@HiveField(2)@JsonKey(fromJson: readJsonDate) DateTime purchasedAt,@HiveField(3) String currency,@HiveField(4) double total,@HiveField(5) int itemCount,@HiveField(6)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(7) List<String> imageFileNames
 });
 
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? store, @HiveField(2)  DateTime purchasedAt, @HiveField(3)  String currency, @HiveField(4)  double total, @HiveField(5)  int itemCount, @HiveField(6)  DateTime createdAt, @HiveField(7)  List<String> imageFileNames)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? store, @HiveField(2)@JsonKey(fromJson: readJsonDate)  DateTime purchasedAt, @HiveField(3)  String currency, @HiveField(4)  double total, @HiveField(5)  int itemCount, @HiveField(6)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(7)  List<String> imageFileNames)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReceiptModel() when $default != null:
 return $default(_that.id,_that.store,_that.purchasedAt,_that.currency,_that.total,_that.itemCount,_that.createdAt,_that.imageFileNames);case _:
@@ -178,7 +178,7 @@ return $default(_that.id,_that.store,_that.purchasedAt,_that.currency,_that.tota
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? store, @HiveField(2)  DateTime purchasedAt, @HiveField(3)  String currency, @HiveField(4)  double total, @HiveField(5)  int itemCount, @HiveField(6)  DateTime createdAt, @HiveField(7)  List<String> imageFileNames)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String? store, @HiveField(2)@JsonKey(fromJson: readJsonDate)  DateTime purchasedAt, @HiveField(3)  String currency, @HiveField(4)  double total, @HiveField(5)  int itemCount, @HiveField(6)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(7)  List<String> imageFileNames)  $default,) {final _that = this;
 switch (_that) {
 case _ReceiptModel():
 return $default(_that.id,_that.store,_that.purchasedAt,_that.currency,_that.total,_that.itemCount,_that.createdAt,_that.imageFileNames);}
@@ -195,7 +195,7 @@ return $default(_that.id,_that.store,_that.purchasedAt,_that.currency,_that.tota
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? store, @HiveField(2)  DateTime purchasedAt, @HiveField(3)  String currency, @HiveField(4)  double total, @HiveField(5)  int itemCount, @HiveField(6)  DateTime createdAt, @HiveField(7)  List<String> imageFileNames)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String? store, @HiveField(2)@JsonKey(fromJson: readJsonDate)  DateTime purchasedAt, @HiveField(3)  String currency, @HiveField(4)  double total, @HiveField(5)  int itemCount, @HiveField(6)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(7)  List<String> imageFileNames)?  $default,) {final _that = this;
 switch (_that) {
 case _ReceiptModel() when $default != null:
 return $default(_that.id,_that.store,_that.purchasedAt,_that.currency,_that.total,_that.itemCount,_that.createdAt,_that.imageFileNames);case _:
@@ -210,16 +210,16 @@ return $default(_that.id,_that.store,_that.purchasedAt,_that.currency,_that.tota
 @JsonSerializable()
 
 class _ReceiptModel implements ReceiptModel {
-  const _ReceiptModel({@HiveField(0) required this.id, @HiveField(1) this.store, @HiveField(2) required this.purchasedAt, @HiveField(3) this.currency = 'ILS', @HiveField(4) required this.total, @HiveField(5) this.itemCount = 0, @HiveField(6) required this.createdAt, @HiveField(7) final  List<String> imageFileNames = const []}): _imageFileNames = imageFileNames;
+  const _ReceiptModel({@HiveField(0) required this.id, @HiveField(1) this.store, @HiveField(2)@JsonKey(fromJson: readJsonDate) required this.purchasedAt, @HiveField(3) this.currency = 'ILS', @HiveField(4) required this.total, @HiveField(5) this.itemCount = 0, @HiveField(6)@JsonKey(fromJson: readJsonDate) required this.createdAt, @HiveField(7) final  List<String> imageFileNames = const []}): _imageFileNames = imageFileNames;
   factory _ReceiptModel.fromJson(Map<String, dynamic> json) => _$ReceiptModelFromJson(json);
 
 @override@HiveField(0) final  String id;
 @override@HiveField(1) final  String? store;
-@override@HiveField(2) final  DateTime purchasedAt;
+@override@HiveField(2)@JsonKey(fromJson: readJsonDate) final  DateTime purchasedAt;
 @override@JsonKey()@HiveField(3) final  String currency;
 @override@HiveField(4) final  double total;
 @override@JsonKey()@HiveField(5) final  int itemCount;
-@override@HiveField(6) final  DateTime createdAt;
+@override@HiveField(6)@JsonKey(fromJson: readJsonDate) final  DateTime createdAt;
  final  List<String> _imageFileNames;
 @override@JsonKey()@HiveField(7) List<String> get imageFileNames {
   if (_imageFileNames is EqualUnmodifiableListView) return _imageFileNames;
@@ -261,7 +261,7 @@ abstract mixin class _$ReceiptModelCopyWith<$Res> implements $ReceiptModelCopyWi
   factory _$ReceiptModelCopyWith(_ReceiptModel value, $Res Function(_ReceiptModel) _then) = __$ReceiptModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String? store,@HiveField(2) DateTime purchasedAt,@HiveField(3) String currency,@HiveField(4) double total,@HiveField(5) int itemCount,@HiveField(6) DateTime createdAt,@HiveField(7) List<String> imageFileNames
+@HiveField(0) String id,@HiveField(1) String? store,@HiveField(2)@JsonKey(fromJson: readJsonDate) DateTime purchasedAt,@HiveField(3) String currency,@HiveField(4) double total,@HiveField(5) int itemCount,@HiveField(6)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(7) List<String> imageFileNames
 });
 
 

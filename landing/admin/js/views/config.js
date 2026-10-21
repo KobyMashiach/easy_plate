@@ -25,10 +25,19 @@ function camel(key) {
   return key.replace(/^ff_/, "").replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-function heading(name) {
+// The first sentence of a description, for a parameter with no label yet
+// (labels come from the app's i18n files, so a server-only parameter such as
+// quota_ai_proxy_daily has none). Long first sentences are cut at a word.
+function firstSentence(text) {
+  const s = String(text || "").trim().split(/(?<=[.!?。])\s/)[0].replace(/[.!?。]$/, "").trim();
+  return s.length > 90 ? s.slice(0, 88).replace(/\s+\S*$/, "") + "…" : s;
+}
+
+function heading(p) {
+  const name = p.name;
   const lang = currentLang();
   const pick = (l) => (labels[l] ? (/^ff_/.test(name) ? labels[l].featureName[camel(name)] : labels[l].labels[name]) : undefined);
-  return pick(lang) || pick("en") || pick("he") || name;
+  return pick(lang) || pick("en") || pick("he") || firstSentence(p.description) || name;
 }
 
 export async function mount({ view, actions }) {
@@ -41,25 +50,33 @@ export async function mount({ view, actions }) {
   view.append(h("div.toolbar", h("div.search", input({ placeholder: t("config.search"), oninput: debounce((e) => { search = e.target.value.trim().toLowerCase(); render(); }, 120) })), info), groupChips, body);
 
   const apply = (result) => { params = result.parameters || []; version = result.version; info.textContent = `${t("config.version", { v: version || "?" })} · ${t("config.count", { n: params.length })}`; };
+  // true when saved. A refused save leaves the template as it was, so the
+  // caller puts its control back to the saved value.
   const set = async (name, value) => {
-    try { apply(await call("config.set", { name, value: String(value) })); toast(t("config.saved"), "ok"); render(); } catch (e) { toastError(e); }
+    try { apply(await call("config.set", { name, value: String(value) })); toast(t("config.saved"), "ok"); render(); return true; } catch (e) { toastError(e); return false; }
   };
 
   const row = (p) => {
     const isFlag = /^ff_/.test(p.name);
     let control;
-    if (isFlag) control = chips([["0", t("config.flags.0")], ["1", t("config.flags.1")], ["2", t("config.flags.2")], ["3", t("config.flags.3")]], p.value, (v) => set(p.name, v));
-    else if (p.valueType === "BOOLEAN") control = toggle(p.value === "true", (on) => set(p.name, on ? "true" : "false"));
+    // Chips and switches show the new state on click; a failed save swaps in
+    // a fresh control drawn from the saved value.
+    const revert = (make) => { const fresh = make(); control.replaceWith(fresh); control = fresh; };
+    const flagChips = () => chips([["0", t("config.flags.0")], ["1", t("config.flags.1")], ["2", t("config.flags.2")], ["3", t("config.flags.3")]], p.value, async (v) => { if (!(await set(p.name, v))) revert(flagChips); });
+    const boolToggle = () => toggle(p.value === "true", async (on) => { if (!(await set(p.name, on ? "true" : "false"))) revert(boolToggle); });
+    if (isFlag) control = flagChips();
+    else if (p.valueType === "BOOLEAN") control = boolToggle();
     else if (p.valueType === "JSON") {
       const area = textarea({ value: p.value, style: { direction: "ltr", fontFamily: "ui-monospace, Menlo, monospace", fontSize: "12.5px" } });
-      control = h("div.stack", area, h("div.row", button(t("common.save"), { kind: "small primary", onclick: () => { try { JSON.parse(area.value); } catch (_) { toast(t("common.invalidJson"), "error"); return; } set(p.name, area.value); } })));
+      control = h("div.stack", area, h("div.row", ((b) => { b.addEventListener("click", busy(b, async () => { try { JSON.parse(area.value); } catch (_) { toast(t("common.invalidJson"), "error"); return; } await set(p.name, area.value); })); return b; })(button(t("common.save"), { kind: "small primary" }))));
     } else {
       const ctl = input({ value: p.value, type: p.valueType === "NUMBER" ? "number" : "text", step: "any", style: { direction: "ltr" } });
-      const save = button("✓", { kind: "small primary", onclick: () => { if (ctl.value !== p.value) set(p.name, ctl.value); } });
+      const save = button("✓", { kind: "small primary" });
+      save.addEventListener("click", busy(save, async () => { if (ctl.value !== p.value) await set(p.name, ctl.value); }));
       ctl.addEventListener("keydown", (e) => { if (e.key === "Enter") save.click(); });
       control = h("div.row", h("div.grow", ctl), save);
     }
-    return h("div.card", h("div.row.between", h("div", h("h3", heading(p.name)), h("div.small.muted.mono", p.name, p.group ? ` · ${p.group}` : "")), button("✕", { kind: "ghost small", title: t("config.delete"), onclick: async () => {
+    return h("div.card", h("div.row.between", h("div", h("h3", heading(p)), h("div.small.muted.mono", p.name, p.group ? ` · ${p.group}` : "")), button("✕", { kind: "ghost small", title: t("config.delete"), onclick: async () => {
       if (!(await confirmDialog({ title: t("config.delete"), text: `${t("config.confirmDelete", { name: p.name })} ${t("config.deleteHint")}` }))) return;
       try { apply(await call("config.delete", { name: p.name })); toast(t("common.deleted"), "ok"); render(); } catch (e) { toastError(e); }
     } })), p.description ? h("p.small.muted", p.description) : null, control);
@@ -69,7 +86,7 @@ export async function mount({ view, actions }) {
     clear(body);
     const inGroup = search ? params : params.filter((p) => { const g = GROUPS.find(([, test]) => test(p.name)); return g && g[0] === group; });
     let rows = inGroup;
-    if (search) rows = rows.filter((p) => [p.name, p.description, heading(p.name), p.value].some((v) => String(v || "").toLowerCase().includes(search)));
+    if (search) rows = rows.filter((p) => [p.name, p.description, heading(p), p.value].some((v) => String(v || "").toLowerCase().includes(search)));
     if (group === "features" && state !== "all" && !search) rows = rows.filter((p) => p.value === state);
     if (group === "features" && !search) body.append(stateChips);
     if (group === "gemini") body.append(h("p.small.warn", t("config.deployNote")));

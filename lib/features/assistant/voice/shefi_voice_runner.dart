@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import '../../collab_containers/domain/container_sharing_service.dart';
+import '../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 
 import '../../../core/features/features_flags.dart';
 import '../../../core/monetization/entitlement_service.dart';
@@ -41,6 +43,11 @@ class ShefiVoiceRunner {
   /// For contact_support; a host without it gets "unavailable".
   final FeedbackRepository? feedback;
 
+  /// So an edit to a shared item reaches the other members (see
+  /// AssistantDispatcher.sharing); without them it stays on this phone.
+  final ContainerSharingService? sharing;
+  final RecipeSharingRepository? recipeSharing;
+
   ShefiVoiceRunner({
     required this.recipes,
     required this.books,
@@ -50,6 +57,8 @@ class ShefiVoiceRunner {
     required this.ingestion,
     required this.preferences,
     this.feedback,
+    this.sharing,
+    this.recipeSharing,
   });
 
   /// How long the system assistant is kept waiting before it is told to
@@ -105,6 +114,8 @@ class ShefiVoiceRunner {
       cooking: CookSessionService(),
       ui: _VoiceBridge(),
       feedback: feedback,
+      sharing: sharing,
+      recipeSharing: recipeSharing,
     );
     final snapshot = await dispatcher.snapshot();
     final language = LocaleSettings.currentLocale.languageCode;
@@ -129,7 +140,8 @@ class ShefiVoiceRunner {
     try {
       var reply = '';
       await for (final event in agent.send(text).timeout(timeout)) {
-        if (event is AgentReply) reply = event.text;
+        // A turn cut off mid-tools has no answer: the "try again" line.
+        if (event is AgentReply) reply = event.exhausted ? '' : event.text;
       }
       final end = reply.contains(endMarker);
       final spoken = AssistantText.speech(reply.replaceAll(endMarker, ''));

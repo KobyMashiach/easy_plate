@@ -71,11 +71,11 @@ _ReceiptModel _$ReceiptModelFromJson(Map<String, dynamic> json) =>
     _ReceiptModel(
       id: json['id'] as String,
       store: json['store'] as String?,
-      purchasedAt: DateTime.parse(json['purchasedAt'] as String),
+      purchasedAt: readJsonDate(json['purchasedAt']),
       currency: json['currency'] as String? ?? 'ILS',
       total: (json['total'] as num).toDouble(),
       itemCount: (json['itemCount'] as num?)?.toInt() ?? 0,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: readJsonDate(json['createdAt']),
       imageFileNames:
           (json['imageFileNames'] as List<dynamic>?)
               ?.map((e) => e as String)

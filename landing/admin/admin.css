@@ -257,3 +257,9 @@ details.card summary { cursor: pointer; font-weight: 600; }
   direction: ltr;
   unicode-bidi: isolate;
 }
+
+/* A link styled as a button (the "Open the app" entry). */
+a.btn { text-decoration: none; text-align: center; display: block; }
+
+/* Wide monitors: message text keeps a readable measure inside full-width items. */
+.item .body p, .item .body .pre { max-width: 90ch; }

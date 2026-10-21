@@ -133,7 +133,10 @@ class _MealPlanFilterCardState extends State<MealPlanFilterCard> {
             label: t.groceryList.choosePlans,
             icon: Icons.checklist_rounded,
             expanded: true,
-            onPressed: widget.plans.isEmpty ? null : () => _openPicker(context),
+            // A viewer's menu choice could not be saved to the shared list.
+            onPressed: widget.plans.isEmpty || !widget.list.canEdit
+                ? null
+                : () => _openPicker(context),
           ),
         ],
       ),

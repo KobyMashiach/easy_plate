@@ -1,0 +1,291 @@
+/* The native app's look below lg (docs/web/mobile-native-spec.md). Every rule
+   that changes an existing class sits inside the phone media query, so the
+   desktop (lg, ≥1024 px) is untouched. New classes (.dock-glass, .sheet-*,
+   .press*, …) are only used by phone-only markup. */
+
+/* AppMotion (0.5) */
+:root {
+  --dur-press: 110ms;
+  --dur-quick: 180ms;
+  --dur-standard: 240ms;
+  --dur-emph: 300ms;
+  --dur-exit: 180ms;
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+  --ease-drawer: cubic-bezier(.32, .72, 0, 1);
+  --ease-settle: cubic-bezier(.34, 1.28, .64, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-press: 0ms; --dur-standard: 0ms; --dur-emph: 180ms; }
+}
+
+/* Material Icons Round glyphs (components/icons.tsx below lg). The box
+   keeps the page's direction, so logical utilities on an <Icon> (`end-2`,
+   `ms-1`, `-end-2`) resolve to the right side in RTL; only the inner
+   ligature run is LTR and isolated. No glyph is mirrored by this — a
+   direction-aware icon still opts in with `rtl:-scale-x-100`. */
+.mi-g { direction: ltr; unicode-bidi: isolate; }
+.mi {
+  font-family: "Material Icons Round";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  overflow: hidden;
+  flex-shrink: 0;
+  text-align: center;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* Press feedback on pointer-down (PressScale / ClayIconButton / FAB). */
+.press, .press-icon, .press-fab {
+  transition: transform var(--dur-press) var(--ease-out);
+  -webkit-touch-callout: none;
+}
+.press:active:not(:disabled) { transform: scale(.98); }
+.press-icon:active:not(:disabled) { transform: scale(.92); }
+.press-fab:active:not(:disabled) { transform: scale(.95); }
+
+/* ClayCard (2.4): 0.5 px rim, card shadow, top-left bevel, optional spine. */
+.clay-card {
+  position: relative;
+  background: rgb(var(--c-surface-container-lowest));
+  border: .5px solid rgb(var(--c-surface-container-highest));
+  box-shadow: 0 12px 32px rgb(var(--c-lavender-glow) / .08);
+  isolation: isolate;
+  overflow: hidden;
+  --bevel: .5;
+}
+.clay-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(135deg, rgb(255 255 255 / var(--bevel)) 0%, rgb(255 255 255 / 0) 50%);
+}
+.clay-card.is-active {
+  background: rgb(var(--c-primary-container));
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgb(var(--c-primary-container) / .30);
+  --bevel: .2;
+}
+.clay-card.has-spine::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 8px;
+  pointer-events: none;
+  background: linear-gradient(to right, var(--spine), transparent);
+}
+[dir="rtl"] .clay-card.has-spine::after { background: linear-gradient(to left, var(--spine), transparent); }
+:root[data-theme="dark"] .clay-card { --bevel: .125; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .clay-card { --bevel: .125; } }
+
+/* Round checkbox pop (BouncyCheckbox, 240 ms settle). */
+@keyframes check-pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.check-pop { animation: check-pop var(--dur-standard) var(--ease-settle); }
+
+/* ── Liquid Glass dock (1.4) ─────────────────────────────────────────── */
+.dock-glass {
+  --dock-ink: rgb(28 28 30 / .72);
+  --dock-active: rgb(var(--c-primary));
+  --sheen: rgb(255 255 255 / .35);
+  --rim-a: rgb(255 255 255 / .95);
+  --rim-b: rgb(255 255 255 / .25);
+  background: linear-gradient(to bottom, rgb(255 255 255 / .66), rgb(255 255 255 / .46));
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  box-shadow: 0 10px 30px rgb(0 0 0 / .12), 0 1px 4px rgb(0 0 0 / .05);
+}
+.dock-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 45% 0;
+  border-radius: 9999px 9999px 0 0 / 9999px 9999px 0 0;
+  background: linear-gradient(to bottom, var(--sheen), transparent);
+  pointer-events: none;
+}
+.dock-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(to bottom, var(--rim-a), var(--rim-b) 55%, var(--rim-a));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+.dock-lozenge {
+  background: rgb(255 255 255 / .72);
+  box-shadow: 0 2px 8px rgb(0 0 0 / .06), inset 0 0 0 .6px rgb(255 255 255);
+  will-change: transform;
+}
+.dock-item {
+  color: var(--dock-ink);
+  transition: color var(--dur-quick) var(--ease-out), transform var(--dur-standard) var(--ease-out);
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+}
+.dock-item.is-active { color: var(--dock-active); transform: scale(1.04); }
+.dock-label { font-size: 10.5px; line-height: 14px; letter-spacing: .36px; font-weight: 500; }
+.dock-item.is-active .dock-label { font-weight: 600; }
+:root[data-theme="dark"] .dock-glass {
+  --dock-ink: rgb(255 255 255 / .78);
+  --sheen: rgb(255 255 255 / .07);
+  --rim-a: rgb(255 255 255 / .32);
+  --rim-b: rgb(255 255 255 / .06);
+  background: linear-gradient(to bottom, rgb(44 44 46 / .58), rgb(28 28 30 / .46));
+  box-shadow: 0 12px 30px rgb(0 0 0 / .45);
+}
+:root[data-theme="dark"] .dock-lozenge { background: rgb(255 255 255 / .13); box-shadow: 0 2px 8px rgb(0 0 0 / .06), inset 0 0 0 .6px rgb(255 255 255 / .18); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .dock-glass {
+    --dock-ink: rgb(255 255 255 / .78);
+    --sheen: rgb(255 255 255 / .07);
+    --rim-a: rgb(255 255 255 / .32);
+    --rim-b: rgb(255 255 255 / .06);
+    background: linear-gradient(to bottom, rgb(44 44 46 / .58), rgb(28 28 30 / .46));
+    box-shadow: 0 12px 30px rgb(0 0 0 / .45);
+  }
+  :root:not([data-theme="light"]) .dock-lozenge { background: rgb(255 255 255 / .13); box-shadow: 0 2px 8px rgb(0 0 0 / .06), inset 0 0 0 .6px rgb(255 255 255 / .18); }
+}
+
+/* ── Shefi pill (1.5) ────────────────────────────────────────────────── */
+@keyframes shefi-breathe {
+  from { box-shadow: 0 8px 24px 1px rgb(var(--c-lavender-glow) / .45); }
+  to { box-shadow: 0 8px 32px 1px rgb(var(--c-lavender-glow) / .70); }
+}
+.shefi-pill {
+  background: linear-gradient(to bottom right, rgb(var(--c-lavender-glow)), rgb(var(--c-primary)), rgb(var(--c-on-primary-fixed-variant)));
+  animation: shefi-breathe 3s ease-in-out infinite alternate;
+}
+[dir="rtl"] .shefi-pill { background: linear-gradient(to bottom left, rgb(var(--c-lavender-glow)), rgb(var(--c-primary)), rgb(var(--c-on-primary-fixed-variant))); }
+.shefi-light {
+  background: rgb(var(--c-surface-container-lowest));
+  border: 1.5px solid rgb(var(--c-primary));
+  box-shadow: 0 8px 24px rgb(var(--c-lavender-glow) / .25);
+}
+@media (prefers-reduced-motion: reduce) { .shefi-pill { animation: none; box-shadow: 0 8px 24px 1px rgb(var(--c-lavender-glow) / .45); } }
+
+/* ── Bottom sheet (1.10) ─────────────────────────────────────────────── */
+.sheet-dialog {
+  margin: auto auto 0;
+  padding: 0;
+  width: 100%;
+  max-width: 640px;
+  max-height: 100dvh;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  color: inherit;
+}
+.sheet-dialog::backdrop { background: rgb(0 0 0 / .54); animation: ep-fade-in var(--dur-emph) var(--ease-out); }
+.sheet-dialog[open] .sheet-panel { animation: sheet-in var(--dur-emph) var(--ease-drawer) backwards; transition: transform var(--dur-emph) var(--ease-drawer); }
+.sheet-dialog.is-closing .sheet-panel { animation: sheet-out var(--dur-exit) var(--ease-out) forwards; }
+.sheet-dialog.is-closing::backdrop { animation: ep-fade-out var(--dur-exit) var(--ease-out) forwards; }
+@keyframes sheet-in { from { transform: translateY(100%); } }
+@keyframes sheet-out { to { transform: translateY(100%); } }
+@keyframes ep-fade-in { from { opacity: 0; } }
+@keyframes ep-fade-out { to { opacity: 0; } }
+
+/* ── AppDialog (2.1) ─────────────────────────────────────────────────── */
+.app-dialog {
+  margin: auto;
+  padding: 0;
+  width: calc(100% - 48px);
+  max-width: 380px;
+  max-height: calc(100dvh - 48px);
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  color: inherit;
+}
+.app-dialog::backdrop {
+  background: rgb(var(--c-on-surface) / .32);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  animation: ep-fade-in var(--dur-emph) var(--ease-out);
+}
+.app-dialog[open] .app-dialog-card { animation: dialog-in var(--dur-emph) var(--ease-out) backwards; }
+.app-dialog.is-closing .app-dialog-card { animation: dialog-out var(--dur-exit) cubic-bezier(.68, 0, .77, 0) forwards; }
+.app-dialog.is-closing::backdrop { animation: ep-fade-out var(--dur-exit) var(--ease-out) forwards; }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(4%) scale(.94); } }
+@keyframes dialog-out { to { opacity: 0; transform: translateY(4%) scale(.94); } }
+@media (prefers-reduced-motion: reduce) {
+  @keyframes dialog-in { from { opacity: 0; } }
+  @keyframes dialog-out { to { opacity: 0; } }
+}
+
+/* ── Top notice (2.2) ────────────────────────────────────────────────── */
+@keyframes notice-in { from { opacity: 0; transform: translateY(-60%); } }
+@keyframes notice-out { to { opacity: 0; transform: translateY(-60%); } }
+.notice-in { animation: notice-in var(--dur-emph) var(--ease-out) backwards; }
+.notice-out { animation: notice-out var(--dur-exit) var(--ease-out) forwards; }
+
+/* ── Phone-only overrides of existing classes ────────────────────────── */
+@media (max-width: 1023.98px) {
+  /* Flat page background (0.7), the iOS bounce left to the browser. */
+  body { background-image: none; }
+
+  /* The system Hebrew face (0.3); Latin stays in Plus Jakarta Sans. */
+  html[lang="he"] body { font-family: "Plus Jakarta Sans", "SF Hebrew", "Arial Hebrew", "Noto Sans Hebrew", system-ui, sans-serif; }
+
+  /* ClayCard rim on every .clay (2.4). */
+  .clay {
+    box-shadow:
+      0 12px 32px rgb(var(--c-lavender-glow) / 0.08),
+      inset 1px 1px 0 rgb(255 255 255 / var(--bevel, 0.6)),
+      inset 0 0 0 .5px rgb(var(--c-surface-container-highest));
+  }
+
+  /* ClayCard bottom slab (2.4): the native card shadow (0 12 32 lavender
+     .08) reads on a phone as a solid lavender slab the card's own shape,
+     12 px below it (scripts/preview/out/native/settings.png: #F2ECFF on
+     #FCF8FF). Drawn sharp so it shows at phone scale; active cards keep
+     their primaryContainer glow. */
+  .clay-card:not(.is-active) { box-shadow: 0 12px 0 0 rgb(var(--c-lavender-glow) / .08); }
+
+  /* ClayButton (2.3): solid #441CC8 slab, labelMd w600, 4 px sink, grey disabled face. */
+  .clay-btn-primary, .clay-btn-secondary, .clay-btn-tonal, .clay-btn-ghost, .clay-btn-danger {
+    font-weight: 600; font-size: 14px; line-height: 20px; letter-spacing: .01em;
+    transition: transform var(--dur-press) var(--ease-out), box-shadow var(--dur-press) var(--ease-out);
+  }
+  .clay-btn-primary:active:not(:disabled), .clay-btn-danger:active:not(:disabled), .clay-btn-secondary:active:not(:disabled), .clay-btn-tonal:active:not(:disabled) { transform: translateY(4px); }
+  .clay-btn-primary { box-shadow: 0 4px 0 0 rgb(var(--c-on-primary-fixed-variant)), 0 8px 24px rgb(var(--c-primary) / 0.25); }
+  .clay-btn-danger {
+    background: rgb(var(--c-error));
+    color: rgb(var(--c-on-error));
+    box-shadow: 0 4px 0 0 rgb(var(--c-on-error-container)), 0 8px 24px rgb(var(--c-error) / 0.25);
+  }
+  .clay-btn-primary:disabled, .clay-btn-danger:disabled {
+    opacity: 1;
+    background: rgb(var(--c-outline-variant));
+    color: rgb(var(--c-on-primary));
+    box-shadow: none !important;
+    transform: translateY(4px);
+  }
+
+  /* iOS push/pop (1.8) on the View Transitions API. */
+  html { --vt-dir: 1; }
+  html[dir="rtl"] { --vt-dir: -1; }
+  html.vt-push::view-transition-old(root) { animation: vt-push-old 500ms var(--ease-drawer) both; z-index: 0; }
+  html.vt-push::view-transition-new(root) { animation: vt-push-new 500ms var(--ease-drawer) both; z-index: 1; }
+  html.vt-pop::view-transition-old(root) { animation: vt-pop-old 500ms var(--ease-drawer) both; z-index: 1; }
+  html.vt-pop::view-transition-new(root) { animation: vt-pop-new 500ms var(--ease-drawer) both; z-index: 0; }
+}
+@keyframes vt-push-new { from { transform: translateX(calc(var(--vt-dir) * 100%)); box-shadow: 0 0 24px rgb(0 0 0 / .18); } to { box-shadow: 0 0 24px rgb(0 0 0 / .18); } }
+@keyframes vt-push-old { to { transform: translateX(calc(var(--vt-dir) * -33%)); filter: brightness(.9); } }
+@keyframes vt-pop-old { to { transform: translateX(calc(var(--vt-dir) * 100%)); box-shadow: 0 0 24px rgb(0 0 0 / .18); } from { box-shadow: 0 0 24px rgb(0 0 0 / .18); } }
+@keyframes vt-pop-new { from { transform: translateX(calc(var(--vt-dir) * -33%)); filter: brightness(.9); } }

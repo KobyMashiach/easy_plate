@@ -12,8 +12,10 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/link_phone_usecase.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/sign_out_action.dart';
 import '../widgets/auth_error_text.dart';
-import '../widgets/link_credential_sheets.dart' show normalisePhone;
+import '../widgets/link_credential_sheets.dart' show readPhoneField;
+import '../../domain/send_log.dart';
 
 /// Held between arriving with Google or an email and reaching the app.
 ///
@@ -50,9 +52,14 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
       LinkPhoneUseCase(context.read<AuthRepository>());
 
   Future<void> _send() async {
-    final phone = normalisePhone(_phone.text);
-    if (phone.length < 10) {
-      setState(() => _error = t.auth.invalidPhone);
+    final (:phone, :error) = readPhoneField(_phone.text);
+    if (phone == null) {
+      setState(() => _error = error);
+      return;
+    }
+    final left = SendLog.smsWaitLeft(phone, smsResendWaitSeconds);
+    if (left > 0) {
+      setState(() => _error = t.auth.resendIn(seconds: left));
       return;
     }
     setState(() {
@@ -61,6 +68,13 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
     });
     try {
       final id = await _useCase.start(phone);
+      if (id == AuthRepository.instantlyVerified) {
+        // Verified without a code and already linked: on as after _confirm.
+        if (!mounted) return;
+        final user = context.read<AuthRepository>().currentUser;
+        if (user != null) await AuthSessionService().refreshUser(user);
+        return;
+      }
       if (mounted) {
         setState(() {
           _verificationId = id;
@@ -113,8 +127,10 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
     if (e is AppException && e.message == 'credential-already-in-use') {
       return t.auth.phoneAlreadyUsed;
     }
+    // The Firebase code when there is one, else the error type (a network
+    // failure has no code) — the same fallback as AuthBloc.
     return e is AppException
-        ? authErrorMessage(e.message)
+        ? authErrorMessage(e.message.isNotEmpty ? e.message : e.type.name)
         : t.auth.errorUnknown;
   }
 
@@ -133,7 +149,7 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
             trailingIcon: Icons.logout_rounded,
             onTrailingTap: _busy
                 ? null
-                : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
+                : () => signOutWithFeedback(context, context.read<AuthBloc>()),
           ),
           body: SafeArea(
             child: ListView(
@@ -148,7 +164,7 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
                 const SizedBox(height: AppSpacing.lg),
                 Text(
                   awaitingCode
-                      ? t.auth.codeSentTo(phone: _sentTo ?? '')
+                      ? t.auth.codeSentTo(phone: '\u2066${_sentTo ?? ''}\u2069')
                       : t.auth.phoneGateBody,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMd.copyWith(

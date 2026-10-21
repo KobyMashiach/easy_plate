@@ -10,17 +10,30 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../domain/entities/grocery_item_entity.dart';
 import '../../../../core/constants/app_motion.dart';
+import '../../domain/parse_amount.dart';
 
 /// Drill-down for one line: which recipe contributed how much, with per-source
 /// adjustment and removal, a unit picker, and a free buffer amount.
 ///
 /// Ad-hoc lines carry a single manual source, so they land in exactly this
 /// sheet and are edited the same way as recipe-derived ones.
+///
+/// Each source is reported with its position *and* who it is (recipe id and
+/// label): the list can change under the open sheet (a rebuild, a remote
+/// edit), and the bloc uses the identity to find the right source again.
+typedef BreakdownSourceId = ({String? recipeId, String label});
+
 Future<void> showItemBreakdownSheet(
   BuildContext context,
   GroceryItemEntity item, {
-  required void Function(int sourceIndex, double amount) onAdjustSource,
-  required void Function(int sourceIndex) onRemoveSource,
+  required void Function(
+    int sourceIndex,
+    BreakdownSourceId source,
+    double amount,
+  )
+  onAdjustSource,
+  required void Function(int sourceIndex, BreakdownSourceId source)
+  onRemoveSource,
   required void Function(MeasurementUnit unit) onChangeUnit,
   required void Function(double amount) onAddBuffer,
 }) {
@@ -39,8 +52,13 @@ Future<void> showItemBreakdownSheet(
 
 class _BreakdownBody extends StatefulWidget {
   final GroceryItemEntity item;
-  final void Function(int sourceIndex, double amount) onAdjustSource;
-  final void Function(int sourceIndex) onRemoveSource;
+  final void Function(
+    int sourceIndex,
+    BreakdownSourceId source,
+    double amount,
+  )
+  onAdjustSource;
+  final void Function(int sourceIndex, BreakdownSourceId source) onRemoveSource;
   final void Function(MeasurementUnit unit) onChangeUnit;
   final void Function(double amount) onAddBuffer;
 
@@ -61,10 +79,14 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
 
   /// Mirrored locally: the sheet sits on its own route and can't see the
   /// grocery bloc's rebuilt state, so edits have to show up here directly.
-  late List<({String label, double amount})> _sources = [
+  late List<({String? recipeId, String label, double amount})> _sources = [
     for (final source in widget.item.sources)
-      (label: source.label, amount: source.amount),
+      (recipeId: source.recipeId, label: source.label, amount: source.amount),
   ];
+
+  static BreakdownSourceId _idOf(
+    ({String? recipeId, String label, double amount}) s,
+  ) => (recipeId: s.recipeId, label: s.label);
   late MeasurementUnit _unit = widget.item.unit;
 
   /// One per source, owned here for the sheet's life. Creating them in
@@ -75,8 +97,45 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
       TextEditingController(text: formatAmount(source.amount)),
   ];
 
+  /// The text each field was last filled with or committed at. The field
+  /// shows at most two decimals, so 1.125 reads "1.13": comparing the parsed
+  /// text with the stored amount rewrote (and published) every such amount
+  /// on close though nothing was touched. Only a changed text is an edit.
+  late final List<String> _committedText;
+
+  @override
+  void initState() {
+    super.initState();
+    // Read now, not lazily: a lazy read on close would see the typed text.
+    _committedText = [
+      for (final controller in _amountControllers) controller.text,
+    ];
+  }
+
+  /// The amount typed into field [i], or null when it is unchanged or not
+  /// a number.
+  double? _editedAmount(int i, String text) {
+    if (text.trim() == _committedText[i].trim()) return null;
+    final typed = parseAmount(text);
+    if (typed == null || typed == _sources[i].amount) return null;
+    _committedText[i] = text;
+    return typed;
+  }
+
+  /// An amount typed but never submitted (the sheet swiped away, or "Add"
+  /// tapped with the field still open) used to be lost; it is committed on
+  /// the way out instead.
+  void _commitPending() {
+    for (var i = 0; i < _sources.length && i < _amountControllers.length; i++) {
+      final typed = _editedAmount(i, _amountControllers[i].text);
+      if (typed == null) continue;
+      widget.onAdjustSource(i, _idOf(_sources[i]), typed);
+    }
+  }
+
   @override
   void dispose() {
+    _commitPending();
     _bufferController.dispose();
     for (final controller in _amountControllers) {
       controller.dispose();
@@ -89,8 +148,10 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
   void _removeSource(int index) {
     if (_sources.length <= 1) return;
     final controller = _amountControllers.removeAt(index);
+    _committedText.removeAt(index);
+    final removed = _sources[index];
     setState(() => _sources = [..._sources]..removeAt(index));
-    widget.onRemoveSource(index);
+    widget.onRemoveSource(index, _idOf(removed));
     // After the frame that drops its field, so the field is not torn down
     // while still bound to it.
     WidgetsBinding.instance.addPostFrameCallback((_) => controller.dispose());
@@ -118,7 +179,8 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
             Text(widget.item.name, style: AppTextStyles.headlineMd),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              '${t.groceryList.breakdownTitle} · $_total $unitLabel'.trim(),
+              '${t.groceryList.breakdownTitle} · ${formatAmount(_total)} $unitLabel'
+                  .trim(),
               style: AppTextStyles.labelMd.copyWith(
                 color: AppColors.onSurfaceVariant,
               ),
@@ -196,16 +258,21 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                         style: AppTextStyles.labelMd,
                         decoration: const InputDecoration(isDense: true),
                         onSubmitted: (value) {
-                          final amount = double.tryParse(value);
+                          final amount = _editedAmount(entry.key, value);
                           if (amount == null) return;
                           setState(() {
                             _sources = [..._sources];
                             _sources[entry.key] = (
+                              recipeId: entry.value.recipeId,
                               label: entry.value.label,
                               amount: amount,
                             );
                           });
-                          widget.onAdjustSource(entry.key, amount);
+                          widget.onAdjustSource(
+                            entry.key,
+                            _idOf(entry.value),
+                            amount,
+                          );
                         },
                       ),
                     ),
@@ -264,7 +331,7 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                 ClayButton(
                   label: t.common.add,
                   onPressed: () {
-                    final amount = double.tryParse(_bufferController.text);
+                    final amount = parseAmount(_bufferController.text);
                     if (amount != null) widget.onAddBuffer(amount);
                     Navigator.of(context).pop();
                   },

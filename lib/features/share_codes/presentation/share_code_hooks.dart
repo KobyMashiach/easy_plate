@@ -57,7 +57,11 @@ class ShareCodeHooks {
     return ShareCodeHooks(
       gate: (context, uid) async {
         // An already shared book holds its slot; only a new one is counted.
-        if (book.collabId != null) return true;
+        // Asked of the stored copy: the sheet holds the book as it opened,
+        // before its first code or invite made it shared.
+        if (await _shared(() => containers.books.adapter.byId(book.id), book)) {
+          return true;
+        }
         final shared = await _ownedCount(containers, uid, CollabKind.book);
         if (!context.mounted) return false;
         return ShareGates.book(context, sharedNow: shared);
@@ -75,7 +79,9 @@ class ShareCodeHooks {
     final containers = context.read<ContainerSharingService>();
     return ShareCodeHooks(
       gate: (context, uid) async {
-        if (plan.collabId != null) return true;
+        if (await _shared(() => containers.plans.adapter.byId(plan.id), plan)) {
+          return true;
+        }
         final shared = await _ownedCount(containers, uid, CollabKind.mealPlan);
         if (!context.mounted) return false;
         return ShareGates.plan(context, sharedNow: shared);
@@ -93,7 +99,9 @@ class ShareCodeHooks {
     final containers = context.read<ContainerSharingService>();
     return ShareCodeHooks(
       gate: (context, uid) async {
-        if (list.collabId != null) return true;
+        if (await _shared(() => containers.lists.adapter.byId(list.id), list)) {
+          return true;
+        }
         final shared = await _ownedCount(
           containers,
           uid,
@@ -108,6 +116,24 @@ class ShareCodeHooks {
       active: (uid) => service.activeFor(list.collabId, uid: uid),
       revoke: service.revoke,
     );
+  }
+
+  /// Whether [held] (as the sheet opened with it) or its stored copy is
+  /// already shared.
+  static Future<bool> _shared(
+    Future<Object?> Function() stored,
+    Object held,
+  ) async {
+    String? collabOf(Object? item) => switch (item) {
+      RecipeBookEntity(:final collabId) => collabId,
+      MealPlanEntity(:final collabId) => collabId,
+      GroceryListEntity(:final collabId) => collabId,
+      _ => null,
+    };
+    if (collabOf(held) != null) return true;
+    // Read only when needed: started up front, a held copy that was
+    // already shared left the read unawaited, and its error unhandled.
+    return collabOf(await stored()) != null;
   }
 
   static Future<int> _ownedCount(

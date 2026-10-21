@@ -1,0 +1,37 @@
+{
+  "id": "7b2e4c9a-3d4f-4e5a-8b1c-2d3e4f5a6b73",
+  "title": "Hummus",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": null,
+  "ingredients": [
+    {
+      "name": "Chickpeas",
+      "amount": 400,
+      "unit": "gram"
+    }
+  ],
+  "steps": [
+    "Blend"
+  ],
+  "dietaryTags": [
+    "vegan"
+  ],
+  "sourceChannel": "manual",
+  "sourceUrl": null,
+  "createdAt": "2026-10-01T08:00:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": "d1e2f3a4-5b6c-4d7e-8f9a-0b1c2d3e4f5a",
+  "collabRole": "owner",
+  "imageStoragePath": null,
+  "allergens": [
+    "sesame"
+  ],
+  "mayContain": [],
+  "servings": null,
+  "nutrition": null,
+  "sharedRecipeId": "9b2e4c0a-3d4f-4e5a-8b1c-2d3e4f5a6b72",
+  "contentLang": "en",
+  "contentVersion": 2
+}

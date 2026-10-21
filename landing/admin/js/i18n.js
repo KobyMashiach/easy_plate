@@ -5,11 +5,14 @@
 
 export const LANGS = { he: "עברית", en: "English", ar: "العربية", fr: "Français", ru: "Русский" };
 export const RTL = new Set(["he", "ar"]);
-const LOCALES = { he: "he-IL", en: "en-GB", ar: "ar", fr: "fr-FR", ru: "ru-RU" };
+// Arabic pinned to Western digits (nu-latn), like the app and the web app.
+const LOCALES = { he: "he-IL", en: "en-GB", ar: "ar-u-nu-latn", fr: "fr-FR", ru: "ru-RU" };
 
 const en = {
   lang: "Language",
   signOut: "Sign out",
+  menu: "Menu",
+  openApp: "Open the app",
   gate: {
     title: "EasyPlate Admin",
     intro: "The administration console. Sign in with the administrator's Google account.",
@@ -75,8 +78,9 @@ const en = {
     hint: "Online = the app is open on a phone right now (reported every minute). Kick = frees the device session, the app signs out at once.",
   },
   user: {
+    product: "Product", deviceId: "Device id", fn: "Function", cacheHit: "cache",
     profile: "Profile", auth: "Sign-in", providers: "Providers", lastSignIn: "Last sign-in", created: "Created", lastRefresh: "Last token refresh",
-    entitlement: "Subscription", premiumUntil: "Premium until", adminLock: "Admin lock (webhook leaves it alone)", source: "Source",
+    entitlement: "Subscription", premiumUntil: "Premium until", sourceStripe: "Website (Stripe)", stripeCustomer: "Stripe customer", cancelsAtPeriodEnd: "cancels at period end", sourcePayplus: "Website (PayPlus, Israel)", sourcePaddle: "Website (Paddle via RevenueCat, abroad)", webSubscription: "Web subscription id", adminLock: "Admin lock (webhook leaves it alone)", source: "Source",
     setPremium: "Grant Premium", removePremium: "Remove Premium", premiumForever: "Leave empty for no end date", notify: "Send message",
     disable: "Block account", enable: "Unblock", kick: "Disconnect device", kickHint: "Frees the device session and revokes tokens; the app signs out within seconds.",
     delete: "Delete account", deleteHint: "Removes the Auth user, the profile, every mirrored box, inbox, entitlement and usage. Community posts stay.",
@@ -176,6 +180,8 @@ const en = {
 const he = {
   lang: "שפה",
   signOut: "התנתקות",
+  menu: "תפריט",
+  openApp: "כניסה לאפליקציה",
   gate: {
     title: "EasyPlate Admin",
     intro: "קונסולת הניהול. מתחברים עם חשבון הגוגל של המנהל.",
@@ -241,8 +247,9 @@ const he = {
     hint: "מחובר = האפליקציה פתוחה על הטלפון כרגע (דיווח כל דקה). ניתוק = משחרר את סשן המכשיר, האפליקציה מתנתקת מיד.",
   },
   user: {
+    product: "מוצר", deviceId: "מזהה מכשיר", fn: "פונקציה", cacheHit: "מטמון",
     profile: "פרופיל", auth: "התחברות", providers: "ספקי כניסה", lastSignIn: "כניסה אחרונה", created: "נוצר", lastRefresh: "רענון טוקן אחרון",
-    entitlement: "מנוי", premiumUntil: "פרימיום עד", adminLock: "נעילת מנהל (ה-webhook לא נוגע)", source: "מקור",
+    entitlement: "מנוי", premiumUntil: "פרימיום עד", sourceStripe: "אתר (Stripe)", stripeCustomer: "לקוח Stripe", cancelsAtPeriodEnd: "מתבטל בסוף התקופה", sourcePayplus: "אתר (PayPlus, ישראל)", sourcePaddle: "אתר (Paddle דרך RevenueCat, חו״ל)", webSubscription: "מזהה מנוי באתר", adminLock: "נעילת מנהל (ה-webhook לא נוגע)", source: "מקור",
     setPremium: "הענקת פרימיום", removePremium: "הסרת פרימיום", premiumForever: "להשאיר ריק = בלי תאריך סיום", notify: "שליחת הודעה",
     disable: "חסימת חשבון", enable: "ביטול חסימה", kick: "ניתוק המכשיר", kickHint: "משחרר את סשן המכשיר ומבטל טוקנים; האפליקציה מתנתקת תוך שניות.",
     delete: "מחיקת חשבון", deleteHint: "מוחק את משתמש ה-Auth, הפרופיל, כל הקופסאות המשוקפות, התיבה, המנוי והשימוש. פוסטים בקהילה נשארים.",
@@ -342,6 +349,8 @@ const he = {
 const ar = {
   lang: "اللغة",
   signOut: "تسجيل الخروج",
+  menu: "القائمة",
+  openApp: "الدخول إلى التطبيق",
   gate: { title: "EasyPlate Admin", intro: "لوحة الإدارة. سجّل الدخول بحساب Google الخاص بالمسؤول.", google: "تسجيل الدخول عبر Google", notAdmin: "هذا الحساب ليس المسؤول. تم تسجيل خروجك.", failed: "فشل تسجيل الدخول: {reason}", unauthorizedDomain: "هذا النطاق غير مصرّح به بعد لتسجيل الدخول. أضف aieasyplate.app في Firebase Console → Authentication → Settings → Authorized domains." },
   nav: { dashboard: "نظرة عامة", users: "الحسابات", community: "المجتمع", recipes: "الوصفات المشتركة", personas: "الشخصيات", households: "الحسابات المشتركة", tickets: "الرسائل", config: "الإعدادات", seed: "النشاط", audit: "سجل الإجراءات", stores: "التنزيلات", notifications: "الإشعارات" , whatsnew: "ما الجديد" },
   whatsnew: {
@@ -400,8 +409,9 @@ const ar = {
     hint: "متصل = التطبيق مفتوح على الهاتف الآن (يُبلّغ كل دقيقة). فصل = يحرر جلسة الجهاز ويخرج التطبيق فورًا.",
   },
   user: {
+    product: "المنتج", deviceId: "معرّف الجهاز", fn: "الدالة", cacheHit: "ذاكرة مؤقتة",
     profile: "الملف الشخصي", auth: "تسجيل الدخول", providers: "مزوّدو الدخول", lastSignIn: "آخر دخول", created: "أُنشئ", lastRefresh: "آخر تجديد للرمز",
-    entitlement: "الاشتراك", premiumUntil: "بريميوم حتى", adminLock: "قفل المسؤول (الـ webhook لا يلمسه)", source: "المصدر",
+    entitlement: "الاشتراك", premiumUntil: "بريميوم حتى", sourceStripe: "الموقع (Stripe)", stripeCustomer: "عميل Stripe", cancelsAtPeriodEnd: "يُلغى في نهاية الفترة", sourcePayplus: "الموقع (PayPlus، إسرائيل)", sourcePaddle: "الموقع (Paddle عبر RevenueCat، خارج إسرائيل)", webSubscription: "معرّف اشتراك الموقع", adminLock: "قفل المسؤول (الـ webhook لا يلمسه)", source: "المصدر",
     setPremium: "منح بريميوم", removePremium: "إزالة بريميوم", premiumForever: "اتركه فارغًا بلا تاريخ انتهاء", notify: "إرسال رسالة",
     disable: "حظر الحساب", enable: "إلغاء الحظر", kick: "فصل الجهاز", kickHint: "يحرر جلسة الجهاز ويلغي الرموز؛ يخرج التطبيق خلال ثوانٍ.",
     delete: "حذف الحساب", deleteHint: "يحذف مستخدم Auth والملف الشخصي وكل البيانات المنسوخة وصندوق الوارد والاشتراك والاستخدام. تبقى منشورات المجتمع.",
@@ -501,6 +511,8 @@ const ar = {
 const fr = {
   lang: "Langue",
   signOut: "Se déconnecter",
+  menu: "Menu",
+  openApp: "Ouvrir l’app",
   gate: { title: "EasyPlate Admin", intro: "La console d’administration. Connectez-vous avec le compte Google de l’administrateur.", google: "Se connecter avec Google", notAdmin: "Ce compte n’est pas l’administrateur. Vous avez été déconnecté.", failed: "Connexion échouée : {reason}", unauthorizedDomain: "Ce domaine n’est pas encore autorisé pour la connexion. Ajoutez aieasyplate.app dans Firebase Console → Authentication → Settings → Authorized domains." },
   nav: { dashboard: "Tableau de bord", users: "Comptes", community: "Communauté", recipes: "Recettes partagées", personas: "Personas", households: "Comptes partagés", tickets: "Tickets", config: "Configuration", seed: "Activité", audit: "Journal", stores: "Téléchargements", notifications: "Notifications" , whatsnew: "Nouveautés" },
   whatsnew: {
@@ -559,8 +571,9 @@ const fr = {
     hint: "En ligne = l’app est ouverte sur un téléphone en ce moment (signalé chaque minute). Déconnecter libère la session ; l’app se déconnecte aussitôt.",
   },
   user: {
+    product: "Produit", deviceId: "Identifiant de l'appareil", fn: "Fonction", cacheHit: "cache",
     profile: "Profil", auth: "Connexion", providers: "Fournisseurs", lastSignIn: "Dernière connexion", created: "Créé", lastRefresh: "Dernier rafraîchissement",
-    entitlement: "Abonnement", premiumUntil: "Premium jusqu’au", adminLock: "Verrou admin (le webhook n’y touche pas)", source: "Source",
+    entitlement: "Abonnement", premiumUntil: "Premium jusqu’au", sourceStripe: "Site web (Stripe)", stripeCustomer: "Client Stripe", cancelsAtPeriodEnd: "s’arrête en fin de période", sourcePayplus: "Site web (PayPlus, Israël)", sourcePaddle: "Site web (Paddle via RevenueCat, étranger)", webSubscription: "ID d’abonnement web", adminLock: "Verrou admin (le webhook n’y touche pas)", source: "Source",
     setPremium: "Accorder Premium", removePremium: "Retirer Premium", premiumForever: "Laisser vide pour aucune fin", notify: "Envoyer un message",
     disable: "Bloquer le compte", enable: "Débloquer", kick: "Déconnecter l’appareil", kickHint: "Libère la session et révoque les jetons ; l’app se déconnecte en quelques secondes.",
     delete: "Supprimer le compte", deleteHint: "Supprime l’utilisateur Auth, le profil, toutes les données miroir, la boîte de réception, l’abonnement et l’usage. Les posts restent.",
@@ -660,6 +673,8 @@ const fr = {
 const ru = {
   lang: "Язык",
   signOut: "Выйти",
+  menu: "Меню",
+  openApp: "Открыть приложение",
   gate: { title: "EasyPlate Admin", intro: "Консоль администратора. Войдите через Google-аккаунт администратора.", google: "Войти через Google", notAdmin: "Этот аккаунт не администратор. Вы вышли.", failed: "Вход не удался: {reason}", unauthorizedDomain: "Домен ещё не разрешён для входа. Добавьте aieasyplate.app в Firebase Console → Authentication → Settings → Authorized domains." },
   nav: { dashboard: "Обзор", users: "Аккаунты", community: "Сообщество", recipes: "Общие рецепты", personas: "Персонажи", households: "Общие аккаунты", tickets: "Обращения", config: "Настройки", seed: "Активность", audit: "Журнал", stores: "Загрузки", notifications: "Уведомления" , whatsnew: "Что нового" },
   whatsnew: {
@@ -718,8 +733,9 @@ const ru = {
     hint: "Онлайн = приложение сейчас открыто на телефоне (отчёт каждую минуту). Отключить = освобождает сессию устройства, приложение сразу выходит.",
   },
   user: {
+    product: "Продукт", deviceId: "ID устройства", fn: "Функция", cacheHit: "кэш",
     profile: "Профиль", auth: "Вход", providers: "Провайдеры", lastSignIn: "Последний вход", created: "Создан", lastRefresh: "Последнее обновление токена",
-    entitlement: "Подписка", premiumUntil: "Premium до", adminLock: "Блокировка администратора (webhook не трогает)", source: "Источник",
+    entitlement: "Подписка", premiumUntil: "Premium до", sourceStripe: "Сайт (Stripe)", stripeCustomer: "Клиент Stripe", cancelsAtPeriodEnd: "отменяется в конце периода", sourcePayplus: "Сайт (PayPlus, Израиль)", sourcePaddle: "Сайт (Paddle через RevenueCat, за рубежом)", webSubscription: "ID веб-подписки", adminLock: "Блокировка администратора (webhook не трогает)", source: "Источник",
     setPremium: "Выдать Premium", removePremium: "Снять Premium", premiumForever: "Оставьте пустым — без даты окончания", notify: "Отправить сообщение",
     disable: "Заблокировать аккаунт", enable: "Разблокировать", kick: "Отключить устройство", kickHint: "Освобождает сессию устройства и отзывает токены; приложение выйдет за секунды.",
     delete: "Удалить аккаунт", deleteHint: "Удаляет пользователя Auth, профиль, все зеркальные данные, входящие, подписку и использование. Посты в сообществе остаются.",
@@ -847,6 +863,7 @@ export function setLang(lang) {
   document.documentElement.lang = lang;
   document.documentElement.dir = RTL.has(lang) ? "rtl" : "ltr";
   for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.getAttribute("data-i18n"));
+  for (const el of document.querySelectorAll("[data-i18n-label]")) el.setAttribute("aria-label", t(el.getAttribute("data-i18n-label")));
   for (const fn of listeners) fn(lang);
 }
 

@@ -21,7 +21,11 @@ void main() {
     final recent = t0.subtract(const Duration(days: 30)).millisecondsSinceEpoch;
     final old = t0.subtract(const Duration(days: 121)).millisecondsSinceEpoch;
     expect(
-      StoreReviewService.shouldAsk(successes: 9, asks: 1, lastAskMillis: recent),
+      StoreReviewService.shouldAsk(
+        successes: 9,
+        asks: 1,
+        lastAskMillis: recent,
+      ),
       isFalse,
     );
     expect(

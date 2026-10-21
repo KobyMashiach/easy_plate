@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/utils/amount_format.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -13,6 +14,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
+import '../../../recipe_ingestion/domain/paid_call_refusal.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_ingestion/domain/usecases/refine_recipe_usecase.dart';
 import '../../domain/entities/nutrition_entity.dart';
@@ -215,6 +217,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       // template no longer waits on the model.
       pendingAnalysis: false,
       createdAt: base.createdAt,
+      // Carried so a save that leaves the words alone keeps the record's
+      // language; the repository moves the version on when they changed.
+      contentLang: base.contentLang,
+      contentVersion: base.contentVersion,
     );
   }
 
@@ -251,6 +257,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   }
 
   Future<RecipeEntity?> _refine({required bool timesChanged}) async {
+    // Two taps inside one frame both reach here before the button greys.
+    if (_busy) return null;
     final useCase = RefineRecipeUseCase(
       context.read<RecipeIngestionRepository>(),
     );
@@ -261,10 +269,24 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       debugPrint('Refine error: $e');
       // A missing key is a setup problem, not a failed correction — saying so
       // beats a generic failure the user cannot act on.
+      // A blocked account answers with the same 401/403 type as a missing
+      // key; the body tells them apart, and "not configured" would send a
+      // blocked user looking for a setup problem that is not there.
+      final blocked = isAccountDisabled(e);
       final unconfigured =
-          e is AppException && e.type == AppErrorType.unauthorized;
+          !blocked && e is AppException && e.type == AppErrorType.unauthorized;
+      final phoneRequired =
+          e is AppException && e.type == AppErrorType.phoneRequired;
       if (mounted) {
-        _warn(unconfigured ? t.ingestion.notConfigured : t.editor.refineError);
+        _warn(
+          blocked
+              ? t.auth.blockedTitle
+              : phoneRequired
+              ? t.auth.phoneGateTitle
+              : unconfigured
+              ? t.ingestion.notConfigured
+              : t.editor.refineError,
+        );
       }
       return null;
     } finally {
@@ -272,7 +294,13 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     }
   }
 
-  Future<void> _fixSpelling() async {
+  /// The spelling fix in flight, for a save that was tapped in the same
+  /// frame to wait on (see [_save]).
+  Future<void>? _spellingPass;
+
+  Future<void> _fixSpelling() => _spellingPass = _runSpellingFix();
+
+  Future<void> _runSpellingFix() async {
     if (!_validate()) return;
     final before = _collect();
     final refined = await _refine(timesChanged: false);
@@ -320,6 +348,12 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
 
     var result = _collect();
     if (withAi) {
+      // Both buttons tapped in one frame: the spelling fix is still running
+      // when the sheet closes, and [_refine] steps aside while it is busy —
+      // so the recipe was saved as typed, silently, without the pass that
+      // was just asked for. Let the fix land first, then run the pass.
+      await _spellingPass;
+      if (!mounted) return;
       final refined = await _refine(timesChanged: _timesChanged);
       if (!mounted) return;
       if (refined != null) {
@@ -359,22 +393,39 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
             Column(
               children: [
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                    children: [
-                      const LandscapeHint(),
-                      const SizedBox(height: AppSpacing.md),
-                      _titleCard(),
-                      const SizedBox(height: AppSpacing.md),
-                      _timesCard(),
-                      const SizedBox(height: AppSpacing.md),
-                      _nutritionCard(),
-                      const SizedBox(height: AppSpacing.md),
-                      _topicsCard(),
-                      const SizedBox(height: AppSpacing.md),
-                      _ingredientsCard(),
-                      const SizedBox(height: AppSpacing.md),
-                      _stepsCard(),
+                  // Slivers, so a long recipe (80 ingredients, 100 steps)
+                  // builds the rows on screen rather than every field.
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                        sliver: SliverMainAxisGroup(
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const LandscapeHint(),
+                                  const SizedBox(height: AppSpacing.md),
+                                  _titleCard(),
+                                  const SizedBox(height: AppSpacing.md),
+                                  _timesCard(),
+                                  const SizedBox(height: AppSpacing.md),
+                                  _nutritionCard(),
+                                  const SizedBox(height: AppSpacing.md),
+                                  _topicsCard(),
+                                  const SizedBox(height: AppSpacing.md),
+                                ],
+                              ),
+                            ),
+                            _ingredientsCard(),
+                            const SliverToBoxAdapter(
+                              child: SizedBox(height: AppSpacing.md),
+                            ),
+                            _stepsCard(),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -600,32 +651,113 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     );
   }
 
-  Widget _ingredientsCard() {
-    return _card(
-      title: t.recipe.ingredients,
-      children: [
-        for (var i = 0; i < _ingredients.length; i++) _ingredientRow(i),
-        const SizedBox(height: AppSpacing.xs),
-        ClayButton(
-          label: t.editor.addIngredient,
-          icon: Icons.add_rounded,
-          onPressed: () => setState(() {
-            _ingredients.add(
-              _IngredientRow(
-                name: '',
-                amount: null,
-                unit: MeasurementUnit.unspecified,
-              ),
-            );
-          }),
+  /// [_card] for a list of rows: the same surface, painted behind a sliver
+  /// so only the rows on screen are built. Mirrors ClayCard's fill, edge,
+  /// shadow and top-left bevel; ClayCard itself needs a box child.
+  Widget _sliverCard({
+    required String title,
+    required Widget rows,
+    required Widget footer,
+  }) {
+    final corners = BorderRadius.circular(AppRadius.md);
+    return DecoratedSliver(
+      decoration: ShapeDecoration(
+        color: AppColors.surfaceContainerLowest,
+        shape: RoundedSuperellipseBorder(
+          borderRadius: corners,
+          side: BorderSide(
+            color: AppColors.surfaceContainerHighest,
+            width: 0.5,
+          ),
         ),
-      ],
+        shadows: AppShadows.card,
+      ),
+      sliver: DecoratedSliver(
+        decoration: ShapeDecoration(
+          shape: RoundedSuperellipseBorder(borderRadius: corners),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.center,
+            colors: [
+              AppShadows.bevelHighlight.withValues(
+                alpha: 0.5 * AppShadows.bevelStrength,
+              ),
+              AppShadows.bevelHighlight.withValues(alpha: 0),
+            ],
+          ),
+        ),
+        sliver: SliverPadding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          sliver: SliverMainAxisGroup(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClaySectionHeader(title: title, underline: true),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
+                ),
+              ),
+              rows,
+              SliverToBoxAdapter(child: footer),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Finds a keyed row again after rows above it were removed, so its field
+  /// state moves with it.
+  int? _ingredientIndexOf(Key key) {
+    if (key is! ObjectKey) return null;
+    final index = _ingredients.indexWhere((r) => identical(r, key.value));
+    return index < 0 ? null : index;
+  }
+
+  int? _stepIndexOf(Key key) {
+    if (key is! ObjectKey) return null;
+    final index = _steps.indexWhere((c) => identical(c, key.value));
+    return index < 0 ? null : index;
+  }
+
+  Widget _ingredientsCard() {
+    return _sliverCard(
+      title: t.recipe.ingredients,
+      rows: SliverList.builder(
+        itemCount: _ingredients.length,
+        findChildIndexCallback: _ingredientIndexOf,
+        itemBuilder: (context, index) => _ingredientRow(index),
+      ),
+      footer: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: AppSpacing.xs),
+          ClayButton(
+            label: t.editor.addIngredient,
+            icon: Icons.add_rounded,
+            onPressed: () => setState(() {
+              _ingredients.add(
+                _IngredientRow(
+                  name: '',
+                  amount: null,
+                  unit: MeasurementUnit.unspecified,
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _ingredientRow(int index) {
     final row = _ingredients[index];
     return Padding(
+      // Keyed by the row, like the steps: a removal above moves each row's
+      // field state with it instead of re-pointing it at a neighbour.
+      key: ObjectKey(row),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -660,8 +792,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                     ),
                   )
                   .toList(),
+              // The field shows its own value; nothing else on the page
+              // reads the unit, so a pick does not rebuild every row.
               onChanged: (unit) {
-                if (unit != null) setState(() => row.unit = unit);
+                if (unit != null) row.unit = unit;
               },
             ),
           ),
@@ -698,34 +832,45 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   }
 
   Widget _stepsCard() {
-    return _card(
+    return _sliverCard(
       title: t.recipe.instructions,
-      children: [
-        ReorderableListView.builder(
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          // The card already scrolls inside the page's ListView.
-          physics: const NeverScrollableScrollPhysics(),
-          // A long press inside a step belongs to the text field's own
-          // selection gesture, so dragging starts from an explicit handle
-          // rather than from anywhere on the row.
-          buildDefaultDragHandles: false,
-          itemCount: _steps.length,
-          // Dragging a row whose field still holds focus puts the text
-          // selection overlay and the drag proxy in the same overlay, which
-          // trips a leader/follower paint-order assertion. Dropping focus also
-          // gets the keyboard out of the way while reordering.
-          onReorderStart: (_) => FocusScope.of(context).unfocus(),
-          onReorder: _reorderSteps,
-          itemBuilder: (context, index) => _stepRow(index),
+      // A long press inside a step belongs to the text field's own selection
+      // gesture, so dragging starts only from the explicit handles in the
+      // row (the sliver list has no default handles).
+      rows: SliverReorderableList(
+        itemCount: _steps.length,
+        findChildIndexCallback: _stepIndexOf,
+        // Dragging a row whose field still holds focus puts the text
+        // selection overlay and the drag proxy in the same overlay, which
+        // trips a leader/follower paint-order assertion. Dropping focus also
+        // gets the keyboard out of the way while reordering.
+        onReorderStart: (_) => FocusScope.of(context).unfocus(),
+        onReorder: _reorderSteps,
+        // The dragged row lives in the overlay, above any Material: its text
+        // field needs one, and the lift reads as the row being picked up.
+        proxyDecorator: (child, index, animation) => AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) => Material(
+            elevation: 6 * Curves.easeInOut.transform(animation.value),
+            color: Colors.transparent,
+            child: child,
+          ),
+          child: child,
         ),
-        const SizedBox(height: AppSpacing.xs),
-        ClayButton(
-          label: t.editor.addStep,
-          icon: Icons.add_rounded,
-          onPressed: () => setState(() => _steps.add(TextEditingController())),
-        ),
-      ],
+        itemBuilder: (context, index) => _stepRow(index),
+      ),
+      footer: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: AppSpacing.xs),
+          ClayButton(
+            label: t.editor.addStep,
+            icon: Icons.add_rounded,
+            onPressed: () =>
+                setState(() => _steps.add(TextEditingController())),
+          ),
+        ],
+      ),
     );
   }
 
@@ -770,9 +915,9 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           ReorderableDragStartListener(
             index: index,
             child: Padding(
-              padding: const EdgeInsets.only(
+              padding: const EdgeInsetsDirectional.only(
                 top: AppSpacing.sm,
-                left: AppSpacing.xs,
+                start: AppSpacing.xs,
               ),
               child: Icon(
                 Icons.drag_handle_rounded,

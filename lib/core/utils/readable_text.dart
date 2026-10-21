@@ -98,7 +98,11 @@ String decodeHtmlEntities(String text) {
         m.group(2)!,
         radix: m.group(1)!.isEmpty ? 10 : 16,
       );
-      return code == null ? m.group(0)! : String.fromCharCode(code);
+      // Past the last code point fromCharCode throws, and one bad entity
+      // in a fetched page would fail the whole import.
+      return code == null || code > 0x10FFFF
+          ? m.group(0)!
+          : String.fromCharCode(code);
     },
   );
   return out;

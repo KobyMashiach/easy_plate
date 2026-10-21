@@ -106,6 +106,9 @@ class ShefiOverlay(
     /** Shows the panel; [command] is what came with the wake words, if anything. */
     fun start(command: String) {
         show()
+        // The overlay window was refused (show() already closed and told
+        // the owner): no speech engine to leak, no microphone with no panel.
+        if (closed) return
         prepareTts()
         if (command.isNotBlank()) submit(command) else listen()
     }

@@ -140,7 +140,7 @@ async function listAll(client, url, key) {
   let pageToken = "";
   do {
     const sep = url.includes("?") ? "&" : "?";
-    const data = await catalogGet(client, `${url}${sep}pageSize=5000${pageToken ? `&pageToken=${pageToken}` : ""}`);
+    const data = await catalogGet(client, `${url}${sep}pageSize=5000${pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : ""}`);
     out.push(...(data[key] || []));
     pageToken = data.nextPageToken || "";
   } while (pageToken);

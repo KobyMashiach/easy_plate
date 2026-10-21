@@ -10,6 +10,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/account_avatar_button.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/notification_bell_button.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/home_widgets/home_widget_launch.dart';
@@ -33,6 +34,7 @@ import '../../../price_book/presentation/widgets/price_widgets.dart';
 import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
 import '../../../../core/constants/app_motion.dart';
 import '../../../../core/features/feature_gate.dart';
+import '../../domain/parse_amount.dart';
 
 class GroceryListPage extends StatelessWidget {
   const GroceryListPage({super.key});
@@ -64,25 +66,25 @@ class GroceryListPage extends StatelessWidget {
             ),
             body: _HomeWidgetAddListener(
               child: BlocBuilder<GroceryListBloc, GroceryListState>(
-              builder: (context, state) {
-                return switch (state) {
-                  GroceryListLoading() => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  GroceryListLoaded(
-                    list: final list,
-                    plans: final plans,
-                    lists: final lists,
-                  ) =>
-                    _ListBody(list: list, plans: plans, lists: lists),
-                  GroceryListError(error: final error) => ErrorRetryView(
-                    error: error,
-                    onRetry: () => context.read<GroceryListBloc>().add(
-                      const GroceryListEvent.init(),
+                builder: (context, state) {
+                  return switch (state) {
+                    GroceryListLoading() => const Center(
+                      child: CircularProgressIndicator(),
                     ),
-                  ),
-                };
-              },
+                    GroceryListLoaded(
+                      list: final list,
+                      plans: final plans,
+                      lists: final lists,
+                    ) =>
+                      _ListBody(list: list, plans: plans, lists: lists),
+                    GroceryListError(error: final error) => ErrorRetryView(
+                      error: error,
+                      onRetry: () => context.read<GroceryListBloc>().add(
+                        const GroceryListEvent.init(),
+                      ),
+                    ),
+                  };
+                },
               ),
             ),
           ),
@@ -131,20 +133,33 @@ class _HomeWidgetAddListenerState extends State<_HomeWidgetAddListener> {
         current is GroceryListLoaded &&
         (wanted == null || current.list.id == wanted);
     if (ready) {
-      showAddGroceryItemSheet(context);
+      _openAddSheet(current.list);
       return;
     }
     if (wanted != null) bloc.add(GroceryListEvent.selectList(wanted));
     _waiting?.cancel();
     _waiting = bloc.stream
         .where(
-          (s) => s is GroceryListLoaded && (wanted == null || s.list.id == wanted),
+          (s) =>
+              s is GroceryListLoaded && (wanted == null || s.list.id == wanted),
         )
         .take(1)
         .timeout(const Duration(seconds: 5), onTimeout: (sink) => sink.close())
-        .listen((_) {
-          if (mounted) showAddGroceryItemSheet(context);
+        .listen((state) {
+          if (mounted) _openAddSheet((state as GroceryListLoaded).list);
         });
+  }
+
+  /// The add sheet, or — for a list shared with this account view-only —
+  /// why there is none: an item typed there was dropped without a word.
+  void _openAddSheet(GroceryListEntity list) {
+    if (!list.canEdit) {
+      AppDialog.warning(
+        message: t.sharing.viewerCannotEditList,
+      ).notify(context);
+      return;
+    }
+    showAddGroceryItemSheet(context);
   }
 
   @override
@@ -293,27 +308,30 @@ class _ListBody extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
         ],
-        // A viewer of a shared list reads it; the lines take no taps.
-        IgnorePointer(
-          ignoring: !list.canEdit,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              GrocerySection(
-                title: t.groceryList.uncheckedSection,
-                items: unchecked,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              GrocerySection(
-                title: t.groceryList.checkedSection,
-                items: checked,
-                // Collected lines are done with — kept out of the way by
-                // default.
-                initiallyExpanded: false,
-              ),
-            ],
-          ),
+      ],
+      // A viewer of a shared list reads it; the lines take no taps. The
+      // sections are slivers of their own, so only the rows on screen are
+      // built.
+      sections: SliverIgnorePointer(
+        ignoring: !list.canEdit,
+        sliver: SliverMainAxisGroup(
+          slivers: [
+            GrocerySection(
+              title: t.groceryList.uncheckedSection,
+              items: unchecked,
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.lg)),
+            GrocerySection(
+              title: t.groceryList.checkedSection,
+              items: checked,
+              // Collected lines are done with — kept out of the way by
+              // default.
+              initiallyExpanded: false,
+            ),
+          ],
         ),
+      ),
+      after: [
         const SizedBox(height: AppSpacing.lg),
         // What the shop will cost, as far as past receipts can tell.
         FeatureGate(
@@ -341,6 +359,8 @@ Widget _scroll(
   GroceryListBloc bloc,
   GroceryListEntity list, {
   required List<Widget> children,
+  Widget? sections,
+  List<Widget> after = const [],
 }) {
   return ClayFloatingHeaderView(
     title: t.groceryList.title,
@@ -358,7 +378,13 @@ Widget _scroll(
           AppSpacing.marginMobile,
           ClayNavDock.bottomPadding(context),
         ),
-        sliver: SliverList.list(children: children),
+        sliver: SliverMainAxisGroup(
+          slivers: [
+            SliverList.list(children: children),
+            ?sections,
+            if (after.isNotEmpty) SliverList.list(children: after),
+          ],
+        ),
       ),
     ],
   );
@@ -519,7 +545,7 @@ class _AddItemFormState extends State<_AddItemForm> {
   void _submit() {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
-    final amount = double.tryParse(_amountController.text.trim()) ?? 1;
+    final amount = parseAmount(_amountController.text) ?? 1;
     widget.onSubmit(name, amount, _unit);
     Navigator.of(context).pop();
   }

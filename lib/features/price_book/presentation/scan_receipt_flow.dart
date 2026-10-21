@@ -15,16 +15,17 @@ import 'widgets/receipt_source_sheet.dart';
 Future<int?> scanReceiptFlow(BuildContext context) async {
   final pages = await showReceiptSourceSheet(context);
   if (pages == null || pages.isEmpty || !context.mounted) return null;
-  final scanning = AppDialog.progress(
-    message: t.receipt.scanning,
-  ).show(context);
+  // The card is removed by identity (AppDialog.busy), not by popping the
+  // root navigator's top: during a scan of up to two minutes a deep link
+  // or another dialog may have landed above it, and that one would have
+  // been closed instead, leaving the spinner up.
+  final scanReceipt = ScanReceiptUseCase(context.read());
   try {
-    final scan = await ScanReceiptUseCase(context.read())(
-      pages,
-    ).timeout(const Duration(seconds: 120));
-    if (!context.mounted) return null;
-    Navigator.of(context, rootNavigator: true).pop();
-    await scanning;
+    final scan = await AppDialog.busy(
+      context,
+      () => scanReceipt(pages).timeout(const Duration(seconds: 120)),
+      message: t.receipt.scanning,
+    );
     if (!context.mounted) return null;
     return context.pushNamed<int>(
       Routing.receiptReview,
@@ -32,9 +33,6 @@ Future<int?> scanReceiptFlow(BuildContext context) async {
     );
   } catch (e) {
     debugPrint('Receipt scan failed: $e');
-    if (!context.mounted) return null;
-    Navigator.of(context, rootNavigator: true).pop();
-    await scanning;
     if (context.mounted) {
       AppDialog.error(message: t.receipt.scanFailed).show(context);
     }

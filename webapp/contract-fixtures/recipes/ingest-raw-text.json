@@ -1,0 +1,56 @@
+{
+  "id": "6f1d2c3b-4a5e-4f60-8a7b-1c2d3e4f5a61",
+  "title": "שקשוקה",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 25,
+  "ingredients": [
+    {
+      "name": "ביצים",
+      "amount": 4,
+      "unit": "unit"
+    },
+    {
+      "name": "רסק עגבניות",
+      "amount": 2.5,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "מלח",
+      "amount": null,
+      "unit": "unspecified"
+    }
+  ],
+  "steps": [
+    "מחממים שמן במחבת",
+    "מוסיפים את הרוטב",
+    "שוברים פנימה את הביצים"
+  ],
+  "dietaryTags": [
+    "vegetarian",
+    "kosher",
+    "allergy"
+  ],
+  "sourceChannel": "rawText",
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T09:30:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [
+    "eggs"
+  ],
+  "mayContain": [],
+  "servings": 3,
+  "nutrition": {
+    "calories": 280,
+    "proteinGrams": 16.5,
+    "carbsGrams": 11,
+    "fatGrams": 19.2
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

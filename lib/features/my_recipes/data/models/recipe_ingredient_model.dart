@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import 'json_readers.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 
@@ -13,7 +15,10 @@ sealed class RecipeIngredientModel with _$RecipeIngredientModel {
   const factory RecipeIngredientModel({
     @HiveField(0) required String name,
     @HiveField(1) double? amount,
-    @HiveField(2) @Default(MeasurementUnit.unspecified) MeasurementUnit unit,
+    @HiveField(2)
+    @JsonKey(fromJson: readMeasurementUnit)
+    @Default(MeasurementUnit.unspecified)
+    MeasurementUnit unit,
   }) = _RecipeIngredientModel;
 
   factory RecipeIngredientModel.fromJson(Map<String, dynamic> json) =>

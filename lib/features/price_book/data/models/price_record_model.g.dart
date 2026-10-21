@@ -83,7 +83,7 @@ _PriceRecordModel _$PriceRecordModelFromJson(Map<String, dynamic> json) =>
       quantity: (json['quantity'] as num?)?.toDouble() ?? 1,
       currency: json['currency'] as String? ?? 'ILS',
       store: json['store'] as String?,
-      purchasedAt: DateTime.parse(json['purchasedAt'] as String),
+      purchasedAt: readJsonDate(json['purchasedAt']),
       receiptId: json['receiptId'] as String,
       printedName: json['printedName'] as String?,
       unit: json['unit'] as String? ?? 'unit',

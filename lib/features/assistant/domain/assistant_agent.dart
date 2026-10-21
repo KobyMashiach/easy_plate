@@ -22,7 +22,12 @@ class AgentToolFinished extends AgentEvent {
 
 class AgentReply extends AgentEvent {
   final String text;
-  const AgentReply(this.text);
+
+  /// The round bound was hit while the model still wanted tools: [text]
+  /// is whatever it said along the way, not an answer, and the chat says
+  /// so instead of showing it as "done".
+  final bool exhausted;
+  const AgentReply(this.text, {this.exhausted = false});
 }
 
 /// The loop: send the user's words, run every call the model asks for
@@ -48,17 +53,32 @@ class AssistantAgent {
     List<Map<String, dynamic>>? tools,
   }) : tools = tools ?? AssistantTools.declarations;
 
+  /// Bumped by [reset] and [cancel]: a turn that was in flight when either
+  /// happened must not write its interaction id back afterwards.
+  int _generation = 0;
+
   /// Forgets the server-side conversation.
-  void reset() => _interactionId = null;
+  void reset() {
+    _generation++;
+    _interactionId = null;
+  }
+
+  /// Abandons the running turn: the conversation stays where it was before
+  /// it, so the next message does not continue from an interaction whose
+  /// tool calls were never answered.
+  void cancel() => _generation++;
 
   Stream<AgentEvent> send(String message) async* {
+    final generation = _generation;
+    bool live() => generation == _generation;
+
     var turn = await remote.send(
       message: message,
       systemInstruction: systemInstruction(),
       tools: tools,
       previousInteractionId: _interactionId,
     );
-    _interactionId = turn.interactionId;
+    if (!live()) return;
 
     for (var round = 0; turn.requiresAction && round < maxRounds; round++) {
       final results = <String, ToolResult>{};
@@ -69,6 +89,7 @@ class AssistantAgent {
         results[call.id] = result;
         names[call.id] = call.name;
         yield AgentToolFinished(call, result);
+        if (!live()) return;
       }
       turn = await remote.sendResults(
         previousInteractionId: turn.interactionId,
@@ -76,8 +97,12 @@ class AssistantAgent {
         tools: tools,
         callNames: names,
       );
-      _interactionId = turn.interactionId;
+      if (!live()) return;
     }
-    yield AgentReply(turn.text);
+    // Committed only for a turn that ended in words: one cut off by the
+    // round bound still has calls nobody answered, and continuing from it
+    // would hand the model a dangling request.
+    if (!turn.requiresAction) _interactionId = turn.interactionId;
+    yield AgentReply(turn.text, exhausted: turn.requiresAction);
   }
 }

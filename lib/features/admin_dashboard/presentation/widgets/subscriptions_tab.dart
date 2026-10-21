@@ -37,7 +37,19 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
 
   AdminBillingRepository get _repository => context.read();
 
-  Future<AdminBillingSnapshot> _fetch() => _repository.load();
+  /// The last snapshot that arrived, for callbacks that outlive a refresh.
+  AdminBillingSnapshot? _latest;
+
+  Future<AdminBillingSnapshot> _fetch() =>
+      _repository.load().then((snapshot) => _latest = snapshot);
+
+  /// [account] as the last load has it. The account page stays open across
+  /// the refresh an action triggers, so its menu must act on the account's
+  /// state now — blocked, premium, admin — not as it was when the page
+  /// opened.
+  BillingAccountEntity _current(BillingAccountEntity account) =>
+      _latest?.accounts.where((a) => a.uid == account.uid).firstOrNull ??
+      account;
 
   Future<void> _refresh() {
     final next = _fetch();
@@ -137,27 +149,9 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
       case 'week':
         return (from: null, until: now.add(const Duration(days: 7)));
       case 'month':
-        return (
-          from: null,
-          until: DateTime(
-            now.year,
-            now.month + 1,
-            now.day,
-            now.hour,
-            now.minute,
-          ),
-        );
+        return (from: null, until: _addMonths(now, 1));
       case 'year':
-        return (
-          from: null,
-          until: DateTime(
-            now.year + 1,
-            now.month,
-            now.day,
-            now.hour,
-            now.minute,
-          ),
-        );
+        return (from: null, until: _addMonths(now, 12));
     }
     final today = DateTime(now.year, now.month, now.day);
     final picked = await showDateRangePicker(
@@ -275,8 +269,9 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
         ),
       ).show(context);
     } catch (e) {
+      debugPrint('Broadcast failed: $e');
       if (mounted) {
-        AppDialog.error(message: '${t.common.error}\n$e').show(context);
+        AppDialog.error(message: t.common.error).show(context);
       }
     }
   }
@@ -290,7 +285,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
     } catch (e) {
       debugPrint('Admin action failed: $e');
       if (mounted) {
-        AppDialog.error(message: '${t.common.error}\n$e').show(context);
+        AppDialog.error(message: t.common.error).show(context);
       }
     }
   }
@@ -489,7 +484,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return ErrorRetryView(
-                  error: snapshot.error.toString(),
+                  error: t.common.loadFailed,
                   onRetry: _refresh,
                 );
               }
@@ -511,15 +506,8 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                           message: t.adminBilling.none,
                         ),
                       )
-                    : ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.marginMobile,
-                          AppSpacing.sm,
-                          AppSpacing.marginMobile,
-                          AppSpacing.xl,
-                        ),
-                        children: [
+                    : _AccountsList(
+                        header: [
                           Padding(
                             padding: const EdgeInsets.only(
                               bottom: AppSpacing.sm,
@@ -539,39 +527,94 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                               ),
                             ),
                           ),
+                          for (final capped in [
+                            if (data.accountsCap case final cap?)
+                              t.adminDashboard.cappedAccounts(count: cap),
+                            if (data.eventsCap case final cap?)
+                              t.adminDashboard.cappedEvents(count: cap),
+                          ])
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.sm,
+                              ),
+                              child: Text(
+                                capped,
+                                style: AppTextStyles.labelSm.copyWith(
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ),
                           if (showOrphans) ...[
                             _OrphansCard(events: data.orphanEvents),
                             const SizedBox(height: AppSpacing.sm),
                           ],
-                          for (final account in items) ...[
-                            _AccountCard(
-                              account: account,
-                              now: now,
-                              // The whole account: activity, content,
-                              // publications, sharing, tickets, AI.
-                              onOpen: () => Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => AdminUserPage(
-                                    uid: account.uid,
-                                    name: account.name,
-                                    onActions: () => _actions(account),
-                                  ),
+                        ],
+                        count: items.length,
+                        // Built on demand: the read can hold thousands of
+                        // accounts, and a plain list built a card for each
+                        // before the first frame.
+                        itemBuilder: (context, i) {
+                          final account = items[i];
+                          return _AccountCard(
+                            key: ValueKey(account.uid),
+                            account: account,
+                            now: now,
+                            // The whole account: activity, content,
+                            // publications, sharing, tickets, AI.
+                            onOpen: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => AdminUserPage(
+                                  uid: account.uid,
+                                  name: account.name,
+                                  onActions: () => _actions(_current(account)),
                                 ),
                               ),
-                              onSetPremium: (premium) =>
-                                  _setPremium(account, premium),
-                              onRelease: () => _release(account),
-                              onActions: () => _actions(account),
                             ),
-                            const SizedBox(height: AppSpacing.sm),
-                          ],
-                        ],
+                            onSetPremium: (premium) =>
+                                _setPremium(account, premium),
+                            onRelease: () => _release(account),
+                            onActions: () => _actions(account),
+                          );
+                        },
                       ),
               );
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+/// The header rows, then one card per account, built lazily.
+class _AccountsList extends StatelessWidget {
+  final List<Widget> header;
+  final int count;
+  final IndexedWidgetBuilder itemBuilder;
+
+  const _AccountsList({
+    required this.header,
+    required this.count,
+    required this.itemBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.marginMobile,
+        AppSpacing.sm,
+        AppSpacing.marginMobile,
+        AppSpacing.xl,
+      ),
+      itemCount: header.length + count,
+      itemBuilder: (context, i) => i < header.length
+          ? header[i]
+          : Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: itemBuilder(context, i - header.length),
+            ),
     );
   }
 }
@@ -587,6 +630,7 @@ class _AccountCard extends StatelessWidget {
   final VoidCallback onOpen;
 
   const _AccountCard({
+    super.key,
     required this.account,
     required this.now,
     required this.onSetPremium,
@@ -856,4 +900,21 @@ class _OrphansCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// [at] moved [months] on, the day clamped to the target month's length:
+/// Jan 31 + 1 month is Feb 28/29, not Mar 3, so a month's gift ends in a
+/// month.
+DateTime _addMonths(DateTime at, int months) {
+  final month = at.month + months;
+  final year = at.year + (month - 1) ~/ 12;
+  final m = (month - 1) % 12 + 1;
+  final lastDay = DateTime(year, m + 1, 0).day;
+  return DateTime(
+    year,
+    m,
+    at.day > lastDay ? lastDay : at.day,
+    at.hour,
+    at.minute,
+  );
 }

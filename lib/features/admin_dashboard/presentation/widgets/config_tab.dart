@@ -118,6 +118,10 @@ class _ConfigTabState extends State<ConfigTab> {
         return RefreshIndicator(
           onRefresh: _store.load,
           child: ListView.separated(
+            // Seven categories do not fill a screen, and a list that cannot
+            // scroll takes no drag on Android — so the pull never reached
+            // the indicator there.
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.marginMobile,
               AppSpacing.md,
@@ -156,6 +160,9 @@ Future<void> _publish(
   String value,
 ) async {
   final host = context;
+  // Nothing to publish: the same value again (a field submitted untouched),
+  // or another row still saving — both used to come back as "save failed".
+  if (value == param.value || store.saving != null) return;
   // A minimum above this build locks every older device, this one included,
   // behind an update screen with no way past it: ask first.
   if (param.name == FirebaseService.minimumVersionKey) {
@@ -399,13 +406,42 @@ class _ConfigStore extends ChangeNotifier {
 
   _ConfigStore(this.editor);
 
+  /// A fetch or publish still in flight when the tab closes must not
+  /// notify a disposed notifier.
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
+  /// Bumped by every load and publish: a fetch that was in flight when a
+  /// publish went out answers with the template from before it, and must
+  /// not put the old value back over the row that was just saved.
+  int _generation = 0;
+
   Future<void> load() async {
+    // A publish in flight answers with the template as it is now; a fetch
+    // beside it could only be older. (Pull-to-refresh during a save.)
+    if (saving != null) return;
+    final generation = ++_generation;
     error = null;
-    params = null;
-    notifyListeners();
+    // The list stays while it refreshes — a pull-to-refresh has its own
+    // spinner; only the first load (or a retry after a failure) has
+    // nothing to show yet.
+    if (params == null) notifyListeners();
     try {
-      params = await editor.fetch();
+      final fetched = await editor.fetch();
+      if (generation != _generation) return;
+      params = fetched;
     } catch (e) {
+      if (generation != _generation) return;
       error = e;
     }
     notifyListeners();
@@ -415,6 +451,7 @@ class _ConfigStore extends ChangeNotifier {
   Future<bool> set(RemoteParam param, String value) async {
     if (value == param.value || saving != null) return false;
     saving = param.name;
+    _generation++;
     notifyListeners();
     try {
       params = await editor.set(param.name, value);
@@ -476,7 +513,11 @@ class _ParamRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final Widget control;
     if (param.isFeatureFlag) {
-      control = _FlagChips(value: param.value, onChanged: onChanged);
+      control = _FlagChips(
+        value: param.value,
+        enabled: !saving,
+        onChanged: onChanged,
+      );
     } else if (param.isBoolean) {
       control = Align(
         alignment: AlignmentDirectional.centerStart,
@@ -579,7 +620,15 @@ class _FlagChips extends StatelessWidget {
   final String value;
   final ValueChanged<String> onChanged;
 
-  const _FlagChips({required this.value, required this.onChanged});
+  /// False while the row's value is being published: a second tap meanwhile
+  /// would be refused by the store and reported as a failed save.
+  final bool enabled;
+
+  const _FlagChips({
+    required this.value,
+    required this.onChanged,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -596,7 +645,7 @@ class _FlagChips extends StatelessWidget {
               label: label,
               icon: icon,
               selected: value == code,
-              onTap: () => onChanged(code),
+              onTap: enabled ? () => onChanged(code) : null,
             ),
           ),
         ],
@@ -609,7 +658,7 @@ class _FlagChip extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _FlagChip({
     required this.label,

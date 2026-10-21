@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../../my_recipes/data/models/json_readers.dart';
+
 import '../../domain/entities/receipt_entity.dart';
 
 part 'receipt_model.freezed.dart';
@@ -15,11 +17,13 @@ sealed class ReceiptModel with _$ReceiptModel {
   const factory ReceiptModel({
     @HiveField(0) required String id,
     @HiveField(1) String? store,
-    @HiveField(2) required DateTime purchasedAt,
+    @HiveField(2)
+    @JsonKey(fromJson: readJsonDate)
+    required DateTime purchasedAt,
     @HiveField(3) @Default('ILS') String currency,
     @HiveField(4) required double total,
     @HiveField(5) @Default(0) int itemCount,
-    @HiveField(6) required DateTime createdAt,
+    @HiveField(6) @JsonKey(fromJson: readJsonDate) required DateTime createdAt,
     @HiveField(7) @Default([]) List<String> imageFileNames,
   }) = _ReceiptModel;
 

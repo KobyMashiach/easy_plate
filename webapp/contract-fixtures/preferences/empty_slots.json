@@ -1,0 +1,21 @@
+{
+  "shoppingDay": "saturday",
+  "dietaryPreferences": ["vegan"],
+  "soundEffectsEnabled": true,
+  "onboardingComplete": true,
+  "language": "russian",
+  "fastPageTurnEnabled": true,
+  "walkthroughSeen": false,
+  "communityPricesEnabled": false,
+  "shoppingReminderSlots": [],
+  "pushEnabled": true,
+  "notifyRepliesOnMyPosts": true,
+  "notifyRepliesOnThreads": true,
+  "notifyShareInvites": true,
+  "notifySharedRecipeUpdates": true,
+  "notifyAdminReplies": false,
+  "notifyAnnouncements": true,
+  "foregroundPopupsEnabled": true,
+  "themeMode": "light",
+  "whatsNewSeenBuild": null
+}

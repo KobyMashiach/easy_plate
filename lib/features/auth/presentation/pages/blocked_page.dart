@@ -61,10 +61,7 @@ class BlockedPage extends StatelessWidget {
                     label: t.auth.signOut,
                     icon: Icons.logout_rounded,
                     expanded: true,
-                    onPressed: () => AppDialog.busy(
-                      context,
-                      context.read<AuthRepository>().signOut,
-                    ),
+                    onPressed: () => _signOut(context),
                   ),
                 ],
               ),
@@ -73,5 +70,19 @@ class BlockedPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// A sign-out that throws (offline release of the session) says so rather
+/// than ending as an uncaught error with nothing on screen.
+Future<void> _signOut(BuildContext context) async {
+  final auth = context.read<AuthRepository>();
+  try {
+    await AppDialog.busy(context, auth.signOut);
+  } catch (e) {
+    debugPrint('Sign-out failed: $e');
+    if (context.mounted) {
+      AppDialog.error(message: t.auth.errorUnknown).show(context);
+    }
   }
 }

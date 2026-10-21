@@ -87,12 +87,28 @@ class WakeWordService : Service() {
 
     override fun onDestroy() {
         listener.stop()
-        screenReceiver?.let { unregisterReceiver(it) }
+        screenReceiver?.let { receiver ->
+            // Registered once per filter (see registerScreenReceiver).
+            repeat(2) {
+                try {
+                    unregisterReceiver(receiver)
+                } catch (_: IllegalArgumentException) {
+                }
+            }
+        }
         screenReceiver = null
         if (instance === this) instance = null
         super.onDestroy()
     }
 
+    /**
+     * All three are protected broadcasts (only the system may send them), so
+     * the receiver is registered unexported on Android 13+, where the flag
+     * exists. One exception: ACTION_USER_PRESENT is sent by SystemUI, which
+     * runs under its own uid rather than the system's, and an unexported
+     * receiver only accepts the system uid and our own, so that one filter
+     * stays exported, or the listener would never resume after an unlock.
+     */
     private fun registerScreenReceiver() {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -106,12 +122,18 @@ class WakeWordService : Service() {
                 }
             }
         }
-        val filter = IntentFilter().apply {
+        val screen = IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_USER_PRESENT)
         }
-        registerReceiver(receiver, filter)
+        val unlock = IntentFilter(Intent.ACTION_USER_PRESENT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, screen, Context.RECEIVER_NOT_EXPORTED)
+            registerReceiver(receiver, unlock, Context.RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(receiver, screen)
+            registerReceiver(receiver, unlock)
+        }
         screenReceiver = receiver
     }
 

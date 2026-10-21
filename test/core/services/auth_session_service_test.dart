@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/core/services/auth_session_service.dart';
+import 'package:easy_plate/core/sync/cloud_sync_service.dart';
+import 'package:easy_plate/core/sync/user_cloud_collection.dart';
 import 'package:easy_plate/features/auth/domain/entities/app_user_entity.dart';
 import 'package:easy_plate/features/auth/domain/repositories/auth_repository.dart';
 import 'package:easy_plate/features/user_profile/domain/entities/user_preferences_entity.dart';
@@ -36,16 +38,30 @@ class _FakeProfileRepository implements UserProfileRepository {
     String? appVersion,
   }) async {}
 
+  /// What `account_status` says: null while the account is not blocked.
+  String? blockReason;
+
+  /// When set, the lookup waits for it, like [gate].
+  Completer<void>? blockGate;
+
   @override
-  Future<String?> blockMessage(String uid) async => null;
+  Future<String?> blockMessage(String uid) async {
+    if (blockGate case final held?) await held.future;
+    return blockReason;
+  }
 
   UserProfileEntity? profile;
   Object? failWith;
   int reads = 0;
 
+  /// When set, every lookup waits for it: a slow Firestore, for the tests
+  /// that race a sign-out against an in-flight resolve.
+  Completer<void>? gate;
+
   @override
   Future<UserProfileEntity?> getProfile(String uid) async {
     reads++;
+    if (gate case final held?) await held.future;
     if (failWith != null) throw failWith!;
     return profile;
   }
@@ -56,8 +72,13 @@ class _FakeProfileRepository implements UserProfileRepository {
   @override
   Future<String> uploadPhoto(String uid, File file) async => '';
 
+  /// Every (uid, token) saved, in order.
+  final pushTokens = <(String, String)>[];
+
   @override
-  Future<void> savePushToken(String uid, String token) async {}
+  Future<void> savePushToken(String uid, String token) async {
+    pushTokens.add((uid, token));
+  }
 
   UserProfileEntity? published;
 
@@ -77,15 +98,22 @@ class _FakeProfileRepository implements UserProfileRepository {
 
   @override
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(
-    Set<String> uids,
-  ) async => const {};
+    Set<String> uids, {
+    bool refresh = false,
+  }) async => const {};
 }
 
 class _FakePreferencesRepository implements UserPreferencesRepository {
   bool onboardingComplete = false;
+  int reads = 0;
 
   @override
-  Future<UserPreferencesEntity> getPreferences() async => UserPreferencesEntity(
+  Future<UserPreferencesEntity> getPreferences() async {
+    reads++;
+    return _build();
+  }
+
+  UserPreferencesEntity _build() => UserPreferencesEntity(
     shoppingDay: ShoppingDay.sunday,
     dietaryPreferences: const [],
     onboardingComplete: onboardingComplete,
@@ -93,6 +121,34 @@ class _FakePreferencesRepository implements UserPreferencesRepository {
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+/// One mirror whose pass reports a change or not, as told.
+class _FakeMirror implements CloudMirror {
+  _FakeMirror(this.collection);
+
+  @override
+  final String collection;
+  bool writes = false;
+  int hydrates = 0;
+
+  @override
+  Future<bool> hydrate() async {
+    hydrates++;
+    return writes;
+  }
+
+  @override
+  bool get shared => false;
+
+  @override
+  Future<void> listen() async {}
+
+  @override
+  Future<void> stopListening() async {}
+
+  @override
+  Future<void> clearLocal() async {}
 }
 
 /// Every account past the gate carries a verified phone, so the fixture does
@@ -122,6 +178,8 @@ void main() {
   late _FakeProfileRepository profiles;
   late _FakePreferencesRepository preferences;
   late AuthSessionService session;
+  late StreamController<String> tokenRefreshes;
+  late int claimsRefreshes;
 
   /// The service is a singleton, so each test rebinds the one instance and
   /// waits for the stream event to be processed.
@@ -137,10 +195,17 @@ void main() {
     preferences = _FakePreferencesRepository();
     session = AuthSessionService();
     session.resetForTest();
+    tokenRefreshes = StreamController<String>.broadcast();
+    AuthSessionService.pushTokenRefreshSource = () => tokenRefreshes.stream;
+    claimsRefreshes = 0;
+    AuthSessionService.refreshClaims = () async => claimsRefreshes++;
     session.bind(auth: auth, profiles: profiles, preferences: preferences);
   });
 
-  tearDown(() => auth.close());
+  tearDown(() async {
+    await auth.close();
+    await tokenRefreshes.close();
+  });
 
   test('starts unknown until the first auth state arrives', () {
     expect(session.stage, AuthStage.unknown);
@@ -289,6 +354,53 @@ void main() {
   );
 
   test(
+    'a sign-out during a slow profile lookup does not reopen the gate',
+    () async {
+      // Sign-in reaches the profile read and stalls there, the way a slow
+      // network would; the user signs out while it is pending.
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      profiles.gate = Completer<void>();
+      await signIn(_user);
+      expect(profiles.reads, 1);
+      expect(session.stage, AuthStage.unknown);
+
+      await signIn(null);
+      expect(session.stage, AuthStage.signedOut);
+
+      // The lookup answers for an account that has already left: the stale
+      // run must not set `ready`, publish a profile or bind anything.
+      profiles.gate!.complete();
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(session.stage, AuthStage.signedOut);
+      expect(session.user, isNull);
+      expect(session.profile, isNull);
+      expect(profiles.published, isNull);
+    },
+  );
+
+  test(
+    'a retry that is overtaken by a sign-out is dropped',
+    () async {
+      // On the session screen the retry and the sign-out sit side by side.
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.needsOnboarding);
+
+      profiles.gate = Completer<void>();
+      final retry = session.refreshProfile();
+      await signIn(null);
+      expect(session.stage, AuthStage.signedOut);
+
+      profiles.gate!.complete();
+      await retry;
+      expect(session.stage, AuthStage.signedOut);
+      expect(session.profile, isNull);
+    },
+  );
+
+  test(
     'preferences are handed to the caller for locale and reminders',
     () async {
       UserPreferencesEntity? applied;
@@ -326,6 +438,175 @@ void main() {
       expect(session.stage, AuthStage.ready);
     },
   );
+
+  test(
+    'the gate does not wait for a push token that never arrives',
+    () async {
+      // On iOS the token waits for APNs, up to six seconds; the session
+      // claim goes without it and the token follows later.
+      AuthSessionService.pushTokenSource = () => Completer<String?>().future;
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      final started = DateTime.now();
+      auth.emit(_user);
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      expect(session.stage, AuthStage.ready);
+      expect(
+        DateTime.now().difference(started),
+        lessThan(const Duration(seconds: 2)),
+      );
+    },
+  );
+
+  group('push token for the session screen', () {
+    test(
+      'a token that never arrives is given up on within the grace',
+      () async {
+        // requestRelease and takeover go with whatever is on hand, as the
+        // claim does, instead of holding the button for up to six seconds.
+        AuthSessionService.pushTokenSource = () => Completer<String?>().future;
+        final started = DateTime.now();
+        final result = await session.tokenWithinGrace();
+        expect(result.quick, isNull);
+        expect(
+          DateTime.now().difference(started),
+          lessThan(const Duration(seconds: 1)),
+        );
+      },
+    );
+
+    test('a token already on hand is sent at once', () async {
+      AuthSessionService.pushTokenSource = () async => 'tok';
+      final result = await session.tokenWithinGrace();
+      expect(result.quick, 'tok');
+      expect(await result.token, 'tok');
+    });
+  });
+
+  group('a push token rotated mid-session', () {
+    Future<void> settle() async {
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+    }
+
+    test('is saved for the account through the gate', () async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.ready);
+      profiles.pushTokens.clear();
+
+      // FCM rotates the token: the saved one would reach nobody.
+      tokenRefreshes.add('rotated');
+      await settle();
+      expect(profiles.pushTokens, [('u1', 'rotated')]);
+    });
+
+    test(
+      'is left to the sign-in registration while nobody is through',
+      () async {
+        tokenRefreshes.add('early');
+        await settle();
+        expect(profiles.pushTokens, isEmpty);
+
+        await signIn(null);
+        tokenRefreshes.add('signed-out');
+        await settle();
+        expect(profiles.pushTokens, isEmpty);
+
+        // Held on the session screen: not through the gate either.
+        profiles.profile = null;
+        await signIn(_user);
+        expect(session.stage, AuthStage.needsProfile);
+        tokenRefreshes.add('registering');
+        await settle();
+        expect(profiles.pushTokens, isEmpty);
+      },
+    );
+  });
+
+  group('the account switched off mid-session', () {
+    test('is held on the blocked screen with the console\'s reason', () async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      expect(session.stage, AuthStage.ready);
+
+      // The first paid call answers 403 account_disabled.
+      profiles.blockReason = 'Spam';
+      await session.accountDisabled();
+      expect(session.stage, AuthStage.blocked);
+      expect(session.blockMessage, 'Spam');
+      // The `disabled` claim is pulled into the token (or the revoked
+      // refresh token signs the account out).
+      expect(claimsRefreshes, 1);
+
+      // Told again (every refused call says so): nothing changes.
+      profiles.blockReason = null;
+      await session.accountDisabled();
+      expect(session.stage, AuthStage.blocked);
+      expect(session.blockMessage, 'Spam');
+    });
+
+    test('with no reason on file still blocks, with a blank reason', () async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      await session.accountDisabled();
+      expect(session.stage, AuthStage.blocked);
+      expect(session.blockMessage, '');
+    });
+
+    test('a sign-out during the reason lookup wins', () async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      profiles.blockGate = Completer<void>();
+      final pending = session.accountDisabled();
+      await signIn(null);
+      profiles.blockGate!.complete();
+      await pending;
+      expect(session.stage, AuthStage.signedOut);
+      expect(session.blockMessage, isNull);
+    });
+
+    test('signed out, there is nothing to block', () async {
+      await signIn(null);
+      await session.accountDisabled();
+      expect(session.stage, AuthStage.signedOut);
+    });
+  });
+
+  group('shared-recipe refresh on resume', () {
+    final now = DateTime(2026, 10, 18, 12);
+
+    test('the first resume after sign-in always pulls', () {
+      expect(
+        AuthSessionService.shouldRefreshOnResume(last: null, now: now),
+        isTrue,
+      );
+    });
+
+    test('a resume soon after the last pull is skipped', () {
+      expect(
+        AuthSessionService.shouldRefreshOnResume(
+          last: now.subtract(const Duration(seconds: 30)),
+          now: now,
+        ),
+        isFalse,
+      );
+    });
+
+    test('once the interval has passed it pulls again', () {
+      expect(
+        AuthSessionService.shouldRefreshOnResume(
+          last: now.subtract(AuthSessionService.resumeRefreshInterval),
+          now: now,
+        ),
+        isTrue,
+      );
+    });
+  });
 
   group('minimum splash', () {
     test(
@@ -416,6 +697,67 @@ void main() {
       profiles.profile = buildProfile();
       await signIn(_user);
       expect(session.stage, isNot(AuthStage.phoneClaimed));
+    });
+  });
+
+  group('refresh from the cloud on resume', () {
+    late _FakeMirror prefsMirror;
+    late DateTime now;
+
+    setUp(() {
+      prefsMirror = _FakeMirror(CloudSyncService.preferencesCollection);
+      CloudSyncService().resetForTest();
+      CloudSyncService().mirrorsForTest = [prefsMirror];
+      now = DateTime(2026, 10, 18, 12);
+      CloudSyncService().clock = () => now;
+    });
+
+    tearDown(() {
+      CloudSyncService().mirrorsForTest = null;
+      CloudSyncService().resetForTest();
+    });
+
+    Future<void> signInReady() async {
+      preferences.onboardingComplete = true;
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      await pumpEventQueue();
+      expect(session.stage, AuthStage.ready);
+    }
+
+    test('preferences changed on the web are re-applied', () async {
+      await signInReady();
+      final readsBefore = preferences.reads;
+      prefsMirror.writes = true;
+      now = now.add(CloudSyncService.refreshInterval);
+
+      await session.refreshFromCloud();
+
+      expect(prefsMirror.hydrates, 2);
+      expect(preferences.reads, readsBefore + 1);
+    });
+
+    test('a pass that changed nothing re-reads no preferences', () async {
+      await signInReady();
+      final readsBefore = preferences.reads;
+      now = now.add(CloudSyncService.refreshInterval);
+
+      await session.refreshFromCloud();
+
+      expect(prefsMirror.hydrates, 2);
+      expect(preferences.reads, readsBefore);
+    });
+
+    test('nothing is read before the account is past the gate', () async {
+      profiles.profile = buildProfile();
+      await signIn(_user);
+      await pumpEventQueue();
+      expect(session.stage, AuthStage.needsOnboarding);
+      now = now.add(CloudSyncService.refreshInterval);
+
+      await session.refreshFromCloud();
+
+      expect(prefsMirror.hydrates, 1);
     });
   });
 }

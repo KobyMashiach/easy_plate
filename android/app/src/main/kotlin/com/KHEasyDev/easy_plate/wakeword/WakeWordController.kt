@@ -193,7 +193,9 @@ object WakeWordController {
 
     /** Heard: pause, then open the chat the quickest way allowed. */
     fun onHeard(command: String) {
-        Log.i(TAG, "Wake words heard, command='${command.take(40)}'")
+        // Never what was said: logcat outlives the moment, and a bug report
+        // carries it off the phone.
+        Log.i(TAG, "Wake words heard (command: ${command.length} chars)")
         heardPause = true
         handler.removeCallbacks(heardTimeout)
         handler.postDelayed(heardTimeout, HEARD_PAUSE_MS)
@@ -233,6 +235,11 @@ object WakeWordController {
         return Intent(Intent.ACTION_VIEW, uri).apply {
             setPackage(appContext.packageName)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            // MainActivity keeps `prompt` only on intents carrying this.
+            putExtra(
+                com.KHEasyDev.easy_plate.widgets.WidgetIntents.EXTRA_TRUST,
+                com.KHEasyDev.easy_plate.widgets.WidgetIntents.trustToken(appContext),
+            )
         }
     }
 

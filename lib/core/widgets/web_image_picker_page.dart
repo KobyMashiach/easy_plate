@@ -116,9 +116,15 @@ class _WebImagePickerPageState extends State<WebImagePickerPage> {
         if (isImageSearchUnavailable(e)) {
           _unavailable = true;
         } else {
-          _error = e.type == AppErrorType.networkError
-              ? t.common.networkError
-              : t.image.webSearchFailed;
+          _error = switch (e.type) {
+            AppErrorType.networkError => t.common.networkError,
+            // The day's allowance (the body carried `quota`): a retry
+            // cannot help until tomorrow.
+            AppErrorType.quotaExceeded => t.image.webSearchQuota,
+            // A paid endpoint: the account has to prove a phone first.
+            AppErrorType.phoneRequired => t.auth.phoneGateTitle,
+            _ => t.image.webSearchFailed,
+          };
         }
       });
     } catch (e) {

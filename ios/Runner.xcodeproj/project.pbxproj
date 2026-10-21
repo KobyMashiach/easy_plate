@@ -44,6 +44,9 @@
 		EBB5C81298654B7BAC1C050F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A08ACE368916C18BBB4F8F10 /* Localizable.strings */; };
 		F079FFCA8C01E132713BC2F1 /* WidgetTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95B5DC20245BE2AE2CE6FDBB /* WidgetTheme.swift */; };
 		F70771403462DA0F985AA217 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD564443AB085E917FFDAC7 /* WidgetSnapshot.swift */; };
+		6D2B8F3C9E4A5B71A2C3D4E5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5C1A9E2B7D3F4A6081B2C3D4 /* PrivacyInfo.xcprivacy */; };
+		E9A1C0DE0000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E9A1C0DE0000000000000001 /* PrivacyInfo.xcprivacy */; };
+		E9A1C0DE0000000000000004 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E9A1C0DE0000000000000003 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -172,6 +175,9 @@
 		F9182F394F77489DB041B310 /* ru */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		FC4B58C9CAE494E47FF11E1A /* he */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		FFBF5EFE75D10DE034C489A4 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5C1A9E2B7D3F4A6081B2C3D4 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E9A1C0DE0000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E9A1C0DE0000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,6 +267,7 @@
 				80A35505C595775925F70D53 /* Release.xcconfig */,
 				2CE328770C742E2DBD17696D /* Profile.xcconfig */,
 				A08ACE368916C18BBB4F8F10 /* Localizable.strings */,
+				E9A1C0DE0000000000000001 /* PrivacyInfo.xcprivacy */,
 			);
 			name = EasyPlateWidgets;
 			path = EasyPlateWidgets;
@@ -306,6 +313,7 @@
 			isa = PBXGroup;
 			children = (
 				A1E17C0011AA0001000000E1 /* Runner.entitlements */,
+				5C1A9E2B7D3F4A6081B2C3D4 /* PrivacyInfo.xcprivacy */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -337,6 +345,7 @@
 				611B60C97D77A34031205325 /* Debug.xcconfig */,
 				1E3E11266CF6A8D4A7427621 /* Release.xcconfig */,
 				58CF76AF28845F2013C98B98 /* Profile.xcconfig */,
+				E9A1C0DE0000000000000003 /* PrivacyInfo.xcprivacy */,
 			);
 			name = "Share Extension";
 			path = "Share Extension";
@@ -394,6 +403,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				D49FC4AC78442AA76B29C29B /* [CP] Embed Pods Frameworks */,
 				3510F8CB248E7117A3F1AA1A /* [CP] Copy Pods Resources */,
+				E1A5C0DE5EED0D5F00000001 /* [firebase_crashlytics] Upload dSYMs */,
 			);
 			buildRules = (
 			);
@@ -492,6 +502,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBB5C81298654B7BAC1C050F /* Localizable.strings in Resources */,
+				E9A1C0DE0000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,6 +524,7 @@
 				7E7EB456D9EED8B996A3685D /* GoogleService-Info.plist in Resources */,
 				B51CA367BBB3B01ACC0DEF92 /* AppShortcuts.strings in Resources */,
 				34A1CFC4FD8212E934ED2F28 /* Localizable.strings in Resources */,
+				6D2B8F3C9E4A5B71A2C3D4E5 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -521,6 +533,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E86D752E493EEC247083FA7B /* MainInterface.storyboard in Resources */,
+				E9A1C0DE0000000000000004 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -547,6 +560,30 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E1A5C0DE5EED0D5F00000001 /* [firebase_crashlytics] Upload dSYMs */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "[firebase_crashlytics] Upload dSYMs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Native iOS crashes reach Crashlytics unsymbolicated without the dSYMs.\n# Release only: Debug builds use plain dwarf and have no dSYM to send.\nif [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		3510F8CB248E7117A3F1AA1A /* [CP] Copy Pods Resources */ = {
@@ -828,7 +865,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -964,7 +1001,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1015,7 +1052,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;

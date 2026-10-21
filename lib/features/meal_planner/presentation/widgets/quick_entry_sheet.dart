@@ -8,6 +8,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
+import '../../../grocery_list/domain/parse_amount.dart';
 
 /// Result of the quick-entry sheet: the item's name plus the products it is
 /// made of (possibly empty).
@@ -99,7 +100,7 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
       ingredients.add(
         RecipeIngredientEntity(
           name: name,
-          amount: double.tryParse(product.amount.text.trim()),
+          amount: parseAmount(product.amount.text),
           unit: product.unit,
         ),
       );
@@ -218,8 +219,8 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
                           children: [
                             for (final unit in MeasurementUnit.values)
                               Padding(
-                                padding: const EdgeInsets.only(
-                                  right: AppSpacing.base,
+                                padding: const EdgeInsetsDirectional.only(
+                                  end: AppSpacing.base,
                                 ),
                                 child: GestureDetector(
                                   onTap: () =>

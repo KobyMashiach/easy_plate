@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GroceryItemModel {
 
-@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) MeasurementUnit get unit;@HiveField(3) List<GroceryItemSourceModel> get sources;@HiveField(4) bool get isChecked;@HiveField(5) String get category;@HiveField(6) bool get isAdHoc;
+@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit get unit;@HiveField(3) List<GroceryItemSourceModel> get sources;@HiveField(4) bool get isChecked;@HiveField(5) String get category;@HiveField(6) bool get isAdHoc;
 /// Create a copy of GroceryItemModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $GroceryItemModelCopyWith<$Res>  {
   factory $GroceryItemModelCopyWith(GroceryItemModel value, $Res Function(GroceryItemModel) _then) = _$GroceryItemModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) MeasurementUnit unit,@HiveField(3) List<GroceryItemSourceModel> sources,@HiveField(4) bool isChecked,@HiveField(5) String category,@HiveField(6) bool isAdHoc
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit,@HiveField(3) List<GroceryItemSourceModel> sources,@HiveField(4) bool isChecked,@HiveField(5) String category,@HiveField(6) bool isAdHoc
 });
 
 
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  MeasurementUnit unit, @HiveField(3)  List<GroceryItemSourceModel> sources, @HiveField(4)  bool isChecked, @HiveField(5)  String category, @HiveField(6)  bool isAdHoc)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit, @HiveField(3)  List<GroceryItemSourceModel> sources, @HiveField(4)  bool isChecked, @HiveField(5)  String category, @HiveField(6)  bool isAdHoc)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GroceryItemModel() when $default != null:
 return $default(_that.id,_that.name,_that.unit,_that.sources,_that.isChecked,_that.category,_that.isAdHoc);case _:
@@ -177,7 +177,7 @@ return $default(_that.id,_that.name,_that.unit,_that.sources,_that.isChecked,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  MeasurementUnit unit, @HiveField(3)  List<GroceryItemSourceModel> sources, @HiveField(4)  bool isChecked, @HiveField(5)  String category, @HiveField(6)  bool isAdHoc)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit, @HiveField(3)  List<GroceryItemSourceModel> sources, @HiveField(4)  bool isChecked, @HiveField(5)  String category, @HiveField(6)  bool isAdHoc)  $default,) {final _that = this;
 switch (_that) {
 case _GroceryItemModel():
 return $default(_that.id,_that.name,_that.unit,_that.sources,_that.isChecked,_that.category,_that.isAdHoc);}
@@ -194,7 +194,7 @@ return $default(_that.id,_that.name,_that.unit,_that.sources,_that.isChecked,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  MeasurementUnit unit, @HiveField(3)  List<GroceryItemSourceModel> sources, @HiveField(4)  bool isChecked, @HiveField(5)  String category, @HiveField(6)  bool isAdHoc)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit, @HiveField(3)  List<GroceryItemSourceModel> sources, @HiveField(4)  bool isChecked, @HiveField(5)  String category, @HiveField(6)  bool isAdHoc)?  $default,) {final _that = this;
 switch (_that) {
 case _GroceryItemModel() when $default != null:
 return $default(_that.id,_that.name,_that.unit,_that.sources,_that.isChecked,_that.category,_that.isAdHoc);case _:
@@ -209,12 +209,12 @@ return $default(_that.id,_that.name,_that.unit,_that.sources,_that.isChecked,_th
 @JsonSerializable()
 
 class _GroceryItemModel implements GroceryItemModel {
-  const _GroceryItemModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) this.unit = MeasurementUnit.unspecified, @HiveField(3) required final  List<GroceryItemSourceModel> sources, @HiveField(4) this.isChecked = false, @HiveField(5) this.category = 'כללי', @HiveField(6) this.isAdHoc = false}): _sources = sources;
+  const _GroceryItemModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit) this.unit = MeasurementUnit.unspecified, @HiveField(3) required final  List<GroceryItemSourceModel> sources, @HiveField(4) this.isChecked = false, @HiveField(5) this.category = kDefaultGroceryCategory, @HiveField(6) this.isAdHoc = false}): _sources = sources;
   factory _GroceryItemModel.fromJson(Map<String, dynamic> json) => _$GroceryItemModelFromJson(json);
 
 @override@HiveField(0) final  String id;
 @override@HiveField(1) final  String name;
-@override@JsonKey()@HiveField(2) final  MeasurementUnit unit;
+@override@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) final  MeasurementUnit unit;
  final  List<GroceryItemSourceModel> _sources;
 @override@HiveField(3) List<GroceryItemSourceModel> get sources {
   if (_sources is EqualUnmodifiableListView) return _sources;
@@ -259,7 +259,7 @@ abstract mixin class _$GroceryItemModelCopyWith<$Res> implements $GroceryItemMod
   factory _$GroceryItemModelCopyWith(_GroceryItemModel value, $Res Function(_GroceryItemModel) _then) = __$GroceryItemModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) MeasurementUnit unit,@HiveField(3) List<GroceryItemSourceModel> sources,@HiveField(4) bool isChecked,@HiveField(5) String category,@HiveField(6) bool isAdHoc
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit,@HiveField(3) List<GroceryItemSourceModel> sources,@HiveField(4) bool isChecked,@HiveField(5) String category,@HiveField(6) bool isAdHoc
 });
 
 

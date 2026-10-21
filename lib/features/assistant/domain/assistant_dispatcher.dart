@@ -1,12 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/constants/app_enums.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/errors/app_exception.dart';
+import '../../../core/hive/user_scope.dart';
 import '../../../core/features/features_flags.dart';
 import '../../../core/monetization/monetization_config.dart';
 import '../../../core/services/auth_session_service.dart';
 import '../../../core/services/cook_session_service.dart';
 import '../../../core/utils/i18n/strings.g.dart';
+import '../../collab_containers/domain/container_sharing_service.dart';
 import '../../feedback/domain/entities/feedback_entity.dart';
 import '../../feedback/domain/repositories/feedback_repository.dart';
 import '../../feedback/domain/support_details.dart';
@@ -27,6 +31,9 @@ import '../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../../recipe_books/domain/entities/book_recipe_ref_entity.dart';
 import '../../recipe_books/domain/entities/recipe_book_entity.dart';
 import '../../recipe_books/domain/repositories/recipe_books_repository.dart';
+import '../../recipe_ingestion/domain/entities/ingestion_file.dart';
+import '../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
+import '../../recipe_sharing/domain/usecases/save_collab_recipe_usecase.dart';
 import '../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../../user_profile/domain/repositories/user_preferences_repository.dart';
@@ -55,6 +62,15 @@ class AssistantDispatcher {
   /// support is unavailable (tests, a host with no Firestore).
   final FeedbackRepository? feedback;
 
+  /// Where an edit to a shared book, plan or list goes so the other members
+  /// get it — the screens publish after saving, and an edit Shefi made
+  /// without it stayed on this phone until the next sync rebuilt the copy
+  /// from the document and dropped it. Null in tests.
+  final ContainerSharingService? sharing;
+
+  /// The same for a shared recipe (SaveCollabRecipeUseCase).
+  final RecipeSharingRepository? recipeSharing;
+
   static const _uuid = Uuid();
 
   AssistantDispatcher({
@@ -68,16 +84,79 @@ class AssistantDispatcher {
     required this.cooking,
     required this.ui,
     this.feedback,
+    this.sharing,
+    this.recipeSharing,
   });
+
+  // ── Saving, shared items included ──────────────────────────────────────
+
+  /// A shared recipe goes to its document first, as the editor saves it; a
+  /// refusal (demoted, removed) is thrown and reaches the model as an error.
+  Future<void> _saveRecipe(RecipeEntity recipe) async {
+    final remote = recipeSharing;
+    final uid = UserScope().uid;
+    if (recipe.collabId != null && remote != null && uid != null) {
+      await SaveCollabRecipeUseCase(sharing: remote, recipes: recipes)(
+        recipe,
+        byUid: uid,
+      );
+      return;
+    }
+    await recipes.saveRecipe(recipe);
+  }
+
+  Future<void> _saveBook(RecipeBookEntity book) async {
+    await books.saveBook(book);
+    final shared = sharing;
+    if (book.isShared && shared != null) {
+      await _publish((uid) => shared.books.publish(book, uid: uid));
+    }
+  }
+
+  Future<void> _savePlan(MealPlanEntity plan) async {
+    await plans.savePlan(plan);
+    final shared = sharing;
+    if (plan.isShared && shared != null) {
+      await _publish((uid) => shared.plans.publish(plan, uid: uid));
+    }
+  }
+
+  Future<void> _saveList(GroceryListEntity list) async {
+    await groceries.saveList(list);
+    final shared = sharing;
+    if (list.collabId != null && shared != null) {
+      await _publish((uid) => shared.lists.publish(list, uid: uid));
+    }
+  }
+
+  /// Best effort, like the screens: the local save stands, and the next
+  /// save from anywhere publishes again.
+  Future<void> _publish(Future<void> Function(String uid) publish) async {
+    final uid = UserScope().uid;
+    if (uid == null) return;
+    try {
+      await publish(uid);
+    } catch (e) {
+      debugPrint('Shared item publish failed: $e');
+    }
+  }
 
   Future<ToolResult> execute(ToolCall call) async {
     try {
       return await _run(call.name, call.arguments);
     } on AppException catch (e) {
-      return ToolResult.error(e.type.name, e.message);
+      return ToolResult.error(e.type.name, _brief(e.message));
     } catch (e) {
-      return ToolResult.error('failed', e.toString());
+      return ToolResult.error('failed', _brief(e.toString()));
     }
+  }
+
+  /// A failure as the model reads it: the first line, capped. The result
+  /// rides in the conversation for every later turn, so a whole server
+  /// response or a stack trace would be paid for again and again.
+  static String _brief(String message) {
+    final line = message.trimLeft().split('\n').first.trimRight();
+    return line.length <= 300 ? line : '${line.substring(0, 299)}…';
   }
 
   Future<ToolResult> _run(String name, Map<String, dynamic> a) {
@@ -158,12 +237,55 @@ class AssistantDispatcher {
 
   // ---- Shared helpers ------------------------------------------------------
 
+  /// What one call may carry. The model knows the schema, not these; an
+  /// answer that runs away (a title that is a whole recipe, a thousand
+  /// grocery items) is cut here rather than written to the box.
+  static const maxTitleLength = 200;
+  static const maxTextLength = 4000;
+  static const maxListItems = 100;
+
+  /// A short string — a title, a name, a key — trimmed and capped.
+  static String _title(Object? raw) => _capped(raw, maxTitleLength);
+
+  /// A long string — a step, a message — trimmed and capped.
+  static String _text(Object? raw) => _capped(raw, maxTextLength);
+
+  static String _capped(Object? raw, int max) {
+    final s = (raw is String ? raw : raw?.toString() ?? '').trim();
+    return s.length <= max ? s : s.substring(0, max).trimRight();
+  }
+
+  /// A list argument, at most [maxListItems] long; anything else is empty.
+  static List<Object?> _list(Object? raw) =>
+      raw is List ? raw.take(maxListItems).toList() : const [];
+
+  /// The gate the screen would show before [feature]'s own entry point: a
+  /// feature the console hid or marked "coming soon" is refused; one that is
+  /// Premium-only, for a free account, is refused and the paywall opens the
+  /// way a tap on the locked entry would.
+  ToolResult? _gate(FeaturesFlags feature) {
+    switch (feature.access) {
+      case FeatureAccess.enabled:
+        return null;
+      case FeatureAccess.locked:
+        ui.openScreen('premium');
+        return ToolResult.error('premium_required', t.assistant.needsPremium);
+      case FeatureAccess.hidden:
+      case FeatureAccess.comingSoon:
+        return ToolResult.error(
+          'unavailable',
+          '${feature.label} is not available in this app right now',
+        );
+    }
+  }
+
   /// A recipe by id, or by the closest title when the model passed a name.
   Future<RecipeEntity?> _findRecipe(String? idOrTitle) async {
     if (idOrTitle == null || idOrTitle.trim().isEmpty) return null;
+    idOrTitle = _title(idOrTitle);
     final byId = await recipes.getRecipeById(idOrTitle);
     if (byId != null) return byId;
-    final needle = idOrTitle.trim().toLowerCase();
+    final needle = idOrTitle.toLowerCase();
     final all = await recipes.getRecipes();
     for (final r in all) {
       if (r.title.toLowerCase() == needle) return r;
@@ -210,22 +332,38 @@ class AssistantDispatcher {
 
   static RecipeIngredientEntity _ingredientFrom(Map<String, dynamic> m) =>
       RecipeIngredientEntity(
-        name: (m['name'] as String? ?? '').trim(),
+        name: _title(m['name']),
         amount: (m['amount'] as num?)?.toDouble(),
-        unit: _unitFrom(m['unit'] as String?),
+        unit: _unitFrom(m['unit']?.toString()),
       );
+
+  /// Ingredient-shaped entries of a list argument, nameless ones dropped.
+  static List<RecipeIngredientEntity> _ingredients(Object? raw) => [
+    for (final m in _list(raw))
+      if (m is Map) _ingredientFrom(m.cast<String, dynamic>()),
+  ].where((i) => i.name.isNotEmpty).toList();
 
   static MeasurementUnit _unitFrom(String? name) =>
       MeasurementUnit.values.where((u) => u.name == name).firstOrNull ??
       MeasurementUnit.unspecified;
 
   static List<DietaryPreference> _dietaryFrom(Object? raw) => [
-    for (final n in (raw as List?)?.cast<String>() ?? const <String>[])
+    for (final n in _list(raw).whereType<String>())
       ...DietaryPreference.values.where((d) => d.name == n),
   ];
 
+  /// An integer argument as the model sent it: the schema says `integer`,
+  /// but a JSON number can still arrive as `4.0` (or, rarely, `"4"`), and
+  /// a cast would fail the whole tool over the shape of a number.
+  static int? _int(Object? raw) => switch (raw) {
+    final int n => n,
+    final num n => n.toInt(),
+    final String s => int.tryParse(s.trim()),
+    _ => null,
+  };
+
   static int? _weekdayFrom(Object? raw) {
-    if (raw is int) return raw.clamp(0, 6);
+    if (raw is num) return raw.toInt().clamp(0, 6);
     if (raw is String) {
       final i = ShoppingDay.values.indexWhere(
         (d) => d.name == raw.trim().toLowerCase(),
@@ -235,8 +373,7 @@ class AssistantDispatcher {
     return null;
   }
 
-  static List<String> _strings(Object? raw) =>
-      (raw as List?)?.map((e) => e.toString()).toList() ?? const [];
+  static List<String> _strings(Object? raw) => _list(raw).map(_text).toList();
 
   Future<List<DietaryPreference>> _dietaryPreferences() async =>
       (await preferences.getPreferences()).dietaryPreferences;
@@ -244,9 +381,11 @@ class AssistantDispatcher {
   // ---- Recipes ------------------------------------------------------------
 
   Future<ToolResult> _searchRecipes(Map<String, dynamic> a) async {
-    final query = (a['query'] as String? ?? '').trim().toLowerCase();
+    final query = _title(a['query']).toLowerCase();
     final dietary = _dietaryFrom(a['dietary']);
-    final limit = (a['limit'] as int?) ?? 20;
+    // `take` throws on a negative count; a model's "limit: 0" is read as
+    // "the default", not "nothing".
+    final limit = (_int(a['limit']) ?? 20).clamp(1, 100);
     final all = await recipes.getRecipes();
     final hits = all.where((r) {
       if (dietary.isNotEmpty && !dietary.every(r.dietaryTags.contains)) {
@@ -272,27 +411,24 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _createRecipe(Map<String, dynamic> a) async {
-    final ingredients = [
-      for (final m in (a['ingredients'] as List?) ?? const [])
-        if (m is Map) _ingredientFrom(m.cast<String, dynamic>()),
-    ].where((i) => i.name.isNotEmpty).toList();
-    final steps = _strings(a['steps']).where((s) => s.trim().isNotEmpty);
+    final ingredients = _ingredients(a['ingredients']);
+    final steps = _strings(a['steps']).where((s) => s.isNotEmpty);
     final recipe = RecipeEntity(
       id: _uuid.v4(),
-      title: (a['title'] as String? ?? '').trim(),
+      title: _title(a['title']),
       ingredients: ingredients,
       steps: steps.toList(),
       createdAt: DateTime.now(),
-      servings: a['servings'] as int?,
-      prepTimeMinutes: a['prep_minutes'] as int?,
-      cookTimeMinutes: a['cook_minutes'] as int?,
+      servings: _int(a['servings']),
+      prepTimeMinutes: _int(a['prep_minutes']),
+      cookTimeMinutes: _int(a['cook_minutes']),
       dietaryTags: _dietaryFrom(a['dietary_tags']),
       sourceChannel: RecipeIngestionChannel.manual,
     );
     if (recipe.title.isEmpty) {
       return ToolResult.error('invalid', 'A title is required');
     }
-    await recipes.saveRecipe(recipe);
+    await _saveRecipe(recipe);
     return ToolResult.ok(
       _recipeSummary(recipe),
       card: RecipeCard(recipe, caption: t.assistant.recipeSaved),
@@ -311,19 +447,20 @@ class AssistantDispatcher {
     final ingredients = [
       for (final i in recipe.ingredients)
         if (!remove.contains(i.name.toLowerCase())) i,
-      for (final m in (a['add_ingredients'] as List?) ?? const [])
-        if (m is Map) _ingredientFrom(m.cast<String, dynamic>()),
+      ..._ingredients(a['add_ingredients']),
     ];
     final steps = a['steps'] == null ? null : _strings(a['steps']);
+    // A blank title is "no change", not a recipe with no name.
+    final title = _title(a['title']);
     final updated = recipe.copyWith(
-      title: (a['title'] as String?)?.trim(),
-      servings: a['servings'] as int?,
-      prepTimeMinutes: a['prep_minutes'] as int?,
-      cookTimeMinutes: a['cook_minutes'] as int?,
+      title: title.isEmpty ? null : title,
+      servings: _int(a['servings']),
+      prepTimeMinutes: _int(a['prep_minutes']),
+      cookTimeMinutes: _int(a['cook_minutes']),
       ingredients: ingredients,
       steps: steps,
     );
-    await recipes.saveRecipe(updated);
+    await _saveRecipe(updated);
     return ToolResult.ok(_recipeFull(updated), card: RecipeCard(updated));
   }
 
@@ -345,10 +482,32 @@ class AssistantDispatcher {
     if (content.isEmpty) {
       return ToolResult.error('invalid', 'Nothing to import');
     }
+    // Cut, a pasted recipe would silently lose its last steps: too long is
+    // refused, and the model can send the user to the add screen.
+    if (content.length > maxTextLength) {
+      return ToolResult.error(
+        'invalid',
+        'content is longer than $maxTextLength characters',
+      );
+    }
+    final link = source == 'url' || source == 'social_video';
+    // The same four switches as the add screen's channels.
+    final gate = _gate(switch (source) {
+      'url' => FeaturesFlags.ingestLink,
+      'social_video' => FeaturesFlags.ingestSocialVideo,
+      'request' => FeaturesFlags.ingestAiRequest,
+      _ => FeaturesFlags.ingestText,
+    });
+    if (gate != null) return gate;
+    // Only an http(s) address reaches the fetch — checked before the gate
+    // below, which spends an extraction.
+    if (link && !IngestionLaunch.isWebUrl(content)) {
+      return ToolResult.error('invalid', 'content must be an http(s) link');
+    }
     final prefs = await _dietaryPreferences();
-    // Links cost an extraction from the daily allowance, as on the add screen.
-    if ((source == 'url' || source == 'social_video') &&
-        !await ui.allowAiExtraction()) {
+    // Every source is a model call and costs an extraction from the daily
+    // allowance, as on the add screen (text, link, video and request alike).
+    if (!await ui.allowAiExtraction()) {
       return ToolResult.error('quota', t.ads.aiQuotaReached);
     }
     final parsed = switch (source) {
@@ -357,7 +516,7 @@ class AssistantDispatcher {
       'request' => await ingestion.generateRecipe(content, prefs),
       _ => await ingestion.parseRawText(content, prefs),
     };
-    await recipes.saveRecipe(parsed);
+    await _saveRecipe(parsed);
     return ToolResult.ok(
       _recipeFull(parsed),
       card: RecipeCard(parsed, caption: t.assistant.recipeSaved),
@@ -365,7 +524,9 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _searchWebRecipes(Map<String, dynamic> a) async {
-    final query = (a['query'] as String? ?? '').trim();
+    if (_gate(FeaturesFlags.ingestWebSearch) case final gate?) return gate;
+    final query = _title(a['query']);
+    if (query.isEmpty) return ToolResult.error('invalid', 'query is required');
     final results = await ingestion.searchWeb(
       query,
       await _dietaryPreferences(),
@@ -395,9 +556,11 @@ class AssistantDispatcher {
     return ToolResult.ok(
       {
         'books': [
-          for (final b in all)
+          for (final b in all.take(maxListedEntities))
             {'id': b.id, 'title': b.title, 'recipe_count': b.recipeRefs.length},
         ],
+        if (all.length > maxListedEntities)
+          'more_books_not_listed': all.length - maxListedEntities,
       },
       card: LinesCard(t.nav.library, [
         for (final b in all) '${b.title} · ${b.recipeRefs.length}',
@@ -406,7 +569,8 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _createBook(Map<String, dynamic> a) async {
-    final title = (a['title'] as String? ?? '').trim();
+    if (_gate(FeaturesFlags.books) case final gate?) return gate;
+    final title = _title(a['title']);
     if (title.isEmpty) {
       return ToolResult.error('invalid', 'A title is required');
     }
@@ -416,7 +580,7 @@ class AssistantDispatcher {
       recipeRefs: const [],
       createdAt: DateTime.now(),
     );
-    await books.saveBook(book);
+    await _saveBook(book);
     return ToolResult.ok({
       'id': book.id,
       'title': title,
@@ -424,14 +588,18 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _addRecipeToBook(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.books) case final gate?) return gate;
     final recipe = await _findRecipe(a['recipe_id'] as String?);
     if (recipe == null) return _notFound('Recipe', a['recipe_id'] as String?);
-    final bookId = a['book_id'] as String? ?? '';
+    final bookId = _title(a['book_id']);
     var book = await books.getBookById(bookId);
     book ??= (await books.getBooks())
         .where((b) => b.title.toLowerCase() == bookId.toLowerCase())
         .firstOrNull;
     if (book == null) return _notFound('Book', bookId);
+    if (!book.canEdit) {
+      return ToolResult.error('read_only', 'This book is view-only');
+    }
     if (book.recipeRefs.any((r) => r.recipeId == recipe.id)) {
       return ToolResult.ok({'already_in_book': true, 'book': book.title});
     }
@@ -439,7 +607,7 @@ class AssistantDispatcher {
       ...book.recipeRefs,
       BookRecipeRefEntity(recipeId: recipe.id, order: book.recipeRefs.length),
     ];
-    await books.saveBook(book.copyWith(recipeRefs: refs));
+    await _saveBook(book.copyWith(recipeRefs: refs));
     return ToolResult.ok({
       'book': book.title,
       'recipe': recipe.title,
@@ -518,10 +686,13 @@ class AssistantDispatcher {
 
   Future<ToolResult> _listMealPlans(Map<String, dynamic> a) async {
     final all = await plans.getPlans();
-    final wanted = a['plan_id'] as String?;
-    final chosen = wanted == null
+    final wanted = a['plan_id'] == null ? null : _title(a['plan_id']);
+    final matching = wanted == null
         ? all
         : all.where((p) => p.id == wanted || p.name == wanted).toList();
+    // Capped: each plan carries its whole week, and the result stays in
+    // the conversation.
+    final chosen = matching.take(maxListedEntities).toList();
     final json = [for (final p in chosen) await _planJson(p)];
     final index = await _recipeIndex();
     final lines = <String>[];
@@ -541,7 +712,11 @@ class AssistantDispatcher {
       }
     }
     return ToolResult.ok(
-      {'plans': json},
+      {
+        'plans': json,
+        if (matching.length > chosen.length)
+          'more_plans_not_listed': matching.length - chosen.length,
+      },
       card: lines.isEmpty ? null : LinesCard(t.nav.mealPlan, lines),
     );
   }
@@ -582,12 +757,13 @@ class AssistantDispatcher {
       ],
       createdAt: DateTime.now(),
     );
-    await plans.savePlan(plan);
+    await _savePlan(plan);
     return plan;
   }
 
   Future<ToolResult> _createMealPlan(Map<String, dynamic> a) async {
-    final name = (a['name'] as String? ?? '').trim();
+    if (_gate(FeaturesFlags.mealPlans) case final gate?) return gate;
+    final name = _title(a['name']);
     if (name.isEmpty) return ToolResult.error('invalid', 'A name is required');
     final template =
         MealPlanTemplate.values
@@ -602,13 +778,14 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _planMeal(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.mealPlans) case final gate?) return gate;
     final weekday = _weekdayFrom(a['weekday']);
-    final mealName = _mealLabel(a['meal'] as String? ?? '');
+    final mealName = _mealLabel(_title(a['meal']));
     if (weekday == null || mealName.isEmpty) {
       return ToolResult.error('invalid', 'weekday and meal are required');
     }
     RecipeEntity? recipe;
-    final freeText = (a['free_text'] as String?)?.trim();
+    final freeText = a['free_text'] == null ? null : _title(a['free_text']);
     if (a['recipe_id'] != null) {
       recipe = await _findRecipe(a['recipe_id'] as String?);
       if (recipe == null) {
@@ -620,12 +797,17 @@ class AssistantDispatcher {
 
     final all = await plans.getPlans();
     MealPlanEntity? plan;
-    final wanted = a['plan_id'] as String?;
+    final wanted = a['plan_id'] == null ? null : _title(a['plan_id']);
     if (wanted != null) {
       plan = all.where((p) => p.id == wanted || p.name == wanted).firstOrNull;
       if (plan == null) return _notFound('Plan', wanted);
-    } else if (all.isNotEmpty) {
-      plan = all.reduce((x, y) => x.createdAt.isAfter(y.createdAt) ? x : y);
+      if (!plan.canEdit) return _planReadOnly;
+    } else if (all.any((p) => p.canEdit)) {
+      // The newest plan this user may write: a shared plan they only view
+      // is never picked on their behalf.
+      plan = all
+          .where((p) => p.canEdit)
+          .reduce((x, y) => x.createdAt.isAfter(y.createdAt) ? x : y);
     } else {
       plan = await _createPlanEntity(
         t.mealPlanner.newPlan,
@@ -656,7 +838,7 @@ class AssistantDispatcher {
     final updatedMeal = meal.copyWith(items: [...meal.items, item]);
     final at = meals.indexWhere((m) => m.id == meal!.id);
     meals[at] = updatedMeal;
-    await plans.savePlan(plan.copyWith(meals: meals));
+    await _savePlan(plan.copyWith(meals: meals));
 
     final title = recipe?.title ?? freeText!;
     return ToolResult.ok(
@@ -679,8 +861,10 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _removePlannedItem(Map<String, dynamic> a) async {
-    final plan = await plans.getPlanById(a['plan_id'] as String? ?? '');
+    if (_gate(FeaturesFlags.mealPlans) case final gate?) return gate;
+    final plan = await plans.getPlanById(_title(a['plan_id']));
     if (plan == null) return _notFound('Plan', a['plan_id'] as String?);
+    if (!plan.canEdit) return _planReadOnly;
     final mealId = a['meal_id'] as String?;
     final itemId = a['item_id'] as String?;
     var removed = false;
@@ -697,13 +881,22 @@ class AssistantDispatcher {
           m,
     ];
     if (!removed) return _notFound('Planned item', itemId);
-    await plans.savePlan(plan.copyWith(meals: meals));
+    await _savePlan(plan.copyWith(meals: meals));
     return ToolResult.ok({
       'removed': itemId,
     }, card: StatusCard(t.assistant.done, icon: 'delete'));
   }
 
   // ---- Groceries ----------------------------------------------------------
+
+  static ToolResult get _planReadOnly => ToolResult.error(
+    'read_only',
+    'This meal plan is view-only',
+  );
+  static ToolResult get _listReadOnly => ToolResult.error(
+    'read_only',
+    'This grocery list is view-only',
+  );
 
   Future<GroceryListEntity?> _activeGroceryList() async {
     final id = await activeList.read();
@@ -768,7 +961,8 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _createGroceryList(Map<String, dynamic> a) async {
-    final wanted = (a['name'] as String? ?? '').trim();
+    if (_gate(FeaturesFlags.groceryLists) case final gate?) return gate;
+    final wanted = _title(a['name']);
     if (wanted.isEmpty) {
       return ToolResult.error('invalid', 'A name is required');
     }
@@ -779,7 +973,7 @@ class AssistantDispatcher {
       createdAt: DateTime.now(),
       source: GroceryListSource.manual,
     );
-    await groceries.saveList(list);
+    await _saveList(list);
     await activeList.write(list.id);
     return ToolResult.ok({
       'list_id': list.id,
@@ -799,15 +993,34 @@ class AssistantDispatcher {
   ToolResult _groceryResult(
     GroceryListEntity list, {
     Map<String, dynamic> extra = const {},
-  }) => ToolResult.ok(
-    {
-      'list_id': list.id,
-      'list_name': list.name,
-      'items': list.items.map(_itemJson).toList(),
-      ...extra,
-    },
-    card: GroceryCard(listId: list.id, listName: list.name, items: list.items),
-  );
+  }) {
+    // The model's copy is capped like the scoped prompt (still-to-buy lines
+    // first): every result stays in the conversation for the turns after
+    // it. The card on screen keeps the whole list.
+    final ordered = [
+      ...list.items.where((i) => !i.isChecked),
+      ...list.items.where((i) => i.isChecked),
+    ];
+    final shown = ordered.take(scopedGroceryItemCap);
+    final more = list.items.length - shown.length;
+    return ToolResult.ok(
+      {
+        'list_id': list.id,
+        'list_name': list.name,
+        'items': shown.map(_itemJson).toList(),
+        if (more > 0) ...{
+          'total_items': list.items.length,
+          'more_items_not_listed': more,
+        },
+        ...extra,
+      },
+      card: GroceryCard(
+        listId: list.id,
+        listName: list.name,
+        items: list.items,
+      ),
+    );
+  }
 
   Future<ToolResult> _getGroceryList(Map<String, dynamic> a) async {
     final list = await _groceryList(a['list_id'] as String?);
@@ -818,13 +1031,11 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _addGroceryItems(Map<String, dynamic> a) async {
-    final wanted = [
-      for (final m in (a['items'] as List?) ?? const [])
-        if (m is Map) _ingredientFrom(m.cast<String, dynamic>()),
-    ].where((i) => i.name.isNotEmpty).toList();
+    if (_gate(FeaturesFlags.groceryLists) case final gate?) return gate;
+    final wanted = _ingredients(a['items']);
     if (wanted.isEmpty) return ToolResult.error('invalid', 'No items given');
 
-    final listId = a['list_id'] as String?;
+    final listId = a['list_id'] == null ? null : _title(a['list_id']);
     final all = await groceries.getLists();
     GroceryListEntity? list;
     if (listId != null && listId.trim().isNotEmpty) {
@@ -848,6 +1059,7 @@ class AssistantDispatcher {
     } else {
       list = all.firstOrNull;
     }
+    if (list != null && !list.canEdit) return _listReadOnly;
     var created = false;
     if (list == null) {
       list = GroceryListEntity(
@@ -881,14 +1093,14 @@ class AssistantDispatcher {
             name: w.name,
             unit: w.unit,
             sources: [GroceryItemSourceEntity(label: w.name, amount: amount)],
-            category: 'כללי',
+            category: kDefaultGroceryCategory,
             isAdHoc: true,
           ),
         );
       }
     }
     final saved = list.copyWith(items: items);
-    await groceries.saveList(saved);
+    await _saveList(saved);
     if (created) await activeList.write(saved.id);
     return _groceryResult(saved, extra: {'added': wanted.length});
   }
@@ -911,8 +1123,10 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _setGroceryItemChecked(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.groceryLists) case final gate?) return gate;
     final list = await _groceryList(a['list_id'] as String?);
     if (list == null) return _notFound('Grocery list', null);
+    if (!list.canEdit) return _listReadOnly;
     final checked = a['checked'] as bool? ?? true;
     final hits = _matchItems(
       list,
@@ -925,27 +1139,34 @@ class AssistantDispatcher {
           hits.contains(i.id) ? i.copyWith(isChecked: checked) : i,
       ],
     );
-    await groceries.saveList(saved);
+    await _saveList(saved);
     return _groceryResult(saved, extra: {'changed': hits.length});
   }
 
-  /// The checklist card's own toggle, outside a model turn.
-  Future<void> toggleGroceryItem(String listId, String itemId) async {
+  /// The checklist card's own toggle, outside a model turn. Returns the list
+  /// as saved, or null when nothing changed (list gone, or view-only).
+  Future<GroceryListEntity?> toggleGroceryItem(
+    String listId,
+    String itemId,
+  ) async {
     final list = await groceries.getListById(listId);
-    if (list == null) return;
-    await groceries.saveList(
-      list.copyWith(
-        items: [
-          for (final i in list.items)
-            i.id == itemId ? i.copyWith(isChecked: !i.isChecked) : i,
-        ],
-      ),
+    // A viewer's card toggles nothing: the shared list is not theirs to tick.
+    if (list == null || !list.canEdit) return null;
+    final saved = list.copyWith(
+      items: [
+        for (final i in list.items)
+          i.id == itemId ? i.copyWith(isChecked: !i.isChecked) : i,
+      ],
     );
+    await _saveList(saved);
+    return saved;
   }
 
   Future<ToolResult> _removeGroceryItems(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.groceryLists) case final gate?) return gate;
     final list = await _groceryList(a['list_id'] as String?);
     if (list == null) return _notFound('Grocery list', null);
+    if (!list.canEdit) return _listReadOnly;
     final hits = _matchItems(
       list,
       _strings(a['items']),
@@ -957,16 +1178,18 @@ class AssistantDispatcher {
           if (!hits.contains(i.id)) i,
       ],
     );
-    await groceries.saveList(saved);
+    await _saveList(saved);
     return _groceryResult(saved, extra: {'removed': hits.length});
   }
 
   Future<ToolResult> _clearCheckedItems(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.groceryLists) case final gate?) return gate;
     final list = await _groceryList(a['list_id'] as String?);
     if (list == null) return _notFound('Grocery list', null);
+    if (!list.canEdit) return _listReadOnly;
     final kept = list.items.where((i) => !i.isChecked).toList();
     final saved = list.copyWith(items: kept);
-    await groceries.saveList(saved);
+    await _saveList(saved);
     return _groceryResult(
       saved,
       extra: {'removed': list.items.length - kept.length},
@@ -974,9 +1197,17 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _groceryListFromRecipe(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.groceryLists) ??
+            _gate(FeaturesFlags.groceryFromRecipe)
+        case final gate?) {
+      return gate;
+    }
     final recipe = await _findRecipe(a['recipe_id'] as String?);
     if (recipe == null) return _notFound('Recipe', a['recipe_id'] as String?);
-    final scale = (a['scale'] as num?)?.toDouble() ?? 1;
+    final raw = a['scale'];
+    final wanted = raw is num ? raw.toDouble() : double.tryParse('$raw') ?? 1;
+    // Bounded: a slip like 500 would fill the list with absurd amounts.
+    final scale = wanted > 0 ? wanted.clamp(0.1, maxScale) : 1.0;
     final list = await CreateRecipeGroceryListUseCase(
       groceries,
       activeList,
@@ -989,16 +1220,14 @@ class AssistantDispatcher {
   Future<ToolResult> _startCookMode(Map<String, dynamic> a) async {
     final recipe = await _findRecipe(a['recipe_id'] as String?);
     if (recipe == null) return _notFound('Recipe', a['recipe_id'] as String?);
-    if (MonetizationConfig.cookModeLocked) {
-      ui.openScreen('premium');
-      return ToolResult.error('premium_required', t.assistant.needsPremium);
-    }
-    final step = (a['step'] as int?) ?? 1;
+    // Premium-locked, hidden or "coming soon": the same verdict as the
+    // screen's entry point, so a hidden cook mode starts no session.
+    if (_gate(FeaturesFlags.cookMode) case final gate?) return gate;
+    final step = _int(a['step']) ?? 1;
     final session = cooking.start(recipe);
-    cooking.setStep(
-      recipe.id,
-      (step - 1).clamp(0, recipe.steps.length - 1),
-    );
+    // `clamp` needs lower <= upper: a recipe with no steps clamps to 0.
+    final last = recipe.steps.isEmpty ? 0 : recipe.steps.length - 1;
+    cooking.setStep(recipe.id, (step - 1).clamp(0, last));
     ui.openCookMode(session.recipe);
     return ToolResult.ok({
       'recipe_id': recipe.id,
@@ -1009,10 +1238,11 @@ class AssistantDispatcher {
   Future<ToolResult> _startTimer(Map<String, dynamic> a) async {
     final recipe = await _findRecipe(a['recipe_id'] as String?);
     if (recipe == null) return _notFound('Recipe', a['recipe_id'] as String?);
-    if (MonetizationConfig.cookModeLocked) {
-      return ToolResult.error('premium_required', t.assistant.needsPremium);
+    if (_gate(FeaturesFlags.cookMode) ?? _gate(FeaturesFlags.cookTimers)
+        case final gate?) {
+      return gate;
     }
-    final step = ((a['step'] as int?) ?? 1) - 1;
+    final step = (_int(a['step']) ?? 1) - 1;
     final session = cooking.start(recipe);
     final timer = session.timers[step];
     if (timer == null) {
@@ -1106,7 +1336,8 @@ class AssistantDispatcher {
   /// reason + message, signed with the same details, marked as coming
   /// through Shefi. Gated by the same two flags as the form and the chat.
   Future<ToolResult> _contactSupport(Map<String, dynamic> a) async {
-    final message = (a['message'] as String? ?? '').trim();
+    // The form's own cap on the message.
+    final message = _text(a['message']);
     if (message.isEmpty) {
       return ToolResult.error('invalid', 'message is required');
     }
@@ -1148,7 +1379,10 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _openScreen(Map<String, dynamic> a) async {
-    final screen = a['screen'] as String? ?? '';
+    final screen = _title(a['screen']);
+    if (!AssistantTools.screens.contains(screen)) {
+      return ToolResult.error('invalid', 'No screen named "$screen"');
+    }
     ui.openScreen(screen);
     return ToolResult.ok({'opened': screen});
   }
@@ -1171,7 +1405,52 @@ class AssistantDispatcher {
     'g': 1,
     'kilogram': 1000,
     'kg': 1000,
+    'ounce': 28.35,
+    'oz': 28.35,
+    'pound': 453.6,
+    'lb': 453.6,
   };
+
+  /// Spellings the model (or the user's words) send for the same unit:
+  /// plurals, British spellings and the usual abbreviations.
+  static const _unitAliases = <String, String>{
+    'millilitre': 'milliliter',
+    'mls': 'ml',
+    'litre': 'liter',
+    'ltr': 'liter',
+    'tsps': 'tsp',
+    'tbs': 'tbsp',
+    'tbsps': 'tbsp',
+    'tbl': 'tbsp',
+    'gr': 'g',
+    'grs': 'g',
+    'kgs': 'kg',
+    'kilo': 'kilogram',
+    'kilos': 'kilogram',
+    'kilogramme': 'kilogram',
+    'gramme': 'gram',
+    'lbs': 'lb',
+    '°c': 'celsius',
+    '°f': 'fahrenheit',
+  };
+
+  /// [raw] as a key of [_toMl] / [_toG] (or celsius / fahrenheit):
+  /// "Cups" → cup, "tablespoons" → tablespoon, "grams" → gram.
+  static String _unit(String raw) {
+    final u = raw.trim().toLowerCase().replaceAll(RegExp(r'\.$'), '');
+    String? known(String s) {
+      if (_toMl.containsKey(s) || _toG.containsKey(s)) return s;
+      if (s == 'celsius' || s == 'c' || s == 'fahrenheit' || s == 'f') {
+        return s;
+      }
+      return _unitAliases[s];
+    }
+
+    return known(u) ??
+        (u.endsWith('es') ? known(u.substring(0, u.length - 2)) : null) ??
+        (u.endsWith('s') ? known(u.substring(0, u.length - 1)) : null) ??
+        u;
+  }
 
   /// Grams per millilitre for the pantry staples people convert most.
   static const _density = <String, double>{
@@ -1191,9 +1470,12 @@ class AssistantDispatcher {
   };
 
   ToolResult _convertMeasurement(Map<String, dynamic> a) {
-    final amount = (a['amount'] as num?)?.toDouble();
-    final from = (a['from'] as String? ?? '').trim().toLowerCase();
-    final to = (a['to'] as String? ?? '').trim().toLowerCase();
+    final raw = a['amount'];
+    final amount = raw is num
+        ? raw.toDouble()
+        : double.tryParse(raw?.toString().trim().replaceAll(',', '.') ?? '');
+    final from = _unit(_title(a['from']));
+    final to = _unit(_title(a['to']));
     if (amount == null || from.isEmpty || to.isEmpty) {
       return ToolResult.error('invalid', 'amount, from and to are required');
     }
@@ -1205,10 +1487,11 @@ class AssistantDispatcher {
         (to == 'celsius' || to == 'c')) {
       result = (amount - 32) * 5 / 9;
     } else {
-      final ingredient = (a['ingredient'] as String? ?? '').toLowerCase();
+      final ingredient = _title(a['ingredient']).toLowerCase();
+      // The longest name that matches: "brown sugar" before "sugar".
       final density =
-          _density.entries
-              .where((e) => ingredient.contains(e.key))
+          (_density.entries.where((e) => ingredient.contains(e.key)).toList()
+                ..sort((x, y) => y.key.length.compareTo(x.key.length)))
               .map((e) => e.value)
               .firstOrNull ??
           1.0;
@@ -1234,14 +1517,36 @@ class AssistantDispatcher {
   }
 
   Future<ToolResult> _estimateNutrition(Map<String, dynamic> a) async {
+    if (_gate(FeaturesFlags.nutrition) case final gate?) return gate;
     final recipe = await _findRecipe(a['recipe_id'] as String?);
     if (recipe == null) return _notFound('Recipe', a['recipe_id'] as String?);
-    final estimated = await ingestion.estimateNutrition(recipe);
-    await recipes.saveRecipe(estimated);
+    if (!recipe.canEdit) {
+      return ToolResult.error('read_only', 'This recipe is view-only');
+    }
+    final estimate = await ingestion.estimateNutrition(recipe);
+    // Only the estimate, onto the recipe as it is stored now: the model
+    // call took seconds, and an edit saved meanwhile (here, or on the
+    // website) must not be undone by the copy read before it.
+    final fresh = await recipes.getRecipeById(recipe.id);
+    if (fresh == null) return _notFound('Recipe', recipe.id);
+    final estimated = fresh.copyWith(
+      servings: estimate.servings,
+      nutrition: estimate.nutrition,
+    );
+    await _saveRecipe(estimated);
     return ToolResult.ok(_recipeFull(estimated), card: RecipeCard(estimated));
   }
 
   // ---- Context for the system prompt ------------------------------------
+
+  /// How many books or plans a listing tool hands the model.
+  static const maxListedEntities = 100;
+
+  /// The largest recipe multiplier `grocery_list_from_recipe` accepts.
+  static const maxScale = 20.0;
+
+  /// How many lines of a scoped grocery list go into the system prompt.
+  static const scopedGroceryItemCap = 150;
 
   /// What the model should know before the first word: the date, the
   /// preferences, the recipes it can refer to by id, the active list and
@@ -1313,10 +1618,30 @@ class AssistantDispatcher {
             'Grocery list "${l.name}" (list_id ${l.id}): ${l.items.length} items, '
             '${l.checkedCount} bought.',
           );
-        for (final i in l.items) {
+        // Capped: a 600-line list would otherwise ride along on every turn.
+        // Still-to-buy lines first, since those are what gets asked about;
+        // the tools look items up by name in the whole list, so an unlisted
+        // one can still be ticked or removed, and get_grocery_list reads it.
+        final unchecked = l.items.where((i) => !i.isChecked);
+        final checked = l.items.where((i) => i.isChecked);
+        final shown = [
+          ...unchecked,
+          ...checked,
+        ].take(scopedGroceryItemCap).toList();
+        for (final i in shown) {
           b.writeln(
             '- ${i.isChecked ? '[x]' : '[ ]'} ${i.name} (item_id ${i.id})'
             '${i.totalAmount > 0 ? ': ${i.totalAmount} ${i.unit.name}' : ''}',
+          );
+        }
+        final rest = l.items.length - shown.length;
+        if (rest > 0) {
+          final restUnchecked =
+              unchecked.length - shown.where((i) => !i.isChecked).length;
+          b.writeln(
+            '...and $rest more items not listed here '
+            '($restUnchecked still to buy, ${rest - restUnchecked} bought); '
+            'call get_grocery_list to read them.',
           );
         }
         return b.toString();

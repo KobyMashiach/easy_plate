@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecipeBookModel {
 
-@HiveField(0) String get id;@HiveField(1) String get title;@HiveField(2) List<BookRecipeRefModel> get recipeRefs;@HiveField(3) Map<String, String> get collaborators;@HiveField(4) DateTime get createdAt;@HiveField(5) String? get coverImageFileName;@HiveField(6) String? get coverImageStoragePath;// The spine colour by name, appended: older books decode as null.
+@HiveField(0) String get id;@HiveField(1) String get title;@HiveField(2) List<BookRecipeRefModel> get recipeRefs;@HiveField(3) Map<String, String> get collaborators;@HiveField(4)@JsonKey(fromJson: readJsonDate) DateTime get createdAt;@HiveField(5) String? get coverImageFileName;@HiveField(6) String? get coverImageStoragePath;// The spine colour by name, appended: older books decode as null.
 @HiveField(7) String? get spine;// Cross-account sharing, appended: the shared document and this
 // account's role in it. Null for a book that was never shared.
 @HiveField(8) String? get collabId;@HiveField(9) String? get collabRole;/// The language the title is written in; see [RecipeModel.contentLang].
@@ -53,7 +53,7 @@ abstract mixin class $RecipeBookModelCopyWith<$Res>  {
   factory $RecipeBookModelCopyWith(RecipeBookModel value, $Res Function(RecipeBookModel) _then) = _$RecipeBookModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath,@HiveField(7) String? spine,@HiveField(8) String? collabId,@HiveField(9) String? collabRole,@HiveField(10) String? contentLang,@HiveField(11) int contentVersion
+@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath,@HiveField(7) String? spine,@HiveField(8) String? collabId,@HiveField(9) String? collabRole,@HiveField(10) String? contentLang,@HiveField(11) int contentVersion
 });
 
 
@@ -166,7 +166,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine, @HiveField(8)  String? collabId, @HiveField(9)  String? collabRole, @HiveField(10)  String? contentLang, @HiveField(11)  int contentVersion)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine, @HiveField(8)  String? collabId, @HiveField(9)  String? collabRole, @HiveField(10)  String? contentLang, @HiveField(11)  int contentVersion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeBookModel() when $default != null:
 return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath,_that.spine,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);case _:
@@ -187,7 +187,7 @@ return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine, @HiveField(8)  String? collabId, @HiveField(9)  String? collabRole, @HiveField(10)  String? contentLang, @HiveField(11)  int contentVersion)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine, @HiveField(8)  String? collabId, @HiveField(9)  String? collabRole, @HiveField(10)  String? contentLang, @HiveField(11)  int contentVersion)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeBookModel():
 return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath,_that.spine,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);}
@@ -204,7 +204,7 @@ return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine, @HiveField(8)  String? collabId, @HiveField(9)  String? collabRole, @HiveField(10)  String? contentLang, @HiveField(11)  int contentVersion)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String title, @HiveField(2)  List<BookRecipeRefModel> recipeRefs, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(5)  String? coverImageFileName, @HiveField(6)  String? coverImageStoragePath, @HiveField(7)  String? spine, @HiveField(8)  String? collabId, @HiveField(9)  String? collabRole, @HiveField(10)  String? contentLang, @HiveField(11)  int contentVersion)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeBookModel() when $default != null:
 return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.createdAt,_that.coverImageFileName,_that.coverImageStoragePath,_that.spine,_that.collabId,_that.collabRole,_that.contentLang,_that.contentVersion);case _:
@@ -219,7 +219,7 @@ return $default(_that.id,_that.title,_that.recipeRefs,_that.collaborators,_that.
 @JsonSerializable()
 
 class _RecipeBookModel implements RecipeBookModel {
-  const _RecipeBookModel({@HiveField(0) required this.id, @HiveField(1) required this.title, @HiveField(2) required final  List<BookRecipeRefModel> recipeRefs, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4) required this.createdAt, @HiveField(5) this.coverImageFileName, @HiveField(6) this.coverImageStoragePath, @HiveField(7) this.spine, @HiveField(8) this.collabId, @HiveField(9) this.collabRole, @HiveField(10) this.contentLang, @HiveField(11) this.contentVersion = 0}): _recipeRefs = recipeRefs,_collaborators = collaborators;
+  const _RecipeBookModel({@HiveField(0) required this.id, @HiveField(1) required this.title, @HiveField(2) required final  List<BookRecipeRefModel> recipeRefs, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4)@JsonKey(fromJson: readJsonDate) required this.createdAt, @HiveField(5) this.coverImageFileName, @HiveField(6) this.coverImageStoragePath, @HiveField(7) this.spine, @HiveField(8) this.collabId, @HiveField(9) this.collabRole, @HiveField(10) this.contentLang, @HiveField(11) this.contentVersion = 0}): _recipeRefs = recipeRefs,_collaborators = collaborators;
   factory _RecipeBookModel.fromJson(Map<String, dynamic> json) => _$RecipeBookModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -238,7 +238,7 @@ class _RecipeBookModel implements RecipeBookModel {
   return EqualUnmodifiableMapView(_collaborators);
 }
 
-@override@HiveField(4) final  DateTime createdAt;
+@override@HiveField(4)@JsonKey(fromJson: readJsonDate) final  DateTime createdAt;
 @override@HiveField(5) final  String? coverImageFileName;
 @override@HiveField(6) final  String? coverImageStoragePath;
 // The spine colour by name, appended: older books decode as null.
@@ -285,7 +285,7 @@ abstract mixin class _$RecipeBookModelCopyWith<$Res> implements $RecipeBookModel
   factory _$RecipeBookModelCopyWith(_RecipeBookModel value, $Res Function(_RecipeBookModel) _then) = __$RecipeBookModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath,@HiveField(7) String? spine,@HiveField(8) String? collabId,@HiveField(9) String? collabRole,@HiveField(10) String? contentLang,@HiveField(11) int contentVersion
+@HiveField(0) String id,@HiveField(1) String title,@HiveField(2) List<BookRecipeRefModel> recipeRefs,@HiveField(3) Map<String, String> collaborators,@HiveField(4)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(5) String? coverImageFileName,@HiveField(6) String? coverImageStoragePath,@HiveField(7) String? spine,@HiveField(8) String? collabId,@HiveField(9) String? collabRole,@HiveField(10) String? contentLang,@HiveField(11) int contentVersion
 });
 
 

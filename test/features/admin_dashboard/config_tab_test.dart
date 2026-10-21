@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_plate/core/features/features_flags.dart';
 import 'package:easy_plate/core/utils/i18n/strings.g.dart';
 import 'package:easy_plate/core/widgets/clay/clay.dart';
@@ -10,14 +12,28 @@ import 'package:flutter_test/flutter_test.dart';
 class _FakeEditor implements RemoteConfigEditor {
   List<RemoteParam> params;
   final sets = <(String, String)>[];
+
+  /// When set, every publish waits here until the test lets it through.
+  Completer<void>? gate;
+
+  /// When set, a fetch answers — with the template as it was when the fetch
+  /// started — only once the test lets it through.
+  Completer<void>? fetchGate;
+  int fetches = 0;
   _FakeEditor(this.params);
 
   @override
-  Future<List<RemoteParam>> fetch() async => params;
+  Future<List<RemoteParam>> fetch() async {
+    fetches++;
+    final snapshot = params;
+    if (fetchGate != null) await fetchGate!.future;
+    return snapshot;
+  }
 
   @override
   Future<List<RemoteParam>> set(String name, String value) async {
     sets.add((name, value));
+    if (gate != null) await gate!.future;
     params = [
       for (final p in params) p.name == name ? p.withValue(value) : p,
     ];
@@ -166,6 +182,84 @@ void main() {
     expect(find.text(t.adminConfig.groups.features), findsNothing);
     expect(find.text(t.adminConfig.labels.tts_voice_he), findsOneWidget);
     expect(find.byType(Switch), findsNothing);
+  });
+
+  testWidgets('a flag\'s chips are off while it publishes, so a second tap '
+      'is not reported as a failed save', (tester) async {
+    final editor = _FakeEditor([
+      _p('ff_books', 'NUMBER', '2', group: 'featureFlags'),
+    ])..gate = Completer<void>();
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_app(ConfigTab(source: editor)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.adminConfig.groups.features));
+    await tester.pumpAndSettle();
+
+    final card = find.ancestor(
+      of: find.text(FeaturesFlags.books.label),
+      matching: find.byType(ClayCard),
+    );
+    Finder chip(String label) =>
+        find.descendant(of: card, matching: find.text(label));
+
+    await tester.tap(chip(t.adminConfig.flag.premium));
+    await tester.pump();
+    expect(editor.sets, [('ff_books', '3')]);
+    // Still publishing: the other chips take no tap, and nothing says
+    // "failed".
+    await tester.tap(chip(t.adminConfig.flag.hidden));
+    await tester.pump();
+    expect(editor.sets.length, 1);
+    expect(find.text(t.adminConfig.saveFailed), findsNothing);
+
+    editor.gate!.complete();
+    await tester.pumpAndSettle();
+    expect(find.text(t.adminConfig.saveFailed), findsNothing);
+    // Published: the chips are live again.
+    await tester.tap(chip(t.adminConfig.flag.hidden));
+    await tester.pumpAndSettle();
+    expect(editor.sets.last, ('ff_books', '0'));
+  });
+
+  testWidgets('pass 10: a refresh that was in flight when a value was '
+      'published does not put the old value back', (tester) async {
+    final editor = _FakeEditor([_p('ads_enabled', 'BOOLEAN', 'true')]);
+    // A phone-sized view: the indicator arms at a quarter of its height.
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_app(ConfigTab(source: editor)));
+    await tester.pumpAndSettle();
+    expect(editor.fetches, 1);
+
+    // Pull to refresh: the fetch is out, and the list stays (no spinner in
+    // its place).
+    editor.fetchGate = Completer<void>();
+    await tester.drag(find.byType(ListView), const Offset(0, 600));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(editor.fetches, 2);
+    expect(find.text(t.adminConfig.groups.adsQuotas), findsOneWidget);
+
+    // Meanwhile the switch is flipped and published.
+    await tester.tap(find.text(t.adminConfig.groups.adsQuotas));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+    expect(editor.sets, [('ads_enabled', 'false')]);
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+
+    // The stale fetch lands: the published value holds.
+    editor.fetchGate!.complete();
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+
+    // Published again while a fresh refresh is out: same answer.
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
   });
 
   testWidgets('a failed load offers a retry', (tester) async {

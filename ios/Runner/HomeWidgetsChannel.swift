@@ -17,6 +17,7 @@ final class HomeWidgetsChannel {
   private static weak var live: HomeWidgetsChannel?
 
   private let channel: FlutterMethodChannel
+  private var observing = false
   private var defaults: UserDefaults? { UserDefaults(suiteName: HomeWidgetsChannel.group) }
 
   init(messenger: FlutterBinaryMessenger) {
@@ -26,6 +27,25 @@ final class HomeWidgetsChannel {
     }
     HomeWidgetsChannel.live = self
     observeQueue()
+  }
+
+  /// Stops answering Dart and listening to the extension. Safe to call twice;
+  /// deinit calls it too, so a channel replaced by a new engine never leaves
+  /// a second observer behind (each would fire `pendingChanged` again).
+  func dispose() {
+    channel.setMethodCallHandler(nil)
+    if HomeWidgetsChannel.live === self { HomeWidgetsChannel.live = nil }
+    guard observing else { return }
+    observing = false
+    CFNotificationCenterRemoveObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      CFNotificationName(HomeWidgetsChannel.pendingNotification as CFString),
+      nil)
+  }
+
+  deinit {
+    dispose()
   }
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -94,9 +114,13 @@ final class HomeWidgetsChannel {
   /// The extension's "the queue grew" signal, cross-process.
   private func observeQueue() {
     let center = CFNotificationCenterGetDarwinNotifyCenter()
+    // Registered under this instance's address (not nil) so dispose() can
+    // remove exactly this observer. The callback itself goes through the
+    // weak `live`, never through that pointer, so it cannot touch a freed
+    // channel.
     CFNotificationCenterAddObserver(
       center,
-      nil,
+      Unmanaged.passUnretained(self).toOpaque(),
       { _, _, _, _, _ in
         DispatchQueue.main.async {
           HomeWidgetsChannel.live?.channel.invokeMethod("pendingChanged", arguments: nil)
@@ -105,5 +129,6 @@ final class HomeWidgetsChannel {
       HomeWidgetsChannel.pendingNotification as CFString,
       nil,
       .deliverImmediately)
+    observing = true
   }
 }

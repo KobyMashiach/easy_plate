@@ -43,6 +43,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# android/build.gradle.kts redirects every Gradle build dir to /build/, but
+# Android Studio (or a stray `gradlew` run with another root) still creates
+# these; ios/build/ comes from a plain `xcodebuild`. ios/Pods/ and
+# ios/.symlinks/ are ignored in ios/.gitignore (Pods are not tracked).
+/android/build/
+/android/app/build/
+/ios/build/
 
 # Local --dart-define-from-file values. Never commit a real key; the committed
 # dev.example.json is the template to copy.
@@ -58,3 +65,18 @@ landing/.og/
 
 # raw phone capture for the Play foreground-service video (47 MB); the composed cut is kept
 store_assets/play/fgs_special_use_raw.mp4
+
+# Web app (webapp/) build output and local env; built by ./run.sh buildWebsite
+landing/app/
+webapp/node_modules/
+webapp/.env.local
+webapp/.env.*.local
+webapp/dist/
+
+# generated per-language dictionaries (scripts/split-i18n.mjs)
+webapp/src/i18n-gen/
+
+# Web/native parity harness (webapp/scripts/preview): screenshots and the
+# emulator copy of the rules are generated on every run.
+webapp/scripts/preview/out/
+webapp/scripts/preview/.emulator/

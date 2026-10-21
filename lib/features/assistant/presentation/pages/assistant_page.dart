@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -167,6 +168,8 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       cooking: CookSessionService(),
       ui: this,
       feedback: context.read(),
+      sharing: context.read(),
+      recipeSharing: context.read(),
     );
     // The chat uses the microphone itself: "Hey Shefi" waits until it
     // closes.
@@ -188,14 +191,26 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
           : t.assistant.scopedWelcome(name: scope.title),
       onReply: _onReply,
     );
-    _refreshSnapshot();
+    // Kept so a launch prompt waits for it: the first turn must not go out
+    // with an empty system prompt (no language rule, no scope lock).
+    _firstSnapshot = _refreshSnapshot().catchError((Object e) {
+      debugPrint('Assistant snapshot failed: $e');
+    });
     // A widget tap arrives with a question, or with the microphone: the
     // conversation starts on its own once the screen is up.
     final launch = widget.launch;
     if (launch != null && (launch.prompt != null || launch.voice)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
         if (launch.prompt case final prompt?) {
+          // A prompt nobody vouched for is shown, not sent: the user reads
+          // it and taps send (see AssistantLaunch.autoSend).
+          if (!launch.autoSend) {
+            _input.text = prompt;
+            return;
+          }
+          await _firstSnapshot;
+          if (!mounted) return;
           _send(prompt, spoken: launch.spokenPrompt);
         } else if (launch.voice) {
           _toggleMic();
@@ -207,6 +222,7 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
   // The snapshot is gathered once per conversation and after every turn,
   // so a recipe saved a moment ago is already in the next prompt.
   String _system = '';
+  late final Future<void> _firstSnapshot;
   Future<void> _refreshSnapshot() async {
     final snapshot = await _bloc.dispatcher.snapshot();
     final scope = _scope;
@@ -249,7 +265,9 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
   bool _spokenTurn = false;
 
   void _onReply(String text) {
-    if (!_spokenTurn) return;
+    // The turn may land after the chat was closed: the voice (and its
+    // notifiers) are disposed by then, so there is nothing to read it to.
+    if (!mounted || !_spokenTurn) return;
     final asks = AssistantText.asks(text);
     _voice.speak(text).then((_) {
       if (!mounted || !_spokenTurn || !asks) return;
@@ -278,9 +296,12 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
   }
 
   // ---- AssistantUiBridge --------------------------------------------------
+  // A turn still in flight when the chat closes reaches these with the page
+  // gone: nothing is asked or opened then, and a delete counts as refused.
 
   @override
   Future<bool> confirmDelete(String what) async {
+    if (!mounted) return false;
     final ok = await AppDialog.warning(
       title: t.assistant.confirmTitle,
       message: t.assistant.confirmBody(what: what),
@@ -293,19 +314,26 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
   }
 
   @override
-  Future<bool> allowAiExtraction() => QuotaGates.extractWithAi(context);
+  Future<bool> allowAiExtraction() async =>
+      mounted && await QuotaGates.extractWithAi(context);
 
   @override
-  void openRecipe(RecipeEntity recipe) => context.pushNamed(
-    Routing.recipeDetails,
-    extra: RecipeDetailsArgs(recipe: recipe),
-  );
+  void openRecipe(RecipeEntity recipe) {
+    if (!mounted) return;
+    context.pushNamed(
+      Routing.recipeDetails,
+      extra: RecipeDetailsArgs(recipe: recipe),
+    );
+  }
 
   @override
-  void openCookMode(RecipeEntity recipe) => cookModeFrom(context, recipe);
+  void openCookMode(RecipeEntity recipe) {
+    if (mounted) cookModeFrom(context, recipe);
+  }
 
   @override
   void openScreen(String screen) {
+    if (!mounted) return;
     switch (screen) {
       case 'recipes':
         MainTabs.index.value = MainTabs.recipes;
@@ -699,7 +727,9 @@ class _InputBar extends StatelessWidget {
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
     )..layout(maxWidth: width);
-    return painter.computeLineMetrics().length > 1;
+    final wraps = painter.computeLineMetrics().length > 1;
+    painter.dispose();
+    return wraps;
   }
 
   // Never taller than three lines: a longer question scrolls inside the
@@ -713,6 +743,11 @@ class _InputBar extends StatelessWidget {
         enabled: enabled,
         minLines: minLines,
         maxLines: 3,
+        // The same cap the bloc cuts at: a paste past it stops here rather
+        // than being trimmed on the way out without a word.
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(AssistantBloc.maxMessageChars),
+        ],
         textInputAction: TextInputAction.send,
         onSubmitted: onSend,
         style: AppTextStyles.bodyMd,

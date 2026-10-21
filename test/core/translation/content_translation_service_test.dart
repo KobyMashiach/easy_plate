@@ -50,6 +50,9 @@ class _FakeRemote implements ContentTranslationDataSource {
   final asked = <TranslatableItem>[];
   int reads = 0;
 
+  /// Runs while the model is "thinking": an edit landing mid-pass.
+  void Function()? meanwhile;
+
   @override
   Future<Map<String, TranslatedFields>> readVariants(
     String lang,
@@ -65,6 +68,7 @@ class _FakeRemote implements ContentTranslationDataSource {
     List<TranslatableItem> items,
   ) async {
     asked.addAll(items);
+    meanwhile?.call();
     if (throws) throw StateError('offline');
     return {
       for (final item in items)
@@ -102,6 +106,7 @@ class _FakeLocal extends ContentVariantsLocalStore {
 class _FakeRecipes implements RecipesRepository {
   _FakeRecipes(this._all);
   List<RecipeEntity> _all;
+  set all(List<RecipeEntity> value) => _all = value;
   final saved = <RecipeEntity>[];
 
   @override
@@ -341,6 +346,21 @@ void main() {
     expect(outcome.total, 0);
   });
 
+  test(
+    'records the answer left out (an allowance spent part-way) count as failed',
+    () async {
+      final remote = _FakeRemote(); // answers nothing for the recipe
+      final recipes = _FakeRecipes([shakshuka()]);
+      final outcome = await _serviceWith(
+        remote,
+        recipes: recipes,
+      ).switchTo(AppLanguage.english);
+
+      expect(recipes.saved, isEmpty);
+      expect(outcome.failed, 1);
+    },
+  );
+
   test('shopping lists keep their quantities and their checks', () async {
     final list = GroceryListEntity(
       id: 'g1',
@@ -543,4 +563,59 @@ void main() {
       expect(remote.sourcesWritten, isEmpty);
     },
   );
+
+  group('an edit that lands while the model translates', () {
+    _FakeRemote answering() => _FakeRemote(
+      answer: {
+        'recipe/r1': const TranslatedFields({...english, 'sourceHash': 'x'}),
+      },
+    );
+
+    test('new words are not overwritten by the old translation', () async {
+      final remote = answering();
+      final recipes = _FakeRecipes([shakshuka()]);
+      // Edited on the website and pulled in: other words, the next version.
+      remote.meanwhile = () => recipes.all = [
+        shakshuka(version: 1).copyWith(title: 'שקשוקה חריפה'),
+      ];
+
+      final outcome = await _serviceWith(
+        remote,
+        recipes: recipes,
+      ).switchTo(AppLanguage.english);
+
+      expect(recipes.saved, isEmpty);
+      expect(outcome.translated, 0);
+    });
+
+    test('other fields changed meanwhile are kept', () async {
+      final remote = answering();
+      final recipes = _FakeRecipes([shakshuka()]);
+      remote.meanwhile = () => recipes.all = [
+        shakshuka().copyWith(imageFileName: 'new.jpg'),
+      ];
+
+      await _serviceWith(
+        remote,
+        recipes: recipes,
+      ).switchTo(AppLanguage.english);
+
+      final saved = recipes.saved.single;
+      expect(saved.title, 'Shakshuka');
+      expect(saved.imageFileName, 'new.jpg');
+    });
+
+    test('a record deleted meanwhile is not brought back', () async {
+      final remote = answering();
+      final recipes = _FakeRecipes([shakshuka()]);
+      remote.meanwhile = () => recipes.all = [];
+
+      await _serviceWith(
+        remote,
+        recipes: recipes,
+      ).switchTo(AppLanguage.english);
+
+      expect(recipes.saved, isEmpty);
+    });
+  });
 }

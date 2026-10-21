@@ -72,10 +72,16 @@ class CommunityPriceEntity {
   final double average;
   final int count;
 
+  /// What the figure is per, when it came from a document keyed by unit;
+  /// null for the legacy per-name document, which mixes units and is read
+  /// as per package.
+  final PriceUnit? unit;
+
   const CommunityPriceEntity({
     required this.normalizedName,
     required this.median,
     required this.average,
     required this.count,
+    this.unit,
   });
 }

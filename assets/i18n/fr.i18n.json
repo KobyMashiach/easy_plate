@@ -17,6 +17,7 @@
     "or": "ou",
     "missingInfo": "[information manquante]",
     "networkError": "Pas de connexion Internet",
+    "loadFailed": "Le chargement a échoué. Vérifiez la connexion et réessayez",
     "landscapeHint": "Plus pratique en mode paysage",
     "rotateLandscape": "Pivoter",
     "rotatePortrait": "Retour en portrait"
@@ -41,6 +42,7 @@
     "codeSentTo": "Nous avons envoyé un code à $phone",
     "verify": "Vérifier",
     "resendCode": "Renvoyer",
+    "resendIn": "Renvoyer dans ${seconds}s",
     "forgotPassword": "Mot de passe oublié",
     "resetSent": "E-mail de réinitialisation envoyé",
     "noAccount": "Pas de compte ? Inscrivez-vous",
@@ -48,6 +50,7 @@
     "invalidEmail": "Adresse e-mail invalide",
     "passwordTooShort": "Le mot de passe doit faire au moins 6 caractères",
     "invalidPhone": "Numéro de téléphone invalide",
+    "phoneNeedsCountryCode": "Ajoutez l’indicatif du pays, par ex. +33 6 12 34 56 78",
     "codeRequired": "Saisissez le code reçu",
     "errorUnauthorized": "Ces informations sont incorrectes",
     "errorNetwork": "Pas de connexion Internet",
@@ -141,7 +144,8 @@
     "shoppingDayTitle": "Quel est votre jour de courses hebdomadaire ?",
     "dietaryTitle": "Quelles sont vos préférences alimentaires ?",
     "dietarySubtitle": "Vous pouvez en choisir plusieurs",
-    "finish": "C'est parti"
+    "finish": "C'est parti",
+    "saveFailed": "Impossible d'enregistrer vos choix. Vérifiez votre connexion et réessayez."
   },
   "dietary": {
     "meat": "Viande",
@@ -203,6 +207,7 @@
     "translationPartialTitle": "Traduction incomplète",
     "translationPartial": "$count éléments sont restés dans leur langue. Réessayez plus tard.",
     "translationFailed": "La traduction a échoué. Votre contenu est resté dans sa langue.",
+    "saveFailed": "Impossible d'enregistrer ce changement. Vérifiez votre connexion et réessayez.",
     "account": "Compte",
     "notifications": "Notifications",
     "notificationsHint": "Quelles alertes vous parviennent, et comment",
@@ -240,6 +245,12 @@
     "foregroundPopups": "Afficher les alertes en fenêtre",
     "foregroundPopupsHint": "Une notification reçue pendant que vous êtes dans l’application ouvre une petite carte. Désactivé, elle va seulement dans la boîte.",
     "reminders": "Rappels de courses"
+  },
+  "shoppingReminder": {
+    "twoDaysBefore": "Le jour des courses approche — c’est le moment de planifier le menu",
+    "dayBefore": "Demain, c’est le jour des courses — vérifiez que votre menu est à jour",
+    "sameDayMorning": "Aujourd’hui, c’est le jour des courses — terminez le menu pour une liste précise",
+    "sameDayAfternoon": "Dernier rappel avant les courses — votre liste vous attend"
   },
   "preferences": {
     "title": "Préférences",
@@ -296,7 +307,10 @@
     "coverImage": "Photo de couverture",
     "bookOptions": "Options du livre",
     "renameBook": "Renommer le livre",
-    "spineColor": "Couleur de la tranche"
+    "spineColor": "Couleur de la tranche",
+    "deleteConfirm": "Supprimer « $title » ? Les recettes qu'il contient restent dans votre bibliothèque.",
+    "deleteSharedConfirm": "Supprimer « $title » ? Il disparaîtra aussi pour toutes les personnes avec qui vous l'avez partagé. Les recettes restent dans votre bibliothèque.",
+    "leaveConfirm": "Quitter « $title » ? Il n'apparaîtra plus sur votre étagère."
   },
   "recipe": {
     "prepTime": "Temps de préparation",
@@ -325,7 +339,8 @@
     "communityUpdateBoth": "La communauté aussi",
     "communityUpdateLocal": "Seulement la mienne",
     "communityUpdated": "La copie de la communauté a été mise à jour",
-    "communityGone": "La recette n’est plus dans la communauté ; enregistrée pour vous seulement"
+    "communityGone": "La recette n’est plus dans la communauté ; enregistrée pour vous seulement",
+    "communityUpdateFailed": "Enregistré pour vous. La publication dans la communauté n'a pas été mise à jour ; réessayez plus tard."
   },
   "cookMode": {
     "title": "Mode cuisine",
@@ -458,7 +473,16 @@
     "removeSavedConfirm": "La recette sera retirée de vos recettes enregistrées. Vous pourrez la réenregistrer depuis la communauté.",
     "oneNewPost": "1 nouvelle publication",
     "newPosts": "$count nouvelles publications",
-    "replyFailed": "Votre réponse n’a pas pu être envoyée"
+    "replyFailed": "Votre réponse n’a pas pu être envoyée",
+    "postFailed": "Votre publication n’a pas pu être envoyée",
+    "deletePostFailed": "La publication n’a pas pu être supprimée",
+    "shareFailed": "La recette n’a pas pu être partagée",
+    "updateFailed": "La recette partagée n’a pas pu être mise à jour",
+    "unshareFailed": "La recette n’a pas pu être retirée du fil",
+    "importFailed": "La recette n’a pas pu être enregistrée",
+    "ageMinutes": "$n min",
+    "ageHours": "$n h",
+    "ageDays": "$n j"
   },
   "sharing": {
     "title": "Partager la recette",
@@ -471,7 +495,7 @@
     "roleEditorHint": "Ses modifications apparaissent aussi chez vous",
     "send": "Envoyer l'invitation",
     "sent": "Invitation envoyée",
-    "invalidContact": "Saisissez un e-mail ou un téléphone valide",
+    "invalidContact": "Saisissez un e-mail valide, ou un téléphone avec son indicatif pays (+…)",
     "notFound": "Aucun compte ne correspond. Vérifiez que l'e-mail ou le téléphone est lié à son compte et qu'il/elle a ouvert l'application récemment.",
     "self": "Impossible de partager avec vous-même",
     "failed": "Le partage a échoué, réessayez",
@@ -486,6 +510,8 @@
     "accepted": "La recette a été ajoutée à vos recettes",
     "declined": "Invitation refusée",
     "acceptFailed": "L'acceptation a échoué, réessayez",
+    "acceptQueued": "Pas de connexion pour le moment. Vous avez rejoint le partage ; la copie sera ajoutée à la prochaine ouverture de l'app en ligne.",
+    "collabMissing": "Ce partage n’est plus disponible : son propriétaire l’a retiré",
     "members": "Membres",
     "noMembersYet": "Personne n'a encore accepté",
     "remove": "Retirer",
@@ -514,7 +540,15 @@
     "shareList": "Partager la liste de courses",
     "acceptedList": "La liste a été ajoutée à vos listes de courses",
     "viewerCannotEditList": "Cette liste est partagée avec vous en lecture seule",
-    "kindList": "liste de courses"
+    "kindList": "liste de courses",
+    "sharedBooksCount": {
+      "one": "1 livre partagé",
+      "other": "$n livres partagés"
+    },
+    "sharedListsCount": {
+      "one": "1 liste de courses partagée",
+      "other": "$n listes de courses partagées"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -622,6 +656,7 @@
     "chooseFile": "Choisir un fichier",
     "replaceFile": "Autre fichier",
     "fileTooLarge": "Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.",
+    "textTooLong": "Le texte est trop long — jusqu’à $max caractères.",
     "fileUnsupported": "Seuls les fichiers audio et les PDF peuvent être analysés.",
     "sharedIn": "Depuis $app",
     "addFile": "Ajouter un fichier",
@@ -633,10 +668,15 @@
     "webSearchHint": "Par exemple : shakshuka, cheesecake, kebbé de betterave",
     "urlScrapeDescription": "Collez le lien d’une page de recette, site ou blog. Nous lisons la page, ignorons les publicités et les histoires autour, et n’extrayons que la recette : ingrédients, quantités et étapes. Sur beaucoup de sites, cela n’entame même pas votre quota quotidien.",
     "urlScrapeHint": "https://www.exemple.fr/recette/...",
+    "invalidUrl": "Ce lien n’est pas valide. Collez une adresse complète commençant par http:// ou https://",
     "socialVideoDescription": "Collez le lien d’une vidéo TikTok, Instagram, YouTube ou Facebook. Nous la regardons pour vous, écoutons ce qui est dit, lisons les sous-titres et la description, et en faisons une recette écrite et structurée. Comptez environ une minute.",
     "aiRequestDescription": "Pas de recette, juste une idée ? Décrivez le plat, pour qui il est et ce qui compte pour vous : le modèle écrit une recette complète qui respecte vos préférences alimentaires.",
     "manualDescription": "Écrivez la recette vous-même, directement dans l’éditeur structuré : nom, ingrédients avec quantités et unités, étapes. Sans IA, sans attente. Idéal pour la recette de grand-mère que vous connaissez par cœur.",
-    "fileDescription": "Choisissez un fichier audio où quelqu’un lit ou raconte la recette, un message vocal WhatsApp ou un PDF de recette. Nous transcrivons et lisons tout, puis en extrayons une recette propre. Plusieurs fichiers peuvent être joints : ils sont analysés ensemble comme une seule recette."
+    "fileDescription": "Choisissez un fichier audio où quelqu’un lit ou raconte la recette, un message vocal WhatsApp ou un PDF de recette. Nous transcrivons et lisons tout, puis en extrayons une recette propre. Plusieurs fichiers peuvent être joints : ils sont analysés ensemble comme une seule recette.",
+    "saveFailed": "Impossible d'enregistrer la recette. Réessayez.",
+    "recordingTag": "Enregistrement",
+    "sizeKb": "$n Ko",
+    "sizeMb": "$n Mo"
   },
   "mealPlanner": {
     "title": "Planification des repas",
@@ -752,6 +792,8 @@
     "scanning": "Lecture du ticket…",
     "pagesCount": "$count photos",
     "scanFailed": "Impossible de lire le ticket. Essayez une photo plus nette ou un PDF.",
+    "deleteFailed": "Suppression impossible. Vérifiez la connexion et réessayez.",
+    "renameFailed": "Impossible de renommer le magasin. Vérifiez la connexion et réessayez.",
     "reviewTitle": "Ce qui a été lu",
     "reviewSubtitle": "Corrigez les noms et les prix avant d’enregistrer",
     "store": "Magasin",
@@ -772,6 +814,9 @@
     "save": "Enregistrer les prix",
     "saved": "$count prix enregistrés",
     "savedShared": "$count prix enregistrés et partagés",
+    "savedShareQuota": "$count prix enregistrés. Vous avez atteint la limite de partage du jour, ils n'ont donc pas été partagés",
+    "savedShareFailed": "$count prix enregistrés. Le partage avec la communauté a échoué",
+    "pdfTooLarge": "Ce PDF est trop volumineux. La limite est de 10 Mo.",
     "nothingToSave": "Aucun produit à enregistrer",
     "estimated": "Estimation d’après vos données",
     "estimatedTotal": "Coût estimé",
@@ -885,6 +930,7 @@
     "webSearchHint": "Que chercher ? ex. kubbeh à la betterave",
     "webSearchEmpty": "Aucune image trouvée, essayez d’autres mots",
     "webSearchFailed": "La recherche a échoué, réessayez",
+    "webSearchQuota": "Vous avez atteint la limite de recherches d'images pour aujourd'hui. Réessayez demain",
     "webSearchUnavailable": "La recherche d’images n’est pas disponible pour le moment",
     "webSearchEnd": "Ce sont tous les résultats",
     "webSearchDownloadFailed": "Impossible de télécharger cette image, essayez-en une autre"
@@ -907,8 +953,14 @@
   },
   "ads": {
     "badge": "Publicité",
-    "freeViewsLeft": "Il vous reste $count recettes gratuites aujourd'hui",
-    "rewardedViewsLeft": "Il reste $count ouvertures avec une courte vidéo aujourd'hui",
+    "freeViewsLeft(param=count)": {
+      "one": "Il vous reste $count recette gratuite aujourd'hui",
+      "other": "Il vous reste $count recettes gratuites aujourd'hui"
+    },
+    "rewardedViewsLeft(param=count)": {
+      "one": "Il reste $count ouverture avec une courte vidéo aujourd'hui",
+      "other": "Il reste $count ouvertures avec une courte vidéo aujourd'hui"
+    },
     "sharedQuotaReached": "Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !",
     "unlockRecipeTitle": "Débloquer une recette partagée",
     "unlockRecipeMessage": "Regardez une courte vidéo pour débloquer cette recette ($count restantes aujourd'hui)",
@@ -998,7 +1050,15 @@
     "switchInherited": "Votre formule vient de votre foyer. Seule la personne qui paie le foyer peut la changer.",
     "currentPlan": "Votre formule",
     "switchTo": "Changer pour $price",
-    "switched": "Formule modifiée"
+    "switched": "Formule modifiée",
+    "webRow": "Passer à Premium ou gérer sur le site",
+    "webRowHint": "Carte, Apple Pay ou Google Pay, sans commission de store",
+    "webManagedTitle": "Votre abonnement a été acheté sur le site",
+    "webManagedBody": "Changer de formule, annuler ou modifier le moyen de paiement se fait depuis votre compte sur le site.",
+    "otherStoreBody": "Votre forfait a été acheté dans l'autre boutique d'applications (App Store ou Google Play). Le changement ou la résiliation se fait là-bas.",
+    "paymentPending": "Votre paiement est en attente. Premium s'activera tout seul une fois validé, inutile d'acheter à nouveau.",
+    "webOpen": "Ouvrir le site",
+    "webLinkFailed": "Impossible d’ouvrir le site. Réessayez."
   },
   "walkthrough": {
     "title": "Guide",
@@ -1171,6 +1231,7 @@
     "bug": "Bug",
     "suggestion": "Suggestion",
     "closedNotice": "L'équipe a clos cette conversation. Vous pouvez la lire mais plus y écrire ; ouvrez-en une nouvelle pour un autre sujet.",
+    "threadFull": "Cette conversation est pleine. Ouvrez-en une nouvelle pour continuer à écrire.",
     "closedConversations": "Conversations closes ($n)",
     "noOpenConversations": "Aucune conversation ouverte",
     "closedTag": "Close"
@@ -1354,7 +1415,9 @@
     "grantYear": "Un an",
     "grantRange": "Dates exactes",
     "grantedUntil": "Premium accordé jusqu'au $date",
-    "grantStarts": "Commence le $date"
+    "grantStarts": "Commence le $date",
+    "cappedAccounts": "Seuls les $count premiers comptes sont affichés",
+    "cappedEvents": "Seuls les $count premiers événements d'achat sont affichés"
   },
   "assistant": {
     "title": "Shefi",
@@ -1529,7 +1592,9 @@
     },
     "listening": "J’écoute…",
     "stop": "Arrêter",
-    "cancelled": "Annulé."
+    "cancelled": "Annulé.",
+    "toggleFailed": "Impossible de mettre à jour la liste. Réessayez.",
+    "roundsExhausted": "Je n’ai pas pu terminer en un seul tour. Essayez de demander par étapes plus petites."
   },
   "shareCode": {
     "title": "Code et lien",
@@ -1557,6 +1622,7 @@
     "usedUp": "Ce code a été épuisé.",
     "self": "C'est votre propre code.",
     "gone": "Ce que ce code partageait n'existe plus.",
+    "tooManyRecipes": "Ce partage contient trop de recettes pour être rejoint d'un coup. Demandez au propriétaire de le diviser.",
     "failed": "Impossible de rejoindre. Réessayez.",
     "messageText": "$name a partagé « $title » avec vous sur EasyPlate. Code : $code\n$link",
     "revoke": "Annuler le code",
@@ -1582,7 +1648,10 @@
     "owner": "Propriétaire",
     "you": "Vous",
     "invite": "Inviter un membre",
-    "inviteExplain": "Toute personne ayant ce code rejoint le compte partagé. $free places restantes.",
+    "inviteExplain(param=free)": {
+      "one": "Toute personne ayant ce code rejoint le compte partagé. $free place restante.",
+      "other": "Toute personne ayant ce code rejoint le compte partagé. $free places restantes."
+    },
     "noSeats": "Toutes les places sont prises.",
     "remove": "Retirer",
     "removeConfirm": "Retirer $name du compte partagé ? Il perd l’accès et Premium.",
@@ -1711,7 +1780,8 @@
     "shefiLauncher": "Icône Shefi",
     "whatsNew": "Nouveautés",
     "supportChat": "Chat support",
-    "storeReview": "Invitation à noter l’app"
+    "storeReview": "Invitation à noter l’app",
+    "webCheckout": "Achat sur le site"
   },
   "wakeWord": {
     "title": "Hé Shefi",
@@ -1740,6 +1810,7 @@
     "privacyIos": "La reconnaissance se fait sur l'appareil quand c'est possible, sinon via le service vocal d'Apple. EasyPlate n'enregistre ni ne conserve aucun son.",
     "permissionTitle": "Micro nécessaire",
     "permissionDenied": "Pour entendre « Hé Shefi », l'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).",
+    "toggleFailed": "Impossible de modifier « Hé Shefi » pour le moment. Réessayez.",
     "openSettings": "Ouvrir les réglages",
     "notificationTitle": "Shefi écoute",
     "notificationBody": "Dites « Hé Shefi » pour commencer une conversation",

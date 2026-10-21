@@ -52,7 +52,8 @@ class SessionGatePage extends StatelessWidget {
     final locale = LocaleSettings.currentLocale.languageCode;
     final local = at.toLocal();
     return t.auth.sessionRequestTakeover(
-      when: '${DateFormat.MMMd(locale).format(local)} ${DateFormat.Hm(locale).format(local)}',
+      when:
+          '${DateFormat.MMMd(locale).format(local)} ${DateFormat.Hm(locale).format(local)}',
     );
   }
 
@@ -194,10 +195,7 @@ class SessionGatePage extends StatelessWidget {
                     label: other ? t.auth.signOut : t.auth.signIn,
                     icon: Icons.logout_rounded,
                     expanded: true,
-                    onPressed: () => AppDialog.busy(
-                      context,
-                      context.read<AuthRepository>().signOut,
-                    ),
+                    onPressed: () => _signOut(context),
                   ),
                 ],
               ),
@@ -206,5 +204,19 @@ class SessionGatePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// A sign-out that throws (offline release of the session) says so rather
+/// than ending as an uncaught error with nothing on screen.
+Future<void> _signOut(BuildContext context) async {
+  final auth = context.read<AuthRepository>();
+  try {
+    await AppDialog.busy(context, auth.signOut);
+  } catch (e) {
+    debugPrint('Sign-out failed: $e');
+    if (context.mounted) {
+      AppDialog.error(message: t.auth.errorUnknown).show(context);
+    }
   }
 }

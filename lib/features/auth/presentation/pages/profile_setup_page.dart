@@ -20,6 +20,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/link_apple_usecase.dart';
 import '../../domain/usecases/link_google_usecase.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/sign_out_action.dart';
 import '../widgets/apple_sign_in.dart';
 import '../widgets/link_credential_sheets.dart';
 import '../../../../core/widgets/app_dialog.dart';
@@ -64,7 +65,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   Future<void> _pickPhoto() async {
     final result = await showImageSourceSheet(
       context,
-      hasImage: _photoFileName != null,
+      hasImage: _photoFileName != null || _photoUrl != null,
     );
     if (result == null || !mounted) return;
     setState(() {
@@ -143,6 +144,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   /// the router without one, and the link used to succeed and then throw
   /// `Provider<AuthBloc> not found` from this very line.
   Future<void> _refreshIdentity() async {
+    // Reached after the provider's sheet: the page may be gone by now.
+    if (!mounted) return;
     final user = context.read<AuthRepository>().currentUser;
     if (user != null) {
       await AppDialog.busy(context, () => _session.refreshUser(user));
@@ -212,7 +215,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             trailingIcon: widget.isEditing ? null : Icons.logout_rounded,
             onTrailingTap: widget.isEditing || _busy
                 ? null
-                : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
+                : () => signOutWithFeedback(context, context.read<AuthBloc>()),
           ),
           body: SafeArea(
             child: Column(
@@ -378,7 +381,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             )
           else if (verified)
             Padding(
-              padding: const EdgeInsets.only(left: AppSpacing.xs),
+              padding: const EdgeInsetsDirectional.only(start: AppSpacing.xs),
               child: Row(
                 children: [
                   Icon(

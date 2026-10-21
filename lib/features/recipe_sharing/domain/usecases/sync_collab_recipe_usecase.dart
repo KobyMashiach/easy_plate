@@ -20,16 +20,31 @@ class SyncCollabRecipeUseCase {
     final collabId = local.collabId;
     if (collabId == null) return local;
 
-    final collab = await sharing.getCollab(collabId);
+    CollabRecipeEntity? collab;
+    try {
+      collab = await sharing.getCollab(collabId);
+    } catch (e) {
+      // Removed from the share by the owner: the rules refuse the read,
+      // which for this copy means the same as a deleted document. Offline
+      // is a different failure and still thrown (the caller keeps the copy).
+      if (!'$e'.contains('permission-denied')) rethrow;
+      collab = null;
+    }
+    // The fetch took a while: merge onto the copy as stored now, so a save
+    // made meanwhile (a translation, a new community post id) is kept, and
+    // a copy deleted meanwhile is not brought back.
+    final current = await recipes.getRecipeById(local.id);
+    if (current == null) return local;
+
     if (collab == null) {
-      final orphaned = orphan(local);
+      final orphaned = orphan(current);
       await recipes.saveRecipe(orphaned);
       return orphaned;
     }
 
     final (:recipe, :keptTranslation) = keepTranslation(
-      local,
-      merged(local, collab, uid: uid),
+      current,
+      merged(current, collab, uid: uid),
     );
     await recipes.saveRecipe(recipe, stampLanguage: !keptTranslation);
     return recipe;
@@ -54,6 +69,11 @@ class SyncCollabRecipeUseCase {
     imageStoragePath: local.imageStoragePath,
     savedFromSharedId: local.savedFromSharedId,
     pendingAnalysis: local.pendingAnalysis,
+    servings: local.servings,
+    nutrition: local.nutrition,
+    sharedRecipeId: local.sharedRecipeId,
+    contentLang: local.contentLang,
+    contentVersion: local.contentVersion,
     createdAt: local.createdAt,
   );
 
@@ -87,6 +107,15 @@ class SyncCollabRecipeUseCase {
         : local.imageFileName,
     imageStoragePath: collab.recipe.imageStoragePath ?? local.imageStoragePath,
     savedFromSharedId: local.savedFromSharedId,
+    // Part of the shared document too; left out, every refresh wiped the
+    // servings and the macros off the local copy — the owner's included.
+    servings: collab.recipe.servings,
+    nutrition: collab.recipe.nutrition,
+    // What belongs to this copy alone: its community post, and the
+    // language stamp keepTranslation() decides about.
+    sharedRecipeId: local.sharedRecipeId,
+    contentLang: local.contentLang,
+    contentVersion: local.contentVersion,
     collabId: collab.id,
     // The role the document says, not the one cached at accept time — the
     // owner may have changed it since.

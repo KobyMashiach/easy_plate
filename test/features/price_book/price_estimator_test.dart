@@ -67,4 +67,75 @@ void main() {
     expect(s.pricedItems, 2);
     expect(s.unpricedItems, 1);
   });
+
+  group('currencies', currencyTests);
+}
+
+PriceRecordEntity _foreign(String name, double price, String currency) =>
+    PriceRecordEntity(
+      id: '$name-$currency',
+      name: name,
+      normalizedName: normalizeProductName(name),
+      unitPrice: price,
+      quantity: 1,
+      currency: currency,
+      store: null,
+      purchasedAt: DateTime(2026, 9, 20),
+      receiptId: 'r-$currency',
+    );
+
+void currencyTests() {
+  final mixed = [
+    _r('חלב 3% תנובה', 6.9, day: 1),
+    _r('לחם אחיד', 8.0),
+    // A newer, pricier record of the same milk — in dollars.
+    _foreign('חלב 3% תנובה', 4.5, 'USD'),
+  ];
+
+  test('a record in the minority currency never becomes the estimate', () {
+    final e = PriceEstimator.estimate('חלב', mixed);
+    expect(e.currency, 'ILS');
+    expect(e.unitPrice, 6.9);
+    expect(e.sampleCount, 1);
+  });
+
+  test('the majority currency wins, shekels on a tie or an empty book', () {
+    expect(PriceEstimator.dominantCurrency(mixed), 'ILS');
+    expect(PriceEstimator.dominantCurrency(const []), 'ILS');
+    expect(
+      PriceEstimator.dominantCurrency([
+        _foreign('milk', 1, 'USD'),
+        _r('חלב', 6.9),
+      ]),
+      'ILS',
+    );
+    expect(
+      PriceEstimator.dominantCurrency([
+        _foreign('milk', 1, 'USD'),
+        _foreign('bread', 2, 'USD'),
+        _r('חלב', 6.9),
+      ]),
+      'USD',
+    );
+  });
+
+  test('the summary does not add dollars to shekels', () {
+    const ils = PriceEstimate(unitPrice: 10, basis: PriceBasis.personal);
+    const usd = PriceEstimate(
+      unitPrice: 3,
+      basis: PriceBasis.personal,
+      currency: 'USD',
+    );
+    final s = GroceryCostSummary.of([
+      (estimate: ils, multiplier: 1),
+      (estimate: ils, multiplier: 2),
+      (estimate: usd, multiplier: 1),
+      (estimate: PriceEstimate.none, multiplier: 1),
+    ]);
+    expect(s.currency, 'ILS');
+    expect(s.knownTotal, 30);
+    expect(s.pricedItems, 2);
+    // The foreign line and the unknown one are both "not in this total".
+    expect(s.unpricedItems, 2);
+  });
 }

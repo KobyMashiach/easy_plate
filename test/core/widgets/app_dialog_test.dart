@@ -131,6 +131,29 @@ void main() {
       expect(find.text('הודעה 2'), findsOneWidget);
     });
 
+    testWidgets('a replacement gets its own full time on screen', (
+      tester,
+    ) async {
+      var n = 0;
+      await tester.pumpWidget(
+        host(
+          onTap: (context) async {
+            AppDialog.info(message: 'הודעה ${++n}').notify(context);
+          },
+        ),
+      );
+
+      await tester.tap(find.text('open'));
+      await tester.pump(const Duration(seconds: 2));
+      await tester.tap(find.text('open'));
+      await tester.pump();
+      // Past the first notice's end, well inside the second's.
+      await tester.pump(const Duration(milliseconds: 1500));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('הודעה 2'), findsOneWidget);
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+    });
+
     testWidgets('a tap dismisses it early', (tester) async {
       await tester.pumpWidget(
         host(

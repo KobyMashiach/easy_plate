@@ -35,10 +35,24 @@ export async function mount({ view, actions }) {
   const count = h("span.muted.small");
   view.append(h("p.small.muted", t("personas.intro")), h("div.toolbar", count), list);
 
+  // A Firestore failure shows the console's error card instead of a spinner
+  // for ever; a newer render (after an edit) wins over a slower older one.
+  let seq = 0;
   const render = async () => {
+    const mine = ++seq;
     clear(list);
     list.append(spinner());
-    const rows = await personas({ fresh: true });
+    let rows;
+    try {
+      rows = await personas({ fresh: true });
+    } catch (err) {
+      if (mine !== seq) return;
+      clear(list);
+      list.append(h("div.card.error", err.message));
+      console.error(err);
+      return;
+    }
+    if (mine !== seq) return;
     clear(list);
     count.textContent = t("personas.count", { n: fmtNumber(rows.length) });
     if (!rows.length) { list.append(empty(t("personas.none"))); return; }
@@ -102,11 +116,13 @@ export async function mount({ view, actions }) {
       } catch (e) { clear(results); toastError(e); }
     }));
     const createBtn = button(t("personas.createSelected", { n: 0 }), { kind: "primary", hidden: true });
-    const close = modal({ title: t("personas.suggest"), wide: true, body: h("div.stack", h("div.row", field(t("personas.suggestCount"), n), field(t("common.language"), lang), ask), results), actions: [(c) => button(t("common.cancel"), { onclick: c }), () => createBtn] });
+    let closedSuggest = false;
+    const close = modal({ title: t("personas.suggest"), wide: true, onClose: () => { closedSuggest = true; }, body: h("div.stack", h("div.row", field(t("personas.suggestCount"), n), field(t("common.language"), lang), ask), results), actions: [(c) => button(t("common.cancel"), { onclick: c }), () => createBtn] });
     createBtn.addEventListener("click", busy(createBtn, async () => {
       const chosen = people.filter((p) => p.selected);
       let made = 0;
       for (const p of chosen) {
+        if (closedSuggest) break;
         try { await call("persona.create", { name: p.name, gender: p.gender, photoUrl: p.photoUrl }); made++; } catch (e) { toastError(e); }
       }
       invalidatePersonas();
@@ -123,10 +139,12 @@ export async function mount({ view, actions }) {
     if (!rows.length) return;
     const progress = h("p.small.muted");
     let withContent = false;
+    let closed = false;
     const run = async (c, flag) => {
       withContent = flag;
       let done = 0;
       for (let i = 0; i < rows.length; i++) {
+        if (closed) break;
         progress.textContent = t("personas.deleting", { i: i + 1, n: rows.length });
         try { await call("persona.delete", { uid: rows[i].uid, withContent }); done++; } catch (e) { toastError(e); }
       }
@@ -135,7 +153,7 @@ export async function mount({ view, actions }) {
       c();
       render();
     };
-    modal({ title: t("personas.deleteAllTitle", { n: rows.length }), body: h("div.stack", h("p.small.warn", t("common.irreversible")), progress), actions: [
+    modal({ title: t("personas.deleteAllTitle", { n: rows.length }), onClose: () => { closed = true; }, body: h("div.stack", h("p.small.warn", t("common.irreversible")), progress), actions: [
       (c) => button(t("common.cancel"), { onclick: c }),
       (c) => { const b = button(t("personas.deleteKeep"), { kind: "danger" }); b.addEventListener("click", busy(b, () => run(c, false))); return b; },
       (c) => { const b = button(t("personas.deleteWithContent"), { kind: "danger" }); b.addEventListener("click", busy(b, () => run(c, true))); return b; },

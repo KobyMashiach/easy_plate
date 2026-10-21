@@ -2,6 +2,7 @@
 // that link to them. Used by build.mjs; nothing here runs on its own.
 
 import { TOPICS, SLUGS, UI } from './topics.mjs';
+import { BRAND_ALT } from './site.config.mjs';
 
 // Short labels for cards, breadcrumbs and footer links.
 export const LABELS = {
@@ -194,9 +195,9 @@ export function renderGuide(ctx) {
       { '@type': 'Article', '@id': `${url}#article`, headline: t.h1, description: t.description, inLanguage: lang, mainEntityOfPage: { '@id': url }, image: [og, ...screens.map(s => site + s)], author: { '@id': `${site}/#organization` }, publisher: { '@id': `${site}/#organization` }, datePublished: '2026-10-06', dateModified: lastmod, about: { '@id': `${site}/#app` }, wordCount: words },
       { '@type': 'HowTo', '@id': `${url}#how`, name: t.h1, inLanguage: lang, step: t.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.t, text: s.d })) },
       { '@type': 'FAQPage', '@id': `${url}#faq`, inLanguage: lang, mainEntity: t.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
-      { '@type': 'Organization', '@id': `${site}/#organization`, name: 'EasyPlate', legalName: 'KH Easy Dev', url: site, logo: { '@type': 'ImageObject', url: `${site}/icon-192.png`, width: 192, height: 192 }, email: support },
-      { '@type': 'WebSite', '@id': `${site}/#website`, url: site, name: 'EasyPlate', inLanguage: langs },
-      { '@type': ['SoftwareApplication', 'MobileApplication'], '@id': `${site}/#app`, name: 'EasyPlate', url: site, operatingSystem: 'iOS, Android', applicationCategory: 'LifestyleApplication', installUrl: [appStore, play] },
+      { '@type': 'Organization', '@id': `${site}/#organization`, name: 'EasyPlate', alternateName: BRAND_ALT, legalName: 'KH Easy Dev', url: site, logo: { '@type': 'ImageObject', url: `${site}/icon-192.png`, width: 192, height: 192 }, email: support },
+      { '@type': 'WebSite', '@id': `${site}/#website`, url: site, name: 'EasyPlate', alternateName: BRAND_ALT, inLanguage: langs },
+      { '@type': ['SoftwareApplication', 'MobileApplication'], '@id': `${site}/#app`, name: 'EasyPlate', alternateName: BRAND_ALT, url: site, operatingSystem: 'iOS, Android', applicationCategory: 'LifestyleApplication', installUrl: [appStore, play] },
     ],
   };
 

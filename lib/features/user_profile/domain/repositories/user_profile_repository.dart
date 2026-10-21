@@ -30,7 +30,12 @@ abstract class UserProfileRepository {
   /// Display names and photos for [uids], read live rather than from a copy
   /// stored at post time — so renaming shows up everywhere on the next read.
   /// Uids with no public profile are simply absent from the result.
-  Future<Map<String, PublicProfileEntity>> getPublicProfiles(Set<String> uids);
+  /// [refresh] reads past the short-lived cache (pull to refresh), so a
+  /// rename shows up at once; a read already in flight is joined.
+  Future<Map<String, PublicProfileEntity>> getPublicProfiles(
+    Set<String> uids, {
+    bool refresh = false,
+  });
 
   /// Writes only the public half. Backfills accounts created before the
   /// public document existed, so their old posts stop showing a stale name.

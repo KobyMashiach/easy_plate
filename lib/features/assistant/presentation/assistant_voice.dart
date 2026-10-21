@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -5,10 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../../../core/constants/api_config.dart';
+import '../../../core/errors/app_exception.dart';
 import '../../../core/network/ai_auth_header.dart';
+import '../../../core/network/http_calls.dart';
 import '../../../core/services/firebase_service.dart';
 import '../../../core/utils/i18n/strings.g.dart';
 import '../domain/assistant_text.dart';
@@ -38,7 +42,14 @@ class AssistantVoice {
   /// request that was still downloading.
   int _utterance = 0;
 
+  /// Set once the speak function refused for the day's allowance: every
+  /// later reply in this conversation goes straight to the device voice
+  /// instead of spending a round trip on a refusal that stands until
+  /// midnight.
+  bool _cloudVoiceSpent = false;
+
   bool _sttReady = false;
+  bool _disposed = false;
   bool _ttsReady = false;
 
   /// True while the microphone is open.
@@ -71,24 +82,46 @@ class AssistantVoice {
       ttsLocale(code).replaceAll('-', '_');
 
   /// Asks for the microphone and speech permissions on first use.
+  ///
+  /// The recognizer is a process-wide singleton whose `initialize` only
+  /// registers callbacks the first time it succeeds, so a later chat's
+  /// voice would never hear "done" and stay on "listening". The callbacks
+  /// are re-pointed at this instance on every call instead.
   Future<bool> prepare() async {
+    _bindRecognizer();
     if (_sttReady) return available ?? false;
     try {
       available = await _stt.initialize(
-        onStatus: (status) {
-          // The recognizer stops on its own after silence or a time limit.
-          if (status == 'done' || status == 'notListening') {
-            listening.value = false;
-          }
-        },
-        onError: (_) => listening.value = false,
+        onStatus: _onSttStatus,
+        onError: _onSttError,
       );
     } catch (e) {
       debugPrint('Speech recognition unavailable: $e');
       available = false;
     }
+    // A first initialize on another instance returned early above without
+    // taking these; bind again so this one owns them.
+    _bindRecognizer();
     _sttReady = true;
     return available ?? false;
+  }
+
+  void _bindRecognizer() {
+    _stt.statusListener = _onSttStatus;
+    _stt.errorListener = _onSttError;
+  }
+
+  /// The recognizer stops on its own after silence or a time limit.
+  void _onSttStatus(String status) {
+    if (_disposed) return;
+    if (status == 'done' || status == 'notListening') {
+      listening.value = false;
+    }
+  }
+
+  void _onSttError(SpeechRecognitionError _) {
+    if (_disposed) return;
+    listening.value = false;
   }
 
   /// Opens the microphone. [onText] gets every partial transcript as the
@@ -158,7 +191,11 @@ class AssistantVoice {
     final utterance = ++_utterance;
     await stopSpeaking(keepTurn: true);
     speaking.value = true;
-    if (cloudVoiceEnabled && await _speakCloud(trimmed, utterance)) return;
+    if (cloudVoiceEnabled &&
+        !_cloudVoiceSpent &&
+        await _speakCloud(trimmed, utterance)) {
+      return;
+    }
     if (utterance != _utterance) return;
     await _speakDevice(trimmed);
   }
@@ -192,10 +229,34 @@ class AssistantVoice {
       if (utterance == _utterance) speaking.value = false;
       file.delete().catchError((_) => file);
       return true;
+    } on DioException catch (e) {
+      if (isQuotaRefusal(e.response?.statusCode, e.response?.data)) {
+        _cloudVoiceSpent = true;
+      }
+      debugPrint('Cloud voice failed, device voice instead: $e');
+      return false;
     } catch (e) {
       debugPrint('Cloud voice failed, device voice instead: $e');
       return false;
     }
+  }
+
+  /// Whether a speak response is the daily-allowance refusal (429 with a
+  /// `quota` object) rather than a passing capacity error. The body comes
+  /// back as bytes, since that is what a successful call returns.
+  @visibleForTesting
+  static bool isQuotaRefusal(int? statusCode, Object? body) {
+    if (statusCode != 429) return false;
+    Object? decoded = body;
+    if (body is List<int>) {
+      try {
+        decoded = jsonDecode(utf8.decode(body));
+      } catch (_) {
+        return false;
+      }
+    }
+    return HttpCalls.errorTypeFor(statusCode, decoded) ==
+        AppErrorType.quotaExceeded;
   }
 
   Future<void> _speakDevice(String text) async {
@@ -224,6 +285,7 @@ class AssistantVoice {
   }
 
   Future<void> dispose() async {
+    _disposed = true;
     await stopListening();
     await stopSpeaking();
     await _player.dispose();

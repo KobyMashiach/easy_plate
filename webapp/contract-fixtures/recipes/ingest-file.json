@@ -1,0 +1,54 @@
+{
+  "id": "6f1d2c3b-4a5e-4f60-8a7b-1c2d3e4f5a64",
+  "title": "עוגת שמרים של סבתא",
+  "prepTimeMinutes": null,
+  "cookTimeMinutes": 40,
+  "ingredients": [
+    {
+      "name": "קמח",
+      "amount": 1,
+      "unit": "kilogram"
+    },
+    {
+      "name": "שמרים",
+      "amount": 25,
+      "unit": "gram"
+    },
+    {
+      "name": "סוכר",
+      "amount": 1,
+      "unit": "cup"
+    }
+  ],
+  "steps": [
+    "מערבבים",
+    "מתפיחים שעה",
+    "אופים 40 דקות"
+  ],
+  "dietaryTags": [
+    "allergy"
+  ],
+  "sourceChannel": "file",
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T09:30:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [
+    "gluten"
+  ],
+  "mayContain": [],
+  "servings": 12,
+  "nutrition": {
+    "calories": 310,
+    "proteinGrams": 7,
+    "carbsGrams": 55,
+    "fatGrams": 6
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

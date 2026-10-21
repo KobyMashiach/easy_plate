@@ -61,7 +61,7 @@ extension SharedRecipesEventPatterns on SharedRecipesEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _Share value)?  share,TResult Function( _ToggleLike value)?  toggleLike,TResult Function( _UpdateShared value)?  updateShared,TResult Function( _Unshare value)?  unshare,TResult Function( _Import value)?  importToMyRecipes,TResult Function( _SavedChanged value)?  savedChanged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _Refresh value)?  refresh,TResult Function( _Share value)?  share,TResult Function( _ToggleLike value)?  toggleLike,TResult Function( _UpdateShared value)?  updateShared,TResult Function( _Unshare value)?  unshare,TResult Function( _Import value)?  importToMyRecipes,TResult Function( _SavedChanged value)?  savedChanged,TResult Function( _ScopeOpened value)?  scopeOpened,TResult Function( _DismissNotice value)?  dismissNotice,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -72,7 +72,9 @@ return toggleLike(_that);case _UpdateShared() when updateShared != null:
 return updateShared(_that);case _Unshare() when unshare != null:
 return unshare(_that);case _Import() when importToMyRecipes != null:
 return importToMyRecipes(_that);case _SavedChanged() when savedChanged != null:
-return savedChanged(_that);case _:
+return savedChanged(_that);case _ScopeOpened() when scopeOpened != null:
+return scopeOpened(_that);case _DismissNotice() when dismissNotice != null:
+return dismissNotice(_that);case _:
   return orElse();
 
 }
@@ -90,7 +92,7 @@ return savedChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _Share value)  share,required TResult Function( _ToggleLike value)  toggleLike,required TResult Function( _UpdateShared value)  updateShared,required TResult Function( _Unshare value)  unshare,required TResult Function( _Import value)  importToMyRecipes,required TResult Function( _SavedChanged value)  savedChanged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _Refresh value)  refresh,required TResult Function( _Share value)  share,required TResult Function( _ToggleLike value)  toggleLike,required TResult Function( _UpdateShared value)  updateShared,required TResult Function( _Unshare value)  unshare,required TResult Function( _Import value)  importToMyRecipes,required TResult Function( _SavedChanged value)  savedChanged,required TResult Function( _ScopeOpened value)  scopeOpened,required TResult Function( _DismissNotice value)  dismissNotice,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -101,7 +103,9 @@ return toggleLike(_that);case _UpdateShared():
 return updateShared(_that);case _Unshare():
 return unshare(_that);case _Import():
 return importToMyRecipes(_that);case _SavedChanged():
-return savedChanged(_that);}
+return savedChanged(_that);case _ScopeOpened():
+return scopeOpened(_that);case _DismissNotice():
+return dismissNotice(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -115,7 +119,7 @@ return savedChanged(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _Share value)?  share,TResult? Function( _ToggleLike value)?  toggleLike,TResult? Function( _UpdateShared value)?  updateShared,TResult? Function( _Unshare value)?  unshare,TResult? Function( _Import value)?  importToMyRecipes,TResult? Function( _SavedChanged value)?  savedChanged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _Refresh value)?  refresh,TResult? Function( _Share value)?  share,TResult? Function( _ToggleLike value)?  toggleLike,TResult? Function( _UpdateShared value)?  updateShared,TResult? Function( _Unshare value)?  unshare,TResult? Function( _Import value)?  importToMyRecipes,TResult? Function( _SavedChanged value)?  savedChanged,TResult? Function( _ScopeOpened value)?  scopeOpened,TResult? Function( _DismissNotice value)?  dismissNotice,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -126,7 +130,9 @@ return toggleLike(_that);case _UpdateShared() when updateShared != null:
 return updateShared(_that);case _Unshare() when unshare != null:
 return unshare(_that);case _Import() when importToMyRecipes != null:
 return importToMyRecipes(_that);case _SavedChanged() when savedChanged != null:
-return savedChanged(_that);case _:
+return savedChanged(_that);case _ScopeOpened() when scopeOpened != null:
+return scopeOpened(_that);case _DismissNotice() when dismissNotice != null:
+return dismissNotice(_that);case _:
   return null;
 
 }
@@ -143,7 +149,7 @@ return savedChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( RecipeEntity recipe)?  share,TResult Function( String id)?  toggleLike,TResult Function( String id,  RecipeEntity recipe)?  updateShared,TResult Function( String id)?  unshare,TResult Function( SharedRecipeEntity shared)?  importToMyRecipes,TResult Function( Set<String> savedIds)?  savedChanged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( Completer<void> done)?  refresh,TResult Function( RecipeEntity recipe)?  share,TResult Function( String id)?  toggleLike,TResult Function( String id,  RecipeEntity recipe)?  updateShared,TResult Function( String id)?  unshare,TResult Function( SharedRecipeEntity shared)?  importToMyRecipes,TResult Function( Set<String> savedIds)?  savedChanged,TResult Function( SharedFeedScope scope)?  scopeOpened,TResult Function()?  dismissNotice,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
@@ -153,7 +159,9 @@ return toggleLike(_that.id);case _UpdateShared() when updateShared != null:
 return updateShared(_that.id,_that.recipe);case _Unshare() when unshare != null:
 return unshare(_that.id);case _Import() when importToMyRecipes != null:
 return importToMyRecipes(_that.shared);case _SavedChanged() when savedChanged != null:
-return savedChanged(_that.savedIds);case _:
+return savedChanged(_that.savedIds);case _ScopeOpened() when scopeOpened != null:
+return scopeOpened(_that.scope);case _DismissNotice() when dismissNotice != null:
+return dismissNotice();case _:
   return orElse();
 
 }
@@ -171,7 +179,7 @@ return savedChanged(_that.savedIds);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( RecipeEntity recipe)  share,required TResult Function( String id)  toggleLike,required TResult Function( String id,  RecipeEntity recipe)  updateShared,required TResult Function( String id)  unshare,required TResult Function( SharedRecipeEntity shared)  importToMyRecipes,required TResult Function( Set<String> savedIds)  savedChanged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( Completer<void> done)  refresh,required TResult Function( RecipeEntity recipe)  share,required TResult Function( String id)  toggleLike,required TResult Function( String id,  RecipeEntity recipe)  updateShared,required TResult Function( String id)  unshare,required TResult Function( SharedRecipeEntity shared)  importToMyRecipes,required TResult Function( Set<String> savedIds)  savedChanged,required TResult Function( SharedFeedScope scope)  scopeOpened,required TResult Function()  dismissNotice,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Refresh():
@@ -181,7 +189,9 @@ return toggleLike(_that.id);case _UpdateShared():
 return updateShared(_that.id,_that.recipe);case _Unshare():
 return unshare(_that.id);case _Import():
 return importToMyRecipes(_that.shared);case _SavedChanged():
-return savedChanged(_that.savedIds);}
+return savedChanged(_that.savedIds);case _ScopeOpened():
+return scopeOpened(_that.scope);case _DismissNotice():
+return dismissNotice();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -195,7 +205,7 @@ return savedChanged(_that.savedIds);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( RecipeEntity recipe)?  share,TResult? Function( String id)?  toggleLike,TResult? Function( String id,  RecipeEntity recipe)?  updateShared,TResult? Function( String id)?  unshare,TResult? Function( SharedRecipeEntity shared)?  importToMyRecipes,TResult? Function( Set<String> savedIds)?  savedChanged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( Completer<void> done)?  refresh,TResult? Function( RecipeEntity recipe)?  share,TResult? Function( String id)?  toggleLike,TResult? Function( String id,  RecipeEntity recipe)?  updateShared,TResult? Function( String id)?  unshare,TResult? Function( SharedRecipeEntity shared)?  importToMyRecipes,TResult? Function( Set<String> savedIds)?  savedChanged,TResult? Function( SharedFeedScope scope)?  scopeOpened,TResult? Function()?  dismissNotice,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Refresh() when refresh != null:
@@ -205,7 +215,9 @@ return toggleLike(_that.id);case _UpdateShared() when updateShared != null:
 return updateShared(_that.id,_that.recipe);case _Unshare() when unshare != null:
 return unshare(_that.id);case _Import() when importToMyRecipes != null:
 return importToMyRecipes(_that.shared);case _SavedChanged() when savedChanged != null:
-return savedChanged(_that.savedIds);case _:
+return savedChanged(_that.savedIds);case _ScopeOpened() when scopeOpened != null:
+return scopeOpened(_that.scope);case _DismissNotice() when dismissNotice != null:
+return dismissNotice();case _:
   return null;
 
 }
@@ -764,6 +776,116 @@ as Set<String>,
 }
 
 /// @nodoc
+
+
+class _ScopeOpened with DiagnosticableTreeMixin implements SharedRecipesEvent {
+  const _ScopeOpened(this.scope);
+  
+
+ final  SharedFeedScope scope;
+
+/// Create a copy of SharedRecipesEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ScopeOpenedCopyWith<_ScopeOpened> get copyWith => __$ScopeOpenedCopyWithImpl<_ScopeOpened>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SharedRecipesEvent.scopeOpened'))
+    ..add(DiagnosticsProperty('scope', scope));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ScopeOpened&&(identical(other.scope, scope) || other.scope == scope));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,scope);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'SharedRecipesEvent.scopeOpened(scope: $scope)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ScopeOpenedCopyWith<$Res> implements $SharedRecipesEventCopyWith<$Res> {
+  factory _$ScopeOpenedCopyWith(_ScopeOpened value, $Res Function(_ScopeOpened) _then) = __$ScopeOpenedCopyWithImpl;
+@useResult
+$Res call({
+ SharedFeedScope scope
+});
+
+
+
+
+}
+/// @nodoc
+class __$ScopeOpenedCopyWithImpl<$Res>
+    implements _$ScopeOpenedCopyWith<$Res> {
+  __$ScopeOpenedCopyWithImpl(this._self, this._then);
+
+  final _ScopeOpened _self;
+  final $Res Function(_ScopeOpened) _then;
+
+/// Create a copy of SharedRecipesEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? scope = null,}) {
+  return _then(_ScopeOpened(
+null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
+as SharedFeedScope,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _DismissNotice with DiagnosticableTreeMixin implements SharedRecipesEvent {
+  const _DismissNotice();
+  
+
+
+
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SharedRecipesEvent.dismissNotice'))
+    ;
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DismissNotice);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'SharedRecipesEvent.dismissNotice()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
 mixin _$SharedRecipesState implements DiagnosticableTreeMixin {
 
 
@@ -880,11 +1002,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<SharedRecipeEntity> recipes,  bool imported,  Set<String> savedIds)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<SharedRecipeEntity> recipes,  List<SharedRecipeEntity> older,  bool imported,  Set<String> savedIds,  SharedFeedNotice? notice)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SharedRecipesLoading() when loading != null:
 return loading();case SharedRecipesLoaded() when loaded != null:
-return loaded(_that.recipes,_that.imported,_that.savedIds);case SharedRecipesError() when errorMessage != null:
+return loaded(_that.recipes,_that.older,_that.imported,_that.savedIds,_that.notice);case SharedRecipesError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return orElse();
 
@@ -903,11 +1025,11 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<SharedRecipeEntity> recipes,  bool imported,  Set<String> savedIds)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<SharedRecipeEntity> recipes,  List<SharedRecipeEntity> older,  bool imported,  Set<String> savedIds,  SharedFeedNotice? notice)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case SharedRecipesLoading():
 return loading();case SharedRecipesLoaded():
-return loaded(_that.recipes,_that.imported,_that.savedIds);case SharedRecipesError():
+return loaded(_that.recipes,_that.older,_that.imported,_that.savedIds,_that.notice);case SharedRecipesError():
 return errorMessage(_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -922,11 +1044,11 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<SharedRecipeEntity> recipes,  bool imported,  Set<String> savedIds)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<SharedRecipeEntity> recipes,  List<SharedRecipeEntity> older,  bool imported,  Set<String> savedIds,  SharedFeedNotice? notice)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case SharedRecipesLoading() when loading != null:
 return loading();case SharedRecipesLoaded() when loaded != null:
-return loaded(_that.recipes,_that.imported,_that.savedIds);case SharedRecipesError() when errorMessage != null:
+return loaded(_that.recipes,_that.older,_that.imported,_that.savedIds,_that.notice);case SharedRecipesError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return null;
 
@@ -977,7 +1099,7 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 class SharedRecipesLoaded with DiagnosticableTreeMixin implements SharedRecipesState {
-  const SharedRecipesLoaded(final  List<SharedRecipeEntity> recipes, {this.imported = false, final  Set<String> savedIds = const <String>{}}): _recipes = recipes,_savedIds = savedIds;
+  const SharedRecipesLoaded(final  List<SharedRecipeEntity> recipes, {final  List<SharedRecipeEntity> older = const <SharedRecipeEntity>[], this.imported = false, final  Set<String> savedIds = const <String>{}, this.notice}): _recipes = recipes,_older = older,_savedIds = savedIds;
   
 
  final  List<SharedRecipeEntity> _recipes;
@@ -985,6 +1107,19 @@ class SharedRecipesLoaded with DiagnosticableTreeMixin implements SharedRecipesS
   if (_recipes is EqualUnmodifiableListView) return _recipes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_recipes);
+}
+
+/// The viewer's own and saved posts older than [recipes] — the newest
+/// window — fetched only for the "mine" and "saved" scopes, which show
+/// them alongside; "all" shows [recipes] alone.
+ final  List<SharedRecipeEntity> _older;
+/// The viewer's own and saved posts older than [recipes] — the newest
+/// window — fetched only for the "mine" and "saved" scopes, which show
+/// them alongside; "all" shows [recipes] alone.
+@JsonKey() List<SharedRecipeEntity> get older {
+  if (_older is EqualUnmodifiableListView) return _older;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_older);
 }
 
 @JsonKey() final  bool imported;
@@ -999,6 +1134,10 @@ class SharedRecipesLoaded with DiagnosticableTreeMixin implements SharedRecipesS
   return EqualUnmodifiableSetView(_savedIds);
 }
 
+/// A write of the viewer's own that failed. The feed stays: a share
+/// that did not go through is no reason to replace it with the retry
+/// view.
+ final  SharedFeedNotice? notice;
 
 /// Create a copy of SharedRecipesState
 /// with the given fields replaced by the non-null parameter values.
@@ -1011,21 +1150,21 @@ $SharedRecipesLoadedCopyWith<SharedRecipesLoaded> get copyWith => _$SharedRecipe
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'SharedRecipesState.loaded'))
-    ..add(DiagnosticsProperty('recipes', recipes))..add(DiagnosticsProperty('imported', imported))..add(DiagnosticsProperty('savedIds', savedIds));
+    ..add(DiagnosticsProperty('recipes', recipes))..add(DiagnosticsProperty('older', older))..add(DiagnosticsProperty('imported', imported))..add(DiagnosticsProperty('savedIds', savedIds))..add(DiagnosticsProperty('notice', notice));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SharedRecipesLoaded&&const DeepCollectionEquality().equals(other._recipes, _recipes)&&(identical(other.imported, imported) || other.imported == imported)&&const DeepCollectionEquality().equals(other._savedIds, _savedIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SharedRecipesLoaded&&const DeepCollectionEquality().equals(other._recipes, _recipes)&&const DeepCollectionEquality().equals(other._older, _older)&&(identical(other.imported, imported) || other.imported == imported)&&const DeepCollectionEquality().equals(other._savedIds, _savedIds)&&(identical(other.notice, notice) || other.notice == notice));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes),imported,const DeepCollectionEquality().hash(_savedIds));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_recipes),const DeepCollectionEquality().hash(_older),imported,const DeepCollectionEquality().hash(_savedIds),notice);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'SharedRecipesState.loaded(recipes: $recipes, imported: $imported, savedIds: $savedIds)';
+  return 'SharedRecipesState.loaded(recipes: $recipes, older: $older, imported: $imported, savedIds: $savedIds, notice: $notice)';
 }
 
 
@@ -1036,7 +1175,7 @@ abstract mixin class $SharedRecipesLoadedCopyWith<$Res> implements $SharedRecipe
   factory $SharedRecipesLoadedCopyWith(SharedRecipesLoaded value, $Res Function(SharedRecipesLoaded) _then) = _$SharedRecipesLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<SharedRecipeEntity> recipes, bool imported, Set<String> savedIds
+ List<SharedRecipeEntity> recipes, List<SharedRecipeEntity> older, bool imported, Set<String> savedIds, SharedFeedNotice? notice
 });
 
 
@@ -1053,12 +1192,14 @@ class _$SharedRecipesLoadedCopyWithImpl<$Res>
 
 /// Create a copy of SharedRecipesState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? recipes = null,Object? imported = null,Object? savedIds = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? recipes = null,Object? older = null,Object? imported = null,Object? savedIds = null,Object? notice = freezed,}) {
   return _then(SharedRecipesLoaded(
 null == recipes ? _self._recipes : recipes // ignore: cast_nullable_to_non_nullable
+as List<SharedRecipeEntity>,older: null == older ? _self._older : older // ignore: cast_nullable_to_non_nullable
 as List<SharedRecipeEntity>,imported: null == imported ? _self.imported : imported // ignore: cast_nullable_to_non_nullable
 as bool,savedIds: null == savedIds ? _self._savedIds : savedIds // ignore: cast_nullable_to_non_nullable
-as Set<String>,
+as Set<String>,notice: freezed == notice ? _self.notice : notice // ignore: cast_nullable_to_non_nullable
+as SharedFeedNotice?,
   ));
 }
 

@@ -1,4 +1,5 @@
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
@@ -10,6 +11,10 @@ import '../entities/grocery_item_source_entity.dart';
 /// ingredients, and sums identical ingredients (matched by normalized
 /// name + unit) into a single aggregated line — see spec §6.1.
 class BuildAggregateGroceryListUseCase {
+  /// The id prefix of a plan's free-text dish line. Built by every
+  /// rebuild, so a line with it is the plan's, never the shopper's.
+  static const freeTextIdPrefix = 'freeText|';
+
   final RecipesRepository recipesRepository;
   BuildAggregateGroceryListUseCase(this.recipesRepository);
 
@@ -43,7 +48,7 @@ class BuildAggregateGroceryListUseCase {
                 recipeId: null,
               );
             } else {
-              final key = 'freeText|${item.id}';
+              final key = '$freeTextIdPrefix${item.id}';
               aggregated[key] = GroceryItemEntity(
                 id: key,
                 name: item.freeText!,
@@ -55,7 +60,7 @@ class BuildAggregateGroceryListUseCase {
                     amount: 1,
                   ),
                 ],
-                category: 'כללי',
+                category: kDefaultGroceryCategory,
                 isAdHoc: true,
               );
             }
@@ -138,7 +143,7 @@ void addIngredientLines(
             name: ingredient.name,
             unit: ingredient.unit,
             sources: [source],
-            category: 'כללי',
+            category: kDefaultGroceryCategory,
           )
         : existing.copyWith(sources: [...existing.sources, source]);
   }

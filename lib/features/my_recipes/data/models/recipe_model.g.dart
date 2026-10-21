@@ -121,14 +121,12 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
       .map((e) => RecipeIngredientModel.fromJson(e as Map<String, dynamic>))
       .toList(),
   steps: (json['steps'] as List<dynamic>).map((e) => e as String).toList(),
-  dietaryTags:
-      (json['dietaryTags'] as List<dynamic>?)
-          ?.map((e) => $enumDecode(_$DietaryPreferenceEnumMap, e))
-          .toList() ??
-      const [],
+  dietaryTags: json['dietaryTags'] == null
+      ? const []
+      : readDietaryTags(json['dietaryTags']),
   sourceChannel: json['sourceChannel'] as String?,
   sourceUrl: json['sourceUrl'] as String?,
-  createdAt: DateTime.parse(json['createdAt'] as String),
+  createdAt: readJsonDate(json['createdAt']),
   imageFileName: json['imageFileName'] as String?,
   savedFromSharedId: json['savedFromSharedId'] as String?,
   pendingAnalysis: json['pendingAnalysis'] as bool? ?? false,

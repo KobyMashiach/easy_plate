@@ -52,19 +52,30 @@ class _ProductPickerState extends State<_ProductPicker> {
   @override
   void initState() {
     super.initState();
-    widget.repository.getRecords().then((records) {
-      if (!mounted) return;
-      setState(() {
-        _products = latestPerProduct(records);
-        _loading = false;
-      });
-    });
+    widget.repository
+        .getRecords()
+        .then((records) {
+          if (!mounted) return;
+          setState(() {
+            _products = latestPerProduct(records);
+            _loading = false;
+          });
+        })
+        .catchError((Object e) {
+          // An empty picker, not a spinner that never stops.
+          debugPrint('Product picker load failed: $e');
+          if (mounted) setState(() => _loading = false);
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     final shown = _products
-        .where((p) => _query.isEmpty || p.name.contains(_query))
+        .where(
+          (p) =>
+              _query.isEmpty ||
+              p.name.toLowerCase().contains(_query.toLowerCase()),
+        )
         .toList();
     return SafeArea(
       child: Padding(

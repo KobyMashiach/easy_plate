@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +13,9 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/refresh_email_verified_usecase.dart';
 import '../../domain/usecases/send_email_verification_usecase.dart';
 import '../bloc/auth_bloc.dart';
+import '../widgets/sign_out_action.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../domain/send_log.dart';
 
 /// Held between signing up with a password and reaching the app, so an address
 /// nobody controls cannot become an account.
@@ -25,17 +29,51 @@ class EmailVerificationPage extends StatefulWidget {
 class _EmailVerificationPageState extends State<EmailVerificationPage> {
   bool _busy = false;
 
+  /// Seconds before another mail may be asked for: one goes out on every
+  /// arrival here already, and Firebase throttles an address hit repeatedly.
+  int _resendIn = 0;
+  Timer? _cooldown;
+  static const _resendWait = 30;
+
   @override
   void initState() {
     super.initState();
     // The link goes out as soon as the screen appears, so the common path is
     // "check your mail" rather than "press send first".
-    WidgetsBinding.instance.addPostFrameCallback((_) => _send(silent: true));
+    // Not when one went out moments ago — linking an email sends its own,
+    // and a second straight after is a duplicate (or a throttle).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final uid = context.read<AuthRepository>().currentUser?.uid;
+      final left = SendLog.mailWaitLeft(uid, _resendWait);
+      if (left > 0) {
+        _startCooldown(left);
+      } else {
+        _send(silent: true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _cooldown?.cancel();
+    super.dispose();
+  }
+
+  void _startCooldown([int seconds = _resendWait]) {
+    _cooldown?.cancel();
+    setState(() => _resendIn = seconds);
+    _cooldown = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return timer.cancel();
+      setState(() => _resendIn--);
+      if (_resendIn <= 0) timer.cancel();
+    });
   }
 
   Future<void> _send({bool silent = false}) async {
     final repository = context.read<AuthRepository>();
     setState(() => _busy = true);
+    _startCooldown();
     try {
       await SendEmailVerificationUseCase(repository)();
       if (mounted && !silent) _toast(t.auth.emailResent);
@@ -91,7 +129,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
             trailingIcon: Icons.logout_rounded,
             onTrailingTap: _busy
                 ? null
-                : () => context.read<AuthBloc>().add(const AuthEvent.signOut()),
+                : () => signOutWithFeedback(context, context.read<AuthBloc>()),
           ),
           body: SafeArea(
             child: ListView(
@@ -121,9 +159,11 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                 const SizedBox(height: AppSpacing.sm),
                 Center(
                   child: TextButton(
-                    onPressed: _busy ? null : () => _send(),
+                    onPressed: _busy || _resendIn > 0 ? null : () => _send(),
                     child: Text(
-                      t.auth.resendEmail,
+                      _resendIn > 0
+                          ? t.auth.resendIn(seconds: _resendIn)
+                          : t.auth.resendEmail,
                       style: AppTextStyles.labelMd.copyWith(
                         color: AppColors.primary,
                       ),

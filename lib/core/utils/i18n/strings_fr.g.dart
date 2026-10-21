@@ -49,6 +49,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$weekday$fr weekday = _Translations$weekday$fr._(_root);
 	@override late final _Translations$settings$fr settings = _Translations$settings$fr._(_root);
 	@override late final _Translations$notificationSettings$fr notificationSettings = _Translations$notificationSettings$fr._(_root);
+	@override late final _Translations$shoppingReminder$fr shoppingReminder = _Translations$shoppingReminder$fr._(_root);
 	@override late final _Translations$preferences$fr preferences = _Translations$preferences$fr._(_root);
 	@override late final _Translations$more$fr more = _Translations$more$fr._(_root);
 	@override late final _Translations$language$fr language = _Translations$language$fr._(_root);
@@ -109,6 +110,7 @@ class _Translations$common$fr extends Translations$common$he {
 	@override String get or => 'ou';
 	@override String get missingInfo => '[information manquante]';
 	@override String get networkError => 'Pas de connexion Internet';
+	@override String get loadFailed => 'Le chargement a échoué. Vérifiez la connexion et réessayez';
 	@override String get landscapeHint => 'Plus pratique en mode paysage';
 	@override String get rotateLandscape => 'Pivoter';
 	@override String get rotatePortrait => 'Retour en portrait';
@@ -140,6 +142,7 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String codeSentTo({required Object phone}) => 'Nous avons envoyé un code à ${phone}';
 	@override String get verify => 'Vérifier';
 	@override String get resendCode => 'Renvoyer';
+	@override String resendIn({required Object seconds}) => 'Renvoyer dans ${seconds}s';
 	@override String get forgotPassword => 'Mot de passe oublié';
 	@override String get resetSent => 'E-mail de réinitialisation envoyé';
 	@override String get noAccount => 'Pas de compte ? Inscrivez-vous';
@@ -147,6 +150,7 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get invalidEmail => 'Adresse e-mail invalide';
 	@override String get passwordTooShort => 'Le mot de passe doit faire au moins 6 caractères';
 	@override String get invalidPhone => 'Numéro de téléphone invalide';
+	@override String get phoneNeedsCountryCode => 'Ajoutez l’indicatif du pays, par ex. +33 6 12 34 56 78';
 	@override String get codeRequired => 'Saisissez le code reçu';
 	@override String get errorUnauthorized => 'Ces informations sont incorrectes';
 	@override String get errorNetwork => 'Pas de connexion Internet';
@@ -255,6 +259,7 @@ class _Translations$onboarding$fr extends Translations$onboarding$he {
 	@override String get dietaryTitle => 'Quelles sont vos préférences alimentaires ?';
 	@override String get dietarySubtitle => 'Vous pouvez en choisir plusieurs';
 	@override String get finish => 'C\'est parti';
+	@override String get saveFailed => 'Impossible d\'enregistrer vos choix. Vérifiez votre connexion et réessayez.';
 }
 
 // Path: dietary
@@ -344,6 +349,7 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get translationPartialTitle => 'Traduction incomplète';
 	@override String translationPartial({required Object count}) => '${count} éléments sont restés dans leur langue. Réessayez plus tard.';
 	@override String get translationFailed => 'La traduction a échoué. Votre contenu est resté dans sa langue.';
+	@override String get saveFailed => 'Impossible d\'enregistrer ce changement. Vérifiez votre connexion et réessayez.';
 	@override String get account => 'Compte';
 	@override String get notifications => 'Notifications';
 	@override String get notificationsHint => 'Quelles alertes vous parviennent, et comment';
@@ -388,6 +394,19 @@ class _Translations$notificationSettings$fr extends Translations$notificationSet
 	@override String get foregroundPopups => 'Afficher les alertes en fenêtre';
 	@override String get foregroundPopupsHint => 'Une notification reçue pendant que vous êtes dans l’application ouvre une petite carte. Désactivé, elle va seulement dans la boîte.';
 	@override String get reminders => 'Rappels de courses';
+}
+
+// Path: shoppingReminder
+class _Translations$shoppingReminder$fr extends Translations$shoppingReminder$he {
+	_Translations$shoppingReminder$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get twoDaysBefore => 'Le jour des courses approche — c’est le moment de planifier le menu';
+	@override String get dayBefore => 'Demain, c’est le jour des courses — vérifiez que votre menu est à jour';
+	@override String get sameDayMorning => 'Aujourd’hui, c’est le jour des courses — terminez le menu pour une liste précise';
+	@override String get sameDayAfternoon => 'Dernier rappel avant les courses — votre liste vous attend';
 }
 
 // Path: preferences
@@ -473,6 +492,9 @@ class _Translations$books$fr extends Translations$books$he {
 	@override String get bookOptions => 'Options du livre';
 	@override String get renameBook => 'Renommer le livre';
 	@override String get spineColor => 'Couleur de la tranche';
+	@override String deleteConfirm({required Object title}) => 'Supprimer « ${title} » ? Les recettes qu\'il contient restent dans votre bibliothèque.';
+	@override String deleteSharedConfirm({required Object title}) => 'Supprimer « ${title} » ? Il disparaîtra aussi pour toutes les personnes avec qui vous l\'avez partagé. Les recettes restent dans votre bibliothèque.';
+	@override String leaveConfirm({required Object title}) => 'Quitter « ${title} » ? Il n\'apparaîtra plus sur votre étagère.';
 }
 
 // Path: recipe
@@ -509,6 +531,7 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'Seulement la mienne';
 	@override String get communityUpdated => 'La copie de la communauté a été mise à jour';
 	@override String get communityGone => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement';
+	@override String get communityUpdateFailed => 'Enregistré pour vous. La publication dans la communauté n\'a pas été mise à jour ; réessayez plus tard.';
 }
 
 // Path: cookMode
@@ -663,6 +686,15 @@ class _Translations$community$fr extends Translations$community$he {
 	@override String get oneNewPost => '1 nouvelle publication';
 	@override String newPosts({required Object count}) => '${count} nouvelles publications';
 	@override String get replyFailed => 'Votre réponse n’a pas pu être envoyée';
+	@override String get postFailed => 'Votre publication n’a pas pu être envoyée';
+	@override String get deletePostFailed => 'La publication n’a pas pu être supprimée';
+	@override String get shareFailed => 'La recette n’a pas pu être partagée';
+	@override String get updateFailed => 'La recette partagée n’a pas pu être mise à jour';
+	@override String get unshareFailed => 'La recette n’a pas pu être retirée du fil';
+	@override String get importFailed => 'La recette n’a pas pu être enregistrée';
+	@override String ageMinutes({required Object n}) => '${n} min';
+	@override String ageHours({required Object n}) => '${n} h';
+	@override String ageDays({required Object n}) => '${n} j';
 }
 
 // Path: sharing
@@ -682,7 +714,7 @@ class _Translations$sharing$fr extends Translations$sharing$he {
 	@override String get roleEditorHint => 'Ses modifications apparaissent aussi chez vous';
 	@override String get send => 'Envoyer l\'invitation';
 	@override String get sent => 'Invitation envoyée';
-	@override String get invalidContact => 'Saisissez un e-mail ou un téléphone valide';
+	@override String get invalidContact => 'Saisissez un e-mail valide, ou un téléphone avec son indicatif pays (+…)';
 	@override String get notFound => 'Aucun compte ne correspond. Vérifiez que l\'e-mail ou le téléphone est lié à son compte et qu\'il/elle a ouvert l\'application récemment.';
 	@override String get self => 'Impossible de partager avec vous-même';
 	@override String get failed => 'Le partage a échoué, réessayez';
@@ -697,6 +729,8 @@ class _Translations$sharing$fr extends Translations$sharing$he {
 	@override String get accepted => 'La recette a été ajoutée à vos recettes';
 	@override String get declined => 'Invitation refusée';
 	@override String get acceptFailed => 'L\'acceptation a échoué, réessayez';
+	@override String get acceptQueued => 'Pas de connexion pour le moment. Vous avez rejoint le partage ; la copie sera ajoutée à la prochaine ouverture de l\'app en ligne.';
+	@override String get collabMissing => 'Ce partage n’est plus disponible : son propriétaire l’a retiré';
 	@override String get members => 'Membres';
 	@override String get noMembersYet => 'Personne n\'a encore accepté';
 	@override String get remove => 'Retirer';
@@ -726,6 +760,14 @@ class _Translations$sharing$fr extends Translations$sharing$he {
 	@override String get acceptedList => 'La liste a été ajoutée à vos listes de courses';
 	@override String get viewerCannotEditList => 'Cette liste est partagée avec vous en lecture seule';
 	@override String get kindList => 'liste de courses';
+	@override String sharedBooksCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		one: '1 livre partagé',
+		other: '${n} livres partagés',
+	);
+	@override String sharedListsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n,
+		one: '1 liste de courses partagée',
+		other: '${n} listes de courses partagées',
+	);
 }
 
 // Path: notifications
@@ -854,6 +896,7 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get chooseFile => 'Choisir un fichier';
 	@override String get replaceFile => 'Autre fichier';
 	@override String get fileTooLarge => 'Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.';
+	@override String textTooLong({required Object max}) => 'Le texte est trop long — jusqu’à ${max} caractères.';
 	@override String get fileUnsupported => 'Seuls les fichiers audio et les PDF peuvent être analysés.';
 	@override String sharedIn({required Object app}) => 'Depuis ${app}';
 	@override String get addFile => 'Ajouter un fichier';
@@ -865,10 +908,15 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get webSearchHint => 'Par exemple : shakshuka, cheesecake, kebbé de betterave';
 	@override String get urlScrapeDescription => 'Collez le lien d’une page de recette, site ou blog. Nous lisons la page, ignorons les publicités et les histoires autour, et n’extrayons que la recette : ingrédients, quantités et étapes. Sur beaucoup de sites, cela n’entame même pas votre quota quotidien.';
 	@override String get urlScrapeHint => 'https://www.exemple.fr/recette/...';
+	@override String get invalidUrl => 'Ce lien n’est pas valide. Collez une adresse complète commençant par http:// ou https://';
 	@override String get socialVideoDescription => 'Collez le lien d’une vidéo TikTok, Instagram, YouTube ou Facebook. Nous la regardons pour vous, écoutons ce qui est dit, lisons les sous-titres et la description, et en faisons une recette écrite et structurée. Comptez environ une minute.';
 	@override String get aiRequestDescription => 'Pas de recette, juste une idée ? Décrivez le plat, pour qui il est et ce qui compte pour vous : le modèle écrit une recette complète qui respecte vos préférences alimentaires.';
 	@override String get manualDescription => 'Écrivez la recette vous-même, directement dans l’éditeur structuré : nom, ingrédients avec quantités et unités, étapes. Sans IA, sans attente. Idéal pour la recette de grand-mère que vous connaissez par cœur.';
 	@override String get fileDescription => 'Choisissez un fichier audio où quelqu’un lit ou raconte la recette, un message vocal WhatsApp ou un PDF de recette. Nous transcrivons et lisons tout, puis en extrayons une recette propre. Plusieurs fichiers peuvent être joints : ils sont analysés ensemble comme une seule recette.';
+	@override String get saveFailed => 'Impossible d\'enregistrer la recette. Réessayez.';
+	@override String get recordingTag => 'Enregistrement';
+	@override String sizeKb({required Object n}) => '${n} Ko';
+	@override String sizeMb({required Object n}) => '${n} Mo';
 }
 
 // Path: mealPlanner
@@ -1005,6 +1053,8 @@ class _Translations$receipt$fr extends Translations$receipt$he {
 	@override String get scanning => 'Lecture du ticket…';
 	@override String pagesCount({required Object count}) => '${count} photos';
 	@override String get scanFailed => 'Impossible de lire le ticket. Essayez une photo plus nette ou un PDF.';
+	@override String get deleteFailed => 'Suppression impossible. Vérifiez la connexion et réessayez.';
+	@override String get renameFailed => 'Impossible de renommer le magasin. Vérifiez la connexion et réessayez.';
 	@override String get reviewTitle => 'Ce qui a été lu';
 	@override String get reviewSubtitle => 'Corrigez les noms et les prix avant d’enregistrer';
 	@override String get store => 'Magasin';
@@ -1025,6 +1075,9 @@ class _Translations$receipt$fr extends Translations$receipt$he {
 	@override String get save => 'Enregistrer les prix';
 	@override String saved({required Object count}) => '${count} prix enregistrés';
 	@override String savedShared({required Object count}) => '${count} prix enregistrés et partagés';
+	@override String savedShareQuota({required Object count}) => '${count} prix enregistrés. Vous avez atteint la limite de partage du jour, ils n\'ont donc pas été partagés';
+	@override String savedShareFailed({required Object count}) => '${count} prix enregistrés. Le partage avec la communauté a échoué';
+	@override String get pdfTooLarge => 'Ce PDF est trop volumineux. La limite est de 10 Mo.';
 	@override String get nothingToSave => 'Aucun produit à enregistrer';
 	@override String get estimated => 'Estimation d’après vos données';
 	@override String get estimatedTotal => 'Coût estimé';
@@ -1152,6 +1205,7 @@ class _Translations$image$fr extends Translations$image$he {
 	@override String get webSearchHint => 'Que chercher ? ex. kubbeh à la betterave';
 	@override String get webSearchEmpty => 'Aucune image trouvée, essayez d’autres mots';
 	@override String get webSearchFailed => 'La recherche a échoué, réessayez';
+	@override String get webSearchQuota => 'Vous avez atteint la limite de recherches d\'images pour aujourd\'hui. Réessayez demain';
 	@override String get webSearchUnavailable => 'La recherche d’images n’est pas disponible pour le moment';
 	@override String get webSearchEnd => 'Ce sont tous les résultats';
 	@override String get webSearchDownloadFailed => 'Impossible de télécharger cette image, essayez-en une autre';
@@ -1195,8 +1249,14 @@ class _Translations$ads$fr extends Translations$ads$he {
 
 	// Translations
 	@override String get badge => 'Publicité';
-	@override String freeViewsLeft({required Object count}) => 'Il vous reste ${count} recettes gratuites aujourd\'hui';
-	@override String rewardedViewsLeft({required Object count}) => 'Il reste ${count} ouvertures avec une courte vidéo aujourd\'hui';
+	@override String freeViewsLeft({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(count,
+		one: 'Il vous reste ${count} recette gratuite aujourd\'hui',
+		other: 'Il vous reste ${count} recettes gratuites aujourd\'hui',
+	);
+	@override String rewardedViewsLeft({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(count,
+		one: 'Il reste ${count} ouverture avec une courte vidéo aujourd\'hui',
+		other: 'Il reste ${count} ouvertures avec une courte vidéo aujourd\'hui',
+	);
 	@override String get sharedQuotaReached => 'Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !';
 	@override String get unlockRecipeTitle => 'Débloquer une recette partagée';
 	@override String unlockRecipeMessage({required Object count}) => 'Regardez une courte vidéo pour débloquer cette recette (${count} restantes aujourd\'hui)';
@@ -1294,6 +1354,14 @@ class _Translations$premium$fr extends Translations$premium$he {
 	@override String get currentPlan => 'Votre formule';
 	@override String switchTo({required Object price}) => 'Changer pour ${price}';
 	@override String get switched => 'Formule modifiée';
+	@override String get webRow => 'Passer à Premium ou gérer sur le site';
+	@override String get webRowHint => 'Carte, Apple Pay ou Google Pay, sans commission de store';
+	@override String get webManagedTitle => 'Votre abonnement a été acheté sur le site';
+	@override String get webManagedBody => 'Changer de formule, annuler ou modifier le moyen de paiement se fait depuis votre compte sur le site.';
+	@override String get otherStoreBody => 'Votre forfait a été acheté dans l\'autre boutique d\'applications (App Store ou Google Play). Le changement ou la résiliation se fait là-bas.';
+	@override String get paymentPending => 'Votre paiement est en attente. Premium s\'activera tout seul une fois validé, inutile d\'acheter à nouveau.';
+	@override String get webOpen => 'Ouvrir le site';
+	@override String get webLinkFailed => 'Impossible d’ouvrir le site. Réessayez.';
 }
 
 // Path: walkthrough
@@ -1389,6 +1457,7 @@ class _Translations$feedback$fr extends Translations$feedback$he {
 	@override String get bug => 'Bug';
 	@override String get suggestion => 'Suggestion';
 	@override String get closedNotice => 'L\'équipe a clos cette conversation. Vous pouvez la lire mais plus y écrire ; ouvrez-en une nouvelle pour un autre sujet.';
+	@override String get threadFull => 'Cette conversation est pleine. Ouvrez-en une nouvelle pour continuer à écrire.';
 	@override String closedConversations({required Object n}) => 'Conversations closes (${n})';
 	@override String get noOpenConversations => 'Aucune conversation ouverte';
 	@override String get closedTag => 'Close';
@@ -1587,6 +1656,8 @@ class _Translations$adminDashboard$fr extends Translations$adminDashboard$he {
 	@override String get grantRange => 'Dates exactes';
 	@override String grantedUntil({required Object date}) => 'Premium accordé jusqu\'au ${date}';
 	@override String grantStarts({required Object date}) => 'Commence le ${date}';
+	@override String cappedAccounts({required Object count}) => 'Seuls les ${count} premiers comptes sont affichés';
+	@override String cappedEvents({required Object count}) => 'Seuls les ${count} premiers événements d\'achat sont affichés';
 }
 
 // Path: assistant
@@ -1641,6 +1712,8 @@ class _Translations$assistant$fr extends Translations$assistant$he {
 	@override String get listening => 'J’écoute…';
 	@override String get stop => 'Arrêter';
 	@override String get cancelled => 'Annulé.';
+	@override String get toggleFailed => 'Impossible de mettre à jour la liste. Réessayez.';
+	@override String get roundsExhausted => 'Je n’ai pas pu terminer en un seul tour. Essayez de demander par étapes plus petites.';
 }
 
 // Path: shareCode
@@ -1675,6 +1748,7 @@ class _Translations$shareCode$fr extends Translations$shareCode$he {
 	@override String get usedUp => 'Ce code a été épuisé.';
 	@override String get self => 'C\'est votre propre code.';
 	@override String get gone => 'Ce que ce code partageait n\'existe plus.';
+	@override String get tooManyRecipes => 'Ce partage contient trop de recettes pour être rejoint d\'un coup. Demandez au propriétaire de le diviser.';
 	@override String get failed => 'Impossible de rejoindre. Réessayez.';
 	@override String messageText({required Object name, required Object title, required Object code, required Object link}) => '${name} a partagé « ${title} » avec vous sur EasyPlate. Code : ${code}\n${link}';
 	@override String get revoke => 'Annuler le code';
@@ -1707,7 +1781,10 @@ class _Translations$household$fr extends Translations$household$he {
 	@override String get owner => 'Propriétaire';
 	@override String get you => 'Vous';
 	@override String get invite => 'Inviter un membre';
-	@override String inviteExplain({required Object free}) => 'Toute personne ayant ce code rejoint le compte partagé. ${free} places restantes.';
+	@override String inviteExplain({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(free,
+		one: 'Toute personne ayant ce code rejoint le compte partagé. ${free} place restante.',
+		other: 'Toute personne ayant ce code rejoint le compte partagé. ${free} places restantes.',
+	);
 	@override String get noSeats => 'Toutes les places sont prises.';
 	@override String get remove => 'Retirer';
 	@override String removeConfirm({required Object name}) => 'Retirer ${name} du compte partagé ? Il perd l’accès et Premium.';
@@ -1858,6 +1935,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get whatsNew => 'Nouveautés';
 	@override String get supportChat => 'Chat support';
 	@override String get storeReview => 'Invitation à noter l’app';
+	@override String get webCheckout => 'Achat sur le site';
 }
 
 // Path: wakeWord
@@ -1893,6 +1971,7 @@ class _Translations$wakeWord$fr extends Translations$wakeWord$he {
 	@override String get privacyIos => 'La reconnaissance se fait sur l\'appareil quand c\'est possible, sinon via le service vocal d\'Apple. EasyPlate n\'enregistre ni ne conserve aucun son.';
 	@override String get permissionTitle => 'Micro nécessaire';
 	@override String get permissionDenied => 'Pour entendre « Hé Shefi », l\'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).';
+	@override String get toggleFailed => 'Impossible de modifier « Hé Shefi » pour le moment. Réessayez.';
 	@override String get openSettings => 'Ouvrir les réglages';
 	@override String get notificationTitle => 'Shefi écoute';
 	@override String get notificationBody => 'Dites « Hé Shefi » pour commencer une conversation';
@@ -2309,6 +2388,7 @@ extension on TranslationsFr {
 			'common.or' => 'ou',
 			'common.missingInfo' => '[information manquante]',
 			'common.networkError' => 'Pas de connexion Internet',
+			'common.loadFailed' => 'Le chargement a échoué. Vérifiez la connexion et réessayez',
 			'common.landscapeHint' => 'Plus pratique en mode paysage',
 			'common.rotateLandscape' => 'Pivoter',
 			'common.rotatePortrait' => 'Retour en portrait',
@@ -2331,6 +2411,7 @@ extension on TranslationsFr {
 			'auth.codeSentTo' => ({required Object phone}) => 'Nous avons envoyé un code à ${phone}',
 			'auth.verify' => 'Vérifier',
 			'auth.resendCode' => 'Renvoyer',
+			'auth.resendIn' => ({required Object seconds}) => 'Renvoyer dans ${seconds}s',
 			'auth.forgotPassword' => 'Mot de passe oublié',
 			'auth.resetSent' => 'E-mail de réinitialisation envoyé',
 			'auth.noAccount' => 'Pas de compte ? Inscrivez-vous',
@@ -2338,6 +2419,7 @@ extension on TranslationsFr {
 			'auth.invalidEmail' => 'Adresse e-mail invalide',
 			'auth.passwordTooShort' => 'Le mot de passe doit faire au moins 6 caractères',
 			'auth.invalidPhone' => 'Numéro de téléphone invalide',
+			'auth.phoneNeedsCountryCode' => 'Ajoutez l’indicatif du pays, par ex. +33 6 12 34 56 78',
 			'auth.codeRequired' => 'Saisissez le code reçu',
 			'auth.errorUnauthorized' => 'Ces informations sont incorrectes',
 			'auth.errorNetwork' => 'Pas de connexion Internet',
@@ -2428,6 +2510,7 @@ extension on TranslationsFr {
 			'onboarding.dietaryTitle' => 'Quelles sont vos préférences alimentaires ?',
 			'onboarding.dietarySubtitle' => 'Vous pouvez en choisir plusieurs',
 			'onboarding.finish' => 'C\'est parti',
+			'onboarding.saveFailed' => 'Impossible d\'enregistrer vos choix. Vérifiez votre connexion et réessayez.',
 			'dietary.meat' => 'Viande',
 			'dietary.dairy' => 'Produits laitiers',
 			'dietary.vegetarian' => 'Végétarien',
@@ -2481,6 +2564,7 @@ extension on TranslationsFr {
 			'settings.translationPartialTitle' => 'Traduction incomplète',
 			'settings.translationPartial' => ({required Object count}) => '${count} éléments sont restés dans leur langue. Réessayez plus tard.',
 			'settings.translationFailed' => 'La traduction a échoué. Votre contenu est resté dans sa langue.',
+			'settings.saveFailed' => 'Impossible d\'enregistrer ce changement. Vérifiez votre connexion et réessayez.',
 			'settings.account' => 'Compte',
 			'settings.notifications' => 'Notifications',
 			'settings.notificationsHint' => 'Quelles alertes vous parviennent, et comment',
@@ -2516,6 +2600,10 @@ extension on TranslationsFr {
 			'notificationSettings.foregroundPopups' => 'Afficher les alertes en fenêtre',
 			'notificationSettings.foregroundPopupsHint' => 'Une notification reçue pendant que vous êtes dans l’application ouvre une petite carte. Désactivé, elle va seulement dans la boîte.',
 			'notificationSettings.reminders' => 'Rappels de courses',
+			'shoppingReminder.twoDaysBefore' => 'Le jour des courses approche — c’est le moment de planifier le menu',
+			'shoppingReminder.dayBefore' => 'Demain, c’est le jour des courses — vérifiez que votre menu est à jour',
+			'shoppingReminder.sameDayMorning' => 'Aujourd’hui, c’est le jour des courses — terminez le menu pour une liste précise',
+			'shoppingReminder.sameDayAfternoon' => 'Dernier rappel avant les courses — votre liste vous attend',
 			'preferences.title' => 'Préférences',
 			'preferences.hint' => 'Courses, régime alimentaire et comportement des livres',
 			'preferences.shopping' => 'Courses',
@@ -2565,6 +2653,9 @@ extension on TranslationsFr {
 			'books.bookOptions' => 'Options du livre',
 			'books.renameBook' => 'Renommer le livre',
 			'books.spineColor' => 'Couleur de la tranche',
+			'books.deleteConfirm' => ({required Object title}) => 'Supprimer « ${title} » ? Les recettes qu\'il contient restent dans votre bibliothèque.',
+			'books.deleteSharedConfirm' => ({required Object title}) => 'Supprimer « ${title} » ? Il disparaîtra aussi pour toutes les personnes avec qui vous l\'avez partagé. Les recettes restent dans votre bibliothèque.',
+			'books.leaveConfirm' => ({required Object title}) => 'Quitter « ${title} » ? Il n\'apparaîtra plus sur votre étagère.',
 			'recipe.prepTime' => 'Temps de préparation',
 			'recipe.cookTime' => 'Temps de cuisson',
 			'recipe.ingredients' => 'Ingrédients',
@@ -2592,6 +2683,7 @@ extension on TranslationsFr {
 			'recipe.communityUpdateLocal' => 'Seulement la mienne',
 			'recipe.communityUpdated' => 'La copie de la communauté a été mise à jour',
 			'recipe.communityGone' => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement',
+			'recipe.communityUpdateFailed' => 'Enregistré pour vous. La publication dans la communauté n\'a pas été mise à jour ; réessayez plus tard.',
 			'cookMode.title' => 'Mode cuisine',
 			'cookMode.start' => 'Commencer à cuisiner',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Étape ${n} sur ${total}',
@@ -2719,6 +2811,15 @@ extension on TranslationsFr {
 			'community.oneNewPost' => '1 nouvelle publication',
 			'community.newPosts' => ({required Object count}) => '${count} nouvelles publications',
 			'community.replyFailed' => 'Votre réponse n’a pas pu être envoyée',
+			'community.postFailed' => 'Votre publication n’a pas pu être envoyée',
+			'community.deletePostFailed' => 'La publication n’a pas pu être supprimée',
+			'community.shareFailed' => 'La recette n’a pas pu être partagée',
+			'community.updateFailed' => 'La recette partagée n’a pas pu être mise à jour',
+			'community.unshareFailed' => 'La recette n’a pas pu être retirée du fil',
+			'community.importFailed' => 'La recette n’a pas pu être enregistrée',
+			'community.ageMinutes' => ({required Object n}) => '${n} min',
+			'community.ageHours' => ({required Object n}) => '${n} h',
+			'community.ageDays' => ({required Object n}) => '${n} j',
 			'sharing.title' => 'Partager la recette',
 			'sharing.contactLabel' => 'E-mail ou téléphone de la personne',
 			'sharing.contactHint' => 'nom@exemple.com ou 05…',
@@ -2729,7 +2830,7 @@ extension on TranslationsFr {
 			'sharing.roleEditorHint' => 'Ses modifications apparaissent aussi chez vous',
 			'sharing.send' => 'Envoyer l\'invitation',
 			'sharing.sent' => 'Invitation envoyée',
-			'sharing.invalidContact' => 'Saisissez un e-mail ou un téléphone valide',
+			'sharing.invalidContact' => 'Saisissez un e-mail valide, ou un téléphone avec son indicatif pays (+…)',
 			'sharing.notFound' => 'Aucun compte ne correspond. Vérifiez que l\'e-mail ou le téléphone est lié à son compte et qu\'il/elle a ouvert l\'application récemment.',
 			'sharing.self' => 'Impossible de partager avec vous-même',
 			'sharing.failed' => 'Le partage a échoué, réessayez',
@@ -2744,6 +2845,8 @@ extension on TranslationsFr {
 			'sharing.accepted' => 'La recette a été ajoutée à vos recettes',
 			'sharing.declined' => 'Invitation refusée',
 			'sharing.acceptFailed' => 'L\'acceptation a échoué, réessayez',
+			'sharing.acceptQueued' => 'Pas de connexion pour le moment. Vous avez rejoint le partage ; la copie sera ajoutée à la prochaine ouverture de l\'app en ligne.',
+			'sharing.collabMissing' => 'Ce partage n’est plus disponible : son propriétaire l’a retiré',
 			'sharing.members' => 'Membres',
 			'sharing.noMembersYet' => 'Personne n\'a encore accepté',
 			'sharing.remove' => 'Retirer',
@@ -2773,11 +2876,15 @@ extension on TranslationsFr {
 			'sharing.acceptedList' => 'La liste a été ajoutée à vos listes de courses',
 			'sharing.viewerCannotEditList' => 'Cette liste est partagée avec vous en lecture seule',
 			'sharing.kindList' => 'liste de courses',
+			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 livre partagé', other: '${n} livres partagés', ), 
+			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 liste de courses partagée', other: '${n} listes de courses partagées', ), 
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'Aucune notification',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} a partagé « ${recipe} » avec vous',
 			'notifications.asViewer' => 'en lecture seule',
 			'notifications.asEditor' => 'en modification',
+			_ => null,
+		} ?? switch (path) {
 			'notifications.markAllRead' => 'Tout marquer comme lu',
 			'notifications.openRecipe' => 'Ouvrir la recette',
 			'notifications.alreadyHandled' => 'Cette invitation a déjà été traitée',
@@ -2804,8 +2911,6 @@ extension on TranslationsFr {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} a partagé la liste de courses « ${recipe} » avec vous',
 			'editor.title' => 'Modifier la recette',
 			'editor.recipeTitle' => 'Nom de la recette',
-			_ => null,
-		} ?? switch (path) {
 			'editor.titleHint' => 'Par exemple : shakshuka de Jérusalem',
 			'editor.topics' => 'Thèmes',
 			'editor.titleRequired' => 'Un nom de recette est requis',
@@ -2876,6 +2981,7 @@ extension on TranslationsFr {
 			'ingestion.chooseFile' => 'Choisir un fichier',
 			'ingestion.replaceFile' => 'Autre fichier',
 			'ingestion.fileTooLarge' => 'Les fichiers sont trop volumineux. La limite totale est de 10 Mo, soit environ dix minutes d’enregistrement.',
+			'ingestion.textTooLong' => ({required Object max}) => 'Le texte est trop long — jusqu’à ${max} caractères.',
 			'ingestion.fileUnsupported' => 'Seuls les fichiers audio et les PDF peuvent être analysés.',
 			'ingestion.sharedIn' => ({required Object app}) => 'Depuis ${app}',
 			'ingestion.addFile' => 'Ajouter un fichier',
@@ -2887,10 +2993,15 @@ extension on TranslationsFr {
 			'ingestion.webSearchHint' => 'Par exemple : shakshuka, cheesecake, kebbé de betterave',
 			'ingestion.urlScrapeDescription' => 'Collez le lien d’une page de recette, site ou blog. Nous lisons la page, ignorons les publicités et les histoires autour, et n’extrayons que la recette : ingrédients, quantités et étapes. Sur beaucoup de sites, cela n’entame même pas votre quota quotidien.',
 			'ingestion.urlScrapeHint' => 'https://www.exemple.fr/recette/...',
+			'ingestion.invalidUrl' => 'Ce lien n’est pas valide. Collez une adresse complète commençant par http:// ou https://',
 			'ingestion.socialVideoDescription' => 'Collez le lien d’une vidéo TikTok, Instagram, YouTube ou Facebook. Nous la regardons pour vous, écoutons ce qui est dit, lisons les sous-titres et la description, et en faisons une recette écrite et structurée. Comptez environ une minute.',
 			'ingestion.aiRequestDescription' => 'Pas de recette, juste une idée ? Décrivez le plat, pour qui il est et ce qui compte pour vous : le modèle écrit une recette complète qui respecte vos préférences alimentaires.',
 			'ingestion.manualDescription' => 'Écrivez la recette vous-même, directement dans l’éditeur structuré : nom, ingrédients avec quantités et unités, étapes. Sans IA, sans attente. Idéal pour la recette de grand-mère que vous connaissez par cœur.',
 			'ingestion.fileDescription' => 'Choisissez un fichier audio où quelqu’un lit ou raconte la recette, un message vocal WhatsApp ou un PDF de recette. Nous transcrivons et lisons tout, puis en extrayons une recette propre. Plusieurs fichiers peuvent être joints : ils sont analysés ensemble comme une seule recette.',
+			'ingestion.saveFailed' => 'Impossible d\'enregistrer la recette. Réessayez.',
+			'ingestion.recordingTag' => 'Enregistrement',
+			'ingestion.sizeKb' => ({required Object n}) => '${n} Ko',
+			'ingestion.sizeMb' => ({required Object n}) => '${n} Mo',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',
@@ -3000,6 +3111,8 @@ extension on TranslationsFr {
 			'receipt.scanning' => 'Lecture du ticket…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} photos',
 			'receipt.scanFailed' => 'Impossible de lire le ticket. Essayez une photo plus nette ou un PDF.',
+			'receipt.deleteFailed' => 'Suppression impossible. Vérifiez la connexion et réessayez.',
+			'receipt.renameFailed' => 'Impossible de renommer le magasin. Vérifiez la connexion et réessayez.',
 			'receipt.reviewTitle' => 'Ce qui a été lu',
 			'receipt.reviewSubtitle' => 'Corrigez les noms et les prix avant d’enregistrer',
 			'receipt.store' => 'Magasin',
@@ -3020,6 +3133,9 @@ extension on TranslationsFr {
 			'receipt.save' => 'Enregistrer les prix',
 			'receipt.saved' => ({required Object count}) => '${count} prix enregistrés',
 			'receipt.savedShared' => ({required Object count}) => '${count} prix enregistrés et partagés',
+			'receipt.savedShareQuota' => ({required Object count}) => '${count} prix enregistrés. Vous avez atteint la limite de partage du jour, ils n\'ont donc pas été partagés',
+			'receipt.savedShareFailed' => ({required Object count}) => '${count} prix enregistrés. Le partage avec la communauté a échoué',
+			'receipt.pdfTooLarge' => 'Ce PDF est trop volumineux. La limite est de 10 Mo.',
 			'receipt.nothingToSave' => 'Aucun produit à enregistrer',
 			'receipt.estimated' => 'Estimation d’après vos données',
 			'receipt.estimatedTotal' => 'Coût estimé',
@@ -3129,6 +3245,7 @@ extension on TranslationsFr {
 			'image.webSearchHint' => 'Que chercher ? ex. kubbeh à la betterave',
 			'image.webSearchEmpty' => 'Aucune image trouvée, essayez d’autres mots',
 			'image.webSearchFailed' => 'La recherche a échoué, réessayez',
+			'image.webSearchQuota' => 'Vous avez atteint la limite de recherches d\'images pour aujourd\'hui. Réessayez demain',
 			'image.webSearchUnavailable' => 'La recherche d’images n’est pas disponible pour le moment',
 			'image.webSearchEnd' => 'Ce sont tous les résultats',
 			'image.webSearchDownloadFailed' => 'Impossible de télécharger cette image, essayez-en une autre',
@@ -3145,8 +3262,8 @@ extension on TranslationsFr {
 			'update.updateNow' => 'Mettre à jour',
 			'update.later' => 'Ignorer',
 			'ads.badge' => 'Publicité',
-			'ads.freeViewsLeft' => ({required Object count}) => 'Il vous reste ${count} recettes gratuites aujourd\'hui',
-			'ads.rewardedViewsLeft' => ({required Object count}) => 'Il reste ${count} ouvertures avec une courte vidéo aujourd\'hui',
+			'ads.freeViewsLeft' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(count, one: 'Il vous reste ${count} recette gratuite aujourd\'hui', other: 'Il vous reste ${count} recettes gratuites aujourd\'hui', ), 
+			'ads.rewardedViewsLeft' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(count, one: 'Il reste ${count} ouverture avec une courte vidéo aujourd\'hui', other: 'Il reste ${count} ouvertures avec une courte vidéo aujourd\'hui', ), 
 			'ads.sharedQuotaReached' => 'Vous avez atteint la limite quotidienne de recettes partagées. Elle se réinitialise demain !',
 			'ads.unlockRecipeTitle' => 'Débloquer une recette partagée',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'Regardez une courte vidéo pour débloquer cette recette (${count} restantes aujourd\'hui)',
@@ -3223,6 +3340,14 @@ extension on TranslationsFr {
 			'premium.currentPlan' => 'Votre formule',
 			'premium.switchTo' => ({required Object price}) => 'Changer pour ${price}',
 			'premium.switched' => 'Formule modifiée',
+			'premium.webRow' => 'Passer à Premium ou gérer sur le site',
+			'premium.webRowHint' => 'Carte, Apple Pay ou Google Pay, sans commission de store',
+			'premium.webManagedTitle' => 'Votre abonnement a été acheté sur le site',
+			'premium.webManagedBody' => 'Changer de formule, annuler ou modifier le moyen de paiement se fait depuis votre compte sur le site.',
+			'premium.otherStoreBody' => 'Votre forfait a été acheté dans l\'autre boutique d\'applications (App Store ou Google Play). Le changement ou la résiliation se fait là-bas.',
+			'premium.paymentPending' => 'Votre paiement est en attente. Premium s\'activera tout seul une fois validé, inutile d\'acheter à nouveau.',
+			'premium.webOpen' => 'Ouvrir le site',
+			'premium.webLinkFailed' => 'Impossible d’ouvrir le site. Réessayez.',
 			'walkthrough.title' => 'Guide',
 			'walkthrough.start' => 'Lancer le guide',
 			'walkthrough.startHint' => 'Une visite guidée de toutes les fonctions de l\'application, pas à pas',
@@ -3272,6 +3397,8 @@ extension on TranslationsFr {
 			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché, une estimation du coût d’après vos tickets, et le partage avec qui fait les courses avec vous.',
 			'walkthrough.topics.groceries.s1' => 'Touchez « Courses ».',
 			'walkthrough.topics.groceries.s2' => 'Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'Touchez le plus pour ajouter un article à la main.',
 			'walkthrough.topics.groceries.s4' => 'Le nom de l\'article est déjà rempli. Choisissez une quantité et une unité, ou partez d\'un produit que vos tickets connaissent déjà.',
 			'walkthrough.topics.groceries.s5' => 'Touchez « Ajouter » et l\'article rejoint la liste.',
@@ -3318,8 +3445,6 @@ extension on TranslationsFr {
 			'walkthrough.demoRecipesHint' => 'Voici à quoi ressemblent les recettes dans l\'application. Touchez-en une pour voir sa page complète : temps, thèmes, allergènes, ingrédients et étapes.',
 			'walkthrough.demoBooks' => 'Livres d\'exemple',
 			'walkthrough.demoBooksHint' => 'Voici à quoi ressemble un livre de recettes. Touchez-en un pour l\'ouvrir, tourner ses pages et naviguer depuis le sommaire.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'Exemple seulement, rien n\'est enregistré',
 			'whatsNew.title' => 'Nouveautés d\'EasyPlate',
 			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} sur ${total}',
@@ -3369,6 +3494,7 @@ extension on TranslationsFr {
 			'feedback.bug' => 'Bug',
 			'feedback.suggestion' => 'Suggestion',
 			'feedback.closedNotice' => 'L\'équipe a clos cette conversation. Vous pouvez la lire mais plus y écrire ; ouvrez-en une nouvelle pour un autre sujet.',
+			'feedback.threadFull' => 'Cette conversation est pleine. Ouvrez-en une nouvelle pour continuer à écrire.',
 			'feedback.closedConversations' => ({required Object n}) => 'Conversations closes (${n})',
 			'feedback.noOpenConversations' => 'Aucune conversation ouverte',
 			'feedback.closedTag' => 'Close',
@@ -3549,6 +3675,8 @@ extension on TranslationsFr {
 			'adminDashboard.grantRange' => 'Dates exactes',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'Premium accordé jusqu\'au ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Commence le ${date}',
+			'adminDashboard.cappedAccounts' => ({required Object count}) => 'Seuls les ${count} premiers comptes sont affichés',
+			'adminDashboard.cappedEvents' => ({required Object count}) => 'Seuls les ${count} premiers événements d\'achat sont affichés',
 			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Votre sous-chef : questions, planning, courses, cuisine',
 			'assistant.placeholder' => 'Demandez ou dites-moi quoi faire…',
@@ -3694,6 +3822,8 @@ extension on TranslationsFr {
 			'assistant.listening' => 'J’écoute…',
 			'assistant.stop' => 'Arrêter',
 			'assistant.cancelled' => 'Annulé.',
+			'assistant.toggleFailed' => 'Impossible de mettre à jour la liste. Réessayez.',
+			'assistant.roundsExhausted' => 'Je n’ai pas pu terminer en un seul tour. Essayez de demander par étapes plus petites.',
 			'shareCode.title' => 'Code et lien',
 			'shareCode.tabContact' => 'Contact',
 			'shareCode.tabCode' => 'Code ou lien',
@@ -3719,6 +3849,7 @@ extension on TranslationsFr {
 			'shareCode.usedUp' => 'Ce code a été épuisé.',
 			'shareCode.self' => 'C\'est votre propre code.',
 			'shareCode.gone' => 'Ce que ce code partageait n\'existe plus.',
+			'shareCode.tooManyRecipes' => 'Ce partage contient trop de recettes pour être rejoint d\'un coup. Demandez au propriétaire de le diviser.',
 			'shareCode.failed' => 'Impossible de rejoindre. Réessayez.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} a partagé « ${title} » avec vous sur EasyPlate. Code : ${code}\n${link}',
 			'shareCode.revoke' => 'Annuler le code',
@@ -3742,7 +3873,7 @@ extension on TranslationsFr {
 			'household.owner' => 'Propriétaire',
 			'household.you' => 'Vous',
 			'household.invite' => 'Inviter un membre',
-			'household.inviteExplain' => ({required Object free}) => 'Toute personne ayant ce code rejoint le compte partagé. ${free} places restantes.',
+			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(free, one: 'Toute personne ayant ce code rejoint le compte partagé. ${free} place restante.', other: 'Toute personne ayant ce code rejoint le compte partagé. ${free} places restantes.', ), 
 			'household.noSeats' => 'Toutes les places sont prises.',
 			'household.remove' => 'Retirer',
 			'household.removeConfirm' => ({required Object name}) => 'Retirer ${name} du compte partagé ? Il perd l’accès et Premium.',
@@ -3780,6 +3911,8 @@ extension on TranslationsFr {
 			'homeWidgets.widgetAssistantHint' => 'Un bouton qui ouvre Shefi, avec le micro si vous voulez, et des questions rapides.',
 			'homeWidgets.widgetGroceryAdd' => 'Ajout rapide à la liste',
 			'homeWidgets.widgetGroceryAddHint' => 'Tapez ou dictez un article directement dans la liste de votre choix.',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.widgetGroceryList' => 'Liste de courses',
 			'homeWidgets.widgetGroceryListHint' => 'Ce qu\'il reste à acheter ; cochez les articles depuis le widget.',
 			'homeWidgets.widgetTodayMenu' => 'Menu du jour',
@@ -3832,8 +3965,6 @@ extension on TranslationsFr {
 			'featureName.cookMode' => 'Mode cuisine',
 			'featureName.cookTimers' => 'Minuteurs de cuisson',
 			'featureName.nutrition' => 'Nutrition',
-			_ => null,
-		} ?? switch (path) {
 			'featureName.recipeImageAi' => 'Image par IA',
 			'featureName.recipeImageSearch' => 'Recherche d’image Google',
 			'featureName.groceryFromRecipe' => 'Liste de courses depuis une recette',
@@ -3868,6 +3999,7 @@ extension on TranslationsFr {
 			'featureName.whatsNew' => 'Nouveautés',
 			'featureName.supportChat' => 'Chat support',
 			'featureName.storeReview' => 'Invitation à noter l’app',
+			'featureName.webCheckout' => 'Achat sur le site',
 			'wakeWord.title' => 'Hé Shefi',
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',
@@ -3890,6 +4022,7 @@ extension on TranslationsFr {
 			'wakeWord.privacyIos' => 'La reconnaissance se fait sur l\'appareil quand c\'est possible, sinon via le service vocal d\'Apple. EasyPlate n\'enregistre ni ne conserve aucun son.',
 			'wakeWord.permissionTitle' => 'Micro nécessaire',
 			'wakeWord.permissionDenied' => 'Pour entendre « Hé Shefi », l\'app a besoin du micro (et, sur iOS, de la reconnaissance vocale).',
+			'wakeWord.toggleFailed' => 'Impossible de modifier « Hé Shefi » pour le moment. Réessayez.',
 			'wakeWord.openSettings' => 'Ouvrir les réglages',
 			'wakeWord.notificationTitle' => 'Shefi écoute',
 			'wakeWord.notificationBody' => 'Dites « Hé Shefi » pour commencer une conversation',

@@ -56,9 +56,14 @@ class _BookViewerBody extends StatelessWidget {
           ),
           BookViewerLoaded(book: final book, recipes: final recipes) =>
             OpenBookShell(
-              // Everything that can change on a page — including the cover
-              // photo, which leaves the count untouched.
-              bookKey: ValueKey('${recipes.length}|${book.coverImageFileName}'),
+              // Everything that can change on a page: the recipes in their
+              // order, their wording (the version moves on an edit) and the
+              // cover photo. The flip widget snapshots its pages once, so a
+              // reorder with the same count would otherwise show stale pages.
+              bookKey: ValueKey(
+                '${recipes.map((r) => '${r.id}:${r.contentVersion}').join(',')}'
+                '|${book.coverImageFileName}',
+              ),
               pages: (bookNav) => [
                 TableOfContentsPage(
                   bookTitle: book.title,
@@ -132,15 +137,27 @@ class _BookViewerBody extends StatelessWidget {
                   label: t.books.quickNav,
                   onTap: () async {
                     final bloc = context.read<BookViewerBloc>();
-                    final index = await showQuickNavSheet(
+                    final recipeId = await showQuickNavSheet(
                       context,
                       recipes,
-                      // A read-only copy ignores a drag; the bloc refuses too.
-                      onReorder: (oldIndex, newIndex) => book.canEdit
-                          ? bloc.add(.reorderRecipes(oldIndex, newIndex))
+                      // A read-only copy has no drag handles; the bloc
+                      // refuses a reorder too.
+                      onReorder: book.canEdit
+                          ? (oldIndex, newIndex) =>
+                                bloc.add(.reorderRecipes(oldIndex, newIndex))
                           : null,
                     );
-                    if (index != null) await bookNav.goTo(index + 1);
+                    if (recipeId == null) return;
+                    // The page by id in the book as it is once the sheet's
+                    // reorders have landed: they moved the indices.
+                    await bloc.settled;
+                    if (!context.mounted) return;
+                    final now = bloc.state;
+                    if (now is! BookViewerLoaded) return;
+                    final index = now.recipes.indexWhere(
+                      (r) => r.id == recipeId,
+                    );
+                    if (index >= 0) await bookNav.goTo(index + 1);
                   },
                 ),
               ],

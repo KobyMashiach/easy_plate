@@ -89,10 +89,11 @@ class _MainNavBarState extends State<MainNavBar> {
         if (!guardFeature(context, FeaturesFlags.assistant)) return;
         context.pushNamed(
           Routing.assistant,
-          extra: AssistantLaunch(
+          extra: AssistantLaunch.external(
             prompt: launch.prompt,
             voice: launch.voice,
             spokenPrompt: launch.fromWakeWord,
+            platform: defaultTargetPlatform,
           ),
         );
       case HomeWidgetAction.grocery:
@@ -167,10 +168,16 @@ class _MainNavBarState extends State<MainNavBar> {
       context,
       firstRunWalkthrough(),
       onDone: (_) async {
-        final latest = await preferences.getPreferences();
-        await preferences.savePreferences(
-          latest.copyWith(walkthroughSeen: true),
-        );
+        // Offline at the end of the tour: not marked, so it is offered
+        // again next launch — but not an unhandled error.
+        try {
+          final latest = await preferences.getPreferences();
+          await preferences.savePreferences(
+            latest.copyWith(walkthroughSeen: true),
+          );
+        } catch (e) {
+          debugPrint('Marking the tour seen failed: $e');
+        }
       },
     );
   }

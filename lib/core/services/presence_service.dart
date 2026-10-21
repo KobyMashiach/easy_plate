@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+import 'account_deletion_guard.dart';
 import 'firebase_service.dart';
 
 /// Tells the server, while the app is open, that the account is in use.
@@ -91,6 +92,19 @@ class PresenceService {
     if (uid != null) await _write(uid, online: false);
   }
 
+  /// Stops reporting without writing anything, and returns the account
+  /// that was reporting (to [start] again if need be). For account
+  /// deletion: a heartbeat during the server call, or the offline mark a
+  /// sign-out writes, would recreate `users/{uid}` after the server
+  /// removed it.
+  String? halt() {
+    _timer?.cancel();
+    _timer = null;
+    final uid = _uid;
+    _uid = null;
+    return uid;
+  }
+
   /// The app moved to the foreground (true) or away from it (false).
   void setForeground(bool foreground) {
     if (_foreground == foreground) return;
@@ -102,7 +116,10 @@ class PresenceService {
     } else {
       _timer?.cancel();
       _timer = null;
-      unawaited(_write(uid, online: false));
+      // Switched off in the console: nothing was reported, and every trip
+      // to the background (a photo picker, a share sheet) would otherwise
+      // still cost a write.
+      if (interval > 0) unawaited(_write(uid, online: false));
     }
   }
 
@@ -118,6 +135,8 @@ class PresenceService {
   }
 
   Future<void> _write(String uid, {required bool online}) async {
+    // Merge-set: during a deletion it would recreate the removed document.
+    if (AccountDeletionGuard.blocks(uid)) return;
     try {
       final db = _firestore ?? FirebaseFirestore.instance;
       await db

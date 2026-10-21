@@ -50,7 +50,7 @@ DailyAiUsage _day(String day, int calls) => DailyAiUsage(
   },
 );
 
-DashboardOverview _overview() {
+DashboardOverview _overview({int? usersCap, int? eventsCap}) {
   final days = [for (var i = 1; i <= 7; i++) _day('2026-09-1$i', i)];
   return DashboardOverview(
     period: DashboardPeriod.month,
@@ -105,16 +105,21 @@ DashboardOverview _overview() {
     cacheEntries: 6,
     cacheHits: 3,
     pricing: AiPricing.defaults,
+    usersCap: usersCap,
+    eventsCap: eventsCap,
   );
 }
 
 class _FakeDashboard implements AdminDashboardRepository {
   DashboardPeriod? loadedPeriod;
 
+  /// What the next load answers; the week-long overview when unset.
+  DashboardOverview? overview;
+
   @override
   Future<DashboardOverview> load(DashboardPeriod period) async {
     loadedPeriod = period;
-    return _overview();
+    return overview ?? _overview();
   }
 
   @override
@@ -137,6 +142,7 @@ class _FakeDashboard implements AdminDashboardRepository {
 
 class _FakeBilling implements AdminBillingRepository {
   final actions = <String>[];
+  int? accountsCap;
 
   @override
   Future<AdminBillingSnapshot> load() async => AdminBillingSnapshot(
@@ -178,6 +184,7 @@ class _FakeBilling implements AdminBillingRepository {
       ),
     ],
     orphanEvents: const [],
+    accountsCap: accountsCap,
   );
 
   @override
@@ -337,6 +344,68 @@ void main() {
     expect(dashboard.loadedPeriod, DashboardPeriod.today);
   });
 
+  testWidgets(
+    'the cost chart\'s total is the range\'s, not the bars\' window',
+    (
+      tester,
+    ) async {
+      // A single day: the bars show the week behind it, the tile only today.
+      final week = _overview();
+      final today = DashboardOverview(
+        period: DashboardPeriod.today,
+        loadedAt: week.loadedAt,
+        usersTotal: week.usersTotal,
+        newUsers: week.newUsers,
+        premiumCount: week.premiumCount,
+        disabledCount: week.disabledCount,
+        withPushToken: week.withPushToken,
+        usersByPlatform: week.usersByPlatform,
+        usersByVersion: week.usersByVersion,
+        signupsByDay: week.signupsByDay,
+        paymentsByCurrency: week.paymentsByCurrency,
+        paymentsCount: week.paymentsCount,
+        sandboxPayments: week.sandboxPayments,
+        days: week.days,
+        aiTotal: week.days.last.total,
+        aiByModel: week.days.last.byModel,
+        aiByKind: week.days.last.byKind,
+        // No user rows: Ann's week-long spend would equal the window sum.
+        aiUsers: const [],
+        sharedRecipes: week.sharedRecipes,
+        forumPosts: week.forumPosts,
+        feedbackTotal: week.feedbackTotal,
+        cacheEntries: week.cacheEntries,
+        cacheHits: week.cacheHits,
+        pricing: week.pricing,
+      );
+      dashboard.overview = today;
+      tester.view.physicalSize = const Size(1080, 14000);
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        _app(
+          DashboardTab(onOpenTickets: () {}),
+          dashboard: dashboard,
+          billing: billing,
+          feedback: feedback,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final pricing = today.pricing;
+      final rangeCost = DashboardFormat.cost(today.aiCostUsd, pricing);
+      final windowCost = DashboardFormat.cost(
+        today.days.fold(0.0, (a, d) => a + d.cost(pricing)),
+        pricing,
+      );
+      expect(rangeCost, isNot(windowCost));
+      // The tile and the chart header say the same thing (a user row may
+      // carry the figure too); the wider window's sum is nowhere.
+      expect(find.text(rangeCost), findsAtLeastNWidgets(2));
+      expect(find.text(windowCost), findsNothing);
+    },
+  );
+
   testWidgets('the subscriptions tab lists accounts with their block state', (
     tester,
   ) async {
@@ -365,6 +434,52 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Bob'), findsOneWidget);
     expect(find.text('Ann'), findsNothing);
+  });
+
+  testWidgets('a read that hit its cap says the list is partial', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 14000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    final s = t.adminDashboard;
+
+    await tester.pumpWidget(
+      _app(
+        const SubscriptionsTab(),
+        dashboard: dashboard,
+        billing: billing,
+        feedback: feedback,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(s.cappedAccounts(count: 5000)), findsNothing);
+
+    billing.accountsCap = 5000;
+    dashboard.overview = _overview(eventsCap: 2000);
+    await tester.pumpWidget(
+      _app(
+        SubscriptionsTab(key: UniqueKey()),
+        dashboard: dashboard,
+        billing: billing,
+        feedback: feedback,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(s.cappedAccounts(count: 5000)), findsOneWidget);
+
+    await tester.pumpWidget(
+      _app(
+        DashboardTab(onOpenTickets: () {}),
+        dashboard: dashboard,
+        billing: billing,
+        feedback: feedback,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(s.cappedEvents(count: 2000)), findsOneWidget);
+    expect(find.text(s.cappedAccounts(count: 5000)), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('the tickets tab counts unread, toggles read and reads all', (

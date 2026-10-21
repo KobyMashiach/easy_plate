@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../hive/user_scope.dart';
+import '../services/account_deletion_guard.dart';
 
 /// Where the mirrors write: the account's own document, or the household's
 /// once the account belongs to one (Pro Duo / Pro Family). Set by the
@@ -31,7 +32,9 @@ abstract class CloudRoot {
     FirebaseFirestore firestore,
   ) {
     final uid = UserScope().uid;
-    if (uid == null) return null;
+    // Mid-deletion: a push-back or a late write would leave records under
+    // an account the server is removing.
+    if (uid == null || AccountDeletionGuard.blocks(uid)) return null;
     return firestore.collection(usersCollection).doc(uid);
   }
 }
@@ -43,7 +46,11 @@ abstract class CloudRoot {
 /// `List<UserCloudCollection>` would erase it to `dynamic` and Hive would then
 /// be asked for a `Box<dynamic>` it never opened.
 abstract class CloudMirror {
-  Future<void> hydrate();
+  /// Pulls the cloud copy into the box; true when that wrote to the box.
+  Future<bool> hydrate();
+
+  /// The Firestore subcollection, e.g. `recipes`.
+  String get collection;
 
   /// Whether the mirror follows the household root (recipes, plans…) or
   /// stays the account's own (preferences, daily usage).
@@ -57,6 +64,51 @@ abstract class CloudMirror {
   /// Empties the local box: a member leaving a household must not carry
   /// its data into their own root.
   Future<void> clearLocal();
+}
+
+/// Which records this device has seen on the server, per root.
+///
+/// Hydrate pushes back what the box holds and the server lacks, because
+/// that may be a save that never got up (data older than the mirror, a
+/// save before the root resolved). But it may as well be a record deleted
+/// elsewhere — on the website, now that it edits the same records — and
+/// pushing it back undid that delete on every phone that still held it.
+/// The ledger tells the two apart: a record the server once confirmed and
+/// no longer has was deleted there.
+///
+/// Keys are `{collection path}/{id}`, so a household root and the personal
+/// one never vouch for each other. Scoped like every other box, and wiped
+/// with them on sign-out.
+abstract final class CloudSyncLedger {
+  static const boxName = 'cloudSyncedBox';
+
+  static Future<Box<bool>?> open() async {
+    if (UserScope().uid == null) return null;
+    try {
+      return await UserScope().open<bool>(boxName);
+    } catch (e) {
+      debugPrint('Cloud ledger unavailable: $e');
+      return null;
+    }
+  }
+
+  static String key(String path, String id) => '$path/$id';
+
+  static Future<void> mark(String path, Iterable<String> ids) async {
+    final box = await open();
+    if (box == null || !box.isOpen) return;
+    final fresh = {
+      for (final id in ids)
+        if (!box.containsKey(key(path, id))) key(path, id): true,
+    };
+    if (fresh.isNotEmpty) await box.putAll(fresh);
+  }
+
+  static Future<void> unmark(String path, Iterable<String> ids) async {
+    final box = await open();
+    if (box == null || !box.isOpen) return;
+    await box.deleteAll([for (final id in ids) key(path, id)]);
+  }
 }
 
 /// Mirrors one Hive box into `users/{uid}/{collection}` in Firestore.
@@ -81,6 +133,7 @@ class UserCloudCollection<T> implements CloudMirror {
   final String boxName;
 
   /// Subcollection under the account document, e.g. `recipes`.
+  @override
   final String collection;
 
   final String Function(T value) idOf;
@@ -190,11 +243,16 @@ class UserCloudCollection<T> implements CloudMirror {
   Future<void> push(T value) async {
     final ref = _ref();
     if (ref == null) return;
+    final id = idOf(value);
     try {
-      await ref.doc(idOf(value)).set(toJson(value));
+      await ref.doc(id).set(toJson(value));
     } catch (e) {
       debugPrint('Cloud push to $collection failed: $e');
+      return;
     }
+    // Acknowledged by the server: from now on, its absence there means
+    // someone deleted it.
+    await CloudSyncLedger.mark(ref.path, [id]);
   }
 
   Future<void> remove(String id) async {
@@ -204,7 +262,9 @@ class UserCloudCollection<T> implements CloudMirror {
       await ref.doc(id).delete();
     } catch (e) {
       debugPrint('Cloud delete from $collection failed: $e');
+      return;
     }
+    await CloudSyncLedger.unmark(ref.path, [id]);
   }
 
   /// Merges the account's cloud copy into the local box, then sends up
@@ -216,14 +276,44 @@ class UserCloudCollection<T> implements CloudMirror {
   /// two cases where the box legitimately knows more — an account whose data
   /// predates this mirror, and records saved while the network was down.
   ///
-  /// There are no tombstones, so a record deleted on another device while this
-  /// one was offline is restored rather than removed. Deletes propagate
-  /// immediately when online, which is the case that matters.
+  /// There are no tombstones on the server. A record the box holds and the
+  /// server lacks is removed only when [CloudSyncLedger] says the server
+  /// once confirmed it (so it was deleted elsewhere — another device, the
+  /// website) and the answer came from the server, not the offline cache;
+  /// anything else is pushed back.
   @override
-  Future<void> hydrate() async {
+  Future<bool> hydrate() async {
     final ref = _ref();
-    if (ref == null) return;
+    if (ref == null) return false;
+    // The root this read is for. The read below can outlive the account
+    // (the session's hydrate gives up after a few seconds, this does not),
+    // and the box is opened for whoever is signed in *then*: without the
+    // check a late answer put one account's recipes into the next one's
+    // box, or a left household's data into the member's own root.
+    bool rootMoved() => _ref()?.path != ref.path;
 
+    final box = await UserScope().open<T>(boxName);
+    if (rootMoved() || !box.isOpen) return false;
+
+    // Keys this device writes while the pass runs. The read can take
+    // seconds, and since hydrate also runs on resume the user may be
+    // saving meanwhile: the answer predates that save, and putting it over
+    // the box (or deleting the record) would undo the edit on screen.
+    final touched = <Object?>{};
+    final watching = box.watch().listen((event) => touched.add(event.key));
+    try {
+      return await _merge(ref, box, touched, rootMoved);
+    } finally {
+      await watching.cancel();
+    }
+  }
+
+  Future<bool> _merge(
+    CollectionReference<Map<String, dynamic>> ref,
+    Box<T> box,
+    Set<Object?> touched,
+    bool Function() rootMoved,
+  ) async {
     // Reads fall back to the SDK's cache when the server cannot be reached,
     // and throw only when there is no cache either — which is just "nothing to
     // merge", so the local box is left as it is.
@@ -232,19 +322,30 @@ class UserCloudCollection<T> implements CloudMirror {
       snapshot = await ref.get();
     } catch (e) {
       debugPrint('Cloud hydrate of $collection failed: $e');
-      return;
+      return false;
     }
+    if (rootMoved() || !box.isOpen) return false;
 
-    final box = await UserScope().open<T>(boxName);
     final remoteIds = <String>{};
     final decoded = <String, T>{};
 
     for (final doc in snapshot.docs) {
+      // Counted as on the server before decoding: a record this build
+      // cannot read (a newer website wrote it) is still the server's copy,
+      // and pushing the box's older one back would overwrite that edit.
+      remoteIds.add(doc.id);
+      if (touched.contains(doc.id)) continue;
       try {
         // Decoded one at a time: a single document written by an older build
         // should cost that one record, not the whole collection.
-        decoded[doc.id] = fromJson(doc.data());
-        remoteIds.add(doc.id);
+        final value = fromJson(doc.data());
+        // Unchanged records are not rewritten: a resume re-read of an
+        // account where nothing moved must not wake every screen.
+        final current = box.get(doc.id);
+        if (current != null && _sameJson(toJson(current), toJson(value))) {
+          continue;
+        }
+        decoded[doc.id] = value;
       } catch (e) {
         debugPrint('Cloud hydrate of $collection/${doc.id} skipped: $e');
       }
@@ -253,11 +354,36 @@ class UserCloudCollection<T> implements CloudMirror {
     // once, not once per record. Sign-in with a few hundred recipes used to
     // rebuild the recipes tab a few hundred times.
     if (decoded.isNotEmpty) await box.putAll(decoded);
+    if (rootMoved() || !box.isOpen) return decoded.isNotEmpty;
 
+    // Only a server answer can say a record is gone: a read served from the
+    // cache when offline may simply not hold every document.
+    final fromServer = !snapshot.metadata.isFromCache;
+    final ledger = await CloudSyncLedger.open();
+    final deletedElsewhere = <String>[];
     // Copied before pushing: the loop above writes to the same box.
     for (final value in box.values.toList()) {
       final id = idOf(value);
-      if (!remoteIds.contains(id)) unawaited(push(value));
+      if (remoteIds.contains(id)) continue;
+      // Saved here during the pass: that save carries its own push.
+      if (touched.contains(id)) continue;
+      if (fromServer &&
+          (ledger?.containsKey(CloudSyncLedger.key(ref.path, id)) ?? false)) {
+        deletedElsewhere.add(id);
+      } else {
+        unawaited(push(value));
+      }
     }
+    if (deletedElsewhere.isNotEmpty) {
+      await box.deleteAll(deletedElsewhere);
+      await CloudSyncLedger.unmark(ref.path, deletedElsewhere);
+    }
+    if (fromServer) {
+      await CloudSyncLedger.mark(ref.path, [
+        for (final doc in snapshot.docs)
+          if (!doc.metadata.hasPendingWrites) doc.id,
+      ]);
+    }
+    return decoded.isNotEmpty || deletedElsewhere.isNotEmpty;
   }
 }

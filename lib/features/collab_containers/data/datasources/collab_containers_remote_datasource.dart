@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../community/data/doc_fields.dart';
+import '../../../recipe_sharing/data/datasources/recipe_sharing_remote_datasource.dart';
 import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
 import '../../domain/entities/collab_container_entity.dart';
 import '../../domain/repositories/collab_containers_repository.dart';
@@ -31,23 +33,22 @@ class CollabContainersFirestoreDataSource {
 
   CollabContainerEntity _from(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? const <String, dynamic>{};
-    final createdAt =
-        (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
-    final rawMembers = (data['members'] as Map?) ?? const {};
+    final createdAt = docDate(data['createdAt']) ?? DateTime.now();
+    final rawMembers = docMap(data['members']) ?? const {};
     return CollabContainerEntity(
       id: doc.id,
-      kind: CollabKind.fromName(data['kind'] as String?),
-      ownerUid: (data['ownerUid'] as String?) ?? '',
+      kind: CollabKind.fromName(docStringOrNull(data['kind'])),
+      ownerUid: docString(data['ownerUid']),
       members: {
         for (final entry in rawMembers.entries)
-          entry.key as String: ?CollabRole.values
+          entry.key: ?CollabRole.values
               .where((r) => r.name == entry.value)
               .firstOrNull,
       },
-      title: (data['title'] as String?) ?? '',
-      content: Map<String, dynamic>.from((data['content'] as Map?) ?? const {}),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? createdAt,
-      updatedBy: data['updatedBy'] as String?,
+      title: docString(data['title']),
+      content: docMap(data['content']) ?? {},
+      updatedAt: docDate(data['updatedAt']) ?? createdAt,
+      updatedBy: docStringOrNull(data['updatedBy']),
     );
   }
 
@@ -123,11 +124,17 @@ class CollabContainersFirestoreDataSource {
   /// The recipe invites that do not exist yet. An invite already sent —
   /// directly, or with another container — must not be rewritten: only its
   /// target may touch it after creation, so the whole batch would be refused.
+  /// With [replaceDead], one answered by a target who has since left the
+  /// recipe's roster (see [RecipeSharingFirestoreDataSource.inviteIsDead])
+  /// is deleted, which the writer may do, and counted as missing. Only a
+  /// deliberate invite asks for that: a save must not quietly undo a
+  /// removal the recipe's owner made on purpose.
   Future<List<({String collabId, String title, String targetUid})>>
   _missingRecipeInvites(
     List<RecipeInvite> recipes,
-    Iterable<String> targets,
-  ) async {
+    Iterable<String> targets, {
+    bool replaceDead = false,
+  }) async {
     final wanted = [
       for (final target in targets)
         for (final recipe in recipes)
@@ -141,14 +148,31 @@ class CollabContainersFirestoreDataSource {
     ];
     if (wanted.isEmpty) return const [];
     final existing = await Future.wait([
-      for (final w in wanted) _invite(w.collabId, w.targetUid).get(),
+      for (final w in wanted)
+        RecipeSharingFirestoreDataSource.readInvite(
+          _invite(w.collabId, w.targetUid),
+        ),
     ]);
     final missing = <({String collabId, String title, String targetUid})>[];
     for (var i = 0; i < wanted.length; i++) {
-      if (existing[i].exists) {
-        _known.add(existing[i].id);
-      } else {
+      final invite = existing[i];
+      if (invite == null) {
         missing.add(wanted[i]);
+        continue;
+      }
+      final dead =
+          replaceDead &&
+          await RecipeSharingFirestoreDataSource.inviteIsDead(
+            invite,
+            _firestore
+                .collection(RecipeSharingFirestoreDataSource.collabs)
+                .doc(wanted[i].collabId),
+          );
+      if (dead) {
+        await invite.reference.delete();
+        missing.add(wanted[i]);
+      } else {
+        _known.add(invite.id);
       }
     }
     return missing;
@@ -160,67 +184,94 @@ class CollabContainersFirestoreDataSource {
     required CollabRole role,
     required List<RecipeInvite> recipes,
   }) async {
-    final missing = await _missingRecipeInvites(recipes, [targetUid]);
-    // Shared with the same person before: the invite stands (pending or
-    // answered) and may not be rewritten by anyone but them. Only recipes
-    // added since are new to them.
-    final already = (await _invite(container.id, targetUid).get()).exists;
+    // A deliberate invite to this person re-checks every recipe invite of
+    // theirs: one seen earlier this session may have died since (removed
+    // from the share, then invited again).
+    _known.removeWhere((id) => id.endsWith('_$targetUid'));
+    final missing = await _missingRecipeInvites(
+      recipes,
+      [targetUid],
+      replaceDead: true,
+    );
+    // Shared with the same person before: the invite stands (pending, or
+    // accepted while they are still a member) and may not be rewritten by
+    // anyone but them. Only recipes added since are new to them. A dead one
+    // — they were removed, or declined — is deleted and written afresh, with
+    // an inbox item under a new id since the old item may still be there.
+    final inviteId = ShareInviteEntity.idFor(
+      collabId: container.id,
+      targetUid: targetUid,
+    );
+    var notificationId = inviteId;
+    final existing = await RecipeSharingFirestoreDataSource.readInvite(
+      _invite(container.id, targetUid),
+    );
+    var already = existing != null;
+    if (existing != null &&
+        await RecipeSharingFirestoreDataSource.inviteIsDead(
+          existing,
+          _doc(container.id),
+        )) {
+      await existing.reference.delete();
+      already = false;
+      notificationId = '${inviteId}_${DateTime.now().millisecondsSinceEpoch}';
+    }
     if (already && missing.isEmpty) return;
-    final batch = _firestore.batch();
+    // The container invite and its inbox item go first, so they share the
+    // first commit (the inbox rule reads the invite with getAfter).
+    final writes = <void Function(WriteBatch)>[];
     if (!already) {
-      batch.set(
-        _invite(container.id, targetUid),
-        _inviteFields(
-          collabId: container.id,
-          title: container.title,
-          ownerUid: container.ownerUid,
-          targetUid: targetUid,
-          role: role,
-          kind: container.kind,
+      writes.add(
+        (batch) => batch.set(
+          _invite(container.id, targetUid),
+          _inviteFields(
+            collabId: container.id,
+            title: container.title,
+            ownerUid: container.ownerUid,
+            targetUid: targetUid,
+            role: role,
+            kind: container.kind,
+          ),
         ),
       );
-      batch.set(
-        _firestore
-            .collection(notifications)
-            .doc(targetUid)
-            .collection('items')
-            .doc(
-              ShareInviteEntity.idFor(
-                collabId: container.id,
-                targetUid: targetUid,
-              ),
-            ),
-        {
-          'type': AppNotificationType.shareInvite.name,
-          'kind': container.kind.name,
-          'fromUid': container.ownerUid,
-          'inviteId': ShareInviteEntity.idFor(
-            collabId: container.id,
-            targetUid: targetUid,
-          ),
-          'collabId': container.id,
-          'recipeTitle': container.title,
-          'role': role.name,
-          'read': false,
-          'createdAt': Timestamp.now(),
-        },
+      writes.add(
+        (batch) => batch.set(
+          _firestore
+              .collection(notifications)
+              .doc(targetUid)
+              .collection('items')
+              .doc(notificationId),
+          {
+            'type': AppNotificationType.shareInvite.name,
+            'kind': container.kind.name,
+            'fromUid': container.ownerUid,
+            'inviteId': inviteId,
+            'collabId': container.id,
+            'recipeTitle': container.title,
+            'role': role.name,
+            'read': false,
+            'createdAt': Timestamp.now(),
+          },
+        ),
       );
     }
     for (final m in missing) {
-      batch.set(
-        _invite(m.collabId, m.targetUid),
-        _inviteFields(
-          collabId: m.collabId,
-          title: m.title,
-          ownerUid: container.ownerUid,
-          targetUid: m.targetUid,
-          role: role,
-          kind: CollabKind.recipe,
-          via: container.id,
+      writes.add(
+        (batch) => batch.set(
+          _invite(m.collabId, m.targetUid),
+          _inviteFields(
+            collabId: m.collabId,
+            title: m.title,
+            ownerUid: container.ownerUid,
+            targetUid: m.targetUid,
+            role: role,
+            kind: CollabKind.recipe,
+            via: container.id,
+          ),
         ),
       );
     }
-    await batch.commit();
+    await _commitChunked(writes);
     _known.addAll([
       for (final m in missing)
         ShareInviteEntity.idFor(collabId: m.collabId, targetUid: m.targetUid),
@@ -236,41 +287,58 @@ class CollabContainersFirestoreDataSource {
     final targets = participants.keys.where((uid) => uid != byUid);
     final missing = await _missingRecipeInvites(recipes, targets);
     if (missing.isEmpty) return;
-    final batch = _firestore.batch();
+    final writes = <void Function(WriteBatch)>[];
     for (final m in missing) {
       // The owner of the container gets to edit a recipe an editor brought
       // in; everyone else gets the role they hold on the container.
       final role = participants[m.targetUid] == CollabRole.viewer
           ? CollabRole.viewer
           : CollabRole.editor;
-      batch.set(
-        _invite(m.collabId, m.targetUid),
-        _inviteFields(
-          collabId: m.collabId,
-          title: m.title,
-          ownerUid: byUid,
-          targetUid: m.targetUid,
-          role: role,
-          kind: CollabKind.recipe,
-          via: containerId,
+      writes.add(
+        (batch) => batch.set(
+          _invite(m.collabId, m.targetUid),
+          _inviteFields(
+            collabId: m.collabId,
+            title: m.title,
+            ownerUid: byUid,
+            targetUid: m.targetUid,
+            role: role,
+            kind: CollabKind.recipe,
+            via: containerId,
+          ),
         ),
       );
     }
-    await batch.commit();
+    await _commitChunked(writes);
     _known.addAll([
       for (final m in missing)
         ShareInviteEntity.idFor(collabId: m.collabId, targetUid: m.targetUid),
     ]);
   }
 
+  /// A batch takes 500 writes; a little under, per commit. A Family
+  /// household times a long book's new recipes is past that, and the one
+  /// commit used to fail whole.
+  static const _batchLimit = 450;
+
+  Future<void> _commitChunked(List<void Function(WriteBatch)> writes) async {
+    for (var i = 0; i < writes.length; i += _batchLimit) {
+      final batch = _firestore.batch();
+      for (final write in writes.skip(i).take(_batchLimit)) {
+        write(batch);
+      }
+      await batch.commit();
+    }
+  }
+
   ShareInviteEntity _inviteFrom(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? const <String, dynamic>{};
     return ShareInviteEntity(
       id: doc.id,
-      collabId: (data['collabId'] as String?) ?? '',
-      recipeTitle: (data['recipeTitle'] as String?) ?? '',
-      ownerUid: (data['ownerUid'] as String?) ?? '',
-      targetUid: (data['targetUid'] as String?) ?? '',
+      collabId: docString(data['collabId']),
+      recipeTitle: docString(data['recipeTitle']),
+      ownerUid: docString(data['ownerUid']),
+      targetUid: docString(data['targetUid']),
       role: CollabRole.values.firstWhere(
         (r) => r.name == data['role'],
         orElse: () => CollabRole.viewer,
@@ -279,9 +347,9 @@ class CollabContainersFirestoreDataSource {
         (s) => s.name == data['status'],
         orElse: () => ShareInviteStatus.pending,
       ),
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      kind: CollabKind.fromName(data['kind'] as String?),
-      via: data['via'] as String?,
+      createdAt: docDate(data['createdAt']) ?? DateTime.now(),
+      kind: CollabKind.fromName(docStringOrNull(data['kind'])),
+      via: docStringOrNull(data['via']),
     );
   }
 
@@ -289,8 +357,50 @@ class CollabContainersFirestoreDataSource {
     required String collabId,
     required String uid,
   }) async {
-    final doc = await _invite(collabId, uid).get();
-    return doc.exists ? _inviteFrom(doc) : null;
+    // Through readInvite: the rules refuse the read of an invite that is
+    // not there, so a plain get would throw for "never invited".
+    final doc = await RecipeSharingFirestoreDataSource.readInvite(
+      _invite(collabId, uid),
+    );
+    return doc == null ? null : _inviteFrom(doc);
+  }
+
+  /// `whereIn` takes at most 30 values per query.
+  static const _idChunk = 30;
+
+  /// The account's invites among [collabIds], a chunk of ids per query. The
+  /// rules let an invite's target list invites, which the `targetUid`
+  /// filter proves for every row the query can return; the ids are the
+  /// deterministic `{collabId}_{uid}` the invites are written under.
+  Future<Map<String, ShareInviteEntity>> recipeInvites({
+    required Set<String> collabIds,
+    required String uid,
+  }) async {
+    if (collabIds.isEmpty) return const {};
+    final ids = [
+      for (final collabId in collabIds)
+        ShareInviteEntity.idFor(collabId: collabId, targetUid: uid),
+    ];
+    final snapshots = await Future.wait([
+      for (var i = 0; i < ids.length; i += _idChunk)
+        _firestore
+            .collection(invites)
+            .where('targetUid', isEqualTo: uid)
+            .where(
+              FieldPath.documentId,
+              whereIn: ids.sublist(
+                i,
+                i + _idChunk > ids.length ? ids.length : i + _idChunk,
+              ),
+            )
+            .get(),
+    ]);
+    final found = parseEach(
+      [for (final snapshot in snapshots) ...snapshot.docs],
+      _inviteFrom,
+      label: 'Recipe invites',
+    );
+    return {for (final invite in found) invite.collabId: invite};
   }
 
   Future<void> setInviteStatus(String inviteId, ShareInviteStatus status) {
@@ -317,7 +427,7 @@ class CollabContainersFirestoreDataSource {
         .collection(collection)
         .where('ownerUid', isEqualTo: uid)
         .get();
-    return snapshot.docs.map(_from).toList();
+    return parseEach(snapshot.docs, _from, label: 'Shared containers');
   }
 
   Future<List<CollabContainerEntity>> sharedWith(String uid) async {
@@ -325,14 +435,22 @@ class CollabContainersFirestoreDataSource {
         .collection(collection)
         .where('memberUids', arrayContains: uid)
         .get();
-    return snapshot.docs.map(_from).toList();
+    return parseEach(snapshot.docs, _from, label: 'Shared containers');
   }
 
-  Future<void> removeMember(String id, String memberUid) {
-    return _doc(id).update({
-      'members.$memberUid': FieldValue.delete(),
-      'memberUids': FieldValue.arrayRemove([memberUid]),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-  }
+  /// [revokeInvite]: the owner removing someone — their invite is deleted
+  /// with the roster change (see [removeFromRoster]).
+  Future<void> removeMember(
+    String id,
+    String memberUid, {
+    bool revokeInvite = false,
+  }) => removeFromRoster(
+    _firestore,
+    _doc(id),
+    _firestore
+        .collection(invites)
+        .doc(ShareInviteEntity.idFor(collabId: id, targetUid: memberUid)),
+    memberUid,
+    revokeInvite: revokeInvite,
+  );
 }

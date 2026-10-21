@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecipeIngredientModel {
 
-@HiveField(0) String get name;@HiveField(1) double? get amount;@HiveField(2) MeasurementUnit get unit;
+@HiveField(0) String get name;@HiveField(1) double? get amount;@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit get unit;
 /// Create a copy of RecipeIngredientModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RecipeIngredientModelCopyWith<$Res>  {
   factory $RecipeIngredientModelCopyWith(RecipeIngredientModel value, $Res Function(RecipeIngredientModel) _then) = _$RecipeIngredientModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2) MeasurementUnit unit
+@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit
 });
 
 
@@ -152,7 +152,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)  MeasurementUnit unit)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeIngredientModel() when $default != null:
 return $default(_that.name,_that.amount,_that.unit);case _:
@@ -173,7 +173,7 @@ return $default(_that.name,_that.amount,_that.unit);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)  MeasurementUnit unit)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeIngredientModel():
 return $default(_that.name,_that.amount,_that.unit);}
@@ -190,7 +190,7 @@ return $default(_that.name,_that.amount,_that.unit);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)  MeasurementUnit unit)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeIngredientModel() when $default != null:
 return $default(_that.name,_that.amount,_that.unit);case _:
@@ -205,12 +205,12 @@ return $default(_that.name,_that.amount,_that.unit);case _:
 @JsonSerializable()
 
 class _RecipeIngredientModel implements RecipeIngredientModel {
-  const _RecipeIngredientModel({@HiveField(0) required this.name, @HiveField(1) this.amount, @HiveField(2) this.unit = MeasurementUnit.unspecified});
+  const _RecipeIngredientModel({@HiveField(0) required this.name, @HiveField(1) this.amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit) this.unit = MeasurementUnit.unspecified});
   factory _RecipeIngredientModel.fromJson(Map<String, dynamic> json) => _$RecipeIngredientModelFromJson(json);
 
 @override@HiveField(0) final  String name;
 @override@HiveField(1) final  double? amount;
-@override@JsonKey()@HiveField(2) final  MeasurementUnit unit;
+@override@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) final  MeasurementUnit unit;
 
 /// Create a copy of RecipeIngredientModel
 /// with the given fields replaced by the non-null parameter values.
@@ -245,7 +245,7 @@ abstract mixin class _$RecipeIngredientModelCopyWith<$Res> implements $RecipeIng
   factory _$RecipeIngredientModelCopyWith(_RecipeIngredientModel value, $Res Function(_RecipeIngredientModel) _then) = __$RecipeIngredientModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2) MeasurementUnit unit
+@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit
 });
 
 

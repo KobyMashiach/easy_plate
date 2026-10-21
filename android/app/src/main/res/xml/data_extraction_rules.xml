@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ (android:dataExtractionRules); see backup_rules.xml for why
+     each file is left out.
+     Cloud backup: Hive, the Firebase Auth session, the intent-trust token
+     and the widgets' snapshot/queue are not uploaded to Google's backup.
+     Device transfer (cable / local Wi-Fi, the user holding both phones)
+     still carries everything as Android does by default, except the
+     intent-trust token: each install mints its own. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="app_flutter/" />
+        <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.W0RFRkFVTFRd+MToxMDEyMTIzNjg3Njg1OmFuZHJvaWQ6OTk1YWZlNGUzMWVkZmJkYmFkYjU2Yw.xml" />
+        <exclude domain="sharedpref" path="easy_plate_intent_trust.xml" />
+        <exclude domain="sharedpref" path="easy_plate_widgets.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="easy_plate_intent_trust.xml" />
+    </device-transfer>
+</data-extraction-rules>

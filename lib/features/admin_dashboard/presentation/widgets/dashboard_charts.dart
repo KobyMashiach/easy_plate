@@ -44,11 +44,20 @@ class _ClayBarChartState extends State<ClayBarChart> {
   int? _selected;
 
   @override
+  void didUpdateWidget(ClayBarChart old) {
+    super.didUpdateWidget(old);
+    // Another range (30 days → 7) is another set of bars: a tapped index
+    // from the old one would point past the end, or at the wrong day.
+    if (old.data.length != widget.data.length) _selected = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final data = widget.data;
     if (data.isEmpty) return SizedBox(height: widget.height);
     final max = data.fold(0.0, (m, d) => math.max(m, d.value));
-    final selected = _selected;
+    final tapped = _selected;
+    final selected = tapped != null && tapped < data.length ? tapped : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

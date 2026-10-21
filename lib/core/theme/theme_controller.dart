@@ -94,7 +94,12 @@ class ThemeController extends ChangeNotifier {
 
   void _apply({required bool notify}) {
     final dark = resolvesDark(_mode);
-    if (dark == AppColors.isDark && notify) return;
+    if (dark == AppColors.isDark && notify) {
+      // Same colours (System → Light on a light phone), but a new mode: the
+      // selector that listens here has to move to it.
+      notifyListeners();
+      return;
+    }
     AppColors.palette = dark ? AppPalette.dark : AppPalette.light;
     // Status bar icons have to flip with the page behind them.
     SystemChrome.setSystemUIOverlayStyle(

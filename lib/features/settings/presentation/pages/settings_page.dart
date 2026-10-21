@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +19,8 @@ import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
 import '../widgets/settings_widgets.dart';
 import '../../../../core/features/feature_gate.dart';
+import '../../../../core/services/account_deletion_guard.dart';
+import '../../../../core/services/presence_service.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 import '../../data/account_deletion_remote_datasource.dart';
 
@@ -36,7 +40,10 @@ class SettingsPage extends StatelessWidget {
           leadingIcon: Icons.arrow_back_rounded,
           onLeadingTap: () => Navigator.of(context).maybePop(),
         ),
-        body: BlocBuilder<SettingsBloc, SettingsState>(
+        body: BlocConsumer<SettingsBloc, SettingsState>(
+          listenWhen: SettingsBloc.saveFailedBetween,
+          listener: (context, _) =>
+              AppDialog.error(message: t.settings.saveFailed).notify(context),
           builder: (context, state) {
             return switch (state) {
               SettingsLoading() => const Center(
@@ -197,19 +204,31 @@ Future<void> _deleteAccount(BuildContext context) async {
     destructive: true,
   ).show(context);
   if (confirmed != true || !context.mounted) return;
+  // Presence quiet for the whole call: a heartbeat during it, or the
+  // offline mark sign-out writes after it, would recreate the users/{uid}
+  // document the server has just deleted. Back on if the delete fails.
+  final reporting = PresenceService().halt();
+  void resumePresence() {
+    if (reporting != null) PresenceService().start(reporting);
+  }
+
   try {
     await AppDialog.busy(
       context,
-      () => AccountDeletionRemoteDataSource().deleteMyAccount(),
+      () => AccountDeletionGuard.guard(
+        () => AccountDeletionRemoteDataSource().deleteMyAccount(),
+      ),
       message: t.settings.deletingAccount,
     );
   } on AccountDeletionRefused {
+    resumePresence();
     if (context.mounted) {
       AppDialog.error(message: t.settings.deleteAccountHousehold).show(context);
     }
     return;
   } catch (e) {
     debugPrint('Account deletion failed: $e');
+    resumePresence();
     if (context.mounted) {
       AppDialog.error(message: t.settings.deleteAccountFailed).show(context);
     }
@@ -225,6 +244,14 @@ Future<void> _deleteAccount(BuildContext context) async {
   }
 }
 
+/// The content switch in progress, and the newest one asked for. Two
+/// switches overlapping (the second picked while the first, instant one
+/// still re-saved the library) each wrote against what it read before the
+/// other's writes, and the library ended up in a mix of both. They run one
+/// at a time, and one overtaken by a newer pick while it waited is dropped.
+Future<void> _languageQueue = Future.value();
+int _languageRequest = 0;
+
 /// Switches the app's language, then rewrites the account's own recipes,
 /// books, plans and lists into it. The switch lands first so the progress
 /// card is already in the new language; the content follows behind it.
@@ -234,15 +261,23 @@ Future<void> _changeLanguage(
   AppLanguage language,
 ) async {
   final service = context.read<ContentTranslationService>();
-  bloc.add(SettingsEvent.changeLanguage(language));
+  final request = ++_languageRequest;
+  final saved = Completer<bool>();
+  bloc.add(SettingsEvent.changeLanguage(language, saved: saved));
   // Switched off in the console: the interface changes language, the
   // account's own content stays as written.
   if (!FeaturesFlags.contentTranslation.isEnabled) return;
-  // The bloc switches the locale on its own microtask; the strings below
-  // should already be the new ones.
-  await Future<void>.delayed(Duration.zero);
-  if (!context.mounted) return;
+  // Wait for the save itself, not for the record on screen to carry the
+  // new language: the bloc shows a change before persisting it, so a
+  // refused save used to have its content translated anyway. A refused
+  // switch leaves the content as it is.
+  if (!await saved.future || !context.mounted) return;
+  final previous = _languageQueue;
+  final turn = Completer<void>();
+  _languageQueue = turn.future;
   try {
+    await previous;
+    if (request != _languageRequest || !context.mounted) return;
     // A language this account has been in before is on the device already:
     // that switch is instant and gets no loading card.
     if (await service.isLocal(language)) {
@@ -272,5 +307,7 @@ Future<void> _changeLanguage(
     if (context.mounted) {
       AppDialog.error(message: t.settings.translationFailed).show(context);
     }
+  } finally {
+    turn.complete();
   }
 }

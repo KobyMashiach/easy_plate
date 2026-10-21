@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/get_recipes_usecase.dart';
@@ -32,6 +33,10 @@ sealed class MyRecipesState with _$MyRecipesState {
     List<RecipeEntity> recipes, {
     @Default('') String query,
     @Default([]) List<DietaryPreference> dietaryFilters,
+
+    /// A failed action (a delete) said over the list, which stays as it
+    /// was — an error screen in its place lost the tab and the filters.
+    String? notice,
   }) = MyRecipesLoaded;
   const factory MyRecipesState.errorMessage(String error) = MyRecipesError;
 }
@@ -114,12 +119,25 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
   }
 
   Future<void> _init(_Init event, Emitter<MyRecipesState> emit) async {
+    // Re-run on every return from the add screen: the query and the topic
+    // chips the user set stay, the list underneath them is what refreshes.
+    final current = state;
+    final query = current is MyRecipesLoaded ? current.query : '';
+    final filters = current is MyRecipesLoaded
+        ? current.dietaryFilters
+        : <DietaryPreference>[];
     try {
       _allRecipes = await getRecipesUseCase();
-      emit(.loaded(_allRecipes));
+      emit(
+        .loaded(
+          _applyFilters(query, filters),
+          query: query,
+          dietaryFilters: filters,
+        ),
+      );
     } catch (e) {
       debugPrint('My recipes error: $e');
-      emit(.errorMessage(e.toString()));
+      emit(.errorMessage(t.common.loadFailed));
     }
   }
 
@@ -154,7 +172,24 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
     _DeleteRecipe event,
     Emitter<MyRecipesState> emit,
   ) async {
-    await deleteRecipeUseCase(event.id);
+    try {
+      await deleteRecipeUseCase(event.id);
+    } catch (e) {
+      // Said, and a state the busy card ends on: before, a failed delete
+      // left the card up for its whole timeout and the error unhandled.
+      debugPrint('Deleting the recipe failed: $e');
+      final current = state;
+      if (current is! MyRecipesLoaded) {
+        emit(.errorMessage(t.common.error));
+        return;
+      }
+      // The list (and the tab the user was on) stays; the failure is said
+      // over it. Cleared first, so a second failure in a row is still a
+      // change the busy card ends on.
+      emit(current.copyWith(notice: null));
+      emit(current.copyWith(notice: t.common.error));
+      return;
+    }
     _allRecipes = _allRecipes.where((r) => r.id != event.id).toList();
     final current = state;
     if (current is! MyRecipesLoaded) return;

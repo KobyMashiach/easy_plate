@@ -32,12 +32,15 @@ List<String> keysOf(List<WhatsNewPage> pages) => [
 ];
 
 void main() {
-  test('a clean install has nothing due: the baseline is the running build', () {
-    expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: 12), isFalse);
-    expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: 13), isFalse);
-    expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: 11), isTrue);
-    expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: null), isTrue);
-  });
+  test(
+    'a clean install has nothing due: the baseline is the running build',
+    () {
+      expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: 12), isFalse);
+      expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: 13), isFalse);
+      expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: 11), isTrue);
+      expect(whatsNewMayBeDue(currentBuild: 12, lastSeenBuild: null), isTrue);
+    },
+  );
 
   test('a single-version jump shows that version only', () {
     final pages = computeWhatsNewPages(

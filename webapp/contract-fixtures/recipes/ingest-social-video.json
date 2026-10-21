@@ -1,0 +1,53 @@
+{
+  "id": "6f1d2c3b-4a5e-4f60-8a7b-1c2d3e4f5a63",
+  "title": "פסטה ברוטב שמנת",
+  "prepTimeMinutes": null,
+  "cookTimeMinutes": null,
+  "ingredients": [
+    {
+      "name": "פסטה",
+      "amount": 500,
+      "unit": "gram"
+    },
+    {
+      "name": "שמנת מתוקה",
+      "amount": 250,
+      "unit": "milliliter"
+    }
+  ],
+  "steps": [
+    "מבשלים את הפסטה",
+    "מוסיפים שמנת"
+  ],
+  "dietaryTags": [
+    "dairy",
+    "vegetarian",
+    "allergy"
+  ],
+  "sourceChannel": "socialVideo",
+  "sourceUrl": "https://www.tiktok.com/@chef/video/7420000000000000000",
+  "createdAt": "2026-10-18T09:30:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [
+    "gluten",
+    "milk"
+  ],
+  "mayContain": [
+    "treeNuts"
+  ],
+  "servings": 4,
+  "nutrition": {
+    "calories": 610,
+    "proteinGrams": 17,
+    "carbsGrams": 88,
+    "fatGrams": 21
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

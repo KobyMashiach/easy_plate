@@ -60,7 +60,13 @@ class _HouseholdPageState extends State<HouseholdPage> {
 
   void _changed() {
     if (!mounted) return;
-    setState(() {});
+    setState(() {
+      // A code minted for a household that has since gone (dissolved from
+      // another device) would send people to "gone".
+      if (_invite != null && _invite!.targetId != _service.current?.id) {
+        _invite = null;
+      }
+    });
     _loadPeople();
   }
 
@@ -76,8 +82,11 @@ class _HouseholdPageState extends State<HouseholdPage> {
           .getPublicProfiles(
             household.memberUids.toSet(),
           );
-      if (mounted) setState(() => _people = people);
+      // An older roster's answer landing after a newer one's is dropped.
+      if (mounted && _peopleFor == key) setState(() => _people = people);
     } catch (e) {
+      // Asked again on the next change rather than never.
+      if (_peopleFor == key) _peopleFor = null;
       debugPrint('Household members unavailable: $e');
     }
   }
@@ -88,12 +97,16 @@ class _HouseholdPageState extends State<HouseholdPage> {
     return name.isEmpty ? uid.substring(0, uid.length.clamp(0, 6)) : name;
   }
 
-  Future<void> _run(Future<void> Function() action) async {
+  /// Runs [action] behind the busy flag; true when it went through. Every
+  /// refusal is shown here, so a caller only has to decide what a success
+  /// leads to.
+  Future<bool> _run(Future<void> Function() action) async {
     setState(() => _busy = true);
     try {
       await action();
+      return true;
     } on HouseholdRefused catch (e) {
-      if (!mounted) return;
+      if (!mounted) return false;
       AppDialog.error(
         message: switch (e.code) {
           HouseholdRefused.full => t.household.full,
@@ -102,9 +115,11 @@ class _HouseholdPageState extends State<HouseholdPage> {
           _ => t.household.failed,
         },
       ).notify(context);
+      return false;
     } catch (e) {
       debugPrint('Household action failed: $e');
       if (mounted) AppDialog.error(message: t.household.failed).notify(context);
+      return false;
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -136,7 +151,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (ok != true) return;
+    if (ok != true || !mounted) return;
     await _run(() => _remote.remove(memberUid));
   }
 
@@ -148,9 +163,12 @@ class _HouseholdPageState extends State<HouseholdPage> {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (ok != true) return;
-    await _run(_remote.leave);
-    if (mounted) Navigator.of(context).maybePop();
+    if (ok != true || !mounted) return;
+    // Only a leave that went through closes the page: closing over a
+    // refusal left the user believing they had left.
+    if (await _run(_remote.leave) && mounted) {
+      Navigator.of(context).maybePop();
+    }
   }
 
   Future<void> _dissolve() async {
@@ -161,9 +179,10 @@ class _HouseholdPageState extends State<HouseholdPage> {
       cancelLabel: t.common.cancel,
       destructive: true,
     ).show(context);
-    if (ok != true) return;
-    await _run(_remote.dissolve);
-    if (mounted) Navigator.of(context).maybePop();
+    if (ok != true || !mounted) return;
+    if (await _run(_remote.dissolve) && mounted) {
+      Navigator.of(context).maybePop();
+    }
   }
 
   @override

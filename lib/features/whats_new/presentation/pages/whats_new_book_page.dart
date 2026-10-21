@@ -20,10 +20,9 @@ import '../whats_new_service.dart';
 /// The release highlights, as a book from the library: the same open-book
 /// shell, page stock and page turn as the guide, one leaf per feature.
 ///
-/// Acknowledging — "Got it" on the last page, or the capsule's Close —
-/// stamps the build so the book is not shown again. Leaving any other way
-/// (the system back gesture) stamps nothing, and the book comes back on
-/// the next launch.
+/// Leaving stamps the build so the book is not shown again: "Got it" on the
+/// last page, the capsule's Close, or the system back gesture (PopScope) —
+/// once, whichever comes first.
 class WhatsNewBookPage extends StatefulWidget {
   final WhatsNewArgs args;
 
@@ -38,6 +37,10 @@ class WhatsNewBookPage extends StatefulWidget {
 
 class _WhatsNewBookPageState extends State<WhatsNewBookPage> {
   bool _acknowledged = false;
+
+  /// Set by the first Got it / Close / Try it: a second tap while the
+  /// first is still acknowledging would pop twice (or push the target twice).
+  bool _leaving = false;
 
   Future<void> _acknowledge() async {
     if (_acknowledged) return;
@@ -58,6 +61,8 @@ class _WhatsNewBookPageState extends State<WhatsNewBookPage> {
   }
 
   Future<void> _close() async {
+    if (_leaving) return;
+    _leaving = true;
     await _acknowledge();
     if (mounted) Navigator.of(context).maybePop();
   }
@@ -65,6 +70,8 @@ class _WhatsNewBookPageState extends State<WhatsNewBookPage> {
   /// "Try it": the book is acknowledged and closed, then the target opens
   /// over the home screen — or the dock switches tab.
   Future<void> _tryFeature(String target) async {
+    if (_leaving) return;
+    _leaving = true;
     final router = GoRouter.maybeOf(context);
     final tab = WhatsNewTargets.tabOf(target);
     await _acknowledge();
@@ -82,27 +89,35 @@ class _WhatsNewBookPageState extends State<WhatsNewBookPage> {
     final pages = widget.args.pages;
     final language = LocaleSettings.currentLocale.languageCode;
 
-    return OpenBookShell(
-      bookKey: ValueKey('whats-new-${widget.args.build}-$language'),
-      pages: (bookNav) => [
-        for (var i = 0; i < pages.length; i++)
-          _FeaturePage(
-            page: pages[i],
-            index: i,
-            total: pages.length,
-            language: language,
-            onNext: () => bookNav.goTo(i + 1),
-            onDone: _close,
-            onTry: _tryFeature,
+    // The system back (Android button, iOS swipe) closes the book too, and
+    // counts as seen like Close does: otherwise the same release came back
+    // on every launch until one of the buttons was tapped.
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _acknowledge();
+      },
+      child: OpenBookShell(
+        bookKey: ValueKey('whats-new-${widget.args.build}-$language'),
+        pages: (bookNav) => [
+          for (var i = 0; i < pages.length; i++)
+            _FeaturePage(
+              page: pages[i],
+              index: i,
+              total: pages.length,
+              language: language,
+              onNext: () => bookNav.goTo(i + 1),
+              onDone: _close,
+              onTry: _tryFeature,
+            ),
+        ],
+        actions: (bookNav) => [
+          QuickJumpAction(
+            icon: Icons.close_rounded,
+            label: t.whatsNew.close,
+            onTap: _close,
           ),
-      ],
-      actions: (bookNav) => [
-        QuickJumpAction(
-          icon: Icons.close_rounded,
-          label: t.whatsNew.close,
-          onTap: _close,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -218,7 +233,10 @@ class _FeaturePage extends StatelessWidget {
                         foregroundColor: AppColors.primary,
                       ),
                       icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                      label: Text(t.whatsNew.tryIt, style: AppTextStyles.labelMd),
+                      label: Text(
+                        t.whatsNew.tryIt,
+                        style: AppTextStyles.labelMd,
+                      ),
                     ),
                   ),
                 ],
@@ -287,6 +305,13 @@ class _Illustration extends StatelessWidget {
         child: Image.network(
           feature.imageUrl,
           fit: BoxFit.cover,
+          // Decoded at the width it is shown at: the console takes any
+          // upload, and a full-size photo cost tens of MB per page.
+          cacheWidth:
+              (MediaQuery.sizeOf(context).width *
+                      MediaQuery.devicePixelRatioOf(context))
+                  .round()
+                  .clamp(64, 2048),
           errorBuilder: (_, _, _) => icon,
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/services/auth_session_service.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../../domain/usecases/create_forum_post_usecase.dart';
 import '../../domain/usecases/delete_forum_post_usecase.dart';
@@ -43,7 +44,16 @@ sealed class ForumEvent with _$ForumEvent {
 
   /// A new snapshot from the live listener.
   const factory ForumEvent.synced(List<ForumPostEntity> posts) = _Synced;
+
+  /// The page has shown [ForumLoaded.notice]: cleared, so the next failure
+  /// — even the same one — is a new state the page hears.
+  const factory ForumEvent.dismissNotice() = _DismissNotice;
 }
+
+/// What a write of the viewer's own failed at; the page holds the words.
+/// What failed while a list was on screen; the page holds the words.
+/// [loadFailed]: a pull or a resume re-read — the list stays.
+enum ForumNotice { createFailed, deleteFailed, loadFailed }
 
 @freezed
 sealed class ForumState with _$ForumState {
@@ -55,6 +65,11 @@ sealed class ForumState with _$ForumState {
   const factory ForumState.loaded(
     List<ForumPostEntity> posts, {
     @Default(<ForumPostEntity>[]) List<ForumPostEntity> incoming,
+
+    /// A write of the viewer's own that failed. The list stays: a thread
+    /// that could not be posted or deleted is no reason to take the forum
+    /// away and show the retry view in its place.
+    ForumNotice? notice,
   }) = ForumLoaded;
   const factory ForumState.errorMessage(String error) = ForumError;
 }
@@ -73,7 +88,7 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
   /// Likes of the viewer's own still on their way to the server, by thread.
   /// A snapshot that lands in that window carries the old value; without
   /// this the heart would flick back for a beat and then forward again.
-  final _likesInFlight = <String, bool>{};
+  final _likesInFlight = <String, ({bool liked, int countBefore})>{};
 
   ForumBloc({
     required this.getForumPostsUseCase,
@@ -86,13 +101,21 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
     on<_Refresh>(_refresh);
     on<_CreatePost>(_createPost);
     on<_DeletePost>(_deletePost);
-    on<_ToggleLike>(_toggleLike);
+    // One at a time: two quick taps on a heart would both read the row
+    // before either write landed, and the second would undo the first's
+    // in-flight mark while its write was still out.
+    on<_ToggleLike>(_toggleLike, transformer: _sequential());
     on<_ViewportAtTop>(_viewportAtTop);
     on<_RevealIncoming>(_revealIncoming);
     on<_SetLive>(_setLive);
     on<_Synced>(_synced);
+    on<_DismissNotice>(_dismissNotice);
     add(const ForumEvent.init());
   }
+
+  /// Handles each event only after the previous one of its kind finished.
+  static EventTransformer<E> _sequential<E>() =>
+      (events, mapper) => events.asyncExpand(mapper);
 
   factory ForumBloc.fromContext(BuildContext context) {
     return ForumBloc(
@@ -114,13 +137,22 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
 
   /// First a one-shot read — it refreshes the viewer's like cache and turns
   /// the spinner into a list at once — then the live listener behind it.
-  Future<void> _init(_Init event, Emitter<ForumState> emit) async {
+  Future<void> _init(_Init event, Emitter<ForumState> emit) => _load(emit);
+
+  /// [refresh] (pull to refresh) reads authors past the profile cache.
+  Future<void> _load(Emitter<ForumState> emit, {bool refresh = false}) async {
     try {
-      emit(.loaded(await getForumPostsUseCase(viewerUid: _uid)));
+      emit(
+        .loaded(
+          await getForumPostsUseCase(viewerUid: _uid, refresh: refresh),
+        ),
+      );
       _listen();
     } catch (e) {
       debugPrint('Forum error: $e');
-      emit(.errorMessage(e.toString()));
+      // A list already on screen stays, with a word; only a first load
+      // with nothing to keep shows the error view.
+      _notify(ForumNotice.loadFailed, e, emit);
     }
   }
 
@@ -150,8 +182,13 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
     _wantLive = event.live;
     if (event.live) {
       // Whatever changed while the listener was closed is not in memory:
-      // re-read once, then listen again from there.
-      if (state is ForumLoaded) await _init(const _Init(), emit);
+      // re-read once, then listen again from there. A list that failed to
+      // load (offline when it was opened) gets that read too, so coming
+      // back brings it up without a pull. Only a read still in progress is
+      // left alone.
+      if (state is ForumLoaded || state is ForumError) {
+        await _init(const _Init(), emit);
+      }
     } else {
       await _stopListening();
     }
@@ -159,7 +196,7 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
 
   Future<void> _refresh(_Refresh event, Emitter<ForumState> emit) async {
     try {
-      await _init(const _Init(), emit);
+      await _load(emit, refresh: true);
     } finally {
       if (!event.done.isCompleted) event.done.complete();
     }
@@ -208,8 +245,8 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
     if (_likesInFlight.isEmpty) return posts;
     return [
       for (final post in posts)
-        if (_likesInFlight[post.id] case final liked?)
-          _reconcileLike(post, liked)
+        if (_likesInFlight[post.id] case final pending?)
+          _reconcileLike(post, pending.liked, pending.countBefore)
         else
           post,
     ];
@@ -218,9 +255,21 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
   /// The server's row, with the viewer's pending like on it: the flag as
   /// the app knows it, and the counter one step along if the server has
   /// not counted it yet.
-  static ForumPostEntity _reconcileLike(ForumPostEntity post, bool liked) {
-    if (post.likedByMe == liked) return post;
-    return post.withLikeToggled();
+  ///
+  /// The datasource flips its flag before the transaction commits, so a
+  /// snapshot can carry the new flag with the old counter ([countBefore],
+  /// the row's count at the tap): the counter is moved here then, or the
+  /// heart showed liked with the count one short until the commit landed.
+  static ForumPostEntity _reconcileLike(
+    ForumPostEntity post,
+    bool liked,
+    int countBefore,
+  ) {
+    if (post.likedByMe != liked) return post.withLikeToggled();
+    if (post.likeCount == countBefore) {
+      return post.withViewerLike(!liked).withLikeToggled();
+    }
+    return post;
   }
 
   Future<void> _createPost(_CreatePost event, Emitter<ForumState> emit) async {
@@ -238,14 +287,16 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
       await _init(const _Init(), emit);
     } catch (e) {
       debugPrint('Create post error: $e');
-      emit(.errorMessage(e.toString()));
+      _notify(ForumNotice.createFailed, e, emit);
     }
   }
 
   Future<void> _deletePost(_DeletePost event, Emitter<ForumState> emit) async {
-    final current = state;
     try {
       await deleteForumPostUseCase(event.postId);
+      // The state as it is now, not as it was before the write: a snapshot
+      // may have landed meanwhile.
+      final current = state;
       if (current is ForumLoaded) {
         emit(
           .loaded(
@@ -258,8 +309,26 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
       }
     } catch (e) {
       debugPrint('Delete post error: $e');
-      emit(.errorMessage(e.toString()));
+      _notify(ForumNotice.deleteFailed, e, emit);
     }
+  }
+
+  /// A failed write keeps the list and flags it for the page to word. Only
+  /// with no list to keep does the error view take over.
+  void _notify(ForumNotice notice, Object error, Emitter<ForumState> emit) {
+    final current = state;
+    if (current is ForumLoaded) {
+      emit(.loaded(current.posts, incoming: current.incoming, notice: notice));
+    } else {
+      debugPrint('Forum write failed with no list to keep: $error');
+      emit(.errorMessage(t.community.loadFailed));
+    }
+  }
+
+  void _dismissNotice(_DismissNotice event, Emitter<ForumState> emit) {
+    final current = state;
+    if (current is! ForumLoaded || current.notice == null) return;
+    emit(.loaded(current.posts, incoming: current.incoming));
   }
 
   /// The row flips before the write lands so the tap feels immediate, and is
@@ -272,7 +341,10 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
 
     final original = current.posts[index];
     final flipped = original.withLikeToggled();
-    _likesInFlight[event.postId] = flipped.likedByMe;
+    _likesInFlight[event.postId] = (
+      liked: flipped.likedByMe,
+      countBefore: original.likeCount,
+    );
     emit(
       .loaded(
         [...current.posts]..[index] = flipped,
@@ -287,10 +359,13 @@ class ForumBloc extends Bloc<ForumEvent, ForumState> {
       final latest = state;
       if (latest is! ForumLoaded) return;
       final at = latest.posts.indexWhere((p) => p.id == event.postId);
-      if (at != -1) {
+      // Only the like is undone, on the row as it is now: a reply count or
+      // an edit that arrived meanwhile stays.
+      final row = at == -1 ? null : latest.posts[at];
+      if (row != null && row.likedByMe == flipped.likedByMe) {
         emit(
           .loaded(
-            [...latest.posts]..[at] = original,
+            [...latest.posts]..[at] = row.withLikeToggled(),
             incoming: latest.incoming,
           ),
         );

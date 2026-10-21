@@ -102,7 +102,7 @@ exports.adminRemoteConfig = onRequest(
       return res.status(400).json({ error: { message: "Unknown action" } });
     } catch (err) {
       logger.error("remote config admin failed", { action, reason: err.message });
-      return res.status(500).json({ error: { message: err.message } });
+      return res.status(500).json({ error: { code: "failed", message: "Remote Config action failed" } });
     }
   },
 );

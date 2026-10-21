@@ -72,7 +72,7 @@ _MealPlanModel _$MealPlanModelFromJson(Map<String, dynamic> json) =>
       meals: (json['meals'] as List<dynamic>)
           .map((e) => MealModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: readJsonDate(json['createdAt']),
       collabId: json['collabId'] as String?,
       collabRole: json['collabRole'] as String?,
       contentLang: json['contentLang'] as String?,

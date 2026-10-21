@@ -34,10 +34,18 @@ class UserScope {
     'productPricingBox',
     'contentVariantsBox',
     'shareUsageBox',
+    'cloudSyncedBox',
   ];
 
   String? _uid;
   String? get uid => _uid;
+
+  /// Bumped every time the scope moves: a switch to another account, or the
+  /// sign-out wipe. The same uid on both sides of a wipe is still a
+  /// different scope, since its boxes were deleted in between, and work that
+  /// started before must not count as done for the one after.
+  int _generation = 0;
+  int get generation => _generation;
 
   /// The boxes this class has opened, by full scoped name.
   ///
@@ -63,6 +71,7 @@ class UserScope {
       }
     }
     _uid = uid;
+    _generation++;
   }
 
   /// Opens [base] for the current account. Throws rather than falling back to
@@ -98,6 +107,7 @@ class UserScope {
   Future<void> clearAccount() async {
     final uid = _uid;
     _uid = null;
+    _generation++;
     if (uid == null) return;
 
     String? directory;
@@ -152,6 +162,7 @@ class UserScope {
   @visibleForTesting
   void resetForTest() {
     _uid = null;
+    _generation++;
     _opened.clear();
   }
 }

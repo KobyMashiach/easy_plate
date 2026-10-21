@@ -1,3 +1,5 @@
+import '../../community/data/doc_fields.dart';
+
 /// Pro Duo (two seats) or Pro Family (six). Read from the store product id
 /// the same way the server does.
 enum HouseholdTier {
@@ -45,18 +47,19 @@ class HouseholdEntity {
 
   static HouseholdEntity? fromJson(String id, Map<String, dynamic>? json) {
     if (json == null) return null;
-    final tier = HouseholdTier.fromName(json['tier'] as String?);
+    final tier = HouseholdTier.fromName(docStringOrNull(json['tier']));
     if (tier == null) return null;
     return HouseholdEntity(
       id: id,
-      ownerUid: (json['ownerUid'] as String?) ?? '',
+      ownerUid: docString(json['ownerUid']),
       tier: tier,
-      seats: (json['seats'] as num?)?.toInt() ?? tier.seats,
-      title: (json['title'] as String?) ?? '',
-      memberUids: [
-        for (final uid in (json['memberUids'] as List?) ?? const [])
-          uid.toString(),
-      ],
+      // A non-positive count would make [freeSeats]' clamp throw.
+      seats: switch (docInt(json['seats'])) {
+        final n? when n > 0 => n,
+        _ => tier.seats,
+      },
+      title: docString(json['title']),
+      memberUids: docStrings(json['memberUids']),
     );
   }
 }

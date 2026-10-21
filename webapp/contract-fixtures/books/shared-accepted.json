@@ -1,0 +1,19 @@
+{
+  "id": "8c3f5d1b-4e5a-4f6b-9c2d-3e4f5a6b7c84",
+  "title": "אפייה",
+  "recipeRefs": [
+    {
+      "recipeId": "5f0c2a7e-1b2d-4c3e-8f9a-0b1c2d3e4f50",
+      "order": 0
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T10:00:00.000Z",
+  "coverImageFileName": null,
+  "coverImageStoragePath": "recipe_images/ownerUid/cover.jpg",
+  "spine": "coral",
+  "collabId": "e2f3a4b5-6c7d-4e8f-9a0b-1c2d3e4f5a6b",
+  "collabRole": "viewer",
+  "contentLang": "he",
+  "contentVersion": 0
+}

@@ -7,6 +7,33 @@
 # file; a build without it ships blank ad units and no store SDK.
 DEFINES="--dart-define-from-file=dart_defines/dev.json"
 
+# Store builds keep the Dart debug info out of the binary (smaller download)
+# and write it per platform under build/symbols/. Without uploading those
+# files Crashlytics shows Dart stack frames as raw addresses. No --obfuscate:
+# class names stay readable in logs and reflection-free code paths.
+SYMBOLS_DIR="build/symbols"
+
+# Sends one platform's Dart symbols to Crashlytics. The app id is read from
+# the Firebase config files in the repo. Needs `firebase login`; a failed
+# upload only warns, the build itself is kept. Manual equivalent:
+#   firebase crashlytics:symbols:upload --app=<GOOGLE_APP_ID> build/symbols/<platform>
+function uploadDartSymbols() {
+  local platform=$1 app_id
+  if [ "$platform" = "android" ]; then
+    app_id=$(sed -n 's/.*"mobilesdk_app_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' android/app/google-services.json | head -n 1)
+  else
+    app_id=$(/usr/libexec/PlistBuddy -c "Print :GOOGLE_APP_ID" ios/Runner/GoogleService-Info.plist 2>/dev/null)
+  fi
+  if [ -z "$app_id" ] || ! command -v firebase >/dev/null; then
+    echo "⚠️  Dart symbols not uploaded (no firebase CLI or app id). Run by hand:"
+    echo "   firebase crashlytics:symbols:upload --app=<GOOGLE_APP_ID> $SYMBOLS_DIR/$platform"
+    return 0
+  fi
+  echo "Upload Dart symbols ($platform) to Crashlytics"
+  firebase crashlytics:symbols:upload --app="$app_id" "$SYMBOLS_DIR/$platform" ||
+    echo "⚠️  Symbol upload failed; retry: firebase crashlytics:symbols:upload --app=$app_id $SYMBOLS_DIR/$platform"
+}
+
 # === ANDROID FUNCTIONS (01–09) ===
 function androidRun() {
   echo "Run  Android"
@@ -22,12 +49,14 @@ function androidRunDebug() {
 
 function androidBuildApk() {
   echo "Build Android APK"
-  flutter build apk --release $DEFINES
+  flutter build apk --release $DEFINES --split-debug-info=$SYMBOLS_DIR/android &&
+    uploadDartSymbols android
 }
 
 function androidBuildAab() {
   echo "Build Android App Bundle"
-  flutter build appbundle --release $DEFINES
+  flutter build appbundle --release $DEFINES --split-debug-info=$SYMBOLS_DIR/android &&
+    uploadDartSymbols android
 }
 
 
@@ -36,9 +65,22 @@ function androidClean() {
   flutter clean && flutter pub get
 }
 
+# Wipes every Firestore collection of the active Firebase project. There is
+# no undo, so the project id (from .firebaserc, else "easy-plate") is shown
+# and must be typed back exactly before anything is sent; the CLI's own y/N
+# prompt still follows.
 function deleteAllFirebaseData() {
-  echo "Delete all Firebase data"
-  firebase firestore:delete --all-collections
+  local project
+  project=$(sed -n 's/.*"default"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' .firebaserc 2>/dev/null | head -n 1)
+  project=${project:-easy-plate}
+  echo "Delete all Firestore data in Firebase project: $project"
+  echo "This removes every collection and document and cannot be undone."
+  read -r -p "Type the project id ($project) to confirm: " typed
+  if [ "$typed" != "$project" ]; then
+    echo "❌ '$typed' does not match '$project'. Nothing deleted."
+    return 1
+  fi
+  firebase firestore:delete --all-collections --project "$project"
 }
 
 function androidLogs() {
@@ -59,7 +101,8 @@ function iosRunDebug() {
 
 function iosBuildIpa() {
   echo "Build IPA iOS"
-  flutter build ipa --release $DEFINES
+  flutter build ipa --release $DEFINES --split-debug-info=$SYMBOLS_DIR/ios &&
+    uploadDartSymbols ios
 }
 
 function openBuilderIos() {
@@ -108,10 +151,9 @@ function doctorCheck() {
 
 function clearGradleCache() {
   echo "Clear Gradle Cache (full)"
+  # Only Gradle's own daemons: a blanket pkill of java/dart took down every
+  # IDE, analysis server and unrelated JVM on the machine.
   (cd android && ./gradlew --stop 2>/dev/null)
-  pkill -9 -f gradle 2>/dev/null
-  pkill -9 -f java 2>/dev/null
-  pkill -9 -f dart 2>/dev/null
   flutter clean
   rm -rf android/.gradle
   rm -rf android/build
@@ -141,6 +183,8 @@ function createLauncherIcons() {
 # and translated text, sitemap.xml, robots.txt and the og/<lang>.png share
 # images. Edit copy only inside I18N in landing/index.html, then run this.
 function buildWebsite() {
+  echo "Build web app (webapp/ → landing/app, served at /app)"
+  (cd webapp && ([ -d node_modules ] || npm install --no-audit --no-fund) && npm run build) || return 1
   echo "Build website (CSS + 5 language pages + sitemap + og images)"
   (cd landing && [ -d node_modules ] || npm install --no-audit --no-fund) &&   (cd landing && npm run build)
 }

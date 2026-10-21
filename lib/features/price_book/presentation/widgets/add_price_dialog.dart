@@ -10,8 +10,21 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../domain/entities/price_record_entity.dart';
 import '../../domain/entities/price_unit.dart';
+import '../../domain/price_estimator.dart';
 import '../../domain/product_name.dart';
 import '../../domain/repositories/price_book_repository.dart';
+import 'price_widgets.dart';
+
+/// The currency a manual price is recorded in: the one most of the book is
+/// already in, so a dollar book's manual entry is not filed as shekels and
+/// then left out of every estimate. Shekels when the book can't be read.
+Future<String> manualPriceCurrency(PriceBookRepository repository) async {
+  try {
+    return PriceEstimator.dominantCurrency(await repository.getRecords());
+  } catch (_) {
+    return 'ILS';
+  }
+}
 
 /// Records a price with no receipt behind it — one the user paid or simply
 /// knows. Stored as a record under the `manual` receipt id, so it counts
@@ -27,6 +40,14 @@ Future<bool> showAddPriceDialog(
     text: price == null ? '' : price.toStringAsFixed(2),
   );
   var chosen = unit;
+  final currency = await manualPriceCurrency(
+    context.read<PriceBookRepository>(),
+  );
+  if (!context.mounted) {
+    nameController.dispose();
+    priceController.dispose();
+    return false;
+  }
   final confirmed = await AppDialog.general(
     title: t.receipt.addPrice,
     message: t.receipt.addPriceHint,
@@ -50,7 +71,7 @@ Future<bool> showAddPriceDialog(
             style: AppTextStyles.bodyMd,
             decoration: InputDecoration(
               labelText: t.receipt.price,
-              prefixText: '₪ ',
+              prefixText: '${currencySymbol(currency)} ',
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -118,20 +139,31 @@ Future<bool> showAddPriceDialog(
       !context.mounted) {
     return false;
   }
-  await context.read<PriceBookRepository>().saveRecords([
-    PriceRecordEntity(
-      id: const Uuid().v4(),
-      name: productName,
-      normalizedName: normalizeProductName(productName),
-      unitPrice: value,
-      unit: chosen,
-      quantity: 1,
-      currency: 'ILS',
-      store: null,
-      purchasedAt: DateTime.now(),
-      receiptId: PriceRecordEntity.manualReceiptId,
-    ),
-  ]);
+  final repository = context.read<PriceBookRepository>();
+  try {
+    await repository.saveRecords([
+      PriceRecordEntity(
+        id: const Uuid().v4(),
+        name: productName,
+        normalizedName: normalizeProductName(productName),
+        unitPrice: value,
+        unit: chosen,
+        quantity: 1,
+        currency: currency,
+        store: null,
+        purchasedAt: DateTime.now(),
+        receiptId: PriceRecordEntity.manualReceiptId,
+      ),
+    ]);
+  } catch (e) {
+    // Called from tap handlers nobody awaits: a failed write said here, or
+    // it is lost without a word.
+    debugPrint('Saving a manual price failed: $e');
+    if (context.mounted) {
+      AppDialog.error(message: t.common.error).show(context);
+    }
+    return false;
+  }
   if (context.mounted) {
     AppDialog.success(message: t.receipt.priceSaved).notify(context);
   }

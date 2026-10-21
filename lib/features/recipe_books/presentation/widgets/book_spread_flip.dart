@@ -93,7 +93,9 @@ class _BookSpreadFlipState extends State<BookSpreadFlip>
   void didUpdateWidget(BookSpreadFlip oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller?._state = null;
+      if (oldWidget.controller?._state == this) {
+        oldWidget.controller!._state = null;
+      }
       widget.controller?._state = this;
     }
     if (_spread > _spreadCount - 1) _spread = _spreadCount - 1;
@@ -101,7 +103,10 @@ class _BookSpreadFlipState extends State<BookSpreadFlip>
 
   @override
   void dispose() {
-    widget.controller?._state = null;
+    // A re-keyed flip registers its new state before this old one is
+    // disposed: only let go of the controller if it is still ours, or the
+    // new state is left unreachable (contents rows and jumps go dead).
+    if (widget.controller?._state == this) widget.controller!._state = null;
     _turn.dispose();
     super.dispose();
   }

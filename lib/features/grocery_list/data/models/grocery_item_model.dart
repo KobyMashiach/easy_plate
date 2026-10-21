@@ -1,7 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../../my_recipes/data/models/json_readers.dart';
+
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/grocery_item_entity.dart';
 import 'grocery_item_source_model.dart';
 
@@ -14,10 +17,13 @@ sealed class GroceryItemModel with _$GroceryItemModel {
   const factory GroceryItemModel({
     @HiveField(0) required String id,
     @HiveField(1) required String name,
-    @HiveField(2) @Default(MeasurementUnit.unspecified) MeasurementUnit unit,
+    @HiveField(2)
+    @JsonKey(fromJson: readMeasurementUnit)
+    @Default(MeasurementUnit.unspecified)
+    MeasurementUnit unit,
     @HiveField(3) required List<GroceryItemSourceModel> sources,
     @HiveField(4) @Default(false) bool isChecked,
-    @HiveField(5) @Default('כללי') String category,
+    @HiveField(5) @Default(kDefaultGroceryCategory) String category,
     @HiveField(6) @Default(false) bool isAdHoc,
   }) = _GroceryItemModel;
 

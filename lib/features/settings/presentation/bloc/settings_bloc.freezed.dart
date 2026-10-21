@@ -143,14 +143,14 @@ return setThemeMode(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( ShoppingDay day)?  updateShoppingDay,TResult Function( DietaryPreference preference)?  toggleDietaryPreference,TResult Function( bool enabled)?  toggleSoundEffects,TResult Function( AppLanguage language)?  changeLanguage,TResult Function( bool enabled)?  toggleFastPageTurn,TResult Function( bool enabled)?  toggleCommunityPrices,TResult Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult Function( String mode)?  setThemeMode,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( ShoppingDay day)?  updateShoppingDay,TResult Function( DietaryPreference preference)?  toggleDietaryPreference,TResult Function( bool enabled)?  toggleSoundEffects,TResult Function( AppLanguage language,  Completer<bool>? saved)?  changeLanguage,TResult Function( bool enabled)?  toggleFastPageTurn,TResult Function( bool enabled)?  toggleCommunityPrices,TResult Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult Function( String mode)?  setThemeMode,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _UpdateShoppingDay() when updateShoppingDay != null:
 return updateShoppingDay(_that.day);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
 return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects() when toggleSoundEffects != null:
 return toggleSoundEffects(_that.enabled);case _ChangeLanguage() when changeLanguage != null:
-return changeLanguage(_that.language);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
+return changeLanguage(_that.language,_that.saved);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
 return toggleFastPageTurn(_that.enabled);case _ToggleCommunityPrices() when toggleCommunityPrices != null:
 return toggleCommunityPrices(_that.enabled);case _SetShoppingReminders() when setShoppingReminders != null:
 return setShoppingReminders(_that.slots);case _SetNotification() when setNotification != null:
@@ -173,14 +173,14 @@ return setThemeMode(_that.mode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( ShoppingDay day)  updateShoppingDay,required TResult Function( DietaryPreference preference)  toggleDietaryPreference,required TResult Function( bool enabled)  toggleSoundEffects,required TResult Function( AppLanguage language)  changeLanguage,required TResult Function( bool enabled)  toggleFastPageTurn,required TResult Function( bool enabled)  toggleCommunityPrices,required TResult Function( List<ShoppingReminderSlot> slots)  setShoppingReminders,required TResult Function( NotificationSetting setting,  bool enabled)  setNotification,required TResult Function( String mode)  setThemeMode,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( ShoppingDay day)  updateShoppingDay,required TResult Function( DietaryPreference preference)  toggleDietaryPreference,required TResult Function( bool enabled)  toggleSoundEffects,required TResult Function( AppLanguage language,  Completer<bool>? saved)  changeLanguage,required TResult Function( bool enabled)  toggleFastPageTurn,required TResult Function( bool enabled)  toggleCommunityPrices,required TResult Function( List<ShoppingReminderSlot> slots)  setShoppingReminders,required TResult Function( NotificationSetting setting,  bool enabled)  setNotification,required TResult Function( String mode)  setThemeMode,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _UpdateShoppingDay():
 return updateShoppingDay(_that.day);case _ToggleDietaryPreference():
 return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects():
 return toggleSoundEffects(_that.enabled);case _ChangeLanguage():
-return changeLanguage(_that.language);case _ToggleFastPageTurn():
+return changeLanguage(_that.language,_that.saved);case _ToggleFastPageTurn():
 return toggleFastPageTurn(_that.enabled);case _ToggleCommunityPrices():
 return toggleCommunityPrices(_that.enabled);case _SetShoppingReminders():
 return setShoppingReminders(_that.slots);case _SetNotification():
@@ -199,14 +199,14 @@ return setThemeMode(_that.mode);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( ShoppingDay day)?  updateShoppingDay,TResult? Function( DietaryPreference preference)?  toggleDietaryPreference,TResult? Function( bool enabled)?  toggleSoundEffects,TResult? Function( AppLanguage language)?  changeLanguage,TResult? Function( bool enabled)?  toggleFastPageTurn,TResult? Function( bool enabled)?  toggleCommunityPrices,TResult? Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult? Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult? Function( String mode)?  setThemeMode,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( ShoppingDay day)?  updateShoppingDay,TResult? Function( DietaryPreference preference)?  toggleDietaryPreference,TResult? Function( bool enabled)?  toggleSoundEffects,TResult? Function( AppLanguage language,  Completer<bool>? saved)?  changeLanguage,TResult? Function( bool enabled)?  toggleFastPageTurn,TResult? Function( bool enabled)?  toggleCommunityPrices,TResult? Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult? Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult? Function( String mode)?  setThemeMode,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _UpdateShoppingDay() when updateShoppingDay != null:
 return updateShoppingDay(_that.day);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
 return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects() when toggleSoundEffects != null:
 return toggleSoundEffects(_that.enabled);case _ChangeLanguage() when changeLanguage != null:
-return changeLanguage(_that.language);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
+return changeLanguage(_that.language,_that.saved);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
 return toggleFastPageTurn(_that.enabled);case _ToggleCommunityPrices() when toggleCommunityPrices != null:
 return toggleCommunityPrices(_that.enabled);case _SetShoppingReminders() when setShoppingReminders != null:
 return setShoppingReminders(_that.slots);case _SetNotification() when setNotification != null:
@@ -453,10 +453,11 @@ as bool,
 
 
 class _ChangeLanguage implements SettingsEvent {
-  const _ChangeLanguage(this.language);
+  const _ChangeLanguage(this.language, {this.saved});
   
 
  final  AppLanguage language;
+ final  Completer<bool>? saved;
 
 /// Create a copy of SettingsEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -468,16 +469,16 @@ _$ChangeLanguageCopyWith<_ChangeLanguage> get copyWith => __$ChangeLanguageCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangeLanguage&&(identical(other.language, language) || other.language == language));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangeLanguage&&(identical(other.language, language) || other.language == language)&&(identical(other.saved, saved) || other.saved == saved));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,language);
+int get hashCode => Object.hash(runtimeType,language,saved);
 
 @override
 String toString() {
-  return 'SettingsEvent.changeLanguage(language: $language)';
+  return 'SettingsEvent.changeLanguage(language: $language, saved: $saved)';
 }
 
 
@@ -488,7 +489,7 @@ abstract mixin class _$ChangeLanguageCopyWith<$Res> implements $SettingsEventCop
   factory _$ChangeLanguageCopyWith(_ChangeLanguage value, $Res Function(_ChangeLanguage) _then) = __$ChangeLanguageCopyWithImpl;
 @useResult
 $Res call({
- AppLanguage language
+ AppLanguage language, Completer<bool>? saved
 });
 
 
@@ -505,10 +506,11 @@ class __$ChangeLanguageCopyWithImpl<$Res>
 
 /// Create a copy of SettingsEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? language = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? language = null,Object? saved = freezed,}) {
   return _then(_ChangeLanguage(
 null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
-as AppLanguage,
+as AppLanguage,saved: freezed == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
+as Completer<bool>?,
   ));
 }
 
@@ -964,11 +966,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( UserPreferencesEntity preferences,  int sharedBooksCount,  int sharedListsCount)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( UserPreferencesEntity preferences,  int sharedBooksCount,  int sharedListsCount,  int saveFailures)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SettingsLoading() when loading != null:
 return loading();case SettingsLoaded() when loaded != null:
-return loaded(_that.preferences,_that.sharedBooksCount,_that.sharedListsCount);case SettingsError() when errorMessage != null:
+return loaded(_that.preferences,_that.sharedBooksCount,_that.sharedListsCount,_that.saveFailures);case SettingsError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return orElse();
 
@@ -987,11 +989,11 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( UserPreferencesEntity preferences,  int sharedBooksCount,  int sharedListsCount)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( UserPreferencesEntity preferences,  int sharedBooksCount,  int sharedListsCount,  int saveFailures)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case SettingsLoading():
 return loading();case SettingsLoaded():
-return loaded(_that.preferences,_that.sharedBooksCount,_that.sharedListsCount);case SettingsError():
+return loaded(_that.preferences,_that.sharedBooksCount,_that.sharedListsCount,_that.saveFailures);case SettingsError():
 return errorMessage(_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -1006,11 +1008,11 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( UserPreferencesEntity preferences,  int sharedBooksCount,  int sharedListsCount)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( UserPreferencesEntity preferences,  int sharedBooksCount,  int sharedListsCount,  int saveFailures)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case SettingsLoading() when loading != null:
 return loading();case SettingsLoaded() when loaded != null:
-return loaded(_that.preferences,_that.sharedBooksCount,_that.sharedListsCount);case SettingsError() when errorMessage != null:
+return loaded(_that.preferences,_that.sharedBooksCount,_that.sharedListsCount,_that.saveFailures);case SettingsError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return null;
 
@@ -1055,12 +1057,15 @@ String toString() {
 
 
 class SettingsLoaded implements SettingsState {
-  const SettingsLoaded(this.preferences, {this.sharedBooksCount = 0, this.sharedListsCount = 0});
+  const SettingsLoaded(this.preferences, {this.sharedBooksCount = 0, this.sharedListsCount = 0, this.saveFailures = 0});
   
 
  final  UserPreferencesEntity preferences;
 @JsonKey() final  int sharedBooksCount;
 @JsonKey() final  int sharedListsCount;
+/// Bumped by every refused save, so the screens can say so (the
+/// switch going back on its own read as a tap that did not land).
+@JsonKey() final  int saveFailures;
 
 /// Create a copy of SettingsState
 /// with the given fields replaced by the non-null parameter values.
@@ -1072,16 +1077,16 @@ $SettingsLoadedCopyWith<SettingsLoaded> get copyWith => _$SettingsLoadedCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsLoaded&&(identical(other.preferences, preferences) || other.preferences == preferences)&&(identical(other.sharedBooksCount, sharedBooksCount) || other.sharedBooksCount == sharedBooksCount)&&(identical(other.sharedListsCount, sharedListsCount) || other.sharedListsCount == sharedListsCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsLoaded&&(identical(other.preferences, preferences) || other.preferences == preferences)&&(identical(other.sharedBooksCount, sharedBooksCount) || other.sharedBooksCount == sharedBooksCount)&&(identical(other.sharedListsCount, sharedListsCount) || other.sharedListsCount == sharedListsCount)&&(identical(other.saveFailures, saveFailures) || other.saveFailures == saveFailures));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,preferences,sharedBooksCount,sharedListsCount);
+int get hashCode => Object.hash(runtimeType,preferences,sharedBooksCount,sharedListsCount,saveFailures);
 
 @override
 String toString() {
-  return 'SettingsState.loaded(preferences: $preferences, sharedBooksCount: $sharedBooksCount, sharedListsCount: $sharedListsCount)';
+  return 'SettingsState.loaded(preferences: $preferences, sharedBooksCount: $sharedBooksCount, sharedListsCount: $sharedListsCount, saveFailures: $saveFailures)';
 }
 
 
@@ -1092,7 +1097,7 @@ abstract mixin class $SettingsLoadedCopyWith<$Res> implements $SettingsStateCopy
   factory $SettingsLoadedCopyWith(SettingsLoaded value, $Res Function(SettingsLoaded) _then) = _$SettingsLoadedCopyWithImpl;
 @useResult
 $Res call({
- UserPreferencesEntity preferences, int sharedBooksCount, int sharedListsCount
+ UserPreferencesEntity preferences, int sharedBooksCount, int sharedListsCount, int saveFailures
 });
 
 
@@ -1109,11 +1114,12 @@ class _$SettingsLoadedCopyWithImpl<$Res>
 
 /// Create a copy of SettingsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? preferences = null,Object? sharedBooksCount = null,Object? sharedListsCount = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? preferences = null,Object? sharedBooksCount = null,Object? sharedListsCount = null,Object? saveFailures = null,}) {
   return _then(SettingsLoaded(
 null == preferences ? _self.preferences : preferences // ignore: cast_nullable_to_non_nullable
 as UserPreferencesEntity,sharedBooksCount: null == sharedBooksCount ? _self.sharedBooksCount : sharedBooksCount // ignore: cast_nullable_to_non_nullable
 as int,sharedListsCount: null == sharedListsCount ? _self.sharedListsCount : sharedListsCount // ignore: cast_nullable_to_non_nullable
+as int,saveFailures: null == saveFailures ? _self.saveFailures : saveFailures // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

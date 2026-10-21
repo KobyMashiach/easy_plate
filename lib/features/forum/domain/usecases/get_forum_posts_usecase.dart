@@ -8,5 +8,7 @@ class GetForumPostsUseCase {
   Future<List<ForumPostEntity>> call({
     required String viewerUid,
     int limit = 50,
-  }) => repository.getPosts(viewerUid: viewerUid, limit: limit);
+    bool refresh = false,
+  }) =>
+      repository.getPosts(viewerUid: viewerUid, limit: limit, refresh: refresh);
 }

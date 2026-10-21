@@ -46,6 +46,20 @@ abstract class AssistantTools {
   // Support
   static const contactSupport = 'contact_support';
 
+  /// The screens `open_screen` may name; anything else is refused.
+  static const screens = [
+    'recipes',
+    'library',
+    'meal_plan',
+    'groceries',
+    'community',
+    'settings',
+    'preferences',
+    'premium',
+    'notifications',
+    'add_recipe',
+  ];
+
   static const _weekday = {
     'type': 'string',
     'enum': [
@@ -408,7 +422,7 @@ abstract class AssistantTools {
     ),
     _tool(
       convertMeasurement,
-      'Exact kitchen unit conversion (gram, kilogram, milliliter, liter, teaspoon, tablespoon, cup; also fahrenheit/celsius). Water-density for volume↔weight unless an ingredient with a known density is named (flour, sugar, butter, oil, honey, rice).',
+      'Exact kitchen unit conversion (gram, kilogram, milliliter, liter, teaspoon, tablespoon, cup, ounce, pound; also fahrenheit/celsius). Water-density for volume↔weight unless an ingredient with a known density is named (flour, sugar, butter, oil, honey, rice).',
       {
         'amount': {'type': 'number'},
         'from': {'type': 'string'},
@@ -452,21 +466,7 @@ abstract class AssistantTools {
       openScreen,
       'Navigate to a screen of the app.',
       {
-        'screen': {
-          'type': 'string',
-          'enum': [
-            'recipes',
-            'library',
-            'meal_plan',
-            'groceries',
-            'community',
-            'settings',
-            'preferences',
-            'premium',
-            'notifications',
-            'add_recipe',
-          ],
-        },
+        'screen': {'type': 'string', 'enum': screens},
       },
       required: ['screen'],
     ),

@@ -65,8 +65,13 @@ sealed class SettingsEvent with _$SettingsEvent {
   ) = _ToggleDietaryPreference;
   const factory SettingsEvent.toggleSoundEffects(bool enabled) =
       _ToggleSoundEffects;
-  const factory SettingsEvent.changeLanguage(AppLanguage language) =
-      _ChangeLanguage;
+
+  /// [saved] is completed with whether the record now holds [language]:
+  /// content translation waits for that, not for the on-screen preview.
+  const factory SettingsEvent.changeLanguage(
+    AppLanguage language, {
+    Completer<bool>? saved,
+  }) = _ChangeLanguage;
   const factory SettingsEvent.toggleFastPageTurn(bool enabled) =
       _ToggleFastPageTurn;
   const factory SettingsEvent.toggleCommunityPrices(bool enabled) =
@@ -91,6 +96,10 @@ sealed class SettingsState with _$SettingsState {
     UserPreferencesEntity preferences, {
     @Default(0) int sharedBooksCount,
     @Default(0) int sharedListsCount,
+
+    /// Bumped by every refused save, so the screens can say so (the
+    /// switch going back on its own read as a tap that did not land).
+    @Default(0) int saveFailures,
   }) = SettingsLoaded;
   const factory SettingsState.errorMessage(String error) = SettingsError;
 }
@@ -109,18 +118,33 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     required this.recipeBooksRepository,
     required this.groceryListsRepository,
   }) : super(const SettingsState.loading()) {
-    on<_Init>(_init);
-    on<_UpdateShoppingDay>(_updateShoppingDay);
-    on<_ToggleDietaryPreference>(_toggleDietaryPreference);
-    on<_ToggleSoundEffects>(_toggleSoundEffects);
-    on<_ChangeLanguage>(_changeLanguage);
-    on<_ToggleFastPageTurn>(_toggleFastPageTurn);
-    on<_ToggleCommunityPrices>(_toggleCommunityPrices);
-    on<_SetShoppingReminders>(_setShoppingReminders);
-    on<_SetNotification>(_setNotification);
-    on<_SetThemeMode>(_setThemeMode);
+    // One queue for every event, not one per type: each save re-reads the
+    // stored record, applies its change and writes it back, so two switches
+    // flipped in quick succession would both read the record before either
+    // wrote and the second write would undo the first. One at a time, in
+    // the order they were tapped — the init first, so a tap that lands
+    // before the first read is answered rather than dropped.
+    on<SettingsEvent>(_handle, transformer: _sequential());
     add(const SettingsEvent.init());
   }
+
+  /// Handles each event only after the previous one finished.
+  static EventTransformer<E> _sequential<E>() =>
+      (events, mapper) => events.asyncExpand(mapper);
+
+  Future<void> _handle(SettingsEvent event, Emitter<SettingsState> emit) =>
+      switch (event) {
+        _Init() => _init(event, emit),
+        _UpdateShoppingDay() => _updateShoppingDay(event, emit),
+        _ToggleDietaryPreference() => _toggleDietaryPreference(event, emit),
+        _ToggleSoundEffects() => _toggleSoundEffects(event, emit),
+        _ChangeLanguage() => _changeLanguage(event, emit),
+        _ToggleFastPageTurn() => _toggleFastPageTurn(event, emit),
+        _ToggleCommunityPrices() => _toggleCommunityPrices(event, emit),
+        _SetShoppingReminders() => _setShoppingReminders(event, emit),
+        _SetNotification() => _setNotification(event, emit),
+        _SetThemeMode() => _setThemeMode(event, emit),
+      };
 
   factory SettingsBloc.fromContext(BuildContext context) {
     return SettingsBloc(
@@ -131,48 +155,89 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     );
   }
 
+  int _saveFailures = 0;
+
+  /// For a screen's listener: a save was refused since [previous].
+  static bool saveFailedBetween(
+    SettingsState previous,
+    SettingsState current,
+  ) =>
+      current is SettingsLoaded &&
+      current.saveFailures >
+          (previous is SettingsLoaded ? previous.saveFailures : 0);
+
   Future<void> _init(_Init event, Emitter<SettingsState> emit) async {
     try {
       final preferences = await getUserPreferencesUseCase();
-      final books = await recipeBooksRepository.getBooks();
-      final lists = await groceryListsRepository.getLists();
+      // The counts only label a row: a failed read of either box shows 0
+      // rather than failing all three settings screens.
+      final books = await _orEmpty(recipeBooksRepository.getBooks, 'books');
+      final lists = await _orEmpty(groceryListsRepository.getLists, 'lists');
       emit(
         .loaded(
           preferences,
-          sharedBooksCount: books
-              .where((b) => b.collaborators.isNotEmpty)
-              .length,
-          sharedListsCount: lists
-              .where((l) => l.collaborators.isNotEmpty)
-              .length,
+          sharedBooksCount: books.where((b) => b.isShared).length,
+          sharedListsCount: lists.where((l) => l.isShared).length,
+          saveFailures: _saveFailures,
         ),
       );
     } catch (e) {
       debugPrint('Settings error: $e');
-      emit(.errorMessage(e.toString()));
+      emit(.errorMessage(t.common.loadFailed));
+    }
+  }
+
+  static Future<List<T>> _orEmpty<T>(
+    Future<List<T>> Function() read,
+    String what,
+  ) async {
+    try {
+      return await read();
+    } catch (e) {
+      debugPrint('Settings: shared $what count unavailable: $e');
+      return const [];
     }
   }
 
   /// Every change shows at once and is persisted after: a switch that waits
   /// for the cloud write before moving reads as a tap that never landed.
   ///
+  /// [change] is applied to the record as stored, not to this bloc's copy of
+  /// it: the notification screen, the assistant and the what's-new book each
+  /// save through their own path, and a copy loaded before they did wrote
+  /// their changes back out (a switch turned off there came back on here).
+  /// A refused save puts the screen back where it was.
+  ///
   /// The session is told afterwards so everything that reads the current
   /// preferences elsewhere — the grocery tab's price fallback, the popup
   /// gate for pushes — sees the new value without a restart.
-  Future<void> _commit(
+  Future<UserPreferencesEntity> _commit(
     SettingsLoaded current,
-    UserPreferencesEntity updated,
+    UserPreferencesEntity Function(UserPreferencesEntity) change,
     Emitter<SettingsState> emit,
   ) async {
-    emit(
+    void show(UserPreferencesEntity preferences) => emit(
       .loaded(
-        updated,
+        preferences,
         sharedBooksCount: current.sharedBooksCount,
         sharedListsCount: current.sharedListsCount,
+        saveFailures: _saveFailures,
       ),
     );
-    await saveUserPreferencesUseCase(updated);
+    show(change(current.preferences));
+    final UserPreferencesEntity updated;
+    try {
+      updated = change(await getUserPreferencesUseCase());
+      await saveUserPreferencesUseCase(updated);
+    } catch (e) {
+      debugPrint('Settings save failed: $e');
+      _saveFailures++;
+      show(current.preferences);
+      return current.preferences;
+    }
+    show(updated);
     AuthSessionService().publishPreferences(updated);
+    return updated;
   }
 
   Future<void> _updateShoppingDay(
@@ -181,14 +246,27 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(shoppingDay: event.day);
-    await _commit(current, updated, emit);
+    final updated = await _commit(
+      current,
+      (p) => p.copyWith(shoppingDay: event.day),
+      emit,
+    );
     // With the slots the account chose, not the defaults: a reminder set
     // to "day before only" must stay that way when the day moves.
-    await ShoppingReminderService().scheduleForShoppingDay(
-      updated.shoppingDay,
-      slots: updated.shoppingReminderSlots,
-    );
+    await _reschedule(updated);
+  }
+
+  /// The plugin can throw (permission revoked, exact alarms off); the
+  /// preference is saved either way, so the failure is only logged.
+  Future<void> _reschedule(UserPreferencesEntity updated) async {
+    try {
+      await ShoppingReminderService().scheduleForShoppingDay(
+        updated.shoppingDay,
+        slots: updated.shoppingReminderSlots,
+      );
+    } catch (e) {
+      debugPrint('Shopping reminders not rescheduled: $e');
+    }
   }
 
   Future<void> _toggleDietaryPreference(
@@ -197,13 +275,16 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final preferences = [...current.preferences.dietaryPreferences];
-    preferences.contains(event.preference)
-        ? preferences.remove(event.preference)
-        : preferences.add(event.preference);
+    // Toggled on the record as re-read, not on this bloc's copy: the
+    // assistant saves this list through its own path, and a list built
+    // here would write its stale version back over that.
     await _commit(
       current,
-      current.preferences.copyWith(dietaryPreferences: preferences),
+      (p) => p.copyWith(
+        dietaryPreferences: p.dietaryPreferences.contains(event.preference)
+            ? (p.dietaryPreferences.toList()..remove(event.preference))
+            : [...p.dietaryPreferences, event.preference],
+      ),
       emit,
     );
   }
@@ -215,18 +296,27 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     final current = state;
-    if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(language: event.language);
-    emit(
-      .loaded(
-        updated,
-        sharedBooksCount: current.sharedBooksCount,
-        sharedListsCount: current.sharedListsCount,
-      ),
-    );
+    if (current is! SettingsLoaded) {
+      event.saved?.complete(false);
+      return;
+    }
     await LocaleSettings.setLocale(event.language.locale);
-    await saveUserPreferencesUseCase(updated);
-    AuthSessionService().publishPreferences(updated);
+    final saved = await _commit(
+      current,
+      (p) => p.copyWith(language: event.language),
+      emit,
+    );
+    // Refused: the record kept its language, so the live locale goes back
+    // too, rather than the screens in one language and the selector on
+    // another.
+    if (saved.language != event.language) {
+      await LocaleSettings.setLocale(saved.language.locale);
+    } else {
+      // Scheduled reminders carry their text from when they were set:
+      // without this they kept arriving in the old language.
+      await _reschedule(saved);
+    }
+    event.saved?.complete(saved.language == event.language);
   }
 
   Future<void> _toggleFastPageTurn(
@@ -237,7 +327,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (current is! SettingsLoaded) return;
     await _commit(
       current,
-      current.preferences.copyWith(fastPageTurnEnabled: event.enabled),
+      (p) => p.copyWith(fastPageTurnEnabled: event.enabled),
       emit,
     );
   }
@@ -248,16 +338,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
-    final updated = current.preferences.copyWith(
-      shoppingReminderSlots: event.slots,
+    final updated = await _commit(
+      current,
+      (p) => p.copyWith(shoppingReminderSlots: event.slots),
+      emit,
     );
-    await _commit(current, updated, emit);
     // Rescheduled at once. Before, the old reminders kept firing until the
     // next launch re-read the preferences.
-    await ShoppingReminderService().scheduleForShoppingDay(
-      updated.shoppingDay,
-      slots: updated.shoppingReminderSlots,
-    );
+    await _reschedule(updated);
   }
 
   Future<void> _setThemeMode(
@@ -267,11 +355,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     final current = state;
     if (current is! SettingsLoaded) return;
     if (current.preferences.themeMode == event.mode) return;
-    await _commit(
-      current,
-      current.preferences.copyWith(themeMode: event.mode),
-      emit,
-    );
+    await _commit(current, (p) => p.copyWith(themeMode: event.mode), emit);
   }
 
   Future<void> _toggleCommunityPrices(
@@ -282,7 +366,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (current is! SettingsLoaded) return;
     await _commit(
       current,
-      current.preferences.copyWith(communityPricesEnabled: event.enabled),
+      (p) => p.copyWith(communityPricesEnabled: event.enabled),
       emit,
     );
   }
@@ -295,7 +379,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (current is! SettingsLoaded) return;
     await _commit(
       current,
-      current.preferences.copyWith(soundEffectsEnabled: event.enabled),
+      (p) => p.copyWith(soundEffectsEnabled: event.enabled),
       emit,
     );
   }
@@ -308,7 +392,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (current is! SettingsLoaded) return;
     await _commit(
       current,
-      event.setting.apply(current.preferences, event.enabled),
+      (p) => event.setting.apply(p, event.enabled),
       emit,
     );
   }

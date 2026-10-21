@@ -1,0 +1,50 @@
+{
+  "id": "5f0c2a7e-1b2d-4c3e-8f9a-0b1c2d3e4f50",
+  "title": "עוגת שוקולד",
+  "prepTimeMinutes": 15,
+  "cookTimeMinutes": 35,
+  "ingredients": [
+    {
+      "name": "קמח",
+      "amount": 1.5,
+      "unit": "cup"
+    },
+    {
+      "name": "ביצים",
+      "amount": 3,
+      "unit": "unit"
+    }
+  ],
+  "steps": [
+    "מערבבים",
+    "אופים"
+  ],
+  "dietaryTags": [
+    "dairy"
+  ],
+  "sourceChannel": null,
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T10:00:00.000Z",
+  "imageFileName": "cake.jpg",
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": "c0ffee00-1111-4222-8333-444455556666",
+  "collabRole": "editor",
+  "imageStoragePath": "recipe_images/ownerUid/cake.jpg",
+  "allergens": [
+    "gluten",
+    "eggs",
+    "milk"
+  ],
+  "mayContain": [],
+  "servings": 8,
+  "nutrition": {
+    "calories": 420,
+    "proteinGrams": 6.5,
+    "carbsGrams": 52,
+    "fatGrams": 21
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

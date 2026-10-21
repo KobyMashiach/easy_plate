@@ -90,7 +90,7 @@ class _TicketsTabState extends State<TicketsTab> {
     } catch (e) {
       debugPrint('Ticket action failed: $e');
       if (mounted) {
-        AppDialog.error(message: '${t.common.error}\n$e').show(context);
+        AppDialog.error(message: t.common.error).show(context);
       }
     }
   }

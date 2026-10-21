@@ -50,6 +50,15 @@ abstract class CollabContainersRepository {
     required String uid,
   });
 
+  /// The invites this account holds for [collabIds], by collab id; one
+  /// never sent is simply absent. Read in a few list queries rather than a
+  /// document read per recipe — accepting a book of a hundred recipes used
+  /// to cost a hundred round trips before the first copy was written.
+  Future<Map<String, ShareInviteEntity>> recipeInvites({
+    required Set<String> collabIds,
+    required String uid,
+  });
+
   /// Accepts on the invite and joins the container, in that order — the
   /// rules check the accepted invite before admitting the member.
   Future<CollabContainerEntity> acceptInvite(ShareInviteEntity invite);
@@ -59,5 +68,9 @@ abstract class CollabContainersRepository {
   Future<List<CollabContainerEntity>> sharedWith(String uid);
 
   /// The owner revoking someone, or a member leaving.
-  Future<void> removeMember(String containerId, String memberUid);
+  Future<void> removeMember(
+    String containerId,
+    String memberUid, {
+    bool revokeInvite = false,
+  });
 }

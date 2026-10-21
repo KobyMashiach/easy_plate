@@ -8,18 +8,30 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../domain/phone_number.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/link_email_password_usecase.dart';
 import '../../domain/usecases/link_phone_usecase.dart';
+import '../../domain/send_log.dart';
 import 'auth_error_text.dart';
 
-/// Firebase requires E.164. A local Israeli number is the common paste, so
-/// `05…` is upgraded rather than rejected.
-String normalisePhone(String raw) {
-  final trimmed = raw.replaceAll(RegExp(r'[\s\-()]'), '');
-  if (trimmed.startsWith('+')) return trimmed;
-  if (trimmed.startsWith('0')) return '+972${trimmed.substring(1)}';
-  return '+$trimmed';
+/// The typed number in E.164, or the message to show instead. The one
+/// reading of a phone field for sign-in, the phone gate and linking: a
+/// local `0…` becomes `+972…` only in Hebrew; elsewhere the country code is
+/// asked for.
+({String? phone, String? error}) readPhoneField(String raw) {
+  final input = normalisePhone(
+    raw,
+    israeliLocal: LocaleSettings.currentLocale.languageCode == 'he',
+  );
+  return switch (input.rejection) {
+    null => (phone: input.e164, error: null),
+    PhoneRejection.needsCountryCode => (
+      phone: null,
+      error: t.auth.phoneNeedsCountryCode,
+    ),
+    PhoneRejection.invalid => (phone: null, error: t.auth.invalidPhone),
+  };
 }
 
 /// Attaches a phone number to the signed-in account, so signing in with that
@@ -105,9 +117,14 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
       LinkPhoneUseCase(context.read<AuthRepository>());
 
   Future<void> _send() async {
-    final phone = normalisePhone(_phone.text);
-    if (phone.length < 10) {
-      setState(() => _error = t.auth.invalidPhone);
+    final (:phone, :error) = readPhoneField(_phone.text);
+    if (phone == null) {
+      setState(() => _error = error);
+      return;
+    }
+    final left = SendLog.smsWaitLeft(phone, smsResendWaitSeconds);
+    if (left > 0) {
+      setState(() => _error = t.auth.resendIn(seconds: left));
       return;
     }
     setState(() {
@@ -116,7 +133,13 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
     });
     try {
       final id = await _useCase.start(phone);
-      if (mounted) setState(() => _verificationId = id);
+      if (!mounted) return;
+      // Verified without a code: already linked, nothing left to type.
+      if (id == AuthRepository.instantlyVerified) {
+        Navigator.of(context).pop(true);
+        return;
+      }
+      setState(() => _verificationId = id);
     } catch (e) {
       if (mounted) setState(() => _error = _messageFor(e));
     } finally {
@@ -151,8 +174,10 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
     if (e is AppException && e.message == 'credential-already-in-use') {
       return t.auth.phoneAlreadyUsed;
     }
+    // The Firebase code when there is one, else the error type (a network
+    // failure has no code) — the same fallback as AuthBloc.
     return e is AppException
-        ? authErrorMessage(e.message)
+        ? authErrorMessage(e.message.isNotEmpty ? e.message : e.type.name)
         : t.auth.errorUnknown;
   }
 
@@ -257,7 +282,8 @@ class _LinkEmailSheetState extends State<_LinkEmailSheet> {
             t.auth.errorEmailInUse,
           AppException(message: 'provider-already-linked') =>
             t.auth.emailAlreadyLinked,
-          AppException(message: final code) => authErrorMessage(code),
+          AppException(message: final code, type: final type) =>
+            authErrorMessage(code.isNotEmpty ? code : type.name),
           _ => t.auth.errorUnknown,
         };
       });

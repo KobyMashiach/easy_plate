@@ -40,7 +40,10 @@ class WidgetQuickAddActivity : Activity() {
         super.onCreate(savedInstanceState)
         if (loaded == null || !loaded.enabled) {
             // Nothing to add to: the app will say why.
-            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("easyplate://open/widget/settings")))
+            startActivity(
+                Intent(Intent.ACTION_VIEW, android.net.Uri.parse("easyplate://open/widget/settings"))
+                    .setPackage(packageName),
+            )
             finish()
             return
         }
@@ -142,7 +145,6 @@ class WidgetQuickAddActivity : Activity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
     // The dialog dictates through the system recognizer: "Hey Shefi" gives
     // the microphone up while it is open.
     override fun onResume() {
@@ -156,6 +158,7 @@ class WidgetQuickAddActivity : Activity() {
         super.onPause()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != REQUEST_SPEECH || resultCode != RESULT_OK) return

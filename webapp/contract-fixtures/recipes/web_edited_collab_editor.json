@@ -1,0 +1,52 @@
+{
+  "id": "c011ab00-1111-4222-8333-944455556666",
+  "title": "שקשוקה ירושלמית",
+  "prepTimeMinutes": null,
+  "cookTimeMinutes": null,
+  "ingredients": [
+    {
+      "name": "ביצים",
+      "amount": 4,
+      "unit": "unit"
+    },
+    {
+      "name": "רסק עגבניות",
+      "amount": 0.5,
+      "unit": "cup"
+    }
+  ],
+  "steps": [
+    "מחממים את הרוטב 10 דקות",
+    "שוברים את הביצים ומבשלים חצי שעה"
+  ],
+  "dietaryTags": [
+    "vegetarian",
+    "kosher",
+    "allergy"
+  ],
+  "sourceChannel": "urlScrape",
+  "sourceUrl": "https://example.com/shakshuka",
+  "createdAt": "2026-09-01T08:00:00.000Z",
+  "imageFileName": "0f1e2d3c-4b5a-4968-8776-655443322110.jpg",
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": "d2e3f4a5-b6c7-4d8e-9f00-112233445566",
+  "collabRole": "editor",
+  "imageStoragePath": "recipe_images/uid123/0f1e2d3c-4b5a-4968-8776-655443322110.jpg",
+  "allergens": [
+    "eggs"
+  ],
+  "mayContain": [
+    "sesame"
+  ],
+  "servings": 4,
+  "nutrition": {
+    "calories": 320,
+    "proteinGrams": 18.5,
+    "carbsGrams": 12,
+    "fatGrams": 22.25
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 3
+}

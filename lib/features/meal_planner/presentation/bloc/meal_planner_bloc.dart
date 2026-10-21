@@ -156,9 +156,10 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     final current = state;
     if (current is! MealPlannerLoaded) return;
     final selectedId = current.selectedPlan?.id;
-    final selected =
-        event.plans.where((p) => p.id == selectedId).firstOrNull ??
-        event.plans.firstOrNull;
+    final selected = _onScreenWhileWriting(
+      event.plans.where((p) => p.id == selectedId).firstOrNull ??
+          event.plans.firstOrNull,
+    );
     emit(
       .loaded(
         event.plans,
@@ -193,10 +194,16 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
 
   /// [syncShared] refreshes the selected plan from its shared document
   /// first — on open and on switching plans, not on every edit.
+  ///
+  /// [recipes] is the map already on screen, passed by the edits: a change
+  /// to a plan touches no recipe, so the whole recipes box is not re-read
+  /// after every tap on the board. The recipes stream keeps that map
+  /// current; the open and switch paths still read it fresh.
   Future<void> _reload(
     Emitter<MealPlannerState> emit, {
     String? selectedPlanId,
     bool syncShared = false,
+    Map<String, RecipeEntity>? recipes,
   }) async {
     try {
       var plans = await getMealPlansUseCase();
@@ -221,7 +228,14 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
           debugPrint('Shared plan refresh failed: $e');
         }
       }
-      final recipes = await _recipes();
+      selected = _onScreenWhileWriting(selected);
+      // The map on screen now, not the one captured before the awaits: the
+      // recipes stream may have renamed or re-estimated one meanwhile.
+      recipes = recipes == null
+          ? await _recipes()
+          : (state is MealPlannerLoaded
+                ? (state as MealPlannerLoaded).recipes
+                : recipes);
       emit(
         .loaded(
           plans,
@@ -232,8 +246,58 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       );
     } catch (e) {
       debugPrint('Meal planner error: $e');
-      emit(.errorMessage(e.toString()));
+      emit(.errorMessage(t.common.loadFailed));
     }
+  }
+
+  /// Plan saves of this bloc's own not yet stored. While one is queued the
+  /// stored plan (a box echo, the reload after an earlier save) lacks it,
+  /// and taking it would flicker the later edit off the board and back.
+  int _inflight = 0;
+
+  /// [stored], unless it is the plan on screen while a save of this bloc's
+  /// own is still queued: then the screen's copy, which already has it.
+  MealPlanEntity? _onScreenWhileWriting(MealPlanEntity? stored) {
+    final current = state;
+    if (_inflight == 0 || current is! MealPlannerLoaded) return stored;
+    final shown = current.selectedPlan;
+    return shown != null && shown.id == stored?.id ? shown : stored;
+  }
+
+  /// Shared publishes, one at a time and each of the plan as stored when
+  /// it runs: concurrent publishes of per-edit snapshots could land out of
+  /// order (one waits on recipe links, the next does not), and the older
+  /// whole document would undo the newer edit for every member.
+  Future<void> _publishes = Future.value();
+
+  /// Publishes queued but not started yet, by plan id: a burst of edits
+  /// sends the stored plan once, not once per tap.
+  final _queuedPublishes = <String, Future<void>>{};
+
+  Future<void> _publish(String planId, String uid) {
+    final queued = _queuedPublishes[planId];
+    if (queued != null) return queued;
+    final run = _publishes.then((_) async {
+      _queuedPublishes.remove(planId);
+      final latest = await saveMealPlanUseCase.repository.getPlanById(planId);
+      if (latest == null || !latest.isShared || !latest.canEdit) return;
+      await sharing?.plans.publish(latest, uid: uid);
+    });
+    _queuedPublishes[planId] = run;
+    _publishes = run.then<void>((_) {}, onError: (Object _) {});
+    return run;
+  }
+
+  /// Plan edits, one at a time: each reads the stored plan and writes it
+  /// back, and two of them interleaving would both start from the same
+  /// record and the second write would drop the first.
+  Future<void> _writes = Future.value();
+
+  Future<T> _serial<T>(Future<T> Function() write) {
+    final run = _writes.then((_) => write());
+    // A failed write must not wedge the ones behind it.
+    _writes = run.then<void>((_) {}, onError: (Object _) {});
+    return run;
   }
 
   Future<void> _updateSelectedPlan(
@@ -245,16 +309,54 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     // A read-only shared plan: the board hides the actions, this is the backstop.
     if (!current.selectedPlan!.canEdit) return;
     final updated = transform(current.selectedPlan!);
-    await saveMealPlanUseCase(updated);
+    // On screen before the save: a second quick edit (two taps on ✕) reads
+    // the plan from state, and must start from this one, not the old plan,
+    // or its save drops this edit.
+    emit(
+      current.copyWith(
+        selectedPlan: updated,
+        plans: [
+          for (final p in current.plans) p.id == updated.id ? updated : p,
+        ],
+      ),
+    );
+    final MealPlanEntity? saved;
+    try {
+      // The edit is made again on the plan as it is stored right now, not
+      // on the copy on screen: the website (or a resume refresh) may have
+      // written the plan since it was read, and the board's copy written
+      // whole would put the old meals back.
+      _inflight++;
+      saved = await _serial(() async {
+        try {
+          final stored = await saveMealPlanUseCase.repository.getPlanById(
+            updated.id,
+          );
+          // Deleted elsewhere meanwhile, or no longer this account's to
+          // edit: writing it would bring it back.
+          if (stored == null || !stored.canEdit) return null;
+          final next = transform(stored);
+          await saveMealPlanUseCase(next);
+          return next;
+        } finally {
+          _inflight--;
+        }
+      });
+    } catch (e) {
+      debugPrint('Saving the plan failed: $e');
+      // Back to what is stored, rather than an edit shown but never kept.
+      await _reload(emit, selectedPlanId: updated.id, recipes: current.recipes);
+      return;
+    }
     final uid = UserScope().uid;
-    if (updated.isShared && uid != null) {
+    if (saved != null && saved.isShared && uid != null) {
       try {
-        await sharing?.plans.publish(updated, uid: uid);
+        await _publish(saved.id, uid);
       } catch (e) {
         debugPrint('Shared plan publish failed: $e');
       }
     }
-    await _reload(emit, selectedPlanId: updated.id);
+    await _reload(emit, selectedPlanId: updated.id, recipes: current.recipes);
   }
 
   Future<void> _init(_Init event, Emitter<MealPlannerState> emit) =>
@@ -329,13 +431,16 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   }
 
   Future<void> _addMeal(_AddMeal event, Emitter<MealPlannerState> emit) {
+    // Minted once: the edit runs on the screen's plan and again on the
+    // stored one, and both must name the same meal.
+    final id = _uuid.v4();
     return _updateSelectedPlan(emit, (plan) {
       final order = plan.mealsForWeekday(event.weekday).length;
       return plan.copyWith(
         meals: [
           ...plan.meals,
           MealEntity(
-            id: _uuid.v4(),
+            id: id,
             weekday: event.weekday,
             name: event.name,
             order: order,
@@ -375,13 +480,10 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     _AddRecipeItem event,
     Emitter<MealPlannerState> emit,
   ) {
+    final item = MealItemEntity(id: _uuid.v4(), recipeId: event.recipeId);
     return _updateSelectedPlan(
       emit,
-      (plan) => _withItemAdded(
-        plan,
-        event.mealId,
-        MealItemEntity(id: _uuid.v4(), recipeId: event.recipeId),
-      ),
+      (plan) => _withItemAdded(plan, event.mealId, item),
     );
   }
 
@@ -389,17 +491,14 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     _AddFreeTextItem event,
     Emitter<MealPlannerState> emit,
   ) {
+    final item = MealItemEntity(
+      id: _uuid.v4(),
+      freeText: event.text,
+      ingredients: event.ingredients,
+    );
     return _updateSelectedPlan(
       emit,
-      (plan) => _withItemAdded(
-        plan,
-        event.mealId,
-        MealItemEntity(
-          id: _uuid.v4(),
-          freeText: event.text,
-          ingredients: event.ingredients,
-        ),
-      ),
+      (plan) => _withItemAdded(plan, event.mealId, item),
     );
   }
 

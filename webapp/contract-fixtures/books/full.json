@@ -1,0 +1,17 @@
+{
+  "id": "8a7b6c5d-4e3f-4a2b-8c1d-0e9f8a7b6c5d",
+  "title": "ספר השבת",
+  "recipeRefs": [
+    { "recipeId": "0b8c5b6e-2c1f-4a8e-9a1d-6a2f3c4d5e6f", "order": 0 },
+    { "recipeId": "1c9d6c7f-3d2a-4b9f-8b2e-7b3a4d5e6f70", "order": 1 }
+  ],
+  "collaborators": { "uid-other": "viewer" },
+  "createdAt": "2026-10-18T09:00:00.000Z",
+  "coverImageFileName": null,
+  "coverImageStoragePath": "recipe_images/uid-123/2f3e4d5c-6b7a-4980-9a8b-7c6d5e4f3a2b.jpg",
+  "spine": "teal",
+  "collabId": "collab-book-1",
+  "collabRole": "editor",
+  "contentLang": "he",
+  "contentVersion": 2
+}

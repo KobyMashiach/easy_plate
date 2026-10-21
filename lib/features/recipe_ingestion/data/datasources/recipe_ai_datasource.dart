@@ -66,6 +66,29 @@ class ReceiptPage {
   bool get isPdf => mimeType == 'application/pdf';
 }
 
+/// One inline attachment as the request body carries it: the block type
+/// (`image`, `document`, `audio`), its MIME type and its bytes.
+typedef InlineMediaPart = ({String type, String mimeType, Uint8List bytes});
+
+/// The inline blocks for [parts], bytes base64-encoded — the pure half of
+/// the encode, so a test can check the shape without an isolate.
+List<Map<String, dynamic>> inlineMediaBlocks(List<InlineMediaPart> parts) => [
+  for (final part in parts)
+    {
+      'type': part.type,
+      'mime_type': part.mimeType,
+      'data': base64Encode(part.bytes),
+    },
+];
+
+/// [inlineMediaBlocks] off the UI isolate. A receipt is up to 10 MB of
+/// photos, and base64 of that on the main isolate held the frame for the
+/// whole encode — the spinner froze exactly when the user was told to wait.
+/// The body is byte-for-byte what the inline encode produced.
+Future<List<Map<String, dynamic>>> encodeInlineMedia(
+  List<InlineMediaPart> parts,
+) => compute(inlineMediaBlocks, parts);
+
 /// Calls the Gemini Interactions API over raw HTTP (there is no official Google
 /// GenAI Dart SDK). Extraction runs in structured-output mode so the model's
 /// answer validates against the recipe shape, and the `url_context` /
@@ -524,29 +547,43 @@ $_dietaryTagRules
     required RecipeIngestionChannel channel,
     String? sourceUrl,
   }) {
-    final ingredients = ((input['ingredients'] as List?) ?? const [])
-        .cast<Map<String, dynamic>>()
-        .map(
-          (raw) => RecipeIngredientEntity(
-            name: raw['name'] as String,
+    // Shape-tolerant on purpose: the schema asks for strings and objects,
+    // but a model answer that strays (a nameless ingredient, a number where
+    // a step should be) must lose that one line, not crash the review — or
+    // worse, pass a lazily-cast list on to the screen to blow up there.
+    final ingredients = <RecipeIngredientEntity>[
+      for (final raw in (input['ingredients'] as List?) ?? const [])
+        if (raw is Map &&
+            raw['name'] is String &&
+            (raw['name'] as String).trim().isNotEmpty)
+          RecipeIngredientEntity(
+            name: (raw['name'] as String).trim(),
             amount: (raw['amount'] as num?)?.toDouble(),
             unit: MeasurementUnit.values.firstWhere(
               (u) => u.name == raw['unit'],
               orElse: () => MeasurementUnit.unspecified,
             ),
           ),
-        )
-        .toList();
+    ];
 
     final allergens = Allergen.fromNames(input['allergens']);
+    final title = input['title'];
+    if (title is! String || title.trim().isEmpty) {
+      throw const AppException(
+        AppErrorType.parsingFailed,
+        message: 'No recipe title returned by the model',
+      );
+    }
 
     return RecipeEntity(
       id: _uuid.v4(),
-      title: input['title'] as String,
+      title: title.trim(),
       prepTimeMinutes: (input['prep_time_minutes'] as num?)?.toInt(),
       cookTimeMinutes: (input['cook_time_minutes'] as num?)?.toInt(),
       ingredients: ingredients,
-      steps: ((input['steps'] as List?) ?? const []).cast<String>(),
+      steps: ((input['steps'] as List?) ?? const [])
+          .whereType<String>()
+          .toList(),
       dietaryTags: dietaryTagsWithAllergens(
         dietaryTagsFromModel(input['dietary_tags']),
         allergens,
@@ -666,12 +703,14 @@ $_dietaryTagRules
   Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) async {
     if (pages.isEmpty) return ReceiptScanEntity.empty;
     final blocks = <Map<String, dynamic>>[
-      for (final page in pages)
-        {
-          'type': page.isPdf ? 'document' : 'image',
-          'mime_type': page.mimeType,
-          'data': base64Encode(page.bytes),
-        },
+      ...await encodeInlineMedia([
+        for (final page in pages)
+          (
+            type: page.isPdf ? 'document' : 'image',
+            mimeType: page.mimeType,
+            bytes: page.bytes,
+          ),
+      ]),
       {
         'type': 'text',
         'text': pages.length > 1
@@ -760,8 +799,10 @@ $_dietaryTagRules
         }
       }
     }
+    final dump = jsonEncode(data);
     debugPrint(
-      'Gemini returned no image block: ${jsonEncode(data).substring(0, 300)}',
+      'Gemini returned no image block: '
+      '${dump.length > 300 ? dump.substring(0, 300) : dump}',
     );
     throw const AppException(
       AppErrorType.parsingFailed,
@@ -769,20 +810,87 @@ $_dietaryTagRules
     );
   }
 
+  /// What [estimateNutrition] sends for [recipe]: the title, the servings
+  /// and the ingredients. The steps only ride along when an ingredient has
+  /// no amount — then they may be where the quantity is written; otherwise
+  /// they are tokens that cannot change the numbers.
+  static String nutritionPayload(RecipeEntity recipe) => jsonEncode({
+    'title': recipe.title,
+    'servings': recipe.servings,
+    'ingredients': [
+      for (final i in recipe.ingredients)
+        {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
+    ],
+    if (recipe.ingredients.any((i) => i.amount == null)) 'steps': recipe.steps,
+  });
+
+  /// Answers by payload, for the life of the process: the same ingredients
+  /// asked again (a re-estimate of an unchanged recipe, the assistant and
+  /// the details screen on the same one, a double trigger while the first
+  /// call is in flight) share one model call. A failed call is forgotten so
+  /// the next attempt really retries.
+  static final _nutritionAnswers =
+      <String, Future<({int? servings, NutritionEntity nutrition})>>{};
+  static const _nutritionCacheSize = 50;
+
+  @visibleForTesting
+  static void clearNutritionCache() => _nutritionAnswers.clear();
+
   /// Fills in servings and per-serving nutrition for a recipe that has none —
   /// everything written before nutrition existed, and anything typed by hand.
   /// The rest of the recipe is untouched.
   @override
-  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) async {
-    final payload = jsonEncode({
-      'title': recipe.title,
-      'servings': recipe.servings,
-      'ingredients': [
-        for (final i in recipe.ingredients)
-          {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
-      ],
-      'steps': recipe.steps,
-    });
+  Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) =>
+      estimateNutritionCached(recipe, _askNutrition);
+
+  /// [estimateNutrition] with the model call passed in, so the cache can be
+  /// tested without a key.
+  @visibleForTesting
+  static Future<RecipeEntity> estimateNutritionCached(
+    RecipeEntity recipe,
+    Future<({int? servings, NutritionEntity nutrition})> Function(
+      String payload,
+    )
+    ask,
+  ) async {
+    final payload = nutritionPayload(recipe);
+    var answer = _nutritionAnswers.remove(payload);
+    if (answer == null) {
+      answer = ask(payload);
+      answer.then<void>(
+        (_) {},
+        onError: (Object _) {
+          if (identical(_nutritionAnswers[payload], answer)) {
+            _nutritionAnswers.remove(payload);
+          }
+        },
+      );
+    }
+    // Re-inserted last: the map is in use order, the oldest goes first.
+    _nutritionAnswers[payload] = answer;
+    if (_nutritionAnswers.length > _nutritionCacheSize) {
+      _nutritionAnswers.remove(_nutritionAnswers.keys.first);
+    }
+    final (:servings, :nutrition) = await answer;
+    final estimated = recipe.copyWith(
+      servings: recipe.servings ?? servings,
+      nutrition: nutrition,
+    );
+    // The estimate fills the servings in, which changes the payload: filed
+    // under that one too, a re-estimate of the saved result is answered
+    // here instead of asking the model what it just said.
+    if (recipe.servings == null && servings != null) {
+      _nutritionAnswers.putIfAbsent(
+        nutritionPayload(estimated),
+        () => Future.value((servings: servings, nutrition: nutrition)),
+      );
+    }
+    return estimated;
+  }
+
+  Future<({int? servings, NutritionEntity nutrition})> _askNutrition(
+    String payload,
+  ) async {
     final data = await _callStructured(
       feature: 'nutrition',
       _body(
@@ -799,10 +907,7 @@ $_dietaryTagRules
         message: 'No nutrition returned',
       );
     }
-    return recipe.copyWith(
-      servings: recipe.servings ?? _servingsFrom(data['servings']),
-      nutrition: nutrition,
-    );
+    return (servings: _servingsFrom(data['servings']), nutrition: nutrition);
   }
 
   String _dietaryHint(List<DietaryPreference> preferences) {
@@ -852,12 +957,14 @@ $_dietaryTagRules
       feature: 'file',
       _body(
         input: [
-          for (final file in files)
-            {
-              'type': file.isPdf ? 'document' : 'audio',
-              'mime_type': file.mimeType,
-              'data': base64Encode(file.bytes),
-            },
+          ...await encodeInlineMedia([
+            for (final file in files)
+              (
+                type: file.isPdf ? 'document' : 'audio',
+                mimeType: file.mimeType,
+                bytes: file.bytes,
+              ),
+          ]),
           {'type': 'text', 'text': prompt},
         ],
         schema: _recipeSchema,
@@ -979,16 +1086,16 @@ $_dietaryTagRules
       ),
     );
 
-    return ((data['results'] as List?) ?? const [])
-        .cast<Map<String, dynamic>>()
-        .map(
-          (r) => WebSearchResultEntity(
+    // A result the model left malformed is dropped, not fatal to the rest.
+    return [
+      for (final r in (data['results'] as List?) ?? const [])
+        if (r is Map && r['title'] is String && r['url'] is String)
+          WebSearchResultEntity(
             title: r['title'] as String,
             url: r['url'] as String,
-            snippet: r['snippet'] as String,
+            snippet: (r['snippet'] as String?) ?? '',
           ),
-        )
-        .toList();
+    ];
   }
 
   @override

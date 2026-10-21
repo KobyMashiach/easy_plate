@@ -31,8 +31,9 @@ List<WhatsNewPage> computeWhatsNewPages({
 
   return [
     for (final release in due)
-      for (final feature in [...release.features]
-        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
+      for (final feature in [
+        ...release.features,
+      ]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
         if (isFeatureShown(feature.featureKey))
           WhatsNewPage(feature: feature, release: release),
   ];
@@ -40,5 +41,7 @@ List<WhatsNewPage> computeWhatsNewPages({
 
 /// Whether there is anything at all to decide: a build at or below the
 /// pointer has nothing new, and the collection need not be read.
-bool whatsNewMayBeDue({required int currentBuild, required int? lastSeenBuild}) =>
-    lastSeenBuild == null || currentBuild > lastSeenBuild;
+bool whatsNewMayBeDue({
+  required int currentBuild,
+  required int? lastSeenBuild,
+}) => lastSeenBuild == null || currentBuild > lastSeenBuild;

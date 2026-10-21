@@ -8,6 +8,8 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/device_session_service.dart';
 import '../../../../core/services/presence_service.dart';
 import '../../domain/entities/app_user_entity.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/send_log.dart';
 
 abstract class AuthDataSource {
   Stream<AppUserEntity?> authStateChanges();
@@ -37,9 +39,14 @@ abstract class AuthDataSource {
   /// its own.
   Future<bool> refreshEmailVerified();
 
+  /// Resolves with the verification id for the SMS code, or with
+  /// [AuthRepository.instantlyVerified] when Android verified the number without one: the
+  /// credential is then already linked (or, with [reauthenticate], used to
+  /// confirm the account's own number) and there is no code to ask for.
   Future<String> startPhoneLink(
     String phoneNumber, {
     void Function(Object error)? onFailed,
+    bool reauthenticate = false,
   });
   Future<void> linkPhone(String verificationId, String smsCode);
 
@@ -53,6 +60,9 @@ abstract class AuthDataSource {
 }
 
 class FirebaseAuthDataSource implements AuthDataSource {
+  /// Android's resend token per number: without it a second
+  /// verifyPhoneNumber for the same number may send nothing at all.
+  final _resendTokens = <String, int>{};
   final FirebaseAuth _auth;
 
   FirebaseAuthDataSource({FirebaseAuth? auth})
@@ -241,6 +251,7 @@ class FirebaseAuthDataSource implements AuthDataSource {
 
     _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
+      forceResendingToken: _resendTokens[phoneNumber],
       verificationCompleted: (credential) async {
         try {
           final result = await _auth.signInWithCredential(credential);
@@ -248,6 +259,15 @@ class FirebaseAuthDataSource implements AuthDataSource {
           if (user != null) autoResolved?.call(user);
         } catch (e) {
           debugPrint('Phone auto-verification failed: $e');
+          // Instant verification sends no code, so nothing else completes
+          // the wait: left here, the screen spun forever on a failure.
+          if (!completer.isCompleted) {
+            completer.completeError(
+              e is FirebaseAuthException ? _mapAuthError(e) : e,
+            );
+          } else {
+            onFailed?.call(e);
+          }
         }
       },
       verificationFailed: (e) {
@@ -257,7 +277,9 @@ class FirebaseAuthDataSource implements AuthDataSource {
           onFailed?.call(e);
         }
       },
-      codeSent: (verificationId, _) {
+      codeSent: (verificationId, resendToken) {
+        if (resendToken != null) _resendTokens[phoneNumber] = resendToken;
+        SendLog.smsSent(phoneNumber);
         if (!completer.isCompleted) completer.complete(verificationId);
       },
       codeAutoRetrievalTimeout: (verificationId) {
@@ -316,6 +338,7 @@ class FirebaseAuthDataSource implements AuthDataSource {
   Future<void> sendEmailVerification() async {
     try {
       await _requireUser.sendEmailVerification();
+      SendLog.verificationMailSent(_requireUser.uid);
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }
@@ -328,7 +351,12 @@ class FirebaseAuthDataSource implements AuthDataSource {
     await user.reload();
     // reload() mutates the cached instance rather than returning a new one, so
     // the flag has to be read off currentUser again.
-    return _auth.currentUser?.emailVerified ?? false;
+    final verified = _auth.currentUser?.emailVerified ?? false;
+    // reload() leaves the ID token as it was, still saying
+    // `email_verified: false` for up to an hour — and the directory rules
+    // read the token, so the profile write that follows would be refused.
+    if (verified) await _auth.currentUser?.getIdToken(true);
+    return verified;
   }
 
   /// Same SMS round trip as signing in, but the resulting credential is
@@ -338,14 +366,43 @@ class FirebaseAuthDataSource implements AuthDataSource {
   Future<String> startPhoneLink(
     String phoneNumber, {
     void Function(Object error)? onFailed,
+    bool reauthenticate = false,
   }) {
     final completer = Completer<String>();
 
     _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      // Deliberately empty: auto-retrieval would sign the credential in, and
-      // linking has to stay an explicit step against the current user.
-      verificationCompleted: (_) {},
+      forceResendingToken: _resendTokens[phoneNumber],
+      verificationCompleted: (credential) async {
+        // Auto-retrieval after the code went out: the user is already on the
+        // code step and confirms it there, as before.
+        if (completer.isCompleted) return;
+        // Instant verification: no code is sent, so nothing else would end
+        // the wait (the gate spun forever with sign-out disabled). The
+        // credential goes against the current user, as the code would.
+        try {
+          if (reauthenticate) {
+            await _requireUser.reauthenticateWithCredential(credential);
+            await _auth.currentUser?.getIdToken(true);
+          } else {
+            await _requireUser.linkWithCredential(credential);
+            await _auth.currentUser?.reload();
+            await _refreshTokenAfterPhoneLink();
+          }
+          if (!completer.isCompleted) {
+            completer.complete(AuthRepository.instantlyVerified);
+          }
+        } catch (e) {
+          debugPrint('Phone instant verification failed: $e');
+          if (!completer.isCompleted) {
+            completer.completeError(
+              e is FirebaseAuthException ? _mapAuthError(e) : e,
+            );
+          } else {
+            onFailed?.call(e);
+          }
+        }
+      },
       verificationFailed: (e) {
         if (!completer.isCompleted) {
           completer.completeError(_mapAuthError(e));
@@ -353,7 +410,9 @@ class FirebaseAuthDataSource implements AuthDataSource {
           onFailed?.call(e);
         }
       },
-      codeSent: (verificationId, _) {
+      codeSent: (verificationId, resendToken) {
+        if (resendToken != null) _resendTokens[phoneNumber] = resendToken;
+        SendLog.smsSent(phoneNumber);
         if (!completer.isCompleted) completer.complete(verificationId);
       },
       codeAutoRetrievalTimeout: (verificationId) {
@@ -377,10 +436,26 @@ class FirebaseAuthDataSource implements AuthDataSource {
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
     }
+    await _refreshTokenAfterPhoneLink();
+  }
+
+  /// The paid endpoints refuse a token without `phone_number` (403
+  /// phone_required), and reload() leaves the ID token as it was: a fresh
+  /// one now, so the first AI call after the gate opens isn't refused. Best
+  /// effort — the link itself is done, and the SDK refreshes within the hour.
+  Future<void> _refreshTokenAfterPhoneLink() async {
+    try {
+      await _auth.currentUser?.getIdToken(true);
+    } catch (e) {
+      debugPrint('Token refresh after phone link failed: $e');
+    }
   }
 
   @override
-  Future<void> reauthenticatePhone(String verificationId, String smsCode) async {
+  Future<void> reauthenticatePhone(
+    String verificationId,
+    String smsCode,
+  ) async {
     try {
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
@@ -414,6 +489,9 @@ class FirebaseAuthDataSource implements AuthDataSource {
         GoogleAuthProvider.credential(idToken: idToken),
       );
       await _auth.currentUser?.reload();
+      // An adopted Google address is verified; the token has to say so
+      // before the directory write that follows (see refreshEmailVerified).
+      await _auth.currentUser?.getIdToken(true);
     } on GoogleSignInException catch (e) {
       throw e.code == GoogleSignInExceptionCode.canceled
           ? const AppException(AppErrorType.cancelled)
@@ -448,9 +526,19 @@ class FirebaseAuthDataSource implements AuthDataSource {
       );
       await _requireUser.linkWithCredential(credential);
       await _auth.currentUser?.reload();
-      await _auth.currentUser?.sendEmailVerification();
     } on FirebaseAuthException catch (e) {
       _rethrow(e);
+    }
+    // The link is done by now. A mail that fails to go out (throttled) is
+    // not a failed link — reporting it as one sent the user into a retry
+    // that then failed with "provider already linked".
+    try {
+      final user = _auth.currentUser;
+      await user?.sendEmailVerification();
+      // The verification screen opens next; it must not send a second one.
+      if (user != null) SendLog.verificationMailSent(user.uid);
+    } catch (e) {
+      debugPrint('Verification mail after linking failed: $e');
     }
   }
 }

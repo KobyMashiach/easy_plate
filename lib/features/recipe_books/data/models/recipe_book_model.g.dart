@@ -91,7 +91,7 @@ _RecipeBookModel _$RecipeBookModelFromJson(Map<String, dynamic> json) =>
             (k, e) => MapEntry(k, e as String),
           ) ??
           const {},
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: readJsonDate(json['createdAt']),
       coverImageFileName: json['coverImageFileName'] as String?,
       coverImageStoragePath: json['coverImageStoragePath'] as String?,
       spine: json['spine'] as String?,

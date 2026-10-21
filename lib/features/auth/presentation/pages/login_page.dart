@@ -15,9 +15,11 @@ import '../../../../core/widgets/language_selector.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/apple_sign_in.dart';
 import '../widgets/auth_error_text.dart';
+import '../widgets/link_credential_sheets.dart' show readPhoneField;
 import 'phone_verification_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/constants/app_motion.dart';
+import '../../domain/send_log.dart';
 
 enum _Method { email, phone }
 
@@ -59,15 +61,6 @@ class _LoginViewState extends State<_LoginView> {
   bool _validEmail(String value) =>
       RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value);
 
-  /// Firebase requires E.164. Local Israeli numbers are the common paste, so
-  /// `05…` is upgraded rather than rejected.
-  String _normalisePhone(String raw) {
-    final trimmed = raw.replaceAll(RegExp(r'[\s-()]'), '');
-    if (trimmed.startsWith('+')) return trimmed;
-    if (trimmed.startsWith('0')) return '+972${trimmed.substring(1)}';
-    return '+$trimmed';
-  }
-
   void _submitEmail() {
     final email = _email.text.trim();
     final password = _password.text;
@@ -88,9 +81,16 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   void _submitPhone() {
-    final phone = _normalisePhone(_phone.text);
-    if (phone.length < 10) {
-      setState(() => _fieldError = t.auth.invalidPhone);
+    final (:phone, :error) = readPhoneField(_phone.text);
+    if (phone == null) {
+      setState(() => _fieldError = error);
+      return;
+    }
+    // Back from the code screen and on again: the code screen's cooldown
+    // must not be a button press away from a second SMS.
+    final left = SendLog.smsWaitLeft(phone, smsResendWaitSeconds);
+    if (left > 0) {
+      setState(() => _fieldError = t.auth.resendIn(seconds: left));
       return;
     }
     setState(() => _fieldError = null);
@@ -438,7 +438,8 @@ class _LanguageButton extends StatelessWidget {
 
     await DeviceLocaleStore().write(picked);
     await LocaleSettings.setLocale(picked.locale);
-    onChanged();
+    // The page may have been left (a redirect) during the awaits.
+    if (context.mounted) onChanged();
   }
 
   @override

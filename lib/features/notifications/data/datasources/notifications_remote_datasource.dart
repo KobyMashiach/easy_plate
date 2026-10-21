@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../community/data/doc_fields.dart';
 import '../../domain/entities/app_notification_entity.dart';
 
 abstract class NotificationsRemoteDataSource {
@@ -14,6 +16,10 @@ abstract class NotificationsRemoteDataSource {
 class NotificationsFirestoreDataSource
     implements NotificationsRemoteDataSource {
   static const collection = 'notifications';
+
+  /// A batch takes 500 writes; a little under, per commit. The inbox shows
+  /// its newest hundred, but the collection behind it keeps growing.
+  static const _batchLimit = 450;
 
   final FirebaseFirestore _firestore;
 
@@ -30,38 +36,47 @@ class NotificationsFirestoreDataSource
         .limit(100)
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs.map((doc) {
-            final data = doc.data();
-            return AppNotificationEntity(
-              id: doc.id,
-              type: AppNotificationType.values.firstWhere(
-                (t) => t.name == data['type'],
-                orElse: () => AppNotificationType.shareInvite,
-              ),
-              fromUid: (data['fromUid'] as String?) ?? '',
-              inviteId: data['inviteId'] as String?,
-              collabId: data['collabId'] as String?,
-              recipeTitle: data['recipeTitle'] as String?,
-              sharedId: data['sharedId'] as String?,
-              message: data['message'] as String?,
-              feedbackExcerpt: data['feedbackExcerpt'] as String?,
-              feedbackId: data['feedbackId'] as String?,
-              title: data['title'] as String?,
-              postId: data['postId'] as String?,
-              replyId: data['replyId'] as String?,
-              postTitle: data['postTitle'] as String?,
-              excerpt: data['excerpt'] as String?,
-              onMyPost: (data['onMyPost'] as bool?) ?? false,
-              kind: CollabKind.fromName(data['kind'] as String?),
-              role: CollabRole.values
-                  .where((r) => r.name == data['role'])
-                  .firstOrNull,
-              read: (data['read'] as bool?) ?? false,
-              createdAt:
-                  (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-            );
-          }).toList(),
+          (snapshot) => parseEach(
+            snapshot.docs,
+            (doc) => fromData(doc.id, doc.data()),
+            label: 'Inbox',
+          ),
         );
+  }
+
+  /// One inbox row, or null for a type this build does not know — a newer
+  /// client or function may write one, and showing it as a share invite
+  /// (the old fallback) offered accept/decline on something that is not
+  /// an invite at all.
+  @visibleForTesting
+  static AppNotificationEntity? fromData(String id, Map<String, dynamic> data) {
+    final type = docEnum(AppNotificationType.values, data['type']);
+    if (type == null) {
+      debugPrint('Inbox row $id skipped: unknown type ${data['type']}');
+      return null;
+    }
+    return AppNotificationEntity(
+      id: id,
+      type: type,
+      fromUid: docString(data['fromUid']),
+      inviteId: docNonEmpty(data['inviteId']),
+      collabId: docNonEmpty(data['collabId']),
+      recipeTitle: docStringOrNull(data['recipeTitle']),
+      sharedId: docNonEmpty(data['sharedId']),
+      message: docStringOrNull(data['message']),
+      feedbackExcerpt: docStringOrNull(data['feedbackExcerpt']),
+      feedbackId: docNonEmpty(data['feedbackId']),
+      title: docStringOrNull(data['title']),
+      postId: docNonEmpty(data['postId']),
+      replyId: docNonEmpty(data['replyId']),
+      postTitle: docStringOrNull(data['postTitle']),
+      excerpt: docStringOrNull(data['excerpt']),
+      onMyPost: docBool(data['onMyPost']),
+      kind: CollabKind.fromName(docStringOrNull(data['kind'])),
+      role: docEnum(CollabRole.values, data['role']),
+      read: docBool(data['read']),
+      createdAt: docDate(data['createdAt']) ?? DateTime.now(),
+    );
   }
 
   @override
@@ -71,12 +86,13 @@ class NotificationsFirestoreDataSource
   @override
   Future<void> markAllRead(String uid) async {
     final unread = await _items(uid).where('read', isEqualTo: false).get();
-    if (unread.docs.isEmpty) return;
-    final batch = _firestore.batch();
-    for (final doc in unread.docs) {
-      batch.update(doc.reference, {'read': true});
+    for (var i = 0; i < unread.docs.length; i += _batchLimit) {
+      final batch = _firestore.batch();
+      for (final doc in unread.docs.skip(i).take(_batchLimit)) {
+        batch.update(doc.reference, {'read': true});
+      }
+      await batch.commit();
     }
-    await batch.commit();
   }
 
   @override
@@ -86,11 +102,12 @@ class NotificationsFirestoreDataSource
   @override
   Future<void> deleteAll(String uid) async {
     final all = await _items(uid).get();
-    if (all.docs.isEmpty) return;
-    final batch = _firestore.batch();
-    for (final doc in all.docs) {
-      batch.delete(doc.reference);
+    for (var i = 0; i < all.docs.length; i += _batchLimit) {
+      final batch = _firestore.batch();
+      for (final doc in all.docs.skip(i).take(_batchLimit)) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
     }
-    await batch.commit();
   }
 }

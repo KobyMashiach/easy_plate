@@ -39,3 +39,28 @@ test("a parameter inside a parameter group is found", () => {
   assert.equal(flags.intFrom(flat, "ff_notifications", 2), 3);
   assert.equal(flags.boolFrom(flat, "a", false), false);
 });
+
+test("with no Remote Config read, the notifications flag is gated, not on", () => {
+  assert.equal(flags.NOTIFICATIONS_FALLBACK, 0);
+  const flag = flags.intFrom({}, flags.NOTIFICATIONS_FLAG, flags.NOTIFICATIONS_FALLBACK);
+  assert.equal(flags.pushAllowed({ flag, premium: true }), false);
+});
+
+test("a burst of reads on a cold instance shares one template fetch", async () => {
+  const rf = require("./remoteFlags");
+  rf.resetForTest();
+  let calls = 0;
+  let release;
+  const gate = new Promise((r) => (release = r));
+  const fetchTemplate = async () => {
+    calls++;
+    await gate;
+    return { parameters: { q: { defaultValue: { value: "7" } } } };
+  };
+  const reads = Array.from({ length: 10 }, () => rf.params(Date.now(), fetchTemplate));
+  release();
+  const all = await Promise.all(reads);
+  assert.equal(calls, 1);
+  assert.ok(all.every((p) => rf.intFrom(p, "q", 0) === 7));
+  rf.resetForTest();
+});

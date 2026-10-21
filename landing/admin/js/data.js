@@ -1,7 +1,7 @@
 // Reads the views share: personas, public profiles, the price table and
 // the cost of a token tally — all straight from Firestore under the rules
 // that open these collections to the administrator.
-import { db, collection, doc, getDoc, getDocs, query, where, documentId, PERSONA_PREFIX } from "./firebase.js";
+import { db, collection, doc, getDoc, getDocs, query, where, documentId, limit, PERSONA_PREFIX } from "./firebase.js";
 import { chunks } from "./api.js";
 import { t } from "./i18n.js";
 
@@ -51,7 +51,7 @@ export async function profiles(uids) {
   const ids = [...new Set(uids.filter(Boolean))];
   const out = {};
   await Promise.all(chunks(ids).map(async (chunk) => {
-    const snap = await getDocs(query(collection(db, "public_profiles"), where(documentId(), "in", chunk)));
+    const snap = await getDocs(query(collection(db, "public_profiles"), where(documentId(), "in", chunk), limit(30)));
     for (const d of snap.docs) out[d.id] = d.data();
   }));
   return out;

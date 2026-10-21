@@ -15,10 +15,12 @@ class _FakeForumRepository implements ForumRepository {
   List<ForumPostEntity> posts = [];
   bool throwsOnRead = false;
   bool throwsOnLike = false;
+  bool throwsOnCreate = false;
 
   /// Set, a like write waits on it — to test a snapshot landing mid-flight.
   Completer<void>? likeGate;
   int reads = 0;
+  final refreshes = <bool>[];
   final likedPostIds = <String>[];
 
   /// The live window, pushed by the tests as Firestore would.
@@ -29,8 +31,10 @@ class _FakeForumRepository implements ForumRepository {
   Future<List<ForumPostEntity>> getPosts({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   }) async {
     reads++;
+    refreshes.add(refresh);
     if (throwsOnRead) throw Exception('offline');
     return posts;
   }
@@ -57,18 +61,28 @@ class _FakeForumRepository implements ForumRepository {
   }) => const Stream.empty();
 
   @override
+  Future<ForumReplyEntity?> getReply(
+    String postId,
+    String replyId, {
+    required String viewerUid,
+  }) async => null;
+
+  @override
   Future<void> createPost({
     required String title,
     required String body,
     required String authorUid,
     required String authorName,
     String? authorPhotoUrl,
-  }) async {}
+  }) async {
+    if (throwsOnCreate) throw Exception('offline');
+  }
 
   @override
   Future<List<ForumReplyEntity>> getReplies(
     String postId, {
     required String viewerUid,
+    bool refresh = false,
   }) async => const [];
 
   @override
@@ -87,8 +101,8 @@ class _FakeForumRepository implements ForumRepository {
     String postId, {
     required String viewerUid,
   }) async {
-    if (throwsOnLike) throw Exception('offline');
     if (likeGate case final gate?) await gate.future;
+    if (throwsOnLike) throw Exception('offline');
     likedPostIds.add(postId);
     return true;
   }
@@ -272,6 +286,31 @@ void main() {
       await bloc.close();
     });
 
+    test(
+      'a snapshot with the new flag but the old count shows the count moved',
+      () async {
+        repository.posts = [buildPost(id: 'p1', likeCount: 2)];
+        repository.likeGate = Completer<void>();
+        final bloc = buildBloc();
+        await settle();
+
+        bloc.add(const ForumEvent.toggleLike('p1'));
+        await Future<void>.delayed(Duration.zero);
+        // The datasource's flag already flipped; the counter not yet.
+        repository.live.add([
+          buildPost(id: 'p1', likeCount: 2, likedByMe: true),
+        ]);
+        await settle();
+
+        final post = (bloc.state as ForumLoaded).posts.single;
+        expect(post.likedByMe, isTrue);
+        expect(post.likeCount, 3);
+        repository.likeGate!.complete();
+        await settle();
+        await bloc.close();
+      },
+    );
+
     test('going to the background closes the listener; coming back re-reads '
         'and reopens it', () async {
       repository.posts = [buildPost(id: 'p1')];
@@ -286,6 +325,25 @@ void main() {
       bloc.add(const ForumEvent.setLive(true));
       await settle();
       expect(repository.reads, readsBefore + 1);
+      // A resume is not a pull: authors come from the profile cache.
+      expect(repository.refreshes.last, isFalse);
+      expect(repository.live.hasListener, isTrue);
+      await bloc.close();
+    });
+
+    test('coming back from a failed first load re-reads and opens the '
+        'listener without a pull', () async {
+      repository.throwsOnRead = true;
+      final bloc = buildBloc();
+      await settle();
+      expect(bloc.state, isA<ForumError>());
+      expect(repository.live.hasListener, isFalse);
+
+      repository.throwsOnRead = false;
+      repository.posts = [buildPost(id: 'p1')];
+      bloc.add(const ForumEvent.setLive(true));
+      await settle();
+      expect((bloc.state as ForumLoaded).posts, hasLength(1));
       expect(repository.live.hasListener, isTrue);
       await bloc.close();
     });
@@ -321,6 +379,7 @@ void main() {
       await done.future;
 
       expect(repository.reads, readsBefore + 1);
+      expect(repository.refreshes.last, isTrue);
       expect((bloc.state as ForumLoaded).posts, hasLength(2));
     });
 
@@ -353,7 +412,10 @@ void main() {
         const Duration(seconds: 2),
         onTimeout: () => fail('refresh future never completed'),
       );
-      expect(bloc.state, isA<ForumError>());
+      // The list on screen stays, flagged for the page to say so.
+      final state = bloc.state as ForumLoaded;
+      expect(state.posts, hasLength(1));
+      expect(state.notice, ForumNotice.loadFailed);
     });
   });
 
@@ -403,5 +465,106 @@ void main() {
       expect(post.likedByMe, isFalse);
       expect(post.likeCount, 2);
     });
+
+    test(
+      'a failed write undoes only the like, keeping what changed meanwhile',
+      () async {
+        repository.posts = [buildPost(likeCount: 2)];
+        final gate = repository.likeGate = Completer<void>();
+        final bloc = buildBloc();
+        await settle();
+
+        bloc.add(const ForumEvent.toggleLike('p1'));
+        await Future<void>.delayed(Duration.zero);
+        // A reply lands while the like is out.
+        repository.live.add([buildPost(likeCount: 2, replyCount: 5)]);
+        await settle();
+
+        repository.throwsOnLike = true;
+        gate.complete();
+        await settle();
+
+        final post = (bloc.state as ForumLoaded).posts.single;
+        expect(post.replyCount, 5);
+        expect(post.likedByMe, isFalse);
+        expect(post.likeCount, 2);
+        await bloc.close();
+      },
+    );
+
+    test('two quick taps are handled one after the other', () async {
+      repository.posts = [buildPost(likeCount: 2)];
+      final gate = repository.likeGate = Completer<void>();
+      final bloc = buildBloc();
+      await settle();
+
+      bloc.add(const ForumEvent.toggleLike('p1'));
+      bloc.add(const ForumEvent.toggleLike('p1'));
+      await Future<void>.delayed(Duration.zero);
+      // Only the first has flipped the row; the second waits for its write.
+      final midway = (bloc.state as ForumLoaded).posts.single;
+      expect(midway.likedByMe, isTrue);
+      expect(midway.likeCount, 3);
+      expect(repository.likedPostIds, isEmpty);
+
+      gate.complete();
+      await settle();
+
+      expect(repository.likedPostIds, ['p1', 'p1']);
+      final post = (bloc.state as ForumLoaded).posts.single;
+      expect(post.likedByMe, isFalse);
+      expect(post.likeCount, 2);
+    });
+  });
+
+  group('a write of the viewer\'s own that failed', () {
+    test(
+      'keeps the list and flags it, until the page says it was shown',
+      () async {
+        repository.posts = [buildPost()];
+        repository.throwsOnCreate = true;
+        final bloc = buildBloc();
+        await settle();
+
+        bloc.add(const ForumEvent.createPost('כותרת', 'תוכן'));
+        await settle();
+
+        var state = bloc.state as ForumLoaded;
+        expect(state.posts, hasLength(1), reason: 'the list stays');
+        expect(state.notice, ForumNotice.createFailed);
+
+        bloc.add(const ForumEvent.dismissNotice());
+        await settle();
+        state = bloc.state as ForumLoaded;
+        expect(state.notice, isNull);
+
+        // The same failure again is a new state, not swallowed as a repeat.
+        final emitted = <ForumState>[];
+        final sub = bloc.stream.listen(emitted.add);
+        bloc.add(const ForumEvent.createPost('כותרת', 'תוכן'));
+        await settle();
+        await sub.cancel();
+        expect(
+          emitted.whereType<ForumLoaded>().map((s) => s.notice),
+          contains(ForumNotice.createFailed),
+        );
+      },
+    );
+
+    test(
+      'with no list to keep, the error view carries a worded message',
+      () async {
+        repository.throwsOnRead = true;
+        repository.throwsOnCreate = true;
+        final bloc = buildBloc();
+        await settle();
+
+        bloc.add(const ForumEvent.createPost('כותרת', 'תוכן'));
+        await settle();
+
+        final state = bloc.state as ForumError;
+        expect(state.error, isNot(contains('Exception')));
+      },
+    );
   });
 }

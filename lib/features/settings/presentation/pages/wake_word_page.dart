@@ -57,18 +57,34 @@ class _WakeWordPageState extends State<WakeWordPage>
   }
 
   Future<void> _refresh() async {
-    await _service.refreshPermission();
-    final open = await _service.canOpenFromBackground();
-    if (mounted) setState(() => _canOpenFromBackground = open);
+    try {
+      await _service.refreshPermission();
+      final open = await _service.canOpenFromBackground();
+      if (mounted) setState(() => _canOpenFromBackground = open);
+    } catch (e) {
+      // The page keeps what it showed; the next resume asks again.
+      debugPrint('Wake word permissions unknown: $e');
+    }
   }
 
   Future<void> _toggle(bool on) async {
     if (_busy) return;
     setState(() => _busy = true);
-    final ok = await _service.setEnabled(on);
-    if (!mounted) return;
-    setState(() => _busy = false);
-    if (ok) return;
+    var ok = false;
+    try {
+      ok = await _service.setEnabled(on);
+    } catch (e) {
+      // A failure is not a refused microphone: saying so would send the
+      // user to a permission screen with nothing to change.
+      debugPrint('Wake word toggle failed: $e');
+      if (mounted) {
+        AppDialog.error(message: t.wakeWord.toggleFailed).show(context);
+      }
+      return;
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted || ok) return;
     final forever = _service.permission.value == 'permanentlyDenied';
     final go = await AppDialog.warning(
       title: t.wakeWord.permissionTitle,

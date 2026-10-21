@@ -21,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { SITE, APP_STORE_URL, APP_STORE_ID, PLAY_URL, SUPPORT, CONTENT_UPDATED } from './site.config.mjs';
+import { SITE, APP_STORE_URL, APP_STORE_ID, PLAY_URL, SUPPORT, CONTENT_UPDATED, BRAND_ALT } from './site.config.mjs';
 import { SLUGS } from './topics.mjs';
 import { renderGuide, guideUrl, homeGuidesSection, homeFooterGuides } from './guides.mjs';
 
@@ -78,10 +78,10 @@ function hreflangLinks(hrefFor) {
 
 function jsonLd(lang) {
   const t = I18N[lang], seo = t.seo, url = urlFor(lang);
-  const org = { '@type': 'Organization', '@id': `${SITE}/#organization`, name: 'EasyPlate', legalName: 'KH Easy Dev', url: SITE, logo: { '@type': 'ImageObject', url: `${SITE}/icon-192.png`, width: 192, height: 192 }, email: SUPPORT, contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: SUPPORT, availableLanguage: LANGS }, sameAs: [APP_STORE_URL, PLAY_URL] };
-  const site = { '@type': 'WebSite', '@id': `${SITE}/#website`, url: SITE, name: 'EasyPlate', description: seo.description, inLanguage: LANGS, publisher: { '@id': `${SITE}/#organization` } };
+  const org = { '@type': 'Organization', '@id': `${SITE}/#organization`, name: 'EasyPlate', alternateName: BRAND_ALT, legalName: 'KH Easy Dev', url: SITE, logo: { '@type': 'ImageObject', url: `${SITE}/icon-192.png`, width: 192, height: 192 }, email: SUPPORT, contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: SUPPORT, availableLanguage: LANGS }, sameAs: [APP_STORE_URL, PLAY_URL] };
+  const site = { '@type': 'WebSite', '@id': `${SITE}/#website`, url: SITE, name: 'EasyPlate', alternateName: BRAND_ALT, description: seo.description, inLanguage: LANGS, publisher: { '@id': `${SITE}/#organization` } };
   const app = {
-    '@type': ['SoftwareApplication', 'MobileApplication'], '@id': `${SITE}/#app`, name: 'EasyPlate', alternateName: 'Easy Plate',
+    '@type': ['SoftwareApplication', 'MobileApplication'], '@id': `${SITE}/#app`, name: 'EasyPlate', alternateName: BRAND_ALT,
     url: SITE, description: seo.description, inLanguage: lang, operatingSystem: 'iOS, Android', applicationCategory: 'LifestyleApplication', applicationSubCategory: 'Cooking and recipes',
     image: `${SITE}/icon-192.png`, screenshot: SCREENS.map(s => ({ '@type': 'ImageObject', url: `${SITE}/screens/${s}.jpg`, width: 540, height: s.startsWith('09') || s.startsWith('10') ? 1092 : 1129 })),
     featureList: [1, 2, 3, 4, 5, 6, 7].map(n => t.features[`f${n}t`]),
@@ -335,6 +335,7 @@ const robots = `User-agent: *
 Allow: /
 Disallow: /.og/
 Disallow: /admin
+Disallow: /app
 
 Sitemap: ${SITE}/sitemap.xml
 `;
@@ -384,8 +385,11 @@ if (want('pages')) {
     for (const [f, s] of outputs) write(f, s);
     console.log(`${doc}: ${outputs.length} pages`);
   }
+  // The share-link fallback page (/s/CODE) carries the store links too; it
+  // is not rendered from the template, so it gets the same rewrite in place.
+  write('s/index.html', applyConfig(read('s/index.html')));
   write('sitemap.xml', sitemap());
   write('robots.txt', robots);
-  console.log('sitemap.xml, robots.txt written');
+  console.log('s/index.html, sitemap.xml, robots.txt written');
 }
 if (want('og')) buildOg();

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -125,20 +127,45 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   /// and clears the pending flag. Capped like the original attempt was.
   bool _estimating = false;
 
+  /// The recipe as stored right now, for a change to be made on. The page's
+  /// copy is the one it opened with, and the website or another device may
+  /// have edited the recipe since: a whole record built from that copy
+  /// would put their edit back. A post opened as its author is not in the
+  /// box under its own id, so its copy on screen is the base. Null when the
+  /// recipe was deleted elsewhere — a write must not bring it back.
+  Future<RecipeEntity?> _latest() async {
+    if (widget.sharedId != null) return recipe;
+    return context.read<RecipesRepository>().getRecipeById(recipe.id);
+  }
+
   /// Fills servings and per-serving nutrition for a recipe that has none, or
   /// re-estimates one the user asked to redo. Saved straight away, like a
   /// deferred analysis.
   Future<void> _estimateNutrition() async {
+    // A second tap before the button greys out would pay for a second call.
+    if (_estimating) return;
     final ingestion = context.read<RecipeIngestionRepository>();
-    final recipes = context.read<RecipesRepository>();
     setState(() => _estimating = true);
     try {
-      final updated = await EstimateNutritionUseCase(ingestion)(
+      final estimate = await EstimateNutritionUseCase(ingestion)(
         recipe,
       ).timeout(const Duration(seconds: 30));
-      await SaveRecipeUseCase(recipes)(updated);
       if (!mounted) return;
-      setState(() => recipe = updated);
+      // Only the estimate, onto the recipe as it is now: the call took
+      // seconds, and an edit saved meanwhile must survive it.
+      final base = await _latest();
+      if (base == null) throw StateError('Recipe ${recipe.id} is gone');
+      final updated = base.copyWith(
+        servings: estimate.servings,
+        nutrition: estimate.nutrition,
+      );
+      if (!mounted) return;
+      // Through _persist, not a plain save: a post opened as its author must
+      // not grow a local twin, and a shared recipe's estimate has to reach
+      // the shared document or the next sync lays the old copy back.
+      final stored = await _persist(updated);
+      if (!mounted) return;
+      setState(() => recipe = stored);
       AppDialog.success(message: t.nutrition.estimated).notify(context);
     } catch (e) {
       debugPrint('Nutrition estimate failed: $e');
@@ -151,8 +178,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   }
 
   Future<void> _analyzeNow() async {
+    if (_analyzing) return;
     final ingestion = context.read<RecipeIngestionRepository>();
-    final recipes = context.read<RecipesRepository>();
 
     setState(() => _analyzing = true);
     try {
@@ -162,8 +189,19 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
           ? GenerateRecipeUseCase(ingestion)(recipe.rawText)
           : ParseRawTextUseCase(ingestion)(recipe.rawText);
       final parsed = await analysis.timeout(const Duration(seconds: 30));
+      if (!mounted) return;
+      // Built on the recipe as it is now, not as the page opened with it:
+      // the model took seconds, and what changed meanwhile must survive.
+      final base = await _latest();
+      if (base == null) throw StateError('Recipe ${recipe.id} is gone');
+      // Structured elsewhere meanwhile (by hand on the website, or this
+      // same analysis on another device): that version stands.
+      if (!base.pendingAnalysis && widget.sharedId == null) {
+        if (mounted) setState(() => recipe = base);
+        return;
+      }
       final updated = RecipeEntity(
-        id: recipe.id,
+        id: base.id,
         title: parsed.title,
         prepTimeMinutes: parsed.prepTimeMinutes,
         cookTimeMinutes: parsed.cookTimeMinutes,
@@ -172,28 +210,33 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         // A topic the user already picked outranks the model's silence on it.
         dietaryTags: parsed.dietaryTags.isNotEmpty
             ? parsed.dietaryTags
-            : recipe.dietaryTags,
+            : base.dietaryTags,
         allergens: parsed.allergens.isNotEmpty
             ? parsed.allergens
-            : recipe.allergens,
+            : base.allergens,
         mayContain: parsed.mayContain.isNotEmpty
             ? parsed.mayContain
-            : recipe.mayContain,
-        servings: parsed.servings ?? recipe.servings,
-        nutrition: parsed.nutrition ?? recipe.nutrition,
-        sourceChannel: recipe.sourceChannel,
-        sourceUrl: recipe.sourceUrl,
-        imageFileName: recipe.imageFileName,
-        imageStoragePath: recipe.imageStoragePath,
-        savedFromSharedId: recipe.savedFromSharedId,
-        collabId: recipe.collabId,
-        collabRole: recipe.collabRole,
-        sharedRecipeId: recipe.sharedRecipeId,
+            : base.mayContain,
+        servings: parsed.servings ?? base.servings,
+        nutrition: parsed.nutrition ?? base.nutrition,
+        sourceChannel: base.sourceChannel,
+        sourceUrl: base.sourceUrl,
+        imageFileName: base.imageFileName,
+        imageStoragePath: base.imageStoragePath,
+        savedFromSharedId: base.savedFromSharedId,
+        collabId: base.collabId,
+        collabRole: base.collabRole,
+        sharedRecipeId: base.sharedRecipeId,
         pendingAnalysis: false,
-        createdAt: recipe.createdAt,
+        createdAt: base.createdAt,
+        // Carried so a save that leaves the words alone keeps the record's
+        // language; the repository moves the version on when they changed.
+        contentLang: base.contentLang,
+        contentVersion: base.contentVersion,
       );
-      await SaveRecipeUseCase(recipes)(updated);
-      if (mounted) setState(() => recipe = updated);
+      if (!mounted) return;
+      final stored = await _persist(updated);
+      if (mounted) setState(() => recipe = stored);
     } catch (e) {
       debugPrint('Deferred analysis failed: $e');
       if (mounted) {
@@ -215,11 +258,19 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     );
     if (result == null || !mounted) return;
 
-    final previous = recipe.imageFileName;
+    // The photo goes onto the recipe as it is stored now: the sheet stayed
+    // open a while, and an edit made elsewhere meanwhile must survive it.
+    final base = await _latest();
+    if (!mounted) return;
+    if (base == null) {
+      AppDialog.error(message: t.common.error).show(context);
+      return;
+    }
+    final previous = base.imageFileName;
     // Read before the copyWith, which clears it: a new photo invalidates the
     // uploaded one, and this is the last moment the old path is known.
-    final previousRemote = recipe.imageStoragePath;
-    final updated = recipe.copyWith(
+    final previousRemote = base.imageStoragePath;
+    final updated = base.copyWith(
       imageFileName: result.fileName,
       removeImage: result.removed,
     );
@@ -235,7 +286,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       // nothing recorded it, and the screen went on showing the old one.
       debugPrint('Photo change failed for ${recipe.id}: $e');
       if (mounted) {
-        AppDialog.error(message: '${t.common.error}\n$e').show(context);
+        AppDialog.error(message: t.common.error).show(context);
       }
       return;
     }
@@ -280,10 +331,12 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
           )(postId, updated, persist: false),
         );
       } catch (e) {
+        // Nothing was written. Thrown, not swallowed: every caller says the
+        // change failed in its own words and keeps what the post still says
+        // — returning the old copy here let "nutrition estimated" show over
+        // a refused save.
         debugPrint('Post update failed: $e');
-        if (mounted) {
-          AppDialog.error(message: '${t.common.error}\n$e').show(context);
-        }
+        rethrow;
       }
       return updated;
     }
@@ -332,6 +385,16 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       }
     } catch (e) {
       debugPrint('Community update failed: $e');
+      // Offline, a timeout, a refusal: the post is still there, so the link
+      // stays and the user hears the update did not go out.
+      if (!isPostGone(e)) {
+        if (mounted) {
+          AppDialog.warning(
+            message: t.recipe.communityUpdateFailed,
+          ).notify(context);
+        }
+        return stored;
+      }
       // The post is gone (taken down elsewhere): forget the link.
       final unlinked = stored.copyWith(clearSharedRecipeId: true);
       await SaveRecipeUseCase(recipes)(unlinked);
@@ -348,7 +411,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   /// the title is ambiguous.
   Future<String?> _findMyPost(RecipeEntity recipe) async {
     final uid = AuthSessionService().user?.uid;
-    if (uid == null) return null;
+    // Reached after an await: the page may have gone (a sign-out redirect).
+    if (uid == null || !mounted) return null;
     try {
       // Only this account's posts, and without a like lookup per post: the
       // whole feed with likes was two hundred reads plus two hundred more,
@@ -400,13 +464,28 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
   }
 
   Future<void> _edit() async {
+    final repository = context.read<RecipesRepository>();
+    final before = recipe;
     final edited = await context.pushNamed<RecipeEntity>(
       Routing.recipeEditor,
       extra: recipe,
     );
     if (edited == null || !mounted) return;
-    final stored = await _persist(edited);
-    if (mounted) setState(() => recipe = stored);
+    try {
+      final merged = mergeEditedRecipe(
+        edited,
+        before,
+        await repository.getRecipeById(before.id),
+      );
+      if (!mounted) return;
+      final stored = await _persist(merged);
+      if (mounted) setState(() => recipe = stored);
+    } catch (e) {
+      // A refused shared write (a revoked or demoted member) or a failed
+      // save: said, rather than the edits vanishing without a word.
+      debugPrint('Saving the edited recipe failed: $e');
+      if (mounted) AppDialog.error(message: t.common.error).show(context);
+    }
   }
 
   @override
@@ -828,3 +907,128 @@ class _GlassChip extends StatelessWidget {
     );
   }
 }
+
+/// The editor returns the record as it was when it opened, with the user's
+/// changes. What landed meanwhile from elsewhere — the website's edit of
+/// another field, the photo upload's storage path, a community link set or
+/// cleared, a change of role — is taken from [fresh] wherever the user left
+/// that field alone, so the save does not put the old values back. A field
+/// both sides changed keeps the user's version: it is the one they just saw.
+@visibleForTesting
+RecipeEntity mergeEditedRecipe(
+  RecipeEntity edited,
+  RecipeEntity before,
+  RecipeEntity? fresh,
+) {
+  if (fresh == null) return edited;
+  var changed = false;
+  T pick<T>(T mine, T was, T theirs, [bool Function(T a, T b)? same]) {
+    final eq = same ?? (T a, T b) => a == b;
+    // Untouched here and moved elsewhere: theirs.
+    if (eq(mine, was) && !eq(theirs, was)) {
+      changed = true;
+      return theirs;
+    }
+    return mine;
+  }
+
+  bool sameList<E>(List<E> a, List<E> b) => listEquals(a, b);
+  bool sameIngredients(
+    List<RecipeIngredientEntity> a,
+    List<RecipeIngredientEntity> b,
+  ) => listEquals(
+    [for (final i in a) '${i.name}\u0001${i.amount}\u0001${i.unit.name}'],
+    [for (final i in b) '${i.name}\u0001${i.amount}\u0001${i.unit.name}'],
+  );
+
+  final title = pick(edited.title, before.title, fresh.title);
+  final prep = pick(
+    edited.prepTimeMinutes,
+    before.prepTimeMinutes,
+    fresh.prepTimeMinutes,
+  );
+  final cook = pick(
+    edited.cookTimeMinutes,
+    before.cookTimeMinutes,
+    fresh.cookTimeMinutes,
+  );
+  final ingredients = pick(
+    edited.ingredients,
+    before.ingredients,
+    fresh.ingredients,
+    sameIngredients,
+  );
+  final steps = pick(edited.steps, before.steps, fresh.steps, sameList);
+  final tags = pick(
+    edited.dietaryTags,
+    before.dietaryTags,
+    fresh.dietaryTags,
+    sameList,
+  );
+  final servings = pick(edited.servings, before.servings, fresh.servings);
+  final nutrition = pick(edited.nutrition, before.nutrition, fresh.nutrition);
+  final allergens = pick(
+    edited.allergens,
+    before.allergens,
+    fresh.allergens,
+    sameList,
+  );
+  final mayContain = pick(
+    edited.mayContain,
+    before.mayContain,
+    fresh.mayContain,
+    sameList,
+  );
+  final pending = pick(
+    edited.pendingAnalysis,
+    before.pendingAnalysis,
+    fresh.pendingAnalysis,
+  );
+  // Not the editor's to change: always as stored now.
+  final collabId = pick(edited.collabId, before.collabId, fresh.collabId);
+  final collabRole = pick(
+    edited.collabRole,
+    before.collabRole,
+    fresh.collabRole,
+  );
+  final photoMoved =
+      fresh.imageFileName != before.imageFileName ||
+      fresh.imageStoragePath != before.imageStoragePath;
+  final linkMoved = fresh.sharedRecipeId != before.sharedRecipeId;
+  if (!changed && !photoMoved && !linkMoved) return edited;
+  return RecipeEntity(
+    id: edited.id,
+    title: title,
+    prepTimeMinutes: prep,
+    cookTimeMinutes: cook,
+    ingredients: ingredients,
+    steps: steps,
+    dietaryTags: tags,
+    servings: servings,
+    nutrition: nutrition,
+    allergens: allergens,
+    mayContain: mayContain,
+    sourceChannel: edited.sourceChannel,
+    sourceUrl: edited.sourceUrl,
+    imageFileName: photoMoved ? fresh.imageFileName : edited.imageFileName,
+    imageStoragePath: photoMoved
+        ? fresh.imageStoragePath
+        : edited.imageStoragePath,
+    savedFromSharedId: edited.savedFromSharedId,
+    pendingAnalysis: pending,
+    collabId: collabId,
+    collabRole: collabRole,
+    sharedRecipeId: linkMoved ? fresh.sharedRecipeId : edited.sharedRecipeId,
+    createdAt: edited.createdAt,
+    // The stored record's: the repository moves the version on from it
+    // when the merged words differ.
+    contentLang: fresh.contentLang ?? edited.contentLang,
+    contentVersion: fresh.contentVersion,
+  );
+}
+
+/// Whether a failed community update means the post no longer exists, the
+/// only failure that should unlink the recipe from it for good.
+@visibleForTesting
+bool isPostGone(Object error) =>
+    error is FirebaseException && error.code == 'not-found';

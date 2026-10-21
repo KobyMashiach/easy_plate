@@ -102,9 +102,7 @@ class _UpdatePrompt extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.base),
                         Text(
-                          forced
-                              ? t.update.forcedBody
-                              : t.update.optionalBody,
+                          forced ? t.update.forcedBody : t.update.optionalBody,
                           style: AppTextStyles.bodyMd.copyWith(
                             color: AppColors.onSurfaceVariant,
                           ),

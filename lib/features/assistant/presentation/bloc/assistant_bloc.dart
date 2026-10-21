@@ -10,6 +10,8 @@ import '../../domain/assistant_agent.dart';
 import '../../domain/assistant_dispatcher.dart';
 import '../../domain/assistant_models.dart';
 import '../../domain/assistant_text.dart';
+import '../../../recipe_ingestion/domain/paid_call_refusal.dart';
+import '../../../grocery_list/domain/entities/grocery_list_entity.dart';
 
 sealed class AssistantEvent {
   const AssistantEvent();
@@ -87,14 +89,26 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
     this.onReply,
   }) : super(_initial(welcome)) {
     on<AssistantSend>(_onSend);
-    on<AssistantToggleGroceryItem>(_onToggle);
+    // One at a time: each toggle reads the list and saves it whole, so two
+    // quick taps run side by side would overwrite each other.
+    on<AssistantToggleGroceryItem>(_onToggle, transformer: _sequential());
     on<AssistantReset>(_onReset);
     on<AssistantCancel>(_onCancel);
   }
 
-  /// Which turn is live; a cancel bumps it, and the turn that was running
-  /// drops out at its next event (which also cancels the agent's stream).
+  static EventTransformer<E> _sequential<E>() =>
+      (events, mapper) => events.asyncExpand(mapper);
+
+  /// Which turn is live; a cancel or a reset bumps it, and the turn that
+  /// was running drops out at its next event (which also cancels the
+  /// agent's stream).
   int _turn = 0;
+
+  /// The longest message one turn sends. The proxy caps only the request
+  /// body (16 MB); this is the size past which a message is a pasted
+  /// document, which the import tool takes at the same length
+  /// ([AssistantDispatcher.maxTextLength]).
+  static const maxMessageChars = AssistantDispatcher.maxTextLength;
 
   static AssistantState _initial(String? welcome) => AssistantState(
     messages: [
@@ -119,7 +133,16 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
     AssistantSend event,
     Emitter<AssistantState> emit,
   ) async {
-    final text = event.text.trim();
+    // Cut at the cap, not refused: the composer already stops at it, and a
+    // message that arrived some other way (a widget, a share) is better
+    // answered short than dropped without a word.
+    final text = switch (event.text.trim()) {
+      final s when s.length > maxMessageChars => s.substring(
+        0,
+        maxMessageChars,
+      ),
+      final s => s,
+    };
     if (text.isEmpty || state.busy) return;
     final turn = ++_turn;
     final user = AssistantMessage(
@@ -167,8 +190,9 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
               );
             }
           case AgentReply():
-            onReply?.call(e.text);
-            await _reveal(pending.id, AssistantText.display(e.text), emit);
+            final reply = e.exhausted ? t.assistant.roundsExhausted : e.text;
+            onReply?.call(reply);
+            await _reveal(pending.id, AssistantText.display(reply), emit, turn);
         }
       }
     } on AppException catch (e) {
@@ -182,6 +206,7 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
   void _onCancel(AssistantCancel event, Emitter<AssistantState> emit) {
     if (!state.busy) return;
     _turn++;
+    agent.cancel();
     emit(
       state.copyWith(
         messages: [
@@ -199,16 +224,24 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
   String _messageFor(AppException e) => switch (e.type) {
     AppErrorType.quotaExceeded => t.assistant.quotaReached,
     AppErrorType.networkError => t.common.networkError,
+    AppErrorType.phoneRequired => t.auth.phoneGateTitle,
+    // A console-blocked account (403 account_disabled) still arrives as
+    // `unauthorized`; the body tells it from a missing key.
+    _ when isAccountDisabled(e) => t.auth.blockedTitle,
     _ => t.assistant.error,
   };
 
   /// Word-by-word reveal of the reply, paced so a long answer still lands
-  /// within about a second and a half.
+  /// within about a second and a half. Stops the moment [turn] is no longer
+  /// the live one: a cancel has already written "Cancelled." into the
+  /// bubble, and the reveal must not keep writing over it.
   Future<void> _reveal(
     String id,
     String text,
     Emitter<AssistantState> emit,
+    int turn,
   ) async {
+    if (turn != _turn) return;
     if (text.isEmpty) {
       _replace(
         id,
@@ -230,6 +263,7 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
         emit,
       );
       if (!done) await Future<void>.delayed(const Duration(milliseconds: 35));
+      if (turn != _turn) return;
     }
   }
 
@@ -258,8 +292,31 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
     AssistantToggleGroceryItem event,
     Emitter<AssistantState> emit,
   ) async {
-    await dispatcher.toggleGroceryItem(event.listId, event.itemId);
-    // Reflect it on every card that shows that list.
+    final GroceryListEntity? saved;
+    try {
+      saved = await dispatcher.toggleGroceryItem(event.listId, event.itemId);
+    } catch (_) {
+      emit(
+        state.copyWith(
+          messages: [
+            ...state.messages,
+            AssistantMessage(
+              id: _uuid.v4(),
+              role: AssistantRole.assistant,
+              text: t.assistant.toggleFailed,
+              error: true,
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    if (saved == null) return;
+    // Every card that shows that list now reads the stored ticks, so the
+    // cards and the list cannot drift apart however fast the taps came.
+    final checked = {
+      for (final i in saved.items) i.id: i.isChecked,
+    };
     emit(
       state.copyWith(
         messages: [
@@ -274,8 +331,8 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
                   listName: card.listName,
                   items: [
                     for (final i in card.items)
-                      i.id == event.itemId
-                          ? i.copyWith(isChecked: !i.isChecked)
+                      checked.containsKey(i.id)
+                          ? i.copyWith(isChecked: checked[i.id])
                           : i,
                   ],
                 ),
@@ -288,6 +345,10 @@ class AssistantBloc extends Bloc<AssistantEvent, AssistantState> {
   }
 
   void _onReset(AssistantReset event, Emitter<AssistantState> emit) {
+    // The turn in flight is over too: without this its reply, failure or
+    // "busy: false" landed on the fresh conversation, and a reveal that
+    // was still ticking wrote the old answer under the new welcome.
+    _turn++;
     agent.reset();
     emit(_initial(welcome));
   }

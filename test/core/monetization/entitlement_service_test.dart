@@ -89,6 +89,48 @@ void main() {
   });
 
   _storeAndServerTests();
+
+  group('remembered verdict', () {
+    late EntitlementService service;
+    setUp(() {
+      service = EntitlementService();
+      service.clear();
+    });
+
+    test('nothing remembered: a gated route has to wait for the document', () {
+      expect(service.hasRemembered, isFalse);
+      expect(service.resolved, isFalse);
+    });
+
+    test('a remembered premium reads as premium until the document lands', () {
+      service.rememberForTest(true);
+      expect(service.hasRemembered, isTrue);
+      expect(service.isPremium, isTrue);
+      // The document says otherwise: it wins once read.
+      service.setForTest(false);
+      expect(service.isPremium, isTrue, reason: 'not resolved yet');
+    });
+
+    test('a remembered free is remembered too, and is not premium', () {
+      service.rememberForTest(false);
+      expect(service.hasRemembered, isTrue);
+      expect(service.isPremium, isFalse);
+    });
+
+    test('whenResolved gives up after two seconds offline, not four', () async {
+      final started = DateTime.now();
+      await service.whenResolved();
+      final waited = DateTime.now().difference(started);
+      expect(waited, greaterThanOrEqualTo(const Duration(seconds: 2)));
+      expect(waited, lessThan(const Duration(seconds: 4)));
+    });
+
+    test('clear forgets the remembered verdict with the rest', () {
+      service.rememberForTest(true);
+      service.clear();
+      expect(service.hasRemembered, isFalse);
+    });
+  });
 }
 
 void _storeAndServerTests() {
@@ -128,5 +170,35 @@ void _storeAndServerTests() {
       expect(service.isPremium, isTrue);
       expect(notifications, 1);
     });
+  });
+
+  group('fromWeb', () {
+    late EntitlementService service;
+    setUp(() {
+      service = EntitlementService();
+      service.clear();
+    });
+
+    test(
+      'PayPlus and Paddle through RevenueCat are web plans; a store one is not',
+      () {
+        service.documentForTest({'premium': true, 'source': 'payplus'});
+        expect(service.fromWeb, isTrue);
+        service.documentForTest({
+          'premium': true,
+          'source': 'revenuecat',
+          'store': 'PADDLE',
+        });
+        expect(service.fromWeb, isTrue);
+        service.documentForTest({
+          'premium': true,
+          'source': 'revenuecat',
+          'store': 'APP_STORE',
+        });
+        expect(service.fromWeb, isFalse);
+        service.documentForTest({'premium': true, 'source': 'household'});
+        expect(service.fromWeb, isFalse);
+      },
+    );
   });
 }

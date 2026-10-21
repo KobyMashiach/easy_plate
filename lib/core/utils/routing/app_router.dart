@@ -113,8 +113,12 @@ Future<String?> Function(BuildContext, GoRouterState) featureRedirect(
   bool lockedOpens = false,
 }) => (context, state) async {
   // The verdict first: a paying account on a fresh install must not be
-  // bounced on the default while its document loads.
-  await EntitlementService().whenResolved();
+  // bounced on the default while its document loads. An account seen before
+  // on this phone carries last run's verdict and is let through on it at
+  // once; only a fresh install with nothing remembered waits, and offline
+  // not for long.
+  final entitlement = EntitlementService();
+  if (!entitlement.hasRemembered) await entitlement.whenResolved();
   return switch (feature.access) {
     FeatureAccess.enabled => null,
     FeatureAccess.locked =>
@@ -122,6 +126,17 @@ Future<String?> Function(BuildContext, GoRouterState) featureRedirect(
     _ => Routing.home,
   };
 };
+
+/// A route whose arguments travel in `extra` has nothing to show when it is
+/// reached without them — a restored stack, a deep link to its path, a tap
+/// on a stale shortcut — and the cast in its builder would take the app
+/// down. Home instead; [gate] is the route's own feature gate, run only when
+/// the arguments are there.
+Future<String?> Function(BuildContext, GoRouterState) withExtra<T>([
+  Future<String?> Function(BuildContext, GoRouterState)? gate,
+]) =>
+    (context, state) async =>
+        state.extra is T ? await gate?.call(context, state) : Routing.home;
 
 GoRouter buildRouter() {
   final session = AuthSessionService();
@@ -190,6 +205,10 @@ GoRouter buildRouter() {
       GoRoute(
         path: Routing.phoneVerify,
         name: Routing.phoneVerify,
+        // Reached only from the login form, with its arguments; without
+        // them (a restored stack) the form is where to start again.
+        redirect: (context, state) =>
+            state.extra is PhoneVerificationArgs ? null : Routing.login,
         builder: (context, state) =>
             PhoneVerificationPage(args: state.extra as PhoneVerificationArgs),
       ),
@@ -226,12 +245,14 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.bookDetails,
             name: Routing.bookDetails,
+            redirect: withExtra<String>(),
             builder: (context, state) =>
                 BookViewerPage(bookId: state.extra as String),
           ),
           GoRoute(
             path: Routing.recipeDetails,
             name: Routing.recipeDetails,
+            redirect: withExtra<RecipeDetailsArgs>(),
             builder: (context, state) {
               final args = state.extra as RecipeDetailsArgs;
               return RecipeDetailsPage(
@@ -245,7 +266,9 @@ GoRouter buildRouter() {
             name: Routing.cookMode,
             // The gate lives here, so every door into cook mode (the
             // recipe, the inbox card, a notification tap) is gated at once.
-            redirect: featureRedirect(FeaturesFlags.cookMode),
+            redirect: withExtra<RecipeEntity>(
+              featureRedirect(FeaturesFlags.cookMode),
+            ),
             builder: (context, state) =>
                 CookModePage(recipe: state.extra as RecipeEntity),
           ),
@@ -270,21 +293,27 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.receiptImages,
             name: Routing.receiptImages,
-            redirect: featureRedirect(FeaturesFlags.priceBook),
+            redirect: withExtra<ReceiptEntity>(
+              featureRedirect(FeaturesFlags.priceBook),
+            ),
             builder: (context, state) =>
                 ReceiptImagesPage(receipt: state.extra as ReceiptEntity),
           ),
           GoRoute(
             path: Routing.receiptDetails,
             name: Routing.receiptDetails,
-            redirect: featureRedirect(FeaturesFlags.priceBook),
+            redirect: withExtra<ReceiptEntity>(
+              featureRedirect(FeaturesFlags.priceBook),
+            ),
             builder: (context, state) =>
                 ReceiptDetailsPage(receipt: state.extra as ReceiptEntity),
           ),
           GoRoute(
             path: Routing.receiptReview,
             name: Routing.receiptReview,
-            redirect: featureRedirect(FeaturesFlags.receiptScan),
+            redirect: withExtra<ReceiptReviewArgs>(
+              featureRedirect(FeaturesFlags.receiptScan),
+            ),
             builder: (context, state) {
               final args = state.extra as ReceiptReviewArgs;
               return ReceiptReviewPage(scan: args.scan, pages: args.pages);
@@ -293,7 +322,9 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.nutritionDashboard,
             name: Routing.nutritionDashboard,
-            redirect: featureRedirect(FeaturesFlags.nutrition),
+            redirect: withExtra<NutritionDashboardArgs>(
+              featureRedirect(FeaturesFlags.nutrition),
+            ),
             builder: (context, state) => NutritionDashboardPage(
               args: state.extra as NutritionDashboardArgs,
             ),
@@ -301,6 +332,7 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.recipeEditor,
             name: Routing.recipeEditor,
+            redirect: withExtra<RecipeEntity>(),
             builder: (context, state) =>
                 RecipeEditorPage(recipe: state.extra as RecipeEntity),
           ),
@@ -396,7 +428,11 @@ GoRouter buildRouter() {
           GoRoute(
             path: Routing.forumThread,
             name: Routing.forumThread,
-            redirect: featureRedirect(FeaturesFlags.forum),
+            // The route carries no post id, so without the post in `extra`
+            // there is nothing to load: the community list, on home.
+            redirect: withExtra<ForumPostEntity>(
+              featureRedirect(FeaturesFlags.forum),
+            ),
             // `?reply=` names the reply to scroll to — set by a tap on a
             // reply notification, absent when opened from the list.
             builder: (context, state) => ForumThreadPage(
@@ -435,8 +471,7 @@ GoRouter buildRouter() {
             name: Routing.whatsNew,
             // `extra` carries the pages; a deep link without them has no
             // book to show and lands back on home, like a hidden flag.
-            redirect: (context, state) async =>
-                state.extra is WhatsNewArgs
+            redirect: (context, state) async => state.extra is WhatsNewArgs
                 ? await featureRedirect(FeaturesFlags.whatsNew)(context, state)
                 : Routing.home,
             builder: (context, state) =>

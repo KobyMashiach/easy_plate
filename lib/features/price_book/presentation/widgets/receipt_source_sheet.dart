@@ -8,7 +8,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../recipe_ingestion/domain/entities/ingestion_file.dart';
 import '../../../recipe_ingestion/data/datasources/recipe_ai_datasource.dart'
     show ReceiptPage;
 import '../pages/receipt_camera_page.dart';
@@ -48,6 +50,12 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
     return ReceiptPage(bytes: await file.readAsBytes(), mimeType: 'image/jpeg');
   }
 
+  /// A refused permission or a picker that broke: said, not swallowed.
+  void _failed(Object error) {
+    debugPrint('Receipt source failed: $error');
+    if (mounted) AppDialog.error(message: t.common.error).show(context);
+  }
+
   /// Our own viewfinder with auto-capture; the system camera only when it
   /// cannot run (no permission, no camera).
   Future<void> _shoot() async {
@@ -69,6 +77,8 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
         );
       }
       if (page != null && mounted) setState(() => _pages.add(page!));
+    } catch (e) {
+      _failed(e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -87,6 +97,8 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
         if (page != null) _pages.add(page);
       }
       if (mounted && _pages.isNotEmpty) setState(() {});
+    } catch (e) {
+      _failed(e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -101,12 +113,23 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
       );
       final path = files.isEmpty ? null : files.first.path;
       if (path == null) return;
-      final bytes = await File(path).readAsBytes();
+      // Checked before reading: the whole file would otherwise be held in
+      // memory (and base64'd) only to be refused by the model.
+      final file = File(path);
+      if (await file.length() > IngestionFile.maxBytes) {
+        if (mounted) {
+          AppDialog.warning(message: t.receipt.pdfTooLarge).notify(context);
+        }
+        return;
+      }
+      final bytes = await file.readAsBytes();
       if (!mounted) return;
       // A PDF is the whole receipt: it goes on its own.
       Navigator.of(
         context,
       ).pop([ReceiptPage(bytes: bytes, mimeType: 'application/pdf')]);
+    } catch (e) {
+      _failed(e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -158,21 +181,44 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
               // Photos taken so far, then "one more" or "scan".
               Row(
                 children: [
-                  for (var i = 0; i < _pages.length; i++)
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        end: AppSpacing.base,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                        child: Image.memory(
-                          _pages[i].bytes,
-                          width: 48,
-                          height: 64,
-                          fit: BoxFit.cover,
-                        ),
+                  // Scrolls once a long receipt's pages outgrow the row,
+                  // instead of overflowing it.
+                  Flexible(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (var i = 0; i < _pages.length; i++)
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                end: AppSpacing.base,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm,
+                                ),
+                                child: Image.memory(
+                                  _pages[i].bytes,
+                                  width: 48,
+                                  height: 64,
+                                  fit: BoxFit.cover,
+                                  // Decoded at the thumbnail's size: a viewfinder
+                                  // capture is ~1920px, eight megabytes per page
+                                  // decoded at full size for a 48px chip.
+                                  cacheWidth:
+                                      (48 *
+                                              MediaQuery.devicePixelRatioOf(
+                                                context,
+                                              ))
+                                          .ceil(),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
+                  ),
                   Expanded(
                     child: Text(
                       t.receipt.pagesCount(count: _pages.length),

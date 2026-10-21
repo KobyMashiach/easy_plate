@@ -266,7 +266,8 @@ class AdminUserDetailDataSource {
             .where(FieldPath.documentId, whereIn: chunk)
             .get();
         for (final doc in snap.docs) {
-          final name = (doc.data()['fullName'] as String?)?.trim();
+          final raw = doc.data()['fullName'];
+          final name = raw is String ? raw.trim() : null;
           if (name != null && name.isNotEmpty) names[doc.id] = name;
         }
       }
@@ -364,7 +365,9 @@ class AdminUserDetailDataSource {
         ActivityEvent(
           kind: ActivityKind.joined,
           at: joined,
-          title: (d.profile['fullName'] as String?) ?? d.uid,
+          title: d.profile['fullName'] is String
+              ? d.profile['fullName'] as String
+              : d.uid,
           data: d.profile,
         ),
       );
@@ -404,10 +407,11 @@ class AdminUserDetailDataSource {
     add(
       ActivityKind.aiCall,
       d.aiCalls,
+      // aiUsage.js writes the HTTP status as a number (200, 429).
       detail: (i) => [
         i.data['kind'],
         i.data['status'],
-      ].whereType<String>().join(' · '),
+      ].where((v) => (v is String && v.isNotEmpty) || v is num).join(' · '),
     );
     add(
       ActivityKind.purchase,

@@ -19,10 +19,15 @@ class JoinResult {
   final String title;
   final CollabKind kind;
   final bool alreadyMember;
+
+  /// The invite the code was redeemed into and accepted, whose inbox row
+  /// is then done too. Null for a household or an existing member.
+  final String? inviteId;
   const JoinResult({
     required this.title,
     required this.kind,
     this.alreadyMember = false,
+    this.inviteId,
   });
 }
 
@@ -154,18 +159,30 @@ class ShareCodeService {
           sharing: sharing,
           recipes: recipes,
         ).accept(invite);
-        return JoinResult(title: local.title, kind: invite.kind);
+        return JoinResult(
+          title: local.title,
+          kind: invite.kind,
+          inviteId: invite.id,
+        );
       case CollabKind.book:
       case CollabKind.mealPlan:
         await containers.accept(invite, uid: uid);
-        return JoinResult(title: invite.recipeTitle, kind: invite.kind);
+        return JoinResult(
+          title: invite.recipeTitle,
+          kind: invite.kind,
+          inviteId: invite.id,
+        );
       case CollabKind.groceryList:
         final list =
             await containers.accept(invite, uid: uid) as GroceryListEntity;
         // Opened as the device's active list, so the groceries tab shows
         // what was just joined.
         await HiveActiveGroceryListStore.instance.write(list.id);
-        return JoinResult(title: invite.recipeTitle, kind: invite.kind);
+        return JoinResult(
+          title: invite.recipeTitle,
+          kind: invite.kind,
+          inviteId: invite.id,
+        );
       case CollabKind.household:
         // The server answers a household code with `household`, never an
         // invite; reaching here means an older server.

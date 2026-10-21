@@ -11,6 +11,7 @@ import '../constants/app_text_styles.dart';
 import '../features/feature_gate.dart';
 import '../network/image_search_client.dart';
 import '../services/image_storage_service.dart';
+import '../sync/recipe_image_store.dart';
 import '../utils/i18n/strings.g.dart';
 import 'app_dialog.dart';
 import 'clay/clay.dart';
@@ -91,6 +92,12 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
   bool _generating = false;
   bool _failed = false;
 
+  /// A row's work is under way — the prompt sheet or the web picker is
+  /// open, or the picture is on its way. A second tap in the same frame
+  /// (before the sheet rebuilds) would otherwise open a second prompt
+  /// sheet or pay for a second picture.
+  bool _busy = false;
+
   Future<void> _pick(ImageSource source) async {
     // The picker's own UI covers the wait for it; the copy to disk after it
     // returns is ours to show.
@@ -106,12 +113,28 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
 
   /// The picker page stores the picture itself and hands back its name.
   Future<void> _searchWeb() async {
-    final fileName = await pickWebImage(context, query: widget.searchQuery!);
-    if (fileName == null || !mounted) return;
-    Navigator.of(context).pop(ImagePickResult.picked(fileName));
+    if (_busy) return;
+    _busy = true;
+    try {
+      final fileName = await pickWebImage(context, query: widget.searchQuery!);
+      if (fileName == null || !mounted) return;
+      Navigator.of(context).pop(ImagePickResult.picked(fileName));
+    } finally {
+      _busy = false;
+    }
   }
 
   Future<void> _generate() async {
+    if (_busy) return;
+    _busy = true;
+    try {
+      await _generateOnce();
+    } finally {
+      _busy = false;
+    }
+  }
+
+  Future<void> _generateOnce() async {
     final prompt = widget.aiPrompt ?? await widget.aiPromptPicker!(context);
     if (prompt == null || !mounted) return;
     setState(() {
@@ -123,6 +146,11 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
           await GenerateImageUseCase(context.read<RecipeIngestionRepository>())(
             prompt,
           ).timeout(const Duration(seconds: 60));
+      // Asked for as a 1K JPEG, so this is far under the cap; one that is
+      // not would upload, but no other device would ever download it.
+      if (bytes.isEmpty || bytes.length > RecipeImageStore.maxBytes) {
+        throw StateError('generated image of ${bytes.length} bytes');
+      }
       final fileName = '${_uuid.v4()}.jpg';
       final stored = await ImageStorageService().storeBytes(fileName, bytes);
       if (!mounted) return;

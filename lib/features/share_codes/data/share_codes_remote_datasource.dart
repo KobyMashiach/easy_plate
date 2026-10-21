@@ -6,6 +6,7 @@ import '../../../core/constants/app_enums.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/network/ai_auth_header.dart';
 import '../../../core/network/http_calls.dart';
+import '../../community/data/doc_fields.dart';
 import '../../recipe_sharing/domain/entities/share_invite_entity.dart';
 import '../domain/share_code_entity.dart';
 import '../domain/share_codes_repository.dart';
@@ -93,31 +94,31 @@ class ShareCodesFirestoreRepository implements ShareCodesRepository {
         .where('revoked', isEqualTo: false)
         .get();
     final now = DateTime.now();
-    return snapshot.docs
-        .map(_fromDoc)
-        .nonNulls
-        .where((code) => code.isActiveAt(now))
-        .toList()
+    return parseEach(
+        snapshot.docs,
+        _fromDoc,
+        label: 'Share codes',
+      ).where((code) => code.isActiveAt(now)).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
   ShareCodeEntity? _fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
     if (data == null) return null;
-    final expires = (data['expiresAt'] as Timestamp?)?.toDate();
+    final expires = docDate(data['expiresAt']);
     if (expires == null) return null;
     return ShareCodeEntity(
       code: doc.id,
-      kind: CollabKind.fromName(data['kind'] as String?),
-      targetId: (data['targetId'] as String?) ?? '',
-      ownerUid: (data['ownerUid'] as String?) ?? '',
+      kind: CollabKind.fromName(docStringOrNull(data['kind'])),
+      targetId: docString(data['targetId']),
+      ownerUid: docString(data['ownerUid']),
       role: data['role'] == CollabRole.editor.name
           ? CollabRole.editor
           : CollabRole.viewer,
-      title: (data['title'] as String?) ?? '',
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? expires,
+      title: docString(data['title']),
+      createdAt: docDate(data['createdAt']) ?? expires,
       expiresAt: expires,
-      uses: (data['uses'] as num?)?.toInt() ?? 0,
+      uses: docInt(data['uses']) ?? 0,
       revoked: data['revoked'] == true,
     );
   }
@@ -141,7 +142,7 @@ class ShareCodesFirestoreRepository implements ShareCodesRepository {
     }
     if (body['already'] == true) return const RedeemOutcome.already();
     if (body['household'] case final Map household) {
-      return RedeemOutcome.household((household['title'] as String?) ?? '');
+      return RedeemOutcome.household(docString(household['title']));
     }
     final invite = body['invite'];
     if (invite is! Map) {
@@ -166,22 +167,22 @@ class ShareCodesFirestoreRepository implements ShareCodesRepository {
 
   @visibleForTesting
   static ShareInviteEntity inviteFromJson(Map<String, dynamic> json) {
-    final collabId = (json['collabId'] as String?) ?? '';
-    final targetUid = (json['targetUid'] as String?) ?? '';
+    final collabId = docString(json['collabId']);
+    final targetUid = docString(json['targetUid']);
     return ShareInviteEntity(
       id:
-          (json['id'] as String?) ??
+          docStringOrNull(json['id']) ??
           ShareInviteEntity.idFor(collabId: collabId, targetUid: targetUid),
       collabId: collabId,
-      recipeTitle: (json['title'] as String?) ?? '',
-      ownerUid: (json['ownerUid'] as String?) ?? '',
+      recipeTitle: docString(json['title']),
+      ownerUid: docString(json['ownerUid']),
       targetUid: targetUid,
       role: json['role'] == CollabRole.editor.name
           ? CollabRole.editor
           : CollabRole.viewer,
       status: ShareInviteStatus.pending,
       createdAt: DateTime.now(),
-      kind: CollabKind.fromName(json['kind'] as String?),
+      kind: CollabKind.fromName(docStringOrNull(json['kind'])),
     );
   }
 }

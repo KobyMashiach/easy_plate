@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/features/features_flags.dart';
 import '../../../core/services/auth_session_service.dart';
 import '../../../core/utils/routing/routing.dart';
+import '../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../../user_profile/domain/repositories/user_preferences_repository.dart';
 import '../data/whats_new_repository.dart';
 import '../domain/entities/whats_new_release.dart';
@@ -84,7 +85,15 @@ class WhatsNewService {
 
     final build = await currentBuild();
     if (build == null) return;
-    final current = await preferences.getPreferences();
+    final UserPreferencesEntity current;
+    try {
+      current = await preferences.getPreferences();
+    } catch (e) {
+      // Not "nothing new": next launch asks again.
+      debugPrint('What\'s new preferences read failed: $e');
+      _offeredTo = null;
+      return;
+    }
     if (!current.onboardingComplete) return;
     final lastSeen = current.whatsNewSeenBuild;
     if (!whatsNewMayBeDue(currentBuild: build, lastSeenBuild: lastSeen)) {
@@ -106,11 +115,10 @@ class WhatsNewService {
       lastSeenBuild: lastSeen,
       isFeatureShown: isFeatureShown,
     );
-    if (pages.isEmpty) {
-      // Nothing to show for these releases: the pointer moves on quietly.
-      await acknowledge(preferences, build);
-      return;
-    }
+    // Nothing to show yet: the pointer is left alone. An early updater may
+    // be ahead of the release the admin has not published yet, and a
+    // stamp now would skip it for good.
+    if (pages.isEmpty) return;
     if (!context.mounted) return;
     await context.pushNamed(
       Routing.whatsNew,
@@ -134,9 +142,11 @@ class WhatsNewService {
       isFeatureShown: isFeatureShown,
     );
     if (pages.isEmpty || !context.mounted) return false;
+    // Stamped with the release shown, not the running build: a replay must
+    // not mark releases the launch offer never got to show as seen.
     await context.pushNamed(
       Routing.whatsNew,
-      extra: WhatsNewArgs(pages: pages, build: current),
+      extra: WhatsNewArgs(pages: pages, build: release.versionCode),
     );
     return true;
   }

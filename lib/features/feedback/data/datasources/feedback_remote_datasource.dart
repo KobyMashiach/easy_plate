@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
+import '../../../community/data/doc_fields.dart';
 import '../../domain/entities/feedback_entity.dart';
 
 abstract class FeedbackRemoteDataSource {
@@ -63,7 +65,7 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .get();
-    return [for (final doc in snapshot.docs) ?_toEntity(doc)];
+    return parseEach(snapshot.docs, _toEntity, label: 'Feedback');
   }
 
   @override
@@ -72,20 +74,28 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .snapshots()
-        .map((snapshot) => [for (final doc in snapshot.docs) ?_toEntity(doc)]);
+        .map(
+          (snapshot) => parseEach(snapshot.docs, _toEntity, label: 'Feedback'),
+        );
   }
 
-  /// One equality filter and the order done here, so the query needs no
-  /// composite index.
+  /// Ordered on the server so the limit keeps the newest hundred rather
+  /// than an arbitrary hundred (composite index authorUid ASC, createdAt
+  /// DESC; one on updatedAt exists too). By `createdAt`, which every writer
+  /// has always set — an order by `updatedAt` would drop the conversations
+  /// from before that field was written. The screen's order — newest
+  /// activity first — is still applied here, since a reply moves
+  /// `updatedAt`, not `createdAt`.
   @override
   Stream<List<FeedbackEntity>> watchMine(String uid) {
     return _root
         .where('authorUid', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
         .limit(100)
         .snapshots()
         .map(
           (snapshot) =>
-              [for (final doc in snapshot.docs) ?_toEntity(doc)]
+              parseEach(snapshot.docs, _toEntity, label: 'Feedback')
                 ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt)),
         );
   }
@@ -194,45 +204,51 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
   }
 
   static List<FeedbackReply> _lines(Object? raw) => [
-    for (final r in (raw as List?) ?? const [])
+    for (final r in docList(raw))
       if (r is Map)
         FeedbackReply(
-          text: (r['text'] as String?) ?? '',
-          at: (r['at'] as Timestamp?)?.toDate() ?? DateTime(0),
+          text: docString(r['text']),
+          at: docDate(r['at']) ?? DateTime(0),
         ),
   ];
 
-  FeedbackEntity? _toEntity(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data() ?? const <String, dynamic>{};
-    final type = FeedbackType.values
-        .where((t) => t.name == data['type'])
-        .firstOrNull;
-    if (type == null) return null;
-    final createdAt =
-        (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+  static FeedbackEntity _toEntity(DocumentSnapshot<Map<String, dynamic>> doc) =>
+      fromData(doc.id, doc.data() ?? const <String, dynamic>{});
+
+  /// One message as stored, whoever wrote it — the app, the website or the
+  /// console.
+  @visibleForTesting
+  static FeedbackEntity fromData(String id, Map<String, dynamic> data) {
+    // A type this build does not know (a newer client's) files under
+    // "other" rather than hiding the conversation, replies and all.
+    final type =
+        docEnum(FeedbackType.values, data['type']) ?? FeedbackType.other;
+    final createdAt = docDate(data['createdAt']) ?? DateTime.now();
     return FeedbackEntity(
-      id: doc.id,
+      id: id,
       type: type,
-      message: (data['message'] as String?) ?? '',
-      authorUid: (data['authorUid'] as String?) ?? '',
-      authorName: (data['authorName'] as String?) ?? '',
-      authorEmail: data['authorEmail'] as String?,
-      appVersion: data['appVersion'] as String?,
+      message: docString(data['message']),
+      authorUid: docString(data['authorUid']),
+      authorName: docString(data['authorName']),
+      authorEmail: docStringOrNull(data['authorEmail']),
+      appVersion: docStringOrNull(data['appVersion']),
       createdAt: createdAt,
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? createdAt,
+      updatedAt: docDate(data['updatedAt']) ?? createdAt,
       read: data['read'] == true,
-      readAt: (data['readAt'] as Timestamp?)?.toDate(),
+      readAt: docDate(data['readAt']),
       replies: _lines(data['replies']),
       followUps: _lines(data['followUps']),
       details: {
         if (data['details'] is Map)
           for (final e in (data['details'] as Map).entries)
-            if (e.key is String && e.value is String && (e.value as String).trim().isNotEmpty)
+            if (e.key is String &&
+                e.value is String &&
+                (e.value as String).trim().isNotEmpty)
               e.key as String: e.value as String,
       },
       userUnread: data['userUnread'] == true,
       closed: data['status'] == 'closed',
-      closedAt: (data['closedAt'] as Timestamp?)?.toDate(),
+      closedAt: docDate(data['closedAt']),
       source: data['source'] == FeedbackSource.shefi.name
           ? FeedbackSource.shefi
           : FeedbackSource.app,

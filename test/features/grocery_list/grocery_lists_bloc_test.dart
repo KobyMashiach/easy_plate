@@ -12,6 +12,8 @@ import 'package:easy_plate/features/grocery_list/domain/usecases/delete_grocery_
 import 'package:easy_plate/features/grocery_list/domain/usecases/get_grocery_lists_usecase.dart';
 import 'package:easy_plate/features/grocery_list/domain/usecases/save_grocery_list_usecase.dart';
 import 'package:easy_plate/features/grocery_list/presentation/bloc/grocery_list_bloc.dart';
+import 'package:easy_plate/features/meal_planner/domain/entities/meal_entity.dart';
+import 'package:easy_plate/features/meal_planner/domain/entities/meal_item_entity.dart';
 import 'package:easy_plate/features/meal_planner/domain/entities/meal_plan_entity.dart';
 import 'package:easy_plate/features/meal_planner/domain/repositories/meal_plans_repository.dart';
 import 'package:easy_plate/features/meal_planner/domain/usecases/get_meal_plans_usecase.dart';
@@ -52,17 +54,23 @@ class _Lists implements GroceryListsRepository {
 
 class _Recipes implements RecipesRepository {
   final recipes = <String, RecipeEntity>{};
+  Duration delay = Duration.zero;
 
   @override
-  Future<RecipeEntity?> getRecipeById(String id) async => recipes[id];
+  Future<RecipeEntity?> getRecipeById(String id) async {
+    if (delay > Duration.zero) await Future<void>.delayed(delay);
+    return recipes[id];
+  }
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
 class _Plans implements MealPlansRepository {
+  final plans = <MealPlanEntity>[];
+
   @override
-  Future<List<MealPlanEntity>> getPlans() async => const [];
+  Future<List<MealPlanEntity>> getPlans() async => plans;
 
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
@@ -103,6 +111,7 @@ GroceryListEntity storedList(
 void main() {
   late _Lists lists;
   late _Recipes recipes;
+  late _Plans plans;
   late InMemoryActiveGroceryListStore active;
 
   GroceryListBloc build() => GroceryListBloc(
@@ -114,7 +123,7 @@ void main() {
       lists,
       active,
     ),
-    getMealPlansUseCase: GetMealPlansUseCase(_Plans()),
+    getMealPlansUseCase: GetMealPlansUseCase(plans),
     activeListStore: active,
   );
 
@@ -127,6 +136,7 @@ void main() {
   setUp(() {
     lists = _Lists();
     recipes = _Recipes();
+    plans = _Plans();
     active = InMemoryActiveGroceryListStore();
   });
 
@@ -308,6 +318,77 @@ void main() {
       await bloc.close();
     });
 
+    test('rebuilding a plans list twice keeps one line per dish', () async {
+      // A free-text dish on the plan becomes an ad-hoc line; a second
+      // rebuild used to keep the old copy next to the new one.
+      plans.plans.add(
+        MealPlanEntity(
+          id: 'p',
+          name: 'שבוע',
+          createdAt: DateTime(2026, 1, 1),
+          meals: const [
+            MealEntity(
+              id: 'm',
+              weekday: 0,
+              name: 'ערב',
+              order: 0,
+              items: [MealItemEntity(id: 'i', freeText: 'טוסט')],
+            ),
+          ],
+        ),
+      );
+      lists.stored['primary'] = storedList('primary');
+      active.value = 'primary';
+      final bloc = build();
+      await settle();
+
+      bloc.add(const GroceryListEvent.regenerate());
+      await settle();
+      bloc.add(const GroceryListEvent.regenerate());
+      await settle();
+
+      final items = loaded(bloc).list.items;
+      expect(items.map((i) => i.name), ['טוסט']);
+      expect(items.map((i) => i.id).toSet(), hasLength(1));
+      await bloc.close();
+    });
+
+    test(
+      'pass 8: a free-text dish removed from the plan leaves the list',
+      () async {
+        final plan = MealPlanEntity(
+          id: 'p',
+          name: 'שבוע',
+          createdAt: DateTime(2026, 1, 1),
+          meals: const [
+            MealEntity(
+              id: 'm',
+              weekday: 0,
+              name: 'ערב',
+              order: 0,
+              items: [MealItemEntity(id: 'i', freeText: 'פיצה')],
+            ),
+          ],
+        );
+        plans.plans.add(plan);
+        lists.stored['primary'] = storedList('primary');
+        active.value = 'primary';
+        final bloc = build();
+        await settle();
+        bloc.add(const GroceryListEvent.regenerate());
+        await settle();
+        expect(loaded(bloc).list.items.map((i) => i.name), ['פיצה']);
+
+        plans.plans
+          ..clear()
+          ..add(plan.copyWith(meals: const []));
+        bloc.add(const GroceryListEvent.regenerate());
+        await settle();
+        expect(loaded(bloc).list.items, isEmpty);
+        await bloc.close();
+      },
+    );
+
     test('switching opens the other list', () async {
       lists.stored['primary'] = storedList('primary');
       lists.stored['b'] = storedList('b', createdAt: DateTime(2026, 2, 1));
@@ -482,5 +563,188 @@ void main() {
       expect(loaded(bloc).list.items, hasLength(2));
       await bloc.close();
     });
+  });
+
+  group('pass 6', () {
+    test('a tick made while a rebuild runs survives it', () async {
+      recipes.recipes['r1'] = shakshuka();
+      final bloc = build();
+      await settle();
+      bloc.add(GroceryListEvent.createRecipeList(shakshuka(), '', 1));
+      await settle();
+      final eggs = loaded(bloc).list.items.firstWhere((i) => i.name == 'ביצים');
+
+      recipes.delay = const Duration(milliseconds: 40);
+      bloc.add(const GroceryListEvent.regenerate());
+      await settle();
+      // Mid-rebuild: the shopper ticks the eggs.
+      bloc.add(GroceryListEvent.toggleItem(eggs.id));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final list = loaded(bloc).list;
+      expect(list.items.firstWhere((i) => i.id == eggs.id).isChecked, isTrue);
+      expect(
+        lists.stored[list.id]!.items
+            .firstWhere((i) => i.id == eggs.id)
+            .isChecked,
+        isTrue,
+      );
+      await bloc.close();
+    });
+
+    test('a viewer cannot rescale or re-pick menus on a shared list', () async {
+      lists.stored['v'] = GroceryListEntity(
+        id: 'v',
+        name: 'Shared',
+        items: const [],
+        createdAt: DateTime(2026),
+        source: GroceryListSource.recipe,
+        recipeId: 'r1',
+        collabId: 'c1',
+        collabRole: CollabRole.viewer,
+      );
+      lists.stored['p'] = GroceryListEntity(
+        id: 'p',
+        name: 'Shared plans',
+        items: const [],
+        createdAt: DateTime(2025),
+        collabId: 'c2',
+        collabRole: CollabRole.viewer,
+      );
+      await active.write('v');
+      final bloc = build();
+      await settle();
+      bloc.add(const GroceryListEvent.setRecipeScale(3));
+      await settle();
+      expect(lists.stored['v']!.recipeScale, 1);
+
+      bloc.add(const GroceryListEvent.selectList('p'));
+      await settle();
+      bloc.add(const GroceryListEvent.selectPlans(['mine']));
+      await settle();
+      expect(lists.stored['p']!.selectedPlanIds, isEmpty);
+      await bloc.close();
+    });
+  });
+
+  group('pass 7: edits land on the stored list, not the screen copy', () {
+    GroceryItemEntity line(String id, {bool checked = false}) =>
+        GroceryItemEntity(
+          id: id,
+          name: id,
+          unit: MeasurementUnit.unit,
+          sources: [GroceryItemSourceEntity(label: id, amount: 1)],
+          category: 'כללי',
+          isChecked: checked,
+          isAdHoc: true,
+        );
+
+    GroceryListEntity manual(List<GroceryItemEntity> items) =>
+        GroceryListEntity(
+          id: 'm',
+          name: 'ידני',
+          items: items,
+          createdAt: DateTime(2026, 1, 1),
+          source: GroceryListSource.manual,
+        );
+
+    Future<GroceryListBloc> open(List<GroceryItemEntity> items) async {
+      lists.stored['m'] = manual(items);
+      active.value = 'm';
+      final bloc = build();
+      await settle();
+      return bloc;
+    }
+
+    test('a tick keeps a line the website added meanwhile', () async {
+      final bloc = await open([line('milk')]);
+      // Written by the website after the screen read the list.
+      lists.stored['m'] = manual([line('milk'), line('bread')]);
+
+      bloc.add(const GroceryListEvent.toggleItem('milk'));
+      await settle();
+
+      final items = lists.stored['m']!.items;
+      expect(items.map((i) => i.id), ['milk', 'bread']);
+      expect(items.first.isChecked, isTrue);
+      await bloc.close();
+    });
+
+    test(
+      'a tick writes the value shown, not a flip of the stored one',
+      () async {
+        final bloc = await open([line('milk')]);
+        // Ticked on the website already; the screen still shows it open.
+        lists.stored['m'] = manual([line('milk', checked: true)]);
+
+        bloc.add(const GroceryListEvent.toggleItem('milk'));
+        await settle();
+
+        expect(lists.stored['m']!.items.single.isChecked, isTrue);
+        await bloc.close();
+      },
+    );
+
+    test('deleting ticked lines spares one ticked elsewhere since', () async {
+      final bloc = await open([line('milk', checked: true), line('eggs')]);
+      lists.stored['m'] = manual([
+        line('milk', checked: true),
+        line('eggs', checked: true),
+      ]);
+
+      bloc.add(const GroceryListEvent.deleteCheckedItems());
+      await settle();
+
+      expect(lists.stored['m']!.items.map((i) => i.id), ['eggs']);
+      await bloc.close();
+    });
+
+    test(
+      'an edit to a list deleted elsewhere does not bring it back',
+      () async {
+        final bloc = await open([line('milk')]);
+        lists.stored.remove('m');
+
+        bloc.add(const GroceryListEvent.removeItem('milk'));
+        await settle();
+
+        expect(lists.stored.containsKey('m'), isFalse);
+        await bloc.close();
+      },
+    );
+
+    test('a rename keeps lines added elsewhere', () async {
+      final bloc = await open([line('milk')]);
+      lists.stored['m'] = manual([line('milk'), line('bread')]);
+
+      bloc.add(const GroceryListEvent.renameList('m', 'שבת'));
+      await settle();
+
+      expect(lists.stored['m']!.name, 'שבת');
+      expect(lists.stored['m']!.items, hasLength(2));
+      await bloc.close();
+    });
+  });
+
+  test('a source is found by who it is when positions moved', () {
+    const a = GroceryItemSourceEntity(recipeId: 'r1', label: 'A', amount: 1);
+    const b = GroceryItemSourceEntity(recipeId: 'r2', label: 'B', amount: 2);
+    const c = GroceryItemSourceEntity(label: 'C', amount: 3);
+    int at(List<GroceryItemSourceEntity> s, int i, GroceryItemSourceEntity w) =>
+        GroceryListBloc.sourcePosition(
+          s,
+          i,
+          recipeId: w.recipeId,
+          label: w.label,
+        );
+    // Still where the sheet saw it.
+    expect(at([a, b, c], 1, b), 1);
+    // A rebuild dropped "A": "B" moved up one.
+    expect(at([b, c], 1, b), 0);
+    // Gone altogether: nothing is touched.
+    expect(at([a, c], 1, b), -1);
+    // No identity: the index as given, when in range.
+    expect(GroceryListBloc.sourcePosition([a, b], 1), 1);
+    expect(GroceryListBloc.sourcePosition([a], 3), -1);
   });
 }

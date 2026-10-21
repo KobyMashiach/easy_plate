@@ -54,10 +54,17 @@ async function permissionFor(uid) {
   return permissionOf(snapshot.exists ? snapshot.data() : null);
 }
 
-async function isAdmin(caller) {
+// An administrator the console switched off (account_status disabled) has
+// none of the powers left — otherwise a disabled admin's still-valid token
+// could call the console and switch the account back on.
+async function isAdmin(caller, db = null) {
   if (!caller || !caller.uid) return false;
   try {
-    return (await permissionFor(caller.uid)) === PERMISSIONS.ADMIN;
+    const store = db || admin.firestore();
+    const user = await store.doc(`users/${caller.uid}`).get();
+    if (permissionOf(user.exists ? user.data() : null) !== PERMISSIONS.ADMIN) return false;
+    const status = await store.doc(`account_status/${caller.uid}`).get();
+    return !(status.exists && (status.data() || {}).disabled === true);
   } catch (err) {
     logger.warn("permission read failed", { uid: caller.uid, reason: err.message });
     return false;

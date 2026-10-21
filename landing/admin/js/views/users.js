@@ -2,18 +2,23 @@
 // session, who is Premium or blocked. One click opens the account.
 import { db, collection, onSnapshot, query, limit } from "../firebase.js";
 import { t, fmtNumber, fmtDate } from "../i18n.js";
-import { h, clear, table, avatar, dot, badge, when, button, busy, chips, input, textarea, field, modal, toast, toastError, debounce } from "../ui.js";
+import { h, clear, table, avatar, dot, badge, when, button, busy, chips, input, textarea, field, modal, confirmDialog, toast, toastError, debounce } from "../ui.js";
 import { isOnline, premiumActive, platformLabel } from "../data.js";
 import { call } from "../api.js";
 
+// Rows drawn at once; the rest come on "show more". The filters, the
+// search and the count still run over every account.
+const PAGE = 200;
+
 export async function mount({ view, actions }) {
   let users = [], sessions = {}, statuses = {}, entitlements = {};
-  let filter = "all", search = "";
+  let filter = "all", search = "", shown = PAGE;
   const body = h("div");
   const count = h("span.muted.small");
-  const searchBox = input({ placeholder: t("common.search"), oninput: debounce((e) => { search = e.target.value.trim().toLowerCase(); render(); }, 150) });
+  const refilter = () => { shown = PAGE; render(true); };
+  const searchBox = input({ placeholder: t("common.search"), oninput: debounce((e) => { search = e.target.value.trim().toLowerCase(); refilter(); }, 150) });
   view.append(
-    h("div.toolbar", h("div.search", searchBox), chips([["all", t("users.filter.all")], ["online", t("users.filter.online")], ["premium", t("users.filter.premium")], ["disabled", t("users.filter.disabled")], ["session", t("users.filter.session")]], filter, (v) => { filter = v; render(); }), count),
+    h("div.toolbar", h("div.search", searchBox), chips([["all", t("users.filter.all")], ["online", t("users.filter.online")], ["premium", t("users.filter.premium")], ["disabled", t("users.filter.disabled")], ["session", t("users.filter.session")]], filter, (v) => { filter = v; refilter(); }), count),
     h("p.small.muted", t("users.hint")),
     body,
   );
@@ -27,6 +32,8 @@ export async function mount({ view, actions }) {
       body: h("div.stack", field(t("common.title"), title), field(t("common.body"), text)),
       actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.send"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => {
         if (!text.value.trim()) return;
+        // A push to every account: one more explicit yes, as the notifications page asks.
+        if (!(await confirmDialog({ title: t("users.broadcastTitle"), text: t("notif.confirm.all"), danger: false }))) return;
         try { const r = await call("user.notifyAll", { title: title.value.trim(), body: text.value.trim() }); toast(t("users.broadcastSent", { items: r.items, sent: r.sent, failed: r.failed }), "ok"); c(); } catch (err) { toastError(err); }
       })); return b; }],
     });
@@ -34,7 +41,12 @@ export async function mount({ view, actions }) {
   });
   actions.append(broadcast);
 
-  const render = () => {
+  const millis = (v) => (v && typeof v.toMillis === "function" ? v.toMillis() : 0);
+  // What the visible table shows. A presence heartbeat only moves an
+  // online account's lastSeenAt, which nothing on screen depends on, so
+  // the table is rebuilt only when this changes (or the clock ticks).
+  let drawn = "";
+  const render = (force = false) => {
     const now = Date.now();
     let rows = users.map((u) => ({
       ...u,
@@ -48,8 +60,16 @@ export async function mount({ view, actions }) {
     if (filter === "disabled") rows = rows.filter((r) => r.disabled);
     if (filter === "session") rows = rows.filter((r) => r.session);
     if (search) rows = rows.filter((r) => [r.fullName, r.email, r.phoneNumber, r.uid].some((v) => String(v || "").toLowerCase().includes(search)));
-    rows.sort((a, b) => Number(b.online) - Number(a.online) || ((b.lastSeenAt && b.lastSeenAt.toMillis ? b.lastSeenAt.toMillis() : 0) - (a.lastSeenAt && a.lastSeenAt.toMillis ? a.lastSeenAt.toMillis() : 0)));
+    // Online accounts by name (their lastSeenAt moves every heartbeat and
+    // would shuffle the rows); the rest by when they were last seen.
+    rows.sort((a, b) => Number(b.online) - Number(a.online)
+      || (a.online ? String(a.fullName || a.uid).localeCompare(String(b.fullName || b.uid)) : millis(b.lastSeenAt) - millis(a.lastSeenAt)));
     count.textContent = t("users.count", { n: fmtNumber(rows.length) });
+    const page = rows.slice(0, shown);
+    const signature = JSON.stringify([rows.length, page.map((r) => [r.uid, r.online, r.premium, r.disabled, r.fullName, r.email, r.phoneNumber, r.photoUrl, r.platform, r.appVersion,
+      r.session ? [r.session.platform, millis(r.session.expiresAt)] : null, millis(r.createdAt), r.online ? 0 : millis(r.lastSeenAt)])]);
+    if (!force && signature === drawn) return;
+    drawn = signature;
     clear(body);
     body.append(table([
       { label: "", cell: (r) => dot(r.online) },
@@ -59,16 +79,34 @@ export async function mount({ view, actions }) {
       { label: t("users.device"), cell: (r) => h("span.small", platformLabel(r.platform), r.appVersion ? ` · ${r.appVersion}` : "") },
       { label: t("users.session"), cell: (r) => r.session ? h("span.small", platformLabel(r.session.platform), r.session.expiresAt ? ` · ${t("users.sessionUntil", { date: fmtDate(r.session.expiresAt, false) })}` : "") : h("span.small.muted", t("users.noSession")) },
       { label: t("users.joined"), cell: (r) => h("span.small", fmtDate(r.createdAt, false)) },
-    ], rows, { onRow: (r) => { location.hash = `#/users/${r.uid}`; }, emptyText: t("common.nothingFound") }));
+    ], page, { onRow: (r) => { location.hash = `#/users/${r.uid}`; }, emptyText: t("common.nothingFound") }));
+    if (rows.length > page.length) body.append(h("div.center", button(`${t("common.showMore")} (${fmtNumber(rows.length - page.length)})`, { kind: "small", onclick: () => { shown += PAGE; render(true); } })));
   };
+  // The four listeners answer within the same moment; one table for all
+  // of them rather than four in a row.
+  let pending = false;
+  let forceNext = false;
+  const schedule = (force = false) => { forceNext = forceNext || force; if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; const f = forceNext; forceNext = false; render(f); }); };
 
+  // Each listener is bounded like the users one and applies only the
+  // documents that changed (a heartbeat is one change, not 5000 copies).
+  const byId = new Map();
+  const follow = (name, apply, onError = () => {}) => onSnapshot(query(collection(db, name), limit(5000)), (snap) => {
+    for (const ch of snap.docChanges()) {
+      if (ch.type === "removed") byId.get(name).delete(ch.doc.id);
+      else byId.get(name).set(ch.doc.id, ch.doc.data());
+    }
+    apply(byId.get(name));
+    schedule();
+  }, onError);
+  ["users", "sessions", "account_status", "entitlements"].forEach((n) => byId.set(n, new Map()));
   const subs = [
-    onSnapshot(query(collection(db, "users"), limit(5000)), (snap) => { users = snap.docs.map((d) => ({ uid: d.id, ...d.data() })); render(); }, (err) => toastError(err)),
-    onSnapshot(collection(db, "sessions"), (snap) => { sessions = Object.fromEntries(snap.docs.map((d) => [d.id, d.data()])); render(); }, () => {}),
-    onSnapshot(collection(db, "account_status"), (snap) => { statuses = Object.fromEntries(snap.docs.map((d) => [d.id, d.data()])); render(); }, () => {}),
-    onSnapshot(collection(db, "entitlements"), (snap) => { entitlements = Object.fromEntries(snap.docs.map((d) => [d.id, d.data()])); render(); }, () => {}),
+    follow("users", (m) => { users = Array.from(m, ([uid, d]) => ({ uid, ...d })); }, (err) => toastError(err)),
+    follow("sessions", (m) => { sessions = Object.fromEntries(m); }),
+    follow("account_status", (m) => { statuses = Object.fromEntries(m); }),
+    follow("entitlements", (m) => { entitlements = Object.fromEntries(m); }),
   ];
-  // The online column depends on the clock as much as on the data.
-  const tick = setInterval(render, 30000);
+  // The online column and the "last seen" ages depend on the clock.
+  const tick = setInterval(() => schedule(true), 30000);
   return () => { subs.forEach((u) => u()); clearInterval(tick); };
 }

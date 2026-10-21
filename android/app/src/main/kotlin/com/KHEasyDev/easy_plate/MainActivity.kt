@@ -4,6 +4,7 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
 import com.KHEasyDev.easy_plate.widgets.HomeWidgetsChannel
+import com.KHEasyDev.easy_plate.widgets.WidgetIntents
 import com.KHEasyDev.easy_plate.wakeword.WakeWordChannel
 import com.KHEasyDev.easy_plate.wakeword.WakeWordController
 import com.KHEasyDev.easy_plate.wakeword.ShefiVoiceEngine
@@ -16,11 +17,15 @@ class MainActivity : FlutterFragmentActivity() {
         // Before Flutter reads the intent: a launch from the "שפי" icon
         // becomes the Shefi deep link, so the app opens on the chat.
         routeShefiLauncher(intent)
+        WidgetIntents.stripUntrustedPrompt(this, intent)
+        WidgetIntents.stripFlutterLaunchExtras(intent)
         super.onCreate(savedInstanceState)
     }
 
     override fun onNewIntent(intent: android.content.Intent) {
         routeShefiLauncher(intent)
+        WidgetIntents.stripUntrustedPrompt(this, intent)
+        WidgetIntents.stripFlutterLaunchExtras(intent)
         super.onNewIntent(intent)
     }
 
@@ -30,6 +35,8 @@ class MainActivity : FlutterFragmentActivity() {
         if (intent?.component?.className?.endsWith(".ShefiLauncher") != true) return
         intent.action = android.content.Intent.ACTION_VIEW
         intent.data = android.net.Uri.parse("easyplate://open/widget/assistant?voice=1&source=launcher")
+        // Our own door: keeps `voice` past stripUntrustedPrompt.
+        intent.putExtra(WidgetIntents.EXTRA_TRUST, WidgetIntents.trustToken(this))
     }
 
     /** Must match `AdsConfig.nativeFactoryId` on the Dart side. */

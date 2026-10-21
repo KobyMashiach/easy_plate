@@ -38,6 +38,11 @@ class ForumPage extends StatefulWidget {
 class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
   late final ForumBloc _bloc = ForumBloc.fromContext(context);
 
+  /// The last thread sent, and whether it failed: the composer reopens
+  /// with it then, rather than the words being gone with the sheet.
+  ({String title, String body})? _draft;
+  bool _keepDraft = false;
+
   /// Owned here rather than by the list so it outlives a switch between the
   /// loaded, empty and error views and keeps the reader's place.
   final _scroll = ScrollController();
@@ -107,7 +112,25 @@ class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
       value: _bloc,
       child: Stack(
         children: [
-          BlocBuilder<ForumBloc, ForumState>(
+          BlocConsumer<ForumBloc, ForumState>(
+            // A write of the viewer's own that failed: said once, over the
+            // list that stays, then cleared so the next one is heard too.
+            listenWhen: (previous, current) =>
+                current is ForumLoaded &&
+                current.notice != null &&
+                (previous is! ForumLoaded || previous.notice != current.notice),
+            listener: (context, state) {
+              final notice = (state as ForumLoaded).notice!;
+              if (notice == ForumNotice.createFailed) _keepDraft = true;
+              final dialog = AppDialog.error(message: _noticeText(notice));
+              // A failed re-read is said in passing; a lost write is read.
+              if (notice == ForumNotice.loadFailed) {
+                dialog.notify(context);
+              } else {
+                dialog.show(context);
+              }
+              context.read<ForumBloc>().add(const ForumEvent.dismissNotice());
+            },
             builder: (context, state) {
               return switch (state) {
                 ForumLoading() => const Center(
@@ -168,9 +191,11 @@ class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
       ),
-      builder: (_) => const _PostComposer(),
+      builder: (_) => _PostComposer(initial: _keepDraft ? _draft : null),
     );
     if (result == null || !context.mounted) return;
+    _keepDraft = false;
+    _draft = result;
     await AppDialog.busyEvent(
       context,
       _bloc,
@@ -180,6 +205,12 @@ class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
     if (mounted) await scrollToTop();
   }
 }
+
+String _noticeText(ForumNotice notice) => switch (notice) {
+  ForumNotice.createFailed => t.community.postFailed,
+  ForumNotice.deleteFailed => t.community.deletePostFailed,
+  ForumNotice.loadFailed => t.community.loadFailed,
+};
 
 /// Dispatches a reload and hands the indicator a future that completes when the
 /// bloc is actually done with it.
@@ -437,15 +468,17 @@ class _PostCard extends StatelessWidget {
 }
 
 class _PostComposer extends StatefulWidget {
-  const _PostComposer();
+  /// A thread that failed to post, to start from.
+  final ({String title, String body})? initial;
+  const _PostComposer({this.initial});
 
   @override
   State<_PostComposer> createState() => _PostComposerState();
 }
 
 class _PostComposerState extends State<_PostComposer> {
-  final _title = TextEditingController();
-  final _body = TextEditingController();
+  late final _title = TextEditingController(text: widget.initial?.title);
+  late final _body = TextEditingController(text: widget.initial?.body);
   String? _error;
 
   @override
@@ -487,6 +520,9 @@ class _PostComposerState extends State<_PostComposer> {
             const SizedBox(height: AppSpacing.gutter),
             TextField(
               controller: _title,
+              // The rules' caps: longer was refused as a bare "post failed".
+              maxLength: 500,
+              buildCounter: _noCounter,
               textInputAction: TextInputAction.next,
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(labelText: t.community.postTitle),
@@ -495,6 +531,8 @@ class _PostComposerState extends State<_PostComposer> {
             TextField(
               controller: _body,
               maxLines: 5,
+              maxLength: 20000,
+              buildCounter: _noCounter,
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(
                 hintText: t.community.postBody,
@@ -514,3 +552,11 @@ class _PostComposerState extends State<_PostComposer> {
     );
   }
 }
+
+/// The caps hold without a "n/500" counter under every field.
+Widget? _noCounter(
+  BuildContext context, {
+  required int currentLength,
+  required bool isFocused,
+  required int? maxLength,
+}) => null;

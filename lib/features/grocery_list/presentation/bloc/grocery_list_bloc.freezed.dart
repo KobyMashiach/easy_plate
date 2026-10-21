@@ -176,7 +176,7 @@ return activeChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  regenerate,TResult Function( List<String> planIds)?  selectPlans,TResult Function( String itemId)?  toggleItem,TResult Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult Function( String itemId)?  removeItem,TResult Function( String itemId,  double amount)?  addBuffer,TResult Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult Function( String itemId,  int sourceIndex)?  removeSource,TResult Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult Function( bool checked)?  setAllChecked,TResult Function()?  deleteCheckedItems,TResult Function( List<MealPlanEntity> plans)?  plansChanged,TResult Function( String listId)?  selectList,TResult Function( String name,  GroceryListSource source)?  createList,TResult Function( RecipeEntity recipe,  String name,  double scale)?  createRecipeList,TResult Function( String listId,  String name)?  renameList,TResult Function( String listId)?  deleteList,TResult Function( double scale)?  setRecipeScale,TResult Function( List<GroceryListEntity> lists)?  listsChanged,TResult Function( String listId)?  activeChanged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function()?  regenerate,TResult Function( List<String> planIds)?  selectPlans,TResult Function( String itemId)?  toggleItem,TResult Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult Function( String itemId)?  removeItem,TResult Function( String itemId,  double amount)?  addBuffer,TResult Function( String itemId,  int sourceIndex,  double amount,  String? recipeId,  String? label)?  adjustSource,TResult Function( String itemId,  int sourceIndex,  String? recipeId,  String? label)?  removeSource,TResult Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult Function( bool checked)?  setAllChecked,TResult Function()?  deleteCheckedItems,TResult Function( List<MealPlanEntity> plans)?  plansChanged,TResult Function( String listId)?  selectList,TResult Function( String name,  GroceryListSource source)?  createList,TResult Function( RecipeEntity recipe,  String name,  double scale)?  createRecipeList,TResult Function( String listId,  String name)?  renameList,TResult Function( String listId)?  deleteList,TResult Function( double scale)?  setRecipeScale,TResult Function( List<GroceryListEntity> lists)?  listsChanged,TResult Function( String listId)?  activeChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Regenerate() when regenerate != null:
@@ -186,8 +186,8 @@ return toggleItem(_that.itemId);case _AddAdHocItem() when addAdHocItem != null:
 return addAdHocItem(_that.name,_that.amount,_that.unit);case _RemoveItem() when removeItem != null:
 return removeItem(_that.itemId);case _AddBuffer() when addBuffer != null:
 return addBuffer(_that.itemId,_that.amount);case _AdjustSource() when adjustSource != null:
-return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSource() when removeSource != null:
-return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit() when changeUnit != null:
+return adjustSource(_that.itemId,_that.sourceIndex,_that.amount,_that.recipeId,_that.label);case _RemoveSource() when removeSource != null:
+return removeSource(_that.itemId,_that.sourceIndex,_that.recipeId,_that.label);case _ChangeUnit() when changeUnit != null:
 return changeUnit(_that.itemId,_that.unit);case _SetAllChecked() when setAllChecked != null:
 return setAllChecked(_that.checked);case _DeleteCheckedItems() when deleteCheckedItems != null:
 return deleteCheckedItems();case _PlansChanged() when plansChanged != null:
@@ -217,7 +217,7 @@ return activeChanged(_that.listId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  regenerate,required TResult Function( List<String> planIds)  selectPlans,required TResult Function( String itemId)  toggleItem,required TResult Function( String name,  double amount,  MeasurementUnit unit)  addAdHocItem,required TResult Function( String itemId)  removeItem,required TResult Function( String itemId,  double amount)  addBuffer,required TResult Function( String itemId,  int sourceIndex,  double amount)  adjustSource,required TResult Function( String itemId,  int sourceIndex)  removeSource,required TResult Function( String itemId,  MeasurementUnit unit)  changeUnit,required TResult Function( bool checked)  setAllChecked,required TResult Function()  deleteCheckedItems,required TResult Function( List<MealPlanEntity> plans)  plansChanged,required TResult Function( String listId)  selectList,required TResult Function( String name,  GroceryListSource source)  createList,required TResult Function( RecipeEntity recipe,  String name,  double scale)  createRecipeList,required TResult Function( String listId,  String name)  renameList,required TResult Function( String listId)  deleteList,required TResult Function( double scale)  setRecipeScale,required TResult Function( List<GroceryListEntity> lists)  listsChanged,required TResult Function( String listId)  activeChanged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function()  regenerate,required TResult Function( List<String> planIds)  selectPlans,required TResult Function( String itemId)  toggleItem,required TResult Function( String name,  double amount,  MeasurementUnit unit)  addAdHocItem,required TResult Function( String itemId)  removeItem,required TResult Function( String itemId,  double amount)  addBuffer,required TResult Function( String itemId,  int sourceIndex,  double amount,  String? recipeId,  String? label)  adjustSource,required TResult Function( String itemId,  int sourceIndex,  String? recipeId,  String? label)  removeSource,required TResult Function( String itemId,  MeasurementUnit unit)  changeUnit,required TResult Function( bool checked)  setAllChecked,required TResult Function()  deleteCheckedItems,required TResult Function( List<MealPlanEntity> plans)  plansChanged,required TResult Function( String listId)  selectList,required TResult Function( String name,  GroceryListSource source)  createList,required TResult Function( RecipeEntity recipe,  String name,  double scale)  createRecipeList,required TResult Function( String listId,  String name)  renameList,required TResult Function( String listId)  deleteList,required TResult Function( double scale)  setRecipeScale,required TResult Function( List<GroceryListEntity> lists)  listsChanged,required TResult Function( String listId)  activeChanged,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _Regenerate():
@@ -227,8 +227,8 @@ return toggleItem(_that.itemId);case _AddAdHocItem():
 return addAdHocItem(_that.name,_that.amount,_that.unit);case _RemoveItem():
 return removeItem(_that.itemId);case _AddBuffer():
 return addBuffer(_that.itemId,_that.amount);case _AdjustSource():
-return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSource():
-return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit():
+return adjustSource(_that.itemId,_that.sourceIndex,_that.amount,_that.recipeId,_that.label);case _RemoveSource():
+return removeSource(_that.itemId,_that.sourceIndex,_that.recipeId,_that.label);case _ChangeUnit():
 return changeUnit(_that.itemId,_that.unit);case _SetAllChecked():
 return setAllChecked(_that.checked);case _DeleteCheckedItems():
 return deleteCheckedItems();case _PlansChanged():
@@ -254,7 +254,7 @@ return activeChanged(_that.listId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  regenerate,TResult? Function( List<String> planIds)?  selectPlans,TResult? Function( String itemId)?  toggleItem,TResult? Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult? Function( String itemId)?  removeItem,TResult? Function( String itemId,  double amount)?  addBuffer,TResult? Function( String itemId,  int sourceIndex,  double amount)?  adjustSource,TResult? Function( String itemId,  int sourceIndex)?  removeSource,TResult? Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult? Function( bool checked)?  setAllChecked,TResult? Function()?  deleteCheckedItems,TResult? Function( List<MealPlanEntity> plans)?  plansChanged,TResult? Function( String listId)?  selectList,TResult? Function( String name,  GroceryListSource source)?  createList,TResult? Function( RecipeEntity recipe,  String name,  double scale)?  createRecipeList,TResult? Function( String listId,  String name)?  renameList,TResult? Function( String listId)?  deleteList,TResult? Function( double scale)?  setRecipeScale,TResult? Function( List<GroceryListEntity> lists)?  listsChanged,TResult? Function( String listId)?  activeChanged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function()?  regenerate,TResult? Function( List<String> planIds)?  selectPlans,TResult? Function( String itemId)?  toggleItem,TResult? Function( String name,  double amount,  MeasurementUnit unit)?  addAdHocItem,TResult? Function( String itemId)?  removeItem,TResult? Function( String itemId,  double amount)?  addBuffer,TResult? Function( String itemId,  int sourceIndex,  double amount,  String? recipeId,  String? label)?  adjustSource,TResult? Function( String itemId,  int sourceIndex,  String? recipeId,  String? label)?  removeSource,TResult? Function( String itemId,  MeasurementUnit unit)?  changeUnit,TResult? Function( bool checked)?  setAllChecked,TResult? Function()?  deleteCheckedItems,TResult? Function( List<MealPlanEntity> plans)?  plansChanged,TResult? Function( String listId)?  selectList,TResult? Function( String name,  GroceryListSource source)?  createList,TResult? Function( RecipeEntity recipe,  String name,  double scale)?  createRecipeList,TResult? Function( String listId,  String name)?  renameList,TResult? Function( String listId)?  deleteList,TResult? Function( double scale)?  setRecipeScale,TResult? Function( List<GroceryListEntity> lists)?  listsChanged,TResult? Function( String listId)?  activeChanged,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _Regenerate() when regenerate != null:
@@ -264,8 +264,8 @@ return toggleItem(_that.itemId);case _AddAdHocItem() when addAdHocItem != null:
 return addAdHocItem(_that.name,_that.amount,_that.unit);case _RemoveItem() when removeItem != null:
 return removeItem(_that.itemId);case _AddBuffer() when addBuffer != null:
 return addBuffer(_that.itemId,_that.amount);case _AdjustSource() when adjustSource != null:
-return adjustSource(_that.itemId,_that.sourceIndex,_that.amount);case _RemoveSource() when removeSource != null:
-return removeSource(_that.itemId,_that.sourceIndex);case _ChangeUnit() when changeUnit != null:
+return adjustSource(_that.itemId,_that.sourceIndex,_that.amount,_that.recipeId,_that.label);case _RemoveSource() when removeSource != null:
+return removeSource(_that.itemId,_that.sourceIndex,_that.recipeId,_that.label);case _ChangeUnit() when changeUnit != null:
 return changeUnit(_that.itemId,_that.unit);case _SetAllChecked() when setAllChecked != null:
 return setAllChecked(_that.checked);case _DeleteCheckedItems() when deleteCheckedItems != null:
 return deleteCheckedItems();case _PlansChanged() when plansChanged != null:
@@ -695,12 +695,14 @@ as double,
 
 
 class _AdjustSource implements GroceryListEvent {
-  const _AdjustSource(this.itemId, this.sourceIndex, this.amount);
+  const _AdjustSource(this.itemId, this.sourceIndex, this.amount, {this.recipeId, this.label});
   
 
  final  String itemId;
  final  int sourceIndex;
  final  double amount;
+ final  String? recipeId;
+ final  String? label;
 
 /// Create a copy of GroceryListEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -712,16 +714,16 @@ _$AdjustSourceCopyWith<_AdjustSource> get copyWith => __$AdjustSourceCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdjustSource&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.sourceIndex, sourceIndex) || other.sourceIndex == sourceIndex)&&(identical(other.amount, amount) || other.amount == amount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdjustSource&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.sourceIndex, sourceIndex) || other.sourceIndex == sourceIndex)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.label, label) || other.label == label));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,itemId,sourceIndex,amount);
+int get hashCode => Object.hash(runtimeType,itemId,sourceIndex,amount,recipeId,label);
 
 @override
 String toString() {
-  return 'GroceryListEvent.adjustSource(itemId: $itemId, sourceIndex: $sourceIndex, amount: $amount)';
+  return 'GroceryListEvent.adjustSource(itemId: $itemId, sourceIndex: $sourceIndex, amount: $amount, recipeId: $recipeId, label: $label)';
 }
 
 
@@ -732,7 +734,7 @@ abstract mixin class _$AdjustSourceCopyWith<$Res> implements $GroceryListEventCo
   factory _$AdjustSourceCopyWith(_AdjustSource value, $Res Function(_AdjustSource) _then) = __$AdjustSourceCopyWithImpl;
 @useResult
 $Res call({
- String itemId, int sourceIndex, double amount
+ String itemId, int sourceIndex, double amount, String? recipeId, String? label
 });
 
 
@@ -749,12 +751,14 @@ class __$AdjustSourceCopyWithImpl<$Res>
 
 /// Create a copy of GroceryListEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? sourceIndex = null,Object? amount = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? sourceIndex = null,Object? amount = null,Object? recipeId = freezed,Object? label = freezed,}) {
   return _then(_AdjustSource(
 null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
 as String,null == sourceIndex ? _self.sourceIndex : sourceIndex // ignore: cast_nullable_to_non_nullable
 as int,null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
-as double,
+as double,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
+as String?,label: freezed == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -765,11 +769,13 @@ as double,
 
 
 class _RemoveSource implements GroceryListEvent {
-  const _RemoveSource(this.itemId, this.sourceIndex);
+  const _RemoveSource(this.itemId, this.sourceIndex, {this.recipeId, this.label});
   
 
  final  String itemId;
  final  int sourceIndex;
+ final  String? recipeId;
+ final  String? label;
 
 /// Create a copy of GroceryListEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -781,16 +787,16 @@ _$RemoveSourceCopyWith<_RemoveSource> get copyWith => __$RemoveSourceCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoveSource&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.sourceIndex, sourceIndex) || other.sourceIndex == sourceIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoveSource&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.sourceIndex, sourceIndex) || other.sourceIndex == sourceIndex)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.label, label) || other.label == label));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,itemId,sourceIndex);
+int get hashCode => Object.hash(runtimeType,itemId,sourceIndex,recipeId,label);
 
 @override
 String toString() {
-  return 'GroceryListEvent.removeSource(itemId: $itemId, sourceIndex: $sourceIndex)';
+  return 'GroceryListEvent.removeSource(itemId: $itemId, sourceIndex: $sourceIndex, recipeId: $recipeId, label: $label)';
 }
 
 
@@ -801,7 +807,7 @@ abstract mixin class _$RemoveSourceCopyWith<$Res> implements $GroceryListEventCo
   factory _$RemoveSourceCopyWith(_RemoveSource value, $Res Function(_RemoveSource) _then) = __$RemoveSourceCopyWithImpl;
 @useResult
 $Res call({
- String itemId, int sourceIndex
+ String itemId, int sourceIndex, String? recipeId, String? label
 });
 
 
@@ -818,11 +824,13 @@ class __$RemoveSourceCopyWithImpl<$Res>
 
 /// Create a copy of GroceryListEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? sourceIndex = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? sourceIndex = null,Object? recipeId = freezed,Object? label = freezed,}) {
   return _then(_RemoveSource(
 null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
 as String,null == sourceIndex ? _self.sourceIndex : sourceIndex // ignore: cast_nullable_to_non_nullable
-as int,
+as int,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
+as String?,label: freezed == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

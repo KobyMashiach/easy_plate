@@ -152,7 +152,17 @@ enum FeaturesFlags {
   /// The store's own "rate this app" sheet (App Store / Google Play
   /// in-app review), asked once after the second saved recipe and then
   /// no more than once a season. Hidden, the sheet is never requested.
-  storeReview('ff_store_review')
+  storeReview('ff_store_review'),
+
+  /// Premium bought on the website (aieasyplate.app/app) through PayPlus
+  /// (Israeli accounts) or RevenueCat's Paddle checkout (abroad; per-provider switches
+  /// ff_web_checkout_il / ff_web_checkout_intl live on the website only)
+  /// instead of the stores: the "upgrade / manage on the web" row in the
+  /// account menu and the paywall's web hand-off. The server reads the same
+  /// flag, so hidden here also refuses checkout and upgrade links there.
+  /// Store policy on linking out to an external purchase differs by
+  /// region, which is why this one ships hidden.
+  webCheckout('ff_web_checkout')
   ;
 
   /// The Remote Config parameter name.
@@ -211,16 +221,15 @@ enum FeaturesFlags {
     FeatureFlagValue value,
     bool premium, {
     bool allFeatures = false,
-  }) =>
-      allFeatures
+  }) => allFeatures
       ? FeatureAccess.enabled
       : switch (value) {
-        FeatureFlagValue.hidden => FeatureAccess.hidden,
-        FeatureFlagValue.comingSoon => FeatureAccess.comingSoon,
-        FeatureFlagValue.enabled => FeatureAccess.enabled,
-        FeatureFlagValue.premiumOnly =>
-          premium ? FeatureAccess.enabled : FeatureAccess.locked,
-      };
+          FeatureFlagValue.hidden => FeatureAccess.hidden,
+          FeatureFlagValue.comingSoon => FeatureAccess.comingSoon,
+          FeatureFlagValue.enabled => FeatureAccess.enabled,
+          FeatureFlagValue.premiumOnly =>
+            premium ? FeatureAccess.enabled : FeatureAccess.locked,
+        };
 
   bool get isVisible => access.isVisible;
   bool get isEnabled => access.isEnabled;

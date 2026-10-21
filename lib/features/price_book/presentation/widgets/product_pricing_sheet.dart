@@ -25,20 +25,35 @@ Future<bool> showProductPricingSheet(
   required PriceRecordEntity product,
 }) async {
   final repository = context.read<PriceBookRepository>();
-  final changed = await showModalBottomSheet<bool>(
-    context: context,
-    isScrollControlled: true,
-    builder: (_) =>
-        _ProductPricingSheet(product: product, repository: repository),
-  );
-  return changed ?? false;
+  // Told of every change as it happens: a sheet dismissed by a tap outside
+  // or a drag returns null, and the page still has to reload.
+  final touched = ValueNotifier<bool>(false);
+  try {
+    final changed = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _ProductPricingSheet(
+        product: product,
+        repository: repository,
+        touched: touched,
+      ),
+    );
+    return (changed ?? false) || touched.value;
+  } finally {
+    touched.dispose();
+  }
 }
 
 class _ProductPricingSheet extends StatefulWidget {
   final PriceRecordEntity product;
   final PriceBookRepository repository;
+  final ValueNotifier<bool> touched;
 
-  const _ProductPricingSheet({required this.product, required this.repository});
+  const _ProductPricingSheet({
+    required this.product,
+    required this.repository,
+    required this.touched,
+  });
 
   @override
   State<_ProductPricingSheet> createState() => _ProductPricingSheetState();
@@ -49,7 +64,12 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
   Map<String, ReceiptEntity> _receipts = const {};
   late ProductPricingEntity _policy;
   bool _loading = true;
-  bool _changed = false;
+  bool _changedValue = false;
+  bool get _changed => _changedValue;
+  set _changed(bool value) {
+    _changedValue = value;
+    if (value) widget.touched.value = true;
+  }
 
   String get _key => ProductPricingEntity.keyFor(
     widget.product.normalizedName,
@@ -64,9 +84,21 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
   }
 
   Future<void> _load() async {
-    final all = await widget.repository.getRecords();
-    final receipts = await widget.repository.getReceipts();
-    final pricing = await widget.repository.getPricing();
+    final List<PriceRecordEntity> all;
+    final List<ReceiptEntity> receipts;
+    final Map<String, ProductPricingEntity> pricing;
+    try {
+      all = await widget.repository.getRecords();
+      receipts = await widget.repository.getReceipts();
+      pricing = await widget.repository.getPricing();
+    } catch (e) {
+      // Not a spinner forever: the sheet opens empty and says why.
+      debugPrint('Product pricing load failed: $e');
+      if (!mounted) return;
+      setState(() => _loading = false);
+      AppDialog.error(message: t.common.loadFailed).notify(context);
+      return;
+    }
     if (!mounted) return;
     setState(() {
       _records =
@@ -97,6 +129,43 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
     _changed = true;
   }
 
+  /// One receipt in or out of the chosen set, applied to the choice as it
+  /// is stored now: a receipt picked on the website (or another device)
+  /// since the sheet opened must not be dropped by this tap.
+  /// Toggles one after another: two quick ticks each read the same stored
+  /// set, and the second save dropped the first receipt.
+  Future<void> _toggles = Future.value();
+
+  Future<void> _toggleReceipt(String receiptId, bool include) {
+    final run = _toggles.then((_) => _toggleReceiptNow(receiptId, include));
+    _toggles = run.then<void>((_) {}, onError: (Object _) {});
+    return run;
+  }
+
+  Future<void> _toggleReceiptNow(String receiptId, bool include) async {
+    if (!mounted) return;
+    final stored = (await widget.repository.getPricing())[_key];
+    if (!mounted) return;
+    final ids = {
+      ...(stored != null && stored.mode == PricingMode.receipts
+          ? stored.receiptIds
+          : _policy.receiptIds),
+    };
+    if (include) {
+      ids.add(receiptId);
+    } else {
+      ids.remove(receiptId);
+    }
+    if (ids.isEmpty) return;
+    await _save(
+      ProductPricingEntity(
+        key: _key,
+        mode: PricingMode.receipts,
+        receiptIds: ids.toList(),
+      ),
+    );
+  }
+
   Future<void> _deleteProduct() async {
     final ok = await AppDialog.warning(
       title: t.receipt.deleteProduct,
@@ -106,12 +175,21 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
       destructive: true,
     ).show(context);
     if (ok != true || !mounted) return;
-    await AppDialog.busy(context, () async {
-      for (final r in _records) {
-        await DeletePriceRecordUseCase(widget.repository)(r.id);
-      }
-      await widget.repository.deletePricing(_key);
-    });
+    try {
+      await AppDialog.busy(context, () async {
+        for (final r in _records) {
+          await DeletePriceRecordUseCase(widget.repository)(r.id);
+        }
+        await widget.repository.deletePricing(_key);
+      });
+    } catch (e) {
+      debugPrint('Product delete failed: $e');
+      if (!mounted) return;
+      AppDialog.error(message: t.receipt.deleteFailed).show(context);
+      // Some records may be gone already: the page behind reloads.
+      _changed = true;
+      return;
+    }
     if (mounted) Navigator.of(context).pop(true);
   }
 
@@ -240,15 +318,19 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
                         _ModeChip(
                           label: t.receipt.pricingReceipts,
                           selected: _policy.mode == PricingMode.receipts,
-                          onTap: () => _save(
-                            ProductPricingEntity(
-                              key: _key,
-                              mode: PricingMode.receipts,
-                              receiptIds: _policy.receiptIds.isEmpty
-                                  ? [_records.first.receiptId]
-                                  : _policy.receiptIds,
-                            ),
-                          ),
+                          // No record left to pick a receipt from (all
+                          // deleted on another device): nothing to choose.
+                          onTap: _records.isEmpty && _policy.receiptIds.isEmpty
+                              ? null
+                              : () => _save(
+                                  ProductPricingEntity(
+                                    key: _key,
+                                    mode: PricingMode.receipts,
+                                    receiptIds: _policy.receiptIds.isEmpty
+                                        ? [_records.first.receiptId]
+                                        : _policy.receiptIds,
+                                  ),
+                                ),
                         ),
                       ],
                     ),
@@ -286,22 +368,8 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
                             if (_policy.mode == PricingMode.receipts)
                               Checkbox(
                                 value: _policy.receiptIds.contains(r.receiptId),
-                                onChanged: (v) {
-                                  final ids = {..._policy.receiptIds};
-                                  if (v == true) {
-                                    ids.add(r.receiptId);
-                                  } else {
-                                    ids.remove(r.receiptId);
-                                  }
-                                  if (ids.isEmpty) return;
-                                  _save(
-                                    ProductPricingEntity(
-                                      key: _key,
-                                      mode: PricingMode.receipts,
-                                      receiptIds: ids.toList(),
-                                    ),
-                                  );
-                                },
+                                onChanged: (v) =>
+                                    _toggleReceipt(r.receiptId, v == true),
                               ),
                             Expanded(
                               child: Text(

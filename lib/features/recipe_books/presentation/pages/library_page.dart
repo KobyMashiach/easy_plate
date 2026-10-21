@@ -105,6 +105,9 @@ class LibraryPage extends StatelessWidget {
                                         Routing.bookDetails,
                                         extra: book.id,
                                       );
+                                      // A sign-out redirect may have closed
+                                      // the shelf meanwhile.
+                                      if (bloc.isClosed) return;
                                       bloc.add(const LibraryEvent.init());
                                     },
                                     onLongPress: () =>
@@ -234,7 +237,9 @@ class LibraryPage extends StatelessWidget {
                         context,
                         current: book.spine,
                       );
-                      if (spine != null) bloc.add(.setSpine(book.id, spine));
+                      if (spine != null && !bloc.isClosed) {
+                        bloc.add(.setSpine(book.id, spine));
+                      }
                     },
                     child: Row(
                       children: [
@@ -279,7 +284,7 @@ class LibraryPage extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.gutter),
                   onTap: () {
                     Navigator.of(sheetContext).pop();
-                    bloc.add(.deleteBook(book.id));
+                    _confirmDelete(context, bloc, book);
                   },
                   child: Row(
                     children: [
@@ -345,11 +350,38 @@ class LibraryPage extends StatelessWidget {
       initial: book.title,
     );
     if (title == null || !context.mounted) return;
+    // The same name emits a state equal to the current one, which the bloc
+    // drops: the busy card would wait out its whole timeout for nothing.
+    if (title.trim().isEmpty || title.trim() == book.title.trim()) return;
     await AppDialog.busyEvent(
       context,
       bloc,
       LibraryEvent.renameBook(book.id, title),
     );
+  }
+
+  /// One tap in the options sheet used to delete the book outright — for
+  /// the owner of a shared one, for every member too.
+  Future<void> _confirmDelete(
+    BuildContext context,
+    LibraryBloc bloc,
+    RecipeBookEntity book,
+  ) async {
+    final leaving = book.isShared && !book.isMine;
+    final confirmed = await AppDialog.warning(
+      title: leaving ? t.sharing.leave : t.common.delete,
+      message: leaving
+          ? t.books.leaveConfirm(title: book.title)
+          : book.isShared
+          ? t.books.deleteSharedConfirm(title: book.title)
+          : t.books.deleteConfirm(title: book.title),
+      icon: leaving ? Icons.logout_rounded : Icons.delete_outline_rounded,
+      confirmLabel: leaving ? t.sharing.leave : t.common.delete,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
+    if (confirmed != true || bloc.isClosed) return;
+    bloc.add(.deleteBook(book.id));
   }
 
   /// A new book opens straight away: naming it is the first step of filling
@@ -372,16 +404,22 @@ class LibraryPage extends StatelessWidget {
     if (!context.mounted) return;
 
     final id = const Uuid().v4();
-    await AppDialog.busy(context, () {
+    final landed = await AppDialog.busy(context, () {
+      // A failed create emits an error: the card must end on that too, or
+      // it would stay up for good (it is not dismissible).
       final landed = bloc.stream.firstWhere(
-        (state) => state is LibraryLoaded && state.books.any((b) => b.id == id),
+        (state) =>
+            state is LibraryError ||
+            state is LibraryLoaded && state.books.any((b) => b.id == id),
       );
       bloc.add(.createBook(title, id: id, spine: spine));
       return landed;
     });
-    if (!context.mounted) return;
+    // A failed create has no book to open; the error state says why.
+    if (!context.mounted || landed is LibraryError) return;
     await context.pushNamed(Routing.bookDetails, extra: id);
     // Same reload as opening from the shelf: the cover may have changed inside.
+    if (bloc.isClosed) return;
     bloc.add(const LibraryEvent.init());
   }
 }

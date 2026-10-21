@@ -67,6 +67,10 @@ class ShareIntentService {
     return uri.host == 'aieasyplate.app' && uri.path.startsWith('/s/');
   }
 
+  /// The largest shared file read into memory.
+  @visibleForTesting
+  static const readCap = 64 * 1024 * 1024;
+
   /// The ingestion launch a share maps to. Text and links fill the matching
   /// text channel; files are read into memory for the file channel, all of
   /// them, in the order shared — they are the parts of one recipe. Files
@@ -90,6 +94,14 @@ class ShareIntentService {
       if (mimeType == null) continue;
       final file = File(shared.path);
       if (!await file.exists()) continue;
+      // Read whole into memory below: a recording of hundreds of megabytes
+      // would take the app down before the form could say it is too large.
+      // Anything up to [readCap] still reaches the form, which explains the
+      // 10 MB limit itself.
+      if (await file.length() > readCap) {
+        debugPrint('Shared file skipped: larger than the read cap');
+        continue;
+      }
       read.add(
         IngestionFile(
           name: shared.path.split(Platform.pathSeparator).last,

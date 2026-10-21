@@ -1,0 +1,33 @@
+{
+  "id": "6a1d3b8f-2c3e-4d4f-9a0b-1c2d3e4f5a61",
+  "title": "Shakshuka",
+  "prepTimeMinutes": null,
+  "cookTimeMinutes": 20,
+  "ingredients": [
+    {
+      "name": "Eggs",
+      "amount": 4,
+      "unit": "unit"
+    }
+  ],
+  "steps": [
+    "Cook"
+  ],
+  "dietaryTags": [],
+  "sourceChannel": null,
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T10:05:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": "9b2e4c0a-3d4f-4e5a-8b1c-2d3e4f5a6b72",
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [],
+  "mayContain": [],
+  "servings": null,
+  "nutrition": null,
+  "sharedRecipeId": null,
+  "contentLang": "en",
+  "contentVersion": 0
+}

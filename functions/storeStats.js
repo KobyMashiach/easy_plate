@@ -288,13 +288,32 @@ async function loadConfig(db) {
   return { config, privateKey, keyPresent: isPem(privateKey) };
 }
 
+// Pure: why a pasted key is refused, or null. A key that only looks like a
+// PEM but does not parse would be saved and fail every nightly sync.
+function keyProblem(raw) {
+  const key = normalizePem(raw);
+  if (!key) return null;
+  if (!isPem(key)) return "The private key must be the .p8 file's contents (BEGIN PRIVATE KEY)";
+  try {
+    crypto.createPrivateKey(key);
+  } catch (_) {
+    return "The private key could not be read; paste the whole .p8 file";
+  }
+  return null;
+}
+
 async function saveConfig(db, patch) {
+  // The key is checked before anything is written: a refused key used to
+  // leave the rest of the form saved and the operator unsure of what stuck.
+  if (patch.applePrivateKey !== undefined) {
+    const problem = keyProblem(patch.applePrivateKey);
+    if (problem) throw Object.assign(new Error(problem), { status: 400, code: "invalid" });
+  }
   const current = await loadConfig(db);
   const next = cleanConfig({ ...current.config, ...patch });
   await db.doc(CONFIG_DOC).set({ ...next, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
   if (patch.applePrivateKey !== undefined) {
     const key = normalizePem(patch.applePrivateKey);
-    if (key && !isPem(key)) throw Object.assign(new Error("The private key must be the .p8 file's contents (BEGIN PRIVATE KEY)"), { status: 400, code: "invalid" });
     if (key) await db.doc(PRIVATE_DOC).set({ applePrivateKey: key, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
     else await db.doc(PRIVATE_DOC).delete();
   }
@@ -331,7 +350,24 @@ async function serviceAccountEmail(fetchImpl = fetch) {
 // Google Play.
 // ---------------------------------------------------------------------------
 
-async function syncAndroid({ db, config, storage = admin.storage() }) {
+// Pure: the monthly report files a nightly sync reads — this month's and
+// last month's (Google still corrects the recent days), named
+// installs_{package}_{YYYYMM}_{overview|country}.csv. Every file used to be
+// downloaded and every day of history rewritten each night, which grows by
+// a file and ~30 writes a month forever. A first sync or a backfill reads
+// them all; a name without a month is always read.
+function recentReports(files, now = Date.now()) {
+  const d = new Date(now);
+  const month = (y, m) => `${y}${String(m + 1).padStart(2, "0")}`;
+  const current = month(d.getUTCFullYear(), d.getUTCMonth());
+  const previous = d.getUTCMonth() === 0 ? month(d.getUTCFullYear() - 1, 11) : month(d.getUTCFullYear(), d.getUTCMonth() - 1);
+  return files.filter((f) => {
+    const m = String(f.name).match(/_(\d{6})_(?:overview|country)\.csv$/);
+    return !m || m[1] >= previous || m[1] === current;
+  });
+}
+
+async function syncAndroid({ db, config, storage = admin.storage(), backfill = false, now = Date.now() }) {
   if (!androidConfigured(config)) throw Object.assign(new Error("Play bucket not configured"), { status: 400, code: "not_configured" });
   const bucket = storage.bucket(config.playBucket);
   const pkg = config.playPackage;
@@ -343,8 +379,14 @@ async function syncAndroid({ db, config, storage = admin.storage() }) {
     await markSync(db, "android", { error: reason });
     throw Object.assign(new Error(reason), { status: 502, code: "play_access" });
   }
-  const overview = files.filter((f) => f.name.endsWith("_overview.csv") && f.name.includes(`installs_${pkg}_`));
-  const country = files.filter((f) => f.name.endsWith("_country.csv") && f.name.includes(`installs_${pkg}_`));
+  // Everything on a backfill or before anything was stored; otherwise the
+  // recent months only.
+  const state = await db.doc(`${STATS}/android`).get();
+  const full = backfill || !state.exists || !state.get("lastDay");
+  const ours = files.filter((f) => f.name.includes(`installs_${pkg}_`));
+  const picked = full ? ours : recentReports(ours, now);
+  const overview = picked.filter((f) => f.name.endsWith("_overview.csv"));
+  const country = picked.filter((f) => f.name.endsWith("_country.csv"));
   const days = {};
   for (const file of overview) {
     const [buf] = await file.download();
@@ -359,12 +401,16 @@ async function syncAndroid({ db, config, storage = admin.storage() }) {
   const written = await writeDays(db, "android", days);
   const dates = Object.keys(days).sort();
   const last = dates.length ? days[dates[dates.length - 1]] : null;
+  // A partial read knows only its own months: the totals come from the
+  // stored days, the first day from what was there before.
+  const stored = full ? null : await db.collection(`${STATS}/android/days`).select("date").get();
+  const firstDay = full ? dates[0] || null : (state.get("firstDay") || dates[0] || null);
   await markSync(db, "android", {
     error: null,
     files: overview.length,
-    days: dates.length,
-    firstDay: dates[0] || null,
-    lastDay: dates[dates.length - 1] || null,
+    days: full ? dates.length : stored.size,
+    firstDay,
+    lastDay: dates[dates.length - 1] || state.get("lastDay") || null,
     totalUserInstalls: last ? last.totalUserInstalls : 0,
     activeDevices: last ? last.activeDevices : 0,
   });
@@ -376,6 +422,12 @@ async function syncAndroid({ db, config, storage = admin.storage() }) {
 // App Store.
 // ---------------------------------------------------------------------------
 
+// One day's report; a hung request used to hold a backfill until the
+// function's own timeout threw every fetched day away.
+const APPLE_DAY_TIMEOUT_MS = 30000;
+// Days written as a backfill goes, not only at the end.
+const IOS_FLUSH_DAYS = 50;
+
 async function fetchAppleDay({ config, token, date, fetchImpl = fetch }) {
   const params = new URLSearchParams({
     "filter[frequency]": "DAILY",
@@ -384,7 +436,7 @@ async function fetchAppleDay({ config, token, date, fetchImpl = fetch }) {
     "filter[reportType]": "SALES",
     "filter[vendorNumber]": config.appleVendor,
   });
-  const res = await fetchImpl(`${ASC_HOST}/v1/salesReports?${params}`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/a-gzip" } });
+  const res = await fetchImpl(`${ASC_HOST}/v1/salesReports?${params}`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/a-gzip" }, signal: AbortSignal.timeout(APPLE_DAY_TIMEOUT_MS) });
   if (res.status === 404) return { ...parseAppleSales("", config.appleAppId), missing: true };
   if (!res.ok) {
     let detail = "";
@@ -420,27 +472,40 @@ async function syncIos({ db, config, privateKey, fetchImpl = fetch, backfill = f
   const wanted = daysBetween(from, yesterday).filter((d) => backfill || !have.has(d) || d >= recheckFrom);
   let token = appleJwt({ issuerId: config.appleIssuerId, keyId: config.appleKeyId, privateKey, now });
   let minted = now;
-  const days = {};
+  let days = {};
+  let written = 0;
+  let failed = false;
+  const flush = async () => {
+    const batch = days;
+    days = {};
+    if (Object.keys(batch).length) written += await writeDays(db, "ios", batch);
+  };
   let index = 0;
   const worker = async () => {
-    while (index < wanted.length) {
+    while (!failed && index < wanted.length) {
       const date = wanted[index++];
       if (Date.now() - minted > 15 * 60 * 1000) {
         token = appleJwt({ issuerId: config.appleIssuerId, keyId: config.appleKeyId, privateKey });
         minted = Date.now();
       }
-      days[date] = await fetchAppleDay({ config, token, date, fetchImpl });
+      try {
+        days[date] = await fetchAppleDay({ config, token, date, fetchImpl });
+      } catch (err) {
+        failed = true;
+        throw err;
+      }
+      if (Object.keys(days).length >= IOS_FLUSH_DAYS) await flush();
     }
   };
   try {
     await Promise.all(Array.from({ length: Math.min(IOS_CONCURRENCY, wanted.length) }, worker));
   } catch (err) {
     // Whatever was fetched before the failure is kept; the error is shown.
-    if (Object.keys(days).length) await writeDays(db, "ios", days);
+    await flush();
     await markSync(db, "ios", { error: err.message });
     throw err;
   }
-  const written = await writeDays(db, "ios", days);
+  await flush();
   const all = await db.collection(`${STATS}/ios/days`).select("date", "downloads", "missing").get();
   const dates = all.docs.map((d) => d.id).sort();
   await markSync(db, "ios", {
@@ -489,7 +554,7 @@ async function sync({ db, platform = "all", backfill = false, fetchImpl = fetch,
   const result = { android: null, ios: null, errors: {} };
   if (platform === "all" || platform === "android") {
     if (androidConfigured(config)) {
-      try { result.android = await syncAndroid({ db, config, storage }); } catch (err) { result.errors.android = err.message; }
+      try { result.android = await syncAndroid({ db, config, storage, backfill }); } catch (err) { result.errors.android = err.message; }
     } else result.errors.android = "not_configured";
   }
   if (platform === "all" || platform === "ios") {
@@ -512,7 +577,7 @@ module.exports = {
   loadConfig,
   internals: {
     dayKey, isDayKey, daysBetween, decodeReport, parseCsv, parseTsv, parsePlayOverview, parsePlayCountries,
-    classifyProductType, parseAppleSales, normalizePem, isPem, appleJwt, cleanConfig, androidConfigured, iosConfigured, totals,
-    syncAndroid, syncIos, fetchAppleDay, CONFIG_DOC, PRIVATE_DOC, STATS, DEFAULT_PACKAGE, DEFAULT_APPLE_APP_ID,
+    classifyProductType, parseAppleSales, normalizePem, isPem, keyProblem, appleJwt, cleanConfig, androidConfigured, iosConfigured, totals,
+    syncAndroid, recentReports, syncIos, fetchAppleDay, CONFIG_DOC, PRIVATE_DOC, STATS, DEFAULT_PACKAGE, DEFAULT_APPLE_APP_ID,
   },
 };

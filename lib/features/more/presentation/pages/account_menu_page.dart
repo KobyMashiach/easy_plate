@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/monetization/entitlement_service.dart';
+import '../../../../core/monetization/web_billing_links.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -14,6 +15,7 @@ import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/profile_avatar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/widgets/sign_out_action.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/services/admin_access.dart';
 import '../../../../core/services/admin_inbox_service.dart';
@@ -37,16 +39,7 @@ class AccountMenuPage extends StatelessWidget {
       destructive: true,
     ).show(context);
     if (!(confirmed ?? false) || !context.mounted) return;
-    // Signing out clears Firebase, Google/Apple and the local scope; the bloc
-    // reports through its stream, and the card stays up until it has.
-    await AppDialog.busy(context, () {
-      bloc.add(const AuthEvent.signOut());
-      return bloc.stream.firstWhere(
-        (state) => state is! AuthLoading,
-        // The gate's redirect disposes this page, and its bloc, mid-way.
-        orElse: () => const AuthState.idle(),
-      );
-    });
+    await signOutWithFeedback(context, bloc);
   }
 
   @override
@@ -129,6 +122,30 @@ class AccountMenuPage extends StatelessWidget {
                           onTap: () => context.pushNamed(Routing.premium),
                         ),
                       );
+                    },
+                  ),
+                ),
+                // Premium on the website (PayPlus / Paddle via RevenueCat) — card, Apple Pay, Google
+                // Pay, no store fee. Opens the site already signed in.
+                FeatureGate(
+                  feature: FeaturesFlags.webCheckout,
+                  gapAfter: AppSpacing.sm,
+                  child: _MenuRow(
+                    icon: Icons.language_rounded,
+                    label: t.premium.webRow,
+                    hint: t.premium.webRowHint,
+                    onTap: () async {
+                      final opened = await AppDialog.busy(
+                        context,
+                        () => WebBillingLinks().open(
+                          lang: LocaleSettings.currentLocale.languageCode,
+                        ),
+                      );
+                      if (!opened && context.mounted) {
+                        AppDialog.error(
+                          message: t.premium.webLinkFailed,
+                        ).show(context);
+                      }
                     },
                   ),
                 ),

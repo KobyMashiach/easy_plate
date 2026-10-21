@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
+import '../../../recipe_sharing/data/datasources/pending_accepts_store.dart';
+import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../../recipe_sharing/domain/usecases/respond_to_share_invite_usecase.dart';
 import '../repositories/collab_containers_repository.dart';
@@ -18,10 +22,22 @@ class RecipeLinker {
   final RecipesRepository recipes;
   final CollabContainersRepository containers;
 
+  /// How long a recipe's photo upload may hold a save up. Offline it would
+  /// not complete at all, and the save of the whole book or plan with it;
+  /// past this the recipe is left out this time and picked up by the next
+  /// save (the upload itself finishes and is persisted on its own).
+  final Duration remoteTimeout;
+
+  /// Where the recipe accepts inside a container leave their marks (see
+  /// [PendingAcceptsStore]); the device store when not given.
+  final PendingAcceptsStore? pending;
+
   const RecipeLinker({
     required this.sharing,
     required this.recipes,
     required this.containers,
+    this.remoteTimeout = const Duration(seconds: 8),
+    this.pending,
   });
 
   /// Local id → collab id for every recipe in [recipeIds] that is, or can be
@@ -45,11 +61,20 @@ class RecipeLinker {
         }
         continue;
       }
+      // Deliberate, pending a product decision: a copy saved from the
+      // community (not this account's own) is shared on as this account's
+      // collab when its book or plan is, like any other recipe in it.
       try {
-        final ready = await recipes.readyForSharing(recipe);
+        final ready = await recipes
+            .readyForSharing(recipe)
+            .timeout(remoteTimeout);
         final collabId = await sharing.ensureCollab(ready, ownerUid: uid);
+        // Only the sharing marks, onto the recipe as stored now: the upload
+        // and the document write took a while, and an edit or a translation
+        // saved meanwhile must not be undone.
+        final current = await recipes.getRecipeById(id) ?? ready;
         await recipes.saveRecipe(
-          ready.copyWith(collabId: collabId, collabRole: CollabRole.owner),
+          current.copyWith(collabId: collabId, collabRole: CollabRole.owner),
         );
         byRecipeId[id] = collabId;
         owned.add((collabId: collabId, title: recipe.title));
@@ -73,13 +98,24 @@ class RecipeLinker {
       for (final recipe in await recipes.getRecipes())
         ?recipe.collabId: recipe.id,
     };
-    for (final collabId in collabIds) {
-      if (byCollabId.containsKey(collabId)) continue;
+    final missing = {
+      for (final collabId in collabIds)
+        if (!byCollabId.containsKey(collabId)) collabId,
+    };
+    if (missing.isEmpty) return byCollabId;
+    // One read for every invite still needed, not one per recipe: a book
+    // of a hundred recipes waited out a hundred round trips here before
+    // its first copy was written.
+    final Map<String, ShareInviteEntity> invites;
+    try {
+      invites = await containers.recipeInvites(collabIds: missing, uid: uid);
+    } catch (e) {
+      debugPrint('Recipe invites could not be read: $e');
+      return byCollabId;
+    }
+    for (final collabId in missing) {
       try {
-        final invite = await containers.recipeInvite(
-          collabId: collabId,
-          uid: uid,
-        );
+        final invite = invites[collabId];
         if (invite == null) continue;
         final RecipeEntity local;
         if (invite.status == ShareInviteStatus.accepted) {
@@ -94,6 +130,7 @@ class RecipeLinker {
           local = await RespondToShareInviteUseCase(
             sharing: sharing,
             recipes: recipes,
+            pending: pending,
           ).accept(invite);
           byCollabId[collabId] = local.id;
           continue;
@@ -102,6 +139,10 @@ class RecipeLinker {
         byCollabId[collabId] = local.id;
       } catch (e) {
         debugPrint('Shared recipe $collabId could not be fetched: $e');
+        // The network went away: every accept left would wait out its own
+        // timeout for the same answer. The rest is picked up by the next
+        // refresh of the container, like this one's mark.
+        if (RecipeSharingRepository.isAcceptQueued(e)) break;
       }
     }
     return byCollabId;

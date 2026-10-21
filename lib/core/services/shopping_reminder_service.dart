@@ -6,6 +6,7 @@ import 'package:timezone/timezone.dart' as tz;
 import '../constants/app_enums.dart';
 import '../monetization/monetization_config.dart';
 import '../navigation/main_tabs.dart';
+import '../utils/i18n/strings.g.dart';
 import 'cook_session_service.dart';
 import '../features/features_flags.dart';
 
@@ -22,18 +23,31 @@ class ShoppingReminderService {
   bool _initialized = false;
 
   static const _channelId = 'shopping_reminders';
-  static const _details = NotificationDetails(
+
+  /// Built per schedule, not const: the channel name is what Android shows
+  /// in its notification settings, and it has to follow the app's language
+  /// like the reminder texts do.
+  NotificationDetails get _details => NotificationDetails(
     android: AndroidNotificationDetails(
       _channelId,
-      'תזכורות קניות',
+      t.notificationSettings.reminders,
       importance: Importance.defaultImportance,
     ),
-    iOS: DarwinNotificationDetails(),
+    iOS: const DarwinNotificationDetails(),
   );
 
   Future<void> initialize() async {
     if (_initialized) return;
     tz.initializeTimeZones();
+    // The package starts on UTC and nothing told it otherwise: "18:00 the
+    // day before" rang at 18:00 UTC — 21:00 in Israel in summer — and the
+    // weekly repeat kept that hour. The device's zone is matched from the
+    // database by its offsets across a year, which needs no extra plugin.
+    final local = matchLocalLocation(
+      tz.timeZoneDatabase.locations.values,
+      now: DateTime.now(),
+    );
+    if (local != null) tz.setLocalLocation(local);
     await _plugin.initialize(
       settings: const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -105,12 +119,23 @@ class ShoppingReminderService {
         MonetizationConfig.notificationsLocked ||
         !FeaturesFlags.shoppingReminder.isEnabled ||
         !FeaturesFlags.notifications.isEnabled;
-    final key = '$locked|$shoppingDay|$slots';
+    // The language is part of the key: the texts are baked into the scheduled
+    // notifications, so a language switch has to write them again.
+    final key =
+        '$locked|$shoppingDay|$slots|${LocaleSettings.currentLocale.languageCode}';
     if (key == _lastKey) return;
     // Recorded only once the work below went through: a plugin hiccup must
     // not silence this key for the rest of the session.
     _lastKey = null;
-    await _schedule(shoppingDay, slots, locked);
+    // Never thrown on: callers on the entitlement and console listeners do
+    // not await this, and an escaped plugin error there is recorded as a
+    // fatal crash. The key stays unset, so the next call tries again.
+    try {
+      await _schedule(shoppingDay, slots, locked);
+    } catch (e) {
+      debugPrint('Scheduling reminders failed: $e');
+      return;
+    }
     _lastKey = key;
   }
 
@@ -134,28 +159,30 @@ class ShoppingReminderService {
         ? DateTime.sunday
         : shoppingDay.index;
 
-    // Every slot the app knows; only the chosen ones are scheduled.
-    const all =
+    // Every slot the app knows; only the chosen ones are scheduled. The texts
+    // come from the app's strings, in the language the app is in right now:
+    // a reminder in a language the user never chose read as someone else's.
+    final all =
         <ShoppingReminderSlot, ({int daysBefore, int hour, String body})>{
           ShoppingReminderSlot.twoDaysBefore: (
             daysBefore: 2,
             hour: 18,
-            body: 'יום הקניות מתקרב — כדאי להתחיל לתכנן את התפריט',
+            body: t.shoppingReminder.twoDaysBefore,
           ),
           ShoppingReminderSlot.dayBefore: (
             daysBefore: 1,
             hour: 18,
-            body: 'מחר יום הקניות — בדקו שהתפריט שלכם מעודכן',
+            body: t.shoppingReminder.dayBefore,
           ),
           ShoppingReminderSlot.sameDayMorning: (
             daysBefore: 0,
             hour: 9,
-            body: 'היום יום הקניות — סיימו את התפריט כדי לקבל רשימה מדויקת',
+            body: t.shoppingReminder.sameDayMorning,
           ),
           ShoppingReminderSlot.sameDayAfternoon: (
             daysBefore: 0,
             hour: 16,
-            body: 'תזכורת אחרונה לפני הקניות — רשימת הקניות מחכה לכם',
+            body: t.shoppingReminder.sameDayAfternoon,
           ),
         };
     final schedule = [for (final slot in slots) all[slot]!];
@@ -165,7 +192,7 @@ class ShoppingReminderService {
       try {
         await _plugin.zonedSchedule(
           id: i,
-          title: 'EasyPlate',
+          title: t.appName,
           body: entry.body,
           scheduledDate: _nextInstance(
             targetWeekday,
@@ -180,6 +207,45 @@ class ShoppingReminderService {
         debugPrint('Failed to schedule reminder $i: $e');
       }
     }
+  }
+
+  /// The database zone that keeps this device's clock: the same UTC offset
+  /// as the device's own at four points a season apart (so the same
+  /// daylight-saving rule), preferring one whose abbreviation also matches
+  /// ([abbreviation], the device's `timeZoneName`). Null when none does —
+  /// the reminders then stay on UTC, as before.
+  @visibleForTesting
+  static tz.Location? matchLocalLocation(
+    Iterable<tz.Location> candidates, {
+    required DateTime now,
+    Duration Function(DateTime instant)? offsetAt,
+    String? abbreviation,
+  }) {
+    final localOffset =
+        offsetAt ?? (instant) => instant.toLocal().timeZoneOffset;
+    final name = abbreviation ?? now.toLocal().timeZoneName;
+    final samples = [
+      for (var quarter = 0; quarter < 4; quarter++)
+        now.toUtc().add(Duration(days: 91 * quarter)),
+    ];
+    tz.Location? fallback;
+    for (final location in candidates) {
+      final fits = samples.every(
+        (instant) =>
+            location.timeZone(instant.millisecondsSinceEpoch).offset ==
+            localOffset(instant),
+      );
+      if (!fits) continue;
+      if (location.timeZone(now.millisecondsSinceEpoch).abbreviation == name) {
+        return location;
+      }
+      // A region's own zone over the `Etc/` fixed offsets, which carry no
+      // daylight-saving rule of their own.
+      if (fallback == null || fallback.name.startsWith('Etc/')) {
+        fallback = location;
+      }
+    }
+    return fallback;
   }
 
   tz.TZDateTime _nextInstance(int targetWeekday, int daysBefore, int hour) {

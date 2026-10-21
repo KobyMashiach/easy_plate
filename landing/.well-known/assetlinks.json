@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.KHEasyDev.easy_plate",
+      "sha256_cert_fingerprints": [
+        "58:04:C9:C1:F0:26:9E:FF:C5:64:E8:84:AA:87:B3:37:75:6E:4D:2E:D3:B4:C4:6D:26:DF:14:20:94:BA:B2:60",
+        "E0:C9:21:29:20:E0:FB:32:68:75:A1:25:63:50:88:4E:C4:AF:27:3E:E4:10:4C:E0:79:97:EA:BE:F2:2A:E4:27"
+      ]
+    }
+  }
+]

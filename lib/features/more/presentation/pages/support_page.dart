@@ -66,11 +66,17 @@ class SupportPage extends StatelessWidget {
   }
 
   Future<void> _open(BuildContext context, Uri uri) async {
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened) {
-      if (context.mounted) {
-        AppDialog.error(message: t.more.supportUnavailable).show(context);
-      }
+    bool opened;
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      // No app for the scheme (a phone without a mail client throws rather
+      // than answering false): the same word as a refused launch.
+      debugPrint('Support link failed: $e');
+      opened = false;
+    }
+    if (!opened && context.mounted) {
+      AppDialog.error(message: t.more.supportUnavailable).show(context);
     }
   }
 

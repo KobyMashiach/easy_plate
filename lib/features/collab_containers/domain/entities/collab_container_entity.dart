@@ -1,4 +1,5 @@
 import '../../../../core/constants/app_enums.dart';
+import '../../../community/data/doc_fields.dart';
 
 /// The shared source of truth for a book or a meal plan that lives in more
 /// than one account. Local books and plans with a matching `collabId` are
@@ -48,14 +49,14 @@ class CollabContainerEntity {
 
   static Set<String> collabIdsIn(Map<String, dynamic> content) {
     final ids = <String>{};
-    for (final raw in (content['recipes'] as List?) ?? const []) {
+    for (final raw in docList(content['recipes'])) {
       if (raw is Map && raw['collabId'] is String) {
         ids.add(raw['collabId'] as String);
       }
     }
-    for (final meal in (content['meals'] as List?) ?? const []) {
+    for (final meal in docList(content['meals'])) {
       if (meal is! Map) continue;
-      for (final item in (meal['items'] as List?) ?? const []) {
+      for (final item in docList(meal['items'])) {
         if (item is Map && item['recipeCollabId'] is String) {
           ids.add(item['recipeCollabId'] as String);
         }

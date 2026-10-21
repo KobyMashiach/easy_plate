@@ -19,6 +19,11 @@ class RecipeBooksRepositoryImpl implements RecipeBooksRepository {
   /// Sends the cover photo itself to Storage; the mirror carries only fields.
   final RecipeImageStore? images;
 
+  /// Cover uploads in flight, by file name. A save starts one in the
+  /// background; a share right after waits for that one instead of sending
+  /// the same file a second time.
+  final Map<String, Future<String?>> _uploads = {};
+
   RecipeBooksRepositoryImpl({
     required this.localDataSource,
     this.cloud,
@@ -67,16 +72,68 @@ class RecipeBooksRepositoryImpl implements RecipeBooksRepository {
         fileName != null &&
         uid != null &&
         model.coverImageStoragePath == null) {
-      final path = await store.upload(fileName, uid: uid);
+      final path = await _upload(store, fileName, uid: uid);
       // A failed upload leaves the path null so the next save tries again,
       // rather than recording one that resolves to nothing.
       if (path != null) {
-        uploaded = model.copyWith(coverImageStoragePath: path);
+        // Onto the book as it is now, not the pre-upload snapshot: a rename
+        // saved while the cover travelled must not be undone. A book deleted
+        // or given another cover meanwhile is left to its newer save.
+        final current = await localDataSource.getBookById(model.id);
+        if (current == null || current.coverImageFileName != fileName) return;
+        uploaded = current.copyWith(coverImageStoragePath: path);
         await localDataSource.saveBook(uploaded);
       }
     }
 
-    await (cloud?.push(uploaded ?? model) ?? Future.value());
+    if (uploaded != null) {
+      await (cloud?.push(uploaded) ?? Future.value());
+      return;
+    }
+    // No upload, or a failed one that may have taken a while: the book as
+    // the box holds it now, not the snapshot from before — a rename saved or
+    // a website change pulled in meanwhile must not be overwritten in the
+    // mirror. Deleted meanwhile: nothing to push.
+    final current = await localDataSource.getBookById(model.id);
+    if (current != null) await (cloud?.push(current) ?? Future.value());
+  }
+
+  Future<String?> _upload(
+    RecipeImageStore store,
+    String fileName, {
+    required String uid,
+  }) => _uploads.putIfAbsent(
+    fileName,
+    // A block, not an arrow: `remove` hands back the stored future, and a
+    // `whenComplete` that returns a future waits on it — on itself.
+    () => store.upload(fileName, uid: uid).whenComplete(() {
+      _uploads.remove(fileName);
+    }),
+  );
+
+  @override
+  Future<RecipeBookEntity> readyForSharing(RecipeBookEntity book) async {
+    final store = images;
+    final fileName = book.coverImageFileName;
+    final uid = UserScope().uid;
+    if (store == null ||
+        fileName == null ||
+        uid == null ||
+        book.coverImageStoragePath != null) {
+      return book;
+    }
+    final path = await _upload(store, fileName, uid: uid);
+    if (path == null) return book;
+    // Onto the book as the box has it now — a save that landed while the
+    // cover travelled must not be undone — and only while it still wears
+    // this cover; one replaced meanwhile is left to its own save.
+    final current = await localDataSource.getBookById(book.id);
+    if (current != null && current.coverImageFileName == fileName) {
+      final stored = current.copyWith(coverImageStoragePath: path);
+      await localDataSource.saveBook(stored);
+      unawaited(cloud?.push(stored) ?? Future.value());
+    }
+    return book.copyWith(coverImageStoragePath: path);
   }
 
   @override

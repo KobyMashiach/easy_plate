@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -80,25 +82,36 @@ class ImageSearchClient {
   final HttpCalls _http;
   final Dio _downloader;
 
-  ImageSearchClient({HttpCalls? http, Dio? downloader})
-    : _http = http ?? HttpCalls(headerProvider: aiProxyAuthHeader),
-      _downloader =
-          downloader ??
-          Dio(
-            BaseOptions(
-              connectTimeout: const Duration(seconds: 15),
-              receiveTimeout: const Duration(seconds: 30),
-              responseType: ResponseType.bytes,
-              // A few hosts refuse a bare client; a browser-looking one is
-              // what the picture was served to when Google indexed it.
-              headers: const {
-                'User-Agent':
-                    'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
-                    '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
-                'Accept': 'image/*,*/*;q=0.8',
-              },
-            ),
-          );
+  /// The largest picture [download] accepts. A search result can point at
+  /// anything — a 40 MB poster, a file that never ends — and the whole body
+  /// used to be held in memory before anyone looked at it; past this the
+  /// transfer is cut and the next candidate is tried.
+  static const defaultMaxDownloadBytes = 8 * 1024 * 1024;
+
+  final int maxDownloadBytes;
+
+  ImageSearchClient({
+    HttpCalls? http,
+    Dio? downloader,
+    this.maxDownloadBytes = defaultMaxDownloadBytes,
+  }) : _http = http ?? HttpCalls(headerProvider: aiProxyAuthHeader),
+       _downloader =
+           downloader ??
+           Dio(
+             BaseOptions(
+               connectTimeout: const Duration(seconds: 15),
+               receiveTimeout: const Duration(seconds: 30),
+               responseType: ResponseType.bytes,
+               // A few hosts refuse a bare client; a browser-looking one is
+               // what the picture was served to when Google indexed it.
+               headers: const {
+                 'User-Agent':
+                     'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
+                     '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
+                 'Accept': 'image/*,*/*;q=0.8',
+               },
+             ),
+           );
 
   static bool get isAvailable => ApiConfig.usesProxy;
 
@@ -133,13 +146,37 @@ class ImageSearchClient {
   }
 
   Future<Uint8List?> _fetch(String url) async {
+    final cancel = CancelToken();
     try {
-      final response = await _downloader.get<List<int>>(url);
-      final data = response.data;
+      // Streamed, so the cap is enforced as the bytes arrive rather than
+      // after a huge body is already in memory.
+      final response = await _downloader.get<ResponseBody>(
+        url,
+        cancelToken: cancel,
+        options: Options(responseType: ResponseType.stream),
+      );
+      final body = response.data;
       final type = response.headers.value('content-type') ?? '';
+      final declared = int.tryParse(
+        response.headers.value(Headers.contentLengthHeader) ?? '',
+      );
       // An HTML error page with a 200 is not a picture, whatever it is named.
-      if (data == null || type.startsWith('text/html')) return null;
-      return Uint8List.fromList(data);
+      if (body == null ||
+          type.startsWith('text/html') ||
+          (declared != null && declared > maxDownloadBytes)) {
+        cancel.cancel();
+        return null;
+      }
+      final bytes = BytesBuilder(copy: false);
+      await for (final chunk in body.stream) {
+        bytes.add(chunk);
+        if (bytes.length > maxDownloadBytes) {
+          debugPrint('Image download over $maxDownloadBytes bytes: $url');
+          cancel.cancel();
+          return null;
+        }
+      }
+      return bytes.takeBytes();
     } catch (e) {
       debugPrint('Image download failed for $url: $e');
       return null;

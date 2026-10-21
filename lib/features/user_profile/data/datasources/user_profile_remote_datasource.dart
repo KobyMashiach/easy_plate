@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../../core/utils/contact_hash.dart';
+import '../../../community/data/doc_fields.dart';
 import '../../domain/entities/public_profile_entity.dart';
 import '../../domain/entities/user_profile_entity.dart';
 
@@ -40,12 +42,19 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
 
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
+  final FirebaseAuth? _authOverride;
+
+  /// Read only when a directory entry is written, so building this source
+  /// never touches Firebase Auth.
+  FirebaseAuth get _auth => _authOverride ?? FirebaseAuth.instance;
 
   UserProfileFirestoreDataSource({
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,
+    FirebaseAuth? auth,
   }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _storage = storage ?? FirebaseStorage.instance;
+       _storage = storage ?? FirebaseStorage.instance,
+       _authOverride = auth;
 
   DocumentReference<Map<String, dynamic>> _doc(String uid) =>
       _firestore.collection(collection).doc(uid);
@@ -61,12 +70,12 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
 
     return UserProfileEntity(
       uid: uid,
-      fullName: (data['fullName'] as String?) ?? '',
-      email: data['email'] as String?,
-      phoneNumber: data['phoneNumber'] as String?,
-      photoUrl: data['photoUrl'] as String?,
-      pushToken: data['pushToken'] as String?,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      fullName: docString(data['fullName']),
+      email: docStringOrNull(data['email']),
+      phoneNumber: docStringOrNull(data['phoneNumber']),
+      photoUrl: docNonEmpty(data['photoUrl']),
+      pushToken: docStringOrNull(data['pushToken']),
+      createdAt: docDate(data['createdAt']) ?? DateTime.now(),
       permission: UserPermission.fromName(data['permission']),
     );
   }
@@ -74,7 +83,8 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   /// Writes the private document and its public mirror together, so a renamed
   /// account can never be left showing an old name to everyone else.
   @override
-  Future<void> saveProfile(UserProfileEntity profile) {
+  Future<void> saveProfile(UserProfileEntity profile) async {
+    final createdAt = await _createdAtToWrite(profile);
     final batch = _firestore.batch();
 
     // Merge, so writing the profile never clobbers fields owned elsewhere
@@ -86,7 +96,7 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
         'email': profile.email,
         'phoneNumber': profile.phoneNumber,
         'photoUrl': profile.photoUrl,
-        'createdAt': Timestamp.fromDate(profile.createdAt),
+        'createdAt': ?createdAt,
         'updatedAt': FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),
@@ -105,6 +115,31 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
 
     return batch.commit();
   }
+
+  /// `createdAt` is written once, with the document. Every save used to
+  /// carry the entity's date, and an entity built fresh for the save (the
+  /// profile editor, a profile read that found no date and fell back to
+  /// "now") moved the account's creation date with it — the console's
+  /// cohorts and the admin "member since" drifted. A document that already
+  /// holds one keeps it; one without (a new account, or an old one that
+  /// predates the field) gets the entity's. Unreadable (offline with no
+  /// cached copy), the date is written as before — never left out of a
+  /// first save.
+  Future<Timestamp?> _createdAtToWrite(UserProfileEntity profile) async {
+    try {
+      final doc = await _doc(profile.uid).get();
+      if (keepsCreatedAt(doc.data())) return null;
+    } catch (e) {
+      debugPrint('Profile ${profile.uid} not read before save: $e');
+    }
+    return Timestamp.fromDate(profile.createdAt);
+  }
+
+  /// Whether the stored document already carries a creation date — then a
+  /// save must not touch it.
+  @visibleForTesting
+  static bool keepsCreatedAt(Map<String, dynamic>? existing) =>
+      existing != null && existing['createdAt'] != null;
 
   /// Public half only. Used to backfill accounts that predate this document
   /// and to self-heal one that went missing, without rewriting the private
@@ -128,11 +163,16 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   /// One directory entry per verified contact. Written on every publish so an
   /// account that later links a phone becomes findable by it.
   void _addDirectoryEntries(WriteBatch batch, UserProfileEntity profile) {
+    final user = _auth.currentUser;
     final hashes = <String>[];
-    for (final raw in [profile.email, profile.phoneNumber]) {
-      final contact = raw == null ? null : normalizeContact(raw);
-      if (contact == null) continue;
-      final hash = contactHash(contact.value);
+    for (final value in directoryContacts(
+      profile.uid,
+      authUid: user?.uid,
+      authEmail: user?.email,
+      emailVerified: user?.emailVerified ?? false,
+      authPhone: user?.phoneNumber,
+    )) {
+      final hash = contactHash(value);
       hashes.add(hash);
       batch.set(_firestore.collection(directoryCollection).doc(hash), {
         'uid': profile.uid,
@@ -146,6 +186,28 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
     );
   }
 
+  /// The normalised contacts the rules let this account claim: only the
+  /// signed-in token's own phone, and its email once verified. Taken from the
+  /// auth account rather than the profile document — a stored address that
+  /// differs from the token's, or one not yet confirmed, would be refused,
+  /// and with it the whole batch (the profile save included).
+  @visibleForTesting
+  static List<String> directoryContacts(
+    String profileUid, {
+    required String? authUid,
+    required String? authEmail,
+    required bool emailVerified,
+    required String? authPhone,
+  }) {
+    if (authUid == null || authUid != profileUid) return const [];
+    return [
+      if (emailVerified && authEmail != null)
+        if (normalizeContact(authEmail) case final c? when c.isEmail) c.value,
+      // The token carries E.164 already; nothing to upgrade.
+      if (authPhone != null && authPhone.startsWith('+')) authPhone,
+    ];
+  }
+
   @override
   Future<String?> findUidByContact(String contact) async {
     final normalized = normalizeContact(contact);
@@ -155,10 +217,14 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
         .collection(directoryCollection)
         .doc(hash)
         .get();
-    final uid = doc.data()?['uid'] as String?;
-    debugPrint(
-      'Directory lookup "${normalized.value}" → $hash → ${uid ?? 'not found'}',
-    );
+    final uid = docStringOrNull(doc.data()?['uid']);
+    // The contact itself is someone's phone or email: debug builds only
+    // (debugPrint still reaches the device log in release).
+    if (kDebugMode) {
+      debugPrint(
+        'Directory lookup "${normalized.value}" → $hash → ${uid ?? 'not found'}',
+      );
+    }
     return uid;
   }
 
@@ -166,9 +232,13 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(
     Set<String> uids,
   ) async {
-    if (uids.isEmpty) return const {};
-
-    final ids = uids.toList();
+    // A blank id (a document missing its author) or one with a slash would
+    // make the whole `whereIn` query throw, and every name with it.
+    final ids = [
+      for (final uid in uids)
+        if (uid.isNotEmpty && !uid.contains('/')) uid,
+    ];
+    if (ids.isEmpty) return const {};
     final chunks = [
       for (var i = 0; i < ids.length; i += _uidChunk)
         ids.sublist(i, i + _uidChunk > ids.length ? ids.length : i + _uidChunk),
@@ -179,6 +249,9 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
         (chunk) => _firestore
             .collection(publicCollection)
             .where(FieldPath.documentId, whereIn: chunk)
+            // A chunk never holds more, and the rules refuse a list query
+            // without a bound (no scraping every profile in one read).
+            .limit(_uidChunk)
             .get(),
       ),
     );
@@ -188,8 +261,8 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
         for (final doc in snapshot.docs)
           doc.id: PublicProfileEntity(
             uid: doc.id,
-            fullName: (doc.data()['fullName'] as String?) ?? '',
-            photoUrl: doc.data()['photoUrl'] as String?,
+            fullName: docString(doc.data()['fullName']),
+            photoUrl: docNonEmpty(doc.data()['photoUrl']),
           ),
     };
   }
@@ -233,7 +306,7 @@ class UserProfileFirestoreDataSource implements UserProfileRemoteDataSource {
           .get();
       final data = doc.data();
       if (data == null || data['disabled'] != true) return null;
-      return (data['message'] as String?) ?? '';
+      return docString(data['message']);
     } catch (e) {
       // Offline, or a rules refusal: an unreadable status is not a block.
       debugPrint('Account status read failed: $e');

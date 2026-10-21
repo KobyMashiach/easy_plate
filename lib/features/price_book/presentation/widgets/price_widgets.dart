@@ -9,14 +9,15 @@ import '../../domain/price_estimator.dart';
 
 /// "₪7.20" — two decimals, the shekel in front whatever the locale, since
 /// every receipt in the app is Israeli so far.
-String priceLabel(double amount, {String currency = 'ILS'}) {
-  final symbol = switch (currency) {
-    'USD' => r'$',
-    'EUR' => '€',
-    _ => '₪',
-  };
-  return '$symbol${amount.toStringAsFixed(2)}';
-}
+String priceLabel(double amount, {String currency = 'ILS'}) =>
+    '${currencySymbol(currency)}${amount.toStringAsFixed(2)}';
+
+/// The mark a price is written with: ₪ unless the receipt said otherwise.
+String currencySymbol(String currency) => switch (currency) {
+  'USD' => r'$',
+  'EUR' => '€',
+  _ => '₪',
+};
 
 /// The price beside a grocery line: the figure with a small mark of where
 /// it came from, or a muted "no data".
@@ -48,7 +49,7 @@ class PriceChip extends StatelessWidget {
           ),
           const SizedBox(width: 3),
           Text(
-            priceLabel(price * multiplier),
+            priceLabel(price * multiplier, currency: estimate.currency),
             style: AppTextStyles.labelMd.copyWith(
               color: AppColors.onSurface,
               fontWeight: FontWeight.w800,
@@ -101,7 +102,10 @@ class GroceryCostCard extends StatelessWidget {
                 ),
                 Text(
                   summary.hasAny
-                      ? priceLabel(summary.knownTotal)
+                      ? priceLabel(
+                          summary.knownTotal,
+                          currency: summary.currency,
+                        )
                       : t.receipt.noData,
                   style: AppTextStyles.headlineMd.copyWith(
                     fontWeight: FontWeight.w800,

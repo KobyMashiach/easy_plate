@@ -6,6 +6,14 @@ import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, t
 import { isOnline, premiumActive, platformLabel, pricing, tally, costIls, isPersona, profiles } from "../data.js";
 import { call } from "../api.js";
 
+// Which "bought on the website" label an entitlement gets: PayPlus / Stripe
+// by source, Paddle when RevenueCat reports it (store PADDLE, since
+// 2026-10-18) or from the retired direct route (source paddle).
+function webSourceKey(ent) {
+  if (ent.source === "revenuecat" && String(ent.store || "").toUpperCase() === "PADDLE") return "user.sourcePaddle";
+  return ({ stripe: "user.sourceStripe", payplus: "user.sourcePayplus", paddle: "user.sourcePaddle" })[ent.source] || null;
+}
+
 const COLLECTIONS = ["recipes", "books", "meal_plans", "grocery_lists", "preferences", "price_records", "receipts", "product_pricing"];
 const SHARED = new Set(["recipes", "books", "meal_plans", "grocery_lists", "price_records", "receipts", "product_pricing"]);
 
@@ -112,14 +120,19 @@ export async function mount({ view, params, setTitle }) {
   let active = "overview";
   tabWrap.append(tabs(persona ? TABS.filter(([k]) => k === "community" || k === "overview") : TABS, active, (k) => { active = k; renderTab(); }));
 
+  // A slow tab that resolves after the next click must not replace it.
+  let tabSeq = 0;
   async function renderTab() {
+    const mine = ++tabSeq;
     clear(body);
     body.append(spinner());
     try {
       const section = await ({ overview, content, ai, community, sharing, inbox, tickets })[active]();
+      if (mine !== tabSeq) return;
       clear(body);
       body.append(section);
     } catch (err) {
+      if (mine !== tabSeq) return;
       clear(body);
       body.append(h("div.card.error", err.message));
       console.error(err);
@@ -135,7 +148,7 @@ export async function mount({ view, params, setTitle }) {
     entCard.append(kv([
       [t("common.status"), premiumActive(ent, now) ? badge(t("users.premium"), "mint") : badge(t("users.free"))],
       [t("user.premiumUntil"), ent && ent.premiumUntil ? fmtDate(ent.premiumUntil) : "—"],
-      [t("user.source"), ent && ent.source], ["Product", ent && ent.productId], [t("user.adminLock"), ent && ent.adminLock ? t("common.yes") : t("common.no")],
+      [t("user.source"), ent && webSourceKey(ent) ? h("span", t(webSourceKey(ent)), ent.cancelAtPeriodEnd ? ` · ${t("user.cancelsAtPeriodEnd")}` : "") : ent && ent.source], [t("user.product"), ent && ent.productId], [t("user.stripeCustomer"), ent && ent.stripeCustomerId ? h("a", { href: `https://dashboard.stripe.com/customers/${ent.stripeCustomerId}`, target: "_blank", rel: "noopener" }, ent.stripeCustomerId) : null], [t("user.webSubscription"), ent && (ent.source === "payplus" || ent.source === "paddle") && ent.subscriptionId ? ent.subscriptionId : null], [t("user.adminLock"), ent && ent.adminLock ? t("common.yes") : t("common.no")],
       [t("user.household"), household ? h("a", { href: "#/households" }, household.title || household.id) : null],
     ]));
     if (!persona) entCard.append(h("div.row", button(t("user.setPremium"), { kind: "small primary", onclick: grantPremium }), ent && ent.premium ? button(t("user.removePremium"), { kind: "small danger", onclick: removePremium }) : null));
@@ -160,7 +173,7 @@ export async function mount({ view, params, setTitle }) {
     };
     const profileCard = h("div.card", h("h2", t("user.profile")), kv([
       [t("user.fullName"), user && user.fullName], [t("common.email"), user && user.email], [t("common.phone"), user && user.phoneNumber],
-      [t("users.permission"), permissionControl()],
+      persona ? undefined : [t("users.permission"), permissionControl()],
       [t("user.created"), user && fmtDate(user.createdAt)], [t("common.platform"), user && platformLabel(user.platform)], [t("user.appVersion"), user && user.appVersion],
       [t("users.lastSeen"), user && fmtDate(user.lastSeenAt)], [t("user.pushToken"), user && user.pushToken ? h("span.mono.small", String(user.pushToken).slice(0, 24) + "…") : "—"],
       persona ? [t("personas.bio"), publicProfile && publicProfile.bio] : undefined,
@@ -177,7 +190,7 @@ export async function mount({ view, params, setTitle }) {
     ]), h("p.small.muted", t("user.tokenHint"))) : h("p.muted", t("user.noAuth")));
 
     const sessionCard = persona ? null : h("div.card", h("h2", t("users.session")), session ? kv([
-      [t("users.device"), platformLabel(session.platform)], ["Device id", h("span.mono.small", session.deviceId)], [t("users.hardwareId"), session.hardwareId ? h("span.mono.small", String(session.hardwareId).slice(0, 16) + "…") : "—"], [t("user.created"), fmtDate(session.startedAt)], [t("user.expires"), session.expiresAt ? fmtDate(session.expiresAt) : "∞"], [t("users.lastSeen"), fmtDate(session.lastSeenAt)],
+      [t("users.device"), platformLabel(session.platform)], [t("user.deviceId"), h("span.mono.small", session.deviceId)], [t("users.hardwareId"), session.hardwareId ? h("span.mono.small", String(session.hardwareId).slice(0, 16) + "…") : "—"], [t("user.created"), fmtDate(session.startedAt)], [t("user.expires"), session.expiresAt ? fmtDate(session.expiresAt) : "∞"], [t("users.lastSeen"), fmtDate(session.lastSeenAt)],
       session.releaseRequest ? [t("users.releaseRequest"), h("span", platformLabel(session.releaseRequest.platform), " · ", fmtDate(session.releaseRequest.at), " · ", session.releaseRequest.declinedAt ? badge(t("users.declined"), "amber") : session.releaseRequest.takeoverAt ? t("users.takeoverAt", { date: fmtDate(session.releaseRequest.takeoverAt) }) : "")] : null,
     ].filter(Boolean)) : h("p.muted", t("users.noSession")));
 
@@ -216,14 +229,28 @@ export async function mount({ view, params, setTitle }) {
     let root = household ? "households" : "users";
     let col = "recipes";
     const list = h("div");
+    // A failed read shows the console's error card (not a spinner for ever),
+    // and a slow collection cannot overwrite the one clicked after it.
+    let seq = 0;
     const render = async () => {
+      const mine = ++seq;
       clear(list);
       list.append(spinner());
       const rootId = root === "households" ? household.id : uid;
       const available = root === "households" ? COLLECTIONS.filter((c) => SHARED.has(c)) : COLLECTIONS;
       if (!available.includes(col)) col = available[0];
-      const snap = await getDocs(query(collection(db, root, rootId, col), limit(500)));
-      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      let docs;
+      try {
+        const snap = await getDocs(query(collection(db, root, rootId, col), limit(500)));
+        docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      } catch (err) {
+        if (mine !== seq) return;
+        clear(list);
+        list.append(h("div.card.error", err.message));
+        console.error(err);
+        return;
+      }
+      if (mine !== seq) return;
       clear(list);
       list.append(h("div.toolbar", tabs(available.map((c) => [c, t(`user.collections.${c}`)]), col, (c) => { col = c; render(); }), h("span.muted.small", t("user.items", { n: docs.length }))));
       list.append(table([
@@ -268,8 +295,8 @@ export async function mount({ view, params, setTitle }) {
         h("div.card", h("h2", t("dash.byKind")), table([{ label: t("user.kind"), cell: (r) => r.key }, { label: t("dash.calls"), num: true, cell: (r) => fmtNumber(r.tally.calls) }, { label: t("dash.tokens"), num: true, cell: (r) => fmtNumber(r.tally.total) }], kinds)),
       ),
       h("div.card", h("h2", t("user.recentCalls")), table([
-        { label: t("user.when"), cell: (d) => h("span.small", fmtDate(d.at)) }, { label: "fn", cell: (d) => h("span.small", d.fn) }, { label: t("user.model"), cell: (d) => h("span.small", d.model) }, { label: t("user.kind"), cell: (d) => d.kind },
-        { label: t("user.statusCol"), cell: (d) => badge(String(d.status), d.status === 200 ? "green" : "red") }, { label: t("user.ms"), num: true, cell: (d) => fmtNumber(d.ms) }, { label: t("dash.tokens"), num: true, cell: (d) => d.cacheHit ? "cache" : fmtNumber(d.totalTokens) },
+        { label: t("user.when"), cell: (d) => h("span.small", fmtDate(d.at)) }, { label: t("user.fn"), cell: (d) => h("span.small", d.fn) }, { label: t("user.model"), cell: (d) => h("span.small", d.model) }, { label: t("user.kind"), cell: (d) => d.kind },
+        { label: t("user.statusCol"), cell: (d) => badge(String(d.status), d.status === 200 ? "green" : "red") }, { label: t("user.ms"), num: true, cell: (d) => fmtNumber(d.ms) }, { label: t("dash.tokens"), num: true, cell: (d) => d.cacheHit ? t("user.cacheHit") : fmtNumber(d.totalTokens) },
       ], callsSnap.docs.map((d) => d.data()))),
     );
   }
@@ -323,7 +350,7 @@ export async function mount({ view, params, setTitle }) {
   async function tickets() {
     const snap = await getDocs(query(collection(db, "feedback"), where("authorUid", "==", uid), limit(100)));
     return h("div.card", table([
-      { label: t("user.when"), cell: (d) => h("span.small", fmtDate(d.createdAt)) }, { label: t("user.kind2"), cell: (d) => badge(t(`tickets.types.${d.type}`), d.type === "bug" ? "red" : "amber") }, { label: t("common.body"), cell: (d) => h("span.small.pre", d.message) }, { label: t("tickets.replied"), cell: (d) => (d.replies || []).length ? badge(String(d.replies.length), "green") : "—" },
+      { label: t("user.when"), cell: (d) => h("span.small", fmtDate(d.createdAt)) }, { label: t("user.kind2"), cell: (d) => badge(t(`tickets.types.${d.type}`) === `tickets.types.${d.type}` ? String(d.type || "—") : t(`tickets.types.${d.type}`), d.type === "bug" ? "red" : "amber") }, { label: t("common.body"), cell: (d) => h("span.small.pre", d.message) }, { label: t("tickets.replied"), cell: (d) => (d.replies || []).length ? badge(String(d.replies.length), "green") : "—" },
     ], snap.docs.map((d) => d.data()).sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))));
   }
 

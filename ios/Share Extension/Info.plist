@@ -26,18 +26,30 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
+			<!-- Only what the app takes in (share_intent_service.dart): recordings and
+			     voice notes, PDFs, a caption as text, a web link — up to ten
+			     items, since a voice note can come in parts. A file URL also
+			     conforms to public.url, so it is excluded: a photo or a .docx
+			     shared from Files must not list EasyPlate. Ogg/Opus (WhatsApp voice
+			     notes) and WebM are named too, in case an iOS version types them
+			     outside public.audio (IngestionFile.mimeTypeFor reads them). -->
 			<key>NSExtensionActivationRule</key>
-			<dict>
-				<!-- Recordings, voice notes or PDFs, several at once when a
-				     voice note came in parts. Text and links too, so a recipe
-				     caption or a video link can be shared straight in. -->
-				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
-				<integer>10</integer>
-				<key>NSExtensionActivationSupportsText</key>
-				<true/>
-				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-				<integer>1</integer>
-			</dict>
+			<string>SUBQUERY (
+  extensionItems, $extensionItem,
+  SUBQUERY (
+    $extensionItem.attachments, $attachment,
+    SUBQUERY (
+      $attachment.registeredTypeIdentifiers, $uti,
+      $uti UTI-CONFORMS-TO "public.audio"
+      OR $uti UTI-CONFORMS-TO "org.xiph.ogg-audio"
+      OR $uti UTI-CONFORMS-TO "org.xiph.opus"
+      OR $uti UTI-CONFORMS-TO "org.webmproject.webm"
+      OR $uti UTI-CONFORMS-TO "com.adobe.pdf"
+      OR $uti UTI-CONFORMS-TO "public.plain-text"
+      OR ($uti UTI-CONFORMS-TO "public.url" AND NOT ($uti UTI-CONFORMS-TO "public.file-url"))
+    ).@count &gt;= 1
+  ).@count BETWEEN {1, 10}
+).@count &gt;= 1</string>
 		</dict>
 		<key>NSExtensionMainStoryboard</key>
 		<string>MainInterface</string>

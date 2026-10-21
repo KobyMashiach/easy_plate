@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import com.KHEasyDev.easy_plate.wakeword.ShefiOverlay
 import com.KHEasyDev.easy_plate.wakeword.WakeWordController
+import com.KHEasyDev.easy_plate.widgets.WidgetIntents
 
 /**
  * The app's launcher entry: transparent, with no layout of its own.
@@ -29,14 +30,23 @@ class EntryActivity : Activity() {
         val viaGemini = openedByAssistant(intent) &&
             prefs.getBoolean(WakeWordController.ASSISTANT_OPENS_SHEFI, false)
         // The home-screen Shefi widget asks for the panel outright (Koby:
-        // the widget must not open the app's chat).
-        val viaWidget = intent?.action == ACTION_SHEFI_PANEL
+        // the widget must not open the app's chat). Only our own widget's
+        // PendingIntent (it carries the trust token): the panel opens
+        // listening, and this activity is exported, so any other app asking
+        // for it would switch the microphone on — it just opens the app.
+        val viaWidget = intent?.action == ACTION_SHEFI_PANEL && WidgetIntents.isTrusted(this, intent)
 
         if (viaWidget || (viaGemini && prefs.getBoolean(WakeWordController.ASSISTANT_PANEL, true))) {
             WakeWordController.init(this)
             // Our own "Hey Shefi" listener, if on, gives up the microphone.
             WakeWordController.hold(PANEL_HOLD)
-            val prompt = intent?.getStringExtra(EXTRA_PROMPT).orEmpty()
+            // Only our own widget's PendingIntent may hand Shefi a request;
+            // any other app reaching this exported activity just opens it.
+            val prompt = if (WidgetIntents.isTrusted(this, intent)) {
+                intent?.getStringExtra(EXTRA_PROMPT).orEmpty()
+            } else {
+                ""
+            }
             panel = ShefiOverlay(
                 this,
                 onClosed = {
@@ -57,6 +67,12 @@ class EntryActivity : Activity() {
         if (viaGemini) {
             forward.action = Intent.ACTION_VIEW
             forward.data = Uri.parse("easyplate://open/widget/assistant?voice=1&source=launcher")
+            // Decided here (the referrer is Gemini), so MainActivity keeps `voice`.
+            forward.putExtra(WidgetIntents.EXTRA_TRUST, WidgetIntents.trustToken(this))
+        } else {
+            // A forwarded launch never vouches for itself: drop any token-looking
+            // extra a caller put on it (it could only guess, but be explicit).
+            forward.removeExtra(WidgetIntents.EXTRA_TRUST)
         }
         startActivity(forward)
         finish()
@@ -69,8 +85,25 @@ class EntryActivity : Activity() {
         super.onDestroy()
     }
 
+    /**
+     * Only the system's own record of who started this activity counts.
+     * `Activity.getReferrer()` first returns whatever the caller put in
+     * `EXTRA_REFERRER` / `EXTRA_REFERRER_NAME` (any app can write
+     * "android-app://com.google.android.googlequicksearchbox" there and,
+     * with "Gemini opens Shefi" on, have the panel open listening); only
+     * when neither extra is present does it fall back to the package the
+     * ActivityManager saw launch us, which cannot be spoofed. A real Gemini
+     * launch still passes: with the extras gone the referrer is the package
+     * that actually started us, which is Gemini's.
+     */
     private fun openedByAssistant(intent: Intent?): Boolean {
         if (intent?.action != Intent.ACTION_MAIN || intent.data != null) return false
+        try {
+            intent.removeExtra(Intent.EXTRA_REFERRER)
+            intent.removeExtra(Intent.EXTRA_REFERRER_NAME)
+        } catch (_: Exception) {
+            return false // a malformed extras bundle from another app
+        }
         val from = referrer?.host ?: return false
         return from in ASSISTANT_PACKAGES
     }

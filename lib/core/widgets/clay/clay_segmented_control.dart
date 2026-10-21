@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../constants/app_colors.dart';
@@ -61,7 +63,12 @@ class ClaySegmentedControl extends StatelessWidget {
   }) {
     final wanted = _iconSize + AppSpacing.xs + labelWidth + 2 * _hPad + 2;
     final cap = available - (count - 1) * _iconOnly;
-    final chosen = wanted.clamp(available / count, cap > 0 ? cap : available);
+    final upper = cap > 0 ? cap : available;
+    // Narrower than an icon per segment, the even share is above the cap,
+    // and clamp throws when its bounds cross.
+    final chosen = wanted
+        .clamp(math.min(available / count, upper), upper)
+        .toDouble();
     final rest = (available - chosen) / (count - 1);
     return [for (var i = 0; i < count; i++) i == selected ? chosen : rest];
   }

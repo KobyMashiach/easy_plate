@@ -41,4 +41,23 @@ sealed class DailyUsageModel with _$DailyUsageModel {
   /// keep what is stored rather than hand out a second allowance.
   DailyUsageModel forDay(String today) =>
       today.compareTo(day) > 0 ? DailyUsageModel.empty(today) : this;
+
+  /// The record that stands when two copies of the account's day meet: the
+  /// one in memory and the one the cloud hydrate wrote to the box behind
+  /// it. On the same day neither is trusted to be the smaller — the higher
+  /// count and the union of the ids win, so a spend made on another device
+  /// is never undone by a stale copy here. Across days the later day
+  /// stands, as in [forDay].
+  DailyUsageModel mergedWith(DailyUsageModel other) {
+    final order = day.compareTo(other.day);
+    if (order > 0) return this;
+    if (order < 0) return other;
+    return DailyUsageModel(
+      day: day,
+      viewedSharedIds: {...viewedSharedIds, ...other.viewedSharedIds}.toList(),
+      aiExtractions: aiExtractions > other.aiExtractions
+          ? aiExtractions
+          : other.aiExtractions,
+    );
+  }
 }

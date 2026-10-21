@@ -10,6 +10,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:easy_plate/core/navigation/main_tabs.dart';
 import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/core/monetization/entitlement_service.dart';
 import 'package:easy_plate/core/styles/app_theme.dart';
@@ -114,6 +115,7 @@ class _FakeSharedRecipes implements SharedRecipesRepository {
   Future<List<SharedRecipeEntity>> getFeed({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   }) async => feed;
 
   @override
@@ -126,6 +128,20 @@ class _FakeSharedRecipes implements SharedRecipesRepository {
   Future<List<SharedRecipeEntity>> getByAuthor(
     String authorUid, {
     int limit = 200,
+  }) async => const [];
+
+  @override
+  Future<List<SharedRecipeEntity>> getMine({
+    required String viewerUid,
+    int limit = 200,
+    bool refresh = false,
+  }) async => const [];
+
+  @override
+  Future<List<SharedRecipeEntity>> getByIds(
+    Set<String> ids, {
+    required String viewerUid,
+    bool refresh = false,
   }) async => const [];
 
   @override
@@ -183,6 +199,7 @@ class _FakeForum implements ForumRepository {
   Future<List<ForumPostEntity>> getPosts({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   }) async => const [];
 
   @override
@@ -240,6 +257,9 @@ void main() {
       addTearDown(EntitlementService().clear);
 
       LocaleSettings.setLocaleSync(locale);
+      // The page builds its surfaces only while its tab is showing.
+      MainTabs.index.value = MainTabs.community;
+      addTearDown(() => MainTabs.index.value = MainTabs.recipes);
       final key = GlobalKey();
       await tester.pumpWidget(
         MultiRepositoryProvider(

@@ -54,7 +54,7 @@ class RecipeImageStore {
   /// Callers treat null as "not uploaded yet" and try again on the next save,
   /// rather than recording a path that resolves to nothing.
   Future<String?> upload(String fileName, {required String uid}) async {
-    final local = ImageStorageService().pathFor(fileName);
+    final local = await ImageStorageService().resolve(fileName);
     if (local == null) {
       debugPrint('Recipe image upload skipped: no local file for $fileName');
       return null;
@@ -73,13 +73,20 @@ class RecipeImageStore {
   /// The local path for [fileName], downloading it from [storagePath] first if
   /// this device does not have it yet.
   Future<String?> ensureCached(String fileName, String storagePath) {
+    // Another account wrote the name: one that would land outside the image
+    // directory is not worth a download that could never be stored.
+    if (!ImageStorageService.isSafeName(fileName)) return Future.value();
     final existing = ImageStorageService().pathFor(fileName);
     if (existing != null) return Future.value(existing);
 
     final running = _inFlight[fileName];
     if (running != null) return running;
 
-    final future = _download(fileName, storagePath);
+    // A name the device has not checked yet may be on disk after all: the
+    // check, then the download only when it is not.
+    final future = ImageStorageService()
+        .resolve(fileName)
+        .then<String?>((local) => local ?? _download(fileName, storagePath));
     _inFlight[fileName] = future;
     // Cleared once it settles, so a download that failed on a dead connection
     // is retried the next time the photo is asked for rather than being

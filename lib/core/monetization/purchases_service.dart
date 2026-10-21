@@ -50,6 +50,9 @@ class PurchasesService {
   /// same user costs nothing.
   Future<void> logIn(String uid) async {
     if (_uid == uid) return;
+    // Set before the SDK call so a second sign-in during it is seen below;
+    // cleared again by [_configure] / [_identify] when the call fails, or
+    // the same account's next sign-in would be skipped as already done.
     _uid = uid;
     if (!PurchasesConfig.enabled) return;
     if (!_configured) {
@@ -69,9 +72,15 @@ class PurchasesService {
       );
       Purchases.addCustomerInfoUpdateListener(_onCustomerInfo);
       _configured = true;
-      _onCustomerInfo(await Purchases.getCustomerInfo());
+      final info = await Purchases.getCustomerInfo();
+      // Only while this is still the signed-in account: a sign-out (or a
+      // switch) during the read must not hand its premium to the next one.
+      if (_uid == uid) _onCustomerInfo(info);
     } catch (e) {
       debugPrint('Purchases init failed: $e');
+      // Nothing is configured, so nobody is logged in: forget the uid and
+      // the next auth event tries again instead of returning early.
+      if (!_configured) _uid = null;
     } finally {
       _configuring = null;
     }
@@ -82,10 +91,15 @@ class PurchasesService {
   /// receipts.
   Future<void> logOut() async {
     _uid = null;
-    if (!_configured) return;
+    // A sign-out while the SDK is still coming up: let it finish, or it
+    // would stay identified as the account that just left.
+    if (_configuring case final configuring?) await configuring;
+    if (!_configured || _uid != null) return;
     try {
       // Already anonymous (a sign-out right after a failed sign-in) throws.
       if (await Purchases.isAnonymous) return;
+      // A sign-in landed during that check: the SDK now belongs to it.
+      if (_uid != null) return;
       await Purchases.logOut();
     } catch (e) {
       debugPrint('Purchases logOut skipped: $e');
@@ -95,9 +109,11 @@ class PurchasesService {
   Future<void> _identify(String uid) async {
     try {
       final result = await Purchases.logIn(uid);
-      _onCustomerInfo(result.customerInfo);
+      if (_uid == uid) _onCustomerInfo(result.customerInfo);
     } catch (e) {
       debugPrint('Purchases logIn failed: $e');
+      // The SDK is still on the previous id; the next auth event retries.
+      if (_uid == uid) _uid = null;
     }
   }
 
@@ -265,6 +281,14 @@ class PurchasesService {
 
   void _onCustomerInfo(CustomerInfo info) =>
       EntitlementService().setFromStore(hasPremium(info));
+
+  /// Tests share the singleton; the app configures it once for its lifetime.
+  @visibleForTesting
+  void resetForTest() {
+    _configured = false;
+    _configuring = null;
+    _uid = null;
+  }
 
   static bool hasPremium(CustomerInfo info) => info.entitlements.active
       .containsKey(PurchasesConfig.premiumEntitlementId);

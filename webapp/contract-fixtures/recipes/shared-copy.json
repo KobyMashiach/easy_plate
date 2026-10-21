@@ -1,0 +1,48 @@
+{
+  "id": "7d6c5b4a-3f2e-4d1c-9b0a-8f7e6d5c4b3a",
+  "title": "Shakshuka",
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "ingredients": [
+    {
+      "name": "Eggs",
+      "amount": 4,
+      "unit": "unit"
+    },
+    {
+      "name": "Salt",
+      "amount": null,
+      "unit": "unspecified"
+    }
+  ],
+  "steps": [
+    "Heat the sauce",
+    "Add the eggs"
+  ],
+  "dietaryTags": [
+    "vegetarian"
+  ],
+  "sourceChannel": null,
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T09:00:00.000Z",
+  "imageFileName": "x.jpg",
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": "collab-r9",
+  "collabRole": "editor",
+  "imageStoragePath": "recipe_images/owner/x.jpg",
+  "allergens": [
+    "eggs"
+  ],
+  "mayContain": [],
+  "servings": 2,
+  "nutrition": {
+    "calories": 320,
+    "proteinGrams": 18,
+    "carbsGrams": 12,
+    "fatGrams": 22
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

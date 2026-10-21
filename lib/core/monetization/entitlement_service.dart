@@ -50,12 +50,30 @@ class EntitlementService extends ChangeNotifier {
   /// first second after launch.
   bool get resolved => _resolved;
 
+  /// True while a verdict from this account's last run on this phone is in
+  /// hand (see [isPremium]): good enough to open a gated route on without
+  /// waiting for the document.
+  bool get hasRemembered => _remembered != null;
+
   /// The store product behind the verdict, for the household tier.
   String? get productId => _lastData?['productId'] as String?;
 
   /// True when premium comes from a household owner's subscription rather
   /// than this account's own purchase.
   bool get inherited => _lastData?['source'] == 'household';
+
+  /// True when premium was bought on the website (PayPlus in Israel, Paddle
+  /// through RevenueCat abroad, or the dormant Stripe path) rather than in a
+  /// store: no store can change or cancel it, so the paywall hands changes
+  /// and cancellation over to the website instead. RevenueCat reports a web
+  /// purchase under its own source with store PADDLE (or RC_BILLING /
+  /// STRIPE); the retired direct route wrote source `paddle`.
+  bool get fromWeb =>
+      _webSources.contains(_lastData?['source']) ||
+      (_lastData?['source'] == 'revenuecat' &&
+          _rcWebStores.contains(_lastData?['store']));
+  static const _webSources = {'payplus', 'paddle', 'stripe'};
+  static const _rcWebStores = {'PADDLE', 'RC_BILLING', 'STRIPE'};
   bool _resolved = false;
 
   bool? _remembered;
@@ -63,8 +81,9 @@ class EntitlementService extends ChangeNotifier {
 
   /// Completes once the account's document has been read (at once if it
   /// already was), or after [timeout] offline, so a caller can wait for the
-  /// real verdict instead of acting on a default.
-  Future<void> whenResolved({Duration timeout = const Duration(seconds: 4)}) {
+  /// real verdict instead of acting on a default. Two seconds is as long as
+  /// a tap on a gated route is held before it opens on the default.
+  Future<void> whenResolved({Duration timeout = const Duration(seconds: 2)}) {
     if (_resolved) return Future.value();
     final completer = Completer<void>();
     late final VoidCallback listener;
@@ -111,7 +130,13 @@ class EntitlementService extends ChangeNotifier {
   /// Follows [uid]'s entitlement for as long as they are signed in. Safe to
   /// call without Firebase up (tests): the failure is logged and the account
   /// stays free.
+  ///
+  /// The same account again (the auth events that follow a credential link
+  /// or an email confirmation each re-run the sign-in path) keeps the open
+  /// listener: starting over dropped the store's word (a purchase the
+  /// webhook has not written yet) and re-read the document for nothing.
   void watch(String uid) {
+    if (_uid == uid && _subscription != null) return;
     clear();
     _uid = uid;
     unawaited(_loadRemembered(uid));
@@ -199,6 +224,19 @@ class EntitlementService extends ChangeNotifier {
     }
     return null;
   }
+
+  /// Tests only: what the phone remembers of this account, as `_loadRemembered`
+  /// would have read it.
+  @visibleForTesting
+  void rememberForTest(bool? premium) {
+    _remembered = premium;
+    notifyListeners();
+  }
+
+  /// Tests and the rendered previews: the account's `entitlements` document
+  /// as if the listener had just read it (plan, product id and all).
+  @visibleForTesting
+  void documentForTest(Map<String, dynamic>? data) => _onData(data);
 
   @visibleForTesting
   void setForTest(bool premium) {

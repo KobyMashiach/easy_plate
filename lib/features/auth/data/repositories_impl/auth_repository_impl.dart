@@ -65,8 +65,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> refreshEmailVerified() => dataSource.refreshEmailVerified();
 
   @override
-  Future<String> startPhoneLink(String phoneNumber) =>
-      dataSource.startPhoneLink(phoneNumber);
+  Future<String> startPhoneLink(
+    String phoneNumber, {
+    bool reauthenticate = false,
+  }) => dataSource.startPhoneLink(phoneNumber, reauthenticate: reauthenticate);
 
   @override
   Future<void> linkPhone(String verificationId, String smsCode) =>

@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../../my_recipes/data/models/json_readers.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import 'grocery_item_model.dart';
@@ -18,7 +20,7 @@ sealed class GroceryListModel with _$GroceryListModel {
     @HiveField(1) required String name,
     @HiveField(2) required List<GroceryItemModel> items,
     @HiveField(3) @Default({}) Map<String, String> collaborators,
-    @HiveField(4) required DateTime createdAt,
+    @HiveField(4) @JsonKey(fromJson: readJsonDate) required DateTime createdAt,
     // Appended, never reordered: lists written before this existed decode with
     // the default and keep meaning "all plans".
     @HiveField(5) @Default(<String>[]) List<String> selectedPlanIds,
@@ -54,11 +56,16 @@ extension GroceryListModelMapper on GroceryListModel {
     name: name,
     items: items.map((i) => i.toEntity()).toList(),
     collaborators: collaborators.map(
-      (k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v)),
+      (k, v) => MapEntry(
+        k,
+        AccessRole.values.where((r) => r.name == v).firstOrNull ??
+            AccessRole.viewer,
+      ),
     ),
     selectedPlanIds: selectedPlanIds,
     createdAt: createdAt,
     contentLang: contentLang,
+    contentVersion: contentVersion,
     source: GroceryListSource.fromName(source),
     recipeId: recipeId,
     recipeScale: recipeScale,
@@ -80,6 +87,7 @@ extension GroceryListEntityMapper on GroceryListEntity {
     selectedPlanIds: selectedPlanIds,
     createdAt: createdAt,
     contentLang: contentLang,
+    contentVersion: contentVersion,
     source: source.name,
     recipeId: recipeId,
     recipeScale: recipeScale,

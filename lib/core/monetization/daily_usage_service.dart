@@ -28,6 +28,10 @@ class DailyUsageService extends ChangeNotifier {
   String? _uid;
   Future<void>? _loading;
 
+  /// The account [_loading] reads for. A caller for another account must
+  /// not take that load as its own.
+  String? _loadingUid;
+
   /// Test seam: the mirror is the singleton's unless one is injected.
   UserCloudCollection<DailyUsageModel>? cloudOverride;
 
@@ -47,15 +51,27 @@ class DailyUsageService extends ChangeNotifier {
     final uid = UserScope().uid;
     if (uid == null) return;
     if (_uid == uid && _usage != null) {
+      await _reconcile(uid);
       _rollover();
       return;
     }
-    return _loading ??= _load(uid).whenComplete(() => _loading = null);
+    if (_loading == null) {
+      _loadingUid = uid;
+      _loading = _load(uid).whenComplete(() => _loading = null);
+    }
+    final loadedUid = _loadingUid;
+    await _loading;
+    // The load that just finished was another account's (the scope moved
+    // while it ran): this account's record is still unread, so go again.
+    if (loadedUid != uid) return ensureLoaded();
   }
 
   Future<void> _load(String uid) async {
     try {
       final box = await _box();
+      // The scope moved while the box opened: that read belongs to nobody
+      // now, and applying it would stamp the other account's uid on it.
+      if (UserScope().uid != uid) return;
       final stored = box.get(DailyUsageModel.storageKey);
       _usage = (stored ?? DailyUsageModel.empty(TrustedClock().today)).forDay(
         TrustedClock().today,
@@ -64,6 +80,29 @@ class DailyUsageService extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Daily usage load failed: $e');
+    }
+  }
+
+  /// Takes in what reached the box behind the in-memory copy. The cloud
+  /// hydrate (sign-in, a resume) writes the account's record straight into
+  /// the box, and a copy read before it landed — the quota indicator asks
+  /// the moment the scope moves — kept the older count and would have
+  /// written it back over the box, and the cloud, on the next spend: a
+  /// second device's three extractions became one. The box is already open
+  /// here, so this is an in-memory read per call.
+  Future<void> _reconcile(String uid) async {
+    try {
+      final box = await _box();
+      if (UserScope().uid != uid || _uid != uid) return;
+      final stored = box.get(DailyUsageModel.storageKey);
+      final current = _usage;
+      if (stored == null || current == null) return;
+      final merged = current.mergedWith(stored);
+      if (merged == current) return;
+      _usage = merged;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Daily usage reconcile failed: $e');
     }
   }
 

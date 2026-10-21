@@ -5,14 +5,16 @@
 // which also works out when a template runs next, in Israel time.
 import { db, collection, onSnapshot, query, orderBy, limit, getDocs } from "../firebase.js";
 import { t, fmtNumber, fmtDate } from "../i18n.js";
-import { h, clear, badge, when, button, busy, chips, input, textarea, select, toggle, field, modal, confirmDialog, toast, toastError, empty } from "../ui.js";
+import { h, clear, badge, when, button, busy, chips, input, textarea, select, toggle, field, modal, confirmDialog, toast, toastError, empty, debounce } from "../ui.js";
 import { call } from "../api.js";
 
 const KINDS = ["manual", "once", "daily", "weekly", "monthly"];
 const SOURCE_COLORS = { console: "brand", app: "mint", template: "amber", schedule: "green" };
 
+// The audience picker (it has its own search box). The same ceiling as the
+// users page: one read of at most 5000 accounts, once per visit.
 async function loadUsers() {
-  const snap = await getDocs(collection(db, "users"));
+  const snap = await getDocs(query(collection(db, "users"), limit(5000)));
   return snap.docs
     .map((d) => ({ uid: d.id, name: d.get("fullName") || d.get("email") || d.get("phoneNumber") || d.id }))
     .filter((u) => !u.uid.startsWith("seed_"))
@@ -133,7 +135,9 @@ export async function mount({ view, actions }) {
     }));
     let enabled = tpl ? tpl.enabled !== false : true;
     const enabledCtl = toggle(enabled, (v) => { enabled = v; });
-    const atField = field(t("notif.at"), atCtl, t("notif.israelTime"));
+    // A one-off is an instant picked on this browser's clock; only the
+    // repeating times are Israel wall-clock times on the server.
+    const atField = field(t("notif.at"), atCtl);
     const timeField = field(t("notif.time"), timeCtl, t("notif.israelTime"));
     const daysField = field(t("notif.weekdays"), dayBoxes);
     const dayField = field(t("notif.dayOfMonth"), dayCtl, t("notif.dayOfMonthHint"));
@@ -206,7 +210,8 @@ export async function mount({ view, actions }) {
   // ---- lists ---------------------------------------------------------------
 
   function sourceBadge(source) {
-    return badge(t(`notif.sources.${source}`) || source, SOURCE_COLORS[source] || "");
+    const key = `notif.sources.${source}`;
+    return badge(t(key) === key ? source : t(key), SOURCE_COLORS[source] || "");
   }
 
   // Who a send or a template reaches, as a badge (or a link for one user).
@@ -283,28 +288,35 @@ export async function mount({ view, actions }) {
     if (tab === "sent") {
       toolbar.append(chips([["all", t("notif.filterAll")], ...TARGETS.map((k) => [k === "all" ? "all-target" : k, t(`notif.targets.${k}`)])], target, (v) => { target = v; render(); }));
       const box = input({ placeholder: t("common.search"), value: search });
-      box.addEventListener("input", () => { search = box.value; const pos = box.selectionStart; render(); const again = toolbar.querySelector("input"); if (again) { again.focus(); again.setSelectionRange(pos, pos); } });
+      // Only the list is redrawn while typing: the field keeps its focus and caret.
+      box.addEventListener("input", debounce(() => { search = box.value; renderBody(); }, 150));
       toolbar.append(box);
     }
+    renderBody();
+  }
+
+  // A snapshot (a send or a scheduled run landing) redraws the list only,
+  // never the toolbar the admin may be typing in.
+  function renderBody() {
     clear(body);
     body.append(tab === "sent" ? renderSent() : renderTemplates());
   }
 
   clear(actions);
   actions.append(
-    button(t("notif.sendNow"), { kind: "primary", onclick: sendNow }),
+    ((b) => { b.addEventListener("click", busy(b, sendNow)); return b; })(button(t("notif.sendNow"), { kind: "primary" })),
     button(t("notif.newTemplate"), { onclick: () => editTemplate(null) }),
   );
 
   const unsubSent = onSnapshot(query(collection(db, "admin_notifications"), orderBy("at", "desc"), limit(500)), (snap) => {
     sent = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    if (tab === "sent") render();
+    if (tab === "sent") renderBody();
   }, toastError);
-  const unsubTemplates = onSnapshot(query(collection(db, "notification_templates"), orderBy("updatedAt", "desc")), (snap) => {
+  const unsubTemplates = onSnapshot(query(collection(db, "notification_templates"), orderBy("updatedAt", "desc"), limit(200)), (snap) => {
     templates = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    if (tab === "templates") render();
+    if (tab === "templates") renderBody();
   }, toastError);
-  ensureUsers().then(() => render()).catch(() => {});
+  ensureUsers().then(() => renderBody()).catch(() => {});
   render();
   return () => { unsubSent(); unsubTemplates(); };
 }

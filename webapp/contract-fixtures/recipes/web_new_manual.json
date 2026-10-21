@@ -1,0 +1,51 @@
+{
+  "id": "5d1f6a3e-8b2c-4f1a-9e7d-2c3b4a5f6e71",
+  "title": "Lemon pasta",
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 12,
+  "ingredients": [
+    {
+      "name": "Spaghetti",
+      "amount": 250,
+      "unit": "gram"
+    },
+    {
+      "name": "Lemon",
+      "amount": 1,
+      "unit": "unit"
+    },
+    {
+      "name": "Olive oil",
+      "amount": 2.5,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "Salt",
+      "amount": null,
+      "unit": "unspecified"
+    }
+  ],
+  "steps": [
+    "Boil the pasta for 10 minutes",
+    "Toss with lemon zest, juice and oil"
+  ],
+  "dietaryTags": [
+    "vegetarian"
+  ],
+  "sourceChannel": "manual",
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T10:15:30.123Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [],
+  "mayContain": [],
+  "servings": null,
+  "nutrition": null,
+  "sharedRecipeId": null,
+  "contentLang": "en",
+  "contentVersion": 0
+}

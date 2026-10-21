@@ -38,13 +38,17 @@ class SaveCollabRecipeUseCase {
   /// Returns the recipe as it was actually stored: [readyForSharing] fills in
   /// the photo's Storage path, and a caller holding the pre-upload entity
   /// would hand it back on the next save and upload the same picture again.
+  ///
+  /// [stampLanguage] goes through to the local save: false keeps the copy's
+  /// language stamp (a translated copy whose words were kept).
   Future<RecipeEntity> call(
     RecipeEntity recipe, {
     required String byUid,
+    bool stampLanguage = true,
   }) async {
     final collabId = recipe.collabId;
     if (collabId == null) {
-      await recipes.saveRecipe(recipe);
+      await recipes.saveRecipe(recipe, stampLanguage: stampLanguage);
       return recipe;
     }
     if (recipe.collabRole == CollabRole.viewer) {
@@ -67,7 +71,7 @@ class SaveCollabRecipeUseCase {
       debugPrint('Shared recipe write refused for $collabId: $e');
       rethrow;
     }
-    await recipes.saveRecipe(ready);
+    await recipes.saveRecipe(ready, stampLanguage: stampLanguage);
     return ready;
   }
 }

@@ -29,10 +29,16 @@ async function main() {
   const rc = getRemoteConfig();
   const template = await rc.getTemplate();
   const added = [];
-  for (const [name, param] of Object.entries(wanted)) {
-    if (template.parameters[name]) continue; // the console's value wins
-    // A conditional value needs its condition; bring it from the file, or
-    // drop the value rather than publish a dangling reference.
+  // Every parameter the console has, grouped or not: a file parameter the
+  // console keeps in a group must not be added again at the top level (a
+  // name twice fails validation, and the whole publish with it).
+  const inConsole = new Set(Object.keys(template.parameters));
+  for (const group of Object.values(template.parameterGroups || {})) {
+    for (const name of Object.keys(group.parameters || {})) inConsole.add(name);
+  }
+  // A conditional value needs its condition; bring it from the file, or
+  // drop the value rather than publish a dangling reference.
+  const withConditions = (name, param) => {
     for (const condName of Object.keys(param.conditionalValues || {})) {
       if (template.conditions.some((c) => c.name === condName)) continue;
       const fromFile = fileConditions.find((c) => c.name === condName);
@@ -43,16 +49,17 @@ async function main() {
         delete param.conditionalValues[condName];
       }
     }
-    template.parameters[name] = param;
+    return param;
+  };
+  for (const [name, param] of Object.entries(wanted)) {
+    if (inConsole.has(name)) continue; // the console's value wins
+    template.parameters[name] = withConditions(name, param);
+    inConsole.add(name);
     added.push(name);
   }
   // Parameter groups: the group is created when the console lacks it; a
   // parameter already in the console (in any group, or ungrouped) is left
   // alone, so a value edited there is never overwritten.
-  const inConsole = new Set(Object.keys(template.parameters));
-  for (const group of Object.values(template.parameterGroups || {})) {
-    for (const name of Object.keys(group.parameters || {})) inConsole.add(name);
-  }
   template.parameterGroups = template.parameterGroups || {};
   for (const [groupName, group] of Object.entries(fileTemplate.parameterGroups || {})) {
     const target = template.parameterGroups[groupName] || (template.parameterGroups[groupName] = { description: group.description, parameters: {} });
@@ -60,7 +67,8 @@ async function main() {
     target.parameters = target.parameters || {};
     for (const [name, param] of Object.entries(group.parameters || {})) {
       if (inConsole.has(name)) continue;
-      target.parameters[name] = param;
+      target.parameters[name] = withConditions(`${groupName}/${name}`, param);
+      inConsole.add(name);
       added.push(`${groupName}/${name}`);
     }
   }

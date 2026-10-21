@@ -68,14 +68,26 @@ class NutritionEntity {
   /// garbage in the field.
   static NutritionEntity? fromJson(Object? raw) {
     if (raw is! Map) return null;
-    final calories = (raw['calories'] as num?)?.toInt();
+    final calories = _readNumber(raw['calories'])?.round();
     if (calories == null) return null;
     return NutritionEntity(
       calories: calories,
-      proteinGrams: (raw['proteinGrams'] as num?)?.toDouble() ?? 0,
-      carbsGrams: (raw['carbsGrams'] as num?)?.toDouble() ?? 0,
-      fatGrams: (raw['fatGrams'] as num?)?.toDouble() ?? 0,
+      proteinGrams: _readNumber(raw['proteinGrams']) ?? 0,
+      carbsGrams: _readNumber(raw['carbsGrams']) ?? 0,
+      fatGrams: _readNumber(raw['fatGrams']) ?? 0,
     );
+  }
+
+  /// A finite number, or one written as text ("12.5", "12,5") by another
+  /// writer; anything else is null rather than a cast error that would
+  /// drop the whole record from the merge.
+  static double? _readNumber(Object? value) {
+    final number = switch (value) {
+      final num n => n.toDouble(),
+      final String s => double.tryParse(s.trim().replaceAll(',', '.')),
+      _ => null,
+    };
+    return number != null && number.isFinite ? number : null;
   }
 
   @override

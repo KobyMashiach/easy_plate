@@ -49,6 +49,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$weekday$ar weekday = _Translations$weekday$ar._(_root);
 	@override late final _Translations$settings$ar settings = _Translations$settings$ar._(_root);
 	@override late final _Translations$notificationSettings$ar notificationSettings = _Translations$notificationSettings$ar._(_root);
+	@override late final _Translations$shoppingReminder$ar shoppingReminder = _Translations$shoppingReminder$ar._(_root);
 	@override late final _Translations$preferences$ar preferences = _Translations$preferences$ar._(_root);
 	@override late final _Translations$more$ar more = _Translations$more$ar._(_root);
 	@override late final _Translations$language$ar language = _Translations$language$ar._(_root);
@@ -109,6 +110,7 @@ class _Translations$common$ar extends Translations$common$he {
 	@override String get or => 'أو';
 	@override String get missingInfo => '[معلومات ناقصة]';
 	@override String get networkError => 'لا يوجد اتصال بالإنترنت';
+	@override String get loadFailed => 'تعذّر التحميل. تحقّقوا من الاتصال وحاولوا مجددًا';
 	@override String get landscapeHint => 'يفضّل العمل بالوضع الأفقي';
 	@override String get rotateLandscape => 'تدوير';
 	@override String get rotatePortrait => 'العودة للوضع الرأسي';
@@ -140,6 +142,7 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String codeSentTo({required Object phone}) => 'أرسلنا رمز تحقق إلى ${phone}';
 	@override String get verify => 'تحقق';
 	@override String get resendCode => 'إعادة الإرسال';
+	@override String resendIn({required Object seconds}) => 'إعادة الإرسال بعد ${seconds} ث';
 	@override String get forgotPassword => 'نسيت كلمة المرور';
 	@override String get resetSent => 'تم إرسال بريد إعادة التعيين';
 	@override String get noAccount => 'لا يوجد حساب؟ سجّلوا';
@@ -147,6 +150,7 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get invalidEmail => 'بريد إلكتروني غير صالح';
 	@override String get passwordTooShort => 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل';
 	@override String get invalidPhone => 'رقم هاتف غير صالح';
+	@override String get phoneNeedsCountryCode => 'أدخل رمز الدولة، مثلًا ‎+972 50 123 4567';
 	@override String get codeRequired => 'أدخلوا الرمز الذي وصلكم';
 	@override String get errorUnauthorized => 'البيانات المُدخلة غير صحيحة';
 	@override String get errorNetwork => 'لا يوجد اتصال بالإنترنت';
@@ -255,6 +259,7 @@ class _Translations$onboarding$ar extends Translations$onboarding$he {
 	@override String get dietaryTitle => 'ما هي تفضيلاتك الغذائية؟';
 	@override String get dietarySubtitle => 'يمكنك اختيار أكثر من واحد';
 	@override String get finish => 'لنبدأ';
+	@override String get saveFailed => 'تعذّر حفظ اختياراتك. تحقق من اتصالك وحاول مجددًا.';
 }
 
 // Path: dietary
@@ -344,6 +349,7 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get translationPartialTitle => 'الترجمة لم تكتمل';
 	@override String translationPartial({required Object count}) => 'بقي ${count} عناصر بلغتها الأصلية. يمكن المحاولة لاحقًا.';
 	@override String get translationFailed => 'فشلت الترجمة. بقي المحتوى بلغته الأصلية.';
+	@override String get saveFailed => 'تعذّر حفظ هذا التغيير. تحقق من اتصالك وحاول مجددًا.';
 	@override String get account => 'الحساب';
 	@override String get notifications => 'الإشعارات';
 	@override String get notificationsHint => 'أي التنبيهات تصلك، وكيف';
@@ -388,6 +394,19 @@ class _Translations$notificationSettings$ar extends Translations$notificationSet
 	@override String get foregroundPopups => 'عرض التنبيهات كنافذة منبثقة';
 	@override String get foregroundPopupsHint => 'التنبيه الذي يصل أثناء وجودك في التطبيق يفتح بطاقة صغيرة. عند الإيقاف يذهب إلى الصندوق فقط.';
 	@override String get reminders => 'تذكيرات التسوق';
+}
+
+// Path: shoppingReminder
+class _Translations$shoppingReminder$ar extends Translations$shoppingReminder$he {
+	_Translations$shoppingReminder$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get twoDaysBefore => 'يوم التسوق يقترب — وقت مناسب لبدء تخطيط القائمة';
+	@override String get dayBefore => 'غدًا يوم التسوق — تأكدوا أن قائمة الوجبات محدّثة';
+	@override String get sameDayMorning => 'اليوم يوم التسوق — أكملوا القائمة للحصول على قائمة مشتريات دقيقة';
+	@override String get sameDayAfternoon => 'تذكير أخير قبل التسوق — قائمة المشتريات تنتظركم';
 }
 
 // Path: preferences
@@ -473,6 +492,9 @@ class _Translations$books$ar extends Translations$books$he {
 	@override String get bookOptions => 'خيارات الكتاب';
 	@override String get renameBook => 'تعديل اسم الكتاب';
 	@override String get spineColor => 'لون الكعب';
+	@override String deleteConfirm({required Object title}) => 'حذف "${title}"؟ تبقى الوصفات التي فيه في مكتبتك.';
+	@override String deleteSharedConfirm({required Object title}) => 'حذف "${title}"؟ سيختفي أيضًا لدى كل من شاركته معهم. تبقى الوصفات في مكتبتك.';
+	@override String leaveConfirm({required Object title}) => 'مغادرة "${title}"؟ لن يظهر بعد الآن على رفّك.';
 }
 
 // Path: recipe
@@ -509,6 +531,7 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get communityUpdateLocal => 'نسختي فقط';
 	@override String get communityUpdated => 'تم تحديث نسخة المجتمع';
 	@override String get communityGone => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط';
+	@override String get communityUpdateFailed => 'تم الحفظ لديك. لم يتم تحديث المنشور في المجتمع، حاول لاحقًا.';
 }
 
 // Path: cookMode
@@ -663,6 +686,15 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String get oneNewPost => 'منشور جديد واحد';
 	@override String newPosts({required Object count}) => '${count} منشورات جديدة';
 	@override String get replyFailed => 'تعذّر إرسال ردك';
+	@override String get postFailed => 'تعذّر نشر منشورك';
+	@override String get deletePostFailed => 'تعذّر حذف المنشور';
+	@override String get shareFailed => 'تعذّرت مشاركة الوصفة';
+	@override String get updateFailed => 'تعذّر تحديث الوصفة المشتركة';
+	@override String get unshareFailed => 'تعذّرت إزالة الوصفة من الخلاصة';
+	@override String get importFailed => 'تعذّر حفظ الوصفة';
+	@override String ageMinutes({required Object n}) => '${n} د';
+	@override String ageHours({required Object n}) => '${n} س';
+	@override String ageDays({required Object n}) => '${n} ي';
 }
 
 // Path: sharing
@@ -682,7 +714,7 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get roleEditorHint => 'تعديلاته تظهر لديكم أيضًا';
 	@override String get send => 'إرسال الدعوة';
 	@override String get sent => 'تم إرسال الدعوة';
-	@override String get invalidContact => 'أدخلوا بريدًا أو رقم هاتف صالحًا';
+	@override String get invalidContact => 'أدخلوا بريدًا صالحًا، أو رقم هاتف مع رمز الدولة (+…)';
 	@override String get notFound => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.';
 	@override String get self => 'لا يمكنك المشاركة مع نفسك';
 	@override String get failed => 'فشلت المشاركة، حاولوا مجددًا';
@@ -697,6 +729,8 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get accepted => 'أُضيفت الوصفة إلى وصفاتكم';
 	@override String get declined => 'رُفضت الدعوة';
 	@override String get acceptFailed => 'فشل القبول، حاولوا مجددًا';
+	@override String get acceptQueued => 'لا يوجد اتصال الآن. تم حفظ الانضمام، وستُضاف النسخة عند فتح التطبيق مع اتصال في المرة القادمة.';
+	@override String get collabMissing => 'لم تعد هذه المشاركة متاحة، فقد أزالها صاحبها';
 	@override String get members => 'الشركاء';
 	@override String get noMembersYet => 'لم يقبل أحد بعد';
 	@override String get remove => 'إزالة';
@@ -726,6 +760,22 @@ class _Translations$sharing$ar extends Translations$sharing$he {
 	@override String get acceptedList => 'أُضيفت القائمة إلى قوائم التسوق لديك';
 	@override String get viewerCannotEditList => 'هذه القائمة مشاركة معك للعرض فقط';
 	@override String get kindList => 'قائمة تسوق';
+	@override String sharedBooksCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: 'لا كتب مشتركة',
+		one: 'كتاب مشترك واحد',
+		two: 'كتابان مشتركان',
+		few: '${n} كتب مشتركة',
+		many: '${n} كتابًا مشتركًا',
+		other: '${n} كتاب مشترك',
+	);
+	@override String sharedListsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: 'لا قوائم تسوق مشتركة',
+		one: 'قائمة تسوق مشتركة واحدة',
+		two: 'قائمتا تسوق مشتركتان',
+		few: '${n} قوائم تسوق مشتركة',
+		many: '${n} قائمة تسوق مشتركة',
+		other: '${n} قائمة تسوق مشتركة',
+	);
 }
 
 // Path: notifications
@@ -854,6 +904,7 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get chooseFile => 'اختيار ملف';
 	@override String get replaceFile => 'ملف آخر';
 	@override String get fileTooLarge => 'الملفات كبيرة جدًا. الحد الإجمالي هو 10MB، نحو عشر دقائق من التسجيل.';
+	@override String textTooLong({required Object max}) => 'النص طويل جدًا — حتى ${max} حرفًا.';
 	@override String get fileUnsupported => 'يمكن تحليل ملفات الصوت وملفات PDF فقط.';
 	@override String sharedIn({required Object app}) => 'من ${app}';
 	@override String get addFile => 'إضافة ملف';
@@ -865,10 +916,15 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get webSearchHint => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر';
 	@override String get urlScrapeDescription => 'الصق رابطًا لصفحة وصفة في موقع أو مدونة. سنقرأ الصفحة ونتجاهل الإعلانات والقصص حولها، ونستخرج الوصفة فقط: المكوّنات والكميات والخطوات. في مواقع كثيرة لا يستهلك هذا حتى من حصّتك اليومية.';
 	@override String get urlScrapeHint => 'https://www.example.com/recipe/...';
+	@override String get invalidUrl => 'هذا ليس رابطًا صالحًا. الصق عنوانًا كاملًا يبدأ بـ http:// أو https://';
 	@override String get socialVideoDescription => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك. سنشاهد الفيديو عنك ونستمع لما يُقال ونقرأ الترجمة والوصف، ونحوّله إلى وصفة مكتوبة ومرتّبة. يستغرق ذلك نحو دقيقة.';
 	@override String get aiRequestDescription => 'ليست لديك وصفة، فقط فكرة؟ صِف الطبق ولمن هو وما يهمّك، وسيكتب لك النموذج وصفة كاملة وفق التفضيلات الغذائية التي حدّدتها.';
 	@override String get manualDescription => 'اكتب الوصفة بنفسك مباشرة في المحرّر المنظّم: الاسم، المكوّنات بكمياتها ووحداتها، وخطوات التحضير. بلا ذكاء اصطناعي وبلا انتظار. مناسب لوصفة الجدّة التي تحفظها عن ظهر قلب.';
 	@override String get fileDescription => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة أو يرويها، أو رسالة صوتية من واتساب، أو ملف PDF لوصفة. سنفرّغ ونقرأ كل شيء ونستخرج وصفة مرتّبة. يمكن إرفاق عدة ملفات وتُحلَّل معًا كوصفة واحدة.';
+	@override String get saveFailed => 'تعذّر حفظ الوصفة. حاول مرة أخرى.';
+	@override String get recordingTag => 'تسجيل';
+	@override String sizeKb({required Object n}) => '${n} ك.ب';
+	@override String sizeMb({required Object n}) => '${n} م.ب';
 }
 
 // Path: mealPlanner
@@ -1005,6 +1061,8 @@ class _Translations$receipt$ar extends Translations$receipt$he {
 	@override String get scanning => 'جارٍ قراءة الإيصال…';
 	@override String pagesCount({required Object count}) => '${count} صور';
 	@override String get scanFailed => 'تعذّرت قراءة الإيصال. جرّب صورة أوضح أو PDF.';
+	@override String get deleteFailed => 'تعذّر الحذف. تحقّق من الاتصال وحاول مرة أخرى.';
+	@override String get renameFailed => 'تعذّر تغيير اسم المتجر. تحقّق من الاتصال وحاول مرة أخرى.';
 	@override String get reviewTitle => 'ما تم التقاطه';
 	@override String get reviewSubtitle => 'صحّح الأسماء والأسعار قبل الحفظ';
 	@override String get store => 'المتجر';
@@ -1025,6 +1083,9 @@ class _Translations$receipt$ar extends Translations$receipt$he {
 	@override String get save => 'حفظ الأسعار';
 	@override String saved({required Object count}) => 'تم حفظ ${count} أسعار';
 	@override String savedShared({required Object count}) => 'تم حفظ ومشاركة ${count} أسعار';
+	@override String savedShareQuota({required Object count}) => 'تم حفظ ${count} أسعار. بلغت الحد اليومي للمشاركة، لذلك لم تتم مشاركتها';
+	@override String savedShareFailed({required Object count}) => 'تم حفظ ${count} أسعار. فشلت مشاركتها مع المجتمع';
+	@override String get pdfTooLarge => 'ملف PDF هذا كبير جدًا. الحد الأقصى 10 ميغابايت.';
 	@override String get nothingToSave => 'لا منتجات للحفظ';
 	@override String get estimated => 'تقدير بناءً على بيانات سابقة';
 	@override String get estimatedTotal => 'التكلفة التقديرية';
@@ -1152,6 +1213,7 @@ class _Translations$image$ar extends Translations$image$he {
 	@override String get webSearchHint => 'عمّ تبحث؟ مثلاً: كبة شمندر';
 	@override String get webSearchEmpty => 'لم يتم العثور على صور، جرّب كلمات أخرى';
 	@override String get webSearchFailed => 'فشل البحث، حاول مرة أخرى';
+	@override String get webSearchQuota => 'وصلت إلى حد البحث عن الصور لهذا اليوم. حاول مرة أخرى غدًا';
 	@override String get webSearchUnavailable => 'بحث الصور غير متاح حالياً';
 	@override String get webSearchEnd => 'هذه كل النتائج';
 	@override String get webSearchDownloadFailed => 'تعذّر تنزيل هذه الصورة، جرّب صورة أخرى';
@@ -1195,8 +1257,22 @@ class _Translations$ads$ar extends Translations$ads$he {
 
 	// Translations
 	@override String get badge => 'إعلان';
-	@override String freeViewsLeft({required Object count}) => 'تبقّى لك ${count} وصفات مجانية لليوم';
-	@override String rewardedViewsLeft({required Object count}) => 'تبقّى ${count} فتحات بفيديو قصير لليوم';
+	@override String freeViewsLeft({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count,
+		zero: 'لم تتبقَّ لك وصفات مجانية لليوم',
+		one: 'تبقّت لك وصفة مجانية واحدة لليوم',
+		two: 'تبقّت لك وصفتان مجانيتان لليوم',
+		few: 'تبقّى لك ${count} وصفات مجانية لليوم',
+		many: 'تبقّى لك ${count} وصفة مجانية لليوم',
+		other: 'تبقّى لك ${count} وصفة مجانية لليوم',
+	);
+	@override String rewardedViewsLeft({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count,
+		zero: 'لم تتبقَّ فتحات بفيديو قصير لليوم',
+		one: 'تبقّت فتحة واحدة بفيديو قصير لليوم',
+		two: 'تبقّت فتحتان بفيديو قصير لليوم',
+		few: 'تبقّى ${count} فتحات بفيديو قصير لليوم',
+		many: 'تبقّى ${count} فتحة بفيديو قصير لليوم',
+		other: 'تبقّى ${count} فتحة بفيديو قصير لليوم',
+	);
 	@override String get sharedQuotaReached => 'وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!';
 	@override String get unlockRecipeTitle => 'فتح وصفة مشتركة';
 	@override String unlockRecipeMessage({required Object count}) => 'شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى ${count} لليوم)';
@@ -1294,6 +1370,14 @@ class _Translations$premium$ar extends Translations$premium$he {
 	@override String get currentPlan => 'باقتك';
 	@override String switchTo({required Object price}) => 'الانتقال مقابل ${price}';
 	@override String get switched => 'تم تغيير الباقة';
+	@override String get webRow => 'الترقية أو إدارة الاشتراك عبر الموقع';
+	@override String get webRowHint => 'بطاقة أو Apple Pay أو Google Pay، بدون عمولة المتجر';
+	@override String get webManagedTitle => 'تم شراء اشتراكك عبر الموقع';
+	@override String get webManagedBody => 'تغيير الباقة أو الإلغاء أو تحديث وسيلة الدفع يتم من حسابك على الموقع.';
+	@override String get otherStoreBody => 'تم شراء خطتك من متجر التطبيقات الآخر (App Store أو Google Play). يتم التبديل أو الإلغاء من هناك.';
+	@override String get paymentPending => 'دفعتك قيد الانتظار. يتم تفعيل بريميوم تلقائيًا عند اكتمالها، فلا داعي للشراء مرة أخرى.';
+	@override String get webOpen => 'فتح الموقع';
+	@override String get webLinkFailed => 'لم نتمكن من فتح الموقع. حاول مرة أخرى.';
 }
 
 // Path: walkthrough
@@ -1389,6 +1473,7 @@ class _Translations$feedback$ar extends Translations$feedback$he {
 	@override String get bug => 'خلل';
 	@override String get suggestion => 'اقتراح';
 	@override String get closedNotice => 'أغلق الفريق هذه المحادثة. يمكنك قراءتها لكن لا الكتابة فيها؛ افتح محادثة جديدة لموضوع جديد.';
+	@override String get threadFull => 'هذه المحادثة ممتلئة. افتح محادثة جديدة لمتابعة الكتابة.';
 	@override String closedConversations({required Object n}) => 'محادثات مغلقة (${n})';
 	@override String get noOpenConversations => 'لا محادثات مفتوحة';
 	@override String get closedTag => 'مغلقة';
@@ -1587,6 +1672,8 @@ class _Translations$adminDashboard$ar extends Translations$adminDashboard$he {
 	@override String get grantRange => 'نطاق تواريخ محدد';
 	@override String grantedUntil({required Object date}) => 'مُنح الاشتراك حتى ${date}';
 	@override String grantStarts({required Object date}) => 'يبدأ في ${date}';
+	@override String cappedAccounts({required Object count}) => 'يتم عرض أول ${count} حساب فقط';
+	@override String cappedEvents({required Object count}) => 'يتم عرض أول ${count} حدث شراء فقط';
 }
 
 // Path: assistant
@@ -1641,6 +1728,8 @@ class _Translations$assistant$ar extends Translations$assistant$he {
 	@override String get listening => 'أستمع…';
 	@override String get stop => 'إيقاف';
 	@override String get cancelled => 'أُلغي.';
+	@override String get toggleFailed => 'تعذّر تحديث القائمة. حاول مرة أخرى.';
+	@override String get roundsExhausted => 'انتهت خطواتي قبل أن أُكمل. حاول الطلب على أجزاء أصغر.';
 }
 
 // Path: shareCode
@@ -1675,6 +1764,7 @@ class _Translations$shareCode$ar extends Translations$shareCode$he {
 	@override String get usedUp => 'استُنفد الرمز.';
 	@override String get self => 'هذا رمزك أنت.';
 	@override String get gone => 'ما شاركه هذا الرمز لم يعد موجودًا.';
+	@override String get tooManyRecipes => 'تحتوي هذه المشاركة على عدد كبير جدًا من الوصفات للانضمام دفعة واحدة. اطلب من المالك تقسيمها.';
 	@override String get failed => 'تعذّر الانضمام. حاول مجددًا.';
 	@override String messageText({required Object name, required Object title, required Object code, required Object link}) => 'شارك ${name} معك "${title}" على EasyPlate. الرمز: ${code}\n${link}';
 	@override String get revoke => 'إلغاء الرمز';
@@ -1707,7 +1797,14 @@ class _Translations$household$ar extends Translations$household$he {
 	@override String get owner => 'المالك';
 	@override String get you => 'أنت';
 	@override String get invite => 'دعوة عضو';
-	@override String inviteExplain({required Object free}) => 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.';
+	@override String inviteExplain({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(free,
+		zero: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. لم تبقَ مقاعد.',
+		one: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعد واحد.',
+		two: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعدان.',
+		few: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.',
+		many: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعدًا.',
+		other: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعد.',
+	);
 	@override String get noSeats => 'كل المقاعد مشغولة.';
 	@override String get remove => 'إزالة';
 	@override String removeConfirm({required Object name}) => 'إزالة ${name} من الحساب المشترك؟ سيفقد الوصول وبريميوم.';
@@ -1858,6 +1955,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get whatsNew => 'ما الجديد';
 	@override String get supportChat => 'دردشة الدعم';
 	@override String get storeReview => 'طلب تقييم التطبيق';
+	@override String get webCheckout => 'الشراء عبر الموقع';
 }
 
 // Path: wakeWord
@@ -1893,6 +1991,7 @@ class _Translations$wakeWord$ar extends Translations$wakeWord$he {
 	@override String get privacyIos => 'يتم التعرف على الجهاز عندما يكون ذلك ممكنًا، وإلا عبر خدمة الكلام من Apple. لا يسجّل EasyPlate الصوت ولا يحفظه.';
 	@override String get permissionTitle => 'الميكروفون مطلوب';
 	@override String get permissionDenied => 'لسماع "هاي شيفي" يحتاج التطبيق إلى الميكروفون (وفي iOS أيضًا إلى التعرف على الكلام).';
+	@override String get toggleFailed => 'تعذّر تغيير "هاي شيفي" الآن. حاول مجددًا.';
 	@override String get openSettings => 'فتح الإعدادات';
 	@override String get notificationTitle => 'شيفي يستمع';
 	@override String get notificationBody => 'قل "هاي شيفي" لبدء محادثة';
@@ -2309,6 +2408,7 @@ extension on TranslationsAr {
 			'common.or' => 'أو',
 			'common.missingInfo' => '[معلومات ناقصة]',
 			'common.networkError' => 'لا يوجد اتصال بالإنترنت',
+			'common.loadFailed' => 'تعذّر التحميل. تحقّقوا من الاتصال وحاولوا مجددًا',
 			'common.landscapeHint' => 'يفضّل العمل بالوضع الأفقي',
 			'common.rotateLandscape' => 'تدوير',
 			'common.rotatePortrait' => 'العودة للوضع الرأسي',
@@ -2331,6 +2431,7 @@ extension on TranslationsAr {
 			'auth.codeSentTo' => ({required Object phone}) => 'أرسلنا رمز تحقق إلى ${phone}',
 			'auth.verify' => 'تحقق',
 			'auth.resendCode' => 'إعادة الإرسال',
+			'auth.resendIn' => ({required Object seconds}) => 'إعادة الإرسال بعد ${seconds} ث',
 			'auth.forgotPassword' => 'نسيت كلمة المرور',
 			'auth.resetSent' => 'تم إرسال بريد إعادة التعيين',
 			'auth.noAccount' => 'لا يوجد حساب؟ سجّلوا',
@@ -2338,6 +2439,7 @@ extension on TranslationsAr {
 			'auth.invalidEmail' => 'بريد إلكتروني غير صالح',
 			'auth.passwordTooShort' => 'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل',
 			'auth.invalidPhone' => 'رقم هاتف غير صالح',
+			'auth.phoneNeedsCountryCode' => 'أدخل رمز الدولة، مثلًا ‎+972 50 123 4567',
 			'auth.codeRequired' => 'أدخلوا الرمز الذي وصلكم',
 			'auth.errorUnauthorized' => 'البيانات المُدخلة غير صحيحة',
 			'auth.errorNetwork' => 'لا يوجد اتصال بالإنترنت',
@@ -2428,6 +2530,7 @@ extension on TranslationsAr {
 			'onboarding.dietaryTitle' => 'ما هي تفضيلاتك الغذائية؟',
 			'onboarding.dietarySubtitle' => 'يمكنك اختيار أكثر من واحد',
 			'onboarding.finish' => 'لنبدأ',
+			'onboarding.saveFailed' => 'تعذّر حفظ اختياراتك. تحقق من اتصالك وحاول مجددًا.',
 			'dietary.meat' => 'لحوم',
 			'dietary.dairy' => 'ألبان',
 			'dietary.vegetarian' => 'نباتي',
@@ -2481,6 +2584,7 @@ extension on TranslationsAr {
 			'settings.translationPartialTitle' => 'الترجمة لم تكتمل',
 			'settings.translationPartial' => ({required Object count}) => 'بقي ${count} عناصر بلغتها الأصلية. يمكن المحاولة لاحقًا.',
 			'settings.translationFailed' => 'فشلت الترجمة. بقي المحتوى بلغته الأصلية.',
+			'settings.saveFailed' => 'تعذّر حفظ هذا التغيير. تحقق من اتصالك وحاول مجددًا.',
 			'settings.account' => 'الحساب',
 			'settings.notifications' => 'الإشعارات',
 			'settings.notificationsHint' => 'أي التنبيهات تصلك، وكيف',
@@ -2516,6 +2620,10 @@ extension on TranslationsAr {
 			'notificationSettings.foregroundPopups' => 'عرض التنبيهات كنافذة منبثقة',
 			'notificationSettings.foregroundPopupsHint' => 'التنبيه الذي يصل أثناء وجودك في التطبيق يفتح بطاقة صغيرة. عند الإيقاف يذهب إلى الصندوق فقط.',
 			'notificationSettings.reminders' => 'تذكيرات التسوق',
+			'shoppingReminder.twoDaysBefore' => 'يوم التسوق يقترب — وقت مناسب لبدء تخطيط القائمة',
+			'shoppingReminder.dayBefore' => 'غدًا يوم التسوق — تأكدوا أن قائمة الوجبات محدّثة',
+			'shoppingReminder.sameDayMorning' => 'اليوم يوم التسوق — أكملوا القائمة للحصول على قائمة مشتريات دقيقة',
+			'shoppingReminder.sameDayAfternoon' => 'تذكير أخير قبل التسوق — قائمة المشتريات تنتظركم',
 			'preferences.title' => 'التفضيلات',
 			'preferences.hint' => 'التسوق، الاحتياجات الغذائية وسلوك الكتب',
 			'preferences.shopping' => 'التسوق',
@@ -2565,6 +2673,9 @@ extension on TranslationsAr {
 			'books.bookOptions' => 'خيارات الكتاب',
 			'books.renameBook' => 'تعديل اسم الكتاب',
 			'books.spineColor' => 'لون الكعب',
+			'books.deleteConfirm' => ({required Object title}) => 'حذف "${title}"؟ تبقى الوصفات التي فيه في مكتبتك.',
+			'books.deleteSharedConfirm' => ({required Object title}) => 'حذف "${title}"؟ سيختفي أيضًا لدى كل من شاركته معهم. تبقى الوصفات في مكتبتك.',
+			'books.leaveConfirm' => ({required Object title}) => 'مغادرة "${title}"؟ لن يظهر بعد الآن على رفّك.',
 			'recipe.prepTime' => 'وقت التحضير',
 			'recipe.cookTime' => 'وقت الطهي',
 			'recipe.ingredients' => 'المكوّنات',
@@ -2592,6 +2703,7 @@ extension on TranslationsAr {
 			'recipe.communityUpdateLocal' => 'نسختي فقط',
 			'recipe.communityUpdated' => 'تم تحديث نسخة المجتمع',
 			'recipe.communityGone' => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط',
+			'recipe.communityUpdateFailed' => 'تم الحفظ لديك. لم يتم تحديث المنشور في المجتمع، حاول لاحقًا.',
 			'cookMode.title' => 'وضع الطبخ',
 			'cookMode.start' => 'ابدأ الطبخ',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'الخطوة ${n} من ${total}',
@@ -2719,6 +2831,15 @@ extension on TranslationsAr {
 			'community.oneNewPost' => 'منشور جديد واحد',
 			'community.newPosts' => ({required Object count}) => '${count} منشورات جديدة',
 			'community.replyFailed' => 'تعذّر إرسال ردك',
+			'community.postFailed' => 'تعذّر نشر منشورك',
+			'community.deletePostFailed' => 'تعذّر حذف المنشور',
+			'community.shareFailed' => 'تعذّرت مشاركة الوصفة',
+			'community.updateFailed' => 'تعذّر تحديث الوصفة المشتركة',
+			'community.unshareFailed' => 'تعذّرت إزالة الوصفة من الخلاصة',
+			'community.importFailed' => 'تعذّر حفظ الوصفة',
+			'community.ageMinutes' => ({required Object n}) => '${n} د',
+			'community.ageHours' => ({required Object n}) => '${n} س',
+			'community.ageDays' => ({required Object n}) => '${n} ي',
 			'sharing.title' => 'مشاركة الوصفة',
 			'sharing.contactLabel' => 'بريد أو هاتف الشريك',
 			'sharing.contactHint' => 'name@example.com أو 05…',
@@ -2729,7 +2850,7 @@ extension on TranslationsAr {
 			'sharing.roleEditorHint' => 'تعديلاته تظهر لديكم أيضًا',
 			'sharing.send' => 'إرسال الدعوة',
 			'sharing.sent' => 'تم إرسال الدعوة',
-			'sharing.invalidContact' => 'أدخلوا بريدًا أو رقم هاتف صالحًا',
+			'sharing.invalidContact' => 'أدخلوا بريدًا صالحًا، أو رقم هاتف مع رمز الدولة (+…)',
 			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.',
 			'sharing.self' => 'لا يمكنك المشاركة مع نفسك',
 			'sharing.failed' => 'فشلت المشاركة، حاولوا مجددًا',
@@ -2744,6 +2865,8 @@ extension on TranslationsAr {
 			'sharing.accepted' => 'أُضيفت الوصفة إلى وصفاتكم',
 			'sharing.declined' => 'رُفضت الدعوة',
 			'sharing.acceptFailed' => 'فشل القبول، حاولوا مجددًا',
+			'sharing.acceptQueued' => 'لا يوجد اتصال الآن. تم حفظ الانضمام، وستُضاف النسخة عند فتح التطبيق مع اتصال في المرة القادمة.',
+			'sharing.collabMissing' => 'لم تعد هذه المشاركة متاحة، فقد أزالها صاحبها',
 			'sharing.members' => 'الشركاء',
 			'sharing.noMembersYet' => 'لم يقبل أحد بعد',
 			'sharing.remove' => 'إزالة',
@@ -2773,11 +2896,15 @@ extension on TranslationsAr {
 			'sharing.acceptedList' => 'أُضيفت القائمة إلى قوائم التسوق لديك',
 			'sharing.viewerCannotEditList' => 'هذه القائمة مشاركة معك للعرض فقط',
 			'sharing.kindList' => 'قائمة تسوق',
+			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا كتب مشتركة', one: 'كتاب مشترك واحد', two: 'كتابان مشتركان', few: '${n} كتب مشتركة', many: '${n} كتابًا مشتركًا', other: '${n} كتاب مشترك', ), 
+			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا قوائم تسوق مشتركة', one: 'قائمة تسوق مشتركة واحدة', two: 'قائمتا تسوق مشتركتان', few: '${n} قوائم تسوق مشتركة', many: '${n} قائمة تسوق مشتركة', other: '${n} قائمة تسوق مشتركة', ), 
 			'notifications.title' => 'الإشعارات',
 			'notifications.empty' => 'لا توجد إشعارات',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"',
 			'notifications.asViewer' => 'للعرض فقط',
 			'notifications.asEditor' => 'للتعديل',
+			_ => null,
+		} ?? switch (path) {
 			'notifications.markAllRead' => 'تعليم الكل كمقروء',
 			'notifications.openRecipe' => 'فتح الوصفة',
 			'notifications.alreadyHandled' => 'تمت معالجة هذه الدعوة',
@@ -2804,8 +2931,6 @@ extension on TranslationsAr {
 			'notifications.sharedList' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك قائمة التسوق "${recipe}"',
 			'editor.title' => 'تعديل الوصفة',
 			'editor.recipeTitle' => 'اسم الوصفة',
-			_ => null,
-		} ?? switch (path) {
 			'editor.titleHint' => 'مثال: شكشوكة القدس',
 			'editor.topics' => 'المواضيع',
 			'editor.titleRequired' => 'يجب إدخال اسم للوصفة',
@@ -2876,6 +3001,7 @@ extension on TranslationsAr {
 			'ingestion.chooseFile' => 'اختيار ملف',
 			'ingestion.replaceFile' => 'ملف آخر',
 			'ingestion.fileTooLarge' => 'الملفات كبيرة جدًا. الحد الإجمالي هو 10MB، نحو عشر دقائق من التسجيل.',
+			'ingestion.textTooLong' => ({required Object max}) => 'النص طويل جدًا — حتى ${max} حرفًا.',
 			'ingestion.fileUnsupported' => 'يمكن تحليل ملفات الصوت وملفات PDF فقط.',
 			'ingestion.sharedIn' => ({required Object app}) => 'من ${app}',
 			'ingestion.addFile' => 'إضافة ملف',
@@ -2887,10 +3013,15 @@ extension on TranslationsAr {
 			'ingestion.webSearchHint' => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر',
 			'ingestion.urlScrapeDescription' => 'الصق رابطًا لصفحة وصفة في موقع أو مدونة. سنقرأ الصفحة ونتجاهل الإعلانات والقصص حولها، ونستخرج الوصفة فقط: المكوّنات والكميات والخطوات. في مواقع كثيرة لا يستهلك هذا حتى من حصّتك اليومية.',
 			'ingestion.urlScrapeHint' => 'https://www.example.com/recipe/...',
+			'ingestion.invalidUrl' => 'هذا ليس رابطًا صالحًا. الصق عنوانًا كاملًا يبدأ بـ http:// أو https://',
 			'ingestion.socialVideoDescription' => 'الصق رابط فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك. سنشاهد الفيديو عنك ونستمع لما يُقال ونقرأ الترجمة والوصف، ونحوّله إلى وصفة مكتوبة ومرتّبة. يستغرق ذلك نحو دقيقة.',
 			'ingestion.aiRequestDescription' => 'ليست لديك وصفة، فقط فكرة؟ صِف الطبق ولمن هو وما يهمّك، وسيكتب لك النموذج وصفة كاملة وفق التفضيلات الغذائية التي حدّدتها.',
 			'ingestion.manualDescription' => 'اكتب الوصفة بنفسك مباشرة في المحرّر المنظّم: الاسم، المكوّنات بكمياتها ووحداتها، وخطوات التحضير. بلا ذكاء اصطناعي وبلا انتظار. مناسب لوصفة الجدّة التي تحفظها عن ظهر قلب.',
 			'ingestion.fileDescription' => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة أو يرويها، أو رسالة صوتية من واتساب، أو ملف PDF لوصفة. سنفرّغ ونقرأ كل شيء ونستخرج وصفة مرتّبة. يمكن إرفاق عدة ملفات وتُحلَّل معًا كوصفة واحدة.',
+			'ingestion.saveFailed' => 'تعذّر حفظ الوصفة. حاول مرة أخرى.',
+			'ingestion.recordingTag' => 'تسجيل',
+			'ingestion.sizeKb' => ({required Object n}) => '${n} ك.ب',
+			'ingestion.sizeMb' => ({required Object n}) => '${n} م.ب',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',
@@ -3000,6 +3131,8 @@ extension on TranslationsAr {
 			'receipt.scanning' => 'جارٍ قراءة الإيصال…',
 			'receipt.pagesCount' => ({required Object count}) => '${count} صور',
 			'receipt.scanFailed' => 'تعذّرت قراءة الإيصال. جرّب صورة أوضح أو PDF.',
+			'receipt.deleteFailed' => 'تعذّر الحذف. تحقّق من الاتصال وحاول مرة أخرى.',
+			'receipt.renameFailed' => 'تعذّر تغيير اسم المتجر. تحقّق من الاتصال وحاول مرة أخرى.',
 			'receipt.reviewTitle' => 'ما تم التقاطه',
 			'receipt.reviewSubtitle' => 'صحّح الأسماء والأسعار قبل الحفظ',
 			'receipt.store' => 'المتجر',
@@ -3020,6 +3153,9 @@ extension on TranslationsAr {
 			'receipt.save' => 'حفظ الأسعار',
 			'receipt.saved' => ({required Object count}) => 'تم حفظ ${count} أسعار',
 			'receipt.savedShared' => ({required Object count}) => 'تم حفظ ومشاركة ${count} أسعار',
+			'receipt.savedShareQuota' => ({required Object count}) => 'تم حفظ ${count} أسعار. بلغت الحد اليومي للمشاركة، لذلك لم تتم مشاركتها',
+			'receipt.savedShareFailed' => ({required Object count}) => 'تم حفظ ${count} أسعار. فشلت مشاركتها مع المجتمع',
+			'receipt.pdfTooLarge' => 'ملف PDF هذا كبير جدًا. الحد الأقصى 10 ميغابايت.',
 			'receipt.nothingToSave' => 'لا منتجات للحفظ',
 			'receipt.estimated' => 'تقدير بناءً على بيانات سابقة',
 			'receipt.estimatedTotal' => 'التكلفة التقديرية',
@@ -3129,6 +3265,7 @@ extension on TranslationsAr {
 			'image.webSearchHint' => 'عمّ تبحث؟ مثلاً: كبة شمندر',
 			'image.webSearchEmpty' => 'لم يتم العثور على صور، جرّب كلمات أخرى',
 			'image.webSearchFailed' => 'فشل البحث، حاول مرة أخرى',
+			'image.webSearchQuota' => 'وصلت إلى حد البحث عن الصور لهذا اليوم. حاول مرة أخرى غدًا',
 			'image.webSearchUnavailable' => 'بحث الصور غير متاح حالياً',
 			'image.webSearchEnd' => 'هذه كل النتائج',
 			'image.webSearchDownloadFailed' => 'تعذّر تنزيل هذه الصورة، جرّب صورة أخرى',
@@ -3145,8 +3282,8 @@ extension on TranslationsAr {
 			'update.updateNow' => 'تحديث الآن',
 			'update.later' => 'تخطٍ',
 			'ads.badge' => 'إعلان',
-			'ads.freeViewsLeft' => ({required Object count}) => 'تبقّى لك ${count} وصفات مجانية لليوم',
-			'ads.rewardedViewsLeft' => ({required Object count}) => 'تبقّى ${count} فتحات بفيديو قصير لليوم',
+			'ads.freeViewsLeft' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: 'لم تتبقَّ لك وصفات مجانية لليوم', one: 'تبقّت لك وصفة مجانية واحدة لليوم', two: 'تبقّت لك وصفتان مجانيتان لليوم', few: 'تبقّى لك ${count} وصفات مجانية لليوم', many: 'تبقّى لك ${count} وصفة مجانية لليوم', other: 'تبقّى لك ${count} وصفة مجانية لليوم', ), 
+			'ads.rewardedViewsLeft' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: 'لم تتبقَّ فتحات بفيديو قصير لليوم', one: 'تبقّت فتحة واحدة بفيديو قصير لليوم', two: 'تبقّت فتحتان بفيديو قصير لليوم', few: 'تبقّى ${count} فتحات بفيديو قصير لليوم', many: 'تبقّى ${count} فتحة بفيديو قصير لليوم', other: 'تبقّى ${count} فتحة بفيديو قصير لليوم', ), 
 			'ads.sharedQuotaReached' => 'وصلت إلى الحد اليومي للوصفات المشتركة. سيُعاد ضبطه غدًا!',
 			'ads.unlockRecipeTitle' => 'فتح وصفة مشتركة',
 			'ads.unlockRecipeMessage' => ({required Object count}) => 'شاهد فيديو قصيرًا لفتح هذه الوصفة (تبقّى ${count} لليوم)',
@@ -3223,6 +3360,14 @@ extension on TranslationsAr {
 			'premium.currentPlan' => 'باقتك',
 			'premium.switchTo' => ({required Object price}) => 'الانتقال مقابل ${price}',
 			'premium.switched' => 'تم تغيير الباقة',
+			'premium.webRow' => 'الترقية أو إدارة الاشتراك عبر الموقع',
+			'premium.webRowHint' => 'بطاقة أو Apple Pay أو Google Pay، بدون عمولة المتجر',
+			'premium.webManagedTitle' => 'تم شراء اشتراكك عبر الموقع',
+			'premium.webManagedBody' => 'تغيير الباقة أو الإلغاء أو تحديث وسيلة الدفع يتم من حسابك على الموقع.',
+			'premium.otherStoreBody' => 'تم شراء خطتك من متجر التطبيقات الآخر (App Store أو Google Play). يتم التبديل أو الإلغاء من هناك.',
+			'premium.paymentPending' => 'دفعتك قيد الانتظار. يتم تفعيل بريميوم تلقائيًا عند اكتمالها، فلا داعي للشراء مرة أخرى.',
+			'premium.webOpen' => 'فتح الموقع',
+			'premium.webLinkFailed' => 'لم نتمكن من فتح الموقع. حاول مرة أخرى.',
 			'walkthrough.title' => 'الدليل',
 			'walkthrough.start' => 'تشغيل الدليل',
 			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
@@ -3272,6 +3417,8 @@ extension on TranslationsAr {
 			'walkthrough.topics.groceries.summary' => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك، ومشاركة مع من يتسوّق معك.',
 			'walkthrough.topics.groceries.s1' => 'اضغط على "التسوّق".',
 			'walkthrough.topics.groceries.s2' => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'اضغط على زر الزائد لإضافة عنصر يدوياً.',
 			'walkthrough.topics.groceries.s4' => 'اسم العنصر معبّأ مسبقاً. اختر كمية ووحدة، أو ابدأ من منتج تعرفه إيصالاتك أصلاً.',
 			'walkthrough.topics.groceries.s5' => 'اضغط "إضافة" ويدخل العنصر إلى القائمة.',
@@ -3318,8 +3465,6 @@ extension on TranslationsAr {
 			'walkthrough.demoRecipesHint' => 'هكذا تبدو الوصفات في التطبيق. اضغط على وصفة لرؤية صفحتها الكاملة: الأوقات، المواضيع، مسببات الحساسية، المكونات والخطوات.',
 			'walkthrough.demoBooks' => 'كتب نموذجية',
 			'walkthrough.demoBooksHint' => 'هكذا يبدو كتاب الوصفات. اضغط على كتاب لفتحه وتقليب صفحاته والانتقال من الفهرس.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.demoOnly' => 'نموذج فقط، لا يُحفظ',
 			'whatsNew.title' => 'ما الجديد في EasyPlate',
 			'whatsNew.pageOf' => ({required Object current, required Object total}) => '${current} من ${total}',
@@ -3369,6 +3514,7 @@ extension on TranslationsAr {
 			'feedback.bug' => 'خلل',
 			'feedback.suggestion' => 'اقتراح',
 			'feedback.closedNotice' => 'أغلق الفريق هذه المحادثة. يمكنك قراءتها لكن لا الكتابة فيها؛ افتح محادثة جديدة لموضوع جديد.',
+			'feedback.threadFull' => 'هذه المحادثة ممتلئة. افتح محادثة جديدة لمتابعة الكتابة.',
 			'feedback.closedConversations' => ({required Object n}) => 'محادثات مغلقة (${n})',
 			'feedback.noOpenConversations' => 'لا محادثات مفتوحة',
 			'feedback.closedTag' => 'مغلقة',
@@ -3549,6 +3695,8 @@ extension on TranslationsAr {
 			'adminDashboard.grantRange' => 'نطاق تواريخ محدد',
 			'adminDashboard.grantedUntil' => ({required Object date}) => 'مُنح الاشتراك حتى ${date}',
 			'adminDashboard.grantStarts' => ({required Object date}) => 'يبدأ في ${date}',
+			'adminDashboard.cappedAccounts' => ({required Object count}) => 'يتم عرض أول ${count} حساب فقط',
+			'adminDashboard.cappedEvents' => ({required Object count}) => 'يتم عرض أول ${count} حدث شراء فقط',
 			'assistant.title' => 'شيفي',
 			'assistant.subtitle' => 'مساعد الطاهي: اسأل، خطط، تسوّق، اطبخ',
 			'assistant.placeholder' => 'اسأل أو قل لي ماذا أفعل…',
@@ -3694,6 +3842,8 @@ extension on TranslationsAr {
 			'assistant.listening' => 'أستمع…',
 			'assistant.stop' => 'إيقاف',
 			'assistant.cancelled' => 'أُلغي.',
+			'assistant.toggleFailed' => 'تعذّر تحديث القائمة. حاول مرة أخرى.',
+			'assistant.roundsExhausted' => 'انتهت خطواتي قبل أن أُكمل. حاول الطلب على أجزاء أصغر.',
 			'shareCode.title' => 'رمز ورابط',
 			'shareCode.tabContact' => 'جهة اتصال',
 			'shareCode.tabCode' => 'رمز أو رابط',
@@ -3719,6 +3869,7 @@ extension on TranslationsAr {
 			'shareCode.usedUp' => 'استُنفد الرمز.',
 			'shareCode.self' => 'هذا رمزك أنت.',
 			'shareCode.gone' => 'ما شاركه هذا الرمز لم يعد موجودًا.',
+			'shareCode.tooManyRecipes' => 'تحتوي هذه المشاركة على عدد كبير جدًا من الوصفات للانضمام دفعة واحدة. اطلب من المالك تقسيمها.',
 			'shareCode.failed' => 'تعذّر الانضمام. حاول مجددًا.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => 'شارك ${name} معك "${title}" على EasyPlate. الرمز: ${code}\n${link}',
 			'shareCode.revoke' => 'إلغاء الرمز',
@@ -3742,7 +3893,7 @@ extension on TranslationsAr {
 			'household.owner' => 'المالك',
 			'household.you' => 'أنت',
 			'household.invite' => 'دعوة عضو',
-			'household.inviteExplain' => ({required Object free}) => 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.',
+			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(free, zero: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. لم تبقَ مقاعد.', one: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعد واحد.', two: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعدان.', few: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.', many: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعدًا.', other: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعد.', ), 
 			'household.noSeats' => 'كل المقاعد مشغولة.',
 			'household.remove' => 'إزالة',
 			'household.removeConfirm' => ({required Object name}) => 'إزالة ${name} من الحساب المشترك؟ سيفقد الوصول وبريميوم.',
@@ -3780,6 +3931,8 @@ extension on TranslationsAr {
 			'homeWidgets.widgetAssistantHint' => 'زر يفتح شيفي، مع الميكروفون إن أردتم، وأسئلة سريعة.',
 			'homeWidgets.widgetGroceryAdd' => 'إضافة سريعة إلى القائمة',
 			'homeWidgets.widgetGroceryAddHint' => 'اكتبوا أو أملوا عنصرًا مباشرة إلى القائمة التي تختارونها.',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.widgetGroceryList' => 'قائمة التسوق',
 			'homeWidgets.widgetGroceryListHint' => 'ما تبقى لشرائه؛ علّموا العناصر من الأداة.',
 			'homeWidgets.widgetTodayMenu' => 'قائمة طعام اليوم',
@@ -3832,8 +3985,6 @@ extension on TranslationsAr {
 			'featureName.cookMode' => 'وضع الطهي',
 			'featureName.cookTimers' => 'مؤقتات الطهي',
 			'featureName.nutrition' => 'القيم الغذائية',
-			_ => null,
-		} ?? switch (path) {
 			'featureName.recipeImageAi' => 'صورة بالذكاء الاصطناعي',
 			'featureName.recipeImageSearch' => 'بحث الصور في جوجل',
 			'featureName.groceryFromRecipe' => 'قائمة تسوق من وصفة',
@@ -3868,6 +4019,7 @@ extension on TranslationsAr {
 			'featureName.whatsNew' => 'ما الجديد',
 			'featureName.supportChat' => 'دردشة الدعم',
 			'featureName.storeReview' => 'طلب تقييم التطبيق',
+			'featureName.webCheckout' => 'الشراء عبر الموقع',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
@@ -3890,6 +4042,7 @@ extension on TranslationsAr {
 			'wakeWord.privacyIos' => 'يتم التعرف على الجهاز عندما يكون ذلك ممكنًا، وإلا عبر خدمة الكلام من Apple. لا يسجّل EasyPlate الصوت ولا يحفظه.',
 			'wakeWord.permissionTitle' => 'الميكروفون مطلوب',
 			'wakeWord.permissionDenied' => 'لسماع "هاي شيفي" يحتاج التطبيق إلى الميكروفون (وفي iOS أيضًا إلى التعرف على الكلام).',
+			'wakeWord.toggleFailed' => 'تعذّر تغيير "هاي شيفي" الآن. حاول مجددًا.',
 			'wakeWord.openSettings' => 'فتح الإعدادات',
 			'wakeWord.notificationTitle' => 'شيفي يستمع',
 			'wakeWord.notificationBody' => 'قل "هاي شيفي" لبدء محادثة',

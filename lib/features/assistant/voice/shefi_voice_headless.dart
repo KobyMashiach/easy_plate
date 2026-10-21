@@ -27,6 +27,13 @@ import '../../feedback/data/datasources/feedback_remote_datasource.dart';
 import '../../feedback/data/repositories_impl/feedback_repository_impl.dart';
 import '../../user_profile/data/datasources/user_preferences_local_datasource.dart';
 import '../../user_profile/data/repositories_impl/user_preferences_repository_impl.dart';
+import '../../collab_containers/data/datasources/collab_containers_remote_datasource.dart';
+import '../../collab_containers/data/repositories_impl/collab_containers_repository_impl.dart';
+import '../../collab_containers/domain/container_sharing_service.dart';
+import '../../recipe_sharing/data/datasources/recipe_sharing_remote_datasource.dart';
+import '../../recipe_sharing/data/repositories_impl/recipe_sharing_repository_impl.dart';
+import '../../user_profile/data/datasources/user_profile_remote_datasource.dart';
+import '../../user_profile/data/repositories_impl/user_profile_repository_impl.dart';
 import 'shefi_voice_channel.dart';
 import 'shefi_voice_runner.dart';
 
@@ -51,25 +58,49 @@ Future<void> runShefiVoiceHeadless() async {
       localDataSource: UserPreferencesLocalDataSourceImpl(),
       cloud: CloudSyncService().preferences,
     );
+    final recipes = RecipesRepositoryImpl(
+      localDataSource: RecipesLocalDataSourceImpl(),
+      cloud: CloudSyncService().recipes,
+      images: RecipeImageStore(),
+    );
+    final books = RecipeBooksRepositoryImpl(
+      localDataSource: RecipeBooksLocalDataSourceImpl(),
+      cloud: CloudSyncService().books,
+      images: RecipeImageStore(),
+    );
+    final plans = MealPlansRepositoryImpl(
+      localDataSource: MealPlansLocalDataSourceImpl(),
+      cloud: CloudSyncService().mealPlans,
+    );
+    final groceries = GroceryListsRepositoryImpl(
+      localDataSource: GroceryListsLocalDataSourceImpl(),
+      cloud: CloudSyncService().groceryLists,
+    );
+    // The same sharing services the app builds, so an edit Siri makes to a
+    // shared recipe, book, plan or list reaches the other members.
+    final recipeSharing = RecipeSharingRepositoryImpl(
+      remoteDataSource: RecipeSharingFirestoreDataSource(),
+    );
+    final sharing = ContainerSharingService(
+      containers: CollabContainersRepositoryImpl(
+        remote: CollabContainersFirestoreDataSource(),
+      ),
+      sharing: recipeSharing,
+      recipes: recipes,
+      profiles: UserProfileRepositoryImpl(
+        remoteDataSource: UserProfileFirestoreDataSource(),
+      ),
+      booksRepository: books,
+      plansRepository: plans,
+      listsRepository: groceries,
+    );
     final runner = ShefiVoiceRunner(
-      recipes: RecipesRepositoryImpl(
-        localDataSource: RecipesLocalDataSourceImpl(),
-        cloud: CloudSyncService().recipes,
-        images: RecipeImageStore(),
-      ),
-      books: RecipeBooksRepositoryImpl(
-        localDataSource: RecipeBooksLocalDataSourceImpl(),
-        cloud: CloudSyncService().books,
-        images: RecipeImageStore(),
-      ),
-      plans: MealPlansRepositoryImpl(
-        localDataSource: MealPlansLocalDataSourceImpl(),
-        cloud: CloudSyncService().mealPlans,
-      ),
-      groceries: GroceryListsRepositoryImpl(
-        localDataSource: GroceryListsLocalDataSourceImpl(),
-        cloud: CloudSyncService().groceryLists,
-      ),
+      recipes: recipes,
+      books: books,
+      plans: plans,
+      groceries: groceries,
+      sharing: sharing,
+      recipeSharing: recipeSharing,
       activeList: HiveActiveGroceryListStore.instance,
       ingestion: RecipeIngestionRepositoryImpl(
         aiDataSource: GeminiRecipeAiDataSource(),

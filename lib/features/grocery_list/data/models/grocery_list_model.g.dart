@@ -102,7 +102,7 @@ _GroceryListModel _$GroceryListModelFromJson(Map<String, dynamic> json) =>
             (k, e) => MapEntry(k, e as String),
           ) ??
           const {},
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: readJsonDate(json['createdAt']),
       selectedPlanIds:
           (json['selectedPlanIds'] as List<dynamic>?)
               ?.map((e) => e as String)

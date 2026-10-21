@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
@@ -110,7 +111,11 @@ class AppUpdateService {
     );
     FirebaseService().configRevision.addListener(evaluate);
     evaluate();
-    await refreshStore();
+    // Not awaited: `main` waits on init before the first frame, and the
+    // store is a network round trip (Play Core, or Apple's lookup with two
+    // storefronts to try). The gate listens to [requirement], so an answer
+    // that lands after the first frame still raises the prompt.
+    unawaited(refreshStore());
   }
 
   /// Asks the store for its newest release and re-runs the decision. The

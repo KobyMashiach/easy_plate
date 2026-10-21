@@ -12,6 +12,20 @@ class ErrorRetryView extends StatelessWidget {
 
   const ErrorRetryView({super.key, required this.error, required this.onRetry});
 
+  /// Whether [text] is a raw exception rather than a sentence for the user:
+  /// a `toString()` of an error, a stack trace, an object's default name.
+  @visibleForTesting
+  static bool looksUnlocalized(String text) =>
+      text.contains('Exception') ||
+      text.contains('Error:') ||
+      text.contains('#0') ||
+      text.contains('Instance of');
+
+  /// What is shown under the title: [error] when it was written for the
+  /// user, the generic line when it is a raw exception.
+  static String messageFor(String error) =>
+      looksUnlocalized(error) ? t.common.loadFailed : error;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -40,7 +54,7 @@ class ErrorRetryView extends StatelessWidget {
               Text(t.common.error, style: AppTextStyles.headlineMd),
               const SizedBox(height: AppSpacing.base),
               Text(
-                error,
+                messageFor(error),
                 style: AppTextStyles.labelMd.copyWith(
                   color: AppColors.onSurfaceVariant,
                 ),

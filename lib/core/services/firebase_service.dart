@@ -249,7 +249,10 @@ class FirebaseService {
     // Debug crashes are noise in the dashboard, and they are already visible
     // in the console.
     unawaited(crashlytics.setCrashlyticsCollectionEnabled(!kDebugMode));
-    FlutterError.onError = crashlytics.recordFlutterFatalError;
+    // A framework error (a build or layout failure the framework caught and
+    // drew its red box for) is not a crash: non-fatal, so the crash-free
+    // rate stays honest. An uncaught error below is what counts as one.
+    FlutterError.onError = crashlytics.recordFlutterError;
     PlatformDispatcher.instance.onError = (error, stack) {
       crashlytics.recordError(error, stack, fatal: true);
       return true;
@@ -361,7 +364,13 @@ class FirebaseService {
       final token = await _fetchToken(messaging);
       // Printed on purpose: the token is what a test push from the Firebase
       // console needs, and copying it off a log is the quickest way to it.
-      debugPrint('FCM TOKEN: $token');
+      // Debug builds only — a release log is readable by other tools on the
+      // phone, and the token lets anyone holding it push to this device.
+      if (kDebugMode) {
+        debugPrint('FCM TOKEN: $token');
+      } else {
+        debugPrint('FCM token registered: ${token != null}');
+      }
       return token;
     } catch (e) {
       debugPrint('Push registration failed: $e');
@@ -381,9 +390,25 @@ class FirebaseService {
     }
   }
 
+  /// The device's push token each time FCM rotates it mid-session. The
+  /// account's saved token and its session record both name the token, so
+  /// a rotation that went unrecorded left the account unreachable (no
+  /// reply pushes, no release request) until its next sign-in. Empty when
+  /// Firebase is not up (tests).
+  Stream<String> get pushTokenRefreshes {
+    try {
+      return FirebaseMessaging.instance.onTokenRefresh;
+    } catch (e) {
+      debugPrint('Push token stream unavailable: $e');
+      return const Stream.empty();
+    }
+  }
+
   /// Prints the device's current FCM token. Called whenever the main screen
-  /// is reached after sign-in, so it is always in the latest log.
+  /// is reached after sign-in, so it is always in the latest log. Debug
+  /// builds only, for the same reason as in [registerPushToken].
   Future<void> logPushToken() async {
+    if (!kDebugMode) return;
     try {
       final token = await _fetchToken(FirebaseMessaging.instance);
       debugPrint('FCM TOKEN: $token');

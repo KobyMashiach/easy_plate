@@ -732,11 +732,18 @@ class RecipeListCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          RecipeScaleStepper(
-            scale: list.recipeScale,
-            baseServings: list.recipeServings,
-            onChanged: (scale) =>
-                bloc.add(GroceryListEvent.setRecipeScale(scale)),
+          // A viewer sees the amount but cannot change a shared list's.
+          IgnorePointer(
+            ignoring: !list.canEdit,
+            child: Opacity(
+              opacity: list.canEdit ? 1 : 0.5,
+              child: RecipeScaleStepper(
+                scale: list.recipeScale,
+                baseServings: list.recipeServings,
+                onChanged: (scale) =>
+                    bloc.add(GroceryListEvent.setRecipeScale(scale)),
+              ),
+            ),
           ),
         ],
       ),

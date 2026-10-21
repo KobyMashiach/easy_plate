@@ -17,6 +17,97 @@ import com.KHEasyDev.easy_plate.MainActivity
 object WidgetIntents {
     private const val SCHEME = "easyplate://open/widget/"
 
+    /**
+     * EntryActivity and MainActivity are exported, so any installed app can
+     * start them with `prompt` (an extra, or `?prompt=` on the widget link)
+     * and have Shefi act on the user's account. Only intents this app built
+     * itself carry [EXTRA_TRUST] with this per-install random token (kept in
+     * private prefs, so no other app can read it); a prompt without it is
+     * dropped and the panel / chat just opens.
+     */
+    const val EXTRA_TRUST = "com.KHEasyDev.easy_plate.TRUST"
+    private const val TRUST_PREFS = "easy_plate_intent_trust"
+    private const val TRUST_KEY = "token"
+
+    /** What only the app's own intents may carry on a link. */
+    private val UNTRUSTED_PARAMS = setOf("prompt", "voice")
+
+    @Synchronized
+    fun trustToken(context: Context): String {
+        val prefs = context.applicationContext.getSharedPreferences(TRUST_PREFS, Context.MODE_PRIVATE)
+        prefs.getString(TRUST_KEY, null)?.let { return it }
+        val token = java.util.UUID.randomUUID().toString()
+        prefs.edit().putString(TRUST_KEY, token).apply()
+        return token
+    }
+
+    fun isTrusted(context: Context, intent: Intent?): Boolean {
+        val given = try {
+            intent?.getStringExtra(EXTRA_TRUST)
+        } catch (_: Exception) {
+            null // a malformed extras bundle from another app
+        } ?: return false
+        return given == trustToken(context)
+    }
+
+    /**
+     * Drops `prompt` from an untrusted intent's link. Any link, not only
+     * `easyplate://open/widget/…`: MainActivity is exported, so an explicit
+     * intent skips the manifest's scheme/host filters, and Flutter's route
+     * is the link's path + query alone (scheme and host are thrown away) —
+     * `EASYPLATE://x/widget/assistant?prompt=…` or `easyplate://widget/…`
+     * reached Dart's widget launch with the prompt intact. `voice` goes
+     * too: `voice=1` opens Shefi listening, the microphone on, for any app
+     * that asks. The app's own voice doors (the "שפי" icon, the Gemini
+     * route, the wake word) mark their intents with the token. No other
+     * link the app takes uses either name.
+     */
+    fun stripUntrustedPrompt(context: Context, intent: Intent?) {
+        val uri = intent?.data ?: return
+        if (uri.isOpaque) return // no query Flutter would read
+        val names = try { uri.queryParameterNames } catch (_: Exception) { return }
+        if (names.none { it in UNTRUSTED_PARAMS } || isTrusted(context, intent)) return
+        val clean = uri.buildUpon().clearQuery()
+        for (name in names) {
+            if (name in UNTRUSTED_PARAMS) continue
+            for (value in uri.getQueryParameters(name)) clean.appendQueryParameter(name, value)
+        }
+        intent.data = clean.build()
+    }
+
+    /**
+     * Launch-intent extras the Flutter embedding itself reads off whatever
+     * intent started MainActivity, before any of the app's code runs:
+     * `route` becomes the initial route (go_router opens on it — so
+     * `route=/widget/assistant?prompt=…` reached Shefi with the prompt and
+     * no link for [stripUntrustedPrompt] to clean), `cached_engine_id` /
+     * `background_mode` with a bad value crash the launch, `trace-to-file`
+     * and the other engine switches are shell flags. The app never sets
+     * any of them, so they go from every intent, trusted or not.
+     */
+    private val FLUTTER_LAUNCH_EXTRAS = arrayOf(
+        "route", "dart_entrypoint", "dart_entrypoint_args", "background_mode",
+        "cached_engine_id", "cached_engine_group_id", "destroy_engine_with_activity",
+        "enable_state_restoration",
+        "trace-startup", "start-paused", "disable-service-auth-codes", "endless-trace-buffer",
+        "use-test-fonts", "enable-dart-profiling", "profile-startup", "enable-software-rendering",
+        "skia-deterministic-rendering", "trace-skia", "trace-skia-allowlist", "trace-systrace",
+        "trace-to-file", "profile-microtasks", "enable-impeller", "enable-vulkan-validation",
+        "dump-skp-on-shader-compilation", "cache-sksl", "purge-persistent-cache",
+        "verbose-logging", "vm-service-port", "dart-flags",
+    )
+
+    fun stripFlutterLaunchExtras(intent: Intent?) {
+        intent ?: return
+        try {
+            for (key in FLUTTER_LAUNCH_EXTRAS) intent.removeExtra(key)
+        } catch (_: Exception) {
+            // A bundle that will not unparcel (another app's malformed
+            // extras) would throw again inside Flutter: drop it whole.
+            intent.replaceExtras(null as android.os.Bundle?)
+        }
+    }
+
     fun open(context: Context, action: String, vararg params: Pair<String, String?>): PendingIntent {
         val builder = Uri.parse(SCHEME + action).buildUpon()
         for ((key, value) in params) if (!value.isNullOrEmpty()) builder.appendQueryParameter(key, value)
@@ -43,6 +134,7 @@ object WidgetIntents {
             action = EntryActivity.ACTION_SHEFI_PANEL
             putExtra(EntryActivity.EXTRA_VOICE, voice)
             if (!prompt.isNullOrBlank()) putExtra(EntryActivity.EXTRA_PROMPT, prompt)
+            putExtra(EXTRA_TRUST, trustToken(context))
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         return PendingIntent.getActivity(

@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../../my_recipes/data/models/json_readers.dart';
+
 import '../../domain/entities/price_record_entity.dart';
 import '../../domain/entities/price_unit.dart';
 
@@ -21,7 +23,9 @@ sealed class PriceRecordModel with _$PriceRecordModel {
     @HiveField(4) @Default(1) double quantity,
     @HiveField(5) @Default('ILS') String currency,
     @HiveField(6) String? store,
-    @HiveField(7) required DateTime purchasedAt,
+    @HiveField(7)
+    @JsonKey(fromJson: readJsonDate)
+    required DateTime purchasedAt,
     @HiveField(8) required String receiptId,
     // Appended: the printed line and the price unit by name.
     @HiveField(9) String? printedName,

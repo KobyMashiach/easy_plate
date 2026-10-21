@@ -188,6 +188,11 @@ class ContentTranslationService {
       try {
         final made = await remote.translate(code, wanted);
         known.addAll(made);
+        // A day's allowance can run out part-way: the records the answer
+        // left out stay in their own language and are reported as such.
+        failed = wanted
+            .where((i) => !made.containsKey('${i.type}/${i.id}'))
+            .length;
         await local.write(code, {
           for (final item in wanted)
             if (made['${item.type}/${item.id}'] case final fields?)
@@ -217,18 +222,44 @@ class ContentTranslationService {
       onProgress?.call(done, total);
     }
 
-    for (final recipe in allRecipes) {
-      final fields = known['$recipeType/${recipe.id}'];
-      if (fields == null) continue;
+    // Read again before writing: the reads above are seconds old by now,
+    // and a resume re-read, a household listener or the shared pull may have
+    // brought in an edit made on the website meanwhile. Each translation is
+    // laid over the record as it is now, and only while its words are still
+    // the ones translated — saving the snapshot would push the old record
+    // over that edit. A record deleted meanwhile is not recreated.
+    final current = await Future.wait([
+      recipes.getRecipes(),
+      books.getBooks(),
+      plans.getPlans(),
+      lists.getLists(),
+    ]);
+    Map<String, E> byId<E>(Object list, String Function(E) id) => {
+      for (final e in list as List<E>) id(e): e,
+    };
+    final nowRecipes = byId<RecipeEntity>(current[0], (r) => r.id);
+    final nowBooks = byId<RecipeBookEntity>(current[1], (b) => b.id);
+    final nowPlans = byId<MealPlanEntity>(current[2], (p) => p.id);
+    final nowLists = byId<GroceryListEntity>(current[3], (l) => l.id);
+
+    for (final read in allRecipes) {
+      final fields = known['$recipeType/${read.id}'];
+      final recipe = nowRecipes[read.id];
+      if (fields == null || recipe == null) continue;
+      if (recipe.contentVersion != read.contentVersion) continue;
+      if (!_needs(recipe.contentLang, recipe.title, target)) continue;
       await recipes.saveRecipe(
         _applyRecipe(recipe, fields, target),
         stampLanguage: false,
       );
       step(wanted.any((i) => i.id == recipe.id && i.type == recipeType));
     }
-    for (final book in allBooks) {
-      final fields = known['$bookType/${book.id}'];
-      if (fields == null) continue;
+    for (final read in allBooks) {
+      final fields = known['$bookType/${read.id}'];
+      final book = nowBooks[read.id];
+      if (fields == null || book == null) continue;
+      if (book.contentVersion != read.contentVersion) continue;
+      if (!_needs(book.contentLang, book.title, target)) continue;
       await books.saveBook(
         book.copyWith(
           title: fields.text('title') ?? book.title,
@@ -238,18 +269,24 @@ class ContentTranslationService {
       );
       step(wanted.any((i) => i.id == book.id && i.type == bookType));
     }
-    for (final plan in allPlans) {
-      final fields = known['$planType/${plan.id}'];
-      if (fields == null) continue;
+    for (final read in allPlans) {
+      final fields = known['$planType/${read.id}'];
+      final plan = nowPlans[read.id];
+      if (fields == null || plan == null) continue;
+      if (plan.contentVersion != read.contentVersion) continue;
+      if (!_needs(plan.contentLang, plan.name, target)) continue;
       await plans.savePlan(
         _applyPlan(plan, fields, target),
         stampLanguage: false,
       );
       step(wanted.any((i) => i.id == plan.id && i.type == planType));
     }
-    for (final list in allLists) {
-      final fields = known['$listType/${list.id}'];
-      if (fields == null) continue;
+    for (final read in allLists) {
+      final fields = known['$listType/${read.id}'];
+      final list = nowLists[read.id];
+      if (fields == null || list == null) continue;
+      if (list.contentVersion != read.contentVersion) continue;
+      if (!_needs(list.contentLang, list.name, target)) continue;
       await lists.saveList(
         _applyList(list, fields, target),
         stampLanguage: false,

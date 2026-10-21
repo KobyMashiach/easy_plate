@@ -48,16 +48,40 @@ class _CookModePageState extends State<CookModePage> {
     final cook = _session.start(widget.recipe);
     _session.screenShown(_id);
     _pages = PageController(initialPage: cook.stepIndex);
+    _session.addListener(_followSession);
     // No wakelock on the web and in tests; cooking carries on without it.
     unawaited(WakelockPlus.enable().catchError((_) {}));
   }
 
   @override
   void dispose() {
+    _session.removeListener(_followSession);
     _session.screenHidden(_id);
     unawaited(WakelockPlus.disable().catchError((_) {}));
     _pages.dispose();
     super.dispose();
+  }
+
+  /// Shefi, a notification action or the inbox may move the session's step
+  /// while this screen is open: the card follows it. A swipe or an animation
+  /// in flight is left alone (its own page change will set the step); once
+  /// it settles, [_onScrollEnd] catches up with anything that moved meanwhile.
+  void _followSession() {
+    final cook = _cook;
+    if (!mounted || cook == null || _steps.isEmpty || !_pages.hasClients) {
+      return;
+    }
+    final position = _pages.position;
+    if (position.isScrollingNotifier.value) return;
+    final target = cook.stepIndex.clamp(0, _steps.length - 1);
+    final current = _pages.page?.round();
+    if (current == null || current == target) return;
+    _go(target);
+  }
+
+  bool _onScrollEnd(ScrollEndNotification _) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followSession());
+    return false;
   }
 
   void _go(int index) {
@@ -192,20 +216,23 @@ class _CookModePageState extends State<CookModePage> {
                         onTap: _go,
                       ),
                       Expanded(
-                        child: PageView.builder(
-                          controller: _pages,
-                          itemCount: total,
-                          onPageChanged: (i) {
-                            HapticFeedback.selectionClick();
-                            _session.setStep(_id, i);
-                          },
-                          itemBuilder: (context, i) => _StepPage(
-                            number: i + 1,
-                            text: _steps[i],
-                            ingredients: _ingredientsIn(_steps[i]),
-                            timer: cook.timers[i],
-                            onToggleTimer: () => _session.toggleTimer(_id, i),
-                            onResetTimer: () => _session.resetTimer(_id, i),
+                        child: NotificationListener<ScrollEndNotification>(
+                          onNotification: _onScrollEnd,
+                          child: PageView.builder(
+                            controller: _pages,
+                            itemCount: total,
+                            onPageChanged: (i) {
+                              HapticFeedback.selectionClick();
+                              _session.setStep(_id, i);
+                            },
+                            itemBuilder: (context, i) => _StepPage(
+                              number: i + 1,
+                              text: _steps[i],
+                              ingredients: _ingredientsIn(_steps[i]),
+                              timer: cook.timers[i],
+                              onToggleTimer: () => _session.toggleTimer(_id, i),
+                              onResetTimer: () => _session.resetTimer(_id, i),
+                            ),
                           ),
                         ),
                       ),

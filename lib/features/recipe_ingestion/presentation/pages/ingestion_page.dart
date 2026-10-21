@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
@@ -132,6 +133,14 @@ class IngestionPage extends StatelessWidget {
       ),
       child: BlocConsumer<IngestionBloc, IngestionState>(
         listener: (context, state) {
+          final notice = switch (state) {
+            IngestionReview(:final notice) => notice,
+            IngestionUnparsed(:final notice) => notice,
+            _ => null,
+          };
+          if (notice != null) {
+            AppDialog.error(message: notice).notify(context);
+          }
           if (state is IngestionSaved) {
             Navigator.of(context).pop();
             // After the pop so the store's sheet lands on the recipes list.
@@ -149,12 +158,24 @@ class IngestionPage extends StatelessWidget {
               child: switch (state) {
                 IngestionIdle(channel: final channel) => _ChannelForm(
                   channel: channel,
-                  // Only the channel it was shared to starts filled in; a
-                  // switch to another channel starts that one empty.
-                  initialText: launch?.channel == channel ? launch?.text : null,
-                  initialFiles: launch?.channel == channel
-                      ? launch?.files ?? const []
-                      : const [],
+                  // What this channel last submitted comes back after a
+                  // failure; otherwise only the channel it was shared to
+                  // starts filled in.
+                  initialText:
+                      context.read<IngestionBloc>().draftText(channel) ??
+                      (launch?.channel == channel ? launch?.text : null),
+                  initialFiles: switch (context
+                      .read<IngestionBloc>()
+                      .draftFiles) {
+                    final files
+                        when files.isNotEmpty &&
+                            channel == RecipeIngestionChannel.file =>
+                      files,
+                    _ =>
+                      launch?.channel == channel
+                          ? launch?.files ?? const []
+                          : const [],
+                  },
                 ),
                 IngestionParsing(channel: final channel) => Center(
                   child: Column(
@@ -186,12 +207,14 @@ class IngestionPage extends StatelessWidget {
                   text: final text,
                   sourceUrl: final sourceUrl,
                   timedOut: final timedOut,
+                  retryable: final retryable,
                 ) =>
                   _UnparsedView(
                     channel: channel,
                     text: text,
                     sourceUrl: sourceUrl,
                     timedOut: timedOut,
+                    retryable: retryable,
                   ),
                 IngestionSaved() => const Center(
                   child: CircularProgressIndicator(),
@@ -302,10 +325,41 @@ class _ChannelFormState extends State<_ChannelForm> {
     RecipeIngestionChannel.manual || RecipeIngestionChannel.file => '',
   };
 
+  /// The most characters a channel's text field sends. The proxy's own
+  /// limit is the 16 MB request body (functions/aiProxy.js MAX_BODY_BYTES),
+  /// which a paste never reaches; these are the sizes past which the model
+  /// is being handed a whole site, not a recipe — and the daily extraction
+  /// would be spent on it. A shared-in text lands in the field whole, so
+  /// the submit checks too, not only the field.
+  static int maxCharsFor(RecipeIngestionChannel channel) => switch (channel) {
+    RecipeIngestionChannel.rawText => 30000,
+    RecipeIngestionChannel.aiRequest => 2000,
+    RecipeIngestionChannel.webSearch => 300,
+    RecipeIngestionChannel.urlScrape ||
+    RecipeIngestionChannel.socialVideo => 2048,
+    // No text field on these channels: -1 is the formatter's "no limit".
+    RecipeIngestionChannel.manual || RecipeIngestionChannel.file => -1,
+  };
+
   Future<void> _submit() async {
     final value = _controller.text.trim();
     if (value.isEmpty) return;
     final bloc = context.read<IngestionBloc>();
+    final max = maxCharsFor(widget.channel);
+    if (max > 0 && value.length > max) {
+      AppDialog.warning(
+        message: t.ingestion.textTooLong(max: max),
+      ).notify(context);
+      return;
+    }
+    // A link that is not one is refused here, before the gate below spends
+    // an extraction on it.
+    if ((widget.channel == RecipeIngestionChannel.urlScrape ||
+            widget.channel == RecipeIngestionChannel.socialVideo) &&
+        !IngestionLaunch.isWebUrl(value)) {
+      AppDialog.warning(message: t.ingestion.invalidUrl).notify(context);
+      return;
+    }
     // The AI channels cost a daily extraction, and a video: asked for
     // before the model is touched, so a refused gate costs nothing.
     if (_isAiExtraction(widget.channel)) {
@@ -342,6 +396,9 @@ class _ChannelFormState extends State<_ChannelForm> {
       if (!mounted) return;
       final added = <IngestionFile>[];
       var unsupported = false;
+      // Sized from disk before any is read: a long recording read whole
+      // only to be refused held hundreds of megabytes for nothing.
+      var total = _files.fold<int>(0, (sum, f) => sum + f.bytes.length);
       for (final entry in picked) {
         final path = entry.path;
         if (path == null) continue;
@@ -351,7 +408,17 @@ class _ChannelFormState extends State<_ChannelForm> {
           unsupported = true;
           continue;
         }
-        final bytes = await File(path).readAsBytes();
+        final file = File(path);
+        total += await file.length();
+        if (total > IngestionFile.maxBytes) {
+          if (mounted) {
+            AppDialog.warning(
+              message: t.ingestion.fileTooLarge,
+            ).notify(context);
+          }
+          return;
+        }
+        final bytes = await file.readAsBytes();
         added.add(IngestionFile(name: name, bytes: bytes, mimeType: mimeType));
       }
       if (!mounted) return;
@@ -366,6 +433,22 @@ class _ChannelFormState extends State<_ChannelForm> {
       setState(() => _files.addAll(added));
     } finally {
       if (mounted) setState(() => _picking = false);
+    }
+  }
+
+  /// True while a submit is between the tap and the bloc: the quota gate
+  /// records an extraction (or opens the ad sheet) before the bloc's own
+  /// "already parsing" guard can see a second tap, so a double tap counted
+  /// two extractions for one analysis.
+  bool _submitting = false;
+
+  Future<void> _once(Future<void> Function() run) async {
+    if (_submitting) return;
+    _submitting = true;
+    try {
+      await run();
+    } finally {
+      _submitting = false;
     }
   }
 
@@ -441,7 +524,8 @@ class _ChannelFormState extends State<_ChannelForm> {
   Widget _parseButton() {
     final isFile = widget.channel == RecipeIngestionChannel.file;
     final ready = isFile ? _files.isNotEmpty : _hasInput;
-    final submit = isFile ? _submitFiles : _submit;
+    final run = isFile ? _submitFiles : _submit;
+    Future<void> submit() => _once(run);
     if (!_isAiExtraction(widget.channel) || !MonetizationConfig.aiGated) {
       return ClayButton(
         // A request is not analysed, it is written — the button says so.
@@ -591,6 +675,11 @@ class _ChannelFormState extends State<_ChannelForm> {
                         RecipeIngestionChannel.aiRequest => 4,
                         _ => 2,
                       },
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(
+                          _ChannelFormState.maxCharsFor(widget.channel),
+                        ),
+                      ],
                       style: AppTextStyles.bodyMd,
                       decoration: InputDecoration(hintText: _hint),
                     ),
@@ -728,8 +817,10 @@ class _FileRow extends StatelessWidget {
   });
 
   static String _sizeLabel(int bytes) {
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).round()} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024) {
+      return t.ingestion.sizeKb(n: '${(bytes / 1024).round()}');
+    }
+    return t.ingestion.sizeMb(n: (bytes / (1024 * 1024)).toStringAsFixed(1));
   }
 
   @override
@@ -770,7 +861,7 @@ class _FileRow extends StatelessWidget {
                 style: AppTextStyles.bodyMd,
               ),
               Text(
-                '${file.isPdf ? 'PDF' : t.ingestion.file.split(' ').first} · '
+                '${file.isPdf ? 'PDF' : t.ingestion.recordingTag} · '
                 '${_sizeLabel(file.bytes.length)}',
                 style: AppTextStyles.labelMd.copyWith(
                   color: AppColors.onSurfaceVariant,
@@ -1059,8 +1150,10 @@ class _ErrorView extends StatelessWidget {
               ClayButton(
                 label: t.common.retry,
                 icon: Icons.refresh_rounded,
+                // The same request again (or the search results back), not
+                // an empty form.
                 onPressed: () =>
-                    context.read<IngestionBloc>().add(.selectChannel(channel)),
+                    context.read<IngestionBloc>().add(const .retry()),
               ),
             ],
           ),
@@ -1264,11 +1357,16 @@ class _UnparsedView extends StatelessWidget {
   final String? sourceUrl;
   final bool timedOut;
 
+  /// False after a refusal that stands (quota, phone, blocked account):
+  /// the Retry button is greyed, the other two ways out stay.
+  final bool retryable;
+
   const _UnparsedView({
     required this.channel,
     required this.text,
     required this.sourceUrl,
     required this.timedOut,
+    this.retryable = true,
   });
 
   /// Retries the same analysis, not a different one: a link is re-parsed as a
@@ -1357,7 +1455,7 @@ class _UnparsedView extends StatelessWidget {
                       label: t.ingestion.retryAnalysis,
                       icon: Icons.refresh_rounded,
                       expanded: true,
-                      onPressed: () => _retry(context),
+                      onPressed: retryable ? () => _retry(context) : null,
                     ),
                   ),
                 ],

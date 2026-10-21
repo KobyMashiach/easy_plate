@@ -1,0 +1,48 @@
+{
+  "id": "a551574a-0000-4000-8000-000000000005",
+  "name": "מרק עדשים מהיר 2",
+  "items": [
+    {
+      "id": "עדשים כתומות|cup",
+      "name": "עדשים כתומות",
+      "unit": "cup",
+      "sources": [
+        {
+          "recipeId": "a551574a-0000-4000-8000-000000000001",
+          "label": "מרק עדשים מהיר",
+          "amount": 3.75
+        }
+      ],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": false
+    },
+    {
+      "id": "בצל|unspecified",
+      "name": "בצל",
+      "unit": "unspecified",
+      "sources": [
+        {
+          "recipeId": "a551574a-0000-4000-8000-000000000001",
+          "label": "מרק עדשים מהיר",
+          "amount": 0
+        }
+      ],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": false
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T10:15:00.000Z",
+  "selectedPlanIds": [],
+  "contentLang": "he",
+  "contentVersion": 0,
+  "source": "recipe",
+  "recipeId": "a551574a-0000-4000-8000-000000000001",
+  "recipeScale": 2.5,
+  "recipeServings": 4,
+  "recipeTitle": "מרק עדשים מהיר",
+  "collabId": null,
+  "collabRole": null
+}

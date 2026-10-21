@@ -1,0 +1,37 @@
+{
+  "name": "easyplate-webapp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "EasyPlate on the web: sign in, account and Premium (Stripe), recipe viewer. Built into ../landing/app and served by Firebase Hosting under /app.",
+  "scripts": {
+    "dev": "node scripts/split-i18n.mjs && vite",
+    "build": "node scripts/check-i18n.mjs && node scripts/test-translation.mjs && node scripts/split-i18n.mjs && tsc --noEmit && vite build",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "preview": "vite preview",
+    "typecheck": "node scripts/split-i18n.mjs && tsc --noEmit",
+    "test": "node scripts/test-translation.mjs",
+    "preview:emulators": "cd scripts/preview && mkdir -p .emulator && cp ../../../firestore.rules ../../../storage.rules .emulator/ && JAVA_HOME=${PREVIEW_JAVA_HOME:-$JAVA_HOME} firebase emulators:start --only auth,firestore,storage --project demo-easyplate --config firebase.json",
+    "preview:seed": "node scripts/preview/seed.mjs",
+    "preview:dev": "node scripts/split-i18n.mjs && VITE_EMULATORS=1 vite --port 5188 --strictPort --host 127.0.0.1",
+    "preview:shoot": "node scripts/preview/shoot.mjs",
+    "preview:native": "cd .. && flutter test test/store_assets/web_parity_screens_test.dart --dart-define=WEB_PARITY_SCREENS=true --timeout 120s && cd webapp && node scripts/preview/shoot.mjs --compare-only",
+    "preview:check-build": "node scripts/split-i18n.mjs && node scripts/preview/check-build.mjs"
+  },
+  "dependencies": {
+    "firebase": "12.19.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.30.6"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.5.30",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.8.3",
+    "vite": "6.4.4"
+  }
+}

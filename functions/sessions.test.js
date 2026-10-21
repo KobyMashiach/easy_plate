@@ -146,3 +146,159 @@ test("a takeover needs a fresh SMS confirmation of the account's phone", () => {
   assert.equal(freshPhoneProof(null, NOW), false);
   assert.deepEqual(parseRequest({ action: "takeover", deviceId: "B", platform: "android" }), { action: "takeover", deviceId: "B", hardwareId: null, platform: "android", pushToken: null });
 });
+
+test("a release request is read and written inside one transaction", async () => {
+  const { requestRelease } = require("./sessions").internals;
+  const admin = require("firebase-admin");
+  const now = 1_700_000_000_000;
+  const store = new Map([["sessions/u1", {
+    deviceId: "A",
+    platform: "ios",
+    expiresAt: admin.firestore.Timestamp.fromMillis(now + DAY_MS),
+    releaseRequest: { deviceId: "B", at: admin.firestore.Timestamp.fromMillis(now - 1000), declinedAt: admin.firestore.Timestamp.fromMillis(now - 500) },
+  }]]);
+  const outside = [];
+  const inside = [];
+  const docRef = (path) => ({
+    path,
+    get: async () => { outside.push(`get ${path}`); return { exists: store.has(path), data: () => store.get(path), get: (f) => (store.get(path) || {})[f] }; },
+    set: async () => { outside.push(`set ${path}`); },
+  });
+  const db = {
+    doc: docRef,
+    runTransaction: async (fn) => fn({
+      get: async (ref) => { inside.push(`get ${ref.path}`); return { exists: store.has(ref.path), data: () => store.get(ref.path) }; },
+      set: (ref, data) => { inside.push(`set ${ref.path}`); store.set(ref.path, { ...store.get(ref.path), ...data }); },
+    }),
+  };
+  const out = await requestRelease("u1", { deviceId: "B", platform: "android", pushToken: null, title: "t", body: "b" }, { db, now, settings: async () => ({ waitHours: 24 }) });
+  assert.deepEqual(inside, ["get sessions/u1", "set sessions/u1"]);
+  assert.ok(!outside.includes("get sessions/u1") && !outside.includes("set sessions/u1"), "the record is never touched outside the transaction");
+  // The earlier request was declined, so the clock starts over now.
+  assert.equal(out.takeoverAt, now + 24 * 60 * 60 * 1000);
+  assert.equal(store.get("sessions/u1").releaseRequest.declinedAt, null);
+
+  // The holder itself asking finds the account free and writes nothing.
+  inside.length = 0;
+  const own = await requestRelease("u1", { deviceId: "A", platform: "ios" }, { db, now, settings: async () => ({ waitHours: 24 }) });
+  assert.deepEqual(own, { ok: true, free: true });
+  assert.deepEqual(inside, ["get sessions/u1"]);
+});
+
+const DEVICE_SECRET = "d".repeat(43);
+
+test("a device that sends its own secret gets it bound; only its hash is kept", () => {
+  const { secretHash } = require("./sessions").internals;
+  const out = decide({ existing: null, deviceId: "A", platform: "ios", now: NOW, days: 30, enforce: true, bind: DEVICE_SECRET });
+  assert.equal(out.secretBound, true);
+  assert.equal(out.record.secretHash, secretHash(DEVICE_SECRET));
+  assert.equal(JSON.stringify(out).includes(DEVICE_SECRET), false);
+  // An older build asks for nothing: the record is exactly as before.
+  const old = decide({ existing: null, deviceId: "A", platform: "ios", now: NOW, days: 30, enforce: true });
+  assert.equal(old.secretBound, undefined);
+  assert.equal("secretHash" in old.record, false);
+});
+
+test("copied ids no longer make the same device once the record carries a secret", () => {
+  const { secretHash } = require("./sessions").internals;
+  const held = { ...phone, hardwareId: "H", secretHash: secretHash("the-secret") };
+  // Another phone with the ids read out of sessions/{uid}: refused.
+  const replay = decide({ existing: held, deviceId: "A", hardwareId: "H", platform: "android", now: NOW, days: 30, enforce: true });
+  assert.equal(replay.ok, false);
+  const wrong = decide({ existing: held, deviceId: "A", hardwareId: "H", platform: "android", now: NOW, days: 30, enforce: true, secret: "guess", bind: "guess" });
+  assert.equal(wrong.ok, false);
+  // The holder with its secret: the same device, the month kept, nothing rebound.
+  const holder = decide({ existing: held, deviceId: "A", platform: "ios", now: NOW, days: 30, enforce: true, secret: "the-secret", bind: "the-secret" });
+  assert.equal(holder.ok, true);
+  assert.equal(holder.sameDevice, true);
+  assert.equal(holder.record.startedAt, phone.startedAt);
+  assert.equal(holder.record.secretHash, secretHash("the-secret"));
+  assert.equal(holder.secretBound, undefined);
+  assert.equal(sameDevice(held, "A", "H"), false);
+  assert.equal(sameDevice(held, "Z", null, "the-secret"), true);
+});
+
+test("an existing record without a secret binds the holder's own on its next claim", () => {
+  const { secretHash } = require("./sessions").internals;
+  const out = decide({ existing: phone, deviceId: "A", platform: "ios", now: NOW, days: 30, enforce: true, secret: DEVICE_SECRET, bind: DEVICE_SECRET });
+  assert.equal(out.ok, true);
+  assert.equal(out.secretBound, true);
+  assert.equal(out.record.secretHash, secretHash(DEVICE_SECRET));
+  assert.equal(out.record.startedAt, phone.startedAt);
+});
+
+test("a lost answer does not lock the holder out: the retry presents the same secret", () => {
+  const first = decide({ existing: phone, deviceId: "A", platform: "ios", now: NOW, days: 30, enforce: true, secret: DEVICE_SECRET, bind: DEVICE_SECRET });
+  // The response never arrived; the device still holds what it drew and asks again.
+  const retry = decide({ existing: first.record, deviceId: "A", platform: "ios", now: NOW + 1000, days: 30, enforce: true, secret: DEVICE_SECRET, bind: DEVICE_SECRET });
+  assert.equal(retry.ok, true);
+  assert.equal(retry.sameDevice, true);
+  assert.equal(retry.secretBound, undefined);
+});
+
+test("the app's exact claim shape binds its 43-char base64url secret end to end; nothing is drawn by the server", () => {
+  const { secretHash, secretMatches } = require("./sessions").internals;
+  const secret = require("node:crypto").randomBytes(32).toString("base64url");
+  assert.equal(secret.length, 43);
+  const req = parseRequest({ action: "claim", deviceId: "A", hardwareId: "H", platform: "android", wantsSecret: true, secret });
+  assert.equal(req.wantsSecret, true);
+  const out = decide({ existing: null, deviceId: req.deviceId, hardwareId: req.hardwareId, platform: req.platform, now: NOW, days: 30, enforce: true, secret: req.secret, bind: req.wantsSecret ? req.secret : null });
+  assert.equal(out.record.secretHash, secretHash(secret));
+  assert.equal(secretMatches(out.record.secretHash, secret), true);
+  assert.equal(JSON.stringify(out).includes(secret), false);
+  // Takeover: the same shape, a fresh record bound to it.
+  const take = parseRequest({ action: "takeover", deviceId: "B", platform: "ios", wantsSecret: true, secret });
+  assert.equal(take.wantsSecret, true);
+  // wantsSecret with an invalid secret (padded, 44 chars, wrong alphabet): nothing bound, nothing drawn.
+  for (const bad of [secret + "=", secret + "A", secret.slice(0, 42) + "+", undefined]) {
+    const r = parseRequest({ action: "claim", deviceId: "A", platform: "ios", wantsSecret: true, secret: bad });
+    assert.equal(r.wantsSecret, undefined);
+    const d = decide({ existing: null, deviceId: "A", platform: "ios", now: NOW, days: 30, enforce: true, secret: r.secret || null, bind: r.wantsSecret ? r.secret : null });
+    assert.equal("secretHash" in d.record, false);
+  }
+});
+
+test("the request carries the secret and the ask only when the device sent them", () => {
+  assert.deepEqual(parseRequest({ action: "claim", deviceId: "A", platform: "ios", secret: DEVICE_SECRET, wantsSecret: true }), { action: "claim", deviceId: "A", hardwareId: null, platform: "ios", pushToken: null, secret: DEVICE_SECRET, wantsSecret: true });
+  // A short secret is presented but never bound.
+  assert.equal(parseRequest({ action: "claim", deviceId: "A", platform: "ios", secret: "x", wantsSecret: true }).wantsSecret, undefined);
+  assert.equal(parseRequest({ action: "takeover", deviceId: "A", platform: "ios", wantsSecret: true }).wantsSecret, undefined);
+  assert.deepEqual(parseRequest({ action: "release", deviceId: "A", secret: "x" }), { action: "release", deviceId: "A", hardwareId: null, secret: "x" });
+  assert.equal(parseRequest({ action: "release", deviceId: "A", wantsSecret: true }).wantsSecret, undefined);
+  assert.equal(parseRequest({ action: "claim", deviceId: "A", secret: 5 }).secret, undefined);
+});
+
+test("expiry pages until no session is left, by cursor", async () => {
+  const { expire } = require("./sessions").internals;
+  const all = Array.from({ length: 5 }, (_, i) => ({ id: `u${i}`, updateTime: i, ref: { delete: async () => { if (i === 1) throw new Error("renewed"); } } }));
+  const queries = [];
+  const query = (cursor) => ({
+    orderBy: () => query(cursor),
+    limit: (n) => ({ ...query(cursor), n }),
+    startAfter: (doc) => query(doc),
+    get: async function () {
+      const from = cursor ? all.indexOf(cursor) + 1 : 0;
+      queries.push(from);
+      return { docs: all.slice(from, from + 2) };
+    },
+  });
+  const db = { collection: () => ({ where: () => query(null) }) };
+  const revoked = [];
+  const count = await expire(Date.now(), { db, auth: { revokeRefreshTokens: async (uid) => revoked.push(uid) }, page: 2 });
+  assert.equal(count, 4);
+  assert.deepEqual(revoked, ["u0", "u2", "u3", "u4"]);
+  assert.deepEqual(queries, [0, 2, 4]);
+});
+
+test("the holder is pushed once per asker per ten minutes; the record still refreshes", () => {
+  const { releasePushDue, RELEASE_PUSH_GAP_MS } = require("./sessions").internals;
+  const now = 1_700_000_000_000;
+  const ask = { deviceId: "B", hardwareId: "hw" };
+  assert.equal(releasePushDue(null, ask, now), true);
+  const recent = { deviceId: "B", hardwareId: "hw", notifiedAt: now - 60_000, declinedAt: null };
+  assert.equal(releasePushDue(recent, ask, now), false);
+  assert.equal(releasePushDue({ ...recent, notifiedAt: now - RELEASE_PUSH_GAP_MS }, ask, now), true);
+  assert.equal(releasePushDue({ ...recent, declinedAt: now - 1000 }, ask, now), true);
+  assert.equal(releasePushDue({ ...recent, deviceId: "C", hardwareId: "other" }, ask, now), true);
+  assert.equal(releasePushDue({ deviceId: "B", at: now - 1000 }, ask, now), true, "a request from before the stamp pushes");
+});

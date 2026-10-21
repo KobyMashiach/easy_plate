@@ -1,0 +1,27 @@
+{
+  "id": "primary",
+  "name": "Groceries",
+  "items": [
+    {
+      "id": "freeText|meal-item-1",
+      "name": "Pizza night",
+      "unit": "unspecified",
+      "sources": [{ "recipeId": null, "label": "Dinner", "amount": 1 }],
+      "isChecked": false,
+      "category": "כללי",
+      "isAdHoc": true
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-01T08:00:00.000Z",
+  "selectedPlanIds": ["plan-a", "plan-b"],
+  "contentLang": "en",
+  "contentVersion": 0,
+  "source": "plans",
+  "recipeId": null,
+  "recipeScale": 1,
+  "recipeServings": null,
+  "recipeTitle": null,
+  "collabId": null,
+  "collabRole": null
+}

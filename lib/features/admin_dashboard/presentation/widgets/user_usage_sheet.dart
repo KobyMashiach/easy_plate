@@ -120,10 +120,8 @@ class _UserUsageSheetState extends State<_UserUsageSheet> {
             future: _load,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return Text(
-                  '${t.common.error}\n${snapshot.error}',
-                  style: muted,
-                );
+                debugPrint('User usage load failed: ${snapshot.error}');
+                return Text(t.common.loadFailed, style: muted);
               }
               if (!snapshot.hasData) {
                 return const Center(

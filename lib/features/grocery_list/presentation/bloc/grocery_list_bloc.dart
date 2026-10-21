@@ -8,6 +8,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../../meal_planner/domain/usecases/get_meal_plans_usecase.dart';
@@ -43,13 +44,23 @@ sealed class GroceryListEvent with _$GroceryListEvent {
   const factory GroceryListEvent.removeItem(String itemId) = _RemoveItem;
   const factory GroceryListEvent.addBuffer(String itemId, double amount) =
       _AddBuffer;
+
+  /// [label] (with [recipeId]) names the source the sheet showed at
+  /// [sourceIndex]; when the line changed underneath, the source is found
+  /// by them, and nothing happens if it is gone.
   const factory GroceryListEvent.adjustSource(
     String itemId,
     int sourceIndex,
-    double amount,
-  ) = _AdjustSource;
-  const factory GroceryListEvent.removeSource(String itemId, int sourceIndex) =
-      _RemoveSource;
+    double amount, {
+    String? recipeId,
+    String? label,
+  }) = _AdjustSource;
+  const factory GroceryListEvent.removeSource(
+    String itemId,
+    int sourceIndex, {
+    String? recipeId,
+    String? label,
+  }) = _RemoveSource;
   const factory GroceryListEvent.changeUnit(
     String itemId,
     MeasurementUnit unit,
@@ -318,21 +329,83 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
 
   /// Every write goes through here: the box, then — for a shared list —
   /// the shared document, so the other accounts see the change.
-  Future<void> _save(GroceryListEntity list) async {
+  ///
+  /// [change] is made on the list as it is stored at the moment of the
+  /// write, not on the copy on screen: the website, a home-screen widget or
+  /// a co-editor may have written the list since it was read, and the
+  /// screen's copy written whole would put their lines and ticks back the
+  /// way they were. [screen] stands in only for the first list, which is
+  /// shown before it was ever saved; any other list missing from the box
+  /// was deleted elsewhere, and writing it would bring it back.
+  Future<GroceryListEntity?> _save(
+    GroceryListEntity screen,
+    GroceryListEntity Function(GroceryListEntity list) change, {
+    bool create = false,
+  }) async {
     _inflight++;
-    try {
-      await saveGroceryListUseCase(list);
-    } finally {
-      _inflight--;
-    }
+    final run = _writes.then((_) async {
+      try {
+        final stored = await saveGroceryListUseCase.repository.getListById(
+          screen.id,
+        );
+        final base =
+            stored ?? (create || screen.id == defaultListId ? screen : null);
+        // A list made view-only meanwhile is not this account's to write.
+        if (base == null || !base.canEdit) return null;
+        final next = change(base);
+        await saveGroceryListUseCase(next);
+        return next;
+      } finally {
+        _inflight--;
+      }
+    });
+    // One write at a time, in order: two read-modify-writes interleaving
+    // would both start from the same record. A failed one must not wedge
+    // the ones behind it.
+    _writes = run.then<void>((_) {}, onError: (Object _) {});
+    final saved = await run;
     final uid = UserScope().uid;
-    if (!list.isShared || uid == null) return;
+    if (saved == null || !saved.isShared || uid == null) return saved;
     try {
-      await sharing?.lists.publish(list, uid: uid);
+      await _publish(saved.id, uid);
     } catch (e) {
       debugPrint('Shared list publish failed: $e');
     }
+    return saved;
   }
+
+  /// Shared publishes, one at a time and each of the list as stored when
+  /// it runs: concurrent publishes of per-edit snapshots could land out of
+  /// order (one waits on recipe links, the next does not), and the older
+  /// whole document would undo the newer edit for every member.
+  Future<void> _publishes = Future.value();
+
+  /// Publishes queued but not started yet, by list id: a run of ticks
+  /// sends the stored list once, not once per tap.
+  final _queuedPublishes = <String, Future<void>>{};
+
+  Future<void> _publish(String listId, String uid) {
+    final queued = _queuedPublishes[listId];
+    if (queued != null) return queued;
+    final run = _publishes.then((_) async {
+      _queuedPublishes.remove(listId);
+      final latest = await saveGroceryListUseCase.repository.getListById(
+        listId,
+      );
+      if (latest == null || !latest.isShared || !latest.canEdit) return;
+      await sharing?.lists.publish(latest, uid: uid);
+    });
+    _queuedPublishes[listId] = run;
+    _publishes = run.then<void>((_) {}, onError: (Object _) {});
+    return run;
+  }
+
+  /// A list made here, written as it is.
+  Future<void> _saveNew(GroceryListEntity list) =>
+      _save(list, (stored) => stored, create: true);
+
+  /// The tail of the write queue; see [_save].
+  Future<void> _writes = Future.value();
 
   /// Writes of this bloc's own that the box has not echoed yet. While one
   /// is in flight an echo may be older than the screen, so the screen wins.
@@ -343,10 +416,15 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   static String _signature(GroceryListEntity l) => [
     l.name,
     l.recipeScale,
+    // What another device or the owner can change without touching a line:
+    // the role (editor demoted to viewer) and the menus the list is built from.
+    l.collabRole?.name,
+    l.selectedPlanIds.join(','),
     for (final item in l.items) ...[
       item.id,
       item.name,
       item.isChecked,
+      item.isAdHoc,
       item.unit.name,
       item.category,
       for (final source in item.sources) ...[source.label, source.amount],
@@ -383,25 +461,29 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       }
     } catch (e) {
       debugPrint('Grocery list error: $e');
-      emit(.errorMessage(e.toString()));
+      emit(.errorMessage(t.common.loadFailed));
     }
   }
 
   /// Meal plans are only reloaded where they might have changed; every other
   /// write reuses the ones already in state so the selector keeps its labels.
   Future<void> _persist(
-    GroceryListEntity list,
+    GroceryListEntity screen,
+    GroceryListEntity Function(GroceryListEntity list) change,
     Emitter<GroceryListState> emit, {
     List<MealPlanEntity>? plans,
   }) async {
     // A read-only shared list: the page hides the actions, this is the
     // backstop.
-    if (!list.canEdit) return;
-    await _save(list);
+    if (!screen.canEdit) return;
+    final list = change(screen);
     final current = state;
     final lists = current is GroceryListLoaded
         ? current.lists
         : const <GroceryListEntity>[];
+    // Shown first, written after, as _updateItem does: emitting the
+    // pre-save snapshot once the write landed would revert a tick made
+    // meanwhile, and a swiped-away row would stay in the tree until then.
     emit(
       .loaded(
         list,
@@ -410,6 +492,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
         lists: _withList(lists, list),
       ),
     );
+    await _save(screen, change);
   }
 
   Future<void> _updateItem(
@@ -420,17 +503,18 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final current = state;
     if (current is! GroceryListLoaded) return;
     if (!current.list.canEdit) return;
-    final updated = current.list.copyWith(
-      items: current.list.items
+    GroceryListEntity change(GroceryListEntity list) => list.copyWith(
+      items: list.items
           .map((item) => item.id == itemId ? transform(item) : item)
           .toList(),
     );
+    final updated = change(current.list);
     // Shown first, written after: a checkbox that waits for the disk (and
     // the cloud push queued behind it) reads as a tap that did not land.
     emit(
       current.copyWith(list: updated, lists: _withList(current.lists, updated)),
     );
-    await _save(updated);
+    await _save(current.list, change);
   }
 
   Future<void> _init(_Init event, Emitter<GroceryListState> emit) =>
@@ -443,8 +527,12 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     Emitter<GroceryListState> emit,
   ) async {
     final existing = await _currentList();
+    // A viewer's choice of menus would be saved here and refused upstream,
+    // leaving this device's copy apart from the shared list.
+    if (!existing.canEdit) return;
     await _save(
-      existing.copyWith(selectedPlanIds: event.planIds),
+      existing,
+      (list) => list.copyWith(selectedPlanIds: event.planIds),
     );
     await _regenerate(const _Regenerate(), emit);
   }
@@ -462,7 +550,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final List<GroceryItemEntity> built;
     switch (existing.source) {
       case GroceryListSource.manual:
-        await _persist(existing, emit, plans: plans);
+        await _persist(existing, (list) => list, emit, plans: plans);
         return;
       case GroceryListSource.recipe:
         final fromRecipe = existing.recipeId == null
@@ -474,7 +562,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
         // The recipe is gone, or was a community post never kept here:
         // the lines the list was made with are the best there is.
         if (fromRecipe == null) {
-          await _persist(existing, emit, plans: plans);
+          await _persist(existing, (list) => list, emit, plans: plans);
           return;
         }
         built = fromRecipe;
@@ -490,22 +578,51 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
         built = await buildAggregateGroceryListUseCase(selected);
     }
 
-    final checkedIds = existing.items
-        .where((i) => i.isChecked)
-        .map((i) => i.id)
-        .toSet();
-    final adHocItems = existing.items.where((i) => i.isAdHoc).toList();
+    // The rebuild awaited plans and recipes; the shopper may have switched
+    // lists meanwhile (nothing to write then), or ticked and added lines on
+    // this one — those come from the list as it is now, not as it was read:
+    // the screen's copy for what is shown, the stored one for what is
+    // written (see [_save]).
+    if (_activeId != null && _activeId != existing.id) return;
+    final now = state;
+    final latest = now is GroceryListLoaded && now.list.id == existing.id
+        ? now.list
+        : existing;
+    // A plan's free-text dish is built as an ad-hoc line under a stable id;
+    // the copy already on the list must not be kept beside the rebuilt one,
+    // or every rebuild doubles it.
+    final builtIds = built.map((i) => i.id).toSet();
+    GroceryListEntity rebuilt(GroceryListEntity list) {
+      final checkedIds = list.items
+          .where((i) => i.isChecked)
+          .map((i) => i.id)
+          .toSet();
+      // A free-text dish that has left the plan (removed, its plan deleted
+      // or unticked) is not rebuilt, and must not be kept as if the shopper
+      // had typed it.
+      final adHocItems = list.items
+          .where(
+            (i) =>
+                i.isAdHoc &&
+                !builtIds.contains(i.id) &&
+                !i.id.startsWith(
+                  BuildAggregateGroceryListUseCase.freeTextIdPrefix,
+                ),
+          )
+          .toList();
+      return list.copyWith(
+        items: [
+          ...built.map(
+            (item) => checkedIds.contains(item.id)
+                ? item.copyWith(isChecked: true)
+                : item,
+          ),
+          ...adHocItems,
+        ],
+      );
+    }
 
-    final merged = [
-      ...built.map(
-        (item) => checkedIds.contains(item.id)
-            ? item.copyWith(isChecked: true)
-            : item,
-      ),
-      ...adHocItems,
-    ];
-
-    await _persist(existing.copyWith(items: merged), emit, plans: plans);
+    await _persist(latest, rebuilt, emit, plans: plans);
   }
 
   Future<void> _selectList(
@@ -524,7 +641,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   ) async {
     final list = _newList(event.name, event.source);
     _activeId = list.id;
-    await _save(list);
+    await _saveNew(list);
     await activeListStore.write(list.id);
     if (list.canRegenerate) {
       // A plans list is only useful filled: built from every menu at once,
@@ -558,12 +675,22 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     if (name.isEmpty) return;
     final target = current.lists.where((l) => l.id == event.listId).firstOrNull;
     if (target == null || !target.canEdit) return;
-    final renamed = target.copyWith(name: name);
-    await _save(renamed);
+    final renamed = await _save(
+      target,
+      (list) => list.copyWith(name: name),
+    );
+    // Deleted elsewhere meanwhile: the box listener takes it off the screen.
+    if (renamed == null) return;
+    // Only the name, onto the screen as it is now: a tick made while the
+    // write was queued must not be taken back by it.
+    final now = state;
+    if (now is! GroceryListLoaded) return;
+    GroceryListEntity named(GroceryListEntity l) =>
+        l.id == renamed.id ? l.copyWith(name: renamed.name) : l;
     emit(
-      current.copyWith(
-        list: current.list.id == renamed.id ? renamed : current.list,
-        lists: _withList(current.lists, renamed),
+      now.copyWith(
+        list: named(now.list),
+        lists: [for (final l in now.lists) named(l)],
       ),
     );
   }
@@ -606,43 +733,64 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final current = state;
     if (current is! GroceryListLoaded) return;
     final list = current.list;
+    if (!list.canEdit) return;
     if (list.source != GroceryListSource.recipe || event.scale <= 0) return;
     if (event.scale == list.recipeScale) return;
-    final factor = event.scale / list.recipeScale;
-    final rescaled = list.copyWith(
-      recipeScale: event.scale,
-      items: [
-        for (final item in list.items)
-          item.isAdHoc
-              ? item
-              : item.copyWith(
-                  sources: [
-                    for (final s in item.sources)
-                      s.recipeId != null && s.recipeId == list.recipeId
-                          ? GroceryItemSourceEntity(
-                              recipeId: s.recipeId,
-                              label: s.label,
-                              amount: s.amount * factor,
-                            )
-                          : s,
-                  ],
-                ),
-      ],
-    );
+    // The factor is taken from the list it is applied to: the stored list
+    // may already have been rescaled elsewhere, and scaling its amounts by
+    // the screen's factor would compound the two.
+    GroceryListEntity rescale(GroceryListEntity list) {
+      if (list.source != GroceryListSource.recipe ||
+          list.recipeScale <= 0 ||
+          list.recipeScale == event.scale) {
+        return list;
+      }
+      final factor = event.scale / list.recipeScale;
+      return list.copyWith(
+        recipeScale: event.scale,
+        items: [
+          for (final item in list.items)
+            item.isAdHoc
+                ? item
+                : item.copyWith(
+                    sources: [
+                      for (final s in item.sources)
+                        s.recipeId != null && s.recipeId == list.recipeId
+                            ? GroceryItemSourceEntity(
+                                recipeId: s.recipeId,
+                                label: s.label,
+                                amount: s.amount * factor,
+                              )
+                            : s,
+                    ],
+                  ),
+        ],
+      );
+    }
+
+    final rescaled = rescale(list);
     emit(
       current.copyWith(
         list: rescaled,
         lists: _withList(current.lists, rescaled),
       ),
     );
-    await _save(rescaled);
+    await _save(list, rescale);
   }
 
   Future<void> _toggleItem(_ToggleItem event, Emitter<GroceryListState> emit) {
+    // The tick the shopper sees flipped, written as that value: flipping
+    // whatever the store holds would undo a tick another device already made.
+    final current = state;
+    final shown = current is GroceryListLoaded
+        ? current.list.items.where((i) => i.id == event.itemId).firstOrNull
+        : null;
+    if (shown == null) return Future.value();
+    final checked = !shown.isChecked;
     return _updateItem(
       emit,
       event.itemId,
-      (item) => item.copyWith(isChecked: !item.isChecked),
+      (item) => item.copyWith(isChecked: checked),
     );
   }
 
@@ -661,11 +809,12 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       sources: [
         GroceryItemSourceEntity(label: event.name, amount: event.amount),
       ],
-      category: 'כללי',
+      category: kDefaultGroceryCategory,
       isAdHoc: true,
     );
     await _persist(
-      current.list.copyWith(items: [...current.list.items, item]),
+      current.list,
+      (list) => list.copyWith(items: [...list.items, item]),
       emit,
     );
   }
@@ -678,10 +827,14 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   ) {
     return _updateItem(emit, event.itemId, (item) {
       if (item.sources.length <= 1) return item;
-      if (event.sourceIndex < 0 || event.sourceIndex >= item.sources.length) {
-        return item;
-      }
-      final sources = [...item.sources]..removeAt(event.sourceIndex);
+      final at = sourcePosition(
+        item.sources,
+        event.sourceIndex,
+        recipeId: event.recipeId,
+        label: event.label,
+      );
+      if (at < 0) return item;
+      final sources = [...item.sources]..removeAt(at);
       return item.copyWith(sources: sources);
     });
   }
@@ -701,8 +854,9 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final current = state;
     if (current is! GroceryListLoaded) return;
     await _persist(
-      current.list.copyWith(
-        items: current.list.items
+      current.list,
+      (list) => list.copyWith(
+        items: list.items
             .map((i) => i.copyWith(isChecked: event.checked))
             .toList(),
       ),
@@ -716,9 +870,16 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   ) async {
     final current = state;
     if (current is! GroceryListLoaded) return;
+    // The lines the shopper saw ticked — not whatever another device has
+    // ticked since, which they never confirmed deleting.
+    final doomed = {
+      for (final i in current.list.items)
+        if (i.isChecked) i.id,
+    };
     await _persist(
-      current.list.copyWith(
-        items: current.list.items.where((i) => !i.isChecked).toList(),
+      current.list,
+      (list) => list.copyWith(
+        items: list.items.where((i) => !doomed.contains(i.id)).toList(),
       ),
       emit,
     );
@@ -731,8 +892,9 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     final current = state;
     if (current is! GroceryListLoaded) return;
     await _persist(
-      current.list.copyWith(
-        items: current.list.items.where((i) => i.id != event.itemId).toList(),
+      current.list,
+      (list) => list.copyWith(
+        items: list.items.where((i) => i.id != event.itemId).toList(),
       ),
       emit,
     );
@@ -743,7 +905,10 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       return item.copyWith(
         sources: [
           ...item.sources,
-          GroceryItemSourceEntity(label: 'תוספת', amount: event.amount),
+          GroceryItemSourceEntity(
+            label: t.groceryList.buffer,
+            amount: event.amount,
+          ),
         ],
       );
     });
@@ -755,17 +920,39 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   ) {
     return _updateItem(emit, event.itemId, (item) {
       final sources = [...item.sources];
-      if (event.sourceIndex < 0 || event.sourceIndex >= sources.length) {
-        return item;
-      }
-      final source = sources[event.sourceIndex];
-      sources[event.sourceIndex] = GroceryItemSourceEntity(
+      final at = sourcePosition(
+        sources,
+        event.sourceIndex,
+        recipeId: event.recipeId,
+        label: event.label,
+      );
+      if (at < 0) return item;
+      final source = sources[at];
+      sources[at] = GroceryItemSourceEntity(
         recipeId: source.recipeId,
         label: source.label,
         amount: event.amount,
       );
       return item.copyWith(sources: sources);
     });
+  }
+
+  /// Where the source the sheet meant now sits: [index] when it still holds
+  /// that source, else the first with the same recipe and label, else -1.
+  /// Without an identity (older callers) the index is taken as given.
+  @visibleForTesting
+  static int sourcePosition(
+    List<GroceryItemSourceEntity> sources,
+    int index, {
+    String? recipeId,
+    String? label,
+  }) {
+    bool matches(GroceryItemSourceEntity s) =>
+        s.recipeId == recipeId && s.label == label;
+    final inRange = index >= 0 && index < sources.length;
+    if (label == null) return inRange ? index : -1;
+    if (inRange && matches(sources[index])) return index;
+    return sources.indexWhere(matches);
   }
 
   @override

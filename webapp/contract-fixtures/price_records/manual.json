@@ -1,0 +1,13 @@
+{
+  "id": "9a8b7c6d-1234-4abc-9def-0123456789ab",
+  "name": "חלב 3%",
+  "normalizedName": "חלב 3%",
+  "unitPrice": 6.9,
+  "quantity": 1,
+  "currency": "ILS",
+  "store": null,
+  "purchasedAt": "2026-10-18T10:00:00.000Z",
+  "receiptId": "manual",
+  "printedName": null,
+  "unit": "unit"
+}

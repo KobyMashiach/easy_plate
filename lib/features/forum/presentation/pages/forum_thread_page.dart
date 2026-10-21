@@ -50,6 +50,10 @@ class _ForumThreadPageState extends State<ForumThreadPage>
   /// not yank the reader back to it.
   String? _pendingHighlight;
 
+  /// Whether the highlighted reply was already asked for on its own, after
+  /// the first window turned out not to hold it.
+  bool _revealAsked = false;
+
   /// Lit up right now, for the flash after the scroll.
   String? _lit;
   Timer? _litTimer;
@@ -57,6 +61,7 @@ class _ForumThreadPageState extends State<ForumThreadPage>
   /// How many replies the last state had, to notice the reader's own reply
   /// arriving and follow it down.
   int _replyCount = -1;
+  String? _lastReplyId;
 
   /// Estimate for a reply card, used to jump near a reply that has not been
   /// laid out yet; the exact position is settled once it is on screen.
@@ -97,8 +102,14 @@ class _ForumThreadPageState extends State<ForumThreadPage>
   void _onLoaded(ForumThreadLoaded state) {
     final replies = state.replies;
     final wasFirst = _replyCount == -1;
-    final grew = !wasFirst && replies.length > _replyCount;
+    // The list is capped at the newest replies, so at the cap a new one
+    // changes the tail without changing the count.
+    final grew =
+        !wasFirst &&
+        (replies.length > _replyCount ||
+            (replies.isNotEmpty && replies.last.id != _lastReplyId));
     _replyCount = replies.length;
+    _lastReplyId = replies.lastOrNull?.id;
 
     if (_pendingHighlight case final id?) {
       final index = replies.indexWhere((r) => r.id == id);
@@ -106,6 +117,12 @@ class _ForumThreadPageState extends State<ForumThreadPage>
         _pendingHighlight = null;
         _scrollToReply(index, id);
         return;
+      }
+      // Older than the newest replies the thread loads: fetched by itself,
+      // and the next state carries it.
+      if (!_revealAsked) {
+        _revealAsked = true;
+        _bloc.add(ForumThreadEvent.reveal(id));
       }
     }
     // The reader's own reply just landed: follow it to the bottom, as any
@@ -401,6 +418,10 @@ class _ReplyComposerState extends State<_ReplyComposer> {
   /// Recipe attached to the reply being written, if any.
   SharedRecipeEntity? _attached;
 
+  /// The last reply sent, to give back if the server refuses it.
+  String? _lastBody;
+  SharedRecipeEntity? _lastAttached;
+
   /// Mirrors the text field so the send button can disable itself; the guard
   /// in [_send] alone made an empty tap look like a dead button.
   bool _hasText = false;
@@ -440,6 +461,10 @@ class _ReplyComposerState extends State<_ReplyComposer> {
         sharedRecipeTitle: _attached?.recipe.title,
       ),
     );
+    // Cleared at once, as a chat does — and kept aside, so a reply the
+    // server refuses comes back into the composer instead of being lost.
+    _lastBody = body;
+    _lastAttached = _attached;
     _reply.clear();
     setState(() => _attached = null);
     // Dismiss so the freshly posted reply is visible instead of hidden behind
@@ -449,6 +474,20 @@ class _ReplyComposerState extends State<_ReplyComposer> {
 
   @override
   Widget build(BuildContext context) {
+    // A re-read that failed over replies already shown: they stay, with a
+    // word in passing.
+    return BlocListener<ForumThreadBloc, ForumThreadState>(
+      listenWhen: (previous, current) =>
+          current is ForumThreadLoaded &&
+          current.loadFailures >
+              (previous is ForumThreadLoaded ? previous.loadFailures : 0),
+      listener: (context, _) =>
+          AppDialog.error(message: t.community.loadFailed).notify(context),
+      child: _thread(context),
+    );
+  }
+
+  Widget _thread(BuildContext context) {
     return BlocConsumer<ForumThreadBloc, ForumThreadState>(
       listenWhen: (previous, current) =>
           current is ForumThreadLoaded &&
@@ -456,6 +495,10 @@ class _ReplyComposerState extends State<_ReplyComposer> {
           (previous is! ForumThreadLoaded ||
               previous.sendError != current.sendError),
       listener: (context, state) {
+        if (_reply.text.trim().isEmpty && _attached == null) {
+          _reply.text = _lastBody ?? '';
+          setState(() => _attached = _lastAttached);
+        }
         AppDialog.error(message: t.community.replyFailed).show(context);
       },
       buildWhen: (previous, current) => switch ((previous, current)) {
@@ -515,6 +558,9 @@ class _ReplyComposerState extends State<_ReplyComposer> {
                   Expanded(
                     child: TextField(
                       controller: _reply,
+                      // The rules' cap on a reply body.
+                      maxLength: 20000,
+                      buildCounter: _noCounter,
                       maxLines: 3,
                       minLines: 1,
                       style: AppTextStyles.bodyMd,
@@ -548,3 +594,11 @@ class _ReplyComposerState extends State<_ReplyComposer> {
     );
   }
 }
+
+/// No "n/20000" under a one-line composer; the cap still holds.
+Widget? _noCounter(
+  BuildContext context, {
+  required int currentLength,
+  required bool isFocused,
+  required int? maxLength,
+}) => null;

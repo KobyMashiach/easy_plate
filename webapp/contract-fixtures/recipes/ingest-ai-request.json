@@ -1,0 +1,58 @@
+{
+  "id": "6f1d2c3b-4a5e-4f60-8a7b-1c2d3e4f5a65",
+  "title": "דייסת סולת עם פירות",
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 10,
+  "ingredients": [
+    {
+      "name": "סולת",
+      "amount": 3,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "חלב",
+      "amount": 1,
+      "unit": "cup"
+    },
+    {
+      "name": "בננה",
+      "amount": 0.5,
+      "unit": "unit"
+    }
+  ],
+  "steps": [
+    "מחממים חלב",
+    "מוסיפים סולת תוך ערבוב",
+    "מגישים עם בננה מעוכה"
+  ],
+  "dietaryTags": [
+    "dairy",
+    "vegetarian",
+    "kosher",
+    "allergy"
+  ],
+  "sourceChannel": "aiRequest",
+  "sourceUrl": null,
+  "createdAt": "2026-10-18T09:30:00.000Z",
+  "imageFileName": null,
+  "savedFromSharedId": null,
+  "pendingAnalysis": false,
+  "collabId": null,
+  "collabRole": null,
+  "imageStoragePath": null,
+  "allergens": [
+    "gluten",
+    "milk"
+  ],
+  "mayContain": [],
+  "servings": 1,
+  "nutrition": {
+    "calories": 240,
+    "proteinGrams": 9.5,
+    "carbsGrams": 38,
+    "fatGrams": 5
+  },
+  "sharedRecipeId": null,
+  "contentLang": "he",
+  "contentVersion": 0
+}

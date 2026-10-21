@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'assistant_tools.dart';
 
 /// What a scoped conversation is about: the assistant opened from inside a
@@ -101,10 +103,38 @@ class AssistantLaunch {
   /// by voice. A widget's quick question stays a typed one.
   final bool spokenPrompt;
 
+  /// Whether [prompt] goes out on its own. Off by default: a prompt that
+  /// came in through `easyplate://open/widget/assistant?prompt=…` may have
+  /// been written by any app or web page, and sent unseen it would have
+  /// the copilot act on this account (clear a list, spend the AI quota).
+  /// Such a prompt is put in the input field and the user sends it.
+  final bool autoSend;
+
   const AssistantLaunch({
     this.scope,
     this.prompt,
     this.voice = false,
     this.spokenPrompt = false,
+    this.autoSend = false,
   });
+
+  /// A launch from a home-screen widget, the launcher or "Hey Shefi" — all
+  /// of which arrive as the same link any other app can open. Only Android
+  /// vouches for the prompt: its native side drops a `prompt` that lacks
+  /// the per-install token only the app's own widgets and wake-word service
+  /// hold (WidgetIntents.kt). iOS cannot tell its callers apart, so there
+  /// the prompt waits in the field — and the microphone is not opened on
+  /// its own either (`voice=1` from a web page would otherwise start
+  /// listening unasked); the user taps the mic.
+  factory AssistantLaunch.external({
+    String? prompt,
+    bool voice = false,
+    bool spokenPrompt = false,
+    required TargetPlatform platform,
+  }) => AssistantLaunch(
+    prompt: prompt,
+    voice: voice && platform == TargetPlatform.android,
+    spokenPrompt: spokenPrompt,
+    autoSend: platform == TargetPlatform.android,
+  );
 }

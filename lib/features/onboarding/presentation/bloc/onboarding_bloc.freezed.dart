@@ -452,10 +452,10 @@ return complete(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)?  editing,TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)?  saving,TResult Function()?  complete,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences,  bool saveFailed)?  editing,TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)?  saving,TResult Function()?  complete,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Editing() when editing != null:
-return editing(_that.shoppingDay,_that.selectedPreferences);case Saving() when saving != null:
+return editing(_that.shoppingDay,_that.selectedPreferences,_that.saveFailed);case Saving() when saving != null:
 return saving(_that.shoppingDay,_that.selectedPreferences);case Complete() when complete != null:
 return complete();case _:
   return orElse();
@@ -475,10 +475,10 @@ return complete();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)  editing,required TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)  saving,required TResult Function()  complete,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences,  bool saveFailed)  editing,required TResult Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)  saving,required TResult Function()  complete,}) {final _that = this;
 switch (_that) {
 case Editing():
-return editing(_that.shoppingDay,_that.selectedPreferences);case Saving():
+return editing(_that.shoppingDay,_that.selectedPreferences,_that.saveFailed);case Saving():
 return saving(_that.shoppingDay,_that.selectedPreferences);case Complete():
 return complete();}
 }
@@ -494,10 +494,10 @@ return complete();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)?  editing,TResult? Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)?  saving,TResult? Function()?  complete,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences,  bool saveFailed)?  editing,TResult? Function( ShoppingDay shoppingDay,  List<DietaryPreference> selectedPreferences)?  saving,TResult? Function()?  complete,}) {final _that = this;
 switch (_that) {
 case Editing() when editing != null:
-return editing(_that.shoppingDay,_that.selectedPreferences);case Saving() when saving != null:
+return editing(_that.shoppingDay,_that.selectedPreferences,_that.saveFailed);case Saving() when saving != null:
 return saving(_that.shoppingDay,_that.selectedPreferences);case Complete() when complete != null:
 return complete();case _:
   return null;
@@ -511,7 +511,7 @@ return complete();case _:
 
 
 class Editing implements OnboardingState {
-  const Editing(this.shoppingDay, final  List<DietaryPreference> selectedPreferences): _selectedPreferences = selectedPreferences;
+  const Editing(this.shoppingDay, final  List<DietaryPreference> selectedPreferences, {this.saveFailed = false}): _selectedPreferences = selectedPreferences;
   
 
  final  ShoppingDay shoppingDay;
@@ -522,6 +522,7 @@ class Editing implements OnboardingState {
   return EqualUnmodifiableListView(_selectedPreferences);
 }
 
+@JsonKey() final  bool saveFailed;
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
@@ -533,16 +534,16 @@ $EditingCopyWith<Editing> get copyWith => _$EditingCopyWithImpl<Editing>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Editing&&(identical(other.shoppingDay, shoppingDay) || other.shoppingDay == shoppingDay)&&const DeepCollectionEquality().equals(other._selectedPreferences, _selectedPreferences));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Editing&&(identical(other.shoppingDay, shoppingDay) || other.shoppingDay == shoppingDay)&&const DeepCollectionEquality().equals(other._selectedPreferences, _selectedPreferences)&&(identical(other.saveFailed, saveFailed) || other.saveFailed == saveFailed));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,shoppingDay,const DeepCollectionEquality().hash(_selectedPreferences));
+int get hashCode => Object.hash(runtimeType,shoppingDay,const DeepCollectionEquality().hash(_selectedPreferences),saveFailed);
 
 @override
 String toString() {
-  return 'OnboardingState.editing(shoppingDay: $shoppingDay, selectedPreferences: $selectedPreferences)';
+  return 'OnboardingState.editing(shoppingDay: $shoppingDay, selectedPreferences: $selectedPreferences, saveFailed: $saveFailed)';
 }
 
 
@@ -553,7 +554,7 @@ abstract mixin class $EditingCopyWith<$Res> implements $OnboardingStateCopyWith<
   factory $EditingCopyWith(Editing value, $Res Function(Editing) _then) = _$EditingCopyWithImpl;
 @useResult
 $Res call({
- ShoppingDay shoppingDay, List<DietaryPreference> selectedPreferences
+ ShoppingDay shoppingDay, List<DietaryPreference> selectedPreferences, bool saveFailed
 });
 
 
@@ -570,11 +571,12 @@ class _$EditingCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? shoppingDay = null,Object? selectedPreferences = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? shoppingDay = null,Object? selectedPreferences = null,Object? saveFailed = null,}) {
   return _then(Editing(
 null == shoppingDay ? _self.shoppingDay : shoppingDay // ignore: cast_nullable_to_non_nullable
 as ShoppingDay,null == selectedPreferences ? _self._selectedPreferences : selectedPreferences // ignore: cast_nullable_to_non_nullable
-as List<DietaryPreference>,
+as List<DietaryPreference>,saveFailed: null == saveFailed ? _self.saveFailed : saveFailed // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

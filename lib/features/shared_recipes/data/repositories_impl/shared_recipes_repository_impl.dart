@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../user_profile/domain/entities/public_profile_entity.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
 import '../../domain/repositories/shared_recipes_repository.dart';
@@ -19,13 +22,23 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
   });
 
   Future<List<SharedRecipeEntity>> _withLiveAuthors(
-    List<SharedRecipeEntity> recipes,
-  ) async {
+    List<SharedRecipeEntity> recipes, {
+    bool refresh = false,
+  }) async {
     if (recipes.isEmpty) return recipes;
 
-    final profiles = await userProfileRepository.getPublicProfiles(
-      recipes.map((r) => r.authorUid).toSet(),
-    );
+    final Map<String, PublicProfileEntity> profiles;
+    try {
+      profiles = await userProfileRepository.getPublicProfiles(
+        recipes.map((r) => r.authorUid).toSet(),
+        refresh: refresh,
+      );
+    } catch (e) {
+      // Every post keeps the name it was published with: the feed shows
+      // with those rather than failing whole over a name lookup.
+      debugPrint('Author lookup failed: $e');
+      return recipes;
+    }
 
     return [
       for (final shared in recipes)
@@ -43,9 +56,15 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
   Future<List<SharedRecipeEntity>> getFeed({
     required String viewerUid,
     int limit = 50,
+    bool refresh = false,
   }) async {
     return _withLiveAuthors(
-      await remoteDataSource.getFeed(viewerUid: viewerUid, limit: limit),
+      await remoteDataSource.getFeed(
+        viewerUid: viewerUid,
+        limit: limit,
+        refresh: refresh,
+      ),
+      refresh: refresh,
     );
   }
 
@@ -54,6 +73,34 @@ class SharedRecipesRepositoryImpl implements SharedRecipesRepository {
     String authorUid, {
     int limit = 200,
   }) => remoteDataSource.getByAuthor(authorUid, limit: limit);
+
+  @override
+  Future<List<SharedRecipeEntity>> getMine({
+    required String viewerUid,
+    int limit = 200,
+    bool refresh = false,
+  }) async => _withLiveAuthors(
+    await remoteDataSource.getMine(
+      viewerUid: viewerUid,
+      limit: limit,
+      refresh: refresh,
+    ),
+    refresh: refresh,
+  );
+
+  @override
+  Future<List<SharedRecipeEntity>> getByIds(
+    Set<String> ids, {
+    required String viewerUid,
+    bool refresh = false,
+  }) async => _withLiveAuthors(
+    await remoteDataSource.getByIds(
+      ids,
+      viewerUid: viewerUid,
+      refresh: refresh,
+    ),
+    refresh: refresh,
+  );
 
   @override
   Future<SharedRecipeEntity?> getById(

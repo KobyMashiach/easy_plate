@@ -42,7 +42,13 @@ abstract class PurchasesConfig {
 
   /// Purchases only exist on the two mobile platforms with a key to talk to
   /// RevenueCat; everywhere else the layer is a no-op.
-  static bool get enabled => supported && apiKey.isNotEmpty;
+  static bool get enabled =>
+      enabledOverride ?? (supported && apiKey.isNotEmpty);
+
+  /// Tests only: the keys are compile-time, so without this the service
+  /// layer could never be exercised under `flutter test`.
+  @visibleForTesting
+  static bool? enabledOverride;
 
   static bool get supported =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS);

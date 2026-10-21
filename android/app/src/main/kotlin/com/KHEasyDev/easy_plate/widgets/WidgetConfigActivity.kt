@@ -42,7 +42,13 @@ class WidgetConfigActivity : Activity() {
             return
         }
         val info = AppWidgetManager.getInstance(this).getAppWidgetInfo(widgetId)
-        kind = WidgetKind.fromProvider(info?.provider?.className) ?: WidgetKind.ASSISTANT
+        // Exported for the launcher, so any app can open it with any id: only
+        // one of our own widgets gets a settings screen (and a config entry).
+        if (info == null || info.provider.packageName != packageName) {
+            finish()
+            return
+        }
+        kind = WidgetKind.fromProvider(info.provider.className) ?: WidgetKind.ASSISTANT
         setContentView(R.layout.epw_config)
         window.decorView.layoutDirection = if (snapshot?.rtl == true) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
         render()

@@ -37,7 +37,15 @@ class MyRecipesPage extends StatelessWidget {
             leading: const AccountAvatarButton(),
             actions: const [NotificationBellButton()],
           ),
-          body: BlocBuilder<MyRecipesBloc, MyRecipesState>(
+          body: BlocConsumer<MyRecipesBloc, MyRecipesState>(
+            // A failed delete arrives as a notice on the list that stays.
+            listenWhen: (previous, current) =>
+                current is MyRecipesLoaded && current.notice != null,
+            listener: (context, state) {
+              if (state case MyRecipesLoaded(notice: final notice?)) {
+                AppDialog.error(message: notice).show(context);
+              }
+            },
             builder: (context, state) {
               return switch (state) {
                 MyRecipesLoading() => const Center(

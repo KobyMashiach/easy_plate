@@ -30,7 +30,14 @@ class ContentVariantsLocalStore {
         if (key is! String || !key.startsWith(prefix)) continue;
         final raw = box.get(key);
         if (raw == null) continue;
-        final decoded = jsonDecode(raw);
+        final Object? decoded;
+        try {
+          decoded = jsonDecode(raw);
+        } on FormatException catch (e) {
+          // One damaged entry costs that record, not the whole language.
+          debugPrint('Local translation $key unreadable: $e');
+          continue;
+        }
         if (decoded is Map) {
           out[key.substring(prefix.length)] = TranslatedFields(
             Map<String, Object?>.from(decoded),

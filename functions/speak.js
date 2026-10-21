@@ -10,8 +10,12 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const { GoogleAuth } = require("google-auth-library");
+const admin = require("firebase-admin");
 const proxy = require("./aiProxy").internals;
 const remoteFlags = require("./remoteFlags");
+const budget = require("./dailyBudget");
+// The website (aieasyplate.app/app) calls this from the browser too.
+const { ORIGINS } = require("./origins");
 
 const ENDPOINT = "https://texttospeech.googleapis.com/v1/text:synthesize";
 const MAX_CHARS = 1500;
@@ -79,14 +83,25 @@ async function synthesize({ text, lang }, { fetchImpl = fetch, token, parameters
 }
 
 exports.speak = onRequest(
-  { region: "europe-west1", cors: false, maxInstances: 10, timeoutSeconds: 30 },
+  { region: "europe-west1", cors: ORIGINS, maxInstances: 10, timeoutSeconds: 30 },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: { message: "Method not allowed" } });
-    const caller = await proxy.verifyCaller(req);
-    if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
+    const { caller, refusal } = await proxy.verifyPaidCaller(req);
+    if (!caller) return res.status(refusal.status).json({ error: { code: refusal.code, message: refusal.message } });
     const request = parseRequest(req.body);
     if (request.error) return res.status(400).json({ error: { code: request.error, message: request.error } });
+    // Every synthesis is billed by the character; the day's allowance is
+    // claimed first so a loop cannot run up the bill. The app falls back to
+    // the device voice on any failure, so a refusal here is silent for the
+    // user and only the server-side cost stops.
+    let claimed = false;
     try {
+      const decision = await budget.spend({ uid: caller.uid, kind: "speak" });
+      if (!decision.allowed) {
+        logger.info("speak budget exhausted", { uid: caller.uid, used: decision.used, limit: decision.limit });
+        return res.status(429).json(budget.refusalBody(decision, "speak"));
+      }
+      claimed = true;
       const [token, parameters] = await Promise.all([accessToken(), remoteFlags.params()]);
       const { audio, voice } = await synthesize(request, { token, parameters });
       logger.info("spoke", { uid: caller.uid, lang: request.lang, voice, chars: request.text.length, bytes: audio.length });
@@ -95,6 +110,8 @@ exports.speak = onRequest(
       return res.status(200).send(audio);
     } catch (err) {
       logger.error("speak failed", { uid: caller.uid, reason: err.message });
+      // Google did not speak: the slot goes back.
+      if (claimed) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "speak" });
       return res.status(err.status || 502).json({ error: { message: "Speech failed" } });
     }
   },

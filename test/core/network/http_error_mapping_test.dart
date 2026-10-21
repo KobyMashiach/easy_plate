@@ -52,5 +52,86 @@ void main() {
       expect(HttpCalls.errorTypeFor(401, null), AppErrorType.unauthorized);
       expect(HttpCalls.errorTypeFor(403, null), AppErrorType.unauthorized);
     });
+
+    test('the daily budgets (translate, speak, image search, prices) are '
+        'quota, with or without `requested`', () {
+      final body = {
+        'error': {
+          'code': 'quota',
+          'status': 'RESOURCE_EXHAUSTED',
+          'message': 'This request needs 500 translated lines; 250 left',
+          'quota': {
+            'used': 2750,
+            'limit': 3000,
+            'kind': 'translate',
+            'requested': 500,
+          },
+        },
+      };
+      expect(HttpCalls.errorTypeFor(429, body), AppErrorType.quotaExceeded);
+      expect(
+        HttpCalls.quotaOf(body),
+        (used: 2750, limit: 3000, requested: 500),
+      );
+      expect(
+        HttpCalls.quotaOf({
+          'error': {
+            'quota': {'used': 30, 'limit': 30},
+          },
+        }),
+        (used: 30, limit: 30, requested: null),
+      );
+    });
+
+    test('a 429 named quota without the object is the provider, retryable', () {
+      // imageSearch when Serper itself is out of credits.
+      expect(
+        HttpCalls.errorTypeFor(429, {
+          'error': {'code': 'quota', 'message': 'Image search failed'},
+        }),
+        AppErrorType.overloaded,
+      );
+      expect(
+        HttpCalls.quotaOf({
+          'error': {'code': 'quota'},
+        }),
+        isNull,
+      );
+      expect(
+        HttpCalls.errorTypeFor(429, {
+          'error': {'code': 'rate_limited', 'message': 'Try again later'},
+        }),
+        AppErrorType.overloaded,
+      );
+    });
+
+    test('refusals of the request itself are not retried as capacity', () {
+      for (final (status, code) in [
+        (400, 'too_many_lines'),
+        (400, 'too_many_lines_in_item'),
+        (409, 'checkout_pending'),
+        (409, 'in_progress'),
+      ]) {
+        expect(
+          HttpCalls.errorTypeFor(status, {
+            'error': {'code': code},
+          }),
+          AppErrorType.unknown,
+          reason: code,
+        );
+      }
+    });
+
+    test('a malformed quota object reads as none', () {
+      expect(
+        HttpCalls.quotaOf({
+          'error': {
+            'quota': {'used': 'x', 'limit': 3},
+          },
+        }),
+        isNull,
+      );
+      expect(HttpCalls.quotaOf('text'), isNull);
+    });
   });
 }

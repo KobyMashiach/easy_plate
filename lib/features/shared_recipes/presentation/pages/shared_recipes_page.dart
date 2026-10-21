@@ -55,6 +55,25 @@ class SharedRecipesPage extends StatelessWidget {
                     message: t.community.savedToMyRecipes,
                   ).notify(context);
                 }
+                // A write of the viewer's own that failed: said once, over
+                // the feed that stays, then cleared so the next one is
+                // heard too.
+                if (state case SharedRecipesLoaded(notice: final notice?)) {
+                  if (notice == SharedFeedNotice.loadFailed) {
+                    AppDialog.error(
+                      message: _noticeText(notice),
+                    ).notify(context);
+                  } else if (notice == SharedFeedNotice.updated) {
+                    AppDialog.success(
+                      message: _noticeText(notice),
+                    ).notify(context);
+                  } else {
+                    AppDialog.error(message: _noticeText(notice)).show(context);
+                  }
+                  context.read<SharedRecipesBloc>().add(
+                    const SharedRecipesEvent.dismissNotice(),
+                  );
+                }
               },
               builder: (context, state) {
                 return Stack(
@@ -65,9 +84,14 @@ class SharedRecipesPage extends StatelessWidget {
                       ),
                       SharedRecipesLoaded(
                         recipes: final recipes,
+                        older: final older,
                         savedIds: final savedIds,
                       ) =>
-                        _Feed(recipes: recipes, savedIds: savedIds),
+                        _Feed(
+                          recipes: recipes,
+                          older: older,
+                          savedIds: savedIds,
+                        ),
                       SharedRecipesError(error: final error) => ErrorRetryView(
                         error: error,
                         onRetry: () => context.read<SharedRecipesBloc>().add(
@@ -118,9 +142,17 @@ Future<void> _pickAndShare(BuildContext context) async {
 
 class _Feed extends StatefulWidget {
   final List<SharedRecipeEntity> recipes;
+
+  /// Own and saved posts past the newest window; see
+  /// [SharedRecipesLoaded.older].
+  final List<SharedRecipeEntity> older;
   final Set<String> savedIds;
 
-  const _Feed({required this.recipes, required this.savedIds});
+  const _Feed({
+    required this.recipes,
+    required this.older,
+    required this.savedIds,
+  });
 
   @override
   State<_Feed> createState() => _FeedState();
@@ -168,8 +200,12 @@ class _FeedState extends State<_Feed> {
 
   @override
   Widget build(BuildContext context) {
+    // "All" is the newest window; "mine" and "saved" also reach back past
+    // it. Search and sort stay client-side over whichever list that is.
     final visible = _query.apply(
-      widget.recipes,
+      _query.scope == SharedFeedScope.all
+          ? widget.recipes
+          : [...widget.recipes, ...widget.older],
       viewerUid: AuthSessionService().user?.uid,
       savedIds: widget.savedIds,
     );
@@ -377,7 +413,12 @@ class _FeedState extends State<_Feed> {
   Widget _scopeChip({required String label, required SharedFeedScope value}) {
     final selected = _query.scope == value;
     return GestureDetector(
-      onTap: () => setState(() => _query = _query.copyWith(scope: value)),
+      onTap: () {
+        setState(() => _query = _query.copyWith(scope: value));
+        context.read<SharedRecipesBloc>().add(
+          SharedRecipesEvent.scopeOpened(value),
+        );
+      },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: AppMotion.quick,
@@ -429,14 +470,13 @@ class _SharedCard extends StatelessWidget {
     );
     if (edited == null || !context.mounted) return;
 
+    // The outcome — updated, or not — is the bloc's to say: the busy card
+    // only knows it moved on.
     await AppDialog.busyEvent(
       context,
       bloc,
       SharedRecipesEvent.updateShared(shared.id, edited),
     );
-    if (context.mounted) {
-      AppDialog.success(message: t.community.sharedUpdated).notify(context);
-    }
   }
 
   Future<void> _confirmUnshare(BuildContext context) async {
@@ -478,7 +518,7 @@ class _SharedCard extends StatelessWidget {
       ),
     );
     // The author may have rewritten the post from inside: reload the feed.
-    if (mine) bloc.add(const SharedRecipesEvent.init());
+    if (mine && !bloc.isClosed) bloc.add(const SharedRecipesEvent.init());
   }
 
   /// The badge that says what opening this card will cost — nothing for a
@@ -652,3 +692,12 @@ class _SharedCard extends StatelessWidget {
     );
   }
 }
+
+String _noticeText(SharedFeedNotice notice) => switch (notice) {
+  SharedFeedNotice.shareFailed => t.community.shareFailed,
+  SharedFeedNotice.updateFailed => t.community.updateFailed,
+  SharedFeedNotice.unshareFailed => t.community.unshareFailed,
+  SharedFeedNotice.importFailed => t.community.importFailed,
+  SharedFeedNotice.updated => t.community.sharedUpdated,
+  SharedFeedNotice.loadFailed => t.community.loadFailed,
+};

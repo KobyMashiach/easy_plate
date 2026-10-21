@@ -23,3 +23,7 @@ export const SUPPORT = 'support@aieasyplate.app';
 // When the copy (home, guides, legal) last changed: the sitemap's lastmod and
 // the pages' dateModified. Bump it when you edit copy, not on every build.
 export const CONTENT_UPDATED = '2026-10-18';
+
+// Other ways people type the name. Goes into JSON-LD alternateName so Google
+// ties "Easy Plate" and the Hebrew spelling to this site.
+export const BRAND_ALT = ['Easy Plate', 'EasyPlate AI', 'איזי פלייט'];

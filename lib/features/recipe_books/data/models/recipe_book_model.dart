@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../../my_recipes/data/models/json_readers.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../domain/entities/book_spine.dart';
 import '../../domain/entities/recipe_book_entity.dart';
@@ -19,7 +21,7 @@ sealed class RecipeBookModel with _$RecipeBookModel {
     @HiveField(1) required String title,
     @HiveField(2) required List<BookRecipeRefModel> recipeRefs,
     @HiveField(3) @Default({}) Map<String, String> collaborators,
-    @HiveField(4) required DateTime createdAt,
+    @HiveField(4) @JsonKey(fromJson: readJsonDate) required DateTime createdAt,
     @HiveField(5) String? coverImageFileName,
     @HiveField(6) String? coverImageStoragePath,
     // The spine colour by name, appended: older books decode as null.
@@ -45,8 +47,14 @@ extension RecipeBookModelMapper on RecipeBookModel {
     id: id,
     title: title,
     recipeRefs: recipeRefs.map((r) => r.toEntity()).toList(),
+    // An unknown role name (a mirror from a newer build) reads as a viewer
+    // rather than throwing inside getBooks().
     collaborators: collaborators.map(
-      (k, v) => MapEntry(k, AccessRole.values.firstWhere((r) => r.name == v)),
+      (k, v) => MapEntry(
+        k,
+        AccessRole.values.where((r) => r.name == v).firstOrNull ??
+            AccessRole.viewer,
+      ),
     ),
     coverImageFileName: coverImageFileName,
     coverImageStoragePath: coverImageStoragePath,
@@ -57,6 +65,7 @@ extension RecipeBookModelMapper on RecipeBookModel {
         .firstOrNull,
     createdAt: createdAt,
     contentLang: contentLang,
+    contentVersion: contentVersion,
   );
 }
 
@@ -73,5 +82,6 @@ extension RecipeBookEntityMapper on RecipeBookEntity {
     collabRole: collabRole?.name,
     createdAt: createdAt,
     contentLang: contentLang,
+    contentVersion: contentVersion,
   );
 }

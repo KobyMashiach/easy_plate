@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PriceRecordModel {
 
-@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) String get normalizedName;@HiveField(3) double get unitPrice;@HiveField(4) double get quantity;@HiveField(5) String get currency;@HiveField(6) String? get store;@HiveField(7) DateTime get purchasedAt;@HiveField(8) String get receiptId;// Appended: the printed line and the price unit by name.
+@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) String get normalizedName;@HiveField(3) double get unitPrice;@HiveField(4) double get quantity;@HiveField(5) String get currency;@HiveField(6) String? get store;@HiveField(7)@JsonKey(fromJson: readJsonDate) DateTime get purchasedAt;@HiveField(8) String get receiptId;// Appended: the printed line and the price unit by name.
 @HiveField(9) String? get printedName;@HiveField(10) String get unit;
 /// Create a copy of PriceRecordModel
 /// with the given fields replaced by the non-null parameter values.
@@ -49,7 +49,7 @@ abstract mixin class $PriceRecordModelCopyWith<$Res>  {
   factory $PriceRecordModelCopyWith(PriceRecordModel value, $Res Function(PriceRecordModel) _then) = _$PriceRecordModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) String normalizedName,@HiveField(3) double unitPrice,@HiveField(4) double quantity,@HiveField(5) String currency,@HiveField(6) String? store,@HiveField(7) DateTime purchasedAt,@HiveField(8) String receiptId,@HiveField(9) String? printedName,@HiveField(10) String unit
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) String normalizedName,@HiveField(3) double unitPrice,@HiveField(4) double quantity,@HiveField(5) String currency,@HiveField(6) String? store,@HiveField(7)@JsonKey(fromJson: readJsonDate) DateTime purchasedAt,@HiveField(8) String receiptId,@HiveField(9) String? printedName,@HiveField(10) String unit
 });
 
 
@@ -161,7 +161,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  String normalizedName, @HiveField(3)  double unitPrice, @HiveField(4)  double quantity, @HiveField(5)  String currency, @HiveField(6)  String? store, @HiveField(7)  DateTime purchasedAt, @HiveField(8)  String receiptId, @HiveField(9)  String? printedName, @HiveField(10)  String unit)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  String normalizedName, @HiveField(3)  double unitPrice, @HiveField(4)  double quantity, @HiveField(5)  String currency, @HiveField(6)  String? store, @HiveField(7)@JsonKey(fromJson: readJsonDate)  DateTime purchasedAt, @HiveField(8)  String receiptId, @HiveField(9)  String? printedName, @HiveField(10)  String unit)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PriceRecordModel() when $default != null:
 return $default(_that.id,_that.name,_that.normalizedName,_that.unitPrice,_that.quantity,_that.currency,_that.store,_that.purchasedAt,_that.receiptId,_that.printedName,_that.unit);case _:
@@ -182,7 +182,7 @@ return $default(_that.id,_that.name,_that.normalizedName,_that.unitPrice,_that.q
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  String normalizedName, @HiveField(3)  double unitPrice, @HiveField(4)  double quantity, @HiveField(5)  String currency, @HiveField(6)  String? store, @HiveField(7)  DateTime purchasedAt, @HiveField(8)  String receiptId, @HiveField(9)  String? printedName, @HiveField(10)  String unit)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  String normalizedName, @HiveField(3)  double unitPrice, @HiveField(4)  double quantity, @HiveField(5)  String currency, @HiveField(6)  String? store, @HiveField(7)@JsonKey(fromJson: readJsonDate)  DateTime purchasedAt, @HiveField(8)  String receiptId, @HiveField(9)  String? printedName, @HiveField(10)  String unit)  $default,) {final _that = this;
 switch (_that) {
 case _PriceRecordModel():
 return $default(_that.id,_that.name,_that.normalizedName,_that.unitPrice,_that.quantity,_that.currency,_that.store,_that.purchasedAt,_that.receiptId,_that.printedName,_that.unit);}
@@ -199,7 +199,7 @@ return $default(_that.id,_that.name,_that.normalizedName,_that.unitPrice,_that.q
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  String normalizedName, @HiveField(3)  double unitPrice, @HiveField(4)  double quantity, @HiveField(5)  String currency, @HiveField(6)  String? store, @HiveField(7)  DateTime purchasedAt, @HiveField(8)  String receiptId, @HiveField(9)  String? printedName, @HiveField(10)  String unit)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  String normalizedName, @HiveField(3)  double unitPrice, @HiveField(4)  double quantity, @HiveField(5)  String currency, @HiveField(6)  String? store, @HiveField(7)@JsonKey(fromJson: readJsonDate)  DateTime purchasedAt, @HiveField(8)  String receiptId, @HiveField(9)  String? printedName, @HiveField(10)  String unit)?  $default,) {final _that = this;
 switch (_that) {
 case _PriceRecordModel() when $default != null:
 return $default(_that.id,_that.name,_that.normalizedName,_that.unitPrice,_that.quantity,_that.currency,_that.store,_that.purchasedAt,_that.receiptId,_that.printedName,_that.unit);case _:
@@ -214,7 +214,7 @@ return $default(_that.id,_that.name,_that.normalizedName,_that.unitPrice,_that.q
 @JsonSerializable()
 
 class _PriceRecordModel implements PriceRecordModel {
-  const _PriceRecordModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required this.normalizedName, @HiveField(3) required this.unitPrice, @HiveField(4) this.quantity = 1, @HiveField(5) this.currency = 'ILS', @HiveField(6) this.store, @HiveField(7) required this.purchasedAt, @HiveField(8) required this.receiptId, @HiveField(9) this.printedName, @HiveField(10) this.unit = 'unit'});
+  const _PriceRecordModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required this.normalizedName, @HiveField(3) required this.unitPrice, @HiveField(4) this.quantity = 1, @HiveField(5) this.currency = 'ILS', @HiveField(6) this.store, @HiveField(7)@JsonKey(fromJson: readJsonDate) required this.purchasedAt, @HiveField(8) required this.receiptId, @HiveField(9) this.printedName, @HiveField(10) this.unit = 'unit'});
   factory _PriceRecordModel.fromJson(Map<String, dynamic> json) => _$PriceRecordModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -224,7 +224,7 @@ class _PriceRecordModel implements PriceRecordModel {
 @override@JsonKey()@HiveField(4) final  double quantity;
 @override@JsonKey()@HiveField(5) final  String currency;
 @override@HiveField(6) final  String? store;
-@override@HiveField(7) final  DateTime purchasedAt;
+@override@HiveField(7)@JsonKey(fromJson: readJsonDate) final  DateTime purchasedAt;
 @override@HiveField(8) final  String receiptId;
 // Appended: the printed line and the price unit by name.
 @override@HiveField(9) final  String? printedName;
@@ -263,7 +263,7 @@ abstract mixin class _$PriceRecordModelCopyWith<$Res> implements $PriceRecordMod
   factory _$PriceRecordModelCopyWith(_PriceRecordModel value, $Res Function(_PriceRecordModel) _then) = __$PriceRecordModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) String normalizedName,@HiveField(3) double unitPrice,@HiveField(4) double quantity,@HiveField(5) String currency,@HiveField(6) String? store,@HiveField(7) DateTime purchasedAt,@HiveField(8) String receiptId,@HiveField(9) String? printedName,@HiveField(10) String unit
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) String normalizedName,@HiveField(3) double unitPrice,@HiveField(4) double quantity,@HiveField(5) String currency,@HiveField(6) String? store,@HiveField(7)@JsonKey(fromJson: readJsonDate) DateTime purchasedAt,@HiveField(8) String receiptId,@HiveField(9) String? printedName,@HiveField(10) String unit
 });
 
 

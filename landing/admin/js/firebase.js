@@ -58,12 +58,11 @@ export function signOut() {
 // from any client). The functions check the same field on every call.
 export async function isAdminUser(user) {
   if (!user) return false;
-  try {
-    const snapshot = await fsGetDoc(fsDoc(db, "users", user.uid));
-    return snapshot.exists() && snapshot.data().permission === "admin";
-  } catch (_) {
-    return false;
-  }
+  // Only a definite answer says "not admin": a failed read (offline, slow
+  // start) throws, so the caller shows a retryable error instead of signing
+  // the administrator out.
+  const snapshot = await fsGetDoc(fsDoc(db, "users", user.uid));
+  return snapshot.exists() && snapshot.data().permission === "admin";
 }
 
 // A Storage path (the way recipes carry their picture) to something an
@@ -72,7 +71,11 @@ const urlCache = new Map();
 export async function storageUrl(path) {
   if (!path) return null;
   if (urlCache.has(path)) return urlCache.get(path);
-  const promise = getDownloadURL(storageRef(storage, path)).catch(() => null);
+  // A miss is not kept, so a photo still uploading shows on the next look.
+  const promise = getDownloadURL(storageRef(storage, path)).catch(() => {
+    if (urlCache.get(path) === promise) urlCache.delete(path);
+    return null;
+  });
   urlCache.set(path, promise);
   return promise;
 }

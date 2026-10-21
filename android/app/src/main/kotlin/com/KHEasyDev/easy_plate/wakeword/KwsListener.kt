@@ -16,6 +16,7 @@ import com.k2fsa.sherpa.onnx.KeywordSpotter
 import com.k2fsa.sherpa.onnx.KeywordSpotterConfig
 import com.k2fsa.sherpa.onnx.OnlineModelConfig
 import com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig
+import java.util.Collections
 
 /**
  * Spots "Hey Shefi" on the phone itself, the way the system assistants do
@@ -42,7 +43,10 @@ class KwsListener(
 ) {
     private val app = context.applicationContext
     private val main = Handler(Looper.getMainLooper())
-    private val suspended = mutableSetOf<String>()
+    // Mutated on the main thread (suspend/resume), read by the audio thread
+    // through [active] on every chunk: the synchronized wrapper makes each
+    // call atomic and visible across the two.
+    private val suspended: MutableSet<String> = Collections.synchronizedSet(mutableSetOf())
 
     @Volatile private var running = false
     @Volatile private var thread: Thread? = null
@@ -127,6 +131,11 @@ class KwsListener(
         try {
             recorder.startRecording()
             val debug = Log.isLoggable(TAG, Log.DEBUG)
+            // The audio dump (below) only in a debuggable build: on a store
+            // build anyone with adb could switch the tag on and have the
+            // microphone written to external storage.
+            val dumpAudio = debug &&
+                (app.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
             var chunks = 0
             var level = 0f
             val pcm = ShortArray(CHUNK)
@@ -148,7 +157,7 @@ class KwsListener(
                 level = if (rms > level) rms else level * 0.97f + rms * 0.03f
                 val gain = minOf(MAX_GAIN, TARGET_LEVEL / maxOf(level, 1e-4f))
                 for (i in 0 until read) samples[i] = (samples[i] * gain).coerceIn(-1f, 1f)
-                if (debug) dump(samples, read)
+                if (dumpAudio) dump(samples, read)
                 stream.acceptWaveform(if (read == CHUNK) samples else samples.copyOf(read), RATE)
                 while (spotter.isReady(stream)) spotter.decode(stream)
                 val result = spotter.getResult(stream)
@@ -185,8 +194,12 @@ class KwsListener(
 
     // Debug only: what the model hears (after gain), the last 30 seconds in
     // order, 16 kHz mono 16-bit, rewritten every second to the app's
-    // external files folder (adb pull …/files/kws_dump.pcm).
-    private val ring = ShortArray(30 * RATE)
+    // external files folder (adb pull …/files/kws_dump.pcm). Allocated on
+    // the first dump (about 1 MB), so a listener without the debug log tag
+    // never holds it. Only the audio thread touches it; successive threads
+    // are ordered by Thread.start, and the default synchronized lazy covers
+    // the publication anyway.
+    private val ring by lazy { ShortArray(30 * RATE) }
     private var ringPos = 0
     private var ringFilled = false
     private var sinceWrite = 0

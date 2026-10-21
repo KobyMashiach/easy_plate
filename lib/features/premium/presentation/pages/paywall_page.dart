@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -6,13 +8,16 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/constants/legal_links.dart';
+import '../../../../core/constants/purchases_config.dart';
 import '../../../../core/monetization/entitlement_service.dart';
 import '../../../household/domain/household_entity.dart';
 import '../../../../core/monetization/monetization_config.dart';
 import '../../../../core/monetization/purchases_service.dart';
+import '../../../../core/monetization/web_billing_links.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/paywall_offer.dart';
+import '../../domain/plan_store.dart';
 import '../../../../core/widgets/app_dialog.dart';
 
 /// The one place EasyPlate sells anything: the premium subscription that
@@ -42,6 +47,10 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   /// as current and what a switch replaces. Null for premium that was not
   /// bought on this account.
   ActivePlan? _active;
+
+  /// The plan was bought in the other platform's store: this store can't
+  /// switch it, and a "switch" here would sell a second subscription.
+  bool _otherStore = false;
 
   /// Set when the store's redeem screen was opened: the purchase it makes
   /// happens outside the app, so the receipts are re-read on the way back.
@@ -108,9 +117,11 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
       ];
     }
     final active = await PurchasesService().activePlan();
+    final plan = await _planFacts();
     if (!mounted) return;
     setState(() {
       _active = active;
+      _otherStore = !planReplaceableHere(plan.store, defaultTargetPlatform);
       _packages = {for (final p in packages) p.identifier: p};
       _offers = offers;
       _tier = null;
@@ -134,19 +145,54 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
 
   Future<void> _purchase() async {
     final package = _packages[_selectedId];
-    if (package == null) return;
-    final switching = _entitlement.isPremium && _active != null;
+    if (package == null || _busy) return;
+    // The store's own sheet pauses the app; a redemption sheet left open
+    // earlier must not start a restore beside this purchase on resume.
+    _awaitingRedeem = false;
+    final lifetime = _offers
+        .where((o) => o.id == _selectedId)
+        .any((o) => o.isLifetime);
+    // A lifetime purchase is not a plan change: it never ends the running
+    // subscription, and Play refuses a change onto a one-time product.
     setState(() => _busy = true);
     try {
+      // The plan as it is now, not as it was when the page opened: a
+      // restore, a redeemed code or a purchase elsewhere since then would
+      // otherwise sell this package beside the running one.
+      final active = await PurchasesService().activePlan();
+      final plan = await _planFacts();
+      // Only a renewing plan of this store is replaced. One from the other
+      // platform's store makes Play refuse the purchase outright, and a
+      // lifetime purchase is a one-time product Play can't change from.
+      final switching =
+          _entitlement.isPremium &&
+          active != null &&
+          !lifetime &&
+          plan.renewing &&
+          planReplaceableHere(plan.store, defaultTargetPlatform);
+      if (!mounted) return;
       final premium = await PurchasesService().purchase(
         package,
-        replacing: switching ? _active : null,
+        replacing: switching ? active : null,
       );
       if (!mounted) return;
       if (premium) {
         _notify(switching ? t.premium.switched : t.premium.purchased);
-        _active = await PurchasesService().activePlan();
+        // Outside the purchase's own catch: a failed read of the plan after
+        // a payment that went through must not read as a failed payment.
+        final active = await PurchasesService().activePlan();
+        if (mounted) setState(() => _active = active);
       }
+    } on PlatformException catch (e) {
+      debugPrint('Purchase failed: $e');
+      if (!mounted) return;
+      // Not a failure: the charge (a slow card, carrier billing) clears
+      // later and premium turns on then. Saying "failed" sent people to buy
+      // again.
+      PurchasesErrorHelper.getErrorCode(e) ==
+              PurchasesErrorCode.paymentPendingError
+          ? AppDialog.info(message: t.premium.paymentPending).show(context)
+          : _fail(t.premium.purchaseFailed);
     } catch (e) {
       debugPrint('Purchase failed: $e');
       if (mounted) _fail(t.premium.purchaseFailed);
@@ -155,7 +201,37 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
     }
   }
 
+  /// The store the active plan was bought in (null when it can't be read:
+  /// not configured, offline) and whether it renews — a lifetime purchase
+  /// has no expiry.
+  Future<({Store? store, bool renewing})> _planFacts() async {
+    try {
+      final info = await Purchases.getCustomerInfo();
+      final entitlement =
+          info.entitlements.active[PurchasesConfig.premiumEntitlementId];
+      return (
+        store: entitlement?.store,
+        renewing: entitlement != null && entitlement.expirationDate != null,
+      );
+    } catch (e) {
+      debugPrint('Plan store lookup failed: $e');
+      return (store: null, renewing: true);
+    }
+  }
+
   Future<void> _manage() async {
+    // A web subscription is PayPlus's or Paddle's, not the store's: the website is where
+    // it is changed or cancelled, and the link opens it signed in.
+    if (_entitlement.fromWeb) {
+      final opened = await AppDialog.busy(
+        context,
+        () => WebBillingLinks().open(
+          lang: LocaleSettings.currentLocale.languageCode,
+        ),
+      );
+      if (!opened && mounted) _fail(t.premium.webLinkFailed);
+      return;
+    }
     final opened = await AppDialog.busy(
       context,
       PurchasesService().openSubscriptionManagement,
@@ -164,6 +240,9 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
   }
 
   Future<void> _restore() async {
+    // Its finally would re-enable the buttons under a purchase in flight.
+    if (_busy) return;
+    _awaitingRedeem = false;
     setState(() => _busy = true);
     try {
       final premium = await PurchasesService().restore();
@@ -193,8 +272,16 @@ class _PaywallPageState extends State<PaywallPage> with WidgetsBindingObserver {
       selectedId: _selectedId,
       aiPerDay: MonetizationConfig.limits.premiumAiExtractions,
       isPremium: _entitlement.isPremium,
-      // A household member's premium is paid by the owner: nothing to switch.
-      canSwitch: !_entitlement.inherited,
+      // A household member's premium is paid by the owner, and a web
+      // subscription is switched on the website: nothing to switch here.
+      // A plan from the other platform's store is changed there.
+      canSwitch:
+          !_entitlement.inherited && !_entitlement.fromWeb && !_otherStore,
+      switchNote: _entitlement.fromWeb
+          ? t.premium.webManagedBody
+          : _otherStore
+          ? t.premium.otherStoreBody
+          : null,
       currentProductId: _active,
       loading: _loading,
       busy: _busy,
@@ -230,6 +317,10 @@ class PaywallView extends StatelessWidget {
   /// period). False for a household member, whose plan is the owner's.
   final bool canSwitch;
 
+  /// Why switching is not offered here, when [canSwitch] is false and the
+  /// reason is not the household one (a subscription bought on the web).
+  final String? switchNote;
+
   /// The package the account is on now, marked in the switch section.
   final ActivePlan? currentProductId;
   final bool loading;
@@ -257,6 +348,7 @@ class PaywallView extends StatelessWidget {
     required this.aiPerDay,
     required this.isPremium,
     this.canSwitch = true,
+    this.switchNote,
     this.currentProductId,
     required this.loading,
     required this.busy,
@@ -421,7 +513,9 @@ class PaywallView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                canSwitch ? t.premium.switchHint : t.premium.switchInherited,
+                canSwitch
+                    ? t.premium.switchHint
+                    : (switchNote ?? t.premium.switchInherited),
                 textAlign: TextAlign.center,
                 style: AppTextStyles.labelMd.copyWith(
                   color: AppColors.onSurfaceVariant,
@@ -493,7 +587,7 @@ class PaywallView extends StatelessWidget {
               ClayButton(
                 label: selected == null
                     ? ''
-                    : isPremium
+                    : isPremium && !selected.isLifetime
                     ? t.premium.switchTo(price: selected.priceString)
                     : selected.isLifetime
                     ? t.premium.buyFor(price: selected.priceString)
@@ -566,8 +660,14 @@ class PaywallView extends StatelessWidget {
     );
   }
 
-  Future<void> _open(Uri uri) =>
-      launchUrl(uri, mode: LaunchMode.externalApplication);
+  Future<void> _open(Uri uri) async {
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      // A device without a browser: nothing to show, nothing to crash on.
+      debugPrint('Legal link failed: $e');
+    }
+  }
 }
 
 class _Benefit extends StatelessWidget {

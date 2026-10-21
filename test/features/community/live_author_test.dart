@@ -26,12 +26,17 @@ class _FakeProfiles implements UserProfileRepository {
 
   Map<String, PublicProfileEntity> public = {};
   Set<String>? lastRequested;
+  bool? lastRefresh;
+  bool fails = false;
 
   @override
   Future<Map<String, PublicProfileEntity>> getPublicProfiles(
-    Set<String> uids,
-  ) async {
+    Set<String> uids, {
+    bool refresh = false,
+  }) async {
     lastRequested = uids;
+    lastRefresh = refresh;
+    if (fails) throw Exception('offline');
     return {
       for (final entry in public.entries)
         if (uids.contains(entry.key)) entry.key: entry.value,
@@ -79,12 +84,17 @@ class _FakeForumSource implements ForumRemoteDataSource {
 
 class _FakeSharedSource implements SharedRecipesRemoteDataSource {
   List<SharedRecipeEntity> feed = [];
+  bool? lastRefresh;
 
   @override
   Future<List<SharedRecipeEntity>> getFeed({
     required String viewerUid,
     int limit = 50,
-  }) async => feed;
+    bool refresh = false,
+  }) async {
+    lastRefresh = refresh;
+    return feed;
+  }
 
   @override
   Future<SharedRecipeEntity?> getById(
@@ -207,6 +217,26 @@ void main() {
       expect(reply.sharedRecipeTitle, 'קובה סלק');
     });
 
+    test(
+      'only a pull reads past the shared profile cache',
+      () async {
+        source.posts = [buildPost()];
+        // A resume re-read trusts the shared profile cache…
+        await repository.getPosts(viewerUid: 'me');
+        expect(profiles.lastRefresh, isFalse);
+        // …a pull reads past it.
+        await repository.getPosts(viewerUid: 'me', refresh: true);
+        expect(profiles.lastRefresh, isTrue);
+      },
+    );
+
+    test('a failed author lookup keeps the stored names', () async {
+      source.posts = [buildPost()];
+      profiles.fails = true;
+      final posts = await repository.getPosts(viewerUid: 'me');
+      expect(posts.single.authorName, 'שם ישן');
+    });
+
     test('an empty list asks for no profiles at all', () async {
       source.posts = [];
       expect(await repository.getPosts(viewerUid: 'me'), isEmpty);
@@ -251,6 +281,25 @@ void main() {
         expect(shared?.authorName, 'שם חדש');
       },
     );
+
+    test('a refresh reaches the like and profile caches', () async {
+      source.feed = [buildShared()];
+
+      await repository.getFeed(viewerUid: 'me');
+      expect(source.lastRefresh, isFalse);
+      expect(profiles.lastRefresh, isFalse);
+
+      await repository.getFeed(viewerUid: 'me', refresh: true);
+      expect(source.lastRefresh, isTrue);
+      expect(profiles.lastRefresh, isTrue);
+    });
+
+    test('a failed author lookup keeps the stored names', () async {
+      source.feed = [buildShared()];
+      profiles.fails = true;
+      final feed = await repository.getFeed(viewerUid: 'me');
+      expect(feed.single.authorName, 'שם ישן');
+    });
 
     test('one lookup covers every author on the page', () async {
       source.feed = [

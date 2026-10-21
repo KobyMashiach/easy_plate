@@ -87,6 +87,97 @@
       "description": "כמה חילוצי AI מקישור ביום, כל אחד אחרי סרטון.",
       "valueType": "NUMBER"
     },
+    "quota_ai_premium": {
+      "defaultValue": {
+        "value": "10"
+      },
+      "description": "כמה חילוצי AI ביום למנוי Premium (בלי סרטון). נקרא באפליקציה ובאתר; אם חסר, ברירת המחדל בקוד היא 10. מחסום השרת הוא quota_ai_proxy_daily.",
+      "valueType": "NUMBER"
+    },
+    "quota_translate_lines_daily": {
+      "defaultValue": {
+        "value": "3000"
+      },
+      "description": "כמה שורות תוכן (כותרות, מצרכים, שלבים) חשבון אחד יכול לתרגם במודל ביום. שורות שכבר תורגמו למישהו (cache) לא נספרות. הקריאה שחוצה את המכסה עוברת, הבאה אחריה נחסמת עד מחר (429). נקרא בשרת (translateContent), בלי פריסה. 0 = התרגום חסום.",
+      "valueType": "NUMBER"
+    },
+    "quota_speak_calls_daily": {
+      "defaultValue": {
+        "value": "300"
+      },
+      "description": "כמה הקראות של שפי בקול הענן (Google Text-to-Speech, עד 1500 תווים כל אחת) חשבון אחד מקבל ביום. מעבר לזה האפליקציה עוברת בשקט לקול של המכשיר. נקרא בשרת (speak), בלי פריסה. 0 = קול הענן חסום.",
+      "valueType": "NUMBER"
+    },
+    "quota_image_search_daily": {
+      "defaultValue": {
+        "value": "150"
+      },
+      "description": "כמה חיפושי תמונה בגוגל (Serper, בתשלום לכל חיפוש) חשבון אחד יכול לבקש ביום. עמוד שכבר נשמר ב-cache השבוע לא נספר. נקרא בשרת (imageSearch), בלי פריסה. 0 = חיפוש התמונות חסום.",
+      "valueType": "NUMBER"
+    },
+    "quota_price_records_daily": {
+      "defaultValue": {
+        "value": "500"
+      },
+      "description": "כמה מחירים מקבלות חשבון אחד יכול לשתף לממוצעי הקהילה ביום (price_stats): חשבון עם אלפי מחירים מזויפים היה מזיז את החציון לכולם. הקריאה שחוצה את המכסה עוברת, הבאה נחסמת עד מחר (429). נקרא בשרת, בלי פריסה. 0 = שיתוף מחירים חסום.",
+      "valueType": "NUMBER"
+    },
+    "quota_invite_push_daily": {
+      "defaultValue": {
+        "value": "100"
+      },
+      "description": "כמה התראות פוש על הזמנת שיתוף חשבון אחד יכול לגרום לשלוח ביום (לכל הנמענים יחד). מעבר לזה ההזמנה מגיעה לתיבה בלי צלצול. נקרא בשרת (pushOnNotification), בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_invite_push_pair_daily": {
+      "defaultValue": {
+        "value": "10"
+      },
+      "description": "כמה התראות פוש על הזמנת שיתוף שולח אחד יכול לגרום לאותו נמען ביום. מעבר לזה ההזמנה מגיעה לתיבה בלי צלצול. נקרא בשרת (pushOnNotification), בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_forum_reply_fanout_daily": {
+      "defaultValue": {
+        "value": "200"
+      },
+      "description": "כמה תגובות בפורום של חשבון אחד ביום מודיעות למשתתפי הדיון (תיבה + פוש). מעבר לזה התגובה נשמרת ומוצגת, אבל אף אחד לא מקבל התראה עליה. נקרא בשרת (onForumReplyCreated), בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_recipe_update_fanout_daily": {
+      "defaultValue": {
+        "value": "20"
+      },
+      "description": "כמה עריכות ביום של מתכונים שפורסמו בקהילה (לכל מחבר) מודיעות לכל מי ששמר אותם (תיבה + פוש). מעבר לזה העריכה נשמרת כרגיל, אבל אף אחד לא מקבל התראה עליה. נקרא בשרת (onSharedRecipeUpdated), בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_ai_proxy_daily": {
+      "defaultValue": {
+        "value": "30"
+      },
+      "description": "מחסום השרת: כמה קריאות AI (aiProxy + socialRecipe) חשבון אחד יכול לבצע ביום, בלי קשר למנוי. האפליקציה שומרת מכסות משלה; זה הגב האחורי שעוצר לולאה גם מטוקן גנוב. קישור שכבר ב-cache לא נספר. נקרא בשרת (cache 5 דק׳). 0 = כל קריאות ה-AI חסומות.",
+      "valueType": "NUMBER"
+    },
+    "quota_ai_cache_hits_daily": {
+      "defaultValue": {
+        "value": "200"
+      },
+      "description": "כמה תשובות מה-cache של קישורים (aiProxy + socialRecipe) חשבון אחד מקבל ביום. לא עולה טוקנים, אבל כל תשובה היא קריאה + כתיבות ב-Firestore; עוצר לולאה על אותו קישור. מעבר לזה: 429. נקרא בשרת, בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_translate_cache_reads_daily": {
+      "defaultValue": {
+        "value": "50000"
+      },
+      "description": "כמה שורות ביום חשבון אחד יכול לבדוק מול cache התרגומים (translateContent: קריאה ב-Firestore לכל שורה, עד 3000 בקריאה). נפרד ממכסת התרגום — ספרייה שכבר ב-cache עדיין חינם, אבל לולאה של בקשות מה-cache נעצרת (429). נקרא בשרת, בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_social_probe_daily": {
+      "defaultValue": {
+        "value": "15"
+      },
+      "description": "כמה פעמים ביום קישור וידאו (socialRecipe) שלא הצליח להיקרא (פרטי/חסום) מחזיר לחשבון את קריאת ה-AI. מעבר לזה הקריאה נספרת. נקרא בשרת, בלי פריסה.",
+      "valueType": "NUMBER"
+    },
     "gemini_maxInstances": {
       "defaultValue": {
         "value": "10"
@@ -184,6 +275,13 @@
       "description": "מספרי טלפון (מופרדים בפסיק, בפורמט +972...) שפטורים מכלל 'מכשיר אחד לחשבון': אף פעם לא נחסמים ולא נשמרת להם רשומת חיבור. ברירת מחדל: חשבון הבדיקה של אפל. נקרא בשרת (sessions), בלי פריסה.",
       "valueType": "STRING"
     },
+    "session_release_wait_hours": {
+      "defaultValue": {
+        "value": "24"
+      },
+      "description": "כמה שעות מחכים לתשובה מהמכשיר המחובר כשמכשיר אחר מבקש לשחרר את החשבון. אם אף אחד לא סירב, המבקש נכנס בסוף הזמן והמכשיר הישן מנותק. 0 = אף פעם (רק אישור או שחרור מהקונסול). נקרא בשרת (sessions), בלי פריסה.",
+      "valueType": "NUMBER"
+    },
     "support_phone": {
       "defaultValue": {
         "value": "972508247743"
@@ -211,6 +309,20 @@
       },
       "description": "להציג למנהל את כל הפיצ'רים: true = לחשבון המנהל כל דגלי ה-ff_ נחשבים פעילים (כולל פרימיום), בלי קשר לערכם. false = המנהל מתנהג כמו כל חשבון (חינמי/פרימיום לפי המנוי), כדי לראות מה המשתמשים רואים. סופר-משתמש (permission = superuser) תמיד רואה הכול.",
       "valueType": "BOOLEAN"
+    },
+    "iosAppStoreId": {
+      "defaultValue": {
+        "value": "6809243199"
+      },
+      "description": "מזהה האפליקציה ב-App Store (הספרות אחרי id בקישור). משמש לקישור \"עדכון\" ב-iOS ולדף התמיכה. ריק = אין קישור לחנות ב-iOS.",
+      "valueType": "STRING"
+    },
+    "web_billing_catalog": {
+      "defaultValue": {
+        "value": "{\"payplus\":{\"env\":\"production\",\"plans\":[{\"id\":\"easy_plate_ai_pro_monthly\",\"interval\":\"month\",\"amount\":2000,\"order\":1}]},\"revenuecat\":{\"purchaseLink\":\"-\",\"projectId\":\"-\",\"plans\":[]}}"
+      },
+      "description": "מחירון רכישה באתר. payplus (ישראל, ILS) ו-revenuecat (חו\"ל דרך RevenueCat+Paddle: purchaseLink של pay.rev.cat, projectId, ולכל חבילה productId=pri_ ו-packageId). חבילה: id (duo/family בשם = הטייר), interval, amount במטבע קטן. בלי deploy.",
+      "valueType": "JSON"
     }
   },
   "parameterGroups": {
@@ -558,6 +670,27 @@
             "value": "2"
           },
           "description": "צ'אט תמיכה: המשך שיחה על פנייה (תשובות המשתמש אחרי ההודעה הראשונה), רשימת \"הפניות שלי\" במסך התמיכה, וכלי contact_support של שפי. 0 = מוסתר (הטופס שולח הודעה חד-פעמית בלבד, התשובה בתיבת ההתראות), 1 = בקרוב, 2 = פעיל.",
+          "valueType": "NUMBER"
+        },
+        "ff_web_checkout": {
+          "defaultValue": {
+            "value": "0"
+          },
+          "description": "רכישת פרימיום באתר (aieasyplate.app/app): המתג הראשי — שורת \"שדרוג וניהול באתר\" באפליקציה, webBilling ו-upgradeLinks. כל ספק נפתח רק עם המתג שלו (ff_web_checkout_il / _intl). 0 = מוסתר, 1 = בקרוב, 2 = פעיל.",
+          "valueType": "NUMBER"
+        },
+        "ff_web_checkout_il": {
+          "defaultValue": {
+            "value": "0"
+          },
+          "description": "רכישה באתר לחשבון ישראלי (טלפון מאומת +972) דרך PayPlus — דף סליקה עם הוראת קבע ב-ILS. דורש גם ff_web_checkout = 2 ואת סודות PAYPLUS_*. 0 = מוסתר, 1 = בקרוב, 2 = פעיל.",
+          "valueType": "NUMBER"
+        },
+        "ff_web_checkout_intl": {
+          "defaultValue": {
+            "value": "0"
+          },
+          "description": "רכישה באתר לחשבון מחוץ לישראל דרך RevenueCat (Paddle Billing, Paddle = merchant of record, דף pay.rev.cat). דורש ff_web_checkout = 2 ו-revenuecat.purchaseLink במחירון web_billing_catalog. 0 = מוסתר, 1 = בקרוב, 2 = פעיל.",
           "valueType": "NUMBER"
         }
       }

@@ -13,6 +13,7 @@ import '../../features/meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../features/meal_planner/domain/repositories/meal_plans_repository.dart';
 import '../../features/my_recipes/domain/entities/recipe_entity.dart';
 import '../../features/my_recipes/domain/repositories/recipes_repository.dart';
+import '../constants/app_constants.dart';
 import '../constants/app_enums.dart';
 import '../features/features_flags.dart';
 import '../hive/user_scope.dart';
@@ -212,7 +213,14 @@ class HomeWidgetsService {
   /// removes them from the queue. Entries that cannot be applied (a list
   /// that no longer exists) are dropped rather than retried forever.
   Future<void> drain() async {
-    if (_draining || !_ready) return;
+    if (!_ready) return;
+    // A nudge while a pass runs (a second quick-add) is not dropped: the
+    // pass runs once more when it is done, or that line would wait for the
+    // next resume while the republished snapshot hid it from the widget.
+    if (_draining) {
+      _drainAgain = true;
+      return;
+    }
     final groceries = this.groceries;
     if (groceries == null) return;
     _draining = true;
@@ -222,18 +230,31 @@ class HomeWidgetsService {
       final done = <String>[];
       for (final entry in pending) {
         final id = entry['id'];
+        // Removed from the queue by id only: an entry without one would be
+        // applied again on every drain (the same line added each resume).
+        if (id is! String) continue;
         try {
           await applyPending(entry, groceries);
         } catch (e) {
           debugPrint('Widget action failed: $e');
         }
-        if (id is String) done.add(id);
+        done.add(id);
       }
       await _channel.removePending(done);
     } finally {
       _draining = false;
+      if (_drainAgain) {
+        _drainAgain = false;
+        unawaited(drain());
+      }
     }
   }
+
+  bool _drainAgain = false;
+
+  /// Tests only: what a signed-in start would set.
+  @visibleForTesting
+  void markReadyForTest() => _ready = true;
 
   /// One queued action. `add` appends a line, as the groceries tab's add
   /// sheet would, with a quantity of one unit; `toggle` ticks or unticks
@@ -247,8 +268,17 @@ class HomeWidgetsService {
     GroceryListsRepository groceries,
   ) async {
     final type = entry['type'];
-    final list = await _resolveList(entry['listId'] as String?, groceries);
-    if (list == null) return;
+    final resolved = await _resolveList(entry['listId'] as String?, groceries);
+    if (resolved == null) return;
+    // Resolving awaits more than one read, and a sync or the groceries tab
+    // can save the list meanwhile: the change is applied to the copy stored
+    // now, with no await between this read and the save, or that edit was
+    // overwritten by the snapshot read first.
+    final list = await groceries.getListById(resolved.id) ?? resolved;
+    // A list this account only views (a viewer seat on a shared list) is
+    // never written: the save would land locally and the publish be refused,
+    // so the line would vanish on the next sync.
+    if (!list.canEdit) return;
     GroceryListEntity? updated;
     switch (type) {
       case 'add':
@@ -262,7 +292,7 @@ class HomeWidgetsService {
               name: name,
               unit: MeasurementUnit.unit,
               sources: [GroceryItemSourceEntity(label: name, amount: 1)],
-              category: 'כללי',
+              category: kDefaultGroceryCategory,
               isAdHoc: true,
             ),
           ],
@@ -301,9 +331,11 @@ class HomeWidgetsService {
   ) async {
     if (wanted != null) {
       final exact = await groceries.getListById(wanted);
-      if (exact != null) return exact;
+      if (exact != null && exact.canEdit) return exact;
     }
-    final lists = await groceries.getLists()
+    // Only lists this account may edit: a viewer list falls through to the
+    // first editable one, as the groceries tab's add sheet would refuse it.
+    final lists = (await groceries.getLists()).where((l) => l.canEdit).toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
     final defaultId = HomeWidgetDefaultsStore().value.listId;
     final activeId = await activeList?.read();

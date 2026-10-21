@@ -1,6 +1,9 @@
 import '../entities/app_user_entity.dart';
 
 abstract class AuthRepository {
+  /// What [startPhoneLink] resolves with when no code is coming.
+  static const instantlyVerified = '';
+
   /// Emits on sign-in, sign-out and token refresh. Emits null when signed out.
   Stream<AppUserEntity?> authStateChanges();
 
@@ -40,7 +43,14 @@ abstract class AuthRepository {
 
   /// Attaches a phone number to the account that is already signed in, so a
   /// later phone sign-in resolves to this same user rather than a new one.
-  Future<String> startPhoneLink(String phoneNumber);
+  ///
+  /// Resolves with [instantlyVerified] when the number was
+  /// verified without a code: already linked (or, with [reauthenticate],
+  /// already confirmed), so the code step is skipped.
+  Future<String> startPhoneLink(
+    String phoneNumber, {
+    bool reauthenticate = false,
+  });
   Future<void> linkPhone(String verificationId, String smsCode);
 
   /// The SMS round trip of [startPhoneLink] used to confirm the account's own

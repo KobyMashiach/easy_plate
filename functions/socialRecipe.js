@@ -19,6 +19,7 @@
 //
 // Auth, the daily quota and the URL cache are aiProxy's, reused as-is.
 const fs = require("node:fs");
+const crypto = require("node:crypto");
 const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const { logger } = require("firebase-functions");
@@ -27,6 +28,10 @@ const proxy = require("./aiProxy").internals;
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 const aiUsage = require("./aiUsage");
+// The website (aieasyplate.app/app) calls this from the browser too.
+const { ORIGINS } = require("./origins");
+const safeFetch = require("./safeFetch");
+const budget = require("./dailyBudget");
 
 // Past this the video is not sent; the caption alone is used. A recipe reel
 // is 30–90 seconds; a ten-minute video is a cooking show, and its bytes
@@ -36,20 +41,72 @@ const MAX_VIDEO_SECONDS = 10 * 60;
 const CAPTION_LIMIT = 4000;
 const CACHE_KIND = "video";
 
+// A model id as Google names them ("gemini-3.8-flash", "gemini-2.5-flash-lite"):
+// no slash, no colon, no dot-dot, so it cannot leave /v1beta/models/.
+const MODEL_ID = /^[a-z0-9](?:[a-z0-9-]|\.(?!\.)){0,63}$/i;
+
 const BROWSER_UA =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 " +
   "(KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
 
 // The yt-dlp binary is fetched once per instance into /tmp (the only
 // writable place) — a few seconds on a cold start, nothing after.
+//
+// Pinned to one release and checked against its published SHA-256: it used
+// to be "whatever GitHub calls latest", unverified, so a compromised or
+// broken release ran on our servers (with the Gemini key in the
+// environment) the moment an instance started. A failed download used to
+// stay behind too — the library writes the body whatever the status, and
+// the next call found a file and trusted it. Now the body goes to a temp
+// file, is hashed, and only a match is renamed into place; a file already
+// in /tmp is hashed before it is used.
+//
+// To move to a newer yt-dlp: take the tag from github.com/yt-dlp/yt-dlp/
+// releases and the `yt-dlp` line of that release's SHA2-256SUMS.
+const YT_DLP_VERSION = "2026.08.19";
+const YT_DLP_SHA256 = "1fa6733c37ea6fb51c99ad8fe785e7b7e5f3246c9b980230329d4fb72ed8d4d6";
+const YT_DLP_URL = `https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp`;
+const YT_DLP_MAX_BYTES = 50 * 1024 * 1024;
+const YT_DLP_DOWNLOAD_MS = 60 * 1000;
 const BINARY_PATH = "/tmp/yt-dlp";
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function fileMatches(path, expected = YT_DLP_SHA256) {
+  try {
+    return sha256(fs.readFileSync(path)) === expected;
+  } catch (_) {
+    return false;
+  }
+}
+
+/// Downloads the pinned release to [path], verified. Throws on a bad
+/// status, an oversized body or a hash mismatch; nothing is left at [path]
+/// unless it matched.
+async function installYtDlp(path = BINARY_PATH, { fetchImpl = fetch, url = YT_DLP_URL, expected = YT_DLP_SHA256 } = {}) {
+  const res = await fetchImpl(url, { redirect: "follow", signal: AbortSignal.timeout(YT_DLP_DOWNLOAD_MS) });
+  if (!res.ok) throw new Error(`yt-dlp download -> ${res.status}`);
+  const bytes = await safeFetch.readCapped(res, YT_DLP_MAX_BYTES);
+  const got = sha256(bytes);
+  if (got !== expected) throw new Error(`yt-dlp checksum mismatch (${got})`);
+  const temp = `${path}.${process.pid}.${Date.now()}.part`;
+  fs.writeFileSync(temp, bytes, { mode: 0o755 });
+  fs.renameSync(temp, path);
+}
+
 let binaryPromise = null;
 function ytDlp() {
   if (!binaryPromise) {
     binaryPromise = (async () => {
-      if (!fs.existsSync(BINARY_PATH)) {
-        await YTDlpWrap.downloadFromGithub(BINARY_PATH);
-        fs.chmodSync(BINARY_PATH, 0o755);
+      if (!fileMatches(BINARY_PATH)) {
+        try {
+          fs.rmSync(BINARY_PATH, { force: true });
+        } catch (_) {
+          // Not there, or not ours to remove: the rename below replaces it.
+        }
+        await installYtDlp(BINARY_PATH);
       }
       return new YTDlpWrap(BINARY_PATH);
     })().catch((err) => {
@@ -67,10 +124,14 @@ function platformOf(url) {
   } catch (_) {
     return null;
   }
-  if (host === "youtu.be" || host.endsWith("youtube.com")) return "youtube";
-  if (host.endsWith("tiktok.com")) return "tiktok";
-  if (host.endsWith("instagram.com")) return "instagram";
-  if (host.endsWith("facebook.com") || host === "fb.watch") return "facebook";
+  // A bare endsWith("tiktok.com") let "eviltiktok.com" through, and anything
+  // that passes here is fetched by yt-dlp on the server: match the domain or
+  // a real subdomain of it, nothing else.
+  const on = (domain) => host === domain || host.endsWith(`.${domain}`);
+  if (host === "youtu.be" || on("youtube.com")) return "youtube";
+  if (on("tiktok.com")) return "tiktok";
+  if (on("instagram.com")) return "instagram";
+  if (on("facebook.com") || host === "fb.watch") return "facebook";
   return "other";
 }
 
@@ -102,15 +163,41 @@ function metaContent(html, property) {
   return m ? m[1] : null;
 }
 
+// Pages and media are fetched through the SSRF guard: the host allow-list
+// only vouches for the first hop, and a redirect from an allowed host (or a
+// media URL yt-dlp reports) could otherwise point anywhere, the metadata
+// server included. Bodies are read no further than a cap — a chunked
+// response carries no length to refuse up front.
+const MAX_PAGE_BYTES = 2 * 1024 * 1024;
+
+// The request's time, shared out so the slowest path (probe, download,
+// model, the schema-less retry) ends inside the function's 180 s instead of
+// being cut off mid-call with the slot neither used nor given back.
+const FUNCTION_TIMEOUT_S = 180;
+const DEADLINE_MS = 170 * 1000;
+const PROBE_MS = 40 * 1000;
+const DOWNLOAD_MS = 60 * 1000;
+const MODEL_MS = 90 * 1000;
+const MIN_STEP_MS = 5 * 1000;
+
+/// Pure: how long the next step may take — its own cap, or what is left
+/// before [deadline], whichever is shorter (never under MIN_STEP_MS, so a
+/// step is not started with no time at all; the caller checks `left` first).
+function stepBudget(deadline, cap, now = Date.now()) {
+  return Math.max(MIN_STEP_MS, Math.min(cap, deadline - now));
+}
+
 async function fetchText(url, headers = {}) {
-  const res = await fetch(url, { headers: { "User-Agent": BROWSER_UA, ...headers } });
-  if (!res.ok) throw new Error(`${url} -> ${res.status}`);
-  return res.text();
+  const res = await safeFetch.fetchPublic(url, fetch, { headers: { "User-Agent": BROWSER_UA, ...headers } });
+  if (!res.ok) throw new Error(`page -> ${res.status}`);
+  return (await safeFetch.readCapped(res, MAX_PAGE_BYTES)).toString("utf8");
 }
 
 // What yt-dlp knows about the link, without downloading anything.
-async function probe(url) {
+async function probe(url, timeoutMs = PROBE_MS) {
   const bin = await ytDlp();
+  // --socket-timeout bounds each read, not the run: an extractor that keeps
+  // following pages could hold the request until the function's own limit.
   const out = await bin.execPromise([
     "--dump-single-json",
     "--no-playlist",
@@ -123,7 +210,7 @@ async function probe(url) {
     // so no ffmpeg needed. Falls back to whatever exists.
     `best[ext=mp4][vcodec!=none][filesize<${MAX_VIDEO_BYTES}]/best[ext=mp4]/best`,
     url,
-  ]);
+  ], {}, AbortSignal.timeout(timeoutMs));
   const info = JSON.parse(out);
   const chosen = (info.requested_downloads && info.requested_downloads[0]) || info;
   return {
@@ -135,14 +222,10 @@ async function probe(url) {
   };
 }
 
-async function download(mediaUrl, headers) {
-  const res = await fetch(mediaUrl, { headers: { "User-Agent": BROWSER_UA, ...headers } });
+async function download(mediaUrl, headers, timeoutMs = DOWNLOAD_MS) {
+  const res = await safeFetch.fetchPublic(mediaUrl, fetch, { headers: { "User-Agent": BROWSER_UA, ...headers }, timeoutMs });
   if (!res.ok) throw new Error(`media -> ${res.status}`);
-  const declared = Number(res.headers.get("content-length")) || 0;
-  if (declared > MAX_VIDEO_BYTES) throw new Error(`media too large: ${declared}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.length > MAX_VIDEO_BYTES) throw new Error(`media too large: ${buf.length}`);
-  return buf;
+  return safeFetch.readCapped(res, MAX_VIDEO_BYTES);
 }
 
 // The caption without the video, through whatever public door the platform
@@ -189,7 +272,7 @@ function captionText(source) {
 }
 
 // One generateContent call; the answer's text (JSON per the schema).
-async function askGemini({ model, systemInstruction, prompt, schema, video, youtubeUrl, caption }) {
+async function askGemini({ model, systemInstruction, prompt, schema, video, youtubeUrl, caption, deadline = Date.now() + DEADLINE_MS }) {
   const parts = [];
   if (video) parts.push({ inline_data: { mime_type: "video/mp4", data: video.toString("base64") } });
   if (youtubeUrl) parts.push({ file_data: { file_uri: youtubeUrl } });
@@ -204,12 +287,13 @@ async function askGemini({ model, systemInstruction, prompt, schema, video, yout
       thinking_config: { thinking_level: "low" },
     },
   };
-  let res = await callModel(model, body);
+  let res = await callModel(model, body, stepBudget(deadline, MODEL_MS));
   // An older endpoint may not know response_json_schema; the prompt already
-  // describes the shape, so the second try goes without it.
-  if (res.status === 400) {
+  // describes the shape, so the second try goes without it — when there is
+  // still time for it.
+  if (res.status === 400 && deadline - Date.now() > MIN_STEP_MS) {
     delete body.generation_config.response_json_schema;
-    res = await callModel(model, body);
+    res = await callModel(model, body, stepBudget(deadline, MODEL_MS));
   }
   const text = await res.text();
   if (!res.ok) {
@@ -217,20 +301,51 @@ async function askGemini({ model, systemInstruction, prompt, schema, video, yout
     err.status = res.status;
     throw err;
   }
-  const data = JSON.parse(text);
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (err) {
+    err.answered = true;
+    throw err;
+  }
   const answer = ((((data.candidates || [])[0] || {}).content || {}).parts || [])
     .map((p) => p.text || "")
     .join("");
-  if (!answer.trim()) throw new Error("gemini returned no text");
+  if (!answer.trim()) {
+    // The model answered (and was paid for): not a slot to give back.
+    const err = new Error("gemini returned no text");
+    err.answered = true;
+    throw err;
+  }
   return { answer, usage: aiUsage.extractUsage(data) };
 }
 
-function callModel(model, body) {
-  return fetch(`${proxy.GOOGLE_ORIGIN}/v1beta/models/${model}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": geminiApiKey.value() },
-    body: JSON.stringify(body),
-  });
+// Pure: whether a failed call gives the day's slot back. Only a failure on
+// Google's side (5xx) or a network error, as in aiProxy. A 4xx is the
+// request's own fault — an unknown model, a schema the API rejects — and
+// both are the caller's to choose: refunding them made every such call
+// free, each one after a yt-dlp probe and up to 30 MB of video.
+//
+// A model call that timed out is not refunded either: the request reached
+// Google, which most likely went on to bill it, and a timeout is easy to
+// provoke with a long video.
+function refundable(err) {
+  if (!err || err.answered) return false;
+  return typeof err.status !== "number" || err.status >= 500;
+}
+
+async function callModel(model, body, timeoutMs = MODEL_MS) {
+  try {
+    return await fetch(`${proxy.GOOGLE_ORIGIN}/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": geminiApiKey.value() },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (err) {
+    if (err && (err.name === "TimeoutError" || err.name === "AbortError")) err.answered = true;
+    throw err;
+  }
 }
 
 // A recipe with neither ingredients nor steps is the model saying "nothing
@@ -248,6 +363,17 @@ function isUsableRecipe(text) {
   }
 }
 
+/// Whether an unreadable link's AI slot may be given back: one claim on the
+/// day's `socialProbe` budget. A budget that cannot be read keeps the slot.
+async function probeRefundAllowed(uid, spend = budget.spend) {
+  try {
+    return (await spend({ uid, kind: "socialProbe" })).allowed;
+  } catch (err) {
+    logger.warn("probe budget unavailable", { uid, reason: err.message });
+    return false;
+  }
+}
+
 // The Interactions envelope the app already parses, so the client has one
 // reader for both proxies.
 function envelope(text, extra) {
@@ -256,6 +382,15 @@ function envelope(text, extra) {
 
 function refuse(res, status, code, message) {
   return res.status(status).json({ error: { status: code, message } });
+}
+
+// Pure: this endpoint's `status` word for a caller refusal (aiProxy's
+// paidCallerRefusal). The app keys on PHONE_REQUIRED (HttpCalls.isPhoneRequired)
+// to offer phone verification — a disabled account used to get that word,
+// and so the wrong screen, instead of its own.
+function refusalStatus(refusal) {
+  if (refusal.status === 401) return "UNAUTHENTICATED";
+  return refusal.code === "account_disabled" ? "ACCOUNT_DISABLED" : "PHONE_REQUIRED";
 }
 
 exports.socialRecipe = onRequest(
@@ -267,39 +402,69 @@ exports.socialRecipe = onRequest(
     maxInstances: 5,
     // A 30 MB video, its base64 copy and the yt-dlp process at once.
     memory: "1GiB",
-    timeoutSeconds: 180,
+    timeoutSeconds: FUNCTION_TIMEOUT_S,
     // Each request may hold a 30 MB video and its base64 copy; the default
     // 80 in flight per instance would exhaust the memory on the first busy
     // evening. Four is plenty — more traffic scales out to more instances.
     concurrency: 4,
-    cors: false,
+    cors: ORIGINS,
   },
   async (req, res) => {
     if (req.method !== "POST") return refuse(res, 405, "METHOD", "POST only");
-    const caller = await proxy.verifyCaller(req);
-    if (!caller) return refuse(res, 401, "UNAUTHENTICATED", "A valid Firebase ID token is required");
+    const { caller, refusal } = await proxy.verifyPaidCaller(req);
+    if (!caller) return refuse(res, refusal.status, refusalStatus(refusal), refusal.message);
 
     const { url, model, system_instruction: systemInstruction, prompt, schema } = req.body || {};
     const platform = typeof url === "string" ? platformOf(url) : null;
     if (!platform || typeof model !== "string" || typeof prompt !== "string" || !schema) {
       return refuse(res, 400, "BAD_REQUEST", "url, model, prompt and schema are required");
     }
+    // The model id is spliced into the upstream path, which carries this
+    // project's key: a "../" in it would reach any other endpoint of the
+    // Gemini API (files, cached contents, tuned models) on our account.
+    if (!MODEL_ID.test(model)) {
+      return refuse(res, 400, "BAD_REQUEST", "model is not a model id");
+    }
+    // The app sends only the four platforms here (IngestionLaunch.channelForText);
+    // anything else would have this server fetch an arbitrary address on the
+    // caller's behalf, through yt-dlp and the caption fallback.
+    if (platform === "other") {
+      return refuse(res, 400, "BAD_REQUEST", "url must be a TikTok, Instagram, YouTube or Facebook link");
+    }
 
+    // Keyed on the link and on what the model is asked (see aiProxy's
+    // cacheKeyFor): the prompt, system instruction and schema come from the
+    // client, so without them in the key one caller's own prompt would fill
+    // the entry every later paste of this video is answered from. The link
+    // is not in the prompt here (it goes to yt-dlp and the caption fetch),
+    // so a tracking tail cannot carry instructions and any request may fill.
     const normalizedUrl = proxy.normalizeSourceUrl(url);
+    const shape = proxy.requestShape(JSON.stringify([model, systemInstruction ?? null, prompt, schema]), null);
     const cacheEntry = normalizedUrl
-      ? { kind: CACHE_KIND, url, normalizedUrl, key: proxy.cacheKeyFor(CACHE_KIND, normalizedUrl) }
+      ? { kind: CACHE_KIND, url, normalizedUrl, key: proxy.cacheKeyFor(CACHE_KIND, normalizedUrl, shape) }
       : null;
     if (cacheEntry) {
       const cached = await proxy.readCache(cacheEntry);
       if (cached) {
+        const overHits = await proxy.cacheHitRefusal(caller.uid);
+        if (overHits) return res.status(429).json(overHits);
         proxy.countHit(cacheEntry);
-        return res.status(200).set("x-easyplate-cache", "hit").send(cached.body);
+        return res.status(200).set("Content-Type", "application/json").set("x-easyplate-cache", "hit").send(cached.body);
       }
     }
 
     const uid = caller.uid;
-    const limit = proxy.dailyLimitForUser(uid);
-    const slot = await proxy.claimQuotaSlot(uid, limit);
+    let limit;
+    let slot;
+    try {
+      limit = await proxy.dailyLimitForUser(uid);
+      slot = await proxy.claimQuotaSlot(uid, limit);
+    } catch (err) {
+      // A quota transaction that could not run (contention, Firestore down)
+      // is a refusal to retry, not an unhandled rejection.
+      logger.error("social recipe quota check failed", { uid, reason: err.message });
+      return refuse(res, 503, "UNAVAILABLE", "Try again shortly");
+    }
     if (!slot.allowed) {
       return res.status(429).json({
         error: {
@@ -311,6 +476,7 @@ exports.socialRecipe = onRequest(
     }
 
     const started = Date.now();
+    const deadline = started + DEADLINE_MS;
     let mode = "video";
     // Tokens were spent the moment the model answered, whether or not a
     // recipe came out of it — so the record is written on every exit below
@@ -329,14 +495,16 @@ exports.socialRecipe = onRequest(
     try {
       let answer;
       if (platform === "youtube") {
-        ({ answer, usage } = await askGemini({ model, systemInstruction, prompt, schema, youtubeUrl: url }));
+        ({ answer, usage } = await askGemini({ model, systemInstruction, prompt, schema, youtubeUrl: url, deadline }));
       } else {
         let info = null;
         let video = null;
         try {
-          info = await probe(url);
-          if (info.mediaUrl && (!info.durationSec || info.durationSec <= MAX_VIDEO_SECONDS)) {
-            video = await download(info.mediaUrl, info.headers);
+          info = await probe(url, stepBudget(deadline, PROBE_MS));
+          // The model's share of the time is kept back from the download.
+          const forDownload = deadline - Date.now() - MODEL_MS;
+          if (info.mediaUrl && (!info.durationSec || info.durationSec <= MAX_VIDEO_SECONDS) && forDownload > MIN_STEP_MS) {
+            video = await download(info.mediaUrl, info.headers, Math.min(DOWNLOAD_MS, forDownload));
           }
         } catch (err) {
           logger.info("video fetch failed, trying the caption", { platform, reason: err.message });
@@ -346,7 +514,11 @@ exports.socialRecipe = onRequest(
           mode = "caption";
           if (!caption) caption = captionText(await captionFallback(url, platform));
           if (!caption) {
-            await proxy.refundQuotaSlot(uid);
+            // The model was never called, so the slot goes back — but only
+            // a few times a day (dailyBudget `socialProbe`): each of these
+            // still ran yt-dlp and page fetches here, and a private link
+            // is easy to paste in a loop.
+            if (await probeRefundAllowed(uid)) await proxy.refundQuotaSlot(uid);
             return refuse(
               res,
               422,
@@ -355,11 +527,14 @@ exports.socialRecipe = onRequest(
             );
           }
         }
-        ({ answer, usage } = await askGemini({ model, systemInstruction, prompt, schema, video, caption }));
+        ({ answer, usage } = await askGemini({ model, systemInstruction, prompt, schema, video, caption, deadline }));
       }
 
       if (!isUsableRecipe(answer)) {
-        await proxy.refundQuotaSlot(uid);
+        // No refund: the model read the video and was paid for it. The
+        // prompt and schema are the caller's, so an empty answer is easy to
+        // ask for, and a refund here made every such call free — up to
+        // 30 MB of video per call on our key, with no daily cap.
         record(422);
         return refuse(res, 422, "SOCIAL_EMPTY", "No recipe could be read from this video");
       }
@@ -371,12 +546,20 @@ exports.socialRecipe = onRequest(
       return res.status(200).set("Content-Type", "application/json").send(body);
     } catch (err) {
       logger.error("social recipe failed", { platform, mode, reason: err.message });
-      await proxy.refundQuotaSlot(uid);
+      // Given back only when the model never answered (an upstream error,
+      // a fetch that failed): an answer that could not be read was paid for.
+      if (refundable(err)) await proxy.refundQuotaSlot(uid);
       const status = err.status === 429 ? 429 : 502;
       record(status);
-      return refuse(res, status, "UPSTREAM", err.message);
+      // The upstream's own text (Gemini's error body, a media URL) stays in
+      // the log above; the app keys on the status code, not the message.
+      return refuse(res, status, "UPSTREAM", status === 429 ? "The model is busy, try again shortly" : "The recipe could not be read right now");
     }
   },
 );
 
-exports.internals = { platformOf, textFromHtml, metaContent, isUsableRecipe, captionText };
+exports.internals = {
+  platformOf, textFromHtml, metaContent, isUsableRecipe, captionText, refundable, refusalStatus, MODEL_ID,
+  installYtDlp, fileMatches, stepBudget, probeRefundAllowed, callModel,
+  YT_DLP_VERSION, YT_DLP_SHA256, YT_DLP_URL, DEADLINE_MS, MODEL_MS, PROBE_MS, MIN_STEP_MS, FUNCTION_TIMEOUT_S,
+};

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
 
 /// Author line shared by forum posts, replies and shared recipes, so one
 /// person looks the same everywhere in the community.
@@ -25,9 +26,26 @@ class AuthorRow extends StatelessWidget {
   String get _age {
     final difference = DateTime.now().difference(createdAt);
     if (difference.inMinutes < 1) return '·';
-    if (difference.inHours < 1) return '${difference.inMinutes}m';
-    if (difference.inDays < 1) return '${difference.inHours}h';
-    return '${difference.inDays}d';
+    if (difference.inHours < 1) {
+      return t.community.ageMinutes(n: difference.inMinutes);
+    }
+    if (difference.inDays < 1) {
+      return t.community.ageHours(n: difference.inHours);
+    }
+    return t.community.ageDays(n: difference.inDays);
+  }
+
+  /// Whether [url] is a picture this app put there: an upload to our
+  /// Storage bucket or a Google account photo. The rules only bound its
+  /// length, so any account could point its avatar at its own server — every
+  /// community reader's phone then fetched it (their IP in that server's
+  /// log), and a huge body was downloaded whole before decoding.
+  static bool trustedPhotoUrl(String? url) {
+    final uri = url == null ? null : Uri.tryParse(url);
+    if (uri == null || uri.scheme != 'https') return false;
+    return uri.host == 'firebasestorage.googleapis.com' ||
+        uri.host == 'storage.googleapis.com' ||
+        uri.host.endsWith('.googleusercontent.com');
   }
 
   @override
@@ -38,7 +56,7 @@ class AuthorRow extends StatelessWidget {
           width: 32,
           height: 32,
           child: ClipOval(
-            child: photoUrl != null
+            child: trustedPhotoUrl(photoUrl)
                 ? Image.network(
                     photoUrl!,
                     fit: BoxFit.cover,

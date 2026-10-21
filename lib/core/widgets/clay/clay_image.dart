@@ -47,6 +47,11 @@ class ClayImage extends StatefulWidget {
 class _ClayImageState extends State<ClayImage> {
   String? _path;
 
+  /// The disk is being asked about a name not met yet. Drawn as the bare
+  /// tint, not the "no photo" medallion: a photo that is on disk must not
+  /// flash as missing while the check (or the startup listing) is out.
+  bool _checking = false;
+
   @override
   void initState() {
     super.initState();
@@ -67,33 +72,51 @@ class _ClayImageState extends State<ClayImage> {
   /// later, has to ask for a rebuild.
   void _resolve() {
     _path = ImageStorageService().pathFor(widget.fileName);
+    _checking = false;
     if (_path != null) return;
 
     final fileName = widget.fileName;
     final remote = widget.remotePath;
-    if (fileName == null || remote == null) return;
+    if (fileName == null) return;
 
-    RecipeImageStore().ensureCached(fileName, remote).then((path) {
+    // Off the build path: a name not met yet is checked on disk first (the
+    // tint holds meanwhile), then, with a remote copy, fetched when it is
+    // not there — the medallion shows for the length of a download.
+    _checking = true;
+    ImageStorageService().resolve(fileName).then((local) {
       // The widget may be long gone by the time a slow connection answers, and
       // the photo may have been swapped out from under it in the meantime.
-      if (!mounted || path == null || widget.fileName != fileName) return;
-      setState(() => _path = path);
+      if (!mounted || widget.fileName != fileName) return;
+      if (local != null || remote == null) {
+        setState(() {
+          _checking = false;
+          _path = local;
+        });
+        return;
+      }
+      setState(() => _checking = false);
+      RecipeImageStore().ensureCached(fileName, remote).then((path) {
+        if (!mounted || path == null || widget.fileName != fileName) return;
+        setState(() => _path = path);
+      });
     });
   }
 
-  Widget _fallback(BorderRadius borderRadius) {
+  Widget _fallback(BorderRadius borderRadius, {bool icon = true}) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: widget.tint ?? AppColors.primaryFixed,
         borderRadius: borderRadius,
       ),
-      child: Center(
-        child: Icon(
-          widget.fallbackIcon,
-          size: widget.fallbackIconSize,
-          color: AppColors.primary,
-        ),
-      ),
+      child: icon
+          ? Center(
+              child: Icon(
+                widget.fallbackIcon,
+                size: widget.fallbackIconSize,
+                color: AppColors.primary,
+              ),
+            )
+          : null,
     );
   }
 
@@ -102,7 +125,7 @@ class _ClayImageState extends State<ClayImage> {
     final borderRadius = BorderRadius.circular(widget.radius);
     final path = _path;
 
-    if (path == null) return _fallback(borderRadius);
+    if (path == null) return _fallback(borderRadius, icon: !_checking);
 
     // Photos are stored up to 1600px wide; a card thumbnail is a tenth of
     // that. Decoding at the drawn width keeps a grid of them to a fraction

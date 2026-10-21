@@ -33,8 +33,20 @@ class DeleteReceiptUseCase {
 class SharePricesUseCase {
   final PriceBookRepository repository;
   SharePricesUseCase(this.repository);
-  Future<void> call(List<PriceRecordEntity> records) =>
-      repository.sharePrices(records);
+
+  /// Shekel prices only: the community median carries no currency, so a
+  /// dollar receipt's $3.50 was counted as ₪3.50 for everyone. Returns how
+  /// many were sent, so a receipt in another currency is not reported as
+  /// shared.
+  Future<int> call(List<PriceRecordEntity> records) async {
+    final shekels = [
+      for (final r in records)
+        if (r.currency == 'ILS') r,
+    ];
+    if (shekels.isEmpty) return 0;
+    await repository.sharePrices(shekels);
+    return shekels.length;
+  }
 }
 
 /// Turns a reviewed receipt into records and stores them. Returns what was

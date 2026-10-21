@@ -38,7 +38,11 @@ class FirestoreWhatsNewRepository implements WhatsNewRepository {
           .collection(collection)
           .where('versionCode', isGreaterThan: fromBuild)
           .where('versionCode', isLessThanOrEqualTo: toBuild)
-          .orderBy('versionCode')
+          // An account coming back after a very long time reads a bounded
+          // stretch, not every release ever written: the newest 50 (the
+          // book sorts them oldest first itself).
+          .orderBy('versionCode', descending: true)
+          .limit(50)
           .get();
       return [
         for (final doc in snapshot.docs)

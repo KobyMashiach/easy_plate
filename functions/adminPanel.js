@@ -46,9 +46,14 @@ const aiUsage = require("./aiUsage");
 const households = require("./households").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
 const storeStats = require("./storeStats");
+const { StripeError } = require("./stripeClient");
+const { MAX_IMAGE_BYTES, isPrivateAddress, isInternalHostname, assertPublicUrl, fetchImage, readCapped, sniffImage } = require("./safeFetch");
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 const serperApiKey = defineSecret("SERPER_API_KEY");
+// user.delete settles the web subscription first (adminUsers.remove).
+const stripeSecret = defineSecret("STRIPE_SECRET_KEY");
+const billingSecrets = require("./billingSecrets");
 
 // Where the console is served from. A page anywhere else cannot call this,
 // even with a stolen token in hand — the browser refuses before the request
@@ -66,8 +71,10 @@ const MODEL = "gemini-3.8-flash";
 const PERSONA_PREFIX = "seed_";
 const AUDIT_COLLECTION = "admin_audit";
 const PERSONAS_COLLECTION = "seed_personas";
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+// The latest end date a grant may carry: a typo of a few extra digits
+// becomes a refusal rather than a timestamp Firestore cannot hold.
+const MAX_PREMIUM_UNTIL_MS = Date.UTC(2100, 0, 1);
 const CONTENT_COLLECTIONS = new Set(["recipes", "books", "meal_plans", "grocery_lists", "preferences", "price_records", "receipts", "product_pricing"]);
 const CONTENT_ROOTS = new Set(["users", "households"]);
 const UNITS = new Set(["gram", "kilogram", "milliliter", "liter", "teaspoon", "tablespoon", "cup", "unit", "pinch", "unspecified"]);
@@ -85,10 +92,13 @@ const WHATS_NEW_MAX_FEATURES = 40;
 // before any work starts.
 // ---------------------------------------------------------------------------
 
-const str = (max, required = false) => ({ kind: "string", max, required });
+// `clear`: an explicit empty string (or null) is kept as "clear this field"
+// rather than dropped as missing — what lets the console empty a field it
+// once set. Never on a required field.
+const str = (max, required = false, { clear = false } = {}) => ({ kind: "string", max, required, clear });
 const num = (required = false) => ({ kind: "number", required });
 const bool = () => ({ kind: "boolean" });
-const obj = (required = false) => ({ kind: "object", required });
+const obj = (required = false, { clear = false } = {}) => ({ kind: "object", required, clear });
 const anyOf = (values, required = false) => ({ kind: "enum", values, required });
 const strList = (maxItems, maxLen, required = false) => ({ kind: "stringList", maxItems, max: maxLen, required });
 const objList = (maxItems, required = false) => ({ kind: "objectList", maxItems, required });
@@ -102,13 +112,13 @@ const ACTIONS = {
   "user.notify": { uid: str(128, true), title: str(80), body: str(1000, true) },
   "user.notifyAll": { title: str(80), body: str(1000, true) },
   "user.notifyAudience": { audience: anyOf(["all", "premium", "free", "users"], true), uids: strList(500, 128), title: str(80), body: str(1000, true) },
-  "notify.template.save": { id: str(128), name: str(80), title: str(80), body: str(1000, true), target: anyOf(["all", "user", "users", "premium", "free"], true), uid: str(128), uids: strList(500, 128), schedule: obj(true), enabled: bool() },
+  "notify.template.save": { id: str(128), name: str(80, false, { clear: true }), title: str(80), body: str(1000, true), target: anyOf(["all", "user", "users", "premium", "free"], true), uid: str(128), uids: strList(500, 128), schedule: obj(true), enabled: bool() },
   "notify.template.delete": { id: str(128, true) },
   "notify.template.send": { id: str(128, true) },
   "user.auth": { uid: str(128, true) },
   "user.entitlement": { uid: str(128, true), premium: bool(), premiumUntil: num(), adminLock: bool() },
   "user.permission": { uid: str(128, true), permission: anyOf(["user", "superuser", "admin"], true) },
-  "user.profile": { uid: str(128, true), fullName: str(80), photoUrl: str(2000) },
+  "user.profile": { uid: str(128, true), fullName: str(80, false, { clear: true }), photoUrl: str(2000, false, { clear: true }) },
   "user.content.set": { root: anyOf([...CONTENT_ROOTS], true), rootId: str(128, true), collection: anyOf([...CONTENT_COLLECTIONS], true), id: str(128, true), data: obj(true) },
   "user.content.delete": { root: anyOf([...CONTENT_ROOTS], true), rootId: str(128, true), collection: anyOf([...CONTENT_COLLECTIONS], true), id: str(128, true) },
   "forum.post.create": { as: str(128, true), title: str(200, true), body: str(8000, true), createdAt: num() },
@@ -120,7 +130,7 @@ const ACTIONS = {
   "community.like": { as: str(128, true), kind: anyOf(["post", "reply", "recipe"], true), postId: str(128), replyId: str(128), recipeId: str(128), on: bool() },
   "community.seedLikes": { kind: anyOf(["post", "reply", "recipe"], true), postId: str(128), replyId: str(128), recipeId: str(128), count: num(true) },
   "recipe.create": { as: str(128, true), recipe: obj(true), image: obj(), createdAt: num() },
-  "recipe.update": { id: str(128, true), recipe: obj(true), image: obj() },
+  "recipe.update": { id: str(128, true), recipe: obj(true), image: obj(false, { clear: true }) },
   "recipe.delete": { id: str(128, true) },
   "recipe.generate": { title: str(200, true), lang: str(5), hints: str(1000) },
   "dish.suggest": { count: num(), lang: str(5), theme: str(300) },
@@ -141,12 +151,21 @@ const ACTIONS = {
   "pricing.sync": {},
   "stores.stats": {},
   "stores.status": {},
-  "stores.config": { playBucket: str(200), playPackage: str(200), appleVendor: str(40), appleIssuerId: str(80), appleKeyId: str(40), appleAppId: str(40), iosSince: str(10), applePrivateKey: str(8000) },
+  "stores.config": { playBucket: str(200, false, { clear: true }), playPackage: str(200, false, { clear: true }), appleVendor: str(40, false, { clear: true }), appleIssuerId: str(80, false, { clear: true }), appleKeyId: str(40, false, { clear: true }), appleAppId: str(40, false, { clear: true }), iosSince: str(10, false, { clear: true }), applePrivateKey: str(8000) },
   "stores.sync": { platform: anyOf(["all", "android", "ios"]), backfill: bool() },
   "whatsnew.save": { versionCode: num(true), version: str(40, true), releasedAt: num(), isPublished: bool(), features: objList(WHATS_NEW_MAX_FEATURES, true) },
   "whatsnew.delete": { versionCode: num(true) },
   "whatsnew.translate": { title: str(200), description: str(2000), from: anyOf(WHATS_NEW_LANGS, true) },
 };
+
+// Fields that name a document: each becomes one segment of a path
+// (`users/${uid}`, `forum_posts/${postId}/replies/${replyId}` …), so a slash
+// in one would reach another document.
+const ID_FIELDS = new Set(["uid", "id", "postId", "replyId", "recipeId", "hid", "rootId", "as", "sharedRecipeId"]);
+
+function validId(value) {
+  return typeof value === "string" && /^[^/]{1,128}$/.test(value) && value !== "." && value !== ".." && !/^__.*__$/.test(value);
+}
 
 function parseRequest(body) {
   const action = typeof (body && body.action) === "string" ? body.action.trim() : "";
@@ -158,12 +177,15 @@ function parseRequest(body) {
     const missing = raw === undefined || raw === null || (rule.kind === "string" && String(raw).trim() === "");
     if (missing) {
       if (rule.required) return { error: `${field} is required` };
+      // Sent, and empty: "clear it", where the field allows that.
+      if (rule.clear && raw !== undefined) out[field] = rule.kind === "string" ? "" : null;
       continue;
     }
     switch (rule.kind) {
       case "string": {
         if (typeof raw !== "string") return { error: `${field} must be a string` };
         out[field] = raw.trim().slice(0, rule.max);
+        if (ID_FIELDS.has(field) && !validId(out[field])) return { error: `${field} is not a valid id` };
         break;
       }
       case "number": {
@@ -194,6 +216,7 @@ function parseRequest(body) {
       case "stringList": {
         if (!Array.isArray(raw)) return { error: `${field} must be a list` };
         const list = [...new Set(raw.filter((v) => typeof v === "string").map((v) => v.trim().slice(0, rule.max)).filter(Boolean))];
+        if (field === "uids" && list.some((v) => !validId(v))) return { error: `${field} holds an invalid id` };
         if (list.length > rule.maxItems) return { error: `${field} has more than ${rule.maxItems} items` };
         if (rule.required && !list.length) return { error: `${field} is required` };
         out[field] = list;
@@ -379,6 +402,16 @@ function normalizeRecipe(raw) {
   };
 }
 
+// A profile picture URL the rules accept on public_profiles (firestore.rules
+// trustedPhotoUrl, same pattern): an upload to our bucket or a Google account
+// photo, https. The console writes user.profile through the Admin SDK, past
+// the rules — a URL set here on another host would have refused that
+// account's own next profile save.
+const TRUSTED_PHOTO_URL = /^https:\/\/(firebasestorage\.googleapis\.com|storage\.googleapis\.com|([a-z0-9-]+\.)+googleusercontent\.com)\/.*$/;
+function trustedPhotoUrl(url) {
+  return typeof url === "string" && url.length <= 2048 && TRUSTED_PHOTO_URL.test(url);
+}
+
 // randomuser.me keeps a hundred portraits per gender; a persona gets one
 // by number so two personas rarely share a face.
 function portraitUrl(gender, index) {
@@ -414,11 +447,24 @@ function summarize(request) {
   return out;
 }
 
-// A data: URL's bytes and type, or null when it is not an image.
+// The declared type of a data: URL is the sender's word: "image/png" over
+// an SVG (a document that can carry script) would have been stored and
+// served under whatever type it claimed. The bytes decide (sniffImage).
+// A data: URL's bytes and type, or null when it is not a raster image. The
+// type is the sniffed one, never the declared one.
 function decodeDataUrl(dataUrl) {
   const match = /^data:(image\/[a-z0-9.+-]+);base64,([A-Za-z0-9+/=\s]+)$/i.exec(dataUrl || "");
   if (!match) return null;
-  return { contentType: match[1].toLowerCase(), bytes: Buffer.from(match[2].replace(/\s/g, ""), "base64") };
+  const bytes = Buffer.from(match[2].replace(/\s/g, ""), "base64");
+  const contentType = sniffImage(bytes);
+  return contentType ? { contentType, bytes } : null;
+}
+
+// Pure: a Remote Config group name the console may create or add to. Not a
+// prototype key (the groups are a plain object) and no control characters.
+function validGroupName(name) {
+  return typeof name === "string" && name.trim() === name && name.length > 0 && name.length <= 120
+    && !/[\u0000-\u001f\u007f]/.test(name) && !["__proto__", "constructor", "prototype"].includes(name);
 }
 
 function extensionFor(contentType) {
@@ -604,33 +650,8 @@ async function gemini({ key, prompt, schema, uid, kind, fetchImpl = fetch }) {
   }
 }
 
-async function fetchImage(url, fetchImpl = fetch) {
-  if (!/^https?:\/\//i.test(url)) throw refused("image url must be http(s)", "invalid_image");
-  const response = await fetchImpl(url, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; EasyPlateAdmin/1.0)", Accept: "image/*,*/*;q=0.5" },
-    redirect: "follow",
-    signal: AbortSignal.timeout(20000),
-  });
-  if (!response.ok) throw refused(`image fetch failed (${response.status})`, "image_fetch");
-  const contentType = String(response.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (!contentType.startsWith("image/")) {
-    // Some hosts lie about the type; the magic bytes decide.
-    const sniffed = sniffImage(bytes);
-    if (!sniffed) throw refused("the url did not return an image", "invalid_image");
-    return { contentType: sniffed, bytes };
-  }
-  return { contentType, bytes };
-}
-
-function sniffImage(bytes) {
-  if (bytes.length < 12) return null;
-  if (bytes[0] === 0xff && bytes[1] === 0xd8) return "image/jpeg";
-  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "image/png";
-  if (bytes.slice(0, 4).toString() === "RIFF" && bytes.slice(8, 12).toString() === "WEBP") return "image/webp";
-  if (bytes.slice(0, 3).toString() === "GIF") return "image/gif";
-  return null;
-}
+// The SSRF guard (assertPublicUrl, the hop-by-hop fetchImage, readCapped)
+// lives in safeFetch.js, shared with imageSearch's download action.
 
 // Puts a picture in the bucket at `path` (its extension taken from the
 // type) with a download token, the way the app's own uploads are read.
@@ -741,9 +762,11 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     case "user.enable":
       await accounts.enable(request.uid);
       return {};
-    case "user.delete":
-      await accounts.remove(request.uid);
+    case "user.delete": {
+      const removed = await accounts.remove(request.uid, { stripeSecret: keys.stripe || "", billingKeys: keys.billing || null, db });
+      if (removed && removed.error) throw refused("The account owns a household: dissolve it first", removed.error, 409);
       return {};
+    }
     case "user.kick":
       await accounts.releaseSession(request.uid);
       return {};
@@ -752,6 +775,8 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       await notifications.log(db, { by: caller.uid, target: "user", uid: request.uid, title: request.title, body: request.body, source: "console" });
       return {};
     case "user.notifyAll": {
+      const tooMany = await accounts.directSendRefusal(db);
+      if (tooMany) throw refused(tooMany.message, tooMany.error, 409);
       const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body });
       await notifications.log(db, { by: caller.uid, target: "all", title: request.title, body: request.body, source: "console", result });
       return result;
@@ -759,6 +784,8 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
 
     case "user.notifyAudience": {
       if (request.audience === "users" && !(request.uids || []).length) throw Object.assign(new Error("pick at least one user"), { status: 400 });
+      const tooMany = await accounts.directSendRefusal(db);
+      if (tooMany) throw refused(tooMany.message, tooMany.error, 409);
       const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body, audience: request.audience, uids: request.uids });
       await notifications.log(db, { by: caller.uid, target: request.audience, uids: request.uids, title: request.title, body: request.body, source: "console", result });
       return result;
@@ -796,6 +823,9 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     case "user.entitlement": {
       const data = { source: "admin", adminLock: request.adminLock !== false, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
       if (request.premium !== undefined) data.premium = request.premium;
+      if (request.premiumUntil && (request.premiumUntil < 0 || request.premiumUntil > MAX_PREMIUM_UNTIL_MS)) {
+        throw refused("premiumUntil must be a date before 2100", "invalid", 400);
+      }
       data.premiumUntil = request.premiumUntil ? ts(request.premiumUntil) : null;
       data.premiumFrom = request.premium ? admin.firestore.Timestamp.now() : null;
       await db.doc(`entitlements/${request.uid}`).set(data, { merge: true });
@@ -809,6 +839,9 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     case "user.profile": {
       const patch = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
       if (request.fullName !== undefined) patch.fullName = request.fullName;
+      if (request.photoUrl && !trustedPhotoUrl(request.photoUrl)) {
+        throw refused("photoUrl must be an https Storage download URL or a Google account photo", "invalid_photo_url");
+      }
       if (request.photoUrl !== undefined) patch.photoUrl = request.photoUrl || null;
       const batch = db.batch();
       batch.set(db.doc(`users/${request.uid}`), patch, { merge: true });
@@ -929,7 +962,12 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       const normalized = normalizeRecipe(request.recipe);
       if (normalized.error) throw refused(normalized.error);
       const patch = { ...normalized.recipe, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
-      if (request.image) {
+      if (request.image === null) {
+        // "No picture": the recipe lets go of it. The object stays in the
+        // bucket — the author's own copy of the recipe may still show it.
+        patch.imageFileName = null;
+        patch.imageStoragePath = null;
+      } else if (request.image) {
         const image = await recipeImage({ bucket, authorUid: snap.get("authorUid") || "admin", image: request.image, fetchImpl });
         patch.imageFileName = image.fileName;
         patch.imageStoragePath = image.path;
@@ -945,7 +983,8 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
         await db.recursiveDelete(ref);
         // A persona's picture has no other home; a member's lives with
         // their own recipe too and is left alone.
-        if (typeof path === "string" && path.startsWith(`recipe_images/${PERSONA_PREFIX}`)) {
+        const author = snap.get("authorUid");
+        if (isPersona(author) && ownedImagePath(path, author)) {
           await bucket.file(path).delete().catch(() => {});
         }
       }
@@ -1179,9 +1218,10 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       const template = await admin.remoteConfig().getTemplate();
       if (remoteConfig.findParam(template, request.name)) throw refused("parameter exists", "exists", 409);
       const param = { defaultValue: { value: "" }, description: request.description || "", valueType: request.valueType };
+      if (request.group !== undefined && request.group !== "" && !validGroupName(request.group)) throw refused("group name is not valid", "invalid_group");
       if (request.group) {
         template.parameterGroups = template.parameterGroups || {};
-        template.parameterGroups[request.group] = template.parameterGroups[request.group] || { parameters: {} };
+        if (!Object.hasOwn(template.parameterGroups, request.group)) template.parameterGroups[request.group] = { parameters: {} };
         template.parameterGroups[request.group].parameters[request.name] = param;
       } else {
         template.parameters[request.name] = param;
@@ -1260,12 +1300,25 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
   }
 }
 
+// Pure: whether a bucket path is one of this author's recipe pictures —
+// `recipe_images/{authorUid}/{file}`, nothing climbing out of it.
+function ownedImagePath(path, authorUid) {
+  if (typeof path !== "string" || !validId(authorUid)) return false;
+  const prefix = `recipe_images/${authorUid}/`;
+  if (!path.startsWith(prefix) || path.length === prefix.length) return false;
+  return !path.includes("..") && !path.startsWith("/") && !path.slice(prefix.length).includes("/");
+}
+
 // The picture for a shared recipe, stored under the author like the app's
 // own uploads. `storagePath` keeps one already in the bucket; `url` and
 // `dataUrl` bring a new one in.
 async function recipeImage({ bucket, authorUid, image, fetchImpl }) {
   if (!image || typeof image !== "object") return { path: null, fileName: null };
   if (typeof image.storagePath === "string" && image.storagePath) {
+    // Only a picture already under this author: the path is stored on the
+    // recipe and deleted with it (removeAuthored, recipe.delete), so any
+    // other object named here would be deleted later on its behalf.
+    if (!ownedImagePath(image.storagePath, authorUid)) throw refused("storagePath must be one of the author's recipe pictures", "invalid_image");
     return { path: image.storagePath, fileName: image.storagePath.split("/").pop() };
   }
   if (!image.url && !image.dataUrl) return { path: null, fileName: null };
@@ -1315,7 +1368,7 @@ async function removeAuthored(db, bucket, uid) {
   for (const doc of recipes.docs) {
     const path = doc.get("imageStoragePath");
     await db.recursiveDelete(doc.ref);
-    if (typeof path === "string" && path) await bucket.file(path).delete().catch(() => {});
+    if (ownedImagePath(path, uid)) await bucket.file(path).delete().catch(() => {});
     result.recipes++;
   }
   return result;
@@ -1339,7 +1392,7 @@ async function audit(db, { caller, request, ok, error, ms }) {
 }
 
 exports.adminPanel = onRequest(
-  { region: "europe-west1", cors: ORIGINS, maxInstances: 3, timeoutSeconds: 300, memory: "512MiB", secrets: [geminiApiKey, serperApiKey] },
+  { region: "europe-west1", cors: ORIGINS, maxInstances: 3, timeoutSeconds: 300, memory: "512MiB", secrets: [geminiApiKey, serperApiKey, stripeSecret, ...billingSecrets.SECRETS] },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: { message: "POST only" } });
     const caller = await proxy.verifyCaller(req);
@@ -1348,14 +1401,14 @@ exports.adminPanel = onRequest(
 
     const request = parseRequest(req.body || {});
     if (request.error) return res.status(400).json({ error: { code: "invalid", message: request.error } });
-    if (request.uid === caller.uid && /^user\.(disable|delete|kick)$/.test(request.action)) {
+    if (request.uid === caller.uid && /^user\.(disable|enable|delete|kick)$/.test(request.action)) {
       return res.status(400).json({ error: { code: "self", message: "Not on your own account" } });
     }
 
     const db = admin.firestore();
     const started = Date.now();
     try {
-      const result = await run(request, { caller, db, bucket: admin.storage().bucket(), keys: { gemini: geminiApiKey.value(), serper: serperApiKey.value() } });
+      const result = await run(request, { caller, db, bucket: admin.storage().bucket(), keys: { gemini: geminiApiKey.value(), serper: serperApiKey.value(), stripe: stripeSecret.value(), billing: billingSecrets.keys() } });
       await audit(db, { caller, request, ok: true, ms: Date.now() - started });
       logger.info("admin panel action", { action: request.action, by: caller.uid });
       return res.status(200).json({ ok: true, ...result });
@@ -1363,7 +1416,12 @@ exports.adminPanel = onRequest(
       await audit(db, { caller, request, ok: false, error: err.message, ms: Date.now() - started });
       const status = err.status || 500;
       if (status >= 500) logger.error("admin panel action failed", { action: request.action, reason: err.message });
-      return res.status(status).json({ error: { code: err.code || "failed", message: err.message } });
+      // A refusal of ours (4xx) says why; anything else may be a Stripe,
+      // Gemini or Firestore message, which stays in the log and the audit
+      // row (administrator-only) and leaves as a stable code.
+      const known = status < 500 && status !== 429 && !(err instanceof StripeError);
+      const code = known ? (typeof err.code === "string" ? err.code : "invalid") : status === 429 ? "quota" : status === 502 ? "upstream" : "failed";
+      return res.status(status).json({ error: { code, message: known ? err.message : "The action failed" } });
     }
   },
 );
@@ -1378,12 +1436,23 @@ exports.internals = {
   WHATS_NEW_LANGS,
   isPersona,
   personaUid,
+  validId,
+  ownedImagePath,
+  recipeImage,
+  MAX_PREMIUM_UNTIL_MS,
   backdated,
   normalizeRecipe,
   portraitUrl,
+  trustedPhotoUrl,
   summarize,
   decodeDataUrl,
+  validGroupName,
   sniffImage,
+  isPrivateAddress,
+  isInternalHostname,
+  assertPublicUrl,
+  fetchImage,
+  readCapped,
   recipePrompt,
   textPrompt,
   dishesPrompt,

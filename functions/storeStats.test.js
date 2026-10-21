@@ -210,3 +210,27 @@ test("a failing sync keeps what it fetched and records the reason", async () => 
   await assert.rejects(syncIos({ db, config, privateKey: pem, fetchImpl, now: Date.parse("2026-10-09T12:00:00Z") }), /403/);
   assert.match(db.summary.error, /403/);
 });
+
+test("a bad key is refused before any of the form is saved", async () => {
+  const { keyProblem } = require("./storeStats").internals;
+  const { saveConfig } = require("./storeStats");
+  const { privateKey } = crypto.generateKeyPairSync("ec", { namedCurve: "prime256v1" });
+  assert.equal(keyProblem(privateKey.export({ type: "pkcs8", format: "pem" })), null);
+  assert.equal(keyProblem(""), null);
+  assert.ok(keyProblem("AuthKey_ABC123"));
+  assert.ok(keyProblem("-----BEGIN PRIVATE KEY-----\nnot a key\n-----END PRIVATE KEY-----"));
+  const writes = [];
+  const db = { doc: (p) => ({ get: async () => ({ exists: false }), set: async () => writes.push(p), delete: async () => writes.push(p) }) };
+  await assert.rejects(saveConfig(db, { playBucket: "b", applePrivateKey: "AuthKey_ABC123" }), (err) => err.status === 400);
+  assert.deepEqual(writes, []);
+});
+
+test("a nightly Play sync reads this month's and last month's reports only", () => {
+  const { recentReports } = require("./storeStats").internals;
+  const f = (m, k = "overview") => ({ name: `stats/installs/installs_com.x_${m}_${k}.csv` });
+  const files = [f("202608"), f("202609"), f("202610"), f("202610", "country"), { name: "stats/installs/odd.csv" }];
+  const now = Date.UTC(2026, 9, 18);
+  assert.deepEqual(recentReports(files, now).map((x) => x.name), [f("202609").name, f("202610").name, f("202610", "country").name, "stats/installs/odd.csv"]);
+  // January reaches back to December.
+  assert.deepEqual(recentReports([f("202512"), f("202511"), f("202601")], Date.UTC(2026, 0, 3)).map((x) => x.name), [f("202512").name, f("202601").name]);
+});

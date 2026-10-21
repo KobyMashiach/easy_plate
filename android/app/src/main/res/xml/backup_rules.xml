@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auto Backup on Android 11 and below (android:fullBackupContent), which
+     covers both the cloud backup and a phone-to-phone transfer.
+     Everything is backed up except what must not land on another phone:
+       * app_flutter/ is Hive (every box, the device id of the one-device
+         rule, cached recipe photos). Every box also lives at users/{uid}/...
+         and photos in Storage, so a fresh install pulls it all back after
+         sign-in; a restored copy would only clash with that mirror.
+       * The Firebase Auth store is the signed-in session. Its file name is
+         com.google.firebase.auth.api.Store.<base64url("[DEFAULT]")>+
+         <base64url(mobilesdk_app_id)>.xml, from google-services.json; it
+         changes if that app id ever does.
+       * easy_plate_intent_trust is the per-install token that marks the
+         app's own intents (WidgetIntents.trustToken); each install mints
+         its own, and a copy must never vouch for intents on another phone.
+       * easy_plate_widgets is the home-screen widgets' snapshot (lists,
+         plans, the account's names) and their pending queue: written for
+         this phone's widgets by the signed-in app, and a restored queue
+         would be applied to whichever account signs in next.
+     Android 12+ reads data_extraction_rules.xml instead. -->
+<full-backup-content>
+    <exclude domain="root" path="app_flutter/" />
+    <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.W0RFRkFVTFRd+MToxMDEyMTIzNjg3Njg1OmFuZHJvaWQ6OTk1YWZlNGUzMWVkZmJkYmFkYjU2Yw.xml" />
+    <exclude domain="sharedpref" path="easy_plate_intent_trust.xml" />
+    <exclude domain="sharedpref" path="easy_plate_widgets.xml" />
+</full-backup-content>

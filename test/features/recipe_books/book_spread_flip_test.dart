@@ -124,4 +124,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(controller.spread, 1);
   });
+
+  testWidgets('a re-keyed flip keeps answering its controller', (
+    tester,
+  ) async {
+    final controller = BookSpreadController();
+    Widget keyed(int key) => MaterialApp(
+      home: SizedBox(
+        width: 800,
+        height: 400,
+        child: BookSpreadFlip(
+          key: ValueKey(key),
+          pages: pages(),
+          controller: controller,
+          duration: const Duration(milliseconds: 100),
+        ),
+      ),
+    );
+    await tester.pumpWidget(keyed(1));
+    // An edit to the book changes the key: a new state replaces the old.
+    await tester.pumpWidget(keyed(2));
+
+    controller.jumpTo(2);
+    await tester.pump();
+    expect(controller.spread, 2);
+    expect(find.text('p4'), findsOneWidget);
+  });
 }

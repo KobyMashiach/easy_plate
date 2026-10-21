@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GroceryListModel {
 
-@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) List<GroceryItemModel> get items;@HiveField(3) Map<String, String> get collaborators;@HiveField(4) DateTime get createdAt;// Appended, never reordered: lists written before this existed decode with
+@HiveField(0) String get id;@HiveField(1) String get name;@HiveField(2) List<GroceryItemModel> get items;@HiveField(3) Map<String, String> get collaborators;@HiveField(4)@JsonKey(fromJson: readJsonDate) DateTime get createdAt;// Appended, never reordered: lists written before this existed decode with
 // the default and keep meaning "all plans".
 @HiveField(5) List<String> get selectedPlanIds;/// The language the list name and the item names are written in.
 @HiveField(6) String? get contentLang;/// See [RecipeModel.contentVersion].
@@ -57,7 +57,7 @@ abstract mixin class $GroceryListModelCopyWith<$Res>  {
   factory $GroceryListModelCopyWith(GroceryListModel value, $Res Function(GroceryListModel) _then) = _$GroceryListModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle,@HiveField(13) String? collabId,@HiveField(14) String? collabRole
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle,@HiveField(13) String? collabId,@HiveField(14) String? collabRole
 });
 
 
@@ -173,7 +173,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GroceryListModel() when $default != null:
 return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle,_that.collabId,_that.collabRole);case _:
@@ -194,7 +194,7 @@ return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.create
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)  $default,) {final _that = this;
 switch (_that) {
 case _GroceryListModel():
 return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle,_that.collabId,_that.collabRole);}
@@ -211,7 +211,7 @@ return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.create
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String name, @HiveField(2)  List<GroceryItemModel> items, @HiveField(3)  Map<String, String> collaborators, @HiveField(4)@JsonKey(fromJson: readJsonDate)  DateTime createdAt, @HiveField(5)  List<String> selectedPlanIds, @HiveField(6)  String? contentLang, @HiveField(7)  int contentVersion, @HiveField(8)  String source, @HiveField(9)  String? recipeId, @HiveField(10)  double recipeScale, @HiveField(11)  int? recipeServings, @HiveField(12)  String? recipeTitle, @HiveField(13)  String? collabId, @HiveField(14)  String? collabRole)?  $default,) {final _that = this;
 switch (_that) {
 case _GroceryListModel() when $default != null:
 return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.createdAt,_that.selectedPlanIds,_that.contentLang,_that.contentVersion,_that.source,_that.recipeId,_that.recipeScale,_that.recipeServings,_that.recipeTitle,_that.collabId,_that.collabRole);case _:
@@ -226,7 +226,7 @@ return $default(_that.id,_that.name,_that.items,_that.collaborators,_that.create
 @JsonSerializable()
 
 class _GroceryListModel implements GroceryListModel {
-  const _GroceryListModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<GroceryItemModel> items, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4) required this.createdAt, @HiveField(5) final  List<String> selectedPlanIds = const <String>[], @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0, @HiveField(8) this.source = 'plans', @HiveField(9) this.recipeId, @HiveField(10) this.recipeScale = 1.0, @HiveField(11) this.recipeServings, @HiveField(12) this.recipeTitle, @HiveField(13) this.collabId, @HiveField(14) this.collabRole}): _items = items,_collaborators = collaborators,_selectedPlanIds = selectedPlanIds;
+  const _GroceryListModel({@HiveField(0) required this.id, @HiveField(1) required this.name, @HiveField(2) required final  List<GroceryItemModel> items, @HiveField(3) final  Map<String, String> collaborators = const {}, @HiveField(4)@JsonKey(fromJson: readJsonDate) required this.createdAt, @HiveField(5) final  List<String> selectedPlanIds = const <String>[], @HiveField(6) this.contentLang, @HiveField(7) this.contentVersion = 0, @HiveField(8) this.source = 'plans', @HiveField(9) this.recipeId, @HiveField(10) this.recipeScale = 1.0, @HiveField(11) this.recipeServings, @HiveField(12) this.recipeTitle, @HiveField(13) this.collabId, @HiveField(14) this.collabRole}): _items = items,_collaborators = collaborators,_selectedPlanIds = selectedPlanIds;
   factory _GroceryListModel.fromJson(Map<String, dynamic> json) => _$GroceryListModelFromJson(json);
 
 @override@HiveField(0) final  String id;
@@ -245,7 +245,7 @@ class _GroceryListModel implements GroceryListModel {
   return EqualUnmodifiableMapView(_collaborators);
 }
 
-@override@HiveField(4) final  DateTime createdAt;
+@override@HiveField(4)@JsonKey(fromJson: readJsonDate) final  DateTime createdAt;
 // Appended, never reordered: lists written before this existed decode with
 // the default and keep meaning "all plans".
  final  List<String> _selectedPlanIds;
@@ -307,7 +307,7 @@ abstract mixin class _$GroceryListModelCopyWith<$Res> implements $GroceryListMod
   factory _$GroceryListModelCopyWith(_GroceryListModel value, $Res Function(_GroceryListModel) _then) = __$GroceryListModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle,@HiveField(13) String? collabId,@HiveField(14) String? collabRole
+@HiveField(0) String id,@HiveField(1) String name,@HiveField(2) List<GroceryItemModel> items,@HiveField(3) Map<String, String> collaborators,@HiveField(4)@JsonKey(fromJson: readJsonDate) DateTime createdAt,@HiveField(5) List<String> selectedPlanIds,@HiveField(6) String? contentLang,@HiveField(7) int contentVersion,@HiveField(8) String source,@HiveField(9) String? recipeId,@HiveField(10) double recipeScale,@HiveField(11) int? recipeServings,@HiveField(12) String? recipeTitle,@HiveField(13) String? collabId,@HiveField(14) String? collabRole
 });
 
 

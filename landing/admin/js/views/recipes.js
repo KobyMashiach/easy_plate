@@ -80,24 +80,40 @@ function imagePicker(initialPath, queryHint) {
   const results = h("div.imggrid");
   const q = input({ value: queryHint || "", placeholder: t("recipes.searchHint") });
   let nextStart = 1;
-  const show = (src) => { clear(preview); if (src) preview.append(h("img.thumb.lg", { src, alt: "", referrerpolicy: "no-referrer" })); };
+  // The console's CSP allows https images only: an http:// result (Serper
+  // passes the site's own URL through) is previewed over https — the server
+  // fetches the original either way — and a host with no https falls back
+  // to the result's thumbnail.
+  const https = (u) => (typeof u === "string" ? u.replace(/^http:\/\//i, "https://") : u);
+  const show = (src, fallback) => {
+    clear(preview);
+    if (!src) return;
+    const img = h("img.thumb.lg", { src: https(src), alt: "", referrerpolicy: "no-referrer" });
+    if (fallback) img.addEventListener("error", () => { if (img.src !== https(fallback)) img.src = https(fallback); }, { once: true });
+    preview.append(img);
+  };
   if (initialPath) storageUrl(initialPath).then(show);
+  // A newer search clears the grid: an older answer arriving late is dropped.
+  let searchSeq = 0;
   const search = async (more = false) => {
     if (!q.value.trim()) return;
+    const mine = more ? searchSeq : ++searchSeq;
     if (!more) { clear(results); nextStart = 1; }
     const loading = spinner();
     results.append(loading);
     try {
       const r = await call("image.search", { query: q.value.trim(), start: nextStart, lang: currentLang() });
       loading.remove();
+      if (mine !== searchSeq) return;
       nextStart = r.nextStart;
       if (!r.items.length && !more) results.append(h("p.muted.small", t("recipes.noResults")));
       for (const item of r.items) {
-        const img = h("img", { src: item.thumbnail, alt: item.title || "", title: item.source || "", referrerpolicy: "no-referrer", onclick: () => { for (const o of results.querySelectorAll("img")) o.classList.remove("on"); img.classList.add("on"); value = { url: item.url }; show(item.url); } });
+        const pick = () => { for (const o of results.querySelectorAll("img")) { o.classList.remove("on"); o.setAttribute("aria-pressed", "false"); } img.classList.add("on"); img.setAttribute("aria-pressed", "true"); value = { url: item.url }; show(item.url, item.thumbnail); };
+        const img = h("img", { src: https(item.thumbnail), alt: item.title || "", title: item.source || "", referrerpolicy: "no-referrer", tabindex: "0", role: "button", "aria-pressed": "false", onclick: pick, onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } } });
         results.append(img);
       }
       moreBtn.hidden = !nextStart;
-    } catch (e) { loading.remove(); toastError(e); }
+    } catch (e) { loading.remove(); if (mine === searchSeq) toastError(e); }
   };
   const moreBtn = button(t("recipes.searchMore"), { kind: "small", hidden: true, onclick: () => search(true) });
   const searchBtn = button(t("recipes.imageSearch"), { kind: "small primary" });
@@ -140,7 +156,7 @@ async function openEditor({ existing } = {}) {
     isNew ? h("div.card", h("div.row", h("div.grow", field(t("recipes.language"), lang)), h("div.grow", field(t("recipes.hints"), hints)), gen), h("p.small.muted", t("recipes.titleHint"))) : null,
     edWrap,
     h("div.card", picker.root),
-    isNew ? h("div.grid2", field(t("forum.as"), as), field(t("forum.backdate"), h("div.row", date, button(t("common.random"), { kind: "small", onclick: () => { const d = new Date(Date.now() - Math.random() * DAYS_BACK * 86400000); date.value = d.toISOString().slice(0, 16); } })))) : null,
+    isNew ? h("div.grid2", field(t("forum.as"), as), field(t("forum.backdate"), h("div.row", date, button(t("common.random"), { kind: "small", onclick: () => { const ms = Date.now() - Math.random() * DAYS_BACK * 86400000; date.value = new Date(ms - new Date(ms).getTimezoneOffset() * 60000).toISOString().slice(0, 16); } })))) : null,
   );
   modal({
     title: isNew ? t("recipes.new") : t("recipes.edit"),
@@ -155,7 +171,9 @@ async function openEditor({ existing } = {}) {
         if (!(recipe.nutrition && recipe.nutrition.calories)) recipe.nutrition = null;
         try {
           if (isNew) await call("recipe.create", { as: as.value, recipe, image: picker.value || undefined, createdAt: date.value ? new Date(date.value).getTime() : undefined });
-          else await call("recipe.update", { id: existing.id, recipe, image: picker.value && !picker.value.storagePath ? picker.value : undefined });
+          // "none" on an existing recipe that had a picture clears it (the
+          // server keeps an explicit null); an unchanged picture sends nothing.
+          else await call("recipe.update", { id: existing.id, recipe, image: picker.value && !picker.value.storagePath ? picker.value : !picker.value && existing.imageStoragePath ? null : undefined });
           toast(isNew ? t("recipes.published") : t("common.saved"), "ok");
           c();
         } catch (e) { toastError(e); }
@@ -240,6 +258,8 @@ export async function openSeeder() {
   modal({
     title: t("seed.title"),
     wide: true,
+    // Closing (✕, Escape, backdrop) stops a run in progress: no paid calls nobody sees.
+    onClose: () => { stop = true; },
     body: h("div.stack",
       h("div.grid3", field(t("seed.count"), count), field(t("recipes.language"), lang), field(t("seed.author"), as)),
       h("div.grid3", field(t("seed.theme"), theme), field(t("seed.days"), days), field(t("seed.likes"), likes)),
@@ -258,7 +278,11 @@ export async function mount({ view, actions }) {
   view.append(h("div.toolbar", h("div.search", input({ placeholder: t("common.search"), oninput: debounce((e) => { search = e.target.value.trim().toLowerCase(); render(); }, 150) })), count), list);
   actions.append(button(t("seed.title"), { kind: "primary small", onclick: () => openSeeder() }), button(t("recipes.new"), { kind: "small", onclick: () => openEditor() }));
 
+  // Same guard as the forum thread: a card awaits its like controls, and
+  // a snapshot that lands meanwhile must not leave two copies of the feed.
+  let pass = 0;
   const render = async () => {
+    const mine = ++pass;
     const rows = search ? recipes.filter((r) => [r.title, r.authorName].some((v) => String(v || "").toLowerCase().includes(search))) : recipes;
     count.textContent = t("recipes.count", { n: fmtNumber(rows.length) });
     clear(list);
@@ -272,6 +296,7 @@ export async function mount({ view, actions }) {
         } })),
       );
       card.append(await likeControls({ kind: "recipe", recipeId: r.id }));
+      if (mine !== pass) return;
       list.append(card);
     }
   };

@@ -7,6 +7,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/error_retry_view.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
 import '../../domain/repositories/shared_recipes_repository.dart';
 import '../../domain/usecases/get_shared_recipes_usecase.dart';
@@ -37,7 +38,9 @@ class _SharedRecipePickerSheet extends StatefulWidget {
 }
 
 class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
-  late final Future<List<SharedRecipeEntity>> _future = GetSharedRecipesUseCase(
+  late Future<List<SharedRecipeEntity>> _future = _load();
+
+  Future<List<SharedRecipeEntity>> _load() => GetSharedRecipesUseCase(
     widget.repository,
   )(viewerUid: AuthSessionService().user?.uid ?? '');
 
@@ -77,6 +80,13 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState != ConnectionState.done) {
                       return const Center(child: CircularProgressIndicator());
+                    }
+                    // A failed read is not an empty community.
+                    if (snapshot.hasError) {
+                      return ErrorRetryView(
+                        error: t.community.loadFailed,
+                        onRetry: () => setState(() => _future = _load()),
+                      );
                     }
                     final all = snapshot.data ?? const <SharedRecipeEntity>[];
                     final visible = all

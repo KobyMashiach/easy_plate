@@ -1,6 +1,10 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../recipe_sharing/data/repositories_impl/recipe_sharing_repository_impl.dart';
 import '../../../recipe_sharing/domain/entities/share_invite_entity.dart';
+import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../domain/entities/collab_container_entity.dart';
 import '../../domain/repositories/collab_containers_repository.dart';
 import '../datasources/collab_containers_remote_datasource.dart';
@@ -70,19 +74,40 @@ class CollabContainersRepositoryImpl implements CollabContainersRepository {
   }) => remote.recipeInvite(collabId: collabId, uid: uid);
 
   @override
+  Future<Map<String, ShareInviteEntity>> recipeInvites({
+    required Set<String> collabIds,
+    required String uid,
+  }) => remote.recipeInvites(collabIds: collabIds, uid: uid);
+
+  @override
   Future<CollabContainerEntity> acceptInvite(ShareInviteEntity invite) async {
     await remote.setInviteStatus(invite.id, ShareInviteStatus.accepted);
-    await remote.join(
-      invite.collabId,
-      uid: invite.targetUid,
-      role: invite.role,
-    );
-    final container = await remote.get(invite.collabId);
-    if (container == null) {
-      // The owner deleted it between sending and accepting.
+    try {
+      await remote.join(
+        invite.collabId,
+        uid: invite.targetUid,
+        role: invite.role,
+      );
+    } catch (e) {
+      if (!RecipeSharingRepositoryImpl.isCollabGone(e)) rethrow;
+      // The owner deleted it between sending and accepting; see
+      // RecipeSharingRepositoryImpl.acceptInvite for why the join is where
+      // that shows and why the invite is closed as declined.
+      try {
+        await remote.setInviteStatus(invite.id, ShareInviteStatus.declined);
+      } catch (rollback) {
+        debugPrint('Dead invite ${invite.id} not closed: $rollback');
+      }
       throw const AppException(
         AppErrorType.notFound,
-        message: 'collab-missing',
+        message: RecipeSharingRepository.collabMissing,
+      );
+    }
+    final container = await remote.get(invite.collabId);
+    if (container == null) {
+      throw const AppException(
+        AppErrorType.notFound,
+        message: RecipeSharingRepository.collabMissing,
       );
     }
     return container;
@@ -101,6 +126,13 @@ class CollabContainersRepositoryImpl implements CollabContainersRepository {
       remote.sharedWith(uid);
 
   @override
-  Future<void> removeMember(String containerId, String memberUid) =>
-      remote.removeMember(containerId, memberUid);
+  Future<void> removeMember(
+    String containerId,
+    String memberUid, {
+    bool revokeInvite = false,
+  }) => remote.removeMember(
+    containerId,
+    memberUid,
+    revokeInvite: revokeInvite,
+  );
 }

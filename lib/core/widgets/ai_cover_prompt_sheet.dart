@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../features/recipe_ingestion/domain/usecases/generate_image_usecase.dart';
 import '../constants/app_colors.dart';
@@ -78,10 +79,19 @@ class _CoverPromptSheetState extends State<_CoverPromptSheet> {
     CoverTheme.quick => Icons.bolt_rounded,
   };
 
+  /// What the user may add to the prompt, and how much of the title rides
+  /// along: the prompt is paid for by its length, and a pasted page of text
+  /// would drown the instructions that follow it ("no text, no people").
+  static const maxSubjectLength = 200;
+  static const maxTitleLength = 120;
+
   void _submit() {
+    final title = widget.bookTitle.trim();
     Navigator.of(context).pop(
       GenerateImageUseCase.bookCoverPrompt(
-        widget.bookTitle,
+        title.length > maxTitleLength
+            ? title.substring(0, maxTitleLength)
+            : title,
         theme: _theme,
         subject: _text.text,
       ),
@@ -132,6 +142,9 @@ class _CoverPromptSheetState extends State<_CoverPromptSheet> {
               controller: _text,
               style: AppTextStyles.bodyMd,
               textInputAction: TextInputAction.done,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(maxSubjectLength),
+              ],
               onSubmitted: (_) => _canGenerate ? _submit() : null,
               decoration: InputDecoration(
                 hintText: t.image.coverFreeText,

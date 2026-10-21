@@ -1,0 +1,33 @@
+{
+  "id": "ae5b7f3d-6a7c-4b8d-9e4f-5a6b7c8d9ea6",
+  "name": "סופר",
+  "items": [
+    {
+      "id": "g1",
+      "name": "חלב",
+      "unit": "liter",
+      "sources": [
+        {
+          "recipeId": null,
+          "label": "",
+          "amount": 2
+        }
+      ],
+      "isChecked": false,
+      "category": "מוצרי חלב",
+      "isAdHoc": true
+    }
+  ],
+  "collaborators": {},
+  "createdAt": "2026-10-18T10:00:00.000Z",
+  "selectedPlanIds": [],
+  "contentLang": null,
+  "contentVersion": 0,
+  "source": "manual",
+  "recipeId": null,
+  "recipeScale": 1,
+  "recipeServings": null,
+  "recipeTitle": null,
+  "collabId": "b4c5d6e7-8f9a-4b0c-9d1e-2f3a4b5c6d7e",
+  "collabRole": "viewer"
+}

@@ -559,15 +559,16 @@ class _ModalCard extends StatelessWidget {
 /// The single floating notice, and its replacement policy.
 abstract class _Notices {
   static OverlayEntry? _entry;
-  static final _key = GlobalKey<_NoticeState>();
 
   static void show(OverlayState overlay, AppDialog dialog, Duration duration) {
     // A notice still on screen leaves at once — no exit animation, so the
     // new one is not read as a continuation of it.
     dismiss();
     final entry = OverlayEntry(
+      // No shared key: the old entry is removed and the new one inserted in
+      // the same frame, and a GlobalKey would move the old state — its timer
+      // half spent, or its exit already running — into the new notice.
       builder: (_) => _Notice(
-        key: _key,
         dialog: dialog,
         duration: duration,
         onDone: dismiss,
@@ -590,7 +591,6 @@ class _Notice extends StatefulWidget {
   final VoidCallback onDone;
 
   const _Notice({
-    super.key,
     required this.dialog,
     required this.duration,
     required this.onDone,

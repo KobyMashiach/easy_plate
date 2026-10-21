@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +12,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_error_text.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../domain/send_log.dart';
 
 class PhoneVerificationArgs {
   final String verificationId;
@@ -52,10 +55,45 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
   late String _verificationId = widget.args.verificationId;
   String? _fieldError;
 
+  /// Seconds before another SMS may be asked for. A number hit repeatedly
+  /// is throttled by Firebase, and the refusal reads as sign-in being broken.
+  int _resendIn = 0;
+  Timer? _cooldown;
+  static const _resendWait = 30;
+
+  @override
+  void initState() {
+    super.initState();
+    // A code was just sent to get here.
+    _startCooldown();
+  }
+
   @override
   void dispose() {
+    _cooldown?.cancel();
     _code.dispose();
     super.dispose();
+  }
+
+  void _startCooldown([int seconds = _resendWait]) {
+    _cooldown?.cancel();
+    setState(() => _resendIn = seconds);
+    _cooldown = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return timer.cancel();
+      setState(() => _resendIn--);
+      if (_resendIn <= 0) timer.cancel();
+    });
+  }
+
+  void _resend() {
+    // A code sent from another screen (back to the form and on again)
+    // counts too.
+    final left = SendLog.smsWaitLeft(widget.args.phoneNumber, _resendWait);
+    if (left > 0) return _startCooldown(left);
+    _startCooldown();
+    context.read<AuthBloc>().add(
+      AuthEvent.startPhoneVerification(widget.args.phoneNumber),
+    );
   }
 
   void _verify() {
@@ -102,7 +140,11 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
               children: [
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  t.auth.codeSentTo(phone: widget.args.phoneNumber),
+                  // Isolated, or the leading "+" of the number jumps to the
+                  // other end of a Hebrew sentence.
+                  t.auth.codeSentTo(
+                    phone: '\u2066${widget.args.phoneNumber}\u2069',
+                  ),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMd.copyWith(
                     color: AppColors.onSurfaceVariant,
@@ -144,15 +186,11 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
                       const SizedBox(height: AppSpacing.xs),
                       Center(
                         child: TextButton(
-                          onPressed: busy
-                              ? null
-                              : () => context.read<AuthBloc>().add(
-                                  AuthEvent.startPhoneVerification(
-                                    widget.args.phoneNumber,
-                                  ),
-                                ),
+                          onPressed: busy || _resendIn > 0 ? null : _resend,
                           child: Text(
-                            t.auth.resendCode,
+                            _resendIn > 0
+                                ? t.auth.resendIn(seconds: _resendIn)
+                                : t.auth.resendCode,
                             style: AppTextStyles.labelMd.copyWith(
                               color: AppColors.primary,
                             ),

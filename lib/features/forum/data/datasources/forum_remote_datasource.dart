@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../community/data/doc_fields.dart';
 import '../../domain/entities/forum_post_entity.dart';
 import '../../domain/entities/forum_reply_entity.dart';
 
@@ -29,6 +30,11 @@ abstract class ForumRemoteDataSource {
     String postId, {
     required String viewerUid,
   });
+  Future<ForumReplyEntity?> getReply(
+    String postId,
+    String replyId, {
+    required String viewerUid,
+  });
   Future<String> addReply({
     required String postId,
     required String body,
@@ -53,6 +59,9 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
   static const _likes = 'likes';
   static const _uuid = Uuid();
 
+  /// A batch takes 500 writes; a little under, per commit.
+  static const _batchLimit = 450;
+
   final FirebaseFirestore _firestore;
 
   /// Whether the viewer has liked a given thread or reply, keyed by the like
@@ -75,8 +84,16 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
   Query<Map<String, dynamic>> _postsQuery(int limit) =>
       _root.orderBy('createdAt', descending: true).limit(limit);
 
-  Query<Map<String, dynamic>> _repliesQuery(String postId) =>
-      _root.doc(postId).collection(_replies).orderBy('createdAt');
+  /// A thread shows its newest [_repliesLimit] replies, oldest first. The
+  /// query runs newest-first so the limit cuts the old end, not the new
+  /// one; [_repliesOf] turns the page back round.
+  static const _repliesLimit = 200;
+
+  Query<Map<String, dynamic>> _repliesQuery(String postId) => _root
+      .doc(postId)
+      .collection(_replies)
+      .orderBy('createdAt', descending: true)
+      .limit(_repliesLimit);
 
   String _likeKey(DocumentReference<Map<String, dynamic>> target, String uid) =>
       '${target.path}/$_likes/$uid';
@@ -132,10 +149,11 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
       viewerUid,
       refresh: refresh,
     );
-    return [
-      for (var i = 0; i < snapshot.docs.length; i++)
-        _toPost(snapshot.docs[i], likedByMe: liked[i]),
-    ];
+    return parseEach(
+      [for (var i = 0; i < snapshot.docs.length; i++) i],
+      (i) => _toPost(snapshot.docs[i], likedByMe: liked[i]),
+      label: 'Forum posts',
+    );
   }
 
   @override
@@ -175,17 +193,17 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
     final data = doc.data() ?? const <String, dynamic>{};
     return ForumPostEntity(
       id: doc.id,
-      title: (data['title'] as String?) ?? '',
-      body: (data['body'] as String?) ?? '',
-      authorUid: (data['authorUid'] as String?) ?? '',
-      authorName: (data['authorName'] as String?) ?? '',
-      authorPhotoUrl: data['authorPhotoUrl'] as String?,
-      replyCount: (data['replyCount'] as num?)?.toInt() ?? 0,
+      title: docString(data['title']),
+      body: docString(data['body']),
+      authorUid: docString(data['authorUid']),
+      authorName: docString(data['authorName']),
+      authorPhotoUrl: docNonEmpty(data['authorPhotoUrl']),
+      replyCount: docInt(data['replyCount']) ?? 0,
       // Threads written before likes existed have no counter; they read as
       // zero, and the first like's increment creates the field.
-      likeCount: (data['likeCount'] as num?)?.toInt() ?? 0,
+      likeCount: docInt(data['likeCount']) ?? 0,
       likedByMe: likedByMe,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: docDate(data['createdAt']) ?? DateTime.now(),
     );
   }
 
@@ -214,15 +232,13 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
     String viewerUid, {
     required bool refresh,
   }) async {
-    final liked = await _likedByViewer(
-      snapshot.docs,
-      viewerUid,
-      refresh: refresh,
+    final docs = snapshot.docs.reversed.toList();
+    final liked = await _likedByViewer(docs, viewerUid, refresh: refresh);
+    return parseEach(
+      [for (var i = 0; i < docs.length; i++) i],
+      (i) => _toReply(docs[i], likedByMe: liked[i]),
+      label: 'Forum replies',
     );
-    return [
-      for (var i = 0; i < snapshot.docs.length; i++)
-        _toReply(snapshot.docs[i], likedByMe: liked[i]),
-    ];
   }
 
   @override
@@ -244,6 +260,19 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
     ).snapshots().asyncMap((s) => _repliesOf(s, viewerUid, refresh: false));
   }
 
+  /// One reply by id, for a deep link to a reply older than the window.
+  @override
+  Future<ForumReplyEntity?> getReply(
+    String postId,
+    String replyId, {
+    required String viewerUid,
+  }) async {
+    final doc = await _root.doc(postId).collection(_replies).doc(replyId).get();
+    if (!doc.exists) return null;
+    final liked = await _likedByViewer([doc], viewerUid, refresh: true);
+    return _toReply(doc, likedByMe: liked.first);
+  }
+
   ForumReplyEntity _toReply(
     DocumentSnapshot<Map<String, dynamic>> doc, {
     required bool likedByMe,
@@ -251,19 +280,19 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
     final data = doc.data() ?? const <String, dynamic>{};
     return ForumReplyEntity(
       id: doc.id,
-      body: (data['body'] as String?) ?? '',
-      authorUid: (data['authorUid'] as String?) ?? '',
-      authorName: (data['authorName'] as String?) ?? '',
-      authorPhotoUrl: data['authorPhotoUrl'] as String?,
-      sharedRecipeId: data['sharedRecipeId'] as String?,
-      sharedRecipeTitle: data['sharedRecipeTitle'] as String?,
-      likeCount: (data['likeCount'] as num?)?.toInt() ?? 0,
+      body: docString(data['body']),
+      authorUid: docString(data['authorUid']),
+      authorName: docString(data['authorName']),
+      authorPhotoUrl: docNonEmpty(data['authorPhotoUrl']),
+      sharedRecipeId: docNonEmpty(data['sharedRecipeId']),
+      sharedRecipeTitle: docStringOrNull(data['sharedRecipeTitle']),
+      likeCount: docInt(data['likeCount']) ?? 0,
       likedByMe: likedByMe,
       // A reply the local SDK has accepted but the server has not yet: the
       // stream reports it straight away, with this flag, and again without
       // it once the write is acknowledged.
       pending: doc.metadata.hasPendingWrites,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: docDate(data['createdAt']) ?? DateTime.now(),
     );
   }
 
@@ -321,19 +350,36 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
     required String viewerUid,
   }) async {
     final like = target.collection(_likes).doc(viewerUid);
+    final key = _likeKey(target, viewerUid);
 
-    final liked = await _firestore.runTransaction<bool>((transaction) async {
-      final existing = await transaction.get(like);
-      if (existing.exists) {
-        transaction.delete(like);
-        transaction.update(target, {'likeCount': FieldValue.increment(-1)});
-        return false;
+    // The cache flips before the write: the counter the transaction moves
+    // reaches the live stream before the transaction itself resolves, and a
+    // snapshot read against the old flag made the bloc count the like once
+    // more on top of the server's. Put back if the write fails.
+    final before = _viewerLikes[key];
+    _viewerLikes[key] = !(before ?? false);
+    final bool liked;
+    try {
+      liked = await _firestore.runTransaction<bool>((transaction) async {
+        final existing = await transaction.get(like);
+        if (existing.exists) {
+          transaction.delete(like);
+          transaction.update(target, {'likeCount': FieldValue.increment(-1)});
+          return false;
+        }
+        transaction.set(like, {'createdAt': Timestamp.now()});
+        transaction.update(target, {'likeCount': FieldValue.increment(1)});
+        return true;
+      });
+    } catch (_) {
+      if (before == null) {
+        _viewerLikes.remove(key);
+      } else {
+        _viewerLikes[key] = before;
       }
-      transaction.set(like, {'createdAt': Timestamp.now()});
-      transaction.update(target, {'likeCount': FieldValue.increment(1)});
-      return true;
-    });
-    _viewerLikes[_likeKey(target, viewerUid)] = liked;
+      rethrow;
+    }
+    _viewerLikes[key] = liked;
     return liked;
   }
 
@@ -349,19 +395,22 @@ class ForumFirestoreDataSource implements ForumRemoteDataSource {
       replies.docs.map((reply) => reply.reference.collection(_likes).get()),
     );
 
-    final batch = _firestore.batch();
-    for (final like in postLikes.docs) {
-      batch.delete(like.reference);
-    }
-    for (final likes in replyLikes) {
-      for (final like in likes.docs) {
-        batch.delete(like.reference);
+    // A busy thread has more documents than one batch holds. The thread
+    // itself goes in the last batch, so a failure part-way leaves it
+    // standing (with fewer replies) rather than orphaning what remains.
+    final refs = [
+      for (final like in postLikes.docs) like.reference,
+      for (final likes in replyLikes)
+        for (final like in likes.docs) like.reference,
+      for (final reply in replies.docs) reply.reference,
+      post,
+    ];
+    for (var i = 0; i < refs.length; i += _batchLimit) {
+      final batch = _firestore.batch();
+      for (final ref in refs.skip(i).take(_batchLimit)) {
+        batch.delete(ref);
       }
+      await batch.commit();
     }
-    for (final reply in replies.docs) {
-      batch.delete(reply.reference);
-    }
-    batch.delete(post);
-    await batch.commit();
   }
 }

@@ -63,7 +63,21 @@ export function initials(name) {
   return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
 }
 
-export function avatar(name, url, size = "") {
+// Only an https picture from our Storage or Google's CDN is loaded (the app's
+// AuthorRow.trustedPhotoUrl): a profile's photoUrl is whatever its owner wrote.
+export function trustedPhotoUrl(url) {
+  try {
+    const u = new URL(String(url || ""));
+    if (u.protocol !== "https:") return null;
+    const host = u.hostname.toLowerCase();
+    return host === "firebasestorage.googleapis.com" || host === "storage.googleapis.com" || host.endsWith(".googleusercontent.com") ? u.href : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+export function avatar(name, rawUrl, size = "") {
+  const url = trustedPhotoUrl(rawUrl);
   if (url) return h(`img.avatar${size ? "." + size : ""}`, { src: url, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.target.replaceWith(avatar(name, null, size)) });
   return h(`span.avatar${size ? "." + size : ""}`, initials(name));
 }
@@ -109,7 +123,7 @@ export function chips(options, value, onChange) {
   const render = () => {
     clear(wrap);
     for (const [v, label] of options) {
-      wrap.append(h(`button.chip${String(v) === String(value) ? ".on" : ""}`, { type: "button", onclick: () => { value = v; render(); onChange(v); } }, label));
+      wrap.append(h(`button.chip${String(v) === String(value) ? ".on" : ""}`, { type: "button", "aria-pressed": String(String(v) === String(value)), onclick: () => { value = v; render(); onChange(v); } }, label));
     }
   };
   render();
@@ -120,11 +134,12 @@ export function multiChips(options, selected, onChange) {
   const set = new Set(selected || []);
   const wrap = h("div.chips");
   for (const [v, label] of options) {
-    const btn = h(`button.chip${set.has(v) ? ".on" : ""}`, { type: "button" }, label);
+    const btn = h(`button.chip${set.has(v) ? ".on" : ""}`, { type: "button", "aria-pressed": String(set.has(v)) }, label);
     btn.addEventListener("click", () => {
       if (set.has(v)) set.delete(v);
       else set.add(v);
       btn.classList.toggle("on", set.has(v));
+      btn.setAttribute("aria-pressed", String(set.has(v)));
       onChange([...set]);
     });
     wrap.append(btn);
@@ -159,7 +174,17 @@ export function table(columns, rows, { onRow, emptyText } = {}) {
   const tbody = h("tbody");
   for (const row of rows) {
     const tr = h(`tr${onRow ? ".clickable" : ""}`, columns.map((c) => h(`td${c.num ? ".num" : ""}${c.cls ? "." + c.cls : ""}`, c.cell(row))));
-    if (onRow) tr.addEventListener("click", (e) => { if (!e.target.closest("button, a, input, select")) onRow(row); });
+    if (onRow) {
+      tr.addEventListener("click", (e) => { if (!e.target.closest("button, a, input, select")) onRow(row); });
+      // Reachable from the keyboard too: Tab to the row, Enter or Space opens it.
+      tr.tabIndex = 0;
+      tr.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target === tr) {
+          e.preventDefault();
+          onRow(row);
+        }
+      });
+    }
     tbody.append(tr);
   }
   return h("div.table-wrap", h("table", thead, tbody));
@@ -180,24 +205,49 @@ export function kv(pairs) {
 // ---- modals ----
 const modals = () => document.getElementById("modals");
 
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// Escape and Tab belong to the dialog on top; one underneath waits its turn.
+function onTop(back) {
+  return modals().lastElementChild === back;
+}
+
+let modalSeq = 0;
 export function modal({ title, body, actions = [], wide = false, onClose }) {
   const back = h("div.modal-back");
-  const box = h(`div.modal${wide ? ".wide" : ""}`, { role: "dialog", "aria-modal": "true" });
+  const titleId = `modal-title-${++modalSeq}`;
+  const box = h(`div.modal${wide ? ".wide" : ""}`, { role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, tabindex: "-1" });
+  // Focus goes back where it came from when the dialog closes.
+  const opener = document.activeElement;
+  let closed = false;
   const close = () => {
+    if (closed) return;
+    closed = true;
     back.remove();
     document.removeEventListener("keydown", onKey);
+    if (opener && typeof opener.focus === "function" && document.contains(opener)) opener.focus();
     if (onClose) onClose();
   };
-  const onKey = (e) => { if (e.key === "Escape") close(); };
+  const onKey = (e) => {
+    if (!onTop(back)) return;
+    if (e.key === "Escape") { e.preventDefault(); close(); return; }
+    if (e.key !== "Tab") return;
+    // Tab cycles inside the dialog instead of escaping to the page behind.
+    const items = [...box.querySelectorAll(FOCUSABLE)].filter((el) => !el.hidden && el.offsetParent !== null);
+    if (!items.length) { e.preventDefault(); box.focus(); return; }
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !box.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !box.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  };
   document.addEventListener("keydown", onKey);
   back.addEventListener("click", (e) => { if (e.target === back) close(); });
-  box.append(h("div.row.between", h("h2", title), button("✕", { kind: "ghost icon", onclick: close, "aria-label": t("common.close") })));
+  box.append(h("div.row.between", h("h2", { id: titleId }, title), button("✕", { kind: "ghost icon", onclick: close, "aria-label": t("common.close") })));
   box.append(typeof body === "function" ? body(close) : body);
   if (actions.length) box.append(h("div.actions", actions.map((a) => (typeof a === "function" ? a(close) : a))));
   back.append(box);
   modals().append(back);
   const first = box.querySelector("input, textarea, select, button.primary");
-  if (first) setTimeout(() => first.focus(), 30);
+  setTimeout(() => { if (!closed) (first || box).focus(); }, 30);
   return close;
 }
 
@@ -258,10 +308,10 @@ export function hbars(entries, fmt) {
 }
 
 export function tabs(items, active, onChange) {
-  const wrap = h("div.tabs");
+  const wrap = h("div.tabs", { role: "tablist" });
   const render = () => {
     clear(wrap);
-    for (const [key, label] of items) wrap.append(h(`button${key === active ? ".active" : ""}`, { type: "button", onclick: () => { active = key; render(); onChange(key); } }, label));
+    for (const [key, label] of items) wrap.append(h(`button${key === active ? ".active" : ""}`, { type: "button", role: "tab", "aria-selected": String(key === active), onclick: () => { active = key; render(); onChange(key); } }, label));
   };
   render();
   return wrap;

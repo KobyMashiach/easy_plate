@@ -10,7 +10,9 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/error_retry_view.dart';
 import '../../domain/entities/price_record_entity.dart';
+import '../../domain/entities/product_pricing_entity.dart';
 import '../../domain/entities/receipt_entity.dart';
 import '../../domain/repositories/price_book_repository.dart';
 import '../../domain/usecases/price_book_usecases.dart';
@@ -48,6 +50,7 @@ class _PriceBookPageState extends State<PriceBookPage>
   _PriceSort _priceSort = _PriceSort.name;
   String _query = '';
   bool _loading = true;
+  bool _loadFailed = false;
   String? _storeFilter;
   String? _priceStoreFilter;
   int? _periodDays;
@@ -74,14 +77,26 @@ class _PriceBookPageState extends State<PriceBookPage>
   }
 
   Future<void> _load() async {
-    final receipts = await GetReceiptsUseCase(_repository)();
-    final records = await GetPriceRecordsUseCase(_repository)();
-    if (!mounted) return;
-    setState(() {
-      _receipts = receipts;
-      _records = records;
-      _loading = false;
-    });
+    try {
+      final receipts = await GetReceiptsUseCase(_repository)();
+      final records = await GetPriceRecordsUseCase(_repository)();
+      if (!mounted) return;
+      setState(() {
+        _receipts = receipts;
+        _records = records;
+        _loading = false;
+        _loadFailed = false;
+      });
+    } catch (e) {
+      // A storage or scope error used to leave the spinner up for good.
+      debugPrint('Price book load failed: $e');
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadFailed = true;
+        });
+      }
+    }
   }
 
   List<String> get _stores =>
@@ -124,7 +139,11 @@ class _PriceBookPageState extends State<PriceBookPage>
       }
     }
     final list = latest.values
-        .where((r) => _query.isEmpty || r.name.contains(_query))
+        .where(
+          (r) =>
+              _query.isEmpty ||
+              r.name.toLowerCase().contains(_query.toLowerCase()),
+        )
         .where((r) => _unitFilter == null || r.unit == _unitFilter)
         .where(
           (r) =>
@@ -144,6 +163,20 @@ class _PriceBookPageState extends State<PriceBookPage>
     return list;
   }
 
+  /// Runs a delete under the busy card. A failure says so, and the lists are
+  /// reloaded so whatever did go through before it is not shown as still
+  /// there.
+  Future<void> _busyDelete(Future<void> Function() work) async {
+    try {
+      await AppDialog.busy(context, work);
+    } catch (e) {
+      debugPrint('Price book delete failed: $e');
+      if (!mounted) return;
+      AppDialog.error(message: t.receipt.deleteFailed).show(context);
+      _load().ignore();
+    }
+  }
+
   /// Every record of this product and unit, so it leaves the list for good.
   Future<void> _deleteProduct(PriceRecordEntity product) async {
     final ok = await AppDialog.warning(
@@ -161,10 +194,15 @@ class _PriceBookPageState extends State<PriceBookPage>
               r.unit == product.unit,
         )
         .toList();
-    await AppDialog.busy(context, () async {
+    await _busyDelete(() async {
       for (final r in doomed) {
         await DeletePriceRecordUseCase(_repository)(r.id);
       }
+      // Its pricing choice goes too, as from the product sheet: left
+      // behind, the same product added later picks the old rule back up.
+      await _repository.deletePricing(
+        ProductPricingEntity.keyFor(product.normalizedName, product.unit),
+      );
       await _load();
     });
   }
@@ -172,7 +210,7 @@ class _PriceBookPageState extends State<PriceBookPage>
   Future<void> _deleteReceipt(ReceiptEntity receipt) async {
     final keepRecords = await showDeleteReceiptSheet(context);
     if (keepRecords == null || !mounted) return;
-    await AppDialog.busy(context, () async {
+    await _busyDelete(() async {
       await _repository.deleteReceipt(receipt.id, keepRecords: keepRecords);
       for (final f in receipt.imageFileNames) {
         await ImageStorageService().delete(f);
@@ -327,8 +365,14 @@ class _PriceBookPageState extends State<PriceBookPage>
       destructive: true,
     ).show(context);
     if (ok != true || !mounted) return;
-    await AppDialog.busy(context, () async {
+    await _busyDelete(() async {
+      // Read before the boxes are cleared: the receipts' photos live as
+      // files, and clearing the records alone left them on disk for good.
+      final receipts = await GetReceiptsUseCase(_repository)();
       await _repository.deleteAllRecords();
+      for (final f in receipts.expand((r) => r.imageFileNames)) {
+        await ImageStorageService().delete(f);
+      }
       await _load();
     });
   }
@@ -484,6 +528,14 @@ class _PriceBookPageState extends State<PriceBookPage>
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
+                : _loadFailed
+                ? ErrorRetryView(
+                    error: t.common.loadFailed,
+                    onRetry: () {
+                      setState(() => _loading = true);
+                      _load();
+                    },
+                  )
                 : TabBarView(
                     controller: _tabs,
                     children: [_receiptsList(), _pricesList()],

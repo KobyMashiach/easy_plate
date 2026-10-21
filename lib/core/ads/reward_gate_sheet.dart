@@ -65,6 +65,7 @@ class _RewardGateSheetState extends State<_RewardGateSheet> {
   bool _playing = false;
 
   Future<void> _watch() async {
+    if (_playing) return;
     setState(() => _playing = true);
     final outcome = await RewardedAdService().show();
     if (!mounted) return;
@@ -73,76 +74,82 @@ class _RewardGateSheetState extends State<_RewardGateSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: AppColors.primaryFixed,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.play_circle_rounded,
-                size: 40,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.gutter),
-            Text(
-              widget.title,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.headlineMd,
-            ),
-            const SizedBox(height: AppSpacing.base),
-            Text(
-              widget.message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyMd.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            if (_playing)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                child: Column(
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      t.ads.loadingVideo,
-                      style: AppTextStyles.labelMd.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+    // Held while the video loads and plays: a swipe or a tap outside would
+    // answer "no" to the caller while the ad still opened, and the video
+    // the user then watched would earn nothing.
+    return PopScope(
+      canPop: !_playing,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryFixed,
+                  shape: BoxShape.circle,
                 ),
-              )
-            else ...[
-              ClayButton(
-                label: t.ads.watchVideo,
-                icon: Icons.play_arrow_rounded,
-                expanded: true,
-                onPressed: _watch,
+                child: Icon(
+                  Icons.play_circle_rounded,
+                  size: 40,
+                  color: AppColors.primary,
+                ),
               ),
-              const SizedBox(height: AppSpacing.xs),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(
-                  t.common.cancel,
-                  style: AppTextStyles.labelMd.copyWith(
-                    color: AppColors.tertiary,
+              const SizedBox(height: AppSpacing.gutter),
+              Text(
+                widget.title,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.headlineMd,
+              ),
+              const SizedBox(height: AppSpacing.base),
+              Text(
+                widget.message,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (_playing)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  child: Column(
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        t.ads.loadingVideo,
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else ...[
+                ClayButton(
+                  label: t.ads.watchVideo,
+                  icon: Icons.play_arrow_rounded,
+                  expanded: true,
+                  onPressed: _watch,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    t.common.cancel,
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.tertiary,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

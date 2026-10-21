@@ -51,7 +51,8 @@ function textIn(map, lang = currentLang()) {
 }
 
 function flagState(value) {
-  return t(`config.flags.${value}`) || value;
+  const key = `config.flags.${value}`;
+  return t(key) === key ? value : t(key);
 }
 
 // A date-only input value, in the browser's zone.
@@ -82,7 +83,7 @@ export async function mount({ view, actions }) {
     try { all = await ensureFlags(); } catch (e) { toastError(e); return; }
     const isNew = !release;
     const draft = {
-      versionCode: release ? release.versionCode : (releases[0] ? releases[0].versionCode + 1 : 1),
+      versionCode: release ? release.versionCode : (releases && releases[0] ? releases[0].versionCode + 1 : 1),
       version: release ? release.version : "",
       releasedAt: release && release.releasedAt ? toDate(release.releasedAt).getTime() : Date.now(),
       isPublished: release ? release.isPublished === true : false,
@@ -217,7 +218,7 @@ export async function mount({ view, actions }) {
           if (!draft.features.length) return toast(t("whatsnew.needFeatures"), "error");
           const missing = draft.features.filter((f) => !Object.values(f.title).some((v) => v && v.trim()));
           if (missing.length) return toast(t("whatsnew.needTitle", { name: flagName(missing[0].featureKey) }), "error");
-          if (isNew && releases.some((r) => r.versionCode === versionCode)) return toast(t("whatsnew.codeExists"), "error");
+          if (isNew && (releases || []).some((r) => r.versionCode === versionCode)) return toast(t("whatsnew.codeExists"), "error");
           const releasedAt = dateCtl.value ? new Date(`${dateCtl.value}T12:00:00`).getTime() : Date.now();
           try {
             await call("whatsnew.save", { versionCode, version, releasedAt, isPublished: draft.isPublished, features: draft.features });

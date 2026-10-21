@@ -19,13 +19,30 @@ class AdminInboxService {
   final unreadCount = ValueNotifier<int>(0);
 
   StreamSubscription<List<FeedbackEntity>>? _subscription;
+  FeedbackRepository? _repository;
   bool _bound = false;
 
+  /// Whether the app is in front. The inbox is every ticket, so its listener
+  /// is closed while the app is away and reopened on return, when the first
+  /// snapshot brings it up to date; the badge keeps its last count meanwhile.
+  bool _foreground = true;
+
   bool get isBound => _bound;
+
+  /// Whether a Firestore listener is open right now.
+  @visibleForTesting
+  bool get isListening => _subscription != null;
 
   void bind(FeedbackRepository repository) {
     if (_bound) return;
     _bound = true;
+    _repository = repository;
+    if (_foreground) _listen();
+  }
+
+  void _listen() {
+    final repository = _repository;
+    if (!_bound || repository == null || _subscription != null) return;
     _subscription = repository.watchAll().listen(
       (list) {
         items.value = list;
@@ -35,12 +52,31 @@ class AdminInboxService {
     );
   }
 
+  /// The app moved to the foreground (true) or away from it (false).
+  void setForeground(bool foreground) {
+    if (_foreground == foreground) return;
+    _foreground = foreground;
+    if (foreground) {
+      _listen();
+    } else {
+      _subscription?.cancel();
+      _subscription = null;
+    }
+  }
+
   /// On sign-out. The next account must never see the inbox.
   void unbind() {
     _subscription?.cancel();
     _subscription = null;
+    _repository = null;
     _bound = false;
     items.value = const [];
     unreadCount.value = 0;
+  }
+
+  @visibleForTesting
+  void resetForTest() {
+    unbind();
+    _foreground = true;
   }
 }

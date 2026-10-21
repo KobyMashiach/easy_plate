@@ -85,6 +85,18 @@ class IngestionLaunch {
 
   const IngestionLaunch({this.channel, this.text, this.files = const []});
 
+  /// Whether [text] is an address the app may fetch or hand to the model:
+  /// http or https, with a host. A bare word, a `javascript:` or `file:`
+  /// scheme, or a path with no site is refused before anything is spent on
+  /// it — the quota gate runs before the call, so a bad link used to cost
+  /// an extraction and then fail.
+  static bool isWebUrl(String text) {
+    final uri = Uri.tryParse(text.trim());
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty;
+  }
+
   /// The channel a shared piece of text belongs to: a link to one of the
   /// video platforms is a video, any other link a page, the rest pasted text.
   static RecipeIngestionChannel channelForText(String text) {
