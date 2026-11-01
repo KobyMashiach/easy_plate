@@ -201,9 +201,32 @@ class CloudSyncService {
       return Future.value({});
     }
     _lastPass = now;
+    // A household listener that died on an error follows nothing: read like
+    // the account's own mirrors this time, then opened again below.
+    final dead = _listening
+        ? [
+            for (final mirror in _mirrors)
+              if (mirror.shared && !mirror.isListening) mirror,
+          ]
+        : const <CloudMirror>[];
     return _track(
       uid,
-      _pass(uid, timeout, skip: (mirror) => _listening && mirror.shared),
+      _pass(
+        uid,
+        timeout,
+        skip: (mirror) => _listening && mirror.shared && mirror.isListening,
+      ).then((changed) async {
+        for (final mirror in dead) {
+          if (!_listening || UserScope().uid != uid) break;
+          if (mirror.isListening) continue;
+          try {
+            await mirror.listen();
+          } catch (e) {
+            debugPrint('Cloud listen on ${mirror.collection} not reopened: $e');
+          }
+        }
+        return changed;
+      }),
     );
   }
 

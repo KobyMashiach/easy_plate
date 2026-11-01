@@ -85,6 +85,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$wakeWord$fr wakeWord = _Translations$wakeWord$fr._(_root);
 	@override late final _Translations$voiceAssistants$fr voiceAssistants = _Translations$voiceAssistants$fr._(_root);
 	@override late final _Translations$adminConfig$fr adminConfig = _Translations$adminConfig$fr._(_root);
+	@override late final _Translations$quickActions$fr quickActions = _Translations$quickActions$fr._(_root);
 }
 
 // Path: common
@@ -216,6 +217,9 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String sessionTakeoverBody({required Object phone}) => 'Nous enverrons un nouveau code au ${phone}. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.';
 	@override String get sessionTakeoverNoPhone => 'Ce compte n’a pas de numéro de téléphone, il ne peut donc pas être confirmé ici. Demandez la déconnexion ou contactez le support.';
 	@override String get sessionTakeoverFailed => 'Impossible de transférer le compte sur cet appareil. Réessayez.';
+	@override String get reverifyTitle => 'Vérifiez à nouveau votre téléphone';
+	@override String reverifyBody({required Object phone}) => 'Pour votre sécurité, vérifiez à nouveau votre téléphone avant de supprimer le compte. Nous enverrons un nouveau code au ${phone}.';
+	@override String get reverifyNoPhone => 'Ce compte n\'a pas de numéro de téléphone, il ne peut donc pas être vérifié ici. Contactez l\'assistance pour supprimer le compte.';
 	@override String get sessionReleaseTitle => 'Un autre appareil veut se connecter';
 	@override String sessionReleaseBody({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?';
 	@override String get sessionReleaseConfirm => 'Me déconnecter ici';
@@ -532,6 +536,9 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get communityUpdated => 'La copie de la communauté a été mise à jour';
 	@override String get communityGone => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement';
 	@override String get communityUpdateFailed => 'Enregistré pour vous. La publication dans la communauté n\'a pas été mise à jour ; réessayez plus tard.';
+	@override String get sourceLink => 'Recette originale';
+	@override String get sourceLinkHint => 'Ouvrir la source d’où la recette a été importée';
+	@override String get sourceOpenFailed => 'Impossible d’ouvrir le lien';
 }
 
 // Path: cookMode
@@ -917,6 +924,11 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get recordingTag => 'Enregistrement';
 	@override String sizeKb({required Object n}) => '${n} Ko';
 	@override String sizeMb({required Object n}) => '${n} Mo';
+	@override String get videoPhotoTitle => 'Image tirée de la vidéo';
+	@override String get videoPhotoHint => 'Choisissez l’image qui représentera la recette. Vous pourrez la changer plus tard.';
+	@override String get videoPhotoCover => 'Image du post';
+	@override String get videoPhotoNone => 'Sans image';
+	@override String get videoPhotoFailed => 'Impossible d’enregistrer cette image, essayez-en une autre';
 }
 
 // Path: mealPlanner
@@ -1461,6 +1473,7 @@ class _Translations$feedback$fr extends Translations$feedback$he {
 	@override String closedConversations({required Object n}) => 'Conversations closes (${n})';
 	@override String get noOpenConversations => 'Aucune conversation ouverte';
 	@override String get closedTag => 'Close';
+	@override String get dailyLimit => 'Vous avez atteint la limite quotidienne de nouveaux messages au support. Réessayez demain, ou écrivez dans une conversation déjà ouverte.';
 }
 
 // Path: adminBilling
@@ -1935,7 +1948,12 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get whatsNew => 'Nouveautés';
 	@override String get supportChat => 'Chat support';
 	@override String get storeReview => 'Invitation à noter l’app';
+	@override String get quickActions => 'Raccourcis de l’icône';
 	@override String get webCheckout => 'Achat sur le site';
+	@override String get socialVideoPhoto => 'Image depuis une vidéo';
+	@override String get recipeSourceLink => 'Lien vers la recette originale';
+	@override String get webCheckoutIl => 'Achat sur le site (Israël)';
+	@override String get webCheckoutIntl => 'Achat sur le site (étranger)';
 }
 
 // Path: wakeWord
@@ -2011,6 +2029,10 @@ class _Translations$voiceAssistants$fr extends Translations$voiceAssistants$he {
 	@override String get unavailable => 'Shefi n\'est pas disponible pour le moment.';
 	@override String get failed => 'Shefi n\'a pas pu répondre. Réessayez dans un instant.';
 	@override String get goodbye => 'Avec plaisir ! Je suis là quand vous voulez.';
+	@override String get geminiOpensShefi => 'Ouvrir via Gemini mène à Shefi';
+	@override String get geminiOpensShefiHint => 'Dites à Gemini « ouvre Easy Plate » et l’app s’ouvre directement sur une conversation avec Shefi, prêt à écouter. Le micro d’EasyPlate reste fermé jusque-là. Ouvrir depuis l’icône de l’app mène toujours à l’accueil.';
+	@override String get geminiPanel => 'En panneau flottant';
+	@override String get geminiPanelHint => 'Shefi s’ouvre en panneau flottant en bas de l’écran, par-dessus ce qui était ouvert, au lieu d’ouvrir l’app. Touchez à l’extérieur pour revenir.';
 }
 
 // Path: adminConfig
@@ -2021,6 +2043,19 @@ class _Translations$adminConfig$fr extends Translations$adminConfig$he {
 
 	// Translations
 	@override late final _Translations$adminConfig$labels$fr labels = _Translations$adminConfig$labels$fr._(_root);
+}
+
+// Path: quickActions
+class _Translations$quickActions$fr extends Translations$quickActions$he {
+	_Translations$quickActions$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get shefi => 'Parler à Shefi';
+	@override String get groceryAdd => 'Ajouter aux courses';
+	@override String get receipt => 'Ajouter un ticket';
+	@override String get support => 'Contacter le support';
 }
 
 // Path: walkthrough.topics
@@ -2485,6 +2520,9 @@ extension on TranslationsFr {
 			'auth.sessionTakeoverBody' => ({required Object phone}) => 'Nous enverrons un nouveau code au ${phone}. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.',
 			'auth.sessionTakeoverNoPhone' => 'Ce compte n’a pas de numéro de téléphone, il ne peut donc pas être confirmé ici. Demandez la déconnexion ou contactez le support.',
 			'auth.sessionTakeoverFailed' => 'Impossible de transférer le compte sur cet appareil. Réessayez.',
+			'auth.reverifyTitle' => 'Vérifiez à nouveau votre téléphone',
+			'auth.reverifyBody' => ({required Object phone}) => 'Pour votre sécurité, vérifiez à nouveau votre téléphone avant de supprimer le compte. Nous enverrons un nouveau code au ${phone}.',
+			'auth.reverifyNoPhone' => 'Ce compte n\'a pas de numéro de téléphone, il ne peut donc pas être vérifié ici. Contactez l\'assistance pour supprimer le compte.',
 			'auth.sessionReleaseTitle' => 'Un autre appareil veut se connecter',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?',
 			'auth.sessionReleaseConfirm' => 'Me déconnecter ici',
@@ -2684,6 +2722,9 @@ extension on TranslationsFr {
 			'recipe.communityUpdated' => 'La copie de la communauté a été mise à jour',
 			'recipe.communityGone' => 'La recette n’est plus dans la communauté ; enregistrée pour vous seulement',
 			'recipe.communityUpdateFailed' => 'Enregistré pour vous. La publication dans la communauté n\'a pas été mise à jour ; réessayez plus tard.',
+			'recipe.sourceLink' => 'Recette originale',
+			'recipe.sourceLinkHint' => 'Ouvrir la source d’où la recette a été importée',
+			'recipe.sourceOpenFailed' => 'Impossible d’ouvrir le lien',
 			'cookMode.title' => 'Mode cuisine',
 			'cookMode.start' => 'Commencer à cuisiner',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Étape ${n} sur ${total}',
@@ -2877,14 +2918,14 @@ extension on TranslationsFr {
 			'sharing.viewerCannotEditList' => 'Cette liste est partagée avec vous en lecture seule',
 			'sharing.kindList' => 'liste de courses',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 livre partagé', other: '${n} livres partagés', ), 
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 liste de courses partagée', other: '${n} listes de courses partagées', ), 
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'Aucune notification',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} a partagé « ${recipe} » avec vous',
 			'notifications.asViewer' => 'en lecture seule',
 			'notifications.asEditor' => 'en modification',
-			_ => null,
-		} ?? switch (path) {
 			'notifications.markAllRead' => 'Tout marquer comme lu',
 			'notifications.openRecipe' => 'Ouvrir la recette',
 			'notifications.alreadyHandled' => 'Cette invitation a déjà été traitée',
@@ -3002,6 +3043,11 @@ extension on TranslationsFr {
 			'ingestion.recordingTag' => 'Enregistrement',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} Ko',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} Mo',
+			'ingestion.videoPhotoTitle' => 'Image tirée de la vidéo',
+			'ingestion.videoPhotoHint' => 'Choisissez l’image qui représentera la recette. Vous pourrez la changer plus tard.',
+			'ingestion.videoPhotoCover' => 'Image du post',
+			'ingestion.videoPhotoNone' => 'Sans image',
+			'ingestion.videoPhotoFailed' => 'Impossible d’enregistrer cette image, essayez-en une autre',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',
@@ -3386,6 +3432,8 @@ extension on TranslationsFr {
 			'walkthrough.topics.library.s6' => 'Voici le livre que vous avez créé. Ajoutez-y des recettes d\'ici ; à l\'intérieur, tournez les pages et sautez depuis le sommaire. Un appui long sur un livre de l\'étagère ouvre partage, couverture, renommage et suppression.',
 			'walkthrough.topics.mealPlan.title' => 'Menu de la semaine et nutrition',
 			'walkthrough.topics.mealPlan.summary' => 'Un plan pour toute la semaine avec un résumé nutritionnel par jour, qui alimente la liste de courses.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'Touchez « Repas » pour planifier la semaine.',
 			'walkthrough.topics.mealPlan.s2' => 'Touchez ici pour créer un plan hebdomadaire.',
 			'walkthrough.topics.mealPlan.s3' => 'Le nom du plan est déjà rempli. En dessous, choisissez un modèle : libre, trois repas par jour ou six.',
@@ -3397,8 +3445,6 @@ extension on TranslationsFr {
 			'walkthrough.topics.groceries.summary' => 'Une liste construite depuis le plan, avec ce qui est déjà pris coché, une estimation du coût d’après vos tickets, et le partage avec qui fait les courses avec vous.',
 			'walkthrough.topics.groceries.s1' => 'Touchez « Courses ».',
 			'walkthrough.topics.groceries.s2' => 'Actualiser reconstruit la liste à partir de toutes les recettes du plan de la semaine.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'Touchez le plus pour ajouter un article à la main.',
 			'walkthrough.topics.groceries.s4' => 'Le nom de l\'article est déjà rempli. Choisissez une quantité et une unité, ou partez d\'un produit que vos tickets connaissent déjà.',
 			'walkthrough.topics.groceries.s5' => 'Touchez « Ajouter » et l\'article rejoint la liste.',
@@ -3498,6 +3544,7 @@ extension on TranslationsFr {
 			'feedback.closedConversations' => ({required Object n}) => 'Conversations closes (${n})',
 			'feedback.noOpenConversations' => 'Aucune conversation ouverte',
 			'feedback.closedTag' => 'Close',
+			'feedback.dailyLimit' => 'Vous avez atteint la limite quotidienne de nouveaux messages au support. Réessayez demain, ou écrivez dans une conversation déjà ouverte.',
 			'adminBilling.title' => 'Utilisateurs',
 			'adminBilling.all' => 'Tous',
 			'adminBilling.paying' => 'Payants',
@@ -3899,6 +3946,8 @@ extension on TranslationsFr {
 			'homeWidgets.defaults' => 'Valeurs par défaut des nouveaux widgets',
 			'homeWidgets.defaultsHint' => 'Chaque widget peut être modifié ensuite depuis ses propres réglages (appui long sur le widget).',
 			'homeWidgets.defaultList' => 'Liste de courses',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.openList' => 'La liste ouverte',
 			'homeWidgets.defaultPlan' => 'Plan de repas',
 			'homeWidgets.firstPlan' => 'Le premier plan',
@@ -3911,8 +3960,6 @@ extension on TranslationsFr {
 			'homeWidgets.widgetAssistantHint' => 'Un bouton qui ouvre Shefi, avec le micro si vous voulez, et des questions rapides.',
 			'homeWidgets.widgetGroceryAdd' => 'Ajout rapide à la liste',
 			'homeWidgets.widgetGroceryAddHint' => 'Tapez ou dictez un article directement dans la liste de votre choix.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.widgetGroceryList' => 'Liste de courses',
 			'homeWidgets.widgetGroceryListHint' => 'Ce qu\'il reste à acheter ; cochez les articles depuis le widget.',
 			'homeWidgets.widgetTodayMenu' => 'Menu du jour',
@@ -3999,7 +4046,12 @@ extension on TranslationsFr {
 			'featureName.whatsNew' => 'Nouveautés',
 			'featureName.supportChat' => 'Chat support',
 			'featureName.storeReview' => 'Invitation à noter l’app',
+			'featureName.quickActions' => 'Raccourcis de l’icône',
 			'featureName.webCheckout' => 'Achat sur le site',
+			'featureName.socialVideoPhoto' => 'Image depuis une vidéo',
+			'featureName.recipeSourceLink' => 'Lien vers la recette originale',
+			'featureName.webCheckoutIl' => 'Achat sur le site (Israël)',
+			'featureName.webCheckoutIntl' => 'Achat sur le site (étranger)',
 			'wakeWord.title' => 'Hé Shefi',
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',
@@ -4051,7 +4103,15 @@ extension on TranslationsFr {
 			'voiceAssistants.unavailable' => 'Shefi n\'est pas disponible pour le moment.',
 			'voiceAssistants.failed' => 'Shefi n\'a pas pu répondre. Réessayez dans un instant.',
 			'voiceAssistants.goodbye' => 'Avec plaisir ! Je suis là quand vous voulez.',
+			'voiceAssistants.geminiOpensShefi' => 'Ouvrir via Gemini mène à Shefi',
+			'voiceAssistants.geminiOpensShefiHint' => 'Dites à Gemini « ouvre Easy Plate » et l’app s’ouvre directement sur une conversation avec Shefi, prêt à écouter. Le micro d’EasyPlate reste fermé jusque-là. Ouvrir depuis l’icône de l’app mène toujours à l’accueil.',
+			'voiceAssistants.geminiPanel' => 'En panneau flottant',
+			'voiceAssistants.geminiPanelHint' => 'Shefi s’ouvre en panneau flottant en bas de l’écran, par-dessus ce qui était ouvert, au lieu d’ouvrir l’app. Touchez à l’extérieur pour revenir.',
 			'adminConfig.labels.admin_all_features' => 'Montrer toutes les fonctionnalités à l\'admin',
+			'quickActions.shefi' => 'Parler à Shefi',
+			'quickActions.groceryAdd' => 'Ajouter aux courses',
+			'quickActions.receipt' => 'Ajouter un ticket',
+			'quickActions.support' => 'Contacter le support',
 			_ => null,
 		};
 	}

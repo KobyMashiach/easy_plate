@@ -8,6 +8,7 @@ import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../domain/entities/shared_recipe_entity.dart';
 import '../../domain/repositories/shared_recipes_repository.dart';
 import '../../domain/usecases/get_shared_recipes_usecase.dart';
@@ -117,7 +118,7 @@ class _SharedRecipePickerSheetState extends State<_SharedRecipePickerSheet> {
                         return ClayCard(
                           radius: AppRadius.md,
                           padding: const EdgeInsets.all(AppSpacing.gutter),
-                          onTap: () => Navigator.of(context).pop(shared),
+                          onTap: () => popIfCurrent(context, shared),
                           child: Row(
                             children: [
                               Icon(

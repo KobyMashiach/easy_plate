@@ -302,3 +302,25 @@ test("the holder is pushed once per asker per ten minutes; the record still refr
   assert.equal(releasePushDue({ ...recent, deviceId: "C", hardwareId: "other" }, ask, now), true);
   assert.equal(releasePushDue({ deviceId: "B", at: now - 1000 }, ask, now), true, "a request from before the stamp pushes");
 });
+
+test("a revoke that fails puts the session back for the next run; a deleted account does not", async () => {
+  const { expire } = require("./sessions").internals;
+  const restored = [];
+  const docs = ["busy", "gone", "ok"].map((id) => ({
+    id,
+    updateTime: 1,
+    data: () => ({ deviceId: id, expiresAt: 0 }),
+    ref: { delete: async () => {}, create: async (data) => restored.push([id, data.deviceId]) },
+  }));
+  const query = { orderBy: () => query, limit: () => query, startAfter: () => query, get: async () => ({ docs }) };
+  const db = { collection: () => ({ where: () => query }) };
+  const auth = {
+    revokeRefreshTokens: async (uid) => {
+      if (uid === "busy") throw Object.assign(new Error("TOO_MANY_ATTEMPTS"), { code: "auth/internal-error" });
+      if (uid === "gone") throw Object.assign(new Error("no user"), { code: "auth/user-not-found" });
+    },
+  };
+  const count = await expire(Date.now(), { db, auth, page: 10 });
+  assert.equal(count, 2);
+  assert.deepEqual(restored, [["busy", "busy"]]);
+});

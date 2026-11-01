@@ -60,17 +60,31 @@ function voiceFor(parameters, lang) {
   return { languageCode: locale, name };
 }
 
-async function synthesize({ text, lang }, { fetchImpl = fetch, token, parameters }) {
+// Below the function's 30 s, so a hung synthesis ends in the handler (slot
+// refunded, a typed 504) instead of the platform killing the request.
+const SYNTH_TIMEOUT_MS = 20000;
+
+async function synthesize({ text, lang }, { fetchImpl = fetch, token, parameters, timeoutMs = SYNTH_TIMEOUT_MS }) {
   const voice = voiceFor(parameters, lang);
-  const response = await fetchImpl(ENDPOINT, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      input: { text },
-      voice,
-      audioConfig: { audioEncoding: "MP3", speakingRate: 1.0 },
-    }),
-  });
+  const signal = AbortSignal.timeout(timeoutMs);
+  let response;
+  try {
+    response = await fetchImpl(ENDPOINT, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: { text },
+        voice,
+        audioConfig: { audioEncoding: "MP3", speakingRate: 1.0 },
+      }),
+      signal,
+    });
+  } catch (err) {
+    if (err && (err.name === "TimeoutError" || err.name === "AbortError")) err.status = 504;
+    throw err;
+  }
+  // A body cut off by the deadline (or any unreadable one) reads as empty,
+  // which the checks below turn into a failure.
   const json = await response.json().catch(() => ({}));
   if (!response.ok) {
     const reason = json && json.error && json.error.message ? json.error.message : `HTTP ${response.status}`;
@@ -110,11 +124,13 @@ exports.speak = onRequest(
       return res.status(200).send(audio);
     } catch (err) {
       logger.error("speak failed", { uid: caller.uid, reason: err.message });
-      // Google did not speak: the slot goes back.
-      if (claimed) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "speak" });
-      return res.status(err.status || 502).json({ error: { message: "Speech failed" } });
+      // Google did not speak: the slot goes back — except after a timeout,
+      // which reached Google and was most likely billed (as in aiProxy).
+      if (claimed && err.status !== 504) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "speak" });
+      const status = err.status || 502;
+      return res.status(status).json({ error: { code: status === 504 ? "upstream_timeout" : status === 429 ? "upstream_busy" : "upstream", message: "Speech failed" } });
     }
   },
 );
 
-exports.internals = { parseRequest, voiceFor, synthesize, DEFAULT_VOICES, LOCALES, MAX_CHARS };
+exports.internals = { parseRequest, voiceFor, synthesize, DEFAULT_VOICES, LOCALES, MAX_CHARS, SYNTH_TIMEOUT_MS };

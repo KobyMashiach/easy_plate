@@ -69,6 +69,45 @@ class ContentVariantsLocalStore {
     }
   }
 
+  /// Every record held in any language, as `type/id` — what the switch
+  /// compares against the account's records to find translations of ones
+  /// that were deleted.
+  Future<Set<String>> held() async {
+    try {
+      final box = await UserScope().open<String>(boxName);
+      return {
+        for (final key in box.keys) ?_recordOf(key),
+      };
+    } catch (e) {
+      debugPrint('Listing local translations failed: $e');
+      return {};
+    }
+  }
+
+  /// Drops every language's copy of the records in [typeIds] (`type/id`).
+  Future<void> forget(Iterable<String> typeIds) async {
+    final doomed = typeIds.toSet();
+    if (doomed.isEmpty) return;
+    try {
+      final box = await UserScope().open<String>(boxName);
+      await box.deleteAll([
+        for (final key in box.keys)
+          if (_recordOf(key) case final record? when doomed.contains(record))
+            key,
+      ]);
+    } catch (e) {
+      // Left behind, it is only read and never applied: no record has the id.
+      debugPrint('Dropping local translations failed: $e');
+    }
+  }
+
+  /// The `type/id` part of a `lang/type/id` key.
+  static String? _recordOf(Object? key) {
+    if (key is! String) return null;
+    final cut = key.indexOf('/');
+    return cut > 0 ? key.substring(cut + 1) : null;
+  }
+
   /// Firestore hands back timestamps and other types jsonEncode refuses;
   /// only the strings, lists of strings and the version are worth keeping.
   static Map<String, Object?> _plain(Map<String, Object?> fields) => {

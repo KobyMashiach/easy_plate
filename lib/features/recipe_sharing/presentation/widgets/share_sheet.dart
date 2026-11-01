@@ -189,13 +189,16 @@ class _ShareSheetState extends State<_ShareSheet> {
       }
     } catch (e) {
       debugPrint('Share code creation failed: $e');
-      if (mounted) setState(() => _codeError = t.shareCode.failed);
+      // Not "could not join": this is the owner making a code.
+      if (mounted) setState(() => _codeError = t.sharing.failed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _revokeCode(ShareCodeEntity code) async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final codes = widget.codes;
     if (codes == null) return;
     setState(() => _busy = true);
@@ -211,7 +214,7 @@ class _ShareSheetState extends State<_ShareSheet> {
       }
     } catch (e) {
       debugPrint('Share code revoke failed: $e');
-      if (mounted) setState(() => _codeError = t.shareCode.failed);
+      if (mounted) setState(() => _codeError = t.common.error);
     } finally {
       if (mounted) setState(() => _busy = false);
     }

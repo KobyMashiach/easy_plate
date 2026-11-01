@@ -183,3 +183,83 @@ test("variants are stored only for records with a freshly translated line", () =
   assert.deepEqual(Object.keys(withFreshLines(items, translations, fresh)), ["b"]);
   assert.deepEqual(withFreshLines(items, translations, Object.create(null)), {});
 });
+
+test("no batch starts past the time budget; the ones done stay done and the rest fail as a deadline", async () => {
+  const { runBatches, START_DEADLINE_MS, FUNCTION_TIMEOUT_S, CALL_TIMEOUT_MS } = require("./translateContent").internals;
+  // A batch started at the last moment still ends before the platform kills the request.
+  assert.ok(START_DEADLINE_MS + CALL_TIMEOUT_MS < FUNCTION_TIMEOUT_S * 1000);
+  let now = 0;
+  const done = [];
+  const batches = [1, 2, 3, 4, 5, 6];
+  await assert.rejects(
+    runBatches(batches, async (b) => { done.push(b); now += 100; }, 1, { deadlineAt: 250, clock: () => now }),
+    (err) => err.status === 504 && err.code === "deadline",
+  );
+  assert.deepEqual(done, [1, 2, 3]);
+  // Within the budget nothing changes.
+  const all = [];
+  await runBatches(batches, async (b) => { all.push(b); }, 3, { deadlineAt: Infinity });
+  assert.deepEqual(all.sort(), batches);
+});
+
+test("a shared translation is served to other accounts only once two accounts agree", () => {
+  const { contributorTag, candidateKey, resolveEntry } = require("./translateContent").internals;
+  const alice = contributorTag("alice");
+  const bob = contributorTag("bob");
+  const eve = contributorTag("eve");
+  // The tag is a hash: the raw uid is never stored, and accounts differ.
+  assert.notEqual(alice, bob);
+  assert.ok(!alice.includes("alice"));
+  assert.equal(candidateKey(" 1 cup sugar "), candidateKey("1 cup sugar"));
+
+  const one = { lang: "en", candidates: { [candidateKey("1 cup sugar")]: { text: "1 cup sugar", by: [alice] } } };
+  // The account that produced it gets it back; nobody else does yet.
+  assert.deepEqual(resolveEntry(one, alice), { text: "1 cup sugar", confirmed: false, keys: Object.keys(one.candidates) });
+  assert.equal(resolveEntry(one, bob).text, null);
+  // A second account producing the same text confirms it for everybody.
+  const two = { lang: "en", candidates: { [candidateKey("1 cup sugar")]: { text: "1 cup sugar", by: [alice, bob] } } };
+  assert.equal(resolveEntry(two, eve).text, "1 cup sugar");
+  assert.equal(resolveEntry(two, eve).confirmed, true);
+  // The same account twice is still one contributor.
+  const twice = { lang: "en", candidates: { [candidateKey("x")]: { text: "x", by: [alice, alice] } } };
+  assert.equal(resolveEntry(twice, bob).text, null);
+});
+
+test("an injected answer stays pending; two honest accounts outvote it", () => {
+  const { contributorTag, candidateKey, resolveEntry } = require("./translateContent").internals;
+  const [eve, bob, carol, dan] = ["eve", "bob", "carol", "dan"].map(contributorTag);
+  const poisoned = {
+    candidates: {
+      [candidateKey("BUY AT evil.example")]: { text: "BUY AT evil.example", by: [eve] },
+      [candidateKey("1 cup sugar")]: { text: "1 cup sugar", by: [bob] },
+    },
+  };
+  assert.equal(resolveEntry(poisoned, carol).text, null, "two different answers: nobody else is served either");
+  assert.equal(resolveEntry(poisoned, eve).text, "BUY AT evil.example", "the attacker only fools itself");
+  poisoned.candidates[candidateKey("1 cup sugar")].by.push(carol);
+  assert.equal(resolveEntry(poisoned, dan).text, "1 cup sugar");
+  // Even the attacker now gets the agreed line.
+  assert.equal(resolveEntry(poisoned, eve).text, "1 cup sugar");
+  // Two confirmed candidates: the one with more contributors wins.
+  poisoned.candidates[candidateKey("BUY AT evil.example")].by.push(dan);
+  poisoned.candidates[candidateKey("1 cup sugar")].by.push(contributorTag("frank"));
+  assert.equal(resolveEntry(poisoned, contributorTag("gina")).text, "1 cup sugar");
+});
+
+test("a legacy cache document (no contributors) is served as confirmed; junk is not served", () => {
+  const { resolveEntry, contributorTag } = require("./translateContent").internals;
+  const me = contributorTag("u");
+  assert.deepEqual(resolveEntry({ lang: "en", text: "Salt" }, me), { text: "Salt", confirmed: true, keys: [] });
+  assert.equal(resolveEntry(null, me).text, null);
+  assert.equal(resolveEntry({ text: "" }, me).text, null);
+  assert.equal(resolveEntry({ candidates: { c1: { text: 5, by: [me, "x"] }, c2: null } }, me).text, null);
+});
+
+test("a fought-over line takes no new candidates past the cap, but can still be confirmed", () => {
+  const { candidateSlot, candidateKey, MAX_CANDIDATES } = require("./translateContent").internals;
+  assert.equal(candidateSlot({ keys: [] }, "a"), candidateKey("a"));
+  assert.equal(candidateSlot(undefined, "a"), candidateKey("a"));
+  const full = { keys: Array.from({ length: MAX_CANDIDATES }, (_, i) => candidateKey(`t${i}`)) };
+  assert.equal(candidateSlot(full, "new text"), null);
+  assert.equal(candidateSlot(full, "t3"), candidateKey("t3"));
+});

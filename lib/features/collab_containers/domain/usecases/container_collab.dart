@@ -304,10 +304,12 @@ class ContainerCollab<T> {
     CollabContainerEntity container, {
     required String uid,
     T? local,
+    Map<String, String>? recipeIndex,
   }) async {
     final byCollabId = await linker.materialize(
       container.recipeCollabIds,
       uid: uid,
+      index: recipeIndex,
     );
     // The caller's copy was read before the recipes were fetched: lay the
     // document over the copy as stored now, so a save made meanwhile is
@@ -384,9 +386,14 @@ class ContainerCollab<T> {
   /// Brings every local copy of this kind up to date in one pass, from the
   /// two queries the caller already ran. Never orphans: a query answers from
   /// cache offline, so an absent document proves nothing.
+  ///
+  /// [recipeIndex] hands out the pass's [RecipeLinker.recipeIndex] when the
+  /// caller refreshes several kinds in a row and reads it once for all of
+  /// them; asked only once some copy has a document to lay over.
   Future<int> refresh(
     List<CollabContainerEntity> fetched, {
     required String uid,
+    Future<Map<String, String>> Function()? recipeIndex,
   }) async {
     final cached = (await adapter.all()).where(adapter.isShared).toList();
     if (cached.isEmpty) return 0;
@@ -395,13 +402,22 @@ class ContainerCollab<T> {
         if (c.kind == adapter.kind) c.id: c,
     };
     var rewritten = 0;
+    // The recipes box read and mapped once for the whole pass, not once per
+    // shared copy: every resume pull walks every shared book, plan and list.
+    Map<String, String>? index;
     for (final local in cached) {
       final container = byId[adapter.collabIdOf(local)];
       if (container == null) continue;
       // Signed out, or another account in, while this loop ran.
       if (!stillSignedIn(uid)) return rewritten;
       try {
-        final result = await _localFrom(container, uid: uid, local: local);
+        index ??= await (recipeIndex ?? linker.recipeIndex)();
+        final result = await _localFrom(
+          container,
+          uid: uid,
+          local: local,
+          recipeIndex: index,
+        );
         if (!identical(result, local)) rewritten++;
       } catch (e) {
         debugPrint(

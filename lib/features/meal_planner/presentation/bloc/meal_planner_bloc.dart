@@ -69,6 +69,10 @@ sealed class MealPlannerState with _$MealPlannerState {
     @Default({}) Map<String, String> recipeTitles,
     // The recipes behind the plan's items, for the nutrition roll-ups.
     @Default({}) Map<String, RecipeEntity> recipes,
+    // Bumped by a delete that failed: the reload after it is otherwise the
+    // same state, which the bloc would not emit, and the page waits for
+    // the next state to drop its busy card.
+    @Default(0) int deleteFailures,
   }) = MealPlannerLoaded;
   const factory MealPlannerState.errorMessage(String error) = MealPlannerError;
 }
@@ -423,11 +427,24 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
         ? current.plans.where((p) => p.id == event.planId).firstOrNull
         : null;
     final uid = UserScope().uid;
-    if (plan != null && plan.isShared && uid != null) {
-      await sharing?.plans.retire(plan, uid: uid);
+    var failed = false;
+    try {
+      if (plan != null && plan.isShared && uid != null) {
+        await sharing?.plans.retire(plan, uid: uid);
+      }
+      await deleteMealPlanUseCase(event.planId);
+    } catch (e) {
+      // A throw here used to emit nothing: the page's busy card waited out
+      // its 30 s and then said "deleted". The plan still in the list is
+      // how the page tells the failure.
+      debugPrint('Deleting the plan failed: $e');
+      failed = true;
     }
-    await deleteMealPlanUseCase(event.planId);
     await _reload(emit);
+    final after = state;
+    if (failed && after is MealPlannerLoaded) {
+      emit(after.copyWith(deleteFailures: after.deleteFailures + 1));
+    }
   }
 
   Future<void> _addMeal(_AddMeal event, Emitter<MealPlannerState> emit) {

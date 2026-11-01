@@ -35,6 +35,9 @@ class _PhoneClaimedPageState extends State<PhoneClaimedPage> {
   /// Deletes the account minted a moment ago — it has no profile and no
   /// data — then signs out, so the login screen is where the user lands.
   Future<void> _backToExisting() async {
+    // A second tap before the rebuild greys the button out would delete
+    // and sign out twice over.
+    if (_busy) return;
     final auth = context.read<AuthRepository>();
     setState(() => _busy = true);
     try {

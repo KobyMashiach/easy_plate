@@ -215,3 +215,93 @@ test("an invite's title is a short string whatever the owner stored", () => {
   assert.equal(titleOf("x".repeat(5000)).length, 200);
   assert.equal(titleOf("  ", "Plan"), "Plan");
 });
+
+test("guessing codes is capped per account a day, and only misses count", async () => {
+  const budget = require("./dailyBudget");
+  const { redeemFor } = require("./shareCodes").internals;
+  assert.equal(budget.KINDS.shareCodeMiss.param, "quota_share_code_misses_daily");
+  const db = fakeDb({
+    [`share_codes/${CODE}`]: codeDoc(),
+    "collab_recipes/c1": { ownerUid: "owner", title: "Soup", memberUids: ["owner"], members: { owner: "owner" } },
+  });
+  const limit = 3;
+  const spend = (args) => budget.claim(db, { ...args, limit });
+  const opts = { spend, refund: budget.refund };
+  const missCount = () => (db.store.get(`usage_budgets/${budget.docId("guesser", "shareCodeMiss")}`) || {}).count || 0;
+
+  // A real code works any number of times without spending the allowance.
+  for (let i = 0; i < 5; i++) {
+    const out = await redeemFor(db, "guesser", CODE, opts);
+    assert.equal(out.status, 200, `redeem ${i}`);
+  }
+  assert.equal(missCount(), 0, "a code that worked is given back");
+
+  // Unknown codes are 404 until the line, then 429 — and past the line even
+  // a real code is not looked up (a guesser learns nothing more).
+  for (let i = 0; i < limit; i++) assert.equal((await redeemFor(db, "guesser", `ABCDEFG${i + 2}`, opts)).status, 404);
+  const capped = await redeemFor(db, "guesser", "ZZZZZZZZ", opts);
+  assert.equal(capped.status, 429);
+  assert.equal(capped.body.error.code, "quota");
+  assert.equal(capped.body.error.quota.kind, "shareCodeMiss");
+  assert.equal((await redeemFor(db, "guesser", CODE, opts)).status, 429);
+  // Someone else is not affected.
+  assert.equal((await redeemFor(db, "friend", CODE, opts)).status, 200);
+});
+
+test("a budget store that fails refuses the redemption rather than skipping the check", async () => {
+  const { redeemFor } = require("./shareCodes").internals;
+  const db = fakeDb({ [`share_codes/${CODE}`]: codeDoc() });
+  await assert.rejects(redeemFor(db, "u", CODE, { spend: async () => { throw new Error("firestore unavailable"); }, refund: async () => {} }), /unavailable/);
+  assert.equal(db.store.has("share_invites/c1_u"), false);
+});
+
+test("redeeming a code and sharing prices need a verified phone, like the paid endpoints", async () => {
+  const proxyInternals = require("./aiProxy").internals;
+  const real = proxyInternals.verifyPaidCaller;
+  const seen = [];
+  let caller = null;
+  proxyInternals.verifyPaidCaller = async () => {
+    seen.push("paid");
+    const refusal = proxyInternals.paidCallerRefusal(caller);
+    return refusal ? { caller: null, refusal } : { caller, refusal: null };
+  };
+  const res = () => ({
+    statusCode: 0,
+    body: null,
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; },
+    set() { return this; },
+    setHeader() {},
+    getHeader() {},
+    on() {},
+    end() {},
+  });
+  const req = (body) => ({ method: "POST", headers: {}, get() {}, body });
+  const handlers = {
+    shareCodes: [require("./shareCodes").shareCodes, { action: "redeem", code: CODE }],
+    priceStats: [require("./priceStats").priceStats, { records: [{ name: "milk", price: 7 }] }],
+  };
+  try {
+    for (const [name, [handler, body]] of Object.entries(handlers)) {
+      // An email/password account minted against the Auth REST API: no phone.
+      caller = { uid: "throwaway", email: "x@example.com" };
+      let out = res();
+      await handler(req(body), out);
+      assert.equal(out.statusCode, 403, name);
+      assert.equal(out.body.error.code, "phone_required", name);
+      // Switched off from the console.
+      caller = { uid: "u1", phone_number: "+972500000000", disabled: true };
+      out = res();
+      await handler(req(body), out);
+      assert.equal(out.body.error.code, "account_disabled", name);
+      // No token.
+      caller = null;
+      out = res();
+      await handler(req(body), out);
+      assert.equal(out.statusCode, 401, name);
+    }
+    assert.equal(seen.length, 6, "both go through verifyPaidCaller");
+  } finally {
+    proxyInternals.verifyPaidCaller = real;
+  }
+});

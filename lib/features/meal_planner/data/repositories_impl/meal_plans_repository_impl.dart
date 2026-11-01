@@ -2,6 +2,8 @@ import 'dart:async';
 
 import '../../../../core/sync/user_cloud_collection.dart';
 import '../../../../core/translation/content_translation.dart';
+import '../../../../core/translation/content_translation_service.dart';
+import '../../../../core/translation/content_variants_cleaner.dart';
 import '../../domain/entities/meal_plan_entity.dart';
 import '../../domain/repositories/meal_plans_repository.dart';
 import '../datasources/meal_plans_local_datasource.dart';
@@ -14,7 +16,15 @@ class MealPlansRepositoryImpl implements MealPlansRepository {
   /// survives the device it was built on.
   final UserCloudCollection<MealPlanModel>? cloud;
 
-  MealPlansRepositoryImpl({required this.localDataSource, this.cloud});
+  /// Drops a deleted record's translations, so a language switch stops
+  /// reading them. Optional so tests can run without it.
+  final ContentVariantsCleaner? translations;
+
+  MealPlansRepositoryImpl({
+    required this.localDataSource,
+    this.cloud,
+    this.translations,
+  });
 
   @override
   Future<List<MealPlanEntity>> getPlans() async {
@@ -50,6 +60,7 @@ class MealPlansRepositoryImpl implements MealPlansRepository {
   Future<void> deletePlan(String id) async {
     await localDataSource.deletePlan(id);
     unawaited(cloud?.remove(id) ?? Future.value());
+    translations?.forget(ContentTranslationService.planType, id);
   }
 
   /// See the same method on the recipes repository.

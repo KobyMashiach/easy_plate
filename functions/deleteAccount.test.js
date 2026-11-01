@@ -128,3 +128,34 @@ test("the profile photo is deleted by its exact name, never by a uid prefix", as
   assert.ok(deleted.includes("profile_photos/abc.jpg"));
   assert.ok(!listed.some((p) => p.startsWith("profile_photos")));
 });
+
+test("a deletion needs a recent sign-in only while the window is on", () => {
+  const { recentSignIn } = require("./deleteAccount").internals;
+  const now = Date.UTC(2026, 10, 1, 12, 0, 0);
+  const signedIn = (minutesAgo) => ({ uid: "u1", auth_time: Math.floor((now - minutesAgo * 60 * 1000) / 1000) });
+  // Window 10: a sign-in 2 minutes old passes, one 11 minutes old does not.
+  assert.equal(recentSignIn(signedIn(2), now, 10), true);
+  assert.equal(recentSignIn(signedIn(10), now, 10), true);
+  assert.equal(recentSignIn(signedIn(11), now, 10), false);
+  assert.equal(recentSignIn(signedIn(55), now, 10), false);
+  assert.equal(recentSignIn({ uid: "u1" }, now, 10), false);
+  // A sign-in from the future (beyond clock skew) is not trusted.
+  assert.equal(recentSignIn(signedIn(-5), now, 10), false);
+  // Window 0: no check at all, so older store builds can still delete.
+  assert.equal(recentSignIn(signedIn(55), now, 0), true);
+  assert.equal(recentSignIn({ uid: "u1" }, now, 0), true);
+});
+
+test("the recent sign-in window comes from Remote Config, off when unset", async () => {
+  const { recentAuthMinutes, RECENT_AUTH_PARAM, RECENT_AUTH_FALLBACK } = require("./deleteAccount").internals;
+  const param = (value) => async () => ({ [RECENT_AUTH_PARAM]: { defaultValue: { value } } });
+  assert.equal(RECENT_AUTH_FALLBACK, 0);
+  assert.equal(await recentAuthMinutes(async () => ({})), 0);
+  assert.equal(await recentAuthMinutes(param("10")), 10);
+  assert.equal(await recentAuthMinutes(param("0")), 0);
+  assert.equal(await recentAuthMinutes(param("-3")), 0);
+  assert.equal(await recentAuthMinutes(param("ten")), 0);
+  const template = require("../remoteconfig.template.json");
+  assert.equal(template.parameters[RECENT_AUTH_PARAM].valueType, "NUMBER");
+  assert.equal(template.parameters[RECENT_AUTH_PARAM].defaultValue.value, "0");
+});

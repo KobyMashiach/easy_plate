@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -8,6 +7,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../domain/entities/price_record_entity.dart';
 import '../../domain/entities/product_pricing_entity.dart';
 import '../../domain/entities/receipt_entity.dart';
@@ -199,11 +199,11 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
     }
     final r = _receipts[receiptId];
     if (r == null) {
-      return DateFormat.yMd().format(
+      return purchaseDateLabel(
         _records.firstWhere((x) => x.receiptId == receiptId).purchasedAt,
       );
     }
-    return '${r.store ?? t.receipt.noStore} · ${DateFormat.yMd().format(r.purchasedAt)}';
+    return '${r.store ?? t.receipt.noStore} · ${purchaseDateLabel(r.purchasedAt)}';
   }
 
   @override
@@ -395,7 +395,7 @@ class _ProductPricingSheetState extends State<_ProductPricingSheet> {
                     ClayButton(
                       label: MaterialLocalizations.of(context).closeButtonLabel,
                       expanded: true,
-                      onPressed: () => Navigator.of(context).pop(_changed),
+                      onPressed: () => popIfCurrent(context, _changed),
                     ),
                   ],
                 ),

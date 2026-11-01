@@ -9,6 +9,7 @@ import 'package:provider/single_child_widget.dart';
 import '../sync/cloud_sync_service.dart';
 import '../translation/content_translation_datasource.dart';
 import '../translation/content_translation_service.dart';
+import '../translation/content_variants_cleaner.dart';
 import '../sync/recipe_image_store.dart';
 import '../../features/admin_billing/data/datasources/admin_billing_remote_datasource.dart';
 import '../../features/admin_billing/data/datasources/admin_users_remote_datasource.dart';
@@ -185,6 +186,7 @@ List<SingleChildWidget> buildRepositoryProviders() {
         localDataSource: context.read(),
         cloud: CloudSyncService().recipes,
         images: RecipeImageStore(),
+        translations: ContentVariantsCleaner(),
       ),
     ),
     RepositoryProvider<RecipeBooksRepository>(
@@ -192,12 +194,14 @@ List<SingleChildWidget> buildRepositoryProviders() {
         localDataSource: context.read(),
         cloud: CloudSyncService().books,
         images: RecipeImageStore(),
+        translations: ContentVariantsCleaner(),
       ),
     ),
     RepositoryProvider<MealPlansRepository>(
       create: (context) => MealPlansRepositoryImpl(
         localDataSource: context.read(),
         cloud: CloudSyncService().mealPlans,
+        translations: ContentVariantsCleaner(),
       ),
     ),
     // Shared books and plans. After the books and plans repositories: it
@@ -206,6 +210,7 @@ List<SingleChildWidget> buildRepositoryProviders() {
       create: (context) => GroceryListsRepositoryImpl(
         localDataSource: context.read(),
         cloud: CloudSyncService().groceryLists,
+        translations: ContentVariantsCleaner(),
       ),
     ),
     RepositoryProvider<ContainerSharingService>(

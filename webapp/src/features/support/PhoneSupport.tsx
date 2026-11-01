@@ -13,7 +13,7 @@ import { ClayButton, ClayCard, ClayIconButton, EmptyState, LoadingSpinner } from
 import { Icon } from "../../components/icons";
 import { PhoneBar } from "../../components/PhoneBar";
 import { useToast } from "../../components/Toaster";
-import { excerpt, FEEDBACK_TYPES, MAX_FOLLOW_UPS, MAX_MESSAGE, addFollowUp, markSeen, sendFeedback, threadOf, useConversation, useMyConversations, type Conversation, type FeedbackType } from "./data";
+import { excerpt, FEEDBACK_TYPES, MAX_FOLLOW_UPS, MAX_MESSAGE, addFollowUp, markSeen, refusedForDailyLimit, sendFeedback, threadOf, useConversation, useMyConversations, type Conversation, type FeedbackType } from "./data";
 
 /** feedbackTypeIcon (feedback_form.dart). */
 export const PHONE_FEEDBACK_ICONS: Record<FeedbackType, string> = {
@@ -149,6 +149,11 @@ function PhoneFeedbackForm({ name, profileEmail }: { name: string; profileEmail:
     for (const [k, v] of Object.entries(raw)) if (v && v.trim()) details[k] = v.trim();
     try {
       const id = await sendFeedback({ type, message, authorUid: user.uid, authorName: name, authorEmail: profileEmail ?? user.email ?? null, details });
+      // Past the day's allowance the server closes it at once: said here, with the text kept.
+      if (await refusedForDailyLimit(id)) {
+        toast.show(t("support.form.dailyLimit"), "error");
+        return;
+      }
       setMessage("");
       setType("");
       if (chat === "enabled") navigate(`/support/${id}`);
@@ -378,7 +383,7 @@ export function PhoneSupportChat({ id }: { id: string | undefined }) {
       {item ? (
         item.closed || item.followUps.length >= MAX_FOLLOW_UPS ? (
           <p className="flex items-center justify-center gap-2 px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-2 text-center text-label-md text-on-surface-variant">
-            <Icon name="lock" size={16} className="text-outline" /> {item.closed ? t("support.chat.closed") : t("support.chat.full")}
+            <Icon name="lock" size={16} className="text-outline" /> {item.overDailyLimit ? t("support.form.dailyLimit") : item.closed ? t("support.chat.closed") : t("support.chat.full")}
           </p>
         ) : (
           <form onSubmit={send} className="flex items-end gap-2 px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-2">

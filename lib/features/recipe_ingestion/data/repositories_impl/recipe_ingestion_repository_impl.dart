@@ -7,6 +7,7 @@ import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../domain/entities/ingestion_file.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
+import '../../domain/entities/recipe_image_candidate.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/repositories/recipe_ingestion_repository.dart';
 import '../datasources/recipe_ai_datasource.dart';
@@ -84,13 +85,18 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
   }
 
   @override
-  Future<RecipeEntity> parseFromSocialVideo(
+  Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,
   ) {
     if (_useFakeData) {
       return Future.value(
-        fakeParsedRecipe(RecipeIngestionChannel.socialVideo, sourceUrl: url),
+        SocialVideoRecipe(
+          recipe: fakeParsedRecipe(
+            RecipeIngestionChannel.socialVideo,
+            sourceUrl: url,
+          ),
+        ),
       );
     }
     return aiDataSource.parseFromSocialVideo(url, preferences);

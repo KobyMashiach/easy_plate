@@ -86,6 +86,11 @@ test("the authorization header must match the secret exactly", () => {
   assert.equal(authorized("s3cret ", "s3cret"), false);
   assert.equal(authorized("", "s3cret"), false);
   assert.equal(authorized(undefined, "s3cret"), false);
+  // A placeholder secret is not configured: presenting the placeholder fails.
+  assert.equal(authorized("-", "-"), false);
+  assert.equal(authorized("Bearer -", "-"), false);
+  assert.equal(authorized("unset", "unset"), false);
+  assert.equal(authorized("", ""), false);
   assert.equal(authorized("s3cret", ""), false);
 });
 

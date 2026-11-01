@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -11,6 +10,7 @@ import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../domain/entities/price_record_entity.dart';
 import '../../domain/entities/product_pricing_entity.dart';
 import '../../domain/entities/receipt_entity.dart';
@@ -345,7 +345,7 @@ class _PriceBookPageState extends State<PriceBookPage>
                   label: t.receipt.applyFilters,
                   icon: Icons.check_rounded,
                   expanded: true,
-                  onPressed: () => Navigator.of(sheetContext).pop(true),
+                  onPressed: () => popIfCurrent(sheetContext, true),
                 ),
               ],
             ),
@@ -594,7 +594,7 @@ class _PriceBookPageState extends State<PriceBookPage>
                   children: [
                     Text(r.store ?? '—', style: AppTextStyles.bodyLg),
                     Text(
-                      '${DateFormat.yMd().format(r.purchasedAt)} · ${t.receipt.itemsInReceipt(count: r.itemCount)}',
+                      '${purchaseDateLabel(r.purchasedAt)} · ${t.receipt.itemsInReceipt(count: r.itemCount)}',
                       style: AppTextStyles.labelMd.copyWith(
                         color: AppColors.onSurfaceVariant,
                       ),
@@ -662,8 +662,8 @@ class _PriceBookPageState extends State<PriceBookPage>
                     Text(r.name, style: AppTextStyles.bodyMd),
                     Text(
                       r.receiptId == PriceRecordEntity.manualReceiptId
-                          ? '${t.receipt.manualSource} · ${DateFormat.yMd().format(r.purchasedAt)}'
-                          : '${r.store ?? t.receipt.lastPaid} · ${DateFormat.yMd().format(r.purchasedAt)}',
+                          ? '${t.receipt.manualSource} · ${purchaseDateLabel(r.purchasedAt)}'
+                          : '${r.store ?? t.receipt.lastPaid} · ${purchaseDateLabel(r.purchasedAt)}',
                       style: AppTextStyles.labelSm.copyWith(
                         color: AppColors.onSurfaceVariant,
                       ),

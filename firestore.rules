@@ -38,10 +38,24 @@ service cloud.firestore {
                && get(/databases/$(database)/documents/account_status/$(request.auth.uid)).data.get('disabled', false) == true);
     }
 
+    // Whether the token carries a verified phone. Every real account links
+    // one at the app's gate (and the website's /phone step) before it sees
+    // anything else, and both refresh the token right after linking — but
+    // an email/password account minted straight against the Auth REST API
+    // has none, costs nothing, and used to like, post, reply, publish
+    // recipes and send invites like anyone else. So every write that
+    // reaches other people asks for it too. Not the account's own data
+    // (users/{uid}/…, a household), nor support: those stay open to
+    // whatever the gate lets through.
+    function hasPhone() {
+      return signedIn() && request.auth.token.get('phone_number', null) is string;
+    }
+
     // The author is asserted by the client, so it has to be checked against the
-    // token or anyone could post under someone else's name.
+    // token or anyone could post under someone else's name. Only for the
+    // community's documents, hence the phone.
     function authoredByCaller() {
-      return signedIn() && request.resource.data.authorUid == request.auth.uid;
+      return hasPhone() && request.resource.data.authorUid == request.auth.uid;
     }
 
     // Whether the caller owns the shared recipe or container an invite or a
@@ -110,10 +124,16 @@ service cloud.firestore {
     // renders these hosts only (AuthorRow.trustedPhotoUrl); the rule makes
     // the document itself say no more than that. `matches` covers the whole
     // string, and the host must end at the first "/" (no "@" or ".evil.com").
+    // Narrowed further (2026-11-01): the host families alone still let a
+    // profile name a server its owner runs and reads the logs of — any
+    // project's bucket on firebasestorage/storage.googleapis.com (bucket
+    // access logs), or a Colab proxy on *.googleusercontent.com (a live
+    // server). So: this project's own bucket (both of its names), and a
+    // Google account photo (lhN.googleusercontent.com), nothing else.
     function trustedPhotoUrl(d, key) {
       return !(key in d) || d[key] == null
              || (d[key] is string && d[key].size() <= 2048
-                 && d[key].matches('https://(firebasestorage\\.googleapis\\.com|storage\\.googleapis\\.com|([a-z0-9-]+\\.)+googleusercontent\\.com)/.*'));
+                 && d[key].matches('https://(firebasestorage\\.googleapis\\.com/v0/b/easy-plate\\.(firebasestorage\\.app|appspot\\.com)/o/|storage\\.googleapis\\.com/easy-plate\\.(firebasestorage\\.app|appspot\\.com)/|lh[0-9]+\\.googleusercontent\\.com/).*'));
     }
     function optionalNumber(d, key) {
       return !(key in d) || d[key] == null || d[key] is number;
@@ -318,6 +338,7 @@ service cloud.firestore {
                       // hand it to someone else, inflate its likes or move
                       // its date (the feed's order).
                       (resource.data.authorUid == request.auth.uid
+                       && hasPhone()
                        && notDisabled()
                        && request.resource.data.authorUid == resource.data.authorUid
                        && request.resource.data.get('likeCount', 0) == resource.data.get('likeCount', 0)
@@ -330,7 +351,7 @@ service cloud.firestore {
       // become two likes.
       match /likes/{uid} {
         allow read: if signedIn();
-        allow create: if signedIn() && request.auth.uid == uid && likeCreatedWithCounter(postPath());
+        allow create: if hasPhone() && request.auth.uid == uid && likeCreatedWithCounter(postPath());
         // The author sweeps these when unsharing, so they may delete likes
         // that belong to other people — but only their own recipe's.
         allow delete: if signedIn()
@@ -404,7 +425,8 @@ service cloud.firestore {
       // Switched on before both clients send the three fields, this refuses
       // every reply from an older build — hence left as a comment.
       allow update: if signedIn() && (
-                      (request.resource.data.diff(resource.data).affectedKeys()
+                      (hasPhone()
+                       && request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['replyCount'])
                        && request.resource.data.replyCount == resource.data.get('replyCount', 0) + 1)
                       || movesLikeCountByOne(/databases/$(database)/documents/forum_posts/$(postId)/likes/$(request.auth.uid))
@@ -415,7 +437,7 @@ service cloud.firestore {
       // become two likes.
       match /likes/{uid} {
         allow read: if signedIn();
-        allow create: if signedIn() && request.auth.uid == uid && likeCreatedWithCounter(postPath());
+        allow create: if hasPhone() && request.auth.uid == uid && likeCreatedWithCounter(postPath());
         // The thread's author sweeps these when deleting it, so they may
         // delete likes that belong to other people — but only on their own
         // thread.
@@ -450,7 +472,7 @@ service cloud.firestore {
 
         match /likes/{uid} {
           allow read: if signedIn();
-          allow create: if signedIn() && request.auth.uid == uid && likeCreatedWithCounter(replyPath());
+          allow create: if hasPhone() && request.auth.uid == uid && likeCreatedWithCounter(replyPath());
           allow delete: if signedIn()
                         && ((request.auth.uid == uid && likeDeletedWithCounter(replyPath()))
                             || threadAuthoredByCaller());
@@ -523,7 +545,7 @@ service cloud.firestore {
       }
 
       allow read: if isOwner() || isMember() || isAdmin();
-      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid
+      allow create: if hasPhone() && request.resource.data.ownerUid == request.auth.uid
                     && rosterCreatedEmpty();
       allow delete: if isOwner();
       allow update: if
@@ -573,7 +595,7 @@ service cloud.firestore {
       }
 
       allow read: if isOwner() || isMember() || isAdmin();
-      allow create: if signedIn()
+      allow create: if hasPhone()
                     && request.resource.data.ownerUid == request.auth.uid
                     && request.resource.data.kind in ['book', 'mealPlan', 'groceryList']
                     && rosterCreatedEmpty();
@@ -612,7 +634,7 @@ service cloud.firestore {
       allow get: if signedIn() && (resource == null || partyToInvite());
       allow list: if signedIn() && partyToInvite();
       // Only the owner of the document named may send an invite for it.
-      allow create: if signedIn()
+      allow create: if hasPhone()
                     && notDisabled()
                     && request.resource.data.ownerUid == request.auth.uid
                     && request.resource.data.status == 'pending'
@@ -660,6 +682,7 @@ service cloud.firestore {
                          && request.resource.data.read == false
                          && recentCreatedAt(request.resource.data)
                          && request.resource.data.inviteId is string
+                         && hasPhone()
                          && notDisabled()
                          && announcedInvite().ownerUid == request.auth.uid
                          && announcedInvite().targetUid == uid
@@ -707,7 +730,22 @@ service cloud.firestore {
                && added.text is string && added.text.size() > 0 && added.text.size() <= 4000
                && added.at is timestamp;
       }
-      allow create: if authoredByCaller()
+      function validSupportDetails(d) {
+        return d == null
+               || (d is map
+                   && d.keys().hasOnly(['name', 'email', 'phone', 'uid', 'version', 'device', 'language'])
+                   && optionalString(d, 'name', 300)
+                   && optionalString(d, 'email', 320)
+                   && optionalString(d, 'phone', 32)
+                   && optionalString(d, 'uid', 128)
+                   && optionalString(d, 'version', 100)
+                   && optionalString(d, 'device', 64)
+                   && optionalString(d, 'language', 16));
+      }
+      // Signed as the caller, phone or not (authoredByCaller asks for
+      // one): support stays reachable from wherever the gate let through.
+      // How many a day is the onFeedbackCreated trigger's business.
+      allow create: if signedIn() && request.resource.data.authorUid == request.auth.uid
                     && request.resource.data.type in ['bug', 'suggestion', 'account', 'billing', 'sharing', 'recipes', 'other']
                     && request.resource.data.message is string
                     && request.resource.data.message.size() > 0
@@ -717,6 +755,22 @@ service cloud.firestore {
                     && request.resource.data.keys().hasOnly(['type', 'message', 'authorUid', 'authorName', 'authorEmail', 'appVersion', 'details', 'source', 'followUps', 'userUnread', 'read', 'createdAt', 'updatedAt'])
                     && request.resource.data.get('followUps', []) == []
                     && request.resource.data.get('read', false) == false
+                    // The signature fields, held to their types and to sizes
+                    // no real name, address or build string reaches: only
+                    // `message` was bounded, so one account could drop
+                    // ~1 MiB documents into the administrator's inbox (and
+                    // a map for a name broke the console's parser).
+                    // `details` carries exactly the seven signature lines
+                    // both writers collect (SupportDetails.collect and the
+                    // website's support pages/Shefi), each a short string —
+                    // a new line there needs its key added here first.
+                    && request.resource.data.get('authorName', '') is string
+                    && request.resource.data.get('authorName', '').size() <= 300
+                    && optionalString(request.resource.data, 'authorEmail', 320)
+                    && optionalString(request.resource.data, 'appVersion', 100)
+                    && request.resource.data.get('source', 'app') in ['app', 'shefi']
+                    && request.resource.data.get('userUnread', false) == false
+                    && validSupportDetails(request.resource.data.get('details', null))
                     // The console's inbox is ordered by it: a date next year
                     // stayed on top of every other conversation.
                     && recentCreatedAt(request.resource.data);
@@ -820,7 +874,7 @@ service cloud.firestore {
       // thirty days, so the code lives a month from about now and no longer:
       // a code dated years ahead never expired, and `maxUses` (the server's
       // field) is not the client's to set.
-      allow create: if signedIn()
+      allow create: if hasPhone()
                     && notDisabled()
                     && request.resource.data.keys().hasOnly(['kind', 'targetId', 'ownerUid', 'role', 'title', 'createdAt', 'expiresAt', 'uses', 'revoked'])
                     && request.resource.data.ownerUid == request.auth.uid

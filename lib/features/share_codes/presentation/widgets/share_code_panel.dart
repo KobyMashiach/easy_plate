@@ -204,15 +204,21 @@ class _CodeChip extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // One line always: at a large text size the spaced-out code
+            // wrapped mid-code, and is read aloud or typed letter by letter.
             Expanded(
-              child: Text(
-                code,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.headlineMd.copyWith(
-                  letterSpacing: 5,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                  color: AppColors.primary,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  code,
+                  maxLines: 1,
+                  textDirection: TextDirection.ltr,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.headlineMd.copyWith(
+                    letterSpacing: 5,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ),

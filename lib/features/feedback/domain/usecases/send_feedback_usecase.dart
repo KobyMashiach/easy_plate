@@ -67,6 +67,35 @@ class SendFeedbackUseCase {
   }
 }
 
+/// How long a new conversation's verdict is waited on (see
+/// [refusedForDailyLimit]): a warm function answers in a second, a cold one
+/// in a few. Past this the conversation counts as admitted; a late refusal
+/// still shows in the chat itself.
+const supportVerdictTimeout = Duration(seconds: 8);
+
+/// Whether the server refused the conversation [feedbackId] for the
+/// account's daily allowance of new ones (quota_feedback_daily, applied by
+/// the onFeedbackCreated function after the write — builds in the stores
+/// write straight to Firestore, so the limit cannot come first). Waits for
+/// the function's stamp; no stamp in [timeout], an unreadable document or a
+/// deleted one all answer false: a message the server took is never
+/// reported as refused.
+Future<bool> refusedForDailyLimit(
+  FeedbackRepository repository,
+  String feedbackId, {
+  Duration timeout = supportVerdictTimeout,
+}) async {
+  try {
+    final judged = await repository
+        .watchOne(feedbackId)
+        .firstWhere((f) => f == null || f.judged)
+        .timeout(timeout);
+    return judged?.overDailyLimit ?? false;
+  } catch (_) {
+    return false;
+  }
+}
+
 /// The user's side of a conversation after it is opened.
 class ContinueFeedbackUseCase {
   final FeedbackRepository repository;

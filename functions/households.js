@@ -185,9 +185,24 @@ async function syncSeats(db, ref, ownerEnt) {
 // taps on "create" at once (or two devices) used to read no membership
 // each and open two households for one owner, with the app following
 // whichever the query returned first.
+//
+// The "not in a household" query alone does not serialise two such
+// transactions: a query's *missing* results are not a document either one
+// read, so both could commit, and an owner on Pro Family firing creates in
+// parallel got several households of five inherited Premium seats each.
+// Both now also read and write the account's lock document
+// (household_locks/{uid}, server-only), which Firestore does serialise:
+// the second retries, and its retry sees the first household.
+const LOCKS = "household_locks";
+
+function lockRef(db, uid) {
+  return db.collection(LOCKS).doc(uid);
+}
+
 async function create(db, uid, title) {
   const ref = db.collection("households").doc();
   return db.runTransaction(async (tx) => {
+    await tx.get(lockRef(db, uid));
     const elsewhere = await tx.get(db.collection("households").where("memberUids", "array-contains", uid).limit(1));
     if (!elsewhere.empty) return { error: "in_household" };
     const ent = (await tx.get(db.collection("entitlements").doc(uid))).data();
@@ -204,6 +219,7 @@ async function create(db, uid, title) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
     tx.set(ref, data);
+    tx.set(lockRef(db, uid), { householdId: ref.id, at: admin.firestore.FieldValue.serverTimestamp() });
     return { household: publicHousehold(ref.id, data) };
   });
 }
@@ -230,6 +246,11 @@ async function join(db, householdId, uid, { tx = null, issuerUid = null } = {}) 
   if (!householdTierFor(ownerEnt)) return { error: "not_eligible" };
   const entRef = db.collection("entitlements").doc(uid);
   const memberEnt = (await read(entRef)).data();
+  // The joiner's lock, as in create: two redemptions at once (two codes,
+  // two households) would otherwise both find "no household elsewhere".
+  // Only meaningful inside a transaction (the share-code path); the batch
+  // path still writes it so the next transaction sees a fresh version.
+  await read(lockRef(db, uid));
 
   const writer = tx || db.batch();
   writer.update(ref, {
@@ -237,6 +258,7 @@ async function join(db, householdId, uid, { tx = null, issuerUid = null } = {}) 
     [`members.${uid}`]: { joinedAt: admin.firestore.Timestamp.now(), role: "member" },
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   });
+  writer.set(lockRef(db, uid), { householdId: snap.id, at: admin.firestore.FieldValue.serverTimestamp() });
   if (mayInherit(memberEnt)) {
     writer.set(entRef, { ...inheritedEntitlement(ownerEnt, snap.id), updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
   }
@@ -371,7 +393,7 @@ exports.restoreHouseholdPremium = onSchedule(
   },
 );
 
-exports.internals = { restoreLapsed, LAPSE_WINDOW_MS, seatCheck, tierOf, seatsFor, entitlementActive, householdTierFor, inheritedEntitlement, mayInherit, regainedEntitlement, restoreInherited, releasedEntitlement, publicHousehold, join, create, leave, remove, dissolve, syncMembers, syncSeats };
+exports.internals = { LOCKS, restoreLapsed, LAPSE_WINDOW_MS, seatCheck, tierOf, seatsFor, entitlementActive, householdTierFor, inheritedEntitlement, mayInherit, regainedEntitlement, restoreInherited, releasedEntitlement, publicHousehold, join, create, leave, remove, dissolve, syncMembers, syncSeats };
 
 const STATUS = { in_household: 409, not_eligible: 403, gone: 404, full: 409, not_member: 404, not_owner: 403, owner_cannot_leave: 409 };
 
@@ -381,6 +403,11 @@ exports.households = onRequest(
     if (req.method !== "POST") return res.status(405).json({ error: { message: "Method not allowed" } });
     const caller = await proxy.verifyCaller(req);
     if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
+    // Switched off from the console (the `disabled` claim, adminUsers.disable):
+    // every action here reaches other people — seats, their inherited
+    // Premium, a whole shared library on dissolve — the same reason the
+    // share-code redemption that joins a household refuses it.
+    if (caller.disabled === true) return res.status(403).json({ error: { code: "account_disabled", message: "This account is disabled" } });
     const body = req.body || {};
     const db = admin.firestore();
     try {

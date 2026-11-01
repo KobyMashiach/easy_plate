@@ -11,6 +11,14 @@ class AccountDeletionRefused implements Exception {
   const AccountDeletionRefused(this.code);
 }
 
+/// The server wants a recent sign-in before it deletes the account
+/// (`recent_login_required`, on while Remote Config's
+/// `delete_account_recent_auth_minutes` is above 0): the phone is verified
+/// again by SMS and the call retried once.
+class AccountDeletionNeedsRecentLogin implements Exception {
+  const AccountDeletionNeedsRecentLogin();
+}
+
 /// The account deleting itself through the `deleteAccount` function, which
 /// holds the Admin SDK: the Auth user, the profile and its mirrored boxes,
 /// photos, shared documents, codes, invites and community posts all go.
@@ -37,6 +45,9 @@ class AccountDeletionRemoteDataSource {
         receiveTimeout: const Duration(seconds: 300),
       );
     } on AppException catch (e) {
+      if (needsRecentLogin(e.message)) {
+        throw const AccountDeletionNeedsRecentLogin();
+      }
       final code = refusalIn(e.message);
       if (code != null) throw AccountDeletionRefused(code);
       rethrow;
@@ -49,4 +60,8 @@ class AccountDeletionRemoteDataSource {
     final code = match?.group(1);
     return code == 'household_owner' ? code : null;
   }
+
+  /// Whether an error body is the server asking for a recent sign-in.
+  static bool needsRecentLogin(String message) =>
+      RegExp(r'code[":\s]+recent_login_required').hasMatch(message);
 }

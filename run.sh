@@ -5,7 +5,26 @@
 
 # Every build reads its ad units, RevenueCat keys and proxy URL from this
 # file; a build without it ships blank ad units and no store SDK.
-DEFINES="--dart-define-from-file=dart_defines/dev.json"
+# ADMOB_TEST_ADS=false serves the real units in debug runs too (AdsConfig
+# would otherwise switch debug to Google's sample units). Register your own
+# phones under AdMob → Settings → Test devices so they never click a live ad.
+DEFINES="--dart-define-from-file=dart_defines/dev.json --dart-define=ADMOB_TEST_ADS=false"
+
+# Stops a run or build whose dev.json is missing one of the four real ad
+# units, or still holds Google's sample ones: AdsConfig silently falls back
+# to the sample unit for a blank id, and that build would earn nothing.
+function checkAdUnits() {
+  local key value missing=0
+  for key in ADMOB_NATIVE_AD_UNIT_ANDROID ADMOB_REWARDED_AD_UNIT_ANDROID \
+             ADMOB_NATIVE_AD_UNIT_IOS ADMOB_REWARDED_AD_UNIT_IOS; do
+    value=$(sed -n "s/.*\"$key\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p" dart_defines/dev.json 2>/dev/null | head -n 1)
+    if [ -z "$value" ] || [[ "$value" == *3940256099942544* ]]; then
+      echo "❌ $key in dart_defines/dev.json is empty or a Google test unit."
+      missing=1
+    fi
+  done
+  return $missing
+}
 
 # Store builds keep the Dart debug info out of the binary (smaller download)
 # and write it per platform under build/symbols/. Without uploading those
@@ -37,6 +56,7 @@ function uploadDartSymbols() {
 # === ANDROID FUNCTIONS (01–09) ===
 function androidRun() {
   echo "Run  Android"
+  checkAdUnits || return 1
   flutter run --release $DEFINES
 }
 
@@ -44,17 +64,20 @@ function androidRun() {
 # in use this was the only kind it ran in; the store keys run anywhere.)
 function androidRunDebug() {
   echo "Run (Debug) Android"
+  checkAdUnits || return 1
   flutter run $DEFINES
 }
 
 function androidBuildApk() {
   echo "Build Android APK"
+  checkAdUnits || return 1
   flutter build apk --release $DEFINES --split-debug-info=$SYMBOLS_DIR/android &&
     uploadDartSymbols android
 }
 
 function androidBuildAab() {
   echo "Build Android App Bundle"
+  checkAdUnits || return 1
   flutter build appbundle --release $DEFINES --split-debug-info=$SYMBOLS_DIR/android &&
     uploadDartSymbols android
 }
@@ -91,16 +114,19 @@ function androidLogs() {
 # === IOS FUNCTIONS (11–19) ===
 function iosRun() {
   echo "Run iOS"
+  checkAdUnits || return 1
   flutter run --release $DEFINES
 }
 
 function iosRunDebug() {
   echo "Run (Debug) iOS"
+  checkAdUnits || return 1
   flutter run $DEFINES
 }
 
 function iosBuildIpa() {
   echo "Build IPA iOS"
+  checkAdUnits || return 1
   flutter build ipa --release $DEFINES --split-debug-info=$SYMBOLS_DIR/ios &&
     uploadDartSymbols ios
 }
@@ -197,6 +223,87 @@ function deployWebsite() {
   firebase deploy --only hosting
 }
 
+# === AUTONOMOUS QA LOOP ===
+# Opens Claude Code in this terminal (a normal, visible session) with a
+# parallel test → fix → retest loop: three agents for performance,
+# UI/functional bugs and security. Asks how many minutes to run (180 = 3
+# hours); the session is killed at that deadline whatever it is doing.
+# Hourly reports and a Hebrew final summary go to docs/review/qa-loop/.
+# The duration can also be passed directly: ./run.sh qaLoop 60
+function qaLoop() {
+  local minutes=$1
+  if [ -z "$minutes" ]; then
+    read -r -p "How many minutes should the QA loop run? [180]: " minutes
+    minutes=${minutes:-180}
+  fi
+  if ! [[ "$minutes" =~ ^[0-9]+$ ]] || [ "$minutes" -eq 0 ]; then
+    echo "❌ '$minutes' is not a number of minutes."
+    return 1
+  fi
+  local stamp deadline
+  stamp=$(date +%Y%m%d-%H%M%S)
+  deadline=$(date -v+"${minutes}"M "+%Y-%m-%d %H:%M")
+  mkdir -p docs/review/qa-loop
+
+  local prompt
+  prompt=$(cat <<EOF
+# Autonomous Multi-Agent Parallel QA & Remediation Loop
+
+Started at $(date "+%Y-%m-%d %H:%M"). Hard deadline: $deadline (${minutes} minutes).
+Check the clock with \`date\` between cycles and stop starting new work when the deadline is near.
+
+## Objective
+Execute a continuous, multi-threaded testing and remediation loop until the deadline. Deploy multiple autonomous worker agents running in parallel to simultaneously test, audit, and fix different layers of the application to maximize throughput and code coverage.
+
+## Agent Team Structure & Division of Labor
+
+### 1. Performance & Load Agent
+* Focus: Speed, API latency, database query efficiency, memory leaks, and concurrency bottlenecks.
+* Action: Continuously run load tests, stress tests, and profiling. Identify slow queries or resource spikes and immediately optimize the code.
+
+### 2. UI/UX & Functional Bug Hunter Agent
+* Focus: Client-side errors, console exceptions, broken layouts, responsive design flaws, edge-case user flows, and state management issues.
+* Action: Systematically test user interactions, form submissions, and navigation paths. Immediately patch frontend and component logic upon failure.
+
+### 3. Security & Reliability Agent
+* Focus: Input validation, authentication/authorization gaps, unhandled exceptions, and API error-handling robustness.
+* Action: Run security checks and failure-injection testing, then immediately harden the codebase against vulnerabilities.
+
+## Core Loop Protocol (For Every Agent)
+1. Test: Run domain-specific diagnostic tests.
+2. Fix: Write clean, production-ready code to resolve any discovered issues without temporary patches.
+3. Verify: Re-run tests to confirm the fix works and creates no regressions.
+4. Loop: Restart the cycle until the deadline.
+
+## This repo
+* Flutter app (lib/, test/): \`flutter analyze\`, \`flutter test\`.
+* Cloud Functions (functions/): \`npm test\` inside functions/.
+* Web app (webapp/) and site (landing/): \`npm run build\` in each.
+* Firestore rules: firestore.rules.
+* Follow CLAUDE.md and the project memory (AppDialog, feature flags, i18n in all five languages).
+
+## Guard rails (unattended run)
+* No git commit, push, reset or checkout; leave every change in the working tree for review.
+* No firebase deploy, no Remote Config publish, no writes to production data, no store uploads.
+* Agents work on separate files/modules to avoid conflicts.
+
+## Synchronization & Logging
+* At the end of each hour, write a consolidated progress report to docs/review/qa-loop/$stamp-hour-<n>.md summarizing fixes applied across all parallel streams.
+* At the end, write docs/review/qa-loop/$stamp-final.md with all fixes, tests run, and open items — in Hebrew.
+EOF
+)
+
+  echo "QA loop: ${minutes} minutes, hard stop at $deadline"
+  # Hard stop: at the deadline, kill the Claude session started below (the
+  # only other child of this shell).
+  ( sleep $((minutes * 60)); echo; echo "⏰ $minutes minutes are up, stopping Claude."
+    pkill -TERM -P $$ ) &
+  local watchdog=$!
+  claude "$prompt" --permission-mode auto
+  kill "$watchdog" 2>/dev/null
+  echo "QA loop finished at $(date "+%H:%M"). Reports: docs/review/qa-loop/"
+}
+
 # === INTERACTIVE MENU ===
 function menu() {
   echo ""
@@ -205,16 +312,16 @@ function menu() {
   echo "📱 ANDROID"
   echo "--------------------------------------"
   echo "01. Run"
-  echo "04. Run (Debug, for Test Store purchases)"
   echo "02. Build APK"
   echo "03. Build App Bundle"
+  echo "04. Run (Debug, real ads)"
   echo "09. Android Clean"
   echo ""
   echo "🍎 iOS"
   echo "--------------------------------------"
   echo "11. Run"
-  echo "14. Run (Debug, for Test Store purchases)"
   echo "12. Build IPA"
+  echo "14. Run (Debug, real ads)"
   echo "17. Open iOS Runner in Xcode"
   echo "19. Clean & Build iOS"
   echo ""
@@ -230,17 +337,21 @@ function menu() {
   echo "28. Store Screenshots (paywall review image)"
   echo "29. Delete all Firebase data"
   echo ""
+  echo "📜 LOGS"
+  echo "--------------------------------------"
+  echo "31. Android LOGS"
+  echo "32. IOS LOGS"
+  echo ""
   echo "🌐 WEBSITE"
   echo "--------------------------------------"
   echo "41. Build website (CSS, 5 languages, sitemap, og images)"
   echo "42. Build + deploy website (firebase hosting)"
   echo ""
-  echo "📜 LOGS"
+  echo "🤖 QA"
   echo "--------------------------------------"
-  echo "31. Android LOGS"
-  echo "32. IOS LOGS"
+  echo "51. Autonomous QA loop (Claude, asks for minutes)"
   echo "======================================"
-  read -p "Enter your choice (01–42): " choice
+  read -p "Enter your choice (01–51): " choice
 
   case $choice in
     1|01) androidRun ;;
@@ -250,8 +361,8 @@ function menu() {
     9|09) androidClean ;;
 
     11) iosRun ;;
-    14) iosRunDebug ;;
     12) iosBuildIpa ;;
+    14) iosRunDebug ;;
     17) openBuilderIos ;;
     19) cleanAndBuildIos ;;
 
@@ -271,7 +382,9 @@ function menu() {
     41) buildWebsite ;;
     42) deployWebsite ;;
 
-    *) echo "❌ Invalid option. Please select between 01–42." ;;
+    51) qaLoop ;;
+
+    *) echo "❌ Invalid option. Please select between 01–51." ;;
   esac
 }
 

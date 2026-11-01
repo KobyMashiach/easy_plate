@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:async';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
+import 'package:easy_plate/core/features/features_flags.dart';
 import 'package:easy_plate/core/errors/app_exception.dart';
 import 'package:easy_plate/features/price_book/domain/entities/receipt_scan_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/data/datasources/recipe_ai_datasource.dart'
@@ -13,6 +14,7 @@ import 'package:easy_plate/features/my_recipes/domain/usecases/save_recipe_useca
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/original_recipe_page_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_result_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/ingestion_file.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/entities/recipe_image_candidate.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/fetch_original_recipe_page_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/generate_recipe_usecase.dart';
@@ -57,11 +59,14 @@ class _FakeIngestion implements RecipeIngestionRepository {
     List<DietaryPreference> p,
   ) => onParse!(files.map((f) => f.name).join(','));
 
+  /// What the server offers with a video recipe (the cover, stills).
+  List<RecipeImageCandidate> socialImages = const [];
+
   @override
-  Future<RecipeEntity> parseFromSocialVideo(
+  Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> p,
-  ) => onParse!(url);
+  ) async => SocialVideoRecipe(recipe: await onParse!(url), images: socialImages);
 
   @override
   Future<RecipeEntity> generateRecipe(
@@ -131,8 +136,21 @@ void main() {
   late _FakeIngestion ingestion;
   late _FakeRecipes recipes;
 
+  /// The photo store as the bloc sees it: what was written, what was
+  /// deleted, named in order.
+  final stored = <Uint8List>[];
+  final deleted = <String>[];
+  Future<String?> Function(Uint8List bytes)? storeImage;
+
   IngestionBloc buildBloc() => IngestionBloc(
     analysisTimeout: const Duration(milliseconds: 50),
+    storeImage:
+        storeImage ??
+        (bytes) async {
+          stored.add(bytes);
+          return 'picked${stored.length}.jpg';
+        },
+    deleteImage: (name) async => deleted.add(name),
     parseRawTextUseCase: ParseRawTextUseCase(ingestion),
     searchWebRecipesUseCase: SearchWebRecipesUseCase(ingestion),
     parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(ingestion),
@@ -152,6 +170,172 @@ void main() {
   setUp(() {
     ingestion = _FakeIngestion();
     recipes = _FakeRecipes();
+    stored.clear();
+    deleted.clear();
+    storeImage = null;
+    FeaturesFlags.overrides = {
+      FeaturesFlags.socialVideoPhoto: FeatureFlagValue.enabled,
+    };
+  });
+  tearDown(() => FeaturesFlags.overrides = null);
+
+  RecipeImageCandidate candidate(RecipeImageCandidateKind kind, int seed) =>
+      RecipeImageCandidate(
+        kind: kind,
+        bytes: Uint8List.fromList([seed, seed + 1, seed + 2]),
+        atSeconds: kind == RecipeImageCandidateKind.frame ? seed * 1.0 : null,
+      );
+
+  group('pictures from a video', () {
+    const link = 'https://www.tiktok.com/@a/video/1';
+
+    setUp(() {
+      ingestion.onParse = (_) async => parsed('שקשוקה');
+      ingestion.socialImages = [
+        candidate(RecipeImageCandidateKind.cover, 10),
+        candidate(RecipeImageCandidateKind.frame, 20),
+        candidate(RecipeImageCandidateKind.frame, 30),
+      ];
+    });
+
+    test('the post\'s cover goes on the recipe by itself, the stills are offered', () async {
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      final state = await settle(bloc) as IngestionReview;
+
+      expect(state.imageCandidates.length, 3);
+      expect(state.selectedImage, 0);
+      expect(state.recipe.imageFileName, 'picked1.jpg');
+      expect(stored, [Uint8List.fromList([10, 11, 12])], reason: 'only the cover was written');
+    });
+
+    test('a still is written once however often it is picked; "no picture" takes it off', () async {
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      await settle(bloc);
+
+      bloc.add(const IngestionEvent.pickImageCandidate(1));
+      var state = await bloc.stream.first as IngestionReview;
+      expect(state.selectedImage, 1);
+      expect(state.recipe.imageFileName, 'picked2.jpg');
+
+      bloc.add(const IngestionEvent.pickImageCandidate(null));
+      state = await bloc.stream.first as IngestionReview;
+      expect(state.selectedImage, isNull);
+      expect(state.recipe.imageFileName, isNull);
+      expect(state.imageCandidates.length, 3, reason: 'still on offer');
+
+      bloc.add(const IngestionEvent.pickImageCandidate(1));
+      state = await bloc.stream.first as IngestionReview;
+      expect(state.recipe.imageFileName, 'picked2.jpg');
+      expect(stored.length, 2, reason: 'the cover and one still, each once');
+
+      // An index that is not a candidate changes nothing.
+      bloc.add(const IngestionEvent.pickImageCandidate(7));
+      await Future<void>.delayed(Duration.zero);
+      expect((bloc.state as IngestionReview).recipe.imageFileName, 'picked2.jpg');
+    });
+
+    test('closing the screen deletes the pictures the saved recipe did not take', () async {
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      await settle(bloc);
+      bloc.add(const IngestionEvent.pickImageCandidate(2));
+      final state = await bloc.stream.first as IngestionReview;
+
+      bloc.add(IngestionEvent.saveRecipe(state.recipe));
+      expect(await bloc.stream.first, isA<IngestionSaved>());
+      expect(recipes.saved.single.imageFileName, 'picked2.jpg');
+
+      await bloc.close();
+      expect(deleted, ['picked1.jpg'], reason: 'the cover file, not the saved still');
+    });
+
+    test('backing out without saving deletes every picture written', () async {
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      await settle(bloc);
+      bloc.add(const IngestionEvent.pickImageCandidate(1));
+      await bloc.stream.first;
+
+      await bloc.close();
+      expect(deleted, unorderedEquals(['picked1.jpg', 'picked2.jpg']));
+    });
+
+    test('a cover that cannot be written leaves the recipe bare, the stills still on offer', () async {
+      storeImage = (_) async => null;
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      final state = await settle(bloc) as IngestionReview;
+
+      expect(state.recipe.imageFileName, isNull);
+      expect(state.selectedImage, isNull);
+      expect(state.imageCandidates.length, 3);
+
+      // Picking one that also fails says so, and keeps the review.
+      bloc.add(const IngestionEvent.pickImageCandidate(1));
+      final after = await bloc.stream.firstWhere(
+        (s) => s is IngestionReview && s.notice != null,
+      ) as IngestionReview;
+      expect(after.notice, t.ingestion.videoPhotoFailed);
+      expect(after.recipe.imageFileName, isNull);
+    });
+
+    test('with the feature hidden the recipe arrives bare and nothing is written', () async {
+      FeaturesFlags.overrides = {
+        FeaturesFlags.socialVideoPhoto: FeatureFlagValue.hidden,
+      };
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      final state = await settle(bloc) as IngestionReview;
+
+      expect(state.imageCandidates, isEmpty);
+      expect(state.recipe.imageFileName, isNull);
+      expect(stored, isEmpty);
+    });
+
+    test('the editor swapping the photo clears the pick, the candidates stay', () async {
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      final state = await settle(bloc) as IngestionReview;
+
+      bloc.add(
+        IngestionEvent.updateRecipe(
+          state.recipe.copyWith(imageFileName: 'from-gallery.jpg'),
+        ),
+      );
+      final after = await bloc.stream.first as IngestionReview;
+      expect(after.selectedImage, isNull);
+      expect(after.imageCandidates.length, 3);
+      expect(after.recipe.imageFileName, 'from-gallery.jpg');
+    });
+
+    test('two quick picks land in the order they were tapped', () async {
+      // The first still is slow to write, the second quick: the last tap
+      // must win, and the same still tapped twice is still written once.
+      var n = 0;
+      storeImage = (bytes) async {
+        if (bytes.first == 20) {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+        }
+        stored.add(bytes);
+        return 'picked${++n}.jpg';
+      };
+      final bloc = buildBloc();
+      bloc.add(const IngestionEvent.parseSocialVideo(link));
+      await settle(bloc);
+
+      bloc.add(const IngestionEvent.pickImageCandidate(1));
+      bloc.add(const IngestionEvent.pickImageCandidate(1));
+      bloc.add(const IngestionEvent.pickImageCandidate(2));
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+
+      final state = bloc.state as IngestionReview;
+      expect(state.selectedImage, 2);
+      expect(state.recipe.imageFileName, 'picked3.jpg');
+      expect(stored.length, 3, reason: 'the cover and each still once');
+      await bloc.close();
+    });
   });
 
   test('a fast analysis lands on review as before', () async {

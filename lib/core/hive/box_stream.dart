@@ -16,10 +16,42 @@ import 'package:hive_ce/hive.dart';
 Stream<List<T>> watchBoxValues<T>(
   Future<Box<T>> Function() open, {
   Duration quiet = const Duration(milliseconds: 60),
-}) async* {
-  final box = await open();
-  yield box.values.toList();
-  yield* coalesce(box.watch(), quiet).map((_) => box.values.toList());
+}) {
+  late final StreamController<List<T>> controller;
+  StreamSubscription<void>? changes;
+  var cancelled = false;
+  controller = StreamController<List<T>>(
+    onListen: () async {
+      final Box<T> box;
+      try {
+        box = await open();
+      } catch (e, stack) {
+        if (!cancelled) {
+          controller.addError(e, stack);
+          await controller.close();
+        }
+        return;
+      }
+      if (cancelled) return;
+      // Following the box before the first read, not after: a write that
+      // landed between the two (a screen saving the moment it had the
+      // list) was in neither, and the tab showed the box without it until
+      // some later write happened along.
+      changes = coalesce(box.watch(), quiet).listen(
+        (_) => controller.add(box.values.toList()),
+        onError: controller.addError,
+        onDone: controller.close,
+      );
+      controller.add(box.values.toList());
+    },
+    onPause: () => changes?.pause(),
+    onResume: () => changes?.resume(),
+    onCancel: () {
+      cancelled = true;
+      return changes?.cancel();
+    },
+  );
+  return controller.stream;
 }
 
 /// Emits once per burst of [source] events: the first event starts a

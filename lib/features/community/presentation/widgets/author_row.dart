@@ -35,18 +35,29 @@ class AuthorRow extends StatelessWidget {
     return t.community.ageDays(n: difference.inDays);
   }
 
-  /// Whether [url] is a picture this app put there: an upload to our
-  /// Storage bucket or a Google account photo. The rules only bound its
-  /// length, so any account could point its avatar at its own server — every
-  /// community reader's phone then fetched it (their IP in that server's
-  /// log), and a huge body was downloaded whole before decoding.
+  /// Whether [url] is a picture this app put there: an upload to this
+  /// project's own Storage bucket (either of its names, in the download-URL
+  /// or the storage.googleapis.com form) or a Google account photo
+  /// (lhN.googleusercontent.com). The same shape `trustedPhotoUrl` in
+  /// firestore.rules accepts — kept in step, since documents written before
+  /// the rule was narrowed still carry older URLs. Any wider and a profile
+  /// could name a server its owner reads the logs of (another project's
+  /// bucket, a Colab proxy on *.googleusercontent.com): every community
+  /// reader's phone then fetched it, their IP in that log.
   static bool trustedPhotoUrl(String? url) {
-    final uri = url == null ? null : Uri.tryParse(url);
-    if (uri == null || uri.scheme != 'https') return false;
-    return uri.host == 'firebasestorage.googleapis.com' ||
-        uri.host == 'storage.googleapis.com' ||
-        uri.host.endsWith('.googleusercontent.com');
+    if (url == null || url.length > 2048) return false;
+    return _trustedPhoto.hasMatch(url);
   }
+
+  /// Anchored at the start and ending each host at its first "/", as the
+  /// rule's `matches` does: no "@", ".evil.com" or port can follow it.
+  static final _trustedPhoto = RegExp(
+    r'^https://('
+    r'firebasestorage\.googleapis\.com/v0/b/easy-plate\.(firebasestorage\.app|appspot\.com)/o/'
+    r'|storage\.googleapis\.com/easy-plate\.(firebasestorage\.app|appspot\.com)/'
+    r'|lh[0-9]+\.googleusercontent\.com/'
+    r')',
+  );
 
   @override
   Widget build(BuildContext context) {

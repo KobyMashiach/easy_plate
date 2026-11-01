@@ -542,7 +542,16 @@ async function expire(now = Date.now(), { db = admin.firestore(), auth = admin.a
       try {
         await auth.revokeRefreshTokens(doc.id);
       } catch (err) {
-        logger.warn("revoke failed", { uid: doc.id, reason: err.message });
+        // An account deleted since has nothing to revoke. Any other failure
+        // (Auth throttling, a network error) puts the record back: with it
+        // gone, no later run would ever retry the revoke, and the device
+        // would keep a session past its month. `create`, so a device that
+        // claimed afresh in the meantime keeps its new record.
+        if (err && err.code !== "auth/user-not-found") {
+          logger.warn("revoke failed, session kept for the next run", { uid: doc.id, reason: err.message });
+          await doc.ref.create(doc.data()).catch((e) => logger.warn("session restore failed", { uid: doc.id, reason: e.message }));
+          continue;
+        }
       }
       count++;
     }

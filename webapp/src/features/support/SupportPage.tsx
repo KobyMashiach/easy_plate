@@ -11,7 +11,7 @@ import { Button, Notice, PageTitle, Spinner } from "../../components/ui";
 import { Icon } from "../../components/icons";
 import { FeatureGate } from "../../components/FeatureGate";
 import { useProfileDoc } from "../settings/data";
-import { excerpt, FEEDBACK_ICONS, FEEDBACK_TYPES, MAX_MESSAGE, sendFeedback, threadOf, useMyConversations, type Conversation, type FeedbackType } from "./data";
+import { excerpt, FEEDBACK_ICONS, FEEDBACK_TYPES, MAX_MESSAGE, refusedForDailyLimit, sendFeedback, threadOf, useMyConversations, type Conversation, type FeedbackType } from "./data";
 import { WhatsNewBook } from "./WhatsNewBook";
 import { useIsPhone } from "../../components/useIsPhone";
 import { PhoneSupport } from "./PhoneSupport";
@@ -172,6 +172,11 @@ function FeedbackForm({ name, profileEmail }: { name: string; profileEmail: stri
     for (const [k, v] of Object.entries(raw)) if (v && v.trim()) details[k] = v.trim();
     try {
       const id = await sendFeedback({ type, message, authorUid: user.uid, authorName: name, authorEmail: profileEmail ?? user.email ?? null, details });
+      // Past the day's allowance the server closes it at once: said here, with the text kept.
+      if (await refusedForDailyLimit(id)) {
+        setNotice({ kind: "error", text: t("support.form.dailyLimit") });
+        return;
+      }
       setMessage("");
       setType("");
       if (chat === "enabled") navigate(`/support/${id}`);

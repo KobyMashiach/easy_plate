@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/errors/app_exception.dart';
@@ -222,6 +221,9 @@ class _ReceiptReviewPageState extends State<ReceiptReviewPage> {
   }
 
   Future<void> _save() async {
+    // Two taps in one frame both reach here before the button greys out,
+    // and each would store the whole receipt.
+    if (_saving) return;
     final lines = _validLines;
     if (lines.isEmpty) {
       AppDialog.info(message: t.receipt.nothingToSave).notify(context);
@@ -360,7 +362,7 @@ class _ReceiptReviewPageState extends State<ReceiptReviewPage> {
                   _HeaderRow(
                     icon: Icons.event_rounded,
                     label: t.receipt.date,
-                    value: date == null ? '—' : DateFormat.yMd().format(date),
+                    value: date == null ? '—' : purchaseDateLabel(date),
                   ),
                   _HeaderRow(
                     icon: Icons.receipt_long_rounded,

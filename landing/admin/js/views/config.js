@@ -1,6 +1,6 @@
 // Remote Config, the whole template: every parameter under the heading
 // the app's תצורה tab gives it, edited in place and published at once.
-import { t, currentLang } from "../i18n.js";
+import { t, currentLang, LANGS } from "../i18n.js";
 import { h, clear, spinner, button, busy, chips, select, input, textarea, field, toggle, modal, confirmDialog, toast, toastError, empty, debounce } from "../ui.js";
 import { call } from "../api.js";
 
@@ -105,7 +105,29 @@ export async function mount({ view, actions }) {
       try { apply(await call("config.add", { name: name.value.trim(), valueType: type.value, value: value.value, description: description.value.trim(), group: groupCtl.value.trim() })); toast(t("config.saved"), "ok"); c(); render(); } catch (e) { toastError(e); }
     })); return b; }] });
   };
-  actions.append(button(t("config.add"), { kind: "small", onclick: add }), button(t("common.refresh"), { kind: "small", onclick: () => load() }));
+  // The shared translation cache (translateContent) is not Remote Config,
+  // but it is the other server-side switch the app's content runs through:
+  // a line whose cached translation is wrong, or was planted, is dropped
+  // here and translated afresh on the next request.
+  const purge = () => {
+    const text = textarea({ placeholder: "1 כוס סוכר" });
+    const lang = select([["", t("config.purge.allLangs")], ...Object.entries(LANGS)]);
+    const result = h("div.stack");
+    modal({ title: t("config.purge.title"), body: h("div.stack", h("p.small.muted", t("config.purge.hint")), field(t("config.purge.text"), text), field(t("config.purge.lang"), lang), result), actions: [(c) => button(t("common.cancel"), { onclick: c }), () => { const b = button(t("config.purge.run"), { kind: "danger" }); b.addEventListener("click", busy(b, async () => {
+      const line = text.value.trim();
+      if (!line) return;
+      if (!(await confirmDialog({ title: t("config.purge.title"), text: t("config.purge.confirm", { lang: lang.value ? LANGS[lang.value] : t("config.purge.allLangs") }) }))) return;
+      try {
+        const r = await call("translation.purge", lang.value ? { text: line, lang: lang.value } : { text: line });
+        const removed = r.removed || [];
+        clear(result);
+        if (!removed.length) { result.append(h("p.small.muted", t("config.purge.none"))); return; }
+        result.append(h("p.small", t("config.purge.done", { n: removed.length })), ...removed.map((e) => h("div.small", h("b", `${LANGS[e.lang] || e.lang}: `), (e.texts || []).map((x) => (x.by === null ? x.text : `${x.text} (${x.by})`)).join(" · "))));
+        toast(t("common.deleted"), "ok");
+      } catch (e) { toastError(e); }
+    })); return b; }] });
+  };
+  actions.append(button(t("config.add"), { kind: "small", onclick: add }), button(t("config.purge.title"), { kind: "small", onclick: purge }), button(t("common.refresh"), { kind: "small", onclick: () => load() }));
 
   const load = async () => {
     clear(body);

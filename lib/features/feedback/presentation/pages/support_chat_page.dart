@@ -132,7 +132,11 @@ class _SupportChatPageState extends State<SupportChatPage> {
                     ),
                   },
                 ),
-                if (item != null && item.closed)
+                // Refused for the day's allowance: closed by the server,
+                // and said so rather than "the team closed it".
+                if (item != null && item.overDailyLimit)
+                  _ClosedNotice(message: t.feedback.dailyLimit)
+                else if (item != null && item.closed)
                   const _ClosedNotice()
                 else if (item != null && item.followUps.length >= maxFollowUps)
                   _ClosedNotice(message: t.feedback.threadFull)

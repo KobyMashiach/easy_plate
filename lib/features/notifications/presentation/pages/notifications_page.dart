@@ -149,6 +149,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
     ShareInviteEntity invite, {
     required bool accept,
   }) async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final useCase = RespondToShareInviteUseCase(
       sharing: _sharing,
       recipes: context.read<RecipesRepository>(),
@@ -237,6 +239,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   /// The author changed a post this account saved: take the new version
   /// (and show it), or keep the copy as it is.
   Future<void> _refreshCopy(AppNotificationEntity item) async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final sharedId = item.sharedId;
     if (sharedId == null) return;
     setState(() => _busy = true);

@@ -87,8 +87,16 @@ export function IngestPage() {
   const fileInput = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
 
-  // Leaving the page stops the call in flight.
-  useEffect(() => () => abortRef.current?.abort("cancel"), []);
+  // Leaving the page stops the call in flight — and one still waiting on the
+  // quota gate, which has no controller yet, never starts (`alive`).
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      abortRef.current?.abort("cancel");
+    };
+  }, []);
 
   const allowed = useCallback(
     (c: IngestionChannel) => {
@@ -163,6 +171,7 @@ export function IngestPage() {
     try {
       setFormError(null);
       if (opts.gated && !(await spend())) return;
+      if (!alive.current) return;
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       const timer = window.setTimeout(() => ctrl.abort("timeout"), ch === "socialVideo" ? SOCIAL_TIMEOUT_MS : ANALYSIS_TIMEOUT_MS);

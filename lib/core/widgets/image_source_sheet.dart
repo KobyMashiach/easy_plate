@@ -15,6 +15,7 @@ import '../sync/recipe_image_store.dart';
 import '../utils/i18n/strings.g.dart';
 import 'app_dialog.dart';
 import 'clay/clay.dart';
+import 'pop_if_current.dart';
 import 'web_image_picker_page.dart';
 
 /// Outcome of the photo sheet: a newly stored file name, or an explicit removal.
@@ -52,11 +53,15 @@ Future<ImagePickResult?> showImageSourceSheet(
   );
   return showModalBottomSheet<ImagePickResult>(
     context: context,
-    builder: (sheetContext) => _ImageSourceSheet(
-      hasImage: hasImage,
-      aiPrompt: aiPrompt,
-      aiPromptPicker: aiPromptPicker,
-      searchQuery: searchQuery,
+    // Scrolls when the rows outgrow the sheet (a short phone, a larger
+    // text size) instead of overflowing its bottom edge.
+    builder: (sheetContext) => SingleChildScrollView(
+      child: _ImageSourceSheet(
+        hasImage: hasImage,
+        aiPrompt: aiPrompt,
+        aiPromptPicker: aiPromptPicker,
+        searchQuery: searchQuery,
+      ),
     ),
   );
 }
@@ -99,12 +104,22 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
   bool _busy = false;
 
   Future<void> _pick(ImageSource source) async {
+    // Two taps in one frame opened the picker twice: the second failed at
+    // once ("already active"), popped the sheet with nothing, and the photo
+    // then taken in the first was dropped.
+    if (_busy) return;
+    _busy = true;
     // The picker's own UI covers the wait for it; the copy to disk after it
     // returns is ours to show.
-    final fileName = await AppDialog.busy(
-      context,
-      () => ImageStorageService().pickAndStore(source),
-    );
+    final String? fileName;
+    try {
+      fileName = await AppDialog.busy(
+        context,
+        () => ImageStorageService().pickAndStore(source),
+      );
+    } finally {
+      _busy = false;
+    }
     if (!mounted) return;
     Navigator.of(
       context,
@@ -266,9 +281,8 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
                     icon: Icons.delete_outline_rounded,
                     label: t.image.remove,
                     isDestructive: true,
-                    onTap: () => Navigator.of(
-                      context,
-                    ).pop(const ImagePickResult.removed()),
+                    onTap: () =>
+                        popIfCurrent(context, const ImagePickResult.removed()),
                   ),
                 ],
               ],
@@ -310,7 +324,12 @@ class _SourceTile extends StatelessWidget {
         children: [
           Icon(icon, color: color),
           const SizedBox(width: AppSpacing.sm),
-          Text(label, style: AppTextStyles.bodyMd.copyWith(color: color)),
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyles.bodyMd.copyWith(color: color),
+            ),
+          ),
         ],
       ),
     );

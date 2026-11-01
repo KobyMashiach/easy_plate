@@ -160,7 +160,7 @@ function ContentsLeaf({ book, recipes, onOpen, onCover }: { book: RecipeBook; re
       ) : (
         cover
       )}
-      <h1 className="mt-6 text-headline-lg text-on-surface">{book.title || t("library.ui.untitled")}</h1>
+      <h1 className="mt-6 break-words text-headline-lg text-on-surface">{book.title || t("library.ui.untitled")}</h1>
       <PageHeading id="toc-h" className="mt-8">
         {t("library.contents")}
       </PageHeading>
@@ -220,7 +220,7 @@ function RecipeLeaf({ recipe, number }: { recipe: Recipe; number: number }) {
         {recipe.imageStoragePath ? (
           <StorageImage path={recipe.imageStoragePath} className="mb-4 h-40 w-full rounded-md object-cover" fallback={<span className="mb-4 block h-40 w-full rounded-md bg-primary-fixed" aria-hidden="true" />} />
         ) : null}
-        <h1 id={h} className="text-headline-lg-mobile text-on-surface">
+        <h1 id={h} className="break-words text-headline-lg-mobile text-on-surface">
           <Link to={`/recipes/${recipe.id}`}>{recipe.title || t("library.ui.untitled")}</Link>
         </h1>
         {recipe.dietaryTags.length ? (

@@ -134,3 +134,38 @@ test("the caller's address is the hop Google's front end appended, not the one t
   assert.equal(clientIp("", "198.51.100.1"), "198.51.100.1");
   assert.equal(clientIp(undefined, undefined), "");
 });
+
+test("a signed-in account mints a limited number of links an hour", async () => {
+  const { handle, LIMIT_MINT_PER_ACCOUNT, LINKS } = require("./upgradeLinks").internals;
+  const remoteFlags = require("./remoteFlags");
+  const realParams = remoteFlags.params;
+  remoteFlags.params = async () => ({ ff_web_checkout: { defaultValue: { value: "2" } } });
+  // An in-memory Firestore: enough for createLink and the rate counters.
+  const store = new Map();
+  const ref = (collection, id) => ({
+    path: `${collection}/${id}`,
+    get: async () => ({ exists: store.has(`${collection}/${id}`), data: () => store.get(`${collection}/${id}`) }),
+    set: async (data, opts) => store.set(`${collection}/${id}`, opts && opts.merge ? { ...(store.get(`${collection}/${id}`) || {}), ...data } : data),
+  });
+  const db = {
+    collection: (name) => ({ doc: (id) => ref(name, id) }),
+    runTransaction: async (fn) => fn({ get: (r) => r.get(), set: (r, data, opts) => r.set(data, opts) }),
+  };
+  try {
+    const caller = { uid: "u1" };
+    const nowMs = Date.UTC(2026, 10, 1, 3, 0, 0);
+    for (let i = 0; i < LIMIT_MINT_PER_ACCOUNT; i++) {
+      const out = await handle({ db, caller, request: { action: "mint", lang: "en" }, nowMs: nowMs + i });
+      assert.equal(out.status, 200, `mint ${i + 1}`);
+    }
+    const over = await handle({ db, caller, request: { action: "mint", lang: "en" }, nowMs: nowMs + 100 });
+    assert.equal(over.status, 429);
+    assert.equal(over.body.error.code, "rate_limited");
+    assert.equal([...store.keys()].filter((k) => k.startsWith(`${LINKS}/`)).length, LIMIT_MINT_PER_ACCOUNT, "no link written past the limit");
+    // Another account is not held up by this one; the hour after, this one mints again.
+    assert.equal((await handle({ db, caller: { uid: "u2" }, request: { action: "mint", lang: "en" }, nowMs })).status, 200);
+    assert.equal((await handle({ db, caller, request: { action: "mint", lang: "en" }, nowMs: nowMs + 60 * 60 * 1000 + 1 })).status, 200);
+  } finally {
+    remoteFlags.params = realParams;
+  }
+});

@@ -60,11 +60,19 @@ class _Recipes implements RecipesRepository {
     RecipeEntity recipe, {
     bool stampLanguage = true,
   }) async => stored[recipe.id] = recipe;
+
+  /// Runs while a recipe is made ready for sharing (its photo upload).
+  Future<void> Function(RecipeEntity recipe)? onReady;
+
   @override
   Future<RecipeEntity> readyForSharing(
     RecipeEntity recipe, {
     bool persist = true,
-  }) async => recipe;
+  }) async {
+    await onReady?.call(recipe);
+    return recipe;
+  }
+
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
@@ -409,6 +417,59 @@ void main() {
     profiles = _Profiles()..directory['friend@x.com'] = friend;
     books = _Books();
     plans = _Plans();
+  });
+
+  group('ensureCollabs', () {
+    test(
+      'shares a few recipes side by side, never more, and keeps the order',
+      () async {
+        final ids = [for (var i = 0; i < 10; i++) 'n$i'];
+        for (final id in ids) {
+          recipes.stored[id] = recipe(id);
+        }
+        var inFlight = 0;
+        var peak = 0;
+        final gates = <Completer<void>>[];
+        recipes.onReady = (_) async {
+          inFlight++;
+          if (inFlight > peak) peak = inFlight;
+          final gate = Completer<void>();
+          gates.add(gate);
+          await gate.future;
+          inFlight--;
+        };
+        final linker = RecipeLinker(
+          sharing: sharing,
+          recipes: recipes,
+          containers: containers,
+          pending: InMemoryPendingAcceptsStore(),
+        );
+
+        final linking = linker.ensureCollabs(['r2', ...ids], uid: owner);
+        await pumpEventQueue();
+        expect(inFlight, RecipeLinker.shareConcurrency);
+        // Let the uploads finish in reverse, a few at a time.
+        while (gates.any((g) => !g.isCompleted)) {
+          for (final gate in gates.reversed) {
+            if (!gate.isCompleted) gate.complete();
+          }
+          await pumpEventQueue();
+        }
+        final linked = await linking;
+
+        expect(peak, RecipeLinker.shareConcurrency);
+        expect(gates, hasLength(10));
+        for (final id in ids) {
+          expect(recipes.stored[id]!.collabRole, CollabRole.owner);
+          expect(linked.byRecipeId[id], recipes.stored[id]!.collabId);
+        }
+        // The already-shared r2 first, then the new ones in the book's order.
+        expect(linked.owned.map((o) => o.title), [
+          'Recipe r2',
+          for (final id in ids) 'Recipe $id',
+        ]);
+      },
+    );
   });
 
   group('share', () {
@@ -929,6 +990,174 @@ void main() {
         expect(rewritten, 1);
         expect(books.stored['book-1']!.title, 'Renamed');
         expect(books.stored['book-2']!.collabId, 'not-in-answer');
+      },
+    );
+
+    test(
+      'reads the recipes box once for the whole pass, and a recipe one '
+      'copy fetched is not fetched again for the next',
+      () async {
+        sharing.collabs['rc-new'] = CollabRecipeEntity(
+          id: 'rc-new',
+          ownerUid: owner,
+          members: const {friend: CollabRole.viewer},
+          recipe: recipe('remote'),
+          updatedAt: DateTime(2026),
+        );
+        containers.invitesById['rc-new_$friend'] = ShareInviteEntity(
+          id: 'rc-new_$friend',
+          collabId: 'rc-new',
+          recipeTitle: 'Recipe remote',
+          ownerUid: owner,
+          targetUid: friend,
+          role: CollabRole.viewer,
+          status: ShareInviteStatus.accepted,
+          createdAt: DateTime(2026),
+        );
+        final fetched = <CollabContainerEntity>[];
+        for (var i = 0; i < 5; i++) {
+          books.stored['book-$i'] = RecipeBookEntity(
+            id: 'book-$i',
+            title: 'Old $i',
+            recipeRefs: const [],
+            createdAt: DateTime(2026),
+            collabId: 'c$i',
+            collabRole: CollabRole.viewer,
+          );
+          fetched.add(
+            CollabContainerEntity(
+              id: 'c$i',
+              kind: CollabKind.book,
+              ownerUid: owner,
+              members: const {friend: CollabRole.viewer},
+              title: 'Renamed $i',
+              content: const {
+                'recipes': [
+                  {'collabId': 'rc-old', 'order': 0},
+                  {'collabId': 'rc-new', 'order': 1},
+                ],
+              },
+              updatedAt: DateTime(2026),
+            ),
+          );
+        }
+        var reads = 0;
+        var fetches = 0;
+        recipes.onRead = () => reads++;
+        sharing.onGetCollab = () => fetches++;
+
+        final rewritten = await bookCollab().refresh(fetched, uid: friend);
+
+        expect(rewritten, 5);
+        expect(reads, 1);
+        // Cached by the first copy; the other four find it in the index.
+        expect(fetches, 1);
+        final copy = recipes.stored.values.singleWhere(
+          (r) => r.collabId == 'rc-new',
+        );
+        for (var i = 0; i < 5; i++) {
+          expect(books.stored['book-$i']!.title, 'Renamed $i');
+          expect(
+            books.stored['book-$i']!.recipeRefs.map((r) => r.recipeId),
+            ['r2', copy.id],
+          );
+        }
+      },
+    );
+
+    test(
+      'kinds refreshed in a row share one read of the recipes box, and a '
+      'pass with nothing to refresh reads none',
+      () async {
+        books.stored['book-1'] = book(
+          collabId: 'cb',
+          role: CollabRole.viewer,
+          recipeIds: const [],
+        );
+        plans.stored['plan-1'] = MealPlanEntity(
+          id: 'plan-1',
+          name: 'Old',
+          meals: const [],
+          createdAt: DateTime(2026),
+          collabId: 'cp',
+          collabRole: CollabRole.viewer,
+        );
+        final fetched = [
+          CollabContainerEntity(
+            id: 'cb',
+            kind: CollabKind.book,
+            ownerUid: owner,
+            members: const {friend: CollabRole.viewer},
+            title: 'Book renamed',
+            content: const {
+              'recipes': [
+                {'collabId': 'rc-old', 'order': 0},
+              ],
+            },
+            updatedAt: DateTime(2026),
+          ),
+          CollabContainerEntity(
+            id: 'cp',
+            kind: CollabKind.mealPlan,
+            ownerUid: owner,
+            members: const {friend: CollabRole.viewer},
+            title: 'Plan renamed',
+            content: const {
+              'meals': [
+                {
+                  'id': 'm1',
+                  'weekday': 0,
+                  'name': 'Dinner',
+                  'order': 0,
+                  'items': [
+                    {'id': 'i1', 'recipeCollabId': 'rc-old', 'label': 'x'},
+                  ],
+                },
+              ],
+            },
+            updatedAt: DateTime(2026),
+          ),
+        ];
+        var reads = 0;
+        recipes.onRead = () => reads++;
+        Future<Map<String, String>>? index;
+        var asked = 0;
+        Future<Map<String, String>> recipeIndex() {
+          asked++;
+          return index ??= bookCollab().linker.recipeIndex();
+        }
+
+        final rewritten =
+            await bookCollab().refresh(
+              fetched,
+              uid: friend,
+              recipeIndex: recipeIndex,
+            ) +
+            await planCollab().refresh(
+              fetched,
+              uid: friend,
+              recipeIndex: recipeIndex,
+            );
+
+        expect(rewritten, 2);
+        expect(reads, 1);
+        expect(asked, 2);
+        expect(books.stored['book-1']!.recipeRefs.single.recipeId, 'r2');
+        expect(
+          plans.stored['plan-1']!.meals.single.items.single.recipeId,
+          'r2',
+        );
+
+        // No local copy has a document in the answer: nothing is read.
+        reads = 0;
+        asked = 0;
+        await bookCollab().refresh(
+          const [],
+          uid: friend,
+          recipeIndex: recipeIndex,
+        );
+        expect(asked, 0);
+        expect(reads, 0);
       },
     );
 

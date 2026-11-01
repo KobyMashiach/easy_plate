@@ -26,13 +26,17 @@ import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../domain/entities/ingestion_file.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
+import '../../domain/entities/recipe_image_candidate.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../bloc/ingestion_bloc.dart';
 import '../widgets/ai_quota_indicator.dart';
+import '../widgets/video_image_picker.dart';
+import '../../../../core/widgets/recipe_source_link.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
 import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../../core/constants/app_motion.dart';
@@ -194,9 +198,16 @@ class IngestionPage extends StatelessWidget {
                 ),
                 IngestionSearchResults(results: final results) =>
                   _SearchResults(results: results),
-                IngestionReview(recipe: final recipe) => _ReviewRecipe(
-                  recipe: recipe,
-                ),
+                IngestionReview(
+                  recipe: final recipe,
+                  imageCandidates: final imageCandidates,
+                  selectedImage: final selectedImage,
+                ) =>
+                  _ReviewRecipe(
+                    recipe: recipe,
+                    imageCandidates: imageCandidates,
+                    selectedImage: selectedImage,
+                  ),
                 IngestionOriginal(page: final page) => _OriginalView(
                   page: page,
                 ),
@@ -387,6 +398,8 @@ class _ChannelFormState extends State<_ChannelForm> {
   /// time. Each file is read at once, so the share-sheet copy and a picked
   /// file take the same path from here on.
   Future<void> _pickFiles() async {
+    // A second tap before the rebuild greys the button out.
+    if (_picking) return;
     setState(() => _picking = true);
     try {
       final picked = await FilePicker.pickFiles(
@@ -929,7 +942,15 @@ class _SearchResults extends StatelessWidget {
 class _ReviewRecipe extends StatelessWidget {
   final RecipeEntity recipe;
 
-  const _ReviewRecipe({required this.recipe});
+  /// The pictures offered for a video recipe, and which one is on it.
+  final List<RecipeImageCandidate> imageCandidates;
+  final int? selectedImage;
+
+  const _ReviewRecipe({
+    required this.recipe,
+    this.imageCandidates = const [],
+    this.selectedImage,
+  });
 
   /// The editor is reached by route name so ingestion never reaches into
   /// another feature's presentation layer, and it pops the edited recipe back.
@@ -956,6 +977,22 @@ class _ReviewRecipe extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(recipe.title, style: AppTextStyles.headlineLgMobile),
+              // A video recipe arrives with pictures to choose from: the
+              // post's cover is already on it, the stills are the
+              // alternatives. The gate draws coming-soon / Premium itself.
+              if (imageCandidates.isNotEmpty)
+                FeatureGate(
+                  feature: FeaturesFlags.socialVideoPhoto,
+                  gapBefore: AppSpacing.md,
+                  child: VideoImagePicker(
+                    candidates: imageCandidates,
+                    selected: selectedImage,
+                    onPick: (index) => context.read<IngestionBloc>().add(
+                      IngestionEvent.pickImageCandidate(index),
+                    ),
+                  ),
+                ),
+              RecipeSourceLink(url: recipe.sourceUrl, gapBefore: AppSpacing.md),
               // The tags the analysis settled on, up front so a wrong one is
               // seen — and changed in the editor — before the recipe is saved.
               if (recipe.dietaryTags.isNotEmpty) ...[
@@ -1190,14 +1227,14 @@ Future<void> showOpenRecipeSheet(BuildContext context, String url) async {
               icon: Icons.article_rounded,
               title: t.ingestion.viewOriginal,
               hint: t.ingestion.viewOriginalHint,
-              onTap: () => Navigator.of(sheetContext).pop(false),
+              onTap: () => popIfCurrent(sheetContext, false),
             ),
             const SizedBox(height: AppSpacing.sm),
             _OpenOption(
               icon: Icons.auto_awesome_rounded,
               title: t.ingestion.generateStructured,
               hint: t.ingestion.generateStructuredHint,
-              onTap: () => Navigator.of(sheetContext).pop(true),
+              onTap: () => popIfCurrent(sheetContext, true),
             ),
           ],
         ),

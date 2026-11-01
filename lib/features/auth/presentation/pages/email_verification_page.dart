@@ -71,6 +71,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   }
 
   Future<void> _send({bool silent = false}) async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final repository = context.read<AuthRepository>();
     setState(() => _busy = true);
     _startCooldown();
@@ -86,6 +88,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   }
 
   Future<void> _check() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final repository = context.read<AuthRepository>();
     setState(() => _busy = true);
     try {

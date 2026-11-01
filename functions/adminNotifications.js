@@ -387,14 +387,23 @@ async function runDue(db, send, now = Date.now()) {
   let count = 0;
 
   const stalled = await db.collection(TEMPLATES_COLLECTION).where("broadcastLeaseUntil", "<=", ts(now)).limit(20).get();
+  // Each template's claim is its own try: one whose transaction keeps
+  // failing (contention, a malformed document) used to throw out of the
+  // tick and hold back every template after it, on every tick.
   for (const doc of stalled.docs) {
-    const run = await db.runTransaction(async (tx) => {
-      const fresh = await tx.get(doc.ref);
-      const data = fresh.data();
-      if (!resumable(data, now)) return null;
-      tx.update(doc.ref, { broadcastLeaseUntil: ts(now + LEASE_MS) });
-      return data.broadcast;
-    });
+    let run;
+    try {
+      run = await db.runTransaction(async (tx) => {
+        const fresh = await tx.get(doc.ref);
+        const data = fresh.data();
+        if (!resumable(data, now)) return null;
+        tx.update(doc.ref, { broadcastLeaseUntil: ts(now + LEASE_MS) });
+        return data.broadcast;
+      });
+    } catch (err) {
+      logger.warn("stalled notification not claimed", { id: doc.id, reason: err.message });
+      continue;
+    }
     if (!run) continue;
     try {
       const result = await continueRun(db, doc.ref, doc.id, run, { send, source: "schedule", deadline });
@@ -407,7 +416,13 @@ async function runDue(db, send, now = Date.now()) {
   const due = await db.collection(TEMPLATES_COLLECTION)
     .where("nextRunAt", "<=", ts(now)).limit(50).get();
   for (const doc of due.docs) {
-    const claim = await claimRun(db, doc.ref, now, { advance: true, due: true });
+    let claim;
+    try {
+      claim = await claimRun(db, doc.ref, now, { advance: true, due: true });
+    } catch (err) {
+      logger.warn("scheduled notification not claimed", { id: doc.id, reason: err.message });
+      continue;
+    }
     if (!claim || !claim.run) continue;
     try {
       const result = await continueRun(db, doc.ref, doc.id, claim.run, { send, source: "schedule", deadline });

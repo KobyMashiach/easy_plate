@@ -12,6 +12,11 @@
   body {
     @apply bg-background text-on-surface font-sans text-body-md antialiased;
     min-height: 100dvh;
+    /* Inherited by all text: a run with no break point (a pasted link, a
+       caption's hashtags, a glued title) wraps inside its box instead of
+       widening it — one such recipe title used to push the whole phone page
+       sideways. Text that should stay on one line already uses truncate. */
+    overflow-wrap: break-word;
     /* The soft lavender wash behind every screen of the app. */
     background-image:
       radial-gradient(900px 500px at 50% -20%, rgb(var(--c-primary-fixed) / 0.55), transparent 70%),

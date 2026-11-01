@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/utils/routing/routing.dart';
@@ -125,7 +124,7 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
           ClayPageHeader(
             title: _store ?? '—',
             subtitle:
-                '${DateFormat.yMd().format(r.purchasedAt)} · ${priceLabel(r.total, currency: r.currency)}',
+                '${purchaseDateLabel(r.purchasedAt)} · ${priceLabel(r.total, currency: r.currency)}',
             trailing: ClayIconButton(
               icon: Icons.edit_rounded,
               size: 44,

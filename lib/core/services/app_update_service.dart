@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
@@ -303,35 +304,67 @@ class AppUpdateService {
       BaseOptions(
         connectTimeout: const Duration(seconds: 8),
         receiveTimeout: const Duration(seconds: 8),
+        // Apple answers with `text/javascript`, which Dio does not decode as
+        // JSON: asked for a Map it got a String and the probe threw on
+        // every iPhone. Read as text and decoded here instead.
+        responseType: ResponseType.plain,
       ),
     );
     final locale = Platform.localeName; // e.g. he_IL
     final country = locale.contains('_')
         ? locale.split('_').last.split('.').first
         : '';
-    for (final storefront in [country, '']) {
-      if (storefront.isEmpty && country.isEmpty) continue;
-      final response = await dio.get<Map<String, dynamic>>(
-        'https://itunes.apple.com/lookup',
-        queryParameters: {
-          'bundleId': installed.packageName,
-          if (storefront.isNotEmpty) 'country': storefront,
-        },
-      );
-      final results = response.data?['results'];
-      if (results is! List || results.isEmpty) continue;
-      final first = results.first;
-      if (first is! Map) continue;
-      final version = first['version'];
-      if (version is! String || version.isEmpty) continue;
-      return StoreRelease(
-        version: version,
-        newer: (compareVersions(installed.version, version) ?? 0) < 0,
-        storeUrl: first['trackViewUrl'] is String
-            ? first['trackViewUrl'] as String
-            : null,
-      );
+    try {
+      for (final storefront in [country, '']) {
+        if (storefront.isEmpty && country.isEmpty) continue;
+        final response = await dio.get<Object?>(
+          'https://itunes.apple.com/lookup',
+          queryParameters: {
+            'bundleId': installed.packageName,
+            if (storefront.isNotEmpty) 'country': storefront,
+          },
+        );
+        final release = appStoreRelease(
+          response.data,
+          installedVersion: installed.version,
+        );
+        if (release != null) return release;
+      }
+      return null;
+    } finally {
+      // One client per probe: closed, or its connection pool outlives it.
+      dio.close();
     }
-    return null;
+  }
+
+  /// The release in an App Store lookup answer — the body as text or
+  /// already decoded — or null when it names none.
+  @visibleForTesting
+  static StoreRelease? appStoreRelease(
+    Object? body, {
+    required String installedVersion,
+  }) {
+    Object? data = body;
+    if (data is String) {
+      try {
+        data = jsonDecode(data);
+      } on FormatException {
+        return null;
+      }
+    }
+    if (data is! Map) return null;
+    final results = data['results'];
+    if (results is! List || results.isEmpty) return null;
+    final first = results.first;
+    if (first is! Map) return null;
+    final version = first['version'];
+    if (version is! String || version.isEmpty) return null;
+    return StoreRelease(
+      version: version,
+      newer: (compareVersions(installedVersion, version) ?? 0) < 0,
+      storeUrl: first['trackViewUrl'] is String
+          ? first['trackViewUrl'] as String
+          : null,
+    );
   }
 }

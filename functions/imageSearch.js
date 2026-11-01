@@ -154,7 +154,11 @@ async function search(request, { key, fetchImpl = fetch, db = admin.firestore(),
   try {
     json = JSON.parse(text);
   } catch (err) {
-    throw new Error(`upstream returned non-JSON (${response.status})`);
+    // A 2xx that is not JSON (a proxy's HTML page, a body cut off) is
+    // Serper failing, so refundable; a refusal without a JSON body (a CDN's
+    // HTML 429/403) is classified by its status below.
+    if (response.ok) throw upstreamDown(`upstream returned non-JSON (${response.status})`);
+    json = null;
   }
   if (!response.ok) {
     const reason = json && (json.message || (json.error && json.error.message)) ? String(json.message || json.error.message) : `HTTP ${response.status}`;

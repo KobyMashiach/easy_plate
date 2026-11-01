@@ -173,8 +173,16 @@ function eventRecord(event, now = Date.now(), { catalog = null } = {}) {
   };
 }
 
+// A placeholder secret ("-", "unset" — what the other billing secrets hold
+// until the real value exists) is no secret: a caller presenting the same
+// placeholder must not pass.
+function placeholderSecret(secret) {
+  const s = typeof secret === "string" ? secret.trim().toLowerCase() : "";
+  return s === "" || s === "-" || s === "unset";
+}
+
 function authorized(header, secret) {
-  if (typeof header !== "string" || !secret) return false;
+  if (typeof header !== "string" || placeholderSecret(secret)) return false;
   // RevenueCat sends the header verbatim; accept it with or without a
   // "Bearer " prefix so either dashboard convention works.
   const presented = header.replace(/^Bearer\s+/i, "");

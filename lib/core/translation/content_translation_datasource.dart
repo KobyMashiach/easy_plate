@@ -190,20 +190,25 @@ class ContentTranslationRemoteDataSource
     Iterable<String> types,
   ) async {
     final out = <String, TranslatedFields>{};
-    for (final type in types) {
-      final ref = _typeRef(lang, type);
-      if (ref == null) continue;
-      try {
-        final snapshot = await ref.get();
-        for (final doc in snapshot.docs) {
-          out['$type/${doc.id}'] = TranslatedFields(doc.data());
-        }
-      } catch (e) {
-        // A missing folder is the normal first-switch case; anything else
-        // only means the model is asked for more than it had to be.
-        debugPrint('Reading $type variants in $lang failed: $e');
-      }
-    }
+    // The folders are independent: read side by side, not one round trip
+    // after another, while the language switch waits on all of them.
+    await Future.wait([
+      for (final type in types)
+        if (_typeRef(lang, type) case final ref?)
+          () async {
+            try {
+              final snapshot = await ref.get();
+              for (final doc in snapshot.docs) {
+                out['$type/${doc.id}'] = TranslatedFields(doc.data());
+              }
+            } catch (e) {
+              // A missing folder is the normal first-switch case; anything
+              // else only means the model is asked for more than it had to
+              // be.
+              debugPrint('Reading $type variants in $lang failed: $e');
+            }
+          }(),
+    ]);
     return out;
   }
 
@@ -286,14 +291,13 @@ class ContentTranslationRemoteDataSource
 
   @override
   Future<void> forget(String type, String id, Iterable<String> langs) async {
-    for (final lang in langs) {
-      final ref = _typeRef(lang, type);
-      if (ref == null) continue;
-      try {
-        await ref.doc(id).delete();
-      } catch (e) {
-        debugPrint('Dropping the $lang copy of $type/$id failed: $e');
-      }
-    }
+    // One delete per language, side by side rather than in sequence.
+    await Future.wait([
+      for (final lang in langs)
+        if (_typeRef(lang, type) case final ref?)
+          ref.doc(id).delete().catchError((Object e) {
+            debugPrint('Dropping the $lang copy of $type/$id failed: $e');
+          }),
+    ]);
   }
 }

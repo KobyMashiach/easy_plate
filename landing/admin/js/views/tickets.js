@@ -96,6 +96,9 @@ export async function mount({ view, user }) {
   const merge = () => {
     const byId = new Map(recent.map((tk) => [tk.id, tk]));
     for (const tk of unread) if (!byId.has(tk.id)) byId.set(tk.id, tk);
+    // Refused for the writer's daily allowance (onFeedbackCreated): closed
+    // and marked by the server, never part of the inbox.
+    for (const [id, tk] of byId) if (tk.rejected) byId.delete(id);
     tickets = [...byId.values()].sort((a, b) => (toDate(b.createdAt) || new Date(0)).getTime() - (toDate(a.createdAt) || new Date(0)).getTime());
     render();
   };

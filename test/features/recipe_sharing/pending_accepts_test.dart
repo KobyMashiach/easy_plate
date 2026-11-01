@@ -336,7 +336,16 @@ void main() {
     test(
       'the refresh runs it first, even for an account with no shared copy',
       () async {
-        await pending.add(mark('c1'));
+        // The refresh asks the real clock (it takes no `now`), so the mark
+        // is dated from it: one dated from the fixed [now] above went stale
+        // — given up, never written — once that day was a week past.
+        await pending.add(
+          PendingAccept(
+            collabId: 'c1',
+            kind: CollabKind.recipe,
+            at: DateTime.now().subtract(const Duration(minutes: 5)),
+          ),
+        );
         final rewritten = await RefreshCollabRecipesUseCase(
           sharing: sharing,
           recipes: recipes,

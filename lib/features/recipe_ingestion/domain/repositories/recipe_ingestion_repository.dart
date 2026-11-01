@@ -6,6 +6,7 @@ import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../data/datasources/recipe_ai_datasource.dart' show ReceiptPage;
 import '../entities/ingestion_file.dart';
 import '../entities/original_recipe_page_entity.dart';
+import '../entities/recipe_image_candidate.dart';
 import '../entities/web_search_result_entity.dart';
 
 abstract class RecipeIngestionRepository {
@@ -29,7 +30,10 @@ abstract class RecipeIngestionRepository {
     List<DietaryPreference> preferences,
   );
 
-  Future<RecipeEntity> parseFromSocialVideo(
+  /// The recipe read from a TikTok / Instagram / YouTube / Facebook video,
+  /// with the pictures the server offers for it (the post's cover, stills
+  /// of the food) — none when there is no server to cut them.
+  Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,
   );

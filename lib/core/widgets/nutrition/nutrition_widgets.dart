@@ -285,23 +285,34 @@ class MacroRing extends StatelessWidget {
         child: Center(
           child:
               center ??
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    kcalNumber(nutrition.calories),
-                    style: AppTextStyles.headlineMd.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontVariations: const [FontVariation('wght', 800)],
-                    ),
+              // Inside the ring's hole, scaled down rather than wrapped or
+              // overflowing: a four-digit day on the small rings, or a
+              // larger system text size, would not fit at full size.
+              Padding(
+                padding: EdgeInsets.all(thickness),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        kcalNumber(nutrition.calories),
+                        maxLines: 1,
+                        style: AppTextStyles.headlineMd.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontVariations: const [FontVariation('wght', 800)],
+                        ),
+                      ),
+                      Text(
+                        t.nutrition.kcal,
+                        maxLines: 1,
+                        style: AppTextStyles.labelSm.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    t.nutrition.kcal,
-                    style: AppTextStyles.labelSm.copyWith(
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                ),
               ),
         ),
       ),

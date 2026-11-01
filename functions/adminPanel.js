@@ -27,6 +27,8 @@
 //   what's new whatsnew.save / whatsnew.delete / whatsnew.translate — the
 //              release highlights (whats_new_releases/{versionCode}) the app
 //              shows a returning account once after an update
+//   content    translation.purge — drops a line from the shared translation
+//              cache (translateContent.js), one language or all of them
 //
 // Every call writes one admin_audit row: who, what, with which fields
 // (pictures and long texts cut down), and whether it worked.
@@ -44,6 +46,7 @@ const remoteConfig = require("./adminRemoteConfig").internals;
 const imageSearch = require("./imageSearch").internals;
 const aiUsage = require("./aiUsage");
 const households = require("./households").internals;
+const translation = require("./translateContent").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
 const storeStats = require("./storeStats");
 const { StripeError } = require("./stripeClient");
@@ -156,6 +159,9 @@ const ACTIONS = {
   "whatsnew.save": { versionCode: num(true), version: str(40, true), releasedAt: num(), isPublished: bool(), features: objList(WHATS_NEW_MAX_FEATURES, true) },
   "whatsnew.delete": { versionCode: num(true) },
   "whatsnew.translate": { title: str(200), description: str(2000), from: anyOf(WHATS_NEW_LANGS, true) },
+  // One past the longest line translateContent caches, so a longer paste is
+  // refused rather than cut to a different line's key.
+  "translation.purge": { text: str(translation.MAX_TEXT + 1, true), lang: anyOf(Object.keys(translation.LANGUAGE_NAMES)) },
 };
 
 // Fields that name a document: each becomes one segment of a path
@@ -1295,6 +1301,34 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       return out;
     }
 
+    // --- content -----------------------------------------------------------
+    case "translation.purge": {
+      // The key is sha256(lang|trimmed line), the same the app's request
+      // reaches; parseRequest has trimmed the text already. With no
+      // language, every language's copy of the line goes.
+      if (request.text.length > translation.MAX_TEXT) throw refused(`lines over ${translation.MAX_TEXT} characters are never cached`, "too_long");
+      const langs = request.lang ? [request.lang] : Object.keys(translation.LANGUAGE_NAMES);
+      const refs = langs.map((lang) => db.collection(translation.CACHE_COLLECTION).doc(translation.cacheKey(lang, request.text)));
+      const snaps = await db.getAll(...refs);
+      const removed = [];
+      const batch = db.batch();
+      snaps.forEach((snap, i) => {
+        if (!snap.exists) return;
+        batch.delete(refs[i]);
+        // What was there, so the console shows what it removed: the legacy
+        // `text`, or every candidate with how many accounts stood behind it.
+        const data = snap.data() || {};
+        const texts = typeof data.text === "string" && data.text
+          ? [{ text: data.text.slice(0, 300), by: null }]
+          : Object.values(data.candidates || {})
+            .filter((c) => c && typeof c.text === "string")
+            .map((c) => ({ text: c.text.slice(0, 300), by: Array.isArray(c.by) ? c.by.length : 0 }));
+        removed.push({ lang: langs[i], texts });
+      });
+      if (removed.length) await batch.commit();
+      return { removed };
+    }
+
     default:
       throw refused("unknown action");
   }
@@ -1395,7 +1429,12 @@ exports.adminPanel = onRequest(
   { region: "europe-west1", cors: ORIGINS, maxInstances: 3, timeoutSeconds: 300, memory: "512MiB", secrets: [geminiApiKey, serperApiKey, stripeSecret, ...billingSecrets.SECRETS] },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: { message: "POST only" } });
-    const caller = await proxy.verifyCaller(req);
+    // Revocation checked: the administrator's powers are the ones worth
+    // stealing a token for, and revoking the refresh tokens (Firebase
+    // console, or a password reset) has to end a stolen session now, not
+    // within the hour the ID token still verifies. One Auth lookup per
+    // console call.
+    const caller = await proxy.verifyCaller(req, { checkRevoked: true });
     if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
     if (!(await accounts.isAdmin(caller))) return res.status(403).json({ error: { message: "Administrator only" } });
 

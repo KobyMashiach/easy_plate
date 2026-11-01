@@ -60,4 +60,38 @@ void main() {
     answer.completeError(StateError('done'));
     await tester.pumpAndSettle();
   });
+
+  testWidgets('every row reachable on a short phone at a larger text size', (
+    tester,
+  ) async {
+    // 375×667 at 1.3×: the camera, gallery, AI, web and remove rows are
+    // taller than the sheet's 9/16 of the screen.
+    tester.view.physicalSize = const Size(750, 1334);
+    tester.view.devicePixelRatio = 2;
+    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.pumpWidget(
+      RepositoryProvider<RecipeIngestionRepository>.value(
+        value: _Repository(),
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showImageSourceSheet(
+                context,
+                hasImage: true,
+                aiPrompt: 'a dish',
+                searchQuery: 'shakshuka',
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text(t.image.change), findsOneWidget);
+  });
 }

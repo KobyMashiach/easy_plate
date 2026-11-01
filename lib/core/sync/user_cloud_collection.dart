@@ -61,6 +61,11 @@ abstract class CloudMirror {
   Future<void> listen();
   Future<void> stopListening();
 
+  /// Whether a live listener is open right now. False again after the
+  /// listener died on an error (Firestore closes it), so the caller can
+  /// read the collection and open it again.
+  bool get isListening;
+
   /// Empties the local box: a member leaving a household must not carry
   /// its data into their own root.
   Future<void> clearLocal();
@@ -170,11 +175,31 @@ class UserCloudCollection<T> implements CloudMirror {
     if (ref == null) return;
     final box = await UserScope().open<T>(boxName);
     _subscription = ref.snapshots().listen(
-      (snapshot) => _apply(snapshot, box),
-      onError: (Object e) =>
-          debugPrint('Cloud listen on $collection failed: $e'),
+      // One snapshot at a time, in the order they came: each awaits its box
+      // writes, and the next one read the box meanwhile — a record deleted
+      // and re-added on the server was skipped by the second as "already
+      // here", then deleted by the first resuming.
+      (snapshot) => _applying = _applying
+          .then((_) => _apply(snapshot, box))
+          .catchError((Object e) {
+            debugPrint('Cloud change on $collection not applied: $e');
+          }),
+      onError: (Object e) {
+        debugPrint('Cloud listen on $collection failed: $e');
+        // Firestore closes a listener after an error; marked closed so the
+        // next resume reads this collection and listens again, instead of
+        // skipping it as followed live for the rest of the session.
+        _subscription?.cancel();
+        _subscription = null;
+      },
     );
   }
+
+  @override
+  bool get isListening => _subscription != null;
+
+  /// The snapshot being written into the box, which the next one waits on.
+  Future<void> _applying = Future.value();
 
   @override
   Future<void> stopListening() async {
@@ -197,9 +222,38 @@ class UserCloudCollection<T> implements CloudMirror {
     Box<T> box,
   ) async {
     if (!box.isOpen) return;
+    final changes = snapshot.docChanges;
+    // The first snapshot of a listener is every document, decoded and
+    // compared on the UI isolate: past [_decodeBatch] it takes breaks, as
+    // [hydrate] does, and a record saved on the device during one is left
+    // to that save (its own snapshot is queued behind this one).
+    if (changes.length > _decodeBatch) {
+      final touched = <Object?>{};
+      final watching = box.watch().listen((event) => touched.add(event.key));
+      try {
+        await _applyChanges(changes, box, touched);
+      } finally {
+        await watching.cancel();
+      }
+      return;
+    }
+    await _applyChanges(changes, box, null);
+  }
+
+  Future<void> _applyChanges(
+    List<DocumentChange<Map<String, dynamic>>> changes,
+    Box<T> box,
+    Set<Object?>? touched,
+  ) async {
     final puts = <String, T>{};
     final deletes = <String>[];
-    for (final change in snapshot.docChanges) {
+    var sinceBreak = 0;
+    for (final change in changes) {
+      if (touched != null && ++sinceBreak > _decodeBatch) {
+        sinceBreak = 1;
+        await Future<void>.delayed(Duration.zero);
+        if (!box.isOpen) return;
+      }
       final id = change.doc.id;
       if (change.type == DocumentChangeType.removed) {
         if (box.containsKey(id)) deletes.add(id);
@@ -215,6 +269,10 @@ class UserCloudCollection<T> implements CloudMirror {
       } catch (e) {
         debugPrint('Cloud change on $collection/$id skipped: $e');
       }
+    }
+    if (touched != null) {
+      puts.removeWhere((id, _) => touched.contains(id));
+      deletes.removeWhere(touched.contains);
     }
     if (puts.isNotEmpty) await box.putAll(puts);
     if (deletes.isNotEmpty) await box.deleteAll(deletes);
@@ -266,6 +324,85 @@ class UserCloudCollection<T> implements CloudMirror {
     }
     await CloudSyncLedger.unmark(ref.path, [id]);
   }
+
+  /// Records per commit. A batch takes 500 writes, but a commit is also one
+  /// request, capped at 10 MiB: 200 of even a long recipe stays well under,
+  /// and it is still 200 round trips folded into one.
+  @visibleForTesting
+  static const batchLimit = 200;
+
+  /// [push] for many records at once: one batched commit per [batchLimit]
+  /// records and one ledger write per commit, instead of a round trip and
+  /// a ledger write per record. A receipt brings in dozens of price lines
+  /// at a time, and those used to go up one request each.
+  ///
+  /// Same contract as [push]: never awaited from a save path, errors
+  /// swallowed. A chunk that fails leaves only its own records unconfirmed;
+  /// the next hydrate pushes them back.
+  Future<void> pushAll(Iterable<T> values) async {
+    final ref = _ref();
+    if (ref == null) return;
+    final byId = {for (final value in values) idOf(value): value};
+    await _inChunks(byId.keys.toList(), (ids) async {
+      final batch = _firestore.batch();
+      for (final id in ids) {
+        batch.set(ref.doc(id), toJson(byId[id] as T));
+      }
+      try {
+        await batch.commit();
+      } catch (e) {
+        debugPrint('Cloud push of ${ids.length} to $collection failed: $e');
+        return;
+      }
+      await CloudSyncLedger.mark(ref.path, ids);
+    });
+  }
+
+  /// [remove] for many ids at once, batched like [pushAll]: clearing a
+  /// price book of a few thousand lines was as many separate deletes and
+  /// ledger writes.
+  Future<void> removeAll(Iterable<String> ids) async {
+    final ref = _ref();
+    if (ref == null) return;
+    await _inChunks(ids.toSet().toList(), (chunk) async {
+      final batch = _firestore.batch();
+      for (final id in chunk) {
+        batch.delete(ref.doc(id));
+      }
+      try {
+        await batch.commit();
+      } catch (e) {
+        debugPrint(
+          'Cloud delete of ${chunk.length} from $collection failed: $e',
+        );
+        return;
+      }
+      await CloudSyncLedger.unmark(ref.path, chunk);
+    });
+  }
+
+  /// Runs [commit] over [ids] in [batchLimit]-sized chunks, side by side:
+  /// each chunk is its own commit, so one waiting on the network does not
+  /// hold the others back.
+  static Future<void> _inChunks(
+    List<String> ids,
+    Future<void> Function(List<String> chunk) commit,
+  ) async {
+    if (ids.isEmpty) return;
+    await Future.wait([
+      for (var i = 0; i < ids.length; i += batchLimit)
+        commit(
+          ids.sublist(
+            i,
+            i + batchLimit > ids.length ? ids.length : i + batchLimit,
+          ),
+        ),
+    ]);
+  }
+
+  /// Documents decoded between breaks, in [hydrate] and in a listener's
+  /// first snapshot.
+  static const _decodeBatch = 100;
 
   /// Merges the account's cloud copy into the local box, then sends up
   /// anything only the box had.
@@ -329,7 +466,17 @@ class UserCloudCollection<T> implements CloudMirror {
     final remoteIds = <String>{};
     final decoded = <String, T>{};
 
+    var sinceBreak = 0;
     for (final doc in snapshot.docs) {
+      // Decoding and comparing is all on the UI isolate; a few hundred
+      // recipes in one go held a frame on resume. A break every
+      // [_decodeBatch] lets frames (and saves) through; the saves are
+      // caught by [touched] and kept below.
+      if (++sinceBreak > _decodeBatch) {
+        sinceBreak = 1;
+        await Future<void>.delayed(Duration.zero);
+        if (rootMoved() || !box.isOpen) return false;
+      }
       // Counted as on the server before decoding: a record this build
       // cannot read (a newer website wrote it) is still the server's copy,
       // and pushing the box's older one back would overwrite that edit.
@@ -350,6 +497,9 @@ class UserCloudCollection<T> implements CloudMirror {
         debugPrint('Cloud hydrate of $collection/${doc.id} skipped: $e');
       }
     }
+    // Saved on the device while the loop above took its breaks: the save
+    // is newer than this answer.
+    decoded.removeWhere((id, _) => touched.contains(id));
     // One write, one box event: every tab watching this box re-reads it
     // once, not once per record. Sign-in with a few hundred recipes used to
     // rebuild the recipes tab a few hundred times.
@@ -361,6 +511,7 @@ class UserCloudCollection<T> implements CloudMirror {
     final fromServer = !snapshot.metadata.isFromCache;
     final ledger = await CloudSyncLedger.open();
     final deletedElsewhere = <String>[];
+    final pushBack = <T>[];
     // Copied before pushing: the loop above writes to the same box.
     for (final value in box.values.toList()) {
       final id = idOf(value);
@@ -371,9 +522,13 @@ class UserCloudCollection<T> implements CloudMirror {
           (ledger?.containsKey(CloudSyncLedger.key(ref.path, id)) ?? false)) {
         deletedElsewhere.add(id);
       } else {
-        unawaited(push(value));
+        pushBack.add(value);
       }
     }
+    // Batched: joining a household pushes everything the member had into
+    // the household root, which was one request and one ledger write per
+    // recipe, plan, list and price line.
+    if (pushBack.isNotEmpty) unawaited(pushAll(pushBack));
     if (deletedElsewhere.isNotEmpty) {
       await box.deleteAll(deletedElsewhere);
       await CloudSyncLedger.unmark(ref.path, deletedElsewhere);

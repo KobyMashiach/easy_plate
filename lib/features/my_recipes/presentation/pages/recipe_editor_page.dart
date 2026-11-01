@@ -14,6 +14,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../recipe_ingestion/domain/paid_call_refusal.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_ingestion/domain/usecases/refine_recipe_usecase.dart';
@@ -341,7 +342,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
       ),
       builder: (sheetContext) => _SaveOptionsSheet(
-        onPick: (value) => Navigator.of(sheetContext).pop(value),
+        onPick: (value) => popIfCurrent(sheetContext, value),
       ),
     );
     if (withAi == null || !mounted) return;
@@ -483,6 +484,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           controller: _title,
           style: AppTextStyles.bodyLg,
           textInputAction: TextInputAction.next,
+          // The rules cap a title at 500 for a community post, a shared
+          // recipe and a share code; a longer one saved here would fail
+          // each of those later with nothing to say why.
+          inputFormatters: [LengthLimitingTextInputFormatter(500)],
           decoration: InputDecoration(
             hintText: t.editor.titleHint,
             errorText: _titleError,

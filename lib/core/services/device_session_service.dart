@@ -366,7 +366,9 @@ class DeviceSessionService {
     stopWaiting();
     if (!ApiConfig.usesProxy && _firestore == null) return;
     final db = _firestore ?? FirebaseFirestore.instance;
-    _waitWatch = db.doc('sessions/$uid').snapshots().listen((snapshot) async {
+    late final StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
+    subscription;
+    subscription = db.doc('sessions/$uid').snapshots().listen((snapshot) async {
       final data = snapshot.data();
       final expires = (data?['expiresAt'] as Timestamp?)?.toDate();
       if (!snapshot.exists ||
@@ -375,7 +377,12 @@ class DeviceSessionService {
         return;
       }
       final request = data?['releaseRequest'];
-      if (request is! Map || request['deviceId'] != await deviceId()) return;
+      if (request is! Map) return;
+      final mine = await deviceId();
+      // Stopped (or replaced) while the id was read: this gate has moved
+      // on, and a takeover timer armed now would fire into it later.
+      if (!identical(_waitWatch, subscription)) return;
+      if (request['deviceId'] != mine) return;
       if (request['declinedAt'] != null) {
         _scheduleTakeover(null, onFree);
         onDeclined();
@@ -386,6 +393,7 @@ class DeviceSessionService {
         onFree,
       );
     }, onError: (Object e) => debugPrint('Release wait failed: $e'));
+    _waitWatch = subscription;
   }
 
   /// The holder never answered: at [at] a claim takes the account over, so
@@ -468,9 +476,14 @@ class DeviceSessionService {
     if (!ApiConfig.usesProxy && _firestore == null) return;
     final db = _firestore ?? FirebaseFirestore.instance;
     var seen = false;
-    _watch = db.doc('sessions/$uid').snapshots().listen(
+    late final StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
+    subscription;
+    subscription = db.doc('sessions/$uid').snapshots().listen(
       (snapshot) async {
         final mine = await deviceId();
+        // Unwatched (signed out, or another account watched) while the id
+        // was read: ending a session now would end the wrong one.
+        if (!identical(_watch, subscription)) return;
         final end = evaluate(
           exists: snapshot.exists,
           deviceId: snapshot.data()?['deviceId'] as String?,
@@ -496,6 +509,7 @@ class DeviceSessionService {
       },
       onError: (Object e) => debugPrint('Session watch failed: $e'),
     );
+    _watch = subscription;
   }
 
   /// The secret this install holds for [uid], or null. Never throws: a

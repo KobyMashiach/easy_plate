@@ -6,6 +6,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../meal_planner/domain/entities/meal_plan_entity.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
@@ -262,7 +263,7 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
               // An empty pick would aggregate nothing, so it cannot be applied.
               onPressed: _selected.isEmpty
                   ? null
-                  : () => Navigator.of(context).pop(_selected),
+                  : () => popIfCurrent(context, _selected),
             ),
           ],
         ),

@@ -39,7 +39,7 @@ const allergenNames = ["gluten", "milk", "eggs", "fish", "shellfish", "peanuts",
 export const RECIPE_SCHEMA = {
   type: "object",
   properties: {
-    title: { type: "string", description: "Dish title as written in the source" },
+    title: { type: "string", description: "Dish title, in the answer language the system instruction names" },
     prep_time_minutes: { type: "integer", description: "Preparation time in minutes. Omit if the source does not state it" },
     cook_time_minutes: { type: "integer", description: "Cook time in minutes. Omit if the source does not state it" },
     ingredients: {
@@ -90,11 +90,34 @@ const SEARCH_RESULTS_SCHEMA = {
   required: ["results"],
 };
 
-/** `_body` in the datasource: the same keys, in the same order. */
+/**
+ * The language every word of the recipe comes back in: the one the site is
+ * read in right now, whatever the source was written in — the app's rule
+ * (`GeminiRecipeAiDataSource.languageInstruction`), in the same Hebrew.
+ */
+export function languageInstruction(lang: string): string {
+  const names: Record<string, string> = { he: "עברית", en: "אנגלית", ar: "ערבית", fr: "צרפתית", ru: "רוסית" };
+  const name = names[lang] || names.he;
+  return `שפת התשובה: ${name}. כתוב את כל הטקסט במתכון — הכותרת, שמות המצרכים והשלבים — ב${name}, גם כשהמקור כתוב בשפה אחרת: תרגם אותו. אל תשאיר טקסט בשפת המקור, חוץ משמות מותגים.`;
+}
+
+/** The page's language as the I18nProvider wrote it on <html>; Hebrew before it has. */
+function uiLang(): string {
+  return (typeof document !== "undefined" && document.documentElement.lang) || "he";
+}
+
+/** A recipe-writing prompt with the answer's language on it. */
+export function withLanguage(systemInstruction: string, lang: string = uiLang()): string {
+  return `${systemInstruction}\n${languageInstruction(lang)}`;
+}
+
+/** `_body` in the datasource: the same keys, in the same order. A recipe
+ * prompt (the default, or generate) carries the answer language; a caller
+ * with its own prompt passes it as is. */
 function body({
   input,
   schema,
-  systemInstruction = SYSTEM_PROMPT,
+  systemInstruction = withLanguage(SYSTEM_PROMPT),
   tools = [],
   model = MODEL,
   thinkingLevel = THINKING_LEVEL,
@@ -342,7 +365,7 @@ export async function parseFromSocialVideo(url: string, prefs: DietaryPreference
     {
       url,
       model: MODEL,
-      system_instruction: SYSTEM_PROMPT,
+      system_instruction: withLanguage(SYSTEM_PROMPT),
       prompt:
         "שלוף את המתכון מהסרטון הבא: מהטקסט שמופיע על המסך, ממה שנאמר, ממה שנעשה, ומהכיתוב. " +
         "אם הכמויות לא נאמרות אך נראות, הערך אותן. אם אין מתכון בסרטון, החזר רשימות ריקות." +
@@ -376,7 +399,7 @@ export async function parseFromFiles(files: InlineFile[], { signal }: Signal = {
 
 export async function generateRecipe(request: string, prefs: DietaryPreference[], { signal }: Signal = {}): Promise<Recipe> {
   const data = await callRaw(
-    body({ input: `כתוב מתכון מלא לפי הבקשה הבאה:\n\n${request}${dietaryHint(prefs)}`, schema: RECIPE_SCHEMA, systemInstruction: GENERATE_SYSTEM_PROMPT }),
+    body({ input: `כתוב מתכון מלא לפי הבקשה הבאה:\n\n${request}${dietaryHint(prefs)}`, schema: RECIPE_SCHEMA, systemInstruction: withLanguage(GENERATE_SYSTEM_PROMPT) }),
     { feature: "generate", signal },
   );
   return toRecipe(decodeJson(data), "aiRequest");

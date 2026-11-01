@@ -85,6 +85,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$wakeWord$ru wakeWord = _Translations$wakeWord$ru._(_root);
 	@override late final _Translations$voiceAssistants$ru voiceAssistants = _Translations$voiceAssistants$ru._(_root);
 	@override late final _Translations$adminConfig$ru adminConfig = _Translations$adminConfig$ru._(_root);
+	@override late final _Translations$quickActions$ru quickActions = _Translations$quickActions$ru._(_root);
 }
 
 // Path: common
@@ -216,6 +217,9 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String sessionTakeoverBody({required Object phone}) => 'Мы отправим новый код на ${phone}. После подтверждения аккаунт перейдёт на это устройство, а другое выйдет из аккаунта.';
 	@override String get sessionTakeoverNoPhone => 'В аккаунте нет номера телефона, поэтому подтвердить здесь нельзя. Попросите выйти или напишите в поддержку.';
 	@override String get sessionTakeoverFailed => 'Не удалось перенести аккаунт на это устройство. Попробуйте ещё раз.';
+	@override String get reverifyTitle => 'Подтвердите телефон ещё раз';
+	@override String reverifyBody({required Object phone}) => 'В целях безопасности подтвердите телефон ещё раз перед удалением аккаунта. Мы отправим новый код на ${phone}.';
+	@override String get reverifyNoPhone => 'У этого аккаунта нет номера телефона, поэтому его нельзя подтвердить здесь. Чтобы удалить аккаунт, обратитесь в поддержку.';
 	@override String get sessionReleaseTitle => 'Другое устройство хочет войти';
 	@override String sessionReleaseBody({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?';
 	@override String get sessionReleaseConfirm => 'Выйти здесь';
@@ -532,6 +536,9 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get communityUpdated => 'Копия в сообществе обновлена';
 	@override String get communityGone => 'Рецепта больше нет в сообществе; сохранено только у вас';
 	@override String get communityUpdateFailed => 'Сохранено у вас. Публикация в сообществе не обновлена, попробуйте позже.';
+	@override String get sourceLink => 'Оригинальный рецепт';
+	@override String get sourceLinkHint => 'Открыть источник, откуда импортирован рецепт';
+	@override String get sourceOpenFailed => 'Не удалось открыть ссылку';
 }
 
 // Path: cookMode
@@ -921,6 +928,11 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get recordingTag => 'Запись';
 	@override String sizeKb({required Object n}) => '${n} КБ';
 	@override String sizeMb({required Object n}) => '${n} МБ';
+	@override String get videoPhotoTitle => 'Картинка из видео';
+	@override String get videoPhotoHint => 'Выберите картинку для рецепта. Её можно поменять и позже.';
+	@override String get videoPhotoCover => 'Обложка поста';
+	@override String get videoPhotoNone => 'Без картинки';
+	@override String get videoPhotoFailed => 'Не удалось сохранить картинку, попробуйте другую';
 }
 
 // Path: mealPlanner
@@ -1465,6 +1477,7 @@ class _Translations$feedback$ru extends Translations$feedback$he {
 	@override String closedConversations({required Object n}) => 'Закрытые обращения (${n})';
 	@override String get noOpenConversations => 'Нет открытых обращений';
 	@override String get closedTag => 'Закрыто';
+	@override String get dailyLimit => 'Вы достигли дневного лимита новых обращений в поддержку. Попробуйте завтра или напишите в уже открытое обращение.';
 }
 
 // Path: adminBilling
@@ -1939,7 +1952,12 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get whatsNew => 'Что нового';
 	@override String get supportChat => 'Чат поддержки';
 	@override String get storeReview => 'Запрос оценки в магазине';
+	@override String get quickActions => 'Быстрые действия значка';
 	@override String get webCheckout => 'Покупка на сайте';
+	@override String get socialVideoPhoto => 'Картинка из видео';
+	@override String get recipeSourceLink => 'Ссылка на оригинальный рецепт';
+	@override String get webCheckoutIl => 'Покупка на сайте (Израиль)';
+	@override String get webCheckoutIntl => 'Покупка на сайте (за рубежом)';
 }
 
 // Path: wakeWord
@@ -2015,6 +2033,10 @@ class _Translations$voiceAssistants$ru extends Translations$voiceAssistants$he {
 	@override String get unavailable => 'Шефи сейчас недоступен.';
 	@override String get failed => 'Шефи не смог ответить. Попробуйте чуть позже.';
 	@override String get goodbye => 'С удовольствием! Я здесь, когда понадоблюсь.';
+	@override String get geminiOpensShefi => 'Открытие через Gemini ведёт к Шефи';
+	@override String get geminiOpensShefiHint => 'Скажите Gemini «открой Easy Plate», и приложение откроется сразу на разговоре с Шефи, готовым слушать. До этого микрофон EasyPlate остаётся закрытым. Открытие с иконки приложения по-прежнему ведёт на главный экран.';
+	@override String get geminiPanel => 'Плавающей панелью';
+	@override String get geminiPanelHint => 'Шефи открывается плавающей панелью внизу экрана, поверх того, что было открыто, а не как приложение. Коснитесь вне панели, чтобы вернуться.';
 }
 
 // Path: adminConfig
@@ -2025,6 +2047,19 @@ class _Translations$adminConfig$ru extends Translations$adminConfig$he {
 
 	// Translations
 	@override late final _Translations$adminConfig$labels$ru labels = _Translations$adminConfig$labels$ru._(_root);
+}
+
+// Path: quickActions
+class _Translations$quickActions$ru extends Translations$quickActions$he {
+	_Translations$quickActions$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get shefi => 'Поговорить с Шефи';
+	@override String get groceryAdd => 'Добавить в список покупок';
+	@override String get receipt => 'Добавить чек';
+	@override String get support => 'Написать в поддержку';
 }
 
 // Path: walkthrough.topics
@@ -2489,6 +2524,9 @@ extension on TranslationsRu {
 			'auth.sessionTakeoverBody' => ({required Object phone}) => 'Мы отправим новый код на ${phone}. После подтверждения аккаунт перейдёт на это устройство, а другое выйдет из аккаунта.',
 			'auth.sessionTakeoverNoPhone' => 'В аккаунте нет номера телефона, поэтому подтвердить здесь нельзя. Попросите выйти или напишите в поддержку.',
 			'auth.sessionTakeoverFailed' => 'Не удалось перенести аккаунт на это устройство. Попробуйте ещё раз.',
+			'auth.reverifyTitle' => 'Подтвердите телефон ещё раз',
+			'auth.reverifyBody' => ({required Object phone}) => 'В целях безопасности подтвердите телефон ещё раз перед удалением аккаунта. Мы отправим новый код на ${phone}.',
+			'auth.reverifyNoPhone' => 'У этого аккаунта нет номера телефона, поэтому его нельзя подтвердить здесь. Чтобы удалить аккаунт, обратитесь в поддержку.',
 			'auth.sessionReleaseTitle' => 'Другое устройство хочет войти',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?',
 			'auth.sessionReleaseConfirm' => 'Выйти здесь',
@@ -2688,6 +2726,9 @@ extension on TranslationsRu {
 			'recipe.communityUpdated' => 'Копия в сообществе обновлена',
 			'recipe.communityGone' => 'Рецепта больше нет в сообществе; сохранено только у вас',
 			'recipe.communityUpdateFailed' => 'Сохранено у вас. Публикация в сообществе не обновлена, попробуйте позже.',
+			'recipe.sourceLink' => 'Оригинальный рецепт',
+			'recipe.sourceLinkHint' => 'Открыть источник, откуда импортирован рецепт',
+			'recipe.sourceOpenFailed' => 'Не удалось открыть ссылку',
 			'cookMode.title' => 'Режим готовки',
 			'cookMode.start' => 'Начать готовить',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Шаг ${n} из ${total}',
@@ -2881,14 +2922,14 @@ extension on TranslationsRu {
 			'sharing.viewerCannotEditList' => 'Этот список открыт вам только для просмотра',
 			'sharing.kindList' => 'список покупок',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} общая книга', few: '${n} общие книги', many: '${n} общих книг', other: '${n} общей книги', ), 
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} общий список покупок', few: '${n} общих списка покупок', many: '${n} общих списков покупок', other: '${n} общего списка покупок', ), 
 			'notifications.title' => 'Уведомления',
 			'notifications.empty' => 'Уведомлений нет',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами «${recipe}»',
 			'notifications.asViewer' => 'только просмотр',
 			'notifications.asEditor' => 'для редактирования',
-			_ => null,
-		} ?? switch (path) {
 			'notifications.markAllRead' => 'Отметить все прочитанными',
 			'notifications.openRecipe' => 'Открыть рецепт',
 			'notifications.alreadyHandled' => 'Приглашение уже обработано',
@@ -3006,6 +3047,11 @@ extension on TranslationsRu {
 			'ingestion.recordingTag' => 'Запись',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} КБ',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} МБ',
+			'ingestion.videoPhotoTitle' => 'Картинка из видео',
+			'ingestion.videoPhotoHint' => 'Выберите картинку для рецепта. Её можно поменять и позже.',
+			'ingestion.videoPhotoCover' => 'Обложка поста',
+			'ingestion.videoPhotoNone' => 'Без картинки',
+			'ingestion.videoPhotoFailed' => 'Не удалось сохранить картинку, попробуйте другую',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',
@@ -3390,6 +3436,8 @@ extension on TranslationsRu {
 			'walkthrough.topics.library.s6' => 'Это созданная вами книга. Отсюда в неё добавляют рецепты; внутри листают страницы и переходят из оглавления. Долгое нажатие на книгу на полке открывает общий доступ, обложку, переименование и удаление.',
 			'walkthrough.topics.mealPlan.title' => 'Меню на неделю и питание',
 			'walkthrough.topics.mealPlan.summary' => 'План на всю неделю со сводкой питательности по дням, из которого строится список покупок.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'Нажмите «Меню», чтобы спланировать неделю.',
 			'walkthrough.topics.mealPlan.s2' => 'Нажмите здесь, чтобы создать недельный план.',
 			'walkthrough.topics.mealPlan.s3' => 'Название плана уже заполнено. Ниже выберите шаблон: свободный, три приёма пищи в день или шесть.',
@@ -3401,8 +3449,6 @@ extension on TranslationsRu {
 			'walkthrough.topics.groceries.summary' => 'Список, построенный из плана, с отметкой уже собранного, оценкой стоимости по вашим чекам и общим доступом для тех, кто ходит за покупками с вами.',
 			'walkthrough.topics.groceries.s1' => 'Нажмите «Покупки».',
 			'walkthrough.topics.groceries.s2' => 'Обновление заново собирает список из всех рецептов недельного плана.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'Нажмите плюс, чтобы добавить пункт вручную.',
 			'walkthrough.topics.groceries.s4' => 'Название пункта уже заполнено. Выберите количество и единицу, или начните с товара, который уже знают ваши чеки.',
 			'walkthrough.topics.groceries.s5' => 'Нажмите «Добавить», и пункт попадёт в список.',
@@ -3502,6 +3548,7 @@ extension on TranslationsRu {
 			'feedback.closedConversations' => ({required Object n}) => 'Закрытые обращения (${n})',
 			'feedback.noOpenConversations' => 'Нет открытых обращений',
 			'feedback.closedTag' => 'Закрыто',
+			'feedback.dailyLimit' => 'Вы достигли дневного лимита новых обращений в поддержку. Попробуйте завтра или напишите в уже открытое обращение.',
 			'adminBilling.title' => 'Пользователи',
 			'adminBilling.all' => 'Все',
 			'adminBilling.paying' => 'Платят',
@@ -3903,6 +3950,8 @@ extension on TranslationsRu {
 			'homeWidgets.defaults' => 'Значения по умолчанию для новых виджетов',
 			'homeWidgets.defaultsHint' => 'Каждый виджет можно потом изменить в его настройках (долгое нажатие на виджет).',
 			'homeWidgets.defaultList' => 'Список покупок',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.openList' => 'Открытый список',
 			'homeWidgets.defaultPlan' => 'План питания',
 			'homeWidgets.firstPlan' => 'Первый план',
@@ -3915,8 +3964,6 @@ extension on TranslationsRu {
 			'homeWidgets.widgetAssistantHint' => 'Кнопка, открывающая Шефи, при желании с микрофоном, и быстрые вопросы.',
 			'homeWidgets.widgetGroceryAdd' => 'Быстрое добавление в список',
 			'homeWidgets.widgetGroceryAddHint' => 'Введите или продиктуйте продукт прямо в выбранный список.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.widgetGroceryList' => 'Список покупок',
 			'homeWidgets.widgetGroceryListHint' => 'Что осталось купить; отмечайте продукты прямо в виджете.',
 			'homeWidgets.widgetTodayMenu' => 'Меню на сегодня',
@@ -4003,7 +4050,12 @@ extension on TranslationsRu {
 			'featureName.whatsNew' => 'Что нового',
 			'featureName.supportChat' => 'Чат поддержки',
 			'featureName.storeReview' => 'Запрос оценки в магазине',
+			'featureName.quickActions' => 'Быстрые действия значка',
 			'featureName.webCheckout' => 'Покупка на сайте',
+			'featureName.socialVideoPhoto' => 'Картинка из видео',
+			'featureName.recipeSourceLink' => 'Ссылка на оригинальный рецепт',
+			'featureName.webCheckoutIl' => 'Покупка на сайте (Израиль)',
+			'featureName.webCheckoutIntl' => 'Покупка на сайте (за рубежом)',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
@@ -4055,7 +4107,15 @@ extension on TranslationsRu {
 			'voiceAssistants.unavailable' => 'Шефи сейчас недоступен.',
 			'voiceAssistants.failed' => 'Шефи не смог ответить. Попробуйте чуть позже.',
 			'voiceAssistants.goodbye' => 'С удовольствием! Я здесь, когда понадоблюсь.',
+			'voiceAssistants.geminiOpensShefi' => 'Открытие через Gemini ведёт к Шефи',
+			'voiceAssistants.geminiOpensShefiHint' => 'Скажите Gemini «открой Easy Plate», и приложение откроется сразу на разговоре с Шефи, готовым слушать. До этого микрофон EasyPlate остаётся закрытым. Открытие с иконки приложения по-прежнему ведёт на главный экран.',
+			'voiceAssistants.geminiPanel' => 'Плавающей панелью',
+			'voiceAssistants.geminiPanelHint' => 'Шефи открывается плавающей панелью внизу экрана, поверх того, что было открыто, а не как приложение. Коснитесь вне панели, чтобы вернуться.',
 			'adminConfig.labels.admin_all_features' => 'Показывать администратору все функции',
+			'quickActions.shefi' => 'Поговорить с Шефи',
+			'quickActions.groceryAdd' => 'Добавить в список покупок',
+			'quickActions.receipt' => 'Добавить чек',
+			'quickActions.support' => 'Написать в поддержку',
 			_ => null,
 		};
 	}

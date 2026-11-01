@@ -35,11 +35,17 @@ double productMatchScore(String query, String candidate) =>
 /// [productMatchScore] for names already through [normalizeProductName]:
 /// the estimator runs this once per grocery line against every stored
 /// record, in build, and the records carry their normalised name.
-double productMatchScoreNormalized(String q, String c) {
+double productMatchScoreNormalized(String q, String c) =>
+    productMatchScoreWithTokens(q, productTokens(q).toSet(), c);
+
+/// [productMatchScoreNormalized] with the query's words already split
+/// ([qt] is `productTokens(q).toSet()`): one grocery line is scored against
+/// every record, and splitting the same query once per record was half the
+/// work.
+double productMatchScoreWithTokens(String q, Set<String> qt, String c) {
   if (q.isEmpty || c.isEmpty) return 0;
   if (q == c) return 1;
-  final qt = productTokens(q).toSet();
-  final ct = productTokens(c).toSet();
+  final ct = _storedTokens(c);
   if (qt.isEmpty || ct.isEmpty) return 0;
   final (short, long) = qt.length <= ct.length ? (qt, ct) : (ct, qt);
   if (!long.containsAll(short)) return 0;
@@ -47,3 +53,16 @@ double productMatchScoreNormalized(String q, String c) {
   // lengths, the better.
   return short.length / long.length;
 }
+
+/// The words of stored names, split once: the same few hundred names are
+/// scored against every grocery line on every build. Bounded — past
+/// [_storedTokensCap] names it starts over — and read-only to its callers.
+Set<String> _storedTokens(String normalized) {
+  final known = _storedTokenSets[normalized];
+  if (known != null) return known;
+  if (_storedTokenSets.length >= _storedTokensCap) _storedTokenSets.clear();
+  return _storedTokenSets[normalized] = productTokens(normalized).toSet();
+}
+
+final _storedTokenSets = <String, Set<String>>{};
+const _storedTokensCap = 4096;

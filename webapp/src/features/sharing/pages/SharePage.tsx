@@ -186,7 +186,8 @@ function ShareSheet({ kind, id }: { kind: ShareKind; id: string }) {
       setCodes((c) => [created, ...(c ?? [])]);
     } catch (err) {
       if (err instanceof ItemGone) setItem(null);
-      else setCodeError(t("sharing.code.failed"));
+      // Not sharing.code.failed: that one reads "Could not join" (JoinPage's).
+      else setCodeError(t("sharing.failed"));
     } finally {
       setBusy(false);
     }
@@ -204,7 +205,7 @@ function ShareSheet({ kind, id }: { kind: ShareKind; id: string }) {
       await revokeShareCode(code.code);
       setCodes((c) => (c ?? []).filter((x) => x.code !== code.code));
     } catch (_) {
-      setCodeError(t("sharing.code.failed"));
+      setCodeError(t("common.error"));
     } finally {
       setBusy(false);
     }

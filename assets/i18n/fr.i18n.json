@@ -116,6 +116,9 @@
     "sessionTakeoverBody": "Nous enverrons un nouveau code au $phone. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.",
     "sessionTakeoverNoPhone": "Ce compte n’a pas de numéro de téléphone, il ne peut donc pas être confirmé ici. Demandez la déconnexion ou contactez le support.",
     "sessionTakeoverFailed": "Impossible de transférer le compte sur cet appareil. Réessayez.",
+    "reverifyTitle": "Vérifiez à nouveau votre téléphone",
+    "reverifyBody": "Pour votre sécurité, vérifiez à nouveau votre téléphone avant de supprimer le compte. Nous enverrons un nouveau code au $phone.",
+    "reverifyNoPhone": "Ce compte n'a pas de numéro de téléphone, il ne peut donc pas être vérifié ici. Contactez l'assistance pour supprimer le compte.",
     "sessionReleaseTitle": "Un autre appareil veut se connecter",
     "sessionReleaseBody": "Un appareil ($platform) veut se connecter à votre compte. Se déconnecter sur cet appareil ?",
     "sessionReleaseConfirm": "Me déconnecter ici",
@@ -340,7 +343,10 @@
     "communityUpdateLocal": "Seulement la mienne",
     "communityUpdated": "La copie de la communauté a été mise à jour",
     "communityGone": "La recette n’est plus dans la communauté ; enregistrée pour vous seulement",
-    "communityUpdateFailed": "Enregistré pour vous. La publication dans la communauté n'a pas été mise à jour ; réessayez plus tard."
+    "communityUpdateFailed": "Enregistré pour vous. La publication dans la communauté n'a pas été mise à jour ; réessayez plus tard.",
+    "sourceLink": "Recette originale",
+    "sourceLinkHint": "Ouvrir la source d’où la recette a été importée",
+    "sourceOpenFailed": "Impossible d’ouvrir le lien"
   },
   "cookMode": {
     "title": "Mode cuisine",
@@ -676,7 +682,12 @@
     "saveFailed": "Impossible d'enregistrer la recette. Réessayez.",
     "recordingTag": "Enregistrement",
     "sizeKb": "$n Ko",
-    "sizeMb": "$n Mo"
+    "sizeMb": "$n Mo",
+    "videoPhotoTitle": "Image tirée de la vidéo",
+    "videoPhotoHint": "Choisissez l’image qui représentera la recette. Vous pourrez la changer plus tard.",
+    "videoPhotoCover": "Image du post",
+    "videoPhotoNone": "Sans image",
+    "videoPhotoFailed": "Impossible d’enregistrer cette image, essayez-en une autre"
   },
   "mealPlanner": {
     "title": "Planification des repas",
@@ -1234,7 +1245,8 @@
     "threadFull": "Cette conversation est pleine. Ouvrez-en une nouvelle pour continuer à écrire.",
     "closedConversations": "Conversations closes ($n)",
     "noOpenConversations": "Aucune conversation ouverte",
-    "closedTag": "Close"
+    "closedTag": "Close",
+    "dailyLimit": "Vous avez atteint la limite quotidienne de nouveaux messages au support. Réessayez demain, ou écrivez dans une conversation déjà ouverte."
   },
   "adminBilling": {
     "title": "Utilisateurs",
@@ -1781,7 +1793,12 @@
     "whatsNew": "Nouveautés",
     "supportChat": "Chat support",
     "storeReview": "Invitation à noter l’app",
-    "webCheckout": "Achat sur le site"
+    "quickActions": "Raccourcis de l’icône",
+    "webCheckout": "Achat sur le site",
+    "socialVideoPhoto": "Image depuis une vidéo",
+    "recipeSourceLink": "Lien vers la recette originale",
+    "webCheckoutIl": "Achat sur le site (Israël)",
+    "webCheckoutIntl": "Achat sur le site (étranger)"
   },
   "wakeWord": {
     "title": "Hé Shefi",
@@ -1842,11 +1859,21 @@
     "premiumOnly": "Shefi est disponible avec Premium. Vous pouvez passer à Premium dans l'app EasyPlate.",
     "unavailable": "Shefi n'est pas disponible pour le moment.",
     "failed": "Shefi n'a pas pu répondre. Réessayez dans un instant.",
-    "goodbye": "Avec plaisir ! Je suis là quand vous voulez."
+    "goodbye": "Avec plaisir ! Je suis là quand vous voulez.",
+    "geminiOpensShefi": "Ouvrir via Gemini mène à Shefi",
+    "geminiOpensShefiHint": "Dites à Gemini « ouvre Easy Plate » et l’app s’ouvre directement sur une conversation avec Shefi, prêt à écouter. Le micro d’EasyPlate reste fermé jusque-là. Ouvrir depuis l’icône de l’app mène toujours à l’accueil.",
+    "geminiPanel": "En panneau flottant",
+    "geminiPanelHint": "Shefi s’ouvre en panneau flottant en bas de l’écran, par-dessus ce qui était ouvert, au lieu d’ouvrir l’app. Touchez à l’extérieur pour revenir."
   },
   "adminConfig": {
     "labels": {
       "admin_all_features": "Montrer toutes les fonctionnalités à l'admin"
     }
+  },
+  "quickActions": {
+    "shefi": "Parler à Shefi",
+    "groceryAdd": "Ajouter aux courses",
+    "receipt": "Ajouter un ticket",
+    "support": "Contacter le support"
   }
 }

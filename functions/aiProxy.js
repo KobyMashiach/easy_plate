@@ -41,6 +41,116 @@ const ALLOWED_PATH = "/v1beta/interactions";
 // few KB. Cloud Functions itself stops at 32 MB.
 const MAX_BODY_BYTES = 16 * 1024 * 1024;
 
+// What a request may ask of the model, past the body cap. The daily quota
+// counts calls, not tokens, and the body cap is sized for inline photos and
+// PDFs — so 16 MB of *text* (a few million tokens of prompt, system
+// instruction, tool declarations or schema) was one call like any other,
+// and so was an answer as long as the model allows. Each limit is a Remote
+// Config parameter (console edit, no deploy) with these as the fallbacks.
+//
+// Prompt: every character the model reads as text — the body without its
+// inline media (`data` of an image/audio/document block, still governed by
+// the body cap) and without `response_format` (the schema has its own
+// limit). Counting the whole remainder, not only `text` blocks and the
+// system instruction, leaves no field to smuggle a book through: tool
+// declarations and the assistant's function results are text too. The
+// app's largest is a 30,000-character paste (ingestion_page maxCharsFor)
+// under a ~3 KB system prompt; the assistant sends ~4 KB of instructions, a
+// data snapshot (40 recipes, lists of 30 items) and 29 tool declarations
+// (~15 KB). 200,000 is several times any of them.
+const MAX_PROMPT_CHARS = 200 * 1000;
+const PROMPT_CHARS_PARAM = "ai_max_prompt_chars";
+// The response schema, as JSON: the app's recipe schema is ~4 KB.
+const MAX_SCHEMA_CHARS = 64 * 1024;
+const SCHEMA_CHARS_PARAM = "ai_max_schema_chars";
+// The answer's ceiling, sent as generation_config.max_output_tokens (a
+// smaller value from the client is kept). The app sends none, so without
+// this every call could run to the model's own maximum (64K on the flash
+// models). Thinking counts against it, so it is kept at half that: a
+// recipe answer is a few thousand tokens, and a receipt (thinking "high")
+// has room for the long thought before it. Lower it only after reading
+// the real totals in ai_usage — an answer cut off is a broken feature.
+const MAX_OUTPUT_TOKENS = 32768;
+const OUTPUT_TOKENS_PARAM = "ai_max_output_tokens";
+
+// Pure: the three limits from the console template. A missing, unreadable
+// or non-positive value falls back — a typo in the console must not turn
+// every AI call into a refusal (quota_ai_proxy_daily = 0 is the switch for
+// that).
+function sizeLimitsFrom(parameters) {
+  const read = (name, fallback) => {
+    const value = remoteFlags.intFrom(parameters, name, fallback);
+    return value > 0 ? value : fallback;
+  };
+  return {
+    promptChars: read(PROMPT_CHARS_PARAM, MAX_PROMPT_CHARS),
+    schemaChars: read(SCHEMA_CHARS_PARAM, MAX_SCHEMA_CHARS),
+    outputTokens: read(OUTPUT_TOKENS_PARAM, MAX_OUTPUT_TOKENS),
+  };
+}
+
+async function sizeLimits() {
+  return sizeLimitsFrom(await remoteFlags.params());
+}
+
+const MEDIA_OUTPUT = new Set(["image", "audio", "video"]);
+
+/// Pure: the characters of [body] the model reads as text (see above).
+function promptChars(body) {
+  if (!body || typeof body !== "object") return 0;
+  const text = JSON.stringify(body, function (key, value) {
+    if (this === body && key === "response_format") return undefined;
+    // An inline attachment: its bytes, not its words.
+    if (key === "data" && typeof value === "string" && this && typeof this.mime_type === "string") return undefined;
+    return value;
+  });
+  return text ? text.length : 0;
+}
+
+/// Pure: the characters of the response format (the schema inside it).
+function schemaChars(body) {
+  const format = body && typeof body === "object" ? body.response_format : undefined;
+  return format === undefined || format === null ? 0 : JSON.stringify(format).length;
+}
+
+/// Pure: why [body] asks too much of the model, as `{ status, code,
+/// message }`, or null. Over a size is a 413, as for the body cap.
+function sizeRefusal(body, limits) {
+  const prompt = promptChars(body);
+  if (prompt > limits.promptChars) {
+    return { status: 413, code: "prompt_too_large", message: `The prompt is ${prompt} characters; the limit is ${limits.promptChars}` };
+  }
+  const schema = schemaChars(body);
+  if (schema > limits.schemaChars) {
+    return { status: 413, code: "schema_too_large", message: `The response schema is ${schema} characters; the limit is ${limits.schemaChars}` };
+  }
+  return null;
+}
+
+/// Pure: [body] with generation_config.max_output_tokens at most
+/// [ceiling], as `{ body }`, or `{ refusal }` for a value that is not a
+/// positive integer. A smaller value from the client is kept. A request for
+/// a picture (response_format of type image, audio or video) gets no
+/// ceiling it did not ask for: one image is its own bound, and a token cap
+/// on it can cut the picture off. [body] itself is not changed.
+function withOutputCeiling(body, ceiling) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) return { body };
+  const config = body.generation_config;
+  if (config !== undefined && (config === null || typeof config !== "object" || Array.isArray(config))) {
+    return { refusal: { status: 400, code: "invalid", message: "generation_config must be an object" } };
+  }
+  const sent = config ? config.max_output_tokens : undefined;
+  if (sent !== undefined && !(Number.isInteger(sent) && sent > 0)) {
+    return { refusal: { status: 400, code: "invalid", message: "max_output_tokens must be a positive integer" } };
+  }
+  if (sent !== undefined && sent <= ceiling) return { body };
+  if (sent === undefined) {
+    const formats = [].concat(body.response_format ?? []);
+    if (formats.some((f) => f && MEDIA_OUTPUT.has(f.type))) return { body };
+  }
+  return { body: { ...body, generation_config: { ...(config || {}), max_output_tokens: ceiling } } };
+}
+
 // Calls per user per UTC day. This is the whole point of owning the proxy: an
 // authenticated user can still burn money in a loop, and only the server can
 // say no. The number is the Remote Config parameter `quota_ai_proxy_daily`
@@ -303,15 +413,27 @@ async function cacheHitRefusal(uid, spend = budget.spend) {
 
 // `checkRevoked` asks Auth whether the session was revoked since the token
 // was minted (one extra lookup): for the irreversible calls only.
-async function verifyCaller(req, { checkRevoked = false } = {}) {
+async function verifyCaller(req, opts) {
+  return (await checkToken(req, opts)).caller;
+}
+
+// Auth itself failing (its key fetch or the revocation lookup), as opposed
+// to the token being bad: the caller is not told to sign in again for it.
+const AUTH_UNAVAILABLE = new Set(["auth/internal-error", "app/network-error", "app/network-timeout", "auth/network-request-failed"]);
+
+/// The token check with its reason: `{ caller }` for a good token,
+/// `{ caller: null, unavailable }` otherwise — `unavailable` when Auth could
+/// not answer, so a paid endpoint can say "try again" (503) instead of 401.
+async function checkToken(req, { checkRevoked = false, auth = admin.auth() } = {}) {
   const header = req.get("authorization") || "";
   const match = header.match(/^Bearer\s+(.+)$/i);
-  if (!match) return null;
+  if (!match) return { caller: null, unavailable: false };
   try {
-    return await admin.auth().verifyIdToken(match[1], checkRevoked);
+    return { caller: await auth.verifyIdToken(match[1], checkRevoked), unavailable: false };
   } catch (err) {
-    logger.warn("rejected an ID token", { reason: err.code || err.message });
-    return null;
+    const unavailable = AUTH_UNAVAILABLE.has(err && err.code);
+    logger.warn(unavailable ? "ID token not checked, Auth unavailable" : "rejected an ID token", { reason: err.code || err.message });
+    return { caller: null, unavailable };
   }
 }
 
@@ -337,7 +459,8 @@ function paidCallerRefusal(caller) {
 /// token *and* a verified phone. Answers `{ caller }` or `{ refusal }`
 /// (status, code, message) for the endpoint to send in its own envelope.
 async function verifyPaidCaller(req, opts) {
-  const caller = await verifyCaller(req, opts);
+  const { caller, unavailable } = await checkToken(req, opts);
+  if (unavailable) return { caller: null, refusal: { status: 503, code: "auth_unavailable", message: "Try again shortly" } };
   const refusal = paidCallerRefusal(caller);
   return refusal ? { caller: null, refusal } : { caller, refusal: null };
 }
@@ -464,6 +587,45 @@ async function claimQuotaSlot(uid, limit) {
   });
 }
 
+/// How long the forwarded call may take: the function's own timeout less a
+/// margin, so a hung model call ends here with a typed 504 the app reads as
+/// "overloaded" — rather than in the platform killing the request mid-way,
+/// which answered with a bare 504 page and left no log line saying why.
+const UPSTREAM_MARGIN_MS = 5000;
+const MIN_UPSTREAM_MS = 10000;
+function upstreamTimeoutMs(functionSeconds) {
+  const seconds = Number(functionSeconds);
+  const total = Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : 120000;
+  return Math.max(MIN_UPSTREAM_MS, total - UPSTREAM_MARGIN_MS);
+}
+
+/// Whether an upstream answer gives the day's slot back: a 5xx only, as in
+/// socialRecipe. A 429 stays charged (a burst of the caller's own is what
+/// provokes it), and so does a timeout (see the handler).
+function upstreamRefundable(status) {
+  return status >= 500;
+}
+
+/// The forwarded call, bounded by `timeoutMs`. Throws on a network error or
+/// the deadline; a thrown error carries `timedOut` for the deadline.
+async function callUpstream(body, apiKey, { fetchImpl = fetch, timeoutMs }) {
+  try {
+    const upstream = await fetchImpl(`${GOOGLE_ORIGIN}${ALLOWED_PATH}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      body,
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    // The body read is under the same signal: a stream that stalls half-way
+    // is the same hang as one that never answers.
+    const text = await upstream.text();
+    return { status: upstream.status, text, contentType: upstream.headers.get("content-type") || "application/json" };
+  } catch (err) {
+    if (err && (err.name === "TimeoutError" || err.name === "AbortError")) err.timedOut = true;
+    throw err;
+  }
+}
+
 /// Gives a slot back when Google itself failed. The user should not pay a day's
 /// quota for our upstream being down. Best effort: if this write loses a race
 /// the worst case is one over-counted call.
@@ -527,6 +689,20 @@ exports.aiProxy = onRequest(
     }
     const refused = bodyRefusal(req.body);
     if (refused) return res.status(400).json({ error: { code: "invalid", message: refused } });
+
+    // Before the cache and the quota: a request this size is refused, not
+    // charged. The cache key stays on the body as sent (`body`) — keying
+    // it on the clamped copy would orphan every entry already cached, and
+    // the clamp is the same for every request anyway.
+    const limits = await sizeLimits();
+    const tooLarge = sizeRefusal(req.body, limits);
+    const ceiling = tooLarge ? null : withOutputCeiling(req.body, limits.outputTokens);
+    const sizeProblem = tooLarge || ceiling.refusal;
+    if (sizeProblem) {
+      logger.warn("ai request refused for size", { uid: caller.uid, code: sizeProblem.code });
+      return res.status(sizeProblem.status).json({ error: { code: sizeProblem.code, message: sizeProblem.message } });
+    }
+    const forwardBody = ceiling.body === req.body ? body : JSON.stringify(ceiling.body);
 
     const uid = caller.uid;
 
@@ -595,22 +771,14 @@ exports.aiProxy = onRequest(
 
     const started = Date.now();
     try {
-      const upstream = await fetch(`${GOOGLE_ORIGIN}${ALLOWED_PATH}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": geminiApiKey.value(),
-        },
-        body,
-      });
+      const upstream = await callUpstream(forwardBody, geminiApiKey.value(), { timeoutMs: upstreamTimeoutMs(timeoutSeconds.value()) });
+      const text = upstream.text;
 
-      const text = await upstream.text();
-
-      if (upstream.status >= 500) {
+      if (upstreamRefundable(upstream.status)) {
         await refundQuotaSlot(uid);
       }
 
-      const contentType = upstream.headers.get("content-type") || "application/json";
+      const contentType = upstream.contentType;
 
       // The bill, for the dashboard. Not awaited: the answer goes out first.
       void aiUsage.recordCall({
@@ -645,9 +813,13 @@ exports.aiProxy = onRequest(
         .set("x-easyplate-cache", cacheEntry ? "miss" : "none")
         .send(text);
     } catch (err) {
-      await refundQuotaSlot(uid);
-      logger.error("upstream call failed", { uid, reason: err.message });
-      return res.status(502).json({ error: { message: "Upstream request failed" } });
+      // A network failure is given back. A timeout is not: the request
+      // reached Google, which most likely billed it, and a slow request is
+      // easy to build (the rule translateContent and socialRecipe follow).
+      if (!err.timedOut) await refundQuotaSlot(uid);
+      logger.error("upstream call failed", { uid, reason: err.message, timedOut: Boolean(err.timedOut) });
+      if (err.timedOut) return res.status(504).json({ error: { code: "upstream_timeout", message: "The model took too long, try again" } });
+      return res.status(502).json({ error: { code: "upstream", message: "Upstream request failed" } });
     }
   },
 );
@@ -667,6 +839,7 @@ exports.internals = {
   // Shared with socialRecipe.js, which is the same proxy for one more kind
   // of source: same caller check, same daily allowance, same URL cache.
   verifyCaller,
+  checkToken,
   verifyPaidCaller,
   paidCallerRefusal,
   bodyRefusal,
@@ -676,6 +849,9 @@ exports.internals = {
   INTERACTION_OWNERS,
   claimQuotaSlot,
   refundQuotaSlot,
+  upstreamTimeoutMs,
+  upstreamRefundable,
+  callUpstream,
   readCache,
   writeCache,
   cacheHitRefusal,
@@ -695,6 +871,18 @@ exports.internals = {
   isFresh,
   ALLOWED_PATH,
   MAX_BODY_BYTES,
+  sizeLimitsFrom,
+  sizeLimits,
+  promptChars,
+  schemaChars,
+  sizeRefusal,
+  withOutputCeiling,
+  MAX_PROMPT_CHARS,
+  MAX_SCHEMA_CHARS,
+  MAX_OUTPUT_TOKENS,
+  PROMPT_CHARS_PARAM,
+  SCHEMA_CHARS_PARAM,
+  OUTPUT_TOKENS_PARAM,
   FREE_DAILY_CALLS,
   CACHE_COLLECTION,
   CACHE_TTL_MS,

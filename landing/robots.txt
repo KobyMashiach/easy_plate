@@ -1,7 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /.og/
+Allow: /app-ads.txt
 Disallow: /admin
-Disallow: /app
+Disallow: /app$
+Disallow: /app/
 
 Sitemap: https://aieasyplate.app/sitemap.xml

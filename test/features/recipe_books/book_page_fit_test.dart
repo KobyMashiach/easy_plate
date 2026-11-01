@@ -6,7 +6,9 @@ import 'package:easy_plate/features/recipe_books/presentation/widgets/book_sprea
 import 'package:easy_plate/features/recipe_books/presentation/widgets/open_book_shell.dart';
 import 'package:easy_plate/features/recipe_books/presentation/widgets/recipe_book_page.dart';
 import 'package:easy_plate/features/recipe_books/presentation/widgets/table_of_contents_page.dart';
+import 'package:easy_plate/features/user_profile/domain/repositories/user_preferences_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 RecipeEntity recipe() => RecipeEntity(
@@ -172,4 +174,34 @@ void main() {
       greaterThan(tester.getCenter(find.text('second')).dx),
     );
   });
+
+  testWidgets('a preferences read that fails leaves the defaults, no error', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(844, 390);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      RepositoryProvider<UserPreferencesRepository>.value(
+        value: _FailingPreferences(),
+        child: MaterialApp(
+          home: OpenBookShell(
+            pages: (_) => const [Center(child: Text('first'))],
+            actions: (_) => const [],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('first'), findsOneWidget);
+  });
+}
+
+class _FailingPreferences implements UserPreferencesRepository {
+  @override
+  noSuchMethod(Invocation invocation) => Future<Never>.error(
+    StateError('preferences box unavailable'),
+  );
 }

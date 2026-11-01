@@ -1257,7 +1257,7 @@ PODS:
     - Firebase/Crashlytics (= 12.18.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (16.6.0):
+  - firebase_messaging (16.7.0):
     - Firebase/Messaging (= 12.18.0)
     - firebase_core
     - Flutter
@@ -1590,6 +1590,8 @@ PODS:
   - PurchasesHybridCommonUI (18.37.0):
     - PurchasesHybridCommon (= 18.37.0)
     - RevenueCatUI (= 5.88.0)
+  - quick_actions_ios (0.0.1):
+    - Flutter
   - RecaptchaInterop (101.0.0)
   - receive_sharing_intent (1.8.1):
     - Flutter
@@ -1639,6 +1641,7 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
   - purchases_ui_flutter (from `.symlinks/plugins/purchases_ui_flutter/ios`)
+  - quick_actions_ios (from `.symlinks/plugins/quick_actions_ios/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -1746,6 +1749,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/purchases_flutter/ios"
   purchases_ui_flutter:
     :path: ".symlinks/plugins/purchases_ui_flutter/ios"
+  quick_actions_ios:
+    :path: ".symlinks/plugins/quick_actions_ios/ios"
   receive_sharing_intent:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
   share_plus:
@@ -1778,7 +1783,7 @@ SPEC CHECKSUMS:
   firebase_auth: 4c0f66df5d18671fd5ce6d6e9eb5ebdb653e03e5
   firebase_core: 22b31970001508f6e63945bedcb7b9de68819aa5
   firebase_crashlytics: f849aa211acedd808e8edc055d57d5aaeb7a2633
-  firebase_messaging: e0eae0e66bd04d3c1856ad08ad84ac75e0673a55
+  firebase_messaging: 376f773b1cb559a4d6de1d0ee6002d652a9ce052
   firebase_remote_config: 990169a8da90a9622619cf94dbab7118156b3bf8
   firebase_storage: d29b933001ab3621acf6b45871a7f981e3e2448b
   FirebaseABTesting: 7060ad22592c1ae86cccf9cc0f886f470084cbd5
@@ -1829,6 +1834,7 @@ SPEC CHECKSUMS:
   purchases_ui_flutter: cd8190c10ebcbde997eb91dafa4f2792ff79d484
   PurchasesHybridCommon: 2e72564d3393d480ca126d4d057737435dd7ccba
   PurchasesHybridCommonUI: b9e63653fa3abb753b702e0a9b074fbf452b0cbb
+  quick_actions_ios: 500fcc11711d9f646739093395c4ae8eec25f779
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
   RevenueCat: 96e12da1f3de201c65f337ff661506ac28ee1514
@@ -1840,6 +1846,6 @@ SPEC CHECKSUMS:
   wakelock_plus: e29112ab3ef0b318e58cfa5c32326458be66b556
   webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
 
-PODFILE CHECKSUM: 190934823daebffc51e840f6fb25092dc1faf001
+PODFILE CHECKSUM: b0d8f52b32be46500b9218c796e5556cc64522c7
 
 COCOAPODS: 1.16.2

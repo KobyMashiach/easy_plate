@@ -206,7 +206,7 @@ export function Forum() {
                   />
                   <Link to={`/community/thread/${encodeURIComponent(post.id)}`} onClick={(e) => e.stopPropagation()} className="mt-3 block">
                     <span dir="auto" className="block break-words text-body-lg">{post.title}</span>
-                    <span dir="auto" className="mt-1 line-clamp-3 block whitespace-pre-wrap break-words text-body-md text-on-surface-variant">{post.body}</span>
+                    <span dir="auto" className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-body-md text-on-surface-variant">{post.body}</span>
                   </Link>
                   <div className="mt-3 flex items-center text-tertiary" onClick={(e) => e.stopPropagation()}>
                     <LikeButton liked={liked} count={count} onToggle={() => like(post)} />
@@ -281,7 +281,7 @@ export function Forum() {
                 />
                 <Link to={`/community/thread/${encodeURIComponent(post.id)}`} className="block rounded-std">
                   <span dir="auto" className="block break-words text-body-lg font-bold">{post.title}</span>
-                  <span dir="auto" className="mt-1 line-clamp-3 block whitespace-pre-wrap break-words text-body-md text-on-surface-variant">{post.body}</span>
+                  <span dir="auto" className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-body-md text-on-surface-variant">{post.body}</span>
                 </Link>
                 <div className="mt-auto flex items-center gap-2">
                   <LikeButton liked={liked} count={count} onToggle={() => like(post)} />

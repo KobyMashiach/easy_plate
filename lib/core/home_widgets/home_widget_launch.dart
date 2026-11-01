@@ -39,6 +39,9 @@ class HomeWidgetLaunch {
   /// Opened from the "שפי" app-drawer icon (or "Hey Google, open Shefi").
   bool get fromLauncher => params['source'] == 'launcher';
 
+  /// Opened from the app icon's long-press menu: see QuickActionsService.
+  bool get fromShortcut => params['source'] == 'shortcut';
+
   /// `grocery`: which list, and whether the add sheet opens.
   String? get listId => _text('list');
   bool get add => params['add'] == '1' || params['add'] == 'true';
@@ -52,7 +55,8 @@ class HomeWidgetLaunch {
   }
 }
 
-enum HomeWidgetAction { assistant, grocery, plan, settings }
+/// `receipt` and `support` come only from the app icon's shortcuts.
+enum HomeWidgetAction { assistant, grocery, plan, settings, receipt, support }
 
 /// Holds the latest widget launch until the main screen takes it.
 abstract class PendingHomeWidgetLaunch {
@@ -82,6 +86,10 @@ abstract class HomeWidgetRequests {
 
   /// The planner: show this plan (null keeps the open one) on this day.
   static final planner = ValueNotifier<PlannerRequest?>(null);
+
+  /// The groceries tab: start a receipt scan (the tab holds the price book
+  /// the scan refreshes).
+  static final receiptScan = ValueNotifier<bool>(false);
 }
 
 class GroceryAddRequest {

@@ -6,6 +6,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../domain/entities/price_record_entity.dart';
 import '../../domain/repositories/price_book_repository.dart';
 import 'add_price_dialog.dart';
@@ -123,7 +124,7 @@ class _ProductPickerState extends State<_ProductPicker> {
                             horizontal: AppSpacing.gutter,
                             vertical: AppSpacing.sm,
                           ),
-                          onTap: () => Navigator.of(context).pop(r),
+                          onTap: () => popIfCurrent(context, r),
                           child: Row(
                             children: [
                               Expanded(

@@ -5,6 +5,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 
 /// Jump list for the open book. Tapping an entry returns its recipe id (not
@@ -107,7 +108,7 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
                     child: ClayCard(
                       radius: AppRadius.std,
                       padding: const EdgeInsets.all(AppSpacing.sm),
-                      onTap: () => Navigator.of(context).pop(recipe.id),
+                      onTap: () => popIfCurrent(context, recipe.id),
                       child: Row(
                         children: [
                           Container(

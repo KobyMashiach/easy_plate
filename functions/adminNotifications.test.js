@@ -111,3 +111,38 @@ test("a template is not deleted while its broadcast is going out", async () => {
   await deleteTemplate(dbWith(null), "t3");
   assert.deepEqual(deleted, ["t2", "t3"]);
 });
+
+test("a template whose claim fails does not hold back the due templates after it", async () => {
+  const { runDue } = require("./adminNotifications");
+  const admin = require("firebase-admin");
+  const now = THU_10;
+  const template = (id) => ({
+    id,
+    data: { title: "t", body: "b", target: "all", enabled: true, schedule: { kind: "daily", time: "10:00" }, nextRunAt: admin.firestore.Timestamp.fromMillis(now - 1000) },
+    updates: [],
+  });
+  const docs = [template("bad"), template("good")].map((t) => ({ id: t.id, t, ref: { id: t.id, update: async (patch) => t.updates.push(patch) } }));
+  const db = {
+    collection: (name) => ({
+      where: (field) => ({ limit: () => ({ get: async () => ({ docs: field === "nextRunAt" ? docs : [] }) }) }),
+      add: async () => {},
+    }),
+    doc: () => ({ get: async () => ({ exists: false }) }),
+    runTransaction: async (fn) => {
+      let target;
+      const tx = {
+        get: async (ref) => { target = docs.find((d) => d.ref === ref); return { data: () => target.t.data }; },
+        update: (ref, patch) => docs.find((d) => d.ref === ref).t.updates.push(patch),
+      };
+      const out = await fn(tx);
+      if (target && target.id === "bad") throw Object.assign(new Error("10 ABORTED: too much contention"), { code: 10 });
+      return out;
+    },
+  };
+  const sent = [];
+  const send = { one: async () => {}, all: async (p) => { sent.push(p.runKey); return { done: true, items: 1, sent: 1, failed: 0 }; } };
+  const count = await runDue(db, send, now);
+  assert.equal(count, 1);
+  assert.equal(sent.length, 1);
+  assert.ok(sent[0].startsWith("tpl_good_"));
+});

@@ -44,7 +44,14 @@ class AdminInboxService {
     final repository = _repository;
     if (!_bound || repository == null || _subscription != null) return;
     _subscription = repository.watchAll().listen(
-      (list) {
+      (all) {
+        // A conversation the server refused for the writer's daily
+        // allowance (onFeedbackCreated) never reaches the inbox: it is
+        // closed and marked, and the writer was told to try tomorrow.
+        final list = [
+          for (final f in all)
+            if (!f.overDailyLimit) f,
+        ];
         items.value = list;
         unreadCount.value = list.where((f) => !f.read).length;
       },

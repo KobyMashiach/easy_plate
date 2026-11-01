@@ -12,11 +12,17 @@ class _FakeRecipesRepository implements RecipesRepository {
   final Map<String, RecipeEntity> recipes;
   _FakeRecipesRepository(this.recipes);
 
+  /// How often each recipe was read.
+  final reads = <String, int>{};
+
   @override
   noSuchMethod(Invocation invocation) => throw UnimplementedError();
 
   @override
-  Future<RecipeEntity?> getRecipeById(String id) async => recipes[id];
+  Future<RecipeEntity?> getRecipeById(String id) async {
+    reads[id] = (reads[id] ?? 0) + 1;
+    return recipes[id];
+  }
 
   @override
   Future<List<RecipeEntity>> getRecipes() async => recipes.values.toList();
@@ -212,4 +218,27 @@ void main() {
     expect(items.single.totalAmount, 6);
     expect(items.single.sources.map((s) => s.label), ['שקשוקה', 'חביתה']);
   });
+
+  test(
+    'a recipe repeated across the week is read once and counted every time',
+    () async {
+      final repository = _FakeRecipesRepository({
+        'a': _recipe('a', 'שקשוקה', const [
+          RecipeIngredientEntity(name: 'ביצים', amount: 4),
+        ]),
+      });
+
+      final items = await BuildAggregateGroceryListUseCase(repository)([
+        _planWith([
+          for (var i = 0; i < 7; i++) MealItemEntity(id: '$i', recipeId: 'a'),
+          const MealItemEntity(id: 'gone', recipeId: 'missing'),
+          const MealItemEntity(id: 'gone2', recipeId: 'missing'),
+        ]),
+      ]);
+
+      expect(repository.reads, {'a': 1, 'missing': 1});
+      expect(items.single.totalAmount, 28);
+      expect(items.single.sources, hasLength(7));
+    },
+  );
 }

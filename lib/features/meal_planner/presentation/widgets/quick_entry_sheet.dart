@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -89,6 +91,9 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
   bool get _canSubmit => _nameController.text.trim().isNotEmpty;
 
   void _submit() {
+    // Already closing (a second tap in the same frame): popping again
+    // would close the page under this sheet.
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final text = _nameController.text.trim();
     if (text.isEmpty) return;
 
@@ -213,7 +218,12 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
                       ),
                       const SizedBox(height: AppSpacing.base),
                       SizedBox(
-                        height: 36,
+                        // 36 at the normal text size; taller with the
+                        // system text size so the unit labels are not cut.
+                        height: math.max(
+                          36,
+                          MediaQuery.textScalerOf(context).scale(20) + 16,
+                        ),
                         child: ListView(
                           scrollDirection: Axis.horizontal,
                           children: [

@@ -150,3 +150,151 @@ test("a switched-off account is refused by every paid endpoint", () => {
   assert.equal(paidCallerRefusal({ uid: "u", phone_number: "+972500000000" }), null);
   assert.deepEqual(paidCallerRefusal({ uid: "u", phone_number: "+972500000000", disabled: true }), { status: 403, code: "account_disabled", message: "This account is disabled" });
 });
+
+test("the forwarded call is bounded below the function's own timeout", () => {
+  const { upstreamTimeoutMs } = require("./aiProxy").internals;
+  assert.equal(upstreamTimeoutMs(120), 115000);
+  assert.ok(upstreamTimeoutMs(540) < 540000);
+  // A tiny console value still leaves the model a usable window.
+  assert.equal(upstreamTimeoutMs(1), 10000);
+  // An unreadable value falls back to the 120 s default.
+  assert.equal(upstreamTimeoutMs(undefined), 115000);
+});
+
+test("Google's own failures (5xx) give the slot back; a 429 and the caller's 4xx do not", () => {
+  const { upstreamRefundable } = require("./aiProxy").internals;
+  for (const status of [500, 502, 503, 504]) assert.equal(upstreamRefundable(status), true, String(status));
+  for (const status of [200, 400, 401, 403, 404, 413, 429]) assert.equal(upstreamRefundable(status), false, String(status));
+});
+
+test("a hung model call is aborted and marked as timed out; the key goes in a header", async () => {
+  const { callUpstream, ALLOWED_PATH } = require("./aiProxy").internals;
+  let seen;
+  const hang = (url, opts) => {
+    seen = { url, opts };
+    return new Promise((_resolve, reject) => opts.signal.addEventListener("abort", () => reject(opts.signal.reason)));
+  };
+  await assert.rejects(callUpstream("{}", "KEY", { fetchImpl: hang, timeoutMs: 30 }), (err) => err.timedOut === true);
+  assert.ok(seen.url.endsWith(ALLOWED_PATH));
+  assert.equal(seen.opts.headers["x-goog-api-key"], "KEY");
+  assert.ok(!seen.url.includes("KEY"));
+});
+
+test("a network failure is not mistaken for a timeout; an answer passes its status through", async () => {
+  const { callUpstream } = require("./aiProxy").internals;
+  const down = async () => { throw new TypeError("fetch failed"); };
+  await assert.rejects(callUpstream("{}", "K", { fetchImpl: down, timeoutMs: 1000 }), (err) => !err.timedOut);
+  const busy = async () => ({ status: 429, text: async () => '{"error":{"status":"RESOURCE_EXHAUSTED"}}', headers: { get: () => null } });
+  const out = await callUpstream("{}", "K", { fetchImpl: busy, timeoutMs: 1000 });
+  assert.equal(out.status, 429);
+  assert.equal(out.contentType, "application/json");
+});
+
+test("Auth failing to answer is a 503 for a paid endpoint, not a sign-in-again 401", async () => {
+  const { checkToken, verifyPaidCaller } = require("./aiProxy").internals;
+  const req = (token) => ({ get: (h) => (h.toLowerCase() === "authorization" && token ? `Bearer ${token}` : "") });
+  const failing = (code) => ({ verifyIdToken: async () => { throw Object.assign(new Error(code), { code }); } });
+  assert.deepEqual(await checkToken(req("t"), { auth: failing("auth/internal-error") }), { caller: null, unavailable: true });
+  assert.deepEqual(await checkToken(req("t"), { auth: failing("app/network-error") }), { caller: null, unavailable: true });
+  assert.deepEqual(await checkToken(req("t"), { auth: failing("auth/id-token-expired") }), { caller: null, unavailable: false });
+  assert.deepEqual(await checkToken(req("t"), { auth: failing("auth/id-token-revoked") }), { caller: null, unavailable: false });
+  assert.deepEqual(await checkToken(req(null), { auth: failing("auth/internal-error") }), { caller: null, unavailable: false });
+  const ok = { verifyIdToken: async () => ({ uid: "u", phone_number: "+972500000000" }) };
+  assert.equal((await checkToken(req("t"), { auth: ok })).caller.uid, "u");
+  const down = await verifyPaidCaller(req("t"), { auth: failing("auth/internal-error") });
+  assert.equal(down.caller, null);
+  assert.equal(down.refusal.status, 503);
+  assert.equal(down.refusal.code, "auth_unavailable");
+  const expired = await verifyPaidCaller(req("t"), { auth: failing("auth/id-token-expired") });
+  assert.equal(expired.refusal.status, 401);
+});
+
+test("size limits come from the console; a missing, bad or non-positive value falls back", () => {
+  const p = require("./aiProxy").internals;
+  const fallback = { promptChars: p.MAX_PROMPT_CHARS, schemaChars: p.MAX_SCHEMA_CHARS, outputTokens: p.MAX_OUTPUT_TOKENS };
+  assert.deepEqual(p.sizeLimitsFrom({}), fallback);
+  assert.deepEqual(p.sizeLimitsFrom(undefined), fallback);
+  const v = (value) => ({ defaultValue: { value } });
+  assert.deepEqual(
+    p.sizeLimitsFrom({ [p.PROMPT_CHARS_PARAM]: v("5000"), [p.SCHEMA_CHARS_PARAM]: v("100"), [p.OUTPUT_TOKENS_PARAM]: v("2048") }),
+    { promptChars: 5000, schemaChars: 100, outputTokens: 2048 },
+  );
+  assert.deepEqual(
+    p.sizeLimitsFrom({ [p.PROMPT_CHARS_PARAM]: v("0"), [p.SCHEMA_CHARS_PARAM]: v("abc"), [p.OUTPUT_TOKENS_PARAM]: v("-1") }),
+    fallback,
+  );
+});
+
+test("the prompt counts every text field, not inline media or the schema", () => {
+  const p = require("./aiProxy").internals;
+  const media = "A".repeat(500000);
+  const withMedia = {
+    model: "m",
+    system_instruction: "sys",
+    input: [{ type: "image", mime_type: "image/jpeg", data: media }, { type: "text", text: "read it" }],
+    response_format: { type: "text", mime_type: "application/json", schema: { description: "s".repeat(1000) } },
+  };
+  assert.ok(p.promptChars(withMedia) < 300, "the photo and the schema are not prompt");
+  assert.ok(p.schemaChars(withMedia) > 1000);
+  // Text smuggled anywhere else counts: tool declarations, function results.
+  assert.ok(p.promptChars({ model: "m", input: "hi", tools: [{ type: "function", description: "t".repeat(5000) }] }) > 5000);
+  assert.ok(p.promptChars({ model: "m", input: [{ type: "function_result", call_id: "1", result: { text: "r".repeat(5000) } }] }) > 5000);
+  // A `data` that is not an attachment's (no mime_type) is text.
+  assert.ok(p.promptChars({ model: "m", input: [{ type: "text", text: "x", data: "d".repeat(5000) }] }) > 5000);
+  assert.equal(p.promptChars(null), 0);
+  assert.equal(p.schemaChars({ model: "m" }), 0);
+});
+
+test("a prompt or schema past its limit is a typed 413; the app's largest bodies pass", () => {
+  const p = require("./aiProxy").internals;
+  const limits = p.sizeLimitsFrom({});
+  // The 30,000-character paste with the extraction prompt and a recipe schema.
+  const paste = {
+    model: "gemini-3.8-flash",
+    system_instruction: "ס".repeat(3000),
+    input: `נתח את המתכון הבא לפורמט מובנה:\n\n${"מ".repeat(30000)}`,
+    generation_config: { thinking_level: "low" },
+    response_format: { type: "text", mime_type: "application/json", schema: { type: "object", description: "r".repeat(4000) } },
+  };
+  assert.equal(p.sizeRefusal(paste, limits), null);
+  // The assistant: instructions + snapshot, 29 tool declarations, a function result.
+  const assistant = {
+    model: "gemini-3.8-flash",
+    system_instruction: "a".repeat(4000) + "s".repeat(30000),
+    input: [{ type: "function_result", call_id: "c", name: "search_recipes", result: { hits: "h".repeat(40000) } }],
+    previous_interaction_id: "v1_abc",
+    tools: Array.from({ length: 29 }, (_, i) => ({ type: "function", name: `t${i}`, description: "d".repeat(500), parameters: { type: "object" } })),
+  };
+  assert.equal(p.sizeRefusal(assistant, limits), null);
+
+  const long = p.sizeRefusal({ model: "m", input: "x".repeat(limits.promptChars + 1) }, limits);
+  assert.equal(long.status, 413);
+  assert.equal(long.code, "prompt_too_large");
+  const schema = p.sizeRefusal({ model: "m", input: "x", response_format: { schema: { d: "y".repeat(limits.schemaChars) } } }, limits);
+  assert.equal(schema.status, 413);
+  assert.equal(schema.code, "schema_too_large");
+});
+
+test("max_output_tokens is clamped to the ceiling; a smaller value is kept; a picture gets none it did not ask for", () => {
+  const { withOutputCeiling } = require("./aiProxy").internals;
+  // The app sends none: the ceiling is added, the rest of the config kept.
+  const body = { model: "m", input: "hi", generation_config: { thinking_level: "low" } };
+  const out = withOutputCeiling(body, 32768).body;
+  assert.deepEqual(out.generation_config, { thinking_level: "low", max_output_tokens: 32768 });
+  assert.deepEqual(body.generation_config, { thinking_level: "low" }, "the caller's body is not changed");
+  assert.equal(withOutputCeiling({ model: "m", input: "hi" }, 100).body.generation_config.max_output_tokens, 100);
+  // Smaller than the ceiling: the same body, untouched.
+  const small = { model: "m", generation_config: { max_output_tokens: 500 } };
+  assert.equal(withOutputCeiling(small, 32768).body, small);
+  // Larger: brought down.
+  assert.equal(withOutputCeiling({ model: "m", generation_config: { max_output_tokens: 1e6 } }, 32768).body.generation_config.max_output_tokens, 32768);
+  // Not a positive integer, or a config that is not an object: 400.
+  for (const bad of [0, -5, 1.5, "100", null]) {
+    assert.equal(withOutputCeiling({ model: "m", generation_config: { max_output_tokens: bad } }, 10).refusal.status, 400, String(bad));
+  }
+  assert.equal(withOutputCeiling({ model: "m", generation_config: "x" }, 10).refusal.status, 400);
+  // The image request (generateImage): no ceiling added, but one it sent is clamped.
+  const image = { model: "img", input: "a cake", response_format: { type: "image", aspect_ratio: "4:3" } };
+  assert.equal(withOutputCeiling(image, 32768).body, image);
+  assert.equal(withOutputCeiling({ ...image, generation_config: { max_output_tokens: 1e6 } }, 32768).body.generation_config.max_output_tokens, 32768);
+});

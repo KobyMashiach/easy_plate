@@ -16,6 +16,7 @@ const billingSecrets = require("./billingSecrets");
 const payplus = require("./payplusClient");
 const paddle = require("./paddleClient");
 const rc = require("./revenueCatClient");
+const remoteFlags = require("./remoteFlags");
 // The website's own origins (the account page has a "Delete account" card):
 // the same list the web checkout and the upgrade links answer.
 const { ORIGINS } = require("./webBilling").internals;
@@ -27,6 +28,29 @@ const STRIPE_CUSTOMERS = "stripe_customers";
 // Subscription states with nothing left to cancel. Anything else — live, in
 // grace, still unknown — is cancelled; one Stripe no longer has is fine.
 const STRIPE_ENDED = new Set(["canceled", "incomplete_expired"]);
+
+// How recent the caller's last sign-in must be, in minutes (Remote Config,
+// no deploy). 0 turns the check off: store builds older than the phone
+// re-verification step cannot produce a fresh sign-in, and the stores
+// require that deletion keeps working for them. Once most users run the
+// newer build, 10 makes a stolen (up to an hour old) ID token useless here.
+const RECENT_AUTH_PARAM = "delete_account_recent_auth_minutes";
+const RECENT_AUTH_FALLBACK = 0;
+
+async function recentAuthMinutes(readParams = () => remoteFlags.params()) {
+  const minutes = remoteFlags.intFrom(await readParams(), RECENT_AUTH_PARAM, RECENT_AUTH_FALLBACK);
+  return minutes > 0 ? minutes : 0;
+}
+
+// Pure: whether the ID token's sign-in is recent enough — the same test as
+// the session takeover's freshPhoneProof (sessions.js), with the window
+// from Remote Config and any sign-in method (the clients re-verify by SMS).
+// A window of 0 always passes.
+function recentSignIn(caller, now, minutes) {
+  if (!(minutes > 0)) return true;
+  const authMs = Number((caller && caller.auth_time) || 0) * 1000;
+  return authMs > 0 && now - authMs <= minutes * 60 * 1000 && authMs <= now + 60 * 1000;
+}
 
 // Pure: the request has to say so in as many words. A stray POST from a
 // retry or a misrouted client must not take an account down.
@@ -142,6 +166,8 @@ async function deleteOwned(db, uid) {
   out.collabRecipes = await deleteQuery(db, db.collection("collab_recipes").where("ownerUid", "==", uid), { subtrees: true });
   out.collabContainers = await deleteQuery(db, db.collection("collab_containers").where("ownerUid", "==", uid), { subtrees: true });
   await db.doc(`sessions/${uid}`).delete().catch(() => {});
+  // The household lock (households.js) names the last household joined.
+  await db.doc(`household_locks/${uid}`).delete().catch(() => {});
   out.shareCodes = await deleteQuery(db, db.collection("share_codes").where("ownerUid", "==", uid));
   out.invitesSent = await deleteQuery(db, db.collection("share_invites").where("ownerUid", "==", uid));
   out.invitesReceived = await deleteQuery(db, db.collection("share_invites").where("targetUid", "==", uid));
@@ -340,6 +366,12 @@ exports.deleteAccount = onRequest(
     if (!caller) return res.status(401).json({ error: { code: "unauthenticated", message: "A valid Firebase ID token is required" } });
     const request = parseRequest(req.body);
     if (request.error) return res.status(400).json({ error: { code: "invalid", message: request.error } });
+    // A token proves who signed in, not how long ago: the clients answer
+    // this code with an SMS re-verification and one retry.
+    if (!recentSignIn(caller, Date.now(), await recentAuthMinutes())) {
+      logger.info("account deletion needs a recent sign-in", { uid: caller.uid });
+      return res.status(403).json({ error: { code: "recent_login_required", message: "Sign in again to delete the account" } });
+    }
     try {
       const result = await deleteAccount(admin.firestore(), caller.uid, { stripeSecret: stripeSecret.value(), billingKeys: billingSecrets.keys() });
       if (result.error) {
@@ -355,4 +387,4 @@ exports.deleteAccount = onRequest(
   },
 );
 
-exports.internals = { profilePhotoPath, deleteStorage, parseRequest, deleteQuery, deleteOwned, deleteAccount, leaveRosters, deleteReplies, stripeCleanupFor, stripeConfigured, deleteStripeCustomer, STRIPE_CUSTOMERS, webCleanupFor, deleteWebCustomer, stopRevenueCatPaddle, hadRevenueCatPaddle };
+exports.internals = { recentSignIn, recentAuthMinutes, RECENT_AUTH_PARAM, RECENT_AUTH_FALLBACK, profilePhotoPath, deleteStorage, parseRequest, deleteQuery, deleteOwned, deleteAccount, leaveRosters, deleteReplies, stripeCleanupFor, stripeConfigured, deleteStripeCustomer, STRIPE_CUSTOMERS, webCleanupFor, deleteWebCustomer, stopRevenueCatPaddle, hadRevenueCatPaddle };

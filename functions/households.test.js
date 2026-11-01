@@ -268,3 +268,95 @@ test("a member's own plan that ran out with no write gets the household's Premiu
   assert.deepEqual(out, { seen: 2, restored: 1 });
   assert.deepEqual(seenQuery, [["premiumUntil", ">", now - LAPSE_WINDOW_MS], ["premiumUntil", "<=", now]]);
 });
+
+test("an account switched off from the console can take no household action", async () => {
+  const proxyInternals = require("./aiProxy").internals;
+  const real = proxyInternals.verifyCaller;
+  proxyInternals.verifyCaller = async () => ({ uid: "u1", disabled: true });
+  const res = {
+    statusCode: 0,
+    body: null,
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; },
+    set() { return this; },
+    setHeader() {},
+    getHeader() {},
+    on() {},
+    end() {},
+  };
+  try {
+    for (const action of ["create", "leave", "remove", "dissolve"]) {
+      res.statusCode = 0;
+      await require("./households").households({ method: "POST", headers: {}, get() {}, body: { action, memberUid: "u2" } }, res);
+      assert.equal(res.statusCode, 403, action);
+      assert.equal(res.body.error.code, "account_disabled", action);
+    }
+  } finally {
+    proxyInternals.verifyCaller = real;
+  }
+});
+
+// Optimistic transactions as Firestore runs them: a document read inside a
+// transaction that another commit changed in the meantime makes this one
+// retry; the *absent* results of a query are not a document, so they never
+// do — the phantom that let two creates both pass.
+function racingDb(seed = {}) {
+  const store = new Map(Object.entries(seed));
+  const versions = new Map();
+  let counter = 0;
+  const snapOf = (path) => {
+    const data = store.get(path);
+    return { exists: store.has(path), id: path.split("/").pop(), data: () => data, get: (f) => (data || {})[f], ref: docRef(path) };
+  };
+  const docRef = (path) => ({ path, id: path.split("/").pop(), get: async () => snapOf(path) });
+  const collection = (name) => ({
+    doc: (id) => docRef(`${name}/${id || `auto${++counter}`}`),
+    where: (field, op, value) => ({
+      limit: () => ({
+        isQuery: true,
+        get: async () => {
+          const docs = [...store.entries()]
+            .filter(([path, data]) => path.startsWith(`${name}/`) && path.split("/").length === 2 && Array.isArray(data[field]) && data[field].includes(value))
+            .map(([path]) => snapOf(path));
+          return { empty: docs.length === 0, docs };
+        },
+      }),
+    }),
+  });
+  const runTransaction = async (fn) => {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const reads = new Map();
+      const writes = [];
+      const tx = {
+        get: async (target) => {
+          if (!target.isQuery) reads.set(target.path, versions.get(target.path) || 0);
+          const out = await target.get();
+          await new Promise((r) => setImmediate(r)); // let the other transaction interleave
+          return out;
+        },
+        set: (ref, data) => writes.push([ref.path, data]),
+        update: (ref, data) => writes.push([ref.path, { ...(store.get(ref.path) || {}), ...data }]),
+      };
+      const result = await fn(tx);
+      const conflicted = [...reads].some(([path, v]) => (versions.get(path) || 0) !== v);
+      if (conflicted) continue;
+      for (const [path, data] of writes) {
+        store.set(path, data);
+        versions.set(path, (versions.get(path) || 0) + 1);
+      }
+      return result;
+    }
+    throw new Error("transaction contention");
+  };
+  return { store, collection, runTransaction };
+}
+
+test("two creates fired at once by one owner open one household, not two", async () => {
+  const db = racingDb({ "entitlements/owner": { premium: true, productId: "easyplate_family_monthly" } });
+  const outs = await Promise.all([create(db, "owner", "A"), create(db, "owner", "B"), create(db, "owner", "C")]);
+  const households = [...db.store.keys()].filter((p) => /^households\/[^/]+$/.test(p));
+  assert.equal(households.length, 1, "one household");
+  assert.equal(outs.filter((o) => o.household).length, 1);
+  assert.equal(outs.filter((o) => o.error === "in_household").length, 2);
+  assert.equal(db.store.get("household_locks/owner").householdId, households[0].split("/")[1]);
+});

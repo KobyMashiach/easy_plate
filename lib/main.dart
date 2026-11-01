@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
+import 'core/quick_actions/quick_actions_service.dart';
 import 'core/ads/ads_service.dart';
 import 'core/hive/adapters_controller.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -148,6 +149,10 @@ Future<void> main() async {
   LocaleSettings.getLocaleStream().listen((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) => rebuildEverything());
   });
+
+  // The app icon's shortcuts: bound before the first frame, so the tap
+  // that launched the app is not missed.
+  QuickActionsService().bind();
 
   // The images directory is listed once the app is on screen: its cost
   // grows with every photo, and until it lands each unseen name is checked

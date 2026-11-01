@@ -26,6 +26,10 @@ class _Metadata extends Mock implements SnapshotMetadata {}
 class _QueryDoc extends Mock
     implements QueryDocumentSnapshot<Map<String, dynamic>> {}
 
+class _Batch extends Mock implements WriteBatch {}
+
+class _Change extends Mock implements DocumentChange<Map<String, dynamic>> {}
+
 /// Why the household listeners stay open while the app is in the
 /// background: a record that is in the box but not on the server is either
 /// one another member deleted, or one this device has not pushed yet — and
@@ -58,8 +62,24 @@ void main() {
     when(() => recipes.doc(any())).thenAnswer((call) {
       final id = call.positionalArguments.single as String;
       final doc = _Doc();
+      when(() => doc.id).thenReturn(id);
       when(() => doc.set(any())).thenAnswer((_) async => pushed.add(id));
       return doc;
+    });
+    // A batched push lands in [pushed] too, when it commits.
+    registerFallbackValue(_Doc());
+    when(() => firestore.batch()).thenAnswer((_) {
+      final batch = _Batch();
+      final staged = <String>[];
+      when(
+        () => batch.set<Map<String, dynamic>>(any(), any()),
+      ).thenAnswer((call) {
+        staged.add(
+          (call.positionalArguments.first as DocumentReference).id,
+        );
+      });
+      when(() => batch.commit()).thenAnswer((_) async => pushed.addAll(staged));
+      return batch;
     });
   });
 
@@ -140,6 +160,43 @@ void main() {
       expect(box.get('fine'), 'fine');
       expect(box.get('edited-on-web'), 'edited-on-web');
       expect(pushed, isEmpty);
+    },
+  );
+
+  test(
+    'a long answer is decoded in breaks, and a save in one is kept',
+    () async {
+      final box = await UserScope().open<String>('recipesBox');
+      final ids = [for (var i = 0; i < 250; i++) 'r$i'];
+      await box.putAll({for (final id in ids) id: 'old $id'});
+      serverHolds(ids);
+      var frames = 0;
+      // Something else gets the isolate while the answer is decoded: a
+      // frame, and the user saving a record already decoded.
+      final ticker = Timer.periodic(Duration.zero, (_) => frames++);
+      var saved = false;
+      final m = UserCloudCollection<String>(
+        boxName: 'recipesBox',
+        collection: 'recipes',
+        idOf: (value) => value,
+        toJson: (value) => {'v': value},
+        fromJson: (json) {
+          if (json['v'] == 'r150' && !saved) {
+            saved = true;
+            unawaited(box.put('r10', 'saved during the pass'));
+          }
+          return json['v'] as String;
+        },
+        firestore: firestore,
+      );
+
+      await m.hydrate();
+      ticker.cancel();
+
+      expect(frames, greaterThan(0), reason: 'the decode gave way');
+      expect(box.get('r10'), 'saved during the pass');
+      expect(box.get('r11'), 'r11');
+      expect(box.get('r249'), 'r249');
     },
   );
 
@@ -266,5 +323,208 @@ void main() {
     expect(AccountDeletionGuard.deleting, isNull);
     await mirror().push('r1');
     expect(pushed, ['r1']);
+  });
+
+  group('batched writes', () {
+    late List<_Batch> batches;
+    late List<int> commitSizes;
+    var failCommit = false;
+
+    setUp(() {
+      registerFallbackValue(_Doc());
+      batches = [];
+      commitSizes = [];
+      failCommit = false;
+      when(() => firestore.batch()).thenAnswer((_) {
+        final batch = _Batch();
+        var size = 0;
+        when(
+          () => batch.set<Map<String, dynamic>>(any(), any()),
+        ).thenAnswer((_) => size++);
+        when(() => batch.delete(any())).thenAnswer((_) => size++);
+        when(() => batch.commit()).thenAnswer((_) async {
+          if (failCommit) throw StateError('offline');
+          commitSizes.add(size);
+        });
+        batches.add(batch);
+        return batch;
+      });
+    });
+
+    Future<Box<bool>> ledger() =>
+        UserScope().open<bool>(CloudSyncLedger.boxName);
+
+    /// The commit sizes [n] records split into.
+    List<int> chunks(int n) => [
+      for (var left = n; left > 0; left -= UserCloudCollection.batchLimit)
+        left < UserCloudCollection.batchLimit
+            ? left
+            : UserCloudCollection.batchLimit,
+    ];
+
+    test('pushAll goes up in batches, never one request per record', () async {
+      final ids = [for (var i = 0; i < 1000; i++) 'r$i'];
+      await mirror().pushAll(ids);
+
+      expect(pushed, isEmpty, reason: 'no single-document writes');
+      expect(commitSizes, chunks(1000));
+      final confirmed = await ledger();
+      expect(
+        ids.every(
+          (id) => confirmed.containsKey(
+            CloudSyncLedger.key('users/u1/recipes', id),
+          ),
+        ),
+        isTrue,
+      );
+    });
+
+    test('removeAll deletes in batches and drops the confirmations', () async {
+      await CloudSyncLedger.mark('users/u1/recipes', ['a', 'b', 'c']);
+      await mirror().removeAll(['a', 'b', 'a']);
+
+      expect(commitSizes, [2], reason: 'one commit, duplicates folded');
+      final confirmed = await ledger();
+      expect(
+        confirmed.keys,
+        [CloudSyncLedger.key('users/u1/recipes', 'c')],
+      );
+    });
+
+    test('a failed commit confirms nothing and does not throw', () async {
+      failCommit = true;
+      await mirror().pushAll(['x', 'y']);
+      expect((await ledger()).isEmpty, isTrue);
+    });
+
+    test('a hydrate pushes back what only the box has in batches', () async {
+      final box = await UserScope().open<String>('recipesBox');
+      await box.putAll({for (var i = 0; i < 600; i++) 'r$i': 'r$i'});
+      serverHolds(['r0']);
+
+      await mirror().hydrate();
+      await pumpEventQueue();
+
+      expect(pushed, isEmpty, reason: 'no single-document writes');
+      expect(commitSizes, chunks(599));
+    });
+
+    test('nothing to write opens no batch', () async {
+      await mirror().pushAll(const []);
+      await mirror().removeAll(const []);
+      expect(batches, isEmpty);
+    });
+  });
+
+  group('household listener', () {
+    _Change change(String id, DocumentChangeType type) {
+      final metadata = _Metadata();
+      when(() => metadata.hasPendingWrites).thenReturn(false);
+      final doc = _QueryDoc();
+      when(() => doc.id).thenReturn(id);
+      when(() => doc.data()).thenReturn({'v': id});
+      when(() => doc.metadata).thenReturn(metadata);
+      final c = _Change();
+      when(() => c.type).thenReturn(type);
+      when(() => c.doc).thenReturn(doc);
+      return c;
+    }
+
+    _Snapshot snapshotOf(List<_Change> changes) {
+      final snapshot = _Snapshot();
+      when(() => snapshot.docChanges).thenReturn(changes);
+      return snapshot;
+    }
+
+    test('a first snapshot of every document takes breaks, and a save in one '
+        'is kept', () async {
+      final box = await UserScope().open<String>('recipesBox');
+      final ids = [for (var i = 0; i < 250; i++) 'r$i'];
+      await box.putAll({for (final id in ids) id: 'old $id'});
+      final server = StreamController<QuerySnapshot<Map<String, dynamic>>>();
+      when(() => recipes.snapshots()).thenAnswer((_) => server.stream);
+      var frames = 0;
+      final ticker = Timer.periodic(Duration.zero, (_) => frames++);
+      var saved = false;
+      final m = UserCloudCollection<String>(
+        boxName: 'recipesBox',
+        collection: 'recipes',
+        idOf: (value) => value,
+        toJson: (value) => {'v': value},
+        fromJson: (json) {
+          if (json['v'] == 'r150' && !saved) {
+            saved = true;
+            unawaited(box.put('r10', 'saved during the pass'));
+          }
+          return json['v'] as String;
+        },
+        firestore: firestore,
+      );
+      await m.listen();
+
+      server.add(
+        snapshotOf([
+          for (final id in ids) change(id, DocumentChangeType.added),
+        ]),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      ticker.cancel();
+
+      expect(frames, greaterThan(0), reason: 'the decode gave way');
+      expect(box.get('r10'), 'saved during the pass');
+      expect(box.get('r11'), 'r11');
+      expect(box.get('r249'), 'r249');
+      await m.stopListening();
+      await server.close();
+    });
+
+    test('a listener closed by an error reports itself closed', () async {
+      final server = StreamController<QuerySnapshot<Map<String, dynamic>>>();
+      when(() => recipes.snapshots()).thenAnswer((_) => server.stream);
+      final m = UserCloudCollection<String>(
+        boxName: 'recipesBox',
+        collection: 'recipes',
+        idOf: (value) => value,
+        toJson: (value) => {'v': value},
+        fromJson: (json) => json['v'] as String,
+        firestore: firestore,
+      );
+      expect(m.isListening, isFalse);
+      await m.listen();
+      expect(m.isListening, isTrue);
+
+      server.addError(StateError('permission-denied'));
+      await pumpEventQueue();
+      expect(m.isListening, isFalse);
+      await server.close();
+    });
+
+    test(
+      'snapshots apply in order: a delete then a re-add keeps the record',
+      () async {
+        final box = await UserScope().open<String>('recipesBox');
+        await box.put('x', 'x');
+        final server = StreamController<QuerySnapshot<Map<String, dynamic>>>();
+        when(() => recipes.snapshots()).thenAnswer((_) => server.stream);
+        final m = mirror();
+        await m.listen();
+
+        // Removed (with another record arriving), then put back at once.
+        server
+          ..add(
+            snapshotOf([
+              change('y', DocumentChangeType.added),
+              change('x', DocumentChangeType.removed),
+            ]),
+          )
+          ..add(snapshotOf([change('x', DocumentChangeType.added)]));
+        await pumpEventQueue();
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        expect(box.keys, containsAll(['x', 'y']));
+        await m.stopListening();
+        await server.close();
+      },
+    );
   });
 }

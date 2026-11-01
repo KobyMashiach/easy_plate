@@ -7,6 +7,7 @@ import '../../../../core/utils/duration_label.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import 'shared_feed_query.dart';
 import '../../../../core/constants/app_motion.dart';
 
@@ -178,7 +179,7 @@ class _SharedFeedFilterSheetState extends State<_SharedFeedFilterSheet> {
                           label: t.community.applyFilters,
                           icon: Icons.check_rounded,
                           expanded: true,
-                          onPressed: () => Navigator.of(context).pop(_query),
+                          onPressed: () => popIfCurrent(context, _query),
                         ),
                       ),
                     ],

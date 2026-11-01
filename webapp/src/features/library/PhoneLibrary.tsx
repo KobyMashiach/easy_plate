@@ -79,7 +79,7 @@ export function PhoneBookCover({
             <span className="block text-label-sm" style={{ color: spine }}>
               {t("library.collection")}
             </span>
-            <span className="mt-1 line-clamp-2 block text-body-lg font-bold text-on-surface">{book.title || t("library.ui.untitled")}</span>
+            <span className="mt-1 line-clamp-2 text-body-lg font-bold text-on-surface">{book.title || t("library.ui.untitled")}</span>
             <span className="mt-1 flex items-center gap-1 text-label-md text-outline">
               <Icon name="menu_book" size={16} />
               {t("library.recipesCount", { n: book.recipeRefs.length })}

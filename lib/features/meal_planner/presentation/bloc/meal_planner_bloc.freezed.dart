@@ -1142,11 +1142,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<MealPlanEntity> plans,  MealPlanEntity? selectedPlan,  Map<String, String> recipeTitles,  Map<String, RecipeEntity> recipes)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<MealPlanEntity> plans,  MealPlanEntity? selectedPlan,  Map<String, String> recipeTitles,  Map<String, RecipeEntity> recipes,  int deleteFailures)?  loaded,TResult Function( String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MealPlannerLoading() when loading != null:
 return loading();case MealPlannerLoaded() when loaded != null:
-return loaded(_that.plans,_that.selectedPlan,_that.recipeTitles,_that.recipes);case MealPlannerError() when errorMessage != null:
+return loaded(_that.plans,_that.selectedPlan,_that.recipeTitles,_that.recipes,_that.deleteFailures);case MealPlannerError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return orElse();
 
@@ -1165,11 +1165,11 @@ return errorMessage(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<MealPlanEntity> plans,  MealPlanEntity? selectedPlan,  Map<String, String> recipeTitles,  Map<String, RecipeEntity> recipes)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<MealPlanEntity> plans,  MealPlanEntity? selectedPlan,  Map<String, String> recipeTitles,  Map<String, RecipeEntity> recipes,  int deleteFailures)  loaded,required TResult Function( String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case MealPlannerLoading():
 return loading();case MealPlannerLoaded():
-return loaded(_that.plans,_that.selectedPlan,_that.recipeTitles,_that.recipes);case MealPlannerError():
+return loaded(_that.plans,_that.selectedPlan,_that.recipeTitles,_that.recipes,_that.deleteFailures);case MealPlannerError():
 return errorMessage(_that.error);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -1184,11 +1184,11 @@ return errorMessage(_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<MealPlanEntity> plans,  MealPlanEntity? selectedPlan,  Map<String, String> recipeTitles,  Map<String, RecipeEntity> recipes)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<MealPlanEntity> plans,  MealPlanEntity? selectedPlan,  Map<String, String> recipeTitles,  Map<String, RecipeEntity> recipes,  int deleteFailures)?  loaded,TResult? Function( String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case MealPlannerLoading() when loading != null:
 return loading();case MealPlannerLoaded() when loaded != null:
-return loaded(_that.plans,_that.selectedPlan,_that.recipeTitles,_that.recipes);case MealPlannerError() when errorMessage != null:
+return loaded(_that.plans,_that.selectedPlan,_that.recipeTitles,_that.recipes,_that.deleteFailures);case MealPlannerError() when errorMessage != null:
 return errorMessage(_that.error);case _:
   return null;
 
@@ -1233,7 +1233,7 @@ String toString() {
 
 
 class MealPlannerLoaded implements MealPlannerState {
-  const MealPlannerLoaded(final  List<MealPlanEntity> plans, {this.selectedPlan, final  Map<String, String> recipeTitles = const {}, final  Map<String, RecipeEntity> recipes = const {}}): _plans = plans,_recipeTitles = recipeTitles,_recipes = recipes;
+  const MealPlannerLoaded(final  List<MealPlanEntity> plans, {this.selectedPlan, final  Map<String, String> recipeTitles = const {}, final  Map<String, RecipeEntity> recipes = const {}, this.deleteFailures = 0}): _plans = plans,_recipeTitles = recipeTitles,_recipes = recipes;
   
 
  final  List<MealPlanEntity> _plans;
@@ -1260,6 +1260,10 @@ class MealPlannerLoaded implements MealPlannerState {
   return EqualUnmodifiableMapView(_recipes);
 }
 
+// Bumped by a delete that failed: the reload after it is otherwise the
+// same state, which the bloc would not emit, and the page waits for
+// the next state to drop its busy card.
+@JsonKey() final  int deleteFailures;
 
 /// Create a copy of MealPlannerState
 /// with the given fields replaced by the non-null parameter values.
@@ -1271,16 +1275,16 @@ $MealPlannerLoadedCopyWith<MealPlannerLoaded> get copyWith => _$MealPlannerLoade
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealPlannerLoaded&&const DeepCollectionEquality().equals(other._plans, _plans)&&(identical(other.selectedPlan, selectedPlan) || other.selectedPlan == selectedPlan)&&const DeepCollectionEquality().equals(other._recipeTitles, _recipeTitles)&&const DeepCollectionEquality().equals(other._recipes, _recipes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealPlannerLoaded&&const DeepCollectionEquality().equals(other._plans, _plans)&&(identical(other.selectedPlan, selectedPlan) || other.selectedPlan == selectedPlan)&&const DeepCollectionEquality().equals(other._recipeTitles, _recipeTitles)&&const DeepCollectionEquality().equals(other._recipes, _recipes)&&(identical(other.deleteFailures, deleteFailures) || other.deleteFailures == deleteFailures));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_plans),selectedPlan,const DeepCollectionEquality().hash(_recipeTitles),const DeepCollectionEquality().hash(_recipes));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_plans),selectedPlan,const DeepCollectionEquality().hash(_recipeTitles),const DeepCollectionEquality().hash(_recipes),deleteFailures);
 
 @override
 String toString() {
-  return 'MealPlannerState.loaded(plans: $plans, selectedPlan: $selectedPlan, recipeTitles: $recipeTitles, recipes: $recipes)';
+  return 'MealPlannerState.loaded(plans: $plans, selectedPlan: $selectedPlan, recipeTitles: $recipeTitles, recipes: $recipes, deleteFailures: $deleteFailures)';
 }
 
 
@@ -1291,7 +1295,7 @@ abstract mixin class $MealPlannerLoadedCopyWith<$Res> implements $MealPlannerSta
   factory $MealPlannerLoadedCopyWith(MealPlannerLoaded value, $Res Function(MealPlannerLoaded) _then) = _$MealPlannerLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<MealPlanEntity> plans, MealPlanEntity? selectedPlan, Map<String, String> recipeTitles, Map<String, RecipeEntity> recipes
+ List<MealPlanEntity> plans, MealPlanEntity? selectedPlan, Map<String, String> recipeTitles, Map<String, RecipeEntity> recipes, int deleteFailures
 });
 
 
@@ -1308,13 +1312,14 @@ class _$MealPlannerLoadedCopyWithImpl<$Res>
 
 /// Create a copy of MealPlannerState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? plans = null,Object? selectedPlan = freezed,Object? recipeTitles = null,Object? recipes = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? plans = null,Object? selectedPlan = freezed,Object? recipeTitles = null,Object? recipes = null,Object? deleteFailures = null,}) {
   return _then(MealPlannerLoaded(
 null == plans ? _self._plans : plans // ignore: cast_nullable_to_non_nullable
 as List<MealPlanEntity>,selectedPlan: freezed == selectedPlan ? _self.selectedPlan : selectedPlan // ignore: cast_nullable_to_non_nullable
 as MealPlanEntity?,recipeTitles: null == recipeTitles ? _self._recipeTitles : recipeTitles // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,recipes: null == recipes ? _self._recipes : recipes // ignore: cast_nullable_to_non_nullable
-as Map<String, RecipeEntity>,
+as Map<String, RecipeEntity>,deleteFailures: null == deleteFailures ? _self.deleteFailures : deleteFailures // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

@@ -185,4 +185,47 @@ void main() {
       );
     });
   });
+
+  group('the App Store lookup answer', () {
+    // As Apple sends it: JSON text under `text/javascript`, which reaches
+    // the probe undecoded.
+    const answer =
+        '{"resultCount":1,"results":[{"version":"1.3.0",'
+        '"trackViewUrl":"https://apps.apple.com/app/id1"}]}';
+
+    test('read from the raw text', () {
+      final release = AppUpdateService.appStoreRelease(
+        answer,
+        installedVersion: '1.2.0',
+      );
+      expect(release?.version, '1.3.0');
+      expect(release?.newer, isTrue);
+      expect(release?.storeUrl, 'https://apps.apple.com/app/id1');
+    });
+
+    test('read from an already decoded body too', () {
+      final release = AppUpdateService.appStoreRelease({
+        'results': [
+          {'version': '1.2.0'},
+        ],
+      }, installedVersion: '1.2.0');
+      expect(release?.newer, isFalse);
+      expect(release?.storeUrl, isNull);
+    });
+
+    test('no release in it, or not JSON at all, is no answer', () {
+      for (final body in [
+        '{"resultCount":0,"results":[]}',
+        '<html>',
+        null,
+        '{"results":[{"version":""}]}',
+      ]) {
+        expect(
+          AppUpdateService.appStoreRelease(body, installedVersion: '1.0.0'),
+          isNull,
+          reason: '$body',
+        );
+      }
+    });
+  });
 }

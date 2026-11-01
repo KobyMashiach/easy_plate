@@ -40,7 +40,6 @@ abstract class RecipeSharingRepository {
   });
 
   Future<List<ShareInviteEntity>> incomingInvites(String uid);
-  Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid);
 
   Future<CollabRecipeEntity?> getCollab(String collabId);
 

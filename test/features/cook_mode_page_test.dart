@@ -98,6 +98,60 @@ void main() {
     expect(CookSessionService().hasRunningTimer, isFalse);
   });
 
+  testWidgets('a long ingredient name wraps inside its chip', (tester) async {
+    // Model-written ingredient lines run long; a phone-width step card
+    // must wrap them, not overflow sideways.
+    tester.view.physicalSize = const Size(780, 1690);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    const name =
+        'Flour preferably finely sifted white flour or a gluten free mix '
+        'of rice and tapioca flour';
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: MaterialApp(
+          locale: const Locale('en'),
+          home: CookModePage(
+            recipe: RecipeEntity(
+              id: 'long',
+              title: 'Bread',
+              createdAt: DateTime(2026),
+              ingredients: const [
+                RecipeIngredientEntity(
+                  name: name,
+                  amount: 500,
+                  unit: MeasurementUnit.gram,
+                ),
+              ],
+              steps: const ['Sift the flour into a large bowl.'],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text(name), findsOneWidget);
+  });
+
+  testWidgets('the timer card fits a phone at a large text size', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(780, 1690);
+    tester.view.devicePixelRatio = 2;
+    tester.platformDispatcher.textScaleFactorTestValue = 1.5;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.pumpWidget(app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next step'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('04:00'), findsOneWidget);
+  });
+
   testWidgets('reopening lands on the saved step; done ends the session', (
     tester,
   ) async {

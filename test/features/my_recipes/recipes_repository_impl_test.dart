@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_plate/core/hive/user_scope.dart';
 import 'package:easy_plate/core/sync/recipe_image_store.dart';
 import 'package:easy_plate/core/sync/user_cloud_collection.dart';
+import 'package:easy_plate/core/translation/content_variants_cleaner.dart';
 import 'package:easy_plate/features/my_recipes/data/datasources/recipes_local_datasource.dart';
 import 'package:easy_plate/features/my_recipes/data/models/recipe_model.dart';
 import 'package:easy_plate/features/my_recipes/data/repositories_impl/recipes_repository_impl.dart';
@@ -28,8 +29,10 @@ class _Local implements RecipesLocalDataSource {
 class _Images implements RecipeImageStore {
   String? result = 'recipe_images/u1/a.jpg';
   Completer<void>? gate;
+  var uploads = 0;
   @override
   Future<String?> upload(String fileName, {required String uid}) async {
+    uploads++;
     if (gate != null) await gate!.future;
     return result;
   }
@@ -51,6 +54,14 @@ class _Cloud implements UserCloudCollection<RecipeModel> {
   Future<void> push(RecipeModel value) async => pushed.add(value);
   @override
   Future<void> remove(String id) async {}
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _Cleaner implements ContentVariantsCleaner {
+  final forgotten = <String>[];
+  @override
+  void forget(String type, String id) => forgotten.add('$type/$id');
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -158,4 +169,36 @@ void main() {
       expect(images.removed, [path]);
     },
   );
+
+  test('a share during the save\'s upload sends the photo once', () async {
+    images.gate = Completer<void>();
+    await repository.saveRecipe(recipe);
+    final shared = repository.readyForSharing(recipe);
+    await settle();
+    expect(images.uploads, 1);
+
+    images.gate!.complete();
+    expect((await shared).imageStoragePath, 'recipe_images/u1/a.jpg');
+    await settle();
+    expect(images.uploads, 1);
+    expect(local.store['r1']!.imageStoragePath, 'recipe_images/u1/a.jpg');
+
+    // Settled: a later upload of the same name is a new request, so a
+    // failed one is retried rather than remembered.
+    await repository.readyForSharing(recipe);
+    expect(images.uploads, 2);
+  });
+
+  test('a deleted recipe takes its translations with it', () async {
+    final cleaner = _Cleaner();
+    repository = RecipesRepositoryImpl(
+      localDataSource: local,
+      cloud: cloud,
+      images: images,
+      translations: cleaner,
+    );
+    await repository.saveRecipe(recipe);
+    await repository.deleteRecipe('r1');
+    expect(cleaner.forgotten, ['recipe/r1']);
+  });
 }

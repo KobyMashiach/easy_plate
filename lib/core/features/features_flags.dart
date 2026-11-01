@@ -68,6 +68,12 @@ enum FeaturesFlags {
   ingestWebSearch('ff_ingest_web_search'),
   ingestLink('ff_ingest_link'),
   ingestSocialVideo('ff_ingest_social_video'),
+
+  /// The pictures that come with a recipe read from a video: the post's
+  /// cover goes on the recipe by itself, and the stills of the food the
+  /// server cut are offered on the review screen. Hidden, the recipe is
+  /// saved without a picture, as before.
+  socialVideoPhoto('ff_social_video_photo'),
   ingestAiRequest('ff_ingest_ai_request'),
   ingestFile('ff_ingest_file'),
   shareIn('ff_share_in'),
@@ -79,6 +85,10 @@ enum FeaturesFlags {
   nutrition('ff_nutrition'),
   recipeImageAi('ff_recipe_image_ai'),
   recipeImageSearch('ff_recipe_image_search'),
+
+  /// The "original recipe" row on the recipe screen, opening the page or
+  /// the video the recipe was imported from.
+  recipeSourceLink('ff_recipe_source_link'),
   groceryFromRecipe('ff_grocery_from_recipe'),
 
   // Community.
@@ -153,6 +163,11 @@ enum FeaturesFlags {
   /// in-app review), asked once after the second saved recipe and then
   /// no more than once a season. Hidden, the sheet is never requested.
   storeReview('ff_store_review'),
+
+  /// The app icon's long-press menu: talk to Shefi, add to the grocery
+  /// list, add a receipt, contact support. Each shortcut also needs its
+  /// own feature visible; hidden, the menu is empty.
+  quickActions('ff_quick_actions'),
 
   /// Premium bought on the website (aieasyplate.app/app) through PayPlus
   /// (Israeli accounts) or RevenueCat's Paddle checkout (abroad; per-provider switches

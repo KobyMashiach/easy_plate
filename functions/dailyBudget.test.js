@@ -114,3 +114,13 @@ test("translate cache lookups have a budget of their own, counted in lines, read
   assert.deepEqual(budget.refusalBody(refused, "translateCache").error.quota, { used: 49000, limit: 50000, kind: "translateCache", requested: 3000 });
   assert.deepEqual(budget.decide({ day: "2026-10-18", count: 47000 }, "2026-10-18", 50000, 3000), { allowed: true, used: 50000, limit: 50000 });
 });
+
+test("new support conversations have a budget of their own, five a day by default", () => {
+  assert.equal(budget.KINDS.feedback.param, "quota_feedback_daily");
+  assert.equal(budget.KINDS.feedback.fallback, 5);
+  assert.deepEqual(budget.decide({ day: "2026-11-01", count: 4 }, "2026-11-01", 5), { allowed: true, used: 5, limit: 5 });
+  assert.equal(budget.decide({ day: "2026-11-01", count: 5 }, "2026-11-01", 5).allowed, false);
+  // A new day starts over; 0 in the console closes new conversations.
+  assert.deepEqual(budget.decide({ day: "2026-10-31", count: 5 }, "2026-11-01", 5), { allowed: true, used: 1, limit: 5 });
+  assert.equal(budget.decide(null, "2026-11-01", 0).allowed, false);
+});

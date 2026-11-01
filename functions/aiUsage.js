@@ -151,8 +151,16 @@ function kindOf({ headers = {}, body = null, fn = "aiProxy" } = {}) {
 }
 
 /// Firestore map keys may not contain dots, and model ids do.
+///
+/// The model is whatever the caller put in the body, and the key becomes a
+/// field in the day's shared document (ai_daily/{day}) and the account's: a
+/// caller inventing a long name per call grew that one document towards
+/// Firestore's 1 MiB — past it, nobody's call that day could be counted.
+/// So anything that is not a plausible model id is counted as "invalid".
+const MODEL_KEY = /^[A-Za-z0-9._/-]{1,64}$/;
 function modelKey(model) {
   const m = typeof model === "string" && model.trim() ? model.trim() : "unknown";
+  if (!MODEL_KEY.test(m)) return "invalid";
   return m.replace(/[.~/*\[\]]/g, "_");
 }
 
@@ -228,7 +236,7 @@ function recordCall({ uid, fn, model, kind, status, ms, usage, cacheHit = false 
   const row = {
     uid,
     fn,
-    model: typeof model === "string" ? model : "",
+    model: typeof model === "string" ? model.slice(0, 128) : "",
     kind,
     status,
     ms: num(ms),

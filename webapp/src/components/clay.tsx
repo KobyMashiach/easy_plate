@@ -439,7 +439,7 @@ export function PageHeader({ title, subtitle, trailing, className = "" }: { titl
   return (
     <header className={cx("flex items-start gap-3", className)}>
       <div className="min-w-0 flex-1">
-        <h1 className="text-headline-lg-mobile text-on-surface">{title}</h1>
+        <h1 className="break-words text-headline-lg-mobile text-on-surface">{title}</h1>
         {subtitle ? <p className="mt-2 text-body-md text-on-surface-variant">{subtitle}</p> : null}
       </div>
       {trailing ? <div className="mt-1 flex shrink-0 items-center gap-2">{trailing}</div> : null}

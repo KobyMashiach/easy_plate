@@ -334,8 +334,10 @@ ${entries.join('\n').replace(/\n\n/g, '\n')}
 const robots = `User-agent: *
 Allow: /
 Disallow: /.og/
+Allow: /app-ads.txt
 Disallow: /admin
-Disallow: /app
+Disallow: /app$
+Disallow: /app/
 
 Sitemap: ${SITE}/sitemap.xml
 `;

@@ -41,7 +41,16 @@ class ClayTag extends StatelessWidget {
             Icon(icon, size: 14, color: foreground),
             const SizedBox(width: AppSpacing.xs),
           ],
-          Text(label, style: AppTextStyles.labelSm.copyWith(color: foreground)),
+          // A tag can carry a user's own name for a plan or a book: one
+          // longer than the row ellipsizes instead of overflowing it.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.labelSm.copyWith(color: foreground),
+            ),
+          ),
         ],
       ),
     );

@@ -22,6 +22,7 @@ import '../../../../core/features/feature_gate.dart';
 import '../../../../core/services/account_deletion_guard.dart';
 import '../../../../core/services/presence_service.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
+import '../../../auth/presentation/widgets/session_takeover_sheet.dart';
 import '../../data/account_deletion_remote_datasource.dart';
 
 /// הגדרות — the account and the app: who you are, what reaches you, which
@@ -212,14 +213,32 @@ Future<void> _deleteAccount(BuildContext context) async {
     if (reporting != null) PresenceService().start(reporting);
   }
 
+  Future<void> attempt() => AppDialog.busy(
+    context,
+    () => AccountDeletionGuard.guard(
+      () => AccountDeletionRemoteDataSource().deleteMyAccount(),
+    ),
+    message: t.settings.deletingAccount,
+  );
+
   try {
-    await AppDialog.busy(
-      context,
-      () => AccountDeletionGuard.guard(
-        () => AccountDeletionRemoteDataSource().deleteMyAccount(),
-      ),
-      message: t.settings.deletingAccount,
-    );
+    try {
+      await attempt();
+    } on AccountDeletionNeedsRecentLogin {
+      // The server wants a recent sign-in (a stolen token must not be
+      // enough to delete): the phone again by SMS, which also refreshes the
+      // ID token, then one retry. Dismissing the sheet cancels quietly.
+      if (!context.mounted) {
+        resumePresence();
+        return;
+      }
+      final verified = await showPhoneReverifySheet(context);
+      if (verified != true || !context.mounted) {
+        resumePresence();
+        return;
+      }
+      await attempt();
+    }
   } on AccountDeletionRefused {
     resumePresence();
     if (context.mounted) {

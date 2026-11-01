@@ -86,6 +86,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$wakeWord$en wakeWord = _Translations$wakeWord$en._(_root);
 	@override late final _Translations$voiceAssistants$en voiceAssistants = _Translations$voiceAssistants$en._(_root);
 	@override late final _Translations$adminUser$en adminUser = _Translations$adminUser$en._(_root);
+	@override late final _Translations$quickActions$en quickActions = _Translations$quickActions$en._(_root);
 }
 
 // Path: common
@@ -217,6 +218,9 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String sessionTakeoverBody({required Object phone}) => 'We\'ll send a new code to ${phone}. Once it\'s confirmed, the account moves to this device and the other one is signed out.';
 	@override String get sessionTakeoverNoPhone => 'This account has no phone number, so it can\'t be confirmed here. Ask to disconnect or contact support.';
 	@override String get sessionTakeoverFailed => 'We couldn\'t move the account to this device. Please try again.';
+	@override String get reverifyTitle => 'Verify your phone again';
+	@override String reverifyBody({required Object phone}) => 'For your security, please verify your phone again before deleting the account. We\'ll send a new code to ${phone}.';
+	@override String get reverifyNoPhone => 'This account has no phone number, so it can\'t be verified here. Contact support to delete the account.';
 	@override String get sessionReleaseTitle => 'Another device wants to sign in';
 	@override String sessionReleaseBody({required Object platform}) => 'A device (${platform}) wants to sign in to your account. Sign out on this device?';
 	@override String get sessionReleaseConfirm => 'Sign out here';
@@ -533,6 +537,9 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get communityUpdated => 'The community copy was updated';
 	@override String get communityGone => 'The recipe is no longer in the community; saved only for you';
 	@override String get communityUpdateFailed => 'Saved for you. The community post was not updated; try again later.';
+	@override String get sourceLink => 'Original recipe';
+	@override String get sourceLinkHint => 'Open the source this recipe was imported from';
+	@override String get sourceOpenFailed => 'Could not open the link';
 }
 
 // Path: cookMode
@@ -918,6 +925,11 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get recordingTag => 'Recording';
 	@override String sizeKb({required Object n}) => '${n} KB';
 	@override String sizeMb({required Object n}) => '${n} MB';
+	@override String get videoPhotoTitle => 'Picture from the video';
+	@override String get videoPhotoHint => 'Pick the picture that will stand for this recipe. You can change it later too.';
+	@override String get videoPhotoCover => 'Post cover';
+	@override String get videoPhotoNone => 'No picture';
+	@override String get videoPhotoFailed => 'Could not save that picture, try another';
 }
 
 // Path: mealPlanner
@@ -1462,6 +1474,7 @@ class _Translations$feedback$en extends Translations$feedback$he {
 	@override String closedConversations({required Object n}) => 'Closed conversations (${n})';
 	@override String get noOpenConversations => 'No open conversations';
 	@override String get closedTag => 'Closed';
+	@override String get dailyLimit => 'You\'ve reached today\'s limit of new support messages. Please try again tomorrow, or write in a conversation you already have.';
 }
 
 // Path: adminBilling
@@ -1954,7 +1967,12 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get whatsNew => 'What\'s new';
 	@override String get supportChat => 'Support chat';
 	@override String get storeReview => 'Rate the app prompt';
+	@override String get quickActions => 'App icon shortcuts';
 	@override String get webCheckout => 'Buy on the web';
+	@override String get socialVideoPhoto => 'Picture from a video';
+	@override String get recipeSourceLink => 'Link to the original recipe';
+	@override String get webCheckoutIl => 'Buy on the web (Israel)';
+	@override String get webCheckoutIntl => 'Buy on the web (abroad)';
 }
 
 // Path: adminConfig
@@ -2133,6 +2151,19 @@ class _Translations$adminUser$en extends Translations$adminUser$he {
 	@override String get tabShares => 'Shares';
 	@override late final _Translations$adminUser$shares$en shares = _Translations$adminUser$shares$en._(_root);
 	@override String get permissionSuperuser => 'Superuser';
+}
+
+// Path: quickActions
+class _Translations$quickActions$en extends Translations$quickActions$he {
+	_Translations$quickActions$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get shefi => 'Talk to Shefi';
+	@override String get groceryAdd => 'Add to grocery list';
+	@override String get receipt => 'Add a receipt';
+	@override String get support => 'Contact support';
 }
 
 // Path: walkthrough.topics
@@ -2754,6 +2785,9 @@ extension on TranslationsEn {
 			'auth.sessionTakeoverBody' => ({required Object phone}) => 'We\'ll send a new code to ${phone}. Once it\'s confirmed, the account moves to this device and the other one is signed out.',
 			'auth.sessionTakeoverNoPhone' => 'This account has no phone number, so it can\'t be confirmed here. Ask to disconnect or contact support.',
 			'auth.sessionTakeoverFailed' => 'We couldn\'t move the account to this device. Please try again.',
+			'auth.reverifyTitle' => 'Verify your phone again',
+			'auth.reverifyBody' => ({required Object phone}) => 'For your security, please verify your phone again before deleting the account. We\'ll send a new code to ${phone}.',
+			'auth.reverifyNoPhone' => 'This account has no phone number, so it can\'t be verified here. Contact support to delete the account.',
 			'auth.sessionReleaseTitle' => 'Another device wants to sign in',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'A device (${platform}) wants to sign in to your account. Sign out on this device?',
 			'auth.sessionReleaseConfirm' => 'Sign out here',
@@ -2953,6 +2987,9 @@ extension on TranslationsEn {
 			'recipe.communityUpdated' => 'The community copy was updated',
 			'recipe.communityGone' => 'The recipe is no longer in the community; saved only for you',
 			'recipe.communityUpdateFailed' => 'Saved for you. The community post was not updated; try again later.',
+			'recipe.sourceLink' => 'Original recipe',
+			'recipe.sourceLinkHint' => 'Open the source this recipe was imported from',
+			'recipe.sourceOpenFailed' => 'Could not open the link',
 			'cookMode.title' => 'Cook mode',
 			'cookMode.start' => 'Start cooking',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Step ${n} of ${total}',
@@ -3146,14 +3183,14 @@ extension on TranslationsEn {
 			'sharing.viewerCannotEditList' => 'This list is shared with you view-only',
 			'sharing.kindList' => 'grocery list',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 shared book', other: '${n} shared books', ), 
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 shared grocery list', other: '${n} shared grocery lists', ), 
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'No notifications',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} shared "${recipe}" with you',
 			'notifications.asViewer' => 'view only',
 			'notifications.asEditor' => 'to edit',
-			_ => null,
-		} ?? switch (path) {
 			'notifications.markAllRead' => 'Mark all as read',
 			'notifications.openRecipe' => 'Open recipe',
 			'notifications.alreadyHandled' => 'This invite was already handled',
@@ -3271,6 +3308,11 @@ extension on TranslationsEn {
 			'ingestion.recordingTag' => 'Recording',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} KB',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} MB',
+			'ingestion.videoPhotoTitle' => 'Picture from the video',
+			'ingestion.videoPhotoHint' => 'Pick the picture that will stand for this recipe. You can change it later too.',
+			'ingestion.videoPhotoCover' => 'Post cover',
+			'ingestion.videoPhotoNone' => 'No picture',
+			'ingestion.videoPhotoFailed' => 'Could not save that picture, try another',
 			'mealPlanner.title' => 'Meal planning',
 			'mealPlanner.newPlan' => 'New plan',
 			'mealPlanner.planName' => 'Plan name',
@@ -3655,6 +3697,8 @@ extension on TranslationsEn {
 			'walkthrough.topics.library.s6' => 'This is the book you made. Add recipes to it from here; inside, turn the pages and jump from the contents. A long press on a book on the shelf opens sharing, cover, rename and delete.',
 			'walkthrough.topics.mealPlan.title' => 'Weekly plan and nutrition',
 			'walkthrough.topics.mealPlan.summary' => 'A plan for the whole week with a nutrition summary for each day, which feeds the grocery list.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'Tap "Meals" to plan the week.',
 			'walkthrough.topics.mealPlan.s2' => 'Tap here to create a weekly plan.',
 			'walkthrough.topics.mealPlan.s3' => 'The plan\'s name is already filled in. Below, pick a template: free, three meals a day or six.',
@@ -3666,8 +3710,6 @@ extension on TranslationsEn {
 			'walkthrough.topics.groceries.summary' => 'A list built from the plan, with what has been picked up ticked off, a cost estimate from your receipts, and sharing with whoever shops with you.',
 			'walkthrough.topics.groceries.s1' => 'Tap "Groceries".',
 			'walkthrough.topics.groceries.s2' => 'Refresh rebuilds the list from every recipe in the weekly plan.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'Tap the plus to add an item by hand.',
 			'walkthrough.topics.groceries.s4' => 'The item\'s name is already filled in. Pick an amount and a unit, or start from a product your receipts already know.',
 			'walkthrough.topics.groceries.s5' => 'Tap "Add" and the item joins the list.',
@@ -3767,6 +3809,7 @@ extension on TranslationsEn {
 			'feedback.closedConversations' => ({required Object n}) => 'Closed conversations (${n})',
 			'feedback.noOpenConversations' => 'No open conversations',
 			'feedback.closedTag' => 'Closed',
+			'feedback.dailyLimit' => 'You\'ve reached today\'s limit of new support messages. Please try again tomorrow, or write in a conversation you already have.',
 			'adminBilling.title' => 'Users',
 			'adminBilling.all' => 'All',
 			'adminBilling.paying' => 'Paying',
@@ -4168,6 +4211,8 @@ extension on TranslationsEn {
 			'household.leaveConfirm' => 'Leave? What was saved here stays with the shared account; your own account goes back to what you had before.',
 			'household.dissolve' => 'Close shared account',
 			'household.dissolveConfirm' => 'Close the shared account? Members lose access and Premium. Your data comes back to your own account.',
+			_ => null,
+		} ?? switch (path) {
 			'household.joined' => 'Welcome to the shared account!',
 			'household.inheritedNote' => ({required Object name}) => 'Premium comes from ${name}\'s subscription.',
 			'household.failed' => 'That did not work. Try again.',
@@ -4180,8 +4225,6 @@ extension on TranslationsEn {
 			'homeWidgets.intro' => 'Add EasyPlate widgets to your home screen: ask Shefi, add to a grocery list, see your list and today\'s menu without opening the app.',
 			'homeWidgets.howToIos' => 'Long-press an empty spot on the home screen, tap +, search for EasyPlate and pick a widget. The same widgets fit the lock screen.',
 			'homeWidgets.howToAndroid' => 'Long-press an empty spot on the home screen, choose Widgets and find EasyPlate, or tap "Add to home screen" below.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'Add to home screen',
 			'homeWidgets.installed' => ({required Object count}) => '${count} on the home screen',
 			'homeWidgets.pinFailed' => 'The launcher did not offer to add the widget. Add it from the home screen\'s widget list instead.',
@@ -4286,7 +4329,12 @@ extension on TranslationsEn {
 			'featureName.whatsNew' => 'What\'s new',
 			'featureName.supportChat' => 'Support chat',
 			'featureName.storeReview' => 'Rate the app prompt',
+			'featureName.quickActions' => 'App icon shortcuts',
 			'featureName.webCheckout' => 'Buy on the web',
+			'featureName.socialVideoPhoto' => 'Picture from a video',
+			'featureName.recipeSourceLink' => 'Link to the original recipe',
+			'featureName.webCheckoutIl' => 'Buy on the web (Israel)',
+			'featureName.webCheckoutIntl' => 'Buy on the web (abroad)',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
@@ -4510,6 +4558,10 @@ extension on TranslationsEn {
 			'adminUser.shares.kindHousehold' => 'Household',
 			'adminUser.shares.withNames' => ({required Object names}) => 'With: ${names}',
 			'adminUser.permissionSuperuser' => 'Superuser',
+			'quickActions.shefi' => 'Talk to Shefi',
+			'quickActions.groceryAdd' => 'Add to grocery list',
+			'quickActions.receipt' => 'Add a receipt',
+			'quickActions.support' => 'Contact support',
 			_ => null,
 		};
 	}

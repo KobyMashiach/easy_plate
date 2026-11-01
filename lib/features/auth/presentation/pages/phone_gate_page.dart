@@ -52,6 +52,8 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
       LinkPhoneUseCase(context.read<AuthRepository>());
 
   Future<void> _send() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final (:phone, :error) = readPhoneField(_phone.text);
     if (phone == null) {
       setState(() => _error = error);
@@ -89,6 +91,8 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
   }
 
   Future<void> _confirm() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final code = _code.text.trim();
     if (code.length < 6) {
       setState(() => _error = t.auth.codeRequired);

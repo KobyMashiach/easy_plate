@@ -8,6 +8,7 @@ const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
 const proxy = require("./aiProxy").internals;
 const households = require("./households").internals;
+const budget = require("./dailyBudget");
 // The website (aieasyplate.app/app) calls this from the browser too.
 const { ORIGINS } = require("./origins");
 
@@ -177,30 +178,50 @@ async function redeem(db, code, uid) {
   });
 }
 
-exports.internals = { MAX_CONTAINER_RECIPES, titleOf, validId, normalizeCode, rejectReason, recipeCollabIdsIn, inviteFields, notificationFields, redeem };
+// One redemption as { status, body }. A try is claimed against the
+// caller's daily allowance of misses before the code is even looked up (so
+// a guesser past the line learns nothing more), and given back when the
+// code worked — a person who taps the same household link twice, or joins
+// five shares in a day, never sees the limit.
+async function redeemFor(db, uid, code, { spend = budget.spend, refund = budget.refund } = {}) {
+  const decision = await spend({ uid, kind: "shareCodeMiss", db });
+  if (!decision.allowed) {
+    logger.warn("share code tries exhausted", { uid, used: decision.used, limit: decision.limit });
+    return { status: 429, body: budget.refusalBody(decision, "shareCodeMiss") };
+  }
+  const result = await redeem(db, code, uid);
+  if (result.error) {
+    logger.info("share code refused", { uid, reason: result.error });
+    const status = result.error === "not_found" || result.error === "gone" ? 404 : result.error === "not_eligible" ? 403 : 409;
+    const message = result.error === "too_many_recipes" ? `This share carries more than ${MAX_CONTAINER_RECIPES} recipes; ask the owner to split it` : result.error;
+    return { status, body: { error: { code: result.error, message } } };
+  }
+  await refund(db, { uid, kind: "shareCodeMiss" });
+  logger.info("share code redeemed", { uid, already: result.already === true });
+  return { status: 200, body: result };
+}
+
+exports.internals = { redeemFor, MAX_CONTAINER_RECIPES, titleOf, validId, normalizeCode, rejectReason, recipeCollabIdsIn, inviteFields, notificationFields, redeem };
 
 exports.shareCodes = onRequest(
   { region: "europe-west1", cors: ORIGINS, maxInstances: 5 },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: { message: "Method not allowed" } });
-    const caller = await proxy.verifyCaller(req);
-    if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
-    // Switched off from the console (the `disabled` claim, adminUsers.disable).
-    if (caller.disabled === true) return res.status(403).json({ error: { code: "account_disabled", message: "This account is disabled" } });
+    // A verified phone (as for the paid endpoints, verifyPaidCaller) and not
+    // switched off from the console. The daily allowance of misses is per
+    // account, so it only limits guessing while accounts cost something: an
+    // email/password account minted against the Auth REST API is free.
+    // Every real account has a phone (the gate and the website's /phone
+    // step); the app's HttpCalls refreshes the token on phone_required.
+    const { caller, refusal } = await proxy.verifyPaidCaller(req);
+    if (!caller) return res.status(refusal.status).json({ error: { code: refusal.code, message: refusal.message } });
     const action = req.body && req.body.action;
     if (action !== "redeem") return res.status(400).json({ error: { message: "Unknown action" } });
     const code = normalizeCode(req.body && req.body.code);
     if (!code) return res.status(400).json({ error: { code: "invalid", message: "Invalid code" } });
     try {
-      const result = await redeem(admin.firestore(), code, caller.uid);
-      if (result.error) {
-        logger.info("share code refused", { uid: caller.uid, reason: result.error });
-        const status = result.error === "not_found" || result.error === "gone" ? 404 : result.error === "not_eligible" ? 403 : 409;
-        const message = result.error === "too_many_recipes" ? `This share carries more than ${MAX_CONTAINER_RECIPES} recipes; ask the owner to split it` : result.error;
-        return res.status(status).json({ error: { code: result.error, message } });
-      }
-      logger.info("share code redeemed", { uid: caller.uid, already: result.already === true });
-      return res.status(200).json(result);
+      const out = await redeemFor(admin.firestore(), caller.uid, code);
+      return res.status(out.status).json(out.body);
     } catch (err) {
       logger.error("share code redeem failed", { uid: caller.uid, reason: err.message });
       return res.status(500).json({ error: { message: "Redeem failed" } });

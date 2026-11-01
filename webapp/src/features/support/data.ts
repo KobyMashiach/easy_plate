@@ -38,6 +38,8 @@ export interface Conversation {
   userUnread: boolean;
   closed: boolean;
   viaShefi: boolean;
+  /** Refused for the day's allowance of new conversations (the onFeedbackCreated function): closed at once, never in the inbox. */
+  overDailyLimit: boolean;
 }
 
 const ms = (v: unknown): number | null => {
@@ -72,6 +74,7 @@ export function toConversation(id: string, d: Record<string, unknown>): Conversa
     userUnread: d.userUnread === true,
     closed: d.status === "closed",
     viaShefi: d.source === "shefi",
+    overDailyLimit: d.rejected === "daily_limit",
   };
 }
 
@@ -100,7 +103,8 @@ export function useMyConversations(uid: string | null | undefined, enabled = tru
             setState({
               items: snap.docs
                 .map((d) => toConversation(d.id, d.data() as Record<string, unknown>))
-                .filter((c): c is Conversation => c !== null)
+                // One refused for the daily allowance was never a conversation: the user was told when sending it.
+                .filter((c): c is Conversation => c !== null && !c.overDailyLimit)
                 .sort((a, b) => b.updatedAt - a.updatedAt),
               error: null,
             }),
@@ -176,6 +180,45 @@ export async function sendFeedback(f: NewFeedback): Promise<string> {
     updatedAt: now,
   });
   return id;
+}
+
+/**
+ * Whether the server refused the conversation `id` for the account's daily
+ * allowance of new ones (quota_feedback_daily). The limit is applied after
+ * the write by the onFeedbackCreated function — the store builds write
+ * straight to Firestore — which stamps `admitted` or `rejected`. Waits for
+ * that stamp; none within `timeoutMs`, an error or a deleted document all
+ * answer false, so a message the server took is never reported refused.
+ * The app's refusedForDailyLimit.
+ */
+export function refusedForDailyLimit(id: string, timeoutMs = 8000): Promise<boolean> {
+  return new Promise((resolve) => {
+    let stop: (() => void) | undefined;
+    let done = false;
+    const finish = (refused: boolean) => {
+      if (done) return;
+      done = true;
+      window.clearTimeout(timer);
+      stop?.();
+      resolve(refused);
+    };
+    const timer = window.setTimeout(() => finish(false), timeoutMs);
+    stop = withFirestore(
+      (fs, db) =>
+        fs.onSnapshot(
+          fs.doc(db, "feedback", id),
+          (snap) => {
+            if (!snap.exists()) return finish(false);
+            const d = snap.data() as Record<string, unknown>;
+            if (d.rejected != null) return finish(d.rejected === "daily_limit");
+            if (d.admitted === true) finish(false);
+          },
+          () => finish(false),
+        ),
+      () => finish(false),
+    );
+    if (done) stop?.();
+  });
 }
 
 /** The user's follow-up; puts the conversation back among the unread. */

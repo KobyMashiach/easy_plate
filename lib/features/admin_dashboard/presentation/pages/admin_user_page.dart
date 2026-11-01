@@ -15,6 +15,7 @@ import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../admin_billing/data/datasources/admin_user_detail_datasource.dart';
 import '../../../admin_billing/domain/entities/user_detail_entities.dart';
+import '../../../community/presentation/widgets/author_row.dart';
 
 /// Everything about one account, for the administrator: who they are, their
 /// plan and device, everything they did as one timeline, everything they
@@ -422,13 +423,16 @@ class _Overview extends StatelessWidget {
             CircleAvatar(
               radius: 30,
               backgroundColor: AppColors.primaryFixed,
-              backgroundImage: photo != null && photo.startsWith('http')
+              // Only a picture this app put there: the photo URL is the
+              // inspected user's own text, and any other host would log the
+              // administrator's device fetching it.
+              backgroundImage: AuthorRow.trustedPhotoUrl(photo)
                   // Decoded at the avatar's size, not the upload's.
-                  ? ResizeImage(NetworkImage(photo), width: 180)
+                  ? ResizeImage(NetworkImage(photo!), width: 180)
                   : null,
-              child: photo == null || !photo.startsWith('http')
-                  ? Icon(Icons.person_rounded, color: AppColors.primary)
-                  : null,
+              child: AuthorRow.trustedPhotoUrl(photo)
+                  ? null
+                  : Icon(Icons.person_rounded, color: AppColors.primary),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(

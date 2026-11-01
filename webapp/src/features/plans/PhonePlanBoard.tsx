@@ -177,7 +177,8 @@ function PlanChip({ plan, selected, onSelect, onOptions }: { plan: MealPlan; sel
       {...long.handlers}
       onClick={onSelect}
       aria-pressed={selected}
-      className={`press select-none rounded-full border px-4 py-2 text-label-md transition-colors duration-[180ms] [-webkit-touch-callout:none] ${selected ? "border-primary bg-primary-fixed text-primary" : "border-outline-variant bg-surface-low text-tertiary"}`}
+      title={plan.name || undefined}
+      className={`press max-w-full select-none truncate rounded-full border px-4 py-2 text-label-md transition-colors duration-[180ms] [-webkit-touch-callout:none] ${selected ? "border-primary bg-primary-fixed text-primary" : "border-outline-variant bg-surface-low text-tertiary"}`}
     >
       {plan.name || t("library.ui.untitled")}
     </button>

@@ -159,6 +159,17 @@ export function BottomSheet({
       {open || closing ? (
         <div
           ref={panel}
+          // Closing, the panel stays up for the exit slide only: a form in it
+          // must not submit again in that window (a second Enter added the
+          // grocery item twice).
+          onSubmitCapture={
+            open
+              ? undefined
+              : (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+          }
           className="sheet-panel flex max-h-[92dvh] flex-col bg-surface-lowest text-on-surface"
           style={{ borderTopLeftRadius: radius, borderTopRightRadius: radius }}
         >

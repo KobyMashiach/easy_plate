@@ -249,6 +249,8 @@ class FeedbackFirestoreDataSource implements FeedbackRemoteDataSource {
       userUnread: data['userUnread'] == true,
       closed: data['status'] == 'closed',
       closedAt: docDate(data['closedAt']),
+      admitted: data['admitted'] == true,
+      rejected: docStringOrNull(data['rejected']),
       source: data['source'] == FeedbackSource.shefi.name
           ? FeedbackSource.shefi
           : FeedbackSource.app,

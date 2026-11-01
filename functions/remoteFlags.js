@@ -11,14 +11,27 @@ let cache = { at: 0, params: null };
 // The read in flight, shared: a cold instance taking a burst of requests
 // used to fire one getTemplate per request until the first one landed.
 let inflight = null;
+// How long one template read may take. Every paid endpoint and every push
+// waits on it (shared, above), so a hung read used to hold them all until
+// their own function timeouts; past this the last good read (or the
+// fallbacks) applies and the read is retried after RETRY_MS.
+const READ_TIMEOUT_MS = 5000;
 
-async function params(now = Date.now(), getTemplate = () => admin.remoteConfig().getTemplate()) {
+function withTimeout(promise, ms) {
+  let timer;
+  const deadline = new Promise((_resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(`remote config read timed out after ${ms} ms`)), ms);
+  });
+  return Promise.race([promise, deadline]).finally(() => clearTimeout(timer));
+}
+
+async function params(now = Date.now(), getTemplate = () => admin.remoteConfig().getTemplate(), timeoutMs = READ_TIMEOUT_MS) {
   const ttl = cache.params === null ? RETRY_MS : CACHE_MS;
   if (now - cache.at < ttl) return cache.params || {};
   if (!inflight) {
     inflight = (async () => {
       try {
-        const template = await getTemplate();
+        const template = await withTimeout(Promise.resolve().then(getTemplate), timeoutMs);
         cache = { at: now, params: flatten(template) };
       } catch (error) {
         // The last good read stays in force; with none, the in-code defaults
@@ -109,4 +122,4 @@ async function pushAllowedFor(userSnap) {
 
 const NOTIFICATIONS_FLAG = "ff_notifications";
 
-module.exports = { resetForTest, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK };
+module.exports = { READ_TIMEOUT_MS, resetForTest, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK };

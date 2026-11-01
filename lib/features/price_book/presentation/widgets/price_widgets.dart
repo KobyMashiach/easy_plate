@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -7,17 +8,31 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/price_estimator.dart';
 
+/// A purchase date as the app's language writes it — "1.11.2026" in
+/// Hebrew, "01/11/2026" in French. A bare `DateFormat.yMd()` uses intl's
+/// en_US default whatever the language, so a Hebrew receipt from the 1st of
+/// November read as January the 11th.
+String purchaseDateLabel(DateTime date) =>
+    DateFormat.yMd(LocaleSettings.currentLocale.languageCode).format(date);
+
 /// "₪7.20" — two decimals, the shekel in front whatever the locale, since
 /// every receipt in the app is Israeli so far.
 String priceLabel(double amount, {String currency = 'ILS'}) =>
     '${currencySymbol(currency)}${amount.toStringAsFixed(2)}';
 
 /// The mark a price is written with: ₪ unless the receipt said otherwise.
-String currencySymbol(String currency) => switch (currency) {
-  'USD' => r'$',
-  'EUR' => '€',
-  _ => '₪',
-};
+/// The scan returns any ISO 4217 code (a Russian or British receipt), so a
+/// currency without a sign here is written as its code — never as ₪, which
+/// would pass roubles off as shekels.
+String currencySymbol(String currency) =>
+    switch (currency.trim().toUpperCase()) {
+      '' || 'ILS' => '₪',
+      'USD' => r'$',
+      'EUR' => '€',
+      'GBP' => '£',
+      'RUB' => '₽',
+      final code => '$code ',
+    };
 
 /// The price beside a grocery line: the figure with a small mark of where
 /// it came from, or a muted "no data".

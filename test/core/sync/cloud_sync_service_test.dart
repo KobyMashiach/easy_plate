@@ -26,11 +26,19 @@ class _FakeMirror implements CloudMirror {
   @override
   final bool shared;
 
-  @override
-  Future<void> listen() async {}
+  int listens = 0;
 
   @override
-  Future<void> stopListening() async {}
+  bool isListening = false;
+
+  @override
+  Future<void> listen() async {
+    listens++;
+    isListening = true;
+  }
+
+  @override
+  Future<void> stopListening() async => isListening = false;
 
   @override
   Future<void> clearLocal() async {}
@@ -197,5 +205,33 @@ void main() {
       expect(own.hydrates, 2);
       await sync.stopListening();
     });
+
+    test(
+      'a household listener that died is re-read and opened again',
+      () async {
+        final own = _FakeMirror(collection: 'preferences', shared: false);
+        sync.mirrorsForTest = [mirror, own];
+        now = DateTime(2026, 10, 18, 12);
+        await sync.hydrate('u1');
+        await sync.startListening();
+        expect(mirror.listens, 1);
+
+        // Firestore closed it on an error.
+        mirror.isListening = false;
+        now = now.add(CloudSyncService.refreshInterval);
+        await sync.refresh('u1');
+        expect(mirror.hydrates, 2, reason: 'read, not skipped as live');
+        expect(mirror.listens, 2);
+        expect(mirror.isListening, isTrue);
+
+        // Live again: the next resume skips it, as before.
+        now = now.add(CloudSyncService.refreshInterval);
+        await sync.refresh('u1');
+        expect(mirror.hydrates, 2);
+        expect(mirror.listens, 2);
+        expect(own.listens, 0);
+        await sync.stopListening();
+      },
+    );
   });
 }

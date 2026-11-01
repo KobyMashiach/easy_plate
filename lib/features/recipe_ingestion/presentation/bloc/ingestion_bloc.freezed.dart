@@ -61,7 +61,7 @@ extension IngestionEventPatterns on IngestionEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SelectChannel value)?  selectChannel,TResult Function( _ParseRawText value)?  parseRawText,TResult Function( _SearchWeb value)?  searchWeb,TResult Function( _ParseUrl value)?  parseUrl,TResult Function( _ViewOriginal value)?  viewOriginal,TResult Function( _ParseSocialVideo value)?  parseSocialVideo,TResult Function( _ParseFiles value)?  parseFiles,TResult Function( _GenerateRecipe value)?  generateRecipe,TResult Function( _UpdateRecipe value)?  updateRecipe,TResult Function( _SaveRecipe value)?  saveRecipe,TResult Function( _SaveAsTemplate value)?  saveAsTemplate,TResult Function( _EditManually value)?  editManually,TResult Function( _Retry value)?  retry,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _SelectChannel value)?  selectChannel,TResult Function( _ParseRawText value)?  parseRawText,TResult Function( _SearchWeb value)?  searchWeb,TResult Function( _ParseUrl value)?  parseUrl,TResult Function( _ViewOriginal value)?  viewOriginal,TResult Function( _ParseSocialVideo value)?  parseSocialVideo,TResult Function( _ParseFiles value)?  parseFiles,TResult Function( _GenerateRecipe value)?  generateRecipe,TResult Function( _UpdateRecipe value)?  updateRecipe,TResult Function( _SaveRecipe value)?  saveRecipe,TResult Function( _SaveAsTemplate value)?  saveAsTemplate,TResult Function( _EditManually value)?  editManually,TResult Function( _Retry value)?  retry,TResult Function( _PickImageCandidate value)?  pickImageCandidate,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
@@ -77,7 +77,8 @@ return updateRecipe(_that);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that);case _SaveAsTemplate() when saveAsTemplate != null:
 return saveAsTemplate(_that);case _EditManually() when editManually != null:
 return editManually(_that);case _Retry() when retry != null:
-return retry(_that);case _:
+return retry(_that);case _PickImageCandidate() when pickImageCandidate != null:
+return pickImageCandidate(_that);case _:
   return orElse();
 
 }
@@ -95,7 +96,7 @@ return retry(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SelectChannel value)  selectChannel,required TResult Function( _ParseRawText value)  parseRawText,required TResult Function( _SearchWeb value)  searchWeb,required TResult Function( _ParseUrl value)  parseUrl,required TResult Function( _ViewOriginal value)  viewOriginal,required TResult Function( _ParseSocialVideo value)  parseSocialVideo,required TResult Function( _ParseFiles value)  parseFiles,required TResult Function( _GenerateRecipe value)  generateRecipe,required TResult Function( _UpdateRecipe value)  updateRecipe,required TResult Function( _SaveRecipe value)  saveRecipe,required TResult Function( _SaveAsTemplate value)  saveAsTemplate,required TResult Function( _EditManually value)  editManually,required TResult Function( _Retry value)  retry,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _SelectChannel value)  selectChannel,required TResult Function( _ParseRawText value)  parseRawText,required TResult Function( _SearchWeb value)  searchWeb,required TResult Function( _ParseUrl value)  parseUrl,required TResult Function( _ViewOriginal value)  viewOriginal,required TResult Function( _ParseSocialVideo value)  parseSocialVideo,required TResult Function( _ParseFiles value)  parseFiles,required TResult Function( _GenerateRecipe value)  generateRecipe,required TResult Function( _UpdateRecipe value)  updateRecipe,required TResult Function( _SaveRecipe value)  saveRecipe,required TResult Function( _SaveAsTemplate value)  saveAsTemplate,required TResult Function( _EditManually value)  editManually,required TResult Function( _Retry value)  retry,required TResult Function( _PickImageCandidate value)  pickImageCandidate,}){
 final _that = this;
 switch (_that) {
 case _SelectChannel():
@@ -111,7 +112,8 @@ return updateRecipe(_that);case _SaveRecipe():
 return saveRecipe(_that);case _SaveAsTemplate():
 return saveAsTemplate(_that);case _EditManually():
 return editManually(_that);case _Retry():
-return retry(_that);}
+return retry(_that);case _PickImageCandidate():
+return pickImageCandidate(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -125,7 +127,7 @@ return retry(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SelectChannel value)?  selectChannel,TResult? Function( _ParseRawText value)?  parseRawText,TResult? Function( _SearchWeb value)?  searchWeb,TResult? Function( _ParseUrl value)?  parseUrl,TResult? Function( _ViewOriginal value)?  viewOriginal,TResult? Function( _ParseSocialVideo value)?  parseSocialVideo,TResult? Function( _ParseFiles value)?  parseFiles,TResult? Function( _GenerateRecipe value)?  generateRecipe,TResult? Function( _UpdateRecipe value)?  updateRecipe,TResult? Function( _SaveRecipe value)?  saveRecipe,TResult? Function( _SaveAsTemplate value)?  saveAsTemplate,TResult? Function( _EditManually value)?  editManually,TResult? Function( _Retry value)?  retry,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _SelectChannel value)?  selectChannel,TResult? Function( _ParseRawText value)?  parseRawText,TResult? Function( _SearchWeb value)?  searchWeb,TResult? Function( _ParseUrl value)?  parseUrl,TResult? Function( _ViewOriginal value)?  viewOriginal,TResult? Function( _ParseSocialVideo value)?  parseSocialVideo,TResult? Function( _ParseFiles value)?  parseFiles,TResult? Function( _GenerateRecipe value)?  generateRecipe,TResult? Function( _UpdateRecipe value)?  updateRecipe,TResult? Function( _SaveRecipe value)?  saveRecipe,TResult? Function( _SaveAsTemplate value)?  saveAsTemplate,TResult? Function( _EditManually value)?  editManually,TResult? Function( _Retry value)?  retry,TResult? Function( _PickImageCandidate value)?  pickImageCandidate,}){
 final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
@@ -141,7 +143,8 @@ return updateRecipe(_that);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that);case _SaveAsTemplate() when saveAsTemplate != null:
 return saveAsTemplate(_that);case _EditManually() when editManually != null:
 return editManually(_that);case _Retry() when retry != null:
-return retry(_that);case _:
+return retry(_that);case _PickImageCandidate() when pickImageCandidate != null:
+return pickImageCandidate(_that);case _:
   return null;
 
 }
@@ -158,7 +161,7 @@ return retry(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String url)?  parseUrl,TResult Function( String url)?  viewOriginal,TResult Function( String url)?  parseSocialVideo,TResult Function( List<IngestionFile> files)?  parseFiles,TResult Function( String request)?  generateRecipe,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,TResult Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult Function( String text,  String? sourceUrl)?  editManually,TResult Function()?  retry,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String url)?  parseUrl,TResult Function( String url)?  viewOriginal,TResult Function( String url)?  parseSocialVideo,TResult Function( List<IngestionFile> files)?  parseFiles,TResult Function( String request)?  generateRecipe,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,TResult Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult Function( String text,  String? sourceUrl)?  editManually,TResult Function()?  retry,TResult Function( int? index)?  pickImageCandidate,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
@@ -173,7 +176,8 @@ return updateRecipe(_that.recipe);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that.recipe);case _SaveAsTemplate() when saveAsTemplate != null:
 return saveAsTemplate(_that.text,_that.sourceUrl);case _EditManually() when editManually != null:
 return editManually(_that.text,_that.sourceUrl);case _Retry() when retry != null:
-return retry();case _:
+return retry();case _PickImageCandidate() when pickImageCandidate != null:
+return pickImageCandidate(_that.index);case _:
   return orElse();
 
 }
@@ -191,7 +195,7 @@ return retry();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String url)  parseUrl,required TResult Function( String url)  viewOriginal,required TResult Function( String url)  parseSocialVideo,required TResult Function( List<IngestionFile> files)  parseFiles,required TResult Function( String request)  generateRecipe,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,required TResult Function( String text,  String? sourceUrl)  saveAsTemplate,required TResult Function( String text,  String? sourceUrl)  editManually,required TResult Function()  retry,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String url)  parseUrl,required TResult Function( String url)  viewOriginal,required TResult Function( String url)  parseSocialVideo,required TResult Function( List<IngestionFile> files)  parseFiles,required TResult Function( String request)  generateRecipe,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,required TResult Function( String text,  String? sourceUrl)  saveAsTemplate,required TResult Function( String text,  String? sourceUrl)  editManually,required TResult Function()  retry,required TResult Function( int? index)  pickImageCandidate,}) {final _that = this;
 switch (_that) {
 case _SelectChannel():
 return selectChannel(_that.channel);case _ParseRawText():
@@ -206,7 +210,8 @@ return updateRecipe(_that.recipe);case _SaveRecipe():
 return saveRecipe(_that.recipe);case _SaveAsTemplate():
 return saveAsTemplate(_that.text,_that.sourceUrl);case _EditManually():
 return editManually(_that.text,_that.sourceUrl);case _Retry():
-return retry();}
+return retry();case _PickImageCandidate():
+return pickImageCandidate(_that.index);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -220,7 +225,7 @@ return retry();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  viewOriginal,TResult? Function( String url)?  parseSocialVideo,TResult? Function( List<IngestionFile> files)?  parseFiles,TResult? Function( String request)?  generateRecipe,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,TResult? Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult? Function( String text,  String? sourceUrl)?  editManually,TResult? Function()?  retry,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  viewOriginal,TResult? Function( String url)?  parseSocialVideo,TResult? Function( List<IngestionFile> files)?  parseFiles,TResult? Function( String request)?  generateRecipe,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,TResult? Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult? Function( String text,  String? sourceUrl)?  editManually,TResult? Function()?  retry,TResult? Function( int? index)?  pickImageCandidate,}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
@@ -235,7 +240,8 @@ return updateRecipe(_that.recipe);case _SaveRecipe() when saveRecipe != null:
 return saveRecipe(_that.recipe);case _SaveAsTemplate() when saveAsTemplate != null:
 return saveAsTemplate(_that.text,_that.sourceUrl);case _EditManually() when editManually != null:
 return editManually(_that.text,_that.sourceUrl);case _Retry() when retry != null:
-return retry();case _:
+return retry();case _PickImageCandidate() when pickImageCandidate != null:
+return pickImageCandidate(_that.index);case _:
   return null;
 
 }
@@ -1156,6 +1162,78 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 /// @nodoc
+
+
+class _PickImageCandidate with DiagnosticableTreeMixin implements IngestionEvent {
+  const _PickImageCandidate(this.index);
+  
+
+ final  int? index;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PickImageCandidateCopyWith<_PickImageCandidate> get copyWith => __$PickImageCandidateCopyWithImpl<_PickImageCandidate>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'IngestionEvent.pickImageCandidate'))
+    ..add(DiagnosticsProperty('index', index));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PickImageCandidate&&(identical(other.index, index) || other.index == index));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,index);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'IngestionEvent.pickImageCandidate(index: $index)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PickImageCandidateCopyWith<$Res> implements $IngestionEventCopyWith<$Res> {
+  factory _$PickImageCandidateCopyWith(_PickImageCandidate value, $Res Function(_PickImageCandidate) _then) = __$PickImageCandidateCopyWithImpl;
+@useResult
+$Res call({
+ int? index
+});
+
+
+
+
+}
+/// @nodoc
+class __$PickImageCandidateCopyWithImpl<$Res>
+    implements _$PickImageCandidateCopyWith<$Res> {
+  __$PickImageCandidateCopyWithImpl(this._self, this._then);
+
+  final _PickImageCandidate _self;
+  final $Res Function(_PickImageCandidate) _then;
+
+/// Create a copy of IngestionEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? index = freezed,}) {
+  return _then(_PickImageCandidate(
+freezed == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$IngestionState implements DiagnosticableTreeMixin {
 
 
@@ -1287,13 +1365,13 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  idle,TResult Function( RecipeIngestionChannel channel)?  parsing,TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice)?  review,TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult Function()?  saved,TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult Function( RecipeIngestionChannel channel,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  idle,TResult Function( RecipeIngestionChannel channel)?  parsing,TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)?  review,TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult Function()?  saved,TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult Function( RecipeIngestionChannel channel,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that.channel);case IngestionParsing() when parsing != null:
 return parsing(_that.channel);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that.channel,_that.results);case IngestionReview() when review != null:
-return review(_that.channel,_that.recipe,_that.notice);case IngestionOriginal() when original != null:
+return review(_that.channel,_that.recipe,_that.notice,_that.imageCandidates,_that.selectedImage);case IngestionOriginal() when original != null:
 return original(_that.channel,_that.page);case IngestionSaved() when saved != null:
 return saved();case IngestionUnparsed() when unparsed != null:
 return unparsed(_that.channel,_that.text,_that.sourceUrl,_that.timedOut,_that.notice,_that.retryable);case IngestionError() when errorMessage != null:
@@ -1315,13 +1393,13 @@ return errorMessage(_that.channel,_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  idle,required TResult Function( RecipeIngestionChannel channel)  parsing,required TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)  searchResults,required TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice)  review,required TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)  original,required TResult Function()  saved,required TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)  unparsed,required TResult Function( RecipeIngestionChannel channel,  String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  idle,required TResult Function( RecipeIngestionChannel channel)  parsing,required TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)  searchResults,required TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)  review,required TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)  original,required TResult Function()  saved,required TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)  unparsed,required TResult Function( RecipeIngestionChannel channel,  String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case IngestionIdle():
 return idle(_that.channel);case IngestionParsing():
 return parsing(_that.channel);case IngestionSearchResults():
 return searchResults(_that.channel,_that.results);case IngestionReview():
-return review(_that.channel,_that.recipe,_that.notice);case IngestionOriginal():
+return review(_that.channel,_that.recipe,_that.notice,_that.imageCandidates,_that.selectedImage);case IngestionOriginal():
 return original(_that.channel,_that.page);case IngestionSaved():
 return saved();case IngestionUnparsed():
 return unparsed(_that.channel,_that.text,_that.sourceUrl,_that.timedOut,_that.notice,_that.retryable);case IngestionError():
@@ -1339,13 +1417,13 @@ return errorMessage(_that.channel,_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  idle,TResult? Function( RecipeIngestionChannel channel)?  parsing,TResult? Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult? Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice)?  review,TResult? Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult? Function()?  saved,TResult? Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult? Function( RecipeIngestionChannel channel,  String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  idle,TResult? Function( RecipeIngestionChannel channel)?  parsing,TResult? Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult? Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)?  review,TResult? Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult? Function()?  saved,TResult? Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult? Function( RecipeIngestionChannel channel,  String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that.channel);case IngestionParsing() when parsing != null:
 return parsing(_that.channel);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that.channel,_that.results);case IngestionReview() when review != null:
-return review(_that.channel,_that.recipe,_that.notice);case IngestionOriginal() when original != null:
+return review(_that.channel,_that.recipe,_that.notice,_that.imageCandidates,_that.selectedImage);case IngestionOriginal() when original != null:
 return original(_that.channel,_that.page);case IngestionSaved() when saved != null:
 return saved();case IngestionUnparsed() when unparsed != null:
 return unparsed(_that.channel,_that.text,_that.sourceUrl,_that.timedOut,_that.notice,_that.retryable);case IngestionError() when errorMessage != null:
@@ -1585,12 +1663,20 @@ as List<WebSearchResultEntity>,
 
 
 class IngestionReview with DiagnosticableTreeMixin implements IngestionState {
-  const IngestionReview(this.channel, this.recipe, {this.notice});
+  const IngestionReview(this.channel, this.recipe, {this.notice, final  List<RecipeImageCandidate> imageCandidates = const [], this.selectedImage}): _imageCandidates = imageCandidates;
   
 
  final  RecipeIngestionChannel channel;
  final  RecipeEntity recipe;
  final  String? notice;
+ final  List<RecipeImageCandidate> _imageCandidates;
+@JsonKey() List<RecipeImageCandidate> get imageCandidates {
+  if (_imageCandidates is EqualUnmodifiableListView) return _imageCandidates;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_imageCandidates);
+}
+
+ final  int? selectedImage;
 
 /// Create a copy of IngestionState
 /// with the given fields replaced by the non-null parameter values.
@@ -1603,21 +1689,21 @@ $IngestionReviewCopyWith<IngestionReview> get copyWith => _$IngestionReviewCopyW
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IngestionState.review'))
-    ..add(DiagnosticsProperty('channel', channel))..add(DiagnosticsProperty('recipe', recipe))..add(DiagnosticsProperty('notice', notice));
+    ..add(DiagnosticsProperty('channel', channel))..add(DiagnosticsProperty('recipe', recipe))..add(DiagnosticsProperty('notice', notice))..add(DiagnosticsProperty('imageCandidates', imageCandidates))..add(DiagnosticsProperty('selectedImage', selectedImage));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngestionReview&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.notice, notice) || other.notice == notice));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngestionReview&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.notice, notice) || other.notice == notice)&&const DeepCollectionEquality().equals(other._imageCandidates, _imageCandidates)&&(identical(other.selectedImage, selectedImage) || other.selectedImage == selectedImage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,channel,recipe,notice);
+int get hashCode => Object.hash(runtimeType,channel,recipe,notice,const DeepCollectionEquality().hash(_imageCandidates),selectedImage);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IngestionState.review(channel: $channel, recipe: $recipe, notice: $notice)';
+  return 'IngestionState.review(channel: $channel, recipe: $recipe, notice: $notice, imageCandidates: $imageCandidates, selectedImage: $selectedImage)';
 }
 
 
@@ -1628,7 +1714,7 @@ abstract mixin class $IngestionReviewCopyWith<$Res> implements $IngestionStateCo
   factory $IngestionReviewCopyWith(IngestionReview value, $Res Function(IngestionReview) _then) = _$IngestionReviewCopyWithImpl;
 @useResult
 $Res call({
- RecipeIngestionChannel channel, RecipeEntity recipe, String? notice
+ RecipeIngestionChannel channel, RecipeEntity recipe, String? notice, List<RecipeImageCandidate> imageCandidates, int? selectedImage
 });
 
 
@@ -1645,12 +1731,14 @@ class _$IngestionReviewCopyWithImpl<$Res>
 
 /// Create a copy of IngestionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? channel = null,Object? recipe = null,Object? notice = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? channel = null,Object? recipe = null,Object? notice = freezed,Object? imageCandidates = null,Object? selectedImage = freezed,}) {
   return _then(IngestionReview(
 null == channel ? _self.channel : channel // ignore: cast_nullable_to_non_nullable
 as RecipeIngestionChannel,null == recipe ? _self.recipe : recipe // ignore: cast_nullable_to_non_nullable
 as RecipeEntity,notice: freezed == notice ? _self.notice : notice // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,imageCandidates: null == imageCandidates ? _self._imageCandidates : imageCandidates // ignore: cast_nullable_to_non_nullable
+as List<RecipeImageCandidate>,selectedImage: freezed == selectedImage ? _self.selectedImage : selectedImage // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

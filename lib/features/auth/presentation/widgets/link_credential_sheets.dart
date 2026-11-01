@@ -77,14 +77,18 @@ class _SheetShell extends StatelessWidget {
           top: AppSpacing.md,
           bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.md,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClaySectionHeader(title: title, underline: true),
-            const SizedBox(height: AppSpacing.gutter),
-            ...children,
-          ],
+        // Scrolls once the keyboard leaves less room than the fields and
+        // buttons need (a short phone, a larger text size).
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClaySectionHeader(title: title, underline: true),
+              const SizedBox(height: AppSpacing.gutter),
+              ...children,
+            ],
+          ),
         ),
       ),
     );
@@ -117,6 +121,8 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
       LinkPhoneUseCase(context.read<AuthRepository>());
 
   Future<void> _send() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final (:phone, :error) = readPhoneField(_phone.text);
     if (phone == null) {
       setState(() => _error = error);
@@ -148,6 +154,8 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
   }
 
   Future<void> _confirm() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final code = _code.text.trim();
     if (code.length < 6) {
       setState(() => _error = t.auth.codeRequired);
@@ -251,6 +259,8 @@ class _LinkEmailSheetState extends State<_LinkEmailSheet> {
   }
 
   Future<void> _submit() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final email = _email.text.trim();
     final password = _password.text;
 

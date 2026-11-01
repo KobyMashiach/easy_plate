@@ -59,7 +59,7 @@ function RecipeTile({ recipe, caption }: { recipe: Recipe; caption?: string }) {
       </span>
       <span className="min-w-0 flex-1">
         {caption ? <span className="block text-label-sm text-secondary">{caption}</span> : null}
-        <span className="line-clamp-2 block text-body-lg">{recipe.title}</span>
+        <span className="line-clamp-2 text-body-lg">{recipe.title}</span>
         {meta ? <span className="block text-label-md text-on-surface-variant">{meta}</span> : null}
       </span>
       <Icon name="chevron" className="shrink-0 text-outline rtl:rotate-180" />

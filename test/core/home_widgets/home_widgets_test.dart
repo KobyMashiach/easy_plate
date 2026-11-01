@@ -8,6 +8,7 @@ import 'package:easy_plate/core/home_widgets/home_widget_launch.dart';
 import 'package:easy_plate/core/home_widgets/home_widgets_channel.dart';
 import 'package:easy_plate/core/home_widgets/home_widgets_service.dart';
 import 'package:easy_plate/core/home_widgets/home_widgets_snapshot.dart';
+import 'package:easy_plate/core/services/auth_session_service.dart';
 import 'package:easy_plate/core/services/share_intent_service.dart';
 import 'package:easy_plate/core/utils/i18n/strings.g.dart';
 import 'package:easy_plate/features/grocery_list/domain/entities/grocery_item_entity.dart';
@@ -467,16 +468,88 @@ void main() {
     await pumpEventQueue();
     expect(channel.reads, 2);
   });
+
+  group('publishing', () {
+    late _QueueChannel channel;
+    late HomeWidgetsService service;
+
+    setUp(() {
+      channel = _QueueChannel();
+      service = HomeWidgetsService.forTest(
+        channel: channel,
+        groceries: _Lists([_list()]),
+        plans: _Plans(),
+        recipes: _Recipes(),
+      )..markReadyForTest();
+    });
+
+    test(
+      'before the session is ready the widgets keep what they show',
+      () async {
+        final idle = HomeWidgetsService.forTest(
+          channel: channel,
+          groceries: _Lists([_list()]),
+          plans: _Plans(),
+          recipes: _Recipes(),
+        );
+        expect(AuthSessionService().stage, isNot(AuthStage.signedOut));
+        await idle.publishIfChanged();
+        expect(channel.published, isEmpty);
+        // Asked for outright (a widget about to be pinned), it still goes.
+        await idle.publishNow();
+        expect(channel.published, hasLength(1));
+      },
+    );
+
+    test('a schedule that changes nothing redraws nothing', () async {
+      await service.publishIfChanged();
+      await Future<void>.delayed(const Duration(milliseconds: 2));
+      await service.publishIfChanged();
+      expect(channel.published, hasLength(1));
+      // The timestamp still travels, for the shape the native side reads.
+      expect(
+        (jsonDecode(channel.published.single) as Map)['at'],
+        isA<int>(),
+      );
+    });
+
+    test('an explicit publish always goes out', () async {
+      await service.publishIfChanged();
+      await service.publishNow();
+      expect(channel.published, hasLength(2));
+    });
+
+    test('a drained queue makes the next schedule redraw', () async {
+      await service.publishIfChanged();
+      channel.queued = [
+        {'id': 'q1', 'type': 'rename', 'listId': 'l1'},
+      ];
+      await service.drain();
+      await service.publishIfChanged();
+      expect(channel.published, hasLength(2));
+    });
+  });
 }
 
 class _QueueChannel extends HomeWidgetsChannel {
   int reads = 0;
   Completer<void>? gate;
 
+  /// What the queue holds, for [readPending].
+  List<Map<String, Object?>> queued = const [];
+  final published = <String>[];
+
+  @override
+  Future<void> publish(String snapshotJson) async =>
+      published.add(snapshotJson);
+
+  @override
+  Future<void> removePending(List<String> ids) async {}
+
   @override
   Future<List<Map<String, Object?>>> readPending() async {
     reads++;
     if (gate case final held?) await held.future;
-    return const [];
+    return queued;
   }
 }

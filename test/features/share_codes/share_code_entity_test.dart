@@ -165,6 +165,17 @@ void main() {
       );
     });
 
+    test('the daily cap on wrong codes is a refusal of its own', () {
+      expect(
+        ShareCodesFirestoreRepository.refusalIn(
+          '{error: {code: quota, status: RESOURCE_EXHAUSTED, message: Daily '
+          'limit of 20 calls reached, quota: {used: 20, limit: 20, kind: '
+          'shareCodeMiss}}}',
+        ),
+        ShareCodeRefused.quota,
+      );
+    });
+
     test('ignores unknown codes and plain errors', () {
       expect(
         ShareCodesFirestoreRepository.refusalIn('{error: {code: banana}}'),

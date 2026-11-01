@@ -130,14 +130,20 @@ async function ensureEmulators() {
 // ── Cloud Functions stub ─────────────────────────────────────────────────
 // The few calls a page makes on load get a plausible answer; anything else
 // is a clean 503 the pages already handle. Prices are sample values.
+// The shape webBilling's `plans` answers today (PayPlus for the Israeli
+// sample account): `planId` is the key the paywall lists offers by.
 const SAMPLE_PLANS = {
   enabled: true,
   flag: 2,
+  provider: "payplus",
+  providerFlag: 2,
+  comingSoon: false,
+  configured: true,
   plans: [
-    { priceId: "price_pro_month", lookupKey: "pro_monthly", tier: "pro", seats: 1, interval: "month", intervalCount: 1, amount: 2490, currency: "ils", name: "Easy Plate Pro", description: null, introCoupon: null, introAmount: null },
-    { priceId: "price_pro_year", lookupKey: "pro_yearly", tier: "pro", seats: 1, interval: "year", intervalCount: 1, amount: 19900, currency: "ils", name: "Easy Plate Pro", description: null, introCoupon: null, introAmount: null },
-    { priceId: "price_duo_year", lookupKey: "duo_yearly", tier: "duo", seats: 2, interval: "year", intervalCount: 1, amount: 27900, currency: "ils", name: "Easy Plate Pro Duo", description: null, introCoupon: null, introAmount: null },
-    { priceId: "price_family_year", lookupKey: "family_yearly", tier: "family", seats: 6, interval: "year", intervalCount: 1, amount: 34900, currency: "ils", name: "Easy Plate Pro Family", description: null, introCoupon: null, introAmount: null },
+    { planId: "easy_plate_ai_pro_monthly", provider: "payplus", tier: "pro", seats: 1, interval: "month", intervalCount: 1, amount: 2490, currency: "ils", name: "Easy Plate Pro", description: null, introAmount: null },
+    { planId: "easy_plate_ai_pro_yearly", provider: "payplus", tier: "pro", seats: 1, interval: "year", intervalCount: 1, amount: 19900, currency: "ils", name: "Easy Plate Pro", description: null, introAmount: null },
+    { planId: "easy_plate_ai_pro_duo_yearly", provider: "payplus", tier: "duo", seats: 2, interval: "year", intervalCount: 1, amount: 27900, currency: "ils", name: "Easy Plate Pro Duo", description: null, introAmount: null },
+    { planId: "easy_plate_ai_pro_family_yearly", provider: "payplus", tier: "family", seats: 6, interval: "year", intervalCount: 1, amount: 34900, currency: "ils", name: "Easy Plate Pro Family", description: null, introAmount: null },
   ],
 };
 function startFunctionsStub() {

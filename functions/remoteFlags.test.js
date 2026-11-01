@@ -64,3 +64,22 @@ test("a burst of reads on a cold instance shares one template fetch", async () =
   assert.ok(all.every((p) => rf.intFrom(p, "q", 0) === 7));
   rf.resetForTest();
 });
+
+test("a template read that hangs gives up at its timeout: the fallbacks apply and the read is retried soon", async () => {
+  const rf = require("./remoteFlags");
+  rf.resetForTest();
+  const hang = () => new Promise(() => {});
+  const started = Date.now();
+  const p = await rf.params(1000, hang, 30);
+  assert.deepEqual(p, {});
+  assert.ok(Date.now() - started < 1000);
+  // Within the retry window the failed read is not repeated; after it, it is.
+  let calls = 0;
+  const ok = async () => { calls++; return { parameters: { q: { defaultValue: { value: "3" } } } }; };
+  await rf.params(1000 + 10, ok, 30);
+  assert.equal(calls, 0);
+  const later = await rf.params(1000 + 31_000, ok, 30);
+  assert.equal(calls, 1);
+  assert.equal(rf.intFrom(later, "q", 0), 3);
+  rf.resetForTest();
+});

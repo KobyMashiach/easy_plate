@@ -79,7 +79,12 @@ exports.adminRemoteConfig = onRequest(
   { region: "europe-west1", cors: false, maxInstances: 2 },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: { message: "Method not allowed" } });
-    const caller = await proxy.verifyCaller(req);
+    // Revocation checked: the administrator's powers are the ones worth
+    // stealing a token for, and revoking the refresh tokens (Firebase
+    // console, or a password reset) has to end a stolen session now, not
+    // within the hour the ID token still verifies. One Auth lookup per
+    // console call.
+    const caller = await proxy.verifyCaller(req, { checkRevoked: true });
     if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
     if (!(await isAdmin(caller))) return res.status(403).json({ error: { message: "Administrator only" } });
     const action = req.body && req.body.action;

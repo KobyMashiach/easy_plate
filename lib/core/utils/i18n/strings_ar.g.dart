@@ -85,6 +85,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$wakeWord$ar wakeWord = _Translations$wakeWord$ar._(_root);
 	@override late final _Translations$voiceAssistants$ar voiceAssistants = _Translations$voiceAssistants$ar._(_root);
 	@override late final _Translations$adminConfig$ar adminConfig = _Translations$adminConfig$ar._(_root);
+	@override late final _Translations$quickActions$ar quickActions = _Translations$quickActions$ar._(_root);
 }
 
 // Path: common
@@ -216,6 +217,9 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String sessionTakeoverBody({required Object phone}) => 'سنرسل رمزًا جديدًا إلى ${phone}. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.';
 	@override String get sessionTakeoverNoPhone => 'لا يوجد رقم هاتف في الحساب، لذا لا يمكن التأكيد من هنا. اطلب تسجيل الخروج أو تواصل مع الدعم.';
 	@override String get sessionTakeoverFailed => 'تعذّر نقل الحساب إلى هذا الجهاز. حاول مرة أخرى.';
+	@override String get reverifyTitle => 'تحقّق من هاتفك مرة أخرى';
+	@override String reverifyBody({required Object phone}) => 'لأمانك، يجب التحقق من هاتفك مرة أخرى قبل حذف الحساب. سنرسل رمزًا جديدًا إلى ${phone}.';
+	@override String get reverifyNoPhone => 'لا يوجد رقم هاتف لهذا الحساب، لذا لا يمكن التحقق منه هنا. تواصل مع الدعم لحذف الحساب.';
 	@override String get sessionReleaseTitle => 'جهاز آخر يريد تسجيل الدخول';
 	@override String sessionReleaseBody({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟';
 	@override String get sessionReleaseConfirm => 'تسجيل الخروج هنا';
@@ -532,6 +536,9 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get communityUpdated => 'تم تحديث نسخة المجتمع';
 	@override String get communityGone => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط';
 	@override String get communityUpdateFailed => 'تم الحفظ لديك. لم يتم تحديث المنشور في المجتمع، حاول لاحقًا.';
+	@override String get sourceLink => 'الوصفة الأصلية';
+	@override String get sourceLinkHint => 'فتح المصدر الذي استُوردت منه الوصفة';
+	@override String get sourceOpenFailed => 'تعذّر فتح الرابط';
 }
 
 // Path: cookMode
@@ -925,6 +932,11 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get recordingTag => 'تسجيل';
 	@override String sizeKb({required Object n}) => '${n} ك.ب';
 	@override String sizeMb({required Object n}) => '${n} م.ب';
+	@override String get videoPhotoTitle => 'صورة من الفيديو';
+	@override String get videoPhotoHint => 'اختاروا الصورة التي ستمثّل الوصفة. يمكن تغييرها لاحقاً أيضاً.';
+	@override String get videoPhotoCover => 'صورة المنشور';
+	@override String get videoPhotoNone => 'بدون صورة';
+	@override String get videoPhotoFailed => 'تعذّر حفظ الصورة، جرّبوا صورة أخرى';
 }
 
 // Path: mealPlanner
@@ -1477,6 +1489,7 @@ class _Translations$feedback$ar extends Translations$feedback$he {
 	@override String closedConversations({required Object n}) => 'محادثات مغلقة (${n})';
 	@override String get noOpenConversations => 'لا محادثات مفتوحة';
 	@override String get closedTag => 'مغلقة';
+	@override String get dailyLimit => 'لقد وصلت إلى الحد اليومي لرسائل الدعم الجديدة. يرجى المحاولة مرة أخرى غدًا، أو الكتابة في محادثة مفتوحة لديك.';
 }
 
 // Path: adminBilling
@@ -1955,7 +1968,12 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get whatsNew => 'ما الجديد';
 	@override String get supportChat => 'دردشة الدعم';
 	@override String get storeReview => 'طلب تقييم التطبيق';
+	@override String get quickActions => 'اختصارات أيقونة التطبيق';
 	@override String get webCheckout => 'الشراء عبر الموقع';
+	@override String get socialVideoPhoto => 'صورة من فيديو';
+	@override String get recipeSourceLink => 'رابط الوصفة الأصلية';
+	@override String get webCheckoutIl => 'الشراء عبر الموقع (إسرائيل)';
+	@override String get webCheckoutIntl => 'الشراء عبر الموقع (خارج إسرائيل)';
 }
 
 // Path: wakeWord
@@ -2031,6 +2049,10 @@ class _Translations$voiceAssistants$ar extends Translations$voiceAssistants$he {
 	@override String get unavailable => 'شيفي غير متاح حاليًا.';
 	@override String get failed => 'لم يتمكن شيفي من الإجابة الآن. حاول بعد قليل.';
 	@override String get goodbye => 'بكل سرور! أنا هنا متى احتجتني.';
+	@override String get geminiOpensShefi => 'الفتح عبر Gemini ينقلك إلى شيفي';
+	@override String get geminiOpensShefiHint => 'قل لـ Gemini "افتح Easy Plate" فيفتح التطبيق مباشرة على محادثة مع شيفي، جاهزًا للاستماع. يبقى ميكروفون EasyPlate مغلقًا حتى ذلك الحين. الفتح من أيقونة التطبيق يبقى إلى الشاشة الرئيسية.';
+	@override String get geminiPanel => 'كنافذة عائمة';
+	@override String get geminiPanelHint => 'يفتح شيفي كنافذة عائمة أسفل الشاشة، فوق ما كان مفتوحًا، بدلًا من فتح التطبيق. اضغط خارجها للعودة.';
 }
 
 // Path: adminConfig
@@ -2041,6 +2063,19 @@ class _Translations$adminConfig$ar extends Translations$adminConfig$he {
 
 	// Translations
 	@override late final _Translations$adminConfig$labels$ar labels = _Translations$adminConfig$labels$ar._(_root);
+}
+
+// Path: quickActions
+class _Translations$quickActions$ar extends Translations$quickActions$he {
+	_Translations$quickActions$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get shefi => 'تحدّث مع شيفي';
+	@override String get groceryAdd => 'إضافة إلى قائمة التسوق';
+	@override String get receipt => 'إضافة إيصال';
+	@override String get support => 'التواصل مع الدعم';
 }
 
 // Path: walkthrough.topics
@@ -2505,6 +2540,9 @@ extension on TranslationsAr {
 			'auth.sessionTakeoverBody' => ({required Object phone}) => 'سنرسل رمزًا جديدًا إلى ${phone}. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.',
 			'auth.sessionTakeoverNoPhone' => 'لا يوجد رقم هاتف في الحساب، لذا لا يمكن التأكيد من هنا. اطلب تسجيل الخروج أو تواصل مع الدعم.',
 			'auth.sessionTakeoverFailed' => 'تعذّر نقل الحساب إلى هذا الجهاز. حاول مرة أخرى.',
+			'auth.reverifyTitle' => 'تحقّق من هاتفك مرة أخرى',
+			'auth.reverifyBody' => ({required Object phone}) => 'لأمانك، يجب التحقق من هاتفك مرة أخرى قبل حذف الحساب. سنرسل رمزًا جديدًا إلى ${phone}.',
+			'auth.reverifyNoPhone' => 'لا يوجد رقم هاتف لهذا الحساب، لذا لا يمكن التحقق منه هنا. تواصل مع الدعم لحذف الحساب.',
 			'auth.sessionReleaseTitle' => 'جهاز آخر يريد تسجيل الدخول',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟',
 			'auth.sessionReleaseConfirm' => 'تسجيل الخروج هنا',
@@ -2704,6 +2742,9 @@ extension on TranslationsAr {
 			'recipe.communityUpdated' => 'تم تحديث نسخة المجتمع',
 			'recipe.communityGone' => 'الوصفة لم تعد في المجتمع، حُفظت لك فقط',
 			'recipe.communityUpdateFailed' => 'تم الحفظ لديك. لم يتم تحديث المنشور في المجتمع، حاول لاحقًا.',
+			'recipe.sourceLink' => 'الوصفة الأصلية',
+			'recipe.sourceLinkHint' => 'فتح المصدر الذي استُوردت منه الوصفة',
+			'recipe.sourceOpenFailed' => 'تعذّر فتح الرابط',
 			'cookMode.title' => 'وضع الطبخ',
 			'cookMode.start' => 'ابدأ الطبخ',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'الخطوة ${n} من ${total}',
@@ -2897,14 +2938,14 @@ extension on TranslationsAr {
 			'sharing.viewerCannotEditList' => 'هذه القائمة مشاركة معك للعرض فقط',
 			'sharing.kindList' => 'قائمة تسوق',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا كتب مشتركة', one: 'كتاب مشترك واحد', two: 'كتابان مشتركان', few: '${n} كتب مشتركة', many: '${n} كتابًا مشتركًا', other: '${n} كتاب مشترك', ), 
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا قوائم تسوق مشتركة', one: 'قائمة تسوق مشتركة واحدة', two: 'قائمتا تسوق مشتركتان', few: '${n} قوائم تسوق مشتركة', many: '${n} قائمة تسوق مشتركة', other: '${n} قائمة تسوق مشتركة', ), 
 			'notifications.title' => 'الإشعارات',
 			'notifications.empty' => 'لا توجد إشعارات',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => 'شارك/ت ${name} معك "${recipe}"',
 			'notifications.asViewer' => 'للعرض فقط',
 			'notifications.asEditor' => 'للتعديل',
-			_ => null,
-		} ?? switch (path) {
 			'notifications.markAllRead' => 'تعليم الكل كمقروء',
 			'notifications.openRecipe' => 'فتح الوصفة',
 			'notifications.alreadyHandled' => 'تمت معالجة هذه الدعوة',
@@ -3022,6 +3063,11 @@ extension on TranslationsAr {
 			'ingestion.recordingTag' => 'تسجيل',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} ك.ب',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} م.ب',
+			'ingestion.videoPhotoTitle' => 'صورة من الفيديو',
+			'ingestion.videoPhotoHint' => 'اختاروا الصورة التي ستمثّل الوصفة. يمكن تغييرها لاحقاً أيضاً.',
+			'ingestion.videoPhotoCover' => 'صورة المنشور',
+			'ingestion.videoPhotoNone' => 'بدون صورة',
+			'ingestion.videoPhotoFailed' => 'تعذّر حفظ الصورة، جرّبوا صورة أخرى',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',
@@ -3406,6 +3452,8 @@ extension on TranslationsAr {
 			'walkthrough.topics.library.s6' => 'هذا هو الكتاب الذي أنشأته. من هنا تضيف إليه وصفات، وداخله تقلّب الصفحات وتقفز من الفهرس. الضغط المطوّل على كتاب في الرف يفتح المشاركة والغلاف وإعادة التسمية والحذف.',
 			'walkthrough.topics.mealPlan.title' => 'الخطة الأسبوعية والتغذية',
 			'walkthrough.topics.mealPlan.summary' => 'خطة وجبات للأسبوع كله مع ملخّص غذائي لكل يوم، تغذّي قائمة التسوّق.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'اضغط على "الوجبات" لتخطيط الأسبوع.',
 			'walkthrough.topics.mealPlan.s2' => 'اضغط هنا لإنشاء خطة أسبوعية.',
 			'walkthrough.topics.mealPlan.s3' => 'اسم الخطة معبّأ مسبقاً. في الأسفل اختر قالباً: حرّ، ثلاث وجبات يومياً أو ست.',
@@ -3417,8 +3465,6 @@ extension on TranslationsAr {
 			'walkthrough.topics.groceries.summary' => 'قائمة تُبنى من الخطة، مع تعليم ما جُمع وتقدير للتكلفة من إيصالاتك، ومشاركة مع من يتسوّق معك.',
 			'walkthrough.topics.groceries.s1' => 'اضغط على "التسوّق".',
 			'walkthrough.topics.groceries.s2' => 'التحديث يعيد بناء القائمة من كل وصفات الخطة الأسبوعية.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'اضغط على زر الزائد لإضافة عنصر يدوياً.',
 			'walkthrough.topics.groceries.s4' => 'اسم العنصر معبّأ مسبقاً. اختر كمية ووحدة، أو ابدأ من منتج تعرفه إيصالاتك أصلاً.',
 			'walkthrough.topics.groceries.s5' => 'اضغط "إضافة" ويدخل العنصر إلى القائمة.',
@@ -3518,6 +3564,7 @@ extension on TranslationsAr {
 			'feedback.closedConversations' => ({required Object n}) => 'محادثات مغلقة (${n})',
 			'feedback.noOpenConversations' => 'لا محادثات مفتوحة',
 			'feedback.closedTag' => 'مغلقة',
+			'feedback.dailyLimit' => 'لقد وصلت إلى الحد اليومي لرسائل الدعم الجديدة. يرجى المحاولة مرة أخرى غدًا، أو الكتابة في محادثة مفتوحة لديك.',
 			'adminBilling.title' => 'المستخدمون',
 			'adminBilling.all' => 'الكل',
 			'adminBilling.paying' => 'يدفعون',
@@ -3919,6 +3966,8 @@ extension on TranslationsAr {
 			'homeWidgets.defaults' => 'الإعدادات الافتراضية للأدوات الجديدة',
 			'homeWidgets.defaultsHint' => 'يمكن تغيير كل أداة لاحقًا من إعداداتها (ضغطة مطولة على الأداة).',
 			'homeWidgets.defaultList' => 'قائمة التسوق',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.openList' => 'القائمة المفتوحة',
 			'homeWidgets.defaultPlan' => 'خطة الوجبات',
 			'homeWidgets.firstPlan' => 'الخطة الأولى',
@@ -3931,8 +3980,6 @@ extension on TranslationsAr {
 			'homeWidgets.widgetAssistantHint' => 'زر يفتح شيفي، مع الميكروفون إن أردتم، وأسئلة سريعة.',
 			'homeWidgets.widgetGroceryAdd' => 'إضافة سريعة إلى القائمة',
 			'homeWidgets.widgetGroceryAddHint' => 'اكتبوا أو أملوا عنصرًا مباشرة إلى القائمة التي تختارونها.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.widgetGroceryList' => 'قائمة التسوق',
 			'homeWidgets.widgetGroceryListHint' => 'ما تبقى لشرائه؛ علّموا العناصر من الأداة.',
 			'homeWidgets.widgetTodayMenu' => 'قائمة طعام اليوم',
@@ -4019,7 +4066,12 @@ extension on TranslationsAr {
 			'featureName.whatsNew' => 'ما الجديد',
 			'featureName.supportChat' => 'دردشة الدعم',
 			'featureName.storeReview' => 'طلب تقييم التطبيق',
+			'featureName.quickActions' => 'اختصارات أيقونة التطبيق',
 			'featureName.webCheckout' => 'الشراء عبر الموقع',
+			'featureName.socialVideoPhoto' => 'صورة من فيديو',
+			'featureName.recipeSourceLink' => 'رابط الوصفة الأصلية',
+			'featureName.webCheckoutIl' => 'الشراء عبر الموقع (إسرائيل)',
+			'featureName.webCheckoutIntl' => 'الشراء عبر الموقع (خارج إسرائيل)',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
@@ -4071,7 +4123,15 @@ extension on TranslationsAr {
 			'voiceAssistants.unavailable' => 'شيفي غير متاح حاليًا.',
 			'voiceAssistants.failed' => 'لم يتمكن شيفي من الإجابة الآن. حاول بعد قليل.',
 			'voiceAssistants.goodbye' => 'بكل سرور! أنا هنا متى احتجتني.',
+			'voiceAssistants.geminiOpensShefi' => 'الفتح عبر Gemini ينقلك إلى شيفي',
+			'voiceAssistants.geminiOpensShefiHint' => 'قل لـ Gemini "افتح Easy Plate" فيفتح التطبيق مباشرة على محادثة مع شيفي، جاهزًا للاستماع. يبقى ميكروفون EasyPlate مغلقًا حتى ذلك الحين. الفتح من أيقونة التطبيق يبقى إلى الشاشة الرئيسية.',
+			'voiceAssistants.geminiPanel' => 'كنافذة عائمة',
+			'voiceAssistants.geminiPanelHint' => 'يفتح شيفي كنافذة عائمة أسفل الشاشة، فوق ما كان مفتوحًا، بدلًا من فتح التطبيق. اضغط خارجها للعودة.',
 			'adminConfig.labels.admin_all_features' => 'إظهار كل الميزات للمسؤول',
+			'quickActions.shefi' => 'تحدّث مع شيفي',
+			'quickActions.groceryAdd' => 'إضافة إلى قائمة التسوق',
+			'quickActions.receipt' => 'إضافة إيصال',
+			'quickActions.support' => 'التواصل مع الدعم',
 			_ => null,
 		};
 	}

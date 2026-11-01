@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
@@ -39,8 +40,7 @@ class WebPageDataSourceImpl implements WebPageDataSource {
     final data = response?.data;
     final html = data is String ? data : data?.toString() ?? '';
 
-    final readable = readableTextFromHtml(html);
-    final structured = _structuredFrom(html, url);
+    final (readable, structured) = await parseOriginalPage(html, url);
 
     // A page can legitimately have JSON-LD and near-empty visible text (a
     // JavaScript-rendered site). Only give up when there is neither.
@@ -59,7 +59,27 @@ class WebPageDataSourceImpl implements WebPageDataSource {
     );
   }
 
-  RecipeEntity? _structuredFrom(String html, String url) {
+  /// The page's readable text and its JSON-LD recipe, worked out off the
+  /// UI isolate: a recipe page is often most of a megabyte of HTML, and the
+  /// regular-expression passes over it (~12–50 ms for 730 KB on a desktop,
+  /// several times that on a phone) froze the spinner the user was
+  /// watching. Small pages are not worth an isolate.
+  @visibleForTesting
+  static Future<(ReadableText, RecipeEntity?)> parseOriginalPage(
+    String html,
+    String url,
+  ) => html.length < _isolateFrom
+      ? Future.value(_parse((html, url)))
+      : compute(_parse, (html, url));
+
+  static const _isolateFrom = 64 * 1024;
+
+  static (ReadableText, RecipeEntity?) _parse((String, String) page) {
+    final (html, url) = page;
+    return (readableTextFromHtml(html), _structuredFrom(html, url));
+  }
+
+  static RecipeEntity? _structuredFrom(String html, String url) {
     final recipe = parseJsonLdRecipe(html);
     if (recipe == null) return null;
 

@@ -87,7 +87,7 @@ export function BookViewerPage() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
-      const target = e.target as HTMLElement | null;
+      const target = e.target instanceof Element ? e.target : null;
       if (target && (target.closest("input, textarea, select, [contenteditable=true]") || target.closest('[role="dialog"]'))) return;
       const next = dir === "rtl" ? "ArrowLeft" : "ArrowRight";
       const prev = dir === "rtl" ? "ArrowRight" : "ArrowLeft";

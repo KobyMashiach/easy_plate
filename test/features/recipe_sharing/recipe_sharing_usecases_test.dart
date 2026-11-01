@@ -97,9 +97,6 @@ class _FakeSharing implements RecipeSharingRepository {
   @override
   Future<List<ShareInviteEntity>> incomingInvites(String uid) async => const [];
   @override
-  Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid) async =>
-      const [];
-  @override
   Future<List<CollabRecipeEntity>> collabsOwnedBy(String uid) async {
     log.add('owned:$uid');
     onQuery?.call();

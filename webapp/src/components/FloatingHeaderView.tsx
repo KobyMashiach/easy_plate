@@ -93,7 +93,7 @@ export function FloatingHeaderView({
           WebkitBackdropFilter: "blur(20px)",
         }}
       >
-        <h1 className="text-headline-lg-mobile text-on-surface">{title}</h1>
+        <h1 className="break-words text-headline-lg-mobile text-on-surface">{title}</h1>
         {subtitle ? <p className="mt-2 text-body-md text-on-surface-variant">{subtitle}</p> : null}
       </div>
       {actions ? (

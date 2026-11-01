@@ -101,6 +101,8 @@ class _HouseholdPageState extends State<HouseholdPage> {
   /// refusal is shown here, so a caller only has to decide what a success
   /// leads to.
   Future<bool> _run(Future<void> Function() action) async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return false;
     setState(() => _busy = true);
     try {
       await action();

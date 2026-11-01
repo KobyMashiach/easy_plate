@@ -82,8 +82,11 @@ class _FakeRemote implements ContentTranslationDataSource {
   Future<void> writeSource(String lang, TranslatableItem item) async =>
       sourcesWritten.add('$lang/${item.type}/${item.id}');
 
+  final forgotten = <String>[];
+
   @override
-  Future<void> forget(String type, String id, Iterable<String> langs) async {}
+  Future<void> forget(String type, String id, Iterable<String> langs) async =>
+      forgotten.add('$type/$id');
 }
 
 class _FakeLocal extends ContentVariantsLocalStore {
@@ -101,6 +104,18 @@ class _FakeLocal extends ContentVariantsLocalStore {
     String lang,
     Map<String, TranslatedFields> variants,
   ) async => (byLang[lang] ??= {}).addAll(variants);
+
+  @override
+  Future<Set<String>> held() async => {
+    for (final variants in byLang.values) ...variants.keys,
+  };
+
+  @override
+  Future<void> forget(Iterable<String> typeIds) async {
+    for (final variants in byLang.values) {
+      variants.removeWhere((key, _) => typeIds.contains(key));
+    }
+  }
 }
 
 class _FakeRecipes implements RecipesRepository {
@@ -616,6 +631,100 @@ void main() {
       ).switchTo(AppLanguage.english);
 
       expect(recipes.saved, isEmpty);
+    });
+  });
+
+  group('translations of deleted records', () {
+    Future<void> settle() async {
+      for (var i = 0; i < 5; i++) {
+        await Future<void>.delayed(Duration.zero);
+      }
+    }
+
+    const held = TranslatedFields({'title': 'x', 'version': 0});
+
+    test('are forgotten on the device and in Firebase', () async {
+      final remote = _FakeRemote();
+      final local = _FakeLocal({
+        'en': {'recipe/r1': held, 'recipe/gone': held},
+        'he': {'recipe/gone': held},
+      });
+      await _serviceWith(
+        remote,
+        local: local,
+        recipes: _FakeRecipes([shakshuka(contentLang: 'en')]),
+      ).switchTo(AppLanguage.english);
+      await settle();
+
+      expect(remote.forgotten, ['recipe/gone']);
+      expect(local.byLang['en']!.keys, ['recipe/r1']);
+      expect(local.byLang['he'], isEmpty);
+    });
+
+    test('found only in Firebase are forgotten too', () async {
+      final remote = _FakeRemote(
+        stored: {'recipe/gone': held},
+        answer: {
+          'recipe/r1': const TranslatedFields({...english, 'version': 0}),
+        },
+      );
+      await _serviceWith(
+        remote,
+        recipes: _FakeRecipes([shakshuka()]),
+      ).switchTo(AppLanguage.english);
+      await settle();
+
+      expect(remote.forgotten, ['recipe/gone']);
+    });
+
+    test('of a type with no records at all are left alone', () async {
+      // A box still being pulled down reads empty; that is not "deleted".
+      final remote = _FakeRemote();
+      final local = _FakeLocal({
+        'en': {'book/b1': held, 'recipe/gone': held},
+      });
+      await _serviceWith(
+        remote,
+        local: local,
+        recipes: _FakeRecipes([shakshuka(contentLang: 'en')]),
+      ).switchTo(AppLanguage.english);
+      await settle();
+
+      expect(remote.forgotten, ['recipe/gone']);
+      expect(local.byLang['en']!.keys, ['book/b1']);
+    });
+
+    test('a record that arrives during the pass keeps its own', () async {
+      final remote = _FakeRemote(
+        answer: {
+          'recipe/r1': const TranslatedFields({...english, 'version': 0}),
+        },
+      );
+      final local = _FakeLocal({
+        'en': {'recipe/r2': held},
+      });
+      final recipes = _FakeRecipes([shakshuka()]);
+      // A household listener brings r2 in while the model works.
+      remote.meanwhile = () => recipes.all = [
+        shakshuka(),
+        RecipeEntity(
+          id: 'r2',
+          title: 'Soup',
+          ingredients: const [],
+          steps: const [],
+          createdAt: DateTime(2026),
+          contentLang: 'en',
+        ),
+      ];
+      await _serviceWith(
+        remote,
+        local: local,
+        recipes: recipes,
+      ).switchTo(AppLanguage.english);
+      await settle();
+
+      expect(remote.forgotten, isEmpty);
+      expect(local.byLang['en']!.keys, contains('recipe/r2'));
     });
   });
 }

@@ -1,4 +1,5 @@
 import 'package:easy_plate/core/widgets/app_dialog.dart';
+import 'package:easy_plate/core/widgets/clay/clay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -169,5 +170,75 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('נשמר'), findsNothing);
     });
+  });
+
+  testWidgets('a prompt answer is held to the 500 characters names allow', (
+    tester,
+  ) async {
+    String? answer;
+    await tester.pumpWidget(
+      host(
+        onTap: (context) async {
+          answer = await AppDialog.prompt(
+            context,
+            title: 'שם הספר',
+            confirmLabel: 'שמירה',
+          );
+        },
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'ס' * 700);
+    await tester.tap(find.text('שמירה'));
+    await tester.pumpAndSettle();
+    expect(answer?.length, 500);
+  });
+
+  testWidgets('a second tap on a closing dialog leaves the page under it', (
+    tester,
+  ) async {
+    bool? answer;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => Scaffold(
+                  body: TextButton(
+                    onPressed: () async =>
+                        answer = await const AppDialog.warning(
+                          title: 'למחוק?',
+                          confirmLabel: 'מחיקה',
+                          cancelLabel: 'ביטול',
+                        ).show(context),
+                    child: const Text('details page'),
+                  ),
+                ),
+              ),
+            ),
+            child: const Text('home'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('home'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('details page'));
+    await tester.pumpAndSettle();
+
+    // Both handlers run before a frame, as two quick taps do on a phone.
+    final confirm = tester.widget<ClayButton>(
+      find.widgetWithText(ClayButton, 'מחיקה'),
+    );
+    final cancel = tester.widget<TextButton>(
+      find.widgetWithText(TextButton, 'ביטול'),
+    );
+    confirm.onPressed!();
+    cancel.onPressed!();
+    await tester.pumpAndSettle();
+    expect(answer, isTrue);
+    expect(find.text('details page'), findsOneWidget);
   });
 }

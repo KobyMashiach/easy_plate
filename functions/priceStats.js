@@ -75,14 +75,23 @@ function fold(existing, price, now, contributor = null) {
   let recent = [...prevRecent];
   let recentBy = [...prevBy];
   const mine = contributor ? recentBy.indexOf(contributor) : -1;
+  const replaced = mine >= 0 ? Number(recent[mine]) : null;
   if (mine >= 0) {
     recent.splice(mine, 1);
     recentBy.splice(mine, 1);
   }
   recent = [...recent, price].slice(-RECENT_KEEP);
   recentBy = [...recentBy, contributor].slice(-RECENT_KEEP);
-  const count = ((existing && existing.count) || 0) + 1;
-  const sum = ((existing && existing.sum) || 0) + price;
+  // The count (shown as the sample size) and the mean follow the same rule
+  // as the window: a price from an account already in it replaces that
+  // account's earlier one instead of adding a sample. They used to grow
+  // with every submission, so one account resending a made-up price
+  // could make "based on 5,000 prices" of it, and drag the mean there.
+  const prevCount = (existing && existing.count) || 0;
+  const prevSum = (existing && existing.sum) || 0;
+  const replacing = replaced !== null && Number.isFinite(replaced) && prevCount > 0;
+  const count = replacing ? prevCount : prevCount + 1;
+  const sum = replacing ? Math.max(0, prevSum - replaced) + price : prevSum + price;
   return {
     count,
     sum,
@@ -169,10 +178,15 @@ exports.priceStats = onRequest(
   { region: "europe-west1", minInstances: 0, maxInstances: 5, timeoutSeconds: 60, cors: ORIGINS },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).json({ error: { message: "POST only" } });
-    const caller = await proxy.verifyCaller(req);
-    if (!caller) return res.status(401).json({ error: { message: "A valid Firebase ID token is required" } });
-    // Switched off from the console (the `disabled` claim, adminUsers.disable).
-    if (caller.disabled === true) return res.status(403).json({ error: { code: "account_disabled", message: "This account is disabled" } });
+    // A verified phone, as for the paid endpoints (verifyPaidCaller), and not
+    // switched off from the console (the `disabled` claim). The median keeps
+    // one slot per account, which is only a defence while accounts cost
+    // something: an email/password account minted against the Auth REST API
+    // is free, and twenty of them set a product's price for everyone. Every
+    // real account has a phone (the gate and the website's /phone step); the
+    // app's HttpCalls refreshes the token and retries on phone_required.
+    const { caller, refusal } = await proxy.verifyPaidCaller(req);
+    if (!caller) return res.status(refusal.status).json({ error: { code: refusal.code, message: refusal.message } });
     try {
       const out = await share(admin.firestore(), caller.uid, req.body && req.body.records);
       return res.status(out.status).json(out.body);

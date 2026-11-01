@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../user_profile/domain/entities/user_permission.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
@@ -135,7 +136,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
               ListTile(
                 leading: Icon(icon, color: AppColors.primary),
                 title: Text(label),
-                onTap: () => Navigator.of(sheetContext).pop(id),
+                onTap: () => popIfCurrent(sheetContext, id),
               ),
             const SizedBox(height: AppSpacing.sm),
           ],
@@ -308,7 +309,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                 color: AppColors.primary,
               ),
               title: Text(s.sendPush),
-              onTap: () => Navigator.of(sheetContext).pop('notify'),
+              onTap: () => popIfCurrent(sheetContext, 'notify'),
             ),
             ListTile(
               leading: Icon(
@@ -318,9 +319,10 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                 color: account.disabled ? AppColors.primary : AppColors.error,
               ),
               title: Text(account.disabled ? s.enable : s.disable),
-              onTap: () => Navigator.of(
+              onTap: () => popIfCurrent(
                 sheetContext,
-              ).pop(account.disabled ? 'enable' : 'disable'),
+                account.disabled ? 'enable' : 'disable',
+              ),
             ),
             ListTile(
               leading: Icon(
@@ -328,7 +330,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                 color: AppColors.primary,
               ),
               title: Text(s.releaseSession),
-              onTap: () => Navigator.of(sheetContext).pop('releaseSession'),
+              onTap: () => popIfCurrent(sheetContext, 'releaseSession'),
             ),
             // Either grant toggles back to a plain user; the function refuses
             // the administrator's own account, so the last admin stays.
@@ -345,7 +347,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                     : s.makeSuperuser,
               ),
               subtitle: Text(s.superuserHint, style: AppTextStyles.labelSm),
-              onTap: () => Navigator.of(sheetContext).pop('permission'),
+              onTap: () => popIfCurrent(sheetContext, 'permission'),
             ),
             ListTile(
               leading: Icon(
@@ -360,7 +362,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                     : s.makeAdmin,
               ),
               subtitle: Text(s.adminHint, style: AppTextStyles.labelSm),
-              onTap: () => Navigator.of(sheetContext).pop('admin'),
+              onTap: () => popIfCurrent(sheetContext, 'admin'),
             ),
             ListTile(
               leading: Icon(
@@ -371,7 +373,7 @@ class _SubscriptionsTabState extends State<SubscriptionsTab> {
                 s.deleteAccount,
                 style: TextStyle(color: AppColors.error),
               ),
-              onTap: () => Navigator.of(sheetContext).pop('delete'),
+              onTap: () => popIfCurrent(sheetContext, 'delete'),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],

@@ -90,6 +90,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$wakeWord$he wakeWord = Translations$wakeWord$he.internal(_root);
 	late final Translations$voiceAssistants$he voiceAssistants = Translations$voiceAssistants$he.internal(_root);
 	late final Translations$adminUser$he adminUser = Translations$adminUser$he.internal(_root);
+	late final Translations$quickActions$he quickActions = Translations$quickActions$he.internal(_root);
 }
 
 // Path: common
@@ -447,6 +448,15 @@ class Translations$auth$he {
 
 	/// he: 'לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.'
 	String get sessionTakeoverFailed => 'לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.';
+
+	/// he: 'אימות מחדש של הטלפון'
+	String get reverifyTitle => 'אימות מחדש של הטלפון';
+
+	/// he: 'לביטחונך, צריך לאמת שוב את הטלפון לפני מחיקת החשבון. נשלח קוד חדש ל-$phone.'
+	String reverifyBody({required Object phone}) => 'לביטחונך, צריך לאמת שוב את הטלפון לפני מחיקת החשבון. נשלח קוד חדש ל-${phone}.';
+
+	/// he: 'לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.'
+	String get reverifyNoPhone => 'לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.';
 
 	/// he: 'מכשיר אחר מבקש להתחבר'
 	String get sessionReleaseTitle => 'מכשיר אחר מבקש להתחבר';
@@ -1161,6 +1171,15 @@ class Translations$recipe$he {
 
 	/// he: 'נשמר אצלך. הפוסט בקהילה לא עודכן, נסו שוב מאוחר יותר.'
 	String get communityUpdateFailed => 'נשמר אצלך. הפוסט בקהילה לא עודכן, נסו שוב מאוחר יותר.';
+
+	/// he: 'למתכון המקורי'
+	String get sourceLink => 'למתכון המקורי';
+
+	/// he: 'פתיחת המקור שממנו יובא המתכון'
+	String get sourceLinkHint => 'פתיחת המקור שממנו יובא המתכון';
+
+	/// he: 'לא הצלחנו לפתוח את הקישור'
+	String get sourceOpenFailed => 'לא הצלחנו לפתוח את הקישור';
 }
 
 // Path: cookMode
@@ -2178,6 +2197,21 @@ class Translations$ingestion$he {
 
 	/// he: '$n MB'
 	String sizeMb({required Object n}) => '${n} MB';
+
+	/// he: 'תמונה מהסרטון'
+	String get videoPhotoTitle => 'תמונה מהסרטון';
+
+	/// he: 'בחרו את התמונה שתייצג את המתכון. אפשר לשנות אותה גם אחר כך.'
+	String get videoPhotoHint => 'בחרו את התמונה שתייצג את המתכון. אפשר לשנות אותה גם אחר כך.';
+
+	/// he: 'תמונת הפוסט'
+	String get videoPhotoCover => 'תמונת הפוסט';
+
+	/// he: 'בלי תמונה'
+	String get videoPhotoNone => 'בלי תמונה';
+
+	/// he: 'לא הצלחנו לשמור את התמונה, נסו אחרת'
+	String get videoPhotoFailed => 'לא הצלחנו לשמור את התמונה, נסו אחרת';
 }
 
 // Path: mealPlanner
@@ -3554,6 +3588,9 @@ class Translations$feedback$he {
 
 	/// he: 'סגורה'
 	String get closedTag => 'סגורה';
+
+	/// he: 'הגעת למכסת פניות התמיכה החדשות להיום. אפשר לנסות שוב מחר, או לכתוב בפנייה שכבר פתוחה.'
+	String get dailyLimit => 'הגעת למכסת פניות התמיכה החדשות להיום. אפשר לנסות שוב מחר, או לכתוב בפנייה שכבר פתוחה.';
 }
 
 // Path: adminBilling
@@ -4879,8 +4916,23 @@ class Translations$featureName$he {
 	/// he: 'בקשת דירוג בחנות'
 	String get storeReview => 'בקשת דירוג בחנות';
 
+	/// he: 'קיצורי דרך באייקון'
+	String get quickActions => 'קיצורי דרך באייקון';
+
 	/// he: 'רכישה באתר'
 	String get webCheckout => 'רכישה באתר';
+
+	/// he: 'תמונה מסרטון'
+	String get socialVideoPhoto => 'תמונה מסרטון';
+
+	/// he: 'קישור למתכון המקורי'
+	String get recipeSourceLink => 'קישור למתכון המקורי';
+
+	/// he: 'רכישה באתר (ישראל)'
+	String get webCheckoutIl => 'רכישה באתר (ישראל)';
+
+	/// he: 'רכישה באתר (חו"ל)'
+	String get webCheckoutIntl => 'רכישה באתר (חו"ל)';
 }
 
 // Path: adminConfig
@@ -5301,6 +5353,27 @@ class Translations$adminUser$he {
 
 	/// he: 'סופר-משתמש'
 	String get permissionSuperuser => 'סופר-משתמש';
+}
+
+// Path: quickActions
+class Translations$quickActions$he {
+	Translations$quickActions$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'דבר עם שפי'
+	String get shefi => 'דבר עם שפי';
+
+	/// he: 'הוספה לרשימת קניות'
+	String get groceryAdd => 'הוספה לרשימת קניות';
+
+	/// he: 'הוספת קבלה'
+	String get receipt => 'הוספת קבלה';
+
+	/// he: 'פנייה לתמיכה'
+	String get support => 'פנייה לתמיכה';
 }
 
 // Path: walkthrough.topics
@@ -6270,6 +6343,9 @@ extension on Translations {
 			'auth.sessionTakeoverBody' => ({required Object phone}) => 'נשלח קוד חדש ל-${phone}. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.',
 			'auth.sessionTakeoverNoPhone' => 'אין מספר טלפון בחשבון, אז אי אפשר לאמת מכאן. אפשר לבקש התנתקות או לפנות לתמיכה.',
 			'auth.sessionTakeoverFailed' => 'לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.',
+			'auth.reverifyTitle' => 'אימות מחדש של הטלפון',
+			'auth.reverifyBody' => ({required Object phone}) => 'לביטחונך, צריך לאמת שוב את הטלפון לפני מחיקת החשבון. נשלח קוד חדש ל-${phone}.',
+			'auth.reverifyNoPhone' => 'לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.',
 			'auth.sessionReleaseTitle' => 'מכשיר אחר מבקש להתחבר',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'מכשיר ${platform} מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?',
 			'auth.sessionReleaseConfirm' => 'להתנתק כאן',
@@ -6469,6 +6545,9 @@ extension on Translations {
 			'recipe.communityUpdated' => 'העותק בקהילה עודכן',
 			'recipe.communityGone' => 'המתכון כבר לא בקהילה, נשמר רק אצלך',
 			'recipe.communityUpdateFailed' => 'נשמר אצלך. הפוסט בקהילה לא עודכן, נסו שוב מאוחר יותר.',
+			'recipe.sourceLink' => 'למתכון המקורי',
+			'recipe.sourceLinkHint' => 'פתיחת המקור שממנו יובא המתכון',
+			'recipe.sourceOpenFailed' => 'לא הצלחנו לפתוח את הקישור',
 			'cookMode.title' => 'מצב בישול',
 			'cookMode.start' => 'להתחיל לבשל',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'שלב ${n} מתוך ${total}',
@@ -6662,14 +6741,14 @@ extension on Translations {
 			'sharing.viewerCannotEditList' => 'הרשימה שותפה איתכם לצפייה בלבד',
 			'sharing.kindList' => 'רשימת קניות',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'ספר משותף אחד', other: '${n} ספרים משותפים', ), 
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'רשימת קניות משותפת אחת', other: '${n} רשימות קניות משותפות', ), 
 			'notifications.title' => 'התראות',
 			'notifications.empty' => 'אין התראות',
 			'notifications.sharedRecipe' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את "${recipe}"',
 			'notifications.asViewer' => 'לצפייה בלבד',
 			'notifications.asEditor' => 'לעריכה',
-			_ => null,
-		} ?? switch (path) {
 			'notifications.markAllRead' => 'סימון הכל כנקרא',
 			'notifications.openRecipe' => 'פתיחת המתכון',
 			'notifications.alreadyHandled' => 'ההזמנה כבר טופלה',
@@ -6787,6 +6866,11 @@ extension on Translations {
 			'ingestion.recordingTag' => 'הקלטה',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} KB',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} MB',
+			'ingestion.videoPhotoTitle' => 'תמונה מהסרטון',
+			'ingestion.videoPhotoHint' => 'בחרו את התמונה שתייצג את המתכון. אפשר לשנות אותה גם אחר כך.',
+			'ingestion.videoPhotoCover' => 'תמונת הפוסט',
+			'ingestion.videoPhotoNone' => 'בלי תמונה',
+			'ingestion.videoPhotoFailed' => 'לא הצלחנו לשמור את התמונה, נסו אחרת',
 			'mealPlanner.title' => 'תכנון ארוחות',
 			'mealPlanner.newPlan' => 'תפריט חדש',
 			'mealPlanner.planName' => 'שם התפריט',
@@ -7171,6 +7255,8 @@ extension on Translations {
 			'walkthrough.topics.library.s6' => 'זהו הספר שיצרתם. מכאן מוסיפים אליו מתכונים, ובספר מדפדפים בין העמודים וקופצים מתוכן העניינים. לחיצה ארוכה על ספר במדף פותחת שיתוף, כריכה, שינוי שם ומחיקה.',
 			'walkthrough.topics.mealPlan.title' => 'תפריט שבועי ותזונה',
 			'walkthrough.topics.mealPlan.summary' => 'תוכנית ארוחות לכל השבוע עם סיכום תזונתי לכל יום, שמזינה את רשימת הקניות.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'לחצו על ״תפריטים״ לתכנון הארוחות.',
 			'walkthrough.topics.mealPlan.s2' => 'לחצו כאן כדי ליצור תוכנית שבועית.',
 			'walkthrough.topics.mealPlan.s3' => 'שם התוכנית כבר מולא. למטה בוחרים תבנית: חופשית, שלוש ארוחות ביום או שש.',
@@ -7182,8 +7268,6 @@ extension on Translations {
 			'walkthrough.topics.groceries.summary' => 'רשימה שנבנית מהתפריט, עם סימון מה כבר נאסף, הערכת עלות מהקבלות שלכם, ושיתוף עם מי שקונה איתכם.',
 			'walkthrough.topics.groceries.s1' => 'לחצו על ״קניות״.',
 			'walkthrough.topics.groceries.s2' => 'רענון בונה מחדש את הרשימה מכל המתכונים בתפריט השבועי.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.groceries.s3' => 'לחצו על הפלוס כדי להוסיף פריט ביד.',
 			'walkthrough.topics.groceries.s4' => 'שם הפריט כבר מולא. בוחרים כמות ויחידה, או מתחילים ממוצר שהקבלות שלכם כבר מכירות.',
 			'walkthrough.topics.groceries.s5' => 'לחצו ״הוסף״ והפריט ייכנס לרשימה.',
@@ -7283,6 +7367,7 @@ extension on Translations {
 			'feedback.closedConversations' => ({required Object n}) => 'פניות סגורות (${n})',
 			'feedback.noOpenConversations' => 'אין פניות פתוחות',
 			'feedback.closedTag' => 'סגורה',
+			'feedback.dailyLimit' => 'הגעת למכסת פניות התמיכה החדשות להיום. אפשר לנסות שוב מחר, או לכתוב בפנייה שכבר פתוחה.',
 			'adminBilling.title' => 'משתמשים',
 			'adminBilling.all' => 'הכל',
 			'adminBilling.paying' => 'משלמים',
@@ -7684,6 +7769,8 @@ extension on Translations {
 			'household.leaveConfirm' => 'לעזוב? מה שנשמר כאן נשאר בחשבון המשותף; החשבון שלכם חוזר למה שהיה לכם קודם.',
 			'household.dissolve' => 'לסגור את החשבון המשותף',
 			'household.dissolveConfirm' => 'לסגור את החשבון המשותף? החברים יאבדו גישה ופרימיום. המידע שלכם חוזר לחשבון האישי.',
+			_ => null,
+		} ?? switch (path) {
 			'household.joined' => 'ברוכים הבאים לחשבון המשותף!',
 			'household.inheritedNote' => ({required Object name}) => 'הפרימיום מגיע מהמנוי של ${name}.',
 			'household.failed' => 'זה לא הצליח. נסו שוב.',
@@ -7696,8 +7783,6 @@ extension on Translations {
 			'homeWidgets.intro' => 'הוסיפו ווידג\'טים של EasyPlate למסך הבית: לשאול את שפי, להוסיף לרשימת הקניות, לראות את הרשימה ואת תפריט היום בלי לפתוח את האפליקציה.',
 			'homeWidgets.howToIos' => 'לחיצה ארוכה על מקום ריק במסך הבית, לחיצה על +, חיפוש EasyPlate ובחירת ווידג\'ט. אותם ווידג\'טים מתאימים גם למסך הנעילה.',
 			'homeWidgets.howToAndroid' => 'לחיצה ארוכה על מקום ריק במסך הבית, בחירת "ווידג\'טים" ומציאת EasyPlate, או לחיצה על "הוספה למסך הבית" למטה.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'הוספה למסך הבית',
 			'homeWidgets.installed' => ({required Object count}) => '${count} במסך הבית',
 			'homeWidgets.pinFailed' => 'המשגר לא הציע להוסיף את הווידג\'ט. הוסיפו אותו מרשימת הווידג\'טים של מסך הבית.',
@@ -7802,7 +7887,12 @@ extension on Translations {
 			'featureName.whatsNew' => 'מה חדש',
 			'featureName.supportChat' => 'צ\'אט תמיכה',
 			'featureName.storeReview' => 'בקשת דירוג בחנות',
+			'featureName.quickActions' => 'קיצורי דרך באייקון',
 			'featureName.webCheckout' => 'רכישה באתר',
+			'featureName.socialVideoPhoto' => 'תמונה מסרטון',
+			'featureName.recipeSourceLink' => 'קישור למתכון המקורי',
+			'featureName.webCheckoutIl' => 'רכישה באתר (ישראל)',
+			'featureName.webCheckoutIntl' => 'רכישה באתר (חו"ל)',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -8026,6 +8116,10 @@ extension on Translations {
 			'adminUser.shares.kindHousehold' => 'משק בית',
 			'adminUser.shares.withNames' => ({required Object names}) => 'עם: ${names}',
 			'adminUser.permissionSuperuser' => 'סופר-משתמש',
+			'quickActions.shefi' => 'דבר עם שפי',
+			'quickActions.groceryAdd' => 'הוספה לרשימת קניות',
+			'quickActions.receipt' => 'הוספת קבלה',
+			'quickActions.support' => 'פנייה לתמיכה',
 			_ => null,
 		};
 	}

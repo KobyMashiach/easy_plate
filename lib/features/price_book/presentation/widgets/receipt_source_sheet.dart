@@ -10,6 +10,7 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../recipe_ingestion/domain/entities/ingestion_file.dart';
 import '../../../recipe_ingestion/data/datasources/recipe_ai_datasource.dart'
     show ReceiptPage;
@@ -59,6 +60,8 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
   /// Our own viewfinder with auto-capture; the system camera only when it
   /// cannot run (no permission, no camera).
   Future<void> _shoot() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     setState(() => _busy = true);
     try {
       final bytes = await ReceiptCameraPage.open(context);
@@ -85,6 +88,8 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
   }
 
   Future<void> _gallery() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     setState(() => _busy = true);
     try {
       final files = await _picker.pickMultiImage(
@@ -105,6 +110,8 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
   }
 
   Future<void> _pdf() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     setState(() => _busy = true);
     try {
       final files = await FilePicker.pickFiles(
@@ -243,7 +250,7 @@ class _ReceiptSourceSheetState extends State<_ReceiptSourceSheet> {
                 expanded: true,
                 onPressed: _busy
                     ? null
-                    : () => Navigator.of(context).pop(List.of(_pages)),
+                    : () => popIfCurrent(context, List.of(_pages)),
               ),
             ],
           ],

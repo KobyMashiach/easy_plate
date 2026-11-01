@@ -45,6 +45,10 @@ class ShareCodeRefused implements Exception {
   /// The caller's account was blocked by the administrator (403): every
   /// action of the function refuses it, redeeming and creating alike.
   static const accountDisabled = 'account_disabled';
+
+  /// Today's allowance of wrong codes is spent (429): another try cannot
+  /// help until the daily reset.
+  static const quota = 'quota';
   static const known = {
     invalid,
     notFound,
@@ -58,6 +62,7 @@ class ShareCodeRefused implements Exception {
     notEligible,
     tooManyRecipes,
     accountDisabled,
+    quota,
   };
 
   @override

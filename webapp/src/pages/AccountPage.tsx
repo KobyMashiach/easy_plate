@@ -6,7 +6,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { useI18n } from "../lib/i18n";
 import { isPaddleEntitlement, isWebEntitlement, premiumUntilMs, tierOf } from "../lib/entitlement";
-import { account, ApiError, apiErrorText, billing, links } from "../lib/api";
+import { ApiError, apiErrorText, billing, links } from "../lib/api";
+import { deleteAccountWithReverify, usePhoneReverify } from "../features/settings/phoneReverify";
 import { useManage } from "../lib/webBillingFlows";
 import { Button, Card, Field, Icons, Notice, PageTitle, Pill, Row, Spinner } from "../components/ui";
 import { useIsPhone } from "../components/useIsPhone";
@@ -218,6 +219,7 @@ function DeleteAccountCard() {
   const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const reverify = usePhoneReverify();
   const word = t("delete.word");
   const confirmed = typed.trim().toLocaleLowerCase() === word.toLocaleLowerCase();
 
@@ -239,7 +241,12 @@ function DeleteAccountCard() {
     setBusy(true);
     setError(null);
     try {
-      await account.delete();
+      // A recent sign-in asked for: the SMS dialog, then one retry.
+      // Dismissed = nothing happened, the card is as it was.
+      if (!(await deleteAccountWithReverify(reverify.request))) {
+        setBusy(false);
+        return;
+      }
     } catch (err) {
       // No answer (connection dropped, tab asleep) is not "nothing happened":
       // the server may well have finished.
@@ -281,6 +288,7 @@ function DeleteAccountCard() {
           </p>
         ) : null}
       </form>
+      {reverify.dialog}
     </Card>
   );
 }

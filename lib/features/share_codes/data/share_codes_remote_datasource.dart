@@ -86,14 +86,19 @@ class ShareCodesFirestoreRepository implements ShareCodesRepository {
     String targetId, {
     required String ownerUid,
   }) async {
-    // Equality filters only: no composite index, and the ownerUid clause is
-    // what lets the rules prove the query stays within the owner's documents.
+    // The ownerUid clause is what lets the rules prove the query stays
+    // within the owner's documents. Expired codes are filtered here rather
+    // than on the phone: they never go away on their own, so every share
+    // sheet opened read (and paid for) each one the target ever had. The
+    // range needs the composite index on share_codes in
+    // firestore.indexes.json; isActiveAt below still runs, for the clock.
+    final now = DateTime.now();
     final snapshot = await _codes
         .where('ownerUid', isEqualTo: ownerUid)
         .where('targetId', isEqualTo: targetId)
         .where('revoked', isEqualTo: false)
+        .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
         .get();
-    final now = DateTime.now();
     return parseEach(
         snapshot.docs,
         _fromDoc,

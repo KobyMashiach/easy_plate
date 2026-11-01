@@ -2,6 +2,8 @@ import 'dart:async';
 
 import '../../../../core/sync/user_cloud_collection.dart';
 import '../../../../core/translation/content_translation.dart';
+import '../../../../core/translation/content_translation_service.dart';
+import '../../../../core/translation/content_variants_cleaner.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../../domain/repositories/grocery_lists_repository.dart';
 import '../datasources/grocery_lists_local_datasource.dart';
@@ -14,7 +16,15 @@ class GroceryListsRepositoryImpl implements GroceryListsRepository {
   /// ticked off on one device is the same list on the next.
   final UserCloudCollection<GroceryListModel>? cloud;
 
-  GroceryListsRepositoryImpl({required this.localDataSource, this.cloud});
+  /// Drops a deleted record's translations, so a language switch stops
+  /// reading them. Optional so tests can run without it.
+  final ContentVariantsCleaner? translations;
+
+  GroceryListsRepositoryImpl({
+    required this.localDataSource,
+    this.cloud,
+    this.translations,
+  });
 
   @override
   Future<List<GroceryListEntity>> getLists() async {
@@ -50,6 +60,7 @@ class GroceryListsRepositoryImpl implements GroceryListsRepository {
   Future<void> deleteList(String id) async {
     await localDataSource.deleteList(id);
     unawaited(cloud?.remove(id) ?? Future.value());
+    translations?.forget(ContentTranslationService.listType, id);
   }
 
   /// See the same method on the recipes repository.

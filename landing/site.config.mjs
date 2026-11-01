@@ -5,11 +5,12 @@
 // "Add custom domain", the site also answers at https://easy-plate.web.app.
 export const SITE = 'https://aieasyplate.app';
 
-// App Store link. Get the real one from App Store Connect → the app →
-// "App Information" → "View on App Store" (it looks like
-// https://apps.apple.com/il/app/easyplate/id1234567890). It exists as soon as
-// the app record is created, before the app is approved.
-export const APP_STORE_URL = 'https://apps.apple.com/us/app/easy-plate-ai/id6809243199';
+// App Store link, without a storefront on purpose: apps.apple.com sends the
+// visitor to their own country's page (an Israeli to /il/, where the app is
+// live), and the App Store app on an iPhone opens the app in the user's own
+// storefront instead of a foreign one. The /us/ form that App Store Connect
+// shows ("View on App Store") pinned every visitor to the US page.
+export const APP_STORE_URL = 'https://apps.apple.com/app/easy-plate-ai/id6809243199';
 
 // The numeric part of that link (the digits after "id"). Enables the live
 // rating line on the home page; empty keeps the honest "free to start" line.

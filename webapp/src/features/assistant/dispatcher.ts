@@ -28,7 +28,7 @@ import { canEditPlan, mealsForWeekday, newMealPlan, normalizeMealPlan, WEEKDAYS,
 import { appLanguageOf, defaultPreferences, normalizePreferences, PREFERENCES_ID, updatePreferences, type Preferences } from "../../models/preferences";
 import { canEditRecipe, DIETARY, MEASUREMENT_UNITS, normalizeRecipe, type DietaryPreference, type Ingredient, type MeasurementUnit, type Recipe } from "../../models/recipe";
 import { readActiveList, saveList, writeActiveList } from "../groceries/store";
-import { sendFeedback, type FeedbackType } from "../support/data";
+import { refusedForDailyLimit, sendFeedback, type FeedbackType } from "../support/data";
 import { generateRecipe, IngestError, parseFromSocialVideo, parseFromUrl, parseRawText, searchWeb } from "../ingest/ai";
 import { isWebUrl } from "../ingest/channels";
 import { createBook as createBookRecord, updateBook } from "../library/booksStore";
@@ -1001,6 +1001,8 @@ export class AssistantDispatcher {
     const details: Record<string, string> = {};
     for (const [k, v] of Object.entries(raw)) if (v && v.trim()) details[k] = v.trim();
     const id = await sendFeedback({ type: reason, message, authorUid: env.uid, authorName: env.authorName, authorEmail: env.authorEmail, details, source: "shefi" });
+    // Past the day's allowance of new conversations the server closes it at once (onFeedbackCreated).
+    if (await refusedForDailyLimit(id)) return fail("daily_limit", this.t("support.form.dailyLimit"));
     return ok({
       ticket_id: id,
       reason,

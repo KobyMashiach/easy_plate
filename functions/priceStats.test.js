@@ -93,6 +93,24 @@ test("one account holds one slot of the median window, however many prices it se
   assert.equal(stat.median, 7);
   assert.equal(stat.recentBy, undefined, "who gave which price is not on the public document");
   assert.equal(db.store.get(`${WINDOW_COLLECTION}/${key}`).recentBy.length, 4);
+  // The sample size and the mean are not inflated by the resends either:
+  // four accounts, four samples, the mean of 7, 7, 7 and 9000.
+  assert.equal(stat.count, 4);
+  assert.equal(stat.avg, Math.round(((7 * 3 + 9000) / 4) * 100) / 100);
+});
+
+test("an account's new price replaces its own sample in the count and the mean", () => {
+  let doc = fold(null, 10, 1, "a");
+  doc = fold({ ...doc, recentBy: doc.recentBy }, 20, 1, "b");
+  doc = fold({ ...doc, recentBy: doc.recentBy }, 30, 1, "a"); // a changes 10 → 30
+  assert.equal(doc.count, 2);
+  assert.equal(doc.sum, 50);
+  assert.equal(doc.avg, 25);
+  assert.deepEqual(doc.recent, [20, 30]);
+  // Untracked (legacy) samples and anonymous folds still add one each.
+  doc = fold({ count: 2, sum: 20, recent: [10, 10] }, 12, 1, null);
+  assert.equal(doc.count, 3);
+  assert.equal(doc.sum, 32);
 });
 
 test("a window written before contributors were tracked is kept and extended", () => {

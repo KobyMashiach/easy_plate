@@ -38,6 +38,8 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
   /// Same import as the feed's save button, so a recipe linked in a reply can
   /// be kept without going back to find it in the feed.
   Future<void> _save() async {
+    // A second tap before the rebuild greys the control out.
+    if (_saving) return;
     final repository = context.read<SharedRecipesRepository>();
     final recipes = context.read<RecipesRepository>();
 
@@ -74,6 +76,8 @@ class _ReplyRecipeLinkState extends State<ReplyRecipeLink> {
   }
 
   Future<void> _open() async {
+    // A second tap before the rebuild greys the control out.
+    if (_opening) return;
     final repository = context.read<SharedRecipesRepository>();
     final router = GoRouter.of(context);
 

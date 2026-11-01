@@ -142,7 +142,8 @@ class _OnboardingForm extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
         ClayButton(
           label: t.onboarding.finish,
-          icon: Icons.arrow_back_rounded,
+          // Forward in every language: the icon mirrors itself under RTL.
+          icon: Icons.arrow_forward_rounded,
           expanded: true,
           onPressed: () => bloc.add(const OnboardingEvent.finish()),
         ),

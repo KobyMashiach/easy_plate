@@ -278,3 +278,46 @@ test("switching an account off puts `disabled` in its token claims, and back on 
   // A failure is logged, never thrown: the status document already stands.
   await setDisabledClaim("u1", true, { getUser: async () => { throw new Error("down"); } });
 });
+
+test("every console endpoint verifies the caller with revocation checked, before anything else", async () => {
+  const proxyInternals = require("./aiProxy").internals;
+  const real = proxyInternals.verifyCaller;
+  const seen = [];
+  proxyInternals.verifyCaller = async (_req, opts) => {
+    seen.push(opts);
+    return null; // as for a revoked token
+  };
+  const fakeReq = () => ({
+    method: "POST",
+    headers: { authorization: "Bearer revoked" },
+    get(name) { return this.headers[name.toLowerCase()]; },
+    body: { action: "get" },
+  });
+  const fakeRes = () => ({
+    statusCode: 0,
+    body: null,
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; },
+    set() { return this; },
+    setHeader() {},
+    getHeader() {},
+    on() {},
+    end() {},
+  });
+  try {
+    const handlers = {
+      adminUsers: require("./adminUsers").adminUsers,
+      adminPanel: require("./adminPanel").adminPanel,
+      adminRemoteConfig: require("./adminRemoteConfig").adminRemoteConfig,
+    };
+    for (const [name, handler] of Object.entries(handlers)) {
+      seen.length = 0;
+      const res = fakeRes();
+      await handler(fakeReq(), res);
+      assert.equal(res.statusCode, 401, name);
+      assert.deepEqual(seen, [{ checkRevoked: true }], name);
+    }
+  } finally {
+    proxyInternals.verifyCaller = real;
+  }
+});

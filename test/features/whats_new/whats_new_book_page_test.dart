@@ -220,4 +220,27 @@ void main() {
       expect(WhatsNewService.isFeatureShown('not_a_flag'), isTrue);
     },
   );
+
+  testWidgets('"Next" points the reading way in Hebrew, mirrored once', (
+    tester,
+  ) async {
+    // The arrow icons follow the text direction by themselves: picking the
+    // back arrow for RTL as well mirrored it twice, pointing it backwards.
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await verticalOverflows(() async {
+      await tester.pumpWidget(
+        host(WhatsNewBookPage(args: args(), onAcknowledged: (_) {})),
+      );
+      await tester.pumpAndSettle();
+    });
+    final next = find.byKey(const ValueKey('whatsNew.next')).first;
+    final icon = tester.widget<Icon>(
+      find.descendant(of: next, matching: find.byType(Icon)),
+    );
+    expect(icon.icon, Icons.arrow_forward_rounded);
+    expect(icon.icon!.matchTextDirection, isTrue);
+    expect(Directionality.of(tester.element(next)), TextDirection.rtl);
+  });
 }

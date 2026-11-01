@@ -175,27 +175,42 @@ class _CookModePageState extends State<CookModePage> {
                           children: [
                             Row(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    t.cookMode.stepOf(
-                                      n: '${_index + 1}',
-                                      total: '$total',
-                                    ),
-                                    style: AppTextStyles.labelMd.copyWith(
-                                      color: AppColors.onSurfaceVariant,
-                                    ),
+                                Text(
+                                  t.cookMode.stepOf(
+                                    n: '${_index + 1}',
+                                    total: '$total',
+                                  ),
+                                  style: AppTextStyles.labelMd.copyWith(
+                                    color: AppColors.onSurfaceVariant,
                                   ),
                                 ),
-                                Icon(
-                                  Icons.brightness_7_rounded,
-                                  size: 14,
-                                  color: AppColors.outline,
-                                ),
-                                const SizedBox(width: AppSpacing.xs),
-                                Text(
-                                  t.cookMode.screenOn,
-                                  style: AppTextStyles.labelSm.copyWith(
-                                    color: AppColors.outline,
+                                const SizedBox(width: AppSpacing.sm),
+                                // The screen-on note gives way to the step
+                                // count: on a narrow phone, a larger text
+                                // size or a longer language it ellipsizes
+                                // instead of overflowing the row.
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(
+                                        Icons.brightness_7_rounded,
+                                        size: 14,
+                                        color: AppColors.outline,
+                                      ),
+                                      const SizedBox(width: AppSpacing.xs),
+                                      Flexible(
+                                        child: Text(
+                                          t.cookMode.screenOn,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTextStyles.labelSm
+                                              .copyWith(
+                                                color: AppColors.outline,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -291,6 +306,10 @@ class _FinishPill extends StatelessWidget {
     return PressScale(
       onTap: onTap,
       child: Container(
+        // Capped: the pill shares the top bar with the close and the
+        // ingredients buttons, and at a large text size "Done cooking"
+        // alone outgrew what they leave. It ellipsizes instead.
+        constraints: const BoxConstraints(maxWidth: 180),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
           vertical: AppSpacing.base,
@@ -306,9 +325,13 @@ class _FinishPill extends StatelessWidget {
           children: [
             Icon(Icons.check_rounded, size: 18, color: ink),
             const SizedBox(width: AppSpacing.xs),
-            Text(
-              t.cookMode.finish,
-              style: AppTextStyles.labelMd.copyWith(color: ink),
+            Flexible(
+              child: Text(
+                t.cookMode.finish,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.labelMd.copyWith(color: ink),
+              ),
             ),
           ],
         ),
@@ -562,7 +585,9 @@ class _AmountChip extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.base),
-          Text(ingredient.name, style: AppTextStyles.bodyMd),
+          // Flexible: a long, model-written ingredient line wraps inside
+          // the chip instead of overflowing the step card.
+          Flexible(child: Text(ingredient.name, style: AppTextStyles.bodyMd)),
         ],
       ),
     );
@@ -602,22 +627,36 @@ class _TimerCard extends StatelessWidget {
                     : AppColors.primary,
               ),
               const SizedBox(width: AppSpacing.base),
-              Text(
-                finished ? t.cookMode.timeUp : t.cookMode.timer,
-                style: AppTextStyles.labelMd.copyWith(
-                  color: finished
-                      ? AppColors.onSecondaryContainer
-                      : AppColors.onSurfaceVariant,
+              // At a large text size the 40 pt clock alone nears the card's
+              // width: the label ellipsizes and the clock scales down
+              // rather than the row overflowing.
+              Expanded(
+                child: Text(
+                  finished ? t.cookMode.timeUp : t.cookMode.timer,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: finished
+                        ? AppColors.onSecondaryContainer
+                        : AppColors.onSurfaceVariant,
+                  ),
                 ),
               ),
-              const Spacer(),
-              Text(
-                formatClock(timer.remaining),
-                style: AppTextStyles.displayLg.copyWith(
-                  color: finished
-                      ? AppColors.onSecondaryContainer
-                      : AppColors.onSurface,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+              const SizedBox(width: AppSpacing.base),
+              Flexible(
+                flex: 2,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Text(
+                    formatClock(timer.remaining),
+                    style: AppTextStyles.displayLg.copyWith(
+                      color: finished
+                          ? AppColors.onSecondaryContainer
+                          : AppColors.onSurface,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
                 ),
               ),
             ],

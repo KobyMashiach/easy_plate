@@ -91,6 +91,13 @@ test("model keys are safe Firestore field names", () => {
   assert.equal(modelKey("gemini-3.8-flash"), "gemini-3_8-flash");
   assert.equal(modelKey(""), "unknown");
   assert.equal(modelKey(undefined), "unknown");
+  assert.equal(modelKey("models/gemini-2.5-flash"), "models_gemini-2_5-flash");
+  // Caller-chosen junk does not become a field of the day's shared document.
+  assert.equal(modelKey("x".repeat(65)), "invalid");
+  assert.equal(modelKey("a".repeat(1400)), "invalid");
+  assert.equal(modelKey("gemini flash"), "invalid");
+  assert.equal(modelKey("`users`.u1"), "invalid");
+  assert.equal(modelKey({ toString: () => "gemini" }), "unknown");
 });
 
 test("a call's share of the day goes to the day's map and to its own document", () => {

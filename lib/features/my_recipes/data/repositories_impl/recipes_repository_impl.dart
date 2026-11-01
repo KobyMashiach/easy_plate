@@ -5,6 +5,8 @@ import '../../../../core/hive/user_scope.dart';
 import '../../../../core/sync/recipe_image_store.dart';
 import '../../../../core/sync/user_cloud_collection.dart';
 import '../../../../core/translation/content_translation.dart';
+import '../../../../core/translation/content_translation_service.dart';
+import '../../../../core/translation/content_variants_cleaner.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/repositories/recipes_repository.dart';
 import '../datasources/recipes_local_datasource.dart';
@@ -23,11 +25,22 @@ class RecipesRepositoryImpl implements RecipesRepository {
   /// without this it stayed on the one device that took it.
   final RecipeImageStore? images;
 
+  /// Drops a deleted record's translations, so a language switch stops
+  /// reading them. Optional so tests can run without it.
+  final ContentVariantsCleaner? translations;
+
   RecipesRepositoryImpl({
     required this.localDataSource,
     this.cloud,
     this.images,
+    this.translations,
   });
+
+  /// Uploads in flight, by file name. A recipe shared in the seconds after
+  /// its photo was picked runs [readyForSharing] while the save's own
+  /// background upload is still out, and two saves in a row did the same:
+  /// each sent the whole photo again. They now wait on the one upload.
+  final _uploads = <String, Future<String?>>{};
 
   @override
   Future<List<RecipeEntity>> getRecipes() async {
@@ -113,7 +126,14 @@ class RecipesRepositoryImpl implements RecipesRepository {
     }
     if (model.imageStoragePath != null) return null;
 
-    final path = await store.upload(fileName, uid: uid);
+    final path = await _uploads.putIfAbsent(
+      fileName,
+      // A block, not an arrow: `remove` hands back the stored future, and a
+      // `whenComplete` that returns a future waits on it — on itself.
+      () => store.upload(fileName, uid: uid).whenComplete(() {
+        _uploads.remove(fileName);
+      }),
+    );
     debugPrint('Photo upload for ${model.id}: ${path ?? 'FAILED'}');
     return path == null ? null : model.copyWith(imageStoragePath: path);
   }
@@ -160,6 +180,7 @@ class RecipesRepositoryImpl implements RecipesRepository {
     final doomed = await localDataSource.getRecipeById(id);
     await localDataSource.deleteRecipe(id);
     unawaited(cloud?.remove(id) ?? Future.value());
+    translations?.forget(ContentTranslationService.recipeType, id);
     // Not when the photo travels beyond this copy: a published recipe's
     // community post, and a shared recipe's co-editors, point at the same
     // upload, and deleting it here took the picture off theirs too.

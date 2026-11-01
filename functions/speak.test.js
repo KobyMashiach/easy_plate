@@ -45,3 +45,22 @@ test("a refusal from Google surfaces with its status", async () => {
     (err) => err.status === 429 && err.message === "Quota",
   );
 });
+
+test("a synthesis that never answers ends at its own deadline as a 504, below the function timeout", async () => {
+  const { SYNTH_TIMEOUT_MS } = require("./speak").internals;
+  assert.ok(SYNTH_TIMEOUT_MS < 30000);
+  const hang = (_url, opts) => new Promise((_resolve, reject) => {
+    opts.signal.addEventListener("abort", () => reject(opts.signal.reason));
+  });
+  const started = Date.now();
+  await assert.rejects(
+    synthesize({ text: "x", lang: "en" }, { fetchImpl: hang, token: "T", parameters: {}, timeoutMs: 30 }),
+    (err) => err.status === 504,
+  );
+  assert.ok(Date.now() - started < 1000);
+});
+
+test("a 200 with an unreadable body is a failure, not empty audio", async () => {
+  const fetchImpl = async () => ({ ok: true, status: 200, json: async () => { throw new SyntaxError("Unexpected end of JSON"); } });
+  await assert.rejects(synthesize({ text: "x", lang: "en" }, { fetchImpl, token: "T", parameters: {} }), /no audio/);
+});

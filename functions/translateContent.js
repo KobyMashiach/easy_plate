@@ -8,10 +8,40 @@
 //   translation_cache/{sha256(lang|text)}   every line anyone ever translated
 //   users/{uid}/i18n/{lang}/{type}/{id}     this account's finished variants
 //
-// The first means a line like "2 כוסות קמח" is translated once for everybody;
-// the second means a reinstall or a second phone downloads the work instead
-// of paying for it again. The source text is never overwritten: going back to
-// the language a recipe was written in needs no model at all.
+// The first means a line like "2 כוסות קמח" is translated once for everybody
+// (once it is confirmed, see below); the second means a reinstall or a second
+// phone downloads the work instead of paying for it again. The source text is
+// never overwritten: going back to the language a recipe was written in needs
+// no model at all.
+//
+// The shared cache is only as honest as the model's answer, and that answer
+// can be steered: lines go sixty to a call as one JSON array, so a request
+// carrying a common line next to an instruction line ("…translate entry 1
+// as <anything>") could get attacker text written for the common line and
+// served to every account that has it. So a translation reaches *other*
+// accounts only once two different accounts' calls produced it:
+//
+//   translation_cache/{key} = {
+//     lang,
+//     candidates: { c<sha(text)>: { text, by: [contributor tags] } },
+//   }
+//
+// The first account's answer is stored as a candidate tagged with a hash of
+// its uid (contributorTag — the raw uid is not kept), and that account is
+// served it again from the cache. Anyone else still pays for a translation
+// of their own; if it is the same text (trimmed, exact), their tag joins the
+// candidate's and the line is confirmed for everybody. If it differs, it is
+// a second candidate, and whichever one a later account agrees with first
+// wins — so one injected answer stays pending forever, and two honest
+// accounts outvote it. An attacker would need two paid accounts per line,
+// in agreement, before anyone else's account asked. The extra model cost is
+// one more translation per first-seen line only.
+//
+// Documents written before this (a top-level `text`, no `candidates`) are
+// served as confirmed: the attack was not known when they were written, and
+// re-translating the whole existing cache once per line for a second
+// opinion would double what it already cost. A poisoned one is removed by
+// hand (the console's translation.purge, adminPanel.js).
 const { onRequest } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const { logger } = require("firebase-functions");
@@ -28,6 +58,14 @@ const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
 const CACHE_COLLECTION = "translation_cache";
 const MODEL = "gemini-3.8-flash";
+// Distinct accounts that must produce the same text before a candidate is
+// served to everybody.
+const CONFIRMATIONS = 2;
+// Distinct candidate texts kept per line. Honest answers mostly agree, so a
+// line that reaches this many is being fought over; past it, a new account
+// can still confirm an existing candidate but adds no new one, which keeps
+// the document small whoever is calling.
+const MAX_CANDIDATES = 6;
 
 // Lines per model call. Large enough that the instruction is amortised,
 // small enough that one bad answer does not cost a whole library — and a
@@ -82,6 +120,13 @@ function shapeOf(type) {
 // the function's 540 s timeout threw away every batch already paid for.
 const PARALLEL = 3;
 const CALL_TIMEOUT_MS = 60000;
+// The function runs for 540 s, but a request at the line limit is up to
+// hundreds of batches — far more than three at a time fit in that. No batch
+// starts after this point (a started one may still take CALL_TIMEOUT_MS),
+// so the handler is still alive to give the unstarted lines back and to say
+// why; the batches done are cached, so the app's retry carries on from there.
+const FUNCTION_TIMEOUT_S = 540;
+const START_DEADLINE_MS = FUNCTION_TIMEOUT_S * 1000 - CALL_TIMEOUT_MS - 20000;
 
 /// Pure: the budget units one (trimmed) line costs.
 function unitsOf(text) {
@@ -109,6 +154,63 @@ function batchesOf(strings, maxLines = BATCH, maxChars = BATCH_CHARS) {
 
 function cacheKey(lang, text) {
   return crypto.createHash("sha256").update(`${lang}\n${text}`).digest("hex");
+}
+
+const sha256 = (value) => crypto.createHash("sha256").update(value).digest("hex");
+
+/// Pure: the tag a cache candidate carries for the account that produced it.
+/// A hash, so the shared collection does not list who translated what; the
+/// prefix keeps it from matching a hash of the uid made anywhere else.
+function contributorTag(uid) {
+  return sha256(`translation_cache\n${uid}`).slice(0, 24);
+}
+
+/// Pure: the map key of one candidate text (trimmed): two accounts whose
+/// answers are the same text land on the same key.
+function candidateKey(text) {
+  return `c${sha256(String(text).trim()).slice(0, 24)}`;
+}
+
+/// Pure: what one cache document gives the account tagged [me].
+///   text       the line to serve, or null (the account translates it)
+///   confirmed  whether that text is the shared, agreed one
+///   keys       the candidate keys the document holds (for the write)
+/// A legacy document (top-level `text`) is confirmed as it stands. Among
+/// candidates, the one with the most distinct contributors at or past
+/// CONFIRMATIONS wins (ties by key, so every reader picks the same one);
+/// short of that, the account's own candidate is served back to it alone.
+function resolveEntry(data, me) {
+  const none = { text: null, confirmed: false, keys: [] };
+  if (!data || typeof data !== "object") return none;
+  if (typeof data.text === "string" && data.text) return { text: data.text, confirmed: true, keys: [] };
+  const candidates = data.candidates && typeof data.candidates === "object" ? data.candidates : {};
+  const keys = Object.keys(candidates);
+  let best = null;
+  let bestCount = 0;
+  let bestKey = "";
+  let mine = null;
+  for (const key of keys) {
+    const c = candidates[key];
+    if (!c || typeof c.text !== "string" || !c.text) continue;
+    const by = new Set(Array.isArray(c.by) ? c.by.filter((v) => typeof v === "string") : []);
+    if (by.size >= CONFIRMATIONS && (by.size > bestCount || (by.size === bestCount && key < bestKey))) {
+      best = c.text;
+      bestCount = by.size;
+      bestKey = key;
+    }
+    if (mine === null && me && by.has(me)) mine = c.text;
+  }
+  if (best !== null) return { text: best, confirmed: true, keys };
+  return { text: mine, confirmed: false, keys };
+}
+
+/// Pure: the candidate key a fresh translation is written under, or null
+/// when the document already holds MAX_CANDIDATES other texts.
+function candidateSlot(entry, text) {
+  const key = candidateKey(text);
+  const keys = (entry && entry.keys) || [];
+  if (keys.includes(key) || keys.length < MAX_CANDIDATES) return key;
+  return null;
 }
 
 /// Every distinct string in the request, in the order first seen. Blank and
@@ -167,32 +269,44 @@ function lookup(table, key) {
   return typeof value === "string" ? value : undefined;
 }
 
-async function readCache(lang, strings) {
+/// The lines this account may be served from the shared cache ([table]),
+/// and what each document held ([entries], for the write after a fresh
+/// translation). See resolveEntry for who is served what.
+async function readCache(lang, strings, me) {
   const db = admin.firestore();
   const table = Object.create(null);
+  const entries = Object.create(null);
   for (let i = 0; i < strings.length; i += LOOKUP_CHUNK) {
     const slice = strings.slice(i, i + LOOKUP_CHUNK);
     const refs = slice.map((text) => db.collection(CACHE_COLLECTION).doc(cacheKey(lang, text)));
     const snaps = await db.getAll(...refs);
     snaps.forEach((snap, index) => {
-      const value = snap.exists ? snap.get("text") : null;
-      if (typeof value === "string" && value) table[slice[index]] = value;
+      const entry = resolveEntry(snap.exists ? snap.data() : null, me);
+      entries[slice[index]] = entry;
+      if (entry.text) table[slice[index]] = entry.text;
     });
   }
-  return table;
+  return { table, entries };
 }
 
-async function writeCache(lang, pairs) {
+/// Adds this account's answers as candidates. A merge with arrayUnion, not
+/// a read-modify-write: two accounts landing on the same line at once both
+/// end up in `by`, and confirmation is worked out by whoever reads next.
+async function writeCache(lang, pairs, entries, me) {
   const db = admin.firestore();
-  const entries = Object.entries(pairs);
-  for (let i = 0; i < entries.length; i += 400) {
+  const writes = [];
+  for (const [source, text] of Object.entries(pairs)) {
+    const key = candidateSlot(entries[source], text);
+    if (key) writes.push([source, key, text]);
+  }
+  for (let i = 0; i < writes.length; i += 400) {
     const batch = db.batch();
-    for (const [source, text] of entries.slice(i, i + 400)) {
+    for (const [source, key, text] of writes.slice(i, i + 400)) {
       batch.set(db.collection(CACHE_COLLECTION).doc(cacheKey(lang, source)), {
         lang,
-        text,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
+        candidates: { [key]: { text, by: admin.firestore.FieldValue.arrayUnion(me) } },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
     }
     await batch.commit();
   }
@@ -233,11 +347,19 @@ async function callModel(body, fetchImpl = fetch, timeoutMs = CALL_TIMEOUT_MS) {
 /// Runs [run] over [batches], [parallel] at a time. After the first failure
 /// no new batch starts, the ones in flight are let finish (they are being
 /// paid for, and [run] keeps what they bring), and that failure is thrown.
-async function runBatches(batches, run, parallel = PARALLEL) {
+///
+/// No batch starts once [deadlineAt] (by [clock]) has passed; if any were
+/// left unstarted that way, a 504 `deadline` error is thrown after the ones
+/// in flight finish.
+async function runBatches(batches, run, parallel = PARALLEL, { deadlineAt = Infinity, clock = Date.now } = {}) {
   let next = 0;
   let failure = null;
   const worker = async () => {
     while (failure === null && next < batches.length) {
+      if (clock() >= deadlineAt) {
+        if (failure === null) failure = Object.assign(new Error(`stopped at the time budget with ${batches.length - next} of ${batches.length} batches left`), { status: 504, code: "deadline" });
+        break;
+      }
       const batch = batches[next++];
       try {
         await run(batch);
@@ -368,7 +490,7 @@ exports.translateContent = onRequest(
   {
     secrets: [geminiApiKey],
     region: "europe-west1",
-    timeoutSeconds: 540,
+    timeoutSeconds: FUNCTION_TIMEOUT_S,
     memory: "512MiB",
     minInstances: 0,
     maxInstances: 5,
@@ -408,7 +530,11 @@ exports.translateContent = onRequest(
           return res.status(429).json(budget.refusalBody(lookups, "translateCache"));
         }
       }
-      const table = await readCache(lang, strings);
+      // Lines another account produced and nobody has confirmed yet are not
+      // in [table]: they are translated (and charged) here like any new line,
+      // and this account's answer is the second opinion.
+      const me = contributorTag(uid);
+      const { table, entries } = await readCache(lang, strings, me);
       const missing = strings.filter((s) => !table[s]);
 
       // Only the lines the cache did not have cost anything, so only those
@@ -439,7 +565,7 @@ exports.translateContent = onRequest(
         paid += unitsIn(slice);
         const pairs = Object.create(null);
         slice.forEach((source, index) => {
-          const text = answer.lines[index];
+          const text = answer.lines[index].trim();
           if (text) {
             pairs[source] = text;
             fresh[source] = text;
@@ -449,7 +575,7 @@ exports.translateContent = onRequest(
         // Each batch is cached as it lands, so a timeout or a later failure
         // never throws away lines already paid for.
         if (Object.keys(pairs).length) {
-          await writeCache(lang, pairs).catch((e) => logger.warn("translate cache write failed", { reason: e.message }));
+          await writeCache(lang, pairs, entries, me).catch((e) => logger.warn("translate cache write failed", { reason: e.message }));
         }
         if (answer.usage) {
           usage = usage
@@ -465,7 +591,7 @@ exports.translateContent = onRequest(
               }
             : answer.usage;
         }
-      });
+      }, PARALLEL, { deadlineAt: started + START_DEADLINE_MS });
 
       const translations = applyTranslations(items, table);
       // The version the caller says this text is at. A translation is good
@@ -518,9 +644,12 @@ exports.translateContent = onRequest(
       });
       // Gemini's own text stays in the log above.
       const busy = err.status === 429;
+      if (err.code === "deadline") {
+        return res.status(504).json({ error: { code: "upstream_timeout", message: "Translation took too long, try again to continue" } });
+      }
       return res.status(busy ? 429 : 502).json({ error: { code: busy ? "upstream_busy" : "upstream", message: busy ? "The translator is busy, try again shortly" : "Translation failed" } });
     }
   },
 );
 
-exports.internals = { callModel, unitsOf, batchesOf, withFreshLines, UNIT_CHARS, BATCH, BATCH_CHARS, translateBatch, runBatches, shapeOf, lookup, collectStrings, applyTranslations, parseRequest, cacheKey, linesIn, validId, SHAPES, MAX_LINES_PER_ITEM, MAX_LINES_PER_REQUEST };
+exports.internals = { CACHE_COLLECTION, CONFIRMATIONS, MAX_CANDIDATES, contributorTag, candidateKey, resolveEntry, candidateSlot, LANGUAGE_NAMES, MAX_TEXT, START_DEADLINE_MS, FUNCTION_TIMEOUT_S, CALL_TIMEOUT_MS, callModel, unitsOf, batchesOf, withFreshLines, UNIT_CHARS, BATCH, BATCH_CHARS, translateBatch, runBatches, shapeOf, lookup, collectStrings, applyTranslations, parseRequest, cacheKey, linesIn, validId, SHAPES, MAX_LINES_PER_ITEM, MAX_LINES_PER_REQUEST };

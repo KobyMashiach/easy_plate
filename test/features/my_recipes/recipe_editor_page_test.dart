@@ -11,6 +11,7 @@ import 'package:easy_plate/features/my_recipes/presentation/pages/recipe_editor_
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/original_recipe_page_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/web_search_result_entity.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/entities/ingestion_file.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/entities/recipe_image_candidate.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,7 +76,7 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
   ) => throw UnimplementedError();
 
   @override
-  Future<RecipeEntity> parseFromSocialVideo(
+  Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,
   ) => throw UnimplementedError();
@@ -237,6 +238,17 @@ void main() {
     expect(popped?.ingredients.single.amount, 400);
     expect(popped?.ingredients.single.unit, MeasurementUnit.gram);
     expect(repository.refineCalls, 0, reason: 'times unchanged, so no refine');
+  });
+
+  testWidgets('a title is held to the 500 characters the rules allow', (
+    tester,
+  ) async {
+    await openEditor(tester, buildRecipe());
+
+    await tester.enterText(find.byType(TextField).at(_title), 'א' * 650);
+    await save(tester);
+
+    expect(popped?.title.length, 500);
   });
 
   testWidgets('an empty title blocks saving before the sheet even opens', (

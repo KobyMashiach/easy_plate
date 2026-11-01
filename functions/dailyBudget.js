@@ -55,6 +55,16 @@ const KINDS = Object.freeze({
   // many times a day, since each one still ran a yt-dlp probe and page
   // fetches on our servers.
   socialProbe: { param: "quota_social_probe_daily", fallback: 15, unit: "unreadable video lookups" },
+  // Share codes redeemed without success (shareCodes): unknown, expired,
+  // revoked or used-up codes. A code is 8 characters of 34, so guessing one
+  // is hopeless — as long as nobody can try millions; each try is also a
+  // Firestore transaction on our bill. A code that works is given back, so
+  // only the misses count.
+  shareCodeMiss: { param: "quota_share_code_misses_daily", fallback: 30, unit: "unsuccessful share-code tries" },
+  // New support conversations (index.js onFeedbackCreated): a client write
+  // nothing else limits, and each one lands in the administrator's inbox.
+  // Follow-ups inside a conversation are not counted.
+  feedback: { param: "quota_feedback_daily", fallback: 5, unit: "support conversations" },
 });
 
 function utcDay(now = new Date()) {

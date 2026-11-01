@@ -157,6 +157,27 @@
       "description": "מחסום השרת: כמה קריאות AI (aiProxy + socialRecipe) חשבון אחד יכול לבצע ביום, בלי קשר למנוי. האפליקציה שומרת מכסות משלה; זה הגב האחורי שעוצר לולאה גם מטוקן גנוב. קישור שכבר ב-cache לא נספר. נקרא בשרת (cache 5 דק׳). 0 = כל קריאות ה-AI חסומות.",
       "valueType": "NUMBER"
     },
+    "ai_max_prompt_chars": {
+      "defaultValue": {
+        "value": "200000"
+      },
+      "description": "תווי טקסט מקסימליים לבקשת AI אחת (aiProxy + socialRecipe): פרומפט, הוראות מערכת, כלים ותוצאות כלים — בלי קבצים מצורפים ובלי הסכמה. מעבר: 413. ההדבקה הגדולה באפליקציה 30,000. בלי פריסה. 0/לא תקין = 200000.",
+      "valueType": "NUMBER"
+    },
+    "ai_max_schema_chars": {
+      "defaultValue": {
+        "value": "65536"
+      },
+      "description": "גודל מקסימלי (תווי JSON) של סכמת התשובה בבקשת AI אחת (aiProxy + socialRecipe). סכמת המתכון כ-4,000. מעבר: 413. נקרא בשרת, בלי פריסה. 0/לא תקין = 65536.",
+      "valueType": "NUMBER"
+    },
+    "ai_max_output_tokens": {
+      "defaultValue": {
+        "value": "32768"
+      },
+      "description": "תקרת max_output_tokens לתשובת מודל (כולל חשיבה), aiProxy + socialRecipe. ערך קטן מהלקוח נשמר; בקשת תמונה בלי תקרה. להוריד רק אחרי בדיקת ai_usage — תשובה שנחתכת = פיצ׳ר שבור. בלי פריסה. 0/לא תקין = 32768.",
+      "valueType": "NUMBER"
+    },
     "quota_ai_cache_hits_daily": {
       "defaultValue": {
         "value": "200"
@@ -176,6 +197,20 @@
         "value": "15"
       },
       "description": "כמה פעמים ביום קישור וידאו (socialRecipe) שלא הצליח להיקרא (פרטי/חסום) מחזיר לחשבון את קריאת ה-AI. מעבר לזה הקריאה נספרת. נקרא בשרת, בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_share_code_misses_daily": {
+      "defaultValue": {
+        "value": "30"
+      },
+      "description": "כמה קודי שיתוף שגויים חשבון אחד יכול לנסות ביום (shareCodes redeem). קוד שעובד לא נספר. מעבר לזה: 429, כדי שאי אפשר לנחש קודים. נקרא בשרת, בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "quota_feedback_daily": {
+      "defaultValue": {
+        "value": "5"
+      },
+      "description": "כמה פניות תמיכה חדשות חשבון אחד יכול לפתוח ביום. הודעות המשך בפנייה קיימת לא נספרות. מעבר לזה הפנייה נסגרת ולא מגיעה לתיבת הניהול, והמשתמש מתבקש לנסות מחר. נקרא בשרת (onFeedbackCreated), בלי פריסה. 0 = חסום.",
       "valueType": "NUMBER"
     },
     "gemini_maxInstances": {
@@ -282,6 +317,20 @@
       "description": "כמה שעות מחכים לתשובה מהמכשיר המחובר כשמכשיר אחר מבקש לשחרר את החשבון. אם אף אחד לא סירב, המבקש נכנס בסוף הזמן והמכשיר הישן מנותק. 0 = אף פעם (רק אישור או שחרור מהקונסול). נקרא בשרת (sessions), בלי פריסה.",
       "valueType": "NUMBER"
     },
+    "storage_sweep_mode": {
+      "defaultValue": {
+        "value": "1"
+      },
+      "description": "ניקוי שבועי של תמונות מתכונים שאף רשומה לא מפנה אליהן (מעל 14 יום). 0 = כבוי, 1 = דוח בלבד (admin_reports/storage_sweep), 2 = מחיקה. ריצה חלקית אף פעם לא מוחקת. נקרא בשרת, בלי פריסה.",
+      "valueType": "NUMBER"
+    },
+    "delete_account_recent_auth_minutes": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "מחיקת חשבון דורשת כניסה טרייה: כמה דקות מאז אימות הטלפון האחרון (SMS). 0 = כבוי. להדליק עם 10 כשרוב המשתמשים בגרסה עם אימות מחדש (גרסאות ישנות לא יודעות לאמת ולא יוכלו למחוק). נקרא בשרת (deleteAccount), בלי פריסה.",
+      "valueType": "NUMBER"
+    },
     "support_phone": {
       "defaultValue": {
         "value": "972508247743"
@@ -385,6 +434,13 @@
           "description": "הוספת מתכון מסרטון טיקטוק / אינסטגרם / יוטיוב / פייסבוק (צ׳יפ \"סרטון\").",
           "valueType": "NUMBER"
         },
+        "ff_social_video_photo": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "תמונה למתכון מסרטון (טיקטוק/אינסטגרם/יוטיוב/פייסבוק): תמונת השער של הפוסט נכנסת אוטומטית כתמונת המתכון, ועד 5 פריימים של האוכל מהסרטון מוצעים לבחירה במסך הבדיקה. 0 = מוסתר (המתכון נשמר בלי תמונה), 1 = בקרוב, 2 = פעיל, 3 = לפרימיום בלבד.",
+          "valueType": "NUMBER"
+        },
         "ff_ingest_ai_request": {
           "defaultValue": {
             "value": "2"
@@ -446,6 +502,13 @@
             "value": "2"
           },
           "description": "\"חיפוש תמונה בגוגל\" בבחירת תמונה למתכון (10 תוצאות בכל גלילה). דורש SERPER_API_KEY (serper.dev) בפונקציה imageSearch.",
+          "valueType": "NUMBER"
+        },
+        "ff_recipe_source_link": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "כפתור \"למתכון המקורי\" במסך המתכון: פותח בדפדפן את הקישור שממנו יובא המתכון (אתר או סרטון). 0 = מוסתר, 1 = בקרוב, 2 = פעיל.",
           "valueType": "NUMBER"
         },
         "ff_grocery_from_recipe": {
@@ -663,6 +726,13 @@
             "value": "2"
           },
           "description": "בקשת דירוג בחנות: חלון הדירוג המובנה של App Store / Google Play מוצג אחרי המתכון השני שנשמר, ושוב לכל היותר אחת ל-120 יום (עד 3 פעמים). 0 = מוסתר (לא מבקשים דירוג בכלל), 1 = בקרוב (לא מבקשים), 2 = פעיל.",
+          "valueType": "NUMBER"
+        },
+        "ff_quick_actions": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "קיצורי דרך בלחיצה ארוכה על אייקון האפליקציה: דבר עם שפי, הוספה לרשימת קניות, הוספת קבלה, פנייה לתמיכה. 0 = מוסתר, 1 = בקרוב, 2 = פעיל, 3 = לפרימיום בלבד (חינמי רואה את הקיצורים, לחיצה פותחת את מסך הפרימיום).",
           "valueType": "NUMBER"
         },
         "ff_support_chat": {

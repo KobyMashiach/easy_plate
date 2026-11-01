@@ -198,4 +198,31 @@ void main() {
       expect(loads, 2);
     },
   );
+
+  testWidgets('a photo on a host the app never wrote to is not fetched', (
+    tester,
+  ) async {
+    LocaleSettings.setLocaleSync(AppLocale.he);
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: MaterialApp(
+          home: AdminUserPage(
+            uid: 'u1',
+            name: 'Ann',
+            loader: (_) async => const AdminUserDetail(
+              uid: 'u1',
+              profile: {
+                'fullName': 'Ann',
+                'photoUrl': 'https://logger.example.com/pixel.png',
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final avatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar).first);
+    expect(avatar.backgroundImage, isNull);
+    expect(find.byIcon(Icons.person_rounded), findsWidgets);
+  });
 }

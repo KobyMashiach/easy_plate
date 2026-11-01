@@ -72,6 +72,14 @@ class FeedbackEntity {
   final bool closed;
   final DateTime? closedAt;
 
+  /// The server's verdict on a new conversation (onFeedbackCreated): a
+  /// daily allowance of new conversations per account. [admitted] once it
+  /// fits; past it, [rejected] names why ("daily_limit") and the
+  /// conversation is closed on the spot, never reaching the inbox. Both
+  /// unset until the function has run, and on conversations from before it.
+  final bool admitted;
+  final String? rejected;
+
   const FeedbackEntity({
     required this.id,
     required this.type,
@@ -90,10 +98,19 @@ class FeedbackEntity {
     this.source = FeedbackSource.app,
     this.closed = false,
     this.closedAt,
+    this.admitted = false,
+    this.rejected,
     DateTime? updatedAt,
   }) : updatedAt = updatedAt ?? createdAt;
 
   bool get answered => replies.isNotEmpty;
+
+  /// Refused for the day's allowance of new conversations.
+  bool get overDailyLimit => rejected == dailyLimitReason;
+  static const dailyLimitReason = 'daily_limit';
+
+  /// Whether the server has ruled on it yet, either way.
+  bool get judged => admitted || rejected != null;
 
   /// The whole conversation in the order it was written.
   List<FeedbackMessage> get thread => [

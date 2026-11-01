@@ -62,11 +62,12 @@ async function likeControls({ kind, postId, replyId, recipeId, onDone }) {
     try { await call("community.like", { as: as.value, kind, postId, replyId, recipeId, on: true }); toast(t("common.done"), "ok"); onDone && onDone(); } catch (e) { toastError(e); }
   }));
   const seed = button(t("forum.seedLikes"), { kind: "small" });
-  seed.addEventListener("click", async () => {
+  // busy(): a second click while the prompt or the call is open is ignored.
+  seed.addEventListener("click", busy(seed, async () => {
     const n = await promptDialog({ title: t("forum.seedLikes"), label: t("forum.seedLikesCount"), value: "5" });
     if (n === null) return;
     try { const r = await call("community.seedLikes", { kind, postId, replyId, recipeId, count: Number(n) || 0 }); toast(t("forum.added", { n: r.added }), "ok"); onDone && onDone(); } catch (e) { toastError(e); }
-  });
+  }));
   return h("div.row", h("div.row", as, like), seed);
 }
 
@@ -141,7 +142,10 @@ async function threadList({ view, actions }) {
   actions.append(button(t("seedForum.title"), { kind: "small", onclick: openForumSeeder }));
   const newThread = button(t("forum.newThread"), { kind: "primary small" });
   newThread.addEventListener("click", async () => {
-    const { form, submit } = await composer({ kind: "thread", title: true, onSubmit: async (d) => { await call("forum.post.create", d); toast(t("forum.posted"), "ok"); } });
+    // The composer loads the persona list first: a failed load says so.
+    let built;
+    try { built = await composer({ kind: "thread", title: true, onSubmit: async (d) => { await call("forum.post.create", d); toast(t("forum.posted"), "ok"); } }); } catch (e) { toastError(e); return; }
+    const { form, submit } = built;
     modal({ title: t("forum.newThread"), wide: true, body: form, actions: [(c) => button(t("common.cancel"), { onclick: c }), submit] });
   });
   actions.append(newThread);
@@ -228,9 +232,9 @@ async function thread({ view, actions, postId, setTitle }) {
   };
   const subs = [
     onSnapshot(doc(db, "forum_posts", postId), (snap) => { post = snap.exists() ? { id: snap.id, ...snap.data() } : null; renderHead(); }, toastError),
-    onSnapshot(query(collection(db, "forum_posts", postId, "replies"), orderBy("createdAt"), limitToLast(500)), (snap) => { replies = snap.docs.map((d) => ({ id: d.id, ...d.data() })); renderReplies(); }, toastError),
+    onSnapshot(query(collection(db, "forum_posts", postId, "replies"), orderBy("createdAt"), limitToLast(500)), (snap) => { replies = snap.docs.map((d) => ({ id: d.id, ...d.data() })); renderReplies().catch(toastError); }, toastError),
   ];
-  actions.append(button(t("forum.reply"), { kind: "primary small", onclick: reply }));
+  actions.append(button(t("forum.reply"), { kind: "primary small", onclick: () => reply().catch(toastError) }));
   return () => subs.forEach((u) => u());
 }
 

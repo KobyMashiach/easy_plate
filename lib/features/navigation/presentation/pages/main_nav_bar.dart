@@ -69,19 +69,22 @@ class _MainNavBarState extends State<MainNavBar> {
     super.dispose();
   }
 
-  /// A home-screen widget's tap: the copilot, the groceries tab with the
-  /// add sheet, the planner on today, or the widgets screen. Gated like
+  /// A home-screen widget's tap (or an app icon shortcut's): the copilot,
+  /// the groceries tab with the add sheet or a receipt scan, the planner on
+  /// today, the widgets screen, or support. Gated like
   /// every other door: a widget left on the phone after the console hid
   /// the feature only says so.
   void _openPendingWidgetLaunch() {
     final launch = PendingHomeWidgetLaunch.take();
     if (launch == null || !mounted) return;
-    // "Hey Shefi" comes through here too, with its own flag instead of the
-    // widgets'.
+    // "Hey Shefi" and the app icon's shortcuts come through here too, each
+    // with its own flag instead of the widgets'.
     final door = launch.fromWakeWord
         ? FeaturesFlags.wakeWord
         : launch.fromLauncher
         ? FeaturesFlags.shefiLauncher
+        : launch.fromShortcut
+        ? FeaturesFlags.quickActions
         : FeaturesFlags.homeWidgets;
     if (!guardFeature(context, door)) return;
     switch (launch.action) {
@@ -97,6 +100,7 @@ class _MainNavBarState extends State<MainNavBar> {
           ),
         );
       case HomeWidgetAction.grocery:
+        if (!guardFeature(context, FeaturesFlags.groceryLists)) return;
         MainTabs.index.value = MainTabs.groceries;
         if (launch.add) {
           HomeWidgetRequests.groceryAdd.value = GroceryAddRequest(
@@ -113,6 +117,15 @@ class _MainNavBarState extends State<MainNavBar> {
         );
       case HomeWidgetAction.settings:
         context.pushNamed(Routing.homeWidgets);
+      case HomeWidgetAction.receipt:
+        if (!guardFeature(context, FeaturesFlags.groceryLists) ||
+            !guardFeature(context, FeaturesFlags.receiptScan)) {
+          return;
+        }
+        MainTabs.index.value = MainTabs.groceries;
+        HomeWidgetRequests.receiptScan.value = true;
+      case HomeWidgetAction.support:
+        context.pushNamed(Routing.support);
     }
   }
 

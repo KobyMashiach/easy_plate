@@ -150,8 +150,8 @@ export function guideUrl(lang, slug, langUrls) { return (langUrls[lang] === '/' 
 
 function storeBadges(ui, appStore, play) {
   return `<div class="flex flex-wrap items-center gap-3">
-            <a href="${appStore}" target="_blank" rel="noopener" class="store-badge"><svg viewBox="0 0 24 24" class="h-7 w-7 fill-white" aria-hidden="true"><path d="${APPLE_PATH}"/></svg><span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">${esc(ui.appStoreTop)}</span><span class="text-lg font-bold -mt-0.5">${esc(ui.appStore)}</span></span></a>
-            <a href="${play}" target="_blank" rel="noopener" class="store-badge">${PLAY_SVG}<span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">${esc(ui.playTop)}</span><span class="text-lg font-bold -mt-0.5">${esc(ui.play)}</span></span></a>
+            <a href="${appStore}" class="store-badge"><svg viewBox="0 0 24 24" class="h-7 w-7 fill-white" aria-hidden="true"><path d="${APPLE_PATH}"/></svg><span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">${esc(ui.appStoreTop)}</span><span class="text-lg font-bold -mt-0.5">${esc(ui.appStore)}</span></span></a>
+            <a href="${play}" class="store-badge">${PLAY_SVG}<span class="flex flex-col leading-none text-start"><span class="text-[10px] font-medium text-white/70">${esc(ui.playTop)}</span><span class="text-lg font-bold -mt-0.5">${esc(ui.play)}</span></span></a>
           </div>`;
 }
 

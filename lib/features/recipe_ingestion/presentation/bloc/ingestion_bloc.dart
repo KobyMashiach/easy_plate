@@ -8,11 +8,14 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
+import '../../../../core/features/features_flags.dart';
+import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/usecases/save_recipe_usecase.dart';
 import '../../../user_profile/domain/usecases/get_user_preferences_usecase.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
+import '../../domain/entities/recipe_image_candidate.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/paid_call_refusal.dart';
 import '../../domain/usecases/build_template_recipe.dart';
@@ -61,6 +64,11 @@ sealed class IngestionEvent with _$IngestionEvent {
   /// inputs, or — when opening a search result failed — the paid results
   /// back. Never an empty form.
   const factory IngestionEvent.retry() = _Retry;
+
+  /// Puts one of the pictures offered with a video recipe on it ([index]
+  /// into the review's candidates), or takes the picture off with null.
+  const factory IngestionEvent.pickImageCandidate(int? index) =
+      _PickImageCandidate;
 }
 
 @freezed
@@ -76,10 +84,16 @@ sealed class IngestionState with _$IngestionState {
 
   /// [notice] carries a failed save: the review stays, with what went wrong
   /// said over it.
+  ///
+  /// [imageCandidates] are the pictures the server offered for a recipe
+  /// read from a video — the post's cover, stills of the food — and
+  /// [selectedImage] which of them is on the recipe now (null: none).
   const factory IngestionState.review(
     RecipeIngestionChannel channel,
     RecipeEntity recipe, {
     String? notice,
+    @Default([]) List<RecipeImageCandidate> imageCandidates,
+    int? selectedImage,
   }) = IngestionReview;
 
   /// The page as written, for reading. No model was involved in reaching it.
@@ -138,6 +152,12 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   /// the budget of a text extraction.
   static const socialTimeout = Duration(seconds: 150);
 
+  /// Writes a picked picture to the photo store and hands back its file
+  /// name (null when it could not be written); [deleteImage] takes one
+  /// back. The disk by default; a test passes its own.
+  final Future<String?> Function(Uint8List bytes) storeImage;
+  final Future<void> Function(String fileName) deleteImage;
+
   IngestionBloc({
     this.analysisTimeout = const Duration(seconds: 45),
     RecipeIngestionChannel initialChannel = RecipeIngestionChannel.rawText,
@@ -150,8 +170,18 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     required this.generateRecipeUseCase,
     required this.saveRecipeUseCase,
     required this.getUserPreferencesUseCase,
+    Future<String?> Function(Uint8List bytes)? storeImage,
+    Future<void> Function(String fileName)? deleteImage,
   }) : _channel = initialChannel,
+       storeImage = storeImage ?? _storeOnDisk,
+       deleteImage = deleteImage ?? _deleteFromDisk,
        super(IngestionState.idle(initialChannel)) {
+    // One pick at a time: a slow write of an earlier tap must not land
+    // after a later one, nor the same still be written twice.
+    on<_PickImageCandidate>(
+      _pickImageCandidate,
+      transformer: (events, mapper) => events.asyncExpand(mapper),
+    );
     on<_SelectChannel>(_selectChannel);
     on<_ParseRawText>(_parseRawText);
     on<_SearchWeb>(_searchWeb);
@@ -187,6 +217,127 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       saveRecipeUseCase: SaveRecipeUseCase(context.read()),
       getUserPreferencesUseCase: GetUserPreferencesUseCase(context.read()),
     );
+  }
+
+  static Future<String?> _storeOnDisk(Uint8List bytes) async {
+    final name = '${_uuid.v4()}.jpg';
+    final stored = await ImageStorageService().storeBytes(name, bytes);
+    return stored == null ? null : name;
+  }
+
+  static Future<void> _deleteFromDisk(String fileName) =>
+      ImageStorageService().delete(fileName);
+
+  /// The pictures offered with the last video recipe, as the server sent
+  /// them, and which of them is on the recipe. Cleared when a new analysis
+  /// starts.
+  List<RecipeImageCandidate> _imageCandidates = const [];
+  int? _selectedImage;
+
+  /// The candidates already written to disk, by index: a picture is stored
+  /// once however often it is picked, and whatever the saved recipe did not
+  /// take is deleted when the screen closes.
+  final Map<int, String> _candidateFiles = {};
+
+  /// The photo of the recipe that was saved, kept out of that cleanup.
+  String? _savedImage;
+
+  @override
+  Future<void> close() async {
+    await _dropCandidates();
+    return super.close();
+  }
+
+  /// Deletes the candidate files the recipe did not take, and forgets the
+  /// candidates. A file that cannot be deleted is logged and left: it is
+  /// a stray picture in the app's own folder, not a failure the user sees.
+  Future<void> _dropCandidates() async {
+    final files = Map.of(_candidateFiles);
+    _candidateFiles.clear();
+    _imageCandidates = const [];
+    _selectedImage = null;
+    for (final name in files.values) {
+      if (name == _savedImage) continue;
+      try {
+        await deleteImage(name);
+      } catch (e) {
+        debugPrint('Candidate picture cleanup failed: $e');
+      }
+    }
+  }
+
+  /// Writes candidate [index] to the photo store once; its file name, or
+  /// null when it could not be written.
+  Future<String?> _storeCandidate(int index) async {
+    final known = _candidateFiles[index];
+    if (known != null) return known;
+    try {
+      final name = await storeImage(_imageCandidates[index].bytes);
+      if (name != null) _candidateFiles[index] = name;
+      return name;
+    } catch (e) {
+      debugPrint('Storing the picked picture failed: $e');
+      return null;
+    }
+  }
+
+  /// Keeps the pictures the server offered for the review, and puts the
+  /// post's cover on the recipe by itself — a still replaces it only when
+  /// the user picks one. Nothing of this while the console hides or locks
+  /// the feature: the recipe then arrives bare, as it always did.
+  Future<RecipeEntity> _withOfferedImages(SocialVideoRecipe result) async {
+    if (!FeaturesFlags.socialVideoPhoto.isEnabled || result.images.isEmpty) {
+      return result.recipe;
+    }
+    _imageCandidates = List.unmodifiable(result.images);
+    final cover = _imageCandidates.indexWhere((i) => i.isCover);
+    if (cover == -1) return result.recipe;
+    final fileName = await _storeCandidate(cover);
+    if (fileName == null) return result.recipe;
+    _selectedImage = cover;
+    return result.recipe.copyWith(imageFileName: fileName);
+  }
+
+  IngestionState _review(RecipeEntity recipe, {String? notice}) => .review(
+    _channel,
+    recipe,
+    notice: notice,
+    imageCandidates: _imageCandidates,
+    selectedImage: _selectedImage,
+  );
+
+  Future<void> _pickImageCandidate(
+    _PickImageCandidate event,
+    Emitter<IngestionState> emit,
+  ) async {
+    final current = state;
+    if (current is! IngestionReview) return;
+    final index = event.index;
+    if (index != null && (index < 0 || index >= _imageCandidates.length)) {
+      return;
+    }
+    var recipe = current.recipe;
+    if (index == null) {
+      recipe = recipe.copyWith(removeImage: true);
+      _selectedImage = null;
+      emit(_review(recipe));
+      return;
+    }
+    final fileName = await _storeCandidate(index);
+    // The review may have moved on while the file was written (an edit
+    // from the editor, a save): the picture goes on the recipe as it is
+    // now, and nowhere once the review is gone.
+    final now = state;
+    if (now is! IngestionReview) return;
+    recipe = now.recipe;
+    if (fileName == null) {
+      // Cleared first, so the same failure twice is still a change.
+      emit(_review(recipe));
+      emit(_review(recipe, notice: t.ingestion.videoPhotoFailed));
+      return;
+    }
+    _selectedImage = index;
+    emit(_review(recipe.copyWith(imageFileName: fileName)));
   }
 
   /// The last request that reached the model or the network, so Retry runs
@@ -265,12 +416,14 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     // spend a second extraction from the allowance for the same text.
     if (state is IngestionParsing) return;
     emit(.parsing(_channel));
+    // A new analysis, new pictures: the last review's go.
+    await _dropCandidates();
     try {
       final timeout = _channel == RecipeIngestionChannel.socialVideo
           ? socialTimeout
           : analysisTimeout;
       final recipe = await parse(await _preferences).timeout(timeout);
-      emit(.review(_channel, recipe));
+      emit(_review(recipe));
     } on TimeoutException {
       debugPrint('Ingestion timed out after $analysisTimeout');
       await _offerText(
@@ -376,6 +529,8 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _saving = true;
     try {
       await saveRecipeUseCase(recipe);
+      // The picked picture is the recipe's now; the others go with close().
+      _savedImage = recipe.imageFileName;
       emit(const IngestionState.saved());
     } catch (e) {
       debugPrint('Saving the recipe failed: $e');
@@ -383,9 +538,9 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       final notice = t.ingestion.saveFailed;
       // Cleared first, so a second failure in a row is still a change.
       switch (current) {
-        case IngestionReview(:final channel, recipe: final shown):
-          emit(.review(channel, shown));
-          emit(.review(channel, shown, notice: notice));
+        case IngestionReview(recipe: final shown):
+          emit(_review(shown));
+          emit(_review(shown, notice: notice));
         case IngestionUnparsed(
           :final channel,
           :final text,
@@ -416,7 +571,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
           // Saved from the form (a hand-written recipe from the blank
           // editor): an error screen would lose it, and its Retry would run
           // some earlier request instead. The recipe stays up to save again.
-          emit(.review(_channel, recipe, notice: notice));
+          emit(_review(recipe, notice: notice));
       }
     } finally {
       _saving = false;
@@ -507,8 +662,9 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _remember(event, text: event.url);
     return _runParse(
       emit,
-      (prefs) =>
-          parseRecipeFromSocialVideoUseCase(event.url, preferences: prefs),
+      (prefs) async => _withOfferedImages(
+        await parseRecipeFromSocialVideoUseCase(event.url, preferences: prefs),
+      ),
       fallbackText: () => _pageText(event.url),
       sourceUrl: event.url,
     );
@@ -569,7 +725,14 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _UpdateRecipe event,
     Emitter<IngestionState> emit,
   ) {
-    emit(.review(_channel, event.recipe));
+    // The editor may have swapped the photo: a candidate counts as picked
+    // only while its file is the one on the recipe.
+    final selected = _selectedImage;
+    if (selected != null &&
+        _candidateFiles[selected] != event.recipe.imageFileName) {
+      _selectedImage = null;
+    }
+    emit(_review(event.recipe));
   }
 
   Future<void> _saveRecipe(

@@ -244,4 +244,56 @@ void main() {
     expect(find.text('one'), findsNothing);
     expect(Walkthrough.isActive, isFalse);
   });
+
+  testWidgets(
+    'two skips in one frame on the next-to-last step stop at the last',
+    (
+      tester,
+    ) async {
+      await open(tester);
+      await tester.tap(find.text('דלג על שלב'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('one'), findsOneWidget);
+
+      // Both handlers run before a frame, as two quick taps do on a phone:
+      // the second used to step past the end (a RangeError in the overlay).
+      final skip = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'דלג על שלב'),
+      );
+      skip.onPressed!();
+      skip.onPressed!();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+      expect(find.text('two'), findsOneWidget);
+    },
+  );
+
+  for (final scale in [1.6, 2.0]) {
+    testWidgets('the card footer fits a phone at ${scale}x text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 780);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(scale)),
+            child: child!,
+          ),
+          home: const _Host(),
+        ),
+      );
+      await tester.tap(find.text('start'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      // Skip + Next on one row: the skip label gives way, nothing overflows.
+      expect(find.text('welcome'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

@@ -10,7 +10,7 @@
     "check:i18n": "node scripts/check-i18n.mjs",
     "preview": "vite preview",
     "typecheck": "node scripts/split-i18n.mjs && tsc --noEmit",
-    "test": "node scripts/test-translation.mjs",
+    "test": "node scripts/test-translation.mjs && node scripts/test-photo-url.mjs",
     "preview:emulators": "cd scripts/preview && mkdir -p .emulator && cp ../../../firestore.rules ../../../storage.rules .emulator/ && JAVA_HOME=${PREVIEW_JAVA_HOME:-$JAVA_HOME} firebase emulators:start --only auth,firestore,storage --project demo-easyplate --config firebase.json",
     "preview:seed": "node scripts/preview/seed.mjs",
     "preview:dev": "node scripts/split-i18n.mjs && VITE_EMULATORS=1 vite --port 5188 --strictPort --host 127.0.0.1",

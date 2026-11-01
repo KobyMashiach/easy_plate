@@ -433,7 +433,7 @@ export function RecipeDetailsPage() {
             </div>
 
             <div>
-              <h1 className="text-headline-lg">{view.title}</h1>
+              <h1 className="break-words text-headline-lg">{view.title}</h1>
               {safeHref(recipe.sourceUrl) ? (
                 <a href={safeHref(recipe.sourceUrl)!} target="_blank" rel="noopener noreferrer nofollow" className="mt-2 inline-flex items-center gap-1 text-label-md text-primary">
                   <Icon name="external" size={16} />

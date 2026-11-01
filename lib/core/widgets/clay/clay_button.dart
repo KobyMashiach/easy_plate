@@ -97,10 +97,16 @@ class _ClayButtonState extends State<ClayButton> {
                     Icon(widget.icon, size: 20, color: AppColors.onPrimary),
                     const SizedBox(width: AppSpacing.base),
                   ],
-                  Text(
-                    widget.label,
-                    style: AppTextStyles.labelMd.copyWith(
-                      color: AppColors.onPrimary,
+                  // Flexible: a label longer than the button (French,
+                  // Russian, a larger text size) wraps onto a second line
+                  // instead of overflowing the pill.
+                  Flexible(
+                    child: Text(
+                      widget.label,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.labelMd.copyWith(
+                        color: AppColors.onPrimary,
+                      ),
                     ),
                   ),
                 ],

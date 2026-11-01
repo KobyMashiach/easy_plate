@@ -12,6 +12,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/language_selector.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/apple_sign_in.dart';
 import '../widgets/auth_error_text.dart';
@@ -426,8 +427,7 @@ class _LanguageButton extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               LanguageSelector(
                 selected: _current,
-                onSelect: (language) =>
-                    Navigator.of(sheetContext).pop(language),
+                onSelect: (language) => popIfCurrent(sheetContext, language),
               ),
             ],
           ),

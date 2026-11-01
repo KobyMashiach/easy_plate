@@ -9,6 +9,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../bloc/my_recipes_bloc.dart';
 import '../../../../core/constants/app_motion.dart';
@@ -103,7 +104,7 @@ class _PickerBodyState extends State<_PickerBody> {
 
   void _onRecipeTapped(RecipeEntity recipe) {
     if (!_isMultiSelect) {
-      Navigator.of(context).pop(recipe);
+      popIfCurrent(context, recipe);
       return;
     }
     final nowSelected = !_selected.contains(recipe.id);

@@ -86,7 +86,8 @@ class _FeedbackFormState extends State<FeedbackForm> {
 
     // Read before the first await: the repository comes from the tree, and
     // the tree may be gone by the time the version lookup returns.
-    final useCase = SendFeedbackUseCase(context.read<FeedbackRepository>());
+    final repository = context.read<FeedbackRepository>();
+    final useCase = SendFeedbackUseCase(repository);
     final chatOn = _chatOn;
     setState(() => _sending = true);
     try {
@@ -106,7 +107,15 @@ class _FeedbackFormState extends State<FeedbackForm> {
         appVersion: version,
         details: details,
       );
+      // The server counts new conversations per day after the write; one
+      // past the allowance is closed at once. Said here, with the text left
+      // in the box, rather than opening a chat nobody will answer.
+      final refused = await refusedForDailyLimit(repository, id);
       if (!mounted) return;
+      if (refused) {
+        AppDialog.error(message: t.feedback.dailyLimit).show(context);
+        return;
+      }
       _message.clear();
       // The dropdown reads initialValue once; a new key rebuilds it empty.
       setState(() {
@@ -246,7 +255,12 @@ class _MyConversationsState extends State<_MyConversations> {
     return StreamBuilder<List<FeedbackEntity>>(
       stream: _mine,
       builder: (context, snapshot) {
-        final items = snapshot.data ?? const <FeedbackEntity>[];
+        // A conversation refused for the daily allowance was never one:
+        // the user was told when sending it.
+        final items = [
+          for (final i in snapshot.data ?? const <FeedbackEntity>[])
+            if (!i.overDailyLimit) i,
+        ];
         if (items.isEmpty) return const SizedBox.shrink();
         final open = [
           for (final i in items)

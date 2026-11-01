@@ -5,7 +5,8 @@ import '../../constants/app_spacing.dart';
 import '../../constants/app_text_styles.dart';
 import 'clay_card.dart';
 
-/// Horizontally scrolling row of 72x90 clay day tiles. The active day inverts
+/// Horizontally scrolling row of 72x90 clay day tiles (taller under a
+/// larger system text size). The active day inverts
 /// to the primary container fill, per the Stitch meal-plan screen.
 class ClayDaySelector extends StatelessWidget {
   final List<String> labels;
@@ -25,8 +26,18 @@ class ClayDaySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 90 at the normal text size; the tile is a label line over the
+    // count line, so it grows with the system text size instead of
+    // overflowing (from about 1.4× with a fixed 90).
+    final scaler = MediaQuery.textScalerOf(context);
+    final content =
+        AppSpacing.sm * 2 +
+        scaler.scale(16) +
+        AppSpacing.xs +
+        scaler.scale(32) +
+        2;
     return SizedBox(
-      height: 90,
+      height: content > 90 ? content : 90,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(

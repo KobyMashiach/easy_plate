@@ -80,3 +80,6 @@ webapp/src/i18n-gen/
 # emulator copy of the rules are generated on every run.
 webapp/scripts/preview/out/
 webapp/scripts/preview/.emulator/
+
+# Crashlytics symbol-upload tool (downloaded locally)
+.crashlytics/

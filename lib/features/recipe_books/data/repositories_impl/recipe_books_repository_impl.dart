@@ -4,6 +4,8 @@ import '../../../../core/hive/user_scope.dart';
 import '../../../../core/sync/recipe_image_store.dart';
 import '../../../../core/sync/user_cloud_collection.dart';
 import '../../../../core/translation/content_translation.dart';
+import '../../../../core/translation/content_translation_service.dart';
+import '../../../../core/translation/content_variants_cleaner.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../../domain/repositories/recipe_books_repository.dart';
 import '../datasources/recipe_books_local_datasource.dart';
@@ -24,10 +26,15 @@ class RecipeBooksRepositoryImpl implements RecipeBooksRepository {
   /// the same file a second time.
   final Map<String, Future<String?>> _uploads = {};
 
+  /// Drops a deleted record's translations, so a language switch stops
+  /// reading them. Optional so tests can run without it.
+  final ContentVariantsCleaner? translations;
+
   RecipeBooksRepositoryImpl({
     required this.localDataSource,
     this.cloud,
     this.images,
+    this.translations,
   });
 
   @override
@@ -143,6 +150,7 @@ class RecipeBooksRepositoryImpl implements RecipeBooksRepository {
     final doomed = await localDataSource.getBookById(id);
     await localDataSource.deleteBook(id);
     unawaited(cloud?.remove(id) ?? Future.value());
+    translations?.forget(ContentTranslationService.bookType, id);
     unawaited(
       images?.remove(doomed?.coverImageStoragePath, uid: UserScope().uid) ??
           Future.value(),

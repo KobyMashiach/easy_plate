@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+
+import '../../../user_profile/domain/entities/public_profile_entity.dart';
 import '../../../user_profile/domain/repositories/user_profile_repository.dart';
 import '../../domain/entities/app_notification_entity.dart';
 import '../../domain/repositories/notifications_repository.dart';
@@ -19,9 +22,18 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
   Stream<List<AppNotificationEntity>> watch(String uid) {
     return remoteDataSource.watch(uid).asyncMap((items) async {
       if (items.isEmpty) return items;
-      final profiles = await userProfileRepository.getPublicProfiles(
-        items.map((n) => n.fromUid).toSet(),
-      );
+      final Map<String, PublicProfileEntity> profiles;
+      try {
+        profiles = await userProfileRepository.getPublicProfiles(
+          items.map((n) => n.fromUid).toSet(),
+        );
+      } catch (e) {
+        // A failed name lookup must not cost the inbox this snapshot: it
+        // became a stream error, and the new rows (and the badge) waited
+        // for the next change. The rows show the names stored on them.
+        debugPrint('Inbox sender lookup failed: $e');
+        return items;
+      }
       return [
         for (final item in items)
           if (profiles[item.fromUid] case final profile?)

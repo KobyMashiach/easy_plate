@@ -5,6 +5,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 
 /// What to delete: the receipt alone (its prices stay in the book) or the
 /// receipt with every price read from it. Resolves null when dismissed.
@@ -28,7 +29,7 @@ Future<bool?> showDeleteReceiptSheet(BuildContext context) {
             ClayCard(
               radius: AppRadius.md,
               padding: const EdgeInsets.all(AppSpacing.gutter),
-              onTap: () => Navigator.of(sheetContext).pop(true),
+              onTap: () => popIfCurrent(sheetContext, true),
               child: Row(
                 children: [
                   Icon(Icons.receipt_long_rounded, color: AppColors.primary),
@@ -57,7 +58,7 @@ Future<bool?> showDeleteReceiptSheet(BuildContext context) {
             ClayCard(
               radius: AppRadius.md,
               padding: const EdgeInsets.all(AppSpacing.gutter),
-              onTap: () => Navigator.of(sheetContext).pop(false),
+              onTap: () => popIfCurrent(sheetContext, false),
               child: Row(
                 children: [
                   Icon(Icons.delete_sweep_rounded, color: AppColors.error),

@@ -8,12 +8,14 @@ import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/ai_auth_header.dart';
 import '../../../../core/network/http_calls.dart';
+import '../../../../core/translation/content_translation.dart';
 import '../../../my_recipes/domain/entities/nutrition_entity.dart';
 import '../../../price_book/domain/entities/price_unit.dart';
 import '../../../price_book/domain/entities/receipt_scan_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/entities/ingestion_file.dart';
+import '../../domain/entities/recipe_image_candidate.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 
 abstract class RecipeAiDataSource {
@@ -34,7 +36,7 @@ abstract class RecipeAiDataSource {
     List<DietaryPreference> preferences,
   );
 
-  Future<RecipeEntity> parseFromSocialVideo(
+  Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,
   );
@@ -88,6 +90,28 @@ List<Map<String, dynamic>> inlineMediaBlocks(List<InlineMediaPart> parts) => [
 Future<List<Map<String, dynamic>>> encodeInlineMedia(
   List<InlineMediaPart> parts,
 ) => compute(inlineMediaBlocks, parts);
+
+/// Whether [body] carries inline media blocks — megabytes of base64 that
+/// make serialising the request itself a cost worth moving off the UI
+/// isolate.
+@visibleForTesting
+bool carriesInlineMedia(Map<String, dynamic> body) {
+  final input = body['input'];
+  return input is List &&
+      input.any((block) => block is Map && block['data'] is String);
+}
+
+/// [body] as the UTF-8 JSON bytes the request sends, for a body that
+/// [carriesInlineMedia]. Base64 moved off the UI isolate was not the whole
+/// cost: Dio then ran `jsonEncode` and `utf8.encode` over the same 13 MB on
+/// the UI isolate, per attempt. Dio sends a [Uint8List] as it is, under the
+/// JSON content type the client already sets.
+@visibleForTesting
+Future<Uint8List> encodeJsonBody(Map<String, dynamic> body) =>
+    compute(_jsonBytes, body);
+
+Uint8List _jsonBytes(Map<String, dynamic> body) =>
+    utf8.encode(jsonEncode(body));
 
 /// Calls the Gemini Interactions API over raw HTTP (there is no official Google
 /// GenAI Dart SDK). Extraction runs in structured-output mode so the model's
@@ -156,6 +180,33 @@ $_dietaryTagRules
 יוצא מן הכלל אחד: את מספר המנות ואת הערכים התזונתיים למנה (קלוריות, חלבון, פחמימות, שומן) עליך תמיד להעריך לפי המצרכים והכמויות, גם כשהמקור לא מציין אותם. אלה הערכות סבירות, לא המצאות.
 החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
 
+  /// The language every word of the recipe comes back in: the one the app
+  /// is read in right now, whatever the source was written in. Koby,
+  /// 2026-10-27, after an American post pasted into the Hebrew app came
+  /// back in English: "חייב להביא את המתכון בעברית (תמיד בשפה שהאפליקציה
+  /// נמצאת בה)". In Hebrew like the rest of the prompt.
+  @visibleForTesting
+  static String languageInstruction(AppLanguage language) {
+    final name = switch (language) {
+      AppLanguage.hebrew => 'עברית',
+      AppLanguage.english => 'אנגלית',
+      AppLanguage.arabic => 'ערבית',
+      AppLanguage.french => 'צרפתית',
+      AppLanguage.russian => 'רוסית',
+    };
+    return 'שפת התשובה: $name. כתוב את כל הטקסט במתכון — הכותרת, שמות המצרכים '
+        'והשלבים — ב$name, גם כשהמקור כתוב בשפה אחרת: תרגם אותו. '
+        'אל תשאיר טקסט בשפת המקור, חוץ משמות מותגים.';
+  }
+
+  /// The extraction prompt with the answer's language on it.
+  @visibleForTesting
+  static String systemInstructionFor(AppLanguage language) =>
+      '$_systemPrompt\n${languageInstruction(language)}';
+
+  String get _systemInstruction =>
+      systemInstructionFor(currentContentLanguage());
+
   /// Optional fields are deliberately left out of `required` rather than typed
   /// as nullable — an omitted key is how the model says "the source does not
   /// say", and it keeps the schema inside the subset Gemini accepts.
@@ -164,7 +215,8 @@ $_dietaryTagRules
     'properties': {
       'title': {
         'type': 'string',
-        'description': 'Dish title as written in the source',
+        'description':
+            'Dish title, in the answer language the system instruction names',
       },
       'prep_time_minutes': {
         'type': 'integer',
@@ -331,7 +383,6 @@ $_dietaryTagRules
   static const _generateSystemPrompt =
       '''
 אתה שף ומפתח מתכונים. המשתמש מתאר מנה שהוא רוצה להכין, ואתה כותב לו מתכון מלא ומעשי.
-כתוב את המתכון בשפה שבה נכתבה הבקשה.
 המתכון חייב להיות שלם: כותרת קצרה, זמן הכנה וזמן בישול בדקות, רשימת מצרכים עם כמות ויחידת מידה לכל מצרך, ושלבי הכנה ברורים לפי הסדר.
 ציין תמיד את מספר המנות שהמתכון מניב, ואת הערכים התזונתיים למנה אחת — קלוריות, חלבון, פחמימות ושומן בגרמים — מחושבים מהמצרכים והכמויות שכתבת חלקי מספר המנות. אם הבקשה מציינת כמות סועדים, זה מספר המנות.
 השתמש ביחידות מטריות (גרם, מ"ל, כפית, כף, כוס, יחידה).
@@ -383,14 +434,16 @@ $_dietaryTagRules
   Map<String, dynamic> _body({
     required Object input,
     required Map<String, dynamic> schema,
-    String systemInstruction = _systemPrompt,
+    // Null: the extraction prompt in the app's language. A caller with its
+    // own prompt (receipts, refine, generate) says so.
+    String? systemInstruction,
     List<Map<String, dynamic>> tools = const [],
     String model = ApiConfig.model,
     String thinkingLevel = ApiConfig.thinkingLevel,
   }) {
     return {
       'model': model,
-      'system_instruction': systemInstruction,
+      'system_instruction': systemInstruction ?? _systemInstruction,
       'input': input,
       if (tools.isNotEmpty) 'tools': tools,
       // Left out entirely when blank, so an empty define hands the decision
@@ -512,13 +565,18 @@ $_dietaryTagRules
   }) async {
     _assertConfigured();
     headers = {featureHeader: feature, ...?headers};
+    // Encoded once for every attempt, and off the UI isolate when it is
+    // megabytes of attachments; a text-only body is small enough for Dio.
+    final Object payload = carriesInlineMedia(body)
+        ? await encodeJsonBody(body)
+        : body;
 
     Map<String, dynamic>? data;
     for (var attempt = 0; ; attempt++) {
       try {
         final response = await httpCalls.post(
           ApiConfig.interactionsPath,
-          data: body,
+          data: payload,
           headers: headers,
         );
         data = response?.data as Map<String, dynamic>?;
@@ -1004,11 +1062,14 @@ $_dietaryTagRules
   ///
   /// The function answers in the Interactions envelope, so the same reader
   /// applies; its typed 422s become [AppErrorType.unreadableSource], which
-  /// the ingestion screen turns into "we could not read this video".
-  /// Tier 2 (audio transcription + on-screen OCR) needs a video-processing
-  /// service that this client does not have access to.
+  /// the ingestion screen turns into "we could not read this video". The
+  /// envelope also carries the pictures the server found for the recipe
+  /// (`easyplate.images`: the post's cover, stills of the food), read by
+  /// [socialImagesFrom]. Tier 2 (audio transcription + on-screen OCR)
+  /// needs a video-processing service that this client does not have
+  /// access to.
   @override
-  Future<RecipeEntity> parseFromSocialVideo(
+  Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> preferences,
   ) async {
@@ -1016,17 +1077,20 @@ $_dietaryTagRules
       final data = await _postSocial({
         'url': url,
         'model': ApiConfig.model,
-        'system_instruction': _systemPrompt,
+        'system_instruction': _systemInstruction,
         'prompt':
             'שלוף את המתכון מהסרטון הבא: מהטקסט שמופיע על המסך, ממה שנאמר, ממה שנעשה, ומהכיתוב. '
             'אם הכמויות לא נאמרות אך נראות, הערך אותן. אם אין מתכון בסרטון, החזר רשימות ריקות.'
             '${_dietaryHint(preferences)}',
         'schema': _recipeSchema,
       });
-      return _toEntity(
-        _decodeRecipe(data),
-        channel: RecipeIngestionChannel.socialVideo,
-        sourceUrl: url,
+      return SocialVideoRecipe(
+        recipe: _toEntity(
+          _decodeRecipe(data),
+          channel: RecipeIngestionChannel.socialVideo,
+          sourceUrl: url,
+        ),
+        images: socialImagesFrom(data),
       );
     }
     final input = await _callStructured(
@@ -1041,11 +1105,51 @@ $_dietaryTagRules
       ),
       headers: sourceUrlHeaders(url, kind: 'social'),
     );
-    return _toEntity(
-      input,
-      channel: RecipeIngestionChannel.socialVideo,
-      sourceUrl: url,
+    return SocialVideoRecipe(
+      recipe: _toEntity(
+        input,
+        channel: RecipeIngestionChannel.socialVideo,
+        sourceUrl: url,
+      ),
     );
+  }
+
+  /// The pictures the social function sends with the recipe —
+  /// `easyplate.images`, each `{kind: cover | frame, jpeg: <base64>, at}` —
+  /// in the server's order (the cover first). Shape-tolerant like the
+  /// recipe reader: an entry that is not a picture is left out, never a
+  /// crash on the review.
+  @visibleForTesting
+  static List<RecipeImageCandidate> socialImagesFrom(
+    Map<String, dynamic> data,
+  ) {
+    final extra = data['easyplate'];
+    if (extra is! Map) return const [];
+    final raw = extra['images'];
+    if (raw is! List) return const [];
+    final images = <RecipeImageCandidate>[];
+    for (final item in raw) {
+      if (item is! Map) continue;
+      final encoded = item['jpeg'];
+      if (encoded is! String || encoded.isEmpty) continue;
+      final Uint8List bytes;
+      try {
+        bytes = base64Decode(encoded);
+      } on FormatException {
+        continue;
+      }
+      if (bytes.isEmpty) continue;
+      images.add(
+        RecipeImageCandidate(
+          kind: item['kind'] == 'cover'
+              ? RecipeImageCandidateKind.cover
+              : RecipeImageCandidateKind.frame,
+          bytes: bytes,
+          atSeconds: (item['at'] as num?)?.toDouble(),
+        ),
+      );
+    }
+    return images;
   }
 
   /// No cache headers: two people asking for "a lasagne" are two requests,
@@ -1061,7 +1165,10 @@ $_dietaryTagRules
         input:
             'כתוב מתכון מלא לפי הבקשה הבאה:\n\n$request${_dietaryHint(preferences)}',
         schema: _recipeSchema,
-        systemInstruction: _generateSystemPrompt,
+        // Written in the app's language, whatever language the request was
+        // typed in — the same rule as an extraction.
+        systemInstruction:
+            '$_generateSystemPrompt\n${languageInstruction(currentContentLanguage())}',
       ),
     );
     return _toEntity(input, channel: RecipeIngestionChannel.aiRequest);

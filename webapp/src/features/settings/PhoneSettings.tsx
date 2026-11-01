@@ -3,14 +3,14 @@
 // language / appearance cards, and the two pushed screens it leads to —
 // הגדרות התראות (toggle rows) and העדפות (shopping day, dietary, books).
 // Same preferences record and the same writes as the desktop page.
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { LANGS, useI18n, type Lang } from "../../lib/i18n";
 import { useAccess } from "../../lib/flags";
 import { useContentTranslation } from "../../lib/contentTranslation";
 import { applyTheme, readTheme, type ThemeMode } from "../../lib/theme";
-import { account, ApiError } from "../../lib/api";
+import { ApiError } from "../../lib/api";
 import { AppDialog } from "../../components/AppDialog";
 import { Chip, ClayButton, ClayCard, LoadingSpinner, PageHeader, Switch } from "../../components/clay";
 import { Icon } from "../../components/icons";
@@ -18,6 +18,7 @@ import { useToast } from "../../components/Toaster";
 import { DIETARY, type DietaryPreference } from "../../models/recipe";
 import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, type NotificationFlag, type Preferences } from "../../models/preferences";
 import { usePreferences } from "./data";
+import { deleteAccountWithReverify, usePhoneReverify } from "./phoneReverify";
 
 type SetFn = (key: string, fn: (p: Preferences) => Preferences) => void;
 
@@ -231,16 +232,37 @@ function useAccountDeletion() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
+  const reverify = usePhoneReverify();
+
+  // As on the desktop account page: leaving or reloading mid-call would not
+  // stop the server, but the page would never learn the outcome — ask first.
+  useEffect(() => {
+    if (!busy) return;
+    const onLeave = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onLeave);
+    return () => window.removeEventListener("beforeunload", onLeave);
+  }, [busy]);
 
   const run = async () => {
     if (busy) return;
     setBusy(true);
     try {
-      await account.delete();
+      // A recent sign-in asked for: this dialog steps aside for the SMS one,
+      // and comes back busy for the retry. Dismissed = nothing happened.
+      const done = await deleteAccountWithReverify(reverify.request, { onReverify: () => setOpen(false), onRetry: () => setOpen(true) });
+      if (!done) {
+        setBusy(false);
+        return;
+      }
     } catch (err) {
       setBusy(false);
       setOpen(false);
-      setFailure(err instanceof ApiError && err.code === "household_owner" ? t("settings.deleteHousehold") : t("settings.deleteFailed"));
+      // No answer at all (connection dropped, tab asleep) is not "it failed":
+      // the server may well have finished — the desktop page's wording.
+      setFailure(err instanceof ApiError ? (err.code === "household_owner" ? t("settings.deleteHousehold") : t("settings.deleteFailed")) : t("delete.unconfirmed"));
       return;
     }
     navigate("/login", { replace: true, state: { deleted: user?.uid ?? "" } });
@@ -262,6 +284,7 @@ function useAccountDeletion() {
         onConfirm={() => void run()}
         onCancel={() => setOpen(false)}
       />
+      {reverify.dialog}
       <AppDialog open={failure !== null} kind="error" message={failure ?? ""} confirmLabel={t("settings.ok")} cancelLabel={null} onConfirm={() => setFailure(null)} onCancel={() => setFailure(null)} />
     </>
   );

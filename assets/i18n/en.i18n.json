@@ -116,6 +116,9 @@
     "sessionTakeoverBody": "We'll send a new code to $phone. Once it's confirmed, the account moves to this device and the other one is signed out.",
     "sessionTakeoverNoPhone": "This account has no phone number, so it can't be confirmed here. Ask to disconnect or contact support.",
     "sessionTakeoverFailed": "We couldn't move the account to this device. Please try again.",
+    "reverifyTitle": "Verify your phone again",
+    "reverifyBody": "For your security, please verify your phone again before deleting the account. We'll send a new code to $phone.",
+    "reverifyNoPhone": "This account has no phone number, so it can't be verified here. Contact support to delete the account.",
     "sessionReleaseTitle": "Another device wants to sign in",
     "sessionReleaseBody": "A device ($platform) wants to sign in to your account. Sign out on this device?",
     "sessionReleaseConfirm": "Sign out here",
@@ -340,7 +343,10 @@
     "communityUpdateLocal": "Only mine",
     "communityUpdated": "The community copy was updated",
     "communityGone": "The recipe is no longer in the community; saved only for you",
-    "communityUpdateFailed": "Saved for you. The community post was not updated; try again later."
+    "communityUpdateFailed": "Saved for you. The community post was not updated; try again later.",
+    "sourceLink": "Original recipe",
+    "sourceLinkHint": "Open the source this recipe was imported from",
+    "sourceOpenFailed": "Could not open the link"
   },
   "cookMode": {
     "title": "Cook mode",
@@ -676,7 +682,12 @@
     "saveFailed": "Could not save the recipe. Try again.",
     "recordingTag": "Recording",
     "sizeKb": "$n KB",
-    "sizeMb": "$n MB"
+    "sizeMb": "$n MB",
+    "videoPhotoTitle": "Picture from the video",
+    "videoPhotoHint": "Pick the picture that will stand for this recipe. You can change it later too.",
+    "videoPhotoCover": "Post cover",
+    "videoPhotoNone": "No picture",
+    "videoPhotoFailed": "Could not save that picture, try another"
   },
   "mealPlanner": {
     "title": "Meal planning",
@@ -1234,7 +1245,8 @@
     "threadFull": "This conversation is full. Open a new one to keep writing.",
     "closedConversations": "Closed conversations ($n)",
     "noOpenConversations": "No open conversations",
-    "closedTag": "Closed"
+    "closedTag": "Closed",
+    "dailyLimit": "You've reached today's limit of new support messages. Please try again tomorrow, or write in a conversation you already have."
   },
   "adminBilling": {
     "title": "Users",
@@ -1799,7 +1811,12 @@
     "whatsNew": "What's new",
     "supportChat": "Support chat",
     "storeReview": "Rate the app prompt",
-    "webCheckout": "Buy on the web"
+    "quickActions": "App icon shortcuts",
+    "webCheckout": "Buy on the web",
+    "socialVideoPhoto": "Picture from a video",
+    "recipeSourceLink": "Link to the original recipe",
+    "webCheckoutIl": "Buy on the web (Israel)",
+    "webCheckoutIntl": "Buy on the web (abroad)"
   },
   "adminConfig": {
     "intro": "Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).",
@@ -2053,5 +2070,11 @@
       "withNames": "With: $names"
     },
     "permissionSuperuser": "Superuser"
+  },
+  "quickActions": {
+    "shefi": "Talk to Shefi",
+    "groceryAdd": "Add to grocery list",
+    "receipt": "Add a receipt",
+    "support": "Contact support"
   }
 }

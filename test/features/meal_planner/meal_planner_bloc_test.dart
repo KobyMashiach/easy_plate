@@ -34,8 +34,13 @@ class _Plans implements MealPlansRepository {
     store[plan.id] = plan;
   }
 
+  Object? deleteError;
+
   @override
-  Future<void> deletePlan(String id) async => store.remove(id);
+  Future<void> deletePlan(String id) async {
+    if (deleteError case final error?) throw error;
+    store.remove(id);
+  }
 }
 
 class _Recipes implements RecipesRepository {
@@ -258,4 +263,27 @@ void main() {
       await bloc.close();
     },
   );
+
+  test('a delete that fails still answers, with the plan still listed', () async {
+    // Without a state the page's busy card waited its full 30 s, then
+    // announced the plan deleted.
+    plans.deleteError = StateError('disk');
+    final bloc = build();
+    await loaded(bloc);
+
+    bloc.add(const MealPlannerEvent.deletePlan('p'));
+    final state = await loaded(bloc).timeout(const Duration(seconds: 1));
+    expect(state.plans.map((p) => p.id), ['p']);
+    await bloc.close();
+  });
+
+  test('a delete that goes through drops the plan', () async {
+    final bloc = build();
+    await loaded(bloc);
+
+    bloc.add(const MealPlannerEvent.deletePlan('p'));
+    final state = await loaded(bloc);
+    expect(state.plans, isEmpty);
+    await bloc.close();
+  });
 }

@@ -1,7 +1,7 @@
 // Mirrors every in-app notification as a push. A client cannot send FCM to
 // another device (that needs the server key), so this is the one piece that
 // has to run server-side.
-const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated, onDocumentDeleted } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 const { logger } = require("firebase-functions");
 const notificationPrefs = require("./notificationPrefs");
@@ -125,6 +125,26 @@ const bodyFor = (data, fromName) => {
   return "יש לך התראה חדשה";
 };
 
+// Whether the account that wrote a share invite has a verified phone. The
+// invite allowance below is per sender, which limits one account — but an
+// email/password account minted against the Auth REST API costs nothing
+// and has no phone, so a script could make any uid's phone ring (uids are
+// on every community post) from a fresh sender each time. Every real
+// account has a phone (the gate). An unreadable Auth record lets the push
+// through, as an unreadable budget does; a sender that does not exist does
+// not.
+async function senderHasPhone(fromUid, getUser = (uid) => admin.auth().getUser(uid)) {
+  if (!fromUid) return false;
+  try {
+    const user = await getUser(fromUid);
+    return typeof user.phoneNumber === "string" && user.phoneNumber.length > 0;
+  } catch (err) {
+    if (err && err.code === "auth/user-not-found") return false;
+    logger.warn("invite sender unreadable", { reason: err && (err.code || err.message) });
+    return true;
+  }
+}
+
 // Spends one unit of the sender's daily invite-push allowance and one of
 // the sender→recipient pair's. A budget that cannot be read lets the push
 // through: a Firestore hiccup must not silence real invites.
@@ -206,6 +226,10 @@ exports.pushOnNotification = onDocumentCreated(
     // can write one invite after another: past a daily allowance per sender,
     // and per sender and recipient, the item stays but the phone does not
     // ring again.
+    if (data.type === "shareInvite" && !(await senderHasPhone(String(data.fromUid || "")))) {
+      logger.info("push withheld: invite sender has no verified phone", { uid: event.params.uid, fromUid: String(data.fromUid || "") });
+      return;
+    }
     if (data.type === "shareInvite" && !(await invitePushAllowed(String(data.fromUid || ""), event.params.uid))) {
       logger.info("push withheld: invite push allowance spent", { uid: event.params.uid, fromUid: String(data.fromUid || "") });
       return;
@@ -416,7 +440,20 @@ async function reconcileReplyCount(postRef, stored) {
 /// scanned (up to REPLY_SCAN_LIMIT reads): past it, a reply loop used to
 /// pay that scan on every reply only to tell nobody. Spent only when there
 /// can be someone to tell (another author, or earlier replies).
-async function tellThreadOfReply(db, { postId, replyId, reply }, { allowed = replyFanoutAllowed, write = writeInboxItems, reconcile = reconcileReplyCount } = {}) {
+// Who may tell a thread of a reply: an account with a verified phone (a
+// minted email/password account is free, so a per-replier allowance alone
+// let a script ring every participant from a fresh account each time —
+// the same reason as senderHasPhone for invites), within its allowance.
+// The web console's personas (seed_… ids, written by adminPanel through
+// the Admin SDK; no client can sign in under such a uid) have no Auth
+// record at all, and their replies keep telling the thread as before.
+async function replierMayTell(uid, { hasPhone = senderHasPhone, spend = replyFanoutAllowed } = {}) {
+  const persona = typeof uid === "string" && uid.startsWith("seed_");
+  if (!persona && !(await hasPhone(uid))) return false;
+  return spend(uid);
+}
+
+async function tellThreadOfReply(db, { postId, replyId, reply }, { allowed = replierMayTell, write = writeInboxItems, reconcile = reconcileReplyCount } = {}) {
   if (!reply) return { told: 0, reason: "no_reply" };
   const postRef = db.doc(`forum_posts/${postId}`);
   const post = await postRef.get();
@@ -488,6 +525,124 @@ exports.onForumReplyCreated = onDocumentCreated(
   },
 );
 
+// Pure: whether a thread's update moved its reply counter up — the one move
+// the rules let any signed-in client make with no reply behind it.
+function replyCountRose(before, after) {
+  const was = before && typeof before.replyCount === "number" ? before.replyCount : 0;
+  const now = after && typeof after.replyCount === "number" ? after.replyCount : 0;
+  return now > was;
+}
+
+// The reply counter checked whenever it goes up, not only when a reply is
+// created: a loop of bare increments (no reply written, so
+// onForumReplyCreated never ran) left a thread reading "9,000 replies"
+// until someone really replied. A genuine reply's batch lands the reply
+// and the +1 together, so the count it finds is already right and nothing
+// is written; the reconcile's own write moves the counter down, which does
+// not fire this again.
+exports.onForumPostReplyCountRaised = onDocumentUpdated(
+  "forum_posts/{postId}",
+  async (event) => {
+    const before = event.data?.before.data();
+    const after = event.data?.after.data();
+    if (!replyCountRose(before, after)) return;
+    await reconcileReplyCount(event.data.after.ref, after.replyCount);
+  },
+);
+
+// A liked document's likeCount set back to the likes that exist, after a
+// like was removed. The rules tie each ±1 to the caller's own like
+// document, but the author of a recipe or thread may also sweep likes
+// (deleting the post removes them first, in batches, with the post still
+// there) without moving the counter — so the author could like their own
+// post, sweep the like, and like it again: +1 a round, as many rounds as
+// they liked (proved in the emulator). The sweep cannot be told apart from
+// that loop in rules without breaking older builds' deletes, so the count
+// is put right here instead. Counted inside a transaction with the post,
+// so a like landing meanwhile is either counted or retries the
+// transaction, never lost. A post already gone (the sweep's end) is left
+// alone. Best effort: a failure leaves the counter as it was.
+async function reconcileLikeCount(db, targetPath) {
+  const ref = db.doc(targetPath);
+  try {
+    return await db.runTransaction(async (tx) => {
+      const [target, counted] = await Promise.all([tx.get(ref), tx.get(ref.collection("likes").count())]);
+      if (!target.exists) return null;
+      const actual = counted.data().count;
+      const stored = target.get("likeCount");
+      if ((typeof stored === "number" ? stored : 0) !== actual) tx.update(ref, { likeCount: actual });
+      return actual;
+    });
+  } catch (err) {
+    logger.warn("like count not reconciled", { target: targetPath, reason: err.message });
+    return null;
+  }
+}
+
+exports.onSharedRecipeLikeDeleted = onDocumentDeleted(
+  "shared_recipes/{postId}/likes/{uid}",
+  async (event) => {
+    await reconcileLikeCount(admin.firestore(), `shared_recipes/${event.params.postId}`);
+  },
+);
+exports.onForumPostLikeDeleted = onDocumentDeleted(
+  "forum_posts/{postId}/likes/{uid}",
+  async (event) => {
+    await reconcileLikeCount(admin.firestore(), `forum_posts/${event.params.postId}`);
+  },
+);
+exports.onForumReplyLikeDeleted = onDocumentDeleted(
+  "forum_posts/{postId}/replies/{replyId}/likes/{uid}",
+  async (event) => {
+    await reconcileLikeCount(admin.firestore(), `forum_posts/${event.params.postId}/replies/${event.params.replyId}`);
+  },
+);
+
+// A new support conversation takes one of its author's daily slots
+// (quota_feedback_daily). The clients write feedback/{id} straight to
+// Firestore — builds already in the stores included — so the limit can
+// only be applied after the write, here: within the allowance the
+// conversation is stamped `admitted` (the newer clients wait for one
+// stamp or the other before saying "sent"); past it, it is closed on the
+// spot and stamped `rejected: "daily_limit"`. Closed and read, it leaves
+// the administrator's open inbox and unread badge on every console
+// version, and an older build shows it locked — no follow-ups (the rules
+// take only the seen mark on a closed conversation). It is kept rather
+// than deleted so the writer's client can read the verdict; deleteAccount
+// sweeps it with the rest. Follow-ups are updates and never come here. A
+// budget that cannot be read lets the conversation through: support must
+// not go dark over a Firestore hiccup.
+async function admitFeedback(ref, data, spend = budget.spend) {
+  const uid = data && typeof data.authorUid === "string" ? data.authorUid : "";
+  if (!uid) return null;
+  let allowed = true;
+  try {
+    allowed = (await spend({ uid, kind: "feedback" })).allowed;
+  } catch (err) {
+    logger.warn("feedback allowance unreadable", { reason: err.message });
+  }
+  const now = admin.firestore.FieldValue.serverTimestamp();
+  const verdict = allowed
+    ? { admitted: true }
+    : { rejected: "daily_limit", status: "closed", closedAt: now, read: true, readAt: now };
+  try {
+    await ref.update(verdict);
+  } catch (err) {
+    // Removed meanwhile (the administrator, or the account deleted).
+    logger.warn("feedback verdict not written", { id: ref.id, reason: err.message });
+  }
+  if (!allowed) logger.info("feedback refused: daily limit", { uid, id: ref.id });
+  return allowed;
+}
+
+exports.onFeedbackCreated = onDocumentCreated(
+  "feedback/{feedbackId}",
+  async (event) => {
+    if (!event.data) return;
+    await admitFeedback(event.data.ref, event.data.data());
+  },
+);
+
 exports.shareCodes = require("./shareCodes").shareCodes;
 
 // The administrator editing Remote Config from the dashboard.
@@ -510,5 +665,16 @@ exports.households = require("./households").households;
 exports.onOwnerEntitlementChanged = require("./households").onOwnerEntitlementChanged;
 exports.restoreHouseholdPremium = require("./households").restoreHouseholdPremium;
 
+// Once a week: recipe photos nothing references any more
+// (storageSweep.js). Report-only unless Remote Config storage_sweep_mode is
+// 2, and never deletes on a run that could not read everything.
+exports.weeklyStorageSweep = onSchedule(
+  { schedule: "every sunday 04:00", timeZone: "Asia/Jerusalem", region: "europe-west1", retryCount: 0, timeoutSeconds: 1800, memory: "1GiB" },
+  async () => {
+    await require("./storageSweep").sweep();
+  },
+);
+
 // The pure parts of the triggers above, for the unit test.
-exports.internals = { tellSaversOfEdit, tellThreadOfReply, COPY_SCAN_LIMIT, reconcileReplyCount, bodyFor, invitePushAllowed, replyFanoutAllowed, recipeUpdateFanoutAllowed, REPLY_SCAN_LIMIT, changedFields, recipeChanged, copyRootOf, saversFor, writeInboxItems, PREFS_BATCH, WRITE_BATCH };
+exports.internals = { tellSaversOfEdit, tellThreadOfReply, COPY_SCAN_LIMIT, reconcileReplyCount, reconcileLikeCount, replyCountRose, senderHasPhone, replierMayTell, bodyFor, invitePushAllowed, replyFanoutAllowed, recipeUpdateFanoutAllowed, REPLY_SCAN_LIMIT, changedFields, recipeChanged, copyRootOf, saversFor, writeInboxItems, PREFS_BATCH, WRITE_BATCH };
+exports.internals.admitFeedback = admitFeedback;

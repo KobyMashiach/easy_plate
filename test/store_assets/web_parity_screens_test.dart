@@ -417,12 +417,6 @@ class _FakeSharing implements RecipeSharingRepository {
   ];
 
   @override
-  Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid) async => [
-    for (final i in _list('share_invites'))
-      if (i['ownerUid'] == ownerUid) _invite(i),
-  ];
-
-  @override
   Future<CollabRecipeEntity?> getCollab(String collabId) async =>
       _collabs().where((c) => c.id == collabId).firstOrNull;
 

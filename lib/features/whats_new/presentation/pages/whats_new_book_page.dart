@@ -159,7 +159,6 @@ class _FeaturePage extends StatelessWidget {
     final description = feature.descriptionIn(language);
     final last = index == total - 1;
     final target = feature.targetRoute;
-    final rtl = Directionality.of(context) == TextDirection.rtl;
 
     // The head scrolls with the text: a short leaf keeps the dots and the
     // button at the foot and lets the rest scroll under them.
@@ -248,19 +247,26 @@ class _FeaturePage extends StatelessWidget {
             children: [
               _Dots(index: index, total: total),
               const SizedBox(width: AppSpacing.base),
-              Text(
-                t.whatsNew.pageOf(current: index + 1, total: total),
-                style: AppTextStyles.labelSm.copyWith(color: AppColors.outline),
+              // The counter gives way to the button: on a narrow page or
+              // at a larger text size it ellipsizes instead of pushing the
+              // button out of the row.
+              Expanded(
+                child: Text(
+                  t.whatsNew.pageOf(current: index + 1, total: total),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.labelSm.copyWith(
+                    color: AppColors.outline,
+                  ),
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: AppSpacing.base),
               ClayButton(
                 key: ValueKey(last ? 'whatsNew.gotIt' : 'whatsNew.next'),
                 label: last ? t.whatsNew.gotIt : t.whatsNew.next,
-                icon: last
-                    ? Icons.check_rounded
-                    : (rtl
-                          ? Icons.arrow_back_rounded
-                          : Icons.arrow_forward_rounded),
+                // The arrow mirrors itself under RTL (matchTextDirection):
+                // forward is already "leftwards" in Hebrew and Arabic.
+                icon: last ? Icons.check_rounded : Icons.arrow_forward_rounded,
                 onPressed: last ? onDone : onNext,
               ),
             ],

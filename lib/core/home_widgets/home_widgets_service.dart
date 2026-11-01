@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
@@ -119,6 +120,7 @@ class HomeWidgetsService {
       _lists = const [];
       _plans = const [];
       _recipeTitles = const {};
+      _published = null;
       unawaited(_channel.clear());
     }
   }
@@ -156,21 +158,56 @@ class HomeWidgetsService {
   }
 
   /// Rewrites the snapshot soon. Bursts (a cloud hydrate, a theme flip
-  /// that rebuilds everything) collapse into one write.
+  /// that rebuilds everything) collapse into one write, and a write that
+  /// would draw exactly what the widgets already have is skipped.
   void schedulePublish() {
     if (!_bound) return;
     _publishTimer?.cancel();
     _publishTimer = Timer(const Duration(milliseconds: 250), () {
-      unawaited(publishNow());
+      unawaited(_publish(onlyIfChanged: true));
     });
   }
 
-  /// The snapshot as things stand, written out.
-  Future<void> publishNow() async {
+  /// What was last handed to the widgets, without its timestamp; null when
+  /// the native side may hold something else (nothing sent yet, a clear,
+  /// a drained queue whose overlay the widgets drew).
+  String? _published;
+
+  /// The snapshot as things stand, written out — always, for a caller that
+  /// needs it on the native side now (a widget about to be pinned).
+  Future<void> publishNow() => _publish(onlyIfChanged: false);
+
+  /// What the schedule runs once its quiet period is over.
+  @visibleForTesting
+  Future<void> publishIfChanged() => _publish(onlyIfChanged: true);
+
+  /// Every publish makes every placed widget redraw (a WidgetKit reload on
+  /// iOS, budgeted while the app is in the background; an
+  /// `updateAppWidget` per widget on Android). Most schedules change
+  /// nothing they show — a recipe edit that kept its title, a flag
+  /// revision, a household echo — so those are compared first. `at` is
+  /// left out of the comparison: the native side never reads it.
+  Future<void> _publish({required bool onlyIfChanged}) async {
     _publishTimer?.cancel();
+    // Not ready and not signed out — a cold start before the session
+    // resolves, or a session waiting on another device: the widgets keep
+    // what they show (see [_onSession]). A theme, flag or language
+    // notification in that window used to publish the signed-out snapshot,
+    // and every widget flashed "sign in" until the account was back.
+    if (onlyIfChanged &&
+        !_ready &&
+        AuthSessionService().stage != AuthStage.signedOut) {
+      return;
+    }
     try {
-      await _channel.publish(buildSnapshot().encode());
+      final json = buildSnapshot().toJson();
+      final at = json.remove('at');
+      final content = jsonEncode(json);
+      if (onlyIfChanged && content == _published) return;
+      _published = content;
+      await _channel.publish(jsonEncode({'at': at, ...json}));
     } catch (e) {
+      _published = null;
       debugPrint('Home widgets publish failed: $e');
     }
   }
@@ -241,6 +278,13 @@ class HomeWidgetsService {
         done.add(id);
       }
       await _channel.removePending(done);
+      // The widgets drew these over the snapshot; with them gone, what they
+      // show must be redrawn even if the snapshot itself did not move (an
+      // entry dropped for a list that no longer exists).
+      if (done.isNotEmpty) {
+        _published = null;
+        schedulePublish();
+      }
     } finally {
       _draining = false;
       if (_drainAgain) {

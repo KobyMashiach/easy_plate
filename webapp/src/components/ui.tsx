@@ -75,7 +75,7 @@ export function Pill({ tone = "grey", children }: { tone?: "mint" | "lavender" |
 export function PageTitle({ title, lead }: { title: string; lead?: string }) {
   return (
     <header className="mb-6 animate-rise">
-      <h1 className="text-headline-lg">{title}</h1>
+      <h1 className="break-words text-headline-lg">{title}</h1>
       {lead ? <p className="mt-2 text-body-md text-on-surface-variant">{lead}</p> : null}
     </header>
   );

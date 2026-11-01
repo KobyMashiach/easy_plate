@@ -35,8 +35,15 @@ import 'package:mocktail/mocktail.dart';
 // of what it should write.
 class _Recipes implements RecipesRepository {
   final Map<String, RecipeEntity> store = {};
+
+  /// Reads of the whole box.
+  int reads = 0;
   @override
-  Future<List<RecipeEntity>> getRecipes() async => store.values.toList();
+  Future<List<RecipeEntity>> getRecipes() async {
+    reads++;
+    return store.values.toList();
+  }
+
   @override
   Stream<List<RecipeEntity>> watchRecipes() =>
       Stream.value(store.values.toList());
@@ -606,6 +613,36 @@ void main() {
         plans.store[plan.id]!.mealsForWeekday(2).every((m) => m.items.isEmpty),
         isTrue,
       );
+    });
+
+    test('listing plans reads the recipes box once, however many', () async {
+      for (final name in ['A', 'B', 'C', 'D']) {
+        await run(AssistantTools.createMealPlan, {
+          'name': name,
+          'template': 'threeMeals',
+        });
+        await run(AssistantTools.planMeal, {
+          'plan_id': name,
+          'weekday': 'monday',
+          'meal': 'dinner',
+          'recipe_id': 'r1',
+        });
+      }
+      expect(plans.store, hasLength(4));
+      recipes.reads = 0;
+      final listed = await run(AssistantTools.listMealPlans);
+      expect(recipes.reads, 1);
+      final json = listed.data['plans'] as List;
+      expect(json, hasLength(4));
+      for (final plan in json.cast<Map<String, dynamic>>()) {
+        final titles = [
+          for (final day in plan['days'] as List)
+            for (final meal in (day as Map)['meals'] as List)
+              for (final item in (meal as Map)['items'] as List)
+                (item as Map)['title'],
+        ];
+        expect(titles, [salmon.title]);
+      }
     });
 
     test('a free-text dish lands on a custom meal', () async {

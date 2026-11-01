@@ -72,8 +72,18 @@ abstract class PriceEstimator {
     PriceRecordEntity? best;
     var bestScore = 0.0;
     final query = normalizeProductName(itemName);
+    final queryTokens = productTokens(query).toSet();
+    // A product bought every week is many records under one name: each
+    // name is scored once. The grocery tab runs this per line in build,
+    // and a heavy book (2,000 lines, 60 to price) took ~100 ms of a frame.
+    final scores = <String, double>{};
     for (final record in records) {
-      final score = productMatchScoreNormalized(query, record.normalizedName);
+      final score = scores[record.normalizedName] ??=
+          productMatchScoreWithTokens(
+            query,
+            queryTokens,
+            record.normalizedName,
+          );
       if (score < minScore) continue;
       if (best == null ||
           score > bestScore ||

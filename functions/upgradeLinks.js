@@ -58,6 +58,10 @@ const GLOBAL_SMS_KEY = "global_sms";
 const LIMIT_GLOBAL_EMAIL = 300;
 const GLOBAL_EMAIL_KEY = "global_email";
 const WINDOW_MS = 60 * 60 * 1000;
+// Links a signed-in account mints for itself ("upgrade on the web" in the
+// app), per hour. Each is a document that stays until it is redeemed or
+// expires; a loop of mints used to write one per call without limit.
+const LIMIT_MINT_PER_ACCOUNT = 20;
 
 // ---------------------------------------------------------------------------
 // Pure parts
@@ -294,6 +298,9 @@ async function handle({ db, caller, request, ip, sms, nowMs = Date.now(), fetchI
 
   if (request.action === "mint") {
     if (!caller) return { status: 401, body: { error: { code: "unauthenticated", message: "A valid Firebase ID token is required" } } };
+    if (!(await withinLimits(db, [{ key: `m_${hashToken(caller.uid)}`, kind: "mint", limit: LIMIT_MINT_PER_ACCOUNT }], nowMs))) {
+      return { status: 429, body: { error: { code: "rate_limited", message: "Try again later" } } };
+    }
     const link = await createLink(db, caller.uid, { channel: "direct", nowMs });
     return { status: 200, body: link };
   }
@@ -399,4 +406,4 @@ exports.upgradeLinks = onRequest(
   },
 );
 
-exports.internals = { clientIp, deliverableContact, switchedOff, mintToken, hashToken, linkFor, validToken, normalizePhone, normalizeEmail, parseRequest, redeemReason, rateDecision, limitKeysFor, copyFor, smsConfigured, createLink, redeem, handle, TTL_MS, LINKS, REQUESTS, MAIL, LIMIT_PER_TARGET, LIMIT_PER_IP, LIMIT_GLOBAL_SMS, GLOBAL_SMS_KEY, LIMIT_GLOBAL_EMAIL, GLOBAL_EMAIL_KEY, WINDOW_MS };
+exports.internals = { clientIp, deliverableContact, switchedOff, mintToken, hashToken, linkFor, validToken, normalizePhone, normalizeEmail, parseRequest, redeemReason, rateDecision, limitKeysFor, copyFor, smsConfigured, createLink, redeem, handle, TTL_MS, LINKS, REQUESTS, MAIL, LIMIT_PER_TARGET, LIMIT_PER_IP, LIMIT_GLOBAL_SMS, GLOBAL_SMS_KEY, LIMIT_GLOBAL_EMAIL, GLOBAL_EMAIL_KEY, WINDOW_MS, LIMIT_MINT_PER_ACCOUNT };

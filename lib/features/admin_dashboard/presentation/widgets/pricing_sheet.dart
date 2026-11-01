@@ -73,6 +73,9 @@ class _PricingSheetState extends State<_PricingSheet> {
       double.tryParse(c.text.trim().replaceAll(',', '.')) ?? fallback;
 
   void _save() {
+    // Already closing (a second tap in the same frame): popping again
+    // would close the page under this sheet.
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final models = <String, ModelPrice>{};
     _fields.forEach((key, c) {
       final was = widget.pricing.priceFor(key);

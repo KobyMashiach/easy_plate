@@ -24,7 +24,7 @@ html[lang="ru"] { --font: Inter, "Plus Jakarta Sans", system-ui, sans-serif; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
-body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; overflow-wrap: break-word; }
 a { color: var(--brand2); text-decoration: none; }
 a:hover { text-decoration: underline; }
 h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
@@ -178,7 +178,7 @@ td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; white-spac
 .bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; padding-top: 8px; }
 .bars .bar { flex: 1; background: var(--brand); border-radius: 4px 4px 0 0; min-width: 3px; position: relative; opacity: 0.85; }
 .bars .bar:hover { opacity: 1; }
-.bars .bar[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; inset-inline-start: 50%; transform: translateX(-50%); background: #000; color: #fff; font-size: 11px; padding: 3px 6px; border-radius: 6px; white-space: nowrap; margin-bottom: 4px; z-index: 2; }
+.bars .bar[data-tip]:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #000; color: #fff; font-size: 11px; padding: 3px 6px; border-radius: 6px; white-space: nowrap; margin-bottom: 4px; z-index: 2; }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 5px; vertical-align: -1px; }
 .hbar { display: grid; grid-template-columns: 140px 1fr 70px; gap: 10px; align-items: center; font-size: 13px; padding: 4px 0; }
@@ -209,7 +209,8 @@ details.card summary { cursor: pointer; font-weight: 600; }
 .modal.wide { width: min(980px, 100%); }
 .modal h2 { font-size: 18px; }
 .modal .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px; }
-.toasts { position: fixed; bottom: 18px; inset-inline-start: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 60; width: min(480px, calc(100% - 32px)); }
+/* Centred with a physical left: translateX(-50%) undoes it in either direction; inset-inline-start put RTL toasts off screen. */
+.toasts { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 60; width: min(480px, calc(100% - 32px)); }
 .toast { background: #1d1842; border: 1px solid var(--line2); color: var(--fg); padding: 11px 14px; border-radius: 12px; font-size: 14px; box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8); animation: rise 0.2s ease-out; }
 .toast.error { border-color: rgba(255, 107, 122, 0.5); }
 .toast.ok { border-color: rgba(61, 220, 132, 0.5); }

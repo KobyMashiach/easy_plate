@@ -444,9 +444,7 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.base),
                       child: Text(
-                        t.assistant.working(
-                          tool: state.workingOn!.replaceAll('_', ' '),
-                        ),
+                        assistantWorkingLabel(state.workingOn!),
                         style: AppTextStyles.labelMd.copyWith(
                           color: AppColors.outline,
                         ),
@@ -813,4 +811,49 @@ class _InputBar extends StatelessWidget {
         ),
       ),
   ];
+}
+
+/// The line under the chat while Shefi runs a tool. The tool names are the
+/// model's stable identifiers ("add_grocery_items"), not UI strings — drawn
+/// as they were, a Hebrew or Russian screen read "מבצע: add grocery items" —
+/// so each one is named by the area of the app it works on, in the app's
+/// language, and one with no such area reads as thinking.
+@visibleForTesting
+String assistantWorkingLabel(String tool) {
+  final area = switch (tool) {
+    AssistantTools.searchRecipes ||
+    AssistantTools.getRecipe ||
+    AssistantTools.createRecipe ||
+    AssistantTools.updateRecipe ||
+    AssistantTools.deleteRecipe ||
+    AssistantTools.importRecipe ||
+    AssistantTools.searchWebRecipes ||
+    AssistantTools.openRecipe => t.nav.recipes,
+    AssistantTools.listBooks ||
+    AssistantTools.createBook ||
+    AssistantTools.addRecipeToBook => t.nav.library,
+    AssistantTools.listMealPlans ||
+    AssistantTools.createMealPlan ||
+    AssistantTools.planMeal ||
+    AssistantTools.removePlannedItem => t.nav.mealPlan,
+    AssistantTools.listGroceryLists ||
+    AssistantTools.createGroceryList ||
+    AssistantTools.getGroceryList ||
+    AssistantTools.addGroceryItems ||
+    AssistantTools.setGroceryItemChecked ||
+    AssistantTools.removeGroceryItems ||
+    AssistantTools.clearCheckedItems ||
+    AssistantTools.groceryListFromRecipe => t.nav.groceries,
+    AssistantTools.startCookMode ||
+    AssistantTools.startTimer ||
+    AssistantTools.cookingStatus => t.cookMode.title,
+    AssistantTools.estimateNutrition => t.nutrition.title,
+    AssistantTools.getPreferences ||
+    AssistantTools.setShoppingDay ||
+    AssistantTools.setDietaryPreferences => t.more.preferences,
+    AssistantTools.premiumStatus => t.premium.title,
+    AssistantTools.contactSupport => t.more.support,
+    _ => null,
+  };
+  return area == null ? t.assistant.thinking : t.assistant.working(tool: area);
 }

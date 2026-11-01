@@ -25,7 +25,11 @@ Future<String?> showCoverPromptSheet(
       padding: EdgeInsets.only(
         bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
       ),
-      child: _CoverPromptSheet(bookTitle: bookTitle),
+      // Scrolls once the keyboard leaves less room than the sheet needs,
+      // instead of overflowing behind it.
+      child: SingleChildScrollView(
+        child: _CoverPromptSheet(bookTitle: bookTitle),
+      ),
     ),
   );
 }
@@ -86,6 +90,9 @@ class _CoverPromptSheetState extends State<_CoverPromptSheet> {
   static const maxTitleLength = 120;
 
   void _submit() {
+    // Already closing (a second tap in the same frame): popping again
+    // would close the page under this sheet.
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final title = widget.bookTitle.trim();
     Navigator.of(context).pop(
       GenerateImageUseCase.bookCoverPrompt(

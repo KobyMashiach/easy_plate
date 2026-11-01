@@ -116,6 +116,9 @@
     "sessionTakeoverBody": "נשלח קוד חדש ל-$phone. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.",
     "sessionTakeoverNoPhone": "אין מספר טלפון בחשבון, אז אי אפשר לאמת מכאן. אפשר לבקש התנתקות או לפנות לתמיכה.",
     "sessionTakeoverFailed": "לא הצלחנו להעביר את החשבון למכשיר הזה. נסו שוב.",
+    "reverifyTitle": "אימות מחדש של הטלפון",
+    "reverifyBody": "לביטחונך, צריך לאמת שוב את הטלפון לפני מחיקת החשבון. נשלח קוד חדש ל-$phone.",
+    "reverifyNoPhone": "לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.",
     "sessionReleaseTitle": "מכשיר אחר מבקש להתחבר",
     "sessionReleaseBody": "מכשיר $platform מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?",
     "sessionReleaseConfirm": "להתנתק כאן",
@@ -340,7 +343,10 @@
     "communityUpdateLocal": "רק אצלי",
     "communityUpdated": "העותק בקהילה עודכן",
     "communityGone": "המתכון כבר לא בקהילה, נשמר רק אצלך",
-    "communityUpdateFailed": "נשמר אצלך. הפוסט בקהילה לא עודכן, נסו שוב מאוחר יותר."
+    "communityUpdateFailed": "נשמר אצלך. הפוסט בקהילה לא עודכן, נסו שוב מאוחר יותר.",
+    "sourceLink": "למתכון המקורי",
+    "sourceLinkHint": "פתיחת המקור שממנו יובא המתכון",
+    "sourceOpenFailed": "לא הצלחנו לפתוח את הקישור"
   },
   "cookMode": {
     "title": "מצב בישול",
@@ -676,7 +682,12 @@
     "saveFailed": "לא הצלחנו לשמור את המתכון. נסו שוב.",
     "recordingTag": "הקלטה",
     "sizeKb": "$n KB",
-    "sizeMb": "$n MB"
+    "sizeMb": "$n MB",
+    "videoPhotoTitle": "תמונה מהסרטון",
+    "videoPhotoHint": "בחרו את התמונה שתייצג את המתכון. אפשר לשנות אותה גם אחר כך.",
+    "videoPhotoCover": "תמונת הפוסט",
+    "videoPhotoNone": "בלי תמונה",
+    "videoPhotoFailed": "לא הצלחנו לשמור את התמונה, נסו אחרת"
   },
   "mealPlanner": {
     "title": "תכנון ארוחות",
@@ -1234,7 +1245,8 @@
     "threadFull": "השיחה הזו מלאה. פתחו שיחה חדשה כדי להמשיך לכתוב.",
     "closedConversations": "פניות סגורות ($n)",
     "noOpenConversations": "אין פניות פתוחות",
-    "closedTag": "סגורה"
+    "closedTag": "סגורה",
+    "dailyLimit": "הגעת למכסת פניות התמיכה החדשות להיום. אפשר לנסות שוב מחר, או לכתוב בפנייה שכבר פתוחה."
   },
   "adminBilling": {
     "title": "משתמשים",
@@ -1799,7 +1811,12 @@
     "whatsNew": "מה חדש",
     "supportChat": "צ'אט תמיכה",
     "storeReview": "בקשת דירוג בחנות",
-    "webCheckout": "רכישה באתר"
+    "quickActions": "קיצורי דרך באייקון",
+    "webCheckout": "רכישה באתר",
+    "socialVideoPhoto": "תמונה מסרטון",
+    "recipeSourceLink": "קישור למתכון המקורי",
+    "webCheckoutIl": "רכישה באתר (ישראל)",
+    "webCheckoutIntl": "רכישה באתר (חו\"ל)"
   },
   "adminConfig": {
     "intro": "כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).",
@@ -2053,5 +2070,11 @@
       "withNames": "עם: $names"
     },
     "permissionSuperuser": "סופר-משתמש"
+  },
+  "quickActions": {
+    "shefi": "דבר עם שפי",
+    "groceryAdd": "הוספה לרשימת קניות",
+    "receipt": "הוספת קבלה",
+    "support": "פנייה לתמיכה"
   }
 }

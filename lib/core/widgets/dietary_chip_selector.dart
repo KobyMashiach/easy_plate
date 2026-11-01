@@ -80,10 +80,15 @@ class DietaryChipSelector extends StatelessWidget {
                   color: isSelected ? foreground : AppColors.tertiary,
                 ),
                 const SizedBox(width: AppSpacing.xs),
-                Text(
-                  dietaryLabel(preference),
-                  style: AppTextStyles.labelMd.copyWith(
-                    color: isSelected ? foreground : AppColors.tertiary,
+                // Flexible: a label wider than the line ("Produits
+                // laitiers" at a large text size on a narrow phone) wraps
+                // inside the chip instead of overflowing it.
+                Flexible(
+                  child: Text(
+                    dietaryLabel(preference),
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: isSelected ? foreground : AppColors.tertiary,
+                    ),
                   ),
                 ),
               ],

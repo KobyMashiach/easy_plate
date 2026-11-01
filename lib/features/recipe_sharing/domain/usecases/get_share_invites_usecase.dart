@@ -7,6 +7,4 @@ class GetShareInvitesUseCase {
 
   Future<List<ShareInviteEntity>> incoming(String uid) =>
       repository.incomingInvites(uid);
-  Future<List<ShareInviteEntity>> outgoing(String uid) =>
-      repository.outgoingInvites(uid);
 }

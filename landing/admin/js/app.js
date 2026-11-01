@@ -128,9 +128,18 @@ async function mount() {
   title.textContent = route.title ? route.title() : t(`nav.${route.key}`);
   renderNav();
   document.querySelector(".sidebar").classList.remove("open");
+  document.getElementById("navToggle").setAttribute("aria-expanded", "false");
   const seq = ++mountSeq;
+  // Each mount writes into its own layout-transparent slots: a view still
+  // awaiting its first data (labels.json, personas) when the admin moves on
+  // then appends into slots the next mount's clear() already detached,
+  // never into the page that replaced it.
+  const viewSlot = h("div", { style: { display: "contents" } });
+  const actionsSlot = h("div", { style: { display: "contents" } });
+  view.append(viewSlot);
+  actions.append(actionsSlot);
   try {
-    const stop = await route.view.mount({ view, actions, params, user: currentUser, setTitle: (s) => { if (seq === mountSeq) title.textContent = s; } });
+    const stop = await route.view.mount({ view: viewSlot, actions: actionsSlot, params, user: currentUser, setTitle: (s) => { if (seq === mountSeq) title.textContent = s; } });
     if (seq !== mountSeq) {
       // Superseded while mounting: tear it down instead of leaking it.
       if (typeof stop === "function") { try { stop(); } catch (_) {} }
@@ -140,7 +149,7 @@ async function mount() {
   } catch (err) {
     if (seq !== mountSeq) return;
     console.error(err);
-    view.append(h("div.card.error", err.message || t("common.error")));
+    viewSlot.append(h("div.card.error", err.message || t("common.error")));
   }
 }
 

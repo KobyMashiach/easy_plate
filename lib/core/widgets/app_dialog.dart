@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../constants/app_colors.dart';
@@ -438,6 +439,9 @@ class _PromptFieldState extends State<_PromptField> {
         autofocus: !Walkthrough.isActive,
         style: AppTextStyles.bodyMd,
         decoration: InputDecoration(hintText: widget.hint),
+        // Every prompt names something (a book, a plan, a store) that the
+        // rules cap at 500 once it is shared or put on a share code.
+        inputFormatters: [LengthLimitingTextInputFormatter(500)],
         onChanged: widget.onChanged,
       ),
     );
@@ -452,6 +456,14 @@ class _ModalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigator = Navigator.of(context);
+    final route = ModalRoute.of(context);
+    // Only while this card is the top route: a second tap before the
+    // rebuild (OK twice, OK then Cancel) popped again, and with the card
+    // already closing that pop took the page under it — a confirm closed
+    // the screen it was asked from.
+    void close(bool answer) {
+      if (route == null || route.isCurrent) navigator.pop(answer);
+    }
 
     return PopScope(
       canPop: !dialog.blocking,
@@ -528,13 +540,13 @@ class _ModalCard extends StatelessWidget {
                               label: dialog.confirmLabel ?? t.common.ok,
                               expanded: true,
                               destructive: dialog.destructive,
-                              onPressed: () => navigator.pop(true),
+                              onPressed: () => close(true),
                             ),
                           ),
                         if (!dialog.blocking && dialog.cancelLabel != null) ...[
                           const SizedBox(height: AppSpacing.base),
                           TextButton(
-                            onPressed: () => navigator.pop(false),
+                            onPressed: () => close(false),
                             child: Text(
                               dialog.cancelLabel!,
                               style: AppTextStyles.labelMd.copyWith(

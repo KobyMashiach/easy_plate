@@ -149,6 +149,9 @@ class _CreatePlanFormState extends State<_CreatePlanForm> {
   bool get _canSubmit => _nameController.text.trim().isNotEmpty;
 
   void _submit() {
+    // Already closing (a second tap in the same frame): popping again
+    // would close the page under this sheet, and the plan was created twice.
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
     widget.onSubmit(name, _template);
@@ -400,9 +403,18 @@ Future<void> _confirmDeletePlan(
     bloc,
     MealPlannerEvent.deletePlan(plan.id),
   );
-  if (context.mounted) {
-    AppDialog.success(message: t.mealPlanner.planDeleted).notify(context);
+  if (!context.mounted) return;
+  // Still listed: the delete (or the leave) did not go through.
+  final state = bloc.state;
+  final stillThere =
+      state is MealPlannerLoaded && state.plans.any((p) => p.id == plan.id);
+  if (stillThere) {
+    AppDialog.error(message: t.common.error).show(context);
+    return;
   }
+  AppDialog.success(
+    message: leaves ? t.sharing.left : t.mealPlanner.planDeleted,
+  ).notify(context);
 }
 
 class _PlanBoard extends StatefulWidget {

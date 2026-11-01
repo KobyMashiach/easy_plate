@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -8,6 +9,7 @@ import '../../../../core/utils/amount_format.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/pop_if_current.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../../domain/entities/grocery_list_entity.dart';
@@ -211,7 +213,7 @@ class _ListsSheet extends StatelessWidget {
                     label: t.groceryList.newList,
                     icon: Icons.add_rounded,
                     expanded: true,
-                    onPressed: () => Navigator.of(context).pop(true),
+                    onPressed: () => popIfCurrent(context, true),
                   ),
                 ],
               ),
@@ -590,6 +592,9 @@ class _NameSheetState extends State<_NameSheet> {
   }
 
   void _submit() {
+    // Already closing (a second tap in the same frame): popping again
+    // would close the page under this sheet.
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final name = _name.text.trim();
     if (name.isEmpty) return;
     Navigator.of(context).pop(name);
@@ -616,6 +621,9 @@ class _NameSheetState extends State<_NameSheet> {
               autofocus: true,
               style: AppTextStyles.bodyMd,
               decoration: InputDecoration(labelText: t.groceryList.listName),
+              // A shared list's name goes on its share code, capped at 500
+              // by the rules.
+              inputFormatters: [LengthLimitingTextInputFormatter(500)],
               onSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -837,9 +845,10 @@ class _RecipeListSheetState extends State<_RecipeListSheet> {
                 expanded: true,
                 onPressed: count == 0
                     ? null
-                    : () => Navigator.of(
-                        context,
-                      ).pop((name: _name.text.trim(), scale: _scale)),
+                    : () => popIfCurrent(context, (
+                        name: _name.text.trim(),
+                        scale: _scale,
+                      )),
               ),
               if (count == 0) ...[
                 const SizedBox(height: AppSpacing.sm),

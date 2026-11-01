@@ -114,10 +114,19 @@ export async function revokeShareCode(code: string): Promise<void> {
 export async function activeCodesFor(targetId: string | null, ownerUid: string): Promise<ShareCode[]> {
   if (!targetId) return [];
   const { fs, db } = await firestore();
-  const snap = await fs.getDocs(
-    fs.query(fs.collection(db, "share_codes"), fs.where("ownerUid", "==", ownerUid), fs.where("targetId", "==", targetId), fs.where("revoked", "==", false)),
-  );
   const now = Date.now();
+  // Expired codes are left out by the query (they are never deleted, so a
+  // target's whole history was read each time); the composite index is in
+  // firestore.indexes.json. The filter below still runs, for the clock.
+  const snap = await fs.getDocs(
+    fs.query(
+      fs.collection(db, "share_codes"),
+      fs.where("ownerUid", "==", ownerUid),
+      fs.where("targetId", "==", targetId),
+      fs.where("revoked", "==", false),
+      fs.where("expiresAt", ">", fs.Timestamp.fromMillis(now)),
+    ),
+  );
   return snap.docs
     .map((d) => codeFrom(d.id, d.data()))
     .filter((c): c is ShareCode => c !== null && !c.revoked && c.expiresAtMs > now)

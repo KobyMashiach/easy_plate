@@ -24,6 +24,7 @@ import '../../../../core/widgets/image_source_sheet.dart';
 import '../../../../core/widgets/image_viewer_page.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/nutrition/nutrition_widgets.dart';
+import '../../../../core/widgets/recipe_source_link.dart';
 import '../widgets/nutrition_facts_card.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../cook_mode_entry.dart';
@@ -665,6 +666,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
               ),
             ],
           ),
+          // Where the recipe came from (a site, a video), for anyone who
+          // wants the original — the row draws itself only for a web link.
+          RecipeSourceLink(url: recipe.sourceUrl, gapBefore: AppSpacing.gutter),
           if (recipe.dietaryTags.length > 2) ...[
             const SizedBox(height: AppSpacing.gutter),
             Wrap(

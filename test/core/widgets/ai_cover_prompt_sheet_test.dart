@@ -149,4 +149,63 @@ void main() {
     expect(result, contains('titled "${'ש' * 120}"'));
     expect(result!.length, lessThan(700));
   });
+
+  testWidgets('with the keyboard up on a short phone the sheet scrolls', (
+    tester,
+  ) async {
+    // 375×667 (a small iPhone) with a 260 px keyboard: less room than the
+    // sheet's chips, field and button need.
+    tester.view.physicalSize = const Size(750, 1334);
+    tester.view.devicePixelRatio = 2;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 520);
+    addTearDown(tester.view.reset);
+    await open(tester);
+    expect(tester.takeException(), isNull);
+    expect(find.text(t.image.coverTitle), findsOneWidget);
+  });
+
+  testWidgets('two taps on Generate close the sheet, not the page under it', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TranslationProvider(
+        child: MaterialApp(
+          locale: const Locale('he'),
+          supportedLocales: AppLocaleUtils.supportedLocales,
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => Scaffold(
+                    body: TextButton(
+                      onPressed: () =>
+                          showCoverPromptSheet(context, bookTitle: 'שבת'),
+                      child: const Text('book page'),
+                    ),
+                  ),
+                ),
+              ),
+              child: const Text('home'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('home'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('book page'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.image.themeHealthy));
+    await tester.pump();
+
+    final button = tester.widget<ClayButton>(
+      find.widgetWithText(ClayButton, t.image.coverGenerate),
+    );
+    // Two taps before a frame: the second handler runs on a closing sheet.
+    button.onPressed!();
+    button.onPressed!();
+    await tester.pumpAndSettle();
+    expect(find.text('book page'), findsOneWidget);
+  });
 }

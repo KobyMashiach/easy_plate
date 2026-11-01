@@ -27,6 +27,7 @@ const DEFAULT_ICONS = {
   ff_price_book: "price_check", ff_receipt_scan: "receipt_long", ff_grocery_cost: "price_check", ff_shopping_reminder: "notifications",
   ff_assistant: "smart_toy", ff_assistant_scoped: "smart_toy", ff_assistant_voice: "mic", ff_notifications: "notifications", ff_premium: "workspace_premium", ff_content_translation: "translate", ff_theming: "palette", ff_walkthrough: "school", ff_tutorial_book: "school", ff_feedback: "feedback",
   ff_single_session: "devices", ff_home_widgets: "widgets", ff_wake_word: "mic", ff_voice_assistants: "record_voice_over", ff_shefi_launcher: "smart_toy", ff_whats_new: "new_releases",
+  ff_support_chat: "feedback", ff_store_review: "star", ff_quick_actions: "bolt", ff_web_checkout: "workspace_premium", ff_social_video_photo: "image", ff_recipe_source_link: "link",
 };
 
 let labels = null;
@@ -43,6 +44,31 @@ function camel(key) {
 function flagName(key, lang = currentLang()) {
   const pick = (l) => (labels && labels[l] ? labels[l].featureName[camel(key)] : undefined);
   return pick(lang) || pick("en") || pick("he") || key;
+}
+
+// Pure: the flag's console description without its state legend
+// ("… 0 = מוסתר, 1 = בקרוב, 2 = פעיל."), which is for the administrator,
+// not for a page in the app.
+export function describeFlag(description) {
+  return String(description || "").split(/\s*[.;,]?\s*(?:^|\s)0\s*=/)[0].trim().replace(/[.;,:]+$/, "").trim();
+}
+
+// A page for [flag] with its copy already filled in from what the console
+// knows: the feature's name in every language (labels.json) as the
+// headline, the flag's own description as the Hebrew text. Enough to
+// publish with one switch; the editor below rewords what it likes, and
+// "translate the missing languages" fills the other four descriptions.
+function prefilled(flag, sortOrder) {
+  const title = {};
+  for (const l of LANGS) {
+    const names = labels && labels[l] && labels[l].featureName;
+    const name = names ? names[camel(flag.key)] : undefined;
+    if (name) title[l] = name;
+  }
+  const description = {};
+  const text = describeFlag(flag.description);
+  if (text) description.he = text;
+  return { featureKey: flag.key, title, description, imageUrl: "", iconName: DEFAULT_ICONS[flag.key] || "auto_awesome", targetRoute: "", sortOrder };
 }
 
 function textIn(map, lang = currentLang()) {
@@ -101,21 +127,70 @@ export async function mount({ view, actions }) {
     const checklist = h("div.stack", { style: { maxHeight: "260px", overflowY: "auto", gap: "4px", border: "1px solid var(--line, rgba(127,127,127,.25))", borderRadius: "8px", padding: "6px 8px" } });
     const pages = h("div.stack");
 
+    // The flags on a page of some other release: a flag on none of them is
+    // marked, so what has never been announced stands out in the list.
+    const announced = new Set((releases || [])
+      .filter((r) => !release || r.versionCode !== release.versionCode)
+      .flatMap((r) => (r.features || []).map((f) => f.featureKey)));
+
+    // One switch per flag (Koby, 2026-10-27: "toggle" the features of each
+    // version): on adds a page filled in from the flag, off removes it.
     const paintChecklist = () => {
       clear(checklist);
       const q = searchCtl.value.trim().toLowerCase();
       for (const flag of all) {
         if (q && !flagName(flag.key).toLowerCase().includes(q) && !flag.key.includes(q) && !flag.description.toLowerCase().includes(q)) continue;
-        const box = h("input", { type: "checkbox", checked: !!find(flag.key) });
-        box.addEventListener("change", () => {
-          if (box.checked) draft.features.push({ featureKey: flag.key, title: {}, description: {}, imageUrl: "", iconName: DEFAULT_ICONS[flag.key] || "auto_awesome", targetRoute: "", sortOrder: draft.features.length });
-          else draft.features = draft.features.filter((f) => f.featureKey !== flag.key);
+        const sw = toggle(!!find(flag.key), (on) => {
+          if (on) {
+            if (!find(flag.key)) draft.features.push(prefilled(flag, draft.features.length));
+          } else {
+            draft.features = draft.features.filter((f) => f.featureKey !== flag.key);
+          }
           paintPages();
         });
-        checklist.append(h("label.row", { style: { gap: "8px", alignItems: "center" } }, box, h("span", flagName(flag.key)), h("span.small.muted.mono", flag.key), badge(flagState(flag.value), flag.value === "2" ? "green" : flag.value === "3" ? "brand" : flag.value === "1" ? "amber" : "red")));
+        checklist.append(h("div.row", { style: { gap: "8px", alignItems: "center" } },
+          sw,
+          h("span", flagName(flag.key)),
+          h("span.small.muted.mono", flag.key),
+          badge(flagState(flag.value), flag.value === "2" ? "green" : flag.value === "3" ? "brand" : flag.value === "1" ? "amber" : "red"),
+          announced.has(flag.key) ? null : badge(t("whatsnew.notAnnounced"), "amber"),
+        ));
       }
       if (!checklist.children.length) checklist.append(empty(t("common.nothingFound")));
     };
+
+    // Every page's missing languages in one go, from the language it has
+    // (Hebrew first — the prefilled description is Hebrew). Text already
+    // there is never overwritten.
+    const translateAll = button(t("whatsnew.translateAll"), { kind: "small" });
+    translateAll.addEventListener("click", busy(translateAll, async () => {
+      const has = (map, l) => !!(map[l] || "").trim();
+      let n = 0;
+      let failed = null;
+      for (const f of draft.features) {
+        const from = ["he", "en", ...LANGS].find((l) => has(f.title, l) || has(f.description, l));
+        if (!from) continue;
+        const missing = LANGS.filter((l) => l !== from && (!has(f.title, l) || (has(f.description, from) && !has(f.description, l))));
+        if (!missing.length) continue;
+        try {
+          const r = await call("whatsnew.translate", { title: (f.title[from] || "").trim(), description: (f.description[from] || "").trim(), from });
+          for (const l of missing) {
+            if (!has(f.title, l) && r.title && r.title[l]) f.title[l] = r.title[l];
+            if (!has(f.description, l) && r.description && r.description[l]) f.description[l] = r.description[l];
+          }
+          n++;
+        } catch (e) { failed = e; break; }
+      }
+      paintPages();
+      // A failed call stops the run; its error is the message, not a
+      // "nothing to translate" that would read as success.
+      if (failed) {
+        toastError(failed);
+        if (n) toast(t("whatsnew.translatedAll", { n }), "ok");
+        return;
+      }
+      toast(n ? t("whatsnew.translatedAll", { n }) : t("whatsnew.nothingToTranslate"), "ok");
+    }));
 
     const pageCard = (f, index) => {
       let lang = currentLang();
@@ -202,7 +277,7 @@ export async function mount({ view, actions }) {
           field(t("whatsnew.releasedAt"), dateCtl),
         ),
         field(t("whatsnew.published"), publishedCtl, t("whatsnew.publishedHint")),
-        h("h3", t("whatsnew.features")),
+        h("div.row.between", { style: { alignItems: "center" } }, h("h3", t("whatsnew.features")), translateAll),
         h("p.small.muted", t("whatsnew.featuresHint")),
         h("div.search", searchCtl),
         checklist,

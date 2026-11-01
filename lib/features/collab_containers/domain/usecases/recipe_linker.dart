@@ -48,19 +48,27 @@ class RecipeLinker {
     required String uid,
   }) async {
     final byRecipeId = <String, String>{};
-    final owned = <RecipeInvite>[];
     final titles = <String, String>{};
-    for (final id in recipeIds.toSet()) {
-      final recipe = await recipes.getRecipeById(id);
+    // Slot per recipe, so [owned] keeps the book's order whichever share
+    // finishes first.
+    final ids = recipeIds.toSet().toList();
+    final ownedAt = List<RecipeInvite?>.filled(ids.length, null);
+    final toShare = <(int, RecipeEntity)>[];
+    for (var i = 0; i < ids.length; i++) {
+      final recipe = await recipes.getRecipeById(ids[i]);
       if (recipe == null) continue;
-      titles[id] = recipe.title;
+      titles[recipe.id] = recipe.title;
       if (recipe.collabId case final existing?) {
-        byRecipeId[id] = existing;
+        byRecipeId[recipe.id] = existing;
         if (recipe.collabRole == CollabRole.owner) {
-          owned.add((collabId: existing, title: recipe.title));
+          ownedAt[i] = (collabId: existing, title: recipe.title);
         }
         continue;
       }
+      toShare.add((i, recipe));
+    }
+
+    Future<void> share(int slot, RecipeEntity recipe) async {
       // Deliberate, pending a product decision: a copy saved from the
       // community (not this account's own) is shared on as this account's
       // collab when its book or plan is, like any other recipe in it.
@@ -72,32 +80,64 @@ class RecipeLinker {
         // Only the sharing marks, onto the recipe as stored now: the upload
         // and the document write took a while, and an edit or a translation
         // saved meanwhile must not be undone.
-        final current = await recipes.getRecipeById(id) ?? ready;
+        final current = await recipes.getRecipeById(recipe.id) ?? ready;
         await recipes.saveRecipe(
           current.copyWith(collabId: collabId, collabRole: CollabRole.owner),
         );
-        byRecipeId[id] = collabId;
-        owned.add((collabId: collabId, title: recipe.title));
+        byRecipeId[recipe.id] = collabId;
+        ownedAt[slot] = (collabId: collabId, title: recipe.title);
       } catch (e) {
         // Offline, or refused. The recipe stays out of the shared document
         // this time and is picked up by the next save.
         debugPrint('Recipe ${recipe.id} could not be shared: $e');
       }
     }
-    return LinkedRecipes(byRecipeId: byRecipeId, owned: owned, titles: titles);
+
+    // A few at a time rather than one after another: sharing a book of a
+    // hundred unshared recipes waited out a hundred photo uploads and
+    // document writes in a row (and offline, a hundred [remoteTimeout]s).
+    // Bounded, so a big book does not put every photo on the link at once.
+    var next = 0;
+    Future<void> worker() async {
+      while (next < toShare.length) {
+        final (slot, recipe) = toShare[next++];
+        await share(slot, recipe);
+      }
+    }
+
+    await Future.wait([
+      for (var w = 0; w < shareConcurrency && w < toShare.length; w++) worker(),
+    ]);
+    return LinkedRecipes(
+      byRecipeId: byRecipeId,
+      owned: ownedAt.nonNulls.toList(),
+      titles: titles,
+    );
   }
+
+  /// How many recipes [ensureCollabs] shares side by side.
+  static const shareConcurrency = 4;
+
+  /// Collab id → local id of every shared recipe stored on this device.
+  Future<Map<String, String>> recipeIndex() async => {
+    for (final recipe in await recipes.getRecipes())
+      ?recipe.collabId: recipe.id,
+  };
 
   /// Collab id → local id for every shared recipe in [collabIds] this account
   /// holds or can be let into. A recipe it was never invited to (one an
   /// editor brought in and could not invite it to yet) is left out.
+  ///
+  /// [index] is a [recipeIndex] the caller already read, for a pass over
+  /// many containers: it is used (and kept current with every copy this
+  /// call writes) instead of reading and mapping the whole recipes box
+  /// again for each one. The map returned is then that same map.
   Future<Map<String, String>> materialize(
     Set<String> collabIds, {
     required String uid,
+    Map<String, String>? index,
   }) async {
-    final byCollabId = <String, String>{
-      for (final recipe in await recipes.getRecipes())
-        ?recipe.collabId: recipe.id,
-    };
+    final byCollabId = index ?? await recipeIndex();
     final missing = {
       for (final collabId in collabIds)
         if (!byCollabId.containsKey(collabId)) collabId,

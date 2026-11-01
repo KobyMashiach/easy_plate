@@ -22,7 +22,6 @@ abstract class RecipeSharingRemoteDataSource {
     required CollabRole role,
   });
   Future<List<ShareInviteEntity>> incomingInvites(String uid);
-  Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid);
   Future<CollabRecipeEntity?> getCollab(String collabId);
   Future<void> setInviteStatus(String inviteId, ShareInviteStatus status);
   Future<void> joinCollab(
@@ -315,16 +314,6 @@ class RecipeSharingFirestoreDataSource
         _inviteFrom,
         label: 'Invites',
       ).where((i) => i.via == null).toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-  }
-
-  @override
-  Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid) async {
-    final snapshot = await _firestore
-        .collection(invites)
-        .where('ownerUid', isEqualTo: ownerUid)
-        .get();
-    return parseEach(snapshot.docs, _inviteFrom, label: 'Invites')
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 

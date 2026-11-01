@@ -43,10 +43,6 @@ class RecipeSharingRepositoryImpl implements RecipeSharingRepository {
       remoteDataSource.incomingInvites(uid);
 
   @override
-  Future<List<ShareInviteEntity>> outgoingInvites(String ownerUid) =>
-      remoteDataSource.outgoingInvites(ownerUid);
-
-  @override
   Future<CollabRecipeEntity?> getCollab(String collabId) =>
       remoteDataSource.getCollab(collabId);
 

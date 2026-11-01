@@ -20,13 +20,17 @@ class BuildAggregateGroceryListUseCase {
 
   Future<List<GroceryItemEntity>> call(List<MealPlanEntity> activePlans) async {
     final aggregated = <String, GroceryItemEntity>{};
+    // A week's plan names the same few recipes over and over; each is read
+    // (and turned into an entity) once per build, not once per meal.
+    final recipes = <String, Future<RecipeEntity?>>{};
 
     for (final plan in activePlans) {
       for (final meal in plan.meals) {
         for (final item in meal.items) {
-          if (item.recipeId != null) {
-            final recipe = await recipesRepository.getRecipeById(
-              item.recipeId!,
+          if (item.recipeId case final recipeId?) {
+            final recipe = await recipes.putIfAbsent(
+              recipeId,
+              () => recipesRepository.getRecipeById(recipeId),
             );
             if (recipe == null) continue;
 

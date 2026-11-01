@@ -249,6 +249,9 @@ class AuthSessionService extends ChangeNotifier {
     // are what comes back.
     await UserScope().switchTo(user.uid);
     if (generation != _generation) return;
+    // The profile and block reads touch no box: started here, they run
+    // under the household lookup and the hydrate instead of after them.
+    final early = _profiles == null ? null : _readAccount(user.uid);
     // A different account than the one whose usage is in memory, if any.
     DailyUsageService().reset();
     EntitlementService().watch(user.uid);
@@ -268,7 +271,7 @@ class AuthSessionService extends ChangeNotifier {
     unawaited(refreshSharedRecipes());
     await _loadPreferences();
     if (generation != _generation) return;
-    await _resolveProfile(user);
+    await _resolveProfile(user, early: early);
   }
 
   /// How long after sign-out the local boxes are deleted: long enough for the
@@ -316,15 +319,33 @@ class AuthSessionService extends ChangeNotifier {
     await _onAuthChanged(user);
   }
 
-  Future<void> _resolveProfile(AppUserEntity user) async {
+  /// The account document and its block status, both read at once. Both
+  /// are needed before the stage can move and neither depends on the
+  /// other, so side by side they cost the splash one round trip, not two.
+  /// A run that goes stale before an answer is looked at must not surface
+  /// its error as uncaught; the awaits in [_resolveProfile] still throw.
+  ({Future<UserProfileEntity?> profile, Future<String?> blocked}) _readAccount(
+    String uid,
+  ) => (
+    profile: _profiles!.getProfile(uid)..ignore(),
+    blocked: _profiles!.blockMessage(uid)..ignore(),
+  );
+
+  /// [early] carries reads the sign-in started before hydrating; without
+  /// it (a retry, the registration screen) they are made now.
+  Future<void> _resolveProfile(
+    AppUserEntity user, {
+    ({Future<UserProfileEntity?> profile, Future<String?> blocked})? early,
+  }) async {
     // Also reached from the retry on the session screen and from the
     // registration screen, both of which sit next to a sign-out button: a
     // sign-out during one of the lookups below must win over this run.
     final generation = _generation;
     bool stale() => generation != _generation;
 
+    final reads = early ?? _readAccount(user.uid);
     try {
-      final profile = await _profiles!.getProfile(user.uid);
+      final profile = await reads.profile;
       if (stale()) return;
       _profile = profile;
       profileListenable.value = _profile;
@@ -338,7 +359,7 @@ class AuthSessionService extends ChangeNotifier {
 
     // An account the administrator switched off is held on one screen with
     // the reason, whatever else it has finished.
-    final blocked = await _profiles!.blockMessage(user.uid);
+    final blocked = await reads.blocked;
     if (stale()) return;
     if (blocked case final message?) {
       _blockMessage = message;

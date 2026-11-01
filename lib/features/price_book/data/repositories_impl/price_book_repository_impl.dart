@@ -39,9 +39,7 @@ class PriceBookRepositoryImpl implements PriceBookRepository {
   Future<void> saveRecords(List<PriceRecordEntity> records) async {
     final models = records.map((r) => r.toModel()).toList();
     await localDataSource.putAll(models);
-    for (final model in models) {
-      unawaited(cloud?.push(model));
-    }
+    unawaited(cloud?.pushAll(models));
   }
 
   @override
@@ -75,9 +73,7 @@ class PriceBookRepositoryImpl implements PriceBookRepository {
         .toList();
     final renamed = [for (final r in records) r.copyWith(store: store)];
     await localDataSource.putAll(renamed);
-    for (final r in renamed) {
-      unawaited(cloud?.push(r));
-    }
+    unawaited(cloud?.pushAll(renamed));
   }
 
   @override
@@ -86,10 +82,9 @@ class PriceBookRepositoryImpl implements PriceBookRepository {
       final records = (await localDataSource.getAll())
           .where((r) => r.receiptId == id)
           .toList();
-      await localDataSource.deleteMany(records.map((r) => r.id));
-      for (final r in records) {
-        unawaited(cloud?.remove(r.id));
-      }
+      final ids = [for (final r in records) r.id];
+      await localDataSource.deleteMany(ids);
+      unawaited(cloud?.removeAll(ids));
     }
     await localDataSource.deleteReceipt(id);
     unawaited(receiptsCloud?.remove(id));
@@ -101,15 +96,10 @@ class PriceBookRepositoryImpl implements PriceBookRepository {
     final receipts = await localDataSource.getReceipts();
     final pricing = await localDataSource.getPricing();
     await localDataSource.clearAll();
-    for (final r in records) {
-      unawaited(cloud?.remove(r.id));
-    }
-    for (final r in receipts) {
-      unawaited(receiptsCloud?.remove(r.id));
-    }
-    for (final p in pricing) {
-      unawaited(pricingCloud?.remove(p.key));
-    }
+    // Batched: a book of a few thousand lines was as many single deletes.
+    unawaited(cloud?.removeAll([for (final r in records) r.id]));
+    unawaited(receiptsCloud?.removeAll([for (final r in receipts) r.id]));
+    unawaited(pricingCloud?.removeAll([for (final p in pricing) p.key]));
   }
 
   @override

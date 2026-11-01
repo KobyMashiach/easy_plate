@@ -142,6 +142,11 @@ export function AppDialog({
   }
 
   const k = KIND[kind];
+  // Closing, the card stays up for the exit animation only: a second press
+  // (or a repeated Enter on the focused button) must not confirm again.
+  const confirm = () => {
+    if (open) onConfirm();
+  };
   return (
     <dialog {...shared} className={`app-dialog ${closing ? "is-closing" : ""}`}>
       {open || closing ? (
@@ -166,7 +171,7 @@ export function AppDialog({
                 <span className="inline-block h-7 w-7 animate-spin rounded-full border-[3px] border-primary border-t-transparent" aria-hidden="true" />
               </span>
             ) : (
-              <button type="button" className={`${destructive ? "clay-btn-danger" : "clay-btn-primary"} w-full`} onClick={onConfirm} disabled={confirmDisabled}>
+              <button type="button" className={`${destructive ? "clay-btn-danger" : "clay-btn-primary"} w-full`} onClick={confirm} disabled={confirmDisabled}>
                 {confirmLabel}
               </button>
             )}

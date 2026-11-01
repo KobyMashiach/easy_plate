@@ -6,6 +6,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/hive/user_scope.dart';
 import '../../../core/features/features_flags.dart';
+import '../../../core/services/image_storage_service.dart';
 import '../../../core/monetization/monetization_config.dart';
 import '../../../core/services/auth_session_service.dart';
 import '../../../core/services/cook_session_service.dart';
@@ -512,7 +513,7 @@ class AssistantDispatcher {
     }
     final parsed = switch (source) {
       'url' => await ingestion.parseFromUrl(content, prefs),
-      'social_video' => await ingestion.parseFromSocialVideo(content, prefs),
+      'social_video' => await _fromSocialVideo(content, prefs),
       'request' => await ingestion.generateRecipe(content, prefs),
       _ => await ingestion.parseRawText(content, prefs),
     };
@@ -521,6 +522,30 @@ class AssistantDispatcher {
       _recipeFull(parsed),
       card: RecipeCard(parsed, caption: t.assistant.recipeSaved),
     );
+  }
+
+  /// The recipe from the video with the post's cover as its photo when the
+  /// server found one — what the add screen does by itself; the stills it
+  /// offers there have no picker here. Nothing of this while the console
+  /// hides the feature, and a picture that cannot be written is let go.
+  Future<RecipeEntity> _fromSocialVideo(
+    String url,
+    List<DietaryPreference> prefs,
+  ) async {
+    final result = await ingestion.parseFromSocialVideo(url, prefs);
+    final cover = FeaturesFlags.socialVideoPhoto.isEnabled
+        ? result.cover
+        : null;
+    if (cover == null) return result.recipe;
+    try {
+      final name = '${_uuid.v4()}.jpg';
+      final stored = await ImageStorageService().storeBytes(name, cover.bytes);
+      if (stored == null) return result.recipe;
+      return result.recipe.copyWith(imageFileName: name);
+    } catch (e) {
+      debugPrint('Cover photo skipped: $e');
+      return result.recipe;
+    }
   }
 
   Future<ToolResult> _searchWebRecipes(Map<String, dynamic> a) async {
@@ -653,8 +678,10 @@ class AssistantDispatcher {
     for (final r in await recipes.getRecipes()) r.id: r,
   };
 
-  Future<Map<String, dynamic>> _planJson(MealPlanEntity plan) async {
-    final index = await _recipeIndex();
+  Map<String, dynamic> _planJson(
+    MealPlanEntity plan,
+    Map<String, RecipeEntity> index,
+  ) {
     return {
       'id': plan.id,
       'name': plan.name,
@@ -693,8 +720,9 @@ class AssistantDispatcher {
     // Capped: each plan carries its whole week, and the result stays in
     // the conversation.
     final chosen = matching.take(maxListedEntities).toList();
-    final json = [for (final p in chosen) await _planJson(p)];
+    // One read of the recipes box for every plan listed, not one per plan.
     final index = await _recipeIndex();
+    final json = [for (final p in chosen) _planJson(p, index)];
     final lines = <String>[];
     for (final p in chosen) {
       for (var d = 0; d < 7; d++) {
@@ -1370,6 +1398,11 @@ class AssistantDispatcher {
       details: details,
       source: FeedbackSource.shefi,
     );
+    // Past the day's allowance of new conversations the server closes it
+    // at once (onFeedbackCreated); the model is told so, not "sent".
+    if (await refusedForDailyLimit(repository, id)) {
+      return ToolResult.error('daily_limit', t.feedback.dailyLimit);
+    }
     return ToolResult.ok({
       'ticket_id': id,
       'reason': reason.name,

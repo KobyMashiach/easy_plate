@@ -88,6 +88,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _linkGoogle() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final useCase = LinkGoogleUseCase(context.read<AuthRepository>());
     setState(() => _busy = true);
     try {
@@ -113,6 +115,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _linkApple() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final useCase = LinkAppleUseCase(context.read<AuthRepository>());
     setState(() => _busy = true);
     try {
@@ -154,6 +158,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _save() async {
+    // A second tap before the rebuild greys the control out.
+    if (_busy) return;
     final name = _fullName.text.trim();
     if (name.isEmpty) {
       setState(() => _nameError = t.profile.fullNameRequired);

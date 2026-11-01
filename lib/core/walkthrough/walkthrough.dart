@@ -394,25 +394,48 @@ class _WalkthroughOverlayState extends State<_WalkthroughOverlay>
               ),
             ],
             const SizedBox(height: AppSpacing.md),
+            // At a large text size the two labels no longer fit side by
+            // side: the skip label ellipsizes in what is left, and Next /
+            // Finish keeps at most 60% of the row (its label wraps inside).
             Row(
               children: [
                 if (!isLast)
-                  TextButton(
-                    onPressed: () => _enter(_index + 1),
-                    child: Text(
-                      t.walkthrough.skipStep,
-                      style: AppTextStyles.labelMd.copyWith(
-                        color: AppColors.onSurfaceVariant,
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton(
+                        // Read at tap time: a second tap before the rebuild
+                        // (the button is gone on the last step) would step
+                        // past the end.
+                        onPressed: () {
+                          if (_index < widget.steps.length - 1) {
+                            _enter(_index + 1);
+                          }
+                        },
+                        child: Text(
+                          t.walkthrough.skipStep,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.labelMd.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                     ),
+                  )
+                else
+                  const Spacer(),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: (width - 2 * AppSpacing.md) * 0.6,
                   ),
-                const Spacer(),
-                ClayButton(
-                  label: isLast ? t.walkthrough.finish : t.walkthrough.next,
-                  icon: isLast
-                      ? Icons.check_rounded
-                      : Icons.arrow_forward_rounded,
-                  onPressed: _advance,
+                  child: ClayButton(
+                    label: isLast ? t.walkthrough.finish : t.walkthrough.next,
+                    icon: isLast
+                        ? Icons.check_rounded
+                        : Icons.arrow_forward_rounded,
+                    onPressed: _advance,
+                  ),
                 ),
               ],
             ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../../features/grocery_list/domain/entities/grocery_item_entity.dart';
@@ -16,6 +18,7 @@ import '../constants/app_enums.dart';
 import 'content_changes.dart';
 import 'content_translation.dart';
 import 'content_translation_datasource.dart';
+import 'content_variants_cleaner.dart';
 import 'content_variants_local_store.dart';
 
 /// What one pass did, for the message shown when it finishes.
@@ -70,14 +73,21 @@ class ContentTranslationService {
   final MealPlansRepository plans;
   final GroceryListsRepository lists;
 
+  /// Drops the translations of records that are gone (see [_prune]).
+  late final ContentVariantsCleaner cleaner;
+
   ContentTranslationService({
     required this.remote,
     ContentVariantsLocalStore? local,
+    ContentVariantsCleaner? cleaner,
     required this.recipes,
     required this.books,
     required this.plans,
     required this.lists,
-  }) : local = local ?? ContentVariantsLocalStore();
+  }) : local = local ?? ContentVariantsLocalStore() {
+    this.cleaner =
+        cleaner ?? ContentVariantsCleaner(remote: remote, local: this.local);
+  }
 
   /// Translates everything that is not already in [target].
   ///
@@ -94,6 +104,9 @@ class ContentTranslationService {
       plans.getPlans(),
       lists.getLists(),
     ]);
+    // Every translation met on the way, `type/id`: what the device holds in
+    // any language now, and what Firebase holds in [target] if it is read.
+    final seen = await local.held();
     final allRecipes = (loaded[0] as List<RecipeEntity>)
         .where((r) => _needs(r.contentLang, r.title, target))
         .toList();
@@ -109,7 +122,10 @@ class ContentTranslationService {
 
     final total =
         allRecipes.length + allBooks.length + allPlans.length + allLists.length;
-    if (total == 0) return const TranslationOutcome();
+    if (total == 0) {
+      _prune(seen, loaded);
+      return const TranslationOutcome();
+    }
 
     final items = [
       ...allRecipes.map(_recipeItem),
@@ -128,6 +144,7 @@ class ContentTranslationService {
     ];
     if (stale.isNotEmpty) {
       final fromCloud = await remote.readVariants(code, types);
+      seen.addAll(fromCloud.keys);
       final fresh = <String, TranslatedFields>{};
       for (final item in stale) {
         final key = '${item.type}/${item.id}';
@@ -241,6 +258,9 @@ class ContentTranslationService {
     final nowBooks = byId<RecipeBookEntity>(current[1], (b) => b.id);
     final nowPlans = byId<MealPlanEntity>(current[2], (p) => p.id);
     final nowLists = byId<GroceryListEntity>(current[3], (l) => l.id);
+    // Looked up once per saved record: a scan of [wanted] each time was
+    // quadratic in the size of the account.
+    final asked = {for (final i in wanted) '${i.type}/${i.id}'};
 
     for (final read in allRecipes) {
       final fields = known['$recipeType/${read.id}'];
@@ -252,7 +272,7 @@ class ContentTranslationService {
         _applyRecipe(recipe, fields, target),
         stampLanguage: false,
       );
-      step(wanted.any((i) => i.id == recipe.id && i.type == recipeType));
+      step(asked.contains('$recipeType/${recipe.id}'));
     }
     for (final read in allBooks) {
       final fields = known['$bookType/${read.id}'];
@@ -267,7 +287,7 @@ class ContentTranslationService {
         ),
         stampLanguage: false,
       );
-      step(wanted.any((i) => i.id == book.id && i.type == bookType));
+      step(asked.contains('$bookType/${book.id}'));
     }
     for (final read in allPlans) {
       final fields = known['$planType/${read.id}'];
@@ -279,7 +299,7 @@ class ContentTranslationService {
         _applyPlan(plan, fields, target),
         stampLanguage: false,
       );
-      step(wanted.any((i) => i.id == plan.id && i.type == planType));
+      step(asked.contains('$planType/${plan.id}'));
     }
     for (final read in allLists) {
       final fields = known['$listType/${read.id}'];
@@ -291,16 +311,62 @@ class ContentTranslationService {
         _applyList(list, fields, target),
         stampLanguage: false,
       );
-      step(wanted.any((i) => i.id == list.id && i.type == listType));
+      step(asked.contains('$listType/${list.id}'));
     }
 
     // The library, the planner and the shopping list hold their own copy.
     if (translated + reused > 0) ContentChanges.instance.notify();
+    // Both reads count as "still here": a record that arrived during the
+    // pass (a household listener, the shared pull) keeps its translations.
+    _prune(seen, [
+      for (final (i, list) in loaded.indexed) [...list, ...current[i]],
+    ]);
     return TranslationOutcome(
       translated: translated,
       reused: reused,
       failed: failed,
     );
+  }
+
+  /// Forgets the translations in [seen] whose record is not in [loaded]
+  /// (the four lists [switchTo] read, in [types] order) — what a delete made
+  /// before deletes cleaned up, or on another device, or by another
+  /// household member, left behind. Once per switch, and not awaited: a
+  /// delete waits for the server, and the switch must not wait offline.
+  ///
+  /// [loaded] is exactly what is translated — the boxes, which hold the
+  /// household's records while in one and the copies of recipes shared in —
+  /// so nothing that can still be shown loses its translation. A type with
+  /// no records at all is skipped: on a device still pulling the account
+  /// down, an empty box would read as "everything was deleted", and a wrong
+  /// prune costs the model again.
+  void _prune(Set<String> seen, List<List<Object?>> loaded) {
+    final live = <String>{};
+    final present = <String>{};
+    for (final (index, list) in loaded.indexed) {
+      final type = types[index];
+      for (final record in list) {
+        final id = switch (record) {
+          RecipeEntity r => r.id,
+          RecipeBookEntity b => b.id,
+          MealPlanEntity p => p.id,
+          GroceryListEntity l => l.id,
+          _ => null,
+        };
+        if (id == null) continue;
+        live.add('$type/$id');
+        present.add(type);
+      }
+    }
+    final orphans = [
+      for (final key in seen)
+        if (key.indexOf('/') case final cut when cut > 0)
+          if (present.contains(key.substring(0, cut)) && !live.contains(key))
+            key,
+    ];
+    if (orphans.isEmpty) return;
+    debugPrint('Forgetting translations of ${orphans.length} deleted records');
+    unawaited(cleaner.forgetAll(orphans));
   }
 
   static bool _matches(

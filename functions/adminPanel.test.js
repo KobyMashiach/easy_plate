@@ -230,7 +230,8 @@ const { isPrivateAddress, isInternalHostname, assertPublicUrl, fetchImage } = re
 
 test("addresses inside the network are recognised, in both IP versions", () => {
   for (const ip of ["127.0.0.1", "10.1.2.3", "172.16.0.9", "172.31.255.255", "192.168.1.1", "169.254.169.254", "100.64.0.1", "0.0.0.0", "224.0.0.1", "255.255.255.255", "198.18.0.1",
-    "::1", "::", "fe80::1", "fc00::1", "fd12:3456::1", "::ffff:127.0.0.1", "::ffff:10.0.0.1", "64:ff9b::a00:1", "2002:7f00:1::", "ff02::1", "2001:db8::1", "not-an-ip", ""]) {
+    "::1", "::", "fe80::1", "fc00::1", "fd12:3456::1", "::ffff:127.0.0.1", "::ffff:10.0.0.1", "64:ff9b::a00:1", "2002:7f00:1::", "ff02::1", "2001:db8::1", "not-an-ip", "",
+    "::ffff:0:127.0.0.1", "::ffff:0:a9fe:a9fe", "64:ff9b:1::a00:1", "2001:0:4136:e378:8000:63bf:3fff:fdd2", "100::1"]) {
     assert.equal(isPrivateAddress(ip), true, ip);
   }
   for (const ip of ["93.184.216.34", "8.8.8.8", "172.32.0.1", "172.15.0.1", "2606:4700::6810:84e5", "::ffff:8.8.8.8", "2a00:1450:4001:80b::200e"]) {
@@ -284,6 +285,21 @@ test("fetchImage checks every redirect hop rather than following blindly", async
 
   const loop = async (url) => response(302, { location: url });
   await assert.rejects(fetchImage("https://images.example/loop", loop, { lookup }), (e) => e.code === "image_fetch");
+});
+
+test("fetchImage never hands back an SVG or XML 'image', whatever the header says", async () => {
+  const lookup = async () => [{ address: "93.184.216.34", family: 4 }];
+  const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0, 0]);
+  const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
+  const serve = (type, body) => async () => ({ status: 200, ok: true, headers: new Headers({ "content-type": type }), arrayBuffer: async () => body });
+  for (const type of ["image/svg+xml", "image/svg+xml; charset=utf-8", "IMAGE/SVG+XML", "image/x-xml"]) {
+    await assert.rejects(fetchImage("https://images.example/x", serve(type, svg), { lookup }), (e) => e.code === "invalid_image", type);
+  }
+  // A raster mislabelled as SVG is stored as what it is.
+  const relabelled = await fetchImage("https://images.example/x", serve("image/svg+xml", png), { lookup });
+  assert.equal(relabelled.contentType, "image/png");
+  // Real raster types (also ones the sniffer does not know) keep their header.
+  assert.equal((await fetchImage("https://images.example/x", serve("image/avif", png), { lookup })).contentType, "image/avif");
 });
 
 test("an explicit empty value clears a clearable field; a required one stays required", () => {
@@ -366,4 +382,44 @@ test("a profile picture set from the console is held to the hosts the rules acce
     7,
     null,
   ]) assert.equal(trustedPhotoUrl(bad), false, String(bad).slice(0, 60));
+});
+
+test("translation.purge removes a cached line in one language, or in all of them", async () => {
+  const { run } = require("./adminPanel").internals;
+  const { cacheKey, candidateKey, LANGUAGE_NAMES, MAX_TEXT } = require("./translateContent").internals;
+  const store = new Map();
+  const path = (lang, text) => `translation_cache/${cacheKey(lang, text)}`;
+  store.set(path("en", "1 כוס סוכר"), { lang: "en", text: "1 cup sugar" });
+  store.set(path("fr", "1 כוס סוכר"), { lang: "fr", candidates: { [candidateKey("bad")]: { text: "bad", by: ["a"] }, [candidateKey("1 tasse")]: { text: "1 tasse", by: ["b", "c"] } } });
+  store.set(path("en", "מלח"), { lang: "en", text: "Salt" });
+  const db = {
+    collection: (c) => ({ doc: (id) => ({ path: `${c}/${id}` }) }),
+    getAll: async (...refs) => refs.map((r) => ({ exists: store.has(r.path), data: () => store.get(r.path) })),
+    batch: () => {
+      const doomed = [];
+      return { delete: (r) => doomed.push(r.path), commit: async () => doomed.forEach((p) => store.delete(p)) };
+    },
+  };
+
+  // One language: only that copy goes.
+  const one = await run(parseRequest({ action: "translation.purge", text: " 1 כוס סוכר ", lang: "en" }), { caller: { uid: "admin" }, db });
+  assert.deepEqual(one.removed, [{ lang: "en", texts: [{ text: "1 cup sugar", by: null }] }]);
+  assert.ok(!store.has(path("en", "1 כוס סוכר")));
+  assert.ok(store.has(path("fr", "1 כוס סוכר")));
+
+  // No language: every language's copy, showing each candidate and its count.
+  const all = await run(parseRequest({ action: "translation.purge", text: "1 כוס סוכר" }), { caller: { uid: "admin" }, db });
+  assert.equal(all.removed.length, 1);
+  assert.equal(all.removed[0].lang, "fr");
+  assert.deepEqual(all.removed[0].texts.map((t) => [t.text, t.by]).sort(), [["1 tasse", 2], ["bad", 1]]);
+  assert.ok(store.has(path("en", "מלח")), "other lines stay");
+
+  // Nothing there: nothing removed, no error.
+  assert.deepEqual((await run(parseRequest({ action: "translation.purge", text: "nope" }), { caller: { uid: "admin" }, db })).removed, []);
+
+  // The request shape: text required, language one of the app's, no silent cut.
+  assert.equal(parseRequest({ action: "translation.purge" }).error, "text is required");
+  assert.ok(parseRequest({ action: "translation.purge", text: "x", lang: "de" }).error);
+  assert.deepEqual(Object.keys(LANGUAGE_NAMES).sort(), ["ar", "en", "fr", "he", "ru"]);
+  await assert.rejects(run(parseRequest({ action: "translation.purge", text: "x".repeat(MAX_TEXT + 5) }), { caller: { uid: "admin" }, db }), (e) => e.status === 400 && e.code === "too_long");
 });

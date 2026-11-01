@@ -95,9 +95,15 @@ class ContainerSharingService {
     // (each kind's refresh checks again before every copy).
     if (!stillSignedIn(uid)) return 0;
     final all = fetched.expand((list) => list).toList();
-    return await books.refresh(all, uid: uid) +
-        await plans.refresh(all, uid: uid) +
-        await lists.refresh(all, uid: uid);
+    // One read of the recipes box for the three kinds, and none at all
+    // when no shared copy has a document to refresh from. A copy one kind
+    // fetches lands in the same map, so the next kind sees it.
+    Future<Map<String, String>>? index;
+    Future<Map<String, String>> recipeIndex() =>
+        index ??= _linker.recipeIndex();
+    return await books.refresh(all, uid: uid, recipeIndex: recipeIndex) +
+        await plans.refresh(all, uid: uid, recipeIndex: recipeIndex) +
+        await lists.refresh(all, uid: uid, recipeIndex: recipeIndex);
   }
 
   /// Finishes the container accepts that timed out (or died) after the

@@ -63,14 +63,18 @@ export function initials(name) {
   return (parts[0][0] + (parts[1] ? parts[1][0] : "")).toUpperCase();
 }
 
-// Only an https picture from our Storage or Google's CDN is loaded (the app's
-// AuthorRow.trustedPhotoUrl): a profile's photoUrl is whatever its owner wrote.
+// Only an https picture from this project's own Storage bucket (either name,
+// either URL form) or a Google account photo (lhN.googleusercontent.com) is
+// loaded — the app's AuthorRow.trustedPhotoUrl and the rules'
+// trustedPhotoUrl (firestore.rules). A profile's photoUrl is whatever its
+// owner wrote; another bucket or a *.googleusercontent.com proxy can be a
+// server whose owner reads who looked, and older documents still hold them.
+const TRUSTED_PHOTO = /^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/easy-plate\.(firebasestorage\.app|appspot\.com)\/o\/|storage\.googleapis\.com\/easy-plate\.(firebasestorage\.app|appspot\.com)\/|lh[0-9]+\.googleusercontent\.com\/)/;
 export function trustedPhotoUrl(url) {
+  const raw = String(url || "");
+  if (raw.length > 2048 || !TRUSTED_PHOTO.test(raw)) return null;
   try {
-    const u = new URL(String(url || ""));
-    if (u.protocol !== "https:") return null;
-    const host = u.hostname.toLowerCase();
-    return host === "firebasestorage.googleapis.com" || host === "storage.googleapis.com" || host.endsWith(".googleusercontent.com") ? u.href : null;
+    return new URL(raw).href;
   } catch (_) {
     return null;
   }

@@ -9,6 +9,7 @@ import '../../../core/services/device_locale_store.dart';
 import '../../../core/services/firebase_service.dart';
 import '../../../core/sync/cloud_sync_service.dart';
 import '../../../core/sync/recipe_image_store.dart';
+import '../../../core/translation/content_variants_cleaner.dart';
 import '../../../core/utils/i18n/app_language_mapper.dart';
 import '../../../core/utils/i18n/strings.g.dart';
 import '../../grocery_list/data/datasources/active_grocery_list_store.dart';
@@ -62,19 +63,23 @@ Future<void> runShefiVoiceHeadless() async {
       localDataSource: RecipesLocalDataSourceImpl(),
       cloud: CloudSyncService().recipes,
       images: RecipeImageStore(),
+      translations: ContentVariantsCleaner(),
     );
     final books = RecipeBooksRepositoryImpl(
       localDataSource: RecipeBooksLocalDataSourceImpl(),
       cloud: CloudSyncService().books,
       images: RecipeImageStore(),
+      translations: ContentVariantsCleaner(),
     );
     final plans = MealPlansRepositoryImpl(
       localDataSource: MealPlansLocalDataSourceImpl(),
       cloud: CloudSyncService().mealPlans,
+      translations: ContentVariantsCleaner(),
     );
     final groceries = GroceryListsRepositoryImpl(
       localDataSource: GroceryListsLocalDataSourceImpl(),
       cloud: CloudSyncService().groceryLists,
+      translations: ContentVariantsCleaner(),
     );
     // The same sharing services the app builds, so an edit Siri makes to a
     // shared recipe, book, plan or list reaches the other members.

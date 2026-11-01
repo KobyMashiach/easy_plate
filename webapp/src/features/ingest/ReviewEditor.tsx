@@ -100,7 +100,7 @@ export function ReviewEditor({
         <PhoneTag icon="fact_check" className="bg-primary-fixed text-primary">
           {t("ingest.review.title")}
         </PhoneTag>
-        <h1 className="mt-3 text-headline-lg-mobile">{r.title || t("ingest.untitledRecipe")}</h1>
+        <h1 className="mt-3 break-words text-headline-lg-mobile">{r.title || t("ingest.untitledRecipe")}</h1>
         {r.dietaryTags.length ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {r.dietaryTags.map((d) => (

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_plate/core/monetization/entitlement_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -201,4 +203,51 @@ void _storeAndServerTests() {
       },
     );
   });
+
+  test(
+    'a listener that died on an error is opened again, keeping the verdict',
+    () async {
+      final service = EntitlementService()..clear();
+      final original = service.documentOf;
+      final originalDelay = EntitlementService.reopenAfter;
+      final streams = <StreamController<Map<String, dynamic>?>>[];
+      service.documentOf = (_) {
+        final controller = StreamController<Map<String, dynamic>?>();
+        streams.add(controller);
+        return controller.stream;
+      };
+      EntitlementService.reopenAfter = const Duration(milliseconds: 10);
+      addTearDown(() {
+        service.clear();
+        service.documentOf = original;
+        EntitlementService.reopenAfter = originalDelay;
+      });
+
+      service.watch('u1');
+      streams.single.add({'premium': true});
+      await pumpEventQueue();
+      expect(service.isPremium, isTrue);
+
+      streams.single.addError(StateError('permission-denied'));
+      await pumpEventQueue();
+      // The same account signing in again while the listener is down
+      // reopens it in place instead of returning early.
+      service.watch('u1');
+      expect(streams, hasLength(2));
+      expect(service.isPremium, isTrue, reason: 'not dropped to free');
+
+      streams[1].addError(StateError('unavailable'));
+      await pumpEventQueue();
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(streams, hasLength(3), reason: 'reopened by itself');
+      expect(service.isPremium, isTrue);
+      streams[2].add({'premium': false});
+      await pumpEventQueue();
+      expect(service.isPremium, isFalse);
+
+      // A live listener is kept: no second one for the same account.
+      service.watch('u1');
+      expect(streams, hasLength(3));
+    },
+  );
 }

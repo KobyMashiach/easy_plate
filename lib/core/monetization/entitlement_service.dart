@@ -33,7 +33,7 @@ class EntitlementService extends ChangeNotifier {
   bool _premium = false;
   bool _server = false;
   bool _store = false;
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _subscription;
+  StreamSubscription<Map<String, dynamic>?>? _subscription;
   Timer? _boundary;
   Map<String, dynamic>? _lastData;
 
@@ -136,19 +136,56 @@ class EntitlementService extends ChangeNotifier {
   /// listener: starting over dropped the store's word (a purchase the
   /// webhook has not written yet) and re-read the document for nothing.
   void watch(String uid) {
-    if (_uid == uid && _subscription != null) return;
+    if (_uid == uid) {
+      // Still following, or the listener died on an error: reopened in
+      // place, keeping the verdict it had — starting over would drop the
+      // account to free until the new first snapshot.
+      if (_subscription == null) _open(uid);
+      return;
+    }
     clear();
     _uid = uid;
     unawaited(_loadRemembered(uid));
-    try {
-      _subscription = FirebaseFirestore.instance
+    _open(uid);
+  }
+
+  /// Test seam: the account's entitlement document, live.
+  @visibleForTesting
+  Stream<Map<String, dynamic>?> Function(String uid) documentOf = (uid) =>
+      FirebaseFirestore.instance
           .collection(collection)
           .doc(uid)
           .snapshots()
-          .listen(
-            (snapshot) => _onData(snapshot.data()),
-            onError: (Object e) => debugPrint('Entitlement watch failed: $e'),
-          );
+          .map((snapshot) => snapshot.data());
+
+  /// How long after a listener error it is opened again.
+  @visibleForTesting
+  static Duration reopenAfter = const Duration(seconds: 30);
+
+  Timer? _reopen;
+
+  void _open(String uid) {
+    _reopen?.cancel();
+    _reopen = null;
+    try {
+      late final StreamSubscription<Map<String, dynamic>?> subscription;
+      subscription = documentOf(uid).listen(
+        _onData,
+        onError: (Object e) {
+          debugPrint('Entitlement watch failed: $e');
+          // Firestore closes the stream after an error. Left in place, the
+          // dead subscription made every later watch() for this account
+          // return early, and a purchase the webhook confirmed (or a grant
+          // ending) went unseen for the rest of the session.
+          if (!identical(_subscription, subscription)) return;
+          unawaited(subscription.cancel());
+          _subscription = null;
+          _reopen = Timer(reopenAfter, () {
+            if (_uid == uid && _subscription == null) _open(uid);
+          });
+        },
+      );
+      _subscription = subscription;
     } catch (e) {
       debugPrint('Entitlement watch unavailable: $e');
     }
@@ -181,6 +218,8 @@ class EntitlementService extends ChangeNotifier {
   void clear() {
     _boundary?.cancel();
     _boundary = null;
+    _reopen?.cancel();
+    _reopen = null;
     _lastData = null;
     _subscription?.cancel();
     _subscription = null;

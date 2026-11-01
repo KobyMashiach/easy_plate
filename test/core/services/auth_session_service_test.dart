@@ -44,8 +44,11 @@ class _FakeProfileRepository implements UserProfileRepository {
   /// When set, the lookup waits for it, like [gate].
   Completer<void>? blockGate;
 
+  int blockReads = 0;
+
   @override
   Future<String?> blockMessage(String uid) async {
+    blockReads++;
     if (blockGate case final held?) await held.future;
     return blockReason;
   }
@@ -132,9 +135,13 @@ class _FakeMirror implements CloudMirror {
   bool writes = false;
   int hydrates = 0;
 
+  /// When set, the pass waits for it: a slow first sync.
+  Completer<void>? gate;
+
   @override
   Future<bool> hydrate() async {
     hydrates++;
+    if (gate case final held?) await held.future;
     return writes;
   }
 
@@ -146,6 +153,9 @@ class _FakeMirror implements CloudMirror {
 
   @override
   Future<void> stopListening() async {}
+
+  @override
+  bool get isListening => false;
 
   @override
   Future<void> clearLocal() async {}
@@ -523,6 +533,57 @@ void main() {
         expect(profiles.pushTokens, isEmpty);
       },
     );
+  });
+
+  test('the profile and the block status are read side by side', () async {
+    preferences.onboardingComplete = true;
+    profiles.profile = buildProfile();
+    profiles.gate = Completer<void>();
+    await signIn(_user);
+    // The profile read is still out, and the block read already went.
+    expect(profiles.reads, 1);
+    expect(profiles.blockReads, 1);
+    expect(session.stage, AuthStage.unknown);
+
+    profiles.gate!.complete();
+    await pumpEventQueue();
+    expect(session.stage, AuthStage.ready);
+    expect(profiles.blockReads, 1);
+  });
+
+  test('a block found while the profile was read still blocks', () async {
+    profiles.profile = buildProfile();
+    profiles.blockReason = 'Spam';
+    profiles.gate = Completer<void>();
+    await signIn(_user);
+    profiles.gate!.complete();
+    await pumpEventQueue();
+    expect(session.stage, AuthStage.blocked);
+    expect(session.blockMessage, 'Spam');
+  });
+
+  test('the account reads run under the first sync, not after it', () async {
+    final mirror = _FakeMirror('recipes')..gate = Completer<void>();
+    CloudSyncService().resetForTest();
+    CloudSyncService().mirrorsForTest = [mirror];
+    addTearDown(() {
+      CloudSyncService().mirrorsForTest = null;
+      CloudSyncService().resetForTest();
+    });
+    preferences.onboardingComplete = true;
+    profiles.profile = buildProfile();
+
+    await signIn(_user);
+    await pumpEventQueue();
+    expect(mirror.hydrates, 1);
+    expect(profiles.reads, 1, reason: 'read while the hydrate is out');
+    expect(profiles.blockReads, 1);
+    expect(session.stage, AuthStage.unknown);
+
+    mirror.gate!.complete();
+    await pumpEventQueue();
+    expect(session.stage, AuthStage.ready);
+    expect(profiles.reads, 1, reason: 'the early read is the one used');
   });
 
   group('the account switched off mid-session', () {

@@ -97,6 +97,7 @@ class GroceryListPage extends StatelessWidget {
 /// A home-screen widget asked for the add sheet: the list it named is
 /// opened first, then the sheet, once the bloc has that list loaded. The
 /// request waits in [HomeWidgetRequests] while the tab is not yet built.
+/// A receipt scan asked for by the app icon's shortcut waits the same way.
 class _HomeWidgetAddListener extends StatefulWidget {
   final Widget child;
   const _HomeWidgetAddListener({required this.child});
@@ -112,14 +113,25 @@ class _HomeWidgetAddListenerState extends State<_HomeWidgetAddListener> {
   void initState() {
     super.initState();
     HomeWidgetRequests.groceryAdd.addListener(_onRequest);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _onRequest());
+    HomeWidgetRequests.receiptScan.addListener(_onReceiptRequest);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onRequest();
+      _onReceiptRequest();
+    });
   }
 
   @override
   void dispose() {
     HomeWidgetRequests.groceryAdd.removeListener(_onRequest);
+    HomeWidgetRequests.receiptScan.removeListener(_onReceiptRequest);
     _waiting?.cancel();
     super.dispose();
+  }
+
+  void _onReceiptRequest() {
+    if (!HomeWidgetRequests.receiptScan.value || !mounted) return;
+    HomeWidgetRequests.receiptScan.value = false;
+    scanReceipt(context);
   }
 
   void _onRequest() {
@@ -543,6 +555,9 @@ class _AddItemFormState extends State<_AddItemForm> {
   bool get _canSubmit => _nameController.text.trim().isNotEmpty;
 
   void _submit() {
+    // Already closing (a second tap in the same frame): popping again
+    // would close the page under this sheet, and the item was added twice.
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
     final amount = parseAmount(_amountController.text) ?? 1;

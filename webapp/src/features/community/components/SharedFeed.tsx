@@ -406,8 +406,8 @@ export function SharedFeed() {
                   />
                   <div className="mt-3 flex items-start">
                     <button type="button" onClick={(e) => (e.stopPropagation(), void open(post))} className="min-w-0 flex-1 text-start">
-                      <span dir="auto" className="line-clamp-2 block text-body-lg">{post.recipe.title}</span>
-                      <span className="mt-1 line-clamp-2 block text-label-md text-on-surface-variant">{post.recipe.ingredients.slice(0, 4).map(line).join(" · ")}</span>
+                      <span dir="auto" className="line-clamp-2 text-body-lg">{post.recipe.title}</span>
+                      <span className="mt-1 line-clamp-2 text-label-md text-on-surface-variant">{post.recipe.ingredients.slice(0, 4).map(line).join(" · ")}</span>
                     </button>
                     {post.recipe.imageStoragePath ? <StorageImage path={post.recipe.imageStoragePath} size={64} className="ms-3" /> : null}
                   </div>
@@ -514,8 +514,8 @@ export function SharedFeed() {
                 />
                 <button type="button" onClick={() => void open(post)} className="flex items-start gap-3 text-start">
                   <span className="min-w-0 flex-1">
-                    <span dir="auto" className="line-clamp-2 block text-body-lg font-bold">{post.recipe.title}</span>
-                    <span className="mt-1 line-clamp-2 block text-label-md text-on-surface-variant">{post.recipe.ingredients.slice(0, 4).map(line).join(" · ")}</span>
+                    <span dir="auto" className="line-clamp-2 text-body-lg font-bold">{post.recipe.title}</span>
+                    <span className="mt-1 line-clamp-2 text-label-md text-on-surface-variant">{post.recipe.ingredients.slice(0, 4).map(line).join(" · ")}</span>
                   </span>
                   {post.recipe.imageStoragePath ? <StorageImage path={post.recipe.imageStoragePath} size={64} /> : null}
                 </button>

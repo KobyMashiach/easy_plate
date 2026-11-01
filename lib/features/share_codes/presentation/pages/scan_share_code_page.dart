@@ -52,7 +52,26 @@ class _ScanShareCodePageState extends State<ScanShareCodePage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          MobileScanner(controller: _controller, onDetect: _onDetect),
+          MobileScanner(
+            controller: _controller,
+            onDetect: _onDetect,
+            // The package's own error is the raw English error code
+            // ("permissionDenied"…): said in the app's language instead,
+            // like the receipt camera. The typed code stays below.
+            errorBuilder: (context, error) => ColoredBox(
+              color: Colors.black,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Text(
+                    t.receipt.cameraUnavailable,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyMd.copyWith(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ),
           // A window the size of a code, so the eye knows where to aim.
           Center(
             child: Container(

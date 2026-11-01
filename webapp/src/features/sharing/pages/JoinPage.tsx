@@ -16,6 +16,7 @@ import { Glyph } from "../ui/bits";
 import { joinWithCode, parseCode, ShareCodeRefused, type JoinResult, type Refusal } from "../data/shareCodes";
 import { pathForAccepted } from "../data/respond";
 import { CollabMissing } from "../data/types";
+import { ApiError } from "../../../lib/api";
 
 const REFUSAL_KEY: Record<Refusal, string> = {
   invalid: "sharing.code.invalid",
@@ -59,6 +60,9 @@ function Join() {
     } catch (e) {
       if (e instanceof ShareCodeRefused) setError(t(REFUSAL_KEY[e.reason]));
       else if (e instanceof CollabMissing) setError(t("sharing.code.gone"));
+      // Too many wrong codes today (shareCodes' daily miss budget, a 429):
+      // retrying cannot help until tomorrow, so not "try again".
+      else if (e instanceof ApiError && e.status === 429) setError(t("ingest.limitPremium"));
       else setError(t("sharing.code.failed"));
     } finally {
       setBusy(false);

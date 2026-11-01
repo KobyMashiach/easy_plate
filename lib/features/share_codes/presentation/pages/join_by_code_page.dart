@@ -9,6 +9,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/services/notifications_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -121,18 +122,25 @@ class _JoinByCodePageState extends State<JoinByCodePage> {
           ShareCodeRefused.notEligible => t.household.notEligibleCode,
           ShareCodeRefused.tooManyRecipes => t.shareCode.tooManyRecipes,
           ShareCodeRefused.accountDisabled => t.auth.blockedBody,
+          ShareCodeRefused.quota => t.ads.blockedForToday,
           _ => t.shareCode.invalid,
         },
       );
     } catch (e) {
       debugPrint('Join by code failed: $e');
       if (!mounted) return;
-      // The code was redeemed and the join is queued: not a failure to
-      // retry, the copy follows with the next refresh online.
       setState(
-        () => _error = RecipeSharingRepository.isAcceptQueued(e)
-            ? t.sharing.acceptQueued
-            : t.shareCode.failed,
+        () => _error = switch (e) {
+          // The server's daily cap on wrong codes (429 "quota"): retrying
+          // cannot help until tomorrow, so not a "try again".
+          AppException(type: AppErrorType.quotaExceeded) =>
+            t.ads.blockedForToday,
+          // The code was redeemed and the join is queued: not a failure to
+          // retry, the copy follows with the next refresh online.
+          _ when RecipeSharingRepository.isAcceptQueued(e) =>
+            t.sharing.acceptQueued,
+          _ => t.shareCode.failed,
+        },
       );
     } finally {
       if (mounted) setState(() => _busy = false);

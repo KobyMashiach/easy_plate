@@ -87,7 +87,7 @@
 	<key>GADApplicationIdentifier</key>
 	<!-- AdMob App ID (tilde form). Google's sample; replace with the EasyPlate
 	     iOS App ID from the AdMob console before an App Store build. -->
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-1691633944477228~1184705603</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>EasyPlate shows ads on free accounts. Allowing tracking lets Google AdMob use your advertising identifier to pick ads that are more relevant to you and to measure them. EasyPlate never sells your data, and Premium has no ads.</string>
 	<key>SKAdNetworkItems</key>

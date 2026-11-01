@@ -121,8 +121,10 @@ class _GrocerySectionState extends State<GrocerySection>
         ),
         child: Row(
           children: [
+            // The chevron mirrors itself under RTL (it points left there), so
+            // it turns the other way to land pointing down.
             AnimatedRotation(
-              turns: _expanded ? 0.25 : 0,
+              turns: _expanded ? disclosureOpenTurns(context) : 0,
               duration: AppMotion.standard,
               curve: AppMotion.easeOut,
               child: Icon(

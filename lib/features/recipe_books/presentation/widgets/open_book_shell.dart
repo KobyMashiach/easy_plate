@@ -129,6 +129,10 @@ class _OpenBookShellState extends State<OpenBookShell>
           _soundEnabled = prefs.soundEffectsEnabled;
           _fastPageTurnEnabled = prefs.fastPageTurnEnabled;
         });
+      }).catchError((Object e) {
+        // A failed read is asynchronous: the try below never sees it, and
+        // it surfaced as an uncaught error. The defaults stand.
+        debugPrint('Book preferences read failed: $e');
       });
     } catch (_) {
       // No preferences repository above this widget; the defaults stand.

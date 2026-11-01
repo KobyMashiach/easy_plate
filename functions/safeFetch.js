@@ -83,7 +83,11 @@ function privateV6(ip) {
   if (g.slice(0, 7).every((x) => x === 0) && g[7] === 1) return true; // ::1
   if (g.slice(0, 6).every((x) => x === 0)) return true; // ::a.b.c.d, the deprecated IPv4-compatible form (::127.0.0.1)
   if (g.slice(0, 5).every((x) => x === 0) && g[5] === 0xffff) return privateV4(v4(g[6], g[7])); // ::ffff:a.b.c.d
+  if (g.slice(0, 4).every((x) => x === 0) && g[4] === 0xffff && g[5] === 0) return privateV4(v4(g[6], g[7])); // ::ffff:0:a.b.c.d, IPv4-translated
   if (g[0] === 0x64 && g[1] === 0xff9b && g.slice(2, 6).every((x) => x === 0)) return privateV4(v4(g[6], g[7])); // 64:ff9b::/96 NAT64
+  if (g[0] === 0x64 && g[1] === 0xff9b && g[2] === 1) return true; // 64:ff9b:1::/48, local-use NAT64 (an operator's own translator)
+  if (g[0] === 0x2001 && g[1] === 0) return true; // 2001::/32 Teredo: the IPv4 it reaches is hidden in the address (and never a picture host)
+  if (g[0] === 0x100 && g.slice(1, 4).every((x) => x === 0)) return true; // 100::/64 discard-only
   if (g[0] === 0x2002) return privateV4(v4(g[1], g[2])); // 2002::/16 6to4
   if ((g[0] & 0xfe00) === 0xfc00) return true; // fc00::/7 unique local
   if ((g[0] & 0xffc0) === 0xfe80) return true; // fe80::/10 link-local
@@ -188,7 +192,11 @@ async function fetchImage(url, fetchImpl = fetch, { lookup, userAgent = DEFAULT_
   if (!response.ok) throw refused(`image fetch failed (${response.status})`, "image_fetch", "fetch_failed");
   const contentType = String(response.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
   const bytes = await readCapped(response, maxBytes);
-  if (!contentType.startsWith("image/")) {
+  // An SVG (or any XML "image") is a document that can carry script, not a
+  // picture: kept under its own type it went into the bucket (the console's
+  // seeded photos) as image/svg+xml — the type the storage rules refuse
+  // from every client. Only a raster the magic bytes recognise gets past.
+  if (!contentType.startsWith("image/") || contentType.includes("svg") || contentType.includes("xml")) {
     // Some hosts lie about the type; the magic bytes decide.
     const sniffed = sniffImage(bytes);
     if (!sniffed) throw refused("the url did not return an image", "invalid_image", "not_image");

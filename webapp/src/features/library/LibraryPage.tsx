@@ -219,7 +219,7 @@ function BookCover({ book, picking, contains, busy, onPick, onOptions }: { book:
       />
       <span className="absolute inset-x-0 bottom-0 rounded-b-md bg-gradient-to-t from-on-surface/80 via-on-surface/40 to-transparent p-3 pt-10 ps-5 text-start">
         <span className="block text-label-sm uppercase tracking-wide text-surface/80">{t("library.collection")}</span>
-        <span className="line-clamp-2 block text-body-lg font-bold text-surface">{book.title || t("library.ui.untitled")}</span>
+        <span className="line-clamp-2 text-body-lg font-bold text-surface">{book.title || t("library.ui.untitled")}</span>
         <span className="block text-label-sm text-surface/85">{t("library.recipesCount", { n: book.recipeRefs.length })}</span>
       </span>
       {isBookShared(book) ? (

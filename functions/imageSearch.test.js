@@ -290,3 +290,21 @@ test("Serper down (5xx, network, timeout) is refundable; a 4xx is not", async ()
   const e400 = await run(async () => ({ status: 400, ok: false, text: async () => JSON.stringify({ message: "bad" }) }));
   assert.ok(!e400.refundable);
 });
+
+test("a non-JSON answer is classified by its status: HTML 429 is a refundable quota, a garbled 200 is Serper down", async () => {
+  const db = { collection: () => ({ doc: () => ({ get: async () => ({ exists: false }), set: async () => {} }) }) };
+  const request = parseRequest({ query: "pizza" });
+  const run = (fetchImpl) => search(request, { key: "k", db, fetchImpl }).then(() => null, (e) => e);
+  const html429 = await run(async () => ({ status: 429, ok: false, text: async () => "<html>Too Many Requests</html>" }));
+  assert.equal(html429.status, 429);
+  assert.equal(html429.code, "quota");
+  assert.equal(html429.refundable, true);
+  const html403 = await run(async () => ({ status: 403, ok: false, text: async () => "<html>Forbidden</html>" }));
+  assert.equal(html403.refundable, true);
+  const garbled = await run(async () => ({ status: 200, ok: true, text: async () => '{"images": [' }));
+  assert.equal(garbled.refundable, true);
+  assert.equal(garbled.status, 502);
+  const html400 = await run(async () => ({ status: 400, ok: false, text: async () => "<html>Bad</html>" }));
+  assert.ok(!html400.refundable);
+  assert.equal(html400.status, 502);
+});

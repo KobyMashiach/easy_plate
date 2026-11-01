@@ -134,7 +134,7 @@ function DesktopChat({ id }: { id: string | undefined }) {
           <div className="border-t border-outline-variant/40 p-4">
             {item.closed ? (
               <p className="flex items-center justify-center gap-2 text-center text-label-md text-on-surface-variant">
-                <Icon name="lock" size={16} aria-hidden="true" /> {t("support.chat.closed")}
+                <Icon name="lock" size={16} aria-hidden="true" /> {item.overDailyLimit ? t("support.form.dailyLimit") : t("support.chat.closed")}
               </p>
             ) : item.followUps.length >= MAX_FOLLOW_UPS ? (
               <p className="flex items-center justify-center gap-2 text-center text-label-md text-on-surface-variant">

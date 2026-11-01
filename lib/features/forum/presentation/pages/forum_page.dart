@@ -488,7 +488,12 @@ class _PostComposerState extends State<_PostComposer> {
     super.dispose();
   }
 
+  /// Set once the sheet is closing: a second tap in the same frame popped
+  /// again, and that pop took the page under the sheet with it.
+  bool _submitted = false;
+
   void _submit() {
+    if (_submitted) return;
     final title = _title.text.trim();
     final body = _body.text.trim();
     if (title.isEmpty) {
@@ -499,6 +504,7 @@ class _PostComposerState extends State<_PostComposer> {
       setState(() => _error = t.community.postBodyRequired);
       return;
     }
+    _submitted = true;
     Navigator.of(context).pop((title: title, body: body));
   }
 
@@ -512,41 +518,46 @@ class _PostComposerState extends State<_PostComposer> {
           top: AppSpacing.md,
           bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.md,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClaySectionHeader(title: t.community.newPost, underline: true),
-            const SizedBox(height: AppSpacing.gutter),
-            TextField(
-              controller: _title,
-              // The rules' caps: longer was refused as a bare "post failed".
-              maxLength: 500,
-              buildCounter: _noCounter,
-              textInputAction: TextInputAction.next,
-              style: AppTextStyles.bodyMd,
-              decoration: InputDecoration(labelText: t.community.postTitle),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            TextField(
-              controller: _body,
-              maxLines: 5,
-              maxLength: 20000,
-              buildCounter: _noCounter,
-              style: AppTextStyles.bodyMd,
-              decoration: InputDecoration(
-                hintText: t.community.postBody,
-                errorText: _error,
+        // Scrolls once the keyboard leaves less room than the form needs
+        // (a short phone, a larger text size), instead of overflowing
+        // behind it with Publish out of reach.
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClaySectionHeader(title: t.community.newPost, underline: true),
+              const SizedBox(height: AppSpacing.gutter),
+              TextField(
+                controller: _title,
+                // The rules' caps: longer was refused as a bare "post failed".
+                maxLength: 500,
+                buildCounter: _noCounter,
+                textInputAction: TextInputAction.next,
+                style: AppTextStyles.bodyMd,
+                decoration: InputDecoration(labelText: t.community.postTitle),
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            ClayButton(
-              label: t.community.publish,
-              icon: Icons.send_rounded,
-              expanded: true,
-              onPressed: _submit,
-            ),
-          ],
+              const SizedBox(height: AppSpacing.sm),
+              TextField(
+                controller: _body,
+                maxLines: 5,
+                maxLength: 20000,
+                buildCounter: _noCounter,
+                style: AppTextStyles.bodyMd,
+                decoration: InputDecoration(
+                  hintText: t.community.postBody,
+                  errorText: _error,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              ClayButton(
+                label: t.community.publish,
+                icon: Icons.send_rounded,
+                expanded: true,
+                onPressed: _submit,
+              ),
+            ],
+          ),
         ),
       ),
     );
