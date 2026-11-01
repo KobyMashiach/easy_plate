@@ -223,6 +223,15 @@ function deployWebsite() {
   firebase deploy --only hosting
 }
 
+# === STORE BUILDS ===
+# Both store builds in one go: the Android App Bundle (03), then the iOS
+# IPA (12), then the archive opens in Xcode (17) for the upload. Stops at
+# the first build that fails.
+function buildForStores() {
+  echo "Build for stores (Android AAB + iOS IPA)"
+  androidBuildAab && iosBuildIpa && openBuilderIos
+}
+
 # === AUTONOMOUS QA LOOP ===
 # Opens Claude Code in this terminal (a normal, visible session) with a
 # parallel test → fix → retest loop: three agents for performance,
@@ -347,11 +356,12 @@ function menu() {
   echo "41. Build website (CSS, 5 languages, sitemap, og images)"
   echo "42. Build + deploy website (firebase hosting)"
   echo ""
-  echo "🤖 QA"
+  echo "🤖 BUILDS & QA"
   echo "--------------------------------------"
   echo "51. Autonomous QA loop (Claude, asks for minutes)"
+  echo "59. Build for stores (03 → 12 → 17)"
   echo "======================================"
-  read -p "Enter your choice (01–51): " choice
+  read -p "Enter your choice (01–59): " choice
 
   case $choice in
     1|01) androidRun ;;
@@ -383,6 +393,7 @@ function menu() {
     42) deployWebsite ;;
 
     51) qaLoop ;;
+    59) buildForStores ;;
 
     *) echo "❌ Invalid option. Please select between 01–51." ;;
   esac
