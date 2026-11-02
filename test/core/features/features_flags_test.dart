@@ -3,11 +3,12 @@ import 'package:easy_plate/core/services/firebase_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('the console values map to the four states, anything else is on', () {
+  test('the console values map to the five states, anything else is on', () {
     expect(FeatureFlagValue.fromInt(0), FeatureFlagValue.hidden);
     expect(FeatureFlagValue.fromInt(1), FeatureFlagValue.comingSoon);
     expect(FeatureFlagValue.fromInt(2), FeatureFlagValue.enabled);
     expect(FeatureFlagValue.fromInt(3), FeatureFlagValue.premiumOnly);
+    expect(FeatureFlagValue.fromInt(4), FeatureFlagValue.maintenance);
     expect(FeatureFlagValue.fromInt(7), FeatureFlagValue.enabled);
     expect(FeatureFlagValue.fromInt(-1), FeatureFlagValue.enabled);
   });
@@ -35,6 +36,11 @@ void main() {
         FeaturesFlags.resolve(FeatureFlagValue.enabled, premium),
         FeatureAccess.enabled,
       );
+      // Maintenance closes it for a paying account too.
+      expect(
+        FeaturesFlags.resolve(FeatureFlagValue.maintenance, premium),
+        FeatureAccess.maintenance,
+      );
     }
   });
 
@@ -57,6 +63,9 @@ void main() {
     expect(FeatureAccess.hidden.isVisible, isFalse);
     expect(FeatureAccess.comingSoon.isVisible, isTrue);
     expect(FeatureAccess.comingSoon.isEnabled, isFalse);
+    expect(FeatureAccess.maintenance.isVisible, isTrue);
+    expect(FeatureAccess.maintenance.isEnabled, isFalse);
+    expect(FeatureAccess.maintenance.isLocked, isFalse);
     expect(FeatureAccess.locked.isLocked, isTrue);
     expect(FeatureAccess.locked.isEnabled, isFalse);
     expect(FeatureAccess.enabled.isEnabled, isTrue);

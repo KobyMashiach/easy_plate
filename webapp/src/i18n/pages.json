@@ -28,8 +28,8 @@
     "pages.pw.webManagedBody": "שינוי חבילה, ביטול או עדכון אמצעי תשלום נעשים בחשבון שלך באתר.",
     "pages.login.welcome": "ברוכים הבאים ל-EasyPlate",
     "pages.login.subtitle": "התחברו כדי לשמור את המתכונים שלכם",
-    "pages.login.continueWithGoogle": "המשך עם Google",
-    "pages.login.continueWithApple": "המשך עם Apple",
+    "pages.login.continueWithGoogle": "כניסה עם Google",
+    "pages.login.continueWithApple": "כניסה עם Apple",
     "pages.login.or": "או"
   },
   "en": {
@@ -61,8 +61,8 @@
     "pages.pw.webManagedBody": "Switching plans, cancelling or changing the payment method is done in your account on the website.",
     "pages.login.welcome": "Welcome to EasyPlate",
     "pages.login.subtitle": "Sign in to keep your recipes",
-    "pages.login.continueWithGoogle": "Continue with Google",
-    "pages.login.continueWithApple": "Continue with Apple",
+    "pages.login.continueWithGoogle": "Sign in with Google",
+    "pages.login.continueWithApple": "Sign in with Apple",
     "pages.login.or": "or"
   },
   "ar": {
@@ -94,8 +94,8 @@
     "pages.pw.webManagedBody": "تغيير الباقة أو الإلغاء أو تحديث وسيلة الدفع يتم من حسابك على الموقع.",
     "pages.login.welcome": "أهلًا بكم في EasyPlate",
     "pages.login.subtitle": "سجّلوا الدخول لحفظ وصفاتكم",
-    "pages.login.continueWithGoogle": "المتابعة عبر Google",
-    "pages.login.continueWithApple": "المتابعة باستخدام Apple",
+    "pages.login.continueWithGoogle": "تسجيل الدخول عبر Google",
+    "pages.login.continueWithApple": "تسجيل الدخول باستخدام Apple",
     "pages.login.or": "أو"
   },
   "fr": {
@@ -127,8 +127,8 @@
     "pages.pw.webManagedBody": "Changer de formule, annuler ou modifier le moyen de paiement se fait depuis votre compte sur le site.",
     "pages.login.welcome": "Bienvenue sur EasyPlate",
     "pages.login.subtitle": "Connectez-vous pour garder vos recettes",
-    "pages.login.continueWithGoogle": "Continuer avec Google",
-    "pages.login.continueWithApple": "Continuer avec Apple",
+    "pages.login.continueWithGoogle": "Se connecter avec Google",
+    "pages.login.continueWithApple": "Se connecter avec Apple",
     "pages.login.or": "ou"
   },
   "ru": {
@@ -160,8 +160,8 @@
     "pages.pw.webManagedBody": "Смена тарифа, отмена и способ оплаты — в вашем аккаунте на сайте.",
     "pages.login.welcome": "Добро пожаловать в EasyPlate",
     "pages.login.subtitle": "Войдите, чтобы сохранять рецепты",
-    "pages.login.continueWithGoogle": "Продолжить с Google",
-    "pages.login.continueWithApple": "Продолжить с Apple",
+    "pages.login.continueWithGoogle": "Войти через Google",
+    "pages.login.continueWithApple": "Войти через Apple",
     "pages.login.or": "или"
   }
 }

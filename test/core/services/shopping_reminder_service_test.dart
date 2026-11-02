@@ -21,8 +21,45 @@ void main() {
     );
 
     await expectLater(
-      ShoppingReminderService().scheduleForShoppingDay(ShoppingDay.monday),
+      ShoppingReminderService().scheduleForShoppingDays(const [
+        ShoppingDay.monday,
+      ]),
       completes,
     );
+  });
+
+  test('every shopping day gets its own reminders', () {
+    final times = ShoppingReminderService.reminderTimes(
+      const [ShoppingDay.sunday, ShoppingDay.wednesday],
+      const [
+        ShoppingReminderSlot.dayBefore,
+        ShoppingReminderSlot.sameDayMorning,
+      ],
+    );
+    expect(
+      [for (final r in times) (r.weekday, r.hour)],
+      [
+        (DateTime.tuesday, 18),
+        (DateTime.wednesday, 9),
+        (DateTime.saturday, 18),
+        (DateTime.sunday, 9),
+      ],
+    );
+  });
+
+  test('two reminders on the same evening ring once, for the nearer day', () {
+    // Two days before Monday is the day before Sunday: Saturday 18:00.
+    final times = ShoppingReminderService.reminderTimes(
+      const [ShoppingDay.sunday, ShoppingDay.monday],
+      const [
+        ShoppingReminderSlot.twoDaysBefore,
+        ShoppingReminderSlot.dayBefore,
+      ],
+    );
+    final saturday = times.where(
+      (r) => r.weekday == DateTime.saturday && r.hour == 18,
+    );
+    expect(saturday.single.slot, ShoppingReminderSlot.dayBefore);
+    expect(times.length, 3);
   });
 }

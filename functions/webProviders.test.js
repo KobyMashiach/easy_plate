@@ -118,6 +118,9 @@ test("a provider sells only with its own switch and the master one on (administr
   assert.equal(catalogs.providerOpen({ master: 2, payplus: 2, revenuecat: 0 }, "payplus"), true);
   assert.equal(catalogs.providerOpen({ master: 2, payplus: 2, revenuecat: 0 }, "revenuecat"), false);
   assert.equal(catalogs.providerOpen({ master: 0, payplus: 2, revenuecat: 2 }, "payplus"), false);
+  // Maintenance (4) closes a route like 0 does; a plain >= 2 used to open it.
+  assert.equal(catalogs.providerOpen({ master: 4, payplus: 2, revenuecat: 2 }, "payplus"), false);
+  assert.equal(catalogs.providerOpen({ master: 2, payplus: 4, revenuecat: 2 }, "payplus"), false);
   assert.equal(catalogs.providerOpen({ master: 0, payplus: 0, revenuecat: 0 }, "revenuecat", true), true);
   // No Remote Config read: everything closed.
   assert.deepEqual(catalogs.switches({}), { master: 0, payplus: 0, revenuecat: 0 });

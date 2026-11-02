@@ -16,7 +16,7 @@ import { NAV, type NavItem } from "./nav";
 import { Icon } from "../components/icons";
 import { LANGS, useI18n } from "../lib/i18n";
 import { useAuth } from "../lib/auth";
-import { useFlags, type Access } from "../lib/flags";
+import { dimTagKey, isDimmed, useFlags, type Access } from "../lib/flags";
 import { THEME_EVENT, applyTheme, isDarkNow, readTheme, toggleTheme, type ThemeMode } from "../lib/theme";
 import { useUnreadCount } from "./unread";
 import { appLanguageOf, updatePreferences } from "../models/preferences";
@@ -44,9 +44,10 @@ function NavEntry({ item, access, compact = false }: { item: NavItem; access: Ac
   const unread = useUnreadCount();
   const badge = item.path === "/inbox" && unread > 0 ? unread : 0;
   if (access === "hidden") return null;
-  const tag = access === "comingSoon" ? t("shell.soon") : null;
+  const tagKey = dimTagKey(access);
+  const tag = tagKey ? t(tagKey) : null;
   const base = "group flex items-center gap-3 rounded-full px-4 py-2.5 text-label-md transition-colors";
-  if (access === "comingSoon") {
+  if (isDimmed(access)) {
     return (
       <span className={`${base} cursor-default text-on-surface-variant/60`} aria-disabled="true">
         <Icon name={item.icon} />
@@ -522,7 +523,7 @@ function PhoneMenuPage() {
           if (a === "hidden") return null;
           return (
             <li key={r.path}>
-              <MenuRow to={a === "locked" ? "/pricing" : r.path} icon={r.icon} label={r.label} hint={a === "comingSoon" ? t("shell.soon") : r.hint} locked={a === "locked"} />
+              <MenuRow to={a === "locked" ? "/pricing" : r.path} icon={r.icon} label={r.label} hint={dimTagKey(a) ? t(dimTagKey(a)!) : r.hint} locked={a === "locked"} />
             </li>
           );
         })}

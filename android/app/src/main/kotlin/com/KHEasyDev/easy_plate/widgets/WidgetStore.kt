@@ -197,7 +197,7 @@ data class WidgetDefaults(val listId: String?, val planId: String?, val voice: B
 
 data class WidgetSnapshot(
     val signedIn: Boolean,
-    /** `enabled`, `comingSoon`, `locked` or `hidden`. */
+    /** `enabled`, `comingSoon`, `maintenance`, `locked` or `hidden`. */
     val access: String,
     /** Shefi's own gate: a free account sees "Premium only" on the Shefi widget. */
     val assistantAccess: String,

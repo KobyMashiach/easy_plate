@@ -91,6 +91,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$voiceAssistants$he voiceAssistants = Translations$voiceAssistants$he.internal(_root);
 	late final Translations$adminUser$he adminUser = Translations$adminUser$he.internal(_root);
 	late final Translations$quickActions$he quickActions = Translations$quickActions$he.internal(_root);
+	late final Translations$countries$he countries = Translations$countries$he.internal(_root);
 }
 
 // Path: common
@@ -197,20 +198,29 @@ class Translations$auth$he {
 	/// he: 'לפחות 6 תווים'
 	String get passwordHint => 'לפחות 6 תווים';
 
-	/// he: 'המשך עם Google'
-	String get continueWithGoogle => 'המשך עם Google';
+	/// he: 'כניסה עם Google'
+	String get continueWithGoogle => 'כניסה עם Google';
 
-	/// he: 'המשך עם טלפון'
-	String get continueWithPhone => 'המשך עם טלפון';
+	/// he: 'כניסה עם טלפון'
+	String get continueWithPhone => 'כניסה עם טלפון';
 
-	/// he: 'המשך עם אימייל'
-	String get continueWithEmail => 'המשך עם אימייל';
+	/// he: 'כניסה עם אימייל'
+	String get continueWithEmail => 'כניסה עם אימייל';
 
 	/// he: 'מספר טלפון'
 	String get phoneNumber => 'מספר טלפון';
 
-	/// he: '+972501234567'
-	String get phoneHint => '+972501234567';
+	/// he: '0501234567'
+	String get phoneHint => '0501234567';
+
+	/// he: 'קידומת'
+	String get countryCode => 'קידומת';
+
+	/// he: 'חיפוש מדינה או קידומת'
+	String get countrySearch => 'חיפוש מדינה או קידומת';
+
+	/// he: 'לא נמצאה מדינה'
+	String get countryNotFound => 'לא נמצאה מדינה';
 
 	/// he: 'שליחת קוד'
 	String get sendCode => 'שליחת קוד';
@@ -353,8 +363,8 @@ class Translations$auth$he {
 	/// he: 'הפרטים האלה כבר משויכים לחשבון אחר'
 	String get errorCredentialInUse => 'הפרטים האלה כבר משויכים לחשבון אחר';
 
-	/// he: 'המשך עם Apple'
-	String get continueWithApple => 'המשך עם Apple';
+	/// he: 'כניסה עם Apple'
+	String get continueWithApple => 'כניסה עם Apple';
 
 	/// he: 'קישור חשבון Apple'
 	String get linkApple => 'קישור חשבון Apple';
@@ -679,6 +689,12 @@ class Translations$settings$he {
 
 	/// he: 'יום קניות'
 	String get shoppingDay => 'יום קניות';
+
+	/// he: 'ימי קניות'
+	String get shoppingDays => 'ימי קניות';
+
+	/// he: 'אפשר לבחור כמה ימים בשבוע. התזכורות נשלחות לפני כל אחד מהם.'
+	String get shoppingDaysHint => 'אפשר לבחור כמה ימים בשבוע. התזכורות נשלחות לפני כל אחד מהם.';
 
 	/// he: 'שפה'
 	String get language => 'שפה';
@@ -2041,6 +2057,9 @@ class Translations$ingestion$he {
 
 	/// he: 'מנתח את המתכון...'
 	String get parsing => 'מנתח את המתכון...';
+
+	/// he: 'מחפש מתכונים...'
+	String get searching => 'מחפש מתכונים...';
 
 	/// he: 'לא הצלחנו לנתח את המתכון'
 	String get parseError => 'לא הצלחנו לנתח את המתכון';
@@ -4742,6 +4761,12 @@ class Translations$feature$he {
 	/// he: 'הפיצ׳ר הזה יגיע בקרוב'
 	String get comingSoonMessage => 'הפיצ׳ר הזה יגיע בקרוב';
 
+	/// he: 'בתחזוקה'
+	String get maintenance => 'בתחזוקה';
+
+	/// he: 'הפיצ׳ר הזה בתחזוקה ולא זמין כרגע. נחזור בקרוב'
+	String get maintenanceMessage => 'הפיצ׳ר הזה בתחזוקה ולא זמין כרגע. נחזור בקרוב';
+
 	/// he: 'הפיצ׳ר הזה לא זמין כרגע'
 	String get unavailable => 'הפיצ׳ר הזה לא זמין כרגע';
 
@@ -4861,6 +4886,9 @@ class Translations$featureName$he {
 
 	/// he: 'תזכורת קניות'
 	String get shoppingReminder => 'תזכורת קניות';
+
+	/// he: 'כמה ימי קניות'
+	String get multiShoppingDays => 'כמה ימי קניות';
 
 	/// he: 'שפי (העוזר החכם)'
 	String get assistant => 'שפי (העוזר החכם)';
@@ -5376,6 +5404,78 @@ class Translations$quickActions$he {
 	String get support => 'פנייה לתמיכה';
 }
 
+// Path: countries
+class Translations$countries$he {
+	Translations$countries$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ישראל'
+	String get IL => 'ישראל';
+
+	/// he: 'ארצות הברית'
+	String get US => 'ארצות הברית';
+
+	/// he: 'קנדה'
+	String get CA => 'קנדה';
+
+	/// he: 'בריטניה'
+	String get GB => 'בריטניה';
+
+	/// he: 'צרפת'
+	String get FR => 'צרפת';
+
+	/// he: 'רוסיה'
+	String get RU => 'רוסיה';
+
+	/// he: 'אוקראינה'
+	String get UA => 'אוקראינה';
+
+	/// he: 'גרמניה'
+	String get DE => 'גרמניה';
+
+	/// he: 'ספרד'
+	String get ES => 'ספרד';
+
+	/// he: 'איטליה'
+	String get IT => 'איטליה';
+
+	/// he: 'הולנד'
+	String get NL => 'הולנד';
+
+	/// he: 'בלגיה'
+	String get BE => 'בלגיה';
+
+	/// he: 'שווייץ'
+	String get CH => 'שווייץ';
+
+	/// he: 'איחוד האמירויות'
+	String get AE => 'איחוד האמירויות';
+
+	/// he: 'הרשות הפלסטינית'
+	String get PS => 'הרשות הפלסטינית';
+
+	/// he: 'ירדן'
+	String get JO => 'ירדן';
+
+	/// he: 'מצרים'
+	String get EG => 'מצרים';
+
+	/// he: 'מרוקו'
+	String get MA => 'מרוקו';
+
+	/// he: 'אתיופיה'
+	String get ET => 'אתיופיה';
+
+	/// he: 'אוסטרליה'
+	String get AU => 'אוסטרליה';
+
+	/// he: 'ברזיל'
+	String get BR => 'ברזיל';
+}
+
 // Path: walkthrough.topics
 class Translations$walkthrough$topics$he {
 	Translations$walkthrough$topics$he.internal(this._root);
@@ -5640,6 +5740,9 @@ class Translations$adminConfig$flag$he {
 
 	/// he: 'פרימיום'
 	String get premium => 'פרימיום';
+
+	/// he: 'תחזוקה'
+	String get maintenance => 'תחזוקה';
 }
 
 // Path: adminConfig.labels
@@ -5962,8 +6065,8 @@ class Translations$walkthrough$topics$addRecipe$he {
 	/// he: 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים, תגיות, מנות וערכים תזונתיים.'
 	String get summary => 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים, תגיות, מנות וערכים תזונתיים.';
 
-	/// he: 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.'
-	String get s1 => 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.';
+	/// he: 'לחצו על כפתור הפלוס ליד הכותרת כדי להוסיף מתכון.'
+	String get s1 => 'לחצו על כפתור הפלוס ליד הכותרת כדי להוסיף מתכון.';
 
 	/// he: 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון מטיקטוק, אינסטגרם, יוטיוב או פייסבוק, בקשה חופשית מ-AI, או כתיבה ידנית.'
 	String get s2 => 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון מטיקטוק, אינסטגרם, יוטיוב או פייסבוק, בקשה חופשית מ-AI, או כתיבה ידנית.';
@@ -6259,11 +6362,14 @@ extension on Translations {
 			'auth.emailHint' => 'name@example.com',
 			'auth.password' => 'סיסמה',
 			'auth.passwordHint' => 'לפחות 6 תווים',
-			'auth.continueWithGoogle' => 'המשך עם Google',
-			'auth.continueWithPhone' => 'המשך עם טלפון',
-			'auth.continueWithEmail' => 'המשך עם אימייל',
+			'auth.continueWithGoogle' => 'כניסה עם Google',
+			'auth.continueWithPhone' => 'כניסה עם טלפון',
+			'auth.continueWithEmail' => 'כניסה עם אימייל',
 			'auth.phoneNumber' => 'מספר טלפון',
-			'auth.phoneHint' => '+972501234567',
+			'auth.phoneHint' => '0501234567',
+			'auth.countryCode' => 'קידומת',
+			'auth.countrySearch' => 'חיפוש מדינה או קידומת',
+			'auth.countryNotFound' => 'לא נמצאה מדינה',
 			'auth.sendCode' => 'שליחת קוד',
 			'auth.smsCode' => 'קוד מה-SMS',
 			'auth.codeSentTo' => ({required Object phone}) => 'שלחנו קוד אימות אל ${phone}',
@@ -6311,7 +6417,7 @@ extension on Translations {
 			'auth.phoneFirstHint' => 'חדשים כאן? המשיכו עם טלפון.',
 			'auth.errorAccountExistsDifferentCredential' => 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.',
 			'auth.errorCredentialInUse' => 'הפרטים האלה כבר משויכים לחשבון אחר',
-			'auth.continueWithApple' => 'המשך עם Apple',
+			'auth.continueWithApple' => 'כניסה עם Apple',
 			'auth.linkApple' => 'קישור חשבון Apple',
 			'auth.appleLinked' => 'מקושר',
 			'auth.appleAlreadyUsed' => 'חשבון Apple הזה כבר משויך למשתמש אחר',
@@ -6402,6 +6508,8 @@ extension on Translations {
 			'settings.title' => 'הגדרות',
 			'settings.dietaryPreferences' => 'העדפות תזונתיות',
 			'settings.shoppingDay' => 'יום קניות',
+			'settings.shoppingDays' => 'ימי קניות',
+			'settings.shoppingDaysHint' => 'אפשר לבחור כמה ימים בשבוע. התזכורות נשלחות לפני כל אחד מהם.',
 			'settings.language' => 'שפה',
 			'settings.appearance' => 'מראה',
 			'settings.themeSystem' => 'לפי המכשיר',
@@ -6736,13 +6844,13 @@ extension on Translations {
 			'sharing.kindBook' => 'ספר',
 			'sharing.kindPlan' => 'תפריט',
 			'sharing.recipesTravel' => 'המתכונים שבפנים ישותפו יחד איתו',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.shareList' => 'שיתוף רשימת קניות',
 			'sharing.acceptedList' => 'הרשימה נוספה לרשימות הקניות שלכם',
 			'sharing.viewerCannotEditList' => 'הרשימה שותפה איתכם לצפייה בלבד',
 			'sharing.kindList' => 'רשימת קניות',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'ספר משותף אחד', other: '${n} ספרים משותפים', ), 
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'רשימת קניות משותפת אחת', other: '${n} רשימות קניות משותפות', ), 
 			'notifications.title' => 'התראות',
 			'notifications.empty' => 'אין התראות',
@@ -6814,6 +6922,7 @@ extension on Translations {
 			'ingestion.aiRequestHint' => 'תארו מה בא לכם להכין. לדוגמה: מתכון לדייסת סולת לתינוקת בת שנה עם פירות',
 			'ingestion.parse' => 'נתח מתכון',
 			'ingestion.parsing' => 'מנתח את המתכון...',
+			'ingestion.searching' => 'מחפש מתכונים...',
 			'ingestion.parseError' => 'לא הצלחנו לנתח את המתכון',
 			'ingestion.reviewTitle' => 'בדקו לפני שמירה',
 			'ingestion.notConfigured' => 'התכונה הזו דורשת חיבור לשירות חיצוני שטרם הוגדר',
@@ -7238,7 +7347,7 @@ extension on Translations {
 			'walkthrough.welcomeBody' => 'נעבור יחד על הפעולות העיקריות ונעשה אותן באמת: השדות כבר מולאו בשבילכם. אפשר לדלג על כל שלב, או לסגור ולהפעיל שוב ממסך התמיכה.',
 			'walkthrough.topics.addRecipe.title' => 'הוספת מתכון',
 			'walkthrough.topics.addRecipe.summary' => 'מכניסים מתכון מכל מקור, וה-AI מסדר אותו לפורמט אחיד: מצרכים, כמויות, שלבים, תגיות, מנות וערכים תזונתיים.',
-			'walkthrough.topics.addRecipe.s1' => 'לחצו על כפתור הניצוץ ליד הכותרת כדי להוסיף מתכון.',
+			'walkthrough.topics.addRecipe.s1' => 'לחצו על כפתור הפלוס ליד הכותרת כדי להוסיף מתכון.',
 			'walkthrough.topics.addRecipe.s2' => 'בוחרים מקור: טקסט מודבק, חיפוש באינטרנט, קישור לאתר, סרטון מטיקטוק, אינסטגרם, יוטיוב או פייסבוק, בקשה חופשית מ-AI, או כתיבה ידנית.',
 			'walkthrough.topics.addRecipe.s3' => 'מילאנו כאן מתכון לדוגמה, כמו שמדביקים אותו. הכפתור שמתחת שולח אותו ל-AI, שמחזיר מתכון מסודר לבדיקה, עריכה ושמירה. הניתוח לוקח עד חצי דקה, אז השאירו אותו לאחרי הסיור.',
 			'walkthrough.topics.myRecipes.title' => 'המתכונים שלי ושמורים',
@@ -7249,14 +7358,14 @@ extension on Translations {
 			'walkthrough.topics.library.summary' => 'מסדרים מתכונים בספרים עם תוכן עניינים, כריכה ודפדוף, ומשתפים ספר שלם עם חשבון אחר.',
 			'walkthrough.topics.library.s1' => 'לחצו על ״ספרייה״ כדי לעבור לספרים.',
 			'walkthrough.topics.library.s2' => 'לחצו על הפלוס כדי ליצור ספר חדש.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'שם הספר כבר מולא: ״הדרכה״. אפשר ללחוץ על השדה ולשנות אותו, ואז להמשיך.',
 			'walkthrough.topics.library.s4' => 'לחצו ״שמור״ כדי ליצור את הספר.',
 			'walkthrough.topics.library.s5' => 'בוחרים צבע לשדרה, שמבדיל בין הספרים על המדף, ולוחצים ״שמור״. הספר ייפתח מיד.',
 			'walkthrough.topics.library.s6' => 'זהו הספר שיצרתם. מכאן מוסיפים אליו מתכונים, ובספר מדפדפים בין העמודים וקופצים מתוכן העניינים. לחיצה ארוכה על ספר במדף פותחת שיתוף, כריכה, שינוי שם ומחיקה.',
 			'walkthrough.topics.mealPlan.title' => 'תפריט שבועי ותזונה',
 			'walkthrough.topics.mealPlan.summary' => 'תוכנית ארוחות לכל השבוע עם סיכום תזונתי לכל יום, שמזינה את רשימת הקניות.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'לחצו על ״תפריטים״ לתכנון הארוחות.',
 			'walkthrough.topics.mealPlan.s2' => 'לחצו כאן כדי ליצור תוכנית שבועית.',
 			'walkthrough.topics.mealPlan.s3' => 'שם התוכנית כבר מולא. למטה בוחרים תבנית: חופשית, שלוש ארוחות ביום או שש.',
@@ -7763,14 +7872,14 @@ extension on Translations {
 			'household.invite' => 'להזמין חבר',
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(free, one: 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותר מקום אחד.', other: 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותרו ${free} מקומות.', ), 
 			'household.noSeats' => 'כל המקומות תפוסים.',
+			_ => null,
+		} ?? switch (path) {
 			'household.remove' => 'להסיר',
 			'household.removeConfirm' => ({required Object name}) => 'להסיר את ${name} מהחשבון המשותף? הגישה והפרימיום שלהם יפסקו.',
 			'household.leave' => 'לעזוב את החשבון המשותף',
 			'household.leaveConfirm' => 'לעזוב? מה שנשמר כאן נשאר בחשבון המשותף; החשבון שלכם חוזר למה שהיה לכם קודם.',
 			'household.dissolve' => 'לסגור את החשבון המשותף',
 			'household.dissolveConfirm' => 'לסגור את החשבון המשותף? החברים יאבדו גישה ופרימיום. המידע שלכם חוזר לחשבון האישי.',
-			_ => null,
-		} ?? switch (path) {
 			'household.joined' => 'ברוכים הבאים לחשבון המשותף!',
 			'household.inheritedNote' => ({required Object name}) => 'הפרימיום מגיע מהמנוי של ${name}.',
 			'household.failed' => 'זה לא הצליח. נסו שוב.',
@@ -7832,6 +7941,8 @@ extension on Translations {
 			'homeWidgets.demo3' => 'ביצים',
 			'feature.comingSoon' => 'בקרוב',
 			'feature.comingSoonMessage' => 'הפיצ׳ר הזה יגיע בקרוב',
+			'feature.maintenance' => 'בתחזוקה',
+			'feature.maintenanceMessage' => 'הפיצ׳ר הזה בתחזוקה ולא זמין כרגע. נחזור בקרוב',
 			'feature.unavailable' => 'הפיצ׳ר הזה לא זמין כרגע',
 			'feature.premiumOnly' => 'לפרימיום',
 			'feature.premiumOnlyMessage' => 'הפיצ׳ר הזה זמין למנויי פרימיום',
@@ -7869,6 +7980,7 @@ extension on Translations {
 			'featureName.receiptScan' => 'סריקת קבלה',
 			'featureName.groceryCost' => 'עלות משוערת',
 			'featureName.shoppingReminder' => 'תזכורת קניות',
+			'featureName.multiShoppingDays' => 'כמה ימי קניות',
 			'featureName.assistant' => 'שפי (העוזר החכם)',
 			'featureName.notifications' => 'התראות',
 			'featureName.premium' => 'פרימיום',
@@ -7918,6 +8030,7 @@ extension on Translations {
 			'adminConfig.flag.comingSoon' => 'בקרוב',
 			'adminConfig.flag.everyone' => 'חינמי',
 			'adminConfig.flag.premium' => 'פרימיום',
+			'adminConfig.flag.maintenance' => 'תחזוקה',
 			'adminConfig.labels.ads_enabled' => 'פרסומות פעילות',
 			'adminConfig.labels.ads_fail_open' => 'פתיחה כשאין סרטון',
 			'adminConfig.labels.ads_feed_interval' => 'מרווח מודעות בפיד',
@@ -8120,6 +8233,27 @@ extension on Translations {
 			'quickActions.groceryAdd' => 'הוספה לרשימת קניות',
 			'quickActions.receipt' => 'הוספת קבלה',
 			'quickActions.support' => 'פנייה לתמיכה',
+			'countries.IL' => 'ישראל',
+			'countries.US' => 'ארצות הברית',
+			'countries.CA' => 'קנדה',
+			'countries.GB' => 'בריטניה',
+			'countries.FR' => 'צרפת',
+			'countries.RU' => 'רוסיה',
+			'countries.UA' => 'אוקראינה',
+			'countries.DE' => 'גרמניה',
+			'countries.ES' => 'ספרד',
+			'countries.IT' => 'איטליה',
+			'countries.NL' => 'הולנד',
+			'countries.BE' => 'בלגיה',
+			'countries.CH' => 'שווייץ',
+			'countries.AE' => 'איחוד האמירויות',
+			'countries.PS' => 'הרשות הפלסטינית',
+			'countries.JO' => 'ירדן',
+			'countries.EG' => 'מצרים',
+			'countries.MA' => 'מרוקו',
+			'countries.ET' => 'אתיופיה',
+			'countries.AU' => 'אוסטרליה',
+			'countries.BR' => 'ברזיל',
 			_ => null,
 		};
 	}

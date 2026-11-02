@@ -6,6 +6,7 @@ import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../entities/grocery_item_entity.dart';
 import '../entities/grocery_item_source_entity.dart';
+import '../grocery_product_name.dart';
 
 /// Scans every active meal plan, resolves each recipe reference to its
 /// ingredients, and sums identical ingredients (matched by normalized
@@ -123,8 +124,8 @@ List<GroceryItemEntity> groceryItemsForRecipe(
 }
 
 /// Folds [ingredients] into [aggregated], summing anything that matches an
-/// existing line by normalized name + unit. Amounts are multiplied by
-/// [scale].
+/// existing line by product name ([groceryProductName]) + unit. Amounts are
+/// multiplied by [scale].
 void addIngredientLines(
   Map<String, GroceryItemEntity> aggregated, {
   required List<RecipeIngredientEntity> ingredients,
@@ -133,8 +134,10 @@ void addIngredientLines(
   double scale = 1,
 }) {
   for (final ingredient in ingredients) {
-    final key =
-        '${ingredient.name.trim().toLowerCase()}|${ingredient.unit.name}';
+    // The product, not the recipe's words for it; water is not shopped for.
+    final name = groceryProductName(ingredient.name);
+    if (name == null) continue;
+    final key = '${name.toLowerCase()}|${ingredient.unit.name}';
     final source = GroceryItemSourceEntity(
       recipeId: recipeId,
       label: sourceLabel,
@@ -144,7 +147,7 @@ void addIngredientLines(
     aggregated[key] = existing == null
         ? GroceryItemEntity(
             id: key,
-            name: ingredient.name,
+            name: name,
             unit: ingredient.unit,
             sources: [source],
             category: kDefaultGroceryCategory,

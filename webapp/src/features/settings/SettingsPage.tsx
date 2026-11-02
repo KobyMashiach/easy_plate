@@ -9,13 +9,13 @@ import { useIsPhone } from "../../components/useIsPhone";
 import { PhoneNotificationSettings, PhonePreferences, PhoneSettings } from "./PhoneSettings";
 import { useAuth } from "../../lib/auth";
 import { LANGS, useI18n, type Lang } from "../../lib/i18n";
-import { useAccess } from "../../lib/flags";
+import { isDimmed, useAccess } from "../../lib/flags";
 import { useContentTranslation } from "../../lib/contentTranslation";
 import { applyTheme, readTheme, type ThemeMode } from "../../lib/theme";
 import { Button, Field, Notice, PageTitle, Row, Spinner } from "../../components/ui";
 import { Icon } from "../../components/icons";
 import { DIETARY, type DietaryPreference } from "../../models/recipe";
-import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, type NotificationFlag, type Preferences, type ReminderSlot, type ShoppingDay } from "../../models/preferences";
+import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, shoppingDaysOf, toggleShoppingDay, withShoppingDays, type NotificationFlag, type Preferences, type ReminderSlot, type ShoppingDay } from "../../models/preferences";
 import { saveProfile, uploadProfilePhoto, usePreferences, useProfileDoc } from "./data";
 import { Chips, Choice, GroupLabel, Section, Toggle } from "./controls";
 
@@ -289,7 +289,7 @@ function AppearanceSection({ prefs, busy, onSave }: { prefs: Preferences; busy: 
   const { t } = useI18n();
   const access = useAccess("ff_theming");
   const [mode, setMode] = useState<ThemeMode>(readTheme);
-  if (access === "hidden" || access === "comingSoon") return null;
+  if (access === "hidden" || isDimmed(access)) return null;
   const choose = (m: ThemeMode) => {
     setMode(m);
     applyTheme(m);
@@ -320,17 +320,30 @@ type SetFn = (key: string, fn: (p: Preferences) => Preferences) => void;
 function PreferencesSection({ prefs, busy, set }: { prefs: Preferences; busy: Set<string>; set: SetFn }) {
   const { t } = useI18n();
   const priceBook = useAccess("ff_price_book");
+  const multiDays = useAccess("ff_multi_shopping_days");
   return (
     <Section id="preferences" icon="filter" title={t("settings.preferences")} hint={t("settings.preferencesHint")}>
       <GroupLabel>{t("settings.shopping")}</GroupLabel>
-      <Choice<ShoppingDay>
-        name="shopping-day"
-        label={t("settings.shoppingDay")}
-        options={SHOPPING_DAYS.map((d) => ({ value: d, label: t(`settings.day.${d}`) }))}
-        value={prefs.shoppingDay}
-        onChange={(d) => set("shoppingDay", (p) => ({ ...p, shoppingDay: d }))}
-        disabled={busy.has("shoppingDay")}
-      />
+      {multiDays === "enabled" ? (
+        <Chips<ShoppingDay>
+          label={t("settings.shoppingDays")}
+          options={SHOPPING_DAYS.map((d) => ({ value: d, label: t(`settings.day.${d}`) }))}
+          values={shoppingDaysOf(prefs)}
+          hint={t("settings.shoppingDaysHint")}
+          disabled={busy.has("shoppingDay")}
+          // The last day cannot be turned off; toggleShoppingDay keeps it.
+          onToggle={(d) => set("shoppingDay", (p) => toggleShoppingDay(p, d))}
+        />
+      ) : (
+        <Choice<ShoppingDay>
+          name="shopping-day"
+          label={t("settings.shoppingDay")}
+          options={SHOPPING_DAYS.map((d) => ({ value: d, label: t(`settings.day.${d}`) }))}
+          value={prefs.shoppingDay}
+          onChange={(d) => set("shoppingDay", (p) => withShoppingDays(p, [d]))}
+          disabled={busy.has("shoppingDay")}
+        />
+      )}
       {priceBook === "enabled" || priceBook === "locked" ? (
         <Toggle
           id="pref-community-prices"
@@ -411,7 +424,7 @@ function NotificationsSection({ prefs, busy, set }: { prefs: Preferences; busy: 
   const { t } = useI18n();
   const access = useAccess("ff_notifications");
   const reminders = useAccess("ff_shopping_reminder");
-  if (access === "hidden" || access === "comingSoon") return null;
+  if (access === "hidden" || isDimmed(access)) return null;
   const push = prefs.pushEnabled;
   return (
     <Section id="notifications" icon="inbox" title={t("settings.notifications")} hint={t("settings.pushNote")}>

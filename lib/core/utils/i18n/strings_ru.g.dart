@@ -86,6 +86,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$voiceAssistants$ru voiceAssistants = _Translations$voiceAssistants$ru._(_root);
 	@override late final _Translations$adminConfig$ru adminConfig = _Translations$adminConfig$ru._(_root);
 	@override late final _Translations$quickActions$ru quickActions = _Translations$quickActions$ru._(_root);
+	@override late final _Translations$countries$ru countries = _Translations$countries$ru._(_root);
 }
 
 // Path: common
@@ -133,11 +134,14 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get emailHint => 'name@example.com';
 	@override String get password => 'Пароль';
 	@override String get passwordHint => 'Минимум 6 символов';
-	@override String get continueWithGoogle => 'Продолжить с Google';
-	@override String get continueWithPhone => 'Продолжить по телефону';
-	@override String get continueWithEmail => 'Продолжить по почте';
+	@override String get continueWithGoogle => 'Войти через Google';
+	@override String get continueWithPhone => 'Войти по телефону';
+	@override String get continueWithEmail => 'Войти по почте';
 	@override String get phoneNumber => 'Номер телефона';
-	@override String get phoneHint => '+79161234567';
+	@override String get phoneHint => '0501234567';
+	@override String get countryCode => 'Код';
+	@override String get countrySearch => 'Поиск страны или кода';
+	@override String get countryNotFound => 'Страна не найдена';
 	@override String get sendCode => 'Отправить код';
 	@override String get smsCode => 'Код из SMS';
 	@override String codeSentTo({required Object phone}) => 'Мы отправили код на ${phone}';
@@ -185,7 +189,7 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get phoneFirstHint => 'Впервые здесь? Продолжите с телефоном.';
 	@override String get errorAccountExistsDifferentCredential => 'Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.';
 	@override String get errorCredentialInUse => 'Эти данные уже принадлежат другому аккаунту';
-	@override String get continueWithApple => 'Продолжить с Apple';
+	@override String get continueWithApple => 'Войти через Apple';
 	@override String get linkApple => 'Привязать аккаунт Apple';
 	@override String get appleLinked => 'Привязан';
 	@override String get appleAlreadyUsed => 'Этот аккаунт Apple уже принадлежит другому пользователю';
@@ -330,6 +334,8 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get title => 'Настройки';
 	@override String get dietaryPreferences => 'Пищевые предпочтения';
 	@override String get shoppingDay => 'День покупок';
+	@override String get shoppingDays => 'Дни покупок';
+	@override String get shoppingDaysHint => 'Выберите один или несколько дней в неделю. Напоминания приходят перед каждым из них.';
 	@override String get language => 'Язык';
 	@override String get appearance => 'Оформление';
 	@override String get themeSystem => 'Как в системе';
@@ -876,6 +882,7 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get aiRequestHint => 'Опишите, что хотите приготовить. Например: манная каша для годовалого ребёнка с фруктами';
 	@override String get parse => 'Разобрать рецепт';
 	@override String get parsing => 'Разбираем рецепт...';
+	@override String get searching => 'Ищем рецепты...';
 	@override String get parseError => 'Не удалось разобрать рецепт';
 	@override String get reviewTitle => 'Проверьте перед сохранением';
 	@override String get notConfigured => 'Для этой функции нужен внешний сервис, который ещё не настроен';
@@ -1888,6 +1895,8 @@ class _Translations$feature$ru extends Translations$feature$he {
 	// Translations
 	@override String get comingSoon => 'Скоро';
 	@override String get comingSoonMessage => 'Эта функция скоро появится';
+	@override String get maintenance => 'Обслуживание';
+	@override String get maintenanceMessage => 'Эта функция на обслуживании и временно недоступна. Скоро вернёмся';
 	@override String get unavailable => 'Эта функция сейчас недоступна';
 	@override String get premiumOnly => 'Премиум';
 	@override String get premiumOnlyMessage => 'Эта функция для подписчиков Премиум';
@@ -1934,6 +1943,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get receiptScan => 'Сканирование чека';
 	@override String get groceryCost => 'Примерная стоимость';
 	@override String get shoppingReminder => 'Напоминание о покупках';
+	@override String get multiShoppingDays => 'Несколько дней покупок';
 	@override String get assistant => 'Шефи (помощник)';
 	@override String get notifications => 'Уведомления';
 	@override String get premium => 'Премиум';
@@ -2060,6 +2070,36 @@ class _Translations$quickActions$ru extends Translations$quickActions$he {
 	@override String get groceryAdd => 'Добавить в список покупок';
 	@override String get receipt => 'Добавить чек';
 	@override String get support => 'Написать в поддержку';
+}
+
+// Path: countries
+class _Translations$countries$ru extends Translations$countries$he {
+	_Translations$countries$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get IL => 'Израиль';
+	@override String get US => 'США';
+	@override String get CA => 'Канада';
+	@override String get GB => 'Великобритания';
+	@override String get FR => 'Франция';
+	@override String get RU => 'Россия';
+	@override String get UA => 'Украина';
+	@override String get DE => 'Германия';
+	@override String get ES => 'Испания';
+	@override String get IT => 'Италия';
+	@override String get NL => 'Нидерланды';
+	@override String get BE => 'Бельгия';
+	@override String get CH => 'Швейцария';
+	@override String get AE => 'ОАЭ';
+	@override String get PS => 'Палестина';
+	@override String get JO => 'Иордания';
+	@override String get EG => 'Египет';
+	@override String get MA => 'Марокко';
+	@override String get ET => 'Эфиопия';
+	@override String get AU => 'Австралия';
+	@override String get BR => 'Бразилия';
 }
 
 // Path: walkthrough.topics
@@ -2272,7 +2312,7 @@ class _Translations$walkthrough$topics$addRecipe$ru extends Translations$walkthr
 	// Translations
 	@override String get title => 'Добавить рецепт';
 	@override String get summary => 'Загрузите рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги, теги, порции и питательная ценность.';
-	@override String get s1 => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.';
+	@override String get s1 => 'Нажмите кнопку с плюсом рядом с заголовком, чтобы добавить рецепт.';
 	@override String get s2 => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео из TikTok, Instagram, YouTube или Facebook, свободный запрос к ИИ или ввод вручную.';
 	@override String get s3 => 'Здесь уже заполнен рецепт-пример, как если бы вы его вставили. Кнопка ниже отправляет его ИИ, который возвращает аккуратный рецепт для проверки, правки и сохранения. Разбор занимает до полминуты, так что оставьте его на после тура.';
 }
@@ -2440,11 +2480,14 @@ extension on TranslationsRu {
 			'auth.emailHint' => 'name@example.com',
 			'auth.password' => 'Пароль',
 			'auth.passwordHint' => 'Минимум 6 символов',
-			'auth.continueWithGoogle' => 'Продолжить с Google',
-			'auth.continueWithPhone' => 'Продолжить по телефону',
-			'auth.continueWithEmail' => 'Продолжить по почте',
+			'auth.continueWithGoogle' => 'Войти через Google',
+			'auth.continueWithPhone' => 'Войти по телефону',
+			'auth.continueWithEmail' => 'Войти по почте',
 			'auth.phoneNumber' => 'Номер телефона',
-			'auth.phoneHint' => '+79161234567',
+			'auth.phoneHint' => '0501234567',
+			'auth.countryCode' => 'Код',
+			'auth.countrySearch' => 'Поиск страны или кода',
+			'auth.countryNotFound' => 'Страна не найдена',
 			'auth.sendCode' => 'Отправить код',
 			'auth.smsCode' => 'Код из SMS',
 			'auth.codeSentTo' => ({required Object phone}) => 'Мы отправили код на ${phone}',
@@ -2492,7 +2535,7 @@ extension on TranslationsRu {
 			'auth.phoneFirstHint' => 'Впервые здесь? Продолжите с телефоном.',
 			'auth.errorAccountExistsDifferentCredential' => 'Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.',
 			'auth.errorCredentialInUse' => 'Эти данные уже принадлежат другому аккаунту',
-			'auth.continueWithApple' => 'Продолжить с Apple',
+			'auth.continueWithApple' => 'Войти через Apple',
 			'auth.linkApple' => 'Привязать аккаунт Apple',
 			'auth.appleLinked' => 'Привязан',
 			'auth.appleAlreadyUsed' => 'Этот аккаунт Apple уже принадлежит другому пользователю',
@@ -2583,6 +2626,8 @@ extension on TranslationsRu {
 			'settings.title' => 'Настройки',
 			'settings.dietaryPreferences' => 'Пищевые предпочтения',
 			'settings.shoppingDay' => 'День покупок',
+			'settings.shoppingDays' => 'Дни покупок',
+			'settings.shoppingDaysHint' => 'Выберите один или несколько дней в неделю. Напоминания приходят перед каждым из них.',
 			'settings.language' => 'Язык',
 			'settings.appearance' => 'Оформление',
 			'settings.themeSystem' => 'Как в системе',
@@ -2917,13 +2962,13 @@ extension on TranslationsRu {
 			'sharing.kindBook' => 'Книга',
 			'sharing.kindPlan' => 'Меню',
 			'sharing.recipesTravel' => 'Рецепты внутри будут переданы вместе с ним',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.shareList' => 'Поделиться списком покупок',
 			'sharing.acceptedList' => 'Список добавлен в ваши списки покупок',
 			'sharing.viewerCannotEditList' => 'Этот список открыт вам только для просмотра',
 			'sharing.kindList' => 'список покупок',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} общая книга', few: '${n} общие книги', many: '${n} общих книг', other: '${n} общей книги', ), 
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '${n} общий список покупок', few: '${n} общих списка покупок', many: '${n} общих списков покупок', other: '${n} общего списка покупок', ), 
 			'notifications.title' => 'Уведомления',
 			'notifications.empty' => 'Уведомлений нет',
@@ -2995,6 +3040,7 @@ extension on TranslationsRu {
 			'ingestion.aiRequestHint' => 'Опишите, что хотите приготовить. Например: манная каша для годовалого ребёнка с фруктами',
 			'ingestion.parse' => 'Разобрать рецепт',
 			'ingestion.parsing' => 'Разбираем рецепт...',
+			'ingestion.searching' => 'Ищем рецепты...',
 			'ingestion.parseError' => 'Не удалось разобрать рецепт',
 			'ingestion.reviewTitle' => 'Проверьте перед сохранением',
 			'ingestion.notConfigured' => 'Для этой функции нужен внешний сервис, который ещё не настроен',
@@ -3419,7 +3465,7 @@ extension on TranslationsRu {
 			'walkthrough.welcomeBody' => 'Пройдём вместе по основным действиям и выполним их по-настоящему: поля уже заполнены за вас. Любой шаг можно пропустить, или закрыть тур и запустить его снова с экрана поддержки.',
 			'walkthrough.topics.addRecipe.title' => 'Добавить рецепт',
 			'walkthrough.topics.addRecipe.summary' => 'Загрузите рецепт из любого источника, и ИИ приведёт его к единому формату: ингредиенты, количества, шаги, теги, порции и питательная ценность.',
-			'walkthrough.topics.addRecipe.s1' => 'Нажмите кнопку с искрой рядом с заголовком, чтобы добавить рецепт.',
+			'walkthrough.topics.addRecipe.s1' => 'Нажмите кнопку с плюсом рядом с заголовком, чтобы добавить рецепт.',
 			'walkthrough.topics.addRecipe.s2' => 'Выберите источник: вставленный текст, поиск в интернете, ссылка на сайт, видео из TikTok, Instagram, YouTube или Facebook, свободный запрос к ИИ или ввод вручную.',
 			'walkthrough.topics.addRecipe.s3' => 'Здесь уже заполнен рецепт-пример, как если бы вы его вставили. Кнопка ниже отправляет его ИИ, который возвращает аккуратный рецепт для проверки, правки и сохранения. Разбор занимает до полминуты, так что оставьте его на после тура.',
 			'walkthrough.topics.myRecipes.title' => 'Мои и сохранённые рецепты',
@@ -3430,14 +3476,14 @@ extension on TranslationsRu {
 			'walkthrough.topics.library.summary' => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием, и делитесь целой книгой с другим аккаунтом.',
 			'walkthrough.topics.library.s1' => 'Нажмите «Библиотека», чтобы перейти к книгам.',
 			'walkthrough.topics.library.s2' => 'Нажмите плюс, чтобы создать новую книгу.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'Название книги уже заполнено: «Обучение». Нажмите на поле, чтобы изменить его, и продолжайте.',
 			'walkthrough.topics.library.s4' => 'Нажмите «Сохранить», чтобы создать книгу.',
 			'walkthrough.topics.library.s5' => 'Выберите цвет корешка, по которому книги различаются на полке, и нажмите «Сохранить». Книга сразу откроется.',
 			'walkthrough.topics.library.s6' => 'Это созданная вами книга. Отсюда в неё добавляют рецепты; внутри листают страницы и переходят из оглавления. Долгое нажатие на книгу на полке открывает общий доступ, обложку, переименование и удаление.',
 			'walkthrough.topics.mealPlan.title' => 'Меню на неделю и питание',
 			'walkthrough.topics.mealPlan.summary' => 'План на всю неделю со сводкой питательности по дням, из которого строится список покупок.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'Нажмите «Меню», чтобы спланировать неделю.',
 			'walkthrough.topics.mealPlan.s2' => 'Нажмите здесь, чтобы создать недельный план.',
 			'walkthrough.topics.mealPlan.s3' => 'Название плана уже заполнено. Ниже выберите шаблон: свободный, три приёма пищи в день или шесть.',
@@ -3944,14 +3990,14 @@ extension on TranslationsRu {
 			'homeWidgets.intro' => 'Добавьте виджеты EasyPlate на главный экран: спросите Шефи, добавьте в список покупок, смотрите список и меню на сегодня, не открывая приложение.',
 			'homeWidgets.howToIos' => 'Нажмите и удерживайте пустое место на главном экране, нажмите +, найдите EasyPlate и выберите виджет. Те же виджеты подходят для экрана блокировки.',
 			'homeWidgets.howToAndroid' => 'Нажмите и удерживайте пустое место на главном экране, выберите «Виджеты» и найдите EasyPlate, или нажмите «Добавить на главный экран» ниже.',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'Добавить на главный экран',
 			'homeWidgets.installed' => ({required Object count}) => '${count} на главном экране',
 			'homeWidgets.pinFailed' => 'Лаунчер не предложил добавить виджет. Добавьте его из списка виджетов главного экрана.',
 			'homeWidgets.defaults' => 'Значения по умолчанию для новых виджетов',
 			'homeWidgets.defaultsHint' => 'Каждый виджет можно потом изменить в его настройках (долгое нажатие на виджет).',
 			'homeWidgets.defaultList' => 'Список покупок',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.openList' => 'Открытый список',
 			'homeWidgets.defaultPlan' => 'План питания',
 			'homeWidgets.firstPlan' => 'Первый план',
@@ -3995,6 +4041,8 @@ extension on TranslationsRu {
 			'homeWidgets.demo3' => 'Яйца',
 			'feature.comingSoon' => 'Скоро',
 			'feature.comingSoonMessage' => 'Эта функция скоро появится',
+			'feature.maintenance' => 'Обслуживание',
+			'feature.maintenanceMessage' => 'Эта функция на обслуживании и временно недоступна. Скоро вернёмся',
 			'feature.unavailable' => 'Эта функция сейчас недоступна',
 			'feature.premiumOnly' => 'Премиум',
 			'feature.premiumOnlyMessage' => 'Эта функция для подписчиков Премиум',
@@ -4032,6 +4080,7 @@ extension on TranslationsRu {
 			'featureName.receiptScan' => 'Сканирование чека',
 			'featureName.groceryCost' => 'Примерная стоимость',
 			'featureName.shoppingReminder' => 'Напоминание о покупках',
+			'featureName.multiShoppingDays' => 'Несколько дней покупок',
 			'featureName.assistant' => 'Шефи (помощник)',
 			'featureName.notifications' => 'Уведомления',
 			'featureName.premium' => 'Премиум',
@@ -4116,6 +4165,27 @@ extension on TranslationsRu {
 			'quickActions.groceryAdd' => 'Добавить в список покупок',
 			'quickActions.receipt' => 'Добавить чек',
 			'quickActions.support' => 'Написать в поддержку',
+			'countries.IL' => 'Израиль',
+			'countries.US' => 'США',
+			'countries.CA' => 'Канада',
+			'countries.GB' => 'Великобритания',
+			'countries.FR' => 'Франция',
+			'countries.RU' => 'Россия',
+			'countries.UA' => 'Украина',
+			'countries.DE' => 'Германия',
+			'countries.ES' => 'Испания',
+			'countries.IT' => 'Италия',
+			'countries.NL' => 'Нидерланды',
+			'countries.BE' => 'Бельгия',
+			'countries.CH' => 'Швейцария',
+			'countries.AE' => 'ОАЭ',
+			'countries.PS' => 'Палестина',
+			'countries.JO' => 'Иордания',
+			'countries.EG' => 'Египет',
+			'countries.MA' => 'Марокко',
+			'countries.ET' => 'Эфиопия',
+			'countries.AU' => 'Австралия',
+			'countries.BR' => 'Бразилия',
 			_ => null,
 		};
 	}

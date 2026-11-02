@@ -117,17 +117,16 @@ class _RecipesBodyState extends State<_RecipesBody> {
         .toList();
 
     // The title floats away as the list scrolls and returns on the first
-    // scroll back up; the sparkle stays in its corner throughout.
+    // scroll back up; the add button stays in its corner throughout.
     return ClayFloatingHeaderView(
       title: t.books.myRecipes,
       subtitle: t.books.recipesSubtitle,
-      // The sparkle rather than a plus: adding a recipe here means the
-      // model reads it in, and the same icon marks every AI action in
-      // the app.
+      // A plus, not the AI sparkle: people did not read the sparkle as
+      // "add a recipe".
       trailing: WalkthroughTarget(
         id: WalkthroughIds.recipesAdd,
         child: ClayIconButton(
-          icon: Icons.auto_awesome_rounded,
+          icon: Icons.add_rounded,
           filled: true,
           size: 48,
           tooltip: t.ingestion.title,

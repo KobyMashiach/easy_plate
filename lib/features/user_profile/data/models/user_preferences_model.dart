@@ -46,6 +46,10 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     /// The build number whose "what's new" book was acknowledged; null
     /// (older records) reads as "never".
     @HiveField(18) int? whatsNewSeenBuild,
+
+    /// Shopping days beyond [shoppingDay], as `ShoppingDay` names; null
+    /// (older records) reads as none.
+    @HiveField(19) List<String>? extraShoppingDays,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -93,6 +97,14 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     } else {
       out.remove('shoppingReminderSlots');
     }
+    if (json['extraShoppingDays'] is List) {
+      out['extraShoppingDays'] = [
+        for (final name in docStrings(json['extraShoppingDays']))
+          if (docEnum(ShoppingDay.values, name) != null) name,
+      ];
+    } else {
+      out.remove('extraShoppingDays');
+    }
     if (json['themeMode'] is! String) out.remove('themeMode');
     final seen = docInt(json['whatsNewSeenBuild']);
     if (seen == null) {
@@ -107,6 +119,10 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
 extension UserPreferencesModelMapper on UserPreferencesModel {
   UserPreferencesEntity toEntity() => UserPreferencesEntity(
     shoppingDay: shoppingDay,
+    extraShoppingDays: [
+      for (final name in extraShoppingDays ?? const <String>[])
+        ?docEnum(ShoppingDay.values, name),
+    ],
     dietaryPreferences: dietaryPreferences,
     language: language,
     soundEffectsEnabled: soundEffectsEnabled,
@@ -133,6 +149,7 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
 extension UserPreferencesEntityMapper on UserPreferencesEntity {
   UserPreferencesModel toModel() => UserPreferencesModel(
     shoppingDay: shoppingDay,
+    extraShoppingDays: [for (final day in extraShoppingDays) day.name],
     dietaryPreferences: dietaryPreferences,
     language: language,
     soundEffectsEnabled: soundEffectsEnabled,

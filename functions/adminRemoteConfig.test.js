@@ -37,7 +37,8 @@ test("values are checked against the type before they are written", () => {
   assert.equal(applyValue(t, "quota_ai_premium", "abc"), "invalid_number");
   assert.equal(applyValue(t, "quota_ai_premium", 12), null);
   assert.equal(t.parameters.quota_ai_premium.defaultValue.value, "12");
-  assert.equal(applyValue(t, "ff_books", "4"), "invalid_flag");
+  assert.equal(applyValue(t, "ff_books", "5"), "invalid_flag");
+  assert.equal(applyValue(t, "ff_books", "4"), null);
   assert.equal(applyValue(t, "ff_books", "3"), null);
   assert.equal(t.parameterGroups.featureFlags.parameters.ff_books.defaultValue.value, "3");
   assert.equal(applyValue(t, "isProd", "1.0.0"), null);

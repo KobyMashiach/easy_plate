@@ -204,10 +204,9 @@ class _CookModePageState extends State<CookModePage> {
                                           t.cookMode.screenOn,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: AppTextStyles.labelSm
-                                              .copyWith(
-                                                color: AppColors.outline,
-                                              ),
+                                          style: AppTextStyles.labelSm.copyWith(
+                                            color: AppColors.outline,
+                                          ),
                                         ),
                                       ),
                                     ],

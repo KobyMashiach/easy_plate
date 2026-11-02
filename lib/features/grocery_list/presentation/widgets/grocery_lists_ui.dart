@@ -732,7 +732,7 @@ class RecipeListCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   list.recipeTitle ?? list.name,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.bodyLg,
                 ),

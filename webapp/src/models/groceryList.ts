@@ -10,6 +10,7 @@
 // (build_aggregate_grocery_list_usecase.dart) lives here too, so any screen —
 // the groceries pages, the assistant — builds a list the same way.
 import { MEASUREMENT_UNITS, normalizeIngredient, type CollabRole, type Ingredient, type MeasurementUnit } from "./recipe";
+import { groceryProductName } from "./groceryProductName";
 
 /** kDefaultGroceryCategory in lib/core/constants/app_constants.dart. */
 export const DEFAULT_GROCERY_CATEGORY = "כללי";
@@ -215,7 +216,7 @@ export function planLikeOf(raw: unknown): PlanLike {
   };
 }
 
-/** Folds ingredients into `aggregated`, summing any that match by normalized name + unit. */
+/** Folds ingredients into `aggregated`, summing any that match by product name (groceryProductName) + unit. */
 export function addIngredientLines(
   aggregated: Map<string, GroceryItem>,
   ingredients: Ingredient[],
@@ -224,14 +225,17 @@ export function addIngredientLines(
   scale = 1,
 ): void {
   for (const ing of ingredients) {
-    const key = `${ing.name.trim().toLowerCase()}|${ing.unit}`;
+    // The product, not the recipe's words for it; water is not shopped for.
+    const name = groceryProductName(ing.name);
+    if (name === null) continue;
+    const key = `${name.toLowerCase()}|${ing.unit}`;
     const source: GroceryItemSource = { recipeId, label: sourceLabel, amount: (ing.amount ?? 0) * scale };
     const existing = aggregated.get(key);
     aggregated.set(
       key,
       existing
         ? { ...existing, sources: [...existing.sources, source] }
-        : { id: key, name: ing.name, unit: ing.unit, sources: [source], isChecked: false, category: DEFAULT_GROCERY_CATEGORY, isAdHoc: false },
+        : { id: key, name, unit: ing.unit, sources: [source], isChecked: false, category: DEFAULT_GROCERY_CATEGORY, isAdHoc: false },
     );
   }
 }

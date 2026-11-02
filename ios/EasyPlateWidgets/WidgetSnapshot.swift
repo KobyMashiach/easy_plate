@@ -121,7 +121,7 @@ struct WidgetDefaults: Codable {
 
 struct WidgetSnapshot: Codable {
   var signedIn: Bool
-  /// `enabled`, `comingSoon`, `locked` or `hidden`.
+  /// `enabled`, `comingSoon`, `maintenance`, `locked` or `hidden`.
   var access: String
   /// Shefi's own gate: a free account sees "Premium only" on the Shefi widget.
   var assistantAccess: String?

@@ -75,6 +75,33 @@ class FirebaseAuthDataSource implements AuthDataSource {
     return _googleInit ??= GoogleSignIn.instance.initialize();
   }
 
+  /// Set once Play Integrity has failed on this device; every later SMS
+  /// request then goes through reCAPTCHA as well.
+  bool _recaptchaForced = false;
+
+  /// `internal-error` "[ Error code:39 ]" is Firebase refusing the device's
+  /// Play Integrity token, and no SMS goes out. Seen on a Google Play install
+  /// with a real number (test numbers skip the check). The reCAPTCHA flow
+  /// does not depend on Play Integrity, so the request is retried once that
+  /// way.
+  Future<bool> _fallBackToRecaptcha(FirebaseAuthException e) async {
+    if (_recaptchaForced ||
+        kIsWeb ||
+        defaultTargetPlatform != TargetPlatform.android ||
+        e.code != 'internal-error' ||
+        !(e.message ?? '').contains('Error code:39')) {
+      return false;
+    }
+    _recaptchaForced = true;
+    debugPrint('Play Integrity refused; retrying SMS with reCAPTCHA');
+    try {
+      await _auth.setSettings(forceRecaptchaFlow: true);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Firebase reports an identity the account does not have as an empty
   /// string on some platforms, not null. Left as-is, "no email" looked like an
   /// email to every `== null` check downstream — the profile screen showed
@@ -270,11 +297,19 @@ class FirebaseAuthDataSource implements AuthDataSource {
           }
         }
       },
-      verificationFailed: (e) {
-        if (!completer.isCompleted) {
-          completer.completeError(_mapAuthError(e));
-        } else {
+      verificationFailed: (e) async {
+        if (completer.isCompleted) {
           onFailed?.call(e);
+        } else if (await _fallBackToRecaptcha(e)) {
+          completer.complete(
+            startPhoneVerification(
+              phoneNumber,
+              autoResolved: autoResolved,
+              onFailed: onFailed,
+            ),
+          );
+        } else {
+          completer.completeError(_mapAuthError(e));
         }
       },
       codeSent: (verificationId, resendToken) {
@@ -403,11 +438,19 @@ class FirebaseAuthDataSource implements AuthDataSource {
           }
         }
       },
-      verificationFailed: (e) {
-        if (!completer.isCompleted) {
-          completer.completeError(_mapAuthError(e));
-        } else {
+      verificationFailed: (e) async {
+        if (completer.isCompleted) {
           onFailed?.call(e);
+        } else if (await _fallBackToRecaptcha(e)) {
+          completer.complete(
+            startPhoneLink(
+              phoneNumber,
+              onFailed: onFailed,
+              reauthenticate: reauthenticate,
+            ),
+          );
+        } else {
+          completer.completeError(_mapAuthError(e));
         }
       },
       codeSent: (verificationId, resendToken) {

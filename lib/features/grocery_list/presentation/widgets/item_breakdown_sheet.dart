@@ -242,7 +242,7 @@ class _BreakdownBodyState extends State<_BreakdownBody> {
                     Expanded(
                       child: Text(
                         entry.value.label,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.bodyMd,
                       ),

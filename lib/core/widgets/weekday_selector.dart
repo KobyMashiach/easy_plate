@@ -19,15 +19,38 @@ String weekdayLabel(ShoppingDay day) => switch (day) {
 
 /// Pill day picker: the active day takes the Lavender Glow fill with white
 /// text, inactive days a lavender-white fill with indigo text.
+///
+/// One day by default; [WeekdaySelector.multiple] lets several be on, a tap
+/// toggling a day, and never lets the last one go.
 class WeekdaySelector extends StatelessWidget {
-  final ShoppingDay selected;
-  final ValueChanged<ShoppingDay> onSelect;
+  final List<ShoppingDay> selected;
+  final ValueChanged<List<ShoppingDay>> _onChanged;
+  final bool _multiple;
 
-  const WeekdaySelector({
+  WeekdaySelector({
+    super.key,
+    required ShoppingDay selected,
+    required ValueChanged<ShoppingDay> onSelect,
+  }) : selected = [selected],
+       _onChanged = ((days) => onSelect(days.first)),
+       _multiple = false;
+
+  const WeekdaySelector.multiple({
     super.key,
     required this.selected,
-    required this.onSelect,
-  });
+    required ValueChanged<List<ShoppingDay>> onChanged,
+  }) : _onChanged = onChanged,
+       _multiple = true;
+
+  void _tap(ShoppingDay day) {
+    if (!_multiple) return _onChanged([day]);
+    final isOn = selected.contains(day);
+    if (isOn && selected.length == 1) return;
+    _onChanged([
+      for (final d in ShoppingDay.values)
+        if (d == day ? !isOn : selected.contains(d)) d,
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +58,9 @@ class WeekdaySelector extends StatelessWidget {
       spacing: AppSpacing.base,
       runSpacing: AppSpacing.base,
       children: ShoppingDay.values.map((day) {
-        final isSelected = selected == day;
+        final isSelected = selected.contains(day);
         return GestureDetector(
-          onTap: () => onSelect(day),
+          onTap: () => _tap(day),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
             duration: AppMotion.quick,

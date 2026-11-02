@@ -38,13 +38,14 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       foregroundPopupsEnabled: fields[16] == null ? true : fields[16] as bool,
       themeMode: fields[17] as String?,
       whatsNewSeenBuild: (fields[18] as num?)?.toInt(),
+      extraShoppingDays: (fields[19] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -82,7 +83,9 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(17)
       ..write(obj.themeMode)
       ..writeByte(18)
-      ..write(obj.whatsNewSeenBuild);
+      ..write(obj.whatsNewSeenBuild)
+      ..writeByte(19)
+      ..write(obj.extraShoppingDays);
   }
 
   @override
@@ -128,6 +131,9 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
   foregroundPopupsEnabled: json['foregroundPopupsEnabled'] as bool? ?? true,
   themeMode: json['themeMode'] as String?,
   whatsNewSeenBuild: (json['whatsNewSeenBuild'] as num?)?.toInt(),
+  extraShoppingDays: (json['extraShoppingDays'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -154,6 +160,7 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'foregroundPopupsEnabled': instance.foregroundPopupsEnabled,
   'themeMode': instance.themeMode,
   'whatsNewSeenBuild': instance.whatsNewSeenBuild,
+  'extraShoppingDays': instance.extraShoppingDays,
 };
 
 const _$ShoppingDayEnumMap = {

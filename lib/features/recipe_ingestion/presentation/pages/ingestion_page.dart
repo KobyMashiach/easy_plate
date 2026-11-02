@@ -25,6 +25,7 @@ import '../../../../core/utils/routing/routing.dart';
 import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
+import '../../../../core/widgets/landscape_hint.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/pop_if_current.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
@@ -181,21 +182,29 @@ class IngestionPage extends StatelessWidget {
                           : const [],
                   },
                 ),
-                IngestionParsing(channel: final channel) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: AppSpacing.gutter),
-                      Text(
-                        channel == RecipeIngestionChannel.aiRequest
-                            ? t.ingestion.generating
-                            : t.ingestion.parsing,
-                        style: AppTextStyles.bodyMd,
-                      ),
-                    ],
+                IngestionParsing(channel: final channel, work: final work) =>
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: AppSpacing.gutter),
+                        Text(
+                          switch (work) {
+                            IngestionWork.searching => t.ingestion.searching,
+                            IngestionWork.loadingPage =>
+                              t.ingestion.loadingOriginal,
+                            IngestionWork.analyzing
+                                when channel ==
+                                    RecipeIngestionChannel.aiRequest =>
+                              t.ingestion.generating,
+                            IngestionWork.analyzing => t.ingestion.parsing,
+                          },
+                          style: AppTextStyles.bodyMd,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 IngestionSearchResults(results: final results) =>
                   _SearchResults(results: results),
                 IngestionReview(
@@ -971,6 +980,10 @@ class _ReviewRecipe extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.marginMobile),
             children: [
+              // Sideways here too, as in the editor it opens: the review
+              // is the first screen a new recipe is checked on.
+              const LandscapeHint(),
+              const SizedBox(height: AppSpacing.md),
               ClayTag(
                 label: t.ingestion.reviewTitle,
                 icon: Icons.fact_check_rounded,

@@ -193,7 +193,7 @@ class _PickerBodyState extends State<_PickerBody> {
                       Expanded(
                         child: Text(
                           recipe.title,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodyMd,
                         ),

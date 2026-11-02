@@ -261,7 +261,8 @@ class AssistantDispatcher {
       raw is List ? raw.take(maxListItems).toList() : const [];
 
   /// The gate the screen would show before [feature]'s own entry point: a
-  /// feature the console hid or marked "coming soon" is refused; one that is
+  /// feature the console hid or marked "coming soon" is refused, and so is
+  /// one under maintenance, with a reason the model can pass on; one that is
   /// Premium-only, for a free account, is refused and the paywall opens the
   /// way a tap on the locked entry would.
   ToolResult? _gate(FeaturesFlags feature) {
@@ -271,6 +272,11 @@ class AssistantDispatcher {
       case FeatureAccess.locked:
         ui.openScreen('premium');
         return ToolResult.error('premium_required', t.assistant.needsPremium);
+      case FeatureAccess.maintenance:
+        return ToolResult.error(
+          'maintenance',
+          '${feature.label} is under maintenance right now; try again later',
+        );
       case FeatureAccess.hidden:
       case FeatureAccess.comingSoon:
         return ToolResult.error(
@@ -508,6 +514,8 @@ class AssistantDispatcher {
     final prefs = await _dietaryPreferences();
     // Every source is a model call and costs an extraction from the daily
     // allowance, as on the add screen (text, link, video and request alike).
+    // A retry after a failed call rides on the video already watched: the
+    // model tries again on its own, and each try used to ask for another.
     if (!await ui.allowAiExtraction()) {
       return ToolResult.error('quota', t.ads.aiQuotaReached);
     }
@@ -517,6 +525,7 @@ class AssistantDispatcher {
       'request' => await ingestion.generateRecipe(content, prefs),
       _ => await ingestion.parseRawText(content, prefs),
     };
+    ui.aiExtractionDelivered();
     await _saveRecipe(parsed);
     return ToolResult.ok(
       _recipeFull(parsed),
@@ -1315,6 +1324,7 @@ class AssistantDispatcher {
 
   Map<String, dynamic> _prefsJson(UserPreferencesEntity p) => {
     'shopping_day': p.shoppingDay.name,
+    'shopping_days': [for (final d in p.shoppingDays) d.name],
     'dietary': p.dietaryPreferences.map((d) => d.name).toList(),
     'language': p.language.name,
   };
@@ -1693,7 +1703,7 @@ class AssistantDispatcher {
       )
       ..writeln(
         'User language: ${prefs.language.name}; '
-        'shopping day: ${prefs.shoppingDay.name}; '
+        'shopping days: ${prefs.shoppingDays.map((d) => d.name).join(', ')}; '
         'dietary: ${prefs.dietaryPreferences.map((d) => d.name).join(', ')}.',
       )
       ..writeln('Premium: ${MonetizationConfig.isPremium}.')

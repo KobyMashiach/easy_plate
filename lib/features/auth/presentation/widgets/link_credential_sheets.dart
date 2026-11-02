@@ -9,6 +9,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/phone_number.dart';
+import 'phone_number_field.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/link_email_password_usecase.dart';
 import '../../domain/usecases/link_phone_usecase.dart';
@@ -16,22 +17,13 @@ import '../../domain/send_log.dart';
 import 'auth_error_text.dart';
 
 /// The typed number in E.164, or the message to show instead. The one
-/// reading of a phone field for sign-in, the phone gate and linking: a
-/// local `0…` becomes `+972…` only in Hebrew; elsewhere the country code is
-/// asked for.
-({String? phone, String? error}) readPhoneField(String raw) {
-  final input = normalisePhone(
-    raw,
-    israeliLocal: LocaleSettings.currentLocale.languageCode == 'he',
-  );
-  return switch (input.rejection) {
-    null => (phone: input.e164, error: null),
-    PhoneRejection.needsCountryCode => (
-      phone: null,
-      error: t.auth.phoneNeedsCountryCode,
-    ),
-    PhoneRejection.invalid => (phone: null, error: t.auth.invalidPhone),
-  };
+/// reading of a phone field for sign-in, the phone gate and linking: the
+/// national number in [field] under the country chosen in its menu.
+({String? phone, String? error}) readPhoneField(PhoneFieldController field) {
+  final input = composePhone(field.text, field.country.value);
+  return input.e164 == null
+      ? (phone: null, error: t.auth.invalidPhone)
+      : (phone: input.e164, error: null);
 }
 
 /// Attaches a phone number to the signed-in account, so signing in with that
@@ -103,7 +95,7 @@ class _LinkPhoneSheet extends StatefulWidget {
 }
 
 class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
-  final _phone = TextEditingController();
+  final _phone = PhoneFieldController();
   final _code = TextEditingController();
 
   String? _verificationId;
@@ -123,7 +115,7 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
   Future<void> _send() async {
     // A second tap before the rebuild greys the control out.
     if (_busy) return;
-    final (:phone, :error) = readPhoneField(_phone.text);
+    final (:phone, :error) = readPhoneField(_phone);
     if (phone == null) {
       setState(() => _error = error);
       return;
@@ -197,17 +189,7 @@ class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
       title: t.auth.linkPhone,
       children: [
         if (!awaitingCode)
-          TextField(
-            controller: _phone,
-            keyboardType: TextInputType.phone,
-            textDirection: TextDirection.ltr,
-            style: AppTextStyles.bodyMd,
-            decoration: InputDecoration(
-              labelText: t.auth.phoneNumber,
-              hintText: t.auth.phoneHint,
-              errorText: _error,
-            ),
-          )
+          PhoneNumberField(controller: _phone, errorText: _error)
         else
           TextField(
             controller: _code,

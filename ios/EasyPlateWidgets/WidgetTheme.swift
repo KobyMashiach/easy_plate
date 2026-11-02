@@ -108,6 +108,7 @@ struct NoticeView: View {
       }
       switch access ?? s.access {
       case "comingSoon": return ("clock.fill", s.str("comingSoon"))
+      case "maintenance": return ("wrench.and.screwdriver.fill", s.str("maintenance"))
       case "locked": return ("crown.fill", s.str("premiumOnly"))
       default: return ("lock.fill", s.str("unavailable"))
       }

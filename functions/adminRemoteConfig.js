@@ -43,7 +43,7 @@ function findParam(template, name) {
   return null;
 }
 
-// Pure: the value checked against the parameter's type (and the 0–3 range
+// Pure: the value checked against the parameter's type (and the 0–4 range
 // of a feature flag), then written as the parameter's default. Returns
 // the error code, or null when the template was changed.
 function applyValue(template, name, rawValue) {
@@ -56,7 +56,7 @@ function applyValue(template, name, rawValue) {
       break;
     case "NUMBER": {
       if (value === "" || Number.isNaN(Number(value))) return "invalid_number";
-      if (FLAG_RE.test(name) && !["0", "1", "2", "3"].includes(value)) return "invalid_flag";
+      if (FLAG_RE.test(name) && !["0", "1", "2", "3", "4"].includes(value)) return "invalid_flag";
       break;
     }
     case "JSON":

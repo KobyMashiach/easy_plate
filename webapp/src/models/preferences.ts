@@ -41,7 +41,10 @@ export const NOTIFICATION_FLAGS = [
 export type NotificationFlag = (typeof NOTIFICATION_FLAGS)[number];
 
 export interface Preferences {
+  /** The first shopping day; older builds read only this one. */
   shoppingDay: ShoppingDay;
+  /** Further shopping days besides `shoppingDay`, in week order. */
+  extraShoppingDays: ShoppingDay[];
   dietaryPreferences: DietaryPreference[];
   soundEffectsEnabled: boolean;
   onboardingComplete: boolean;
@@ -73,6 +76,24 @@ export const langOf = (language: AppLanguage): Lang => APP_TO_LANG[language];
 const bool = (v: unknown, fallback: boolean): boolean => (typeof v === "boolean" ? v : fallback);
 const oneOf = <T extends string>(v: unknown, all: readonly T[]): T | null => (typeof v === "string" && (all as readonly string[]).includes(v) ? (v as T) : null);
 
+/** Every shopping day, Sunday first (UserPreferencesEntity.shoppingDays). */
+export function shoppingDaysOf(p: Preferences): ShoppingDay[] {
+  return SHOPPING_DAYS.filter((d) => d === p.shoppingDay || p.extraShoppingDays.includes(d));
+}
+
+/** `days` as the two fields; an empty choice keeps the record as it is. */
+export function withShoppingDays(p: Preferences, days: readonly ShoppingDay[]): Preferences {
+  const sorted = SHOPPING_DAYS.filter((d) => days.includes(d));
+  if (sorted.length === 0) return p;
+  return { ...p, shoppingDay: sorted[0], extraShoppingDays: sorted.slice(1) };
+}
+
+/** A tap on `day` in the several-days picker; the last day stays on. */
+export function toggleShoppingDay(p: Preferences, day: ShoppingDay): Preferences {
+  const days = shoppingDaysOf(p);
+  return withShoppingDays(p, days.includes(day) ? days.filter((d) => d !== day) : [...days, day]);
+}
+
 /** The app's defaults for an account with no record yet (UserPreferencesRepositoryImpl). */
 export function defaultPreferences(language: AppLanguage = "hebrew"): Preferences {
   return normalizePreferences({ language });
@@ -86,6 +107,7 @@ export function normalizePreferences(raw: unknown): Preferences {
   const seen = r.whatsNewSeenBuild;
   return {
     shoppingDay: oneOf(r.shoppingDay, SHOPPING_DAYS) ?? "sunday",
+    extraShoppingDays: Array.isArray(r.extraShoppingDays) ? SHOPPING_DAYS.filter((d) => (r.extraShoppingDays as unknown[]).includes(d)) : [],
     dietaryPreferences: [...new Set(dietary)],
     soundEffectsEnabled: bool(r.soundEffectsEnabled, true),
     onboardingComplete: bool(r.onboardingComplete, false),
@@ -112,6 +134,7 @@ export function normalizePreferences(raw: unknown): Preferences {
 export function preferencesToDart(p: Preferences): Record<string, unknown> {
   return {
     shoppingDay: p.shoppingDay,
+    extraShoppingDays: SHOPPING_DAYS.filter((d) => p.extraShoppingDays.includes(d)),
     dietaryPreferences: [...p.dietaryPreferences],
     soundEffectsEnabled: p.soundEffectsEnabled,
     onboardingComplete: p.onboardingComplete,

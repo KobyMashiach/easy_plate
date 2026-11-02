@@ -69,7 +69,8 @@ function boolFrom(parameters, name, fallback) {
 }
 
 // The notifications feature flag (`ff_notifications`, in the featureFlags
-// group): 0 hidden, 1 coming soon, 2 on for everyone, 3 Premium only.
+// group): 0 hidden, 1 coming soon, 2 on for everyone, 3 Premium only,
+// 4 under maintenance.
 function intFrom(parameters, name, fallback) {
   const raw = parameters?.[name]?.defaultValue?.value;
   if (raw === undefined || raw === null || String(raw).trim() === "") return fallback;
@@ -77,8 +78,16 @@ function intFrom(parameters, name, fallback) {
   return Number.isInteger(parsed) ? parsed : fallback;
 }
 
+// Whether a feature flag's value lets the feature run at all: 2 (everyone)
+// or 3 (Premium). 0 hidden, 1 coming soon and 4 maintenance are closed; a
+// plain `>= 2` would open maintenance.
+function isOpen(flag) {
+  return flag === 2 || flag === 3;
+}
+
 // Pure rule: a push goes out when the feature is on for everyone, or on
-// for Premium and this account pays. Hidden or coming soon sends nothing.
+// for Premium and this account pays. Hidden, coming soon or maintenance
+// sends nothing.
 function pushAllowed({ flag, premium }) {
   if (flag === 2) return true;
   if (flag === 3) return premium === true;
@@ -122,4 +131,4 @@ async function pushAllowedFor(userSnap) {
 
 const NOTIFICATIONS_FLAG = "ff_notifications";
 
-module.exports = { READ_TIMEOUT_MS, resetForTest, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK };
+module.exports = { READ_TIMEOUT_MS, resetForTest, isOpen, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK };

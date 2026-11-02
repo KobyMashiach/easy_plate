@@ -380,14 +380,22 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Sideways with the keyboard up, a phone has a strip of screen left:
+    // the bar and the save button took all of it and hid the field being
+    // typed in. Both step aside while typing and return with the keyboard.
+    final typingSideways =
+        MediaQuery.orientationOf(context) == Orientation.landscape &&
+        MediaQuery.viewInsetsOf(context).bottom > 0;
     return ClayScaffold(
-      appBar: ClayTopAppBar(
-        title: t.editor.title,
-        leadingIcon: Icons.close_rounded,
-        onLeadingTap: () => Navigator.of(context).maybePop(),
-        trailingIcon: Icons.spellcheck_rounded,
-        onTrailingTap: _busy ? null : _fixSpelling,
-      ),
+      appBar: typingSideways
+          ? null
+          : ClayTopAppBar(
+              title: t.editor.title,
+              leadingIcon: Icons.close_rounded,
+              onLeadingTap: () => Navigator.of(context).maybePop(),
+              trailingIcon: Icons.spellcheck_rounded,
+              onTrailingTap: _busy ? null : _fixSpelling,
+            ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -430,15 +438,16 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(AppSpacing.marginMobile),
-                  child: ClayButton(
-                    label: t.common.save,
-                    icon: Icons.check_rounded,
-                    expanded: true,
-                    onPressed: _busy ? null : _save,
+                if (!typingSideways)
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                    child: ClayButton(
+                      label: t.common.save,
+                      icon: Icons.check_rounded,
+                      expanded: true,
+                      onPressed: _busy ? null : _save,
+                    ),
                   ),
-                ),
               ],
             ),
             if (_busy)
@@ -483,6 +492,11 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
         TextField(
           controller: _title,
           style: AppTextStyles.bodyLg,
+          // A long name wraps onto a second line instead of scrolling out
+          // of sight; Enter still moves on, there is no line break to type.
+          keyboardType: TextInputType.text,
+          minLines: 1,
+          maxLines: 3,
           textInputAction: TextInputAction.next,
           // The rules cap a title at 500 for a community post, a shared
           // recipe and a share code; a longer one saved here would fail
@@ -809,6 +823,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
             child: TextField(
               controller: row.name,
               style: AppTextStyles.bodyMd,
+              // Wraps like the title: a long ingredient stays readable.
+              keyboardType: TextInputType.text,
+              minLines: 1,
+              maxLines: 3,
               decoration: InputDecoration(hintText: t.editor.ingredientName),
             ),
           ),

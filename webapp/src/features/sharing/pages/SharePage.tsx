@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../lib/auth";
 import { useI18n } from "../../../lib/i18n";
-import { useAccess, useFlags, type Flag } from "../../../lib/flags";
+import { dimTagKey, useAccess, useFlags, type Flag } from "../../../lib/flags";
 import { getRecord } from "../../../lib/cloud";
 import { normalizeRecipe, type Recipe } from "../../../models/recipe";
 import { FeatureGate } from "../../../components/FeatureGate";
@@ -369,7 +369,7 @@ function ShareSheet({ kind, id }: { kind: ShareKind; id: string }) {
               >
                 {codesAccess === "locked" ? <Icon name="lock" size={14} /> : null}
                 {t("sharing.code.tabCode")}
-                {codesAccess === "comingSoon" ? <span className="pill-grey">{t("shell.soon")}</span> : null}
+                {dimTagKey(codesAccess) ? <span className="pill-grey">{t(dimTagKey(codesAccess)!)}</span> : null}
               </button>
             </div>
           ) : null}

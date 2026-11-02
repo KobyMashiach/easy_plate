@@ -148,7 +148,7 @@ const en = {
   },
   config: {
     search: "Search parameters…", groups: { features: "Features", ads: "Ads & quotas", share: "Free-tier sharing", tts: "Voice", versions: "Versions", gemini: "Gemini (needs deploy)", other: "Other" },
-    flags: { 0: "Hidden", 1: "Coming soon", 2: "Free for all", 3: "Premium only" }, add: "Add parameter", addHint: "Adds a parameter to the live template and publishes it. Give it a Hebrew/English heading in the app's i18n too.",
+    flags: { 0: "Hidden", 1: "Coming soon", 2: "Free for all", 3: "Premium only", 4: "Maintenance" }, add: "Add parameter", addHint: "Adds a parameter to the live template and publishes it. Give it a Hebrew/English heading in the app's i18n too.",
     name: "Key", type: "Type", value: "Value", description: "Description", group: "Group (optional)", delete: "Remove parameter", deleteHint: "The app falls back to its built-in default for a parameter that is gone.",
     saved: "Published", version: "Template version {v}", deployNote: "gemini_* values only take effect on the next functions deploy.", filter: { all: "All states" },
     count: "{n} parameters", edited: "Edited", confirmDelete: "Remove {name} from Remote Config?",
@@ -318,7 +318,7 @@ const he = {
   },
   config: {
     search: "חיפוש פרמטרים…", groups: { features: "פיצ׳רים", ads: "פרסומות ומכסות", share: "שיתוף בחינם", tts: "קול", versions: "גרסאות", gemini: "Gemini (דורש deploy)", other: "אחר" },
-    flags: { 0: "לא מוצג", 1: "בקרוב", 2: "חינמי לכולם", 3: "רק לפרימיום" }, add: "הוספת פרמטר", addHint: "מוסיף פרמטר לתבנית החיה ומפרסם. כדאי לתת לו כותרת בעברית/אנגלית גם ב-i18n של האפליקציה.",
+    flags: { 0: "לא מוצג", 1: "בקרוב", 2: "חינמי לכולם", 3: "רק לפרימיום", 4: "תחזוקה" }, add: "הוספת פרמטר", addHint: "מוסיף פרמטר לתבנית החיה ומפרסם. כדאי לתת לו כותרת בעברית/אנגלית גם ב-i18n של האפליקציה.",
     name: "מפתח", type: "סוג", value: "ערך", description: "תיאור", group: "קבוצה (לא חובה)", delete: "הסרת פרמטר", deleteHint: "האפליקציה חוזרת לברירת המחדל המובנית של פרמטר שנעלם.",
     saved: "פורסם", version: "גרסת תבנית {v}", deployNote: "ערכי gemini_* נכנסים לתוקף רק ב-deploy הבא של הפונקציות.", filter: { all: "כל המצבים" },
     count: "{n} פרמטרים", edited: "נערך", confirmDelete: "להסיר את {name} מ-Remote Config?",
@@ -481,7 +481,7 @@ const ar = {
   },
   config: {
     search: "بحث في المعاملات…", groups: { features: "الميزات", ads: "الإعلانات والحصص", share: "المشاركة المجانية", tts: "الصوت", versions: "الإصدارات", gemini: "Gemini (يتطلب نشرًا)", other: "أخرى" },
-    flags: { 0: "مخفي", 1: "قريبًا", 2: "مجاني للجميع", 3: "بريميوم فقط" }, add: "إضافة معامل", addHint: "يضيف معاملًا إلى القالب الحي وينشره. أعطه عنوانًا في i18n التطبيق أيضًا.",
+    flags: { 0: "مخفي", 1: "قريبًا", 2: "مجاني للجميع", 3: "بريميوم فقط", 4: "صيانة" }, add: "إضافة معامل", addHint: "يضيف معاملًا إلى القالب الحي وينشره. أعطه عنوانًا في i18n التطبيق أيضًا.",
     name: "المفتاح", type: "النوع", value: "القيمة", description: "الوصف", group: "المجموعة (اختياري)", delete: "إزالة المعامل", deleteHint: "يعود التطبيق إلى قيمته المدمجة لمعامل اختفى.",
     saved: "نُشر", version: "إصدار القالب {v}", deployNote: "قيم gemini_* تسري فقط عند النشر التالي للدوال.", filter: { all: "كل الحالات" },
     count: "{n} معاملات", edited: "عُدّل", confirmDelete: "إزالة {name} من Remote Config؟",
@@ -644,7 +644,7 @@ const fr = {
   },
   config: {
     search: "Rechercher un paramètre…", groups: { features: "Fonctions", ads: "Pubs et quotas", share: "Partage gratuit", tts: "Voix", versions: "Versions", gemini: "Gemini (déploiement requis)", other: "Autres" },
-    flags: { 0: "Masqué", 1: "Bientôt", 2: "Gratuit pour tous", 3: "Premium seulement" }, add: "Ajouter un paramètre", addHint: "Ajoute un paramètre au modèle en ligne et le publie. Donnez-lui aussi un libellé dans l’i18n de l’app.",
+    flags: { 0: "Masqué", 1: "Bientôt", 2: "Gratuit pour tous", 3: "Premium seulement", 4: "Maintenance" }, add: "Ajouter un paramètre", addHint: "Ajoute un paramètre au modèle en ligne et le publie. Donnez-lui aussi un libellé dans l’i18n de l’app.",
     name: "Clé", type: "Type", value: "Valeur", description: "Description", group: "Groupe (facultatif)", delete: "Retirer le paramètre", deleteHint: "L’app revient à sa valeur intégrée pour un paramètre disparu.",
     saved: "Publié", version: "Version du modèle {v}", deployNote: "Les valeurs gemini_* ne prennent effet qu’au prochain déploiement des fonctions.", filter: { all: "Tous les états" },
     count: "{n} paramètres", edited: "Modifié", confirmDelete: "Retirer {name} de Remote Config ?",
@@ -807,7 +807,7 @@ const ru = {
   },
   config: {
     search: "Поиск параметров…", groups: { features: "Функции", ads: "Реклама и квоты", share: "Бесплатный шеринг", tts: "Голос", versions: "Версии", gemini: "Gemini (нужен деплой)", other: "Прочее" },
-    flags: { 0: "Скрыто", 1: "Скоро", 2: "Бесплатно всем", 3: "Только Premium" }, add: "Добавить параметр", addHint: "Добавляет параметр в живой шаблон и публикует его. Дайте ему подпись и в i18n приложения.",
+    flags: { 0: "Скрыто", 1: "Скоро", 2: "Бесплатно всем", 3: "Только Premium", 4: "Обслуживание" }, add: "Добавить параметр", addHint: "Добавляет параметр в живой шаблон и публикует его. Дайте ему подпись и в i18n приложения.",
     name: "Ключ", type: "Тип", value: "Значение", description: "Описание", group: "Группа (необязательно)", delete: "Удалить параметр", deleteHint: "Для исчезнувшего параметра приложение использует встроенное значение.",
     saved: "Опубликовано", version: "Версия шаблона {v}", deployNote: "Значения gemini_* вступают в силу только при следующем деплое функций.", filter: { all: "Все состояния" },
     count: "{n} параметров", edited: "Изменено", confirmDelete: "Удалить {name} из Remote Config?",

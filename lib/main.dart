@@ -203,8 +203,8 @@ Future<void> _applyPreferences(UserPreferencesEntity preferences) async {
   // Only after onboarding — asking for notification permission before the user
   // has picked a shopping day has nothing to schedule and no context to explain.
   if (preferences.onboardingComplete) {
-    await ShoppingReminderService().scheduleForShoppingDay(
-      preferences.shoppingDay,
+    await ShoppingReminderService().scheduleForShoppingDays(
+      preferences.shoppingDays,
       slots: preferences.shoppingReminderSlots,
     );
   }
@@ -310,8 +310,8 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     final preferences = AuthSessionService().preferencesListenable.value;
     if (preferences == null || !preferences.onboardingComplete) return;
     unawaited(
-      ShoppingReminderService().scheduleForShoppingDay(
-        preferences.shoppingDay,
+      ShoppingReminderService().scheduleForShoppingDays(
+        preferences.shoppingDays,
         slots: preferences.shoppingReminderSlots,
       ),
     );
@@ -545,11 +545,10 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         // Above the router, so a forced update outlives whatever route the
         // user is on — including one a notification tap pushed — and so the
         // theme switch can freeze the whole screen, dialogs included.
-        builder: (context, child) => MediaQuery.withClampedTextScaling(
-          // A phone set to a very large system font would break the tight
-          // rows (nutrition, prices); text still scales, just not past
-          // what the layouts were drawn for.
-          maxScaleFactor: 1.2,
+        builder: (context, child) => MediaQuery.withNoTextScaling(
+          // The phone's font-size setting is not applied: the layouts are
+          // drawn for one text size, and an enlarged system font clipped
+          // titles and labels across the app. The text stays as designed.
           child: ThemeSwitcher(
             child: UpdateGate(child: child ?? const SizedBox.shrink()),
           ),

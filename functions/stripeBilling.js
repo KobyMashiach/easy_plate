@@ -291,7 +291,7 @@ async function flagValue() {
 
 async function handle({ db, secret, caller, request, fetchImpl }) {
   const flag = await flagValue();
-  const enabled = flag >= 2;
+  const enabled = remoteFlags.isOpen(flag);
 
   if (request.action === "plans") {
     if (!enabled) return { status: 200, body: { enabled: false, flag, plans: [] } };

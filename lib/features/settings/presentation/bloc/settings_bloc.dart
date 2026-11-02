@@ -58,8 +58,10 @@ enum NotificationSetting {
 @freezed
 sealed class SettingsEvent with _$SettingsEvent {
   const factory SettingsEvent.init() = _Init;
-  const factory SettingsEvent.updateShoppingDay(ShoppingDay day) =
-      _UpdateShoppingDay;
+
+  /// Every shopping day the account now has; an empty list is ignored.
+  const factory SettingsEvent.updateShoppingDays(List<ShoppingDay> days) =
+      _UpdateShoppingDays;
   const factory SettingsEvent.toggleDietaryPreference(
     DietaryPreference preference,
   ) = _ToggleDietaryPreference;
@@ -135,7 +137,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   Future<void> _handle(SettingsEvent event, Emitter<SettingsState> emit) =>
       switch (event) {
         _Init() => _init(event, emit),
-        _UpdateShoppingDay() => _updateShoppingDay(event, emit),
+        _UpdateShoppingDays() => _updateShoppingDays(event, emit),
         _ToggleDietaryPreference() => _toggleDietaryPreference(event, emit),
         _ToggleSoundEffects() => _toggleSoundEffects(event, emit),
         _ChangeLanguage() => _changeLanguage(event, emit),
@@ -240,19 +242,19 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     return updated;
   }
 
-  Future<void> _updateShoppingDay(
-    _UpdateShoppingDay event,
+  Future<void> _updateShoppingDays(
+    _UpdateShoppingDays event,
     Emitter<SettingsState> emit,
   ) async {
     final current = state;
     if (current is! SettingsLoaded) return;
     final updated = await _commit(
       current,
-      (p) => p.copyWith(shoppingDay: event.day),
+      (p) => p.withShoppingDays(event.days),
       emit,
     );
     // With the slots the account chose, not the defaults: a reminder set
-    // to "day before only" must stay that way when the day moves.
+    // to "day before only" must stay that way when the days move.
     await _reschedule(updated);
   }
 
@@ -260,8 +262,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   /// preference is saved either way, so the failure is only logged.
   Future<void> _reschedule(UserPreferencesEntity updated) async {
     try {
-      await ShoppingReminderService().scheduleForShoppingDay(
-        updated.shoppingDay,
+      await ShoppingReminderService().scheduleForShoppingDays(
+        updated.shoppingDays,
         slots: updated.shoppingReminderSlots,
       );
     } catch (e) {

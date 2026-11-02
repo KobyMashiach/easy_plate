@@ -8,7 +8,7 @@ import { useLinkLeaveGuard } from "../../lib/leaveGuard";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { getRecord } from "../../lib/cloud";
-import { useFlags } from "../../lib/flags";
+import { isDimmed, useFlags } from "../../lib/flags";
 import { useI18n } from "../../lib/i18n";
 import { saveRecipe } from "../../lib/recipesStore";
 import { Icon } from "../../components/icons";
@@ -455,7 +455,7 @@ export function IngestPage() {
               <div role="group" aria-label={t("ingest.channels")} className="mt-3 flex flex-wrap gap-2">
                 {chips.map(({ c, access }) => {
                   const selected = c === channel;
-                  const disabled = access === "comingSoon";
+                  const disabled = isDimmed(access);
                   const locked = access === "locked";
                   return (
                     <button
@@ -481,7 +481,7 @@ export function IngestPage() {
           <div role="group" aria-label={t("ingest.channels")} className="mb-4 flex flex-wrap gap-2">
             {chips.map(({ c, access }) => {
               const selected = c === channel;
-              const disabled = access === "comingSoon";
+              const disabled = isDimmed(access);
               const locked = access === "locked";
               return (
                 <button

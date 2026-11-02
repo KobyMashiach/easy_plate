@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/features/features_flags.dart';
+import '../../../../core/monetization/quota_gates.dart';
 import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
@@ -71,12 +72,18 @@ sealed class IngestionEvent with _$IngestionEvent {
       _PickImageCandidate;
 }
 
+/// What the spinner is waiting for, so it can say so: a web search that
+/// read "analysing the recipe" looked like the wrong step had started.
+enum IngestionWork { analyzing, searching, loadingPage }
+
 @freezed
 sealed class IngestionState with _$IngestionState {
   const factory IngestionState.idle(RecipeIngestionChannel channel) =
       IngestionIdle;
-  const factory IngestionState.parsing(RecipeIngestionChannel channel) =
-      IngestionParsing;
+  const factory IngestionState.parsing(
+    RecipeIngestionChannel channel, {
+    @Default(IngestionWork.analyzing) IngestionWork work,
+  }) = IngestionParsing;
   const factory IngestionState.searchResults(
     RecipeIngestionChannel channel,
     List<WebSearchResultEntity> results,
@@ -423,6 +430,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
           ? socialTimeout
           : analysisTimeout;
       final recipe = await parse(await _preferences).timeout(timeout);
+      QuotaGates.extractionDelivered();
       emit(_review(recipe));
     } on TimeoutException {
       debugPrint('Ingestion timed out after $analysisTimeout');
@@ -643,7 +651,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       event,
       text: _channel == RecipeIngestionChannel.webSearch ? null : event.url,
     );
-    emit(.parsing(_channel));
+    emit(.parsing(_channel, work: IngestionWork.loadingPage));
     try {
       emit(
         .original(_channel, await fetchOriginalRecipePageUseCase(event.url)),
@@ -704,7 +712,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     // second submit while the first is running would pay for it twice.
     if (state is IngestionParsing) return;
     _remember(event, text: event.query);
-    emit(.parsing(_channel));
+    emit(.parsing(_channel, work: IngestionWork.searching));
     try {
       final results = await searchWebRecipesUseCase(
         event.query,

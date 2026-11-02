@@ -281,7 +281,7 @@ async function findUid(channel, to) {
 async function flagOn() {
   const p = await remoteFlags.params();
   // Closed when Remote Config gave nothing, as in webBilling.flagValue.
-  return remoteFlags.intFrom(p, billing.FLAG, 0) >= 2;
+  return remoteFlags.isOpen(remoteFlags.intFrom(p, billing.FLAG, 0));
 }
 
 async function handle({ db, caller, request, ip, sms, nowMs = Date.now(), fetchImpl }) {

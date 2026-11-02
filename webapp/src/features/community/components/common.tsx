@@ -4,7 +4,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../../../lib/i18n";
-import { useAccess } from "../../../lib/flags";
+import { isDimmed, useAccess } from "../../../lib/flags";
 import { Icon } from "../../../components/icons";
 import { useIsPhone } from "../../../components/useIsPhone";
 import type { Ingredient, Recipe } from "../../../models/recipe";
@@ -41,7 +41,7 @@ export function LikeButton({ liked, count, onToggle, disabled = false }: { liked
   const { t } = useI18n();
   const access = useAccess("ff_likes");
   const phone = useIsPhone();
-  if (access === "hidden" || access === "comingSoon") return null;
+  if (access === "hidden" || isDimmed(access)) return null;
   if (phone && access !== "locked") {
     // LikeButton: a 48 px IconButton (favorite 20, error / favorite_border tertiary) + the count labelMd tertiary.
     return (

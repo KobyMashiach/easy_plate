@@ -2,13 +2,20 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const flags = require("./remoteFlags");
 
-test("the flag decides who gets a push: 2 everyone, 3 Premium, 0/1 nobody", () => {
+test("the flag decides who gets a push: 2 everyone, 3 Premium, 0/1/4 nobody", () => {
+  assert.equal(flags.pushAllowed({ flag: 4, premium: true }), false);
   assert.equal(flags.pushAllowed({ flag: 3, premium: false }), false);
   assert.equal(flags.pushAllowed({ flag: 3, premium: undefined }), false);
   assert.equal(flags.pushAllowed({ flag: 3, premium: true }), true);
   assert.equal(flags.pushAllowed({ flag: 2, premium: false }), true);
   assert.equal(flags.pushAllowed({ flag: 1, premium: true }), false);
   assert.equal(flags.pushAllowed({ flag: 0, premium: true }), false);
+});
+
+test("only 2 and 3 open a feature; maintenance (4) closes it like 0 and 1", () => {
+  assert.equal(flags.isOpen(2), true);
+  assert.equal(flags.isOpen(3), true);
+  for (const v of [0, 1, 4, 5, -1]) assert.equal(flags.isOpen(v), false, String(v));
 });
 
 test("a missing, blank or garbled flag falls back to the default", () => {

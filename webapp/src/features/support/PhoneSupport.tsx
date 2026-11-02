@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type R
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { useI18n } from "../../lib/i18n";
-import { useAccess } from "../../lib/flags";
+import { useAccess, type Access } from "../../lib/flags";
 import { SITE_ORIGIN } from "../../lib/firebase";
 import { ClayButton, ClayCard, ClayIconButton, EmptyState, LoadingSpinner } from "../../components/clay";
 import { Icon } from "../../components/icons";
@@ -57,7 +57,7 @@ export function PhoneSupport({
   name,
   profileEmail,
 }: {
-  whatsNew: "hidden" | "comingSoon" | "locked" | "enabled";
+  whatsNew: Access;
   onWhatsNew: () => void;
   phone: string;
   email: string;

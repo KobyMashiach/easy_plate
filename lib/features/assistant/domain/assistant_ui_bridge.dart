@@ -10,6 +10,10 @@ abstract class AssistantUiBridge {
   /// The daily AI-extraction allowance (free / rewarded video / blocked).
   Future<bool> allowAiExtraction();
 
+  /// The extraction [allowAiExtraction] let through returned a recipe. Until
+  /// then a failed attempt's retry does not ask for another video.
+  void aiExtractionDelivered();
+
   void openRecipe(RecipeEntity recipe);
 
   void openCookMode(RecipeEntity recipe);

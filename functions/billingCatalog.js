@@ -148,11 +148,12 @@ function switches(params) {
   return out;
 }
 
-// Whether a provider sells: its switch and the master one at ≥ 2. An
+// Whether a provider sells: its switch and the master one open (2 or 3,
+// not 4 — maintenance closes it like 0). An
 // administrator passes the switches (to test a route before launch).
 function providerOpen(sw, provider, isAdmin = false) {
   if (isAdmin) return true;
-  return sw.master >= 2 && (sw[provider] || 0) >= 2;
+  return remoteFlags.isOpen(sw.master) && remoteFlags.isOpen(sw[provider] || 0);
 }
 
 async function load() {

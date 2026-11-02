@@ -7,7 +7,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { LANGS, useI18n, type Lang } from "../../lib/i18n";
-import { useAccess } from "../../lib/flags";
+import { isDimmed, useAccess } from "../../lib/flags";
 import { useContentTranslation } from "../../lib/contentTranslation";
 import { applyTheme, readTheme, type ThemeMode } from "../../lib/theme";
 import { ApiError } from "../../lib/api";
@@ -16,7 +16,7 @@ import { Chip, ClayButton, ClayCard, LoadingSpinner, PageHeader, Switch } from "
 import { Icon } from "../../components/icons";
 import { useToast } from "../../components/Toaster";
 import { DIETARY, type DietaryPreference } from "../../models/recipe";
-import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, type NotificationFlag, type Preferences } from "../../models/preferences";
+import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, shoppingDaysOf, toggleShoppingDay, withShoppingDays, type NotificationFlag, type Preferences } from "../../models/preferences";
 import { usePreferences } from "./data";
 import { deleteAccountWithReverify, usePhoneReverify } from "./phoneReverify";
 
@@ -192,7 +192,7 @@ export function PhoneSettings() {
             </div>
           </SettingsCard>
 
-          {theming !== "hidden" && theming !== "comingSoon" ? (
+          {theming !== "hidden" && !isDimmed(theming) ? (
             <SettingsCard id="appearance" title={t("settings.appearance")}>
               <div className="flex flex-wrap justify-center gap-2" role="radiogroup" aria-label={t("settings.appearance")}>
                 {(
@@ -416,20 +416,34 @@ export function PhonePreferences() {
   const { t } = useI18n();
   const { prefs, error, busy, set } = usePrefs();
   const priceBook = useAccess("ff_price_book");
+  const multiDays = useAccess("ff_multi_shopping_days");
   return (
     <PrefsGate title={t("settings.prefsTitle")} prefs={prefs} error={error}>
       {(p) => (
         <>
           <GroupLabel>{t("settings.shopping")}</GroupLabel>
-          <SettingsCard id="shopping-day" title={t("settings.shoppingDay")}>
-            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("settings.shoppingDay")}>
-              {SHOPPING_DAYS.map((d) => (
-                <Chip key={d} selected={p.shoppingDay === d} disabled={busy.has("shoppingDay")} className="!px-4" onClick={() => set("shoppingDay", (x) => ({ ...x, shoppingDay: d }))}>
-                  {t(`settings.day.${d}`)}
-                </Chip>
-              ))}
-            </div>
-          </SettingsCard>
+          {multiDays === "enabled" ? (
+            <SettingsCard id="shopping-day" title={t("settings.shoppingDays")}>
+              <p className="mb-2 text-label-md text-on-surface-variant">{t("settings.shoppingDaysHint")}</p>
+              <div className="flex flex-wrap gap-2" role="group" aria-label={t("settings.shoppingDays")}>
+                {SHOPPING_DAYS.map((d) => (
+                  <Chip key={d} selected={shoppingDaysOf(p).includes(d)} disabled={busy.has("shoppingDay")} className="!px-4" onClick={() => set("shoppingDay", (x) => toggleShoppingDay(x, d))}>
+                    {t(`settings.day.${d}`)}
+                  </Chip>
+                ))}
+              </div>
+            </SettingsCard>
+          ) : (
+            <SettingsCard id="shopping-day" title={t("settings.shoppingDay")}>
+              <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("settings.shoppingDay")}>
+                {SHOPPING_DAYS.map((d) => (
+                  <Chip key={d} selected={p.shoppingDay === d} disabled={busy.has("shoppingDay")} className="!px-4" onClick={() => set("shoppingDay", (x) => withShoppingDays(x, [d]))}>
+                    {t(`settings.day.${d}`)}
+                  </Chip>
+                ))}
+              </div>
+            </SettingsCard>
+          )}
           {priceBook === "enabled" || priceBook === "locked" ? (
             <ToggleRow
               id="pref-community-prices"

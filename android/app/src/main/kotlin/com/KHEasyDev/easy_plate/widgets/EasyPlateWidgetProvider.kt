@@ -68,7 +68,7 @@ abstract class EasyPlateWidgetProvider : AppWidgetProvider() {
         return build(ctx, size)
     }
 
-    /** Signed out, coming soon, Premium, or hidden: one card that says so. */
+    /** Signed out, coming soon, maintenance, Premium, or hidden: one card that says so. */
     private fun notice(ctx: WidgetContext, size: SizeF, access: String?): RemoteViews {
         val p = ctx.palette
         val s = ctx.snapshot
@@ -78,6 +78,7 @@ abstract class EasyPlateWidgetProvider : AppWidgetProvider() {
         val (icon, text) = when {
             s == null || !s.signedIn -> R.drawable.epw_ic_lock to (s?.s("signIn") ?: ctx.context.getString(R.string.epw_sign_in))
             access == "comingSoon" -> R.drawable.epw_ic_schedule to s.s("comingSoon")
+            access == "maintenance" -> R.drawable.epw_ic_settings to s.s("maintenance")
             access == "locked" -> R.drawable.epw_ic_crown to s.s("premiumOnly")
             else -> R.drawable.epw_ic_lock to s.s("unavailable")
         }

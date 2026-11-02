@@ -117,8 +117,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     }
     try {
       // With the slots the record holds, not the defaults (as SettingsBloc).
-      await ShoppingReminderService().scheduleForShoppingDay(
-        current.shoppingDay,
+      await ShoppingReminderService().scheduleForShoppingDays(
+        saved.shoppingDays,
         slots: saved.shoppingReminderSlots,
       );
     } catch (e) {

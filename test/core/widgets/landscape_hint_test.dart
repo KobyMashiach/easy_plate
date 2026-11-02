@@ -27,6 +27,11 @@ void main() {
       ),
     );
 
+    // A phone held upright: the hint reads the orientation on screen.
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
     final scroll = ScrollController();
     await tester.pumpWidget(
       MaterialApp(
@@ -58,6 +63,54 @@ void main() {
     );
 
     // Leaving the screen is what locks portrait again.
+    await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+    expect(calls.last, ['DeviceOrientation.portraitUp']);
+  });
+
+  testWidgets('with two screens carrying a hint, only the last to close '
+      'locks portrait', (tester) async {
+    final calls = <List<String>>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'SystemChrome.setPreferredOrientations') {
+          calls.add((call.arguments as List).cast<String>());
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    final navigator = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        home: const Scaffold(body: LandscapeHint()),
+      ),
+    );
+    await tester.tap(find.text(t.common.rotateLandscape));
+    await tester.pumpAndSettle();
+
+    // The review opens the editor, which has its own hint.
+    navigator.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (_) => const Scaffold(body: LandscapeHint()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final before = calls.length;
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(calls.length, before, reason: 'the review is still sideways');
+
     await tester.pumpWidget(const MaterialApp(home: SizedBox()));
     expect(calls.last, ['DeviceOrientation.portraitUp']);
   });

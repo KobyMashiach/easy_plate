@@ -76,9 +76,15 @@ class SettingsToggle extends StatelessWidget {
 /// A titled card around a selector.
 class SettingsCard extends StatelessWidget {
   final String title;
+  final String? description;
   final Widget child;
 
-  const SettingsCard({super.key, required this.title, required this.child});
+  const SettingsCard({
+    super.key,
+    required this.title,
+    this.description,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +95,13 @@ class SettingsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClaySectionHeader(title: title),
+          if (description != null) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              description!,
+              style: AppTextStyles.labelMd.copyWith(color: AppColors.outline),
+            ),
+          ],
           const SizedBox(height: AppSpacing.gutter),
           child,
         ],

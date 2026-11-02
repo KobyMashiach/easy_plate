@@ -43,6 +43,56 @@ void main() {
     });
   });
 
+  group('phone field', () {
+    const il = PhoneCountry.israel;
+
+    test('every way of writing an Israeli mobile reaches the same number', () {
+      for (final typed in [
+        '0508247743',
+        '050-824-7743',
+        '050-8247743',
+        '508247743',
+        '050 824 7743',
+        '+972 50-824-7743',
+        '972508247743',
+        '00972508247743',
+      ]) {
+        final (:digits, :country) = phoneFieldDigits(typed, il);
+        expect(country, il, reason: typed);
+        expect(composePhone(digits, il).e164, '+972508247743', reason: typed);
+      }
+    });
+
+    test('the field keeps digits only, at most ten', () {
+      expect(phoneFieldDigits('050-82a4.7(7)43', il).digits, '0508247743');
+      expect(phoneFieldDigits('050824774399', il).digits, '0508247743');
+      expect(phoneFieldDigits('-', il).digits, '');
+    });
+
+    test('a pasted international number moves the menu to its country', () {
+      final pasted = phoneFieldDigits('+33 6 12 34 56 78', il);
+      expect(pasted.country.iso, 'FR');
+      expect(pasted.digits, '612345678');
+      expect(composePhone(pasted.digits, pasted.country).e164, '+33612345678');
+      expect(phoneFieldDigits('+1 201 555 0123', il).country.iso, 'US');
+    });
+
+    test('too short or empty is refused', () {
+      expect(composePhone('', il).rejection, PhoneRejection.invalid);
+      expect(composePhone('05082', il).rejection, PhoneRejection.invalid);
+      // An 8-digit landline after the 0 is fine.
+      expect(composePhone('036123456', il).e164, '+97236123456');
+    });
+
+    test('every listed country has a flag and an example that composes', () {
+      for (final c in PhoneCountry.all) {
+        expect(c.flag.runes.length, 2, reason: c.iso);
+        expect(c.example.length, lessThanOrEqualTo(c.maxDigits));
+        expect(composePhone(c.example, c).e164, isNotNull, reason: c.iso);
+      }
+    });
+  });
+
   group('SendLog', () {
     tearDown(SendLog.resetForTest);
 

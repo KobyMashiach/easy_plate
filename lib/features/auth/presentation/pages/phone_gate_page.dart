@@ -15,6 +15,7 @@ import '../bloc/auth_bloc.dart';
 import '../widgets/sign_out_action.dart';
 import '../widgets/auth_error_text.dart';
 import '../widgets/link_credential_sheets.dart' show readPhoneField;
+import '../widgets/phone_number_field.dart';
 import '../../domain/send_log.dart';
 
 /// Held between arriving with Google or an email and reaching the app.
@@ -33,7 +34,7 @@ class PhoneGatePage extends StatefulWidget {
 }
 
 class _PhoneGatePageState extends State<PhoneGatePage> {
-  final _phone = TextEditingController();
+  final _phone = PhoneFieldController();
   final _code = TextEditingController();
 
   String? _verificationId;
@@ -54,7 +55,7 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
   Future<void> _send() async {
     // A second tap before the rebuild greys the control out.
     if (_busy) return;
-    final (:phone, :error) = readPhoneField(_phone.text);
+    final (:phone, :error) = readPhoneField(_phone);
     if (phone == null) {
       setState(() => _error = error);
       return;
@@ -177,17 +178,7 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 if (!awaitingCode)
-                  TextField(
-                    controller: _phone,
-                    keyboardType: TextInputType.phone,
-                    textDirection: TextDirection.ltr,
-                    style: AppTextStyles.bodyMd,
-                    decoration: InputDecoration(
-                      labelText: t.auth.phoneNumber,
-                      hintText: t.auth.phoneHint,
-                      errorText: _error,
-                    ),
-                  )
+                  PhoneNumberField(controller: _phone, errorText: _error)
                 else
                   TextField(
                     controller: _code,

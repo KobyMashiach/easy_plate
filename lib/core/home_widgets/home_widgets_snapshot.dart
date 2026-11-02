@@ -132,6 +132,7 @@ class HomeWidgetsSnapshot {
     'signIn': t.homeWidgets.signIn,
     'openApp': t.homeWidgets.openApp,
     'comingSoon': t.feature.comingSoonMessage,
+    'maintenance': t.feature.maintenanceMessage,
     'premiumOnly': t.feature.premiumOnlyMessage,
     'unavailable': t.feature.unavailable,
     'showChecked': t.homeWidgets.showChecked,

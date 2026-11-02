@@ -318,6 +318,9 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
       mounted && await QuotaGates.extractWithAi(context);
 
   @override
+  void aiExtractionDelivered() => QuotaGates.extractionDelivered();
+
+  @override
   void openRecipe(RecipeEntity recipe) {
     if (!mounted) return;
     context.pushNamed(

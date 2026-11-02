@@ -130,7 +130,7 @@ class _QuickNavBodyState extends State<_QuickNavBody> {
                           Expanded(
                             child: Text(
                               recipe.title,
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.bodyMd,
                             ),

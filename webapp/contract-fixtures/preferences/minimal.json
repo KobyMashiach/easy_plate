@@ -1,5 +1,6 @@
 {
   "shoppingDay": "sunday",
+  "extraShoppingDays": [],
   "dietaryPreferences": [],
   "soundEffectsEnabled": true,
   "onboardingComplete": false,

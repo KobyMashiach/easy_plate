@@ -6,7 +6,7 @@ import '../services/auth_session_service.dart';
 import '../services/firebase_service.dart';
 import '../utils/i18n/strings.g.dart';
 
-/// What the console says about a feature: the four values of every
+/// What the console says about a feature: the five values of every
 /// `ff_*` Remote Config parameter.
 enum FeatureFlagValue {
   /// `0` — the entry point is not drawn at all.
@@ -20,22 +20,33 @@ enum FeatureFlagValue {
 
   /// `3` — for paying accounts; a free account sees it locked, and a tap
   /// opens the paywall.
-  premiumOnly
+  premiumOnly,
+
+  /// `4` — drawn, disabled, marked "maintenance": a feature that was open
+  /// and is switched off for a while, for everyone, Premium included.
+  maintenance
   ;
 
   static FeatureFlagValue fromInt(int value) => switch (value) {
     0 => hidden,
     1 => comingSoon,
     3 => premiumOnly,
+    4 => maintenance,
     _ => enabled,
   };
 }
 
 /// What to draw for *this* account: the console's value with the plan
 /// applied to it, which is the only thing a screen has to look at.
+///
+/// The order is from least to most open: [FeaturesFlags.ofAny] takes the
+/// highest.
 enum FeatureAccess {
   hidden,
   comingSoon,
+
+  /// Under maintenance: drawn disabled for every account.
+  maintenance,
 
   /// Premium-only, and this account is not: drawn locked, taps go to the
   /// paywall.
@@ -109,6 +120,10 @@ enum FeaturesFlags {
   receiptScan('ff_receipt_scan'),
   groceryCost('ff_grocery_cost'),
   shoppingReminder('ff_shopping_reminder'),
+
+  /// More than one shopping day a week in the preferences, each with its
+  /// own reminders. Closed, the picker takes one day, as before.
+  multiShoppingDays('ff_multi_shopping_days'),
 
   // Across the app.
   assistant('ff_assistant'),
@@ -241,6 +256,7 @@ enum FeaturesFlags {
       : switch (value) {
           FeatureFlagValue.hidden => FeatureAccess.hidden,
           FeatureFlagValue.comingSoon => FeatureAccess.comingSoon,
+          FeatureFlagValue.maintenance => FeatureAccess.maintenance,
           FeatureFlagValue.enabled => FeatureAccess.enabled,
           FeatureFlagValue.premiumOnly =>
             premium ? FeatureAccess.enabled : FeatureAccess.locked,

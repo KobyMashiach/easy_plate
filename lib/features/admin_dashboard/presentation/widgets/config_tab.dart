@@ -16,7 +16,7 @@ import '../../data/datasources/admin_remote_config_datasource.dart';
 /// The console's Remote Config, editable from the phone. The tab lists the
 /// categories, one row each; a row opens its own screen with every
 /// parameter of that category drawn by its type — a switch for a boolean, a
-/// field for a number or a text, and the four states of a feature flag as
+/// field for a number or a text, and the five states of a feature flag as
 /// chips. A change is published at once and the device re-fetches, so what
 /// the administrator sees next is what every user gets.
 class ConfigTab extends StatefulWidget {
@@ -575,14 +575,16 @@ class _ParamRow extends StatelessWidget {
   }
 }
 
-/// The four states of a flag: code, label, icon.
+/// The five states of a flag: code, label, icon. Listed in the order the
+/// console reads them, not by code: `4` came last.
 List<(String, String, IconData)> _flagOptions() {
   final f = t.adminConfig.flag;
   return [
     ('0', f.hidden, Icons.visibility_off_rounded),
-    ('1', f.comingSoon, Icons.schedule_rounded),
     ('2', f.everyone, Icons.public_rounded),
     ('3', f.premium, Icons.workspace_premium_rounded),
+    ('1', f.comingSoon, Icons.schedule_rounded),
+    ('4', f.maintenance, Icons.construction_rounded),
   ];
 }
 
@@ -615,7 +617,7 @@ class _FlagFilter extends StatelessWidget {
   }
 }
 
-/// The four states of a feature flag, one chip each, the current one lit.
+/// The five states of a feature flag, one chip each, the current one lit.
 class _FlagChips extends StatelessWidget {
   final String value;
   final ValueChanged<String> onChanged;
@@ -633,7 +635,7 @@ class _FlagChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final options = _flagOptions();
-    // All four on one row, equal widths: the labels are short and the
+    // All five on one row, equal widths: the labels are short and the
     // chip is tight, and a label that still does not fit shrinks rather
     // than wrapping to a second row.
     return Row(

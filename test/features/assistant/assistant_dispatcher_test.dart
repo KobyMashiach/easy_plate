@@ -162,11 +162,22 @@ class _Ingestion extends Mock implements RecipeIngestionRepository {}
 class _Ui implements AssistantUiBridge {
   bool confirm = true;
   bool allow = true;
+  int gates = 0;
+  bool unspent = false;
   final opened = <String>[];
   @override
   Future<bool> confirmDelete(String what) async => confirm;
   @override
-  Future<bool> allowAiExtraction() async => allow;
+  Future<bool> allowAiExtraction() async {
+    if (unspent) return true;
+    gates++;
+    unspent = allow;
+    return allow;
+  }
+
+  @override
+  void aiExtractionDelivered() => unspent = false;
+
   @override
   void openRecipe(RecipeEntity recipe) => opened.add('recipe:${recipe.id}');
   @override
@@ -542,6 +553,31 @@ void main() {
         });
         expect(ok.data['title'], 'Imported');
         expect(recipes.store.values.any((r) => r.title == 'Imported'), isTrue);
+      },
+    );
+
+    test(
+      'a retry after a failed import does not ask for another video',
+      () async {
+        var calls = 0;
+        when(() => ingestion.parseFromUrl(any(), any())).thenAnswer((_) async {
+          if (++calls < 3) throw Exception('timeout');
+          return salmon.copyWith(title: 'Imported');
+        });
+        for (var i = 0; i < 3; i++) {
+          await run(AssistantTools.importRecipe, {
+            'source': 'url',
+            'content': 'https://example.com/r',
+          });
+        }
+        expect(ui.gates, 1);
+
+        // The paid video is spent once a recipe came back.
+        await run(AssistantTools.importRecipe, {
+          'source': 'url',
+          'content': 'https://example.com/r',
+        });
+        expect(ui.gates, 2);
       },
     );
 
@@ -1038,7 +1074,7 @@ void main() {
       final s = await dispatcher.snapshot();
       expect(s, contains('r1: Creamy Tuscan Salmon'));
       expect(s, contains('Milk'));
-      expect(s, contains('shopping day: friday'));
+      expect(s, contains('shopping days: friday'));
     },
   );
 

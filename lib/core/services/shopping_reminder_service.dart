@@ -10,7 +10,7 @@ import '../utils/i18n/strings.g.dart';
 import 'cook_session_service.dart';
 import '../features/features_flags.dart';
 
-/// Staggered reminders leading up to the configured shopping day (spec §6.5):
+/// Staggered reminders leading up to each configured shopping day (spec §6.5):
 /// two days before (1), one day before (1), and the shopping day itself (2 —
 /// morning and afternoon — prompting the user to finalize the menu).
 class ShoppingReminderService {
@@ -89,7 +89,7 @@ class ShoppingReminderService {
   }
 
   /// Reschedules the whole reminder set. Called on app start and whenever the
-  /// shopping day changes in settings.
+  /// shopping days change in settings.
   /// What the last schedule was built from. Callers fire on settings
   /// changes, sign-in, plan changes and console flags, often for the same
   /// answer; only a different answer is worth the plugin round trips.
@@ -100,17 +100,17 @@ class ShoppingReminderService {
   /// interleave on the same ids.
   Future<void> _queue = Future.value();
 
-  Future<void> scheduleForShoppingDay(
-    ShoppingDay shoppingDay, {
+  Future<void> scheduleForShoppingDays(
+    List<ShoppingDay> shoppingDays, {
     List<ShoppingReminderSlot> slots = ShoppingReminderSlot.defaults,
   }) {
-    final next = _queue.then((_) => _scheduleIfChanged(shoppingDay, slots));
+    final next = _queue.then((_) => _scheduleIfChanged(shoppingDays, slots));
     _queue = next.then((_) {}, onError: (_) {});
     return next;
   }
 
   Future<void> _scheduleIfChanged(
-    ShoppingDay shoppingDay,
+    List<ShoppingDay> shoppingDays,
     List<ShoppingReminderSlot> slots,
   ) async {
     // Premium gate, or the console's own switch for the reminders (and for
@@ -122,7 +122,7 @@ class ShoppingReminderService {
     // The language is part of the key: the texts are baked into the scheduled
     // notifications, so a language switch has to write them again.
     final key =
-        '$locked|$shoppingDay|$slots|${LocaleSettings.currentLocale.languageCode}';
+        '$locked|$shoppingDays|$slots|${LocaleSettings.currentLocale.languageCode}';
     if (key == _lastKey) return;
     // Recorded only once the work below went through: a plugin hiccup must
     // not silence this key for the rest of the session.
@@ -131,7 +131,7 @@ class ShoppingReminderService {
     // not await this, and an escaped plugin error there is recorded as a
     // fatal crash. The key stays unset, so the next call tries again.
     try {
-      await _schedule(shoppingDay, slots, locked);
+      await _schedule(shoppingDays, slots, locked);
     } catch (e) {
       debugPrint('Scheduling reminders failed: $e');
       return;
@@ -139,66 +139,43 @@ class ShoppingReminderService {
     _lastKey = key;
   }
 
+  /// The plugin ids this service owns: one per slot per weekday. The
+  /// cook-mode timers start at 9000.
+  static final _ids =
+      ShoppingReminderSlot.values.length * ShoppingDay.values.length;
+
   Future<void> _schedule(
-    ShoppingDay shoppingDay,
+    List<ShoppingDay> shoppingDays,
     List<ShoppingReminderSlot> slots,
     bool locked,
   ) async {
     await initialize();
     // Only this service's own slots: a blanket cancelAll would also drop
     // the cook-mode timer rings, which share the plugin.
-    for (var i = 0; i < ShoppingReminderSlot.values.length; i++) {
+    for (var i = 0; i < _ids; i++) {
       await _plugin.cancel(id: i);
     }
     // Reminders are Premium while the console says so; a free account's
     // slots are cleared and nothing new is set.
     if (locked) return;
 
-    // Dart weekdays run Mon=1..Sun=7; ShoppingDay runs Sunday-first.
-    final targetWeekday = shoppingDay.index == 0
-        ? DateTime.sunday
-        : shoppingDay.index;
-
-    // Every slot the app knows; only the chosen ones are scheduled. The texts
-    // come from the app's strings, in the language the app is in right now:
-    // a reminder in a language the user never chose read as someone else's.
-    final all =
-        <ShoppingReminderSlot, ({int daysBefore, int hour, String body})>{
-          ShoppingReminderSlot.twoDaysBefore: (
-            daysBefore: 2,
-            hour: 18,
-            body: t.shoppingReminder.twoDaysBefore,
-          ),
-          ShoppingReminderSlot.dayBefore: (
-            daysBefore: 1,
-            hour: 18,
-            body: t.shoppingReminder.dayBefore,
-          ),
-          ShoppingReminderSlot.sameDayMorning: (
-            daysBefore: 0,
-            hour: 9,
-            body: t.shoppingReminder.sameDayMorning,
-          ),
-          ShoppingReminderSlot.sameDayAfternoon: (
-            daysBefore: 0,
-            hour: 16,
-            body: t.shoppingReminder.sameDayAfternoon,
-          ),
-        };
-    final schedule = [for (final slot in slots) all[slot]!];
-
+    final schedule = reminderTimes(shoppingDays, slots);
     for (var i = 0; i < schedule.length; i++) {
       final entry = schedule[i];
       try {
         await _plugin.zonedSchedule(
           id: i,
           title: t.appName,
-          body: entry.body,
-          scheduledDate: _nextInstance(
-            targetWeekday,
-            entry.daysBefore,
-            entry.hour,
-          ),
+          body: switch (entry.slot) {
+            ShoppingReminderSlot.twoDaysBefore =>
+              t.shoppingReminder.twoDaysBefore,
+            ShoppingReminderSlot.dayBefore => t.shoppingReminder.dayBefore,
+            ShoppingReminderSlot.sameDayMorning =>
+              t.shoppingReminder.sameDayMorning,
+            ShoppingReminderSlot.sameDayAfternoon =>
+              t.shoppingReminder.sameDayAfternoon,
+          },
+          scheduledDate: _nextInstance(entry.weekday, entry.hour),
           notificationDetails: _details,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
@@ -207,6 +184,48 @@ class ShoppingReminderService {
         debugPrint('Failed to schedule reminder $i: $e');
       }
     }
+  }
+
+  /// When each chosen slot rings for each shopping day: the Dart weekday
+  /// (Mon=1..Sun=7) and hour it lands on. Two shopping days close together
+  /// can put two reminders on the same evening (two days before Monday is
+  /// the day before Sunday); only the one about the nearer day is kept.
+  @visibleForTesting
+  static List<({ShoppingReminderSlot slot, int weekday, int hour})>
+  reminderTimes(
+    List<ShoppingDay> shoppingDays,
+    List<ShoppingReminderSlot> slots,
+  ) {
+    const timing = <ShoppingReminderSlot, ({int daysBefore, int hour})>{
+      ShoppingReminderSlot.twoDaysBefore: (daysBefore: 2, hour: 18),
+      ShoppingReminderSlot.dayBefore: (daysBefore: 1, hour: 18),
+      ShoppingReminderSlot.sameDayMorning: (daysBefore: 0, hour: 9),
+      ShoppingReminderSlot.sameDayAfternoon: (daysBefore: 0, hour: 16),
+    };
+    final byTime =
+        <(int, int), ({ShoppingReminderSlot slot, int daysBefore})>{};
+    for (final day in shoppingDays.toSet()) {
+      // Dart weekdays run Mon=1..Sun=7; ShoppingDay runs Sunday-first.
+      final target = day.index == 0 ? DateTime.sunday : day.index;
+      for (final slot in slots.toSet()) {
+        final at = timing[slot]!;
+        final weekday = ((target - at.daysBefore - 1) % 7) + 1;
+        final time = (weekday, at.hour);
+        final taken = byTime[time];
+        if (taken == null || at.daysBefore < taken.daysBefore) {
+          byTime[time] = (slot: slot, daysBefore: at.daysBefore);
+        }
+      }
+    }
+    final out =
+        [
+          for (final MapEntry(key: (weekday, hour), :value) in byTime.entries)
+            (slot: value.slot, weekday: weekday, hour: hour),
+        ]..sort(
+          (a, b) =>
+              (a.weekday * 24 + a.hour).compareTo(b.weekday * 24 + b.hour),
+        );
+    return out;
   }
 
   /// The database zone that keeps this device's clock: the same UTC offset
@@ -248,12 +267,10 @@ class ShoppingReminderService {
     return fallback;
   }
 
-  tz.TZDateTime _nextInstance(int targetWeekday, int daysBefore, int hour) {
+  tz.TZDateTime _nextInstance(int weekday, int hour) {
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour);
-
-    final reminderWeekday = ((targetWeekday - daysBefore - 1) % 7) + 1;
-    while (scheduled.weekday != reminderWeekday || !scheduled.isAfter(now)) {
+    while (scheduled.weekday != weekday || !scheduled.isAfter(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
     return scheduled;

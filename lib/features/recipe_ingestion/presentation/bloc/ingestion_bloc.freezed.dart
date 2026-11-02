@@ -1365,11 +1365,11 @@ return errorMessage(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  idle,TResult Function( RecipeIngestionChannel channel)?  parsing,TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)?  review,TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult Function()?  saved,TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult Function( RecipeIngestionChannel channel,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  idle,TResult Function( RecipeIngestionChannel channel,  IngestionWork work)?  parsing,TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)?  review,TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult Function()?  saved,TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult Function( RecipeIngestionChannel channel,  String error)?  errorMessage,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that.channel);case IngestionParsing() when parsing != null:
-return parsing(_that.channel);case IngestionSearchResults() when searchResults != null:
+return parsing(_that.channel,_that.work);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that.channel,_that.results);case IngestionReview() when review != null:
 return review(_that.channel,_that.recipe,_that.notice,_that.imageCandidates,_that.selectedImage);case IngestionOriginal() when original != null:
 return original(_that.channel,_that.page);case IngestionSaved() when saved != null:
@@ -1393,11 +1393,11 @@ return errorMessage(_that.channel,_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  idle,required TResult Function( RecipeIngestionChannel channel)  parsing,required TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)  searchResults,required TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)  review,required TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)  original,required TResult Function()  saved,required TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)  unparsed,required TResult Function( RecipeIngestionChannel channel,  String error)  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  idle,required TResult Function( RecipeIngestionChannel channel,  IngestionWork work)  parsing,required TResult Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)  searchResults,required TResult Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)  review,required TResult Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)  original,required TResult Function()  saved,required TResult Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)  unparsed,required TResult Function( RecipeIngestionChannel channel,  String error)  errorMessage,}) {final _that = this;
 switch (_that) {
 case IngestionIdle():
 return idle(_that.channel);case IngestionParsing():
-return parsing(_that.channel);case IngestionSearchResults():
+return parsing(_that.channel,_that.work);case IngestionSearchResults():
 return searchResults(_that.channel,_that.results);case IngestionReview():
 return review(_that.channel,_that.recipe,_that.notice,_that.imageCandidates,_that.selectedImage);case IngestionOriginal():
 return original(_that.channel,_that.page);case IngestionSaved():
@@ -1417,11 +1417,11 @@ return errorMessage(_that.channel,_that.error);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  idle,TResult? Function( RecipeIngestionChannel channel)?  parsing,TResult? Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult? Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)?  review,TResult? Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult? Function()?  saved,TResult? Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult? Function( RecipeIngestionChannel channel,  String error)?  errorMessage,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  idle,TResult? Function( RecipeIngestionChannel channel,  IngestionWork work)?  parsing,TResult? Function( RecipeIngestionChannel channel,  List<WebSearchResultEntity> results)?  searchResults,TResult? Function( RecipeIngestionChannel channel,  RecipeEntity recipe,  String? notice,  List<RecipeImageCandidate> imageCandidates,  int? selectedImage)?  review,TResult? Function( RecipeIngestionChannel channel,  OriginalRecipePageEntity page)?  original,TResult? Function()?  saved,TResult? Function( RecipeIngestionChannel channel,  String text,  String? sourceUrl,  bool timedOut,  String? notice,  bool retryable)?  unparsed,TResult? Function( RecipeIngestionChannel channel,  String error)?  errorMessage,}) {final _that = this;
 switch (_that) {
 case IngestionIdle() when idle != null:
 return idle(_that.channel);case IngestionParsing() when parsing != null:
-return parsing(_that.channel);case IngestionSearchResults() when searchResults != null:
+return parsing(_that.channel,_that.work);case IngestionSearchResults() when searchResults != null:
 return searchResults(_that.channel,_that.results);case IngestionReview() when review != null:
 return review(_that.channel,_that.recipe,_that.notice,_that.imageCandidates,_that.selectedImage);case IngestionOriginal() when original != null:
 return original(_that.channel,_that.page);case IngestionSaved() when saved != null:
@@ -1511,10 +1511,11 @@ as RecipeIngestionChannel,
 
 
 class IngestionParsing with DiagnosticableTreeMixin implements IngestionState {
-  const IngestionParsing(this.channel);
+  const IngestionParsing(this.channel, {this.work = IngestionWork.analyzing});
   
 
  final  RecipeIngestionChannel channel;
+@JsonKey() final  IngestionWork work;
 
 /// Create a copy of IngestionState
 /// with the given fields replaced by the non-null parameter values.
@@ -1527,21 +1528,21 @@ $IngestionParsingCopyWith<IngestionParsing> get copyWith => _$IngestionParsingCo
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IngestionState.parsing'))
-    ..add(DiagnosticsProperty('channel', channel));
+    ..add(DiagnosticsProperty('channel', channel))..add(DiagnosticsProperty('work', work));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngestionParsing&&(identical(other.channel, channel) || other.channel == channel));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngestionParsing&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.work, work) || other.work == work));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,channel);
+int get hashCode => Object.hash(runtimeType,channel,work);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IngestionState.parsing(channel: $channel)';
+  return 'IngestionState.parsing(channel: $channel, work: $work)';
 }
 
 
@@ -1552,7 +1553,7 @@ abstract mixin class $IngestionParsingCopyWith<$Res> implements $IngestionStateC
   factory $IngestionParsingCopyWith(IngestionParsing value, $Res Function(IngestionParsing) _then) = _$IngestionParsingCopyWithImpl;
 @useResult
 $Res call({
- RecipeIngestionChannel channel
+ RecipeIngestionChannel channel, IngestionWork work
 });
 
 
@@ -1569,10 +1570,11 @@ class _$IngestionParsingCopyWithImpl<$Res>
 
 /// Create a copy of IngestionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? channel = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? channel = null,Object? work = null,}) {
   return _then(IngestionParsing(
 null == channel ? _self.channel : channel // ignore: cast_nullable_to_non_nullable
-as RecipeIngestionChannel,
+as RecipeIngestionChannel,work: null == work ? _self.work : work // ignore: cast_nullable_to_non_nullable
+as IngestionWork,
   ));
 }
 

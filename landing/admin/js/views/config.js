@@ -4,6 +4,10 @@ import { t, currentLang, LANGS } from "../i18n.js";
 import { h, clear, spinner, button, busy, chips, select, input, textarea, field, toggle, modal, confirmDialog, toast, toastError, empty, debounce } from "../ui.js";
 import { call } from "../api.js";
 
+// The five values of an ff_* flag, in the order the chips read (like the
+// app's תצורה tab): hidden, free, Premium, coming soon, maintenance.
+const FLAG_STATES = ["0", "2", "3", "1", "4"];
+
 const GROUPS = [
   ["features", (n) => /^ff_/.test(n) || n === "admin_all_features"],
   ["ads", (n) => /^(ads_|quota_)/.test(n)],
@@ -46,7 +50,7 @@ export async function mount({ view, actions }) {
   const body = h("div.stack");
   const info = h("span.muted.small");
   const groupChips = chips(GROUPS.map(([g]) => [g, t(`config.groups.${g}`)]), group, (g) => { group = g; render(); });
-  const stateChips = chips([["all", t("config.filter.all")], ["0", t("config.flags.0")], ["1", t("config.flags.1")], ["2", t("config.flags.2")], ["3", t("config.flags.3")]], state, (s) => { state = s; render(); });
+  const stateChips = chips([["all", t("config.filter.all")], ...FLAG_STATES.map((v) => [v, t(`config.flags.${v}`)])], state, (s) => { state = s; render(); });
   view.append(h("div.toolbar", h("div.search", input({ placeholder: t("config.search"), oninput: debounce((e) => { search = e.target.value.trim().toLowerCase(); render(); }, 120) })), info), groupChips, body);
 
   const apply = (result) => { params = result.parameters || []; version = result.version; info.textContent = `${t("config.version", { v: version || "?" })} · ${t("config.count", { n: params.length })}`; };
@@ -62,7 +66,7 @@ export async function mount({ view, actions }) {
     // Chips and switches show the new state on click; a failed save swaps in
     // a fresh control drawn from the saved value.
     const revert = (make) => { const fresh = make(); control.replaceWith(fresh); control = fresh; };
-    const flagChips = () => chips([["0", t("config.flags.0")], ["1", t("config.flags.1")], ["2", t("config.flags.2")], ["3", t("config.flags.3")]], p.value, async (v) => { if (!(await set(p.name, v))) revert(flagChips); });
+    const flagChips = () => chips(FLAG_STATES.map((v) => [v, t(`config.flags.${v}`)]), p.value, async (v) => { if (!(await set(p.name, v))) revert(flagChips); });
     const boolToggle = () => toggle(p.value === "true", async (on) => { if (!(await set(p.name, on ? "true" : "false"))) revert(boolToggle); });
     if (isFlag) control = flagChips();
     else if (p.valueType === "BOOLEAN") control = boolToggle();

@@ -125,8 +125,8 @@ export function saleState(r: PlansResponse | null, access: string): "loading" | 
   if (!r) return "loading";
   // The server already applied the switches (and lets an administrator
   // through); the client switch can only narrow what it allows.
-  if (r.enabled && access !== "hidden" && access !== "comingSoon") return "open";
+  if (r.enabled && access !== "hidden" && access !== "comingSoon" && access !== "maintenance") return "open";
   if (access === "hidden") return "off";
-  if (r.comingSoon || access === "comingSoon") return "soon";
+  if (r.comingSoon || access === "comingSoon" || access === "maintenance") return "soon";
   return "off";
 }

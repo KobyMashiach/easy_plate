@@ -25,7 +25,7 @@ import {
   type GroceryList,
 } from "../../models/groceryList";
 import { canEditPlan, mealsForWeekday, newMealPlan, normalizeMealPlan, WEEKDAYS, type Meal, type MealItem, type MealPlan } from "../../models/mealPlan";
-import { appLanguageOf, defaultPreferences, normalizePreferences, PREFERENCES_ID, updatePreferences, type Preferences } from "../../models/preferences";
+import { appLanguageOf, defaultPreferences, normalizePreferences, PREFERENCES_ID, shoppingDaysOf, updatePreferences, type Preferences } from "../../models/preferences";
 import { canEditRecipe, DIETARY, MEASUREMENT_UNITS, normalizeRecipe, type DietaryPreference, type Ingredient, type MeasurementUnit, type Recipe } from "../../models/recipe";
 import { readActiveList, saveList, writeActiveList } from "../groceries/store";
 import { refusedForDailyLimit, sendFeedback, type FeedbackType } from "../support/data";
@@ -948,7 +948,7 @@ export class AssistantDispatcher {
   // ---- Account -------------------------------------------------------------
 
   private prefsJson(p: Preferences): Record<string, unknown> {
-    return { shopping_day: p.shoppingDay, dietary: [...p.dietaryPreferences], language: p.language };
+    return { shopping_day: p.shoppingDay, shopping_days: shoppingDaysOf(p), dietary: [...p.dietaryPreferences], language: p.language };
   }
 
   private async getPreferences(): Promise<ToolResult> {
@@ -1097,7 +1097,7 @@ export class AssistantDispatcher {
     const today = `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())}`;
     const lines = [
       `Today: ${today} (${WEEKDAYS[now.getDay()]}).`,
-      `User language: ${prefs.language}; shopping day: ${prefs.shoppingDay}; dietary: ${prefs.dietaryPreferences.join(", ")}.`,
+      `User language: ${prefs.language}; shopping days: ${shoppingDaysOf(prefs).join(", ")}; dietary: ${prefs.dietaryPreferences.join(", ")}.`,
       `Premium: ${this.env().premium}.`,
       "Saved recipes (id: title), most recent first:",
       ...[...all].sort(newestFirst).slice(0, 40).map((r) => `- ${r.id}: ${r.title}`),

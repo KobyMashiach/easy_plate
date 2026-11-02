@@ -19,14 +19,15 @@ class NotificationBellButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Hidden or "coming soon" takes the bell away; Premium-only does not:
+    // Hidden takes the bell away, "coming soon" or "maintenance" dims it;
+    // Premium-only does not:
     // the inbox stays open to everyone (invites, admin messages, cooking),
     // pushes and popups are the Premium part.
     return FeatureGate.builder(
       feature: FeaturesFlags.notifications,
       builder: (context, access) => switch (access) {
         FeatureAccess.hidden => const SizedBox.shrink(),
-        FeatureAccess.comingSoon => GatedChild(
+        FeatureAccess.comingSoon || FeatureAccess.maintenance => GatedChild(
           feature: FeaturesFlags.notifications,
           access: access,
           compact: true,

@@ -17,6 +17,7 @@ import '../bloc/auth_bloc.dart';
 import '../widgets/apple_sign_in.dart';
 import '../widgets/auth_error_text.dart';
 import '../widgets/link_credential_sheets.dart' show readPhoneField;
+import '../widgets/phone_number_field.dart';
 import 'phone_verification_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/constants/app_motion.dart';
@@ -46,7 +47,7 @@ class _LoginView extends StatefulWidget {
 class _LoginViewState extends State<_LoginView> {
   final _email = TextEditingController();
   final _password = TextEditingController();
-  final _phone = TextEditingController();
+  final _phone = PhoneFieldController();
 
   _Method _method = _Method.phone;
   String? _fieldError;
@@ -82,7 +83,7 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   void _submitPhone() {
-    final (:phone, :error) = readPhoneField(_phone.text);
+    final (:phone, :error) = readPhoneField(_phone);
     if (phone == null) {
       setState(() => _fieldError = error);
       return;
@@ -351,17 +352,10 @@ class _LoginViewState extends State<_LoginView> {
       children: [
         ClaySectionHeader(title: t.auth.phoneNumber),
         const SizedBox(height: AppSpacing.gutter),
-        TextField(
+        PhoneNumberField(
           controller: _phone,
-          keyboardType: TextInputType.phone,
-          autofillHints: const [AutofillHints.telephoneNumber],
-          style: AppTextStyles.bodyMd,
-          textDirection: TextDirection.ltr,
-          decoration: InputDecoration(
-            labelText: t.auth.phoneNumber,
-            hintText: t.auth.phoneHint,
-            errorText: _fieldError,
-          ),
+          autofill: true,
+          errorText: _fieldError,
           onSubmitted: (_) => busy ? null : _submitPhone(),
         ),
         const SizedBox(height: AppSpacing.md),

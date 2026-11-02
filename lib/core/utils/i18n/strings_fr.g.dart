@@ -86,6 +86,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$voiceAssistants$fr voiceAssistants = _Translations$voiceAssistants$fr._(_root);
 	@override late final _Translations$adminConfig$fr adminConfig = _Translations$adminConfig$fr._(_root);
 	@override late final _Translations$quickActions$fr quickActions = _Translations$quickActions$fr._(_root);
+	@override late final _Translations$countries$fr countries = _Translations$countries$fr._(_root);
 }
 
 // Path: common
@@ -133,11 +134,14 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get emailHint => 'nom@exemple.com';
 	@override String get password => 'Mot de passe';
 	@override String get passwordHint => 'Au moins 6 caractères';
-	@override String get continueWithGoogle => 'Continuer avec Google';
-	@override String get continueWithPhone => 'Continuer avec le téléphone';
-	@override String get continueWithEmail => 'Continuer avec l\'e-mail';
+	@override String get continueWithGoogle => 'Se connecter avec Google';
+	@override String get continueWithPhone => 'Se connecter avec le téléphone';
+	@override String get continueWithEmail => 'Se connecter avec l\'e-mail';
 	@override String get phoneNumber => 'Numéro de téléphone';
-	@override String get phoneHint => '+33612345678';
+	@override String get phoneHint => '0501234567';
+	@override String get countryCode => 'Indicatif';
+	@override String get countrySearch => 'Rechercher un pays ou un indicatif';
+	@override String get countryNotFound => 'Aucun pays trouvé';
 	@override String get sendCode => 'Envoyer le code';
 	@override String get smsCode => 'Code SMS';
 	@override String codeSentTo({required Object phone}) => 'Nous avons envoyé un code à ${phone}';
@@ -185,7 +189,7 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get phoneFirstHint => 'Nouveau ici ? Continuez avec le téléphone.';
 	@override String get errorAccountExistsDifferentCredential => 'Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.';
 	@override String get errorCredentialInUse => 'Ces informations appartiennent déjà à un autre compte';
-	@override String get continueWithApple => 'Continuer avec Apple';
+	@override String get continueWithApple => 'Se connecter avec Apple';
 	@override String get linkApple => 'Lier un compte Apple';
 	@override String get appleLinked => 'Lié';
 	@override String get appleAlreadyUsed => 'Ce compte Apple appartient déjà à un autre utilisateur';
@@ -330,6 +334,8 @@ class _Translations$settings$fr extends Translations$settings$he {
 	@override String get title => 'Paramètres';
 	@override String get dietaryPreferences => 'Préférences alimentaires';
 	@override String get shoppingDay => 'Jour de courses';
+	@override String get shoppingDays => 'Jours de courses';
+	@override String get shoppingDaysHint => 'Choisissez un ou plusieurs jours par semaine. Les rappels arrivent avant chacun d\'eux.';
 	@override String get language => 'Langue';
 	@override String get appearance => 'Apparence';
 	@override String get themeSystem => 'Système';
@@ -872,6 +878,7 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get aiRequestHint => 'Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits';
 	@override String get parse => 'Analyser la recette';
 	@override String get parsing => 'Analyse de la recette...';
+	@override String get searching => 'Recherche de recettes...';
 	@override String get parseError => 'Nous n\'avons pas pu analyser la recette';
 	@override String get reviewTitle => 'Vérifiez avant d\'enregistrer';
 	@override String get notConfigured => 'Cette fonctionnalité nécessite un service externe qui n\'est pas encore configuré';
@@ -1884,6 +1891,8 @@ class _Translations$feature$fr extends Translations$feature$he {
 	// Translations
 	@override String get comingSoon => 'Bientôt';
 	@override String get comingSoonMessage => 'Cette fonctionnalité arrive bientôt';
+	@override String get maintenance => 'Maintenance';
+	@override String get maintenanceMessage => 'Cette fonctionnalité est en maintenance et temporairement indisponible. De retour bientôt';
 	@override String get unavailable => 'Cette fonctionnalité n’est pas disponible pour le moment';
 	@override String get premiumOnly => 'Premium';
 	@override String get premiumOnlyMessage => 'Cette fonctionnalité est réservée aux abonnés Premium';
@@ -1930,6 +1939,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get receiptScan => 'Scan de ticket';
 	@override String get groceryCost => 'Coût estimé';
 	@override String get shoppingReminder => 'Rappel de courses';
+	@override String get multiShoppingDays => 'Plusieurs jours de courses';
 	@override String get assistant => 'Shefi (l’assistant)';
 	@override String get notifications => 'Notifications';
 	@override String get premium => 'Premium';
@@ -2056,6 +2066,36 @@ class _Translations$quickActions$fr extends Translations$quickActions$he {
 	@override String get groceryAdd => 'Ajouter aux courses';
 	@override String get receipt => 'Ajouter un ticket';
 	@override String get support => 'Contacter le support';
+}
+
+// Path: countries
+class _Translations$countries$fr extends Translations$countries$he {
+	_Translations$countries$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get IL => 'Israël';
+	@override String get US => 'États-Unis';
+	@override String get CA => 'Canada';
+	@override String get GB => 'Royaume-Uni';
+	@override String get FR => 'France';
+	@override String get RU => 'Russie';
+	@override String get UA => 'Ukraine';
+	@override String get DE => 'Allemagne';
+	@override String get ES => 'Espagne';
+	@override String get IT => 'Italie';
+	@override String get NL => 'Pays-Bas';
+	@override String get BE => 'Belgique';
+	@override String get CH => 'Suisse';
+	@override String get AE => 'Émirats arabes unis';
+	@override String get PS => 'Palestine';
+	@override String get JO => 'Jordanie';
+	@override String get EG => 'Égypte';
+	@override String get MA => 'Maroc';
+	@override String get ET => 'Éthiopie';
+	@override String get AU => 'Australie';
+	@override String get BR => 'Brésil';
 }
 
 // Path: walkthrough.topics
@@ -2268,7 +2308,7 @@ class _Translations$walkthrough$topics$addRecipe$fr extends Translations$walkthr
 	// Translations
 	@override String get title => 'Ajouter une recette';
 	@override String get summary => 'Importez une recette de n\'importe quelle source et l\'IA la met dans un format unique : ingrédients, quantités, étapes, tags, portions et nutrition.';
-	@override String get s1 => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.';
+	@override String get s1 => 'Touchez le bouton plus à côté du titre pour ajouter une recette.';
 	@override String get s2 => 'Choisissez une source : texte collé, recherche web, lien de site, vidéo TikTok, Instagram, YouTube ou Facebook, demande libre à l\'IA, ou saisie à la main.';
 	@override String get s3 => 'Une recette d\'exemple est remplie ici, comme si vous l\'aviez collée. Le bouton en dessous l\'envoie à l\'IA, qui renvoie une recette rangée à relire, modifier et enregistrer. L\'analyse prend jusqu\'à une demi-minute : gardez-la pour après la visite.';
 }
@@ -2436,11 +2476,14 @@ extension on TranslationsFr {
 			'auth.emailHint' => 'nom@exemple.com',
 			'auth.password' => 'Mot de passe',
 			'auth.passwordHint' => 'Au moins 6 caractères',
-			'auth.continueWithGoogle' => 'Continuer avec Google',
-			'auth.continueWithPhone' => 'Continuer avec le téléphone',
-			'auth.continueWithEmail' => 'Continuer avec l\'e-mail',
+			'auth.continueWithGoogle' => 'Se connecter avec Google',
+			'auth.continueWithPhone' => 'Se connecter avec le téléphone',
+			'auth.continueWithEmail' => 'Se connecter avec l\'e-mail',
 			'auth.phoneNumber' => 'Numéro de téléphone',
-			'auth.phoneHint' => '+33612345678',
+			'auth.phoneHint' => '0501234567',
+			'auth.countryCode' => 'Indicatif',
+			'auth.countrySearch' => 'Rechercher un pays ou un indicatif',
+			'auth.countryNotFound' => 'Aucun pays trouvé',
 			'auth.sendCode' => 'Envoyer le code',
 			'auth.smsCode' => 'Code SMS',
 			'auth.codeSentTo' => ({required Object phone}) => 'Nous avons envoyé un code à ${phone}',
@@ -2488,7 +2531,7 @@ extension on TranslationsFr {
 			'auth.phoneFirstHint' => 'Nouveau ici ? Continuez avec le téléphone.',
 			'auth.errorAccountExistsDifferentCredential' => 'Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.',
 			'auth.errorCredentialInUse' => 'Ces informations appartiennent déjà à un autre compte',
-			'auth.continueWithApple' => 'Continuer avec Apple',
+			'auth.continueWithApple' => 'Se connecter avec Apple',
 			'auth.linkApple' => 'Lier un compte Apple',
 			'auth.appleLinked' => 'Lié',
 			'auth.appleAlreadyUsed' => 'Ce compte Apple appartient déjà à un autre utilisateur',
@@ -2579,6 +2622,8 @@ extension on TranslationsFr {
 			'settings.title' => 'Paramètres',
 			'settings.dietaryPreferences' => 'Préférences alimentaires',
 			'settings.shoppingDay' => 'Jour de courses',
+			'settings.shoppingDays' => 'Jours de courses',
+			'settings.shoppingDaysHint' => 'Choisissez un ou plusieurs jours par semaine. Les rappels arrivent avant chacun d\'eux.',
 			'settings.language' => 'Langue',
 			'settings.appearance' => 'Apparence',
 			'settings.themeSystem' => 'Système',
@@ -2913,13 +2958,13 @@ extension on TranslationsFr {
 			'sharing.kindBook' => 'Livre',
 			'sharing.kindPlan' => 'Menu',
 			'sharing.recipesTravel' => 'Les recettes qu’il contient sont partagées avec lui',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.shareList' => 'Partager la liste de courses',
 			'sharing.acceptedList' => 'La liste a été ajoutée à vos listes de courses',
 			'sharing.viewerCannotEditList' => 'Cette liste est partagée avec vous en lecture seule',
 			'sharing.kindList' => 'liste de courses',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 livre partagé', other: '${n} livres partagés', ), 
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 liste de courses partagée', other: '${n} listes de courses partagées', ), 
 			'notifications.title' => 'Notifications',
 			'notifications.empty' => 'Aucune notification',
@@ -2991,6 +3036,7 @@ extension on TranslationsFr {
 			'ingestion.aiRequestHint' => 'Décrivez ce que vous voulez préparer. Par exemple : bouillie de semoule pour un bébé d’un an, avec des fruits',
 			'ingestion.parse' => 'Analyser la recette',
 			'ingestion.parsing' => 'Analyse de la recette...',
+			'ingestion.searching' => 'Recherche de recettes...',
 			'ingestion.parseError' => 'Nous n\'avons pas pu analyser la recette',
 			'ingestion.reviewTitle' => 'Vérifiez avant d\'enregistrer',
 			'ingestion.notConfigured' => 'Cette fonctionnalité nécessite un service externe qui n\'est pas encore configuré',
@@ -3415,7 +3461,7 @@ extension on TranslationsFr {
 			'walkthrough.welcomeBody' => 'Parcourons ensemble les actions principales et faisons-les vraiment : les champs sont déjà remplis pour vous. Sautez une étape, ou fermez et recommencez depuis l\'écran d\'assistance.',
 			'walkthrough.topics.addRecipe.title' => 'Ajouter une recette',
 			'walkthrough.topics.addRecipe.summary' => 'Importez une recette de n\'importe quelle source et l\'IA la met dans un format unique : ingrédients, quantités, étapes, tags, portions et nutrition.',
-			'walkthrough.topics.addRecipe.s1' => 'Touchez le bouton étincelle à côté du titre pour ajouter une recette.',
+			'walkthrough.topics.addRecipe.s1' => 'Touchez le bouton plus à côté du titre pour ajouter une recette.',
 			'walkthrough.topics.addRecipe.s2' => 'Choisissez une source : texte collé, recherche web, lien de site, vidéo TikTok, Instagram, YouTube ou Facebook, demande libre à l\'IA, ou saisie à la main.',
 			'walkthrough.topics.addRecipe.s3' => 'Une recette d\'exemple est remplie ici, comme si vous l\'aviez collée. Le bouton en dessous l\'envoie à l\'IA, qui renvoie une recette rangée à relire, modifier et enregistrer. L\'analyse prend jusqu\'à une demi-minute : gardez-la pour après la visite.',
 			'walkthrough.topics.myRecipes.title' => 'Mes recettes et enregistrées',
@@ -3426,14 +3472,14 @@ extension on TranslationsFr {
 			'walkthrough.topics.library.summary' => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner, et partagez un livre entier avec un autre compte.',
 			'walkthrough.topics.library.s1' => 'Touchez « Bibliothèque » pour passer aux livres.',
 			'walkthrough.topics.library.s2' => 'Touchez le plus pour créer un nouveau livre.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'Le nom du livre est déjà rempli : « Tutoriel ». Touchez le champ pour le changer, puis continuez.',
 			'walkthrough.topics.library.s4' => 'Touchez « Enregistrer » pour créer le livre.',
 			'walkthrough.topics.library.s5' => 'Choisissez une couleur de dos, qui distingue les livres sur l\'étagère, et touchez « Enregistrer ». Le livre s\'ouvre aussitôt.',
 			'walkthrough.topics.library.s6' => 'Voici le livre que vous avez créé. Ajoutez-y des recettes d\'ici ; à l\'intérieur, tournez les pages et sautez depuis le sommaire. Un appui long sur un livre de l\'étagère ouvre partage, couverture, renommage et suppression.',
 			'walkthrough.topics.mealPlan.title' => 'Menu de la semaine et nutrition',
 			'walkthrough.topics.mealPlan.summary' => 'Un plan pour toute la semaine avec un résumé nutritionnel par jour, qui alimente la liste de courses.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'Touchez « Repas » pour planifier la semaine.',
 			'walkthrough.topics.mealPlan.s2' => 'Touchez ici pour créer un plan hebdomadaire.',
 			'walkthrough.topics.mealPlan.s3' => 'Le nom du plan est déjà rempli. En dessous, choisissez un modèle : libre, trois repas par jour ou six.',
@@ -3940,14 +3986,14 @@ extension on TranslationsFr {
 			'homeWidgets.intro' => 'Ajoutez les widgets EasyPlate à votre écran d\'accueil : demandez à Shefi, ajoutez à une liste de courses, voyez votre liste et le menu du jour sans ouvrir l\'app.',
 			'homeWidgets.howToIos' => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, touchez +, cherchez EasyPlate et choisissez un widget. Les mêmes widgets conviennent à l\'écran verrouillé.',
 			'homeWidgets.howToAndroid' => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, choisissez Widgets et trouvez EasyPlate, ou touchez « Ajouter à l\'écran d\'accueil » ci-dessous.',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'Ajouter à l\'écran d\'accueil',
 			'homeWidgets.installed' => ({required Object count}) => '${count} sur l\'écran d\'accueil',
 			'homeWidgets.pinFailed' => 'Le lanceur n\'a pas proposé d\'ajouter le widget. Ajoutez-le depuis la liste des widgets de l\'écran d\'accueil.',
 			'homeWidgets.defaults' => 'Valeurs par défaut des nouveaux widgets',
 			'homeWidgets.defaultsHint' => 'Chaque widget peut être modifié ensuite depuis ses propres réglages (appui long sur le widget).',
 			'homeWidgets.defaultList' => 'Liste de courses',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.openList' => 'La liste ouverte',
 			'homeWidgets.defaultPlan' => 'Plan de repas',
 			'homeWidgets.firstPlan' => 'Le premier plan',
@@ -3991,6 +4037,8 @@ extension on TranslationsFr {
 			'homeWidgets.demo3' => 'Œufs',
 			'feature.comingSoon' => 'Bientôt',
 			'feature.comingSoonMessage' => 'Cette fonctionnalité arrive bientôt',
+			'feature.maintenance' => 'Maintenance',
+			'feature.maintenanceMessage' => 'Cette fonctionnalité est en maintenance et temporairement indisponible. De retour bientôt',
 			'feature.unavailable' => 'Cette fonctionnalité n’est pas disponible pour le moment',
 			'feature.premiumOnly' => 'Premium',
 			'feature.premiumOnlyMessage' => 'Cette fonctionnalité est réservée aux abonnés Premium',
@@ -4028,6 +4076,7 @@ extension on TranslationsFr {
 			'featureName.receiptScan' => 'Scan de ticket',
 			'featureName.groceryCost' => 'Coût estimé',
 			'featureName.shoppingReminder' => 'Rappel de courses',
+			'featureName.multiShoppingDays' => 'Plusieurs jours de courses',
 			'featureName.assistant' => 'Shefi (l’assistant)',
 			'featureName.notifications' => 'Notifications',
 			'featureName.premium' => 'Premium',
@@ -4112,6 +4161,27 @@ extension on TranslationsFr {
 			'quickActions.groceryAdd' => 'Ajouter aux courses',
 			'quickActions.receipt' => 'Ajouter un ticket',
 			'quickActions.support' => 'Contacter le support',
+			'countries.IL' => 'Israël',
+			'countries.US' => 'États-Unis',
+			'countries.CA' => 'Canada',
+			'countries.GB' => 'Royaume-Uni',
+			'countries.FR' => 'France',
+			'countries.RU' => 'Russie',
+			'countries.UA' => 'Ukraine',
+			'countries.DE' => 'Allemagne',
+			'countries.ES' => 'Espagne',
+			'countries.IT' => 'Italie',
+			'countries.NL' => 'Pays-Bas',
+			'countries.BE' => 'Belgique',
+			'countries.CH' => 'Suisse',
+			'countries.AE' => 'Émirats arabes unis',
+			'countries.PS' => 'Palestine',
+			'countries.JO' => 'Jordanie',
+			'countries.EG' => 'Égypte',
+			'countries.MA' => 'Maroc',
+			'countries.ET' => 'Éthiopie',
+			'countries.AU' => 'Australie',
+			'countries.BR' => 'Brésil',
 			_ => null,
 		};
 	}

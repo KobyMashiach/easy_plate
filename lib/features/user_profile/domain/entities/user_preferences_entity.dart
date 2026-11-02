@@ -1,7 +1,13 @@
 import '../../../../core/constants/app_enums.dart';
 
 class UserPreferencesEntity {
+  /// The first shopping day of the week. Kept as its own field because
+  /// older builds and the website read only this one.
   final ShoppingDay shoppingDay;
+
+  /// Any further shopping days, besides [shoppingDay]. Empty for an account
+  /// that shops once a week. See [shoppingDays].
+  final List<ShoppingDay> extraShoppingDays;
   final List<DietaryPreference> dietaryPreferences;
   final AppLanguage language;
   final bool soundEffectsEnabled;
@@ -70,6 +76,7 @@ class UserPreferencesEntity {
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
+    this.extraShoppingDays = const [],
     this.language = AppLanguage.hebrew,
     this.soundEffectsEnabled = true,
     this.fastPageTurnEnabled = true,
@@ -89,6 +96,27 @@ class UserPreferencesEntity {
     this.whatsNewSeenBuild,
   });
 
+  /// Every shopping day, Sunday first, without repeats.
+  List<ShoppingDay> get shoppingDays => [
+    for (final day in ShoppingDay.values)
+      if (day == shoppingDay || extraShoppingDays.contains(day)) day,
+  ];
+
+  /// [days] as the two fields: the first one is [shoppingDay], the rest go
+  /// to [extraShoppingDays]. An empty choice keeps the current day — there
+  /// is always at least one.
+  UserPreferencesEntity withShoppingDays(Iterable<ShoppingDay> days) {
+    final sorted = [
+      for (final day in ShoppingDay.values)
+        if (days.contains(day)) day,
+    ];
+    if (sorted.isEmpty) return this;
+    return copyWith(
+      shoppingDay: sorted.first,
+      extraShoppingDays: sorted.skip(1).toList(),
+    );
+  }
+
   /// Whether an alert of [type] should be shown on this device right now:
   /// the device-side half of the choices above. The server applies the same
   /// flags before a push is sent, so this only matters for a push that was
@@ -107,6 +135,7 @@ class UserPreferencesEntity {
 
   UserPreferencesEntity copyWith({
     ShoppingDay? shoppingDay,
+    List<ShoppingDay>? extraShoppingDays,
     List<DietaryPreference>? dietaryPreferences,
     AppLanguage? language,
     bool? soundEffectsEnabled,
@@ -128,6 +157,7 @@ class UserPreferencesEntity {
   }) {
     return UserPreferencesEntity(
       shoppingDay: shoppingDay ?? this.shoppingDay,
+      extraShoppingDays: extraShoppingDays ?? this.extraShoppingDays,
       dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
       language: language ?? this.language,
       soundEffectsEnabled: soundEffectsEnabled ?? this.soundEffectsEnabled,

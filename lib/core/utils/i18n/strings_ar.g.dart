@@ -86,6 +86,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$voiceAssistants$ar voiceAssistants = _Translations$voiceAssistants$ar._(_root);
 	@override late final _Translations$adminConfig$ar adminConfig = _Translations$adminConfig$ar._(_root);
 	@override late final _Translations$quickActions$ar quickActions = _Translations$quickActions$ar._(_root);
+	@override late final _Translations$countries$ar countries = _Translations$countries$ar._(_root);
 }
 
 // Path: common
@@ -133,11 +134,14 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get emailHint => 'name@example.com';
 	@override String get password => 'كلمة المرور';
 	@override String get passwordHint => '6 أحرف على الأقل';
-	@override String get continueWithGoogle => 'المتابعة عبر Google';
-	@override String get continueWithPhone => 'المتابعة عبر الهاتف';
-	@override String get continueWithEmail => 'المتابعة عبر البريد';
+	@override String get continueWithGoogle => 'تسجيل الدخول عبر Google';
+	@override String get continueWithPhone => 'تسجيل الدخول عبر الهاتف';
+	@override String get continueWithEmail => 'تسجيل الدخول عبر البريد';
 	@override String get phoneNumber => 'رقم الهاتف';
-	@override String get phoneHint => '+972501234567';
+	@override String get phoneHint => '0501234567';
+	@override String get countryCode => 'المفتاح';
+	@override String get countrySearch => 'ابحث عن دولة أو مفتاح';
+	@override String get countryNotFound => 'لم يتم العثور على دولة';
 	@override String get sendCode => 'إرسال الرمز';
 	@override String get smsCode => 'رمز الرسالة';
 	@override String codeSentTo({required Object phone}) => 'أرسلنا رمز تحقق إلى ${phone}';
@@ -185,7 +189,7 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get phoneFirstHint => 'جديد هنا؟ تابع باستخدام الهاتف.';
 	@override String get errorAccountExistsDifferentCredential => 'هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.';
 	@override String get errorCredentialInUse => 'هذه البيانات تخص حسابًا آخر بالفعل';
-	@override String get continueWithApple => 'المتابعة باستخدام Apple';
+	@override String get continueWithApple => 'تسجيل الدخول باستخدام Apple';
 	@override String get linkApple => 'ربط حساب Apple';
 	@override String get appleLinked => 'مرتبط';
 	@override String get appleAlreadyUsed => 'حساب Apple هذا مرتبط بمستخدم آخر';
@@ -330,6 +334,8 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get title => 'الإعدادات';
 	@override String get dietaryPreferences => 'التفضيلات الغذائية';
 	@override String get shoppingDay => 'يوم التسوّق';
+	@override String get shoppingDays => 'أيام التسوّق';
+	@override String get shoppingDaysHint => 'اختر يومًا أو أكثر في الأسبوع. تصل التذكيرات قبل كل يوم منها.';
 	@override String get language => 'اللغة';
 	@override String get appearance => 'المظهر';
 	@override String get themeSystem => 'حسب الجهاز';
@@ -880,6 +886,7 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get aiRequestHint => 'صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه';
 	@override String get parse => 'تحليل الوصفة';
 	@override String get parsing => 'جارٍ تحليل الوصفة...';
+	@override String get searching => 'جارٍ البحث عن وصفات...';
 	@override String get parseError => 'لم نتمكّن من تحليل الوصفة';
 	@override String get reviewTitle => 'راجع قبل الحفظ';
 	@override String get notConfigured => 'تتطلّب هذه الميزة خدمة خارجية لم يتم إعدادها بعد';
@@ -1904,6 +1911,8 @@ class _Translations$feature$ar extends Translations$feature$he {
 	// Translations
 	@override String get comingSoon => 'قريباً';
 	@override String get comingSoonMessage => 'هذه الميزة ستصل قريباً';
+	@override String get maintenance => 'قيد الصيانة';
+	@override String get maintenanceMessage => 'هذه الميزة قيد الصيانة وغير متاحة مؤقتًا. سنعود قريبًا';
 	@override String get unavailable => 'هذه الميزة غير متاحة حالياً';
 	@override String get premiumOnly => 'بريميوم';
 	@override String get premiumOnlyMessage => 'هذه الميزة لمشتركي بريميوم';
@@ -1950,6 +1959,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get receiptScan => 'مسح الإيصال';
 	@override String get groceryCost => 'التكلفة التقديرية';
 	@override String get shoppingReminder => 'تذكير التسوق';
+	@override String get multiShoppingDays => 'عدة أيام تسوّق';
 	@override String get assistant => 'شيفي (المساعد)';
 	@override String get notifications => 'الإشعارات';
 	@override String get premium => 'بريميوم';
@@ -2076,6 +2086,36 @@ class _Translations$quickActions$ar extends Translations$quickActions$he {
 	@override String get groceryAdd => 'إضافة إلى قائمة التسوق';
 	@override String get receipt => 'إضافة إيصال';
 	@override String get support => 'التواصل مع الدعم';
+}
+
+// Path: countries
+class _Translations$countries$ar extends Translations$countries$he {
+	_Translations$countries$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get IL => 'إسرائيل';
+	@override String get US => 'الولايات المتحدة';
+	@override String get CA => 'كندا';
+	@override String get GB => 'المملكة المتحدة';
+	@override String get FR => 'فرنسا';
+	@override String get RU => 'روسيا';
+	@override String get UA => 'أوكرانيا';
+	@override String get DE => 'ألمانيا';
+	@override String get ES => 'إسبانيا';
+	@override String get IT => 'إيطاليا';
+	@override String get NL => 'هولندا';
+	@override String get BE => 'بلجيكا';
+	@override String get CH => 'سويسرا';
+	@override String get AE => 'الإمارات';
+	@override String get PS => 'فلسطين';
+	@override String get JO => 'الأردن';
+	@override String get EG => 'مصر';
+	@override String get MA => 'المغرب';
+	@override String get ET => 'إثيوبيا';
+	@override String get AU => 'أستراليا';
+	@override String get BR => 'البرازيل';
 }
 
 // Path: walkthrough.topics
@@ -2288,7 +2328,7 @@ class _Translations$walkthrough$topics$addRecipe$ar extends Translations$walkthr
 	// Translations
 	@override String get title => 'إضافة وصفة';
 	@override String get summary => 'أدخل وصفة من أي مصدر، ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم وحصص وقيم غذائية.';
-	@override String get s1 => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.';
+	@override String get s1 => 'اضغط على زر الإضافة (+) بجانب العنوان لإضافة وصفة.';
 	@override String get s2 => 'اختر مصدراً: نص ملصق، بحث على الإنترنت، رابط موقع، فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك، طلب حرّ من الذكاء الاصطناعي، أو كتابة يدوية.';
 	@override String get s3 => 'عبّأنا هنا وصفة نموذجية كما لو أنك لصقتها. الزر في الأسفل يرسلها إلى الذكاء الاصطناعي الذي يعيدها مرتّبة للمراجعة والتعديل والحفظ. يستغرق التحليل حتى نصف دقيقة، فاتركه إلى ما بعد الجولة.';
 }
@@ -2456,11 +2496,14 @@ extension on TranslationsAr {
 			'auth.emailHint' => 'name@example.com',
 			'auth.password' => 'كلمة المرور',
 			'auth.passwordHint' => '6 أحرف على الأقل',
-			'auth.continueWithGoogle' => 'المتابعة عبر Google',
-			'auth.continueWithPhone' => 'المتابعة عبر الهاتف',
-			'auth.continueWithEmail' => 'المتابعة عبر البريد',
+			'auth.continueWithGoogle' => 'تسجيل الدخول عبر Google',
+			'auth.continueWithPhone' => 'تسجيل الدخول عبر الهاتف',
+			'auth.continueWithEmail' => 'تسجيل الدخول عبر البريد',
 			'auth.phoneNumber' => 'رقم الهاتف',
-			'auth.phoneHint' => '+972501234567',
+			'auth.phoneHint' => '0501234567',
+			'auth.countryCode' => 'المفتاح',
+			'auth.countrySearch' => 'ابحث عن دولة أو مفتاح',
+			'auth.countryNotFound' => 'لم يتم العثور على دولة',
 			'auth.sendCode' => 'إرسال الرمز',
 			'auth.smsCode' => 'رمز الرسالة',
 			'auth.codeSentTo' => ({required Object phone}) => 'أرسلنا رمز تحقق إلى ${phone}',
@@ -2508,7 +2551,7 @@ extension on TranslationsAr {
 			'auth.phoneFirstHint' => 'جديد هنا؟ تابع باستخدام الهاتف.',
 			'auth.errorAccountExistsDifferentCredential' => 'هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.',
 			'auth.errorCredentialInUse' => 'هذه البيانات تخص حسابًا آخر بالفعل',
-			'auth.continueWithApple' => 'المتابعة باستخدام Apple',
+			'auth.continueWithApple' => 'تسجيل الدخول باستخدام Apple',
 			'auth.linkApple' => 'ربط حساب Apple',
 			'auth.appleLinked' => 'مرتبط',
 			'auth.appleAlreadyUsed' => 'حساب Apple هذا مرتبط بمستخدم آخر',
@@ -2599,6 +2642,8 @@ extension on TranslationsAr {
 			'settings.title' => 'الإعدادات',
 			'settings.dietaryPreferences' => 'التفضيلات الغذائية',
 			'settings.shoppingDay' => 'يوم التسوّق',
+			'settings.shoppingDays' => 'أيام التسوّق',
+			'settings.shoppingDaysHint' => 'اختر يومًا أو أكثر في الأسبوع. تصل التذكيرات قبل كل يوم منها.',
 			'settings.language' => 'اللغة',
 			'settings.appearance' => 'المظهر',
 			'settings.themeSystem' => 'حسب الجهاز',
@@ -2933,13 +2978,13 @@ extension on TranslationsAr {
 			'sharing.kindBook' => 'كتاب',
 			'sharing.kindPlan' => 'خطة',
 			'sharing.recipesTravel' => 'ستتم مشاركة الوصفات الموجودة بداخله معه',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.shareList' => 'مشاركة قائمة التسوق',
 			'sharing.acceptedList' => 'أُضيفت القائمة إلى قوائم التسوق لديك',
 			'sharing.viewerCannotEditList' => 'هذه القائمة مشاركة معك للعرض فقط',
 			'sharing.kindList' => 'قائمة تسوق',
 			'sharing.sharedBooksCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا كتب مشتركة', one: 'كتاب مشترك واحد', two: 'كتابان مشتركان', few: '${n} كتب مشتركة', many: '${n} كتابًا مشتركًا', other: '${n} كتاب مشترك', ), 
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharedListsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'لا قوائم تسوق مشتركة', one: 'قائمة تسوق مشتركة واحدة', two: 'قائمتا تسوق مشتركتان', few: '${n} قوائم تسوق مشتركة', many: '${n} قائمة تسوق مشتركة', other: '${n} قائمة تسوق مشتركة', ), 
 			'notifications.title' => 'الإشعارات',
 			'notifications.empty' => 'لا توجد إشعارات',
@@ -3011,6 +3056,7 @@ extension on TranslationsAr {
 			'ingestion.aiRequestHint' => 'صِف ما تريد تحضيره. مثلاً: عصيدة سميد لطفلة بعمر سنة مع الفواكه',
 			'ingestion.parse' => 'تحليل الوصفة',
 			'ingestion.parsing' => 'جارٍ تحليل الوصفة...',
+			'ingestion.searching' => 'جارٍ البحث عن وصفات...',
 			'ingestion.parseError' => 'لم نتمكّن من تحليل الوصفة',
 			'ingestion.reviewTitle' => 'راجع قبل الحفظ',
 			'ingestion.notConfigured' => 'تتطلّب هذه الميزة خدمة خارجية لم يتم إعدادها بعد',
@@ -3435,7 +3481,7 @@ extension on TranslationsAr {
 			'walkthrough.welcomeBody' => 'سنمرّ معاً على الإجراءات الرئيسية وننفّذها فعلاً: الحقول معبّأة لكم مسبقاً. يمكنكم تخطّي أي خطوة، أو الإغلاق والبدء من جديد من شاشة الدعم.',
 			'walkthrough.topics.addRecipe.title' => 'إضافة وصفة',
 			'walkthrough.topics.addRecipe.summary' => 'أدخل وصفة من أي مصدر، ويرتّبها الذكاء الاصطناعي بصيغة موحّدة: مكوّنات وكميات وخطوات ووسوم وحصص وقيم غذائية.',
-			'walkthrough.topics.addRecipe.s1' => 'اضغط على زر الشرارة بجانب العنوان لإضافة وصفة.',
+			'walkthrough.topics.addRecipe.s1' => 'اضغط على زر الإضافة (+) بجانب العنوان لإضافة وصفة.',
 			'walkthrough.topics.addRecipe.s2' => 'اختر مصدراً: نص ملصق، بحث على الإنترنت، رابط موقع، فيديو من تيك توك أو إنستغرام أو يوتيوب أو فيسبوك، طلب حرّ من الذكاء الاصطناعي، أو كتابة يدوية.',
 			'walkthrough.topics.addRecipe.s3' => 'عبّأنا هنا وصفة نموذجية كما لو أنك لصقتها. الزر في الأسفل يرسلها إلى الذكاء الاصطناعي الذي يعيدها مرتّبة للمراجعة والتعديل والحفظ. يستغرق التحليل حتى نصف دقيقة، فاتركه إلى ما بعد الجولة.',
 			'walkthrough.topics.myRecipes.title' => 'وصفاتي والمحفوظة',
@@ -3446,14 +3492,14 @@ extension on TranslationsAr {
 			'walkthrough.topics.library.summary' => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات، وشارك كتاباً كاملاً مع حساب آخر.',
 			'walkthrough.topics.library.s1' => 'اضغط على "المكتبة" للانتقال إلى الكتب.',
 			'walkthrough.topics.library.s2' => 'اضغط على زر الزائد لإنشاء كتاب جديد.',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'اسم الكتاب معبّأ مسبقاً: "دليل". اضغط على الحقل لتغييره، ثم تابع.',
 			'walkthrough.topics.library.s4' => 'اضغط "حفظ" لإنشاء الكتاب.',
 			'walkthrough.topics.library.s5' => 'اختر لون الكعب الذي يميّز الكتب على الرف، واضغط "حفظ". يُفتح الكتاب فوراً.',
 			'walkthrough.topics.library.s6' => 'هذا هو الكتاب الذي أنشأته. من هنا تضيف إليه وصفات، وداخله تقلّب الصفحات وتقفز من الفهرس. الضغط المطوّل على كتاب في الرف يفتح المشاركة والغلاف وإعادة التسمية والحذف.',
 			'walkthrough.topics.mealPlan.title' => 'الخطة الأسبوعية والتغذية',
 			'walkthrough.topics.mealPlan.summary' => 'خطة وجبات للأسبوع كله مع ملخّص غذائي لكل يوم، تغذّي قائمة التسوّق.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.mealPlan.s1' => 'اضغط على "الوجبات" لتخطيط الأسبوع.',
 			'walkthrough.topics.mealPlan.s2' => 'اضغط هنا لإنشاء خطة أسبوعية.',
 			'walkthrough.topics.mealPlan.s3' => 'اسم الخطة معبّأ مسبقاً. في الأسفل اختر قالباً: حرّ، ثلاث وجبات يومياً أو ست.',
@@ -3960,14 +4006,14 @@ extension on TranslationsAr {
 			'homeWidgets.intro' => 'أضيفوا أدوات EasyPlate إلى الشاشة الرئيسية: اسألوا شيفي، أضيفوا إلى قائمة التسوق، وشاهدوا القائمة وقائمة طعام اليوم دون فتح التطبيق.',
 			'homeWidgets.howToIos' => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، ثم على +، ابحثوا عن EasyPlate واختاروا أداة. الأدوات نفسها تناسب شاشة القفل.',
 			'homeWidgets.howToAndroid' => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، اختاروا "الأدوات" وابحثوا عن EasyPlate، أو اضغطوا "إضافة إلى الشاشة الرئيسية" أدناه.',
+			_ => null,
+		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'إضافة إلى الشاشة الرئيسية',
 			'homeWidgets.installed' => ({required Object count}) => '${count} على الشاشة الرئيسية',
 			'homeWidgets.pinFailed' => 'لم يعرض المشغّل إضافة الأداة. أضيفوها من قائمة أدوات الشاشة الرئيسية.',
 			'homeWidgets.defaults' => 'الإعدادات الافتراضية للأدوات الجديدة',
 			'homeWidgets.defaultsHint' => 'يمكن تغيير كل أداة لاحقًا من إعداداتها (ضغطة مطولة على الأداة).',
 			'homeWidgets.defaultList' => 'قائمة التسوق',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.openList' => 'القائمة المفتوحة',
 			'homeWidgets.defaultPlan' => 'خطة الوجبات',
 			'homeWidgets.firstPlan' => 'الخطة الأولى',
@@ -4011,6 +4057,8 @@ extension on TranslationsAr {
 			'homeWidgets.demo3' => 'بيض',
 			'feature.comingSoon' => 'قريباً',
 			'feature.comingSoonMessage' => 'هذه الميزة ستصل قريباً',
+			'feature.maintenance' => 'قيد الصيانة',
+			'feature.maintenanceMessage' => 'هذه الميزة قيد الصيانة وغير متاحة مؤقتًا. سنعود قريبًا',
 			'feature.unavailable' => 'هذه الميزة غير متاحة حالياً',
 			'feature.premiumOnly' => 'بريميوم',
 			'feature.premiumOnlyMessage' => 'هذه الميزة لمشتركي بريميوم',
@@ -4048,6 +4096,7 @@ extension on TranslationsAr {
 			'featureName.receiptScan' => 'مسح الإيصال',
 			'featureName.groceryCost' => 'التكلفة التقديرية',
 			'featureName.shoppingReminder' => 'تذكير التسوق',
+			'featureName.multiShoppingDays' => 'عدة أيام تسوّق',
 			'featureName.assistant' => 'شيفي (المساعد)',
 			'featureName.notifications' => 'الإشعارات',
 			'featureName.premium' => 'بريميوم',
@@ -4132,6 +4181,27 @@ extension on TranslationsAr {
 			'quickActions.groceryAdd' => 'إضافة إلى قائمة التسوق',
 			'quickActions.receipt' => 'إضافة إيصال',
 			'quickActions.support' => 'التواصل مع الدعم',
+			'countries.IL' => 'إسرائيل',
+			'countries.US' => 'الولايات المتحدة',
+			'countries.CA' => 'كندا',
+			'countries.GB' => 'المملكة المتحدة',
+			'countries.FR' => 'فرنسا',
+			'countries.RU' => 'روسيا',
+			'countries.UA' => 'أوكرانيا',
+			'countries.DE' => 'ألمانيا',
+			'countries.ES' => 'إسبانيا',
+			'countries.IT' => 'إيطاليا',
+			'countries.NL' => 'هولندا',
+			'countries.BE' => 'بلجيكا',
+			'countries.CH' => 'سويسرا',
+			'countries.AE' => 'الإمارات',
+			'countries.PS' => 'فلسطين',
+			'countries.JO' => 'الأردن',
+			'countries.EG' => 'مصر',
+			'countries.MA' => 'المغرب',
+			'countries.ET' => 'إثيوبيا',
+			'countries.AU' => 'أستراليا',
+			'countries.BR' => 'البرازيل',
 			_ => null,
 		};
 	}

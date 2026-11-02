@@ -510,8 +510,6 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         title: t.appName,
         leadingIcon: Icons.arrow_back_rounded,
         onLeadingTap: () => Navigator.of(context).maybePop(),
-        trailingIcon: _readOnly ? null : Icons.edit_rounded,
-        onTrailingTap: _readOnly ? null : _edit,
       ),
       body: ListView(
         // Room at the end for the floating copilot, so the last buttons
@@ -622,7 +620,20 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
             ),
           ),
           const SizedBox(height: AppSpacing.gutter),
-          ClayPageHeader(title: recipe.title),
+          // The pencil sits on the title it edits, not in the bar with the
+          // navigation, where people did not look for it.
+          ClayPageHeader(
+            title: recipe.title,
+            trailing: _readOnly
+                ? null
+                : ClayIconButton(
+                    icon: Icons.edit_rounded,
+                    filled: true,
+                    size: 44,
+                    tooltip: t.common.edit,
+                    onTap: _edit,
+                  ),
+          ),
           const SizedBox(height: AppSpacing.gutter),
           // The figures a cook checks before anything else, at a glance.
           Row(

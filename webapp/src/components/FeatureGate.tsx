@@ -1,5 +1,6 @@
 // The web twin of the app's FeatureGate: draws its child when the feature is
-// on for this account, a "coming soon" card when it is announced, a Premium
+// on for this account, a "coming soon" card when it is announced, a
+// "maintenance" card while it is switched off for a while, a Premium
 // card when it is Premium-only on a free account, and nothing when hidden.
 // Use it around a whole page (`page`) or around one button/section.
 import type { ReactNode } from "react";
@@ -26,6 +27,7 @@ export function FeatureGate({ flag, children, page = false, fallback = null }: {
   if (access === "enabled") return <>{children}</>;
   if (access === "hidden") return page ? <GateCard icon="lock" title={t("shell.gate.unavailable")} /> : <>{fallback}</>;
   if (access === "comingSoon") return page ? <GateCard icon="star" title={t("shell.gate.soon")} /> : <>{fallback}</>;
+  if (access === "maintenance") return page ? <GateCard icon="settings" title={t("shell.gate.maintenance")} /> : <>{fallback}</>;
   // locked: Premium only
   return page ? (
     <GateCard icon="premium" title={t("shell.gate.premiumTitle")} body={t("shell.gate.premiumBody")} action={<Link to="/pricing" className="clay-btn-primary">{t("shell.gate.upgrade")}</Link>} />

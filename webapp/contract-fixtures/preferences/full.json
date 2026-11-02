@@ -1,5 +1,6 @@
 {
   "shoppingDay": "thursday",
+  "extraShoppingDays": ["monday", "saturday"],
   "dietaryPreferences": ["kosher", "glutenFree", "allergy"],
   "soundEffectsEnabled": false,
   "onboardingComplete": true,

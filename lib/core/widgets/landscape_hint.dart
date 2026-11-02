@@ -9,7 +9,11 @@ import '../utils/i18n/strings.g.dart';
 /// A one-line nudge on screens full of inputs — "works better sideways" —
 /// with the rotate button that actually turns the screen. The app is
 /// portrait everywhere else, so whatever this unlocks is locked again when
-/// the screen goes away.
+/// the last screen carrying a hint goes away.
+///
+/// Screens with a hint stack (the review after adding a recipe opens the
+/// editor), so the button reads the orientation on screen rather than its
+/// own memory, and only the last hint to leave locks portrait again.
 class LandscapeHint extends StatefulWidget {
   const LandscapeHint({super.key});
 
@@ -22,27 +26,38 @@ class LandscapeHint extends StatefulWidget {
 // scrolled past it — which is exactly when they are working sideways.
 class _LandscapeHintState extends State<LandscapeHint>
     with AutomaticKeepAliveClientMixin {
-  bool _landscape = false;
+  /// Hints alive right now, across stacked screens.
+  static int _alive = 0;
+
+  /// Whether a hint turned the screen sideways and it is still unlocked.
+  static bool _unlocked = false;
 
   @override
   bool get wantKeepAlive => true;
 
-  Future<void> _toggle() async {
-    _landscape = !_landscape;
+  @override
+  void initState() {
+    super.initState();
+    _alive++;
+  }
+
+  Future<void> _toggle(bool landscape) async {
+    _unlocked = !landscape;
     await SystemChrome.setPreferredOrientations(
-      _landscape
+      _unlocked
           ? const [
               DeviceOrientation.landscapeLeft,
               DeviceOrientation.landscapeRight,
             ]
           : const [DeviceOrientation.portraitUp],
     );
-    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    if (_landscape) {
+    _alive--;
+    if (_alive == 0 && _unlocked) {
+      _unlocked = false;
       SystemChrome.setPreferredOrientations(const [
         DeviceOrientation.portraitUp,
       ]);
@@ -53,6 +68,8 @@ class _LandscapeHintState extends State<LandscapeHint>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm,
@@ -79,15 +96,15 @@ class _LandscapeHintState extends State<LandscapeHint>
             ),
           ),
           TextButton.icon(
-            onPressed: _toggle,
+            onPressed: () => _toggle(landscape),
             icon: Icon(
-              _landscape
+              landscape
                   ? Icons.stay_current_portrait_rounded
                   : Icons.stay_current_landscape_rounded,
               size: 18,
             ),
             label: Text(
-              _landscape ? t.common.rotatePortrait : t.common.rotateLandscape,
+              landscape ? t.common.rotatePortrait : t.common.rotateLandscape,
             ),
           ),
         ],

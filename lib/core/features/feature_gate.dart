@@ -15,7 +15,8 @@ import 'features_flags.dart';
 export 'features_flags.dart';
 
 /// Draws [child] as the console says for this account: as built, greyed
-/// out under a "coming soon" tag, greyed out under a "Premium" tag with
+/// out under a "coming soon" or "maintenance" tag, greyed out under a
+/// "Premium" tag with
 /// the paywall behind a tap, or not at all. Re-reads the flag whenever
 /// Remote Config activates or the plan changes, so a console change lands
 /// without a restart.
@@ -93,7 +94,9 @@ class FeatureGate extends StatelessWidget {
         );
         final Widget body = switch (access) {
           FeatureAccess.enabled => child,
-          FeatureAccess.comingSoon || FeatureAccess.locked => GatedChild(
+          FeatureAccess.comingSoon ||
+          FeatureAccess.maintenance ||
+          FeatureAccess.locked => GatedChild(
             feature: deciding,
             access: access,
             compact: compact,
@@ -124,7 +127,7 @@ class FeatureGate extends StatelessWidget {
 }
 
 /// [child], dimmed and deaf to taps, with the tag for [access] ("coming
-/// soon" or "Premium") in its corner. A tap anywhere on it says so in a
+/// soon", "maintenance" or "Premium") in its corner. A tap anywhere on it says so in a
 /// notice — or, for a locked feature, opens the paywall.
 class GatedChild extends StatelessWidget {
   final FeaturesFlags feature;
@@ -174,8 +177,41 @@ class GatedChild extends StatelessWidget {
   }
 }
 
-/// The small "coming soon" / "Premium" chip on its own, for controls that
-/// lay it out themselves (a tab, a chip).
+/// How each gated state looks and what it says: the tag's words, the
+/// sentence behind a tap, the icon, and the tag's colours.
+({
+  String label,
+  String message,
+  IconData icon,
+  Color background,
+  Color foreground,
+})
+_lookOf(FeatureAccess access) => switch (access) {
+  FeatureAccess.locked => (
+    label: t.feature.premiumOnly,
+    message: t.feature.premiumOnlyMessage,
+    icon: Icons.workspace_premium_rounded,
+    background: AppColors.primaryFixed,
+    foreground: AppColors.onPrimaryFixed,
+  ),
+  FeatureAccess.maintenance => (
+    label: t.feature.maintenance,
+    message: t.feature.maintenanceMessage,
+    icon: Icons.construction_rounded,
+    background: AppColors.secondaryContainer,
+    foreground: AppColors.onSecondaryContainer,
+  ),
+  _ => (
+    label: t.feature.comingSoon,
+    message: t.feature.comingSoonMessage,
+    icon: Icons.schedule_rounded,
+    background: AppColors.tertiaryContainer,
+    foreground: AppColors.onTertiaryContainer,
+  ),
+};
+
+/// The small "coming soon" / "maintenance" / "Premium" chip on its own,
+/// for controls that lay it out themselves (a tab, a chip).
 class AccessTag extends StatelessWidget {
   final FeatureAccess access;
   final bool compact;
@@ -184,14 +220,10 @@ class AccessTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locked = access.isLocked;
-    final label = locked ? t.feature.premiumOnly : t.feature.comingSoon;
-    final background = locked
-        ? AppColors.primaryFixed
-        : AppColors.tertiaryContainer;
-    final foreground = locked
-        ? AppColors.onPrimaryFixed
-        : AppColors.onTertiaryContainer;
+    final look = _lookOf(access);
+    final label = look.label;
+    final background = look.background;
+    final foreground = look.foreground;
     if (compact) {
       return Container(
         padding: const EdgeInsets.symmetric(
@@ -213,7 +245,7 @@ class AccessTag extends StatelessWidget {
     }
     return ClayTag(
       label: label,
-      icon: locked ? Icons.workspace_premium_rounded : Icons.schedule_rounded,
+      icon: look.icon,
       background: background,
       foreground: foreground,
     );
@@ -221,7 +253,8 @@ class AccessTag extends StatelessWidget {
 }
 
 /// The icon-only version of [AccessTag], for a corner of an icon button or
-/// a chip: a crown for Premium, a clock for "coming soon".
+/// a chip: a crown for Premium, a clock for "coming soon", tools for
+/// "maintenance".
 class AccessBadge extends StatelessWidget {
   final FeatureAccess access;
 
@@ -230,11 +263,12 @@ class AccessBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locked = access.isLocked;
+    final look = _lookOf(access);
     return Container(
       width: 20,
       height: 20,
       decoration: ShapeDecoration(
-        color: locked ? AppColors.primary : AppColors.tertiaryContainer,
+        color: locked ? AppColors.primary : look.background,
         shape: const CircleBorder(),
         shadows: [
           BoxShadow(
@@ -245,9 +279,9 @@ class AccessBadge extends StatelessWidget {
         ],
       ),
       child: Icon(
-        locked ? Icons.workspace_premium_rounded : Icons.schedule_rounded,
+        look.icon,
         size: 13,
-        color: locked ? AppColors.onPrimary : AppColors.onTertiaryContainer,
+        color: locked ? AppColors.onPrimary : look.foreground,
       ),
     );
   }
@@ -299,17 +333,16 @@ class GatedNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locked = access.isLocked;
+    final look = _lookOf(access);
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            locked ? Icons.workspace_premium_rounded : Icons.schedule_rounded,
+            look.icon,
             size: 56,
-            color: locked
-                ? AppColors.onPrimaryFixedVariant
-                : AppColors.onTertiaryContainer,
+            color: locked ? AppColors.onPrimaryFixedVariant : look.foreground,
           ),
           const SizedBox(height: AppSpacing.gutter),
           Text(
@@ -321,7 +354,7 @@ class GatedNotice extends StatelessWidget {
           AccessTag(access: access),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            locked ? t.feature.premiumOnlyMessage : t.feature.comingSoonMessage,
+            look.message,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMd.copyWith(
               color: AppColors.onSurfaceVariant,
@@ -344,6 +377,10 @@ class GatedNotice extends StatelessWidget {
 /// The notice behind every "coming soon" tap.
 void notifyComingSoon(BuildContext context) =>
     AppDialog.info(message: t.feature.comingSoonMessage).notify(context);
+
+/// The notice behind every tap on a feature under maintenance.
+void notifyMaintenance(BuildContext context) =>
+    AppDialog.info(message: t.feature.maintenanceMessage).notify(context);
 
 /// The popup behind every locked feature: which option it is, that it is
 /// for Premium subscribers, and the two ways out — cancel, or go and see
@@ -372,14 +409,16 @@ void openPaywall(BuildContext context) {
   }
 }
 
-/// What a tap on a gated entry point does: say "coming soon", say
-/// "unavailable", or ask before the paywall.
+/// What a tap on a gated entry point does: say "coming soon", say "under
+/// maintenance", say "unavailable", or ask before the paywall.
 void explainAccess(BuildContext context, FeaturesFlags feature) {
   switch (feature.access) {
     case FeatureAccess.enabled:
       return;
     case FeatureAccess.comingSoon:
       notifyComingSoon(context);
+    case FeatureAccess.maintenance:
+      notifyMaintenance(context);
     case FeatureAccess.locked:
       showPremiumOnlyDialog(context, feature);
     case FeatureAccess.hidden:

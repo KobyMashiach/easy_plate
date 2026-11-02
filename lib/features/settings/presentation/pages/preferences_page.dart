@@ -70,12 +70,25 @@ class _Body extends StatelessWidget {
         SettingsGroupLabel(t.preferences.shopping),
         WalkthroughTarget(
           id: WalkthroughIds.prefsShoppingDay,
-          child: SettingsCard(
-            title: t.settings.shoppingDay,
-            child: WeekdaySelector(
-              selected: preferences.shoppingDay,
-              onSelect: (day) => bloc.add(.updateShoppingDay(day)),
-            ),
+          // Closed in any way, the card is the one-day picker it always was.
+          child: FeatureGate.builder(
+            feature: FeaturesFlags.multiShoppingDays,
+            builder: (context, access) => access.isEnabled
+                ? SettingsCard(
+                    title: t.settings.shoppingDays,
+                    description: t.settings.shoppingDaysHint,
+                    child: WeekdaySelector.multiple(
+                      selected: preferences.shoppingDays,
+                      onChanged: (days) => bloc.add(.updateShoppingDays(days)),
+                    ),
+                  )
+                : SettingsCard(
+                    title: t.settings.shoppingDay,
+                    child: WeekdaySelector(
+                      selected: preferences.shoppingDay,
+                      onSelect: (day) => bloc.add(.updateShoppingDays([day])),
+                    ),
+                  ),
           ),
         ),
         FeatureGate(

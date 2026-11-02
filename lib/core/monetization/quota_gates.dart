@@ -63,10 +63,22 @@ abstract class QuotaGates {
     }
   }
 
+  /// The account whose last paid extraction has not produced a recipe yet.
+  /// The next attempt (Retry, the fallback text, another channel, Shefi
+  /// trying again) rides on it: one customer watched three videos and spent
+  /// the whole day's allowance on one recipe whose first two calls failed.
+  static String? _unspentFor;
+
+  /// The model call that the last paid gate let through returned a recipe,
+  /// so the next extraction pays again.
+  static void extractionDelivered() => _unspentFor = null;
+
   /// Extracting a recipe from a link with the model. Premium skips the video
   /// but still spends from its own, larger, daily allowance.
   static Future<bool> extractWithAi(BuildContext context) async {
     if (!MonetizationConfig.aiGated) return true;
+    final uid = AuthSessionService().user?.uid;
+    if (uid != null && _unspentFor == uid) return true;
 
     final usage = DailyUsageService();
     await usage.ensureLoaded();
@@ -83,6 +95,7 @@ abstract class QuotaGates {
     switch (verdict) {
       case GateVerdict.free:
         await usage.recordAiExtraction();
+        _unspentFor = uid;
         return true;
       case GateVerdict.blocked:
         _notify(context, t.ads.aiQuotaReached);
@@ -98,7 +111,10 @@ abstract class QuotaGates {
           title: t.ads.unlockAiTitle,
           message: t.ads.unlockAiMessage(count: remaining),
         );
-        if (unlocked) await usage.recordAiExtraction();
+        if (unlocked) {
+          await usage.recordAiExtraction();
+          _unspentFor = uid;
+        }
         return unlocked;
     }
   }

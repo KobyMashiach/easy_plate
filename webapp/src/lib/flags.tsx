@@ -1,9 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 // Feature switches, read from the same Remote Config the app reads
 // (lib/core/features/features_flags.dart). Each `ff_*` parameter is
-//   0 hidden · 1 coming soon · 2 on for everyone · 3 Premium only
+//   0 hidden · 1 coming soon · 2 on for everyone · 3 Premium only · 4 maintenance
 // and what a screen draws is that value with the plan applied:
-//   hidden | comingSoon | locked (Premium-only, free account) | enabled.
+//   hidden | comingSoon | maintenance | locked (Premium-only, free account) | enabled.
 // Unread or unreachable → 2 (enabled), the app's own default, so a failed
 // fetch never hides anything. A superuser (users/{uid}.permission) sees all.
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
@@ -17,16 +17,27 @@ export type Flag =
   | "ff_save_with_ai" | "ff_cook_mode" | "ff_cook_timers" | "ff_nutrition" | "ff_recipe_image_ai" | "ff_recipe_image_search" | "ff_grocery_from_recipe"
   | "ff_shared_recipes" | "ff_forum" | "ff_likes"
   | "ff_share_recipes" | "ff_share_books" | "ff_share_plans" | "ff_share_grocery_lists" | "ff_share_codes" | "ff_households"
-  | "ff_price_book" | "ff_receipt_scan" | "ff_grocery_cost" | "ff_shopping_reminder"
+  | "ff_price_book" | "ff_receipt_scan" | "ff_grocery_cost" | "ff_shopping_reminder" | "ff_multi_shopping_days"
   | "ff_assistant" | "ff_assistant_scoped" | "ff_assistant_voice" | "ff_notifications" | "ff_premium" | "ff_content_translation"
   | "ff_theming" | "ff_feedback" | "ff_whats_new" | "ff_support_chat" | "ff_web_checkout" | "ff_web_checkout_il" | "ff_web_checkout_intl";
 
-export type Access = "hidden" | "comingSoon" | "locked" | "enabled";
+export type Access = "hidden" | "comingSoon" | "maintenance" | "locked" | "enabled";
+
+/** Drawn but not usable for anyone: "coming soon" or under maintenance. */
+export function isDimmed(access: Access): boolean {
+  return access === "comingSoon" || access === "maintenance";
+}
+
+/** The small tag a dimmed entry carries, or null for any other state. */
+export function dimTagKey(access: Access): "shell.soon" | "shell.maintenance" | null {
+  return access === "comingSoon" ? "shell.soon" : access === "maintenance" ? "shell.maintenance" : null;
+}
 
 export function resolveAccess(value: number, premium: boolean, allFeatures = false): Access {
   if (allFeatures) return "enabled";
   if (value === 0) return "hidden";
   if (value === 1) return "comingSoon";
+  if (value === 4) return "maintenance";
   if (value === 3) return premium ? "enabled" : "locked";
   return "enabled";
 }

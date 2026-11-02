@@ -51,7 +51,10 @@ class VideoImagePicker extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClaySectionHeader(title: t.ingestion.videoPhotoTitle, underline: true),
+          ClaySectionHeader(
+            title: t.ingestion.videoPhotoTitle,
+            underline: true,
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             t.ingestion.videoPhotoHint,
@@ -85,7 +88,8 @@ class VideoImagePicker extends StatelessWidget {
           SizedBox(
             // The label under each thumbnail grows with the system text
             // size; a fixed height overflowed the cards from about 1.2×.
-            height: thumbSize +
+            height:
+                thumbSize +
                 AppSpacing.xs +
                 MediaQuery.textScalerOf(context).scale(
                   AppTextStyles.labelSm.fontSize! *
@@ -172,7 +176,9 @@ class _Thumb extends StatelessWidget {
             child: Text(
               label,
               style: AppTextStyles.labelSm.copyWith(
-                color: selected ? AppColors.primary : AppColors.onSurfaceVariant,
+                color: selected
+                    ? AppColors.primary
+                    : AppColors.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

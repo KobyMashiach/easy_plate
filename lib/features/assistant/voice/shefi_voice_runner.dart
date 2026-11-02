@@ -254,6 +254,9 @@ class _VoiceBridge implements AssistantUiBridge {
   Future<bool> allowAiExtraction() async => false;
 
   @override
+  void aiExtractionDelivered() {}
+
+  @override
   void openRecipe(RecipeEntity recipe) {}
 
   @override

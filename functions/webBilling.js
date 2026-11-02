@@ -396,7 +396,7 @@ exports.webBilling = onRequest(
       const { catalog, switches } = await catalogs.load();
       // Only asked when it matters: an override, or a switch still closed
       // (an administrator tests a route before launch).
-      const isAdmin = caller && (request.provider || switches.master < 2 || switches.payplus < 2 || switches.revenuecat < 2) ? await permissions.isAdmin(caller, db) : false;
+      const isAdmin = caller && (request.provider || !remoteFlags.isOpen(switches.master) || !remoteFlags.isOpen(switches.payplus) || !remoteFlags.isOpen(switches.revenuecat)) ? await permissions.isAdmin(caller, db) : false;
       const keys = billingSecrets.keys();
       keys.payplus.env = catalog.payplus.env;
       const out = await handle({ db, caller, request, keys, catalog, switches, isAdmin });

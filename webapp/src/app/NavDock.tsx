@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "../components/icons";
 import { useI18n } from "../lib/i18n";
-import type { Access } from "../lib/flags";
+import { dimTagKey, type Access } from "../lib/flags";
 
 export interface DockTab {
   path: string;
@@ -123,8 +123,9 @@ export function NavDock({ tabs }: { tabs: DockTab[] }) {
         {tabs.map((tab, i) => {
           const active = i === lit && (routeIndex >= 0 || dragPos !== null);
           const label = t(tab.label);
-          const dim = tab.access === "comingSoon";
-          const extra = tab.access === "locked" ? ` · ${t("shell.gate.premiumShort")}` : dim ? ` · ${t("shell.soon")}` : "";
+          const dimKey = dimTagKey(tab.access);
+          const dim = dimKey !== null;
+          const extra = tab.access === "locked" ? ` · ${t("shell.gate.premiumShort")}` : dimKey ? ` · ${t(dimKey)}` : "";
           return (
             <a
               key={tab.path}
