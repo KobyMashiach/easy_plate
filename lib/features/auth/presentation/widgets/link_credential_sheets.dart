@@ -15,6 +15,7 @@ import '../../domain/usecases/link_email_password_usecase.dart';
 import '../../domain/usecases/link_phone_usecase.dart';
 import '../../domain/send_log.dart';
 import 'auth_error_text.dart';
+import 'sms_auto_fill.dart';
 
 /// The typed number in E.164, or the message to show instead. The one
 /// reading of a phone field for sign-in, the phone gate and linking: the
@@ -94,13 +95,20 @@ class _LinkPhoneSheet extends StatefulWidget {
   State<_LinkPhoneSheet> createState() => _LinkPhoneSheetState();
 }
 
-class _LinkPhoneSheetState extends State<_LinkPhoneSheet> {
+class _LinkPhoneSheetState extends State<_LinkPhoneSheet> with SmsAutoFill {
   final _phone = PhoneFieldController();
   final _code = TextEditingController();
 
   String? _verificationId;
   bool _busy = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // A code Android reads from the SMS fills itself in and is confirmed.
+    listenForSmsCode(_code, _confirm, ready: () => _verificationId != null);
+  }
 
   @override
   void dispose() {

@@ -11,6 +11,7 @@ import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_error_text.dart';
+import 'sms_auto_fill.dart';
 
 /// "No access to the other device": a new SMS code to the account's own
 /// phone, then this device takes the session and the other one is signed
@@ -62,13 +63,21 @@ class _SessionTakeoverSheet extends StatefulWidget {
   State<_SessionTakeoverSheet> createState() => _SessionTakeoverSheetState();
 }
 
-class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet> {
+class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet>
+    with SmsAutoFill {
   final _code = TextEditingController();
   String? _verificationId;
   bool _busy = false;
   String? _error;
 
   String? get _phone => AuthSessionService().user?.phoneNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    // A code Android reads from the SMS fills itself in and is confirmed.
+    listenForSmsCode(_code, _confirm, ready: () => _verificationId != null);
+  }
 
   @override
   void dispose() {

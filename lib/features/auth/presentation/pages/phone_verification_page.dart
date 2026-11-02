@@ -13,6 +13,7 @@ import '../bloc/auth_bloc.dart';
 import '../widgets/auth_error_text.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../domain/send_log.dart';
+import '../widgets/sms_auto_fill.dart';
 
 class PhoneVerificationArgs {
   final String verificationId;
@@ -47,7 +48,8 @@ class _PhoneVerificationView extends StatefulWidget {
   State<_PhoneVerificationView> createState() => _PhoneVerificationViewState();
 }
 
-class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
+class _PhoneVerificationViewState extends State<_PhoneVerificationView>
+    with SmsAutoFill {
   final _code = TextEditingController();
 
   /// Replaced when the user asks for a new SMS, so the second code is checked
@@ -64,6 +66,8 @@ class _PhoneVerificationViewState extends State<_PhoneVerificationView> {
   @override
   void initState() {
     super.initState();
+    // A code Android reads from the SMS fills itself in and is confirmed.
+    listenForSmsCode(_code, _verify);
     // A code was just sent to get here.
     _startCooldown();
   }

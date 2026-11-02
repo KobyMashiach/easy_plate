@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/device_session_service.dart';
 import '../../../../core/services/presence_service.dart';
+import '../../domain/sms_auto_code.dart';
 import '../../domain/entities/app_user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/send_log.dart';
@@ -280,6 +281,13 @@ class FirebaseAuthDataSource implements AuthDataSource {
       phoneNumber: phoneNumber,
       forceResendingToken: _resendTokens[phoneNumber],
       verificationCompleted: (credential) async {
+        // The code arrived after it was sent: the code screen is up, so it
+        // fills the code in and confirms it there — one sign-in, on screen,
+        // instead of a second one behind it.
+        if (completer.isCompleted && credential.smsCode != null) {
+          SmsAutoCode.publish(credential.smsCode);
+          return;
+        }
         try {
           final result = await _auth.signInWithCredential(credential);
           final user = _map(result.user);
@@ -410,8 +418,11 @@ class FirebaseAuthDataSource implements AuthDataSource {
       forceResendingToken: _resendTokens[phoneNumber],
       verificationCompleted: (credential) async {
         // Auto-retrieval after the code went out: the user is already on the
-        // code step and confirms it there, as before.
-        if (completer.isCompleted) return;
+        // code step, which fills the code in and confirms it there.
+        if (completer.isCompleted) {
+          SmsAutoCode.publish(credential.smsCode);
+          return;
+        }
         // Instant verification: no code is sent, so nothing else would end
         // the wait (the gate spun forever with sign-out disabled). The
         // credential goes against the current user, as the code would.

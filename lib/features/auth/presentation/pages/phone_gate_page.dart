@@ -17,6 +17,7 @@ import '../widgets/auth_error_text.dart';
 import '../widgets/link_credential_sheets.dart' show readPhoneField;
 import '../widgets/phone_number_field.dart';
 import '../../domain/send_log.dart';
+import '../widgets/sms_auto_fill.dart';
 
 /// Held between arriving with Google or an email and reaching the app.
 ///
@@ -33,7 +34,7 @@ class PhoneGatePage extends StatefulWidget {
   State<PhoneGatePage> createState() => _PhoneGatePageState();
 }
 
-class _PhoneGatePageState extends State<PhoneGatePage> {
+class _PhoneGatePageState extends State<PhoneGatePage> with SmsAutoFill {
   final _phone = PhoneFieldController();
   final _code = TextEditingController();
 
@@ -41,6 +42,13 @@ class _PhoneGatePageState extends State<PhoneGatePage> {
   String? _sentTo;
   bool _busy = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // A code Android reads from the SMS fills itself in and is confirmed.
+    listenForSmsCode(_code, _confirm, ready: () => _verificationId != null);
+  }
 
   @override
   void dispose() {
