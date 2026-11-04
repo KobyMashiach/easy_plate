@@ -17,6 +17,7 @@ import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/press_scale.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
+import '../widgets/ingredient_section_heading.dart';
 import '../../../../core/features/feature_gate.dart';
 
 /// One step at a time, in type large enough to read from across the counter,
@@ -748,7 +749,8 @@ class _IngredientsSheetState extends State<_IngredientsSheet> {
             const SizedBox(height: AppSpacing.gutter),
             ClaySectionHeader(title: t.cookMode.ingredients, underline: true),
             const SizedBox(height: AppSpacing.sm),
-            for (final entry in widget.ingredients.asMap().entries)
+            for (final entry in widget.ingredients.asMap().entries) ...[
+              ?IngredientSectionHeading.at(widget.ingredients, entry.key),
               _IngredientRow(
                 ingredient: entry.value,
                 done: _done.contains(entry.key),
@@ -756,6 +758,7 @@ class _IngredientsSheetState extends State<_IngredientsSheet> {
                   if (!_done.add(entry.key)) _done.remove(entry.key);
                 }),
               ),
+            ],
           ],
         ),
       ),

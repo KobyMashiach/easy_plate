@@ -8,13 +8,14 @@ import { db, collection, onSnapshot, query, orderBy } from "../firebase.js";
 import { t, currentLang, fmtDate, toDate } from "../i18n.js";
 import { h, clear, badge, button, busy, chips, input, textarea, select, toggle, field, modal, confirmDialog, toast, toastError, empty, spinner } from "../ui.js";
 import { call } from "../api.js";
+import { previewRelease } from "./whatsnewPreview.js";
+import { iconPicker } from "./whatsnewIcons.js";
 
 const LANGS = ["he", "en", "ar", "fr", "ru"];
 
 // Mirrors `whatsNewIcons` and `WhatsNewTargets` in the app
 // (lib/features/whats_new/domain/whats_new_targets.dart): the app draws
 // only what is on these lists.
-const ICONS = ["auto_awesome", "new_releases", "celebration", "star", "lightbulb", "bolt", "restaurant_menu", "menu_book", "library_books", "calendar_today", "shopping_cart", "groups", "forum", "favorite", "timer", "local_fire_department", "monitor_heart", "image", "image_search", "share", "qr_code", "family_restroom", "receipt_long", "price_check", "notifications", "workspace_premium", "translate", "palette", "school", "feedback", "devices", "widgets", "mic", "record_voice_over", "smart_toy", "link", "video_library", "text_fields", "picture_as_pdf", "security"];
 const TARGETS = ["", "tab:recipes", "tab:library", "tab:mealPlan", "tab:groceries", "tab:community", "ingestion", "assistant", "price_book", "settings", "preferences", "notification_settings", "account_menu", "notifications", "profile_edit", "sharing", "household", "join_code", "scan_code", "home_widgets", "wake_word", "support", "help", "premium", "tutorial"];
 
 // A flag's default icon, so a picked feature starts with something fitting.
@@ -28,6 +29,7 @@ const DEFAULT_ICONS = {
   ff_assistant: "smart_toy", ff_assistant_scoped: "smart_toy", ff_assistant_voice: "mic", ff_notifications: "notifications", ff_premium: "workspace_premium", ff_content_translation: "translate", ff_theming: "palette", ff_walkthrough: "school", ff_tutorial_book: "school", ff_feedback: "feedback",
   ff_single_session: "devices", ff_home_widgets: "widgets", ff_wake_word: "mic", ff_voice_assistants: "record_voice_over", ff_shefi_launcher: "smart_toy", ff_whats_new: "new_releases",
   ff_support_chat: "feedback", ff_store_review: "star", ff_quick_actions: "bolt", ff_multi_shopping_days: "event_repeat", ff_web_checkout: "workspace_premium", ff_social_video_photo: "image", ff_recipe_source_link: "link",
+  ff_delete_recipe: "restaurant_menu", ff_ingredient_sections: "restaurant_menu", ff_recipe_suggestions: "lightbulb",
 };
 
 let labels = null;
@@ -41,7 +43,13 @@ function camel(key) {
   return key.replace(/^ff_/, "").replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
+// A page of free text, tied to no flag: shown to every account, whatever
+// the console says. The app draws any key that names no flag as it is.
+const FREE_PREFIX = "note_";
+const isFreePage = (key) => key.startsWith(FREE_PREFIX);
+
 function flagName(key, lang = currentLang()) {
+  if (isFreePage(key)) return t("whatsnew.freePage");
   const pick = (l) => (labels && labels[l] ? labels[l].featureName[camel(key)] : undefined);
   return pick(lang) || pick("en") || pick("he") || key;
 }
@@ -104,16 +112,29 @@ export async function mount({ view, actions }) {
 
   // ---- editor --------------------------------------------------------------
 
-  async function edit(release) {
+  // [copyFrom]: a new release that starts with that release's pages
+  // (Koby, 2026-11-02: the same highlights for another version) — a new
+  // build number, unpublished, today's date.
+  // The release as a phone shows it, with the flags' current console
+  // values deciding which pages are drawn.
+  async function showPreview(release) {
+    let all;
+    try { all = await ensureFlags(); } catch (e) { toastError(e); return; }
+    const values = new Map(all.map((f) => [f.key, String(f.value)]));
+    previewRelease(release, { flagValue: (key) => values.get(key), flagName });
+  }
+
+  async function edit(release, copyFrom = null) {
     let all;
     try { all = await ensureFlags(); } catch (e) { toastError(e); return; }
     const isNew = !release;
+    const source = release || copyFrom;
     const draft = {
       versionCode: release ? release.versionCode : (releases && releases[0] ? releases[0].versionCode + 1 : 1),
       version: release ? release.version : "",
       releasedAt: release && release.releasedAt ? toDate(release.releasedAt).getTime() : Date.now(),
       isPublished: release ? release.isPublished === true : false,
-      features: release ? (release.features || []).map((f) => ({ ...f, title: { ...(f.title || {}) }, description: { ...(f.description || {}) } })) : [],
+      features: source ? (source.features || []).map((f) => ({ ...f, title: { ...(f.title || {}) }, description: { ...(f.description || {}) } })) : [],
     };
     const picked = () => draft.features;
     const find = (key) => draft.features.find((f) => f.featureKey === key);
@@ -162,8 +183,7 @@ export async function mount({ view, actions }) {
     // Every page's missing languages in one go, from the language it has
     // (Hebrew first — the prefilled description is Hebrew). Text already
     // there is never overwritten.
-    const translateAll = button(t("whatsnew.translateAll"), { kind: "small" });
-    translateAll.addEventListener("click", busy(translateAll, async () => {
+    const translateAll = async () => {
       const has = (map, l) => !!(map[l] || "").trim();
       let n = 0;
       let failed = null;
@@ -190,7 +210,12 @@ export async function mount({ view, actions }) {
         return;
       }
       toast(n ? t("whatsnew.translatedAll", { n }) : t("whatsnew.nothingToTranslate"), "ok");
-    }));
+    };
+    const translateAllButton = () => {
+      const b = button(t("whatsnew.translateAll"), { kind: "small" });
+      b.addEventListener("click", busy(b, translateAll));
+      return b;
+    };
 
     const pageCard = (f, index) => {
       let lang = currentLang();
@@ -223,8 +248,7 @@ export async function mount({ view, actions }) {
         } catch (e) { toastError(e); }
       }));
 
-      const iconCtl = select(ICONS.map((i) => [i, i]), { value: f.iconName || "auto_awesome", style: { direction: "ltr" } });
-      iconCtl.addEventListener("change", () => { f.iconName = iconCtl.value; });
+      const iconCtl = iconPicker(f.iconName || "auto_awesome", (name) => { f.iconName = name; });
       const targetCtl = select(TARGETS.map((r) => [r, r ? (t(`whatsnew.targets.${r}`) === `whatsnew.targets.${r}` ? r : t(`whatsnew.targets.${r}`)) : t("whatsnew.noTarget")]), { value: f.targetRoute || "", style: { direction: "ltr" } });
       targetCtl.addEventListener("change", () => { f.targetRoute = targetCtl.value; });
       const imageCtl = input({ value: f.imageUrl || "", placeholder: "https://…", style: { direction: "ltr" } });
@@ -258,9 +282,32 @@ export async function mount({ view, actions }) {
     const paintPages = () => {
       clear(pages);
       draft.features.forEach((f, i) => { f.sortOrder = i; });
-      if (!draft.features.length) { pages.append(h("p.small.muted", t("whatsnew.pickHint"))); return; }
-      pages.append(h("h3", t("whatsnew.pages", { n: draft.features.length })));
+      // The page tools (AI for every page, a free page) sit above the
+      // pages and again under the last one.
+      const tools = () => h("div.row", { style: { gap: "8px", flexWrap: "wrap" } },
+        draft.features.length ? translateAllButton() : null,
+        addFreeButton(),
+      );
+      const n = draft.features.length;
+      pages.append(h("div.row.between", { style: { alignItems: "center", flexWrap: "wrap", gap: "8px" } },
+        n ? h("h3", t("whatsnew.pages", { n })) : h("p.small.muted", t("whatsnew.pickHint")),
+        tools(),
+      ));
       draft.features.forEach((f, i) => pages.append(pageCard(f, i)));
+      if (n) pages.append(tools());
+    };
+
+    // Free text beside the flags (Koby, 2026-11-02): a page with its own
+    // headline and text, edited, translated and ordered like the others.
+    const addFreeButton = () => {
+      const b = button(`+ ${t("whatsnew.addFreePage")}`, { kind: "small" });
+      b.addEventListener("click", () => {
+        let n = 1;
+        while (find(`${FREE_PREFIX}${n}`)) n++;
+        draft.features.push({ featureKey: `${FREE_PREFIX}${n}`, title: {}, description: {}, imageUrl: "", iconName: "auto_awesome", targetRoute: "", sortOrder: draft.features.length });
+        paintPages();
+      });
+      return b;
     };
 
     searchCtl.addEventListener("input", paintChecklist);
@@ -268,7 +315,7 @@ export async function mount({ view, actions }) {
     paintPages();
 
     modal({
-      title: isNew ? t("whatsnew.newRelease") : t("whatsnew.editRelease", { v: draft.version || draft.versionCode }),
+      title: copyFrom ? t("whatsnew.duplicateOf", { v: copyFrom.version || copyFrom.versionCode }) : isNew ? t("whatsnew.newRelease") : t("whatsnew.editRelease", { v: draft.version || draft.versionCode }),
       wide: true,
       body: h("div.stack",
         h("div.grid3",
@@ -277,13 +324,15 @@ export async function mount({ view, actions }) {
           field(t("whatsnew.releasedAt"), dateCtl),
         ),
         field(t("whatsnew.published"), publishedCtl, t("whatsnew.publishedHint")),
-        h("div.row.between", { style: { alignItems: "center" } }, h("h3", t("whatsnew.features")), translateAll),
+        h("h3", t("whatsnew.features")),
         h("p.small.muted", t("whatsnew.featuresHint")),
         h("div.search", searchCtl),
         checklist,
         pages,
       ),
-      actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => {
+      actions: [
+        () => button(t("whatsnew.preview"), { onclick: () => showPreview({ version: nameCtl.value.trim(), versionCode: Number(versionCtl.value), features: draft.features }) }),
+        (c) => button(t("common.cancel"), { onclick: c }), (c) => {
         const b = button(t("common.save"), { kind: "primary" });
         b.addEventListener("click", busy(b, async () => {
           const versionCode = Number(versionCtl.value);
@@ -334,6 +383,8 @@ export async function mount({ view, actions }) {
         h("ul", { style: { margin: "4px 0 0", paddingInlineStart: "18px" } }, features.map((f) => h("li", h("span", textIn(f.title) || flagName(f.featureKey)), h("span.small.muted.mono", ` · ${f.featureKey}`), f.targetRoute ? h("span.small.muted", ` → ${f.targetRoute}`) : null))),
         h("div.row",
           button(t("common.edit"), { kind: "small", onclick: () => edit(r) }),
+          button(t("whatsnew.preview"), { kind: "small", onclick: () => showPreview(r) }),
+          button(t("whatsnew.duplicate"), { kind: "small", title: t("whatsnew.duplicateHint"), onclick: () => edit(null, r) }),
           button(r.isPublished ? t("whatsnew.unpublish") : t("common.publish"), { kind: r.isPublished ? "small" : "small primary", onclick: () => setPublished(r, !r.isPublished) }),
           button(t("common.delete"), { kind: "ghost small", onclick: () => remove(r) }),
         ),

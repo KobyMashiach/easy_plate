@@ -26,6 +26,7 @@ import { useIsPhone } from "../../components/useIsPhone";
 import { usePhoneNavigate } from "../../components/pageTransition";
 import { ImagePicker } from "../recipes/components/ImagePicker";
 import { PhoneBookViewer } from "./PhoneBookViewer";
+import { SectionedIngredients } from "../recipes/components/IngredientSections";
 
 export function BookViewerPage() {
   const { t, lang, dir } = useI18n();
@@ -432,14 +433,14 @@ function RecipePage({ recipe, number }: { recipe: Recipe; number: number }) {
         <section aria-label={t("recipe.ingredients")}>
           <h3 className="mb-2 text-label-md font-bold text-primary">{t("recipe.ingredients")}</h3>
           <ul className="space-y-1.5">
-            {recipe.ingredients.map((ing, i) => (
+            <SectionedIngredients ingredients={recipe.ingredients} row={(ing, i) => (
               <li key={i} className="flex gap-3 border-b border-outline-variant/40 pb-1.5 text-body-md">
                 <span className="min-w-14 text-on-surface-variant" dir="ltr">
                   {[amount(ing.amount), t(`unit.${ing.unit}`)].filter(Boolean).join(" ")}
                 </span>
                 <span>{ing.name}</span>
               </li>
-            ))}
+            )} />
           </ul>
         </section>
       ) : null}

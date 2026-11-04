@@ -44,8 +44,14 @@ class RecipeSourceLink extends StatelessWidget {
 
   static bool _isVideoSite(Uri uri) {
     final host = hostLabel(uri);
-    return const ['tiktok.com', 'instagram.com', 'youtube.com', 'youtu.be', 'facebook.com', 'fb.watch']
-        .any((site) => host == site || host.endsWith('.$site'));
+    return const [
+      'tiktok.com',
+      'instagram.com',
+      'youtube.com',
+      'youtu.be',
+      'facebook.com',
+      'fb.watch',
+    ].any((site) => host == site || host.endsWith('.$site'));
   }
 
   Future<void> _open(BuildContext context, Uri uri) async {

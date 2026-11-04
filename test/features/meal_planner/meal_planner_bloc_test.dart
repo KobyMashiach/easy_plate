@@ -264,18 +264,21 @@ void main() {
     },
   );
 
-  test('a delete that fails still answers, with the plan still listed', () async {
-    // Without a state the page's busy card waited its full 30 s, then
-    // announced the plan deleted.
-    plans.deleteError = StateError('disk');
-    final bloc = build();
-    await loaded(bloc);
+  test(
+    'a delete that fails still answers, with the plan still listed',
+    () async {
+      // Without a state the page's busy card waited its full 30 s, then
+      // announced the plan deleted.
+      plans.deleteError = StateError('disk');
+      final bloc = build();
+      await loaded(bloc);
 
-    bloc.add(const MealPlannerEvent.deletePlan('p'));
-    final state = await loaded(bloc).timeout(const Duration(seconds: 1));
-    expect(state.plans.map((p) => p.id), ['p']);
-    await bloc.close();
-  });
+      bloc.add(const MealPlannerEvent.deletePlan('p'));
+      final state = await loaded(bloc).timeout(const Duration(seconds: 1));
+      expect(state.plans.map((p) => p.id), ['p']);
+      await bloc.close();
+    },
+  );
 
   test('a delete that goes through drops the plan', () async {
     final bloc = build();

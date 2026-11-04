@@ -26,6 +26,7 @@ import { ingredientLine, quantityLabel } from "./lib/format";
 import { formatClock } from "./lib/stepDuration";
 import { useRecipe } from "./lib/useRecipe";
 import { useSharedRecipe } from "../community/data/useSharedRecipe";
+import { SectionedIngredients } from "./components/IngredientSections";
 
 const NOTIFY_ASKED = "ep-cook-notify-asked";
 
@@ -370,7 +371,7 @@ function CookMode({ community }: { community: boolean }) {
         <BottomSheet open={showIngredients} onClose={() => setShowIngredients(false)} title={t("recipes.cook.ingredients")} showTitle={false}>
           <SectionHeader title={t("recipes.cook.ingredients")} />
           <ul className="mt-3 pb-7">
-            {recipe.ingredients.map((ing, i) => {
+            <SectionedIngredients ingredients={recipe.ingredients} row={(ing, i) => {
               const checked = done.has(i);
               return (
                 <li key={i} className="flex items-center gap-3 py-2">
@@ -380,7 +381,7 @@ function CookMode({ community }: { community: boolean }) {
                   </button>
                 </li>
               );
-            })}
+            }} />
           </ul>
         </BottomSheet>
 
@@ -517,7 +518,7 @@ function CookMode({ community }: { community: boolean }) {
                     {t("recipes.cook.ingredients")}
                   </h2>
                   <ul className="space-y-1">
-                    {recipe.ingredients.map((ing, i) => {
+                    <SectionedIngredients ingredients={recipe.ingredients} row={(ing, i) => {
                       const checked = done.has(i);
                       return (
                         <li key={i}>
@@ -538,7 +539,7 @@ function CookMode({ community }: { community: boolean }) {
                           </label>
                         </li>
                       );
-                    })}
+                    }} />
                   </ul>
                 </div>
               </aside>

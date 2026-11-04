@@ -546,6 +546,10 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get sourceLink => 'Original recipe';
 	@override String get sourceLinkHint => 'Open the source this recipe was imported from';
 	@override String get sourceOpenFailed => 'Could not open the link';
+	@override String get delete => 'Delete recipe';
+	@override String get deleteConfirm => 'The recipe will be deleted for good. This cannot be undone.';
+	@override String get deleteSharedConfirm => 'The recipe is removed only for you. Everyone else in the share keeps it.';
+	@override String get deleted => 'Recipe deleted';
 }
 
 // Path: cookMode
@@ -937,6 +941,22 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get videoPhotoCover => 'Post cover';
 	@override String get videoPhotoNone => 'No picture';
 	@override String get videoPhotoFailed => 'Could not save that picture, try another';
+	@override String get suggestForMe => 'Suggestions for me';
+	@override String get suggestForMeHint => 'Write what you feel like (say, desserts) or leave it empty, and get up to 10 recipes from the web that fit your preferences. Pick one, analyse and save it, then come back for the next.';
+	@override String get suggesting => 'Finding recipes for you…';
+	@override String get suggestionsTitle => 'Picked for you';
+	@override String get suggestionsHint => 'Choose a recipe to analyse. After saving you come back here for the next one.';
+	@override String get savedFromList => 'Recipe saved. Pick the next one';
+	@override String get savedTag => 'Saved';
+	@override String get suggestionsDone => 'Done';
+	@override String get backToResults => 'Back to the list';
+	@override String get suggestionsEmpty => 'No suggestions right now. Try again in a moment.';
+	@override String get suggestTopicLabel => 'What do you feel like? (optional)';
+	@override String get suggestTopicHint => 'For example: desserts, a quick dinner, soups';
+	@override String get suggestDietLabel => 'Diet for this search';
+	@override String get suggestDietNote => 'Starts from your preferences. Changing it here does not change your settings.';
+	@override String get suggestDietReset => 'Back to my preferences';
+	@override String get suggestSearch => 'Find suggestions';
 }
 
 // Path: mealPlanner
@@ -1981,6 +2001,9 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get webCheckout => 'Buy on the web';
 	@override String get socialVideoPhoto => 'Picture from a video';
 	@override String get recipeSourceLink => 'Link to the original recipe';
+	@override String get deleteRecipe => 'Delete recipe';
+	@override String get ingredientSections => 'Ingredient group headings';
+	@override String get recipeSuggestions => 'Recipe suggestions by preferences';
 	@override String get webCheckoutIl => 'Buy on the web (Israel)';
 	@override String get webCheckoutIntl => 'Buy on the web (abroad)';
 }
@@ -3036,6 +3059,10 @@ extension on TranslationsEn {
 			'recipe.sourceLink' => 'Original recipe',
 			'recipe.sourceLinkHint' => 'Open the source this recipe was imported from',
 			'recipe.sourceOpenFailed' => 'Could not open the link',
+			'recipe.delete' => 'Delete recipe',
+			'recipe.deleteConfirm' => 'The recipe will be deleted for good. This cannot be undone.',
+			'recipe.deleteSharedConfirm' => 'The recipe is removed only for you. Everyone else in the share keeps it.',
+			'recipe.deleted' => 'Recipe deleted',
 			'cookMode.title' => 'Cook mode',
 			'cookMode.start' => 'Start cooking',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Step ${n} of ${total}',
@@ -3220,12 +3247,12 @@ extension on TranslationsEn {
 			'sharing.acceptedPlan' => 'The plan was added to your plans',
 			'sharing.viewerCannotEditBook' => 'This book was shared with you as view only',
 			'sharing.viewerCannotEditPlan' => 'This plan was shared with you as view only',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.kindRecipe' => 'Recipe',
 			'sharing.kindBook' => 'Book',
 			'sharing.kindPlan' => 'Plan',
 			'sharing.recipesTravel' => 'The recipes inside are shared along with it',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.shareList' => 'Share grocery list',
 			'sharing.acceptedList' => 'The list was added to your grocery lists',
 			'sharing.viewerCannotEditList' => 'This list is shared with you view-only',
@@ -3360,6 +3387,22 @@ extension on TranslationsEn {
 			'ingestion.videoPhotoCover' => 'Post cover',
 			'ingestion.videoPhotoNone' => 'No picture',
 			'ingestion.videoPhotoFailed' => 'Could not save that picture, try another',
+			'ingestion.suggestForMe' => 'Suggestions for me',
+			'ingestion.suggestForMeHint' => 'Write what you feel like (say, desserts) or leave it empty, and get up to 10 recipes from the web that fit your preferences. Pick one, analyse and save it, then come back for the next.',
+			'ingestion.suggesting' => 'Finding recipes for you…',
+			'ingestion.suggestionsTitle' => 'Picked for you',
+			'ingestion.suggestionsHint' => 'Choose a recipe to analyse. After saving you come back here for the next one.',
+			'ingestion.savedFromList' => 'Recipe saved. Pick the next one',
+			'ingestion.savedTag' => 'Saved',
+			'ingestion.suggestionsDone' => 'Done',
+			'ingestion.backToResults' => 'Back to the list',
+			'ingestion.suggestionsEmpty' => 'No suggestions right now. Try again in a moment.',
+			'ingestion.suggestTopicLabel' => 'What do you feel like? (optional)',
+			'ingestion.suggestTopicHint' => 'For example: desserts, a quick dinner, soups',
+			'ingestion.suggestDietLabel' => 'Diet for this search',
+			'ingestion.suggestDietNote' => 'Starts from your preferences. Changing it here does not change your settings.',
+			'ingestion.suggestDietReset' => 'Back to my preferences',
+			'ingestion.suggestSearch' => 'Find suggestions',
 			'mealPlanner.title' => 'Meal planning',
 			'mealPlanner.newPlan' => 'New plan',
 			'mealPlanner.planName' => 'Plan name',
@@ -3718,6 +3761,8 @@ extension on TranslationsEn {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Step ${current} of ${total}',
 			'walkthrough.tapHint' => 'Tap the highlighted area, or "Next"',
 			'walkthrough.bookTitle' => 'EasyPlate guide',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'Everything the app can do, chapter by chapter. The samples in this book are never saved; the live tour does the real actions, with the fields already filled in.',
 			'walkthrough.contents' => 'Contents',
 			'walkthrough.chapter' => ({required Object number}) => 'Chapter ${number}',
@@ -3738,8 +3783,6 @@ extension on TranslationsEn {
 			'walkthrough.topics.library.summary' => 'Arrange recipes into books with a table of contents, a cover and page turning, and share a whole book with another account.',
 			'walkthrough.topics.library.s1' => 'Tap "Library" to go to your books.',
 			'walkthrough.topics.library.s2' => 'Tap the plus to create a new book.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'The book\'s name is already filled in: "Tutorial". Tap the field to change it, then carry on.',
 			'walkthrough.topics.library.s4' => 'Tap "Save" to create the book.',
 			'walkthrough.topics.library.s5' => 'Pick a spine colour, which tells the books apart on the shelf, and tap "Save". The book opens straight away.',
@@ -4232,6 +4275,8 @@ extension on TranslationsEn {
 			'shareCode.revoke' => 'Cancel code',
 			'shareCode.limitRecipes' => ({required Object count}) => 'Free accounts can share up to ${count} recipes a week.',
 			'shareCode.limitBooks' => ({required Object count}) => 'Free accounts can share up to ${count} books.',
+			_ => null,
+		} ?? switch (path) {
 			'shareCode.limitPlans' => ({required Object count}) => 'Free accounts can share up to ${count} meal plans.',
 			'shareCode.upgrade' => 'See Premium',
 			'shareCode.scanHint' => 'Point the camera at a share QR',
@@ -4252,8 +4297,6 @@ extension on TranslationsEn {
 			'household.invite' => 'Invite a member',
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(free, one: 'Anyone with this code joins the shared account. 1 seat left.', other: 'Anyone with this code joins the shared account. ${free} seats left.', ), 
 			'household.noSeats' => 'All seats are taken.',
-			_ => null,
-		} ?? switch (path) {
 			'household.remove' => 'Remove',
 			'household.removeConfirm' => ({required Object name}) => 'Remove ${name} from the shared account? They lose access and Premium.',
 			'household.leave' => 'Leave shared account',
@@ -4383,6 +4426,9 @@ extension on TranslationsEn {
 			'featureName.webCheckout' => 'Buy on the web',
 			'featureName.socialVideoPhoto' => 'Picture from a video',
 			'featureName.recipeSourceLink' => 'Link to the original recipe',
+			'featureName.deleteRecipe' => 'Delete recipe',
+			'featureName.ingredientSections' => 'Ingredient group headings',
+			'featureName.recipeSuggestions' => 'Recipe suggestions by preferences',
 			'featureName.webCheckoutIl' => 'Buy on the web (Israel)',
 			'featureName.webCheckoutIntl' => 'Buy on the web (abroad)',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',

@@ -104,6 +104,19 @@ const BROWSER_UA =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 " +
   "(KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
 
+// TikTok answers yt-dlp's own webpage request with a page it cannot read
+// ("Unexpected response from webpage request", yt-dlp issue #17604, every
+// TikTok link from 2026-09 on); a desktop browser's user agent gets the real
+// page. Only for TikTok: the other platforms read fine with yt-dlp's default.
+const TIKTOK_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+  "(KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36";
+
+// Pure: the flags a platform needs on top of the probe's own.
+function probeExtraArgs(url) {
+  return platformOf(url) === "tiktok" ? ["--user-agent", TIKTOK_UA] : [];
+}
+
 // The yt-dlp binary is fetched once per instance into /tmp (the only
 // writable place) — a few seconds on a cold start, nothing after.
 //
@@ -116,11 +129,17 @@ const BROWSER_UA =
 // file, is hashed, and only a match is renamed into place; a file already
 // in /tmp is hashed before it is used.
 //
+// The standalone Linux build, not the `yt-dlp` zipapp: the zipapp runs on
+// the instance's own python3, which is 3.10 on the Cloud Functions image,
+// and yt-dlp dropped 3.10 in 2026.10.26. The standalone build carries its
+// own Python (and curl_cffi for browser impersonation), so the runtime's
+// Python no longer decides which yt-dlp can run.
+//
 // To move to a newer yt-dlp: take the tag from github.com/yt-dlp/yt-dlp/
-// releases and the `yt-dlp` line of that release's SHA2-256SUMS.
-const YT_DLP_VERSION = "2026.08.19";
-const YT_DLP_SHA256 = "1fa6733c37ea6fb51c99ad8fe785e7b7e5f3246c9b980230329d4fb72ed8d4d6";
-const YT_DLP_URL = `https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp`;
+// releases and the `yt-dlp_linux` line of that release's SHA2-256SUMS.
+const YT_DLP_VERSION = "2026.10.26";
+const YT_DLP_SHA256 = "767ba9dce7052aa196f8b12652f433d76de128ba168966fa84b6394d5e6c6795";
+const YT_DLP_URL = `https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp_linux`;
 const YT_DLP_MAX_BYTES = 50 * 1024 * 1024;
 const YT_DLP_DOWNLOAD_MS = 60 * 1000;
 const BINARY_PATH = "/tmp/yt-dlp";
@@ -604,6 +623,35 @@ async function fetchText(url, headers = {}) {
   return (await safeFetch.readCapped(res, MAX_PAGE_BYTES)).toString("utf8");
 }
 
+// Pure: yt-dlp's `cookies` field ("a=1; Domain=.tiktok.com; Path=/; Secure;
+// Expires=…; b=2; Domain=…") as the Cookie header the media fetch sends.
+// TikTok's CDN answers 403 without its tt_chain_token, which yt-dlp keeps
+// here rather than in http_headers.
+const COOKIE_ATTRIBUTES = new Set(["domain", "path", "expires", "max-age", "secure", "httponly", "samesite"]);
+function cookieHeader(cookies) {
+  if (typeof cookies !== "string") return "";
+  return cookies
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => {
+      const eq = part.indexOf("=");
+      return eq > 0 && !COOKIE_ATTRIBUTES.has(part.slice(0, eq).trim().toLowerCase());
+    })
+    .join("; ");
+}
+
+function withCookies(headers, cookies) {
+  const cookie = cookieHeader(cookies);
+  if (!cookie || Object.keys(headers).some((k) => k.toLowerCase() === "cookie")) return headers;
+  return { ...headers, Cookie: cookie };
+}
+
+// One self-contained mp4, H.264 first (what every model reads), no merging
+// so no ffmpeg needed; falls back to whatever exists.
+const VIDEO_FORMAT =
+  `best[ext=mp4][vcodec^=h264][filesize<${MAX_VIDEO_BYTES}]/` +
+  `best[ext=mp4][vcodec!=none][filesize<${MAX_VIDEO_BYTES}]/best[ext=mp4]/best`;
+
 // What yt-dlp knows about the link, without downloading anything.
 async function probe(url, timeoutMs = PROBE_MS) {
   const bin = await ytDlp();
@@ -622,9 +670,8 @@ async function probe(url, timeoutMs = PROBE_MS) {
     "--socket-timeout",
     "20",
     "-f",
-    // One self-contained mp4, smallest that is still the best; no merging,
-    // so no ffmpeg needed. Falls back to whatever exists.
-    `best[ext=mp4][vcodec!=none][filesize<${MAX_VIDEO_BYTES}]/best[ext=mp4]/best`,
+    VIDEO_FORMAT,
+    ...probeExtraArgs(url),
     url,
   ], { env: childEnv(), maxBuffer: PROBE_MAX_BUFFER }, AbortSignal.timeout(timeoutMs));
   const info = JSON.parse(out);
@@ -633,7 +680,7 @@ async function probe(url, timeoutMs = PROBE_MS) {
     title: info.title || null,
     description: info.description || null,
     mediaUrl: chosen.url || null,
-    headers: chosen.http_headers || info.http_headers || {},
+    headers: withCookies(chosen.http_headers || info.http_headers || {}, chosen.cookies || info.cookies),
     durationSec: Number(info.duration) || null,
     thumbnail: coverFromProbe(info),
   };
@@ -696,6 +743,38 @@ async function collectImages({ cover, video, answer, durationSec, deadline }) {
     logger.warn("recipe pictures skipped", { reason: err.message });
     return [];
   }
+}
+
+// The video fetched by yt-dlp itself. TikTok's media URL is tied to the
+// session that read the page (a plain fetch of it answers 403 even with the
+// page's cookies, checked 2026-11-04), so when [download] is refused the
+// file comes from the run that can open it. Capped like [download].
+async function downloadWithYtDlp(url, timeoutMs = DOWNLOAD_MS) {
+  const bin = await ytDlp();
+  return withScratch(async (dir) => {
+    await bin.execPromise([
+      "--ignore-config",
+      "--no-playlist",
+      "--no-warnings",
+      "--no-progress",
+      "--socket-timeout",
+      "20",
+      "--max-filesize",
+      String(MAX_VIDEO_BYTES),
+      "-f",
+      VIDEO_FORMAT,
+      ...probeExtraArgs(url),
+      "-o",
+      path.join(dir, "video.%(ext)s"),
+      url,
+    ], { env: childEnv(), maxBuffer: PROBE_MAX_BUFFER }, AbortSignal.timeout(timeoutMs));
+    const file = fs.readdirSync(dir).find((name) => name.startsWith("video.") && !name.endsWith(".part"));
+    // --max-filesize leaves nothing behind for a video over the cap.
+    if (!file) throw new Error("yt-dlp wrote no video");
+    const bytes = fs.readFileSync(path.join(dir, file));
+    if (bytes.length > MAX_VIDEO_BYTES) throw new Error("video over the size cap");
+    return bytes;
+  });
 }
 
 async function download(mediaUrl, headers, timeoutMs = DOWNLOAD_MS) {
@@ -1012,7 +1091,16 @@ exports.socialRecipe = onRequest(
           // The model's share of the time is kept back from the download.
           const forDownload = deadline - Date.now() - MODEL_MS;
           if (info.mediaUrl && (!info.durationSec || info.durationSec <= MAX_VIDEO_SECONDS) && forDownload > MIN_STEP_MS) {
-            video = await download(info.mediaUrl, info.headers, Math.min(DOWNLOAD_MS, forDownload));
+            const budget = Math.min(DOWNLOAD_MS, forDownload);
+            const fetchStarted = Date.now();
+            try {
+              video = await download(info.mediaUrl, info.headers, budget);
+            } catch (err) {
+              const left = budget - (Date.now() - fetchStarted);
+              if (left < MIN_STEP_MS) throw err;
+              logger.info("media fetch refused, downloading through yt-dlp", { platform, reason: err.message });
+              video = await downloadWithYtDlp(url, left);
+            }
           }
         } catch (err) {
           logger.info("video fetch failed, trying the caption", { platform, reason: err.message });
@@ -1086,11 +1174,11 @@ exports.socialRecipe = onRequest(
 );
 
 exports.internals = {
-  platformOf, isLinkShim, unwrapLinkShim, textFromHtml, metaContent, isUsableRecipe, captionText, refundable, refusalStatus, MODEL_ID,
+  platformOf, probeExtraArgs, cookieHeader, withCookies, isLinkShim, unwrapLinkShim, textFromHtml, metaContent, isUsableRecipe, captionText, refundable, refusalStatus, MODEL_ID,
   installYtDlp, fileMatches, stepBudget, probeRefundAllowed, callModel,
   youtubeId, youtubeThumbnails, coverFromProbe, instagramEmbedImage,
   withFrameField, stripFrameField, frameTimes, seconds, fitImages, scaleFilter, videoDemuxer, inputArgs, childEnv, MAX_COVER_PIXELS, MAX_VIDEO_PIXELS,
-  toJpeg, extractFrames, withScratch, runFfmpeg, collectImages, fetchFirstCover, probe, download, captionFallback,
+  toJpeg, extractFrames, withScratch, runFfmpeg, collectImages, fetchFirstCover, probe, download, downloadWithYtDlp, captionFallback,
   FRAME_FIELD, FRAME_PROMPT, MAX_FRAMES, MAX_IMAGES_BASE64, ENVELOPE_VERSION, ffmpegPath,
   FFMPEG_SHA256, FFMPEG_EXPECTED, ffmpegTrusted, hashFile,
   YT_DLP_VERSION, YT_DLP_SHA256, YT_DLP_URL, DEADLINE_MS, MODEL_MS, PROBE_MS, MIN_STEP_MS, FUNCTION_TIMEOUT_S,

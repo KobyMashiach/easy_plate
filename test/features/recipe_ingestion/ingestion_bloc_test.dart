@@ -23,6 +23,7 @@ import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recip
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_social_video_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/parse_recipe_from_url_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/domain/usecases/search_web_recipes_usecase.dart';
+import 'package:easy_plate/features/recipe_ingestion/domain/usecases/suggest_recipes_usecase.dart';
 import 'package:easy_plate/features/recipe_ingestion/presentation/bloc/ingestion_bloc.dart';
 import 'package:easy_plate/features/user_profile/domain/entities/user_preferences_entity.dart';
 import 'package:easy_plate/features/user_profile/domain/repositories/user_preferences_repository.dart';
@@ -44,6 +45,7 @@ class _FakeIngestion implements RecipeIngestionRepository {
   String? pageText;
   bool pageThrows = false;
   Future<List<WebSearchResultEntity>> Function(String query)? onSearch;
+  Future<List<WebSearchResultEntity>> Function()? onSuggest;
 
   @override
   Future<RecipeEntity> parseRawText(String text, List<DietaryPreference> p) =>
@@ -66,7 +68,8 @@ class _FakeIngestion implements RecipeIngestionRepository {
   Future<SocialVideoRecipe> parseFromSocialVideo(
     String url,
     List<DietaryPreference> p,
-  ) async => SocialVideoRecipe(recipe: await onParse!(url), images: socialImages);
+  ) async =>
+      SocialVideoRecipe(recipe: await onParse!(url), images: socialImages);
 
   @override
   Future<RecipeEntity> generateRecipe(
@@ -79,6 +82,22 @@ class _FakeIngestion implements RecipeIngestionRepository {
     if (pageThrows) throw Exception('bot wall');
     return OriginalRecipePageEntity(url: url, text: pageText ?? '');
   }
+
+  @override
+  Future<List<WebSearchResultEntity>> suggestRecipes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  }) {
+    lastKnownTitles = knownTitles;
+    lastTopic = topic;
+    lastDiet = preferences;
+    return onSuggest?.call() ?? Future.value(const []);
+  }
+
+  List<String>? lastKnownTitles;
+  String? lastTopic;
+  List<DietaryPreference>? lastDiet;
 
   @override
   Future<List<WebSearchResultEntity>> searchWeb(
@@ -103,6 +122,11 @@ class _FakeIngestion implements RecipeIngestionRepository {
 
 class _FakeRecipes implements RecipesRepository {
   final saved = <RecipeEntity>[];
+  List<RecipeEntity> kept = const [];
+
+  @override
+  Future<List<RecipeEntity>> getRecipes() async => List.unmodifiable(kept);
+
   Duration delay = Duration.zero;
   bool fail = false;
 
@@ -125,7 +149,7 @@ class _FakePreferences implements UserPreferencesRepository {
   Future<UserPreferencesEntity> getPreferences() async =>
       const UserPreferencesEntity(
         shoppingDay: ShoppingDay.sunday,
-        dietaryPreferences: [],
+        dietaryPreferences: [DietaryPreference.kosher],
       );
 
   @override
@@ -162,6 +186,7 @@ void main() {
     fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(ingestion),
     saveRecipeUseCase: SaveRecipeUseCase(recipes),
     getUserPreferencesUseCase: GetUserPreferencesUseCase(_FakePreferences()),
+    suggestRecipesUseCase: SuggestRecipesUseCase(ingestion, recipes),
   );
 
   Future<IngestionState> settle(IngestionBloc bloc) =>
@@ -198,58 +223,74 @@ void main() {
       ];
     });
 
-    test('the post\'s cover goes on the recipe by itself, the stills are offered', () async {
-      final bloc = buildBloc();
-      bloc.add(const IngestionEvent.parseSocialVideo(link));
-      final state = await settle(bloc) as IngestionReview;
+    test(
+      'the post\'s cover goes on the recipe by itself, the stills are offered',
+      () async {
+        final bloc = buildBloc();
+        bloc.add(const IngestionEvent.parseSocialVideo(link));
+        final state = await settle(bloc) as IngestionReview;
 
-      expect(state.imageCandidates.length, 3);
-      expect(state.selectedImage, 0);
-      expect(state.recipe.imageFileName, 'picked1.jpg');
-      expect(stored, [Uint8List.fromList([10, 11, 12])], reason: 'only the cover was written');
-    });
+        expect(state.imageCandidates.length, 3);
+        expect(state.selectedImage, 0);
+        expect(state.recipe.imageFileName, 'picked1.jpg');
+        expect(stored, [
+          Uint8List.fromList([10, 11, 12]),
+        ], reason: 'only the cover was written');
+      },
+    );
 
-    test('a still is written once however often it is picked; "no picture" takes it off', () async {
-      final bloc = buildBloc();
-      bloc.add(const IngestionEvent.parseSocialVideo(link));
-      await settle(bloc);
+    test(
+      'a still is written once however often it is picked; "no picture" takes it off',
+      () async {
+        final bloc = buildBloc();
+        bloc.add(const IngestionEvent.parseSocialVideo(link));
+        await settle(bloc);
 
-      bloc.add(const IngestionEvent.pickImageCandidate(1));
-      var state = await bloc.stream.first as IngestionReview;
-      expect(state.selectedImage, 1);
-      expect(state.recipe.imageFileName, 'picked2.jpg');
+        bloc.add(const IngestionEvent.pickImageCandidate(1));
+        var state = await bloc.stream.first as IngestionReview;
+        expect(state.selectedImage, 1);
+        expect(state.recipe.imageFileName, 'picked2.jpg');
 
-      bloc.add(const IngestionEvent.pickImageCandidate(null));
-      state = await bloc.stream.first as IngestionReview;
-      expect(state.selectedImage, isNull);
-      expect(state.recipe.imageFileName, isNull);
-      expect(state.imageCandidates.length, 3, reason: 'still on offer');
+        bloc.add(const IngestionEvent.pickImageCandidate(null));
+        state = await bloc.stream.first as IngestionReview;
+        expect(state.selectedImage, isNull);
+        expect(state.recipe.imageFileName, isNull);
+        expect(state.imageCandidates.length, 3, reason: 'still on offer');
 
-      bloc.add(const IngestionEvent.pickImageCandidate(1));
-      state = await bloc.stream.first as IngestionReview;
-      expect(state.recipe.imageFileName, 'picked2.jpg');
-      expect(stored.length, 2, reason: 'the cover and one still, each once');
+        bloc.add(const IngestionEvent.pickImageCandidate(1));
+        state = await bloc.stream.first as IngestionReview;
+        expect(state.recipe.imageFileName, 'picked2.jpg');
+        expect(stored.length, 2, reason: 'the cover and one still, each once');
 
-      // An index that is not a candidate changes nothing.
-      bloc.add(const IngestionEvent.pickImageCandidate(7));
-      await Future<void>.delayed(Duration.zero);
-      expect((bloc.state as IngestionReview).recipe.imageFileName, 'picked2.jpg');
-    });
+        // An index that is not a candidate changes nothing.
+        bloc.add(const IngestionEvent.pickImageCandidate(7));
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          (bloc.state as IngestionReview).recipe.imageFileName,
+          'picked2.jpg',
+        );
+      },
+    );
 
-    test('closing the screen deletes the pictures the saved recipe did not take', () async {
-      final bloc = buildBloc();
-      bloc.add(const IngestionEvent.parseSocialVideo(link));
-      await settle(bloc);
-      bloc.add(const IngestionEvent.pickImageCandidate(2));
-      final state = await bloc.stream.first as IngestionReview;
+    test(
+      'closing the screen deletes the pictures the saved recipe did not take',
+      () async {
+        final bloc = buildBloc();
+        bloc.add(const IngestionEvent.parseSocialVideo(link));
+        await settle(bloc);
+        bloc.add(const IngestionEvent.pickImageCandidate(2));
+        final state = await bloc.stream.first as IngestionReview;
 
-      bloc.add(IngestionEvent.saveRecipe(state.recipe));
-      expect(await bloc.stream.first, isA<IngestionSaved>());
-      expect(recipes.saved.single.imageFileName, 'picked2.jpg');
+        bloc.add(IngestionEvent.saveRecipe(state.recipe));
+        expect(await bloc.stream.first, isA<IngestionSaved>());
+        expect(recipes.saved.single.imageFileName, 'picked2.jpg');
 
-      await bloc.close();
-      expect(deleted, ['picked1.jpg'], reason: 'the cover file, not the saved still');
-    });
+        await bloc.close();
+        expect(deleted, [
+          'picked1.jpg',
+        ], reason: 'the cover file, not the saved still');
+      },
+    );
 
     test('backing out without saving deletes every picture written', () async {
       final bloc = buildBloc();
@@ -262,53 +303,64 @@ void main() {
       expect(deleted, unorderedEquals(['picked1.jpg', 'picked2.jpg']));
     });
 
-    test('a cover that cannot be written leaves the recipe bare, the stills still on offer', () async {
-      storeImage = (_) async => null;
-      final bloc = buildBloc();
-      bloc.add(const IngestionEvent.parseSocialVideo(link));
-      final state = await settle(bloc) as IngestionReview;
+    test(
+      'a cover that cannot be written leaves the recipe bare, the stills still on offer',
+      () async {
+        storeImage = (_) async => null;
+        final bloc = buildBloc();
+        bloc.add(const IngestionEvent.parseSocialVideo(link));
+        final state = await settle(bloc) as IngestionReview;
 
-      expect(state.recipe.imageFileName, isNull);
-      expect(state.selectedImage, isNull);
-      expect(state.imageCandidates.length, 3);
+        expect(state.recipe.imageFileName, isNull);
+        expect(state.selectedImage, isNull);
+        expect(state.imageCandidates.length, 3);
 
-      // Picking one that also fails says so, and keeps the review.
-      bloc.add(const IngestionEvent.pickImageCandidate(1));
-      final after = await bloc.stream.firstWhere(
-        (s) => s is IngestionReview && s.notice != null,
-      ) as IngestionReview;
-      expect(after.notice, t.ingestion.videoPhotoFailed);
-      expect(after.recipe.imageFileName, isNull);
-    });
+        // Picking one that also fails says so, and keeps the review.
+        bloc.add(const IngestionEvent.pickImageCandidate(1));
+        final after =
+            await bloc.stream.firstWhere(
+                  (s) => s is IngestionReview && s.notice != null,
+                )
+                as IngestionReview;
+        expect(after.notice, t.ingestion.videoPhotoFailed);
+        expect(after.recipe.imageFileName, isNull);
+      },
+    );
 
-    test('with the feature hidden the recipe arrives bare and nothing is written', () async {
-      FeaturesFlags.overrides = {
-        FeaturesFlags.socialVideoPhoto: FeatureFlagValue.hidden,
-      };
-      final bloc = buildBloc();
-      bloc.add(const IngestionEvent.parseSocialVideo(link));
-      final state = await settle(bloc) as IngestionReview;
+    test(
+      'with the feature hidden the recipe arrives bare and nothing is written',
+      () async {
+        FeaturesFlags.overrides = {
+          FeaturesFlags.socialVideoPhoto: FeatureFlagValue.hidden,
+        };
+        final bloc = buildBloc();
+        bloc.add(const IngestionEvent.parseSocialVideo(link));
+        final state = await settle(bloc) as IngestionReview;
 
-      expect(state.imageCandidates, isEmpty);
-      expect(state.recipe.imageFileName, isNull);
-      expect(stored, isEmpty);
-    });
+        expect(state.imageCandidates, isEmpty);
+        expect(state.recipe.imageFileName, isNull);
+        expect(stored, isEmpty);
+      },
+    );
 
-    test('the editor swapping the photo clears the pick, the candidates stay', () async {
-      final bloc = buildBloc();
-      bloc.add(const IngestionEvent.parseSocialVideo(link));
-      final state = await settle(bloc) as IngestionReview;
+    test(
+      'the editor swapping the photo clears the pick, the candidates stay',
+      () async {
+        final bloc = buildBloc();
+        bloc.add(const IngestionEvent.parseSocialVideo(link));
+        final state = await settle(bloc) as IngestionReview;
 
-      bloc.add(
-        IngestionEvent.updateRecipe(
-          state.recipe.copyWith(imageFileName: 'from-gallery.jpg'),
-        ),
-      );
-      final after = await bloc.stream.first as IngestionReview;
-      expect(after.selectedImage, isNull);
-      expect(after.imageCandidates.length, 3);
-      expect(after.recipe.imageFileName, 'from-gallery.jpg');
-    });
+        bloc.add(
+          IngestionEvent.updateRecipe(
+            state.recipe.copyWith(imageFileName: 'from-gallery.jpg'),
+          ),
+        );
+        final after = await bloc.stream.first as IngestionReview;
+        expect(after.selectedImage, isNull);
+        expect(after.imageCandidates.length, 3);
+        expect(after.recipe.imageFileName, 'from-gallery.jpg');
+      },
+    );
 
     test('two quick picks land in the order they were tapped', () async {
       // The first still is slow to write, the second quick: the last tap
@@ -828,4 +880,142 @@ void main() {
       await bloc.close();
     },
   );
+
+  group('suggestions by preferences', () {
+    const first = WebSearchResultEntity(
+      title: 'שקשוקה',
+      url: 'https://example.com/a',
+      snippet: '',
+    );
+    const second = WebSearchResultEntity(
+      title: 'מג׳דרה',
+      url: 'https://example.com/b',
+      snippet: '',
+    );
+    RecipeEntity parsed(String title, {DateTime? createdAt}) => RecipeEntity(
+      id: title,
+      title: title,
+      ingredients: const [],
+      steps: const ['x'],
+      createdAt: createdAt ?? DateTime(2026),
+    );
+
+    Future<IngestionBloc> suggested() async {
+      ingestion.onSuggest = () async => [first, second];
+      final bloc = buildBloc()
+        ..add(
+          const IngestionEvent.selectChannel(RecipeIngestionChannel.webSearch),
+        );
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const IngestionEvent.suggestRecipes());
+      final state = await settle(bloc);
+      expect(state, isA<IngestionSearchResults>());
+      expect((state as IngestionSearchResults).suggested, isTrue);
+      return bloc;
+    }
+
+    test(
+      'the account\'s own titles go with the request, newest first',
+      () async {
+        recipes.kept = [
+          parsed('ישן', createdAt: DateTime(2025)),
+          parsed('חדש', createdAt: DateTime(2026, 5)),
+        ];
+        await suggested();
+        expect(ingestion.lastKnownTitles, ['חדש', 'ישן']);
+      },
+    );
+
+    test(
+      'a save from a suggestion returns to the list with it ticked',
+      () async {
+        final bloc = await suggested();
+        ingestion.onParse = (_) async => parsed('שקשוקה');
+        bloc.add(IngestionEvent.parseUrl(first.url));
+        final review = await settle(bloc);
+        expect(review, isA<IngestionReview>());
+        expect(bloc.canReturnToResults, isTrue);
+
+        bloc.add(IngestionEvent.saveRecipe((review as IngestionReview).recipe));
+        final back = await bloc.stream.first;
+        expect(back, isA<IngestionSearchResults>());
+        back as IngestionSearchResults;
+        expect(back.savedUrls, [first.url]);
+        expect(back.justSaved, isTrue);
+        expect(recipes.saved.single.title, 'שקשוקה');
+
+        // The next one, from the same list.
+        ingestion.onParse = (_) async => parsed('מג׳דרה');
+        bloc.add(IngestionEvent.parseUrl(second.url));
+        final next = await settle(bloc) as IngestionReview;
+        bloc.add(IngestionEvent.saveRecipe(next.recipe));
+        final again = await bloc.stream.first as IngestionSearchResults;
+        expect(again.savedUrls, [first.url, second.url]);
+      },
+    );
+
+    test(
+      'back from an opened result lands on the list, nothing spent',
+      () async {
+        final bloc = await suggested();
+        ingestion.onParse = (_) async => parsed('שקשוקה');
+        bloc.add(IngestionEvent.parseUrl(first.url));
+        await settle(bloc);
+        bloc.add(const IngestionEvent.backToResults());
+        final back = await bloc.stream.first as IngestionSearchResults;
+        expect(back.suggested, isTrue);
+        expect(back.savedUrls, isEmpty);
+        expect(recipes.saved, isEmpty);
+      },
+    );
+
+    test('a save after a plain search still closes the screen', () async {
+      ingestion.onSearch = (_) async => [first];
+      final bloc = buildBloc()
+        ..add(
+          const IngestionEvent.selectChannel(RecipeIngestionChannel.webSearch),
+        );
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const IngestionEvent.searchWeb('שקשוקה'));
+      await settle(bloc);
+      ingestion.onParse = (_) async => parsed('שקשוקה');
+      bloc.add(IngestionEvent.parseUrl(first.url));
+      final review = await settle(bloc) as IngestionReview;
+      bloc.add(IngestionEvent.saveRecipe(review.recipe));
+      expect(await bloc.stream.first, isA<IngestionSaved>());
+    });
+
+    test(
+      'what was typed and the diet chosen for this search are what is asked for',
+      () async {
+        ingestion.onSuggest = () async => [first];
+        final bloc = buildBloc()
+          ..add(
+            const IngestionEvent.selectChannel(
+              RecipeIngestionChannel.webSearch,
+            ),
+          );
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(
+          const IngestionEvent.suggestRecipes(
+            topic: 'קינוחים',
+            preferences: [DietaryPreference.vegan],
+          ),
+        );
+        await settle(bloc);
+        expect(ingestion.lastTopic, 'קינוחים');
+        expect(ingestion.lastDiet, [DietaryPreference.vegan]);
+      },
+    );
+
+    test(
+      'nothing typed and the diet untouched: the saved preferences alone',
+      () async {
+        final bloc = await suggested();
+        expect(ingestion.lastTopic, '');
+        expect(ingestion.lastDiet, [DietaryPreference.kosher]);
+        expect(await bloc.savedPreferences(), [DietaryPreference.kosher]);
+      },
+    );
+  });
 }

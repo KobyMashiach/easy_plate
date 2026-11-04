@@ -134,6 +134,9 @@ void addIngredientLines(
   double scale = 1,
 }) {
   for (final ingredient in ingredients) {
+    // A recipe saved before sections existed may still hold its "מצרכים
+    // לרוטב:" heading as a line; it is not something to buy.
+    if (isSectionHeading(ingredient)) continue;
     // The product, not the recipe's words for it; water is not shopped for.
     final name = groceryProductName(ingredient.name);
     if (name == null) continue;

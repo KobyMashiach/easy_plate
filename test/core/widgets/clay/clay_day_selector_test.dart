@@ -33,10 +33,12 @@ void main() {
   ) async {
     await tester.pumpWidget(harness(1.0));
     final box = tester.renderObject<RenderBox>(
-      find.descendant(
-        of: find.byType(ClayDaySelector),
-        matching: find.byType(SizedBox),
-      ).first,
+      find
+          .descendant(
+            of: find.byType(ClayDaySelector),
+            matching: find.byType(SizedBox),
+          )
+          .first,
     );
     expect(box.size.height, 90);
   });

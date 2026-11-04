@@ -351,7 +351,11 @@
     "communityUpdateFailed": "تم الحفظ لديك. لم يتم تحديث المنشور في المجتمع، حاول لاحقًا.",
     "sourceLink": "الوصفة الأصلية",
     "sourceLinkHint": "فتح المصدر الذي استُوردت منه الوصفة",
-    "sourceOpenFailed": "تعذّر فتح الرابط"
+    "sourceOpenFailed": "تعذّر فتح الرابط",
+    "delete": "حذف الوصفة",
+    "deleteConfirm": "ستُحذف الوصفة نهائيًا. لا يمكن التراجع عن ذلك.",
+    "deleteSharedConfirm": "ستُزال الوصفة لديك فقط. سيحتفظ بها باقي المشاركين.",
+    "deleted": "تم حذف الوصفة"
   },
   "cookMode": {
     "title": "وضع الطبخ",
@@ -701,7 +705,23 @@
     "videoPhotoHint": "اختاروا الصورة التي ستمثّل الوصفة. يمكن تغييرها لاحقاً أيضاً.",
     "videoPhotoCover": "صورة المنشور",
     "videoPhotoNone": "بدون صورة",
-    "videoPhotoFailed": "تعذّر حفظ الصورة، جرّبوا صورة أخرى"
+    "videoPhotoFailed": "تعذّر حفظ الصورة، جرّبوا صورة أخرى",
+    "suggestForMe": "اقتراحات لي",
+    "suggestForMeHint": "اكتب ما تشتهيه (مثلًا حلويات) أو اتركه فارغًا، واحصل على حتى 10 وصفات من الإنترنت تناسب تفضيلاتك. اختر واحدة، حلّلها واحفظها، ثم عد للتالية.",
+    "suggesting": "نبحث عن وصفات لك…",
+    "suggestionsTitle": "مختارة لك",
+    "suggestionsHint": "اختر وصفة لتحليلها. بعد الحفظ تعود إلى هنا لاختيار التالية.",
+    "savedFromList": "تم حفظ الوصفة. اختر التالية",
+    "savedTag": "محفوظة",
+    "suggestionsDone": "تم",
+    "backToResults": "العودة إلى القائمة",
+    "suggestionsEmpty": "لا توجد اقتراحات الآن. حاول مرة أخرى بعد قليل.",
+    "suggestTopicLabel": "ماذا تشتهي؟ (اختياري)",
+    "suggestTopicHint": "مثلًا: حلويات، عشاء سريع، شوربات",
+    "suggestDietLabel": "النظام الغذائي لهذا البحث",
+    "suggestDietNote": "يبدأ من تفضيلاتك. التغيير هنا لا يغيّر إعداداتك.",
+    "suggestDietReset": "العودة إلى تفضيلاتي",
+    "suggestSearch": "ابحث عن اقتراحات"
   },
   "mealPlanner": {
     "title": "تخطيط الوجبات",
@@ -1826,6 +1846,9 @@
     "webCheckout": "الشراء عبر الموقع",
     "socialVideoPhoto": "صورة من فيديو",
     "recipeSourceLink": "رابط الوصفة الأصلية",
+    "deleteRecipe": "حذف الوصفة",
+    "ingredientSections": "عناوين مجموعات المكوّنات",
+    "recipeSuggestions": "اقتراح وصفات حسب التفضيلات",
     "webCheckoutIl": "الشراء عبر الموقع (إسرائيل)",
     "webCheckoutIntl": "الشراء عبر الموقع (خارج إسرائيل)"
   },

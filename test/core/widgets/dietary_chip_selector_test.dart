@@ -19,7 +19,10 @@ void main() {
             body: Center(
               child: SizedBox(
                 width: 280,
-                child: DietaryChipSelector(selected: const [], onToggle: (_) {}),
+                child: DietaryChipSelector(
+                  selected: const [],
+                  onToggle: (_) {},
+                ),
               ),
             ),
           ),

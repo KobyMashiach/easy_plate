@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,7 +17,23 @@ import '../../domain/entities/original_recipe_page_entity.dart';
 /// path, and lifts the site's JSON-LD recipe out of it when there is one.
 abstract class WebPageDataSource {
   Future<OriginalRecipePageEntity> fetch(String url);
+
+  /// Where [url] really leads, when it leads anywhere: the address after
+  /// redirects, or null for a page that is gone (404/410), a server that
+  /// fails, or a host that does not answer at all. A link a model wrote may
+  /// be one it made up; this is the check before it is offered.
+  Future<String?> liveUrl(String url);
 }
+
+/// Whether a status says the page is there: an answer, or a bot wall
+/// (401/403/429) in front of a real page. Anything else — 404, a 400 for a
+/// made-up path, a broken server — counts as dead.
+@visibleForTesting
+bool isLiveStatus(int status) =>
+    (status >= 200 && status < 400) ||
+    status == 401 ||
+    status == 403 ||
+    status == 429;
 
 class WebPageDataSourceImpl implements WebPageDataSource {
   static const _uuid = Uuid();
@@ -33,6 +52,44 @@ class WebPageDataSourceImpl implements WebPageDataSource {
               'Accept': 'text/html,application/xhtml+xml',
             },
           );
+
+  /// A separate client: a probe follows redirects, reads only the headers,
+  /// and takes any status as an answer.
+  static final _probe = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 6),
+      receiveTimeout: const Duration(seconds: 6),
+      followRedirects: true,
+      maxRedirects: 5,
+      responseType: ResponseType.stream,
+      validateStatus: (_) => true,
+      headers: const {
+        'User-Agent':
+            'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) '
+            'Chrome/124.0 Mobile Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+      },
+    ),
+  );
+
+  @override
+  Future<String?> liveUrl(String url) async {
+    try {
+      final response = await _probe.get<ResponseBody>(url);
+      // Only the status was wanted: the body is not read.
+      unawaited(response.data?.stream.listen(null).cancel());
+      final status = response.statusCode ?? 0;
+      if (!isLiveStatus(status)) return null;
+      return response.realUri.toString();
+    } on DioException catch (e) {
+      // Slow is not dead: a page that did not answer in time is kept.
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return url;
+      }
+      return null;
+    }
+  }
 
   @override
   Future<OriginalRecipePageEntity> fetch(String url) async {
@@ -88,7 +145,9 @@ class WebPageDataSourceImpl implements WebPageDataSource {
       title: recipe.title,
       prepTimeMinutes: recipe.prepMinutes,
       cookTimeMinutes: recipe.cookMinutes,
-      ingredients: [
+      // Sites write "For the sauce:" as a line of its own; it becomes the
+      // heading of the lines under it rather than an ingredient.
+      ingredients: sectionHeadingsLifted([
         for (final line in recipe.ingredientLines)
           if (parseIngredientLine(line) case final parsed)
             RecipeIngredientEntity(
@@ -96,7 +155,7 @@ class WebPageDataSourceImpl implements WebPageDataSource {
               amount: parsed.amount,
               unit: parsed.unit,
             ),
-      ],
+      ]),
       steps: recipe.steps,
       dietaryTags: recipe.diets,
       sourceChannel: RecipeIngestionChannel.urlScrape,

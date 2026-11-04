@@ -351,7 +351,11 @@
     "communityUpdateFailed": "Saved for you. The community post was not updated; try again later.",
     "sourceLink": "Original recipe",
     "sourceLinkHint": "Open the source this recipe was imported from",
-    "sourceOpenFailed": "Could not open the link"
+    "sourceOpenFailed": "Could not open the link",
+    "delete": "Delete recipe",
+    "deleteConfirm": "The recipe will be deleted for good. This cannot be undone.",
+    "deleteSharedConfirm": "The recipe is removed only for you. Everyone else in the share keeps it.",
+    "deleted": "Recipe deleted"
   },
   "cookMode": {
     "title": "Cook mode",
@@ -693,7 +697,23 @@
     "videoPhotoHint": "Pick the picture that will stand for this recipe. You can change it later too.",
     "videoPhotoCover": "Post cover",
     "videoPhotoNone": "No picture",
-    "videoPhotoFailed": "Could not save that picture, try another"
+    "videoPhotoFailed": "Could not save that picture, try another",
+    "suggestForMe": "Suggestions for me",
+    "suggestForMeHint": "Write what you feel like (say, desserts) or leave it empty, and get up to 10 recipes from the web that fit your preferences. Pick one, analyse and save it, then come back for the next.",
+    "suggesting": "Finding recipes for you…",
+    "suggestionsTitle": "Picked for you",
+    "suggestionsHint": "Choose a recipe to analyse. After saving you come back here for the next one.",
+    "savedFromList": "Recipe saved. Pick the next one",
+    "savedTag": "Saved",
+    "suggestionsDone": "Done",
+    "backToResults": "Back to the list",
+    "suggestionsEmpty": "No suggestions right now. Try again in a moment.",
+    "suggestTopicLabel": "What do you feel like? (optional)",
+    "suggestTopicHint": "For example: desserts, a quick dinner, soups",
+    "suggestDietLabel": "Diet for this search",
+    "suggestDietNote": "Starts from your preferences. Changing it here does not change your settings.",
+    "suggestDietReset": "Back to my preferences",
+    "suggestSearch": "Find suggestions"
   },
   "mealPlanner": {
     "title": "Meal planning",
@@ -1824,6 +1844,9 @@
     "webCheckout": "Buy on the web",
     "socialVideoPhoto": "Picture from a video",
     "recipeSourceLink": "Link to the original recipe",
+    "deleteRecipe": "Delete recipe",
+    "ingredientSections": "Ingredient group headings",
+    "recipeSuggestions": "Recipe suggestions by preferences",
     "webCheckoutIl": "Buy on the web (Israel)",
     "webCheckoutIntl": "Buy on the web (abroad)"
   },

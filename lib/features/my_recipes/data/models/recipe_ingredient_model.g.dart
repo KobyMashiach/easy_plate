@@ -22,19 +22,22 @@ class RecipeIngredientModelAdapter extends TypeAdapter<RecipeIngredientModel> {
       unit: fields[2] == null
           ? MeasurementUnit.unspecified
           : fields[2] as MeasurementUnit,
+      section: fields[3] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecipeIngredientModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.amount)
       ..writeByte(2)
-      ..write(obj.unit);
+      ..write(obj.unit)
+      ..writeByte(3)
+      ..write(obj.section);
   }
 
   @override
@@ -60,6 +63,7 @@ _RecipeIngredientModel _$RecipeIngredientModelFromJson(
   unit: json['unit'] == null
       ? MeasurementUnit.unspecified
       : readMeasurementUnit(json['unit']),
+  section: json['section'] as String?,
 );
 
 Map<String, dynamic> _$RecipeIngredientModelToJson(
@@ -68,6 +72,7 @@ Map<String, dynamic> _$RecipeIngredientModelToJson(
   'name': instance.name,
   'amount': instance.amount,
   'unit': _$MeasurementUnitEnumMap[instance.unit]!,
+  'section': ?instance.section,
 };
 
 const _$MeasurementUnitEnumMap = {

@@ -12,6 +12,7 @@ import { DIET_ICON, PHONE_DIET_TONE, PhoneTag, SectionHeader } from "../recipes/
 import { ingredientLine } from "../recipes/lib/format";
 import { safeHref } from "../recipes/lib/safeHref";
 import { ALLERGENS, DIETARY, MEASUREMENT_UNITS, type Allergen, type DietaryPreference, type MeasurementUnit, type Recipe } from "../../models/recipe";
+import { SectionedIngredients } from "../recipes/components/IngredientSections";
 
 /** Whole numbers only; empty → null. `min` clamps (servings start at 1). */
 function intOrNull(v: string, min = 0): number | null {
@@ -121,12 +122,12 @@ export function ReviewEditor({
           <ClayCard radius={24} padding={24} as="section" aria-labelledby={`${uid}-ing`}>
             <SectionHeader id={`${uid}-ing`} title={t("ingest.ingredients")} />
             <ul className="mt-3">
-              {r.ingredients.map((ing, i) => (
+              <SectionedIngredients ingredients={r.ingredients} row={(ing, i) => (
                 <li key={ingKeys[i]} className="flex items-start gap-3 py-1">
                   <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
                   <span className="min-w-0 flex-1 text-body-md">{ingredientLine(t, ing)}</span>
                 </li>
-              ))}
+              )} />
             </ul>
           </ClayCard>
           <ClayCard radius={24} padding={24} as="section" aria-labelledby={`${uid}-steps`}>
@@ -203,7 +204,7 @@ export function ReviewEditor({
       <section className="clay space-y-3 p-5" aria-labelledby={`${uid}-ing`}>
         <h3 id={`${uid}-ing`} className="text-body-lg font-bold">{t("ingest.ingredients")}</h3>
         <ul className="space-y-3">
-          {r.ingredients.map((ing, i) => (
+          <SectionedIngredients ingredients={r.ingredients} row={(ing, i) => (
             <li key={ingKeys[i]} className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_7rem_9rem_auto] sm:items-end">
               <div className="col-span-2 space-y-1 sm:col-span-1">
                 <label htmlFor={`${uid}-in-${i}`} className="block text-label-sm text-on-surface-variant">{t("ingest.ingredient.name", { n: i + 1 })}</label>
@@ -247,10 +248,11 @@ export function ReviewEditor({
                 <Icon name="trash" size={18} />
               </button>
             </li>
-          ))}
+          )} />
         </ul>
         <button type="button" className="clay-btn-tonal" onClick={() => {
-          set("ingredients", [...r.ingredients, { name: "", amount: null, unit: "unspecified" }]);
+          const above = r.ingredients[r.ingredients.length - 1]?.section;
+          set("ingredients", [...r.ingredients, { name: "", amount: null, unit: "unspecified", ...(above ? { section: above } : {}) }]);
           setIngKeys((k) => [...k, fresh()]);
         }}>
           <Icon name="add" size={18} /> {t("ingest.addIngredient")}

@@ -4,7 +4,7 @@
 // plus the recipe's picture. Saving asks the app's question first: as typed,
 // or with the AI pass (spelling, and the times written in the steps when a
 // time changed — ff_save_with_ai). Blank rows are dropped, not validated.
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../lib/auth";
 import { getRecord, newId, nowIso } from "../../lib/cloud";
@@ -68,6 +68,8 @@ interface IngRow {
   name: string;
   amount: string;
   unit: MeasurementUnit;
+  /** The ingredient's section, carried through untouched (no editor for it). */
+  section: string | null;
 }
 interface StepRow {
   key: string;
@@ -96,7 +98,7 @@ function Editor({ base, isNew }: { base: Recipe; isNew: boolean }) {
   const [protein, setProtein] = useState(gramsText(base.nutrition?.proteinGrams));
   const [carbs, setCarbs] = useState(gramsText(base.nutrition?.carbsGrams));
   const [fat, setFat] = useState(gramsText(base.nutrition?.fatGrams));
-  const [ings, setIngs] = useState<IngRow[]>(() => base.ingredients.map((i) => ({ key: key(), name: i.name, amount: formatAmount(i.amount), unit: i.unit })));
+  const [ings, setIngs] = useState<IngRow[]>(() => base.ingredients.map((i) => ({ key: key(), name: i.name, amount: formatAmount(i.amount), unit: i.unit, section: i.section ?? null })));
   const [steps, setSteps] = useState<StepRow[]>(() => base.steps.map((s) => ({ key: key(), text: s })));
   const [topics, setTopics] = useState<DietaryPreference[]>(base.dietaryTags);
   const [allergens, setAllergens] = useState<Allergen[]>(base.allergens);
@@ -130,7 +132,7 @@ function Editor({ base, isNew }: { base: Recipe; isNew: boolean }) {
       title: title.trim(),
       prepTimeMinutes: intOrNull(prep),
       cookTimeMinutes: intOrNull(cook),
-      ingredients: ings.map((r) => ({ name: r.name.trim(), amount: numOrNull(r.amount), unit: r.unit })).filter((i) => i.name !== ""),
+      ingredients: ings.map((r) => ({ name: r.name.trim(), amount: numOrNull(r.amount), unit: r.unit, ...(r.section ? { section: r.section } : {}) })).filter((i) => i.name !== ""),
       steps: steps.map((s) => s.text.trim()).filter((s) => s !== ""),
       dietaryTags: topics,
       servings: intOrNull(servings),
@@ -496,7 +498,13 @@ function Editor({ base, isNew }: { base: Recipe; isNew: boolean }) {
             </h2>
             <ol className="space-y-2">
               {ings.map((row, i) => (
-                <li key={row.key} className={phone ? "flex items-end gap-1 py-1 [content-visibility:auto] [contain-intrinsic-size:auto_56px]" : "flex flex-wrap items-end gap-2 [content-visibility:auto] [contain-intrinsic-size:auto_60px] sm:flex-nowrap"} aria-label={t("recipes.editor.ingredientRow", { n: i + 1 })}>
+                <Fragment key={row.key}>
+                {row.section && row.section !== ings[i - 1]?.section ? (
+                  <li role="presentation" className={`${i ? "pt-2" : ""} text-label-md font-bold text-on-surface-variant`}>
+                    {row.section}
+                  </li>
+                ) : null}
+                <li className={phone ? "flex items-end gap-1 py-1 [content-visibility:auto] [contain-intrinsic-size:auto_56px]" : "flex flex-wrap items-end gap-2 [content-visibility:auto] [contain-intrinsic-size:auto_60px] sm:flex-nowrap"} aria-label={t("recipes.editor.ingredientRow", { n: i + 1 })}>
                   <div className={phone ? "w-16 shrink-0" : "w-20 shrink-0"}>
                     <label htmlFor={`ing-a-${row.key}`} className="sr-only">
                       {t("recipes.editor.amount")}
@@ -539,13 +547,14 @@ function Editor({ base, isNew }: { base: Recipe; isNew: boolean }) {
                   </div>
                   )}
                 </li>
+                </Fragment>
               ))}
             </ol>
             <button
               type="button"
               className={phone ? "clay-btn-primary" : "clay-btn-tonal"}
               onClick={() => {
-                const row = { key: key(), name: "", amount: "", unit: "unspecified" as MeasurementUnit };
+                const row: IngRow = { key: key(), name: "", amount: "", unit: "unspecified", section: ings[ings.length - 1]?.section ?? null };
                 setIngs([...ings, row]);
                 focusLater(`ing-a-${row.key}`);
               }}

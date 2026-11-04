@@ -47,10 +47,15 @@ class _IngredientRow {
   final TextEditingController amount;
   MeasurementUnit unit;
 
+  /// The heading the line sits under, kept as it came: the editor has no
+  /// field for it, and a save must not wipe the recipe's division.
+  final String? section;
+
   _IngredientRow({
     required String name,
     required double? amount,
     required this.unit,
+    this.section,
   }) : name = TextEditingController(text: name),
        amount = TextEditingController(text: _formatAmount(amount));
 
@@ -67,6 +72,7 @@ class _IngredientRow {
     name: name.text.trim(),
     amount: double.tryParse(amount.text.trim().replaceAll(',', '.')),
     unit: unit,
+    section: section,
   );
 }
 
@@ -112,6 +118,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
         name: ingredient.name,
         amount: ingredient.amount,
         unit: ingredient.unit,
+        section: ingredient.section,
       ),
   ];
   late final List<TextEditingController> _steps = [
@@ -762,6 +769,8 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                   name: '',
                   amount: null,
                   unit: MeasurementUnit.unspecified,
+                  // Added at the end, so it joins the last part of the dish.
+                  section: _ingredients.lastOrNull?.section,
                 ),
               );
             }),

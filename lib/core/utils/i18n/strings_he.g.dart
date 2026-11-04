@@ -1196,6 +1196,18 @@ class Translations$recipe$he {
 
 	/// he: 'לא הצלחנו לפתוח את הקישור'
 	String get sourceOpenFailed => 'לא הצלחנו לפתוח את הקישור';
+
+	/// he: 'מחיקת מתכון'
+	String get delete => 'מחיקת מתכון';
+
+	/// he: 'המתכון יימחק לצמיתות. אי אפשר לבטל את הפעולה.'
+	String get deleteConfirm => 'המתכון יימחק לצמיתות. אי אפשר לבטל את הפעולה.';
+
+	/// he: 'המתכון יוסר רק אצלך. שאר המשתתפים בשיתוף ימשיכו לראות אותו.'
+	String get deleteSharedConfirm => 'המתכון יוסר רק אצלך. שאר המשתתפים בשיתוף ימשיכו לראות אותו.';
+
+	/// he: 'המתכון נמחק'
+	String get deleted => 'המתכון נמחק';
 }
 
 // Path: cookMode
@@ -2231,6 +2243,54 @@ class Translations$ingestion$he {
 
 	/// he: 'לא הצלחנו לשמור את התמונה, נסו אחרת'
 	String get videoPhotoFailed => 'לא הצלחנו לשמור את התמונה, נסו אחרת';
+
+	/// he: 'הצעות לפי ההעדפות שלי'
+	String get suggestForMe => 'הצעות לפי ההעדפות שלי';
+
+	/// he: 'כתבו מה בא לכם (למשל קינוחים) או השאירו ריק, ותקבלו עד 10 מתכונים מהרשת לפי ההעדפות שלכם. בוחרים אחד, מנתחים ושומרים, וחוזרים לבחור את הבא.'
+	String get suggestForMeHint => 'כתבו מה בא לכם (למשל קינוחים) או השאירו ריק, ותקבלו עד 10 מתכונים מהרשת לפי ההעדפות שלכם. בוחרים אחד, מנתחים ושומרים, וחוזרים לבחור את הבא.';
+
+	/// he: 'מחפש מתכונים בשבילך…'
+	String get suggesting => 'מחפש מתכונים בשבילך…';
+
+	/// he: 'הצעות בשבילך'
+	String get suggestionsTitle => 'הצעות בשבילך';
+
+	/// he: 'בחר מתכון לניתוח. אחרי השמירה חוזרים לכאן לבחור את הבא.'
+	String get suggestionsHint => 'בחר מתכון לניתוח. אחרי השמירה חוזרים לכאן לבחור את הבא.';
+
+	/// he: 'המתכון נשמר. אפשר לבחור את הבא'
+	String get savedFromList => 'המתכון נשמר. אפשר לבחור את הבא';
+
+	/// he: 'נשמר'
+	String get savedTag => 'נשמר';
+
+	/// he: 'סיום'
+	String get suggestionsDone => 'סיום';
+
+	/// he: 'חזרה לרשימה'
+	String get backToResults => 'חזרה לרשימה';
+
+	/// he: 'לא נמצאו הצעות כרגע. נסה שוב בעוד רגע.'
+	String get suggestionsEmpty => 'לא נמצאו הצעות כרגע. נסה שוב בעוד רגע.';
+
+	/// he: 'מה בא לך? (לא חובה)'
+	String get suggestTopicLabel => 'מה בא לך? (לא חובה)';
+
+	/// he: 'לדוגמה: קינוחים, ארוחת ערב מהירה, מרקים'
+	String get suggestTopicHint => 'לדוגמה: קינוחים, ארוחת ערב מהירה, מרקים';
+
+	/// he: 'התאמה תזונתית לחיפוש הזה'
+	String get suggestDietLabel => 'התאמה תזונתית לחיפוש הזה';
+
+	/// he: 'מתחיל מההעדפות שלך. שינוי כאן לא משנה את ההגדרות.'
+	String get suggestDietNote => 'מתחיל מההעדפות שלך. שינוי כאן לא משנה את ההגדרות.';
+
+	/// he: 'חזרה להעדפות שלי'
+	String get suggestDietReset => 'חזרה להעדפות שלי';
+
+	/// he: 'חפש הצעות'
+	String get suggestSearch => 'חפש הצעות';
 }
 
 // Path: mealPlanner
@@ -4956,6 +5016,15 @@ class Translations$featureName$he {
 	/// he: 'קישור למתכון המקורי'
 	String get recipeSourceLink => 'קישור למתכון המקורי';
 
+	/// he: 'מחיקת מתכון'
+	String get deleteRecipe => 'מחיקת מתכון';
+
+	/// he: 'כותרות לקבוצות מצרכים'
+	String get ingredientSections => 'כותרות לקבוצות מצרכים';
+
+	/// he: 'הצעות מתכונים לפי העדפות'
+	String get recipeSuggestions => 'הצעות מתכונים לפי העדפות';
+
 	/// he: 'רכישה באתר (ישראל)'
 	String get webCheckoutIl => 'רכישה באתר (ישראל)';
 
@@ -6656,6 +6725,10 @@ extension on Translations {
 			'recipe.sourceLink' => 'למתכון המקורי',
 			'recipe.sourceLinkHint' => 'פתיחת המקור שממנו יובא המתכון',
 			'recipe.sourceOpenFailed' => 'לא הצלחנו לפתוח את הקישור',
+			'recipe.delete' => 'מחיקת מתכון',
+			'recipe.deleteConfirm' => 'המתכון יימחק לצמיתות. אי אפשר לבטל את הפעולה.',
+			'recipe.deleteSharedConfirm' => 'המתכון יוסר רק אצלך. שאר המשתתפים בשיתוף ימשיכו לראות אותו.',
+			'recipe.deleted' => 'המתכון נמחק',
 			'cookMode.title' => 'מצב בישול',
 			'cookMode.start' => 'להתחיל לבשל',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'שלב ${n} מתוך ${total}',
@@ -6840,12 +6913,12 @@ extension on Translations {
 			'sharing.acceptedPlan' => 'התפריט נוסף לתפריטים שלכם',
 			'sharing.viewerCannotEditBook' => 'הספר שותף איתכם לצפייה בלבד',
 			'sharing.viewerCannotEditPlan' => 'התפריט שותף איתכם לצפייה בלבד',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.kindRecipe' => 'מתכון',
 			'sharing.kindBook' => 'ספר',
 			'sharing.kindPlan' => 'תפריט',
 			'sharing.recipesTravel' => 'המתכונים שבפנים ישותפו יחד איתו',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.shareList' => 'שיתוף רשימת קניות',
 			'sharing.acceptedList' => 'הרשימה נוספה לרשימות הקניות שלכם',
 			'sharing.viewerCannotEditList' => 'הרשימה שותפה איתכם לצפייה בלבד',
@@ -6980,6 +7053,22 @@ extension on Translations {
 			'ingestion.videoPhotoCover' => 'תמונת הפוסט',
 			'ingestion.videoPhotoNone' => 'בלי תמונה',
 			'ingestion.videoPhotoFailed' => 'לא הצלחנו לשמור את התמונה, נסו אחרת',
+			'ingestion.suggestForMe' => 'הצעות לפי ההעדפות שלי',
+			'ingestion.suggestForMeHint' => 'כתבו מה בא לכם (למשל קינוחים) או השאירו ריק, ותקבלו עד 10 מתכונים מהרשת לפי ההעדפות שלכם. בוחרים אחד, מנתחים ושומרים, וחוזרים לבחור את הבא.',
+			'ingestion.suggesting' => 'מחפש מתכונים בשבילך…',
+			'ingestion.suggestionsTitle' => 'הצעות בשבילך',
+			'ingestion.suggestionsHint' => 'בחר מתכון לניתוח. אחרי השמירה חוזרים לכאן לבחור את הבא.',
+			'ingestion.savedFromList' => 'המתכון נשמר. אפשר לבחור את הבא',
+			'ingestion.savedTag' => 'נשמר',
+			'ingestion.suggestionsDone' => 'סיום',
+			'ingestion.backToResults' => 'חזרה לרשימה',
+			'ingestion.suggestionsEmpty' => 'לא נמצאו הצעות כרגע. נסה שוב בעוד רגע.',
+			'ingestion.suggestTopicLabel' => 'מה בא לך? (לא חובה)',
+			'ingestion.suggestTopicHint' => 'לדוגמה: קינוחים, ארוחת ערב מהירה, מרקים',
+			'ingestion.suggestDietLabel' => 'התאמה תזונתית לחיפוש הזה',
+			'ingestion.suggestDietNote' => 'מתחיל מההעדפות שלך. שינוי כאן לא משנה את ההגדרות.',
+			'ingestion.suggestDietReset' => 'חזרה להעדפות שלי',
+			'ingestion.suggestSearch' => 'חפש הצעות',
 			'mealPlanner.title' => 'תכנון ארוחות',
 			'mealPlanner.newPlan' => 'תפריט חדש',
 			'mealPlanner.planName' => 'שם התפריט',
@@ -7338,6 +7427,8 @@ extension on Translations {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'שלב ${current} מתוך ${total}',
 			'walkthrough.tapHint' => 'לחצו על האזור המודגש, או על ״הבא״',
 			'walkthrough.bookTitle' => 'מדריך EasyPlate',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. הדוגמאות בספר לא נשמרות; בסיור החי עושים את הפעולות באמת, עם שדות שכבר מולאו.',
 			'walkthrough.contents' => 'תוכן עניינים',
 			'walkthrough.chapter' => ({required Object number}) => 'פרק ${number}',
@@ -7358,8 +7449,6 @@ extension on Translations {
 			'walkthrough.topics.library.summary' => 'מסדרים מתכונים בספרים עם תוכן עניינים, כריכה ודפדוף, ומשתפים ספר שלם עם חשבון אחר.',
 			'walkthrough.topics.library.s1' => 'לחצו על ״ספרייה״ כדי לעבור לספרים.',
 			'walkthrough.topics.library.s2' => 'לחצו על הפלוס כדי ליצור ספר חדש.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'שם הספר כבר מולא: ״הדרכה״. אפשר ללחוץ על השדה ולשנות אותו, ואז להמשיך.',
 			'walkthrough.topics.library.s4' => 'לחצו ״שמור״ כדי ליצור את הספר.',
 			'walkthrough.topics.library.s5' => 'בוחרים צבע לשדרה, שמבדיל בין הספרים על המדף, ולוחצים ״שמור״. הספר ייפתח מיד.',
@@ -7852,6 +7941,8 @@ extension on Translations {
 			'shareCode.revoke' => 'לבטל קוד',
 			'shareCode.limitRecipes' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} מתכונים בשבוע.',
 			'shareCode.limitBooks' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} ספרים.',
+			_ => null,
+		} ?? switch (path) {
 			'shareCode.limitPlans' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} תפריטים.',
 			'shareCode.upgrade' => 'לפרימיום',
 			'shareCode.scanHint' => 'כוונו את המצלמה ל-QR של השיתוף',
@@ -7872,8 +7963,6 @@ extension on Translations {
 			'household.invite' => 'להזמין חבר',
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(free, one: 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותר מקום אחד.', other: 'כל מי שיש לו את הקוד מצטרף לחשבון המשותף. נותרו ${free} מקומות.', ), 
 			'household.noSeats' => 'כל המקומות תפוסים.',
-			_ => null,
-		} ?? switch (path) {
 			'household.remove' => 'להסיר',
 			'household.removeConfirm' => ({required Object name}) => 'להסיר את ${name} מהחשבון המשותף? הגישה והפרימיום שלהם יפסקו.',
 			'household.leave' => 'לעזוב את החשבון המשותף',
@@ -8003,6 +8092,9 @@ extension on Translations {
 			'featureName.webCheckout' => 'רכישה באתר',
 			'featureName.socialVideoPhoto' => 'תמונה מסרטון',
 			'featureName.recipeSourceLink' => 'קישור למתכון המקורי',
+			'featureName.deleteRecipe' => 'מחיקת מתכון',
+			'featureName.ingredientSections' => 'כותרות לקבוצות מצרכים',
+			'featureName.recipeSuggestions' => 'הצעות מתכונים לפי העדפות',
 			'featureName.webCheckoutIl' => 'רכישה באתר (ישראל)',
 			'featureName.webCheckoutIntl' => 'רכישה באתר (חו"ל)',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',

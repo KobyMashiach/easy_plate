@@ -351,7 +351,11 @@
     "communityUpdateFailed": "Enregistré pour vous. La publication dans la communauté n'a pas été mise à jour ; réessayez plus tard.",
     "sourceLink": "Recette originale",
     "sourceLinkHint": "Ouvrir la source d’où la recette a été importée",
-    "sourceOpenFailed": "Impossible d’ouvrir le lien"
+    "sourceOpenFailed": "Impossible d’ouvrir le lien",
+    "delete": "Supprimer la recette",
+    "deleteConfirm": "La recette sera supprimée définitivement. Cette action est irréversible.",
+    "deleteSharedConfirm": "La recette est retirée seulement pour vous. Les autres participants la gardent.",
+    "deleted": "Recette supprimée"
   },
   "cookMode": {
     "title": "Mode cuisine",
@@ -693,7 +697,23 @@
     "videoPhotoHint": "Choisissez l’image qui représentera la recette. Vous pourrez la changer plus tard.",
     "videoPhotoCover": "Image du post",
     "videoPhotoNone": "Sans image",
-    "videoPhotoFailed": "Impossible d’enregistrer cette image, essayez-en une autre"
+    "videoPhotoFailed": "Impossible d’enregistrer cette image, essayez-en une autre",
+    "suggestForMe": "Suggestions pour moi",
+    "suggestForMeHint": "Écrivez ce dont vous avez envie (par exemple des desserts) ou laissez vide, et recevez jusqu'à 10 recettes du web adaptées à vos préférences. Choisissez-en une, analysez-la et enregistrez-la, puis revenez pour la suivante.",
+    "suggesting": "Recherche de recettes pour vous…",
+    "suggestionsTitle": "Choisies pour vous",
+    "suggestionsHint": "Choisissez une recette à analyser. Après l'enregistrement, vous revenez ici pour la suivante.",
+    "savedFromList": "Recette enregistrée. Choisissez la suivante",
+    "savedTag": "Enregistrée",
+    "suggestionsDone": "Terminé",
+    "backToResults": "Retour à la liste",
+    "suggestionsEmpty": "Aucune suggestion pour l'instant. Réessayez dans un moment.",
+    "suggestTopicLabel": "De quoi avez-vous envie ? (facultatif)",
+    "suggestTopicHint": "Par exemple : desserts, dîner rapide, soupes",
+    "suggestDietLabel": "Régime pour cette recherche",
+    "suggestDietNote": "Part de vos préférences. Le modifier ici ne change pas vos réglages.",
+    "suggestDietReset": "Revenir à mes préférences",
+    "suggestSearch": "Trouver des suggestions"
   },
   "mealPlanner": {
     "title": "Planification des repas",
@@ -1806,6 +1826,9 @@
     "webCheckout": "Achat sur le site",
     "socialVideoPhoto": "Image depuis une vidéo",
     "recipeSourceLink": "Lien vers la recette originale",
+    "deleteRecipe": "Supprimer une recette",
+    "ingredientSections": "Titres des groupes d'ingrédients",
+    "recipeSuggestions": "Suggestions de recettes selon les préférences",
     "webCheckoutIl": "Achat sur le site (Israël)",
     "webCheckoutIntl": "Achat sur le site (étranger)"
   },

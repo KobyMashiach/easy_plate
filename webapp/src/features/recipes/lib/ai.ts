@@ -5,7 +5,7 @@
 // accounting and caches treat a web call exactly like a phone call.
 import { ApiError, refusalText } from "../../../lib/api";
 import { interactions, quotaOf } from "../../../lib/functions";
-import { ALLERGENS, DIETARY, MEASUREMENT_UNITS, type Allergen, type DietaryPreference, type Ingredient, type Nutrition, type Recipe } from "../../../models/recipe";
+import { ALLERGENS, cleanSection, DIETARY, MEASUREMENT_UNITS, type Allergen, type DietaryPreference, type Ingredient, type Nutrition, type Recipe } from "../../../models/recipe";
 
 // ApiConfig defaults (lib/core/constants/api_config.dart).
 const MODEL = "gemini-3.8-flash";
@@ -261,7 +261,8 @@ function parsedFields(input: Record<string, unknown>) {
     const o = raw as Record<string, unknown>;
     if (typeof o.name !== "string" || !o.name.trim()) continue;
     const unit = (MEASUREMENT_UNITS as readonly string[]).includes(o.unit as string) ? (o.unit as Ingredient["unit"]) : "unspecified";
-    ingredients.push({ name: o.name.trim(), amount: typeof o.amount === "number" ? o.amount : null, unit });
+    const section = cleanSection(o.section);
+    ingredients.push({ name: o.name.trim(), amount: typeof o.amount === "number" ? o.amount : null, unit, ...(section ? { section } : {}) });
   }
   const names = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
   const allergens = names(input.allergens).filter((a): a is Allergen => (ALLERGENS as readonly string[]).includes(a));

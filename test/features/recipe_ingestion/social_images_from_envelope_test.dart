@@ -28,9 +28,20 @@ void main() {
         'easyplate': {
           'mode': 'video',
           'images': [
-            {'kind': 'cover', 'jpeg': base64Encode([1, 2, 3])},
-            {'kind': 'frame', 'jpeg': base64Encode([4, 5]), 'at': 12.5},
-            {'kind': 'frame', 'jpeg': base64Encode([6]), 'at': 40},
+            {
+              'kind': 'cover',
+              'jpeg': base64Encode([1, 2, 3]),
+            },
+            {
+              'kind': 'frame',
+              'jpeg': base64Encode([4, 5]),
+              'at': 12.5,
+            },
+            {
+              'kind': 'frame',
+              'jpeg': base64Encode([6]),
+              'at': 40,
+            },
           ],
         },
       };
@@ -72,8 +83,15 @@ void main() {
           {'kind': 'frame'},
           {'kind': 'frame', 'jpeg': ''},
           {'kind': 'frame', 'jpeg': '***not base64***'},
-          {'kind': 'frame', 'jpeg': base64Encode([9]), 'at': 3},
-          {'kind': 'whatever', 'jpeg': base64Encode([8])},
+          {
+            'kind': 'frame',
+            'jpeg': base64Encode([9]),
+            'at': 3,
+          },
+          {
+            'kind': 'whatever',
+            'jpeg': base64Encode([8]),
+          },
         ],
       },
     });

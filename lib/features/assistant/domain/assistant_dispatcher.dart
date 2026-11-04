@@ -335,6 +335,7 @@ class AssistantDispatcher {
     'name': i.name,
     'amount': i.amount,
     'unit': i.unit.name,
+    if (i.section != null) 'section': i.section,
   };
 
   static RecipeIngredientEntity _ingredientFrom(Map<String, dynamic> m) =>
@@ -342,6 +343,7 @@ class AssistantDispatcher {
         name: _title(m['name']),
         amount: (m['amount'] as num?)?.toDouble(),
         unit: _unitFrom(m['unit']?.toString()),
+        section: ingredientSection(m['section']),
       );
 
   /// Ingredient-shaped entries of a list argument, nameless ones dropped.

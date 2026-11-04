@@ -29,7 +29,7 @@ List<WhatsNewPage> computeWhatsNewPages({
         release,
   ]..sort((a, b) => a.versionCode.compareTo(b.versionCode));
 
-  return [
+  final pages = [
     for (final release in due)
       for (final feature in [
         ...release.features,
@@ -37,7 +37,37 @@ List<WhatsNewPage> computeWhatsNewPages({
         if (isFeatureShown(feature.featureKey))
           WhatsNewPage(feature: feature, release: release),
   ];
+  return _latestOfEachTitle(pages);
 }
+
+/// [pages] with every page whose headline an even newer page repeats left
+/// out, so a feature announced again in a later release is read once, in
+/// its newest wording (Koby, 2026-11-04: "אם יש כפילות שיציג רק אחד, של
+/// הגרסה האחרונה"). Headlines are compared in every language the page has,
+/// ignoring case, spacing and punctuation; a page with no headline is never
+/// a duplicate. Order is kept.
+List<WhatsNewPage> _latestOfEachTitle(List<WhatsNewPage> pages) {
+  final seen = <String>{};
+  final kept = <WhatsNewPage>[];
+  // Newest first, so the copy that survives is the latest release's.
+  for (final page in pages.reversed) {
+    final titles = {
+      for (final title in page.feature.title.values)
+        if (whatsNewTitleKey(title) case final key when key.isNotEmpty) key,
+    };
+    if (titles.any(seen.contains)) continue;
+    seen.addAll(titles);
+    kept.add(page);
+  }
+  return kept.reversed.toList();
+}
+
+/// A headline reduced to what two writings of it share: lower case, letters
+/// and digits only.
+String whatsNewTitleKey(String title) => title.toLowerCase().replaceAll(
+  RegExp(r'[^\p{L}\p{N}]+', unicode: true),
+  '',
+);
 
 /// Whether there is anything at all to decide: a build at or below the
 /// pointer has nothing new, and the collection need not be read.

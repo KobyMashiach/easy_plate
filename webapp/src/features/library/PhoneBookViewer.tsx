@@ -15,6 +15,7 @@ import type { RecipeBook } from "../../models/book";
 import { DIET_ICON, PHONE_DIET_TONE } from "../recipes/components/phone";
 import { StorageImage } from "./shared/components";
 import { useReducedMotion } from "./shared/hooks";
+import { SectionedIngredients } from "../recipes/components/IngredientSections";
 
 export interface PhoneBookActions {
   onBack: () => void;
@@ -240,12 +241,12 @@ function RecipeLeaf({ recipe, number }: { recipe: Recipe; number: number }) {
         </div>
         <PageHeading className="mt-6">{t("library.ingredients")}</PageHeading>
         <ul className="mt-2">
-          {recipe.ingredients.map((ing, i) => (
+          <SectionedIngredients ingredients={recipe.ingredients} row={(ing, i) => (
             <li key={i} className="flex items-start gap-3 py-1 text-body-md text-on-surface">
               <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
               <span>{[ing.amount === null ? t("library.missingInfo") : amount(ing.amount), ing.unit === "unspecified" ? "" : t(`unit.${ing.unit}`), ing.name].filter(Boolean).join(" ")}</span>
             </li>
-          ))}
+          )} />
         </ul>
         <PageHeading className="mt-6">{t("library.instructions")}</PageHeading>
         <ol className="mt-2">

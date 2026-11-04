@@ -184,6 +184,23 @@ enum FeaturesFlags {
   /// own feature visible; hidden, the menu is empty.
   quickActions('ff_quick_actions'),
 
+  /// The bin on a recipe's own screen: deletes the recipe (and, when it was
+  /// never published or shared, its photo) after a confirmation. On a shared
+  /// recipe it removes only this account's copy. Hidden, recipes can still
+  /// be removed through Shefi and a saved community copy from its card.
+  deleteRecipe('ff_delete_recipe'),
+
+  /// Headings over the groups of a divided ingredient list ("רוטב", "בשר")
+  /// on the recipe screen, the review, cook mode and the book page. Hidden,
+  /// the list is drawn as one run; the sections stay in the data, and a
+  /// heading never reaches a grocery list either way.
+  ingredientSections('ff_ingredient_sections'),
+
+  /// "Suggestions for me" on the web-search channel: up to ten recipes
+  /// found for the account's diet and the dishes it keeps, opened and
+  /// analysed one at a time, a save returning to the list for the next.
+  recipeSuggestions('ff_recipe_suggestions'),
+
   /// Premium bought on the website (aieasyplate.app/app) through PayPlus
   /// (Israeli accounts) or RevenueCat's Paddle checkout (abroad; per-provider switches
   /// ff_web_checkout_il / ff_web_checkout_intl live on the website only)

@@ -78,7 +78,12 @@ class RecipeSharingFirestoreDataSource
     'cookTimeMinutes': recipe.cookTimeMinutes,
     'ingredients': [
       for (final i in recipe.ingredients)
-        {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
+        {
+          'name': i.name,
+          'amount': i.amount,
+          'unit': i.unit.name,
+          if (i.section != null) 'section': i.section,
+        },
     ],
     'steps': recipe.steps,
     'dietaryTags': [for (final tag in recipe.dietaryTags) tag.name],
@@ -112,6 +117,7 @@ class RecipeSharingFirestoreDataSource
                 (u) => u.name == raw['unit'],
                 orElse: () => MeasurementUnit.unspecified,
               ),
+              section: ingredientSection(raw['section']),
             ),
           )
           .toList(),

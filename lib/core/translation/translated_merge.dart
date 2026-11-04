@@ -1,5 +1,4 @@
 import '../../features/my_recipes/domain/entities/recipe_entity.dart';
-import '../../features/my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import 'content_translation.dart';
 
 /// A shared recipe refreshed from its shared document, without losing this
@@ -34,10 +33,9 @@ import 'content_translation.dart';
       title: local.title,
       ingredients: [
         for (final (index, shared) in merged.ingredients.indexed)
-          RecipeIngredientEntity(
+          shared.copyWith(
             name: local.ingredients[index].name,
-            amount: shared.amount,
-            unit: shared.unit,
+            section: local.ingredients[index].section,
           ),
       ],
       steps: local.steps,

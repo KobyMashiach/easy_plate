@@ -545,6 +545,10 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get sourceLink => 'Оригинальный рецепт';
 	@override String get sourceLinkHint => 'Открыть источник, откуда импортирован рецепт';
 	@override String get sourceOpenFailed => 'Не удалось открыть ссылку';
+	@override String get delete => 'Удалить рецепт';
+	@override String get deleteConfirm => 'Рецепт будет удалён навсегда. Это нельзя отменить.';
+	@override String get deleteSharedConfirm => 'Рецепт удалится только у вас. У остальных участников он останется.';
+	@override String get deleted => 'Рецепт удалён';
 }
 
 // Path: cookMode
@@ -940,6 +944,22 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get videoPhotoCover => 'Обложка поста';
 	@override String get videoPhotoNone => 'Без картинки';
 	@override String get videoPhotoFailed => 'Не удалось сохранить картинку, попробуйте другую';
+	@override String get suggestForMe => 'Предложения для меня';
+	@override String get suggestForMeHint => 'Напишите, чего хочется (например, десерты), или оставьте пустым — и получите до 10 рецептов из интернета под ваши предпочтения. Выберите один, разберите и сохраните, затем вернитесь за следующим.';
+	@override String get suggesting => 'Ищем рецепты для вас…';
+	@override String get suggestionsTitle => 'Подобрано для вас';
+	@override String get suggestionsHint => 'Выберите рецепт для разбора. После сохранения вы вернётесь сюда за следующим.';
+	@override String get savedFromList => 'Рецепт сохранён. Выберите следующий';
+	@override String get savedTag => 'Сохранено';
+	@override String get suggestionsDone => 'Готово';
+	@override String get backToResults => 'Назад к списку';
+	@override String get suggestionsEmpty => 'Сейчас предложений нет. Попробуйте чуть позже.';
+	@override String get suggestTopicLabel => 'Чего хочется? (необязательно)';
+	@override String get suggestTopicHint => 'Например: десерты, быстрый ужин, супы';
+	@override String get suggestDietLabel => 'Питание для этого поиска';
+	@override String get suggestDietNote => 'Начинается с ваших предпочтений. Изменение здесь не меняет настройки.';
+	@override String get suggestDietReset => 'Вернуть мои предпочтения';
+	@override String get suggestSearch => 'Найти предложения';
 }
 
 // Path: mealPlanner
@@ -1966,6 +1986,9 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get webCheckout => 'Покупка на сайте';
 	@override String get socialVideoPhoto => 'Картинка из видео';
 	@override String get recipeSourceLink => 'Ссылка на оригинальный рецепт';
+	@override String get deleteRecipe => 'Удаление рецепта';
+	@override String get ingredientSections => 'Заголовки групп ингредиентов';
+	@override String get recipeSuggestions => 'Подбор рецептов по предпочтениям';
 	@override String get webCheckoutIl => 'Покупка на сайте (Израиль)';
 	@override String get webCheckoutIntl => 'Покупка на сайте (за рубежом)';
 }
@@ -2774,6 +2797,10 @@ extension on TranslationsRu {
 			'recipe.sourceLink' => 'Оригинальный рецепт',
 			'recipe.sourceLinkHint' => 'Открыть источник, откуда импортирован рецепт',
 			'recipe.sourceOpenFailed' => 'Не удалось открыть ссылку',
+			'recipe.delete' => 'Удалить рецепт',
+			'recipe.deleteConfirm' => 'Рецепт будет удалён навсегда. Это нельзя отменить.',
+			'recipe.deleteSharedConfirm' => 'Рецепт удалится только у вас. У остальных участников он останется.',
+			'recipe.deleted' => 'Рецепт удалён',
 			'cookMode.title' => 'Режим готовки',
 			'cookMode.start' => 'Начать готовить',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Шаг ${n} из ${total}',
@@ -2958,12 +2985,12 @@ extension on TranslationsRu {
 			'sharing.acceptedPlan' => 'Меню добавлено в ваши меню',
 			'sharing.viewerCannotEditBook' => 'Эта книга доступна вам только для просмотра',
 			'sharing.viewerCannotEditPlan' => 'Это меню доступно вам только для просмотра',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.kindRecipe' => 'Рецепт',
 			'sharing.kindBook' => 'Книга',
 			'sharing.kindPlan' => 'Меню',
 			'sharing.recipesTravel' => 'Рецепты внутри будут переданы вместе с ним',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.shareList' => 'Поделиться списком покупок',
 			'sharing.acceptedList' => 'Список добавлен в ваши списки покупок',
 			'sharing.viewerCannotEditList' => 'Этот список открыт вам только для просмотра',
@@ -3098,6 +3125,22 @@ extension on TranslationsRu {
 			'ingestion.videoPhotoCover' => 'Обложка поста',
 			'ingestion.videoPhotoNone' => 'Без картинки',
 			'ingestion.videoPhotoFailed' => 'Не удалось сохранить картинку, попробуйте другую',
+			'ingestion.suggestForMe' => 'Предложения для меня',
+			'ingestion.suggestForMeHint' => 'Напишите, чего хочется (например, десерты), или оставьте пустым — и получите до 10 рецептов из интернета под ваши предпочтения. Выберите один, разберите и сохраните, затем вернитесь за следующим.',
+			'ingestion.suggesting' => 'Ищем рецепты для вас…',
+			'ingestion.suggestionsTitle' => 'Подобрано для вас',
+			'ingestion.suggestionsHint' => 'Выберите рецепт для разбора. После сохранения вы вернётесь сюда за следующим.',
+			'ingestion.savedFromList' => 'Рецепт сохранён. Выберите следующий',
+			'ingestion.savedTag' => 'Сохранено',
+			'ingestion.suggestionsDone' => 'Готово',
+			'ingestion.backToResults' => 'Назад к списку',
+			'ingestion.suggestionsEmpty' => 'Сейчас предложений нет. Попробуйте чуть позже.',
+			'ingestion.suggestTopicLabel' => 'Чего хочется? (необязательно)',
+			'ingestion.suggestTopicHint' => 'Например: десерты, быстрый ужин, супы',
+			'ingestion.suggestDietLabel' => 'Питание для этого поиска',
+			'ingestion.suggestDietNote' => 'Начинается с ваших предпочтений. Изменение здесь не меняет настройки.',
+			'ingestion.suggestDietReset' => 'Вернуть мои предпочтения',
+			'ingestion.suggestSearch' => 'Найти предложения',
 			'mealPlanner.title' => 'Планирование питания',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',
@@ -3456,6 +3499,8 @@ extension on TranslationsRu {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Шаг ${current} из ${total}',
 			'walkthrough.tapHint' => 'Нажмите на выделенную область или «Далее»',
 			'walkthrough.bookTitle' => 'Справочник EasyPlate',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Примеры в этой книге не сохраняются; живой тур выполняет настоящие действия, а поля уже заполнены.',
 			'walkthrough.contents' => 'Оглавление',
 			'walkthrough.chapter' => ({required Object number}) => 'Глава ${number}',
@@ -3476,8 +3521,6 @@ extension on TranslationsRu {
 			'walkthrough.topics.library.summary' => 'Собирайте рецепты в книги с оглавлением, обложкой и перелистыванием, и делитесь целой книгой с другим аккаунтом.',
 			'walkthrough.topics.library.s1' => 'Нажмите «Библиотека», чтобы перейти к книгам.',
 			'walkthrough.topics.library.s2' => 'Нажмите плюс, чтобы создать новую книгу.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'Название книги уже заполнено: «Обучение». Нажмите на поле, чтобы изменить его, и продолжайте.',
 			'walkthrough.topics.library.s4' => 'Нажмите «Сохранить», чтобы создать книгу.',
 			'walkthrough.topics.library.s5' => 'Выберите цвет корешка, по которому книги различаются на полке, и нажмите «Сохранить». Книга сразу откроется.',
@@ -3970,6 +4013,8 @@ extension on TranslationsRu {
 			'household.owner' => 'Владелец',
 			'household.you' => 'Вы',
 			'household.invite' => 'Пригласить участника',
+			_ => null,
+		} ?? switch (path) {
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(free, one: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.', other: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.', ), 
 			'household.noSeats' => 'Все места заняты.',
 			'household.remove' => 'Удалить',
@@ -3990,8 +4035,6 @@ extension on TranslationsRu {
 			'homeWidgets.intro' => 'Добавьте виджеты EasyPlate на главный экран: спросите Шефи, добавьте в список покупок, смотрите список и меню на сегодня, не открывая приложение.',
 			'homeWidgets.howToIos' => 'Нажмите и удерживайте пустое место на главном экране, нажмите +, найдите EasyPlate и выберите виджет. Те же виджеты подходят для экрана блокировки.',
 			'homeWidgets.howToAndroid' => 'Нажмите и удерживайте пустое место на главном экране, выберите «Виджеты» и найдите EasyPlate, или нажмите «Добавить на главный экран» ниже.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'Добавить на главный экран',
 			'homeWidgets.installed' => ({required Object count}) => '${count} на главном экране',
 			'homeWidgets.pinFailed' => 'Лаунчер не предложил добавить виджет. Добавьте его из списка виджетов главного экрана.',
@@ -4103,6 +4146,9 @@ extension on TranslationsRu {
 			'featureName.webCheckout' => 'Покупка на сайте',
 			'featureName.socialVideoPhoto' => 'Картинка из видео',
 			'featureName.recipeSourceLink' => 'Ссылка на оригинальный рецепт',
+			'featureName.deleteRecipe' => 'Удаление рецепта',
+			'featureName.ingredientSections' => 'Заголовки групп ингредиентов',
+			'featureName.recipeSuggestions' => 'Подбор рецептов по предпочтениям',
 			'featureName.webCheckoutIl' => 'Покупка на сайте (Израиль)',
 			'featureName.webCheckoutIntl' => 'Покупка на сайте (за рубежом)',
 			'wakeWord.title' => 'Эй, Шефи',

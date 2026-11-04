@@ -28,6 +28,7 @@ import '../../domain/usecases/parse_recipe_from_file_usecase.dart';
 import '../../domain/usecases/parse_recipe_from_social_video_usecase.dart';
 import '../../domain/usecases/parse_recipe_from_url_usecase.dart';
 import '../../domain/usecases/search_web_recipes_usecase.dart';
+import '../../domain/usecases/suggest_recipes_usecase.dart';
 
 part 'ingestion_bloc.freezed.dart';
 
@@ -37,6 +38,21 @@ sealed class IngestionEvent with _$IngestionEvent {
       _SelectChannel;
   const factory IngestionEvent.parseRawText(String text) = _ParseRawText;
   const factory IngestionEvent.searchWeb(String query) = _SearchWeb;
+
+  /// Recipes picked by the account's preferences rather than a query, laid
+  /// out like search results: one is opened (and paid for) at a time, and a
+  /// save comes back to the list for the next.
+  ///
+  /// [topic] is what the user typed ("קינוחים"), empty for none;
+  /// [preferences] the diet for this search, null for the saved one.
+  const factory IngestionEvent.suggestRecipes({
+    @Default('') String topic,
+    List<DietaryPreference>? preferences,
+  }) = _SuggestRecipes;
+
+  /// From a result opened out of the list — its review, its page, its
+  /// failure — back to the list, without spending anything.
+  const factory IngestionEvent.backToResults() = _BackToResults;
   const factory IngestionEvent.parseUrl(String url) = _ParseUrl;
   const factory IngestionEvent.viewOriginal(String url) = _ViewOriginal;
   const factory IngestionEvent.parseSocialVideo(String url) = _ParseSocialVideo;
@@ -74,7 +90,7 @@ sealed class IngestionEvent with _$IngestionEvent {
 
 /// What the spinner is waiting for, so it can say so: a web search that
 /// read "analysing the recipe" looked like the wrong step had started.
-enum IngestionWork { analyzing, searching, loadingPage }
+enum IngestionWork { analyzing, searching, suggesting, loadingPage }
 
 @freezed
 sealed class IngestionState with _$IngestionState {
@@ -84,10 +100,17 @@ sealed class IngestionState with _$IngestionState {
     RecipeIngestionChannel channel, {
     @Default(IngestionWork.analyzing) IngestionWork work,
   }) = IngestionParsing;
+
+  /// [suggested]: the list came from the account's preferences, not a
+  /// query. [savedUrls]: the results already saved from it this visit, and
+  /// [justSaved] the moment one more was.
   const factory IngestionState.searchResults(
     RecipeIngestionChannel channel,
-    List<WebSearchResultEntity> results,
-  ) = IngestionSearchResults;
+    List<WebSearchResultEntity> results, {
+    @Default(false) bool suggested,
+    @Default([]) List<String> savedUrls,
+    @Default(false) bool justSaved,
+  }) = IngestionSearchResults;
 
   /// [notice] carries a failed save: the review stays, with what went wrong
   /// said over it.
@@ -135,6 +158,9 @@ sealed class IngestionState with _$IngestionState {
 class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   final ParseRawTextUseCase parseRawTextUseCase;
   final SearchWebRecipesUseCase searchWebRecipesUseCase;
+
+  /// Null where nothing suggests (tests that do not need it).
+  final SuggestRecipesUseCase? suggestRecipesUseCase;
   final ParseRecipeFromUrlUseCase parseRecipeFromUrlUseCase;
   final FetchOriginalRecipePageUseCase fetchOriginalRecipePageUseCase;
   final ParseRecipeFromSocialVideoUseCase parseRecipeFromSocialVideoUseCase;
@@ -170,6 +196,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     RecipeIngestionChannel initialChannel = RecipeIngestionChannel.rawText,
     required this.parseRawTextUseCase,
     required this.searchWebRecipesUseCase,
+    this.suggestRecipesUseCase,
     required this.parseRecipeFromUrlUseCase,
     required this.fetchOriginalRecipePageUseCase,
     required this.parseRecipeFromSocialVideoUseCase,
@@ -192,6 +219,8 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     on<_SelectChannel>(_selectChannel);
     on<_ParseRawText>(_parseRawText);
     on<_SearchWeb>(_searchWeb);
+    on<_SuggestRecipes>(_suggestRecipes);
+    on<_BackToResults>(_backToResults);
     on<_ParseUrl>(_parseUrl);
     on<_ViewOriginal>(_viewOriginal);
     on<_ParseSocialVideo>(_parseSocialVideo);
@@ -213,6 +242,10 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       parseRecipeFromFileUseCase: ParseRecipeFromFileUseCase(context.read()),
       parseRawTextUseCase: ParseRawTextUseCase(context.read()),
       searchWebRecipesUseCase: SearchWebRecipesUseCase(context.read()),
+      suggestRecipesUseCase: SuggestRecipesUseCase(
+        context.read(),
+        context.read(),
+      ),
       parseRecipeFromUrlUseCase: ParseRecipeFromUrlUseCase(context.read()),
       fetchOriginalRecipePageUseCase: FetchOriginalRecipePageUseCase(
         context.read(),
@@ -355,6 +388,29 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   /// so a failure opening one of them returns to the list.
   List<WebSearchResultEntity>? _lastResults;
 
+  /// Whether [_lastResults] are suggestions, and which of them were saved.
+  /// [_openedResult] is the one the screen came from.
+  bool _suggested = false;
+  String? _openedResult;
+  final List<String> _savedUrls = [];
+
+  /// The kept results, as the list state.
+  IngestionState _resultsState({bool justSaved = false}) => .searchResults(
+    _channel,
+    _lastResults!,
+    suggested: _suggested,
+    savedUrls: List.unmodifiable(_savedUrls),
+    justSaved: justSaved,
+  );
+
+  /// Whether a back step from what is on screen lands on a results list.
+  bool get canReturnToResults =>
+      _channel == RecipeIngestionChannel.webSearch &&
+      _lastResults != null &&
+      state is! IngestionSearchResults &&
+      state is! IngestionParsing &&
+      state is! IngestionSaved;
+
   /// Set when the last failure was a refusal that stands — the daily
   /// allowance, no verified phone, a blocked account: running the same
   /// request again would only hit the same wall.
@@ -386,8 +442,9 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     // A failure opening a search result goes back to the results.
     if (_channel == RecipeIngestionChannel.webSearch &&
         last is! _SearchWeb &&
+        last is! _SuggestRecipes &&
         _lastResults != null) {
-      emit(.searchResults(_channel, _lastResults!));
+      emit(_resultsState());
       return null;
     }
     if (last == null || _lastRefused) {
@@ -397,6 +454,10 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     add(last);
     return null;
   }
+
+  /// The diet saved in the account's preferences: what a search starts
+  /// from before the user changes it for that search.
+  Future<List<DietaryPreference>> savedPreferences() => _preferences;
 
   Future<List<DietaryPreference>> get _preferences async =>
       (await getUserPreferencesUseCase()).dietaryPreferences;
@@ -539,6 +600,19 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       await saveRecipeUseCase(recipe);
       // The picked picture is the recipe's now; the others go with close().
       _savedImage = recipe.imageFileName;
+      // Out of the suggestions, the next one is a tap away: the list comes
+      // back with this one ticked, rather than the screen closing.
+      final source = _openedResult;
+      if (_suggested &&
+          _channel == RecipeIngestionChannel.webSearch &&
+          _lastResults != null &&
+          source != null &&
+          _lastResults!.any((r) => r.url == source)) {
+        _openedResult = null;
+        if (!_savedUrls.contains(source)) _savedUrls.add(source);
+        emit(_resultsState(justSaved: true));
+        return;
+      }
       emit(const IngestionState.saved());
     } catch (e) {
       debugPrint('Saving the recipe failed: $e');
@@ -627,6 +701,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
 
   Future<void> _parseUrl(_ParseUrl event, Emitter<IngestionState> emit) {
     if (!_acceptUrl(event.url, emit)) return Future.value();
+    _openedResult = event.url;
     // From a search result the form's query stays the draft, not the link.
     _remember(
       event,
@@ -719,12 +794,47 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
         preferences: await _preferences,
       );
       _lastResults = results;
-      emit(.searchResults(_channel, results));
+      _suggested = false;
+      _savedUrls.clear();
+      emit(_resultsState());
     } catch (e) {
       debugPrint('Web search error: $e');
       _lastRefused = isStandingRefusal(e);
       emit(.errorMessage(_channel, _describe(e, t.common.loadFailed)));
     }
+  }
+
+  Future<void> _suggestRecipes(
+    _SuggestRecipes event,
+    Emitter<IngestionState> emit,
+  ) async {
+    final suggest = suggestRecipesUseCase;
+    if (suggest == null || state is IngestionParsing) return;
+    _remember(event);
+    emit(.parsing(_channel, work: IngestionWork.suggesting));
+    try {
+      final results = await suggest(
+        preferences: event.preferences ?? await _preferences,
+        topic: event.topic,
+      );
+      _lastResults = results;
+      _suggested = true;
+      _savedUrls.clear();
+      emit(_resultsState());
+    } catch (e) {
+      debugPrint('Suggestions error: $e');
+      _lastRefused = isStandingRefusal(e);
+      emit(.errorMessage(_channel, _describe(e, t.common.loadFailed)));
+    }
+  }
+
+  FutureOr<void> _backToResults(
+    _BackToResults event,
+    Emitter<IngestionState> emit,
+  ) {
+    if (_lastResults == null) return null;
+    emit(_resultsState());
+    return null;
   }
 
   /// The editor hands back the whole recipe, so the review simply re-renders

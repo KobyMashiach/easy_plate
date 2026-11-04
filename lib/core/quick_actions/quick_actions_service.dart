@@ -83,7 +83,11 @@ class QuickActionsService {
     final s = t.quickActions;
     return [
       if (FeaturesFlags.assistant.isVisible)
-        ShortcutItem(type: assistant, localizedTitle: s.shefi, icon: 'qa_shefi'),
+        ShortcutItem(
+          type: assistant,
+          localizedTitle: s.shefi,
+          icon: 'qa_shefi',
+        ),
       if (FeaturesFlags.groceryLists.isVisible)
         ShortcutItem(
           type: groceryAdd,
@@ -96,7 +100,11 @@ class QuickActionsService {
           localizedTitle: s.receipt,
           icon: 'qa_receipt',
         ),
-      ShortcutItem(type: support, localizedTitle: s.support, icon: 'qa_support'),
+      ShortcutItem(
+        type: support,
+        localizedTitle: s.support,
+        icon: 'qa_support',
+      ),
     ];
   }
 

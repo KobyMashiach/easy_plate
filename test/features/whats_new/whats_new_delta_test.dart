@@ -32,6 +32,44 @@ List<String> keysOf(List<WhatsNewPage> pages) => [
 ];
 
 void main() {
+  test('a headline repeated by a later release is shown once, the newest', () {
+    WhatsNewFeature titled(String key, Map<String, String> title) =>
+        WhatsNewFeature(featureKey: key, title: title);
+    final pages = computeWhatsNewPages(
+      releases: [
+        release(
+          11,
+          features: [
+            titled('ff_cook_mode', {'he': 'מצב בישול', 'en': 'Cook mode'}),
+            titled('ff_other', {'he': 'משהו אחר'}),
+          ],
+        ),
+        release(
+          12,
+          features: [
+            // Same headline in other punctuation and case.
+            titled('ff_cook_mode', {'he': 'מצב בישול!', 'en': 'cook  mode'}),
+          ],
+        ),
+        release(
+          13,
+          features: [
+            // A free-text page naming no flag, with the English headline
+            // only.
+            titled('note_1', {'en': 'Cook Mode'}),
+            titled('note_2', const {}),
+            titled('note_3', const {}),
+          ],
+        ),
+      ],
+      currentBuild: 13,
+      lastSeenBuild: 10,
+      isFeatureShown: (_) => true,
+    );
+    expect(keysOf(pages), ['ff_other', 'note_1', 'note_2', 'note_3']);
+    expect(pages[1].release.versionCode, 13);
+  });
+
   test(
     'a clean install has nothing due: the baseline is the running build',
     () {

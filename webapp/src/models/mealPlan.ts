@@ -9,7 +9,7 @@
 // a recipe (`recipeId`, no ingredients) or a quick entry (`freeText` plus the
 // products it is made of). There is no per-item servings field: the app counts
 // every recipe item as one serving (PlanNutrition).
-import { normalizeIngredient, type Ingredient, type Nutrition, type Recipe } from "./recipe";
+import { ingredientToDart, normalizeIngredient, type Ingredient, type Nutrition, type Recipe } from "./recipe";
 
 export const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"] as const;
 export type Weekday = (typeof WEEKDAYS)[number];
@@ -93,7 +93,7 @@ export function mealItemToDart(i: MealItem): Record<string, unknown> {
     id: i.id,
     recipeId: i.recipeId,
     freeText: i.freeText,
-    ingredients: i.ingredients.map((g) => ({ name: g.name, amount: g.amount, unit: g.unit })),
+    ingredients: i.ingredients.map(ingredientToDart),
   };
 }
 
@@ -309,7 +309,7 @@ export function planContainerContent(p: MealPlan, collabIdByRecipeId: Map<string
         recipeCollabId: i.recipeId === null ? null : collabIdByRecipeId.get(i.recipeId) ?? null,
         label: i.recipeId === null ? i.freeText : titles.get(i.recipeId) ?? i.freeText,
         freeText: i.freeText,
-        ingredients: i.ingredients.map((g) => ({ name: g.name, amount: g.amount, unit: g.unit })),
+        ingredients: i.ingredients.map(ingredientToDart),
       })),
     })),
   };

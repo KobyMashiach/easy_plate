@@ -14,10 +14,18 @@ void main() {
     for (final language in AppLanguage.values) {
       final line = GeminiRecipeAiDataSource.languageInstruction(language);
       expect(line, startsWith('שפת התשובה: ${names[language]}'));
-      expect(line, contains('תרגם'), reason: 'a source in another language is translated');
+      expect(
+        line,
+        contains('תרגם'),
+        reason: 'a source in another language is translated',
+      );
       final prompt = GeminiRecipeAiDataSource.systemInstructionFor(language);
       expect(prompt, endsWith(line));
-      expect(prompt, contains('JSON'), reason: 'the extraction rules stay in front');
+      expect(
+        prompt,
+        contains('JSON'),
+        reason: 'the extraction rules stay in front',
+      );
     }
   });
 }

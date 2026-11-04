@@ -27,6 +27,25 @@ abstract class RecipeAiDataSource {
     String query,
     List<DietaryPreference> preferences,
   );
+
+  /// Recipes on the web picked for this account rather than for a query:
+  /// its dietary preferences, and something new next to [knownTitles] (the
+  /// recipes it already keeps). The model writes the links itself here, so
+  /// they are checked before they are shown; [suggestDishes] is the way
+  /// that does not depend on that.
+  Future<List<WebSearchResultEntity>> suggestRecipes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  });
+
+  /// Only the dishes for such a list — a name to search by and a line on
+  /// why it suits — with no links: the pages are looked up elsewhere.
+  Future<List<SuggestedDish>> suggestDishes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  });
   Future<RecipeEntity> parseFromUrl(
     String url,
     List<DietaryPreference> preferences,
@@ -59,6 +78,15 @@ abstract class RecipeAiDataSource {
 }
 
 /// One page handed to the receipt scanner: a photo or a PDF, as bytes.
+/// A dish the model suggests: [name] as it would be searched for, [why] in
+/// one sentence, both in the app's language.
+class SuggestedDish {
+  final String name;
+  final String why;
+
+  const SuggestedDish({required this.name, required this.why});
+}
+
 class ReceiptPage {
   final Uint8List bytes;
   final String mimeType;
@@ -169,6 +197,15 @@ allergy — אם ורק אם שדה allergens אינו ריק.
 gluten (חיטה, קמח, לחם, פסטה, קוסקוס, סולת, בורגול, שעורה, שיפון), milk (חלב, גבינה, חמאה, שמנת, יוגורט), eggs (ביצים), fish (דגים), shellfish (פירות ים), peanuts (בוטנים), treeNuts (שקדים, אגוזי מלך, אגוזי לוז, קשיו, פיסטוק, פקאן), sesame (שומשום, טחינה), soy (סויה, רוטב סויה, טופו).
 שדה may_contain — רק אלרגנים שהמקור מציין במפורש שהמתכון עלול להכיל אותם (למשל "עלול להכיל עקבות אגוזים"). בלי ציון מפורש כזה — רשימה ריקה. אל תנחש.''';
 
+  /// Koby, 2026-11-04: a list split as "מצרכים לבשר / מצרכים לרוטב" came
+  /// back with the headings as ingredients, and they went onto the grocery
+  /// list. The heading is a field of each ingredient now, never a line.
+  static const _sectionRules = '''
+חלוקת המצרכים: כשהמקור מחלק את המצרכים לקבוצות (למשל "מצרכים לבשר", "לרוטב", "לבצק"), כתוב בשדה section של כל מצרך את שם הקבוצה שלו, קצר וללא המילה "מצרכים" (למשל "בשר", "רוטב"), ושמור את מצרכי כל קבוצה ברצף.
+כותרת של קבוצה לעולם אינה מצרך: אל תחזיר אותה כפריט ברשימת המצרכים.
+כשהמקור לא מחלק במפורש, אבל מהסרטון או מהשלבים ברור לגמרי לאיזה רכיב של המנה שייך כל מצרך, חלק לפי הרכיבים.
+אם אינך בטוח בחלוקה — השמט את section מכל המצרכים והחזר רשימה אחת כמו שהיא.''';
+
   static const _systemPrompt =
       '''
 אתה מנתח מתכונים. החזר אך ורק מידע שמופיע במקור.
@@ -176,6 +213,7 @@ gluten (חיטה, קמח, לחם, פסטה, קוסקוס, סולת, בורגול
 אם כמות, יחידה או זמן חסרים במקור — השמט את השדה לגמרי. אל תנחש.
 המר כמויות ליחידות מטריות כאשר המקור מציין יחידה ברורה.
 שמור על סדר השלבים כפי שהוא במקור.
+$_sectionRules
 $_dietaryTagRules
 יוצא מן הכלל אחד: את מספר המנות ואת הערכים התזונתיים למנה (קלוריות, חלבון, פחמימות, שומן) עליך תמיד להעריך לפי המצרכים והכמויות, גם כשהמקור לא מציין אותם. אלה הערכות סבירות, לא המצאות.
 החזר JSON בלבד, ללא טקסט נלווה וללא גדרות קוד.''';
@@ -187,17 +225,20 @@ $_dietaryTagRules
   /// נמצאת בה)". In Hebrew like the rest of the prompt.
   @visibleForTesting
   static String languageInstruction(AppLanguage language) {
-    final name = switch (language) {
-      AppLanguage.hebrew => 'עברית',
-      AppLanguage.english => 'אנגלית',
-      AppLanguage.arabic => 'ערבית',
-      AppLanguage.french => 'צרפתית',
-      AppLanguage.russian => 'רוסית',
-    };
+    final name = languageName(language);
     return 'שפת התשובה: $name. כתוב את כל הטקסט במתכון — הכותרת, שמות המצרכים '
         'והשלבים — ב$name, גם כשהמקור כתוב בשפה אחרת: תרגם אותו. '
         'אל תשאיר טקסט בשפת המקור, חוץ משמות מותגים.';
   }
+
+  /// [language]'s name in Hebrew, as the prompts write it.
+  static String languageName(AppLanguage language) => switch (language) {
+    AppLanguage.hebrew => 'עברית',
+    AppLanguage.english => 'אנגלית',
+    AppLanguage.arabic => 'ערבית',
+    AppLanguage.french => 'צרפתית',
+    AppLanguage.russian => 'רוסית',
+  };
 
   /// The extraction prompt with the answer's language on it.
   @visibleForTesting
@@ -252,6 +293,11 @@ $_dietaryTagRules
                 'pinch',
                 'unspecified',
               ],
+            },
+            'section': {
+              'type': 'string',
+              'description':
+                  'The part of the dish this ingredient is for ("sauce", "dough"), when the recipe divides its ingredients. Omit for an undivided list or when unsure',
             },
           },
           'required': ['name', 'unit'],
@@ -609,7 +655,7 @@ $_dietaryTagRules
     // but a model answer that strays (a nameless ingredient, a number where
     // a step should be) must lose that one line, not crash the review — or
     // worse, pass a lazily-cast list on to the screen to blow up there.
-    final ingredients = <RecipeIngredientEntity>[
+    final ingredients = sectionHeadingsLifted([
       for (final raw in (input['ingredients'] as List?) ?? const [])
         if (raw is Map &&
             raw['name'] is String &&
@@ -621,8 +667,9 @@ $_dietaryTagRules
               (u) => u.name == raw['unit'],
               orElse: () => MeasurementUnit.unspecified,
             ),
+            section: ingredientSection(raw['section']),
           ),
-    ];
+    ]);
 
     final allergens = Allergen.fromNames(input['allergens']);
     final title = input['title'];
@@ -1193,16 +1240,180 @@ $_dietaryTagRules
       ),
     );
 
-    // A result the model left malformed is dropped, not fatal to the rest.
+    return _searchResults(data);
+  }
+
+  /// A result the model left malformed — or pointed at something that is not
+  /// a web page — is dropped, not fatal to the rest; a page named twice is
+  /// listed once.
+  static List<WebSearchResultEntity> _searchResults(Map<String, dynamic> data) {
+    final seen = <String>{};
     return [
       for (final r in (data['results'] as List?) ?? const [])
-        if (r is Map && r['title'] is String && r['url'] is String)
+        if (r is Map &&
+            r['title'] is String &&
+            r['url'] is String &&
+            IngestionLaunch.isWebUrl(r['url'] as String) &&
+            seen.add(r['url'] as String))
           WebSearchResultEntity(
             title: r['title'] as String,
             url: r['url'] as String,
             snippet: (r['snippet'] as String?) ?? '',
           ),
     ];
+  }
+
+  /// How many suggestions one call asks for: enough to choose from, few
+  /// enough that a grounded answer still fits and stays real.
+  static const suggestionCount = 10;
+
+  static const _dishesSchema = {
+    'type': 'object',
+    'properties': {
+      'dishes': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'name': {
+              'type': 'string',
+              'description':
+                  'The dish as people search for it, two to five words',
+            },
+            'why': {
+              'type': 'string',
+              'description': 'One short sentence on why it suits this user',
+            },
+          },
+          'required': ['name', 'why'],
+        },
+      },
+    },
+    'required': ['dishes'],
+  };
+
+  @override
+  Future<List<SuggestedDish>> suggestDishes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  }) async {
+    final data = await _callStructured(
+      feature: 'search',
+      _body(
+        input: dishesPrompt(
+          preferences,
+          topic: topic,
+          knownTitles: knownTitles.take(30).toList(),
+          language: currentContentLanguage(),
+        ),
+        schema: _dishesSchema,
+        systemInstruction: 'אתה שף שמציע רעיונות למנות. החזר JSON בלבד.',
+        model: ApiConfig.searchModel,
+        thinkingLevel: ApiConfig.searchThinkingLevel,
+      ),
+    );
+    final seen = <String>{};
+    return [
+      for (final d in (data['dishes'] as List?) ?? const [])
+        if (d is Map &&
+            d['name'] is String &&
+            (d['name'] as String).trim().isNotEmpty &&
+            seen.add((d['name'] as String).trim().toLowerCase()))
+          SuggestedDish(
+            name: (d['name'] as String).trim(),
+            why: (d['why'] as String?)?.trim() ?? '',
+          ),
+    ];
+  }
+
+  /// The dish-ideas request: the same taste rules as [suggestionPrompt],
+  /// without links — the names are what the pages are searched by.
+  @visibleForTesting
+  static String dishesPrompt(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+    required AppLanguage language,
+  }) {
+    final asked = topic.trim();
+    final lines = [
+      if (asked.isEmpty)
+        'הצע $suggestionCount מנות מגוונות שהמשתמש ירצה לבשל: שונות זו מזו (עיקריות, תוספות, מרקים, מאפים, קינוחים).'
+      else ...[
+        'המשתמש ביקש: "$asked". הצע $suggestionCount מנות שעונות בדיוק על הבקשה הזו, שונות זו מזו.',
+        'הבקשה קובעת מה מחפשים; ההעדפות והמתכונים השמורים שלמטה רק מכוונים את הטעם בתוכה.',
+      ],
+      if (preferences.isNotEmpty)
+        'כל מנה חייבת להתאים להעדפות התזונתיות של המשתמש: ${preferences.map((p) => p.name).join(', ')}.',
+      // The name is what the page is searched by: "בראוניז" finds a
+      // brownie with butter, "בראוניז טבעוני" one without.
+      if (preferences.isNotEmpty)
+        'כשההעדפה משנה את המתכון (למשל טבעוני, ללא גלוטן, פרווה), כלול אותה בשם המנה, כדי שהחיפוש ימצא גרסה מתאימה.',
+      if (knownTitles.isNotEmpty)
+        'אלה מתכונים שכבר שמורים אצלו — הם מראים מה הוא אוהב. הצע מנות ברוח דומה אבל חדשות, ואל תחזור על אף אחת מהן: ${knownTitles.join(' | ')}.',
+      if (asked.isEmpty && preferences.isEmpty && knownTitles.isEmpty)
+        'אין לו העדפות שמורות: הצע מנות ביתיות אהובות ופופולריות.',
+      'לכל מנה: שם מוכר וקצר, כפי שמחפשים אותה בגוגל (בלי תיאורים כמו "הכי טעים"), ומשפט אחד שמסביר למה היא מתאימה לו.',
+      'כתוב את השמות ואת המשפטים ב${languageName(language)}.',
+    ];
+    return lines.join('\n');
+  }
+
+  @override
+  Future<List<WebSearchResultEntity>> suggestRecipes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  }) async {
+    final known = knownTitles.take(30).toList();
+    final data = await _callStructured(
+      feature: 'search',
+      _body(
+        input: suggestionPrompt(
+          preferences,
+          topic: topic,
+          knownTitles: known,
+          language: currentContentLanguage(),
+        ),
+        schema: _searchResultsSchema,
+        tools: const [
+          {'type': 'google_search'},
+        ],
+        model: ApiConfig.searchModel,
+        thinkingLevel: ApiConfig.searchThinkingLevel,
+      ),
+    );
+    return _searchResults(data);
+  }
+
+  /// The suggestion request in words: the account's diet when it has one,
+  /// the dishes it already keeps as a taste to build on (and not to repeat),
+  /// and the language the cards are read in.
+  @visibleForTesting
+  static String suggestionPrompt(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+    required AppLanguage language,
+  }) {
+    final asked = topic.trim();
+    final lines = [
+      if (asked.isEmpty)
+        'חפש באינטרנט $suggestionCount מתכונים מגוונים שהמשתמש ירצה לבשל: מנות שונות זו מזו (עיקריות, תוספות, מרקים, מאפים, קינוחים), מאתרי מתכונים אמיתיים.'
+      else
+        'המשתמש ביקש: "$asked". חפש באינטרנט $suggestionCount מתכונים שונים זה מזה שעונים בדיוק על הבקשה, מאתרי מתכונים אמיתיים.',
+      if (preferences.isNotEmpty)
+        'כל מתכון חייב להתאים להעדפות התזונתיות של המשתמש: ${preferences.map((p) => p.name).join(', ')}.',
+      if (knownTitles.isNotEmpty)
+        'אלה מתכונים שכבר שמורים אצלו — הם מראים מה הוא אוהב. הצע מנות ברוח דומה אבל חדשות, ואל תחזור על אף אחת מהן: ${knownTitles.join(' | ')}.',
+      if (asked.isEmpty && preferences.isEmpty && knownTitles.isEmpty)
+        'אין לו העדפות שמורות: הצע מנות ביתיות אהובות ופופולריות.',
+      'לכל היותר שני מתכונים מאותו אתר: קח מכמה אתרים שונים.',
+      'לכל מתכון החזר את הקישור כפי שהחיפוש החזיר אותו — לעולם אל תרכיב כתובת בעצמך — כותרת קצרה, ומשפט אחד שמסביר למה הוא מתאים לו.',
+      'כתוב את הכותרות ואת המשפטים ב${languageName(language)}, גם כשהאתר כתוב בשפה אחרת.',
+    ];
+    return lines.join('\n');
   }
 
   @override
@@ -1248,11 +1459,7 @@ $_dietaryTagRules
       ingredients: names.length == recipe.ingredients.length
           ? [
               for (var i = 0; i < names.length; i++)
-                RecipeIngredientEntity(
-                  name: names[i],
-                  amount: recipe.ingredients[i].amount,
-                  unit: recipe.ingredients[i].unit,
-                ),
+                recipe.ingredients[i].copyWith(name: names[i]),
             ]
           : recipe.ingredients,
       steps: steps.length == recipe.steps.length ? steps : recipe.steps,

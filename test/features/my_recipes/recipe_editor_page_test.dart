@@ -58,6 +58,13 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
   ) => throw UnimplementedError();
 
   @override
+  Future<List<WebSearchResultEntity>> suggestRecipes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  }) => throw UnimplementedError();
+
+  @override
   Future<List<WebSearchResultEntity>> searchWeb(
     String q,
     List<DietaryPreference> p,

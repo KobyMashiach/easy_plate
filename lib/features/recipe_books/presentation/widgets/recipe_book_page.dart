@@ -10,6 +10,8 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
+import '../../../my_recipes/presentation/widgets/ingredient_section_heading.dart';
 import 'book_page_surface.dart';
 
 /// One recipe rendered as a printed book page.
@@ -91,18 +93,10 @@ class RecipeBookPage extends StatelessWidget {
                   const SizedBox(height: AppSpacing.md),
                   BookPageHeading(title: t.recipe.ingredients),
                   const SizedBox(height: AppSpacing.base),
-                  ...recipe.ingredients.map((ingredient) {
-                    final amount = ingredient.isAmountMissing
-                        ? kMissingInfoPlaceholder
-                        : ingredient.displayAmount;
-                    final unit = measurementUnitLabel(ingredient.unit);
-                    final line = [
-                      amount,
-                      unit,
-                      ingredient.name,
-                    ].where((s) => s.isNotEmpty).join(' ');
-
-                    return Padding(
+                  for (final (index, ingredient)
+                      in recipe.ingredients.indexed) ...[
+                    ?IngredientSectionHeading.at(recipe.ingredients, index),
+                    Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppSpacing.xs,
                       ),
@@ -119,12 +113,15 @@ class RecipeBookPage extends StatelessWidget {
                           ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
-                            child: Text(line, style: AppTextStyles.bodyMd),
+                            child: Text(
+                              _ingredientLine(ingredient),
+                              style: AppTextStyles.bodyMd,
+                            ),
                           ),
                         ],
                       ),
-                    );
-                  }),
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.md),
                   BookPageHeading(title: t.recipe.instructions),
                   const SizedBox(height: AppSpacing.base),
@@ -200,3 +197,11 @@ class BookPageHeading extends StatelessWidget {
     );
   }
 }
+
+String _ingredientLine(RecipeIngredientEntity ingredient) => [
+  ingredient.isAmountMissing
+      ? kMissingInfoPlaceholder
+      : ingredient.displayAmount,
+  measurementUnitLabel(ingredient.unit),
+  ingredient.name,
+].where((s) => s.isNotEmpty).join(' ');

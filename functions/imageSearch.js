@@ -179,6 +179,180 @@ async function search(request, { key, fetchImpl = fetch, db = admin.firestore(),
 }
 
 // ---------------------------------------------------------------------------
+// action "recipes": the app's "suggestions for me". The model names dishes
+// (it is good at that) but not their pages: asked for links, a grounded
+// answer came back with addresses on real sites that answer 404, and with
+// whole category pages under a dish's name (checked 2026-11-04). So each
+// dish is looked up here in Google's web results, and the first result that
+// is one recipe on a recipe site goes back. One unit of the caller's
+// `recipeLookup` budget per dish not already cached; a week in Firestore.
+// ---------------------------------------------------------------------------
+
+const WEB_ENDPOINT = "https://google.serper.dev/search";
+const RECIPE_CACHE_COLLECTION = "recipe_search_cache";
+const MAX_DISHES = 12;
+const MAX_DISH_LENGTH = 80;
+const RECIPE_WORD = { he: "מתכון", en: "recipe", ar: "وصفة", fr: "recette", ru: "рецепт" };
+// Videos and posts are not pages the link reader structures, and the rest
+// are not recipe pages at all.
+const NOT_A_RECIPE_HOST = /(^|\.)(youtube\.com|youtu\.be|tiktok\.com|instagram\.com|facebook\.com|pinterest\.[a-z.]+|x\.com|twitter\.com|reddit\.com|wikipedia\.org|quora\.com)$/i;
+// A listing, not one recipe: a category, a tag, a collection, a search, or
+// a path that ends on the word "recipes".
+const LISTING_PATH = /\/(category|categories|tag|tags|collection|collections|search|author|topics?)(\/|$)|\/(recipes|מתכונים|recettes|рецепты|وصفات)\/?$/i;
+
+// Pure: the dishes the app sent, trimmed, de-duplicated and capped.
+function parseRecipesRequest(body) {
+  const raw = body && Array.isArray(body.dishes) ? body.dishes : [];
+  const seen = new Set();
+  const dishes = [];
+  for (const item of raw) {
+    if (typeof item !== "string") continue;
+    const dish = item.replace(/\s+/g, " ").trim().slice(0, MAX_DISH_LENGTH);
+    if (!dish || seen.has(dish.toLowerCase())) continue;
+    seen.add(dish.toLowerCase());
+    dishes.push(dish);
+    if (dishes.length >= MAX_DISHES) break;
+  }
+  if (!dishes.length) return { error: "empty_query" };
+  const lang = body && typeof body.lang === "string" ? body.lang.trim().toLowerCase().slice(0, 2) : "";
+  return { dishes, lang: /^[a-z]{2}$/.test(lang) ? lang : "" };
+}
+
+// Pure: the first of Serper's organic results that is one recipe on a
+// recipe site, or null.
+function pickRecipePage(json) {
+  for (const item of (json && json.organic) || []) {
+    if (!item || typeof item.link !== "string") continue;
+    let url;
+    try {
+      url = new URL(item.link);
+    } catch (_) {
+      continue;
+    }
+    if (url.protocol !== "https:" && url.protocol !== "http:") continue;
+    const host = url.hostname.toLowerCase();
+    if (NOT_A_RECIPE_HOST.test(host)) continue;
+    let path = url.pathname;
+    try {
+      path = decodeURIComponent(path);
+    } catch (_) {
+      // Left encoded: the listing check then simply does not match it.
+    }
+    if (path === "/" || path === "" || LISTING_PATH.test(path)) continue;
+    return {
+      title: typeof item.title === "string" ? item.title.slice(0, 200) : "",
+      url: item.link,
+      snippet: typeof item.snippet === "string" ? item.snippet.slice(0, 300) : "",
+      source: host.replace(/^www\./, ""),
+    };
+  }
+  return null;
+}
+
+// Pure: what Serper is asked for one dish.
+function recipeSearchBody(dish, lang) {
+  const word = RECIPE_WORD[lang] || RECIPE_WORD.en;
+  const body = { q: `${dish} ${word}`, num: 10 };
+  if (lang) body.hl = lang;
+  if (lang === "he") body.gl = "il";
+  return body;
+}
+
+function recipeCacheId(dish, lang) {
+  return crypto.createHash("sha1").update(`recipe|${lang}|${dish.toLowerCase()}`).digest("hex");
+}
+
+// One dish → its page (or null when Google had none worth offering).
+// Throws (refundable) when Serper itself failed.
+async function lookupDish(dish, lang, { key, fetchImpl = fetch }) {
+  let response;
+  try {
+    response = await fetchImpl(WEB_ENDPOINT, {
+      method: "POST",
+      headers: { "X-API-KEY": key, "Content-Type": "application/json" },
+      body: JSON.stringify(recipeSearchBody(dish, lang)),
+      signal: AbortSignal.timeout(SEARCH_TIMEOUT_MS),
+    });
+  } catch (err) {
+    throw Object.assign(new Error(`upstream unreachable: ${err.message}`), { refundable: true });
+  }
+  if (!response.ok) throw Object.assign(new Error(`upstream HTTP ${response.status}`), { refundable: true });
+  return pickRecipePage(await response.json());
+}
+
+// Every dish's page, cached ones first; [onMisses] spends the budget for the
+// rest before Serper is asked (and may throw to refuse). Returns the found
+// pages in the dishes' order, and how many paid lookups failed upstream.
+async function recipePages(request, { key, fetchImpl = fetch, db = admin.firestore(), now = Date.now(), onMisses = null }) {
+  const ids = request.dishes.map((dish) => recipeCacheId(dish, request.lang));
+  const cached = await Promise.all(ids.map(async (id) => {
+    try {
+      const snap = await db.collection(RECIPE_CACHE_COLLECTION).doc(id).get();
+      if (!snap.exists) return undefined;
+      const data = snap.data();
+      const at = data.cachedAt && typeof data.cachedAt.toMillis === "function" ? data.cachedAt.toMillis() : 0;
+      if (now - at > CACHE_TTL_MS) return undefined;
+      // null is a remembered "nothing found", not a miss.
+      return data.page || null;
+    } catch (err) {
+      logger.warn("recipe search cache read failed", { reason: err.message });
+      return undefined;
+    }
+  }));
+  const misses = cached.flatMap((page, index) => (page === undefined ? [index] : []));
+  if (misses.length && onMisses) await onMisses(misses.length);
+  let failed = 0;
+  await Promise.all(misses.map(async (index) => {
+    try {
+      const page = await lookupDish(request.dishes[index], request.lang, { key, fetchImpl });
+      cached[index] = page;
+      await db.collection(RECIPE_CACHE_COLLECTION).doc(ids[index]).set({
+        dish: request.dishes[index],
+        page,
+        cachedAt: admin.firestore.Timestamp.now(),
+      }).catch((err) => logger.warn("recipe search cache write failed", { reason: err.message }));
+    } catch (err) {
+      failed++;
+      cached[index] = null;
+      logger.warn("recipe lookup failed", { reason: err.message });
+    }
+  }));
+  const seen = new Set();
+  const items = [];
+  request.dishes.forEach((dish, index) => {
+    const page = cached[index];
+    if (!page || seen.has(page.url)) return;
+    seen.add(page.url);
+    items.push({ dish, ...page });
+  });
+  return { items, failed };
+}
+
+async function handleRecipes(req, res, caller, key) {
+  const request = parseRecipesRequest(req.body);
+  if (request.error) return res.status(400).json({ error: { code: request.error, message: request.error } });
+  let spent = 0;
+  try {
+    const { items, failed } = await recipePages(request, {
+      key,
+      onMisses: async (count) => {
+        const decision = await budget.spend({ uid: caller.uid, kind: "recipeLookup", amount: count });
+        if (!decision.allowed) throw budget.exhausted(decision, "recipeLookup");
+        spent = count;
+      },
+    });
+    // A lookup Serper failed was not a page bought: given back.
+    if (failed && spent) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "recipeLookup", amount: failed });
+    logger.info("recipe pages", { uid: caller.uid, dishes: request.dishes.length, found: items.length, looked: spent, failed });
+    return res.status(200).json({ items });
+  } catch (err) {
+    if (err.body) return res.status(err.status).json(err.body);
+    logger.error("recipe pages failed", { uid: caller.uid, reason: err.message });
+    return res.status(502).json({ error: { code: "upstream", message: "Recipe search failed" } });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // action "download": the web app cannot read most picked results itself
 // (their hosts send no CORS headers), so it asks for the bytes here and
 // uploads them with its own uploadRecipeImage. The fetch goes through the
@@ -303,6 +477,8 @@ exports.imageSearch = onRequest(
       return res.status(503).json({ error: { code: "not_configured", message: "Image search is not configured" } });
     }
 
+    if (req.body && req.body.action === "recipes") return handleRecipes(req, res, caller, key);
+
     const request = parseRequest(req.body);
     if (request.error === "end_of_results") return res.status(200).json({ items: [], nextStart: null, start: MAX_START });
     if (request.error) return res.status(400).json({ error: { code: request.error, message: request.error } });
@@ -337,4 +513,5 @@ exports.imageSearch = onRequest(
 exports.internals = {
   parseRequest, parseResults, cacheId, searchBody, pageFor, configured, search, PAGE_SIZE, MAX_START,
   parseDownload, acceptImageType, looksLikeMarkup, download, DOWNLOAD_STATUS, MAX_DOWNLOAD_URL_LENGTH,
+  parseRecipesRequest, pickRecipePage, recipeSearchBody, recipePages, MAX_DISHES,
 };

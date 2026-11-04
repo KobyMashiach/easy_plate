@@ -36,6 +36,7 @@ import { safeHref } from "./lib/safeHref";
 import { fileNameOf, useRecipe } from "./lib/useRecipe";
 import { AskShefiLink } from "../assistant/AskShefiLink";
 import { useTranslated } from "../../lib/contentTranslation";
+import { SectionedIngredients } from "./components/IngredientSections";
 
 export function RecipeDetailsPage() {
   const { id } = useParams();
@@ -317,12 +318,12 @@ export function RecipeDetailsPage() {
           <ClayCard radius={24} padding={24} as="section" aria-labelledby="ing-h">
             <SectionHeader id="ing-h" title={t("recipes.ingredients")} />
             <ul className="mt-3">
-              {view.ingredients.map((ing, i) => (
+              <SectionedIngredients ingredients={view.ingredients} row={(ing, i) => (
                 <li key={i} className="flex items-start gap-3 py-1">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
                   <span className="min-w-0 flex-1 text-body-md">{ingredientLine(t, ing)}</span>
                 </li>
-              ))}
+              )} />
             </ul>
             {recipe.ingredients.length ? (
               <FeatureGate flag="ff_grocery_from_recipe">
@@ -498,12 +499,12 @@ export function RecipeDetailsPage() {
               </h2>
               {recipe.ingredients.length ? <ScaleStepper scale={scale} baseServings={recipe.servings} onChange={setScale} /> : null}
               <ul className="divide-y divide-outline-variant/40">
-                {view.ingredients.map((ing, i) => (
+                <SectionedIngredients ingredients={view.ingredients} row={(ing, i) => (
                   <li key={i} className="flex items-start gap-3 py-2">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
                     <span className="text-body-md">{ingredientLine(t, ing, scale)}</span>
                   </li>
-                ))}
+                )} />
               </ul>
               {recipe.ingredients.length ? (
                 <FeatureGate flag="ff_grocery_from_recipe">

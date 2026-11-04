@@ -26,6 +26,7 @@ import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/nutrition/nutrition_widgets.dart';
 import '../../../../core/widgets/recipe_source_link.dart';
 import '../widgets/nutrition_facts_card.dart';
+import '../widgets/ingredient_section_heading.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../cook_mode_entry.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
@@ -464,6 +465,43 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
     }
   }
 
+  /// The bin: on any recipe of this account's own list — written, saved
+  /// from the community, or let into by someone (a viewer too: removing it
+  /// takes only this account's copy). Not on a community post or a recipe
+  /// opened read-only from outside the list.
+  bool get _canDelete =>
+      widget.sharedId == null &&
+      !widget.readOnly &&
+      FeaturesFlags.deleteRecipe.isVisible;
+
+  Future<void> _delete() async {
+    if (!guardFeature(context, FeaturesFlags.deleteRecipe)) return;
+    final repository = context.read<RecipesRepository>();
+    final confirmed = await AppDialog.warning(
+      title: t.recipe.delete,
+      message: recipe.isShared
+          ? t.recipe.deleteSharedConfirm
+          : t.recipe.deleteConfirm,
+      icon: Icons.delete_outline_rounded,
+      confirmLabel: t.common.delete,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
+    if (confirmed != true || !mounted) return;
+    try {
+      await AppDialog.busy(context, () => repository.deleteRecipe(recipe.id));
+    } catch (e) {
+      debugPrint('Deleting the recipe failed: $e');
+      if (mounted) AppDialog.error(message: t.common.error).show(context);
+      return;
+    }
+    if (!mounted) return;
+    AppDialog.success(message: t.recipe.deleted).notify(context);
+    // The lists follow the box on their own; this screen has nothing left
+    // to show.
+    Navigator.of(context).maybePop();
+  }
+
   Future<void> _edit() async {
     final repository = context.read<RecipesRepository>();
     final before = recipe;
@@ -624,14 +662,29 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
           // navigation, where people did not look for it.
           ClayPageHeader(
             title: recipe.title,
-            trailing: _readOnly
+            trailing: !_canDelete && _readOnly
                 ? null
-                : ClayIconButton(
-                    icon: Icons.edit_rounded,
-                    filled: true,
-                    size: 44,
-                    tooltip: t.common.edit,
-                    onTap: _edit,
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_canDelete)
+                        ClayIconButton(
+                          icon: Icons.delete_outline_rounded,
+                          size: 44,
+                          tooltip: t.recipe.delete,
+                          onTap: _delete,
+                        ),
+                      if (_canDelete && !_readOnly)
+                        const SizedBox(width: AppSpacing.sm),
+                      if (!_readOnly)
+                        ClayIconButton(
+                          icon: Icons.edit_rounded,
+                          filled: true,
+                          size: 44,
+                          tooltip: t.common.edit,
+                          onTap: _edit,
+                        ),
+                    ],
                   ),
           ),
           const SizedBox(height: AppSpacing.gutter),
@@ -786,8 +839,10 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
               children: [
                 ClaySectionHeader(title: t.recipe.ingredients, underline: true),
                 const SizedBox(height: AppSpacing.sm),
-                ...recipe.ingredients.map(
-                  (ingredient) => Padding(
+                for (final (index, ingredient)
+                    in recipe.ingredients.indexed) ...[
+                  ?IngredientSectionHeading.at(recipe.ingredients, index),
+                  Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: AppSpacing.xs,
                     ),
@@ -812,7 +867,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                       ],
                     ),
                   ),
-                ),
+                ],
                 if (recipe.ingredients.isNotEmpty)
                   // Shopping for just this dish, without building a menu
                   // around it. Offered on read-only recipes too: a community
@@ -952,8 +1007,14 @@ RecipeEntity mergeEditedRecipe(
     List<RecipeIngredientEntity> a,
     List<RecipeIngredientEntity> b,
   ) => listEquals(
-    [for (final i in a) '${i.name}\u0001${i.amount}\u0001${i.unit.name}'],
-    [for (final i in b) '${i.name}\u0001${i.amount}\u0001${i.unit.name}'],
+    [
+      for (final i in a)
+        '${i.name}\u0001${i.amount}\u0001${i.unit.name}\u0001${i.section}',
+    ],
+    [
+      for (final i in b)
+        '${i.name}\u0001${i.amount}\u0001${i.unit.name}\u0001${i.section}',
+    ],
   );
 
   final title = pick(edited.title, before.title, fresh.title);

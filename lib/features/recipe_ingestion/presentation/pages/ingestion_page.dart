@@ -29,12 +29,15 @@ import '../../../../core/widgets/landscape_hint.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
 import '../../../../core/widgets/pop_if_current.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
+import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
+import '../../../my_recipes/presentation/widgets/ingredient_section_heading.dart';
 import '../../domain/entities/ingestion_file.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/recipe_image_candidate.dart';
 import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../bloc/ingestion_bloc.dart';
+import '../widgets/suggestion_request_sheet.dart';
 import '../widgets/ai_quota_indicator.dart';
 import '../widgets/video_image_picker.dart';
 import '../../../../core/widgets/recipe_source_link.dart';
@@ -146,6 +149,12 @@ class IngestionPage extends StatelessWidget {
           if (notice != null) {
             AppDialog.error(message: notice).notify(context);
           }
+          if (state case IngestionSearchResults(justSaved: true)) {
+            AppDialog.success(
+              message: t.ingestion.savedFromList,
+            ).notify(context);
+            unawaited(StoreReviewService().onSuccessMoment());
+          }
           if (state is IngestionSaved) {
             Navigator.of(context).pop();
             // After the pop so the store's sheet lands on the recipes list.
@@ -153,93 +162,115 @@ class IngestionPage extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          return ClayScaffold(
-            appBar: ClayTopAppBar(
-              title: t.ingestion.title,
-              leadingIcon: Icons.arrow_back_rounded,
-              onLeadingTap: () => Navigator.of(context).maybePop(),
-            ),
-            body: SafeArea(
-              child: switch (state) {
-                IngestionIdle(channel: final channel) => _ChannelForm(
-                  channel: channel,
-                  // What this channel last submitted comes back after a
-                  // failure; otherwise only the channel it was shared to
-                  // starts filled in.
-                  initialText:
-                      context.read<IngestionBloc>().draftText(channel) ??
-                      (launch?.channel == channel ? launch?.text : null),
-                  initialFiles: switch (context
-                      .read<IngestionBloc>()
-                      .draftFiles) {
-                    final files
-                        when files.isNotEmpty &&
-                            channel == RecipeIngestionChannel.file =>
-                      files,
-                    _ =>
-                      launch?.channel == channel
-                          ? launch?.files ?? const []
-                          : const [],
-                  },
-                ),
-                IngestionParsing(channel: final channel, work: final work) =>
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CircularProgressIndicator(),
-                        const SizedBox(height: AppSpacing.gutter),
-                        Text(
-                          switch (work) {
-                            IngestionWork.searching => t.ingestion.searching,
-                            IngestionWork.loadingPage =>
-                              t.ingestion.loadingOriginal,
-                            IngestionWork.analyzing
-                                when channel ==
-                                    RecipeIngestionChannel.aiRequest =>
-                              t.ingestion.generating,
-                            IngestionWork.analyzing => t.ingestion.parsing,
-                          },
-                          style: AppTextStyles.bodyMd,
-                        ),
-                      ],
-                    ),
-                  ),
-                IngestionSearchResults(results: final results) =>
-                  _SearchResults(results: results),
-                IngestionReview(
-                  recipe: final recipe,
-                  imageCandidates: final imageCandidates,
-                  selectedImage: final selectedImage,
-                ) =>
-                  _ReviewRecipe(
-                    recipe: recipe,
-                    imageCandidates: imageCandidates,
-                    selectedImage: selectedImage,
-                  ),
-                IngestionOriginal(page: final page) => _OriginalView(
-                  page: page,
-                ),
-                IngestionError(channel: final channel, error: final error) =>
-                  _ErrorView(channel: channel, error: error),
-                IngestionUnparsed(
-                  channel: final channel,
-                  text: final text,
-                  sourceUrl: final sourceUrl,
-                  timedOut: final timedOut,
-                  retryable: final retryable,
-                ) =>
-                  _UnparsedView(
+          final bloc = context.read<IngestionBloc>();
+          // Out of a result opened from a list, back is the list: the search
+          // (or the suggestions) was already paid for.
+          final toResults = bloc.canReturnToResults;
+          return PopScope(
+            canPop: !toResults,
+            onPopInvokedWithResult: (didPop, _) {
+              if (!didPop && toResults) {
+                bloc.add(const IngestionEvent.backToResults());
+              }
+            },
+            child: ClayScaffold(
+              appBar: ClayTopAppBar(
+                title: t.ingestion.title,
+                leadingIcon: Icons.arrow_back_rounded,
+                onLeadingTap: () => Navigator.of(context).maybePop(),
+              ),
+              body: SafeArea(
+                child: switch (state) {
+                  IngestionIdle(channel: final channel) => _ChannelForm(
                     channel: channel,
-                    text: text,
-                    sourceUrl: sourceUrl,
-                    timedOut: timedOut,
-                    retryable: retryable,
+                    // What this channel last submitted comes back after a
+                    // failure; otherwise only the channel it was shared to
+                    // starts filled in.
+                    initialText:
+                        context.read<IngestionBloc>().draftText(channel) ??
+                        (launch?.channel == channel ? launch?.text : null),
+                    initialFiles: switch (context
+                        .read<IngestionBloc>()
+                        .draftFiles) {
+                      final files
+                          when files.isNotEmpty &&
+                              channel == RecipeIngestionChannel.file =>
+                        files,
+                      _ =>
+                        launch?.channel == channel
+                            ? launch?.files ?? const []
+                            : const [],
+                    },
                   ),
-                IngestionSaved() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              },
+                  IngestionParsing(channel: final channel, work: final work) =>
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: AppSpacing.gutter),
+                          Text(
+                            switch (work) {
+                              IngestionWork.searching => t.ingestion.searching,
+                              IngestionWork.suggesting =>
+                                t.ingestion.suggesting,
+                              IngestionWork.loadingPage =>
+                                t.ingestion.loadingOriginal,
+                              IngestionWork.analyzing
+                                  when channel ==
+                                      RecipeIngestionChannel.aiRequest =>
+                                t.ingestion.generating,
+                              IngestionWork.analyzing => t.ingestion.parsing,
+                            },
+                            style: AppTextStyles.bodyMd,
+                          ),
+                        ],
+                      ),
+                    ),
+                  IngestionSearchResults(
+                    results: final results,
+                    suggested: final suggested,
+                    savedUrls: final savedUrls,
+                  ) =>
+                    _SearchResults(
+                      results: results,
+                      suggested: suggested,
+                      savedUrls: savedUrls,
+                    ),
+                  IngestionReview(
+                    recipe: final recipe,
+                    imageCandidates: final imageCandidates,
+                    selectedImage: final selectedImage,
+                  ) =>
+                    _ReviewRecipe(
+                      recipe: recipe,
+                      imageCandidates: imageCandidates,
+                      selectedImage: selectedImage,
+                    ),
+                  IngestionOriginal(page: final page) => _OriginalView(
+                    page: page,
+                  ),
+                  IngestionError(channel: final channel, error: final error) =>
+                    _ErrorView(channel: channel, error: error),
+                  IngestionUnparsed(
+                    channel: final channel,
+                    text: final text,
+                    sourceUrl: final sourceUrl,
+                    timedOut: final timedOut,
+                    retryable: final retryable,
+                  ) =>
+                    _UnparsedView(
+                      channel: channel,
+                      text: text,
+                      sourceUrl: sourceUrl,
+                      timedOut: timedOut,
+                      retryable: retryable,
+                    ),
+                  IngestionSaved() => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                },
+              ),
             ),
           );
         },
@@ -718,6 +749,37 @@ class _ChannelFormState extends State<_ChannelForm> {
             ]),
             builder: (context, _) => _parseButton(),
           ),
+          if (widget.channel == RecipeIngestionChannel.webSearch)
+            FeatureGate(
+              feature: FeaturesFlags.recipeSuggestions,
+              gapBefore: AppSpacing.md,
+              child: _OpenOption(
+                icon: Icons.tips_and_updates_rounded,
+                title: t.ingestion.suggestForMe,
+                hint: t.ingestion.suggestForMeHint,
+                onTap: () => _once(() async {
+                  if (!guardFeature(context, FeaturesFlags.recipeSuggestions)) {
+                    return;
+                  }
+                  final bloc = context.read<IngestionBloc>();
+                  // The sheet starts from the diet in the settings; what is
+                  // changed there is for this search only.
+                  final saved = await bloc.savedPreferences();
+                  if (!context.mounted) return;
+                  final request = await showSuggestionRequestSheet(
+                    context,
+                    saved: saved,
+                  );
+                  if (request == null) return;
+                  bloc.add(
+                    IngestionEvent.suggestRecipes(
+                      topic: request.topic,
+                      preferences: request.diet,
+                    ),
+                  );
+                }),
+              ),
+            ),
         ],
       ],
     );
@@ -906,44 +968,99 @@ class _FileRow extends StatelessWidget {
 class _SearchResults extends StatelessWidget {
   final List<WebSearchResultEntity> results;
 
-  const _SearchResults({required this.results});
+  /// The list came from the account's preferences: it says so on top, ticks
+  /// what was saved from it, and ends with a way out.
+  final bool suggested;
+  final List<String> savedUrls;
+
+  const _SearchResults({
+    required this.results,
+    this.suggested = false,
+    this.savedUrls = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
     if (results.isEmpty) {
       return ClayEmptyState(
         icon: Icons.search_off_rounded,
-        message: t.ingestion.parseError,
+        message: suggested
+            ? t.ingestion.suggestionsEmpty
+            : t.ingestion.parseError,
       );
     }
 
-    return ListView.separated(
+    return ListView(
       padding: const EdgeInsets.all(AppSpacing.marginMobile),
-      itemCount: results.length,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (context, index) {
-        final result = results[index];
-        return ClayCard(
-          radius: AppRadius.md,
-          padding: const EdgeInsets.all(AppSpacing.gutter),
-          onTap: () => showOpenRecipeSheet(context, result.url),
-          child: Column(
+      children: [
+        if (suggested) ...[
+          ClayPageHeader(title: t.ingestion.suggestionsTitle),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            t.ingestion.suggestionsHint,
+            style: AppTextStyles.labelMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
+        for (final (index, result) in results.indexed) ...[
+          if (index > 0) const SizedBox(height: AppSpacing.sm),
+          _ResultCard(result: result, saved: savedUrls.contains(result.url)),
+        ],
+        if (suggested) ...[
+          const SizedBox(height: AppSpacing.lg),
+          ClayButton(
+            label: t.ingestion.suggestionsDone,
+            icon: Icons.check_rounded,
+            expanded: true,
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ResultCard extends StatelessWidget {
+  final WebSearchResultEntity result;
+  final bool saved;
+
+  const _ResultCard({required this.result, this.saved = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.gutter),
+      onTap: () => showOpenRecipeSheet(context, result.url),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(result.title, style: AppTextStyles.bodyLg),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                result.snippet,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.labelMd.copyWith(
-                  color: AppColors.onSurfaceVariant,
+              Expanded(child: Text(result.title, style: AppTextStyles.bodyLg)),
+              if (saved) ...[
+                const SizedBox(width: AppSpacing.sm),
+                ClayTag(
+                  label: t.ingestion.savedTag,
+                  icon: Icons.check_circle_rounded,
                 ),
-              ),
+              ],
             ],
           ),
-        );
-      },
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            result.snippet,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.labelMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1040,18 +1157,10 @@ class _ReviewRecipe extends StatelessWidget {
                       underline: true,
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    ...recipe.ingredients.map((ingredient) {
-                      final amount = ingredient.isAmountMissing
-                          ? kMissingInfoPlaceholder
-                          : ingredient.displayAmount;
-                      final unit = measurementUnitLabel(ingredient.unit);
-                      final line = [
-                        amount,
-                        unit,
-                        ingredient.name,
-                      ].where((s) => s.isNotEmpty).join(' ');
-
-                      return Padding(
+                    for (final (index, ingredient)
+                        in recipe.ingredients.indexed) ...[
+                      ?IngredientSectionHeading.at(recipe.ingredients, index),
+                      Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: AppSpacing.xs,
                         ),
@@ -1068,12 +1177,15 @@ class _ReviewRecipe extends StatelessWidget {
                             ),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
-                              child: Text(line, style: AppTextStyles.bodyMd),
+                              child: Text(
+                                _ingredientLine(ingredient),
+                                style: AppTextStyles.bodyMd,
+                              ),
                             ),
                           ],
                         ),
-                      );
-                    }),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1517,3 +1629,11 @@ class _UnparsedView extends StatelessWidget {
     );
   }
 }
+
+String _ingredientLine(RecipeIngredientEntity ingredient) => [
+  ingredient.isAmountMissing
+      ? kMissingInfoPlaceholder
+      : ingredient.displayAmount,
+  measurementUnitLabel(ingredient.unit),
+  ingredient.name,
+].where((s) => s.isNotEmpty).join(' ');

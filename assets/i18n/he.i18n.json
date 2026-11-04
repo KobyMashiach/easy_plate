@@ -351,7 +351,11 @@
     "communityUpdateFailed": "נשמר אצלך. הפוסט בקהילה לא עודכן, נסו שוב מאוחר יותר.",
     "sourceLink": "למתכון המקורי",
     "sourceLinkHint": "פתיחת המקור שממנו יובא המתכון",
-    "sourceOpenFailed": "לא הצלחנו לפתוח את הקישור"
+    "sourceOpenFailed": "לא הצלחנו לפתוח את הקישור",
+    "delete": "מחיקת מתכון",
+    "deleteConfirm": "המתכון יימחק לצמיתות. אי אפשר לבטל את הפעולה.",
+    "deleteSharedConfirm": "המתכון יוסר רק אצלך. שאר המשתתפים בשיתוף ימשיכו לראות אותו.",
+    "deleted": "המתכון נמחק"
   },
   "cookMode": {
     "title": "מצב בישול",
@@ -693,7 +697,23 @@
     "videoPhotoHint": "בחרו את התמונה שתייצג את המתכון. אפשר לשנות אותה גם אחר כך.",
     "videoPhotoCover": "תמונת הפוסט",
     "videoPhotoNone": "בלי תמונה",
-    "videoPhotoFailed": "לא הצלחנו לשמור את התמונה, נסו אחרת"
+    "videoPhotoFailed": "לא הצלחנו לשמור את התמונה, נסו אחרת",
+    "suggestForMe": "הצעות לפי ההעדפות שלי",
+    "suggestForMeHint": "כתבו מה בא לכם (למשל קינוחים) או השאירו ריק, ותקבלו עד 10 מתכונים מהרשת לפי ההעדפות שלכם. בוחרים אחד, מנתחים ושומרים, וחוזרים לבחור את הבא.",
+    "suggesting": "מחפש מתכונים בשבילך…",
+    "suggestionsTitle": "הצעות בשבילך",
+    "suggestionsHint": "בחר מתכון לניתוח. אחרי השמירה חוזרים לכאן לבחור את הבא.",
+    "savedFromList": "המתכון נשמר. אפשר לבחור את הבא",
+    "savedTag": "נשמר",
+    "suggestionsDone": "סיום",
+    "backToResults": "חזרה לרשימה",
+    "suggestionsEmpty": "לא נמצאו הצעות כרגע. נסה שוב בעוד רגע.",
+    "suggestTopicLabel": "מה בא לך? (לא חובה)",
+    "suggestTopicHint": "לדוגמה: קינוחים, ארוחת ערב מהירה, מרקים",
+    "suggestDietLabel": "התאמה תזונתית לחיפוש הזה",
+    "suggestDietNote": "מתחיל מההעדפות שלך. שינוי כאן לא משנה את ההגדרות.",
+    "suggestDietReset": "חזרה להעדפות שלי",
+    "suggestSearch": "חפש הצעות"
   },
   "mealPlanner": {
     "title": "תכנון ארוחות",
@@ -1824,6 +1844,9 @@
     "webCheckout": "רכישה באתר",
     "socialVideoPhoto": "תמונה מסרטון",
     "recipeSourceLink": "קישור למתכון המקורי",
+    "deleteRecipe": "מחיקת מתכון",
+    "ingredientSections": "כותרות לקבוצות מצרכים",
+    "recipeSuggestions": "הצעות מתכונים לפי העדפות",
     "webCheckoutIl": "רכישה באתר (ישראל)",
     "webCheckoutIntl": "רכישה באתר (חו\"ל)"
   },

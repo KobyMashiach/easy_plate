@@ -77,7 +77,7 @@ function fakeResponse(status, bytes) {
 }
 
 test("yt-dlp is pinned to one release URL with a SHA-256", () => {
-  assert.match(sr.YT_DLP_URL, /^https:\/\/github\.com\/yt-dlp\/yt-dlp\/releases\/download\/\d{4}\.\d{2}\.\d{2}\/yt-dlp$/);
+  assert.match(sr.YT_DLP_URL, /^https:\/\/github\.com\/yt-dlp\/yt-dlp\/releases\/download\/\d{4}\.\d{2}\.\d{2}\/yt-dlp_linux$/);
   assert.match(sr.YT_DLP_SHA256, /^[0-9a-f]{64}$/);
   assert.ok(!sr.YT_DLP_URL.includes("latest"));
 });
@@ -583,4 +583,26 @@ test("ffmpeg runs only when the binary matches its pinned SHA-256", async () => 
     assert.ok(!fsT.existsSync(pathT.join(dir, "video.mp4")));
     assert.ok(!fsT.existsSync(mark), "a binary that failed its checksum was run");
   });
+});
+
+test("only a TikTok probe carries the desktop user agent", () => {
+  const { probeExtraArgs } = require("./socialRecipe").internals;
+  const args = probeExtraArgs("https://vt.tiktok.com/ZSpRYDYmv/");
+  assert.equal(args[0], "--user-agent");
+  assert.match(args[1], /Windows NT/);
+  assert.deepEqual(probeExtraArgs("https://www.instagram.com/reel/abc/"), []);
+  assert.deepEqual(probeExtraArgs("https://youtu.be/abc"), []);
+});
+
+test("yt-dlp's cookies field becomes the media fetch's Cookie header", () => {
+  const { cookieHeader, withCookies } = require("./socialRecipe").internals;
+  const raw =
+    "tt_chain_token=abc; Domain=.tiktok.com; Path=/; Secure; Expires=1793000000; " +
+    "ttwid=x=y; Domain=.tiktok.com; Path=/; HttpOnly";
+  assert.equal(cookieHeader(raw), "tt_chain_token=abc; ttwid=x=y");
+  assert.equal(cookieHeader(undefined), "");
+  assert.deepEqual(withCookies({ Referer: "r" }, raw), { Referer: "r", Cookie: "tt_chain_token=abc; ttwid=x=y" });
+  // A Cookie yt-dlp already put in the headers is left alone.
+  assert.deepEqual(withCookies({ cookie: "a=1" }, raw), { cookie: "a=1" });
+  assert.deepEqual(withCookies({}, null), {});
 });

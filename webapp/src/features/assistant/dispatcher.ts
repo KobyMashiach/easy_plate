@@ -26,7 +26,7 @@ import {
 } from "../../models/groceryList";
 import { canEditPlan, mealsForWeekday, newMealPlan, normalizeMealPlan, WEEKDAYS, type Meal, type MealItem, type MealPlan } from "../../models/mealPlan";
 import { appLanguageOf, defaultPreferences, normalizePreferences, PREFERENCES_ID, shoppingDaysOf, updatePreferences, type Preferences } from "../../models/preferences";
-import { canEditRecipe, DIETARY, MEASUREMENT_UNITS, normalizeRecipe, type DietaryPreference, type Ingredient, type MeasurementUnit, type Recipe } from "../../models/recipe";
+import { canEditRecipe, cleanSection, DIETARY, MEASUREMENT_UNITS, ingredientToDart, normalizeRecipe, type DietaryPreference, type Ingredient, type MeasurementUnit, type Recipe } from "../../models/recipe";
 import { readActiveList, saveList, writeActiveList } from "../groceries/store";
 import { refusedForDailyLimit, sendFeedback, type FeedbackType } from "../support/data";
 import { generateRecipe, IngestError, parseFromSocialVideo, parseFromUrl, parseRawText, searchWeb } from "../ingest/ai";
@@ -134,7 +134,8 @@ function ingredients(raw: unknown): Ingredient[] {
     if (!m || typeof m !== "object" || Array.isArray(m)) continue;
     const r = m as Record<string, unknown>;
     const amount = typeof r.amount === "number" && Number.isFinite(r.amount) ? r.amount : null;
-    const ing = { name: title(r.name), amount, unit: unitFrom(r.unit === undefined || r.unit === null ? null : asString(r.unit)) };
+    const section = cleanSection(r.section);
+    const ing: Ingredient = { name: title(r.name), amount, unit: unitFrom(r.unit === undefined || r.unit === null ? null : asString(r.unit)), ...(section ? { section } : {}) };
     if (ing.name) out.push(ing);
   }
   return out;
@@ -1135,7 +1136,7 @@ function recipeSummary(r: Recipe): Record<string, unknown> {
 function recipeFull(r: Recipe): Record<string, unknown> {
   const out: Record<string, unknown> = {
     ...recipeSummary(r),
-    ingredients: r.ingredients.map((i) => ({ name: i.name, amount: i.amount, unit: i.unit })),
+    ingredients: r.ingredients.map(ingredientToDart),
     steps: [...r.steps],
   };
   if (r.nutrition) {

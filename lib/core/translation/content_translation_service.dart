@@ -456,6 +456,11 @@ class ContentTranslationService {
       'title': r.title,
       'ingredients': [for (final i in r.ingredients) i.name],
       'steps': r.steps,
+      // Only when the list is divided, so an undivided recipe's fingerprint
+      // (and every translation already made of it) stays as it was.
+      if (ingredientSections(r.ingredients) case final sections
+          when sections.isNotEmpty)
+        'sections': sections,
     },
   );
 
@@ -503,16 +508,24 @@ class ContentTranslationService {
     AppLanguage target,
   ) {
     final names = fields.listOfLength('ingredients', recipe.ingredients.length);
+    final sections = ingredientSections(recipe.ingredients);
+    final translatedSections = sections.isEmpty
+        ? null
+        : fields.listOfLength('sections', sections.length);
+    final sectionIn = {
+      if (translatedSections != null)
+        for (final (index, section) in sections.indexed)
+          section: translatedSections[index],
+    };
     return recipe.copyWith(
       title: fields.text('title') ?? recipe.title,
       ingredients: names == null
           ? recipe.ingredients
           : [
               for (final (index, ingredient) in recipe.ingredients.indexed)
-                RecipeIngredientEntity(
+                ingredient.copyWith(
                   name: names[index],
-                  amount: ingredient.amount,
-                  unit: ingredient.unit,
+                  section: sectionIn[ingredient.section],
                 ),
             ],
       steps: fields.listOfLength('steps', recipe.steps.length) ?? recipe.steps,

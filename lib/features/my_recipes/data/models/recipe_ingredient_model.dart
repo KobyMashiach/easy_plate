@@ -19,6 +19,7 @@ sealed class RecipeIngredientModel with _$RecipeIngredientModel {
     @JsonKey(fromJson: readMeasurementUnit)
     @Default(MeasurementUnit.unspecified)
     MeasurementUnit unit,
+    @HiveField(3) @JsonKey(includeIfNull: false) String? section,
   }) = _RecipeIngredientModel;
 
   factory RecipeIngredientModel.fromJson(Map<String, dynamic> json) =>
@@ -26,11 +27,19 @@ sealed class RecipeIngredientModel with _$RecipeIngredientModel {
 }
 
 extension RecipeIngredientModelMapper on RecipeIngredientModel {
-  RecipeIngredientEntity toEntity() =>
-      RecipeIngredientEntity(name: name, amount: amount, unit: unit);
+  RecipeIngredientEntity toEntity() => RecipeIngredientEntity(
+    name: name,
+    amount: amount,
+    unit: unit,
+    section: section,
+  );
 }
 
 extension RecipeIngredientEntityMapper on RecipeIngredientEntity {
-  RecipeIngredientModel toModel() =>
-      RecipeIngredientModel(name: name, amount: amount, unit: unit);
+  RecipeIngredientModel toModel() => RecipeIngredientModel(
+    name: name,
+    amount: amount,
+    unit: unit,
+    section: section,
+  );
 }

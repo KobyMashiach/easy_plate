@@ -69,6 +69,23 @@ class WebImagePage {
 
 /// Thrown when the server says the search is not set up at all (no API key
 /// or engine id), which the picker reports differently from a network blip.
+/// The page found for one suggested dish.
+class RecipePageResult {
+  final String dish;
+  final String url;
+  final String title;
+
+  /// The site, as a host name without "www.".
+  final String source;
+
+  const RecipePageResult({
+    required this.dish,
+    required this.url,
+    required this.title,
+    required this.source,
+  });
+}
+
 class ImageSearchUnavailable implements Exception {
   const ImageSearchUnavailable();
 }
@@ -137,6 +154,34 @@ class ImageSearchClient {
 
   /// The picture itself, [thumbnail] when the host refuses the original.
   /// Null when neither can be had.
+  /// One recipe page per dish in [dishes], found in Google's web results by
+  /// the same function (action "recipes"): the first result that is one
+  /// recipe on a recipe site. A dish with nothing worth offering is left
+  /// out; the order is the dishes'.
+  Future<List<RecipePageResult>> recipePages(List<String> dishes) async {
+    final response = await _http.post(
+      ApiConfig.imageSearchUrl,
+      data: {
+        'action': 'recipes',
+        'dishes': dishes,
+        'lang': LocaleSettings.currentLocale.languageCode,
+      },
+    );
+    final body = response?.data;
+    final raw = body is Map ? body['items'] : null;
+    return [
+      if (raw is List)
+        for (final item in raw.whereType<Map>())
+          if (item['dish'] is String && item['url'] is String)
+            RecipePageResult(
+              dish: item['dish'] as String,
+              url: item['url'] as String,
+              title: (item['title'] as String?) ?? '',
+              source: (item['source'] as String?) ?? '',
+            ),
+    ];
+  }
+
   Future<Uint8List?> download(WebImageResult result) async {
     for (final url in {result.url, result.thumbnail}) {
       final bytes = await _fetch(url);

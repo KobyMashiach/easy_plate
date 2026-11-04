@@ -16,6 +16,7 @@ interface Draft {
   name: string;
   amount: string;
   unit: MeasurementUnit;
+  section?: string | null;
 }
 
 /** parseAmount: "1,5" and "1.5" both read; anything else is no amount. */
@@ -30,7 +31,7 @@ export function QuickEntryDialog({ initialText, initialIngredients = [], onSubmi
   const nameId = useId();
   const productsId = useId();
   const [text, setText] = useState(initialText ?? "");
-  const [rows, setRows] = useState<Draft[]>(() => initialIngredients.map((g, i) => ({ key: i, name: g.name, amount: g.amount === null ? "" : String(g.amount), unit: g.unit })));
+  const [rows, setRows] = useState<Draft[]>(() => initialIngredients.map((g, i) => ({ key: i, name: g.name, amount: g.amount === null ? "" : String(g.amount), unit: g.unit, section: g.section ?? null })));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Row keys from a counter: two quick taps on "add" in one millisecond
@@ -45,7 +46,7 @@ export function QuickEntryDialog({ initialText, initialIngredients = [], onSubmi
     setBusy(true);
     setError(null);
     // Rows left blank are dropped rather than saved as empty products.
-    const ingredients = rows.filter((r) => r.name.trim()).map((r) => ({ name: r.name.trim(), amount: parseAmount(r.amount), unit: r.unit }));
+    const ingredients = rows.filter((r) => r.name.trim()).map((r) => ({ name: r.name.trim(), amount: parseAmount(r.amount), unit: r.unit, ...(r.section ? { section: r.section } : {}) }));
     try {
       await onSubmit(text.trim(), ingredients);
       onClose();

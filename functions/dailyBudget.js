@@ -28,6 +28,10 @@ const KINDS = Object.freeze({
   translateCache: { param: "quota_translate_cache_reads_daily", fallback: 50000, unit: "translation lookups" },
   speak: { param: "quota_speak_calls_daily", fallback: 300, unit: "voice replies" },
   imageSearch: { param: "quota_image_search_daily", fallback: 150, unit: "image searches" },
+  // Recipe pages looked up for the app's "suggestions for me" (imageSearch
+  // action "recipes"): one unit per dish that was not cached, each a paid
+  // Serper query. A suggestion run is up to twelve dishes.
+  recipeLookup: { param: "quota_recipe_lookup_daily", fallback: 60, unit: "recipe page lookups" },
   // Not a bill but the community's price medians: one account feeding
   // thousands of made-up prices a day would move them for everyone.
   priceRecords: { param: "quota_price_records_daily", fallback: 500, unit: "shared prices" },

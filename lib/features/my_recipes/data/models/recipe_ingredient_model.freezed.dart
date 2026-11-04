@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecipeIngredientModel {
 
-@HiveField(0) String get name;@HiveField(1) double? get amount;@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit get unit;
+@HiveField(0) String get name;@HiveField(1) double? get amount;@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit get unit;@HiveField(3)@JsonKey(includeIfNull: false) String? get section;
 /// Create a copy of RecipeIngredientModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RecipeIngredientModelCopyWith<RecipeIngredientModel> get copyWith => _$RecipeIn
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeIngredientModel&&(identical(other.name, name) || other.name == name)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.unit, unit) || other.unit == unit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeIngredientModel&&(identical(other.name, name) || other.name == name)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.section, section) || other.section == section));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,amount,unit);
+int get hashCode => Object.hash(runtimeType,name,amount,unit,section);
 
 @override
 String toString() {
-  return 'RecipeIngredientModel(name: $name, amount: $amount, unit: $unit)';
+  return 'RecipeIngredientModel(name: $name, amount: $amount, unit: $unit, section: $section)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RecipeIngredientModelCopyWith<$Res>  {
   factory $RecipeIngredientModelCopyWith(RecipeIngredientModel value, $Res Function(RecipeIngredientModel) _then) = _$RecipeIngredientModelCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit
+@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit,@HiveField(3)@JsonKey(includeIfNull: false) String? section
 });
 
 
@@ -65,12 +65,13 @@ class _$RecipeIngredientModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeIngredientModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? amount = freezed,Object? unit = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? amount = freezed,Object? unit = null,Object? section = freezed,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as double?,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as MeasurementUnit,
+as MeasurementUnit,section: freezed == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit, @HiveField(3)@JsonKey(includeIfNull: false)  String? section)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeIngredientModel() when $default != null:
-return $default(_that.name,_that.amount,_that.unit);case _:
+return $default(_that.name,_that.amount,_that.unit,_that.section);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.name,_that.amount,_that.unit);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit, @HiveField(3)@JsonKey(includeIfNull: false)  String? section)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeIngredientModel():
-return $default(_that.name,_that.amount,_that.unit);}
+return $default(_that.name,_that.amount,_that.unit,_that.section);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -190,10 +191,10 @@ return $default(_that.name,_that.amount,_that.unit);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String name, @HiveField(1)  double? amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit)  MeasurementUnit unit, @HiveField(3)@JsonKey(includeIfNull: false)  String? section)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeIngredientModel() when $default != null:
-return $default(_that.name,_that.amount,_that.unit);case _:
+return $default(_that.name,_that.amount,_that.unit,_that.section);case _:
   return null;
 
 }
@@ -205,12 +206,13 @@ return $default(_that.name,_that.amount,_that.unit);case _:
 @JsonSerializable()
 
 class _RecipeIngredientModel implements RecipeIngredientModel {
-  const _RecipeIngredientModel({@HiveField(0) required this.name, @HiveField(1) this.amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit) this.unit = MeasurementUnit.unspecified});
+  const _RecipeIngredientModel({@HiveField(0) required this.name, @HiveField(1) this.amount, @HiveField(2)@JsonKey(fromJson: readMeasurementUnit) this.unit = MeasurementUnit.unspecified, @HiveField(3)@JsonKey(includeIfNull: false) this.section});
   factory _RecipeIngredientModel.fromJson(Map<String, dynamic> json) => _$RecipeIngredientModelFromJson(json);
 
 @override@HiveField(0) final  String name;
 @override@HiveField(1) final  double? amount;
 @override@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) final  MeasurementUnit unit;
+@override@HiveField(3)@JsonKey(includeIfNull: false) final  String? section;
 
 /// Create a copy of RecipeIngredientModel
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +227,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeIngredientModel&&(identical(other.name, name) || other.name == name)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.unit, unit) || other.unit == unit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeIngredientModel&&(identical(other.name, name) || other.name == name)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.section, section) || other.section == section));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,amount,unit);
+int get hashCode => Object.hash(runtimeType,name,amount,unit,section);
 
 @override
 String toString() {
-  return 'RecipeIngredientModel(name: $name, amount: $amount, unit: $unit)';
+  return 'RecipeIngredientModel(name: $name, amount: $amount, unit: $unit, section: $section)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$RecipeIngredientModelCopyWith<$Res> implements $RecipeIng
   factory _$RecipeIngredientModelCopyWith(_RecipeIngredientModel value, $Res Function(_RecipeIngredientModel) _then) = __$RecipeIngredientModelCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit
+@HiveField(0) String name,@HiveField(1) double? amount,@HiveField(2)@JsonKey(fromJson: readMeasurementUnit) MeasurementUnit unit,@HiveField(3)@JsonKey(includeIfNull: false) String? section
 });
 
 
@@ -262,12 +264,13 @@ class __$RecipeIngredientModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeIngredientModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? amount = freezed,Object? unit = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? amount = freezed,Object? unit = null,Object? section = freezed,}) {
   return _then(_RecipeIngredientModel(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,amount: freezed == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as double?,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as MeasurementUnit,
+as MeasurementUnit,section: freezed == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

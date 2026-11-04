@@ -63,7 +63,9 @@ void main() {
         home: Scaffold(
           body: Column(
             children: [
-              Row(children: [ClayButton(label: 'Save', onPressed: () {})]),
+              Row(
+                children: [ClayButton(label: 'Save', onPressed: () {})],
+              ),
               SizedBox(
                 height: 80,
                 child: ListView(

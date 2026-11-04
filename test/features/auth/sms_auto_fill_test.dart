@@ -33,8 +33,9 @@ class _CodeScreenState extends State<_CodeScreen> with SmsAutoFill {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      MaterialApp(home: Scaffold(body: TextField(controller: code)));
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(body: TextField(controller: code)),
+  );
 }
 
 void main() {

@@ -22,6 +22,7 @@ import { PhoneBar } from "../../../components/PhoneBar";
 import { ShefiPill } from "../../../components/FloatingActions";
 import { ClayButton } from "../../../components/clay";
 import { usePhoneNavigate } from "../../../components/pageTransition";
+import { SectionedIngredients } from "../../recipes/components/IngredientSections";
 
 export function SharedRecipePage() {
   const { id = "" } = useParams();
@@ -200,12 +201,12 @@ function SharedRecipe() {
           <section className="clay p-5">
             <h2 className="mb-3 text-body-lg font-bold">{t("recipe.ingredients")}</h2>
             <ul className="space-y-1.5">
-              {r.ingredients.map((i, n) => (
+              <SectionedIngredients ingredients={r.ingredients} row={(i, n) => (
                 <li key={n} className="flex gap-2 text-body-md">
                   <span aria-hidden="true" className="text-primary">•</span>
                   <span dir="auto" className="min-w-0 break-words">{line(i)}</span>
                 </li>
-              ))}
+              )} />
             </ul>
           </section>
           <section className="clay p-5">

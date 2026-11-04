@@ -9,7 +9,7 @@
 // Pure: no React, no Firestore. The aggregation the app does
 // (build_aggregate_grocery_list_usecase.dart) lives here too, so any screen —
 // the groceries pages, the assistant — builds a list the same way.
-import { MEASUREMENT_UNITS, normalizeIngredient, type CollabRole, type Ingredient, type MeasurementUnit } from "./recipe";
+import { isSectionHeading, MEASUREMENT_UNITS, normalizeIngredient, type CollabRole, type Ingredient, type MeasurementUnit } from "./recipe";
 import { groceryProductName } from "./groceryProductName";
 
 /** kDefaultGroceryCategory in lib/core/constants/app_constants.dart. */
@@ -225,6 +225,7 @@ export function addIngredientLines(
   scale = 1,
 ): void {
   for (const ing of ingredients) {
+    if (isSectionHeading(ing)) continue;
     // The product, not the recipe's words for it; water is not shopped for.
     const name = groceryProductName(ing.name);
     if (name === null) continue;

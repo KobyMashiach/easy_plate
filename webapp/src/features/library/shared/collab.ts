@@ -16,7 +16,7 @@
 import { auth } from "../../../lib/firebase";
 import { firestore, getRecord, rootFor } from "../../../lib/cloud";
 import { saveRecipe } from "../../../lib/recipesStore";
-import { normalizeRecipe, type Recipe } from "../../../models/recipe";
+import { ingredientToDart, normalizeRecipe, type Recipe } from "../../../models/recipe";
 
 export type Role = "owner" | "editor" | "viewer";
 
@@ -100,7 +100,7 @@ function recipeFields(r: Recipe): Record<string, unknown> {
     title: r.title,
     prepTimeMinutes: r.prepTimeMinutes,
     cookTimeMinutes: r.cookTimeMinutes,
-    ingredients: r.ingredients.map((i) => ({ name: i.name, amount: i.amount, unit: i.unit })),
+    ingredients: r.ingredients.map(ingredientToDart),
     steps: r.steps,
     dietaryTags: r.dietaryTags,
     allergens: r.allergens,

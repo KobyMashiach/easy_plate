@@ -545,6 +545,10 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get sourceLink => 'الوصفة الأصلية';
 	@override String get sourceLinkHint => 'فتح المصدر الذي استُوردت منه الوصفة';
 	@override String get sourceOpenFailed => 'تعذّر فتح الرابط';
+	@override String get delete => 'حذف الوصفة';
+	@override String get deleteConfirm => 'ستُحذف الوصفة نهائيًا. لا يمكن التراجع عن ذلك.';
+	@override String get deleteSharedConfirm => 'ستُزال الوصفة لديك فقط. سيحتفظ بها باقي المشاركين.';
+	@override String get deleted => 'تم حذف الوصفة';
 }
 
 // Path: cookMode
@@ -944,6 +948,22 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get videoPhotoCover => 'صورة المنشور';
 	@override String get videoPhotoNone => 'بدون صورة';
 	@override String get videoPhotoFailed => 'تعذّر حفظ الصورة، جرّبوا صورة أخرى';
+	@override String get suggestForMe => 'اقتراحات لي';
+	@override String get suggestForMeHint => 'اكتب ما تشتهيه (مثلًا حلويات) أو اتركه فارغًا، واحصل على حتى 10 وصفات من الإنترنت تناسب تفضيلاتك. اختر واحدة، حلّلها واحفظها، ثم عد للتالية.';
+	@override String get suggesting => 'نبحث عن وصفات لك…';
+	@override String get suggestionsTitle => 'مختارة لك';
+	@override String get suggestionsHint => 'اختر وصفة لتحليلها. بعد الحفظ تعود إلى هنا لاختيار التالية.';
+	@override String get savedFromList => 'تم حفظ الوصفة. اختر التالية';
+	@override String get savedTag => 'محفوظة';
+	@override String get suggestionsDone => 'تم';
+	@override String get backToResults => 'العودة إلى القائمة';
+	@override String get suggestionsEmpty => 'لا توجد اقتراحات الآن. حاول مرة أخرى بعد قليل.';
+	@override String get suggestTopicLabel => 'ماذا تشتهي؟ (اختياري)';
+	@override String get suggestTopicHint => 'مثلًا: حلويات، عشاء سريع، شوربات';
+	@override String get suggestDietLabel => 'النظام الغذائي لهذا البحث';
+	@override String get suggestDietNote => 'يبدأ من تفضيلاتك. التغيير هنا لا يغيّر إعداداتك.';
+	@override String get suggestDietReset => 'العودة إلى تفضيلاتي';
+	@override String get suggestSearch => 'ابحث عن اقتراحات';
 }
 
 // Path: mealPlanner
@@ -1982,6 +2002,9 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get webCheckout => 'الشراء عبر الموقع';
 	@override String get socialVideoPhoto => 'صورة من فيديو';
 	@override String get recipeSourceLink => 'رابط الوصفة الأصلية';
+	@override String get deleteRecipe => 'حذف الوصفة';
+	@override String get ingredientSections => 'عناوين مجموعات المكوّنات';
+	@override String get recipeSuggestions => 'اقتراح وصفات حسب التفضيلات';
 	@override String get webCheckoutIl => 'الشراء عبر الموقع (إسرائيل)';
 	@override String get webCheckoutIntl => 'الشراء عبر الموقع (خارج إسرائيل)';
 }
@@ -2790,6 +2813,10 @@ extension on TranslationsAr {
 			'recipe.sourceLink' => 'الوصفة الأصلية',
 			'recipe.sourceLinkHint' => 'فتح المصدر الذي استُوردت منه الوصفة',
 			'recipe.sourceOpenFailed' => 'تعذّر فتح الرابط',
+			'recipe.delete' => 'حذف الوصفة',
+			'recipe.deleteConfirm' => 'ستُحذف الوصفة نهائيًا. لا يمكن التراجع عن ذلك.',
+			'recipe.deleteSharedConfirm' => 'ستُزال الوصفة لديك فقط. سيحتفظ بها باقي المشاركين.',
+			'recipe.deleted' => 'تم حذف الوصفة',
 			'cookMode.title' => 'وضع الطبخ',
 			'cookMode.start' => 'ابدأ الطبخ',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'الخطوة ${n} من ${total}',
@@ -2974,12 +3001,12 @@ extension on TranslationsAr {
 			'sharing.acceptedPlan' => 'تمت إضافة الخطة إلى خططك',
 			'sharing.viewerCannotEditBook' => 'تمت مشاركة هذا الكتاب معك للعرض فقط',
 			'sharing.viewerCannotEditPlan' => 'تمت مشاركة هذه الخطة معك للعرض فقط',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.kindRecipe' => 'وصفة',
 			'sharing.kindBook' => 'كتاب',
 			'sharing.kindPlan' => 'خطة',
 			'sharing.recipesTravel' => 'ستتم مشاركة الوصفات الموجودة بداخله معه',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.shareList' => 'مشاركة قائمة التسوق',
 			'sharing.acceptedList' => 'أُضيفت القائمة إلى قوائم التسوق لديك',
 			'sharing.viewerCannotEditList' => 'هذه القائمة مشاركة معك للعرض فقط',
@@ -3114,6 +3141,22 @@ extension on TranslationsAr {
 			'ingestion.videoPhotoCover' => 'صورة المنشور',
 			'ingestion.videoPhotoNone' => 'بدون صورة',
 			'ingestion.videoPhotoFailed' => 'تعذّر حفظ الصورة، جرّبوا صورة أخرى',
+			'ingestion.suggestForMe' => 'اقتراحات لي',
+			'ingestion.suggestForMeHint' => 'اكتب ما تشتهيه (مثلًا حلويات) أو اتركه فارغًا، واحصل على حتى 10 وصفات من الإنترنت تناسب تفضيلاتك. اختر واحدة، حلّلها واحفظها، ثم عد للتالية.',
+			'ingestion.suggesting' => 'نبحث عن وصفات لك…',
+			'ingestion.suggestionsTitle' => 'مختارة لك',
+			'ingestion.suggestionsHint' => 'اختر وصفة لتحليلها. بعد الحفظ تعود إلى هنا لاختيار التالية.',
+			'ingestion.savedFromList' => 'تم حفظ الوصفة. اختر التالية',
+			'ingestion.savedTag' => 'محفوظة',
+			'ingestion.suggestionsDone' => 'تم',
+			'ingestion.backToResults' => 'العودة إلى القائمة',
+			'ingestion.suggestionsEmpty' => 'لا توجد اقتراحات الآن. حاول مرة أخرى بعد قليل.',
+			'ingestion.suggestTopicLabel' => 'ماذا تشتهي؟ (اختياري)',
+			'ingestion.suggestTopicHint' => 'مثلًا: حلويات، عشاء سريع، شوربات',
+			'ingestion.suggestDietLabel' => 'النظام الغذائي لهذا البحث',
+			'ingestion.suggestDietNote' => 'يبدأ من تفضيلاتك. التغيير هنا لا يغيّر إعداداتك.',
+			'ingestion.suggestDietReset' => 'العودة إلى تفضيلاتي',
+			'ingestion.suggestSearch' => 'ابحث عن اقتراحات',
 			'mealPlanner.title' => 'تخطيط الوجبات',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',
@@ -3472,6 +3515,8 @@ extension on TranslationsAr {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'الخطوة ${current} من ${total}',
 			'walkthrough.tapHint' => 'اضغط على المنطقة المميّزة أو على "التالي"',
 			'walkthrough.bookTitle' => 'دليل EasyPlate',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. الأمثلة في هذا الكتاب لا تُحفظ؛ الجولة الحيّة تنفّذ الإجراءات فعلاً، والحقول معبّأة مسبقاً.',
 			'walkthrough.contents' => 'المحتويات',
 			'walkthrough.chapter' => ({required Object number}) => 'الفصل ${number}',
@@ -3492,8 +3537,6 @@ extension on TranslationsAr {
 			'walkthrough.topics.library.summary' => 'رتّب الوصفات في كتب مع فهرس وغلاف وتقليب صفحات، وشارك كتاباً كاملاً مع حساب آخر.',
 			'walkthrough.topics.library.s1' => 'اضغط على "المكتبة" للانتقال إلى الكتب.',
 			'walkthrough.topics.library.s2' => 'اضغط على زر الزائد لإنشاء كتاب جديد.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'اسم الكتاب معبّأ مسبقاً: "دليل". اضغط على الحقل لتغييره، ثم تابع.',
 			'walkthrough.topics.library.s4' => 'اضغط "حفظ" لإنشاء الكتاب.',
 			'walkthrough.topics.library.s5' => 'اختر لون الكعب الذي يميّز الكتب على الرف، واضغط "حفظ". يُفتح الكتاب فوراً.',
@@ -3986,6 +4029,8 @@ extension on TranslationsAr {
 			'household.owner' => 'المالك',
 			'household.you' => 'أنت',
 			'household.invite' => 'دعوة عضو',
+			_ => null,
+		} ?? switch (path) {
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(free, zero: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. لم تبقَ مقاعد.', one: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعد واحد.', two: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعدان.', few: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.', many: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعدًا.', other: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعد.', ), 
 			'household.noSeats' => 'كل المقاعد مشغولة.',
 			'household.remove' => 'إزالة',
@@ -4006,8 +4051,6 @@ extension on TranslationsAr {
 			'homeWidgets.intro' => 'أضيفوا أدوات EasyPlate إلى الشاشة الرئيسية: اسألوا شيفي، أضيفوا إلى قائمة التسوق، وشاهدوا القائمة وقائمة طعام اليوم دون فتح التطبيق.',
 			'homeWidgets.howToIos' => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، ثم على +، ابحثوا عن EasyPlate واختاروا أداة. الأدوات نفسها تناسب شاشة القفل.',
 			'homeWidgets.howToAndroid' => 'اضغطوا مطولاً على مكان فارغ في الشاشة الرئيسية، اختاروا "الأدوات" وابحثوا عن EasyPlate، أو اضغطوا "إضافة إلى الشاشة الرئيسية" أدناه.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'إضافة إلى الشاشة الرئيسية',
 			'homeWidgets.installed' => ({required Object count}) => '${count} على الشاشة الرئيسية',
 			'homeWidgets.pinFailed' => 'لم يعرض المشغّل إضافة الأداة. أضيفوها من قائمة أدوات الشاشة الرئيسية.',
@@ -4119,6 +4162,9 @@ extension on TranslationsAr {
 			'featureName.webCheckout' => 'الشراء عبر الموقع',
 			'featureName.socialVideoPhoto' => 'صورة من فيديو',
 			'featureName.recipeSourceLink' => 'رابط الوصفة الأصلية',
+			'featureName.deleteRecipe' => 'حذف الوصفة',
+			'featureName.ingredientSections' => 'عناوين مجموعات المكوّنات',
+			'featureName.recipeSuggestions' => 'اقتراح وصفات حسب التفضيلات',
 			'featureName.webCheckoutIl' => 'الشراء عبر الموقع (إسرائيل)',
 			'featureName.webCheckoutIntl' => 'الشراء عبر الموقع (خارج إسرائيل)',
 			'wakeWord.title' => 'هاي شيفي',

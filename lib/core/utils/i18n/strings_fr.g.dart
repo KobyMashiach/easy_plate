@@ -545,6 +545,10 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String get sourceLink => 'Recette originale';
 	@override String get sourceLinkHint => 'Ouvrir la source d’où la recette a été importée';
 	@override String get sourceOpenFailed => 'Impossible d’ouvrir le lien';
+	@override String get delete => 'Supprimer la recette';
+	@override String get deleteConfirm => 'La recette sera supprimée définitivement. Cette action est irréversible.';
+	@override String get deleteSharedConfirm => 'La recette est retirée seulement pour vous. Les autres participants la gardent.';
+	@override String get deleted => 'Recette supprimée';
 }
 
 // Path: cookMode
@@ -936,6 +940,22 @@ class _Translations$ingestion$fr extends Translations$ingestion$he {
 	@override String get videoPhotoCover => 'Image du post';
 	@override String get videoPhotoNone => 'Sans image';
 	@override String get videoPhotoFailed => 'Impossible d’enregistrer cette image, essayez-en une autre';
+	@override String get suggestForMe => 'Suggestions pour moi';
+	@override String get suggestForMeHint => 'Écrivez ce dont vous avez envie (par exemple des desserts) ou laissez vide, et recevez jusqu\'à 10 recettes du web adaptées à vos préférences. Choisissez-en une, analysez-la et enregistrez-la, puis revenez pour la suivante.';
+	@override String get suggesting => 'Recherche de recettes pour vous…';
+	@override String get suggestionsTitle => 'Choisies pour vous';
+	@override String get suggestionsHint => 'Choisissez une recette à analyser. Après l\'enregistrement, vous revenez ici pour la suivante.';
+	@override String get savedFromList => 'Recette enregistrée. Choisissez la suivante';
+	@override String get savedTag => 'Enregistrée';
+	@override String get suggestionsDone => 'Terminé';
+	@override String get backToResults => 'Retour à la liste';
+	@override String get suggestionsEmpty => 'Aucune suggestion pour l\'instant. Réessayez dans un moment.';
+	@override String get suggestTopicLabel => 'De quoi avez-vous envie ? (facultatif)';
+	@override String get suggestTopicHint => 'Par exemple : desserts, dîner rapide, soupes';
+	@override String get suggestDietLabel => 'Régime pour cette recherche';
+	@override String get suggestDietNote => 'Part de vos préférences. Le modifier ici ne change pas vos réglages.';
+	@override String get suggestDietReset => 'Revenir à mes préférences';
+	@override String get suggestSearch => 'Trouver des suggestions';
 }
 
 // Path: mealPlanner
@@ -1962,6 +1982,9 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get webCheckout => 'Achat sur le site';
 	@override String get socialVideoPhoto => 'Image depuis une vidéo';
 	@override String get recipeSourceLink => 'Lien vers la recette originale';
+	@override String get deleteRecipe => 'Supprimer une recette';
+	@override String get ingredientSections => 'Titres des groupes d\'ingrédients';
+	@override String get recipeSuggestions => 'Suggestions de recettes selon les préférences';
 	@override String get webCheckoutIl => 'Achat sur le site (Israël)';
 	@override String get webCheckoutIntl => 'Achat sur le site (étranger)';
 }
@@ -2770,6 +2793,10 @@ extension on TranslationsFr {
 			'recipe.sourceLink' => 'Recette originale',
 			'recipe.sourceLinkHint' => 'Ouvrir la source d’où la recette a été importée',
 			'recipe.sourceOpenFailed' => 'Impossible d’ouvrir le lien',
+			'recipe.delete' => 'Supprimer la recette',
+			'recipe.deleteConfirm' => 'La recette sera supprimée définitivement. Cette action est irréversible.',
+			'recipe.deleteSharedConfirm' => 'La recette est retirée seulement pour vous. Les autres participants la gardent.',
+			'recipe.deleted' => 'Recette supprimée',
 			'cookMode.title' => 'Mode cuisine',
 			'cookMode.start' => 'Commencer à cuisiner',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Étape ${n} sur ${total}',
@@ -2954,12 +2981,12 @@ extension on TranslationsFr {
 			'sharing.acceptedPlan' => 'Le menu a été ajouté à vos menus',
 			'sharing.viewerCannotEditBook' => 'Ce livre est partagé avec vous en lecture seule',
 			'sharing.viewerCannotEditPlan' => 'Ce menu est partagé avec vous en lecture seule',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.kindRecipe' => 'Recette',
 			'sharing.kindBook' => 'Livre',
 			'sharing.kindPlan' => 'Menu',
 			'sharing.recipesTravel' => 'Les recettes qu’il contient sont partagées avec lui',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.shareList' => 'Partager la liste de courses',
 			'sharing.acceptedList' => 'La liste a été ajoutée à vos listes de courses',
 			'sharing.viewerCannotEditList' => 'Cette liste est partagée avec vous en lecture seule',
@@ -3094,6 +3121,22 @@ extension on TranslationsFr {
 			'ingestion.videoPhotoCover' => 'Image du post',
 			'ingestion.videoPhotoNone' => 'Sans image',
 			'ingestion.videoPhotoFailed' => 'Impossible d’enregistrer cette image, essayez-en une autre',
+			'ingestion.suggestForMe' => 'Suggestions pour moi',
+			'ingestion.suggestForMeHint' => 'Écrivez ce dont vous avez envie (par exemple des desserts) ou laissez vide, et recevez jusqu\'à 10 recettes du web adaptées à vos préférences. Choisissez-en une, analysez-la et enregistrez-la, puis revenez pour la suivante.',
+			'ingestion.suggesting' => 'Recherche de recettes pour vous…',
+			'ingestion.suggestionsTitle' => 'Choisies pour vous',
+			'ingestion.suggestionsHint' => 'Choisissez une recette à analyser. Après l\'enregistrement, vous revenez ici pour la suivante.',
+			'ingestion.savedFromList' => 'Recette enregistrée. Choisissez la suivante',
+			'ingestion.savedTag' => 'Enregistrée',
+			'ingestion.suggestionsDone' => 'Terminé',
+			'ingestion.backToResults' => 'Retour à la liste',
+			'ingestion.suggestionsEmpty' => 'Aucune suggestion pour l\'instant. Réessayez dans un moment.',
+			'ingestion.suggestTopicLabel' => 'De quoi avez-vous envie ? (facultatif)',
+			'ingestion.suggestTopicHint' => 'Par exemple : desserts, dîner rapide, soupes',
+			'ingestion.suggestDietLabel' => 'Régime pour cette recherche',
+			'ingestion.suggestDietNote' => 'Part de vos préférences. Le modifier ici ne change pas vos réglages.',
+			'ingestion.suggestDietReset' => 'Revenir à mes préférences',
+			'ingestion.suggestSearch' => 'Trouver des suggestions',
 			'mealPlanner.title' => 'Planification des repas',
 			'mealPlanner.newPlan' => 'Nouveau menu',
 			'mealPlanner.planName' => 'Nom du menu',
@@ -3452,6 +3495,8 @@ extension on TranslationsFr {
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Étape ${current} sur ${total}',
 			'walkthrough.tapHint' => 'Touchez la zone en surbrillance ou « Suivant »',
 			'walkthrough.bookTitle' => 'Guide EasyPlate',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Les exemples de ce livre ne sont jamais enregistrés ; la visite en direct fait les vraies actions, avec les champs déjà remplis.',
 			'walkthrough.contents' => 'Sommaire',
 			'walkthrough.chapter' => ({required Object number}) => 'Chapitre ${number}',
@@ -3472,8 +3517,6 @@ extension on TranslationsFr {
 			'walkthrough.topics.library.summary' => 'Rangez les recettes dans des livres avec sommaire, couverture et pages à tourner, et partagez un livre entier avec un autre compte.',
 			'walkthrough.topics.library.s1' => 'Touchez « Bibliothèque » pour passer aux livres.',
 			'walkthrough.topics.library.s2' => 'Touchez le plus pour créer un nouveau livre.',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.topics.library.s3' => 'Le nom du livre est déjà rempli : « Tutoriel ». Touchez le champ pour le changer, puis continuez.',
 			'walkthrough.topics.library.s4' => 'Touchez « Enregistrer » pour créer le livre.',
 			'walkthrough.topics.library.s5' => 'Choisissez une couleur de dos, qui distingue les livres sur l\'étagère, et touchez « Enregistrer ». Le livre s\'ouvre aussitôt.',
@@ -3966,6 +4009,8 @@ extension on TranslationsFr {
 			'household.owner' => 'Propriétaire',
 			'household.you' => 'Vous',
 			'household.invite' => 'Inviter un membre',
+			_ => null,
+		} ?? switch (path) {
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(free, one: 'Toute personne ayant ce code rejoint le compte partagé. ${free} place restante.', other: 'Toute personne ayant ce code rejoint le compte partagé. ${free} places restantes.', ), 
 			'household.noSeats' => 'Toutes les places sont prises.',
 			'household.remove' => 'Retirer',
@@ -3986,8 +4031,6 @@ extension on TranslationsFr {
 			'homeWidgets.intro' => 'Ajoutez les widgets EasyPlate à votre écran d\'accueil : demandez à Shefi, ajoutez à une liste de courses, voyez votre liste et le menu du jour sans ouvrir l\'app.',
 			'homeWidgets.howToIos' => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, touchez +, cherchez EasyPlate et choisissez un widget. Les mêmes widgets conviennent à l\'écran verrouillé.',
 			'homeWidgets.howToAndroid' => 'Appuyez longuement sur un espace vide de l\'écran d\'accueil, choisissez Widgets et trouvez EasyPlate, ou touchez « Ajouter à l\'écran d\'accueil » ci-dessous.',
-			_ => null,
-		} ?? switch (path) {
 			'homeWidgets.addToHome' => 'Ajouter à l\'écran d\'accueil',
 			'homeWidgets.installed' => ({required Object count}) => '${count} sur l\'écran d\'accueil',
 			'homeWidgets.pinFailed' => 'Le lanceur n\'a pas proposé d\'ajouter le widget. Ajoutez-le depuis la liste des widgets de l\'écran d\'accueil.',
@@ -4099,6 +4142,9 @@ extension on TranslationsFr {
 			'featureName.webCheckout' => 'Achat sur le site',
 			'featureName.socialVideoPhoto' => 'Image depuis une vidéo',
 			'featureName.recipeSourceLink' => 'Lien vers la recette originale',
+			'featureName.deleteRecipe' => 'Supprimer une recette',
+			'featureName.ingredientSections' => 'Titres des groupes d\'ingrédients',
+			'featureName.recipeSuggestions' => 'Suggestions de recettes selon les préférences',
 			'featureName.webCheckoutIl' => 'Achat sur le site (Israël)',
 			'featureName.webCheckoutIntl' => 'Achat sur le site (étranger)',
 			'wakeWord.title' => 'Hé Shefi',

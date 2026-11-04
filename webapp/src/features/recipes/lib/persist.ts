@@ -7,7 +7,7 @@
 // (SyncCollabRecipeUseCase): the shared document is the truth.
 import { firestore, getRecord } from "../../../lib/cloud";
 import { saveRecipe } from "../../../lib/recipesStore";
-import { normalizeIngredient, normalizeRecipe, recipeToDart, ALLERGENS, DIETARY, type Allergen, type CollabRole, type DietaryPreference, type Recipe } from "../../../models/recipe";
+import { ingredientToDart, normalizeIngredient, normalizeRecipe, recipeToDart, ALLERGENS, DIETARY, type Allergen, type CollabRole, type DietaryPreference, type Recipe } from "../../../models/recipe";
 
 export class ViewerCannotEdit extends Error {}
 
@@ -17,7 +17,7 @@ function collabFields(r: Recipe): Record<string, unknown> {
     title: r.title,
     prepTimeMinutes: r.prepTimeMinutes,
     cookTimeMinutes: r.cookTimeMinutes,
-    ingredients: r.ingredients.map((i) => ({ name: i.name, amount: i.amount, unit: i.unit })),
+    ingredients: r.ingredients.map(ingredientToDart),
     steps: r.steps,
     dietaryTags: r.dietaryTags,
     allergens: r.allergens,
@@ -93,7 +93,7 @@ function keepTranslation(local: Recipe, merged: Recipe): Recipe {
   return {
     ...merged,
     title: local.title,
-    ingredients: merged.ingredients.map((shared, i) => ({ name: local.ingredients[i].name, amount: shared.amount, unit: shared.unit })),
+    ingredients: merged.ingredients.map((shared, i) => ({ ...shared, name: local.ingredients[i].name, ...(local.ingredients[i].section ? { section: local.ingredients[i].section } : {}) })),
     steps: local.steps,
     contentLang: local.contentLang,
     contentVersion: local.contentVersion,
@@ -173,7 +173,7 @@ export function mergeEdited(edited: Recipe, before: Recipe, fresh: Recipe | null
   if (!fresh) return edited;
   const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
   const pick = <X,>(mine: X, was: X, theirs: X): X => (same(mine, was) && !same(theirs, was) ? theirs : mine);
-  const ingKey = (r: Recipe) => r.ingredients.map((i) => ({ n: i.name, a: i.amount, u: i.unit }));
+  const ingKey = (r: Recipe) => r.ingredients.map((i) => ({ n: i.name, a: i.amount, u: i.unit, s: i.section ?? null }));
   const photoMoved = fresh.imageFileName !== before.imageFileName || fresh.imageStoragePath !== before.imageStoragePath;
   return {
     ...edited,

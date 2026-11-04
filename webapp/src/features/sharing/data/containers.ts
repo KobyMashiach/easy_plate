@@ -4,7 +4,7 @@
 // ContainerAdapter (encode/decode), RecipeLinker and ContainerCollab.
 import { firestore, getRecord, listRecords, newId } from "../../../lib/cloud";
 import { saveRecipe } from "../../../lib/recipesStore";
-import { normalizeRecipe, type Recipe } from "../../../models/recipe";
+import { cleanSection, ingredientToDart, normalizeRecipe, type Recipe } from "../../../models/recipe";
 import { anyResolves, findUidByContact, normalizeContact } from "./contact";
 import {
   acceptAndJoin,
@@ -130,7 +130,7 @@ function encode(kind: ContainerKind, item: ContainerRecord, collabIdByRecipeId: 
           recipeCollabId: i.recipeId === null ? null : collabIdByRecipeId.get(i.recipeId) ?? null,
           label: i.recipeId === null ? i.freeText : titles.get(i.recipeId) ?? i.freeText,
           freeText: i.freeText,
-          ingredients: i.ingredients.map((g) => ({ name: g.name, amount: g.amount, unit: g.unit })),
+          ingredients: i.ingredients.map(ingredientToDart),
         })),
       })),
     };
@@ -214,7 +214,8 @@ function decode(c: CollabContainer, local: ContainerRecord | null, recipeIdByCol
                 freeText: typeof it.freeText === "string" ? it.freeText : typeof it.label === "string" ? it.label : "",
                 ingredients: arr(it.ingredients).map((g) => {
                   const ing = obj(g);
-                  return { name: String(ing.name ?? ""), amount: typeof ing.amount === "number" ? ing.amount : null, unit: unitOf(ing.unit) };
+                  const section = cleanSection(ing.section);
+                  return { name: String(ing.name ?? ""), amount: typeof ing.amount === "number" ? ing.amount : null, unit: unitOf(ing.unit), ...(section ? { section } : {}) };
                 }),
               },
         );

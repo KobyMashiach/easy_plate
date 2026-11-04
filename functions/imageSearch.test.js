@@ -308,3 +308,67 @@ test("a non-JSON answer is classified by its status: HTML 429 is a refundable qu
   assert.ok(!html400.refundable);
   assert.equal(html400.status, 502);
 });
+
+test("recipes: dishes are trimmed, de-duplicated and capped", () => {
+  const { parseRecipesRequest, MAX_DISHES } = require("./imageSearch").internals;
+  const many = Array.from({ length: 20 }, (_, i) => `dish ${i}`);
+  assert.equal(parseRecipesRequest({ dishes: many }).dishes.length, MAX_DISHES);
+  assert.deepEqual(parseRecipesRequest({ dishes: ["  מג׳דרה ", "מג׳דרה", 4, ""], lang: "HE" }), { dishes: ["מג׳דרה"], lang: "he" });
+  assert.equal(parseRecipesRequest({ dishes: [] }).error, "empty_query");
+  assert.equal(parseRecipesRequest({}).error, "empty_query");
+});
+
+test("recipes: the first organic result that is one recipe on a recipe site is picked", () => {
+  const { pickRecipePage } = require("./imageSearch").internals;
+  const json = {
+    organic: [
+      { link: "https://www.youtube.com/watch?v=1", title: "video" },
+      { link: "https://www.instagram.com/p/x/", title: "post" },
+      { link: "https://www.10dakot.co.il/", title: "home" },
+      { link: "https://www.bbcgoodfood.com/recipes/collection/vegetarian-dinner-recipes", title: "collection" },
+      { link: "https://www.krutit.co.il/category/soups/", title: "category" },
+      { link: "https://www.mako.co.il/food-recipes/%D7%9E%D7%AA%D7%9B%D7%95%D7%A0%D7%99%D7%9D/", title: "listing in Hebrew" },
+      { link: "https://www.krutit.co.il/%D7%9E%D7%A8%D7%A7-%D7%A2%D7%93%D7%A9%D7%99%D7%9D/", title: "מרק עדשים", snippet: "מרק חם" },
+    ],
+  };
+  assert.deepEqual(pickRecipePage(json), {
+    title: "מרק עדשים",
+    url: "https://www.krutit.co.il/%D7%9E%D7%A8%D7%A7-%D7%A2%D7%93%D7%A9%D7%99%D7%9D/",
+    snippet: "מרק חם",
+    source: "krutit.co.il",
+  });
+  assert.equal(pickRecipePage({ organic: [{ link: "https://youtu.be/x" }] }), null);
+  assert.equal(pickRecipePage(null), null);
+});
+
+test("recipes: the search names the dish with the language's word for recipe", () => {
+  const { recipeSearchBody } = require("./imageSearch").internals;
+  assert.deepEqual(recipeSearchBody("שקשוקה", "he"), { q: "שקשוקה מתכון", num: 10, hl: "he", gl: "il" });
+  assert.deepEqual(recipeSearchBody("shakshuka", ""), { q: "shakshuka recipe", num: 10 });
+});
+
+test("recipes: cached dishes cost nothing, misses are charged once, failures counted", async () => {
+  const { recipePages } = require("./imageSearch").internals;
+  const db = fakeDb();
+  let calls = 0;
+  const fetchImpl = async (_url, init) => {
+    calls++;
+    const q = JSON.parse(init.body).q;
+    if (q.startsWith("broken")) return { ok: false, status: 500, json: async () => ({}) };
+    const slug = encodeURIComponent(q.split(" ")[0]);
+    return { ok: true, status: 200, json: async () => ({ organic: [{ link: `https://site.example/${slug}/`, title: q }] }) };
+  };
+  const charged = [];
+  const request = { dishes: ["a", "b", "broken"], lang: "en" };
+  const first = await recipePages(request, { key: "k", fetchImpl, db, onMisses: async (n) => charged.push(n) });
+  assert.deepEqual(first.items.map((i) => i.dish), ["a", "b"]);
+  assert.equal(first.failed, 1);
+  assert.deepEqual(charged, [3]);
+  assert.equal(calls, 3);
+
+  // a and b are cached now; only the failed one is asked again.
+  const second = await recipePages(request, { key: "k", fetchImpl, db, onMisses: async (n) => charged.push(n) });
+  assert.deepEqual(second.items.map((i) => i.dish), ["a", "b"]);
+  assert.deepEqual(charged, [3, 1]);
+  assert.equal(calls, 4);
+});

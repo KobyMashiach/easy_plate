@@ -7,7 +7,10 @@ void main() {
   setUp(() => LocaleSettings.setLocaleSync(AppLocale.he));
 
   test('a running tool is named in the app language, never by its id', () {
-    expect(assistantWorkingLabel(AssistantTools.addGroceryItems), 'מבצע: קניות');
+    expect(
+      assistantWorkingLabel(AssistantTools.addGroceryItems),
+      'מבצע: קניות',
+    );
     expect(assistantWorkingLabel(AssistantTools.planMeal), 'מבצע: תפריטים');
     // No area of the app to name: just "thinking".
     expect(

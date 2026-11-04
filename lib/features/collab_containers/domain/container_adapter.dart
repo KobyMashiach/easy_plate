@@ -77,7 +77,12 @@ List<Map<String, dynamic>> _encodeIngredients(
   List<RecipeIngredientEntity> ingredients,
 ) => [
   for (final i in ingredients)
-    {'name': i.name, 'amount': i.amount, 'unit': i.unit.name},
+    {
+      'name': i.name,
+      'amount': i.amount,
+      'unit': i.unit.name,
+      if (i.section != null) 'section': i.section,
+    },
 ];
 
 List<RecipeIngredientEntity> _decodeIngredients(Object? raw) => [
@@ -90,6 +95,7 @@ List<RecipeIngredientEntity> _decodeIngredients(Object? raw) => [
           (u) => u.name == item['unit'],
           orElse: () => MeasurementUnit.unspecified,
         ),
+        section: ingredientSection(item['section']),
       ),
 ];
 

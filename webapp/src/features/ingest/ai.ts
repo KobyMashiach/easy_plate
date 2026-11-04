@@ -6,7 +6,7 @@
 import { ApiError } from "../../lib/api";
 import { callFunction, interactions, quotaOf } from "../../lib/functions";
 import { newId } from "../../lib/cloud";
-import { ALLERGENS, DIETARY, MEASUREMENT_UNITS, type Allergen, type DietaryPreference, type IngestionChannel, type Ingredient, type MeasurementUnit, type Nutrition, type Recipe } from "../../models/recipe";
+import { ALLERGENS, cleanSection, DIETARY, MEASUREMENT_UNITS, type Allergen, type DietaryPreference, type IngestionChannel, type Ingredient, type MeasurementUnit, type Nutrition, type Recipe } from "../../models/recipe";
 import { GENERATE_SYSTEM_PROMPT, SYSTEM_PROMPT } from "./prompts";
 
 // ApiConfig defaults (lib/core/constants/api_config.dart).
@@ -252,7 +252,8 @@ export function toRecipe(input: Record<string, unknown>, channel: IngestionChann
     const r = raw as Record<string, unknown>;
     if (typeof r.name !== "string" || !r.name.trim()) continue;
     const unit = (MEASUREMENT_UNITS as readonly string[]).includes(r.unit as string) ? (r.unit as MeasurementUnit) : "unspecified";
-    ingredients.push({ name: r.name.trim(), amount: numOrNull(r.amount), unit });
+    const section = cleanSection(r.section);
+    ingredients.push({ name: r.name.trim(), amount: numOrNull(r.amount), unit, ...(section ? { section } : {}) });
   }
   const title = input.title;
   if (typeof title !== "string" || !title.trim()) throw new IngestError("parsing", "No recipe title returned by the model");

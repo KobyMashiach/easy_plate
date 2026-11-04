@@ -32,7 +32,7 @@ export const MAX_LINES_PER_ITEM = 200;
 
 // -- the shapes this reads (structural, so the models need not be imported) --
 
-export interface RecipeShape { id: string; title: string; ingredients: { name: string }[]; steps: string[]; contentLang: string | null; contentVersion: number }
+export interface RecipeShape { id: string; title: string; ingredients: { name: string; section?: string | null }[]; steps: string[]; contentLang: string | null; contentVersion: number }
 export interface BookShape { id: string; title: string; contentLang: string | null; contentVersion: number }
 export interface PlanShape { id: string; name: string; meals: { name: string; items: { freeText: string | null }[] }[]; contentLang: string | null; contentVersion: number }
 export interface ListShape { id: string; name: string; items: { name: string }[]; contentLang: string | null; contentVersion: number }
@@ -87,7 +87,19 @@ export function planFreeText(p: PlanShape): string[] {
 }
 
 export function recipeItem(r: RecipeShape): TranslatableItem {
-  return { type: "recipe", id: r.id, version: r.contentVersion, fields: { title: r.title, ingredients: r.ingredients.map((i) => i.name), steps: [...r.steps] } };
+  // `sections` only for a divided list, so an undivided recipe's fingerprint stays (ContentTranslationService).
+  const sections = ingredientSections(r.ingredients);
+  return { type: "recipe", id: r.id, version: r.contentVersion, fields: { title: r.title, ingredients: r.ingredients.map((i) => i.name), steps: [...r.steps], ...(sections.length ? { sections } : {}) } };
+}
+
+/** The distinct section names, in order of first appearance (ingredientSections). */
+function ingredientSections(ingredients: { section?: string | null }[]): string[] {
+  const out = new Set<string>();
+  for (const i of ingredients) {
+    const s = typeof i.section === "string" ? i.section.trim().slice(0, 60).trim() : "";
+    if (s) out.add(s);
+  }
+  return [...out];
 }
 export function bookItem(b: BookShape): TranslatableItem {
   return { type: "book", id: b.id, version: b.contentVersion, fields: { title: b.title } };
@@ -200,10 +212,17 @@ function listOfLength(v: Variant, field: string, length: number): string[] | nul
 
 export function applyRecipe<T extends RecipeShape>(r: T, v: Variant): T {
   const names = listOfLength(v, "ingredients", r.ingredients.length);
+  const sections = ingredientSections(r.ingredients);
+  const translated = sections.length ? listOfLength(v, "sections", sections.length) : null;
+  const sectionIn = new Map(translated ? sections.map((s, i) => [s, translated[i]]) : []);
+  const sectionOf = (s: string | null | undefined) => {
+    const key = typeof s === "string" ? s.trim().slice(0, 60).trim() : "";
+    return sectionIn.get(key) ?? s;
+  };
   return {
     ...r,
     title: text(v, "title") ?? r.title,
-    ingredients: names ? r.ingredients.map((ing, i) => ({ ...ing, name: names[i] })) : r.ingredients,
+    ingredients: names ? r.ingredients.map((ing, i) => ({ ...ing, name: names[i], ...(ing.section ? { section: sectionOf(ing.section) } : {}) })) : r.ingredients,
     steps: listOfLength(v, "steps", r.steps.length) ?? r.steps,
   };
 }

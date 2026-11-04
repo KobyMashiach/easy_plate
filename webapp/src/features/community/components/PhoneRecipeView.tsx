@@ -12,6 +12,7 @@ import { ClayButton, ClayTag } from "../../../components/clay";
 import { FeatureGate } from "../../../components/FeatureGate";
 import type { DietaryPreference, Nutrition, Recipe } from "../../../models/recipe";
 import { useIngredientLine } from "./common";
+import { SectionedIngredients } from "../../recipes/components/IngredientSections";
 
 const TAG_ICON: Record<DietaryPreference, string> = {
   meat: "set_meal",
@@ -115,14 +116,14 @@ export function PhoneRecipeView({ recipe: r, onCook, onShop }: { recipe: Recipe;
       <section className="clay-card mt-6 p-6" style={{ borderRadius: 24 }} aria-labelledby="ing-h">
         <SectionHeader id="ing-h">{t("recipe.ingredients")}</SectionHeader>
         <ul className="mt-3">
-          {r.ingredients.map((i, n) => (
+          <SectionedIngredients ingredients={r.ingredients} row={(i, n) => (
             <li key={n} className="flex items-start gap-3 py-1 text-body-md">
               <span aria-hidden="true" className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
               <span dir="auto" className="min-w-0 break-words">
                 {line(i)}
               </span>
             </li>
-          ))}
+          )} />
         </ul>
         {r.ingredients.length ? (
           <FeatureGate flag="ff_grocery_from_recipe">

@@ -22,6 +22,8 @@ export interface Ingredient {
   name: string;
   amount: number | null;
   unit: MeasurementUnit;
+  /** The part of the dish ("רוטב", "בצק"); consecutive lines share it, null for an undivided list. */
+  section?: string | null;
 }
 
 export interface Nutrition {
@@ -65,7 +67,47 @@ const oneOf = <T extends string>(v: unknown, all: readonly T[]): T | null => (ty
 
 export function normalizeIngredient(raw: unknown): Ingredient {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  return { name: String(r.name ?? ""), amount: num(r.amount), unit: oneOf(r.unit, MEASUREMENT_UNITS) ?? "unspecified" };
+  const section = cleanSection(r.section);
+  return { name: String(r.name ?? ""), amount: num(r.amount), unit: oneOf(r.unit, MEASUREMENT_UNITS) ?? "unspecified", ...(section ? { section } : {}) };
+}
+
+export function cleanSection(v: unknown): string | null {
+  const s = typeof v === "string" ? v.trim().slice(0, 60).trim() : "";
+  return s || null;
+}
+
+/** The stored ingredient map (RecipeIngredientModel.toJson): `section` only when set. */
+export function ingredientToDart(i: Ingredient): Record<string, unknown> {
+  const section = cleanSection(i.section);
+  return { name: i.name, amount: i.amount, unit: i.unit, ...(section ? { section } : {}) };
+}
+
+const HEADING_LEAD = /^(?:(?:מצרכים|רכיבים)\s+(?:עבור\s+)?ל?|ingredients\s+for\s+(?:the\s+)?)/i;
+
+/** A heading stored as an ingredient line by older recipes ("מצרכים לרוטב:", "For the sauce:"); never a grocery item. */
+export function isSectionHeading(ing: Pick<Ingredient, "name" | "amount">): boolean {
+  if (ing.amount !== null) return false;
+  const name = ing.name.trim();
+  return name.endsWith(":") || name.endsWith("：") || HEADING_LEAD.test(name);
+}
+
+export interface IngredientGroup<T extends Ingredient = Ingredient> { section: string | null; items: { ing: T; index: number }[] }
+
+/** Runs of consecutive ingredients sharing a section, original indices kept. */
+export function ingredientGroups<T extends Ingredient>(ingredients: T[]): IngredientGroup<T>[] {
+  const out: IngredientGroup<T>[] = [];
+  ingredients.forEach((ing, index) => {
+    const section = cleanSection(ing.section);
+    const last = out[out.length - 1];
+    if (last && last.section === section) last.items.push({ ing, index });
+    else out.push({ section, items: [{ ing, index }] });
+  });
+  return out;
+}
+
+/** True when any line carries a section, i.e. headings should be drawn. */
+export function hasSections(ingredients: Ingredient[]): boolean {
+  return ingredients.some((i) => cleanSection(i.section) !== null);
 }
 
 /** Any stored document → a complete Recipe (defaults where the app has them). */
@@ -108,7 +150,7 @@ export function recipeToDart(r: Recipe): Record<string, unknown> {
     title: r.title,
     prepTimeMinutes: r.prepTimeMinutes,
     cookTimeMinutes: r.cookTimeMinutes,
-    ingredients: r.ingredients.map((i) => ({ name: i.name, amount: i.amount, unit: i.unit })),
+    ingredients: r.ingredients.map(ingredientToDart),
     steps: r.steps,
     dietaryTags: r.dietaryTags,
     sourceChannel: r.sourceChannel,

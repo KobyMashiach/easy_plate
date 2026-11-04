@@ -18,6 +18,15 @@ abstract class RecipeIngestionRepository {
     String query,
     List<DietaryPreference> preferences,
   );
+
+  /// Recipes on the web picked for this account rather than for a query:
+  /// its dietary preferences, and something new next to [knownTitles] (the
+  /// recipes it already keeps). Each is opened, and paid for, one at a time.
+  Future<List<WebSearchResultEntity>> suggestRecipes(
+    List<DietaryPreference> preferences, {
+    List<String> knownTitles = const [],
+    String topic = '',
+  });
   Future<RecipeEntity> parseFromUrl(
     String url,
     List<DietaryPreference> preferences,

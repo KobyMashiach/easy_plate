@@ -5,7 +5,7 @@
 import { firestore, getRecord, listRecords, newId } from "../../../lib/cloud";
 import { auth } from "../../../lib/firebase";
 import { RecipeGoneError, saveRecipe } from "../../../lib/recipesStore";
-import { normalizeRecipe, type Recipe } from "../../../models/recipe";
+import { ingredientToDart, normalizeRecipe, type Recipe } from "../../../models/recipe";
 import { anyResolves, findUidByContact, normalizeContact } from "./contact";
 import { inviteFields, inviteIsDead, readInvite, setInviteStatus } from "./invites";
 import { CollabMissing, fsCode, inviteIdFor, ItemGone, roleFrom, ShareFailure, tsMs, type CollabRole, type ShareInvite } from "./types";
@@ -32,7 +32,7 @@ export function recipeFields(r: Recipe): Record<string, unknown> {
     title: r.title,
     prepTimeMinutes: r.prepTimeMinutes,
     cookTimeMinutes: r.cookTimeMinutes,
-    ingredients: r.ingredients.map((i) => ({ name: i.name, amount: i.amount, unit: i.unit })),
+    ingredients: r.ingredients.map(ingredientToDart),
     steps: r.steps,
     dietaryTags: r.dietaryTags,
     allergens: r.allergens,
