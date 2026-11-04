@@ -1,0 +1,21 @@
+pepper	CC0	https://commons.wikimedia.org/wiki/File:Flat_red_bell_pepper_2017_A1.jpg
+cherry	CC0	https://commons.wikimedia.org/wiki/File:3_x_Cherry_Bambelo_tomato_2017_A2.jpg
+lemon	CC0	https://commons.wikimedia.org/wiki/File:Lemon_with_white_background.jpg
+lemon2	Public domain	https://commons.wikimedia.org/wiki/File:Lemon-Whole-Split.jpg
+basil	CC0	https://commons.wikimedia.org/wiki/File:Sweet_basil_leaves.jpg
+mushroom	Public domain	https://commons.wikimedia.org/wiki/File:Mushroom_on_white_background.jpg
+avocado	CC0	https://commons.wikimedia.org/wiki/File:Persea_americana_from_Canadian_supermarket.jpg
+shakshuka	CC0	https://commons.wikimedia.org/wiki/File:Shakshuka_(Unsplash).jpg
+salad	CC0	https://commons.wikimedia.org/wiki/File:Vegetable_Salad_(Unsplash).jpg
+pasta	CC0	https://commons.wikimedia.org/wiki/File:Pasta_in_Amorebieta_(Unsplash).jpg
+pizza	CC0	https://commons.wikimedia.org/wiki/File:Blaze_Pizza_1.jpg
+onions	Public domain	https://commons.wikimedia.org/wiki/File:CSA-Red-Spring-Onions.jpg
+greenpepper	CC0	https://commons.wikimedia.org/wiki/File:Green_bell_pepper_2017_A.jpg
+yellowpepper	CC0	https://commons.wikimedia.org/wiki/File:Yellow_bell_pepper_2017_A1.jpg
+tomatoes	CC0	https://commons.wikimedia.org/wiki/File:Rajsk%C3%A1_jabl%C3%AD%C4%8Dka.jpg
+garlic	Public domain	https://commons.wikimedia.org/wiki/File:White_garlic_vegetable.jpg
+strawberry	CC0	https://commons.wikimedia.org/wiki/File:Strawberry_Half.jpg
+croissant	CC0	https://commons.wikimedia.org/wiki/File:Croissant-Petr_Kratochvil.jpg
+chili	CC0	https://commons.wikimedia.org/wiki/File:%27Red_chilli.jpg
+soup	CC0	https://commons.wikimedia.org/wiki/File:Autumn_Soup_(Unsplash).jpg
+hummus	CC0	https://commons.wikimedia.org/wiki/File:Winter_Hummus_(Unsplash).jpg

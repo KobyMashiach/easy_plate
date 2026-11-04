@@ -1,0 +1,222 @@
+{
+  "_comment": "panorama.py: the eight shots in reading order (raw = file stem in store_assets/raw_panorama/<locale>/), their captions (above the phone on odd shots, below it on even ones; English is set in capitals; last line in the accent yellow), the background colour, and the food lying across the joins. A prop's 'after' is the join after that shot in reading order (-1 = the strip's opening edge, 7 = its closing edge); y is a fraction of the height, size and dx fractions of the panel width; dx and angle mirror for Hebrew. A prop with front: true is drawn over the phones (the paper notes).",
+  "background": "#8E7CF3",
+  "shots": [
+    {
+      "raw": "01_recipes",
+      "he": [
+        "כל המתכונים",
+        "שלך",
+        "במקום אחד"
+      ],
+      "en": [
+        "All your",
+        "recipes.",
+        "One place."
+      ]
+    },
+    {
+      "raw": "03_ai_import",
+      "he": [
+        "מכל סרטון או קישור",
+        "מתכון בשניות"
+      ],
+      "en": [
+        "Any video",
+        "or link —",
+        "a recipe."
+      ]
+    },
+    {
+      "raw": "02_recipe_details",
+      "he": [
+        "כל מתכון",
+        "במבט אחד"
+      ],
+      "en": [
+        "Every recipe",
+        "at a glance."
+      ]
+    },
+    {
+      "raw": "04_library",
+      "he": [
+        "ספרי",
+        "מתכונים",
+        "משלך"
+      ],
+      "en": [
+        "Your own",
+        "recipe books."
+      ]
+    },
+    {
+      "raw": "06_meal_plan",
+      "he": [
+        "תכנון ארוחות",
+        "לכל השבוע"
+      ],
+      "en": [
+        "Plan the",
+        "whole week."
+      ]
+    },
+    {
+      "raw": "08_grocery",
+      "he": [
+        "רשימת קניות",
+        "שמתמלאת",
+        "לבד"
+      ],
+      "en": [
+        "A grocery list",
+        "that fills itself."
+      ]
+    },
+    {
+      "raw": "07_nutrition",
+      "he": [
+        "קלוריות ותזונה",
+        "בגרף אחד"
+      ],
+      "en": [
+        "Calories",
+        "& nutrition,",
+        "made clear."
+      ]
+    },
+    {
+      "raw": "09_community",
+      "he": [
+        "קהילה",
+        "שמבשלת ומשתפת"
+      ],
+      "en": [
+        "Cook.",
+        "Share.",
+        "Get inspired."
+      ]
+    }
+  ],
+  "props": [
+    {
+      "name": "greenpepper",
+      "after": -1,
+      "y": 0.55,
+      "size": 0.42,
+      "angle": -20
+    },
+    {
+      "name": "soup",
+      "after": 0,
+      "y": 0.7,
+      "size": 0.52
+    },
+    {
+      "name": "pepper",
+      "after": 0,
+      "y": 0.3,
+      "size": 0.32,
+      "angle": 10
+    },
+    {
+      "name": "hummus",
+      "after": 1,
+      "y": 0.64,
+      "size": 0.58,
+      "angle": -10
+    },
+    {
+      "name": "garlic",
+      "after": 1,
+      "y": 0.27,
+      "size": 0.22
+    },
+    {
+      "name": "menu_note",
+      "after": 2,
+      "y": 0.6,
+      "size": 0.4,
+      "angle": -6,
+      "front": true,
+      "dx": -0.07
+    },
+    {
+      "name": "lemon2_1",
+      "after": 2,
+      "y": 0.3,
+      "size": 0.28,
+      "angle": -15
+    },
+    {
+      "name": "pasta1",
+      "after": 3,
+      "y": 0.64,
+      "size": 0.62
+    },
+    {
+      "name": "avocado_1",
+      "after": 3,
+      "y": 0.28,
+      "size": 0.24,
+      "angle": 25
+    },
+    {
+      "name": "grocery_note",
+      "after": 4,
+      "y": 0.6,
+      "size": 0.4,
+      "angle": 6,
+      "front": true,
+      "dx": -0.07
+    },
+    {
+      "name": "lemon2_0",
+      "after": 4,
+      "y": 0.3,
+      "size": 0.26,
+      "angle": 20
+    },
+    {
+      "name": "pizza",
+      "after": 5,
+      "y": 0.66,
+      "size": 0.56,
+      "angle": 15
+    },
+    {
+      "name": "avocado_0",
+      "after": 5,
+      "y": 0.29,
+      "size": 0.24,
+      "angle": -30
+    },
+    {
+      "name": "salad",
+      "after": 6,
+      "y": 0.64,
+      "size": 0.52
+    },
+    {
+      "name": "croissant",
+      "after": 6,
+      "y": 0.3,
+      "size": 0.4,
+      "angle": -60
+    },
+    {
+      "name": "onions",
+      "after": 7,
+      "y": 0.42,
+      "size": 0.55,
+      "angle": 70
+    },
+    {
+      "name": "yellowpepper",
+      "after": 7,
+      "y": 0.78,
+      "size": 0.4,
+      "angle": -30
+    }
+  ]
+}
