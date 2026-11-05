@@ -653,9 +653,51 @@
         },
         "ff_notifications": {
           "defaultValue": {
-            "value": "3"
+            "value": "2"
           },
           "description": "התראות: הפעמון, תיבת ההתראות, מסך הגדרות ההתראות, פופאפים ופוש (גם השרת קורא את זה לפני שליחה). 3 = רק לפרימיום (החליף את notifications_premium_only). כבוי: הפעמון נעלם ופוש לא נשלח.",
+          "valueType": "NUMBER"
+        },
+        "ff_push_reply_my_post": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "התראות › תגובה לפוסט שלי בקהילה. 0 כבוי לכולם, 2 לכולם, 3 רק לפרימיום. נבדק בשרת אחרי ff_notifications; ההודעה עדיין נכנסת לתיבת ההתראות, רק הטלפון לא מצלצל.",
+          "valueType": "NUMBER"
+        },
+        "ff_push_reply_thread": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "התראות › תגובה בשרשור שהשתתפתי בו. 0 כבוי לכולם, 2 לכולם, 3 רק לפרימיום. נבדק בשרת אחרי ff_notifications; ההודעה עדיין נכנסת לתיבת ההתראות, רק הטלפון לא מצלצל.",
+          "valueType": "NUMBER"
+        },
+        "ff_push_share_invite": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "התראות › הזמנה לשיתוף מתכון, ספר, תפריט או רשימה. 0 כבוי לכולם, 2 לכולם, 3 רק לפרימיום. נבדק בשרת אחרי ff_notifications; ההודעה עדיין נכנסת לתיבת ההתראות, רק הטלפון לא מצלצל.",
+          "valueType": "NUMBER"
+        },
+        "ff_push_shared_update": {
+          "defaultValue": {
+            "value": "3"
+          },
+          "description": "התראות › עדכון במתכון משותף. 0 כבוי לכולם, 2 לכולם, 3 רק לפרימיום. נבדק בשרת אחרי ff_notifications; ההודעה עדיין נכנסת לתיבת ההתראות, רק הטלפון לא מצלצל.",
+          "valueType": "NUMBER"
+        },
+        "ff_push_admin_reply": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "התראות › תשובה מהתמיכה. 0 כבוי לכולם, 2 לכולם, 3 רק לפרימיום. נבדק בשרת אחרי ff_notifications; ההודעה עדיין נכנסת לתיבת ההתראות, רק הטלפון לא מצלצל.",
+          "valueType": "NUMBER"
+        },
+        "ff_push_announcements": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "התראות › הודעות יזומות מהקונסולה (גם תבניות מתוזמנות). 0 כבוי לכולם, 2 לכולם, 3 רק לפרימיום. נבדק בשרת אחרי ff_notifications; ההודעה עדיין נכנסת לתיבת ההתראות, רק הטלפון לא מצלצל.",
           "valueType": "NUMBER"
         },
         "ff_premium": {

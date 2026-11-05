@@ -25,6 +25,24 @@ function flagFor(data) {
   }
 }
 
+// The console's per-kind push flag (Remote Config, featureFlags group,
+// shown under התראות in the console): the same 0–4 values as
+// ff_notifications, applied after it. A kind with no flag of its own is
+// governed by the master flag alone.
+const PUSH_KIND_FLAGS = Object.freeze({
+  notifyRepliesOnMyPosts: "ff_push_reply_my_post",
+  notifyRepliesOnThreads: "ff_push_reply_thread",
+  notifyShareInvites: "ff_push_share_invite",
+  notifySharedRecipeUpdates: "ff_push_shared_update",
+  notifyAdminReplies: "ff_push_admin_reply",
+  notifyAnnouncements: "ff_push_announcements",
+});
+
+function kindFlagFor(data) {
+  const flag = flagFor(data);
+  return flag === null ? null : PUSH_KIND_FLAGS[flag];
+}
+
 // Folds a stored preferences document (possibly missing, possibly older
 // than these fields) over the defaults. Only booleans are taken; anything
 // else in the document is not this module's business.
@@ -67,4 +85,4 @@ function wantsInboxItem(prefs, data) {
   return flag === null ? true : prefs[flag] !== false;
 }
 
-module.exports = { DEFAULTS, flagFor, fromDocument, load, wantsPush, wantsInboxItem };
+module.exports = { DEFAULTS, PUSH_KIND_FLAGS, kindFlagFor, flagFor, fromDocument, load, wantsPush, wantsInboxItem };

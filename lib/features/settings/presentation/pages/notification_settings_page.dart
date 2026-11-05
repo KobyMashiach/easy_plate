@@ -116,13 +116,14 @@ class _Body extends StatelessWidget {
     final bloc = context.read<SettingsBloc>();
     final push = preferences.pushEnabled;
 
-    SettingsToggle row(
+    Widget row(
       NotificationSetting setting, {
       required String title,
       String? description,
       bool dependsOnPush = true,
+      FeaturesFlags? feature,
     }) {
-      return SettingsToggle(
+      final toggle = SettingsToggle(
         title: title,
         description: description,
         value: setting.of(preferences),
@@ -132,6 +133,11 @@ class _Body extends StatelessWidget {
             ? null
             : (enabled) => bloc.add(.setNotification(setting, enabled)),
       );
+      // The console can close a kind (hidden), keep it for Premium (locked,
+      // tap → paywall) or pause it, per kind under התראות.
+      return feature == null
+          ? toggle
+          : FeatureGate(feature: feature, child: toggle);
     }
 
     return SettingsBody(
@@ -152,32 +158,38 @@ class _Body extends StatelessWidget {
           NotificationSetting.repliesOnMyPosts,
           title: t.notificationSettings.repliesOnMyPosts,
           description: t.notificationSettings.repliesOnMyPostsHint,
+          feature: FeaturesFlags.pushReplyMyPost,
         ),
         row(
           NotificationSetting.repliesOnThreads,
           title: t.notificationSettings.repliesOnThreads,
           description: t.notificationSettings.repliesOnThreadsHint,
+          feature: FeaturesFlags.pushReplyThread,
         ),
         SettingsGroupLabel(t.notificationSettings.sharing),
         row(
           NotificationSetting.shareInvites,
           title: t.notificationSettings.shareInvites,
           description: t.notificationSettings.shareInvitesHint,
+          feature: FeaturesFlags.pushShareInvite,
         ),
         row(
           NotificationSetting.sharedRecipeUpdates,
           title: t.notificationSettings.sharedRecipeUpdates,
           description: t.notificationSettings.sharedRecipeUpdatesHint,
+          feature: FeaturesFlags.pushSharedUpdate,
         ),
         SettingsGroupLabel(t.notificationSettings.easyPlate),
         row(
           NotificationSetting.adminReplies,
           title: t.notificationSettings.adminReplies,
+          feature: FeaturesFlags.pushAdminReply,
         ),
         row(
           NotificationSetting.announcements,
           title: t.notificationSettings.announcements,
           description: t.notificationSettings.announcementsHint,
+          feature: FeaturesFlags.pushAnnouncements,
         ),
         SettingsGroupLabel(t.notificationSettings.inApp),
         row(

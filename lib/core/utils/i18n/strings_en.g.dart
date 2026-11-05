@@ -1981,6 +1981,12 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get multiShoppingDays => 'Several shopping days';
 	@override String get assistant => 'Shefi (the assistant)';
 	@override String get notifications => 'Notifications';
+	@override String get pushReplyMyPost => 'Reply to my post';
+	@override String get pushReplyThread => 'Reply in a thread';
+	@override String get pushShareInvite => 'Share invite';
+	@override String get pushSharedUpdate => 'Shared recipe update';
+	@override String get pushAdminReply => 'Reply from support';
+	@override String get pushAnnouncements => 'Announcements';
 	@override String get premium => 'Premium';
 	@override String get contentTranslation => 'Content translation';
 	@override String get theming => 'Appearance';
@@ -4406,6 +4412,12 @@ extension on TranslationsEn {
 			'featureName.multiShoppingDays' => 'Several shopping days',
 			'featureName.assistant' => 'Shefi (the assistant)',
 			'featureName.notifications' => 'Notifications',
+			'featureName.pushReplyMyPost' => 'Reply to my post',
+			'featureName.pushReplyThread' => 'Reply in a thread',
+			'featureName.pushShareInvite' => 'Share invite',
+			'featureName.pushSharedUpdate' => 'Shared recipe update',
+			'featureName.pushAdminReply' => 'Reply from support',
+			'featureName.pushAnnouncements' => 'Announcements',
 			'featureName.premium' => 'Premium',
 			'featureName.contentTranslation' => 'Content translation',
 			'featureName.theming' => 'Appearance',

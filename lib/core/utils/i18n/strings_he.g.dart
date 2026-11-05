@@ -4956,6 +4956,24 @@ class Translations$featureName$he {
 	/// he: 'התראות'
 	String get notifications => 'התראות';
 
+	/// he: 'תגובה לפוסט שלי'
+	String get pushReplyMyPost => 'תגובה לפוסט שלי';
+
+	/// he: 'תגובה בשרשור'
+	String get pushReplyThread => 'תגובה בשרשור';
+
+	/// he: 'הזמנה לשיתוף'
+	String get pushShareInvite => 'הזמנה לשיתוף';
+
+	/// he: 'עדכון במתכון משותף'
+	String get pushSharedUpdate => 'עדכון במתכון משותף';
+
+	/// he: 'תשובה מהתמיכה'
+	String get pushAdminReply => 'תשובה מהתמיכה';
+
+	/// he: 'הודעות יזומות'
+	String get pushAnnouncements => 'הודעות יזומות';
+
 	/// he: 'פרימיום'
 	String get premium => 'פרימיום';
 
@@ -8072,6 +8090,12 @@ extension on Translations {
 			'featureName.multiShoppingDays' => 'כמה ימי קניות',
 			'featureName.assistant' => 'שפי (העוזר החכם)',
 			'featureName.notifications' => 'התראות',
+			'featureName.pushReplyMyPost' => 'תגובה לפוסט שלי',
+			'featureName.pushReplyThread' => 'תגובה בשרשור',
+			'featureName.pushShareInvite' => 'הזמנה לשיתוף',
+			'featureName.pushSharedUpdate' => 'עדכון במתכון משותף',
+			'featureName.pushAdminReply' => 'תשובה מהתמיכה',
+			'featureName.pushAnnouncements' => 'הודעות יזומות',
 			'featureName.premium' => 'פרימיום',
 			'featureName.contentTranslation' => 'תרגום תוכן',
 			'featureName.theming' => 'מראה',

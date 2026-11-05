@@ -130,6 +130,17 @@ enum FeaturesFlags {
   assistantScoped('ff_assistant_scoped'),
   assistantVoice('ff_assistant_voice'),
   notifications('ff_notifications'),
+
+  /// One push kind each, under התראות in the console: read by the server
+  /// after ff_notifications (a closed kind keeps the inbox item, the phone
+  /// does not ring) and by the settings screen, which hides or locks the
+  /// kind's switch.
+  pushReplyMyPost('ff_push_reply_my_post'),
+  pushReplyThread('ff_push_reply_thread'),
+  pushShareInvite('ff_push_share_invite'),
+  pushSharedUpdate('ff_push_shared_update'),
+  pushAdminReply('ff_push_admin_reply'),
+  pushAnnouncements('ff_push_announcements'),
   premium('ff_premium'),
   contentTranslation('ff_content_translation'),
   theming('ff_theming'),

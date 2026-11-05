@@ -213,8 +213,9 @@ exports.pushOnNotification = onDocumentCreated(
 
     // The plan's say, after the preference: on a gated plan a free account
     // keeps its inbox item but no phone rings.
-    if (!(await remoteFlags.pushAllowedFor(entitlement))) {
-      logger.info("push withheld: free plan", { uid: event.params.uid, type: String(data.type || "") });
+    const kindFlag = notificationPrefs.kindFlagFor(data);
+    if (!(await remoteFlags.pushAllowedFor(entitlement, kindFlag))) {
+      logger.info("push withheld by plan gate", { uid: event.params.uid, type: String(data.type || ""), kindFlag });
       return;
     }
 

@@ -172,9 +172,21 @@ export function busy(btn, fn) {
   };
 }
 
-export function table(columns, rows, { onRow, emptyText } = {}) {
+// A column with `sort` (a key) gets a clickable heading when `onSort` is
+// given: `sort` ({key, dir: "asc"|"desc"}) marks the active one with an
+// arrow, and a click hands the key back to the caller, which reorders.
+export function table(columns, rows, { onRow, emptyText, sort = null, onSort = null } = {}) {
   if (!rows.length) return empty(emptyText);
-  const thead = h("thead", h("tr", columns.map((c) => h(`th${c.num ? ".num" : ""}`, c.label))));
+  const heading = (c) => {
+    if (!c.sort || !onSort) return h(`th${c.num ? ".num" : ""}`, c.label);
+    const active = sort && sort.key === c.sort;
+    const th = h(`th.sortable${c.num ? ".num" : ""}${active ? ".sorted" : ""}`, { "aria-sort": active ? (sort.dir === "asc" ? "ascending" : "descending") : "none", tabIndex: 0 },
+      h("span", c.label), h("span.sort-arrow", active ? (sort.dir === "asc" ? "▲" : "▼") : "↕"));
+    th.addEventListener("click", () => onSort(c.sort));
+    th.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSort(c.sort); } });
+    return th;
+  };
+  const thead = h("thead", h("tr", columns.map(heading)));
   const tbody = h("tbody");
   for (const row of rows) {
     const tr = h(`tr${onRow ? ".clickable" : ""}`, columns.map((c) => h(`td${c.num ? ".num" : ""}${c.cls ? "." + c.cls : ""}`, c.cell(row))));

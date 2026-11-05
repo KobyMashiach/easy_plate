@@ -1982,6 +1982,12 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get multiShoppingDays => 'عدة أيام تسوّق';
 	@override String get assistant => 'شيفي (المساعد)';
 	@override String get notifications => 'الإشعارات';
+	@override String get pushReplyMyPost => 'رد على منشوري';
+	@override String get pushReplyThread => 'رد في نقاش';
+	@override String get pushShareInvite => 'دعوة مشاركة';
+	@override String get pushSharedUpdate => 'تحديث وصفة مشتركة';
+	@override String get pushAdminReply => 'رد من الدعم';
+	@override String get pushAnnouncements => 'إعلانات';
 	@override String get premium => 'بريميوم';
 	@override String get contentTranslation => 'ترجمة المحتوى';
 	@override String get theming => 'المظهر';
@@ -4142,6 +4148,12 @@ extension on TranslationsAr {
 			'featureName.multiShoppingDays' => 'عدة أيام تسوّق',
 			'featureName.assistant' => 'شيفي (المساعد)',
 			'featureName.notifications' => 'الإشعارات',
+			'featureName.pushReplyMyPost' => 'رد على منشوري',
+			'featureName.pushReplyThread' => 'رد في نقاش',
+			'featureName.pushShareInvite' => 'دعوة مشاركة',
+			'featureName.pushSharedUpdate' => 'تحديث وصفة مشتركة',
+			'featureName.pushAdminReply' => 'رد من الدعم',
+			'featureName.pushAnnouncements' => 'إعلانات',
 			'featureName.premium' => 'بريميوم',
 			'featureName.contentTranslation' => 'ترجمة المحتوى',
 			'featureName.theming' => 'المظهر',

@@ -90,3 +90,35 @@ test("a template read that hangs gives up at its timeout: the fallbacks apply an
   assert.equal(rf.intFrom(later, "q", 0), 3);
   rf.resetForTest();
 });
+
+test("per-kind push flag: both the master and the kind's flag must let the account through", () => {
+  const { pushAllowedForKind } = require("./remoteFlags");
+  const v = (x) => ({ defaultValue: { value: String(x) } });
+  const params = (master, kind) => ({ ff_notifications: v(master), ...(kind === undefined ? {} : { ff_push_reply_thread: v(kind) }) });
+  const kindFlag = "ff_push_reply_thread";
+  // Master on for everyone, the kind Premium only.
+  assert.equal(pushAllowedForKind({ parameters: params(2, 3), kindFlag, premium: false }), false);
+  assert.equal(pushAllowedForKind({ parameters: params(2, 3), kindFlag, premium: true }), true);
+  // The kind switched off for everyone.
+  assert.equal(pushAllowedForKind({ parameters: params(2, 0), kindFlag, premium: true }), false);
+  // Maintenance closes it like off.
+  assert.equal(pushAllowedForKind({ parameters: params(2, 4), kindFlag, premium: true }), false);
+  // Master Premium only beats a kind open to everyone.
+  assert.equal(pushAllowedForKind({ parameters: params(3, 2), kindFlag, premium: false }), false);
+  // A kind flag the console lacks reads as open; the master still decides.
+  assert.equal(pushAllowedForKind({ parameters: params(2), kindFlag, premium: false }), true);
+  assert.equal(pushAllowedForKind({ parameters: params(0), kindFlag, premium: true }), false);
+  // A kind with no flag of its own: master only.
+  assert.equal(pushAllowedForKind({ parameters: params(2, 0), kindFlag: null, premium: false }), true);
+});
+
+test("every notification kind maps to its own console flag", () => {
+  const prefs = require("./notificationPrefs");
+  assert.equal(prefs.kindFlagFor({ type: "forumReply", onMyPost: true }), "ff_push_reply_my_post");
+  assert.equal(prefs.kindFlagFor({ type: "forumReply" }), "ff_push_reply_thread");
+  assert.equal(prefs.kindFlagFor({ type: "shareInvite" }), "ff_push_share_invite");
+  assert.equal(prefs.kindFlagFor({ type: "sharedRecipeUpdated" }), "ff_push_shared_update");
+  assert.equal(prefs.kindFlagFor({ type: "adminReply" }), "ff_push_admin_reply");
+  assert.equal(prefs.kindFlagFor({ type: "adminMessage" }), "ff_push_announcements");
+  assert.equal(prefs.kindFlagFor({ type: "somethingNew" }), null);
+});

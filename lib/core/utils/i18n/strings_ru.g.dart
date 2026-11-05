@@ -1966,6 +1966,12 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get multiShoppingDays => 'Несколько дней покупок';
 	@override String get assistant => 'Шефи (помощник)';
 	@override String get notifications => 'Уведомления';
+	@override String get pushReplyMyPost => 'Ответ на мой пост';
+	@override String get pushReplyThread => 'Ответ в обсуждении';
+	@override String get pushShareInvite => 'Приглашение к обмену';
+	@override String get pushSharedUpdate => 'Изменение общего рецепта';
+	@override String get pushAdminReply => 'Ответ поддержки';
+	@override String get pushAnnouncements => 'Объявления';
 	@override String get premium => 'Премиум';
 	@override String get contentTranslation => 'Перевод контента';
 	@override String get theming => 'Оформление';
@@ -4126,6 +4132,12 @@ extension on TranslationsRu {
 			'featureName.multiShoppingDays' => 'Несколько дней покупок',
 			'featureName.assistant' => 'Шефи (помощник)',
 			'featureName.notifications' => 'Уведомления',
+			'featureName.pushReplyMyPost' => 'Ответ на мой пост',
+			'featureName.pushReplyThread' => 'Ответ в обсуждении',
+			'featureName.pushShareInvite' => 'Приглашение к обмену',
+			'featureName.pushSharedUpdate' => 'Изменение общего рецепта',
+			'featureName.pushAdminReply' => 'Ответ поддержки',
+			'featureName.pushAnnouncements' => 'Объявления',
 			'featureName.premium' => 'Премиум',
 			'featureName.contentTranslation' => 'Перевод контента',
 			'featureName.theming' => 'Оформление',

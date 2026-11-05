@@ -121,14 +121,25 @@ function isPremium(userSnapOrData, nowMs = Date.now()) {
 // never falls back.
 const NOTIFICATIONS_FALLBACK = 0;
 
-async function pushAllowedFor(userSnap) {
-  const p = await params();
-  return pushAllowed({
-    flag: intFrom(p, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK),
-    premium: isPremium(userSnap),
-  });
+// A kind's own flag that the template lacks (an older console) reads as
+// open: the master flag above it already carries the gated fallback.
+const PUSH_KIND_FALLBACK = 2;
+
+// Pure rule for one push: the master flag and, when the kind has one, the
+// kind's own flag must both let this account through. Either can be 0
+// (nobody), 2 (everyone) or 3 (Premium only).
+function pushAllowedForKind({ parameters, kindFlag, premium }) {
+  const master = intFrom(parameters, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK);
+  if (!pushAllowed({ flag: master, premium })) return false;
+  if (!kindFlag) return true;
+  return pushAllowed({ flag: intFrom(parameters, kindFlag, PUSH_KIND_FALLBACK), premium });
+}
+
+// `kindFlag` is the per-kind flag name (notificationPrefs.kindFlagFor).
+async function pushAllowedFor(userSnap, kindFlag = null) {
+  return pushAllowedForKind({ parameters: await params(), kindFlag, premium: isPremium(userSnap) });
 }
 
 const NOTIFICATIONS_FLAG = "ff_notifications";
 
-module.exports = { READ_TIMEOUT_MS, resetForTest, isOpen, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK };
+module.exports = { READ_TIMEOUT_MS, resetForTest, isOpen, pushAllowed, boolFrom, intFrom, flatten, isPremium, pushAllowedFor, pushAllowedForKind, params, NOTIFICATIONS_FLAG, NOTIFICATIONS_FALLBACK, PUSH_KIND_FALLBACK };

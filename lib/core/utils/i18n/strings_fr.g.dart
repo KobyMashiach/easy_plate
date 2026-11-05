@@ -1962,6 +1962,12 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get multiShoppingDays => 'Plusieurs jours de courses';
 	@override String get assistant => 'Shefi (l’assistant)';
 	@override String get notifications => 'Notifications';
+	@override String get pushReplyMyPost => 'Réponse à ma publication';
+	@override String get pushReplyThread => 'Réponse dans une discussion';
+	@override String get pushShareInvite => 'Invitation de partage';
+	@override String get pushSharedUpdate => 'Mise à jour d’une recette partagée';
+	@override String get pushAdminReply => 'Réponse du support';
+	@override String get pushAnnouncements => 'Annonces';
 	@override String get premium => 'Premium';
 	@override String get contentTranslation => 'Traduction du contenu';
 	@override String get theming => 'Apparence';
@@ -4122,6 +4128,12 @@ extension on TranslationsFr {
 			'featureName.multiShoppingDays' => 'Plusieurs jours de courses',
 			'featureName.assistant' => 'Shefi (l’assistant)',
 			'featureName.notifications' => 'Notifications',
+			'featureName.pushReplyMyPost' => 'Réponse à ma publication',
+			'featureName.pushReplyThread' => 'Réponse dans une discussion',
+			'featureName.pushShareInvite' => 'Invitation de partage',
+			'featureName.pushSharedUpdate' => 'Mise à jour d’une recette partagée',
+			'featureName.pushAdminReply' => 'Réponse du support',
+			'featureName.pushAnnouncements' => 'Annonces',
 			'featureName.premium' => 'Premium',
 			'featureName.contentTranslation' => 'Traduction du contenu',
 			'featureName.theming' => 'Apparence',

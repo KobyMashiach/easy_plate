@@ -309,8 +309,12 @@ async function notifyAll({
 }) {
   // Plans are in entitlements/{uid}: read per page, and only when the push
   // gate or the audience needs them.
-  const flag = pushFlag ?? remoteFlags.intFrom(await remoteFlags.params(), remoteFlags.NOTIFICATIONS_FLAG, remoteFlags.NOTIFICATIONS_FALLBACK);
-  const needPlans = flag === 3 || audience === "premium" || audience === "free";
+  // The master flag and the announcements kind's own flag (console:
+  // התראות → הודעות יזומות). `pushFlag` (tests) stands in for both.
+  const parameters = pushFlag === null ? await remoteFlags.params() : {};
+  const flag = pushFlag ?? remoteFlags.intFrom(parameters, remoteFlags.NOTIFICATIONS_FLAG, remoteFlags.NOTIFICATIONS_FALLBACK);
+  const kindFlag = pushFlag ?? remoteFlags.intFrom(parameters, notificationPrefs.PUSH_KIND_FLAGS.notifyAnnouncements, remoteFlags.PUSH_KIND_FALLBACK);
+  const needPlans = flag === 3 || kindFlag === 3 || audience === "premium" || audience === "free";
   const uidSet = audience === "users" ? new Set(uids || []) : null;
   const count = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
   const totals = { items: count(resume && resume.items), sent: count(resume && resume.sent), failed: count(resume && resume.failed) };
@@ -350,7 +354,8 @@ async function notifyAll({
         const prefs = prefsByUid.get(doc.id) || notificationPrefs.DEFAULTS;
         // The plan gate applies to a broadcast as to any push: the inbox item
         // is written for everyone, the ring only for accounts the plan allows.
-        const planAllows = remoteFlags.pushAllowed({ flag, premium: premiumOf(doc.id) });
+        const planAllows = remoteFlags.pushAllowed({ flag, premium: premiumOf(doc.id) })
+          && remoteFlags.pushAllowed({ flag: kindFlag, premium: premiumOf(doc.id) });
         if (typeof token === "string" && token && planAllows && notificationPrefs.wantsPush(prefs, { type: "adminMessage" })) {
           tokens.push(token);
         }

@@ -18,6 +18,17 @@ const GROUPS = [
   ["other", () => true],
 ];
 
+// A flag that opens into the flags under it: the card shows the parent's
+// chips and, folded below, one card per child.
+// Everything that decides whether a phone rings sits under התראות: the
+// per-kind push flags, the invite push allowances and the shopping
+// reminder. The children are never listed on their own, also not in a
+// search: a hit on one opens its parent's fold.
+const SUBFLAGS = [
+  ["ff_notifications", "notifications", (n) => /^ff_push_/.test(n) || /^quota_invite_push_/.test(n) || n === "ff_shopping_reminder"],
+];
+const isSubflag = (name) => SUBFLAGS.some(([, , test]) => test(name));
+
 let labels = null;
 async function loadLabels() {
   if (labels) return labels;
@@ -60,7 +71,7 @@ export async function mount({ view, actions }) {
     try { apply(await call("config.set", { name, value: String(value) })); toast(t("config.saved"), "ok"); render(); return true; } catch (e) { toastError(e); return false; }
   };
 
-  const row = (p) => {
+  const row = (p, children = null) => {
     const isFlag = /^ff_/.test(p.name);
     let control;
     // Chips and switches show the new state on click; a failed save swaps in
@@ -83,19 +94,48 @@ export async function mount({ view, actions }) {
     return h("div.card", h("div.row.between", h("div", h("h3", heading(p)), h("div.small.muted.mono", p.name, p.group ? ` · ${p.group}` : "")), button("✕", { kind: "ghost small", title: t("config.delete"), onclick: async () => {
       if (!(await confirmDialog({ title: t("config.delete"), text: `${t("config.confirmDelete", { name: p.name })} ${t("config.deleteHint")}` }))) return;
       try { apply(await call("config.delete", { name: p.name })); toast(t("common.deleted"), "ok"); render(); } catch (e) { toastError(e); }
-    } })), p.description ? h("p.small.muted", p.description) : null, control);
+    } })), p.description ? h("p.small.muted", p.description) : null, control, children ? subflags(p, children) : null);
+  };
+
+  // The fold under a parent flag. Remembers being open across re-renders
+  // (every save re-renders), so a change inside it does not snap it shut.
+  const opened = new Set();
+  // Parents a search or state filter opened because a child matched.
+  let forced = new Set();
+  const subflags = (p, children) => {
+    const [, key] = SUBFLAGS.find(([parent]) => parent === p.name);
+    const counts = FLAG_STATES.map((v) => [v, children.filter((c) => c.value === v).length]).filter(([, n]) => n);
+    const tally = counts.map(([v, n]) => `${n} ${t(`config.flags.${v}`)}`).join(" · ");
+    const box = h("details.subflags", h("summary", h("span", t(`config.subflags.${key}`, { n: children.length })), h("span.small.muted", tally)), h("p.small.muted", t("config.subflags.hint")), h("div.cards", children.map((c) => row(c))));
+    box.open = opened.has(p.name) || forced.has(p.name);
+    box.addEventListener("toggle", () => { if (box.open) opened.add(p.name); else opened.delete(p.name); });
+    return box;
   };
 
   const render = () => {
     clear(body);
+    const filtering = Boolean(search) || (group === "features" && state !== "all");
+    const matches = (p) => (!search || [p.name, p.description, heading(p), p.value].some((v) => String(v || "").toLowerCase().includes(search)))
+      && (group !== "features" || state === "all" || search || p.value === state);
     const inGroup = search ? params : params.filter((p) => { const g = GROUPS.find(([, test]) => test(p.name)); return g && g[0] === group; });
-    let rows = inGroup;
-    if (search) rows = rows.filter((p) => [p.name, p.description, heading(p), p.value].some((v) => String(v || "").toLowerCase().includes(search)));
-    if (group === "features" && state !== "all" && !search) rows = rows.filter((p) => p.value === state);
+    forced = new Set();
+    const shown = [];
+    for (const p of inGroup) {
+      if (isSubflag(p.name)) continue;
+      const entry = SUBFLAGS.find(([parent]) => parent === p.name);
+      const kids = entry ? params.filter((c) => entry[2](c.name)) : [];
+      const hits = filtering ? kids.filter(matches) : kids;
+      if (!matches(p) && !hits.length) continue;
+      if (filtering && hits.length) forced.add(p.name);
+      // A filter that hit children shows just those; otherwise all of them.
+      shown.push([p, kids.length ? (filtering && hits.length ? hits : kids) : null]);
+    }
+    // The parents (התראות) lead their group.
+    shown.sort((a, b) => (b[1] ? 1 : 0) - (a[1] ? 1 : 0));
     if (group === "features" && !search) body.append(stateChips);
     if (group === "gemini") body.append(h("p.small.warn", t("config.deployNote")));
-    if (!rows.length) { body.append(empty(t("common.nothingFound"))); return; }
-    body.append(h("div.cards", rows.map(row)));
+    if (!shown.length) { body.append(empty(t("common.nothingFound"))); return; }
+    body.append(h("div.cards", shown.map(([p, kids]) => row(p, kids))));
   };
 
   const add = () => {
