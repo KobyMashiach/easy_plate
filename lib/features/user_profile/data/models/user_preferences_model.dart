@@ -50,6 +50,10 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     /// Shopping days beyond [shoppingDay], as `ShoppingDay` names; null
     /// (older records) reads as none.
     @HiveField(19) List<String>? extraShoppingDays,
+
+    /// The allergens this account avoids, as `Allergen` names; null (older
+    /// records) reads as none. Only meaningful with the `allergy` diet.
+    @HiveField(20) List<String>? allergens,
   }) = _UserPreferencesModel;
 
   factory UserPreferencesModel.fromJson(Map<String, dynamic> json) =>
@@ -105,6 +109,13 @@ sealed class UserPreferencesModel with _$UserPreferencesModel {
     } else {
       out.remove('extraShoppingDays');
     }
+    if (json['allergens'] is List) {
+      out['allergens'] = [
+        for (final a in Allergen.fromNames(json['allergens'])) a.name,
+      ];
+    } else {
+      out.remove('allergens');
+    }
     if (json['themeMode'] is! String) out.remove('themeMode');
     final seen = docInt(json['whatsNewSeenBuild']);
     if (seen == null) {
@@ -124,6 +135,7 @@ extension UserPreferencesModelMapper on UserPreferencesModel {
         ?docEnum(ShoppingDay.values, name),
     ],
     dietaryPreferences: dietaryPreferences,
+    allergens: Allergen.fromNames(allergens),
     language: language,
     soundEffectsEnabled: soundEffectsEnabled,
     fastPageTurnEnabled: fastPageTurnEnabled,
@@ -151,6 +163,7 @@ extension UserPreferencesEntityMapper on UserPreferencesEntity {
     shoppingDay: shoppingDay,
     extraShoppingDays: [for (final day in extraShoppingDays) day.name],
     dietaryPreferences: dietaryPreferences,
+    allergens: allergens.names,
     language: language,
     soundEffectsEnabled: soundEffectsEnabled,
     fastPageTurnEnabled: fastPageTurnEnabled,

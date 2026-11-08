@@ -1,8 +1,8 @@
 {
   "he": {
     "pages.pw.title": "איזי-פלייט פרימיום",
-    "pages.pw.headline": "בלי מודעות, בלי מכסות",
-    "pages.pw.subtitle": "כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.",
+    "pages.pw.headline": "בלי מודעות, יותר AI",
+    "pages.pw.subtitle": "כל מה שאיזי-פלייט יודעת לעשות, עם הרבה יותר AI בכל יום.",
     "pages.pw.benefitNoAds": "בלי מודעות בפידים של הקהילה",
     "pages.pw.benefitShared": "מתכונים משותפים ללא הגבלה יומית",
     "pages.pw.benefitAi": "חילוץ מתכונים עם AI מכל קישור, עד {count} ביום",
@@ -34,8 +34,8 @@
   },
   "en": {
     "pages.pw.title": "EasyPlate Premium",
-    "pages.pw.headline": "No ads, no limits",
-    "pages.pw.subtitle": "Everything EasyPlate can do, without waiting for tomorrow.",
+    "pages.pw.headline": "No ads, more AI",
+    "pages.pw.subtitle": "Everything EasyPlate can do, with a lot more AI every day.",
     "pages.pw.benefitNoAds": "No ads in the community feeds",
     "pages.pw.benefitShared": "Shared recipes with no daily limit",
     "pages.pw.benefitAi": "AI recipe extraction from any link, up to {count} a day",
@@ -67,8 +67,8 @@
   },
   "ar": {
     "pages.pw.title": "إيزي-بلايت بريميوم",
-    "pages.pw.headline": "بلا إعلانات، بلا حدود",
-    "pages.pw.subtitle": "كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.",
+    "pages.pw.headline": "بلا إعلانات، ذكاء اصطناعي أكثر",
+    "pages.pw.subtitle": "كل ما يقدّمه إيزي-بلايت، مع ذكاء اصطناعي أكثر بكثير كل يوم.",
     "pages.pw.benefitNoAds": "بلا إعلانات في خلاصات المجتمع",
     "pages.pw.benefitShared": "وصفات مشتركة بلا حدّ يومي",
     "pages.pw.benefitAi": "استخراج الوصفات بالذكاء الاصطناعي من أي رابط، حتى {count} في اليوم",
@@ -100,8 +100,8 @@
   },
   "fr": {
     "pages.pw.title": "EasyPlate Premium",
-    "pages.pw.headline": "Sans publicité, sans limites",
-    "pages.pw.subtitle": "Tout ce qu'EasyPlate sait faire, sans attendre demain.",
+    "pages.pw.headline": "Sans publicité, plus d’IA",
+    "pages.pw.subtitle": "Tout ce qu'EasyPlate sait faire, avec bien plus d’IA chaque jour.",
     "pages.pw.benefitNoAds": "Aucune publicité dans les fils de la communauté",
     "pages.pw.benefitShared": "Recettes partagées sans limite quotidienne",
     "pages.pw.benefitAi": "Extraction de recettes par IA depuis n’importe quel lien, jusqu’à {count} par jour",
@@ -133,8 +133,8 @@
   },
   "ru": {
     "pages.pw.title": "EasyPlate Premium",
-    "pages.pw.headline": "Без рекламы, без ограничений",
-    "pages.pw.subtitle": "Всё, что умеет EasyPlate, не дожидаясь завтра.",
+    "pages.pw.headline": "Без рекламы, больше ИИ",
+    "pages.pw.subtitle": "Всё, что умеет EasyPlate, и гораздо больше ИИ каждый день.",
     "pages.pw.benefitNoAds": "Без рекламы в лентах сообщества",
     "pages.pw.benefitShared": "Общие рецепты без дневного лимита",
     "pages.pw.benefitAi": "Извлечение рецептов с помощью ИИ из любой ссылки, до {count} в день",

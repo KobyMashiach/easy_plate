@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -27,7 +30,26 @@ Future<Map<String, String>> aiProxyAuthHeader() async {
     );
   }
 
-  return {'Authorization': 'Bearer $token'};
+  final appCheck = await appCheckToken();
+  return {
+    'Authorization': 'Bearer $token',
+    'X-Firebase-AppCheck': ?appCheck,
+  };
+}
+
+/// The App Check token for a paid call, or null when none could be had (not
+/// activated, the attestation provider failing, offline). Cached by the SDK
+/// like the ID token; bounded so a slow attestation never holds a call up.
+/// The server decides what a missing token costs (`app_check_mode`).
+Future<String?> appCheckToken() async {
+  try {
+    return await FirebaseAppCheck.instance.getToken().timeout(
+      const Duration(seconds: 4),
+    );
+  } catch (e) {
+    debugPrint('App Check token unavailable: $e');
+    return null;
+  }
 }
 
 /// [AuthSessionService.refreshClaims] for the app: a forced ID token

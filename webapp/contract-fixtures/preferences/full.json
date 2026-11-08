@@ -2,6 +2,7 @@
   "shoppingDay": "thursday",
   "extraShoppingDays": ["monday", "saturday"],
   "dietaryPreferences": ["kosher", "glutenFree", "allergy"],
+  "allergens": ["eggs", "sesame"],
   "soundEffectsEnabled": false,
   "onboardingComplete": true,
   "language": "english",

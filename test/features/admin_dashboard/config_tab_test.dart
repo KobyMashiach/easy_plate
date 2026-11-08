@@ -30,12 +30,50 @@ class _FakeEditor implements RemoteConfigEditor {
     return snapshot;
   }
 
+  final platforms = <String?>[];
+
   @override
-  Future<List<RemoteParam>> set(String name, String value) async {
+  Future<List<RemoteParam>> set(
+    String name,
+    String value, {
+    String? platform,
+  }) async {
     sets.add((name, value));
+    platforms.add(platform);
     if (gate != null) await gate!.future;
     params = [
-      for (final p in params) p.name == name ? p.withValue(value) : p,
+      for (final p in params)
+        if (p.name != name)
+          p
+        else
+          switch (platform) {
+            'android' => RemoteParam(
+              name: p.name,
+              group: p.group,
+              description: p.description,
+              valueType: p.valueType,
+              value: p.value,
+              androidValue: value,
+              iosValue: p.iosValue,
+            ),
+            'ios' => RemoteParam(
+              name: p.name,
+              group: p.group,
+              description: p.description,
+              valueType: p.valueType,
+              value: p.value,
+              androidValue: p.androidValue,
+              iosValue: value,
+            ),
+            'both' => RemoteParam(
+              name: p.name,
+              group: p.group,
+              description: p.description,
+              valueType: p.valueType,
+              value: value,
+            ),
+            _ => p.withValue(value),
+          },
     ];
     return params;
   }
@@ -270,6 +308,40 @@ void main() {
     expect(find.text(t.adminConfig.loadFailed), findsOneWidget);
     expect(calls, 1);
   });
+
+  testWidgets('minimumVersion is set for both stores or for one of them', (
+    tester,
+  ) async {
+    final editor = _FakeEditor([_p('minimumVersion', 'STRING', '1.0.5')]);
+    tester.view.physicalSize = const Size(1200, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_app(ConfigTab(source: editor)));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'minimumVersion');
+    await tester.pumpAndSettle();
+
+    // Three fields, and both stores follow the shared value.
+    expect(find.text(t.adminConfig.platformBoth), findsOneWidget);
+    expect(find.text('Android'), findsOneWidget);
+    expect(find.text('iOS'), findsOneWidget);
+    expect(find.text(t.adminConfig.platformFollows), findsNWidgets(2));
+    expect(find.widgetWithText(TextField, '1.0.5'), findsNWidgets(3));
+
+    // iOS alone: only that store changes, and Android still follows. The
+    // test host is not iOS, so no force-update question comes first.
+    final ios = find.byKey(const ValueKey('minimumVersion-ios'));
+    await tester.enterText(
+      find.descendant(of: ios, matching: find.byType(TextField)),
+      '9.9.9',
+    );
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(editor.sets.last, ('minimumVersion', '9.9.9'));
+    expect(editor.platforms.last, 'ios');
+    expect(find.text(t.adminConfig.platformFollows), findsOneWidget);
+    expect(find.widgetWithText(TextField, '9.9.9'), findsOneWidget);
+  });
 }
 
 class _FailingEditor implements RemoteConfigEditor {
@@ -283,6 +355,9 @@ class _FailingEditor implements RemoteConfigEditor {
   }
 
   @override
-  Future<List<RemoteParam>> set(String name, String value) =>
-      throw UnimplementedError();
+  Future<List<RemoteParam>> set(
+    String name,
+    String value, {
+    String? platform,
+  }) => throw UnimplementedError();
 }

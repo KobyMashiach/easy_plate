@@ -79,6 +79,64 @@ test("a paid endpoint needs a verified phone in the token", () => {
   assert.equal(paidCallerRefusal({ uid: "u1", phone_number: "+972500000000" }), null);
 });
 
+test("with ff_phone_optional a Google or Apple identity stands in for the phone; email never does", () => {
+  const { paidCallerRefusal, hasSocialIdentity } = require("./aiProxy").internals;
+  const google = { uid: "u1", firebase: { identities: { "google.com": ["1"], email: ["a@b.c"] } } };
+  const apple = { uid: "u1", firebase: { identities: { "apple.com": ["1"] } } };
+  const email = { uid: "u1", firebase: { identities: { email: ["a@b.c"] } } };
+  assert.equal(hasSocialIdentity(google), true);
+  assert.equal(hasSocialIdentity(apple), true);
+  assert.equal(hasSocialIdentity(email), false);
+  assert.equal(hasSocialIdentity({ uid: "u1" }), false);
+  assert.equal(paidCallerRefusal(google).code, "phone_required", "off by default");
+  assert.equal(paidCallerRefusal(google, { phoneOptional: true }), null);
+  assert.equal(paidCallerRefusal(apple, { phoneOptional: true }), null);
+  assert.equal(paidCallerRefusal(email, { phoneOptional: true }).code, "phone_required");
+  assert.equal(paidCallerRefusal({ ...google, disabled: true }, { phoneOptional: true }).code, "account_disabled");
+});
+
+test("a phone-less caller needs a device to share its allowance, and App Check at mode 2", () => {
+  const { phonelessRefusal } = require("./aiProxy").internals;
+  assert.equal(phonelessRefusal({ mode: 1, verdict: "missing", device: "abcdef0123" }), null, "mode 1 only logs");
+  assert.equal(phonelessRefusal({ mode: 0, verdict: null, device: "abcdef0123" }), null);
+  assert.equal(phonelessRefusal({ mode: 2, verdict: "valid", device: "abcdef0123" }), null);
+  assert.equal(phonelessRefusal({ mode: 2, verdict: "invalid", device: "abcdef0123" }).code, "app_check_failed");
+  assert.equal(phonelessRefusal({ mode: 2, verdict: "missing", device: "abcdef0123" }).code, "app_check_failed");
+  assert.equal(phonelessRefusal({ mode: 1, verdict: "valid", device: null }).code, "phone_required", "the website has no device");
+});
+
+test("verifyPaidCaller keys a phone-less account's allowance by its device", async () => {
+  const { verifyPaidCaller, quotaKeyOf } = require("./aiProxy").internals;
+  const req = { get: (h) => ({ authorization: "Bearer t", "x-firebase-appcheck": "ac" })[h.toLowerCase()] || "" };
+  const auth = (claims) => ({ verifyIdToken: async () => ({ ...claims }) });
+  const params = (flag, mode) => async () => ({ ff_phone_optional: { defaultValue: { value: String(flag) } }, app_check_mode: { defaultValue: { value: String(mode) } } });
+  const db = (hw) => ({ doc: () => ({ get: async () => ({ exists: hw !== undefined, get: () => hw }) }) });
+  const appCheck = (ok) => ({ verifyToken: async () => { if (!ok) throw new Error("bad"); return {}; } });
+  const google = { uid: "g1", firebase: { identities: { "google.com": ["1"] } } };
+
+  const phone = await verifyPaidCaller(req, { auth: auth({ uid: "p1", phone_number: "+972500000000" }), readParams: params(2, 2), db: db(undefined), appCheck: appCheck(false) });
+  assert.equal(quotaKeyOf(phone.caller), "p1", "a phone account is never refused for App Check");
+
+  const shared = await verifyPaidCaller(req, { auth: auth(google), readParams: params(2, 2), db: db("hw12345678"), appCheck: appCheck(true) });
+  assert.equal(quotaKeyOf(shared.caller), "device:hw12345678");
+
+  const attested = await verifyPaidCaller(req, { auth: auth(google), readParams: params(2, 2), db: db("hw12345678"), appCheck: appCheck(false) });
+  assert.equal(attested.refusal.code, "app_check_failed");
+
+  const noDevice = await verifyPaidCaller(req, { auth: auth(google), readParams: params(2, 1), db: db(undefined), appCheck: appCheck(true) });
+  assert.equal(noDevice.refusal.code, "phone_required");
+
+  const flagOff = await verifyPaidCaller(req, { auth: auth(google), readParams: params(0, 1), db: db("hw12345678"), appCheck: appCheck(true) });
+  assert.equal(flagOff.refusal.code, "phone_required");
+});
+
+test("a device key has its own quota document", () => {
+  const { quotaRef } = require("./aiProxy").internals;
+  const db = { doc: (path) => path };
+  assert.equal(quotaRef("u1", db), "ai_usage/u1");
+  assert.equal(quotaRef("device:abc", db), "ai_usage_devices/abc");
+});
+
 test("agent and background runs are refused; the app's bodies pass", () => {
   const { bodyRefusal } = require("./aiProxy").internals;
   assert.equal(bodyRefusal({ model: "m", input: "hi", tools: [] }), null);

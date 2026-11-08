@@ -437,15 +437,49 @@ async function checkToken(req, { checkRevoked = false, auth = admin.auth() } = {
   }
 }
 
-/// Why a verified caller may not spend money, or null. Every account has to
-/// prove a phone before the app (the gate) or the website (RequireAuth →
-/// /phone) lets it reach a paid feature; a throwaway email/password account
-/// minted straight against the Auth REST API has none, and without this it
-/// was a fresh daily allowance per account. The phone is in the ID token
-/// once linked (both clients refresh the token on link).
-function paidCallerRefusal(caller) {
+// Identities a person had to create with Google or Apple, which ask for a
+// phone of their own and are not free to mint in bulk the way a bare
+// email/password account is (the REST API makes one per request).
+const SOCIAL_PROVIDERS = ["google.com", "apple.com"];
+
+// `ff_phone_optional` (featureFlags group): 2 lets a Google/Apple identity
+// stand in for the phone; anything else asks every account for one. The
+// fallback is open because the app's in-code default is too, and the last
+// good template read stays in force through an outage anyway.
+const PHONE_OPTIONAL_FLAG = "ff_phone_optional";
+const PHONE_OPTIONAL_FALLBACK = 2;
+
+// `app_check_mode`: 0 off, 1 verify and log only, 2 refuse a phone-less
+// caller without a valid App Check token. Phone callers are only logged at
+// any mode: the website (browser calls) has no attestation to send.
+const APP_CHECK_MODE_PARAM = "app_check_mode";
+const APP_CHECK_MODE_FALLBACK = 1;
+
+// The quota key of a phone-less account: the device its session runs on,
+// shared by every phone-less account on that device.
+const DEVICE_QUOTA_PREFIX = "device:";
+
+function hasPhoneClaim(caller) {
+  return Boolean(caller) && typeof caller.phone_number === "string" && caller.phone_number !== "";
+}
+
+function hasSocialIdentity(caller) {
+  const ids = caller && caller.firebase && caller.firebase.identities;
+  if (!ids || typeof ids !== "object") return false;
+  return SOCIAL_PROVIDERS.some((p) => Object.prototype.hasOwnProperty.call(ids, p));
+}
+
+/// Why a verified caller may not spend money, or null. An account proves a
+/// phone before the app (the gate) or the website (RequireAuth → /phone)
+/// lets it reach a paid feature — or, with [phoneOptional]
+/// (`ff_phone_optional`), carries a Google or Apple identity instead. A
+/// throwaway email/password account minted straight against the Auth REST
+/// API has neither, and without this it was a fresh daily allowance per
+/// account. The phone is in the ID token once linked (both clients refresh
+/// the token on link); the identities are always there.
+function paidCallerRefusal(caller, { phoneOptional = false } = {}) {
   if (!caller) return { status: 401, code: "unauthenticated", message: "A valid Firebase ID token is required" };
-  if (typeof caller.phone_number !== "string" || !caller.phone_number) {
+  if (!hasPhoneClaim(caller) && !(phoneOptional && hasSocialIdentity(caller))) {
     return { status: 403, code: "phone_required", message: "Verify a phone number first" };
   }
   // Switched off from the console (adminUsers.disable writes the claim).
@@ -455,14 +489,93 @@ function paidCallerRefusal(caller) {
   return null;
 }
 
+/// The App Check verdict of a request: "valid", "invalid" or "missing".
+async function appCheckVerdict(req, appCheck) {
+  const token = (req.get && req.get("x-firebase-appcheck")) || "";
+  if (!token) return "missing";
+  try {
+    await appCheck.verifyToken(token);
+    return "valid";
+  } catch (_err) {
+    return "invalid";
+  }
+}
+
+/// The device a phone-less account's session runs on (the hashed hardware
+/// id the app sends with its session claim), or null with no session record
+/// or one from before the app sent it.
+async function sessionDeviceOf(uid, db) {
+  const snap = await db.doc(`sessions/${uid}`).get();
+  const hw = snap.exists ? snap.get("hardwareId") : null;
+  return typeof hw === "string" && /^[A-Za-z0-9_-]{8,128}$/.test(hw) ? hw : null;
+}
+
+/// Pure: what a phone-less account's request is refused for, or null.
+/// [verdict] is the App Check verdict (null when not checked), [device] the
+/// session's device.
+function phonelessRefusal({ mode, verdict, device }) {
+  if (mode >= 2 && verdict !== "valid") {
+    return { status: 403, code: "app_check_failed", message: "Update the app, or verify a phone number" };
+  }
+  // No device to share an allowance with (the website, or no session record):
+  // the phone is the only proof left.
+  if (!device) return { status: 403, code: "phone_required", message: "Verify a phone number first" };
+  return null;
+}
+
 /// The caller of a paid endpoint (AI, speech, search, translation): a valid
-/// token *and* a verified phone. Answers `{ caller }` or `{ refusal }`
-/// (status, code, message) for the endpoint to send in its own envelope.
-async function verifyPaidCaller(req, opts) {
+/// token and a verified phone, or (ff_phone_optional) a Google/Apple
+/// identity on a device the app attested. Answers `{ caller }` or
+/// `{ refusal }` (status, code, message) for the endpoint to send in its own
+/// envelope. The caller carries `quotaKey`: its uid, or for a phone-less
+/// account its device — so ten Google accounts on one phone share one
+/// day's allowance ([quotaKeyOf]).
+async function verifyPaidCaller(req, opts = {}) {
   const { caller, unavailable } = await checkToken(req, opts);
   if (unavailable) return { caller: null, refusal: { status: 503, code: "auth_unavailable", message: "Try again shortly" } };
-  const refusal = paidCallerRefusal(caller);
-  return refusal ? { caller: null, refusal } : { caller, refusal: null };
+  if (!caller) return { caller: null, refusal: paidCallerRefusal(null) };
+  const parameters = await (opts.readParams || (() => remoteFlags.params()))();
+  const phoneOptional = remoteFlags.intFrom(parameters, PHONE_OPTIONAL_FLAG, PHONE_OPTIONAL_FALLBACK) === 2;
+  const refusal = paidCallerRefusal(caller, { phoneOptional });
+  if (refusal) return { caller: null, refusal };
+  const mode = remoteFlags.intFrom(parameters, APP_CHECK_MODE_PARAM, APP_CHECK_MODE_FALLBACK);
+  const verdict = mode >= 1 ? await appCheckVerdict(req, opts.appCheck || admin.appCheck()) : null;
+  if (hasPhoneClaim(caller)) {
+    if (verdict) logger.info("app check", { uid: caller.uid, verdict, phone: true });
+    caller.quotaKey = caller.uid;
+    return { caller, refusal: null };
+  }
+  let device;
+  try {
+    device = await sessionDeviceOf(caller.uid, opts.db || admin.firestore());
+  } catch (err) {
+    logger.error("session device lookup failed", { uid: caller.uid, reason: err.message });
+    return { caller: null, refusal: { status: 503, code: "unavailable", message: "Try again shortly" } };
+  }
+  if (verdict) logger.info("app check", { uid: caller.uid, verdict, phone: false });
+  const phoneless = phonelessRefusal({ mode, verdict, device });
+  if (phoneless) {
+    logger.warn("phone-less caller refused", { uid: caller.uid, code: phoneless.code, verdict });
+    return { caller: null, refusal: phoneless };
+  }
+  caller.quotaKey = DEVICE_QUOTA_PREFIX + device;
+  return { caller, refusal: null };
+}
+
+/// What a caller's daily allowances are counted against: [verifyPaidCaller]'s
+/// `quotaKey`, else the uid.
+function quotaKeyOf(caller) {
+  return (caller && caller.quotaKey) || (caller && caller.uid);
+}
+
+/// The quota document of a key: ai_usage/{uid} (which also holds the
+/// account's all-time token totals), or ai_usage_devices/{device} for a
+/// device-shared allowance.
+function quotaRef(key, db = admin.firestore()) {
+  const k = String(key);
+  return k.startsWith(DEVICE_QUOTA_PREFIX)
+    ? db.doc(`ai_usage_devices/${k.slice(DEVICE_QUOTA_PREFIX.length)}`)
+    : db.doc(`ai_usage/${k}`);
 }
 
 // Interactions features the app never uses and that bill far beyond one
@@ -563,8 +676,8 @@ function decideQuota(stored, day, limit) {
 
 /// Counts the call before forwarding it. Counting afterwards would let a burst
 /// of parallel requests all pass the check before any of them recorded a use.
-async function claimQuotaSlot(uid, limit) {
-  const ref = admin.firestore().doc(`ai_usage/${uid}`);
+async function claimQuotaSlot(key, limit) {
+  const ref = quotaRef(key);
   return admin.firestore().runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const day = utcDay();
@@ -629,9 +742,9 @@ async function callUpstream(body, apiKey, { fetchImpl = fetch, timeoutMs }) {
 /// Gives a slot back when Google itself failed. The user should not pay a day's
 /// quota for our upstream being down. Best effort: if this write loses a race
 /// the worst case is one over-counted call.
-async function refundQuotaSlot(uid) {
+async function refundQuotaSlot(key) {
   try {
-    const ref = admin.firestore().doc(`ai_usage/${uid}`);
+    const ref = quotaRef(key);
     await admin.firestore().runTransaction(async (tx) => {
       const snap = await tx.get(ref);
       if (!snap.exists) return;
@@ -640,7 +753,7 @@ async function refundQuotaSlot(uid) {
       tx.update(ref, { count: data.count - 1 });
     });
   } catch (err) {
-    logger.warn("quota refund failed", { uid, reason: err.message });
+    logger.warn("quota refund failed", { key, reason: err.message });
   }
 }
 
@@ -705,6 +818,8 @@ exports.aiProxy = onRequest(
     const forwardBody = ceiling.body === req.body ? body : JSON.stringify(ceiling.body);
 
     const uid = caller.uid;
+    // The daily allowances: the account's, or its device's (phone-less).
+    const quotaKey = quotaKeyOf(caller);
 
     // Continuing a conversation: only the account that started it.
     try {
@@ -724,7 +839,7 @@ exports.aiProxy = onRequest(
     if (cacheEntry) {
       const cached = await readCache(cacheEntry);
       if (cached) {
-        const overHits = await cacheHitRefusal(uid);
+        const overHits = await cacheHitRefusal(quotaKey);
         if (overHits) return res.status(429).json(overHits);
         countHit(cacheEntry);
         void aiUsage.recordCall({
@@ -750,7 +865,7 @@ exports.aiProxy = onRequest(
 
     let slot;
     try {
-      slot = await claimQuotaSlot(uid, limit);
+      slot = await claimQuotaSlot(quotaKey, limit);
     } catch (err) {
       logger.error("quota check failed", { uid, reason: err.message });
       return res.status(503).json({ error: { message: "Try again shortly" } });
@@ -775,7 +890,7 @@ exports.aiProxy = onRequest(
       const text = upstream.text;
 
       if (upstreamRefundable(upstream.status)) {
-        await refundQuotaSlot(uid);
+        await refundQuotaSlot(quotaKey);
       }
 
       const contentType = upstream.contentType;
@@ -816,7 +931,7 @@ exports.aiProxy = onRequest(
       // A network failure is given back. A timeout is not: the request
       // reached Google, which most likely billed it, and a slow request is
       // easy to build (the rule translateContent and socialRecipe follow).
-      if (!err.timedOut) await refundQuotaSlot(uid);
+      if (!err.timedOut) await refundQuotaSlot(quotaKey);
       logger.error("upstream call failed", { uid, reason: err.message, timedOut: Boolean(err.timedOut) });
       if (err.timedOut) return res.status(504).json({ error: { code: "upstream_timeout", message: "The model took too long, try again" } });
       return res.status(502).json({ error: { code: "upstream", message: "Upstream request failed" } });
@@ -842,6 +957,14 @@ exports.internals = {
   checkToken,
   verifyPaidCaller,
   paidCallerRefusal,
+  phonelessRefusal,
+  hasSocialIdentity,
+  quotaKeyOf,
+  quotaRef,
+  sessionDeviceOf,
+  appCheckVerdict,
+  PHONE_OPTIONAL_FLAG,
+  APP_CHECK_MODE_PARAM,
   bodyRefusal,
   interactionAllowed,
   interactionIdOf,

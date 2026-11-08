@@ -96,6 +96,16 @@ exports.dailyStoreStats = onSchedule(
 // "[object Object]".
 const clip = (value, max) => (typeof value === "string" ? value : "").slice(0, max);
 
+// The push title: what the console typed for an admin message (shown in
+// bold by the phone), "EasyPlate" for everything else.
+const titleFor = (data) => {
+  if (data.type === "adminMessage") {
+    const title = clip(data.title, 80).trim();
+    if (title && clip(data.message, 1000).trim()) return title;
+  }
+  return "EasyPlate";
+};
+
 const bodyFor = (data, fromName) => {
   fromName = clip(fromName, 80) || "מישהו";
   if (data.type === "shareInvite") {
@@ -108,9 +118,10 @@ const bodyFor = (data, fromName) => {
     return `${fromName} עדכן/ה את "${clip(data.recipeTitle, 120)}" — יש גרסה חדשה למתכון ששמרת`;
   }
   if (data.type === "adminMessage") {
-    const title = String(data.title || "").trim();
-    const message = String(data.message || "").trim();
-    return title && message ? `${title}: ${message.slice(0, 180)}` : message || title || "הודעה מ-EasyPlate";
+    // The console's title is the push title (titleFor); the body is the
+    // message alone. A message with no text falls back to the title.
+    const message = clip(data.message, 1000).trim();
+    return message ? message.slice(0, 180) : clip(data.title, 120).trim() || "הודעה מ-EasyPlate";
   }
   if (data.type === "adminReply") {
     const message = String(data.message || "").trim();
@@ -240,7 +251,7 @@ exports.pushOnNotification = onDocumentCreated(
     try {
       await admin.messaging().send({
       token,
-      notification: { title: "EasyPlate", body: bodyFor(data, fromName) },
+      notification: { title: titleFor(data), body: bodyFor(data, fromName) },
       data: {
         type: String(data.type || "").slice(0, 40),
         inviteId: String(data.inviteId || "").slice(0, 300),
@@ -657,6 +668,10 @@ exports.onUserCreated = require("./permissions").onUserCreated;
 // Notification templates on a schedule (adminNotifications.js).
 exports.runNotificationTemplates = require("./adminNotifications").runNotificationTemplates;
 
+// The app's Instagram account: scheduled posts, daily stats, the weekly
+// token refresh (adminInstagram.js).
+exports.runInstagram = require("./adminInstagram").runInstagram;
+
 exports.sessions = require("./sessions").sessions;
 exports.expireSessions = require("./sessions").expireSessions;
 
@@ -677,5 +692,5 @@ exports.weeklyStorageSweep = onSchedule(
 );
 
 // The pure parts of the triggers above, for the unit test.
-exports.internals = { tellSaversOfEdit, tellThreadOfReply, COPY_SCAN_LIMIT, reconcileReplyCount, reconcileLikeCount, replyCountRose, senderHasPhone, replierMayTell, bodyFor, invitePushAllowed, replyFanoutAllowed, recipeUpdateFanoutAllowed, REPLY_SCAN_LIMIT, changedFields, recipeChanged, copyRootOf, saversFor, writeInboxItems, PREFS_BATCH, WRITE_BATCH };
+exports.internals = { tellSaversOfEdit, tellThreadOfReply, COPY_SCAN_LIMIT, reconcileReplyCount, reconcileLikeCount, replyCountRose, senderHasPhone, replierMayTell, bodyFor, titleFor, invitePushAllowed, replyFanoutAllowed, recipeUpdateFanoutAllowed, REPLY_SCAN_LIMIT, changedFields, recipeChanged, copyRootOf, saversFor, writeInboxItems, PREFS_BATCH, WRITE_BATCH };
 exports.internals.admitFeedback = admitFeedback;

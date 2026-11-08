@@ -2,6 +2,7 @@
   "shoppingDay": "saturday",
   "extraShoppingDays": [],
   "dietaryPreferences": ["vegan"],
+  "allergens": [],
   "soundEffectsEnabled": true,
   "onboardingComplete": true,
   "language": "russian",

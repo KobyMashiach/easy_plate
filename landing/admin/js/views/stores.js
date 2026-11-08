@@ -5,11 +5,16 @@
 import { t, fmtNumber, fmtAgo, fmtDate, currentLang } from "../i18n.js";
 import { h, clear, spinner, button, busy, chips, hbars, table, toast, toastError, modal, field, input, textarea, select, kv, badge, copyText } from "../ui.js";
 import { call } from "../api.js";
+import { db, collection, getDocs, query, limit } from "../firebase.js";
+import { isPersona } from "../data.js";
 
 const RANGES = [["7", "stores.range.d7"], ["30", "stores.range.d30"], ["90", "stores.range.d90"], ["365", "stores.range.y1"], ["all", "stores.range.all"]];
 // Validated on the console's dark surface (dataviz six checks): both pass
 // lightness, chroma, CVD separation and contrast.
 const COLORS = { android: "#22b06a", ios: "#8c6bff" };
+// The device pie also has accounts on the web and accounts with no device
+// recorded yet: two recessive greys, so the two stores stay the story.
+const SLICE_COLORS = { ...COLORS, web: "#8a8fa8", unknown: "#4a4e63" };
 const DAY_MS = 86400000;
 
 // The menu names the store consoles show, per interface language, as the
@@ -237,6 +242,77 @@ function chart(points) {
   return h("div", legend, wrap);
 }
 
+// A donut of [{ key, label, value }]: the total in the hole, a legend with
+// count and share under it. Zero slices stay in the legend, off the ring.
+function donut(slices, ariaLabel) {
+  const total = slices.reduce((n, s) => n + s.value, 0);
+  const size = 160, r = 62, stroke = 22, c = 2 * Math.PI * r;
+  const ns = (tag, attrs) => {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    return el;
+  };
+  const svg = ns("svg", { viewBox: `0 0 ${size} ${size}`, width: size, height: size, role: "img", "aria-label": ariaLabel });
+  svg.append(ns("circle", { cx: size / 2, cy: size / 2, r, fill: "none", stroke: "rgba(255,255,255,0.06)", "stroke-width": stroke }));
+  let offset = 0;
+  const drawn = slices.filter((s) => s.value > 0);
+  for (const s of drawn) {
+    const len = (s.value / total) * c;
+    // A hairline gap between slices (only when there is more than one).
+    const gap = drawn.length > 1 ? Math.min(2, len / 3) : 0;
+    const arc = ns("circle", {
+      cx: size / 2, cy: size / 2, r, fill: "none", stroke: SLICE_COLORS[s.key] || "#8a8fa8", "stroke-width": stroke,
+      "stroke-dasharray": `${Math.max(0, len - gap)} ${c}`, "stroke-dashoffset": -offset,
+      transform: `rotate(-90 ${size / 2} ${size / 2})`,
+    });
+    const title = ns("title", {});
+    title.textContent = `${s.label}: ${fmtNumber(s.value)} (${pct(s.value, total)})`;
+    arc.append(title);
+    svg.append(arc);
+    offset += len;
+  }
+  const num = ns("text", { x: size / 2, y: size / 2 + 2, "text-anchor": "middle", "dominant-baseline": "middle", fill: "currentColor", "font-size": 28, "font-weight": 700 });
+  num.textContent = fmtNumber(total);
+  const sub = ns("text", { x: size / 2, y: size / 2 + 24, "text-anchor": "middle", fill: "currentColor", opacity: 0.6, "font-size": 11 });
+  sub.textContent = t("common.total");
+  svg.append(num, sub);
+  const legend = h("div.stack", { style: { gap: "4px", width: "100%" } }, slices.map((s) => h("div.row", { style: { justifyContent: "space-between", fontSize: "13px" } },
+    h("span.row", h("i.swatch", { style: { background: SLICE_COLORS[s.key] || "#8a8fa8" } }), s.label),
+    h("span", { style: { fontVariantNumeric: "tabular-nums" } }, `${fmtNumber(s.value)} · ${pct(s.value, total)}`))));
+  return h("div.stack", { style: { alignItems: "center", gap: "12px", flex: "1 1 180px", minWidth: "0" } }, svg, legend);
+}
+
+// Accounts by the device they use (the Device column on the Accounts page),
+// demo personas left out: one { platform, seen } per account, where `seen`
+// is the last heartbeat in ms (0 = never recorded).
+async function deviceAccounts() {
+  const snap = await getDocs(query(collection(db, "users"), limit(5000)));
+  const out = [];
+  for (const d of snap.docs) {
+    if (isPersona(d.id)) continue;
+    const raw = String(d.get("platform") || "").toLowerCase();
+    const platform = raw === "android" || raw === "ios" ? raw : raw ? "web" : "unknown";
+    const ls = d.get("lastSeenAt");
+    out.push({ platform, seen: ls && typeof ls.toMillis === "function" ? ls.toMillis() : 0 });
+  }
+  return out;
+}
+
+function countPlatforms(accounts) {
+  const counts = { android: 0, ios: 0, web: 0, unknown: 0 };
+  for (const a of accounts) counts[a.platform]++;
+  return counts;
+}
+
+// The activity windows of the second pair of pies. "older" = everything
+// before a month (and accounts never seen).
+const WINDOWS = [["1", "stores.win.d1"], ["3", "stores.win.d3"], ["7", "stores.win.w1"], ["30", "stores.win.m1"], ["older", "stores.win.older"]];
+
+function inWindow(ms, win, now) {
+  if (win === "older") return ms < now - 30 * DAY_MS;
+  return ms >= now - Number(win) * DAY_MS;
+}
+
 function tile(label, value, sub, color) {
   return h("div.tile", h("div.label", color ? h("span.row", h("i.swatch", { style: { background: color } }), label) : label), h("div.value", value), sub ? h("div.sub", sub) : null);
 }
@@ -351,7 +427,9 @@ export async function mount({ view, actions }) {
     clear(body);
     body.append(spinner());
     try {
-      data = await call("stores.stats");
+      const [stats, accounts] = await Promise.all([call("stores.stats"), deviceAccounts().catch((err) => { console.error(err); return null; })]);
+      data = stats;
+      data.accounts = accounts;
       draw();
     } catch (err) {
       clear(body);
@@ -404,7 +482,11 @@ export async function mount({ view, actions }) {
       { label: t("stores.androidShare"), num: true, cell: (r) => pct(r.android, r.android + r.ios) },
     ], rows, { emptyText: t("stores.noData") });
     body.append(h("div.grid2",
-      h("div.card", h("h2", t("stores.platformShare")), hbars(share, fmtNumber), h("p.small.muted", t("stores.shareNote"))),
+      h("div.card", h("h2", t("stores.platformShare")),
+        h("h3", { style: { margin: "0 0 6px", fontSize: "14px" } }, t("stores.byStores")), hbars(share, fmtNumber), h("p.small.muted", t("stores.shareNote")),
+        h("h3", { style: { margin: "16px 0 6px", fontSize: "14px" } }, t("stores.byUser")),
+        data.accounts ? hbars([[t("stores.android"), countPlatforms(data.accounts).android], [t("stores.ios"), countPlatforms(data.accounts).ios]], fmtNumber) : h("p.small.muted", t("stores.noData")),
+        h("p.small.muted", t("stores.shareDevicesNote"))),
       h("div.card", h("h2", t("stores.byWeek")), periodTable(weeks)),
     ));
     body.append(h("div.card", h("h2", t("stores.byMonth")), periodTable(months)));
@@ -437,4 +519,66 @@ export async function mount({ view, actions }) {
 
   load();
   return () => {};
+}
+
+// ---------------------------------------------------------------------------
+// Platform pies for the overview page: Android vs iOS by the stores'
+// reports and by the accounts' devices, all-time and for one activity
+// window. Loads its own data; a failure on one side leaves that pie empty.
+// ---------------------------------------------------------------------------
+export function platformPies() {
+  const root = h("div.grid2", spinner());
+  let activeWindow = "3";
+  try { activeWindow = localStorage.getItem("ep-admin-stores-window") || "3"; } catch (_) {}
+  const pieBlock = (title, slices, note) => h("div.stack", { style: { flex: "1 1 220px", minWidth: "0", gap: "8px" } },
+    h("h3", { style: { margin: "0", fontSize: "14px" } }, title),
+    slices ? donut(slices, title) : h("p.small.muted", t("stores.noData")),
+    h("p.small.muted", { style: { margin: "0" } }, note));
+  const pair = (left, right) => h("div.row", { style: { flexWrap: "wrap", gap: "24px", alignItems: "flex-start", marginTop: "12px" } }, left, right);
+  const storeSlices = (android, ios) => [
+    { key: "android", label: t("stores.android"), value: android },
+    { key: "ios", label: t("stores.ios"), value: ios },
+  ];
+  const deviceSlices = (accounts) => {
+    if (!accounts) return null;
+    const c = countPlatforms(accounts);
+    return [
+      { key: "android", label: t("stores.android"), value: c.android },
+      { key: "ios", label: t("stores.ios"), value: c.ios },
+      { key: "web", label: t("stores.web"), value: c.web },
+      { key: "unknown", label: t("stores.unknownDevice"), value: c.unknown },
+    ].filter((x) => x.key === "android" || x.key === "ios" || x.value > 0);
+  };
+
+  Promise.all([
+    call("stores.stats").catch((err) => { console.error(err); return null; }),
+    deviceAccounts().catch((err) => { console.error(err); return null; }),
+  ]).then(([stats, accounts]) => {
+    clear(root);
+    const tot = stats && stats.totals ? stats.totals : null;
+    const days = stats && stats.days ? stats.days : {};
+    root.append(h("div.card", h("h2", t("stores.platformShare")), pair(
+      pieBlock(t("stores.shareStore"), tot ? storeSlices(tot.android.installs || 0, tot.ios.downloads || 0) : null, t("stores.shareNote")),
+      pieBlock(t("stores.shareDevices"), deviceSlices(accounts), t("stores.shareDevicesNote")))));
+
+    // The same two pies for one window: store downloads inside it (the
+    // stores report no logins), accounts last seen inside it.
+    const card = h("div.card");
+    const render = () => {
+      clear(card);
+      const now = Date.now();
+      const todayKey = dayKey(new Date(now));
+      const add = (list, field) => (list || []).filter((d) => d.date <= todayKey && inWindow(Date.parse(`${d.date}T12:00:00Z`), activeWindow, now)).reduce((n, d) => n + (d[field] || 0), 0);
+      card.append(
+        h("h2", t("stores.activeTitle")),
+        chips(WINDOWS.map(([k, l]) => [k, t(l)]), activeWindow, (v) => { activeWindow = v; try { localStorage.setItem("ep-admin-stores-window", v); } catch (_) {} render(); }),
+        pair(
+          pieBlock(t("stores.shareStore"), stats ? storeSlices(add(days.android, "installs"), add(days.ios, "downloads")) : null, t("stores.activeStoreNote")),
+          pieBlock(t("stores.shareDevices"), deviceSlices(accounts && accounts.filter((x) => inWindow(x.seen, activeWindow, now))), t("stores.activeDevicesNote"))),
+      );
+    };
+    render();
+    root.append(card);
+  });
+  return root;
 }

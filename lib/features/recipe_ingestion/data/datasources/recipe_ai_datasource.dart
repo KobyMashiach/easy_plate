@@ -37,6 +37,7 @@ abstract class RecipeAiDataSource {
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   });
 
   /// Only the dishes for such a list — a name to search by and a line on
@@ -45,6 +46,7 @@ abstract class RecipeAiDataSource {
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   });
   Future<RecipeEntity> parseFromUrl(
     String url,
@@ -1297,6 +1299,7 @@ $_dietaryTagRules
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   }) async {
     final data = await _callStructured(
       feature: 'search',
@@ -1304,6 +1307,7 @@ $_dietaryTagRules
         input: dishesPrompt(
           preferences,
           topic: topic,
+          allergens: allergens,
           knownTitles: knownTitles.take(30).toList(),
           language: currentContentLanguage(),
         ),
@@ -1327,6 +1331,12 @@ $_dietaryTagRules
     ];
   }
 
+  /// The allergy line of a suggestion request: what no suggestion may
+  /// contain, traces included.
+  @visibleForTesting
+  static String allergenRule(List<Allergen> allergens) =>
+      'למשתמש יש אלרגיה. אסור שמנה תכיל אף אחד מאלה, גם לא כמרכיב משני או בכמות קטנה: ${allergens.map((a) => a.name).join(', ')}.';
+
   /// The dish-ideas request: the same taste rules as [suggestionPrompt],
   /// without links — the names are what the pages are searched by.
   @visibleForTesting
@@ -1334,6 +1344,7 @@ $_dietaryTagRules
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
     required AppLanguage language,
   }) {
     final asked = topic.trim();
@@ -1350,6 +1361,10 @@ $_dietaryTagRules
       // brownie with butter, "בראוניז טבעוני" one without.
       if (preferences.isNotEmpty)
         'כשההעדפה משנה את המתכון (למשל טבעוני, ללא גלוטן, פרווה), כלול אותה בשם המנה, כדי שהחיפוש ימצא גרסה מתאימה.',
+      if (allergens.isNotEmpty) ...[
+        allergenRule(allergens),
+        'כשמנה כזו בדרך כלל מכילה אחד מהם, כלול "ללא ..." בשם המנה (למשל "עוגת שוקולד ללא ביצים"), כדי שהחיפוש ימצא גרסה בלעדיו.',
+      ],
       if (knownTitles.isNotEmpty)
         'אלה מתכונים שכבר שמורים אצלו — הם מראים מה הוא אוהב. הצע מנות ברוח דומה אבל חדשות, ואל תחזור על אף אחת מהן: ${knownTitles.join(' | ')}.',
       if (asked.isEmpty && preferences.isEmpty && knownTitles.isEmpty)
@@ -1365,6 +1380,7 @@ $_dietaryTagRules
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   }) async {
     final known = knownTitles.take(30).toList();
     final data = await _callStructured(
@@ -1373,6 +1389,7 @@ $_dietaryTagRules
         input: suggestionPrompt(
           preferences,
           topic: topic,
+          allergens: allergens,
           knownTitles: known,
           language: currentContentLanguage(),
         ),
@@ -1395,6 +1412,7 @@ $_dietaryTagRules
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
     required AppLanguage language,
   }) {
     final asked = topic.trim();
@@ -1405,6 +1423,7 @@ $_dietaryTagRules
         'המשתמש ביקש: "$asked". חפש באינטרנט $suggestionCount מתכונים שונים זה מזה שעונים בדיוק על הבקשה, מאתרי מתכונים אמיתיים.',
       if (preferences.isNotEmpty)
         'כל מתכון חייב להתאים להעדפות התזונתיות של המשתמש: ${preferences.map((p) => p.name).join(', ')}.',
+      if (allergens.isNotEmpty) allergenRule(allergens),
       if (knownTitles.isNotEmpty)
         'אלה מתכונים שכבר שמורים אצלו — הם מראים מה הוא אוהב. הצע מנות ברוח דומה אבל חדשות, ואל תחזור על אף אחת מהן: ${knownTitles.join(' | ')}.',
       if (asked.isEmpty && preferences.isEmpty && knownTitles.isEmpty)

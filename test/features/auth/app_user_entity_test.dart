@@ -94,6 +94,25 @@ void main() {
     });
   });
 
+  group('needsPhoneVerificationWith(phoneOptional: true)', () {
+    test('a Google account is through without a number', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['google.com']);
+      expect(user.hasSocialIdentity, isTrue);
+      expect(user.needsPhoneVerificationWith(phoneOptional: true), isFalse);
+    });
+
+    test('an Apple account is through without a number', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['apple.com']);
+      expect(user.needsPhoneVerificationWith(phoneOptional: true), isFalse);
+    });
+
+    test('a password account is still held', () {
+      const user = AppUserEntity(uid: 'u', providerIds: ['password']);
+      expect(user.hasSocialIdentity, isFalse);
+      expect(user.needsPhoneVerificationWith(phoneOptional: true), isTrue);
+    });
+  });
+
   group('hasApple', () {
     test('reads the apple.com provider', () {
       const user = AppUserEntity(uid: 'u', providerIds: ['phone', 'apple.com']);

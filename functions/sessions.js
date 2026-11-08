@@ -267,10 +267,19 @@ function toDoc(record) {
 }
 
 // Pure: whether an ID token proves a fresh SMS confirmation of the
-// account's own phone number.
+// account's own phone number — or, for an account with no phone (Google or
+// Apple sign-up, ff_phone_optional), a fresh sign-in through that identity.
+// An account that has a phone is always asked for the SMS.
+const SOCIAL_PROVIDERS = ["google.com", "apple.com"];
 function freshPhoneProof(caller, now) {
-  if (!caller || !caller.phone_number) return false;
-  if (!caller.firebase || caller.firebase.sign_in_provider !== "phone") return false;
+  if (!caller || !caller.firebase) return false;
+  const provider = caller.firebase.sign_in_provider;
+  if (caller.phone_number) {
+    if (provider !== "phone") return false;
+  } else {
+    const ids = caller.firebase.identities || {};
+    if (!SOCIAL_PROVIDERS.includes(provider) || !Object.prototype.hasOwnProperty.call(ids, provider)) return false;
+  }
   const authMs = Number(caller.auth_time || 0) * 1000;
   return authMs > 0 && now - authMs <= TAKEOVER_FRESH_MS && authMs <= now + 60 * 1000;
 }
@@ -337,7 +346,7 @@ async function takeover(caller, request) {
     bind: request.wantsSecret ? request.secret : null,
   });
   await admin.firestore().doc(`sessions/${caller.uid}`).set(toDoc(outcome.record));
-  logger.info("session taken over after SMS", { uid: caller.uid, platform: request.platform });
+  logger.info("session taken over after a fresh sign-in", { uid: caller.uid, platform: request.platform });
   return outcome;
 }
 

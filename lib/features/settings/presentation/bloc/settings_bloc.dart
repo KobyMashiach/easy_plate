@@ -65,6 +65,10 @@ sealed class SettingsEvent with _$SettingsEvent {
   const factory SettingsEvent.toggleDietaryPreference(
     DietaryPreference preference,
   ) = _ToggleDietaryPreference;
+
+  /// One allergen in or out of the list the `allergy` diet avoids.
+  const factory SettingsEvent.toggleAllergen(Allergen allergen) =
+      _ToggleAllergen;
   const factory SettingsEvent.toggleSoundEffects(bool enabled) =
       _ToggleSoundEffects;
 
@@ -130,15 +134,42 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     add(const SettingsEvent.init());
   }
 
+  /// Events added and not yet handled to the end, and who waits for none.
+  int _inFlight = 0;
+  Completer<void>? _idle;
+
+  @override
+  void add(SettingsEvent event) {
+    _inFlight++;
+    super.add(event);
+  }
+
+  /// Resolves once every change asked for so far has been stored (or
+  /// refused). The onboarding waits on it before marking itself done, so a
+  /// choice still being saved cannot write over that mark.
+  Future<void> get idle =>
+      _inFlight == 0 ? Future.value() : (_idle ??= Completer<void>()).future;
+
+  void _settle() {
+    if (--_inFlight > 0) return;
+    _inFlight = 0;
+    _idle?.complete();
+    _idle = null;
+  }
+
   /// Handles each event only after the previous one finished.
   static EventTransformer<E> _sequential<E>() =>
       (events, mapper) => events.asyncExpand(mapper);
 
   Future<void> _handle(SettingsEvent event, Emitter<SettingsState> emit) =>
+      _dispatch(event, emit).whenComplete(_settle);
+
+  Future<void> _dispatch(SettingsEvent event, Emitter<SettingsState> emit) =>
       switch (event) {
         _Init() => _init(event, emit),
         _UpdateShoppingDays() => _updateShoppingDays(event, emit),
         _ToggleDietaryPreference() => _toggleDietaryPreference(event, emit),
+        _ToggleAllergen() => _toggleAllergen(event, emit),
         _ToggleSoundEffects() => _toggleSoundEffects(event, emit),
         _ChangeLanguage() => _changeLanguage(event, emit),
         _ToggleFastPageTurn() => _toggleFastPageTurn(event, emit),
@@ -286,6 +317,24 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         dietaryPreferences: p.dietaryPreferences.contains(event.preference)
             ? (p.dietaryPreferences.toList()..remove(event.preference))
             : [...p.dietaryPreferences, event.preference],
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _toggleAllergen(
+    _ToggleAllergen event,
+    Emitter<SettingsState> emit,
+  ) async {
+    final current = state;
+    if (current is! SettingsLoaded) return;
+    // On the record as re-read, for the same reason as the diet above.
+    await _commit(
+      current,
+      (p) => p.copyWith(
+        allergens: p.allergens.contains(event.allergen)
+            ? (p.allergens.toList()..remove(event.allergen))
+            : Allergen.fromNames([...p.allergens.names, event.allergen.name]),
       ),
       emit,
     );

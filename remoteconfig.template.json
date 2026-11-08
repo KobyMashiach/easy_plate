@@ -372,6 +372,13 @@
       },
       "description": "מחירון רכישה באתר. payplus (ישראל, ILS) ו-revenuecat (חו\"ל דרך RevenueCat+Paddle: purchaseLink של pay.rev.cat, projectId, ולכל חבילה productId=pri_ ו-packageId). חבילה: id (duo/family בשם = הטייר), interval, amount במטבע קטן. בלי deploy.",
       "valueType": "JSON"
+    },
+    "app_check_mode": {
+      "defaultValue": {
+        "value": "1"
+      },
+      "description": "App Check בפונקציות בתשלום: 0 = כבוי, 1 = בודק ורושם ללוג בלבד, 2 = חוסם חשבון בלי טלפון שאין לו אסימון App Check תקין (לפני כן לרשום את האפליקציות ב-App Check בקונסול). חשבון עם טלפון לא נחסם.",
+      "valueType": "NUMBER"
     }
   },
   "parameterGroups": {
@@ -747,6 +754,13 @@
             "value": "2"
           },
           "description": "מכשיר אחד לחשבון: 2 = מכשיר שני נחסם עד שהראשון מתנתק (מסך \"החשבון מחובר במכשיר אחר\"). 0 = כמה מכשירים במקביל (הרישום נשמר, בלי חסימה). 1 ו-3 מתנהגים כמו 0.",
+          "valueType": "NUMBER"
+        },
+        "ff_phone_optional": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הרשמה בלי טלפון: 2 = חשבון Google/Apple נכנס בלי SMS (מכסת ה-AI שלו משותפת לכל החשבונות בלי טלפון באותו מכשיר). כל ערך אחר = טלפון חובה לכולם. מייל/סיסמה תמיד דורש טלפון. לא להסתיר את ff_single_session כשזה פתוח.",
           "valueType": "NUMBER"
         },
         "ff_home_widgets": {

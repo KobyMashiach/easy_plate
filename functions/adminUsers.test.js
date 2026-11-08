@@ -321,3 +321,17 @@ test("every console endpoint verifies the caller with revocation checked, before
     proxyInternals.verifyCaller = real;
   }
 });
+
+test("onPlatform: all keeps every account, android/ios keep their own", () => {
+  const { onPlatform, PLATFORMS } = require("./adminUsers").internals;
+  assert.deepEqual(PLATFORMS, ["all", "android", "ios"]);
+  assert.equal(onPlatform({ platform: "all", accountPlatform: "" }), true);
+  assert.equal(onPlatform({ platform: "all", accountPlatform: "ios" }), true);
+  assert.equal(onPlatform({ accountPlatform: "web" }), true);
+  assert.equal(onPlatform({ platform: "android", accountPlatform: "android" }), true);
+  assert.equal(onPlatform({ platform: "android", accountPlatform: "Android" }), true);
+  assert.equal(onPlatform({ platform: "android", accountPlatform: "ios" }), false);
+  assert.equal(onPlatform({ platform: "android", accountPlatform: "" }), false);
+  assert.equal(onPlatform({ platform: "ios", accountPlatform: "ios" }), true);
+  assert.equal(onPlatform({ platform: "ios", accountPlatform: "web" }), false);
+});

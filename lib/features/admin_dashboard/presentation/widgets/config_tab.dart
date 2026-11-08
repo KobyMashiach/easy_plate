@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -148,7 +150,8 @@ class _ConfigTabState extends State<ConfigTab> {
     saving: _store.saving == p.name,
     // The tab's own context, not the row's: the row is rebuilt (its spinner)
     // while it saves, and a message for a gone context was silently dropped.
-    onChanged: (v) => _publish(this.context, _store, p, v),
+    onChanged: (v, platform) =>
+        _publish(this.context, _store, p, v, platform: platform),
   );
 }
 
@@ -157,15 +160,22 @@ Future<void> _publish(
   BuildContext context,
   _ConfigStore store,
   RemoteParam param,
-  String value,
-) async {
+  String value, {
+  String? platform,
+}) async {
   final host = context;
   // Nothing to publish: the same value again (a field submitted untouched),
   // or another row still saving — both used to come back as "save failed".
-  if (value == param.value || store.saving != null) return;
+  if (store.saving != null) return;
+  if (platform == null && value == param.value) return;
   // A minimum above this build locks every older device, this one included,
-  // behind an update screen with no way past it: ask first.
-  if (param.name == FirebaseService.minimumVersionKey) {
+  // behind an update screen with no way past it: ask first. Only when the
+  // change reaches this device's store.
+  final reachesThisDevice =
+      platform == null ||
+      platform == 'both' ||
+      platform == (Platform.isIOS ? 'ios' : 'android');
+  if (param.name == FirebaseService.minimumVersionKey && reachesThisDevice) {
     final current = (await PackageInfo.fromPlatform()).version;
     if (_versionBelow(current, value)) {
       if (!host.mounted) return;
@@ -179,7 +189,7 @@ Future<void> _publish(
       if (go != true) return;
     }
   }
-  final ok = await store.set(param, value);
+  final ok = await store.set(param, value, platform: platform);
   if (!host.mounted) return;
   if (ok) {
     AppDialog.success(
@@ -333,7 +343,8 @@ class _ConfigSectionPageState extends State<_ConfigSectionPage> {
                   param: p,
                   label: _ConfigStore.label(p.name),
                   saving: store.saving == p.name,
-                  onChanged: (v) => _publish(context, store, p, v),
+                  onChanged: (v, platform) =>
+                      _publish(context, store, p, v, platform: platform),
                 );
               },
             );
@@ -448,13 +459,14 @@ class _ConfigStore extends ChangeNotifier {
   }
 
   /// Publishes one value; true when the console took it.
-  Future<bool> set(RemoteParam param, String value) async {
-    if (value == param.value || saving != null) return false;
+  Future<bool> set(RemoteParam param, String value, {String? platform}) async {
+    if (saving != null) return false;
+    if (platform == null && value == param.value) return false;
     saving = param.name;
     _generation++;
     notifyListeners();
     try {
-      params = await editor.set(param.name, value);
+      params = await editor.set(param.name, value, platform: platform);
       // The device itself: the live stream brings the change in a moment,
       // the fetch brings it now.
       FirebaseService().refreshRemoteConfig();
@@ -500,7 +512,10 @@ class _ParamRow extends StatelessWidget {
   final RemoteParam param;
   final String label;
   final bool saving;
-  final ValueChanged<String> onChanged;
+
+  /// The new value, and the store it is for (null: the default; see
+  /// [RemoteConfigEditor.set]).
+  final void Function(String value, String? platform) onChanged;
 
   const _ParamRow({
     required this.param,
@@ -512,18 +527,26 @@ class _ParamRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget control;
-    if (param.isFeatureFlag) {
+    if (_platformSplit.contains(param.name)) {
+      control = _PlatformFields(
+        param: param,
+        enabled: !saving,
+        onSubmit: onChanged,
+      );
+    } else if (param.isFeatureFlag) {
       control = _FlagChips(
         value: param.value,
         enabled: !saving,
-        onChanged: onChanged,
+        onChanged: (v) => onChanged(v, null),
       );
     } else if (param.isBoolean) {
       control = Align(
         alignment: AlignmentDirectional.centerStart,
         child: Switch.adaptive(
           value: param.value == 'true',
-          onChanged: saving ? null : (v) => onChanged(v ? 'true' : 'false'),
+          onChanged: saving
+              ? null
+              : (v) => onChanged(v ? 'true' : 'false', null),
         ),
       );
     } else {
@@ -531,7 +554,7 @@ class _ParamRow extends StatelessWidget {
         value: param.value,
         numeric: param.isNumber,
         enabled: !saving,
-        onSubmit: onChanged,
+        onSubmit: (v) => onChanged(v, null),
       );
     }
     return ClayCard(
@@ -571,6 +594,77 @@ class _ParamRow extends StatelessWidget {
           control,
         ],
       ),
+    );
+  }
+}
+
+/// Parameters set for both stores at once or for one of them.
+const _platformSplit = {FirebaseService.minimumVersionKey};
+
+/// Three fields: both stores, Android, iOS. A store field shows what that
+/// store reads now, marked when it only follows "both".
+class _PlatformFields extends StatelessWidget {
+  final RemoteParam param;
+  final bool enabled;
+  final void Function(String value, String? platform) onSubmit;
+
+  const _PlatformFields({
+    required this.param,
+    required this.enabled,
+    required this.onSubmit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Widget line(String platform, String label, bool follows) => Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 96,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: AppTextStyles.labelMd),
+                if (follows)
+                  Text(
+                    t.adminConfig.platformFollows,
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.outline,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: _ValueField(
+              // A store that follows "both" still gets its own value when
+              // the same text is submitted there: _ValueField only submits
+              // a change, so the key keeps the field per store.
+              key: ValueKey('${param.name}-$platform'),
+              value: param.valueFor(platform),
+              numeric: false,
+              enabled: enabled,
+              onSubmit: (v) => onSubmit(v, platform),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        line('both', t.adminConfig.platformBoth, false),
+        line('android', 'Android', param.androidValue == null),
+        line('ios', 'iOS', param.iosValue == null),
+        Text(
+          t.adminConfig.platformHint,
+          style: AppTextStyles.labelSm.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -720,6 +814,7 @@ class _ValueField extends StatefulWidget {
   final ValueChanged<String> onSubmit;
 
   const _ValueField({
+    super.key,
     required this.value,
     required this.numeric,
     required this.enabled,

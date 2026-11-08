@@ -55,13 +55,14 @@ extension SettingsEventPatterns on SettingsEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _UpdateShoppingDays value)?  updateShoppingDays,TResult Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult Function( _ToggleSoundEffects value)?  toggleSoundEffects,TResult Function( _ChangeLanguage value)?  changeLanguage,TResult Function( _ToggleFastPageTurn value)?  toggleFastPageTurn,TResult Function( _ToggleCommunityPrices value)?  toggleCommunityPrices,TResult Function( _SetShoppingReminders value)?  setShoppingReminders,TResult Function( _SetNotification value)?  setNotification,TResult Function( _SetThemeMode value)?  setThemeMode,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _UpdateShoppingDays value)?  updateShoppingDays,TResult Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult Function( _ToggleAllergen value)?  toggleAllergen,TResult Function( _ToggleSoundEffects value)?  toggleSoundEffects,TResult Function( _ChangeLanguage value)?  changeLanguage,TResult Function( _ToggleFastPageTurn value)?  toggleFastPageTurn,TResult Function( _ToggleCommunityPrices value)?  toggleCommunityPrices,TResult Function( _SetShoppingReminders value)?  setShoppingReminders,TResult Function( _SetNotification value)?  setNotification,TResult Function( _SetThemeMode value)?  setThemeMode,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _UpdateShoppingDays() when updateShoppingDays != null:
 return updateShoppingDays(_that);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
-return toggleDietaryPreference(_that);case _ToggleSoundEffects() when toggleSoundEffects != null:
+return toggleDietaryPreference(_that);case _ToggleAllergen() when toggleAllergen != null:
+return toggleAllergen(_that);case _ToggleSoundEffects() when toggleSoundEffects != null:
 return toggleSoundEffects(_that);case _ChangeLanguage() when changeLanguage != null:
 return changeLanguage(_that);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
 return toggleFastPageTurn(_that);case _ToggleCommunityPrices() when toggleCommunityPrices != null:
@@ -86,13 +87,14 @@ return setThemeMode(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _UpdateShoppingDays value)  updateShoppingDays,required TResult Function( _ToggleDietaryPreference value)  toggleDietaryPreference,required TResult Function( _ToggleSoundEffects value)  toggleSoundEffects,required TResult Function( _ChangeLanguage value)  changeLanguage,required TResult Function( _ToggleFastPageTurn value)  toggleFastPageTurn,required TResult Function( _ToggleCommunityPrices value)  toggleCommunityPrices,required TResult Function( _SetShoppingReminders value)  setShoppingReminders,required TResult Function( _SetNotification value)  setNotification,required TResult Function( _SetThemeMode value)  setThemeMode,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _UpdateShoppingDays value)  updateShoppingDays,required TResult Function( _ToggleDietaryPreference value)  toggleDietaryPreference,required TResult Function( _ToggleAllergen value)  toggleAllergen,required TResult Function( _ToggleSoundEffects value)  toggleSoundEffects,required TResult Function( _ChangeLanguage value)  changeLanguage,required TResult Function( _ToggleFastPageTurn value)  toggleFastPageTurn,required TResult Function( _ToggleCommunityPrices value)  toggleCommunityPrices,required TResult Function( _SetShoppingReminders value)  setShoppingReminders,required TResult Function( _SetNotification value)  setNotification,required TResult Function( _SetThemeMode value)  setThemeMode,}){
 final _that = this;
 switch (_that) {
 case _Init():
 return init(_that);case _UpdateShoppingDays():
 return updateShoppingDays(_that);case _ToggleDietaryPreference():
-return toggleDietaryPreference(_that);case _ToggleSoundEffects():
+return toggleDietaryPreference(_that);case _ToggleAllergen():
+return toggleAllergen(_that);case _ToggleSoundEffects():
 return toggleSoundEffects(_that);case _ChangeLanguage():
 return changeLanguage(_that);case _ToggleFastPageTurn():
 return toggleFastPageTurn(_that);case _ToggleCommunityPrices():
@@ -113,13 +115,14 @@ return setThemeMode(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _UpdateShoppingDays value)?  updateShoppingDays,TResult? Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult? Function( _ToggleSoundEffects value)?  toggleSoundEffects,TResult? Function( _ChangeLanguage value)?  changeLanguage,TResult? Function( _ToggleFastPageTurn value)?  toggleFastPageTurn,TResult? Function( _ToggleCommunityPrices value)?  toggleCommunityPrices,TResult? Function( _SetShoppingReminders value)?  setShoppingReminders,TResult? Function( _SetNotification value)?  setNotification,TResult? Function( _SetThemeMode value)?  setThemeMode,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _UpdateShoppingDays value)?  updateShoppingDays,TResult? Function( _ToggleDietaryPreference value)?  toggleDietaryPreference,TResult? Function( _ToggleAllergen value)?  toggleAllergen,TResult? Function( _ToggleSoundEffects value)?  toggleSoundEffects,TResult? Function( _ChangeLanguage value)?  changeLanguage,TResult? Function( _ToggleFastPageTurn value)?  toggleFastPageTurn,TResult? Function( _ToggleCommunityPrices value)?  toggleCommunityPrices,TResult? Function( _SetShoppingReminders value)?  setShoppingReminders,TResult? Function( _SetNotification value)?  setNotification,TResult? Function( _SetThemeMode value)?  setThemeMode,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init(_that);case _UpdateShoppingDays() when updateShoppingDays != null:
 return updateShoppingDays(_that);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
-return toggleDietaryPreference(_that);case _ToggleSoundEffects() when toggleSoundEffects != null:
+return toggleDietaryPreference(_that);case _ToggleAllergen() when toggleAllergen != null:
+return toggleAllergen(_that);case _ToggleSoundEffects() when toggleSoundEffects != null:
 return toggleSoundEffects(_that);case _ChangeLanguage() when changeLanguage != null:
 return changeLanguage(_that);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
 return toggleFastPageTurn(_that);case _ToggleCommunityPrices() when toggleCommunityPrices != null:
@@ -143,12 +146,13 @@ return setThemeMode(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( List<ShoppingDay> days)?  updateShoppingDays,TResult Function( DietaryPreference preference)?  toggleDietaryPreference,TResult Function( bool enabled)?  toggleSoundEffects,TResult Function( AppLanguage language,  Completer<bool>? saved)?  changeLanguage,TResult Function( bool enabled)?  toggleFastPageTurn,TResult Function( bool enabled)?  toggleCommunityPrices,TResult Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult Function( String mode)?  setThemeMode,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( List<ShoppingDay> days)?  updateShoppingDays,TResult Function( DietaryPreference preference)?  toggleDietaryPreference,TResult Function( Allergen allergen)?  toggleAllergen,TResult Function( bool enabled)?  toggleSoundEffects,TResult Function( AppLanguage language,  Completer<bool>? saved)?  changeLanguage,TResult Function( bool enabled)?  toggleFastPageTurn,TResult Function( bool enabled)?  toggleCommunityPrices,TResult Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult Function( String mode)?  setThemeMode,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _UpdateShoppingDays() when updateShoppingDays != null:
 return updateShoppingDays(_that.days);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
-return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects() when toggleSoundEffects != null:
+return toggleDietaryPreference(_that.preference);case _ToggleAllergen() when toggleAllergen != null:
+return toggleAllergen(_that.allergen);case _ToggleSoundEffects() when toggleSoundEffects != null:
 return toggleSoundEffects(_that.enabled);case _ChangeLanguage() when changeLanguage != null:
 return changeLanguage(_that.language,_that.saved);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
 return toggleFastPageTurn(_that.enabled);case _ToggleCommunityPrices() when toggleCommunityPrices != null:
@@ -173,12 +177,13 @@ return setThemeMode(_that.mode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( List<ShoppingDay> days)  updateShoppingDays,required TResult Function( DietaryPreference preference)  toggleDietaryPreference,required TResult Function( bool enabled)  toggleSoundEffects,required TResult Function( AppLanguage language,  Completer<bool>? saved)  changeLanguage,required TResult Function( bool enabled)  toggleFastPageTurn,required TResult Function( bool enabled)  toggleCommunityPrices,required TResult Function( List<ShoppingReminderSlot> slots)  setShoppingReminders,required TResult Function( NotificationSetting setting,  bool enabled)  setNotification,required TResult Function( String mode)  setThemeMode,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( List<ShoppingDay> days)  updateShoppingDays,required TResult Function( DietaryPreference preference)  toggleDietaryPreference,required TResult Function( Allergen allergen)  toggleAllergen,required TResult Function( bool enabled)  toggleSoundEffects,required TResult Function( AppLanguage language,  Completer<bool>? saved)  changeLanguage,required TResult Function( bool enabled)  toggleFastPageTurn,required TResult Function( bool enabled)  toggleCommunityPrices,required TResult Function( List<ShoppingReminderSlot> slots)  setShoppingReminders,required TResult Function( NotificationSetting setting,  bool enabled)  setNotification,required TResult Function( String mode)  setThemeMode,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _UpdateShoppingDays():
 return updateShoppingDays(_that.days);case _ToggleDietaryPreference():
-return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects():
+return toggleDietaryPreference(_that.preference);case _ToggleAllergen():
+return toggleAllergen(_that.allergen);case _ToggleSoundEffects():
 return toggleSoundEffects(_that.enabled);case _ChangeLanguage():
 return changeLanguage(_that.language,_that.saved);case _ToggleFastPageTurn():
 return toggleFastPageTurn(_that.enabled);case _ToggleCommunityPrices():
@@ -199,12 +204,13 @@ return setThemeMode(_that.mode);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( List<ShoppingDay> days)?  updateShoppingDays,TResult? Function( DietaryPreference preference)?  toggleDietaryPreference,TResult? Function( bool enabled)?  toggleSoundEffects,TResult? Function( AppLanguage language,  Completer<bool>? saved)?  changeLanguage,TResult? Function( bool enabled)?  toggleFastPageTurn,TResult? Function( bool enabled)?  toggleCommunityPrices,TResult? Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult? Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult? Function( String mode)?  setThemeMode,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( List<ShoppingDay> days)?  updateShoppingDays,TResult? Function( DietaryPreference preference)?  toggleDietaryPreference,TResult? Function( Allergen allergen)?  toggleAllergen,TResult? Function( bool enabled)?  toggleSoundEffects,TResult? Function( AppLanguage language,  Completer<bool>? saved)?  changeLanguage,TResult? Function( bool enabled)?  toggleFastPageTurn,TResult? Function( bool enabled)?  toggleCommunityPrices,TResult? Function( List<ShoppingReminderSlot> slots)?  setShoppingReminders,TResult? Function( NotificationSetting setting,  bool enabled)?  setNotification,TResult? Function( String mode)?  setThemeMode,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _UpdateShoppingDays() when updateShoppingDays != null:
 return updateShoppingDays(_that.days);case _ToggleDietaryPreference() when toggleDietaryPreference != null:
-return toggleDietaryPreference(_that.preference);case _ToggleSoundEffects() when toggleSoundEffects != null:
+return toggleDietaryPreference(_that.preference);case _ToggleAllergen() when toggleAllergen != null:
+return toggleAllergen(_that.allergen);case _ToggleSoundEffects() when toggleSoundEffects != null:
 return toggleSoundEffects(_that.enabled);case _ChangeLanguage() when changeLanguage != null:
 return changeLanguage(_that.language,_that.saved);case _ToggleFastPageTurn() when toggleFastPageTurn != null:
 return toggleFastPageTurn(_that.enabled);case _ToggleCommunityPrices() when toggleCommunityPrices != null:
@@ -383,6 +389,72 @@ class __$ToggleDietaryPreferenceCopyWithImpl<$Res>
   return _then(_ToggleDietaryPreference(
 null == preference ? _self.preference : preference // ignore: cast_nullable_to_non_nullable
 as DietaryPreference,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ToggleAllergen implements SettingsEvent {
+  const _ToggleAllergen(this.allergen);
+  
+
+ final  Allergen allergen;
+
+/// Create a copy of SettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ToggleAllergenCopyWith<_ToggleAllergen> get copyWith => __$ToggleAllergenCopyWithImpl<_ToggleAllergen>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ToggleAllergen&&(identical(other.allergen, allergen) || other.allergen == allergen));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,allergen);
+
+@override
+String toString() {
+  return 'SettingsEvent.toggleAllergen(allergen: $allergen)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ToggleAllergenCopyWith<$Res> implements $SettingsEventCopyWith<$Res> {
+  factory _$ToggleAllergenCopyWith(_ToggleAllergen value, $Res Function(_ToggleAllergen) _then) = __$ToggleAllergenCopyWithImpl;
+@useResult
+$Res call({
+ Allergen allergen
+});
+
+
+
+
+}
+/// @nodoc
+class __$ToggleAllergenCopyWithImpl<$Res>
+    implements _$ToggleAllergenCopyWith<$Res> {
+  __$ToggleAllergenCopyWithImpl(this._self, this._then);
+
+  final _ToggleAllergen _self;
+  final $Res Function(_ToggleAllergen) _then;
+
+/// Create a copy of SettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? allergen = null,}) {
+  return _then(_ToggleAllergen(
+null == allergen ? _self.allergen : allergen // ignore: cast_nullable_to_non_nullable
+as Allergen,
   ));
 }
 

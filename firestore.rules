@@ -38,22 +38,24 @@ service cloud.firestore {
                && get(/databases/$(database)/documents/account_status/$(request.auth.uid)).data.get('disabled', false) == true);
     }
 
-    // Whether the token carries a verified phone. Every real account links
-    // one at the app's gate (and the website's /phone step) before it sees
-    // anything else, and both refresh the token right after linking — but
-    // an email/password account minted straight against the Auth REST API
-    // has none, costs nothing, and used to like, post, reply, publish
-    // recipes and send invites like anyone else. So every write that
-    // reaches other people asks for it too. Not the account's own data
+    // Whether the token carries a verified phone — or a Google or Apple
+    // identity, which the app lets stand in for one (ff_phone_optional). An
+    // email/password account minted straight against the Auth REST API has
+    // neither, costs nothing, and used to like, post, reply, publish recipes
+    // and send invites like anyone else. So every write that reaches other
+    // people asks for one of them. Not the account's own data
     // (users/{uid}/…, a household), nor support: those stay open to
-    // whatever the gate lets through.
+    // whatever the gate lets through. The rules cannot read the console
+    // flag, so a Google/Apple identity counts here whatever it says; the
+    // gate and the paid endpoints are where the flag bites.
     function hasPhone() {
-      return signedIn() && request.auth.token.get('phone_number', null) is string;
+      return signedIn() && (request.auth.token.get('phone_number', null) is string
+        || request.auth.token.firebase.identities.keys().hasAny(['google.com', 'apple.com']));
     }
 
     // The author is asserted by the client, so it has to be checked against the
     // token or anyone could post under someone else's name. Only for the
-    // community's documents, hence the phone.
+    // community's documents, hence the phone (or Google/Apple identity).
     function authoredByCaller() {
       return hasPhone() && request.resource.data.authorUid == request.auth.uid;
     }
@@ -858,9 +860,10 @@ service cloud.firestore {
     // App Store Connect private key the storeStats function signs with is
     // read only by the server (the console sends a new one through
     // adminPanel and is shown "key present", never the key), so a script
-    // running in a signed-in admin page cannot lift it.
+    // running in a signed-in admin page cannot lift it. The same for
+    // `instagram_private`, the Instagram access token (adminInstagram.js).
     match /admin_config/{name} {
-      allow read, write: if isAdmin() && name != 'stores_private';
+      allow read, write: if isAdmin() && name != 'stores_private' && name != 'instagram_private';
     }
 
     // A share code is written by the owner and redeemed by the server (the
@@ -949,6 +952,14 @@ service cloud.firestore {
       allow write: if false;
     }
     match /notification_templates/{templateId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // The app's Instagram posts (drafts, scheduled, published). The console
+    // reads them live; every change goes through adminPanel, which is what
+    // keeps "only an approved post is published" true.
+    match /instagram_posts/{postId} {
       allow read: if isAdmin();
       allow write: if false;
     }

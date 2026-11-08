@@ -57,6 +57,12 @@ abstract class AuthRepository {
   /// number again (the "no access to the other device" takeover).
   Future<void> reauthenticatePhone(String verificationId, String smsCode);
 
+  /// Confirms the signed-in account again through its Google or Apple
+  /// identity (Apple preferred when both are linked and Apple is available),
+  /// for an account with no phone: the takeover and the account deletion
+  /// accept a fresh Google/Apple sign-in in place of the SMS.
+  Future<void> reauthenticateSocial();
+
   /// The mirror of [startPhoneLink] for an account created by phone.
   Future<void> linkEmailPassword(String email, String password);
 

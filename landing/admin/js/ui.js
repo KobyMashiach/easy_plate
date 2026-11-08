@@ -344,3 +344,303 @@ export function debounce(fn, ms = 200) {
 export function copyText(text) {
   navigator.clipboard?.writeText(text).then(() => toast(t("common.copied"), "ok")).catch(() => {});
 }
+
+// ---- emoji picker ----
+// A small button in the corner of a text field that opens a grid of
+// emoji, by group; a pick goes in at the caret (replacing a selection),
+// within the field's maxLength. The panel is fixed-positioned on the
+// page so a scrolling dialog does not clip it; Escape or a click outside
+// closes it (Escape does not close the dialog behind it).
+// One line per emoji: the emoji, then the words a search finds it by
+// (English and Hebrew). A group is [tab icon, lines].
+const EMOJI = [
+  ["😀", `😀 smile grin happy חיוך שמח
+😃 smile happy joy חיוך שמח
+😄 smile laugh happy חיוך צחוק שמח
+😁 grin beam teeth חיוך שיניים
+😆 laugh lol צחוק
+😅 sweat laugh relief צחוק הקלה זיעה
+😂 tears joy laugh lol צחוק דמעות
+🤣 rofl laugh lol צחוק מתגלגל
+😊 blush smile happy חיוך סמוק
+😇 angel innocent halo מלאך תמים
+🙂 smile slight חיוך
+😉 wink קריצה
+😍 love heart eyes אהבה מאוהב לב
+🥰 love hearts adore אהבה לבבות
+😘 kiss love נשיקה
+😋 yum tasty delicious טעים יאמי
+😛 tongue לשון
+😜 wink tongue crazy לשון קריצה
+🤪 crazy zany silly משוגע מטורף
+😎 cool sunglasses מגניב משקפיים
+🤩 star struck wow מדהים כוכבים
+🥳 party celebrate birthday מסיבה חגיגה יום הולדת
+😏 smirk חיוך ערמומי
+🤗 hug hugs חיבוק
+🤔 think thinking hmm חושב מתלבט
+🤭 oops giggle אופס
+😶 speechless silent שותק
+🙄 eye roll גלגול עיניים
+😴 sleep tired שינה עייף
+😮 wow surprised open mouth וואו מופתע
+😲 shocked astonished המום
+🥺 pleading please puppy בבקשה מתחנן
+😢 sad cry tear עצוב דמעה
+😭 crying sob בוכה
+😤 huff frustrated עצבני
+😡 angry mad כועס
+🤯 mind blown מפוצץ
+😱 scream scared fear צרחה מפחד
+🤤 drool hungry ריור רעב
+😷 sick mask חולה מסכה`],
+  ["👍", `👍 like thumbs up yes ok לייק אגודל כן
+👎 dislike thumbs down no דיסלייק לא
+👌 ok perfect אוקיי מושלם
+✌️ peace victory שלום ניצחון
+🤞 fingers crossed luck hope בהצלחה מחזיק אצבעות
+🤟 love you אוהב
+🤘 rock רוק
+🤙 call me shaka תתקשר
+👋 wave hello bye hi שלום היי ביי נפנוף
+👏 clap applause bravo כפיים מחיאות כל הכבוד
+🙌 hooray raise hands celebrate הידד יש
+🫶 heart hands love לב ידיים אהבה
+👐 open hands ידיים פתוחות
+🤲 palms up ידיים
+🙏 please thanks pray תודה בבקשה תפילה
+💪 strong muscle power חזק שריר כוח
+👆 up point למעלה
+👇 down point למטה
+👉 right point ימינה
+👈 left point שמאלה
+☝️ one point attention אחד שימו לב
+✋ stop hand עצור
+🤚 raised hand יד
+🖐️ hand five יד
+✍️ write writing כתיבה
+🫡 salute הצדעה`],
+  ["❤️", `❤️ red heart love לב אדום אהבה
+🧡 orange heart לב כתום
+💛 yellow heart לב צהוב
+💚 green heart לב ירוק
+💙 blue heart לב כחול
+💜 purple heart לב סגול
+🤍 white heart לב לבן
+🖤 black heart לב שחור
+🤎 brown heart לב חום
+💖 sparkling heart לב נוצץ
+💗 growing heart לב
+💓 beating heart לב פועם
+💞 hearts love לבבות
+💕 two hearts love לבבות
+💘 cupid heart arrow לב חץ
+💝 heart gift ribbon לב מתנה
+❣️ heart exclamation לב
+💔 broken heart לב שבור
+❤️‍🔥 heart fire לב בוער`],
+  ["🍕", `🍏 green apple תפוח ירוק
+🍎 apple red תפוח
+🍊 orange תפוז
+🍋 lemon לימון
+🍌 banana בננה
+🍉 watermelon אבטיח
+🍇 grapes ענבים
+🍓 strawberry תות
+🫐 blueberries אוכמניות
+🍒 cherries דובדבן
+🍑 peach אפרסק
+🥭 mango מנגו
+🍍 pineapple אננס
+🥥 coconut קוקוס
+🥝 kiwi קיווי
+🍅 tomato עגבניה
+🥑 avocado אבוקדו
+🥦 broccoli ברוקולי
+🥬 lettuce leafy greens חסה עלים
+🥒 cucumber מלפפון
+🌶️ hot pepper chili spicy פלפל חריף
+🫑 bell pepper פלפל
+🌽 corn תירס
+🥕 carrot גזר
+🧄 garlic שום
+🧅 onion בצל
+🥔 potato תפוח אדמה
+🍠 sweet potato בטטה
+🥐 croissant קרואסון
+🥖 baguette bread באגט לחם
+🍞 bread לחם
+🥨 pretzel בייגלה
+🧀 cheese גבינה
+🥚 egg ביצה
+🍳 cooking fried egg pan בישול ביצה מחבת
+🥞 pancakes פנקייק
+🧇 waffle וופל
+🥓 bacon בייקון
+🥩 meat steak בשר סטייק
+🍗 chicken leg עוף
+🍖 meat bone בשר
+🌭 hot dog נקניקיה
+🍔 burger hamburger המבורגר
+🍟 fries צ'יפס
+🍕 pizza פיצה
+🥪 sandwich כריך סנדוויץ'
+🌮 taco טאקו
+🌯 burrito wrap בוריטו טורטיה
+🥗 salad סלט
+🥘 pan stew paella תבשיל
+🍝 pasta spaghetti פסטה ספגטי
+🍜 noodles ramen soup נודלס ראמן מרק
+🍲 pot stew soup סיר מרק תבשיל
+🍛 curry rice קארי
+🍣 sushi סושי
+🍱 bento box בנטו
+🥟 dumpling כיסון
+🍤 shrimp שרימפס
+🍚 rice אורז
+🍰 cake slice עוגה
+🎂 birthday cake עוגת יום הולדת
+🧁 cupcake קאפקייק
+🥧 pie פאי
+🍫 chocolate שוקולד
+🍬 candy ממתק סוכריה
+🍩 donut סופגניה דונאט
+🍪 cookie עוגיה
+🍯 honey דבש
+☕ coffee קפה
+🍵 tea תה
+🥤 drink cup שתיה
+🍷 wine יין
+🥂 cheers toast לחיים
+🍽️ plate dinner meal צלחת ארוחה
+🥄 spoon כף
+🔪 knife סכין`],
+  ["🎉", `🎉 party tada celebrate מסיבה חגיגה
+🎊 confetti קונפטי
+🎈 balloon בלון
+🎁 gift present מתנה
+🎀 ribbon bow סרט
+🏆 trophy win גביע ניצחון
+🥇 first gold medal מקום ראשון מדליה
+⭐ star כוכב
+🌟 glowing star כוכב
+✨ sparkles new נצנצים
+💫 dizzy star כוכב
+🔥 fire hot lit אש חם
+💥 boom collision בום
+🎯 target goal מטרה
+🚀 rocket launch new רקטה השקה
+📣 megaphone announce כרוז הודעה
+📢 loudspeaker announcement רמקול הכרזה
+🔔 bell notification פעמון התראה
+🛒 cart shopping grocery עגלה קניות
+🛍️ shopping bags קניות
+📅 calendar date יומן תאריך
+⏰ alarm clock time שעון מעורר
+⏳ hourglass wait שעון חול המתנה
+📱 phone mobile app טלפון אפליקציה
+💡 idea tip רעיון טיפ
+📌 pin נעץ
+📝 note memo פתק
+📖 book recipe ספר מתכון`],
+  ["✅", `✅ check done yes וי בוצע
+☑️ checkbox תיבה
+✔️ check mark וי
+❌ cross no wrong איקס לא
+⚠️ warning attention אזהרה שימו לב
+❗ exclamation important חשוב
+❓ question שאלה
+💯 hundred perfect מאה מושלם
+🆕 new חדש
+🆓 free חינם
+🔝 top למעלה
+➡️ right arrow חץ ימינה
+⬅️ left arrow חץ שמאלה
+⬆️ up arrow חץ למעלה
+⬇️ down arrow חץ למטה
+🔄 refresh update רענון עדכון
+➕ plus add פלוס
+➖ minus מינוס
+💲 dollar price מחיר
+💰 money כסף
+🟢 green circle עיגול ירוק
+🟡 yellow circle עיגול צהוב
+🔴 red circle עיגול אדום
+🔵 blue circle עיגול כחול
+🟣 purple circle עיגול סגול`],
+].map(([icon, lines]) => [icon, lines.split("\n").map((line) => {
+  const [emoji, ...words] = line.trim().split(" ");
+  return { emoji, words: words.join(" ").toLowerCase() };
+})]);
+
+export function insertAtCaret(field, text) {
+  const max = field.maxLength > 0 ? field.maxLength : Infinity;
+  const start = field.selectionStart ?? field.value.length;
+  const end = field.selectionEnd ?? field.value.length;
+  if (field.value.length - (end - start) + text.length > max) return false;
+  field.value = field.value.slice(0, start) + text + field.value.slice(end);
+  const at = start + text.length;
+  field.focus();
+  field.setSelectionRange(at, at);
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+  return true;
+}
+
+export function withEmoji(field) {
+  let panel = null;
+  const trigger = h("button.emoji-btn", { type: "button", "aria-label": t("common.emoji"), title: t("common.emoji"), "aria-haspopup": "true", "aria-expanded": "false" }, "🙂");
+  const close = () => {
+    if (!panel) return;
+    panel.remove();
+    panel = null;
+    trigger.setAttribute("aria-expanded", "false");
+    document.removeEventListener("mousedown", outside, true);
+    document.removeEventListener("keydown", onKey, true);
+  };
+  const outside = (e) => { if (panel && !panel.contains(e.target) && e.target !== trigger) close(); };
+  const onKey = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); trigger.focus(); } };
+  const open = () => {
+    let group = 0;
+    panel = h("div.emoji-panel", { role: "dialog", "aria-label": t("common.emoji") });
+    const search = h("input.emoji-search", { type: "search", placeholder: t("common.emojiSearch"), "aria-label": t("common.emojiSearch") });
+    const tabs = h("div.emoji-tabs");
+    const grid = h("div.emoji-grid");
+    const cell = (e) => h("button.emoji-cell", { type: "button", title: e.words.split(" ").slice(0, 3).join(" "), onclick: () => { if (!insertAtCaret(field, e.emoji)) toast(t("common.tooLong"), "error"); } }, e.emoji);
+    // A search looks across every group (each word of the query must start
+    // a keyword); an empty one shows the picked group's tab.
+    const paint = () => {
+      clear(tabs); clear(grid);
+      const q = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      tabs.hidden = q.length > 0;
+      EMOJI.forEach(([icon], i) => tabs.append(h(`button.emoji-tab${i === group ? ".on" : ""}`, { type: "button", onclick: () => { group = i; paint(); } }, icon)));
+      const list = q.length
+        ? EMOJI.flatMap(([, items]) => items).filter((e) => q.every((w) => (" " + e.words).includes(" " + w)))
+        : EMOJI[group][1];
+      if (!list.length) grid.append(h("div.small.muted.emoji-none", t("common.nothingFound")));
+      for (const e of list) grid.append(cell(e));
+    };
+    search.addEventListener("input", paint);
+    // Enter puts in the first match.
+    search.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); grid.querySelector(".emoji-cell")?.click(); } });
+    paint();
+    panel.append(search, tabs, grid);
+    document.body.append(panel);
+    // Under the button, kept on screen (16px gutter).
+    const r = trigger.getBoundingClientRect();
+    const w = panel.offsetWidth, ph = panel.offsetHeight;
+    const left = Math.min(Math.max(16, r.right - w), window.innerWidth - w - 16);
+    const top = r.bottom + 6 + ph > window.innerHeight - 16 ? Math.max(16, r.top - 6 - ph) : r.bottom + 6;
+    Object.assign(panel.style, { left: `${left}px`, top: `${top}px` });
+    trigger.setAttribute("aria-expanded", "true");
+    search.focus();
+    document.addEventListener("mousedown", outside, true);
+    document.addEventListener("keydown", onKey, true);
+  };
+  // Keep the caret where it was: the button must not take focus on press.
+  trigger.addEventListener("mousedown", (e) => e.preventDefault());
+  trigger.addEventListener("click", () => (panel ? close() : open()));
+  const wrap = h(`div.emoji-wrap${field.tagName === "TEXTAREA" ? ".area" : ""}`, field, trigger);
+  // The panel is on <body>: remove it with the dialog.
+  new MutationObserver((_, obs) => { if (!document.contains(wrap)) { close(); obs.disconnect(); } }).observe(document.body, { childList: true, subtree: true });
+  return wrap;
+}

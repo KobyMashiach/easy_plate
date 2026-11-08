@@ -31,4 +31,25 @@ void main() {
       expect(topicOnly, isNot(contains('פופולריות')));
     },
   );
+
+  test('allergens are forbidden by name in both suggestion prompts', () {
+    final dishes = GeminiRecipeAiDataSource.dishesPrompt(
+      [DietaryPreference.allergy],
+      allergens: [Allergen.eggs, Allergen.treeNuts],
+      language: AppLanguage.hebrew,
+    );
+    expect(dishes, contains('eggs, treeNuts'));
+    expect(dishes, contains('ללא'));
+    final linked = GeminiRecipeAiDataSource.suggestionPrompt(
+      [DietaryPreference.allergy],
+      allergens: [Allergen.sesame],
+      language: AppLanguage.hebrew,
+    );
+    expect(linked, contains('sesame'));
+    final none = GeminiRecipeAiDataSource.dishesPrompt(
+      [DietaryPreference.vegan],
+      language: AppLanguage.hebrew,
+    );
+    expect(none, isNot(contains('אלרגיה')));
+  });
 }

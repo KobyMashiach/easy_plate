@@ -2,6 +2,7 @@
   "shoppingDay": "sunday",
   "extraShoppingDays": [],
   "dietaryPreferences": [],
+  "allergens": [],
   "soundEffectsEnabled": true,
   "onboardingComplete": false,
   "language": "hebrew",

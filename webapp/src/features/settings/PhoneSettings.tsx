@@ -15,7 +15,7 @@ import { AppDialog } from "../../components/AppDialog";
 import { Chip, ClayButton, ClayCard, LoadingSpinner, PageHeader, Switch } from "../../components/clay";
 import { Icon } from "../../components/icons";
 import { useToast } from "../../components/Toaster";
-import { DIETARY, type DietaryPreference } from "../../models/recipe";
+import { ALLERGENS, DIETARY, type DietaryPreference } from "../../models/recipe";
 import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, shoppingDaysOf, toggleShoppingDay, withShoppingDays, type NotificationFlag, type Preferences } from "../../models/preferences";
 import { usePreferences } from "./data";
 import { deleteAccountWithReverify, usePhoneReverify } from "./phoneReverify";
@@ -478,6 +478,30 @@ export function PhonePreferences() {
                 </Chip>
               ))}
             </div>
+            {/* Which allergens, once "allergy" is on (the app's preferences screen). */}
+            {p.dietaryPreferences.includes("allergy") ? (
+              <div className="mt-4">
+                <div className="mb-2 text-label-md text-on-surface-variant">{t("settings.allergensAvoid")}</div>
+                <div className="flex flex-wrap gap-2">
+                  {ALLERGENS.map((a) => (
+                    <Chip
+                      key={a}
+                      kind="filter"
+                      selected={p.allergens.includes(a)}
+                      disabled={busy.has(`allergen.${a}`)}
+                      onClick={() =>
+                        set(`allergen.${a}`, (x) => ({
+                          ...x,
+                          allergens: x.allergens.includes(a) ? x.allergens.filter((y) => y !== a) : ALLERGENS.filter((y) => y === a || x.allergens.includes(y)),
+                        }))
+                      }
+                    >
+                      {t(`recipes.allergen.${a}`)}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </SettingsCard>
 
           <GroupLabel>{t("settings.books")}</GroupLabel>

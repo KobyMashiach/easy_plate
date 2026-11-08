@@ -186,7 +186,7 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get phoneGateBody => 'كل حساب يتم تأكيده برقم هاتف. سنرسل لك رمزًا عبر رسالة نصية.';
 	@override String get changeNumber => 'تغيير الرقم';
 	@override String get signInTitle => 'تسجيل الدخول';
-	@override String get phoneFirstHint => 'جديد هنا؟ تابع باستخدام الهاتف.';
+	@override String get phoneFirstHint => 'جديد هنا؟ تابع باستخدام الهاتف أو Google.';
 	@override String get errorAccountExistsDifferentCredential => 'هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.';
 	@override String get errorCredentialInUse => 'هذه البيانات تخص حسابًا آخر بالفعل';
 	@override String get continueWithApple => 'تسجيل الدخول باستخدام Apple';
@@ -224,6 +224,9 @@ class _Translations$auth$ar extends Translations$auth$he {
 	@override String get reverifyTitle => 'تحقّق من هاتفك مرة أخرى';
 	@override String reverifyBody({required Object phone}) => 'لأمانك، يجب التحقق من هاتفك مرة أخرى قبل حذف الحساب. سنرسل رمزًا جديدًا إلى ${phone}.';
 	@override String get reverifyNoPhone => 'لا يوجد رقم هاتف لهذا الحساب، لذا لا يمكن التحقق منه هنا. تواصل مع الدعم لحذف الحساب.';
+	@override String socialTakeoverBody({required Object provider}) => 'سنؤكد الحساب مرة أخرى عبر ${provider}. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.';
+	@override String socialReverifyBody({required Object provider}) => 'لأمانك، يجب تأكيد الحساب مرة أخرى عبر ${provider} قبل حذفه.';
+	@override String socialReverifyButton({required Object provider}) => 'التأكيد عبر ${provider}';
 	@override String get sessionReleaseTitle => 'جهاز آخر يريد تسجيل الدخول';
 	@override String sessionReleaseBody({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟';
 	@override String get sessionReleaseConfirm => 'تسجيل الخروج هنا';
@@ -261,6 +264,7 @@ class _Translations$onboarding$ar extends Translations$onboarding$he {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
+	@override String get lookAndLanguage => 'المظهر واللغة';
 	@override String get welcomeTitle => 'أهلًا بك في EasyPlate';
 	@override String get welcomeSubtitle => 'خطّط لوجباتك، اطبخ وتسوّق — كل ذلك في مكان واحد';
 	@override String get shoppingDayTitle => 'ما هو يوم التسوّق الأسبوعي لديك؟';
@@ -294,6 +298,7 @@ class _Translations$allergens$ar extends Translations$allergens$he {
 
 	// Translations
 	@override String get title => 'مسببات الحساسية';
+	@override String get avoid => 'أتجنّب:';
 	@override String get pick => 'تحديد مسببات الحساسية';
 	@override String get contains => 'يحتوي على';
 	@override String get mayContain => 'قد يحتوي على';
@@ -1336,8 +1341,8 @@ class _Translations$premium$ar extends Translations$premium$he {
 
 	// Translations
 	@override String get title => 'إيزي-بلايت بريميوم';
-	@override String get headline => 'بلا إعلانات، بلا حدود';
-	@override String get subtitle => 'كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.';
+	@override String get headline => 'بلا إعلانات، ذكاء اصطناعي أكثر';
+	@override String get subtitle => 'كل ما يقدّمه إيزي-بلايت، مع ذكاء اصطناعي أكثر بكثير كل يوم.';
 	@override String get benefitNoAds => 'بلا إعلانات في خلاصات المجتمع';
 	@override String get benefitShared => 'وصفات مشتركة بلا حدّ يومي';
 	@override String benefitAi({required Object count}) => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، حتى ${count} في اليوم';
@@ -1997,6 +2002,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get assistantScoped => 'شيفي داخل عنصر';
 	@override String get assistantVoice => 'التحدث مع شيفي';
 	@override String get singleSession => 'جهاز واحد لكل حساب';
+	@override String get phoneOptional => 'التسجيل بدون هاتف (Google/Apple)';
 	@override String get homeWidgets => 'أدوات الشاشة الرئيسية';
 	@override String get wakeWord => 'هاي شيفي';
 	@override String get voiceAssistants => 'شيفي عبر Siri وGemini';
@@ -2454,7 +2460,7 @@ class _Translations$walkthrough$topics$account$ar extends Translations$walkthrou
 	@override String get summary => 'إشعارات بدعوات المشاركة، والحساب مع الاشتراك المميّز والوصول المشترك والإعدادات ووضع العرض.';
 	@override String get s1 => 'الإشعارات: دعوات لمشاركة الكتب والخطط، وتحديثات.';
 	@override String get s2 => 'اضغط على الصورة لفتح حسابك.';
-	@override String get s3 => 'الاشتراك المميّز: تحليلات ذكاء اصطناعي بلا حدّ يومي وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.';
+	@override String get s3 => 'الاشتراك المميّز: حصة يومية أكبر من تحليلات الذكاء الاصطناعي، وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.';
 	@override String get s4 => 'الوصول المشترك: من يشارك معك الكتب والخطط وقوائم التسوّق، وما شاركته أنت.';
 	@override String get s5 => 'اضغط على "الإعدادات".';
 	@override String get s6 => 'وضع العرض: فاتح أو داكن أو حسب الجهاز. في الإعدادات أيضاً اللغة والتفضيلات الغذائية ومسبّبات الحساسية. يمكن تشغيل هذا الدليل مجدداً من شاشة الدعم في الحساب.';
@@ -2577,7 +2583,7 @@ extension on TranslationsAr {
 			'auth.phoneGateBody' => 'كل حساب يتم تأكيده برقم هاتف. سنرسل لك رمزًا عبر رسالة نصية.',
 			'auth.changeNumber' => 'تغيير الرقم',
 			'auth.signInTitle' => 'تسجيل الدخول',
-			'auth.phoneFirstHint' => 'جديد هنا؟ تابع باستخدام الهاتف.',
+			'auth.phoneFirstHint' => 'جديد هنا؟ تابع باستخدام الهاتف أو Google.',
 			'auth.errorAccountExistsDifferentCredential' => 'هذا البريد الإلكتروني يخص حسابًا آخر. سجّل الدخول بالطريقة التي سجّلت بها.',
 			'auth.errorCredentialInUse' => 'هذه البيانات تخص حسابًا آخر بالفعل',
 			'auth.continueWithApple' => 'تسجيل الدخول باستخدام Apple',
@@ -2615,6 +2621,9 @@ extension on TranslationsAr {
 			'auth.reverifyTitle' => 'تحقّق من هاتفك مرة أخرى',
 			'auth.reverifyBody' => ({required Object phone}) => 'لأمانك، يجب التحقق من هاتفك مرة أخرى قبل حذف الحساب. سنرسل رمزًا جديدًا إلى ${phone}.',
 			'auth.reverifyNoPhone' => 'لا يوجد رقم هاتف لهذا الحساب، لذا لا يمكن التحقق منه هنا. تواصل مع الدعم لحذف الحساب.',
+			'auth.socialTakeoverBody' => ({required Object provider}) => 'سنؤكد الحساب مرة أخرى عبر ${provider}. بعد التأكيد ينتقل الحساب إلى هذا الجهاز ويُسجَّل خروج الجهاز الآخر.',
+			'auth.socialReverifyBody' => ({required Object provider}) => 'لأمانك، يجب تأكيد الحساب مرة أخرى عبر ${provider} قبل حذفه.',
+			'auth.socialReverifyButton' => ({required Object provider}) => 'التأكيد عبر ${provider}',
 			'auth.sessionReleaseTitle' => 'جهاز آخر يريد تسجيل الدخول',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'جهاز (${platform}) يريد تسجيل الدخول إلى حسابك. تسجيل الخروج من هذا الجهاز؟',
 			'auth.sessionReleaseConfirm' => 'تسجيل الخروج هنا',
@@ -2634,6 +2643,7 @@ extension on TranslationsAr {
 			'profile.saving' => 'جارٍ الحفظ...',
 			'profile.saveFailed' => 'تعذّر حفظ الملف الشخصي',
 			'profile.myProfile' => 'ملفي الشخصي',
+			'onboarding.lookAndLanguage' => 'المظهر واللغة',
 			'onboarding.welcomeTitle' => 'أهلًا بك في EasyPlate',
 			'onboarding.welcomeSubtitle' => 'خطّط لوجباتك، اطبخ وتسوّق — كل ذلك في مكان واحد',
 			'onboarding.shoppingDayTitle' => 'ما هو يوم التسوّق الأسبوعي لديك؟',
@@ -2649,6 +2659,7 @@ extension on TranslationsAr {
 			'dietary.glutenFree' => 'خالٍ من الغلوتين',
 			'dietary.allergy' => 'حساسية',
 			'allergens.title' => 'مسببات الحساسية',
+			'allergens.avoid' => 'أتجنّب:',
 			'allergens.pick' => 'تحديد مسببات الحساسية',
 			'allergens.contains' => 'يحتوي على',
 			'allergens.mayContain' => 'قد يحتوي على',
@@ -3002,13 +3013,13 @@ extension on TranslationsAr {
 			'sharing.shareAction' => 'مشاركة',
 			'sharing.directoryUnavailable' => 'المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.',
 			'sharing.shareBook' => 'مشاركة الكتاب',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharePlan' => 'مشاركة الخطة',
 			'sharing.acceptedBook' => 'تمت إضافة الكتاب إلى مكتبتك',
 			'sharing.acceptedPlan' => 'تمت إضافة الخطة إلى خططك',
 			'sharing.viewerCannotEditBook' => 'تمت مشاركة هذا الكتاب معك للعرض فقط',
 			'sharing.viewerCannotEditPlan' => 'تمت مشاركة هذه الخطة معك للعرض فقط',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.kindRecipe' => 'وصفة',
 			'sharing.kindBook' => 'كتاب',
 			'sharing.kindPlan' => 'خطة',
@@ -3440,8 +3451,8 @@ extension on TranslationsAr {
 			'ads.videoNotCompleted' => 'لم يكتمل الفيديو، تبقى الوصفة مغلقة',
 			'ads.videoUnavailable' => 'لا يوجد فيديو متاح الآن، حاول مجددًا بعد قليل',
 			'premium.title' => 'إيزي-بلايت بريميوم',
-			'premium.headline' => 'بلا إعلانات، بلا حدود',
-			'premium.subtitle' => 'كل ما يقدّمه إيزي-بلايت، دون انتظار الغد.',
+			'premium.headline' => 'بلا إعلانات، ذكاء اصطناعي أكثر',
+			'premium.subtitle' => 'كل ما يقدّمه إيزي-بلايت، مع ذكاء اصطناعي أكثر بكثير كل يوم.',
 			'premium.benefitNoAds' => 'بلا إعلانات في خلاصات المجتمع',
 			'premium.benefitShared' => 'وصفات مشتركة بلا حدّ يومي',
 			'premium.benefitAi' => ({required Object count}) => 'استخراج الوصفات بالذكاء الاصطناعي من أي رابط، حتى ${count} في اليوم',
@@ -3516,13 +3527,13 @@ extension on TranslationsAr {
 			'walkthrough.focused' => 'عرض إرشاد مركّز',
 			'walkthrough.next' => 'التالي',
 			'walkthrough.finish' => 'إنهاء',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.skipStep' => 'تخطّي الخطوة',
 			'walkthrough.close' => 'إغلاق الدليل',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'الخطوة ${current} من ${total}',
 			'walkthrough.tapHint' => 'اضغط على المنطقة المميّزة أو على "التالي"',
 			'walkthrough.bookTitle' => 'دليل EasyPlate',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'كل ما يمكن فعله في التطبيق، فصلاً بعد فصل. الأمثلة في هذا الكتاب لا تُحفظ؛ الجولة الحيّة تنفّذ الإجراءات فعلاً، والحقول معبّأة مسبقاً.',
 			'walkthrough.contents' => 'المحتويات',
 			'walkthrough.chapter' => ({required Object number}) => 'الفصل ${number}',
@@ -3575,7 +3586,7 @@ extension on TranslationsAr {
 			'walkthrough.topics.account.summary' => 'إشعارات بدعوات المشاركة، والحساب مع الاشتراك المميّز والوصول المشترك والإعدادات ووضع العرض.',
 			'walkthrough.topics.account.s1' => 'الإشعارات: دعوات لمشاركة الكتب والخطط، وتحديثات.',
 			'walkthrough.topics.account.s2' => 'اضغط على الصورة لفتح حسابك.',
-			'walkthrough.topics.account.s3' => 'الاشتراك المميّز: تحليلات ذكاء اصطناعي بلا حدّ يومي وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.',
+			'walkthrough.topics.account.s3' => 'الاشتراك المميّز: حصة يومية أكبر من تحليلات الذكاء الاصطناعي، وبلا إعلانات. يحصل الحساب المجاني على حصة يومية يمكن توسيعها بمشاهدة فيديو قصير.',
 			'walkthrough.topics.account.s4' => 'الوصول المشترك: من يشارك معك الكتب والخطط وقوائم التسوّق، وما شاركته أنت.',
 			'walkthrough.topics.account.s5' => 'اضغط على "الإعدادات".',
 			'walkthrough.topics.account.s6' => 'وضع العرض: فاتح أو داكن أو حسب الجهاز. في الإعدادات أيضاً اللغة والتفضيلات الغذائية ومسبّبات الحساسية. يمكن تشغيل هذا الدليل مجدداً من شاشة الدعم في الحساب.',
@@ -4030,13 +4041,13 @@ extension on TranslationsAr {
 			'household.create' => 'فتح حساب مشترك',
 			'household.nameHint' => 'الاسم، مثلًا عائلة أحمد',
 			'household.notEligible' => 'يأتي الحساب المشترك مع Pro Duo (حسابان) أو Pro Family (حتى 6 حسابات).',
+			_ => null,
+		} ?? switch (path) {
 			'household.seePlans' => 'عرض الخطط',
 			'household.members' => 'الأعضاء',
 			'household.owner' => 'المالك',
 			'household.you' => 'أنت',
 			'household.invite' => 'دعوة عضو',
-			_ => null,
-		} ?? switch (path) {
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(free, zero: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. لم تبقَ مقاعد.', one: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعد واحد.', two: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي مقعدان.', few: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقاعد.', many: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعدًا.', other: 'كل من لديه هذا الرمز ينضم إلى الحساب المشترك. بقي ${free} مقعد.', ), 
 			'household.noSeats' => 'كل المقاعد مشغولة.',
 			'household.remove' => 'إزالة',
@@ -4163,6 +4174,7 @@ extension on TranslationsAr {
 			'featureName.assistantScoped' => 'شيفي داخل عنصر',
 			'featureName.assistantVoice' => 'التحدث مع شيفي',
 			'featureName.singleSession' => 'جهاز واحد لكل حساب',
+			'featureName.phoneOptional' => 'التسجيل بدون هاتف (Google/Apple)',
 			'featureName.homeWidgets' => 'أدوات الشاشة الرئيسية',
 			'featureName.wakeWord' => 'هاي شيفي',
 			'featureName.voiceAssistants' => 'شيفي عبر Siri وGemini',

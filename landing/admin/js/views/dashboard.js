@@ -5,6 +5,34 @@ import { t, fmtNumber, fmtMoney, fmtDate, fmtAgo } from "../i18n.js";
 import { h, clear, spinner, button, busy, chips, bars, hbars, table, toast, toastError, avatar } from "../ui.js";
 import { pricing, tally, addTally, ZERO, costUsd, costIls, isOnline, premiumActive, platformLabel, modelName } from "../data.js";
 import { call } from "../api.js";
+import { platformPies } from "./stores.js";
+
+const CLAUDE_UID = "claude";
+
+// The cost table's sort: a heading click sorts by that column (numbers
+// biggest first, the name A→Z), a second click reverses. The top 15 of
+// that order are shown; "claude" is always the last row.
+const COST_SORTS = {
+  name: (r, profiles) => String((profiles[r.uid] || {}).fullName || r.uid).toLowerCase(),
+  calls: (r) => r.total.calls,
+  input: (r) => r.total.input,
+  output: (r) => r.total.output + r.total.thoughts,
+  cached: (r) => r.total.cached,
+  cost: (r) => r.cost,
+};
+function sortCostRows(rows, sort, profiles) {
+  const key = COST_SORTS[sort.key] || COST_SORTS.cost;
+  const sign = sort.dir === "asc" ? 1 : -1;
+  const cmp = (a, b) => {
+    const x = key(a, profiles), y = key(b, profiles);
+    const byKey = typeof x === "string" ? x.localeCompare(y) : x - y;
+    return sign * byKey || b.cost - a.cost;
+  };
+  return [
+    ...rows.filter((r) => r.uid !== CLAUDE_UID).sort(cmp).slice(0, 15),
+    ...rows.filter((r) => r.uid === CLAUDE_UID),
+  ];
+}
 
 const RANGES = [["today", "dash.range.today"], ["30", "dash.range.d30"], ["60", "dash.range.d60"], ["all", "dash.range.all"]];
 const PAYMENT_TYPES = new Set(["INITIAL_PURCHASE", "RENEWAL", "NON_RENEWING_PURCHASE", "UNCANCELLATION", "PRODUCT_CHANGE"]);
@@ -95,8 +123,11 @@ async function load(range) {
     const models = d.data().models || {};
     if (Object.keys(models).length) byUser[d.id] = Object.fromEntries(Object.entries(models).map(([k, v]) => [k, tally(v)]));
   }
-  const usersByCost = Object.entries(byUser).map(([uid, models]) => ({ uid, models, cost: costIls(models, prices), total: Object.values(models).reduce((a, b) => addTally(a, b), { ...ZERO }) }))
-    .sort((a, b) => b.cost - a.cost).slice(0, 15);
+  // "claude" is every live server test folded into one row (tools/claude_probe):
+  // it is always the last row, whatever its cost.
+  const costRows = Object.entries(byUser).map(([uid, models]) => ({ uid, models, cost: costIls(models, prices), total: Object.values(models).reduce((a, b) => addTally(a, b), { ...ZERO }) }));
+  // Every row; the table sorts and cuts to 15 (sortCostRows).
+  const usersByCost = costRows;
 
   // Pad the chart: one point per day of a bounded range.
   const chart = [];
@@ -124,6 +155,7 @@ function tile(label, value, sub, accent) {
 export async function mount({ view, actions }) {
   let range = "30";
   try { range = localStorage.getItem("ep-admin-range") || "30"; } catch (_) {}
+  let costSort = { key: "cost", dir: "desc" };
   const body = h("div.stack");
   view.append(chips(RANGES.map(([k, l]) => [k, t(l)]), range, (v) => { range = v; try { localStorage.setItem("ep-admin-range", v); } catch (_) {} render(); }), body);
 
@@ -166,6 +198,8 @@ export async function mount({ view, actions }) {
         h("div.card", h("h2", t("dash.signups")), d.chart.length ? bars(d.chart.map((c) => ({ label: c.day, value: c.signups }))) : h("p.muted", t("dash.noData"))),
       ));
 
+      body.append(platformPies());
+
       const modelRows = Object.entries(d.byModel).map(([k, v]) => [modelName(k), costUsd(v, k, d.prices) * (d.prices.usdToIls || 3.7)]).sort((a, b) => b[1] - a[1]);
       const kindRows = Object.entries(d.byKind).map(([k, v]) => [k, v.calls]).sort((a, b) => b[1] - a[1]);
       body.append(h("div.grid2",
@@ -175,14 +209,28 @@ export async function mount({ view, actions }) {
         h("div.card", h("h2", t("dash.byVersion")), hbars(Object.entries(d.byVersion).sort((a, b) => b[1] - a[1]).slice(0, 8), fmtNumber)),
       ));
 
-      body.append(h("div.card", h("h2", t("dash.topUsers")), table([
-        { label: t("common.name"), cell: (r) => { const p = d.profiles[r.uid] || {}; return h("div.row", avatar(p.fullName || r.uid, p.photoUrl, "sm"), h("span", p.fullName || r.uid)); } },
-        { label: t("dash.calls"), num: true, cell: (r) => fmtNumber(r.total.calls) },
-        { label: t("dash.input"), num: true, cell: (r) => fmtNumber(r.total.input) },
-        { label: t("dash.output"), num: true, cell: (r) => fmtNumber(r.total.output + r.total.thoughts) },
-        { label: t("dash.cached"), num: true, cell: (r) => fmtNumber(r.total.cached) },
-        { label: t("dash.cost"), num: true, cell: (r) => fmtMoney(r.cost) },
-      ], d.usersByCost, { onRow: (r) => { location.hash = `#/users/${r.uid}`; }, emptyText: t("dash.noData") })));
+      const costCard = h("div.card");
+      const drawCost = () => {
+        clear(costCard);
+        costCard.append(h("h2", t("dash.topUsers")), table([
+        { label: t("common.name"), sort: "name", cell: (r) => { if (r.uid === CLAUDE_UID) return h("div.row", avatar("claude", null, "sm"), h("span", "claude"), h("span.small.muted", t("dash.claudeRow"))); const p = d.profiles[r.uid] || {}; return h("div.row", avatar(p.fullName || r.uid, p.photoUrl, "sm"), h("span", p.fullName || r.uid)); } },
+        { label: t("dash.calls"), sort: "calls", num: true, cell: (r) => fmtNumber(r.total.calls) },
+        { label: t("dash.input"), sort: "input", num: true, cell: (r) => fmtNumber(r.total.input) },
+        { label: t("dash.output"), sort: "output", num: true, cell: (r) => fmtNumber(r.total.output + r.total.thoughts) },
+        { label: t("dash.cached"), sort: "cached", num: true, cell: (r) => fmtNumber(r.total.cached) },
+        { label: t("dash.cost"), sort: "cost", num: true, cell: (r) => fmtMoney(r.cost) },
+      ], sortCostRows(d.usersByCost, costSort, d.profiles), {
+          sort: costSort,
+          onSort: (key) => {
+            costSort = costSort.key === key ? { key, dir: costSort.dir === "asc" ? "desc" : "asc" } : { key, dir: key === "name" ? "asc" : "desc" };
+            drawCost();
+          },
+          onRow: (r) => { if (r.uid !== CLAUDE_UID) location.hash = `#/users/${r.uid}`; },
+          emptyText: t("dash.noData"),
+        }));
+      };
+      drawCost();
+      body.append(costCard);
     } catch (err) {
       if (mine !== seq) return;
       clear(body);

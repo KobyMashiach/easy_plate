@@ -27,6 +27,10 @@
 //   what's new whatsnew.save / whatsnew.delete / whatsnew.translate — the
 //              release highlights (whats_new_releases/{versionCode}) the app
 //              shows a returning account once after an update
+//   instagram  ig.account.get|connect|disconnect|refresh, ig.post.save|
+//              approve|unapprove|schedule|unschedule|publish|delete,
+//              ig.insights.refresh, ig.comments.list, ig.comment.reply|hide
+//              — the app's Instagram account (adminInstagram.js)
 //   content    translation.purge — drops a line from the shared translation
 //              cache (translateContent.js), one language or all of them
 //
@@ -42,6 +46,7 @@ const proxy = require("./aiProxy").internals;
 const accounts = require("./adminUsers").internals;
 const permissions = require("./permissions");
 const notifications = require("./adminNotifications");
+const instagram = require("./adminInstagram");
 const remoteConfig = require("./adminRemoteConfig").internals;
 const imageSearch = require("./imageSearch").internals;
 const aiUsage = require("./aiUsage");
@@ -113,8 +118,8 @@ const ACTIONS = {
   "user.delete": { uid: str(128, true) },
   "user.kick": { uid: str(128, true) },
   "user.notify": { uid: str(128, true), title: str(80), body: str(1000, true) },
-  "user.notifyAll": { title: str(80), body: str(1000, true) },
-  "user.notifyAudience": { audience: anyOf(["all", "premium", "free", "users"], true), uids: strList(500, 128), title: str(80), body: str(1000, true) },
+  "user.notifyAll": { title: str(80), body: str(1000, true), platform: anyOf(["all", "android", "ios"]) },
+  "user.notifyAudience": { audience: anyOf(["all", "premium", "free", "users"], true), platform: anyOf(["all", "android", "ios"]), uids: strList(500, 128), title: str(80), body: str(1000, true) },
   "notify.template.save": { id: str(128), name: str(80, false, { clear: true }), title: str(80), body: str(1000, true), target: anyOf(["all", "user", "users", "premium", "free"], true), uid: str(128), uids: strList(500, 128), schedule: obj(true), enabled: bool() },
   "notify.template.delete": { id: str(128, true) },
   "notify.template.send": { id: str(128, true) },
@@ -148,7 +153,7 @@ const ACTIONS = {
   "household.removeMember": { hid: str(128, true), uid: str(128, true) },
   "household.dissolve": { hid: str(128, true) },
   "config.get": {},
-  "config.set": { name: str(120, true), value: str(20000) },
+  "config.set": { name: str(120, true), value: str(20000), platform: anyOf(["both", "android", "ios"]) },
   "config.add": { name: str(120, true), valueType: anyOf([...RC_TYPES], true), value: str(20000), description: str(1000), group: str(120) },
   "config.delete": { name: str(120, true) },
   "pricing.sync": {},
@@ -161,13 +166,28 @@ const ACTIONS = {
   "whatsnew.translate": { title: str(200), description: str(2000), from: anyOf(WHATS_NEW_LANGS, true) },
   // One past the longest line translateContent caches, so a longer paste is
   // refused rather than cut to a different line's key.
+  "ig.account.get": {},
+  "ig.account.connect": { token: str(1000, true) },
+  "ig.account.disconnect": {},
+  "ig.account.refresh": {},
+  "ig.post.save": { id: str(128), type: anyOf(["image", "carousel", "reel", "story"], true), title: str(120, false, { clear: true }), caption: str(2300, false, { clear: true }), media: objList(10, true), source: anyOf(["claude", "upload"]) },
+  "ig.post.approve": { id: str(128, true) },
+  "ig.post.unapprove": { id: str(128, true) },
+  "ig.post.schedule": { id: str(128, true), at: num(true) },
+  "ig.post.unschedule": { id: str(128, true) },
+  "ig.post.publish": { id: str(128, true) },
+  "ig.post.delete": { id: str(128, true) },
+  "ig.insights.refresh": { id: str(128) },
+  "ig.comments.list": { id: str(128, true) },
+  "ig.comment.reply": { commentId: str(128, true), text: str(2200, true) },
+  "ig.comment.hide": { commentId: str(128, true), hide: bool() },
   "translation.purge": { text: str(translation.MAX_TEXT + 1, true), lang: anyOf(Object.keys(translation.LANGUAGE_NAMES)) },
 };
 
 // Fields that name a document: each becomes one segment of a path
 // (`users/${uid}`, `forum_posts/${postId}/replies/${replyId}` …), so a slash
 // in one would reach another document.
-const ID_FIELDS = new Set(["uid", "id", "postId", "replyId", "recipeId", "hid", "rootId", "as", "sharedRecipeId"]);
+const ID_FIELDS = new Set(["uid", "id", "postId", "replyId", "recipeId", "hid", "rootId", "as", "sharedRecipeId", "commentId"]);
 
 function validId(value) {
   return typeof value === "string" && /^[^/]{1,128}$/.test(value) && value !== "." && value !== ".." && !/^__.*__$/.test(value);
@@ -433,12 +453,14 @@ function summarize(request) {
     if (key === "action") continue;
     if (key === "photoDataUrl" || key === "data") {
       out[key] = typeof value === "string" ? `<${value.length} chars>` : "<object>";
-    } else if (key === "applePrivateKey") {
+    } else if (key === "applePrivateKey" || (key === "token" && String(request.action).startsWith("ig."))) {
       out[key] = "<secret>";
     } else if (key === "image" && value && typeof value === "object") {
       out[key] = value.storagePath ? { storagePath: value.storagePath } : value.url ? { url: String(value.url).slice(0, 300) } : value.dataUrl ? { dataUrl: `<${String(value.dataUrl).length} chars>` } : {};
     } else if (key === "recipe" && value && typeof value === "object") {
       out[key] = { title: typeof value.title === "string" ? value.title.slice(0, 200) : "" };
+    } else if (key === "media" && Array.isArray(value)) {
+      out[key] = value.map((m) => (m && typeof m === "object" ? String(m.path || "?").slice(0, 200) : "?"));
     } else if (key === "features" && Array.isArray(value)) {
       out[key] = value.map((f) => (f && typeof f === "object" ? String(f.featureKey || "?") : "?"));
     } else if (Array.isArray(value)) {
@@ -757,6 +779,9 @@ async function personaList(db) {
 
 async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
   const now = Date.now();
+  // The Instagram page: its own module. Publishing waits for Instagram to
+  // process the media, inside this function's 300 s.
+  if (request.action.startsWith("ig.")) return instagram.handle(request, { caller, db, bucket, fetchImpl, deadline: now + 270000 });
   switch (request.action) {
     case "ping":
       return { uid: caller.uid, email: caller.email, now };
@@ -783,8 +808,9 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     case "user.notifyAll": {
       const tooMany = await accounts.directSendRefusal(db);
       if (tooMany) throw refused(tooMany.message, tooMany.error, 409);
-      const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body });
-      await notifications.log(db, { by: caller.uid, target: "all", title: request.title, body: request.body, source: "console", result });
+      const platform = request.platform || "all";
+      const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body, platform });
+      await notifications.log(db, { by: caller.uid, target: "all", platform, title: request.title, body: request.body, source: "console", result });
       return result;
     }
 
@@ -792,8 +818,9 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       if (request.audience === "users" && !(request.uids || []).length) throw Object.assign(new Error("pick at least one user"), { status: 400 });
       const tooMany = await accounts.directSendRefusal(db);
       if (tooMany) throw refused(tooMany.message, tooMany.error, 409);
-      const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body, audience: request.audience, uids: request.uids });
-      await notifications.log(db, { by: caller.uid, target: request.audience, uids: request.uids, title: request.title, body: request.body, source: "console", result });
+      const platform = request.platform || "all";
+      const result = await accounts.notifyAll({ fromUid: caller.uid, title: request.title || "", message: request.body, audience: request.audience, uids: request.uids, platform });
+      await notifications.log(db, { by: caller.uid, target: request.audience, platform, uids: request.uids, title: request.title, body: request.body, source: "console", result });
       return result;
     }
 
@@ -1214,7 +1241,7 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     }
     case "config.set": {
       const template = await admin.remoteConfig().getTemplate();
-      const error = remoteConfig.applyValue(template, request.name, request.value === undefined ? "" : request.value);
+      const error = remoteConfig.applyValue(template, request.name, request.value === undefined ? "" : request.value, request.platform);
       if (error) throw refused(error, error, error === "not_found" ? 404 : 400);
       const published = await remoteConfig.publish(template);
       return { version: published.version && published.version.versionNumber, parameters: remoteConfig.flattenTemplate(published) };

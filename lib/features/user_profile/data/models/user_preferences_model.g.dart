@@ -39,13 +39,14 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       themeMode: fields[17] as String?,
       whatsNewSeenBuild: (fields[18] as num?)?.toInt(),
       extraShoppingDays: (fields[19] as List?)?.cast<String>(),
+      allergens: (fields[20] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPreferencesModel obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.shoppingDay)
       ..writeByte(1)
@@ -85,7 +86,9 @@ class UserPreferencesModelAdapter extends TypeAdapter<UserPreferencesModel> {
       ..writeByte(18)
       ..write(obj.whatsNewSeenBuild)
       ..writeByte(19)
-      ..write(obj.extraShoppingDays);
+      ..write(obj.extraShoppingDays)
+      ..writeByte(20)
+      ..write(obj.allergens);
   }
 
   @override
@@ -134,6 +137,9 @@ _UserPreferencesModel _$UserPreferencesModelFromJson(
   extraShoppingDays: (json['extraShoppingDays'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  allergens: (json['allergens'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$UserPreferencesModelToJson(
@@ -161,6 +167,7 @@ Map<String, dynamic> _$UserPreferencesModelToJson(
   'themeMode': instance.themeMode,
   'whatsNewSeenBuild': instance.whatsNewSeenBuild,
   'extraShoppingDays': instance.extraShoppingDays,
+  'allergens': instance.allergens,
 };
 
 const _$ShoppingDayEnumMap = {

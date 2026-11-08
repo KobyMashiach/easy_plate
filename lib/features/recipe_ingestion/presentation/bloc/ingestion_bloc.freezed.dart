@@ -167,13 +167,13 @@ return pickImageCandidate(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String topic,  List<DietaryPreference>? preferences)?  suggestRecipes,TResult Function()?  backToResults,TResult Function( String url)?  parseUrl,TResult Function( String url)?  viewOriginal,TResult Function( String url)?  parseSocialVideo,TResult Function( List<IngestionFile> files)?  parseFiles,TResult Function( String request)?  generateRecipe,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,TResult Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult Function( String text,  String? sourceUrl)?  editManually,TResult Function()?  retry,TResult Function( int? index)?  pickImageCandidate,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( RecipeIngestionChannel channel)?  selectChannel,TResult Function( String text)?  parseRawText,TResult Function( String query)?  searchWeb,TResult Function( String topic,  List<DietaryPreference>? preferences,  List<Allergen>? allergens)?  suggestRecipes,TResult Function()?  backToResults,TResult Function( String url)?  parseUrl,TResult Function( String url)?  viewOriginal,TResult Function( String url)?  parseSocialVideo,TResult Function( List<IngestionFile> files)?  parseFiles,TResult Function( String request)?  generateRecipe,TResult Function( RecipeEntity recipe)?  updateRecipe,TResult Function( RecipeEntity recipe)?  saveRecipe,TResult Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult Function( String text,  String? sourceUrl)?  editManually,TResult Function()?  retry,TResult Function( int? index)?  pickImageCandidate,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that.text);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that.query);case _SuggestRecipes() when suggestRecipes != null:
-return suggestRecipes(_that.topic,_that.preferences);case _BackToResults() when backToResults != null:
+return suggestRecipes(_that.topic,_that.preferences,_that.allergens);case _BackToResults() when backToResults != null:
 return backToResults();case _ParseUrl() when parseUrl != null:
 return parseUrl(_that.url);case _ViewOriginal() when viewOriginal != null:
 return viewOriginal(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
@@ -203,13 +203,13 @@ return pickImageCandidate(_that.index);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String topic,  List<DietaryPreference>? preferences)  suggestRecipes,required TResult Function()  backToResults,required TResult Function( String url)  parseUrl,required TResult Function( String url)  viewOriginal,required TResult Function( String url)  parseSocialVideo,required TResult Function( List<IngestionFile> files)  parseFiles,required TResult Function( String request)  generateRecipe,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,required TResult Function( String text,  String? sourceUrl)  saveAsTemplate,required TResult Function( String text,  String? sourceUrl)  editManually,required TResult Function()  retry,required TResult Function( int? index)  pickImageCandidate,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( RecipeIngestionChannel channel)  selectChannel,required TResult Function( String text)  parseRawText,required TResult Function( String query)  searchWeb,required TResult Function( String topic,  List<DietaryPreference>? preferences,  List<Allergen>? allergens)  suggestRecipes,required TResult Function()  backToResults,required TResult Function( String url)  parseUrl,required TResult Function( String url)  viewOriginal,required TResult Function( String url)  parseSocialVideo,required TResult Function( List<IngestionFile> files)  parseFiles,required TResult Function( String request)  generateRecipe,required TResult Function( RecipeEntity recipe)  updateRecipe,required TResult Function( RecipeEntity recipe)  saveRecipe,required TResult Function( String text,  String? sourceUrl)  saveAsTemplate,required TResult Function( String text,  String? sourceUrl)  editManually,required TResult Function()  retry,required TResult Function( int? index)  pickImageCandidate,}) {final _that = this;
 switch (_that) {
 case _SelectChannel():
 return selectChannel(_that.channel);case _ParseRawText():
 return parseRawText(_that.text);case _SearchWeb():
 return searchWeb(_that.query);case _SuggestRecipes():
-return suggestRecipes(_that.topic,_that.preferences);case _BackToResults():
+return suggestRecipes(_that.topic,_that.preferences,_that.allergens);case _BackToResults():
 return backToResults();case _ParseUrl():
 return parseUrl(_that.url);case _ViewOriginal():
 return viewOriginal(_that.url);case _ParseSocialVideo():
@@ -235,13 +235,13 @@ return pickImageCandidate(_that.index);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String topic,  List<DietaryPreference>? preferences)?  suggestRecipes,TResult? Function()?  backToResults,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  viewOriginal,TResult? Function( String url)?  parseSocialVideo,TResult? Function( List<IngestionFile> files)?  parseFiles,TResult? Function( String request)?  generateRecipe,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,TResult? Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult? Function( String text,  String? sourceUrl)?  editManually,TResult? Function()?  retry,TResult? Function( int? index)?  pickImageCandidate,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( RecipeIngestionChannel channel)?  selectChannel,TResult? Function( String text)?  parseRawText,TResult? Function( String query)?  searchWeb,TResult? Function( String topic,  List<DietaryPreference>? preferences,  List<Allergen>? allergens)?  suggestRecipes,TResult? Function()?  backToResults,TResult? Function( String url)?  parseUrl,TResult? Function( String url)?  viewOriginal,TResult? Function( String url)?  parseSocialVideo,TResult? Function( List<IngestionFile> files)?  parseFiles,TResult? Function( String request)?  generateRecipe,TResult? Function( RecipeEntity recipe)?  updateRecipe,TResult? Function( RecipeEntity recipe)?  saveRecipe,TResult? Function( String text,  String? sourceUrl)?  saveAsTemplate,TResult? Function( String text,  String? sourceUrl)?  editManually,TResult? Function()?  retry,TResult? Function( int? index)?  pickImageCandidate,}) {final _that = this;
 switch (_that) {
 case _SelectChannel() when selectChannel != null:
 return selectChannel(_that.channel);case _ParseRawText() when parseRawText != null:
 return parseRawText(_that.text);case _SearchWeb() when searchWeb != null:
 return searchWeb(_that.query);case _SuggestRecipes() when suggestRecipes != null:
-return suggestRecipes(_that.topic,_that.preferences);case _BackToResults() when backToResults != null:
+return suggestRecipes(_that.topic,_that.preferences,_that.allergens);case _BackToResults() when backToResults != null:
 return backToResults();case _ParseUrl() when parseUrl != null:
 return parseUrl(_that.url);case _ViewOriginal() when viewOriginal != null:
 return viewOriginal(_that.url);case _ParseSocialVideo() when parseSocialVideo != null:
@@ -481,7 +481,7 @@ as String,
 
 
 class _SuggestRecipes with DiagnosticableTreeMixin implements IngestionEvent {
-  const _SuggestRecipes({this.topic = '', final  List<DietaryPreference>? preferences}): _preferences = preferences;
+  const _SuggestRecipes({this.topic = '', final  List<DietaryPreference>? preferences, final  List<Allergen>? allergens}): _preferences = preferences,_allergens = allergens;
   
 
 @JsonKey() final  String topic;
@@ -490,6 +490,17 @@ class _SuggestRecipes with DiagnosticableTreeMixin implements IngestionEvent {
   final value = _preferences;
   if (value == null) return null;
   if (_preferences is EqualUnmodifiableListView) return _preferences;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+/// The allergens to leave out, null for the saved ones.
+ final  List<Allergen>? _allergens;
+/// The allergens to leave out, null for the saved ones.
+ List<Allergen>? get allergens {
+  final value = _allergens;
+  if (value == null) return null;
+  if (_allergens is EqualUnmodifiableListView) return _allergens;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(value);
 }
@@ -506,21 +517,21 @@ _$SuggestRecipesCopyWith<_SuggestRecipes> get copyWith => __$SuggestRecipesCopyW
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'IngestionEvent.suggestRecipes'))
-    ..add(DiagnosticsProperty('topic', topic))..add(DiagnosticsProperty('preferences', preferences));
+    ..add(DiagnosticsProperty('topic', topic))..add(DiagnosticsProperty('preferences', preferences))..add(DiagnosticsProperty('allergens', allergens));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SuggestRecipes&&(identical(other.topic, topic) || other.topic == topic)&&const DeepCollectionEquality().equals(other._preferences, _preferences));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SuggestRecipes&&(identical(other.topic, topic) || other.topic == topic)&&const DeepCollectionEquality().equals(other._preferences, _preferences)&&const DeepCollectionEquality().equals(other._allergens, _allergens));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,topic,const DeepCollectionEquality().hash(_preferences));
+int get hashCode => Object.hash(runtimeType,topic,const DeepCollectionEquality().hash(_preferences),const DeepCollectionEquality().hash(_allergens));
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'IngestionEvent.suggestRecipes(topic: $topic, preferences: $preferences)';
+  return 'IngestionEvent.suggestRecipes(topic: $topic, preferences: $preferences, allergens: $allergens)';
 }
 
 
@@ -531,7 +542,7 @@ abstract mixin class _$SuggestRecipesCopyWith<$Res> implements $IngestionEventCo
   factory _$SuggestRecipesCopyWith(_SuggestRecipes value, $Res Function(_SuggestRecipes) _then) = __$SuggestRecipesCopyWithImpl;
 @useResult
 $Res call({
- String topic, List<DietaryPreference>? preferences
+ String topic, List<DietaryPreference>? preferences, List<Allergen>? allergens
 });
 
 
@@ -548,11 +559,12 @@ class __$SuggestRecipesCopyWithImpl<$Res>
 
 /// Create a copy of IngestionEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? topic = null,Object? preferences = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? topic = null,Object? preferences = freezed,Object? allergens = freezed,}) {
   return _then(_SuggestRecipes(
 topic: null == topic ? _self.topic : topic // ignore: cast_nullable_to_non_nullable
 as String,preferences: freezed == preferences ? _self._preferences : preferences // ignore: cast_nullable_to_non_nullable
-as List<DietaryPreference>?,
+as List<DietaryPreference>?,allergens: freezed == allergens ? _self._allergens : allergens // ignore: cast_nullable_to_non_nullable
+as List<Allergen>?,
   ));
 }
 

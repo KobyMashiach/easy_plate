@@ -24,20 +24,13 @@ import 'package:flutter_test/flutter_test.dart';
 const _enabled = bool.fromEnvironment('STORE_SCREENSHOTS');
 const _outDir = 'store_assets/app_store';
 
-// One plan only: premium, monthly, with the opening deal a new subscriber
-// gets — ₪10 for the first month, then the regular ₪20 — exactly as set in
-// the stores, so the reviewer sees the terms sentence the offer requires.
+// One plan only: premium, monthly, at the regular ₪29.90 — exactly as set in
+// the stores. There is no introductory offer, so none is shown.
 const _offers = [
   PaywallOffer(
     id: 'monthly',
-    priceString: '₪20.00',
+    priceString: '₪29.90',
     period: PaywallPeriod.monthly,
-    intro: PaywallIntro(
-      priceString: '₪10.00',
-      isFree: false,
-      count: 1,
-      unit: PaywallIntroUnit.month,
-    ),
   ),
 ];
 

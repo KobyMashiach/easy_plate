@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -239,9 +240,34 @@ class FirebaseService {
     _analytics = FirebaseAnalytics.instance;
 
     _wireCrashlytics();
+    // Not awaited: the attestation is fetched lazily on the first paid call.
+    unawaited(_activateAppCheck());
     _wireMessaging();
     // Not awaited: a slow or offline fetch must not hold up the first frame.
     unawaited(_initRemoteConfig());
+  }
+
+  /// App Check: an attestation that a call comes from this app on a real
+  /// device (Play Integrity on Android, DeviceCheck on iOS), sent with every
+  /// paid call by `aiProxyAuthHeader`. The server reads it according to the
+  /// `app_check_mode` parameter, so activating it here refuses nothing on
+  /// its own. DeviceCheck rather than App Attest: App Attest needs an
+  /// entitlement and a provisioning profile that carries it. Debug builds use
+  /// the debug provider (its token is printed once, for the console's list).
+  Future<void> _activateAppCheck() async {
+    try {
+      await FirebaseAppCheck.instance.activate(
+        providerAndroid: kDebugMode
+            ? const AndroidDebugProvider()
+            : const AndroidPlayIntegrityProvider(),
+        providerApple: kDebugMode
+            ? const AppleDebugProvider()
+            : const AppleDeviceCheckProvider(),
+      );
+      await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+    } catch (e) {
+      debugPrint('App Check activation failed: $e');
+    }
   }
 
   void _wireCrashlytics() {

@@ -88,16 +88,19 @@ class _FakeIngestion implements RecipeIngestionRepository {
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   }) {
     lastKnownTitles = knownTitles;
     lastTopic = topic;
     lastDiet = preferences;
+    lastAllergens = allergens;
     return onSuggest?.call() ?? Future.value(const []);
   }
 
   List<String>? lastKnownTitles;
   String? lastTopic;
   List<DietaryPreference>? lastDiet;
+  List<Allergen>? lastAllergens;
 
   @override
   Future<List<WebSearchResultEntity>> searchWeb(
@@ -1007,6 +1010,45 @@ void main() {
         expect(ingestion.lastDiet, [DietaryPreference.vegan]);
       },
     );
+
+    test(
+      'allergens chosen with the allergy diet are what is left out',
+      () async {
+        ingestion.onSuggest = () async => [first];
+        final bloc = buildBloc()
+          ..add(
+            const IngestionEvent.selectChannel(
+              RecipeIngestionChannel.webSearch,
+            ),
+          );
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(
+          const IngestionEvent.suggestRecipes(
+            preferences: [DietaryPreference.allergy],
+            allergens: [Allergen.eggs, Allergen.sesame],
+          ),
+        );
+        await settle(bloc);
+        expect(ingestion.lastAllergens, [Allergen.eggs, Allergen.sesame]);
+      },
+    );
+
+    test('allergens without the allergy diet are not sent', () async {
+      ingestion.onSuggest = () async => [first];
+      final bloc = buildBloc()
+        ..add(
+          const IngestionEvent.selectChannel(RecipeIngestionChannel.webSearch),
+        );
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(
+        const IngestionEvent.suggestRecipes(
+          preferences: [DietaryPreference.vegan],
+          allergens: [Allergen.eggs],
+        ),
+      );
+      await settle(bloc);
+      expect(ingestion.lastAllergens, isEmpty);
+    });
 
     test(
       'nothing typed and the diet untouched: the saved preferences alone',

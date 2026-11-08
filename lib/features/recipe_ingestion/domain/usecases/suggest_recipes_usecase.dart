@@ -20,6 +20,7 @@ class SuggestRecipesUseCase {
   Future<List<WebSearchResultEntity>> call({
     List<DietaryPreference> preferences = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   }) async {
     final mine = [...await recipes.getRecipes()]
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -31,6 +32,10 @@ class SuggestRecipesUseCase {
       preferences,
       knownTitles: titles,
       topic: topic.trim(),
+      // Only with the allergy diet on: the list stays saved when it is off.
+      allergens: preferences.contains(DietaryPreference.allergy)
+          ? allergens
+          : const [],
     );
   }
 }

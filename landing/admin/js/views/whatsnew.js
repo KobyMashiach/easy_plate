@@ -27,7 +27,7 @@ const DEFAULT_ICONS = {
   ff_share_recipes: "share", ff_share_books: "share", ff_share_plans: "share", ff_share_grocery_lists: "share", ff_share_codes: "qr_code", ff_households: "family_restroom",
   ff_price_book: "price_check", ff_receipt_scan: "receipt_long", ff_grocery_cost: "price_check", ff_shopping_reminder: "notifications",
   ff_assistant: "smart_toy", ff_assistant_scoped: "smart_toy", ff_assistant_voice: "mic", ff_notifications: "notifications", ff_premium: "workspace_premium", ff_content_translation: "translate", ff_theming: "palette", ff_walkthrough: "school", ff_tutorial_book: "school", ff_feedback: "feedback",
-  ff_single_session: "devices", ff_home_widgets: "widgets", ff_wake_word: "mic", ff_voice_assistants: "record_voice_over", ff_shefi_launcher: "smart_toy", ff_whats_new: "new_releases",
+  ff_single_session: "devices", ff_phone_optional: "phone_disabled", ff_home_widgets: "widgets", ff_wake_word: "mic", ff_voice_assistants: "record_voice_over", ff_shefi_launcher: "smart_toy", ff_whats_new: "new_releases",
   ff_support_chat: "feedback", ff_store_review: "star", ff_quick_actions: "bolt", ff_multi_shopping_days: "event_repeat", ff_web_checkout: "workspace_premium", ff_social_video_photo: "image", ff_recipe_source_link: "link",
   ff_delete_recipe: "restaurant_menu", ff_ingredient_sections: "restaurant_menu", ff_recipe_suggestions: "lightbulb",
 };

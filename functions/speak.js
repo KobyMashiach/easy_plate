@@ -110,7 +110,7 @@ exports.speak = onRequest(
     // user and only the server-side cost stops.
     let claimed = false;
     try {
-      const decision = await budget.spend({ uid: caller.uid, kind: "speak" });
+      const decision = await budget.spend({ uid: proxy.quotaKeyOf(caller), kind: "speak" });
       if (!decision.allowed) {
         logger.info("speak budget exhausted", { uid: caller.uid, used: decision.used, limit: decision.limit });
         return res.status(429).json(budget.refusalBody(decision, "speak"));
@@ -126,7 +126,7 @@ exports.speak = onRequest(
       logger.error("speak failed", { uid: caller.uid, reason: err.message });
       // Google did not speak: the slot goes back — except after a timeout,
       // which reached Google and was most likely billed (as in aiProxy).
-      if (claimed && err.status !== 504) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "speak" });
+      if (claimed && err.status !== 504) await budget.refund(admin.firestore(), { uid: proxy.quotaKeyOf(caller), kind: "speak" });
       const status = err.status || 502;
       return res.status(status).json({ error: { code: status === 504 ? "upstream_timeout" : status === 429 ? "upstream_busy" : "upstream", message: "Speech failed" } });
     }

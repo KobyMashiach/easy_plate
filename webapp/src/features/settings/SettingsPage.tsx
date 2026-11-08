@@ -14,7 +14,7 @@ import { useContentTranslation } from "../../lib/contentTranslation";
 import { applyTheme, readTheme, type ThemeMode } from "../../lib/theme";
 import { Button, Field, Notice, PageTitle, Row, Spinner } from "../../components/ui";
 import { Icon } from "../../components/icons";
-import { DIETARY, type DietaryPreference } from "../../models/recipe";
+import { ALLERGENS, DIETARY, type Allergen, type DietaryPreference } from "../../models/recipe";
 import { appLanguageOf, REMINDER_SLOTS, SHOPPING_DAYS, shoppingDaysOf, toggleShoppingDay, withShoppingDays, type NotificationFlag, type Preferences, type ReminderSlot, type ShoppingDay } from "../../models/preferences";
 import { saveProfile, uploadProfilePhoto, usePreferences, useProfileDoc } from "./data";
 import { Chips, Choice, GroupLabel, Section, Toggle } from "./controls";
@@ -369,6 +369,19 @@ function PreferencesSection({ prefs, busy, set }: { prefs: Preferences; busy: Se
           }))
         }
       />
+      {prefs.dietaryPreferences.includes("allergy") ? (
+        <Chips<Allergen>
+          label={t("settings.allergensAvoid")}
+          options={ALLERGENS.map((a) => ({ value: a, label: t(`recipes.allergen.${a}`) }))}
+          values={prefs.allergens}
+          onToggle={(a) =>
+            set(`allergen.${a}`, (p) => ({
+              ...p,
+              allergens: p.allergens.includes(a) ? p.allergens.filter((x) => x !== a) : ALLERGENS.filter((x) => x === a || p.allergens.includes(x)),
+            }))
+          }
+        />
+      ) : null}
 
       <GroupLabel>{t("settings.books")}</GroupLabel>
       <Toggle

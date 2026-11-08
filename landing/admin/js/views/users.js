@@ -2,9 +2,10 @@
 // session, who is Premium or blocked. One click opens the account.
 import { db, collection, onSnapshot, query, limit } from "../firebase.js";
 import { t, fmtNumber, fmtDate } from "../i18n.js";
-import { h, clear, table, avatar, dot, badge, when, button, busy, chips, input, textarea, field, modal, confirmDialog, toast, toastError, debounce } from "../ui.js";
+import { h, clear, table, avatar, dot, badge, when, button, busy, chips, input, textarea, field, modal, confirmDialog, toast, toastError, debounce, withEmoji } from "../ui.js";
 import { isOnline, premiumActive, platformLabel } from "../data.js";
 import { call } from "../api.js";
+import { platformControl, platformSuffix } from "./notifications.js";
 
 // Rows drawn at once; the rest come on "show more". The filters, the
 // search and the count still run over every account.
@@ -30,10 +31,18 @@ function compare(x, y) {
   return String(x).localeCompare(String(y), undefined, { sensitivity: "base" });
 }
 
+// Admin / superuser / user, as users/{uid}.permission holds it.
+function permissionBadge(permission) {
+  if (permission === "admin") return badge(t("users.permissionAdmin"), "brand");
+  if (permission === "superuser") return badge(t("users.permissionSuperuser"), "amber");
+  return h("span.small.muted", t("users.permissionUser"));
+}
+
 // What each sortable column orders by; null or "" = nothing to sort on.
 const SORTS = {
   name: (r) => r.fullName || r.email || r.phoneNumber || "",
   status: (r) => (r.disabled ? 2 : r.premium ? 0 : 1),
+  permission: (r) => (r.permission === "admin" ? 0 : r.permission === "superuser" ? 1 : 2),
   lastSeen: (r) => (r.online ? Number.MAX_SAFE_INTEGER : millisOf(r.lastSeenAt) || null),
   device: (r) => String(r.platform || "").toLowerCase() || null,
   version: (r) => (r.appVersion ? versionParts(r.appVersion) : null),
@@ -66,14 +75,15 @@ export async function mount({ view, actions }) {
   broadcast.addEventListener("click", () => {
     const title = input({ placeholder: "EasyPlate" });
     const text = textarea({ placeholder: "" });
+    const devices = platformControl();
     const close = modal({
       title: t("users.broadcastTitle"),
-      body: h("div.stack", field(t("common.title"), title), field(t("common.body"), text)),
+      body: h("div.stack", devices.el, field(t("common.title"), withEmoji(title)), field(t("common.body"), withEmoji(text))),
       actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.send"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => {
         if (!text.value.trim()) return;
         // A push to every account: one more explicit yes, as the notifications page asks.
-        if (!(await confirmDialog({ title: t("users.broadcastTitle"), text: t("notif.confirm.all"), danger: false }))) return;
-        try { const r = await call("user.notifyAll", { title: title.value.trim(), body: text.value.trim() }); toast(t("users.broadcastSent", { items: r.items, sent: r.sent, failed: r.failed }), "ok"); c(); } catch (err) { toastError(err); }
+        if (!(await confirmDialog({ title: t("users.broadcastTitle"), text: t("notif.confirm.all") + platformSuffix(devices.value()), danger: false }))) return;
+        try { const r = await call("user.notifyAll", { title: title.value.trim(), body: text.value.trim(), platform: devices.value() }); toast(t("users.broadcastSent", { items: r.items, sent: r.sent, failed: r.failed }), "ok"); c(); } catch (err) { toastError(err); }
       })); return b; }],
     });
     void close;
@@ -117,7 +127,7 @@ export async function mount({ view, actions }) {
     }
     count.textContent = t("users.count", { n: fmtNumber(rows.length) });
     const page = rows.slice(0, shown);
-    const signature = JSON.stringify([sort, rows.length, page.map((r) => [r.uid, r.online, r.premium, r.disabled, r.fullName, r.email, r.phoneNumber, r.photoUrl, r.platform, r.appVersion,
+    const signature = JSON.stringify([sort, rows.length, page.map((r) => [r.uid, r.online, r.premium, r.disabled, r.fullName, r.email, r.phoneNumber, r.photoUrl, r.platform, r.permission, r.appVersion,
       r.session ? [r.session.platform, millis(r.session.expiresAt)] : null, millis(r.createdAt), r.online ? 0 : millis(r.lastSeenAt)])]);
     if (!force && signature === drawn) return;
     drawn = signature;
@@ -126,6 +136,7 @@ export async function mount({ view, actions }) {
       { label: "", cell: (r) => dot(r.online) },
       { label: t("common.name"), sort: "name", cell: (r) => h("div.row", avatar(r.fullName, r.photoUrl, "sm"), h("div", h("div", r.fullName || t("common.unnamed")), h("div.small.muted", r.email || r.phoneNumber || r.uid))) },
       { label: t("common.status"), sort: "status", cell: (r) => h("div.row", r.premium ? badge(t("users.premium"), "mint") : badge(t("users.free")), r.disabled ? badge(t("users.disabled"), "red") : null) },
+      { label: t("users.permission"), sort: "permission", cell: (r) => permissionBadge(r.permission) },
       { label: t("users.lastSeen"), sort: "lastSeen", cell: (r) => r.online ? badge(t("users.online"), "green") : when(r.lastSeenAt) },
       { label: t("users.device"), sort: "device", cell: (r) => h("span.small", platformLabel(r.platform)) },
       { label: t("users.version"), sort: "version", cell: (r) => r.appVersion ? h("span.small.mono", r.appVersion) : h("span.small.muted", "—") },

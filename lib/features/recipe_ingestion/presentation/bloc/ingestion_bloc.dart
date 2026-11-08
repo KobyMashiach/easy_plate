@@ -48,6 +48,9 @@ sealed class IngestionEvent with _$IngestionEvent {
   const factory IngestionEvent.suggestRecipes({
     @Default('') String topic,
     List<DietaryPreference>? preferences,
+
+    /// The allergens to leave out, null for the saved ones.
+    List<Allergen>? allergens,
   }) = _SuggestRecipes;
 
   /// From a result opened out of the list — its review, its page, its
@@ -462,6 +465,11 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   Future<List<DietaryPreference>> get _preferences async =>
       (await getUserPreferencesUseCase()).dietaryPreferences;
 
+  /// The allergens saved in the account's preferences (even with the
+  /// allergy diet off, so switching it on in a search starts from them).
+  Future<List<Allergen>> savedAllergens() async =>
+      (await getUserPreferencesUseCase()).allergens;
+
   FutureOr<void> _selectChannel(
     _SelectChannel event,
     Emitter<IngestionState> emit,
@@ -816,6 +824,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
       final results = await suggest(
         preferences: event.preferences ?? await _preferences,
         topic: event.topic,
+        allergens: event.allergens ?? await savedAllergens(),
       );
       _lastResults = results;
       _suggested = true;

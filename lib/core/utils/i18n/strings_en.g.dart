@@ -187,7 +187,7 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get phoneGateBody => 'Every account is verified by phone. We\'ll text you a code.';
 	@override String get changeNumber => 'Change number';
 	@override String get signInTitle => 'Sign in';
-	@override String get phoneFirstHint => 'New here? Continue with phone.';
+	@override String get phoneFirstHint => 'New here? Continue with phone or Google.';
 	@override String get errorAccountExistsDifferentCredential => 'That email already belongs to another account. Sign in the way you registered.';
 	@override String get errorCredentialInUse => 'Those details already belong to another account';
 	@override String get continueWithApple => 'Sign in with Apple';
@@ -225,6 +225,9 @@ class _Translations$auth$en extends Translations$auth$he {
 	@override String get reverifyTitle => 'Verify your phone again';
 	@override String reverifyBody({required Object phone}) => 'For your security, please verify your phone again before deleting the account. We\'ll send a new code to ${phone}.';
 	@override String get reverifyNoPhone => 'This account has no phone number, so it can\'t be verified here. Contact support to delete the account.';
+	@override String socialTakeoverBody({required Object provider}) => 'We\'ll confirm the account again with ${provider}. Once it\'s confirmed, the account moves to this device and the other one is signed out.';
+	@override String socialReverifyBody({required Object provider}) => 'For your security, please confirm the account again with ${provider} before deleting it.';
+	@override String socialReverifyButton({required Object provider}) => 'Confirm with ${provider}';
 	@override String get sessionReleaseTitle => 'Another device wants to sign in';
 	@override String sessionReleaseBody({required Object platform}) => 'A device (${platform}) wants to sign in to your account. Sign out on this device?';
 	@override String get sessionReleaseConfirm => 'Sign out here';
@@ -262,6 +265,7 @@ class _Translations$onboarding$en extends Translations$onboarding$he {
 	final TranslationsEn _root; // ignore: unused_field
 
 	// Translations
+	@override String get lookAndLanguage => 'Look and language';
 	@override String get welcomeTitle => 'Welcome to EasyPlate';
 	@override String get welcomeSubtitle => 'Plan meals, cook and shop — all in one place';
 	@override String get shoppingDayTitle => 'When is your weekly shopping day?';
@@ -295,6 +299,7 @@ class _Translations$allergens$en extends Translations$allergens$he {
 
 	// Translations
 	@override String get title => 'Allergens';
+	@override String get avoid => 'I avoid:';
 	@override String get pick => 'Mark allergens';
 	@override String get contains => 'Contains';
 	@override String get mayContain => 'May contain';
@@ -1321,8 +1326,8 @@ class _Translations$premium$en extends Translations$premium$he {
 
 	// Translations
 	@override String get title => 'EasyPlate Premium';
-	@override String get headline => 'No ads, no limits';
-	@override String get subtitle => 'Everything EasyPlate can do, without waiting for tomorrow.';
+	@override String get headline => 'No ads, more AI';
+	@override String get subtitle => 'Everything EasyPlate can do, with a lot more AI every day.';
 	@override String get benefitNoAds => 'No ads in the community feeds';
 	@override String get benefitShared => 'Shared recipes with no daily limit';
 	@override String benefitAi({required Object count}) => 'AI recipe extraction from any link, up to ${count} a day';
@@ -1996,6 +2001,7 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get assistantScoped => 'Shefi inside an item';
 	@override String get assistantVoice => 'Voice with Shefi';
 	@override String get singleSession => 'One device per account';
+	@override String get phoneOptional => 'Sign-up without a phone (Google/Apple)';
 	@override String get homeWidgets => 'Home screen widgets';
 	@override String get wakeWord => 'Hey Shefi';
 	@override String get voiceAssistants => 'Shefi in Siri and Gemini';
@@ -2024,6 +2030,9 @@ class _Translations$adminConfig$en extends Translations$adminConfig$he {
 	@override String get intro => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).';
 	@override String get loadFailed => 'Could not load the configuration';
 	@override String get saveFailed => 'Publishing failed. Check the value and try again';
+	@override String get platformBoth => 'Both';
+	@override String get platformFollows => 'same as both';
+	@override String get platformHint => '"Both" sets the value for both stores and clears the separate values. Android or iOS alone changes only that store. Builds already in the stores read it too.';
 	@override String get minVersionTitle => 'Force an update?';
 	@override String minVersionBody({required Object value, required Object current}) => 'Minimum version ${value} is above the version installed here (${current}). Every device below it, this one included, gets an update screen it cannot skip. Make sure that version is already in the stores.';
 	@override String get minVersionConfirm => 'Force update';
@@ -2487,6 +2496,7 @@ class _Translations$adminConfig$labels$en extends Translations$adminConfig$label
 	@override String get gemini_maxInstances => 'Maximum instances';
 	@override String get gemini_timeoutSeconds => 'Call timeout (seconds)';
 	@override String get session_days => 'Session length (days)';
+	@override String get app_check_mode => 'App Check on paid calls';
 	@override String get presence_heartbeat_seconds => 'Presence heartbeat (seconds)';
 	@override String get session_exempt_phones => 'Numbers exempt from one device';
 	@override String get support_phone => 'Support WhatsApp number';
@@ -2700,7 +2710,7 @@ class _Translations$walkthrough$topics$account$en extends Translations$walkthrou
 	@override String get summary => 'Notifications about share invites, and the account with premium, shared access, settings and the display mode.';
 	@override String get s1 => 'Notifications: invitations to share books and plans, and updates.';
 	@override String get s2 => 'Tap the picture to open your account.';
-	@override String get s3 => 'Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.';
+	@override String get s3 => 'Premium: a bigger daily allowance of AI analyses, and no ads. A free account gets a daily allowance, which a short video extends.';
 	@override String get s4 => 'Shared access: who shares books, plans and grocery lists with you, and what you have shared.';
 	@override String get s5 => 'Tap "Settings".';
 	@override String get s6 => 'Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.';
@@ -2823,7 +2833,7 @@ extension on TranslationsEn {
 			'auth.phoneGateBody' => 'Every account is verified by phone. We\'ll text you a code.',
 			'auth.changeNumber' => 'Change number',
 			'auth.signInTitle' => 'Sign in',
-			'auth.phoneFirstHint' => 'New here? Continue with phone.',
+			'auth.phoneFirstHint' => 'New here? Continue with phone or Google.',
 			'auth.errorAccountExistsDifferentCredential' => 'That email already belongs to another account. Sign in the way you registered.',
 			'auth.errorCredentialInUse' => 'Those details already belong to another account',
 			'auth.continueWithApple' => 'Sign in with Apple',
@@ -2861,6 +2871,9 @@ extension on TranslationsEn {
 			'auth.reverifyTitle' => 'Verify your phone again',
 			'auth.reverifyBody' => ({required Object phone}) => 'For your security, please verify your phone again before deleting the account. We\'ll send a new code to ${phone}.',
 			'auth.reverifyNoPhone' => 'This account has no phone number, so it can\'t be verified here. Contact support to delete the account.',
+			'auth.socialTakeoverBody' => ({required Object provider}) => 'We\'ll confirm the account again with ${provider}. Once it\'s confirmed, the account moves to this device and the other one is signed out.',
+			'auth.socialReverifyBody' => ({required Object provider}) => 'For your security, please confirm the account again with ${provider} before deleting it.',
+			'auth.socialReverifyButton' => ({required Object provider}) => 'Confirm with ${provider}',
 			'auth.sessionReleaseTitle' => 'Another device wants to sign in',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'A device (${platform}) wants to sign in to your account. Sign out on this device?',
 			'auth.sessionReleaseConfirm' => 'Sign out here',
@@ -2880,6 +2893,7 @@ extension on TranslationsEn {
 			'profile.saving' => 'Saving...',
 			'profile.saveFailed' => 'We could not save your profile',
 			'profile.myProfile' => 'My profile',
+			'onboarding.lookAndLanguage' => 'Look and language',
 			'onboarding.welcomeTitle' => 'Welcome to EasyPlate',
 			'onboarding.welcomeSubtitle' => 'Plan meals, cook and shop — all in one place',
 			'onboarding.shoppingDayTitle' => 'When is your weekly shopping day?',
@@ -2895,6 +2909,7 @@ extension on TranslationsEn {
 			'dietary.glutenFree' => 'Gluten-free',
 			'dietary.allergy' => 'Allergy',
 			'allergens.title' => 'Allergens',
+			'allergens.avoid' => 'I avoid:',
 			'allergens.pick' => 'Mark allergens',
 			'allergens.contains' => 'Contains',
 			'allergens.mayContain' => 'May contain',
@@ -3248,13 +3263,13 @@ extension on TranslationsEn {
 			'sharing.shareAction' => 'Share',
 			'sharing.directoryUnavailable' => 'Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying.',
 			'sharing.shareBook' => 'Share book',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharePlan' => 'Share plan',
 			'sharing.acceptedBook' => 'The book was added to your library',
 			'sharing.acceptedPlan' => 'The plan was added to your plans',
 			'sharing.viewerCannotEditBook' => 'This book was shared with you as view only',
 			'sharing.viewerCannotEditPlan' => 'This plan was shared with you as view only',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.kindRecipe' => 'Recipe',
 			'sharing.kindBook' => 'Book',
 			'sharing.kindPlan' => 'Plan',
@@ -3686,8 +3701,8 @@ extension on TranslationsEn {
 			'ads.videoNotCompleted' => 'The video wasn\'t completed, the recipe stays locked',
 			'ads.videoUnavailable' => 'No video is available right now, try again in a moment',
 			'premium.title' => 'EasyPlate Premium',
-			'premium.headline' => 'No ads, no limits',
-			'premium.subtitle' => 'Everything EasyPlate can do, without waiting for tomorrow.',
+			'premium.headline' => 'No ads, more AI',
+			'premium.subtitle' => 'Everything EasyPlate can do, with a lot more AI every day.',
 			'premium.benefitNoAds' => 'No ads in the community feeds',
 			'premium.benefitShared' => 'Shared recipes with no daily limit',
 			'premium.benefitAi' => ({required Object count}) => 'AI recipe extraction from any link, up to ${count} a day',
@@ -3762,13 +3777,13 @@ extension on TranslationsEn {
 			'walkthrough.focused' => 'Show focused guidance',
 			'walkthrough.next' => 'Next',
 			'walkthrough.finish' => 'Done',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.skipStep' => 'Skip step',
 			'walkthrough.close' => 'Close guide',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Step ${current} of ${total}',
 			'walkthrough.tapHint' => 'Tap the highlighted area, or "Next"',
 			'walkthrough.bookTitle' => 'EasyPlate guide',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'Everything the app can do, chapter by chapter. The samples in this book are never saved; the live tour does the real actions, with the fields already filled in.',
 			'walkthrough.contents' => 'Contents',
 			'walkthrough.chapter' => ({required Object number}) => 'Chapter ${number}',
@@ -3821,7 +3836,7 @@ extension on TranslationsEn {
 			'walkthrough.topics.account.summary' => 'Notifications about share invites, and the account with premium, shared access, settings and the display mode.',
 			'walkthrough.topics.account.s1' => 'Notifications: invitations to share books and plans, and updates.',
 			'walkthrough.topics.account.s2' => 'Tap the picture to open your account.',
-			'walkthrough.topics.account.s3' => 'Premium: AI analyses with no daily limit and no ads. A free account gets a daily allowance, which a short video extends.',
+			'walkthrough.topics.account.s3' => 'Premium: a bigger daily allowance of AI analyses, and no ads. A free account gets a daily allowance, which a short video extends.',
 			'walkthrough.topics.account.s4' => 'Shared access: who shares books, plans and grocery lists with you, and what you have shared.',
 			'walkthrough.topics.account.s5' => 'Tap "Settings".',
 			'walkthrough.topics.account.s6' => 'Display mode: light, dark or as the device. Settings also hold the language, dietary preferences and allergens. This guide can be started again from the support screen in the account.',
@@ -4276,13 +4291,13 @@ extension on TranslationsEn {
 			'shareCode.self' => 'That is your own code.',
 			'shareCode.gone' => 'What this code shared no longer exists.',
 			'shareCode.tooManyRecipes' => 'This share holds too many recipes to join at once. Ask the owner to split it.',
+			_ => null,
+		} ?? switch (path) {
 			'shareCode.failed' => 'Could not join. Try again.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} shared "${title}" with you on EasyPlate. Code: ${code}\n${link}',
 			'shareCode.revoke' => 'Cancel code',
 			'shareCode.limitRecipes' => ({required Object count}) => 'Free accounts can share up to ${count} recipes a week.',
 			'shareCode.limitBooks' => ({required Object count}) => 'Free accounts can share up to ${count} books.',
-			_ => null,
-		} ?? switch (path) {
 			'shareCode.limitPlans' => ({required Object count}) => 'Free accounts can share up to ${count} meal plans.',
 			'shareCode.upgrade' => 'See Premium',
 			'shareCode.scanHint' => 'Point the camera at a share QR',
@@ -4427,6 +4442,7 @@ extension on TranslationsEn {
 			'featureName.assistantScoped' => 'Shefi inside an item',
 			'featureName.assistantVoice' => 'Voice with Shefi',
 			'featureName.singleSession' => 'One device per account',
+			'featureName.phoneOptional' => 'Sign-up without a phone (Google/Apple)',
 			'featureName.homeWidgets' => 'Home screen widgets',
 			'featureName.wakeWord' => 'Hey Shefi',
 			'featureName.voiceAssistants' => 'Shefi in Siri and Gemini',
@@ -4446,6 +4462,9 @@ extension on TranslationsEn {
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
+			'adminConfig.platformBoth' => 'Both',
+			'adminConfig.platformFollows' => 'same as both',
+			'adminConfig.platformHint' => '"Both" sets the value for both stores and clears the separate values. Android or iOS alone changes only that store. Builds already in the stores read it too.',
 			'adminConfig.minVersionTitle' => 'Force an update?',
 			'adminConfig.minVersionBody' => ({required Object value, required Object current}) => 'Minimum version ${value} is above the version installed here (${current}). Every device below it, this one included, gets an update screen it cannot skip. Make sure that version is already in the stores.',
 			'adminConfig.minVersionConfirm' => 'Force update',
@@ -4493,6 +4512,7 @@ extension on TranslationsEn {
 			'adminConfig.labels.gemini_maxInstances' => 'Maximum instances',
 			'adminConfig.labels.gemini_timeoutSeconds' => 'Call timeout (seconds)',
 			'adminConfig.labels.session_days' => 'Session length (days)',
+			'adminConfig.labels.app_check_mode' => 'App Check on paid calls',
 			'adminConfig.labels.presence_heartbeat_seconds' => 'Presence heartbeat (seconds)',
 			'adminConfig.labels.session_exempt_phones' => 'Numbers exempt from one device',
 			'adminConfig.labels.support_phone' => 'Support WhatsApp number',

@@ -1027,7 +1027,7 @@ exports.socialRecipe = onRequest(
     if (cacheEntry) {
       const cached = await proxy.readCache(cacheEntry);
       if (cached) {
-        const overHits = await proxy.cacheHitRefusal(caller.uid);
+        const overHits = await proxy.cacheHitRefusal(proxy.quotaKeyOf(caller));
         if (overHits) return res.status(429).json(overHits);
         proxy.countHit(cacheEntry);
         return res.status(200).set("Content-Type", "application/json").set("x-easyplate-cache", "hit").send(cached.body);
@@ -1039,7 +1039,7 @@ exports.socialRecipe = onRequest(
     let slot;
     try {
       limit = await proxy.dailyLimitForUser(uid);
-      slot = await proxy.claimQuotaSlot(uid, limit);
+      slot = await proxy.claimQuotaSlot(proxy.quotaKeyOf(caller), limit);
     } catch (err) {
       // A quota transaction that could not run (contention, Firestore down)
       // is a refusal to retry, not an unhandled rejection.
@@ -1120,7 +1120,7 @@ exports.socialRecipe = onRequest(
             // a few times a day (dailyBudget `socialProbe`): each of these
             // still ran yt-dlp and page fetches here, and a private link
             // is easy to paste in a loop.
-            if (await probeRefundAllowed(uid)) await proxy.refundQuotaSlot(uid);
+            if (await probeRefundAllowed(uid)) await proxy.refundQuotaSlot(proxy.quotaKeyOf(caller));
             return refuse(
               res,
               422,
@@ -1163,7 +1163,7 @@ exports.socialRecipe = onRequest(
       logger.error("social recipe failed", { platform, mode, reason: err.message });
       // Given back only when the model never answered (an upstream error,
       // a fetch that failed): an answer that could not be read was paid for.
-      if (refundable(err)) await proxy.refundQuotaSlot(uid);
+      if (refundable(err)) await proxy.refundQuotaSlot(proxy.quotaKeyOf(caller));
       const status = err.status === 429 ? 429 : 502;
       record(status);
       // The upstream's own text (Gemini's error body, a media URL) stays in

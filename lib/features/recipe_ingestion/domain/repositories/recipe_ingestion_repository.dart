@@ -26,6 +26,7 @@ abstract class RecipeIngestionRepository {
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   });
   Future<RecipeEntity> parseFromUrl(
     String url,

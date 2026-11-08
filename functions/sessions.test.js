@@ -147,6 +147,18 @@ test("a takeover needs a fresh SMS confirmation of the account's phone", () => {
   assert.deepEqual(parseRequest({ action: "takeover", deviceId: "B", platform: "android" }), { action: "takeover", deviceId: "B", hardwareId: null, platform: "android", pushToken: null });
 });
 
+test("an account with no phone takes over with a fresh Google or Apple sign-in", () => {
+  const at = (NOW - 60 * 1000) / 1000;
+  const google = { firebase: { sign_in_provider: "google.com", identities: { "google.com": ["1"] } }, auth_time: at };
+  assert.equal(freshPhoneProof(google, NOW), true);
+  assert.equal(freshPhoneProof({ ...google, auth_time: (NOW - 11 * 60 * 1000) / 1000 }, NOW), false, "stale");
+  const apple = { firebase: { sign_in_provider: "apple.com", identities: { "apple.com": ["1"] } }, auth_time: at };
+  assert.equal(freshPhoneProof(apple, NOW), true);
+  assert.equal(freshPhoneProof({ firebase: { sign_in_provider: "password", identities: { email: ["a"] } }, auth_time: at }, NOW), false, "email is never enough");
+  assert.equal(freshPhoneProof({ firebase: { sign_in_provider: "google.com", identities: {} }, auth_time: at }, NOW), false, "the identity must be the account's");
+  assert.equal(freshPhoneProof({ ...google, phone_number: "+972500000000" }, NOW), false, "an account with a phone still needs the SMS");
+});
+
 test("a release request is read and written inside one transaction", async () => {
   const { requestRelease } = require("./sessions").internals;
   const admin = require("firebase-admin");

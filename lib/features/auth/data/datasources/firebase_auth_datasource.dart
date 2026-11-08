@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -55,6 +56,10 @@ abstract class AuthDataSource {
   /// the next ID token proves a fresh phone sign-in (the session takeover
   /// asks for that).
   Future<void> reauthenticatePhone(String verificationId, String smsCode);
+
+  /// Confirms the signed-in account again through its Google or Apple
+  /// identity, then refreshes the token so the server sees the fresh sign-in.
+  Future<void> reauthenticateSocial();
   Future<void> linkEmailPassword(String email, String password);
   Future<void> linkGoogle();
   Future<void> linkApple();
@@ -85,16 +90,55 @@ class FirebaseAuthDataSource implements AuthDataSource {
   /// with a real number (test numbers skip the check). The reCAPTCHA flow
   /// does not depend on Play Integrity, so the request is retried once that
   /// way.
+  ///
+  /// Two Android users on 2026-11-04 still got the generic failure on the
+  /// phone gate, and it did not reproduce on our own devices. So every
+  /// app-verification failure gets the one retry, not only code 39. They
+  /// all mean the device could not prove it is the real app, and reCAPTCHA
+  /// does not depend on that. The retry costs nothing when it would have
+  /// failed anyway.
+  ///
+  /// On 2026-11-05 a user's screenshot showed "(unknown:39)". The native
+  /// Play Integrity failure reaches Dart as a plain FirebaseException, so its
+  /// code is `unknown`, not `internal-error`. The old check required
+  /// `internal-error`, so the code-39 retry had never fired. The number in
+  /// the message is the reliable signal, and an `unknown` failure gets the
+  /// retry as well.
+  @visibleForTesting
+  ///
+  /// Corrected the same evening: with the retry live, the user passed
+  /// reCAPTCHA and still got 39. Firebase reports agree that 39 is the
+  /// server refusing to text that number (QuotaExceeded / TOO_MANY_ATTEMPTS,
+  /// per number or per IP), not Play Integrity. A reCAPTCHA cannot lift it,
+  /// so 39 is never retried; it is told as "too many attempts" instead
+  /// (see [isSmsQuotaBlock]).
+  static bool isAppVerificationFailure(String code, [String? message]) =>
+      !isSmsQuotaBlock(message) &&
+      const {
+        'unknown',
+        'internal-error',
+        'missing-client-identifier',
+        'invalid-app-credential',
+        'missing-app-credential',
+        'app-not-authorized',
+        'captcha-check-failed',
+        'play-integrity-token-error',
+      }.contains(code);
+
+  /// "[ Error code:39 ]": Firebase will not text this number for now.
+  @visibleForTesting
+  static bool isSmsQuotaBlock(String? message) =>
+      (message ?? '').contains(RegExp(r'Error code:\s*39\b'));
+
   Future<bool> _fallBackToRecaptcha(FirebaseAuthException e) async {
     if (_recaptchaForced ||
         kIsWeb ||
         defaultTargetPlatform != TargetPlatform.android ||
-        e.code != 'internal-error' ||
-        !(e.message ?? '').contains('Error code:39')) {
+        !isAppVerificationFailure(e.code, e.message)) {
       return false;
     }
     _recaptchaForced = true;
-    debugPrint('Play Integrity refused; retrying SMS with reCAPTCHA');
+    debugPrint('App verification refused (${e.code}); retrying with reCAPTCHA');
     try {
       await _auth.setSettings(forceRecaptchaFlow: true);
       return true;
@@ -143,6 +187,16 @@ class FirebaseAuthDataSource implements AuthDataSource {
     // The human-readable text is dropped from the exception but is the only
     // place Firebase explains *why*, so it goes to the log.
     debugPrint('FirebaseAuthException ${e.code}: ${e.message}');
+    _report(e);
+    final code = withNativeCode(e.code, e.message);
+    // Arrives as `unknown`, so it would read as a generic failure and send
+    // the user to tap again — each tap extends the block.
+    if (isSmsQuotaBlock(e.message)) {
+      return const AppException(
+        AppErrorType.overloaded,
+        message: 'too-many-requests',
+      );
+    }
 
     return switch (e.code) {
       'invalid-credential' ||
@@ -157,8 +211,43 @@ class FirebaseAuthDataSource implements AuthDataSource {
         AppErrorType.overloaded,
         message: e.code,
       ),
-      _ => AppException(AppErrorType.unknown, message: e.code),
+      _ => AppException(AppErrorType.unknown, message: code),
     };
+  }
+
+  /// `internal-error` alone says nothing. The number Firebase buries in the
+  /// message ("[ Error code:39 ]") is what tells the causes apart, so it
+  /// travels with the code and appears in the user's screenshot.
+  @visibleForTesting
+  static String withNativeCode(String code, String? message) {
+    final n = RegExp(r'Error code:\s*(\d+)').firstMatch(message ?? '');
+    return n == null ? code : '$code:${n.group(1)}';
+  }
+
+  /// Auth failures used to exist only in debugPrint. That meant a failure on
+  /// a user's phone that we could not reproduce left no trace anywhere. Wrong
+  /// codes and rate limits are expected, so they are not reported.
+  void _report(FirebaseAuthException e) {
+    const expected = {
+      'invalid-verification-code',
+      'invalid-credential',
+      'wrong-password',
+      'user-not-found',
+      'too-many-requests',
+      'credential-already-in-use',
+      'session-expired',
+    };
+    if (kDebugMode || expected.contains(e.code)) return;
+    try {
+      unawaited(
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          StackTrace.current,
+          reason: 'auth ${e.code}: ${e.message}',
+          information: ['recaptchaForced=$_recaptchaForced'],
+        ),
+      );
+    } catch (_) {}
   }
 
   Never _rethrow(FirebaseAuthException e) => throw _mapAuthError(e);
@@ -519,6 +608,49 @@ class FirebaseAuthDataSource implements AuthDataSource {
       // A new token now, so the server sees the fresh phone sign-in.
       await _auth.currentUser?.getIdToken(true);
     } on FirebaseAuthException catch (e) {
+      _rethrow(e);
+    }
+  }
+
+  @override
+  Future<void> reauthenticateSocial() async {
+    final user = _requireUser;
+    final providers = user.providerData.map((p) => p.providerId).toSet();
+    try {
+      if (providers.contains('apple.com') &&
+          (defaultTargetPlatform == TargetPlatform.iOS ||
+              !providers.contains('google.com'))) {
+        await user.reauthenticateWithProvider(AppleAuthProvider());
+      } else if (providers.contains('google.com')) {
+        await _ensureGoogleReady();
+        final account = await GoogleSignIn.instance.authenticate();
+        final idToken = account.authentication.idToken;
+        if (idToken == null) {
+          throw const AppException(
+            AppErrorType.unauthorized,
+            message: 'Google returned no ID token',
+          );
+        }
+        await user.reauthenticateWithCredential(
+          GoogleAuthProvider.credential(idToken: idToken),
+        );
+      } else {
+        throw const AppException(
+          AppErrorType.unauthorized,
+          message: 'No Google or Apple identity to confirm',
+        );
+      }
+      // A new token now, so the server sees the fresh sign-in.
+      await _auth.currentUser?.getIdToken(true);
+    } on GoogleSignInException catch (e) {
+      throw e.code == GoogleSignInExceptionCode.canceled
+          ? const AppException(AppErrorType.cancelled)
+          : AppException(
+              AppErrorType.unknown,
+              message: e.description ?? e.code.name,
+            );
+    } on FirebaseAuthException catch (e) {
+      if (_appleCancelled(e)) throw const AppException(AppErrorType.cancelled);
       _rethrow(e);
     }
   }

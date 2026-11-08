@@ -765,16 +765,19 @@ class _ChannelFormState extends State<_ChannelForm> {
                   // The sheet starts from the diet in the settings; what is
                   // changed there is for this search only.
                   final saved = await bloc.savedPreferences();
+                  final savedAllergens = await bloc.savedAllergens();
                   if (!context.mounted) return;
                   final request = await showSuggestionRequestSheet(
                     context,
                     saved: saved,
+                    savedAllergens: savedAllergens,
                   );
                   if (request == null) return;
                   bloc.add(
                     IngestionEvent.suggestRecipes(
                       topic: request.topic,
                       preferences: request.diet,
+                      allergens: request.allergens,
                     ),
                   );
                 }),

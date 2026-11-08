@@ -9,6 +9,11 @@ class UserPreferencesEntity {
   /// that shops once a week. See [shoppingDays].
   final List<ShoppingDay> extraShoppingDays;
   final List<DietaryPreference> dietaryPreferences;
+
+  /// The allergens this account avoids, picked under the `allergy` diet.
+  /// Kept when `allergy` is switched off, so switching it back restores
+  /// them; read through [activeAllergens].
+  final List<Allergen> allergens;
   final AppLanguage language;
   final bool soundEffectsEnabled;
 
@@ -76,6 +81,7 @@ class UserPreferencesEntity {
   const UserPreferencesEntity({
     required this.shoppingDay,
     required this.dietaryPreferences,
+    this.allergens = const [],
     this.extraShoppingDays = const [],
     this.language = AppLanguage.hebrew,
     this.soundEffectsEnabled = true,
@@ -95,6 +101,12 @@ class UserPreferencesEntity {
     this.themeMode,
     this.whatsNewSeenBuild,
   });
+
+  /// [allergens] when the `allergy` diet is on, else none.
+  List<Allergen> get activeAllergens =>
+      dietaryPreferences.contains(DietaryPreference.allergy)
+      ? allergens
+      : const [];
 
   /// Every shopping day, Sunday first, without repeats.
   List<ShoppingDay> get shoppingDays => [
@@ -137,6 +149,7 @@ class UserPreferencesEntity {
     ShoppingDay? shoppingDay,
     List<ShoppingDay>? extraShoppingDays,
     List<DietaryPreference>? dietaryPreferences,
+    List<Allergen>? allergens,
     AppLanguage? language,
     bool? soundEffectsEnabled,
     bool? fastPageTurnEnabled,
@@ -159,6 +172,7 @@ class UserPreferencesEntity {
       shoppingDay: shoppingDay ?? this.shoppingDay,
       extraShoppingDays: extraShoppingDays ?? this.extraShoppingDays,
       dietaryPreferences: dietaryPreferences ?? this.dietaryPreferences,
+      allergens: allergens ?? this.allergens,
       language: language ?? this.language,
       soundEffectsEnabled: soundEffectsEnabled ?? this.soundEffectsEnabled,
       fastPageTurnEnabled: fastPageTurnEnabled ?? this.fastPageTurnEnabled,

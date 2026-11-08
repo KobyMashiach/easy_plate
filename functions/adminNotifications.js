@@ -140,7 +140,7 @@ function cleanSchedule(raw) {
 // The log.
 // ---------------------------------------------------------------------------
 
-async function log(db, { by, target, uid = null, uids = null, title, body, source, templateId = null, result = {}, error = null }) {
+async function log(db, { by, target, platform = "all", uid = null, uids = null, title, body, source, templateId = null, result = {}, error = null }) {
   let targetName = null;
   if (target === "user" && uid) {
     try {
@@ -153,6 +153,7 @@ async function log(db, { by, target, uid = null, uids = null, title, body, sourc
       at: admin.firestore.Timestamp.now(),
       by: by || null,
       target,
+      platform: platform === "android" || platform === "ios" ? platform : "all",
       uid,
       uids: target === "users" ? (uids || []).slice(0, 500) : null,
       targetName,

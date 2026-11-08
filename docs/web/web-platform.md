@@ -41,7 +41,7 @@
 > תשלומים: ההגדרות של PayPlus ושל RevenueCat + Paddle (חשבונות, secrets, Remote Config, deploy) ב-[`web-payments.md`](web-payments.md). סעיפים 1–3 כאן (Stripe) כבר לא רלוונטיים; 4–6 עדיין כן.
 
 1. **Stripe**: חשבון, מוצר "EasyPlate Premium" עם מחירים מתחדשים ו-lookup keys:
-   `easy_plate_ai_pro_monthly` (₪20), אופציונלי `easy_plate_ai_pro_duo_monthly`, `easy_plate_ai_pro_family_monthly`, `..._yearly`.
+   `easy_plate_ai_pro_monthly` (₪29.90), אופציונלי `easy_plate_ai_pro_duo_monthly`, `easy_plate_ai_pro_family_monthly`, `..._yearly`.
    על המחיר: metadata `order` (סדר תצוגה), ולהצעת ₪10 לחודש ראשון — קופון `amount_off=1000, duration=once` ואז metadata `intro_coupon=<coupon id>`, `intro_amount=1000`.
    להפעיל Apple Pay / Google Pay ב-Settings → Payment methods. להפעיל Customer Portal (Settings → Billing → Customer portal) עם ביטול והחלפת מחירים.
 2. **Webhook ב-Stripe**: URL `https://europe-west1-easy-plate.cloudfunctions.net/stripeWebhook`, אירועים:

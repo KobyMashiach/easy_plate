@@ -13,13 +13,27 @@ class RemoteParam {
   final String valueType;
   final String value;
 
+  /// The store's own value (a conditional value under IsAndroidProd /
+  /// IsIosProd); null when that store follows [value].
+  final String? androidValue;
+  final String? iosValue;
+
   const RemoteParam({
     required this.name,
     required this.group,
     required this.description,
     required this.valueType,
     required this.value,
+    this.androidValue,
+    this.iosValue,
   });
+
+  /// The value [platform] (`android` / `ios`) reads; [value] for anything else.
+  String valueFor(String? platform) => switch (platform) {
+    'android' => androidValue ?? value,
+    'ios' => iosValue ?? value,
+    _ => value,
+  };
 
   bool get isBoolean => valueType == 'BOOLEAN';
   bool get isNumber => valueType == 'NUMBER';
@@ -33,6 +47,8 @@ class RemoteParam {
     description: (json['description'] as String?) ?? '',
     valueType: (json['valueType'] as String?) ?? 'STRING',
     value: (json['value'] as String?) ?? '',
+    androidValue: (json['platforms'] as Map?)?['android'] as String?,
+    iosValue: (json['platforms'] as Map?)?['ios'] as String?,
   );
 
   RemoteParam withValue(String value) => RemoteParam(
@@ -41,13 +57,18 @@ class RemoteParam {
     description: description,
     valueType: valueType,
     value: value,
+    androidValue: androidValue,
+    iosValue: iosValue,
   );
 }
 
 /// What the editor needs: the template as a list, and one value published.
 abstract class RemoteConfigEditor {
   Future<List<RemoteParam>> fetch();
-  Future<List<RemoteParam>> set(String name, String value);
+
+  /// [platform]: null edits the default alone; `both` edits the default and
+  /// clears the store values; `android` / `ios` edits that store only.
+  Future<List<RemoteParam>> set(String name, String value, {String? platform});
 }
 
 /// Reads and writes the console's template through the `adminRemoteConfig`
@@ -90,6 +111,14 @@ class AdminRemoteConfigDataSource implements RemoteConfigEditor {
 
   /// Publishes one value and returns the whole template as published.
   @override
-  Future<List<RemoteParam>> set(String name, String value) =>
-      _post({'action': 'set', 'name': name, 'value': value});
+  Future<List<RemoteParam>> set(
+    String name,
+    String value, {
+    String? platform,
+  }) => _post({
+    'action': 'set',
+    'name': name,
+    'value': value,
+    'platform': ?platform,
+  });
 }

@@ -286,6 +286,16 @@ function inAudience({ audience = "all", uid, uidSet = null, premium = false }) {
   return true;
 }
 
+// Pure: whether an account's device is in a broadcast's platform choice.
+//   all      every device (and accounts with none recorded)
+//   android  users/{uid}.platform == "android"
+//   ios      users/{uid}.platform == "ios"
+const PLATFORMS = ["all", "android", "ios"];
+function onPlatform({ platform = "all", accountPlatform = "" }) {
+  if (platform !== "android" && platform !== "ios") return true;
+  return String(accountPlatform || "").toLowerCase() === platform;
+}
+
 // Accounts per page of a broadcast: one batch of inbox items (under
 // Firestore's 500 writes) and one multicast (FCM takes 500 tokens).
 const BROADCAST_PAGE = 400;
@@ -303,7 +313,7 @@ function broadcastItemId(runKey) {
 // `done: false` with the cursor; `onProgress` is told after every page. A
 // call without them (the console's "send now") runs to the end as before.
 async function notifyAll({
-  fromUid, title, message, audience = "all", uids = null,
+  fromUid, title, message, audience = "all", uids = null, platform = "all",
   resume = null, deadline = null, onProgress = null, runKey = null,
   db = admin.firestore(), messaging = null, pushFlag = null,
 }) {
@@ -321,7 +331,7 @@ async function notifyAll({
   let cursor = (resume && typeof resume.cursor === "string" && resume.cursor) || null;
 
   for (;;) {
-    let query = db.collection("users").orderBy(admin.firestore.FieldPath.documentId()).select("pushToken").limit(BROADCAST_PAGE);
+    let query = db.collection("users").orderBy(admin.firestore.FieldPath.documentId()).select("pushToken", "platform").limit(BROADCAST_PAGE);
     if (cursor) query = query.startAfter(cursor);
     const page = await query.get();
     if (page.empty) break;
@@ -332,7 +342,8 @@ async function notifyAll({
       for (const snap of snaps) if (snap.exists) entitlementByUid.set(snap.id, snap);
     }
     const premiumOf = (uid) => remoteFlags.isPremium(entitlementByUid.get(uid));
-    const targets = page.docs.filter((doc) => inAudience({ audience, uid: doc.id, uidSet, premium: premiumOf(doc.id) }));
+    const targets = page.docs.filter((doc) => onPlatform({ platform, accountPlatform: doc.get("platform") })
+      && inAudience({ audience, uid: doc.id, uidSet, premium: premiumOf(doc.id) }));
 
     // Each account's notification choices, read in bounded parallel groups:
     // the item is written for everyone (an announcement has to be readable),
@@ -479,4 +490,4 @@ exports.adminUsers = onRequest(
 
 // The account actions are shared with adminPanel.js (the web console), which
 // adds its own actions on top of the same checks.
-exports.internals = { claimsWithDisabled, setDisabledClaim, parseRequest, validId, isAdmin, remove, deleteInteractionOwners, disable, enable, releaseSession, notifyOne, notifyAll, inAudience, broadcastItemId, directSendRefusal, AUDIENCES, BROADCAST_PAGE, DIRECT_SEND_MAX };
+exports.internals = { claimsWithDisabled, setDisabledClaim, parseRequest, validId, isAdmin, remove, deleteInteractionOwners, disable, enable, releaseSession, notifyOne, notifyAll, inAudience, onPlatform, PLATFORMS, broadcastItemId, directSendRefusal, AUDIENCES, BROADCAST_PAGE, DIRECT_SEND_MAX };

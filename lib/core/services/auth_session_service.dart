@@ -111,6 +111,12 @@ class AuthSessionService extends ChangeNotifier {
 
   AuthStage get stage => _stage;
   AppUserEntity? get user => _user;
+
+  /// Whether a Google or Apple identity may stand in for the phone
+  /// (`ff_phone_optional` on, 2). The console's raw value, as the server
+  /// reads it — a sign-up has no plan to resolve "Premium only" against.
+  static bool get phoneOptional =>
+      FeaturesFlags.phoneOptional.value == FeatureFlagValue.enabled;
   UserProfileEntity? get profile => _profile;
 
   /// The signed-in account's profile, as something to listen to. Separate
@@ -233,8 +239,11 @@ class AuthSessionService extends ChangeNotifier {
 
     // Checked before the email stage, and before any local box is opened: a
     // phone is the root identity, so an account without one has not finished
-    // being created no matter which provider brought it here.
-    if (user.needsPhoneVerification) {
+    // being created — unless the console lets a Google or Apple identity
+    // stand in for it (ff_phone_optional). The raw console value, not the
+    // plan-resolved access: the plan is not known yet, and "Premium only"
+    // means nothing for a sign-up.
+    if (user.needsPhoneVerificationWith(phoneOptional: phoneOptional)) {
       _set(AuthStage.needsPhone);
       return;
     }

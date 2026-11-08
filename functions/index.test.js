@@ -313,3 +313,19 @@ test("a new support conversation takes one of the author's daily slots; past the
   assert.equal(await admitFeedback(refWith(() => assert.fail("no write")), {}, async () => assert.fail("no spend")), null);
   assert.equal(await admitFeedback(refWith(() => assert.fail("no write")), null, async () => assert.fail("no spend")), null);
 });
+
+test("an admin message's push: the console title in the title, the text alone in the body", () => {
+  const { bodyFor, titleFor } = require("./index").internals;
+  const msg = { type: "adminMessage", title: "גרסה 1.0.8", message: "עלתה גרסה חדשה 👏👏👏" };
+  assert.equal(titleFor(msg), "גרסה 1.0.8");
+  assert.equal(bodyFor(msg, "x"), "עלתה גרסה חדשה 👏👏👏");
+  // No title: the app's name, the text as is.
+  assert.equal(titleFor({ type: "adminMessage", message: "שלום" }), "EasyPlate");
+  assert.equal(bodyFor({ type: "adminMessage", message: "שלום" }, "x"), "שלום");
+  // A title alone is the body, under the app's name.
+  assert.equal(titleFor({ type: "adminMessage", title: "רק כותרת" }), "EasyPlate");
+  assert.equal(bodyFor({ type: "adminMessage", title: "רק כותרת" }, "x"), "רק כותרת");
+  // Other kinds keep the app's name.
+  assert.equal(titleFor({ type: "shareInvite", title: "x" }), "EasyPlate");
+  assert.equal(titleFor({ type: "adminMessage", title: { evil: 1 }, message: "m" }), "EasyPlate");
+});

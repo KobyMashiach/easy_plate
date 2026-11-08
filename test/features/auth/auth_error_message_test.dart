@@ -1,4 +1,5 @@
 import 'package:easy_plate/core/utils/i18n/strings.g.dart';
+import 'package:easy_plate/features/auth/data/datasources/firebase_auth_datasource.dart';
 import 'package:easy_plate/features/auth/presentation/widgets/auth_error_text.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,7 +47,11 @@ void main() {
   );
 
   test('an unrecognised code falls back instead of throwing', () {
-    expect(authErrorMessage('some-brand-new-code'), t.auth.errorUnknown);
+    expect(
+      authErrorMessage('some-brand-new-code'),
+      '${t.auth.errorUnknown} (some-brand-new-code)',
+    );
+    expect(authErrorMessage('unknown'), t.auth.errorUnknown);
   });
 
   test('an identity that belongs to another account says so', () {
@@ -59,6 +64,59 @@ void main() {
     expect(
       authErrorMessage('credential-already-in-use'),
       isNot(t.auth.errorUnknown),
+    );
+  });
+
+  test('the native Firebase number travels with internal-error', () {
+    expect(
+      FirebaseAuthDataSource.withNativeCode(
+        'internal-error',
+        'An internal error has occurred. [ Error code:39 ]',
+      ),
+      'internal-error:39',
+    );
+    expect(
+      FirebaseAuthDataSource.withNativeCode('quota-exceeded', null),
+      'quota-exceeded',
+    );
+  });
+
+  test('every app-verification failure gets the reCAPTCHA retry', () {
+    for (final code in [
+      'unknown',
+      'internal-error',
+      'missing-client-identifier',
+      'invalid-app-credential',
+      'app-not-authorized',
+    ]) {
+      expect(
+        FirebaseAuthDataSource.isAppVerificationFailure(code),
+        isTrue,
+        reason: code,
+      );
+    }
+    expect(
+      FirebaseAuthDataSource.isAppVerificationFailure('invalid-phone-number'),
+      isFalse,
+    );
+    // Code 39 is the server refusing the number; reCAPTCHA cannot lift it
+    // (a user passed reCAPTCHA and still got it), so it is never retried.
+    expect(
+      FirebaseAuthDataSource.isAppVerificationFailure(
+        'unknown',
+        'An internal error has occurred. [ Error code:39 ]',
+      ),
+      isFalse,
+    );
+    expect(
+      FirebaseAuthDataSource.isSmsQuotaBlock(
+        'An internal error has occurred. [ Error code:39 ]',
+      ),
+      isTrue,
+    );
+    expect(
+      FirebaseAuthDataSource.isSmsQuotaBlock('[ Error code:17 ]'),
+      isFalse,
     );
   });
 }

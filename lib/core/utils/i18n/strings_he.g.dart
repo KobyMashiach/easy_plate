@@ -354,8 +354,8 @@ class Translations$auth$he {
 	/// he: 'כניסה'
 	String get signInTitle => 'כניסה';
 
-	/// he: 'חדשים כאן? המשיכו עם טלפון.'
-	String get phoneFirstHint => 'חדשים כאן? המשיכו עם טלפון.';
+	/// he: 'חדשים כאן? המשיכו עם טלפון או עם Google.'
+	String get phoneFirstHint => 'חדשים כאן? המשיכו עם טלפון או עם Google.';
 
 	/// he: 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.'
 	String get errorAccountExistsDifferentCredential => 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.';
@@ -468,6 +468,15 @@ class Translations$auth$he {
 	/// he: 'לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.'
 	String get reverifyNoPhone => 'לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.';
 
+	/// he: 'נאמת שוב את החשבון דרך $provider. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.'
+	String socialTakeoverBody({required Object provider}) => 'נאמת שוב את החשבון דרך ${provider}. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.';
+
+	/// he: 'לביטחונך, צריך לאמת שוב את החשבון דרך $provider לפני מחיקתו.'
+	String socialReverifyBody({required Object provider}) => 'לביטחונך, צריך לאמת שוב את החשבון דרך ${provider} לפני מחיקתו.';
+
+	/// he: 'אימות עם $provider'
+	String socialReverifyButton({required Object provider}) => 'אימות עם ${provider}';
+
 	/// he: 'מכשיר אחר מבקש להתחבר'
 	String get sessionReleaseTitle => 'מכשיר אחר מבקש להתחבר';
 
@@ -543,6 +552,9 @@ class Translations$onboarding$he {
 
 	// Translations
 
+	/// he: 'מראה ושפה'
+	String get lookAndLanguage => 'מראה ושפה';
+
 	/// he: 'ברוכים הבאים ל-EasyPlate'
 	String get welcomeTitle => 'ברוכים הבאים ל-EasyPlate';
 
@@ -605,6 +617,9 @@ class Translations$allergens$he {
 
 	/// he: 'אלרגנים'
 	String get title => 'אלרגנים';
+
+	/// he: 'אני נמנע/ת מ:'
+	String get avoid => 'אני נמנע/ת מ:';
 
 	/// he: 'סימון אלרגנים'
 	String get pick => 'סימון אלרגנים';
@@ -3210,11 +3225,11 @@ class Translations$premium$he {
 	/// he: 'איזי-פלייט פרימיום'
 	String get title => 'איזי-פלייט פרימיום';
 
-	/// he: 'בלי מודעות, בלי מכסות'
-	String get headline => 'בלי מודעות, בלי מכסות';
+	/// he: 'בלי מודעות, יותר AI'
+	String get headline => 'בלי מודעות, יותר AI';
 
-	/// he: 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.'
-	String get subtitle => 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.';
+	/// he: 'כל מה שאיזי-פלייט יודעת לעשות, עם הרבה יותר AI בכל יום.'
+	String get subtitle => 'כל מה שאיזי-פלייט יודעת לעשות, עם הרבה יותר AI בכל יום.';
 
 	/// he: 'בלי מודעות בפידים של הקהילה'
 	String get benefitNoAds => 'בלי מודעות בפידים של הקהילה';
@@ -5001,6 +5016,9 @@ class Translations$featureName$he {
 	/// he: 'מכשיר אחד לחשבון'
 	String get singleSession => 'מכשיר אחד לחשבון';
 
+	/// he: 'הרשמה בלי טלפון (Google/Apple)'
+	String get phoneOptional => 'הרשמה בלי טלפון (Google/Apple)';
+
 	/// he: 'ווידג'טים למסך הבית'
 	String get homeWidgets => 'ווידג\'טים למסך הבית';
 
@@ -5066,6 +5084,15 @@ class Translations$adminConfig$he {
 
 	/// he: 'הפרסום נכשל. בדקו את הערך ונסו שוב'
 	String get saveFailed => 'הפרסום נכשל. בדקו את הערך ונסו שוב';
+
+	/// he: 'שתיהן'
+	String get platformBoth => 'שתיהן';
+
+	/// he: 'כמו שתיהן'
+	String get platformFollows => 'כמו שתיהן';
+
+	/// he: '"שתיהן" קובע את הערך לשתי החנויות ומבטל ערכים נפרדים. Android או iOS לבד משנה רק את החנות הזו. נקרא גם בגרסאות שכבר בחנויות.'
+	String get platformHint => '"שתיהן" קובע את הערך לשתי החנויות ומבטל ערכים נפרדים. Android או iOS לבד משנה רק את החנות הזו. נקרא גם בגרסאות שכבר בחנויות.';
 
 	/// he: 'לחייב עדכון?'
 	String get minVersionTitle => 'לחייב עדכון?';
@@ -5912,6 +5939,9 @@ class Translations$adminConfig$labels$he {
 	/// he: 'ימי התחברות למכשיר'
 	String get session_days => 'ימי התחברות למכשיר';
 
+	/// he: 'App Check בפונקציות בתשלום'
+	String get app_check_mode => 'App Check בפונקציות בתשלום';
+
 	/// he: 'דיווח נוכחות (שניות)'
 	String get presence_heartbeat_seconds => 'דיווח נוכחות (שניות)';
 
@@ -6335,8 +6365,8 @@ class Translations$walkthrough$topics$account$he {
 	/// he: 'לחצו על התמונה כדי לפתוח את החשבון.'
 	String get s2 => 'לחצו על התמונה כדי לפתוח את החשבון.';
 
-	/// he: 'פרימיום: ניתוחי AI ללא הגבלה יומית וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.'
-	String get s3 => 'פרימיום: ניתוחי AI ללא הגבלה יומית וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.';
+	/// he: 'פרימיום: מכסה יומית גדולה יותר של ניתוחי AI, וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.'
+	String get s3 => 'פרימיום: מכסה יומית גדולה יותר של ניתוחי AI, וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.';
 
 	/// he: 'גישה משותפת: מי חולק איתכם ספרים, תפריטים ורשימות קניות, ומה שיתפתם אתם.'
 	String get s4 => 'גישה משותפת: מי חולק איתכם ספרים, תפריטים ורשימות קניות, ומה שיתפתם אתם.';
@@ -6501,7 +6531,7 @@ extension on Translations {
 			'auth.phoneGateBody' => 'כל חשבון מאומת במספר טלפון. נשלח לכם קוד ב-SMS.',
 			'auth.changeNumber' => 'שינוי המספר',
 			'auth.signInTitle' => 'כניסה',
-			'auth.phoneFirstHint' => 'חדשים כאן? המשיכו עם טלפון.',
+			'auth.phoneFirstHint' => 'חדשים כאן? המשיכו עם טלפון או עם Google.',
 			'auth.errorAccountExistsDifferentCredential' => 'כתובת המייל הזו כבר משויכת לחשבון אחר. היכנסו בדרך שבה נרשמתם.',
 			'auth.errorCredentialInUse' => 'הפרטים האלה כבר משויכים לחשבון אחר',
 			'auth.continueWithApple' => 'כניסה עם Apple',
@@ -6539,6 +6569,9 @@ extension on Translations {
 			'auth.reverifyTitle' => 'אימות מחדש של הטלפון',
 			'auth.reverifyBody' => ({required Object phone}) => 'לביטחונך, צריך לאמת שוב את הטלפון לפני מחיקת החשבון. נשלח קוד חדש ל-${phone}.',
 			'auth.reverifyNoPhone' => 'לחשבון הזה אין מספר טלפון, אז אי אפשר לאמת אותו כאן. פנו לתמיכה כדי למחוק את החשבון.',
+			'auth.socialTakeoverBody' => ({required Object provider}) => 'נאמת שוב את החשבון דרך ${provider}. אחרי האימות החשבון יעבור למכשיר הזה, והמכשיר השני יתנתק.',
+			'auth.socialReverifyBody' => ({required Object provider}) => 'לביטחונך, צריך לאמת שוב את החשבון דרך ${provider} לפני מחיקתו.',
+			'auth.socialReverifyButton' => ({required Object provider}) => 'אימות עם ${provider}',
 			'auth.sessionReleaseTitle' => 'מכשיר אחר מבקש להתחבר',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'מכשיר ${platform} מבקש להתחבר לחשבון שלך. להתנתק מהמכשיר הזה?',
 			'auth.sessionReleaseConfirm' => 'להתנתק כאן',
@@ -6558,6 +6591,7 @@ extension on Translations {
 			'profile.saving' => 'שומר...',
 			'profile.saveFailed' => 'לא הצלחנו לשמור את הפרופיל',
 			'profile.myProfile' => 'הפרופיל שלי',
+			'onboarding.lookAndLanguage' => 'מראה ושפה',
 			'onboarding.welcomeTitle' => 'ברוכים הבאים ל-EasyPlate',
 			'onboarding.welcomeSubtitle' => 'תכננו ארוחות, בשלו וקנו — הכל במקום אחד',
 			'onboarding.shoppingDayTitle' => 'מתי יום הקניות השבועי שלכם?',
@@ -6573,6 +6607,7 @@ extension on Translations {
 			'dietary.glutenFree' => 'ללא גלוטן',
 			'dietary.allergy' => 'אלרגיה',
 			'allergens.title' => 'אלרגנים',
+			'allergens.avoid' => 'אני נמנע/ת מ:',
 			'allergens.pick' => 'סימון אלרגנים',
 			'allergens.contains' => 'מכיל',
 			'allergens.mayContain' => 'עלול להכיל',
@@ -6926,13 +6961,13 @@ extension on Translations {
 			'sharing.shareAction' => 'שיתוף',
 			'sharing.directoryUnavailable' => 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.',
 			'sharing.shareBook' => 'שיתוף ספר',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharePlan' => 'שיתוף תפריט',
 			'sharing.acceptedBook' => 'הספר נוסף לספרייה שלכם',
 			'sharing.acceptedPlan' => 'התפריט נוסף לתפריטים שלכם',
 			'sharing.viewerCannotEditBook' => 'הספר שותף איתכם לצפייה בלבד',
 			'sharing.viewerCannotEditPlan' => 'התפריט שותף איתכם לצפייה בלבד',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.kindRecipe' => 'מתכון',
 			'sharing.kindBook' => 'ספר',
 			'sharing.kindPlan' => 'תפריט',
@@ -7364,8 +7399,8 @@ extension on Translations {
 			'ads.videoNotCompleted' => 'הסרטון לא הושלם, המתכון נשאר נעול',
 			'ads.videoUnavailable' => 'אין סרטון זמין כרגע, נסו שוב בעוד רגע',
 			'premium.title' => 'איזי-פלייט פרימיום',
-			'premium.headline' => 'בלי מודעות, בלי מכסות',
-			'premium.subtitle' => 'כל מה שאיזי-פלייט יודעת לעשות, בלי לחכות למחר.',
+			'premium.headline' => 'בלי מודעות, יותר AI',
+			'premium.subtitle' => 'כל מה שאיזי-פלייט יודעת לעשות, עם הרבה יותר AI בכל יום.',
 			'premium.benefitNoAds' => 'בלי מודעות בפידים של הקהילה',
 			'premium.benefitShared' => 'מתכונים משותפים ללא הגבלה יומית',
 			'premium.benefitAi' => ({required Object count}) => 'חילוץ מתכונים עם AI מכל קישור, עד ${count} ביום',
@@ -7440,13 +7475,13 @@ extension on Translations {
 			'walkthrough.focused' => 'הצג הנחיה ממוקדת',
 			'walkthrough.next' => 'הבא',
 			'walkthrough.finish' => 'סיום',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.skipStep' => 'דלג על שלב',
 			'walkthrough.close' => 'סגור הדרכה',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'שלב ${current} מתוך ${total}',
 			'walkthrough.tapHint' => 'לחצו על האזור המודגש, או על ״הבא״',
 			'walkthrough.bookTitle' => 'מדריך EasyPlate',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'כל מה שאפשר לעשות באפליקציה, פרק אחר פרק. הדוגמאות בספר לא נשמרות; בסיור החי עושים את הפעולות באמת, עם שדות שכבר מולאו.',
 			'walkthrough.contents' => 'תוכן עניינים',
 			'walkthrough.chapter' => ({required Object number}) => 'פרק ${number}',
@@ -7499,7 +7534,7 @@ extension on Translations {
 			'walkthrough.topics.account.summary' => 'התראות על הזמנות לשיתוף, והחשבון עם פרימיום, גישה משותפת, הגדרות ומצב תצוגה.',
 			'walkthrough.topics.account.s1' => 'התראות: הזמנות לשיתוף ספרים ותפריטים, ועדכונים.',
 			'walkthrough.topics.account.s2' => 'לחצו על התמונה כדי לפתוח את החשבון.',
-			'walkthrough.topics.account.s3' => 'פרימיום: ניתוחי AI ללא הגבלה יומית וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.',
+			'walkthrough.topics.account.s3' => 'פרימיום: מכסה יומית גדולה יותר של ניתוחי AI, וללא פרסומות. חשבון חינמי מקבל מכסה יומית, ואפשר להרחיב אותה בצפייה בסרטון.',
 			'walkthrough.topics.account.s4' => 'גישה משותפת: מי חולק איתכם ספרים, תפריטים ורשימות קניות, ומה שיתפתם אתם.',
 			'walkthrough.topics.account.s5' => 'לחצו על ״הגדרות״.',
 			'walkthrough.topics.account.s6' => 'מצב תצוגה: בהיר, כהה או לפי המכשיר. בהגדרות גם שפה, העדפות תזונה ואלרגנים. את ההדרכה הזו מפעילים שוב ממסך התמיכה שבחשבון.',
@@ -7954,13 +7989,13 @@ extension on Translations {
 			'shareCode.self' => 'זה הקוד שלכם.',
 			'shareCode.gone' => 'מה שהקוד שיתף כבר לא קיים.',
 			'shareCode.tooManyRecipes' => 'השיתוף הזה מכיל יותר מדי מתכונים להצטרפות בבת אחת. בקשו מהבעלים לפצל אותו.',
+			_ => null,
+		} ?? switch (path) {
 			'shareCode.failed' => 'ההצטרפות נכשלה. נסו שוב.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} שיתף איתך את "${title}" ב-EasyPlate. קוד: ${code}\n${link}',
 			'shareCode.revoke' => 'לבטל קוד',
 			'shareCode.limitRecipes' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} מתכונים בשבוע.',
 			'shareCode.limitBooks' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} ספרים.',
-			_ => null,
-		} ?? switch (path) {
 			'shareCode.limitPlans' => ({required Object count}) => 'חשבון חינמי יכול לשתף עד ${count} תפריטים.',
 			'shareCode.upgrade' => 'לפרימיום',
 			'shareCode.scanHint' => 'כוונו את המצלמה ל-QR של השיתוף',
@@ -8105,6 +8140,7 @@ extension on Translations {
 			'featureName.assistantScoped' => 'שפי בתוך פריט',
 			'featureName.assistantVoice' => 'דיבור עם שפי',
 			'featureName.singleSession' => 'מכשיר אחד לחשבון',
+			'featureName.phoneOptional' => 'הרשמה בלי טלפון (Google/Apple)',
 			'featureName.homeWidgets' => 'ווידג\'טים למסך הבית',
 			'featureName.wakeWord' => 'היי שפי',
 			'featureName.voiceAssistants' => 'שפי דרך Siri ו-Gemini',
@@ -8124,6 +8160,9 @@ extension on Translations {
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
+			'adminConfig.platformBoth' => 'שתיהן',
+			'adminConfig.platformFollows' => 'כמו שתיהן',
+			'adminConfig.platformHint' => '"שתיהן" קובע את הערך לשתי החנויות ומבטל ערכים נפרדים. Android או iOS לבד משנה רק את החנות הזו. נקרא גם בגרסאות שכבר בחנויות.',
 			'adminConfig.minVersionTitle' => 'לחייב עדכון?',
 			'adminConfig.minVersionBody' => ({required Object value, required Object current}) => 'גרסה מינימלית ${value} גבוהה מהגרסה שמותקנת כאן (${current}). כל מכשיר עם גרסה נמוכה ממנה, כולל זה, יקבל מסך עדכון בלי אפשרות לדלג. ודאו שהגרסה הזו כבר בחנויות.',
 			'adminConfig.minVersionConfirm' => 'לחייב עדכון',
@@ -8171,6 +8210,7 @@ extension on Translations {
 			'adminConfig.labels.gemini_maxInstances' => 'מקסימום שרתים',
 			'adminConfig.labels.gemini_timeoutSeconds' => 'זמן קצוב לקריאה (שניות)',
 			'adminConfig.labels.session_days' => 'ימי התחברות למכשיר',
+			'adminConfig.labels.app_check_mode' => 'App Check בפונקציות בתשלום',
 			'adminConfig.labels.presence_heartbeat_seconds' => 'דיווח נוכחות (שניות)',
 			'adminConfig.labels.session_exempt_phones' => 'מספרים פטורים ממכשיר אחד',
 			'adminConfig.labels.support_phone' => 'מספר WhatsApp לתמיכה',

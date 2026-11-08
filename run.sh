@@ -48,6 +48,17 @@ function uploadDartSymbols() {
     echo "   firebase crashlytics:symbols:upload --app=<GOOGLE_APP_ID> $SYMBOLS_DIR/$platform"
     return 0
   fi
+  if [ "$platform" = "ios" ]; then
+    # iOS: Flutter's split-debug-info ELF has no BuildID, so the firebase CLI
+    # (dump_syms) cannot process it. Crashlytics symbolicates iOS from the
+    # archive's dSYMs instead; App.framework.dSYM carries the Dart frames.
+    local dsyms="build/ios/archive/Runner.xcarchive/dSYMs"
+    local tool="ios/Pods/FirebaseCrashlytics/upload-symbols"
+    echo "Upload dSYMs (ios) to Crashlytics"
+    "$tool" -gsp ios/Runner/GoogleService-Info.plist -p ios "$dsyms" ||
+      echo "⚠️  dSYM upload failed; retry: $tool -gsp ios/Runner/GoogleService-Info.plist -p ios $dsyms"
+    return 0
+  fi
   echo "Upload Dart symbols ($platform) to Crashlytics"
   firebase crashlytics:symbols:upload --app="$app_id" "$SYMBOLS_DIR/$platform" ||
     echo "⚠️  Symbol upload failed; retry: firebase crashlytics:symbols:upload --app=$app_id $SYMBOLS_DIR/$platform"

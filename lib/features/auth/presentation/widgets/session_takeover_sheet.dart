@@ -10,6 +10,7 @@ import '../../../../core/services/auth_session_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../domain/repositories/auth_repository.dart';
+import 'apple_sign_in.dart';
 import 'auth_error_text.dart';
 import 'sms_auto_fill.dart';
 
@@ -71,6 +72,18 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet>
   String? _error;
 
   String? get _phone => AuthSessionService().user?.phoneNumber;
+
+  /// For an account with no phone: the Google or Apple identity it can be
+  /// confirmed through instead, by name, or null when it has neither.
+  String? get _socialProvider {
+    final user = AuthSessionService().user;
+    if (user == null) return null;
+    if (user.hasApple && (appleSignInAvailable || !user.hasGoogle)) {
+      return 'Apple';
+    }
+    if (user.hasGoogle) return 'Google';
+    return null;
+  }
 
   @override
   void initState() {
@@ -138,6 +151,26 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet>
     }
   }
 
+  /// The proof for an account without a phone: a fresh Google/Apple sign-in.
+  Future<void> _confirmSocial() async {
+    if (_busy) return;
+    setState(() {
+      _error = null;
+      _busy = true;
+    });
+    try {
+      await context.read<AuthRepository>().reauthenticateSocial();
+      await _takeover();
+    } on AppException catch (e) {
+      if (e.type == AppErrorType.cancelled) return;
+      if (mounted) setState(() => _error = _messageFor(e));
+    } catch (e) {
+      if (mounted) setState(() => _error = _messageFor(e));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   /// After a fresh phone proof: this device takes the session over.
   Future<void> _takeover() async {
     if (!widget.takeover) {
@@ -165,6 +198,7 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet>
   @override
   Widget build(BuildContext context) {
     final phone = _phone;
+    final social = _socialProvider;
     final awaitingCode = _verificationId != null;
     return SafeArea(
       child: Padding(
@@ -188,7 +222,38 @@ class _SessionTakeoverSheetState extends State<_SessionTakeoverSheet>
                 underline: true,
               ),
               const SizedBox(height: AppSpacing.gutter),
-              if (phone == null || phone.isEmpty)
+              if ((phone == null || phone.isEmpty) && social != null) ...[
+                Text(
+                  widget.takeover
+                      ? t.auth.socialTakeoverBody(provider: social)
+                      : t.auth.socialReverifyBody(provider: social),
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    _error!,
+                    style: AppTextStyles.labelMd.copyWith(
+                      color: AppColors.error,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.md),
+                ClayButton(
+                  label: t.auth.socialReverifyButton(provider: social),
+                  icon: social == 'Apple'
+                      ? Icons.apple_rounded
+                      : Icons.g_mobiledata_rounded,
+                  expanded: true,
+                  onPressed: _busy ? null : _confirmSocial,
+                ),
+                if (_busy) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  const Center(child: CircularProgressIndicator()),
+                ],
+              ] else if (phone == null || phone.isEmpty)
                 Text(
                   widget.takeover
                       ? t.auth.sessionTakeoverNoPhone

@@ -186,7 +186,7 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get phoneGateBody => 'Chaque compte est vérifié par téléphone. Nous vous enverrons un code par SMS.';
 	@override String get changeNumber => 'Changer de numéro';
 	@override String get signInTitle => 'Connexion';
-	@override String get phoneFirstHint => 'Nouveau ici ? Continuez avec le téléphone.';
+	@override String get phoneFirstHint => 'Nouveau ici ? Continuez avec le téléphone ou Google.';
 	@override String get errorAccountExistsDifferentCredential => 'Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.';
 	@override String get errorCredentialInUse => 'Ces informations appartiennent déjà à un autre compte';
 	@override String get continueWithApple => 'Se connecter avec Apple';
@@ -224,6 +224,9 @@ class _Translations$auth$fr extends Translations$auth$he {
 	@override String get reverifyTitle => 'Vérifiez à nouveau votre téléphone';
 	@override String reverifyBody({required Object phone}) => 'Pour votre sécurité, vérifiez à nouveau votre téléphone avant de supprimer le compte. Nous enverrons un nouveau code au ${phone}.';
 	@override String get reverifyNoPhone => 'Ce compte n\'a pas de numéro de téléphone, il ne peut donc pas être vérifié ici. Contactez l\'assistance pour supprimer le compte.';
+	@override String socialTakeoverBody({required Object provider}) => 'Nous allons confirmer à nouveau le compte avec ${provider}. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.';
+	@override String socialReverifyBody({required Object provider}) => 'Pour votre sécurité, confirmez à nouveau le compte avec ${provider} avant de le supprimer.';
+	@override String socialReverifyButton({required Object provider}) => 'Confirmer avec ${provider}';
 	@override String get sessionReleaseTitle => 'Un autre appareil veut se connecter';
 	@override String sessionReleaseBody({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?';
 	@override String get sessionReleaseConfirm => 'Me déconnecter ici';
@@ -261,6 +264,7 @@ class _Translations$onboarding$fr extends Translations$onboarding$he {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
+	@override String get lookAndLanguage => 'Apparence et langue';
 	@override String get welcomeTitle => 'Bienvenue sur EasyPlate';
 	@override String get welcomeSubtitle => 'Planifiez vos repas, cuisinez et faites vos courses — tout au même endroit';
 	@override String get shoppingDayTitle => 'Quel est votre jour de courses hebdomadaire ?';
@@ -294,6 +298,7 @@ class _Translations$allergens$fr extends Translations$allergens$he {
 
 	// Translations
 	@override String get title => 'Allergènes';
+	@override String get avoid => 'J’évite :';
 	@override String get pick => 'Indiquer les allergènes';
 	@override String get contains => 'Contient';
 	@override String get mayContain => 'Peut contenir';
@@ -1320,8 +1325,8 @@ class _Translations$premium$fr extends Translations$premium$he {
 
 	// Translations
 	@override String get title => 'EasyPlate Premium';
-	@override String get headline => 'Sans publicité, sans limites';
-	@override String get subtitle => 'Tout ce qu\'EasyPlate sait faire, sans attendre demain.';
+	@override String get headline => 'Sans publicité, plus d’IA';
+	@override String get subtitle => 'Tout ce qu\'EasyPlate sait faire, avec bien plus d’IA chaque jour.';
 	@override String get benefitNoAds => 'Aucune publicité dans les fils de la communauté';
 	@override String get benefitShared => 'Recettes partagées sans limite quotidienne';
 	@override String benefitAi({required Object count}) => 'Extraction de recettes par IA depuis n’importe quel lien, jusqu’à ${count} par jour';
@@ -1977,6 +1982,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get assistantScoped => 'Shefi dans un élément';
 	@override String get assistantVoice => 'Voix avec Shefi';
 	@override String get singleSession => 'Un appareil par compte';
+	@override String get phoneOptional => 'Inscription sans téléphone (Google/Apple)';
 	@override String get homeWidgets => 'Widgets d\'écran d\'accueil';
 	@override String get wakeWord => 'Hé Shefi';
 	@override String get voiceAssistants => 'Shefi dans Siri et Gemini';
@@ -2434,7 +2440,7 @@ class _Translations$walkthrough$topics$account$fr extends Translations$walkthrou
 	@override String get summary => 'Notifications d\'invitations au partage, et le compte avec premium, accès partagé, réglages et mode d\'affichage.';
 	@override String get s1 => 'Notifications : invitations à partager des livres et des plans, et mises à jour.';
 	@override String get s2 => 'Touchez la photo pour ouvrir votre compte.';
-	@override String get s3 => 'Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.';
+	@override String get s3 => 'Premium : un quota quotidien d’analyses IA plus large, et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.';
 	@override String get s4 => 'Accès partagé : qui partage des livres, des plans et des listes de courses avec vous, et ce que vous avez partagé.';
 	@override String get s5 => 'Touchez « Réglages ».';
 	@override String get s6 => 'Mode d\'affichage : clair, sombre ou selon l\'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l\'écran d\'assistance du compte.';
@@ -2557,7 +2563,7 @@ extension on TranslationsFr {
 			'auth.phoneGateBody' => 'Chaque compte est vérifié par téléphone. Nous vous enverrons un code par SMS.',
 			'auth.changeNumber' => 'Changer de numéro',
 			'auth.signInTitle' => 'Connexion',
-			'auth.phoneFirstHint' => 'Nouveau ici ? Continuez avec le téléphone.',
+			'auth.phoneFirstHint' => 'Nouveau ici ? Continuez avec le téléphone ou Google.',
 			'auth.errorAccountExistsDifferentCredential' => 'Cet e-mail appartient déjà à un autre compte. Connectez-vous comme lors de votre inscription.',
 			'auth.errorCredentialInUse' => 'Ces informations appartiennent déjà à un autre compte',
 			'auth.continueWithApple' => 'Se connecter avec Apple',
@@ -2595,6 +2601,9 @@ extension on TranslationsFr {
 			'auth.reverifyTitle' => 'Vérifiez à nouveau votre téléphone',
 			'auth.reverifyBody' => ({required Object phone}) => 'Pour votre sécurité, vérifiez à nouveau votre téléphone avant de supprimer le compte. Nous enverrons un nouveau code au ${phone}.',
 			'auth.reverifyNoPhone' => 'Ce compte n\'a pas de numéro de téléphone, il ne peut donc pas être vérifié ici. Contactez l\'assistance pour supprimer le compte.',
+			'auth.socialTakeoverBody' => ({required Object provider}) => 'Nous allons confirmer à nouveau le compte avec ${provider}. Une fois confirmé, le compte passe sur cet appareil et l’autre est déconnecté.',
+			'auth.socialReverifyBody' => ({required Object provider}) => 'Pour votre sécurité, confirmez à nouveau le compte avec ${provider} avant de le supprimer.',
+			'auth.socialReverifyButton' => ({required Object provider}) => 'Confirmer avec ${provider}',
 			'auth.sessionReleaseTitle' => 'Un autre appareil veut se connecter',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'Un appareil (${platform}) veut se connecter à votre compte. Se déconnecter sur cet appareil ?',
 			'auth.sessionReleaseConfirm' => 'Me déconnecter ici',
@@ -2614,6 +2623,7 @@ extension on TranslationsFr {
 			'profile.saving' => 'Enregistrement...',
 			'profile.saveFailed' => 'Impossible d\'enregistrer le profil',
 			'profile.myProfile' => 'Mon profil',
+			'onboarding.lookAndLanguage' => 'Apparence et langue',
 			'onboarding.welcomeTitle' => 'Bienvenue sur EasyPlate',
 			'onboarding.welcomeSubtitle' => 'Planifiez vos repas, cuisinez et faites vos courses — tout au même endroit',
 			'onboarding.shoppingDayTitle' => 'Quel est votre jour de courses hebdomadaire ?',
@@ -2629,6 +2639,7 @@ extension on TranslationsFr {
 			'dietary.glutenFree' => 'Sans gluten',
 			'dietary.allergy' => 'Allergie',
 			'allergens.title' => 'Allergènes',
+			'allergens.avoid' => 'J’évite :',
 			'allergens.pick' => 'Indiquer les allergènes',
 			'allergens.contains' => 'Contient',
 			'allergens.mayContain' => 'Peut contenir',
@@ -2982,13 +2993,13 @@ extension on TranslationsFr {
 			'sharing.shareAction' => 'Partager',
 			'sharing.directoryUnavailable' => 'Le partage n\'est pas encore configuré côté serveur. Déconnectez-vous puis reconnectez-vous ; si cela persiste, les règles Firestore doivent être déployées.',
 			'sharing.shareBook' => 'Partager le livre',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharePlan' => 'Partager le menu',
 			'sharing.acceptedBook' => 'Le livre a été ajouté à votre bibliothèque',
 			'sharing.acceptedPlan' => 'Le menu a été ajouté à vos menus',
 			'sharing.viewerCannotEditBook' => 'Ce livre est partagé avec vous en lecture seule',
 			'sharing.viewerCannotEditPlan' => 'Ce menu est partagé avec vous en lecture seule',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.kindRecipe' => 'Recette',
 			'sharing.kindBook' => 'Livre',
 			'sharing.kindPlan' => 'Menu',
@@ -3420,8 +3431,8 @@ extension on TranslationsFr {
 			'ads.videoNotCompleted' => 'La vidéo n\'a pas été terminée, la recette reste verrouillée',
 			'ads.videoUnavailable' => 'Aucune vidéo disponible pour le moment, réessayez dans un instant',
 			'premium.title' => 'EasyPlate Premium',
-			'premium.headline' => 'Sans publicité, sans limites',
-			'premium.subtitle' => 'Tout ce qu\'EasyPlate sait faire, sans attendre demain.',
+			'premium.headline' => 'Sans publicité, plus d’IA',
+			'premium.subtitle' => 'Tout ce qu\'EasyPlate sait faire, avec bien plus d’IA chaque jour.',
 			'premium.benefitNoAds' => 'Aucune publicité dans les fils de la communauté',
 			'premium.benefitShared' => 'Recettes partagées sans limite quotidienne',
 			'premium.benefitAi' => ({required Object count}) => 'Extraction de recettes par IA depuis n’importe quel lien, jusqu’à ${count} par jour',
@@ -3496,13 +3507,13 @@ extension on TranslationsFr {
 			'walkthrough.focused' => 'Afficher l\'aide ciblée',
 			'walkthrough.next' => 'Suivant',
 			'walkthrough.finish' => 'Terminer',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.skipStep' => 'Passer l\'étape',
 			'walkthrough.close' => 'Fermer le guide',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Étape ${current} sur ${total}',
 			'walkthrough.tapHint' => 'Touchez la zone en surbrillance ou « Suivant »',
 			'walkthrough.bookTitle' => 'Guide EasyPlate',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'Tout ce que l\'application sait faire, chapitre par chapitre. Les exemples de ce livre ne sont jamais enregistrés ; la visite en direct fait les vraies actions, avec les champs déjà remplis.',
 			'walkthrough.contents' => 'Sommaire',
 			'walkthrough.chapter' => ({required Object number}) => 'Chapitre ${number}',
@@ -3555,7 +3566,7 @@ extension on TranslationsFr {
 			'walkthrough.topics.account.summary' => 'Notifications d\'invitations au partage, et le compte avec premium, accès partagé, réglages et mode d\'affichage.',
 			'walkthrough.topics.account.s1' => 'Notifications : invitations à partager des livres et des plans, et mises à jour.',
 			'walkthrough.topics.account.s2' => 'Touchez la photo pour ouvrir votre compte.',
-			'walkthrough.topics.account.s3' => 'Premium : analyses IA sans limite quotidienne et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.',
+			'walkthrough.topics.account.s3' => 'Premium : un quota quotidien d’analyses IA plus large, et sans publicité. Un compte gratuit a un quota quotidien, qu\'une courte vidéo prolonge.',
 			'walkthrough.topics.account.s4' => 'Accès partagé : qui partage des livres, des plans et des listes de courses avec vous, et ce que vous avez partagé.',
 			'walkthrough.topics.account.s5' => 'Touchez « Réglages ».',
 			'walkthrough.topics.account.s6' => 'Mode d\'affichage : clair, sombre ou selon l\'appareil. Les réglages tiennent aussi la langue, les préférences alimentaires et les allergènes. Ce guide se relance depuis l\'écran d\'assistance du compte.',
@@ -4010,13 +4021,13 @@ extension on TranslationsFr {
 			'household.create' => 'Ouvrir un compte partagé',
 			'household.nameHint' => 'Nom, p. ex. famille Martin',
 			'household.notEligible' => 'Le compte partagé est inclus avec Pro Duo (2 comptes) ou Pro Family (jusqu’à 6 comptes).',
+			_ => null,
+		} ?? switch (path) {
 			'household.seePlans' => 'Voir les offres',
 			'household.members' => 'Membres',
 			'household.owner' => 'Propriétaire',
 			'household.you' => 'Vous',
 			'household.invite' => 'Inviter un membre',
-			_ => null,
-		} ?? switch (path) {
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(free, one: 'Toute personne ayant ce code rejoint le compte partagé. ${free} place restante.', other: 'Toute personne ayant ce code rejoint le compte partagé. ${free} places restantes.', ), 
 			'household.noSeats' => 'Toutes les places sont prises.',
 			'household.remove' => 'Retirer',
@@ -4143,6 +4154,7 @@ extension on TranslationsFr {
 			'featureName.assistantScoped' => 'Shefi dans un élément',
 			'featureName.assistantVoice' => 'Voix avec Shefi',
 			'featureName.singleSession' => 'Un appareil par compte',
+			'featureName.phoneOptional' => 'Inscription sans téléphone (Google/Apple)',
 			'featureName.homeWidgets' => 'Widgets d\'écran d\'accueil',
 			'featureName.wakeWord' => 'Hé Shefi',
 			'featureName.voiceAssistants' => 'Shefi dans Siri et Gemini',

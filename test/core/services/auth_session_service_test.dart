@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_plate/core/constants/app_enums.dart';
+import 'package:easy_plate/core/features/features_flags.dart';
 import 'package:easy_plate/core/services/auth_session_service.dart';
 import 'package:easy_plate/core/sync/cloud_sync_service.dart';
 import 'package:easy_plate/core/sync/user_cloud_collection.dart';
@@ -210,9 +211,14 @@ void main() {
     claimsRefreshes = 0;
     AuthSessionService.refreshClaims = () async => claimsRefreshes++;
     session.bind(auth: auth, profiles: profiles, preferences: preferences);
+    // The phone required of everyone unless a test says otherwise.
+    FeaturesFlags.overrides = {
+      FeaturesFlags.phoneOptional: FeatureFlagValue.hidden,
+    };
   });
 
   tearDown(() async {
+    FeaturesFlags.overrides = null;
     await auth.close();
     await tokenRefreshes.close();
   });
@@ -310,6 +316,40 @@ void main() {
       expect(profiles.reads, 0);
     },
   );
+
+  group('ff_phone_optional on', () {
+    setUp(() {
+      FeaturesFlags.overrides = {
+        FeaturesFlags.phoneOptional: FeatureFlagValue.enabled,
+      };
+    });
+
+    test('a Google account without a phone passes the phone gate', () async {
+      profiles.profile = buildProfile();
+      await signIn(_phonelessUser);
+      expect(session.stage, isNot(AuthStage.needsPhone));
+    });
+
+    test('an Apple account without a phone passes the phone gate', () async {
+      profiles.profile = buildProfile();
+      await signIn(
+        const AppUserEntity(uid: 'u3', providerIds: ['apple.com']),
+      );
+      expect(session.stage, isNot(AuthStage.needsPhone));
+    });
+
+    test('an email/password account is still held for a phone', () async {
+      await signIn(
+        const AppUserEntity(
+          uid: 'u4',
+          email: 'e@b.com',
+          emailVerified: true,
+          providerIds: ['password'],
+        ),
+      );
+      expect(session.stage, AuthStage.needsPhone);
+    });
+  });
 
   test('linking a phone releases the gate', () async {
     await signIn(_phonelessUser);

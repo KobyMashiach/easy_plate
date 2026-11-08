@@ -88,7 +88,7 @@ function jsonLd(lang) {
     isAccessibleForFree: true,
     offers: [
       { '@type': 'Offer', name: t.pricing.freeName, price: '0', priceCurrency: 'ILS', category: 'free', availability: 'https://schema.org/InStock', url },
-      { '@type': 'Offer', name: t.pricing.proName, price: '20', priceCurrency: 'ILS', category: 'subscription', availability: 'https://schema.org/InStock', url: url + '#pricing', priceSpecification: { '@type': 'UnitPriceSpecification', price: '20', priceCurrency: 'ILS', billingDuration: 1, billingIncrement: 1, unitCode: 'MON', referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' } } },
+      { '@type': 'Offer', name: t.pricing.proName, price: '29.90', priceCurrency: 'ILS', category: 'subscription', availability: 'https://schema.org/InStock', url: url + '#pricing', priceSpecification: { '@type': 'UnitPriceSpecification', price: '29.90', priceCurrency: 'ILS', billingDuration: 1, billingIncrement: 1, unitCode: 'MON', referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' } } },
     ],
     installUrl: [APP_STORE_URL, PLAY_URL], downloadUrl: [APP_STORE_URL, PLAY_URL], sameAs: [APP_STORE_URL, PLAY_URL],
     author: { '@id': `${SITE}/#organization` }, publisher: { '@id': `${SITE}/#organization` },

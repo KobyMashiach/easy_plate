@@ -336,13 +336,13 @@ async function handleRecipes(req, res, caller, key) {
     const { items, failed } = await recipePages(request, {
       key,
       onMisses: async (count) => {
-        const decision = await budget.spend({ uid: caller.uid, kind: "recipeLookup", amount: count });
+        const decision = await budget.spend({ uid: proxy.quotaKeyOf(caller), kind: "recipeLookup", amount: count });
         if (!decision.allowed) throw budget.exhausted(decision, "recipeLookup");
         spent = count;
       },
     });
     // A lookup Serper failed was not a page bought: given back.
-    if (failed && spent) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "recipeLookup", amount: failed });
+    if (failed && spent) await budget.refund(admin.firestore(), { uid: proxy.quotaKeyOf(caller), kind: "recipeLookup", amount: failed });
     logger.info("recipe pages", { uid: caller.uid, dishes: request.dishes.length, found: items.length, looked: spent, failed });
     return res.status(200).json({ items });
   } catch (err) {
@@ -435,7 +435,7 @@ async function handleDownload(req, res, caller) {
   const parsed = parseDownload(req.body);
   if (parsed.error) return res.status(400).json({ error: { code: parsed.error, message: "url must be an http(s) URL" } });
 
-  const decision = await budget.spend({ uid: caller.uid, kind: "imageSearch" });
+  const decision = await budget.spend({ uid: proxy.quotaKeyOf(caller), kind: "imageSearch" });
   if (!decision.allowed) {
     logger.info("image download budget exhausted", { uid: caller.uid, used: decision.used, limit: decision.limit });
     return res.status(429).json(budget.refusalBody(decision, "imageSearch"));
@@ -488,7 +488,7 @@ exports.imageSearch = onRequest(
       const page = await search(request, {
         key,
         onMiss: async () => {
-          const decision = await budget.spend({ uid: caller.uid, kind: "imageSearch" });
+          const decision = await budget.spend({ uid: proxy.quotaKeyOf(caller), kind: "imageSearch" });
           if (!decision.allowed) throw budget.exhausted(decision, "imageSearch");
           spent = true;
         },
@@ -503,7 +503,7 @@ exports.imageSearch = onRequest(
         return res.status(err.status).json(err.body);
       }
       logger.error("image search failed", { uid: caller.uid, reason: err.message });
-      if (spent && err.refundable) await budget.refund(admin.firestore(), { uid: caller.uid, kind: "imageSearch" });
+      if (spent && err.refundable) await budget.refund(admin.firestore(), { uid: proxy.quotaKeyOf(caller), kind: "imageSearch" });
       const status = err.status || 502;
       return res.status(status).json({ error: { code: err.code || "upstream", message: "Image search failed" } });
     }

@@ -29,6 +29,11 @@ const SUBFLAGS = [
 ];
 const isSubflag = (name) => SUBFLAGS.some(([, , test]) => test(name));
 
+// Parameters edited for both stores at once or for one of them. A platform
+// value is a conditional value under IsAndroidProd / IsIosProd. A platform
+// with none follows the "both" value.
+const PLATFORM_SPLIT = new Set(["minimumVersion"]);
+
 let labels = null;
 async function loadLabels() {
   if (labels) return labels;
@@ -67,8 +72,27 @@ export async function mount({ view, actions }) {
   const apply = (result) => { params = result.parameters || []; version = result.version; info.textContent = `${t("config.version", { v: version || "?" })} · ${t("config.count", { n: params.length })}`; };
   // true when saved. A refused save leaves the template as it was, so the
   // caller puts its control back to the saved value.
-  const set = async (name, value) => {
-    try { apply(await call("config.set", { name, value: String(value) })); toast(t("config.saved"), "ok"); render(); return true; } catch (e) { toastError(e); return false; }
+  const set = async (name, value, platform) => {
+    try { apply(await call("config.set", platform ? { name, value: String(value), platform } : { name, value: String(value) })); toast(t("config.saved"), "ok"); render(); return true; } catch (e) { toastError(e); return false; }
+  };
+
+  // One field per target: both stores, then Android and iOS. A store field
+  // shows the value that store reads now. It is marked when it only follows
+  // "both".
+  const platformControl = (p) => {
+    const own = p.platforms || {};
+    const line = (platform, value, follows) => {
+      const ctl = input({ value, type: "text", style: { direction: "ltr" } });
+      const save = button("✓", { kind: "small primary" });
+      save.addEventListener("click", busy(save, async () => { if (ctl.value.trim() && (ctl.value !== value || follows)) await set(p.name, ctl.value.trim(), platform); }));
+      ctl.addEventListener("keydown", (e) => { if (e.key === "Enter") save.click(); });
+      return h("div.row", h("div", { style: { minWidth: "110px" } }, h("b.small", t(`config.platforms.${platform}`)), follows ? h("div.small.muted", t("config.platforms.follows")) : null), h("div.grow", ctl), save);
+    };
+    return h("div.stack",
+      line("both", p.value, false),
+      line("android", own.android ?? p.value, own.android == null),
+      line("ios", own.ios ?? p.value, own.ios == null),
+      h("p.small.muted", t("config.platforms.hint")));
   };
 
   const row = (p, children = null) => {
@@ -79,7 +103,8 @@ export async function mount({ view, actions }) {
     const revert = (make) => { const fresh = make(); control.replaceWith(fresh); control = fresh; };
     const flagChips = () => chips(FLAG_STATES.map((v) => [v, t(`config.flags.${v}`)]), p.value, async (v) => { if (!(await set(p.name, v))) revert(flagChips); });
     const boolToggle = () => toggle(p.value === "true", async (on) => { if (!(await set(p.name, on ? "true" : "false"))) revert(boolToggle); });
-    if (isFlag) control = flagChips();
+    if (PLATFORM_SPLIT.has(p.name)) control = platformControl(p);
+    else if (isFlag) control = flagChips();
     else if (p.valueType === "BOOLEAN") control = boolToggle();
     else if (p.valueType === "JSON") {
       const area = textarea({ value: p.value, style: { direction: "ltr", fontFamily: "ui-monospace, Menlo, monospace", fontSize: "12.5px" } });

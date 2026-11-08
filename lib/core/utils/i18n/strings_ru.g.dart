@@ -186,7 +186,7 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get phoneGateBody => 'Каждый аккаунт подтверждается по телефону. Мы отправим вам код в SMS.';
 	@override String get changeNumber => 'Изменить номер';
 	@override String get signInTitle => 'Вход';
-	@override String get phoneFirstHint => 'Впервые здесь? Продолжите с телефоном.';
+	@override String get phoneFirstHint => 'Впервые здесь? Продолжите с телефоном или Google.';
 	@override String get errorAccountExistsDifferentCredential => 'Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.';
 	@override String get errorCredentialInUse => 'Эти данные уже принадлежат другому аккаунту';
 	@override String get continueWithApple => 'Войти через Apple';
@@ -224,6 +224,9 @@ class _Translations$auth$ru extends Translations$auth$he {
 	@override String get reverifyTitle => 'Подтвердите телефон ещё раз';
 	@override String reverifyBody({required Object phone}) => 'В целях безопасности подтвердите телефон ещё раз перед удалением аккаунта. Мы отправим новый код на ${phone}.';
 	@override String get reverifyNoPhone => 'У этого аккаунта нет номера телефона, поэтому его нельзя подтвердить здесь. Чтобы удалить аккаунт, обратитесь в поддержку.';
+	@override String socialTakeoverBody({required Object provider}) => 'Мы ещё раз подтвердим аккаунт через ${provider}. После подтверждения аккаунт перейдёт на это устройство, а другое выйдет из аккаунта.';
+	@override String socialReverifyBody({required Object provider}) => 'В целях безопасности ещё раз подтвердите аккаунт через ${provider} перед удалением.';
+	@override String socialReverifyButton({required Object provider}) => 'Подтвердить через ${provider}';
 	@override String get sessionReleaseTitle => 'Другое устройство хочет войти';
 	@override String sessionReleaseBody({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?';
 	@override String get sessionReleaseConfirm => 'Выйти здесь';
@@ -261,6 +264,7 @@ class _Translations$onboarding$ru extends Translations$onboarding$he {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
+	@override String get lookAndLanguage => 'Оформление и язык';
 	@override String get welcomeTitle => 'Добро пожаловать в EasyPlate';
 	@override String get welcomeSubtitle => 'Планируйте меню, готовьте и делайте покупки — всё в одном месте';
 	@override String get shoppingDayTitle => 'Какой у вас день еженедельных покупок?';
@@ -294,6 +298,7 @@ class _Translations$allergens$ru extends Translations$allergens$he {
 
 	// Translations
 	@override String get title => 'Аллергены';
+	@override String get avoid => 'Я избегаю:';
 	@override String get pick => 'Отметить аллергены';
 	@override String get contains => 'Содержит';
 	@override String get mayContain => 'Может содержать';
@@ -1324,8 +1329,8 @@ class _Translations$premium$ru extends Translations$premium$he {
 
 	// Translations
 	@override String get title => 'EasyPlate Premium';
-	@override String get headline => 'Без рекламы, без ограничений';
-	@override String get subtitle => 'Всё, что умеет EasyPlate, не дожидаясь завтра.';
+	@override String get headline => 'Без рекламы, больше ИИ';
+	@override String get subtitle => 'Всё, что умеет EasyPlate, и гораздо больше ИИ каждый день.';
 	@override String get benefitNoAds => 'Без рекламы в лентах сообщества';
 	@override String get benefitShared => 'Общие рецепты без дневного лимита';
 	@override String benefitAi({required Object count}) => 'Извлечение рецептов с помощью ИИ из любой ссылки, до ${count} в день';
@@ -1981,6 +1986,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get assistantScoped => 'Шефи внутри элемента';
 	@override String get assistantVoice => 'Голос с Шефи';
 	@override String get singleSession => 'Одно устройство на аккаунт';
+	@override String get phoneOptional => 'Регистрация без телефона (Google/Apple)';
 	@override String get homeWidgets => 'Виджеты главного экрана';
 	@override String get wakeWord => 'Эй, Шефи';
 	@override String get voiceAssistants => 'Шефи в Siri и Gemini';
@@ -2438,7 +2444,7 @@ class _Translations$walkthrough$topics$account$ru extends Translations$walkthrou
 	@override String get summary => 'Уведомления о приглашениях к общему доступу, и аккаунт с премиумом, общим доступом, настройками и режимом отображения.';
 	@override String get s1 => 'Уведомления: приглашения к общим книгам и планам, и обновления.';
 	@override String get s2 => 'Нажмите на фото, чтобы открыть аккаунт.';
-	@override String get s3 => 'Премиум: разборы ИИ без дневного лимита и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.';
+	@override String get s3 => 'Премиум: больший дневной лимит разборов ИИ и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.';
 	@override String get s4 => 'Общий доступ: кто делится с вами книгами, планами и списками покупок, и чем поделились вы.';
 	@override String get s5 => 'Нажмите «Настройки».';
 	@override String get s6 => 'Режим отображения: светлый, тёмный или как на устройстве. В настройках также язык, пищевые предпочтения и аллергены. Это руководство можно запустить снова с экрана поддержки в аккаунте.';
@@ -2561,7 +2567,7 @@ extension on TranslationsRu {
 			'auth.phoneGateBody' => 'Каждый аккаунт подтверждается по телефону. Мы отправим вам код в SMS.',
 			'auth.changeNumber' => 'Изменить номер',
 			'auth.signInTitle' => 'Вход',
-			'auth.phoneFirstHint' => 'Впервые здесь? Продолжите с телефоном.',
+			'auth.phoneFirstHint' => 'Впервые здесь? Продолжите с телефоном или Google.',
 			'auth.errorAccountExistsDifferentCredential' => 'Этот адрес уже принадлежит другому аккаунту. Войдите тем способом, которым регистрировались.',
 			'auth.errorCredentialInUse' => 'Эти данные уже принадлежат другому аккаунту',
 			'auth.continueWithApple' => 'Войти через Apple',
@@ -2599,6 +2605,9 @@ extension on TranslationsRu {
 			'auth.reverifyTitle' => 'Подтвердите телефон ещё раз',
 			'auth.reverifyBody' => ({required Object phone}) => 'В целях безопасности подтвердите телефон ещё раз перед удалением аккаунта. Мы отправим новый код на ${phone}.',
 			'auth.reverifyNoPhone' => 'У этого аккаунта нет номера телефона, поэтому его нельзя подтвердить здесь. Чтобы удалить аккаунт, обратитесь в поддержку.',
+			'auth.socialTakeoverBody' => ({required Object provider}) => 'Мы ещё раз подтвердим аккаунт через ${provider}. После подтверждения аккаунт перейдёт на это устройство, а другое выйдет из аккаунта.',
+			'auth.socialReverifyBody' => ({required Object provider}) => 'В целях безопасности ещё раз подтвердите аккаунт через ${provider} перед удалением.',
+			'auth.socialReverifyButton' => ({required Object provider}) => 'Подтвердить через ${provider}',
 			'auth.sessionReleaseTitle' => 'Другое устройство хочет войти',
 			'auth.sessionReleaseBody' => ({required Object platform}) => 'Устройство (${platform}) хочет войти в ваш аккаунт. Выйти на этом устройстве?',
 			'auth.sessionReleaseConfirm' => 'Выйти здесь',
@@ -2618,6 +2627,7 @@ extension on TranslationsRu {
 			'profile.saving' => 'Сохранение...',
 			'profile.saveFailed' => 'Не удалось сохранить профиль',
 			'profile.myProfile' => 'Мой профиль',
+			'onboarding.lookAndLanguage' => 'Оформление и язык',
 			'onboarding.welcomeTitle' => 'Добро пожаловать в EasyPlate',
 			'onboarding.welcomeSubtitle' => 'Планируйте меню, готовьте и делайте покупки — всё в одном месте',
 			'onboarding.shoppingDayTitle' => 'Какой у вас день еженедельных покупок?',
@@ -2633,6 +2643,7 @@ extension on TranslationsRu {
 			'dietary.glutenFree' => 'Без глютена',
 			'dietary.allergy' => 'Аллергия',
 			'allergens.title' => 'Аллергены',
+			'allergens.avoid' => 'Я избегаю:',
 			'allergens.pick' => 'Отметить аллергены',
 			'allergens.contains' => 'Содержит',
 			'allergens.mayContain' => 'Может содержать',
@@ -2986,13 +2997,13 @@ extension on TranslationsRu {
 			'sharing.shareAction' => 'Поделиться',
 			'sharing.directoryUnavailable' => 'Общий доступ ещё не настроен на сервере. Выйдите и войдите снова; если не помогает — нужно развернуть правила Firestore.',
 			'sharing.shareBook' => 'Поделиться книгой',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.sharePlan' => 'Поделиться меню',
 			'sharing.acceptedBook' => 'Книга добавлена в вашу библиотеку',
 			'sharing.acceptedPlan' => 'Меню добавлено в ваши меню',
 			'sharing.viewerCannotEditBook' => 'Эта книга доступна вам только для просмотра',
 			'sharing.viewerCannotEditPlan' => 'Это меню доступно вам только для просмотра',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.kindRecipe' => 'Рецепт',
 			'sharing.kindBook' => 'Книга',
 			'sharing.kindPlan' => 'Меню',
@@ -3424,8 +3435,8 @@ extension on TranslationsRu {
 			'ads.videoNotCompleted' => 'Видео не досмотрено, рецепт остаётся закрытым',
 			'ads.videoUnavailable' => 'Сейчас нет доступного видео, попробуйте через минуту',
 			'premium.title' => 'EasyPlate Premium',
-			'premium.headline' => 'Без рекламы, без ограничений',
-			'premium.subtitle' => 'Всё, что умеет EasyPlate, не дожидаясь завтра.',
+			'premium.headline' => 'Без рекламы, больше ИИ',
+			'premium.subtitle' => 'Всё, что умеет EasyPlate, и гораздо больше ИИ каждый день.',
 			'premium.benefitNoAds' => 'Без рекламы в лентах сообщества',
 			'premium.benefitShared' => 'Общие рецепты без дневного лимита',
 			'premium.benefitAi' => ({required Object count}) => 'Извлечение рецептов с помощью ИИ из любой ссылки, до ${count} в день',
@@ -3500,13 +3511,13 @@ extension on TranslationsRu {
 			'walkthrough.focused' => 'Показать подсказку по действию',
 			'walkthrough.next' => 'Далее',
 			'walkthrough.finish' => 'Готово',
+			_ => null,
+		} ?? switch (path) {
 			'walkthrough.skipStep' => 'Пропустить шаг',
 			'walkthrough.close' => 'Закрыть обучение',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Шаг ${current} из ${total}',
 			'walkthrough.tapHint' => 'Нажмите на выделенную область или «Далее»',
 			'walkthrough.bookTitle' => 'Справочник EasyPlate',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.bookSubtitle' => 'Всё, что умеет приложение, глава за главой. Примеры в этой книге не сохраняются; живой тур выполняет настоящие действия, а поля уже заполнены.',
 			'walkthrough.contents' => 'Оглавление',
 			'walkthrough.chapter' => ({required Object number}) => 'Глава ${number}',
@@ -3559,7 +3570,7 @@ extension on TranslationsRu {
 			'walkthrough.topics.account.summary' => 'Уведомления о приглашениях к общему доступу, и аккаунт с премиумом, общим доступом, настройками и режимом отображения.',
 			'walkthrough.topics.account.s1' => 'Уведомления: приглашения к общим книгам и планам, и обновления.',
 			'walkthrough.topics.account.s2' => 'Нажмите на фото, чтобы открыть аккаунт.',
-			'walkthrough.topics.account.s3' => 'Премиум: разборы ИИ без дневного лимита и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.',
+			'walkthrough.topics.account.s3' => 'Премиум: больший дневной лимит разборов ИИ и без рекламы. Бесплатный аккаунт получает дневную квоту, которую расширяет короткое видео.',
 			'walkthrough.topics.account.s4' => 'Общий доступ: кто делится с вами книгами, планами и списками покупок, и чем поделились вы.',
 			'walkthrough.topics.account.s5' => 'Нажмите «Настройки».',
 			'walkthrough.topics.account.s6' => 'Режим отображения: светлый, тёмный или как на устройстве. В настройках также язык, пищевые предпочтения и аллергены. Это руководство можно запустить снова с экрана поддержки в аккаунте.',
@@ -4014,13 +4025,13 @@ extension on TranslationsRu {
 			'household.create' => 'Открыть общий аккаунт',
 			'household.nameHint' => 'Название, например семья Ивановых',
 			'household.notEligible' => 'Общий аккаунт входит в Pro Duo (2 аккаунта) или Pro Family (до 6 аккаунтов).',
+			_ => null,
+		} ?? switch (path) {
 			'household.seePlans' => 'Смотреть тарифы',
 			'household.members' => 'Участники',
 			'household.owner' => 'Владелец',
 			'household.you' => 'Вы',
 			'household.invite' => 'Пригласить участника',
-			_ => null,
-		} ?? switch (path) {
 			'household.inviteExplain' => ({required num free}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(free, one: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.', other: 'Любой, у кого есть этот код, присоединится к общему аккаунту. Свободных мест: ${free}.', ), 
 			'household.noSeats' => 'Все места заняты.',
 			'household.remove' => 'Удалить',
@@ -4147,6 +4158,7 @@ extension on TranslationsRu {
 			'featureName.assistantScoped' => 'Шефи внутри элемента',
 			'featureName.assistantVoice' => 'Голос с Шефи',
 			'featureName.singleSession' => 'Одно устройство на аккаунт',
+			'featureName.phoneOptional' => 'Регистрация без телефона (Google/Apple)',
 			'featureName.homeWidgets' => 'Виджеты главного экрана',
 			'featureName.wakeWord' => 'Эй, Шефи',
 			'featureName.voiceAssistants' => 'Шефи в Siri и Gemini',

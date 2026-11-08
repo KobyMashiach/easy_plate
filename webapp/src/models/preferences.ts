@@ -10,7 +10,7 @@
 // same rule as the app's SettingsBloc._commit.
 import { updateRecord } from "../lib/cloud";
 import type { Lang } from "../lib/i18n";
-import { DIETARY, type DietaryPreference } from "./recipe";
+import { ALLERGENS, DIETARY, type Allergen, type DietaryPreference } from "./recipe";
 
 export const PREFERENCES_ID = "current";
 
@@ -46,6 +46,8 @@ export interface Preferences {
   /** Further shopping days besides `shoppingDay`, in week order. */
   extraShoppingDays: ShoppingDay[];
   dietaryPreferences: DietaryPreference[];
+  /** Allergens avoided under the `allergy` diet, in enum order (kept when the diet is off). */
+  allergens: Allergen[];
   soundEffectsEnabled: boolean;
   onboardingComplete: boolean;
   language: AppLanguage;
@@ -109,6 +111,7 @@ export function normalizePreferences(raw: unknown): Preferences {
     shoppingDay: oneOf(r.shoppingDay, SHOPPING_DAYS) ?? "sunday",
     extraShoppingDays: Array.isArray(r.extraShoppingDays) ? SHOPPING_DAYS.filter((d) => (r.extraShoppingDays as unknown[]).includes(d)) : [],
     dietaryPreferences: [...new Set(dietary)],
+    allergens: Array.isArray(r.allergens) ? ALLERGENS.filter((a) => (r.allergens as unknown[]).includes(a)) : [],
     soundEffectsEnabled: bool(r.soundEffectsEnabled, true),
     onboardingComplete: bool(r.onboardingComplete, false),
     language: oneOf(r.language, APP_LANGUAGES) ?? "hebrew",
@@ -136,6 +139,7 @@ export function preferencesToDart(p: Preferences): Record<string, unknown> {
     shoppingDay: p.shoppingDay,
     extraShoppingDays: SHOPPING_DAYS.filter((d) => p.extraShoppingDays.includes(d)),
     dietaryPreferences: [...p.dietaryPreferences],
+    allergens: ALLERGENS.filter((a) => p.allergens.includes(a)),
     soundEffectsEnabled: p.soundEffectsEnabled,
     onboardingComplete: p.onboardingComplete,
     language: p.language,

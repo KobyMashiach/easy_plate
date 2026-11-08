@@ -128,7 +128,8 @@ class _SettingsBody extends StatelessWidget {
             title: t.settings.language,
             child: LanguageSelector(
               selected: preferences.language,
-              onSelect: (language) => _changeLanguage(context, bloc, language),
+              onSelect: (language) =>
+                  changeAppLanguage(context, bloc, language),
             ),
           ),
         ),
@@ -274,7 +275,7 @@ int _languageRequest = 0;
 /// Switches the app's language, then rewrites the account's own recipes,
 /// books, plans and lists into it. The switch lands first so the progress
 /// card is already in the new language; the content follows behind it.
-Future<void> _changeLanguage(
+Future<void> changeAppLanguage(
   BuildContext context,
   SettingsBloc bloc,
   AppLanguage language,

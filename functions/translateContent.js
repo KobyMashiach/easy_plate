@@ -507,6 +507,8 @@ exports.translateContent = onRequest(
     if (request.error) return res.status(400).json({ error: { code: request.code || "invalid", message: request.error } });
     const { lang, items } = request;
     const uid = caller.uid;
+    // Counted per device for a phone-less account (aiProxy.quotaKeyOf).
+    const quotaKey = proxy.quotaKeyOf(caller);
     const started = Date.now();
     // Lines this call charged to the day's budget, to give back if the
     // model fails before they were translated.
@@ -524,7 +526,7 @@ exports.translateContent = onRequest(
       // The refusal carries `quota.requested`, so the clients cut the
       // request to what is left, as they do for translate units.
       if (strings.length) {
-        const lookups = await budget.spend({ uid, kind: "translateCache", amount: strings.length });
+        const lookups = await budget.spend({ uid: quotaKey, kind: "translateCache", amount: strings.length });
         if (!lookups.allowed) {
           logger.info("translate cache-read budget exhausted", { uid, lang, lines: strings.length, used: lookups.used, limit: lookups.limit });
           return res.status(429).json(budget.refusalBody(lookups, "translateCache"));
@@ -543,7 +545,7 @@ exports.translateContent = onRequest(
       const missingUnits = missing.reduce((n, text) => n + unitsOf(text), 0);
       const units = new Map(missing.map((text) => [text, unitsOf(text)]));
       if (missing.length) {
-        const decision = await budget.spend({ uid, kind: "translate", amount: missingUnits });
+        const decision = await budget.spend({ uid: quotaKey, kind: "translate", amount: missingUnits });
         if (!decision.allowed) {
           logger.info("translate budget exhausted", { uid, lang, lines: missing.length, used: decision.used, limit: decision.limit });
           return res.status(429).json(budget.refusalBody(decision, "translate"));
@@ -637,7 +639,7 @@ exports.translateContent = onRequest(
       // request whose last batch fails on purpose free, however many
       // batches before it were translated.
       const refund = Math.max(0, claimed - paid);
-      if (refund) await budget.refund(admin.firestore(), { uid, kind: "translate", amount: refund });
+      if (refund) await budget.refund(admin.firestore(), { uid: quotaKey, kind: "translate", amount: refund });
       void aiUsage.recordCall({
         uid, fn: "translateContent", model: MODEL, kind: "translate",
         status: err.status === 429 ? 429 : 502, ms: Date.now() - started, usage: null,

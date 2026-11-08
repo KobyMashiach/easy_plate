@@ -62,6 +62,7 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   }) => throw UnimplementedError();
 
   @override

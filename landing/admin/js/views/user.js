@@ -2,7 +2,7 @@
 // own, what they wrote, what the AI cost — and every lever on it.
 import { db, doc, collection, getDoc, getDocs, onSnapshot, query, where, orderBy, limit, Timestamp } from "../firebase.js";
 import { t, fmtNumber, fmtMoney, fmtDate } from "../i18n.js";
-import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, tabs, input, textarea, select, field, toggle, modal, confirmDialog, promptDialog, toast, toastError, copyText, empty } from "../ui.js";
+import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, tabs, input, textarea, select, field, toggle, modal, confirmDialog, promptDialog, toast, toastError, copyText, empty, withEmoji } from "../ui.js";
 import { isOnline, premiumActive, platformLabel, pricing, tally, costIls, isPersona, profiles } from "../data.js";
 import { call } from "../api.js";
 
@@ -96,7 +96,7 @@ export async function mount({ view, params, setTitle }) {
   async function notify() {
     const titleCtl = input({ placeholder: "EasyPlate" });
     const text = textarea();
-    modal({ title: t("user.notify"), body: h("div.stack", field(t("common.title"), titleCtl), field(t("common.body"), text)), actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.send"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => { if (!text.value.trim()) return; try { await call("user.notify", { uid, title: titleCtl.value.trim(), body: text.value.trim() }); toast(t("user.notified"), "ok"); c(); } catch (e) { toastError(e); } })); return b; }] });
+    modal({ title: t("user.notify"), body: h("div.stack", field(t("common.title"), withEmoji(titleCtl)), field(t("common.body"), withEmoji(text))), actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.send"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => { if (!text.value.trim()) return; try { await call("user.notify", { uid, title: titleCtl.value.trim(), body: text.value.trim() }); toast(t("user.notified"), "ok"); c(); } catch (e) { toastError(e); } })); return b; }] });
   }
   async function disable() {
     const message = await promptDialog({ title: t("user.disable"), label: t("user.blockMessage"), multiline: true, okLabel: t("user.disable") });

@@ -423,3 +423,10 @@ test("translation.purge removes a cached line in one language, or in all of them
   assert.deepEqual(Object.keys(LANGUAGE_NAMES).sort(), ["ar", "en", "fr", "he", "ru"]);
   await assert.rejects(run(parseRequest({ action: "translation.purge", text: "x".repeat(MAX_TEXT + 5) }), { caller: { uid: "admin" }, db }), (e) => e.status === 400 && e.code === "too_long");
 });
+
+test("config.set keeps the store a value is for", () => {
+  // Without it in the shape, an iOS-only save was published as the shared
+  // default and moved both stores (2026-11-05).
+  assert.equal(parseRequest({ action: "config.set", name: "minimumVersion", value: "1.0.7", platform: "ios" }).platform, "ios");
+  assert.ok(parseRequest({ action: "config.set", name: "minimumVersion", value: "1", platform: "web" }).error);
+});

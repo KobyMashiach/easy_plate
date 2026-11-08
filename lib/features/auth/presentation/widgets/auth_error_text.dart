@@ -24,5 +24,9 @@ String authErrorMessage(String error) => switch (error) {
   'account-exists-with-different-credential' =>
     t.auth.errorAccountExistsDifferentCredential,
   'credential-already-in-use' => t.auth.errorCredentialInUse,
-  _ => t.auth.errorUnknown,
+  // Any other failure carries its code, e.g. "(internal-error:39)". Some
+  // failures only happen on one user's phone, so a screenshot of the
+  // message has to be enough to tell what went wrong.
+  'unknown' || '' => t.auth.errorUnknown,
+  _ => '${t.auth.errorUnknown} ($error)',
 };

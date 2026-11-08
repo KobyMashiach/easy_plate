@@ -6,8 +6,15 @@
 //   set { name, value }  one parameter's default value, published at once
 //
 // Only the administrator, by the email on the ID token — the same check
-// adminUsers makes. Conditional values are left alone: this edits the
-// default of each parameter, which is what the app reads.
+// adminUsers makes. A plain set edits the default of each parameter and
+// leaves conditional values alone.
+//
+// A per-platform value (2026-11-05, for minimumVersion) is a conditional
+// value under IsAndroidProd / IsIosProd. Those conditions match the store
+// app ids, so builds already in the field pick the split up with no app
+// change. `platform: "android" | "ios"` writes that one value.
+// `platform: "both"` writes the default and drops both platform values, so
+// the two platforms read the same thing again.
 const { onRequest } = require("firebase-functions/v2/https");
 const { logger } = require("firebase-functions");
 const admin = require("firebase-admin");
@@ -15,6 +22,7 @@ const proxy = require("./aiProxy").internals;
 const { isAdmin } = require("./permissions");
 
 const FLAG_RE = /^ff_/;
+const PLATFORM_CONDITIONS = { android: "IsAndroidProd", ios: "IsIosProd" };
 
 // Pure: the template's parameters and grouped parameters as one ordered
 // list the app can draw.
@@ -26,10 +34,23 @@ function flattenTemplate(template) {
     description: (param && param.description) || "",
     valueType: (param && param.valueType) || "STRING",
     value: param && param.defaultValue && param.defaultValue.value !== undefined ? String(param.defaultValue.value) : "",
+    // The value a platform overrides the default with; null when it follows the default.
+    platforms: platformValues(param),
   });
   for (const [name, param] of Object.entries(template.parameters || {})) push(name, param, "");
   for (const [groupName, group] of Object.entries(template.parameterGroups || {})) {
     for (const [name, param] of Object.entries(group.parameters || {})) push(name, param, groupName);
+  }
+  return out;
+}
+
+// Pure: { android, ios }, each the platform's own conditional value or null.
+function platformValues(param) {
+  const conditional = (param && param.conditionalValues) || {};
+  const out = {};
+  for (const [platform, condition] of Object.entries(PLATFORM_CONDITIONS)) {
+    const entry = conditional[condition];
+    out[platform] = entry && entry.value !== undefined ? String(entry.value) : null;
   }
   return out;
 }
@@ -44,9 +65,12 @@ function findParam(template, name) {
 }
 
 // Pure: the value checked against the parameter's type (and the 0–4 range
-// of a feature flag), then written as the parameter's default. Returns
-// the error code, or null when the template was changed.
-function applyValue(template, name, rawValue) {
+// of a feature flag), then written as the parameter's default, or as one
+// platform's value (see the note at the top). Returns the error code, or
+// null when the template was changed.
+function applyValue(template, name, rawValue, platform) {
+  if (platform !== undefined && platform !== null && platform !== "" &&
+      platform !== "both" && !PLATFORM_CONDITIONS[platform]) return "invalid_platform";
   const param = findParam(template, name);
   if (!param) return "not_found";
   const value = String(rawValue === undefined || rawValue === null ? "" : rawValue).trim();
@@ -65,7 +89,17 @@ function applyValue(template, name, rawValue) {
     default:
       break;
   }
+  if (PLATFORM_CONDITIONS[platform]) {
+    const condition = PLATFORM_CONDITIONS[platform];
+    if (!(template.conditions || []).some((c) => c.name === condition)) return "no_condition";
+    param.conditionalValues = { ...(param.conditionalValues || {}), [condition]: { value } };
+    return null;
+  }
   param.defaultValue = { value };
+  if (platform === "both" && param.conditionalValues) {
+    for (const condition of Object.values(PLATFORM_CONDITIONS)) delete param.conditionalValues[condition];
+    if (!Object.keys(param.conditionalValues).length) delete param.conditionalValues;
+  }
   return null;
 }
 
@@ -98,10 +132,10 @@ exports.adminRemoteConfig = onRequest(
         const name = String((req.body && req.body.name) || "").trim();
         if (!name) return res.status(400).json({ error: { code: "invalid", message: "name is required" } });
         const template = await rc.getTemplate();
-        const error = applyValue(template, name, req.body.value);
+        const error = applyValue(template, name, req.body.value, req.body.platform);
         if (error) return res.status(error === "not_found" ? 404 : 400).json({ error: { code: error, message: error } });
         const published = await publish(template);
-        logger.info("remote config set", { by: caller.uid, name, value: String(req.body.value) });
+        logger.info("remote config set", { by: caller.uid, name, value: String(req.body.value), platform: req.body.platform || "default" });
         return res.status(200).json({ version: published.version && published.version.versionNumber, parameters: flattenTemplate(published) });
       }
       return res.status(400).json({ error: { message: "Unknown action" } });
@@ -112,4 +146,4 @@ exports.adminRemoteConfig = onRequest(
   },
 );
 
-exports.internals = { flattenTemplate, findParam, applyValue, publish };
+exports.internals = { flattenTemplate, findParam, applyValue, publish, platformValues, PLATFORM_CONDITIONS };

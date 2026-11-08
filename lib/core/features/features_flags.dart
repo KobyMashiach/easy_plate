@@ -152,6 +152,15 @@ enum FeaturesFlags {
   /// 2 refuses a second device, anything else lets them share.
   singleSession('ff_single_session'),
 
+  /// Sign-up without a phone for Google and Apple accounts: on (2), an
+  /// account that carries a Google or Apple identity passes the gate
+  /// without an SMS; anything else, every account proves a phone first.
+  /// Email/password accounts always prove one. Not a screen but a policy:
+  /// the server reads the same flag (aiProxy.verifyPaidCaller), and a
+  /// phone-less account's AI allowance is shared per device, so it needs
+  /// [singleSession] visible (the session record carries the device).
+  phoneOptional('ff_phone_optional'),
+
   /// The home-screen widgets (Shefi button, quick add, the list, today's
   /// menu) and the settings screen that places them. Hidden, the widgets
   /// on the phone show only a way into the app.

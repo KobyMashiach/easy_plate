@@ -7,11 +7,16 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../../core/widgets/allergen_chip_selector.dart';
 import '../../../../core/widgets/dietary_chip_selector.dart';
 
 /// What a suggestion search asks for: free text ("קינוחים", empty for none)
 /// and the diet for this one search.
-typedef SuggestionRequest = ({String topic, List<DietaryPreference> diet});
+typedef SuggestionRequest = ({
+  String topic,
+  List<DietaryPreference> diet,
+  List<Allergen> allergens,
+});
 
 /// Asks what the suggestions should be about before they are searched for.
 /// The text is optional — empty, the account's preferences alone decide —
@@ -20,6 +25,7 @@ typedef SuggestionRequest = ({String topic, List<DietaryPreference> diet});
 Future<SuggestionRequest?> showSuggestionRequestSheet(
   BuildContext context, {
   required List<DietaryPreference> saved,
+  List<Allergen> savedAllergens = const [],
 }) {
   return showModalBottomSheet<SuggestionRequest>(
     context: context,
@@ -34,7 +40,12 @@ Future<SuggestionRequest?> showSuggestionRequestSheet(
         bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
       ),
       child: SingleChildScrollView(
-        child: SafeArea(child: _SuggestionRequestSheet(saved: saved)),
+        child: SafeArea(
+          child: _SuggestionRequestSheet(
+            saved: saved,
+            savedAllergens: savedAllergens,
+          ),
+        ),
       ),
     ),
   );
@@ -42,8 +53,12 @@ Future<SuggestionRequest?> showSuggestionRequestSheet(
 
 class _SuggestionRequestSheet extends StatefulWidget {
   final List<DietaryPreference> saved;
+  final List<Allergen> savedAllergens;
 
-  const _SuggestionRequestSheet({required this.saved});
+  const _SuggestionRequestSheet({
+    required this.saved,
+    this.savedAllergens = const [],
+  });
 
   @override
   State<_SuggestionRequestSheet> createState() =>
@@ -56,10 +71,15 @@ class _SuggestionRequestSheetState extends State<_SuggestionRequestSheet> {
 
   final _topic = TextEditingController();
   late final List<DietaryPreference> _diet = [...widget.saved];
+  late final List<Allergen> _allergens = [...widget.savedAllergens];
+
+  bool get _allergy => _diet.contains(DietaryPreference.allergy);
 
   bool get _changed =>
       _diet.length != widget.saved.length ||
-      !_diet.every(widget.saved.contains);
+      !_diet.every(widget.saved.contains) ||
+      _allergens.length != widget.savedAllergens.length ||
+      !_allergens.every(widget.savedAllergens.contains);
 
   @override
   void dispose() {
@@ -69,7 +89,11 @@ class _SuggestionRequestSheetState extends State<_SuggestionRequestSheet> {
 
   void _search() => Navigator.of(
     context,
-  ).pop<SuggestionRequest>((topic: _topic.text.trim(), diet: List.of(_diet)));
+  ).pop<SuggestionRequest>((
+    topic: _topic.text.trim(),
+    diet: List.of(_diet),
+    allergens: _allergy ? Allergen.fromNames(_allergens.names) : const [],
+  ));
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +127,24 @@ class _SuggestionRequestSheetState extends State<_SuggestionRequestSheet> {
               if (!_diet.remove(preference)) _diet.add(preference);
             }),
           ),
+          // Which allergens, as in the preferences screen: prefilled from
+          // the saved ones, for this search only.
+          if (_allergy) ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              t.allergens.avoid,
+              style: AppTextStyles.labelSm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.base),
+            AllergenChipSelector(
+              selected: _allergens,
+              onToggle: (a) => setState(() {
+                if (!_allergens.remove(a)) _allergens.add(a);
+              }),
+            ),
+          ],
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
@@ -117,11 +159,14 @@ class _SuggestionRequestSheetState extends State<_SuggestionRequestSheet> {
               // Back to what the settings say, after playing with the chips.
               if (_changed)
                 TextButton(
-                  onPressed: () => setState(
-                    () => _diet
+                  onPressed: () => setState(() {
+                    _diet
                       ..clear()
-                      ..addAll(widget.saved),
-                  ),
+                      ..addAll(widget.saved);
+                    _allergens
+                      ..clear()
+                      ..addAll(widget.savedAllergens);
+                  }),
                   child: Text(t.ingestion.suggestDietReset),
                 ),
             ],

@@ -5,7 +5,7 @@
 // which also works out when a template runs next, in Israel time.
 import { db, collection, onSnapshot, query, orderBy, limit, getDocs } from "../firebase.js";
 import { t, fmtNumber, fmtDate } from "../i18n.js";
-import { h, clear, badge, when, button, busy, chips, input, textarea, select, toggle, field, modal, confirmDialog, toast, toastError, empty, debounce } from "../ui.js";
+import { h, clear, badge, when, button, busy, chips, input, textarea, select, toggle, field, modal, confirmDialog, toast, toastError, empty, debounce, withEmoji } from "../ui.js";
 import { call } from "../api.js";
 
 const KINDS = ["manual", "once", "daily", "weekly", "monthly"];
@@ -19,6 +19,19 @@ async function loadUsers() {
     .map((d) => ({ uid: d.id, name: d.get("fullName") || d.get("email") || d.get("phoneNumber") || d.id }))
     .filter((u) => !u.uid.startsWith("seed_"))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// "Devices": everyone, Android only or iOS only — users/{uid}.platform,
+// the Device column on the Accounts page. Shared with the broadcast there.
+export function platformControl(value = "all") {
+  let current = value;
+  const el = field(t("notif.platform"), chips([["all", t("notif.platforms.all")], ["android", "Android"], ["ios", "iOS"]], current, (v) => { current = v; }));
+  return { el, value: () => current };
+}
+
+// Appended to a confirmation: " · Android only".
+export function platformSuffix(platform) {
+  return platform === "android" || platform === "ios" ? ` · ${t("notif.platformOnly", { p: platform === "ios" ? "iOS" : "Android" })}` : "";
 }
 
 // One user is just a picked list of one, so there is no separate choice;
@@ -92,11 +105,12 @@ export async function mount({ view, actions }) {
 
   async function sendNow() {
     const audience = audienceControl(await ensureUsers());
+    const devices = platformControl();
     const titleCtl = input({ maxLength: 80 });
     const text = textarea({ rows: 4, maxLength: 1000 });
     modal({
       title: t("notif.sendNow"),
-      body: h("div.stack", audience.el, field(t("common.title"), titleCtl), field(t("common.body"), text)),
+      body: h("div.stack", audience.el, devices.el, field(t("common.title"), withEmoji(titleCtl)), field(t("common.body"), withEmoji(text))),
       actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => {
         const b = button(t("common.send"), { kind: "primary" });
         b.addEventListener("click", busy(b, async () => {
@@ -105,9 +119,9 @@ export async function mount({ view, actions }) {
           const problem = audience.check();
           if (problem) return toast(problem, "error");
           const { target, uids } = audience.value();
-          if (!(await confirmDialog({ title: t("notif.sendNow"), text: audienceText({ target, uids }), danger: false }))) return;
+          if (!(await confirmDialog({ title: t("notif.sendNow"), text: audienceText({ target, uids }) + platformSuffix(devices.value()), danger: false }))) return;
           try {
-            const r = await call("user.notifyAudience", { audience: target, ...(uids ? { uids } : {}), title: titleCtl.value.trim(), body: message });
+            const r = await call("user.notifyAudience", { audience: target, platform: devices.value(), ...(uids ? { uids } : {}), title: titleCtl.value.trim(), body: message });
             toast(t("users.broadcastSent", { items: r.items, sent: r.sent, failed: r.failed }), "ok");
             c();
           } catch (e) { toastError(e); }
@@ -156,7 +170,7 @@ export async function mount({ view, actions }) {
       body: h("div.stack",
         field(t("notif.name"), nameCtl, t("notif.nameHint")),
         audience.el,
-        field(t("common.title"), titleCtl), field(t("common.body"), text),
+        field(t("common.title"), withEmoji(titleCtl)), field(t("common.body"), withEmoji(text)),
         // When, the time and the day side by side; they wrap on a narrow
         // screen, and the weekday boxes take a line of their own.
         h("div.row", { style: { alignItems: "flex-start", flexWrap: "wrap", gap: "12px" } },
@@ -222,7 +236,9 @@ export async function mount({ view, actions }) {
       const names = (row.uids || []).map(nameOf);
       return h("span.badge", { title: names.join(", ") }, t("notif.usersCount", { n: names.length }));
     }
-    return badge(t(`notif.targets.${row.target || "all"}`), row.target === "premium" ? "mint" : row.target === "free" ? "amber" : "brand");
+    const who = badge(t(`notif.targets.${row.target || "all"}`), row.target === "premium" ? "mint" : row.target === "free" ? "amber" : "brand");
+    if (row.platform !== "android" && row.platform !== "ios") return who;
+    return h("span.row", { style: { gap: "4px" } }, who, badge(row.platform === "ios" ? "iOS" : "Android", ""));
   }
 
   // The confirmation line before a send that reaches more than one account.

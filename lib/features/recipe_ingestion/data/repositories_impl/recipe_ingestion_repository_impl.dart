@@ -81,15 +81,21 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
     List<DietaryPreference> preferences, {
     List<String> knownTitles = const [],
     String topic = '',
+    List<Allergen> allergens = const [],
   }) {
     if (_useFakeData) return Future.value(fakeWebSearchResults);
     final search = pageSearch;
     if (search == null) {
       return aiDataSource
-          .suggestRecipes(preferences, knownTitles: knownTitles, topic: topic)
+          .suggestRecipes(
+            preferences,
+            knownTitles: knownTitles,
+            topic: topic,
+            allergens: allergens,
+          )
           .then(_onlyLivePages);
     }
-    return _dishPages(search, preferences, knownTitles, topic);
+    return _dishPages(search, preferences, knownTitles, topic, allergens);
   }
 
   /// The model names the dishes; Google's results give each its page. The
@@ -99,11 +105,13 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
     List<DietaryPreference> preferences,
     List<String> knownTitles,
     String topic,
+    List<Allergen> allergens,
   ) async {
     final dishes = await aiDataSource.suggestDishes(
       preferences,
       knownTitles: knownTitles,
       topic: topic,
+      allergens: allergens,
     );
     if (dishes.isEmpty) return const [];
     final pages = await search.recipePages([for (final d in dishes) d.name]);
