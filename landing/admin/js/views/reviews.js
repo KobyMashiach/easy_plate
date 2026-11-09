@@ -185,12 +185,24 @@ export async function mount({ view, actions }) {
     updateCount();
     let tplLang = templateLang(r);
     const langPick = h("select.input", { "aria-label": t("reviews.tplLang"), style: { width: "auto" } }, Object.entries(TEMPLATE_LANG_NAMES).map(([code, label]) => h("option", { value: code, selected: code === tplLang }, label)));
-    langPick.addEventListener("change", () => { tplLang = langPick.value; });
+    langPick.value = tplLang;
+    // The template last put in the box: switching the language rewrites it
+    // in the new language (the box would otherwise keep the old one until
+    // a template button was pressed again).
+    let lastKey = null;
+    const fill = (key) => {
+      lastKey = key;
+      text.value = fillTemplate(TEMPLATES[tplLang][key], r.author).slice(0, max);
+      updateCount();
+    };
+    langPick.addEventListener("change", () => {
+      tplLang = langPick.value;
+      if (lastKey) fill(lastKey);
+    });
     const templates = h("div.row", { style: { flexWrap: "wrap", gap: "6px" } },
       h("span.small.muted", t("reviews.templates")),
       TEMPLATE_KEYS.map((key) => button(t(`reviews.tpl.${key}`), { kind: "small", onclick: () => {
-        text.value = fillTemplate(TEMPLATES[tplLang][key], r.author).slice(0, max);
-        updateCount();
+        fill(key);
         text.focus();
       } })),
       langPick);
@@ -201,6 +213,7 @@ export async function mount({ view, actions }) {
       try {
         const d = await call("reviews.draft", { reviewId: r.id, lang: currentLang(), hint: hint.value.trim() });
         text.value = d.reply || "";
+        lastKey = null;
         updateCount();
         if (d.translation) { translation.hidden = false; translation.textContent = `${t("reviews.translation")} (${d.language || "?"}): ${d.translation}`; }
       } catch (e) { toastError(e); }
