@@ -828,6 +828,8 @@ class _Translations$notifications$ar extends Translations$notifications$he {
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} شارك/ت معك الكتاب "${recipe}"';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} شارك/ت معك الخطة "${recipe}"';
 	@override String get adminReply => 'رد من فريق EasyPlate على رسالتك';
+	@override String adminTicketNew({required Object name}) => 'طلب دعم جديد من ${name}';
+	@override String adminTicketFollowUp({required Object name}) => 'كتب ${name} في طلب دعم';
 	@override String adminReplyQuote({required Object excerpt}) => 'رسالتك: "${excerpt}"';
 	@override String get adminMessage => 'رسالة من EasyPlate';
 	@override String forumReplyOnMyPost({required Object name, required Object post}) => 'ردّ ${name} على منشورك "${post}"';
@@ -3051,6 +3053,8 @@ extension on TranslationsAr {
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك الكتاب "${recipe}"',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} شارك/ت معك الخطة "${recipe}"',
 			'notifications.adminReply' => 'رد من فريق EasyPlate على رسالتك',
+			'notifications.adminTicketNew' => ({required Object name}) => 'طلب دعم جديد من ${name}',
+			'notifications.adminTicketFollowUp' => ({required Object name}) => 'كتب ${name} في طلب دعم',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'رسالتك: "${excerpt}"',
 			'notifications.adminMessage' => 'رسالة من EasyPlate',
 			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => 'ردّ ${name} على منشورك "${post}"',
@@ -3525,10 +3529,10 @@ extension on TranslationsAr {
 			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
 			'walkthrough.startFull' => 'ابدأ الجولة الكاملة',
 			'walkthrough.focused' => 'عرض إرشاد مركّز',
-			'walkthrough.next' => 'التالي',
-			'walkthrough.finish' => 'إنهاء',
 			_ => null,
 		} ?? switch (path) {
+			'walkthrough.next' => 'التالي',
+			'walkthrough.finish' => 'إنهاء',
 			'walkthrough.skipStep' => 'تخطّي الخطوة',
 			'walkthrough.close' => 'إغلاق الدليل',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'الخطوة ${current} من ${total}',
@@ -4039,10 +4043,10 @@ extension on TranslationsAr {
 			'household.seats' => ({required Object used, required Object total}) => '${used} من ${total} مقاعد مستخدمة',
 			'household.intro' => 'افتح حسابًا مشتركًا: الوصفات والكتب والخطط والقوائم تظهر لكل من فيه، ويحصلون على بريميوم معك.',
 			'household.create' => 'فتح حساب مشترك',
-			'household.nameHint' => 'الاسم، مثلًا عائلة أحمد',
-			'household.notEligible' => 'يأتي الحساب المشترك مع Pro Duo (حسابان) أو Pro Family (حتى 6 حسابات).',
 			_ => null,
 		} ?? switch (path) {
+			'household.nameHint' => 'الاسم، مثلًا عائلة أحمد',
+			'household.notEligible' => 'يأتي الحساب المشترك مع Pro Duo (حسابان) أو Pro Family (حتى 6 حسابات).',
 			'household.seePlans' => 'عرض الخطط',
 			'household.members' => 'الأعضاء',
 			'household.owner' => 'المالك',

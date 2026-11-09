@@ -329,3 +329,35 @@ test("an admin message's push: the console title in the title, the text alone in
   assert.equal(titleFor({ type: "shareInvite", title: "x" }), "EasyPlate");
   assert.equal(titleFor({ type: "adminMessage", title: { evil: 1 }, message: "m" }), "EasyPlate");
 });
+
+test("an administrator's ticket push names the writer and quotes the line", () => {
+  const { bodyFor } = require("./index").internals;
+  assert.equal(bodyFor({ type: "adminTicket", authorName: "דנה", message: "האפליקציה נסגרת" }, "x"), "פנייה חדשה מ-דנה: האפליקציה נסגרת");
+  assert.equal(bodyFor({ type: "adminTicket", authorName: "דנה", message: "עדיין", followUp: true }, "x"), "דנה כתב/ה בפנייה: עדיין");
+  assert.equal(bodyFor({ type: "adminTicket", message: "" }, "יוסי"), "פנייה חדשה מ-יוסי");
+});
+
+test("only lines the user added count as a follow-up", () => {
+  const { newFollowUps } = require("./index").internals;
+  assert.deepEqual(newFollowUps({ followUps: [] }, { followUps: [{ text: "a" }] }), [{ text: "a" }]);
+  assert.deepEqual(newFollowUps({ followUps: [{ text: "a" }] }, { followUps: [{ text: "a" }], read: true }), []);
+  assert.deepEqual(newFollowUps(undefined, {}), []);
+});
+
+test("every administrator gets one inbox item per ticket", async () => {
+  const { tellAdminsOfTicket } = require("./index").internals;
+  const written = [];
+  const db = {
+    collection: (name) => ({
+      where: () => ({ select: () => ({ get: async () => ({ empty: false, size: 2, docs: [{ id: "a1" }, { id: "a2" }] }) }) }),
+      doc: (uid) => ({ collection: () => ({ doc: () => ({ path: `${name}/${uid}` }) }) }),
+    }),
+    batch: () => ({ set: (ref, data) => written.push([ref.path, data]), commit: async () => {} }),
+  };
+  const n = await tellAdminsOfTicket(db, { feedbackId: "f1", data: { authorUid: "u1", authorName: "Dana", message: "help", type: "bug" } });
+  assert.equal(n, 2);
+  assert.deepEqual(written.map(([p]) => p), ["notifications/a1", "notifications/a2"]);
+  assert.equal(written[0][1].type, "adminTicket");
+  assert.equal(written[0][1].feedbackId, "f1");
+  assert.equal(written[0][1].message, "help");
+});

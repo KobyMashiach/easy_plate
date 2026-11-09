@@ -142,6 +142,8 @@ class UserPreferencesEntity {
       AppNotificationType.adminMessage => notifyAnnouncements,
       AppNotificationType.forumReply =>
         onMyPost ? notifyRepliesOnMyPosts : notifyRepliesOnThreads,
+      // The administrator's own work queue: governed by the master switch.
+      AppNotificationType.adminTicket => true,
     };
   }
 

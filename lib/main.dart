@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
+import 'core/services/admin_access.dart';
+import 'features/admin_dashboard/presentation/pages/admin_dashboard_page.dart';
 import 'core/quick_actions/quick_actions_service.dart';
 import 'core/ads/ads_service.dart';
 import 'core/hive/adapters_controller.dart';
@@ -418,6 +420,16 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         replyId: data['replyId'],
       );
       if (opened) return;
+    }
+    // An administrator's ticket opens the dashboard's tickets tab (the
+    // dashboard itself shows nothing to anyone else).
+    if (data['type'] == AppNotificationType.adminTicket.name &&
+        AdminAccess.isAdmin) {
+      _router.pushNamed(
+        Routing.adminDashboard,
+        extra: AdminDashboardTab.tickets.index,
+      );
+      return;
     }
     _router.pushNamed(Routing.notifications);
   }

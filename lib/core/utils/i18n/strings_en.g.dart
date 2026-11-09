@@ -821,6 +821,8 @@ class _Translations$notifications$en extends Translations$notifications$he {
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} shared the book "${recipe}" with you';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} shared the plan "${recipe}" with you';
 	@override String get adminReply => 'A reply from the EasyPlate team to your message';
+	@override String adminTicketNew({required Object name}) => 'New ticket from ${name}';
+	@override String adminTicketFollowUp({required Object name}) => '${name} wrote in a ticket';
 	@override String adminReplyQuote({required Object excerpt}) => 'Your message: "${excerpt}"';
 	@override String get adminMessage => 'A message from EasyPlate';
 	@override String forumReplyOnMyPost({required Object name, required Object post}) => '${name} replied to your post "${post}"';
@@ -3301,6 +3303,8 @@ extension on TranslationsEn {
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} shared the book "${recipe}" with you',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} shared the plan "${recipe}" with you',
 			'notifications.adminReply' => 'A reply from the EasyPlate team to your message',
+			'notifications.adminTicketNew' => ({required Object name}) => 'New ticket from ${name}',
+			'notifications.adminTicketFollowUp' => ({required Object name}) => '${name} wrote in a ticket',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Your message: "${excerpt}"',
 			'notifications.adminMessage' => 'A message from EasyPlate',
 			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} replied to your post "${post}"',
@@ -3775,10 +3779,10 @@ extension on TranslationsEn {
 			'walkthrough.startHint' => 'A guided tour of everything in the app, step by step',
 			'walkthrough.startFull' => 'Start the full tour',
 			'walkthrough.focused' => 'Show focused guidance',
-			'walkthrough.next' => 'Next',
-			'walkthrough.finish' => 'Done',
 			_ => null,
 		} ?? switch (path) {
+			'walkthrough.next' => 'Next',
+			'walkthrough.finish' => 'Done',
 			'walkthrough.skipStep' => 'Skip step',
 			'walkthrough.close' => 'Close guide',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Step ${current} of ${total}',
@@ -4289,10 +4293,10 @@ extension on TranslationsEn {
 			'shareCode.revoked' => 'This code was cancelled.',
 			'shareCode.usedUp' => 'This code has been used up.',
 			'shareCode.self' => 'That is your own code.',
-			'shareCode.gone' => 'What this code shared no longer exists.',
-			'shareCode.tooManyRecipes' => 'This share holds too many recipes to join at once. Ask the owner to split it.',
 			_ => null,
 		} ?? switch (path) {
+			'shareCode.gone' => 'What this code shared no longer exists.',
+			'shareCode.tooManyRecipes' => 'This share holds too many recipes to join at once. Ask the owner to split it.',
 			'shareCode.failed' => 'Could not join. Try again.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} shared "${title}" with you on EasyPlate. Code: ${code}\n${link}',
 			'shareCode.revoke' => 'Cancel code',

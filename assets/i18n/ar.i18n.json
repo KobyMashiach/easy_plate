@@ -600,6 +600,8 @@
     "sharedBook": "$name شارك/ت معك الكتاب \"$recipe\"",
     "sharedPlan": "$name شارك/ت معك الخطة \"$recipe\"",
     "adminReply": "رد من فريق EasyPlate على رسالتك",
+    "adminTicketNew": "طلب دعم جديد من $name",
+    "adminTicketFollowUp": "كتب $name في طلب دعم",
     "adminReplyQuote": "رسالتك: \"$excerpt\"",
     "adminMessage": "رسالة من EasyPlate",
     "forumReplyOnMyPost": "ردّ $name على منشورك \"$post\"",

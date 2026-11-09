@@ -199,4 +199,8 @@ enum AppNotificationType {
   /// Someone replied in a forum thread the account opened or took part in.
   /// Written by the `onForumReplyCreated` function.
   forumReply,
+
+  /// A support conversation was opened, or its writer added a line. Only
+  /// administrators get these (`onFeedbackCreated` / `onFeedbackFollowUp`).
+  adminTicket,
 }

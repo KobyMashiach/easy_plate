@@ -824,6 +824,8 @@ class _Translations$notifications$ru extends Translations$notifications$he {
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами книгой «${recipe}»';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами меню «${recipe}»';
 	@override String get adminReply => 'Ответ команды EasyPlate на ваше обращение';
+	@override String adminTicketNew({required Object name}) => 'Новое обращение от ${name}';
+	@override String adminTicketFollowUp({required Object name}) => '${name} написал(а) в обращении';
 	@override String adminReplyQuote({required Object excerpt}) => 'Ваше обращение: "${excerpt}"';
 	@override String get adminMessage => 'Сообщение от EasyPlate';
 	@override String forumReplyOnMyPost({required Object name, required Object post}) => '${name} ответил(а) на ваш пост «${post}»';
@@ -3035,6 +3037,8 @@ extension on TranslationsRu {
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами книгой «${recipe}»',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} поделился(-ась) с вами меню «${recipe}»',
 			'notifications.adminReply' => 'Ответ команды EasyPlate на ваше обращение',
+			'notifications.adminTicketNew' => ({required Object name}) => 'Новое обращение от ${name}',
+			'notifications.adminTicketFollowUp' => ({required Object name}) => '${name} написал(а) в обращении',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Ваше обращение: "${excerpt}"',
 			'notifications.adminMessage' => 'Сообщение от EasyPlate',
 			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} ответил(а) на ваш пост «${post}»',
@@ -3509,10 +3513,10 @@ extension on TranslationsRu {
 			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
 			'walkthrough.startFull' => 'Начать полную экскурсию',
 			'walkthrough.focused' => 'Показать подсказку по действию',
-			'walkthrough.next' => 'Далее',
-			'walkthrough.finish' => 'Готово',
 			_ => null,
 		} ?? switch (path) {
+			'walkthrough.next' => 'Далее',
+			'walkthrough.finish' => 'Готово',
 			'walkthrough.skipStep' => 'Пропустить шаг',
 			'walkthrough.close' => 'Закрыть обучение',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Шаг ${current} из ${total}',
@@ -4023,10 +4027,10 @@ extension on TranslationsRu {
 			'household.seats' => ({required Object used, required Object total}) => 'Занято мест: ${used} из ${total}',
 			'household.intro' => 'Откройте общий аккаунт: рецепты, книги, планы и списки синхронизируются у всех участников, и они получают Premium вместе с вами.',
 			'household.create' => 'Открыть общий аккаунт',
-			'household.nameHint' => 'Название, например семья Ивановых',
-			'household.notEligible' => 'Общий аккаунт входит в Pro Duo (2 аккаунта) или Pro Family (до 6 аккаунтов).',
 			_ => null,
 		} ?? switch (path) {
+			'household.nameHint' => 'Название, например семья Ивановых',
+			'household.notEligible' => 'Общий аккаунт входит в Pro Duo (2 аккаунта) или Pro Family (до 6 аккаунтов).',
 			'household.seePlans' => 'Смотреть тарифы',
 			'household.members' => 'Участники',
 			'household.owner' => 'Владелец',

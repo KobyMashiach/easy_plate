@@ -592,6 +592,8 @@
     "sharedBook": "$name שיתף/ה איתך את הספר \"$recipe\"",
     "sharedPlan": "$name שיתף/ה איתך את התפריט \"$recipe\"",
     "adminReply": "תשובה מצוות EasyPlate לפנייה שלך",
+    "adminTicketNew": "פנייה חדשה מ-$name",
+    "adminTicketFollowUp": "$name כתב/ה בפנייה",
     "adminReplyQuote": "הפנייה שלך: \"$excerpt\"",
     "adminMessage": "הודעה מ-EasyPlate",
     "forumReplyOnMyPost": "$name הגיב/ה לפוסט שלך \"$post\"",

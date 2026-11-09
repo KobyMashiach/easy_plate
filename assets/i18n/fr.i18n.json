@@ -592,6 +592,8 @@
     "sharedBook": "$name a partagé le livre « $recipe » avec vous",
     "sharedPlan": "$name a partagé le menu « $recipe » avec vous",
     "adminReply": "Réponse de l'équipe EasyPlate à votre message",
+    "adminTicketNew": "Nouvelle demande de $name",
+    "adminTicketFollowUp": "$name a écrit dans une demande",
     "adminReplyQuote": "Votre message : \"$excerpt\"",
     "adminMessage": "Un message d'EasyPlate",
     "forumReplyOnMyPost": "$name a répondu à votre publication « $post »",

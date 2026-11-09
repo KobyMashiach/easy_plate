@@ -66,12 +66,15 @@ class NotificationsFirestoreDataSource
       message: docStringOrNull(data['message']),
       feedbackExcerpt: docStringOrNull(data['feedbackExcerpt']),
       feedbackId: docNonEmpty(data['feedbackId']),
-      title: docStringOrNull(data['title']),
+      // An administrator's ticket item carries the writer's name as
+      // `authorName`; it reads as the row's title.
+      title: docStringOrNull(data['title']) ?? docStringOrNull(data['authorName']),
       postId: docNonEmpty(data['postId']),
       replyId: docNonEmpty(data['replyId']),
       postTitle: docStringOrNull(data['postTitle']),
       excerpt: docStringOrNull(data['excerpt']),
       onMyPost: docBool(data['onMyPost']),
+      followUp: docBool(data['followUp']),
       kind: CollabKind.fromName(docStringOrNull(data['kind'])),
       role: docEnum(CollabRole.values, data['role']),
       read: docBool(data['read']),

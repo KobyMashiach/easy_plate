@@ -820,6 +820,8 @@ class _Translations$notifications$fr extends Translations$notifications$he {
 	@override String sharedBook({required Object name, required Object recipe}) => '${name} a partagé le livre « ${recipe} » avec vous';
 	@override String sharedPlan({required Object name, required Object recipe}) => '${name} a partagé le menu « ${recipe} » avec vous';
 	@override String get adminReply => 'Réponse de l\'équipe EasyPlate à votre message';
+	@override String adminTicketNew({required Object name}) => 'Nouvelle demande de ${name}';
+	@override String adminTicketFollowUp({required Object name}) => '${name} a écrit dans une demande';
 	@override String adminReplyQuote({required Object excerpt}) => 'Votre message : "${excerpt}"';
 	@override String get adminMessage => 'Un message d\'EasyPlate';
 	@override String forumReplyOnMyPost({required Object name, required Object post}) => '${name} a répondu à votre publication « ${post} »';
@@ -3031,6 +3033,8 @@ extension on TranslationsFr {
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} a partagé le livre « ${recipe} » avec vous',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} a partagé le menu « ${recipe} » avec vous',
 			'notifications.adminReply' => 'Réponse de l\'équipe EasyPlate à votre message',
+			'notifications.adminTicketNew' => ({required Object name}) => 'Nouvelle demande de ${name}',
+			'notifications.adminTicketFollowUp' => ({required Object name}) => '${name} a écrit dans une demande',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'Votre message : "${excerpt}"',
 			'notifications.adminMessage' => 'Un message d\'EasyPlate',
 			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} a répondu à votre publication « ${post} »',
@@ -3505,10 +3509,10 @@ extension on TranslationsFr {
 			'walkthrough.startHint' => 'Une visite guidée de toutes les fonctions de l\'application, pas à pas',
 			'walkthrough.startFull' => 'Lancer la visite complète',
 			'walkthrough.focused' => 'Afficher l\'aide ciblée',
-			'walkthrough.next' => 'Suivant',
-			'walkthrough.finish' => 'Terminer',
 			_ => null,
 		} ?? switch (path) {
+			'walkthrough.next' => 'Suivant',
+			'walkthrough.finish' => 'Terminer',
 			'walkthrough.skipStep' => 'Passer l\'étape',
 			'walkthrough.close' => 'Fermer le guide',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'Étape ${current} sur ${total}',
@@ -4019,10 +4023,10 @@ extension on TranslationsFr {
 			'household.seats' => ({required Object used, required Object total}) => '${used} places sur ${total} utilisées',
 			'household.intro' => 'Ouvrez un compte partagé : recettes, livres, plans et listes sont synchronisés pour tous ses membres, qui profitent de Premium avec vous.',
 			'household.create' => 'Ouvrir un compte partagé',
-			'household.nameHint' => 'Nom, p. ex. famille Martin',
-			'household.notEligible' => 'Le compte partagé est inclus avec Pro Duo (2 comptes) ou Pro Family (jusqu’à 6 comptes).',
 			_ => null,
 		} ?? switch (path) {
+			'household.nameHint' => 'Nom, p. ex. famille Martin',
+			'household.notEligible' => 'Le compte partagé est inclus avec Pro Duo (2 comptes) ou Pro Family (jusqu’à 6 comptes).',
 			'household.seePlans' => 'Voir les offres',
 			'household.members' => 'Membres',
 			'household.owner' => 'Propriétaire',

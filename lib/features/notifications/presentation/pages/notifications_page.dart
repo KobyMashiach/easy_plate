@@ -1,3 +1,4 @@
+import '../../../admin_dashboard/presentation/pages/admin_dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -451,6 +452,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
         item.type == AppNotificationType.adminMessage) {
       return _adminCard(item);
     }
+    if (item.type == AppNotificationType.adminTicket) {
+      return _ticketCard(item);
+    }
     final invite = item.inviteId == null ? null : _pending[item.inviteId];
     final roleText = item.role == CollabRole.editor
         ? t.notifications.asEditor
@@ -665,6 +669,59 @@ extension on _NotificationsPageState {
           ],
           const SizedBox(height: AppSpacing.sm),
           SelectableText(item.message ?? '', style: AppTextStyles.bodyMd),
+        ],
+      ),
+    );
+  }
+
+  /// For an administrator: a support conversation opened, or a new line in
+  /// one. A tap opens the dashboard on its tickets tab.
+  Widget _ticketCard(AppNotificationEntity item) {
+    final name = (item.title?.trim().isNotEmpty == true
+            ? item.title!.trim()
+            : item.fromName) ??
+        '';
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      color: item.read ? null : AppColors.primaryFixed,
+      onTap: () {
+        _markRead(item);
+        context.pushNamed(
+          Routing.adminDashboard,
+          extra: AdminDashboardTab.tickets.index,
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.support_agent_rounded,
+                size: 18,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: AppSpacing.base),
+              Expanded(
+                child: Text(
+                  item.followUp
+                      ? t.notifications.adminTicketFollowUp(name: name)
+                      : t.notifications.adminTicketNew(name: name),
+                  style: AppTextStyles.bodyMd,
+                ),
+              ),
+            ],
+          ),
+          if (item.message?.trim().isNotEmpty == true) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              item.message!.trim(),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.bodyMd,
+            ),
+          ],
         ],
       ),
     );

@@ -139,6 +139,12 @@ const bodyFor = (data, fromName) => {
     const message = String(data.message || "").trim();
     return message ? `תשובה לפנייה שלך: ${message.slice(0, 180)}` : "יש תשובה לפנייה שלך";
   }
+  if (data.type === "adminTicket") {
+    const who = clip(data.authorName, 80).trim() || fromName;
+    const message = clip(data.message, 200).trim();
+    const head = data.followUp === true ? `${who} כתב/ה בפנייה` : `פנייה חדשה מ-${who}`;
+    return message ? `${head}: ${message.slice(0, 160)}` : head;
+  }
   if (data.type === "forumReply") {
     const title = String(data.postTitle || "").trim();
     const excerpt = String(data.excerpt || "").trim();
@@ -274,6 +280,7 @@ exports.pushOnNotification = onDocumentCreated(
         replyId: String(data.replyId || "").slice(0, 300),
         onMyPost: String(data.onMyPost === true),
         notificationId: String(event.params.itemId || ""),
+        feedbackId: String(data.feedbackId || "").slice(0, 300),
       },
       android: { priority: "high" },
       apns: { payload: { aps: { sound: "default" } } },
@@ -659,11 +666,70 @@ async function admitFeedback(ref, data, spend = budget.spend) {
   return allowed;
 }
 
+// Every administrator (users/{uid}.permission == "admin") hears of a new
+// support conversation, and of each new line the user adds to an open one:
+// an inbox item of type adminTicket, which pushOnNotification turns into a
+// push and the app opens on the admin dashboard's tickets tab. A
+// conversation refused for the daily limit tells nobody.
+async function tellAdminsOfTicket(db, { feedbackId, data, followUp = false, text = "" }) {
+  const admins = await db.collection("users").where("permission", "==", "admin").select().get();
+  if (admins.empty) return 0;
+  const excerpt = String(text || data.message || "").trim().slice(0, 200);
+  const batch = db.batch();
+  for (const doc of admins.docs) {
+    batch.set(db.collection("notifications").doc(doc.id).collection("items").doc(), {
+      type: "adminTicket",
+      fromUid: String(data.authorUid || ""),
+      feedbackId,
+      feedbackType: String(data.type || "").slice(0, 40),
+      authorName: String(data.authorName || "").slice(0, 80),
+      message: excerpt,
+      followUp,
+      read: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+  await batch.commit();
+  return admins.size;
+}
+
 exports.onFeedbackCreated = onDocumentCreated(
   "feedback/{feedbackId}",
   async (event) => {
     if (!event.data) return;
-    await admitFeedback(event.data.ref, event.data.data());
+    const data = event.data.data();
+    const allowed = await admitFeedback(event.data.ref, data);
+    if (!allowed) return;
+    try {
+      await tellAdminsOfTicket(admin.firestore(), { feedbackId: event.params.feedbackId, data });
+    } catch (err) {
+      logger.warn("ticket admin notify failed", { id: event.params.feedbackId, reason: err.message });
+    }
+  },
+);
+
+// Pure: the lines the user added to a conversation in this update, or none
+// (a reply from the administrator, a read mark, a close).
+function newFollowUps(before, after) {
+  const was = Array.isArray(before && before.followUps) ? before.followUps.length : 0;
+  const now = Array.isArray(after && after.followUps) ? after.followUps : [];
+  return now.length > was ? now.slice(was) : [];
+}
+
+exports.onFeedbackFollowUp = onDocumentUpdated(
+  "feedback/{feedbackId}",
+  async (event) => {
+    const before = event.data && event.data.before.data();
+    const after = event.data && event.data.after.data();
+    if (!after || after.rejected || after.status === "closed") return;
+    const added = newFollowUps(before, after);
+    if (!added.length) return;
+    const last = added[added.length - 1];
+    try {
+      await tellAdminsOfTicket(admin.firestore(), { feedbackId: event.params.feedbackId, data: after, followUp: true, text: last && last.text });
+    } catch (err) {
+      logger.warn("ticket follow-up notify failed", { id: event.params.feedbackId, reason: err.message });
+    }
   },
 );
 
@@ -706,3 +772,5 @@ exports.weeklyStorageSweep = onSchedule(
 // The pure parts of the triggers above, for the unit test.
 exports.internals = { tellSaversOfEdit, tellThreadOfReply, COPY_SCAN_LIMIT, reconcileReplyCount, reconcileLikeCount, replyCountRose, senderHasPhone, replierMayTell, bodyFor, titleFor, invitePushAllowed, replyFanoutAllowed, recipeUpdateFanoutAllowed, REPLY_SCAN_LIMIT, changedFields, recipeChanged, copyRootOf, saversFor, writeInboxItems, PREFS_BATCH, WRITE_BATCH };
 exports.internals.admitFeedback = admitFeedback;
+exports.internals.newFollowUps = newFollowUps;
+exports.internals.tellAdminsOfTicket = tellAdminsOfTicket;

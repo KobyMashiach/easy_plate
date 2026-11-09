@@ -596,6 +596,8 @@
     "sharedBook": "$name поделился(-ась) с вами книгой «$recipe»",
     "sharedPlan": "$name поделился(-ась) с вами меню «$recipe»",
     "adminReply": "Ответ команды EasyPlate на ваше обращение",
+    "adminTicketNew": "Новое обращение от $name",
+    "adminTicketFollowUp": "$name написал(а) в обращении",
     "adminReplyQuote": "Ваше обращение: \"$excerpt\"",
     "adminMessage": "Сообщение от EasyPlate",
     "forumReplyOnMyPost": "$name ответил(а) на ваш пост «$post»",

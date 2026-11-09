@@ -39,6 +39,11 @@ class AppNotificationEntity {
   final String? excerpt;
   final bool onMyPost;
 
+  /// For [AppNotificationType.adminTicket]: a new line in a conversation
+  /// already open, rather than a new conversation. The writer's name is in
+  /// [title], their words in [message], the conversation in [feedbackId].
+  final bool followUp;
+
   final bool read;
   final DateTime createdAt;
 
@@ -64,6 +69,7 @@ class AppNotificationEntity {
     this.postTitle,
     this.excerpt,
     this.onMyPost = false,
+    this.followUp = false,
   });
 
   AppNotificationEntity withFromName(String name) => AppNotificationEntity(
@@ -86,6 +92,7 @@ class AppNotificationEntity {
     postTitle: postTitle,
     excerpt: excerpt,
     onMyPost: onMyPost,
+    followUp: followUp,
     read: read,
     createdAt: createdAt,
   );

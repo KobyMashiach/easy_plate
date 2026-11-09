@@ -1920,6 +1920,12 @@ class Translations$notifications$he {
 	/// he: 'תשובה מצוות EasyPlate לפנייה שלך'
 	String get adminReply => 'תשובה מצוות EasyPlate לפנייה שלך';
 
+	/// he: 'פנייה חדשה מ-$name'
+	String adminTicketNew({required Object name}) => 'פנייה חדשה מ-${name}';
+
+	/// he: '$name כתב/ה בפנייה'
+	String adminTicketFollowUp({required Object name}) => '${name} כתב/ה בפנייה';
+
 	/// he: 'הפנייה שלך: "$excerpt"'
 	String adminReplyQuote({required Object excerpt}) => 'הפנייה שלך: "${excerpt}"';
 
@@ -6999,6 +7005,8 @@ extension on Translations {
 			'notifications.sharedBook' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את הספר "${recipe}"',
 			'notifications.sharedPlan' => ({required Object name, required Object recipe}) => '${name} שיתף/ה איתך את התפריט "${recipe}"',
 			'notifications.adminReply' => 'תשובה מצוות EasyPlate לפנייה שלך',
+			'notifications.adminTicketNew' => ({required Object name}) => 'פנייה חדשה מ-${name}',
+			'notifications.adminTicketFollowUp' => ({required Object name}) => '${name} כתב/ה בפנייה',
 			'notifications.adminReplyQuote' => ({required Object excerpt}) => 'הפנייה שלך: "${excerpt}"',
 			'notifications.adminMessage' => 'הודעה מ-EasyPlate',
 			'notifications.forumReplyOnMyPost' => ({required Object name, required Object post}) => '${name} הגיב/ה לפוסט שלך "${post}"',
@@ -7473,10 +7481,10 @@ extension on Translations {
 			'walkthrough.startHint' => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד',
 			'walkthrough.startFull' => 'התחל הדרכה מלאה',
 			'walkthrough.focused' => 'הצג הנחיה ממוקדת',
-			'walkthrough.next' => 'הבא',
-			'walkthrough.finish' => 'סיום',
 			_ => null,
 		} ?? switch (path) {
+			'walkthrough.next' => 'הבא',
+			'walkthrough.finish' => 'סיום',
 			'walkthrough.skipStep' => 'דלג על שלב',
 			'walkthrough.close' => 'סגור הדרכה',
 			'walkthrough.stepOf' => ({required Object current, required Object total}) => 'שלב ${current} מתוך ${total}',
@@ -7987,10 +7995,10 @@ extension on Translations {
 			'shareCode.revoked' => 'הקוד בוטל.',
 			'shareCode.usedUp' => 'הקוד נוצל עד תום.',
 			'shareCode.self' => 'זה הקוד שלכם.',
-			'shareCode.gone' => 'מה שהקוד שיתף כבר לא קיים.',
-			'shareCode.tooManyRecipes' => 'השיתוף הזה מכיל יותר מדי מתכונים להצטרפות בבת אחת. בקשו מהבעלים לפצל אותו.',
 			_ => null,
 		} ?? switch (path) {
+			'shareCode.gone' => 'מה שהקוד שיתף כבר לא קיים.',
+			'shareCode.tooManyRecipes' => 'השיתוף הזה מכיל יותר מדי מתכונים להצטרפות בבת אחת. בקשו מהבעלים לפצל אותו.',
 			'shareCode.failed' => 'ההצטרפות נכשלה. נסו שוב.',
 			'shareCode.messageText' => ({required Object name, required Object title, required Object code, required Object link}) => '${name} שיתף איתך את "${title}" ב-EasyPlate. קוד: ${code}\n${link}',
 			'shareCode.revoke' => 'לבטל קוד',
