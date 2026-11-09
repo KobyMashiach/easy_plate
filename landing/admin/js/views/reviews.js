@@ -13,6 +13,73 @@ const MAX_REPLY = { android: 350, ios: 5970 };
 const STORE = { android: "Google Play", ios: "App Store" };
 const STORE_COLOR = { android: "green", ios: "brand" };
 
+// Ready replies, one set per reviewer language. "{name}" is the reviewer's
+// store nickname (dropped with its comma when the store shows none). Each
+// stays under Google Play's 350 characters. The coupon is offered for the
+// trouble, through the app's support chat (stores have no private
+// messages) — never in exchange for changing the rating, which both stores
+// forbid.
+const TEMPLATE_KEYS = ["thanks", "sorry", "coupon", "idea", "fixed"];
+export const TEMPLATES = {
+  he: {
+    thanks: "תודה רבה{, name}! 💜 שמחים מאוד שהאפליקציה עוזרת לך במטבח. ביקורת כזו נותנת לנו המון כוח להמשיך לשפר. בתיאבון! — צוות EasyPlate",
+    sorry: "היי{ name}, סליחה על אי הנוחות 🙏 זה בדיוק מה שאנחנו לא רוצים שיקרה. נשמח אם תכתבו לנו דרך מסך התמיכה באפליקציה (תפריט ← תמיכה) עם כמה פרטים, ונטפל בזה אישית ומהר. — צוות EasyPlate",
+    coupon: "היי{ name}, אנחנו מצטערים מאוד על החוויה 🙏 כדי לפצות, נשמח לשלוח לך קוד קופון בפרטי — פשוט כתבו לנו בצ'אט התמיכה באפליקציה (תפריט ← תמיכה) ונשלח אותו לשם, ונבדוק גם את התקלה עצמה. — צוות EasyPlate",
+    idea: "תודה{ name} על ההצעה! 💡 רשמנו אותה ברשימת הפיצ'רים שלנו, והרבה מהשיפורים באפליקציה מגיעים בדיוק מהערות כאלה. שווה לעקוב אחרי העדכונים הבאים 😉 — צוות EasyPlate",
+    fixed: "היי{ name}, תודה שדיווחת! 🛠️ התקלה תוקנה בגרסה האחרונה — מומלץ לעדכן את האפליקציה בחנות. אם זה עדיין קורה, כתבו לנו במסך התמיכה באפליקציה ונבדוק מיד. — צוות EasyPlate",
+  },
+  en: {
+    thanks: "Thank you so much{, name}! 💜 We're really happy EasyPlate helps you in the kitchen. Reviews like yours keep us going. Happy cooking! — The EasyPlate team",
+    sorry: "Hi{ name}, sorry for the inconvenience 🙏 That's exactly what we don't want to happen. Please write to us from the Support screen in the app (Menu → Support) with a few details and we'll handle it personally and quickly. — The EasyPlate team",
+    coupon: "Hi{ name}, we're really sorry about your experience 🙏 To make up for it, we'd like to send you a coupon code privately — just message us in the in-app support chat (Menu → Support) and we'll send it there and look into the issue too. — The EasyPlate team",
+    idea: "Thanks for the suggestion{, name}! 💡 We've added it to our feature list — many of our improvements come straight from feedback like yours. Keep an eye on the next updates 😉 — The EasyPlate team",
+    fixed: "Hi{ name}, thanks for reporting this! 🛠️ It's fixed in the latest version — please update the app from the store. If it still happens, write to us from the Support screen in the app and we'll check right away. — The EasyPlate team",
+  },
+  ar: {
+    thanks: "شكرًا جزيلًا{، name}! 💜 يسعدنا جدًا أن EasyPlate يساعدك في المطبخ. تقييمات مثل تقييمك تمنحنا الدافع للاستمرار. بالهناء! — فريق EasyPlate",
+    sorry: "مرحبًا{ name}، نعتذر عن الإزعاج 🙏 هذا بالضبط ما لا نريده أن يحدث. يرجى مراسلتنا من شاشة الدعم في التطبيق (القائمة ← الدعم) مع بعض التفاصيل وسنتابع الأمر شخصيًا وبسرعة. — فريق EasyPlate",
+    coupon: "مرحبًا{ name}، نأسف جدًا لتجربتك 🙏 تعويضًا لك، يسعدنا أن نرسل لك رمز قسيمة بشكل خاص — فقط راسلنا في دردشة الدعم داخل التطبيق (القائمة ← الدعم) وسنرسله هناك ونفحص المشكلة أيضًا. — فريق EasyPlate",
+    idea: "شكرًا على الاقتراح{، name}! 💡 أضفناه إلى قائمة الميزات لدينا — كثير من تحسيناتنا تأتي من ملاحظات مثل ملاحظتك. ترقّب التحديثات القادمة 😉 — فريق EasyPlate",
+    fixed: "مرحبًا{ name}، شكرًا على البلاغ! 🛠️ تم إصلاح المشكلة في أحدث إصدار — يرجى تحديث التطبيق من المتجر. إن استمرت، راسلنا من شاشة الدعم في التطبيق وسنفحصها فورًا. — فريق EasyPlate",
+  },
+  fr: {
+    thanks: "Merci beaucoup{, name} ! 💜 Nous sommes ravis qu'EasyPlate vous aide en cuisine. Des avis comme le vôtre nous motivent énormément. Bonne cuisine ! — L'équipe EasyPlate",
+    sorry: "Bonjour{ name}, désolés pour la gêne occasionnée 🙏 Écrivez-nous depuis l'écran Assistance de l'app (Menu → Assistance) avec quelques détails : nous nous en occupons personnellement et rapidement. — L'équipe EasyPlate",
+    coupon: "Bonjour{ name}, nous sommes vraiment désolés 🙏 Pour nous faire pardonner, nous aimerions vous envoyer un code promo en privé : écrivez-nous dans le chat d'assistance de l'app (Menu → Assistance), nous vous l'enverrons là-bas et examinerons le problème. — L'équipe EasyPlate",
+    idea: "Merci pour la suggestion{, name} ! 💡 Nous l'avons ajoutée à notre liste : beaucoup de nos améliorations viennent de retours comme le vôtre. Restez attentif aux prochaines mises à jour 😉 — L'équipe EasyPlate",
+    fixed: "Bonjour{ name}, merci pour le signalement ! 🛠️ C'est corrigé dans la dernière version : mettez l'app à jour depuis le store. Si le problème persiste, écrivez-nous depuis l'écran Assistance et nous vérifions tout de suite. — L'équipe EasyPlate",
+  },
+  ru: {
+    thanks: "Большое спасибо{, name}! 💜 Очень рады, что EasyPlate помогает вам на кухне. Такие отзывы дают нам силы двигаться дальше. Приятного аппетита! — Команда EasyPlate",
+    sorry: "Здравствуйте{, name}! Простите за неудобства 🙏 Напишите нам, пожалуйста, через экран поддержки в приложении (Меню → Поддержка) с парой подробностей — мы разберёмся лично и быстро. — Команда EasyPlate",
+    coupon: "Здравствуйте{, name}! Нам очень жаль 🙏 В качестве компенсации хотим отправить вам промокод лично — просто напишите нам в чат поддержки в приложении (Меню → Поддержка), мы пришлём его туда и заодно разберёмся с проблемой. — Команда EasyPlate",
+    idea: "Спасибо за идею{, name}! 💡 Мы добавили её в список функций — многие улучшения появляются именно из таких отзывов. Следите за обновлениями 😉 — Команда EasyPlate",
+    fixed: "Здравствуйте{, name}! Спасибо, что сообщили 🛠️ Ошибка исправлена в последней версии — обновите приложение в магазине. Если повторится, напишите нам через экран поддержки, и мы сразу проверим. — Команда EasyPlate",
+  },
+};
+const TEMPLATE_LANG_NAMES = { he: "עברית", en: "English", ar: "العربية", fr: "Français", ru: "Русский" };
+// App Store territories that read each language by default.
+const COUNTRY_LANG = { ISR: "he", IL: "he", FRA: "fr", FR: "fr", BEL: "fr", RUS: "ru", RU: "ru", UKR: "ru", ARE: "ar", SAU: "ar", EGY: "ar", JOR: "ar" };
+
+// Pure: the reviewer's language for the templates.
+export function templateLang(review) {
+  const code = String(review.lang || "").slice(0, 2).toLowerCase();
+  if (code === "iw") return "he";
+  if (TEMPLATES[code]) return code;
+  const text = `${review.title || ""} ${review.text || ""}`;
+  if (/[\u0590-\u05FF]/.test(text)) return "he";
+  if (/[\u0600-\u06FF]/.test(text)) return "ar";
+  if (/[\u0400-\u04FF]/.test(text)) return "ru";
+  return COUNTRY_LANG[String(review.country || "").toUpperCase()] || "en";
+}
+
+// Pure: a template with the reviewer's name, or without it (and the
+// separator before it) when the store shows none.
+export function fillTemplate(template, name) {
+  const n = String(name || "").trim();
+  return template.replace(/\{([^{}]*?)name\}/g, (_, sep) => (n ? `${sep}${n}` : "")).trim();
+}
+
 const stars = (n) => "★".repeat(Math.max(0, Math.min(5, n || 0))) + "☆".repeat(5 - Math.max(0, Math.min(5, n || 0)));
 
 function regionName(code) {
@@ -116,6 +183,17 @@ export async function mount({ view, actions }) {
     const updateCount = () => { counter.textContent = `${text.value.length} / ${max}`; counter.className = text.value.length > max ? "small warn" : "small muted"; };
     text.addEventListener("input", updateCount);
     updateCount();
+    let tplLang = templateLang(r);
+    const langPick = h("select.input", { "aria-label": t("reviews.tplLang"), style: { width: "auto" } }, Object.entries(TEMPLATE_LANG_NAMES).map(([code, label]) => h("option", { value: code, selected: code === tplLang }, label)));
+    langPick.addEventListener("change", () => { tplLang = langPick.value; });
+    const templates = h("div.row", { style: { flexWrap: "wrap", gap: "6px" } },
+      h("span.small.muted", t("reviews.templates")),
+      TEMPLATE_KEYS.map((key) => button(t(`reviews.tpl.${key}`), { kind: "small", onclick: () => {
+        text.value = fillTemplate(TEMPLATES[tplLang][key], r.author).slice(0, max);
+        updateCount();
+        text.focus();
+      } })),
+      langPick);
     const hint = input({ placeholder: t("reviews.draftHint") });
     const translation = h("p.small.muted.pre", { hidden: true });
     const draftBtn = button(t("reviews.draft"), { kind: "small" });
@@ -134,6 +212,7 @@ export async function mount({ view, actions }) {
         h("div", h("span", { style: { color: "var(--amber)" } }, stars(r.rating)), r.title ? h("strong", ` ${r.title}`) : null),
         h("p.pre", r.text || t("reviews.noText")),
         translation,
+        templates,
         h("div.row", hint, draftBtn),
         field(t("reviews.yourReply"), text, r.platform === "android" ? t("reviews.playLimit") : t("reviews.appleNote")),
         counter,
