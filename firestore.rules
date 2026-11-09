@@ -866,6 +866,18 @@ service cloud.firestore {
       allow read, write: if isAdmin() && name != 'stores_private' && name != 'instagram_private';
     }
 
+    // Store reviews (Google Play + App Store) the storeReviews function
+    // pulls in. The console reads them live; every write — a reply sent to
+    // the store, the read mark — goes through adminPanel.
+    match /store_reviews/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /store_reviews_meta/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // A share code is written by the owner and redeemed by the server (the
     // shareCodes function), which creates the invite on the owner's behalf.
     match /share_codes/{code} {

@@ -88,6 +88,18 @@ exports.dailyStoreStats = onSchedule(
   },
 );
 
+// Store reviews (Google Play + App Store) into the console's inbox. Play's
+// API only shows the last week, so this runs several times a day; the
+// monthly CSV in the Play bucket fills in the history.
+const storeReviews = require("./storeReviews");
+exports.syncStoreReviews = onSchedule(
+  { schedule: "every 3 hours", timeZone: "Asia/Jerusalem", region: "europe-west1", retryCount: 1, timeoutSeconds: 540, memory: "512MiB" },
+  async () => {
+    const result = await storeReviews.sync({ db: admin.firestore(), platform: "all" });
+    logger.info("store reviews", { android: result.android, ios: result.ios });
+  },
+);
+
 // The recipient's locale is not known here; Hebrew is the app's primary
 // language, and the in-app inbox is localised properly once they open it.
 // A share invite's item is written by the sharer's own client, so its title

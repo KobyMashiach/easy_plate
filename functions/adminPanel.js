@@ -24,6 +24,9 @@
 //              pricing.sync
 //   stores     stores.stats / stores.status / stores.config / stores.sync —
 //              the exact install counts behind the listings' "500+" tags
+//   reviews    reviews.sync / reviews.reply / reviews.deleteReply /
+//              reviews.read / reviews.draft — Google Play and App Store
+//              reviews, answered from the console (storeReviews.js)
 //   what's new whatsnew.save / whatsnew.delete / whatsnew.translate — the
 //              release highlights (whats_new_releases/{versionCode}) the app
 //              shows a returning account once after an update
@@ -54,6 +57,7 @@ const households = require("./households").internals;
 const translation = require("./translateContent").internals;
 const { syncPricing, syncRate } = require("./pricingCatalog");
 const storeStats = require("./storeStats");
+const storeReviews = require("./storeReviews");
 const { StripeError } = require("./stripeClient");
 const { MAX_IMAGE_BYTES, isPrivateAddress, isInternalHostname, assertPublicUrl, fetchImage, readCapped, sniffImage } = require("./safeFetch");
 
@@ -161,6 +165,11 @@ const ACTIONS = {
   "stores.status": {},
   "stores.config": { playBucket: str(200, false, { clear: true }), playPackage: str(200, false, { clear: true }), appleVendor: str(40, false, { clear: true }), appleIssuerId: str(80, false, { clear: true }), appleKeyId: str(40, false, { clear: true }), appleAppId: str(40, false, { clear: true }), iosSince: str(10, false, { clear: true }), applePrivateKey: str(8000) },
   "stores.sync": { platform: anyOf(["all", "android", "ios"]), backfill: bool() },
+  "reviews.sync": { platform: anyOf(["all", "android", "ios"]), backfill: bool() },
+  "reviews.reply": { reviewId: str(320, true), text: str(6000, true) },
+  "reviews.deleteReply": { reviewId: str(320, true) },
+  "reviews.read": { ids: strList(500, 320, true), read: bool() },
+  "reviews.draft": { reviewId: str(320, true), lang: str(5), hint: str(500) },
   "whatsnew.save": { versionCode: num(true), version: str(40, true), releasedAt: num(), isPublished: bool(), features: objList(WHATS_NEW_MAX_FEATURES, true) },
   "whatsnew.delete": { versionCode: num(true) },
   "whatsnew.translate": { title: str(200), description: str(2000), from: anyOf(WHATS_NEW_LANGS, true) },
@@ -191,6 +200,12 @@ const ID_FIELDS = new Set(["uid", "id", "postId", "replyId", "recipeId", "hid", 
 
 function validId(value) {
   return typeof value === "string" && /^[^/]{1,128}$/.test(value) && value !== "." && value !== ".." && !/^__.*__$/.test(value);
+}
+
+// A store review's document id: the platform, then the store's own id
+// (Google Play's run past the 128 characters validId allows).
+function validReviewId(value) {
+  return typeof value === "string" && /^(android|ios)_[^/]{1,300}$/.test(value);
 }
 
 function parseRequest(body) {
@@ -585,6 +600,36 @@ function recipePrompt({ title, lang, hints }) {
     "`nutrition` is per serving, estimated. `imageQuery` is a short English search phrase for a photo of the finished dish.",
     "`dietaryTags`: only the tags that truly apply (kosher only if the recipe is kosher as written; allergy only if allergens are set).",
     hints ? `Extra wishes from the author: ${hints}` : "",
+  ].filter(Boolean).join("\n");
+}
+
+const REVIEW_REPLY_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    language: { type: "STRING" },
+    reply: { type: "STRING" },
+    translation: { type: "STRING" },
+  },
+  required: ["language", "reply", "translation"],
+};
+
+// A developer reply to a store review: in the reviewer's language, short
+// enough for the store, warm, specific to what they wrote, never promising
+// what the app does not do, never mentioning prices.
+function reviewReplyPrompt(review, { lang, hint }) {
+  const max = review.platform === "android" ? 350 : 1000;
+  const ui = LANG_NAMES[lang] || "Hebrew";
+  return [
+    "You answer app store reviews for EasyPlate, a recipe app (save recipes from links, TikTok/Instagram videos and photos, AI recipe assistant 'Shefi', meal plans, shared grocery lists, receipt scanning, community).",
+    `Store: ${review.platform === "android" ? "Google Play" : "App Store"}. Stars: ${review.rating}/5.`,
+    review.title ? `Review title: ${review.title}` : "",
+    `Review text: ${review.text || "(no text, rating only)"}`,
+    review.lang ? `Reviewer language code: ${review.lang}` : "",
+    review.country ? `Storefront: ${review.country}` : "",
+    hint ? `Instructions from the developer for this reply: ${hint}` : "",
+    `Write the reply in the reviewer's own language (detect it from the text; if there is no text, use ${review.country === "IL" || !review.country ? "Hebrew" : "English"}).`,
+    `At most ${max} characters. Warm, personal, specific to what they wrote; thank them; for a complaint apologise, say what to try or that it is being fixed, and invite them to write through the app's Support screen. No prices, no plan names, no promises of features, no emojis spam (one at most), no signature with a person's name — sign as "צוות EasyPlate" / "The EasyPlate team" in the reply's language.`,
+    `Also give "translation": the review text translated to ${ui} (empty string if it is already in ${ui} or there is no text), and "language": the reviewer's language name in English.`,
   ].filter(Boolean).join("\n");
 }
 
@@ -1296,6 +1341,28 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
     }
     case "stores.sync":
       return storeStats.sync({ db, platform: request.platform || "all", backfill: request.backfill === true, fetchImpl });
+
+    // --- store reviews ----------------------------------------------------
+    case "reviews.sync":
+      return storeReviews.sync({ db, platform: request.platform || "all", backfill: request.backfill === true, fetchImpl });
+    case "reviews.reply":
+      if (!validReviewId(request.reviewId)) throw refused("bad id", "invalid");
+      return storeReviews.reply({ db, id: request.reviewId, text: request.text, fetchImpl, now });
+    case "reviews.deleteReply":
+      if (!validReviewId(request.reviewId)) throw refused("bad id", "invalid");
+      return storeReviews.deleteReply({ db, id: request.reviewId, fetchImpl });
+    case "reviews.read":
+      if (!request.ids.every(validReviewId)) throw refused("bad id", "invalid");
+      return storeReviews.markRead({ db, ids: request.ids, read: request.read !== false });
+    case "reviews.draft": {
+      if (!validReviewId(request.reviewId)) throw refused("bad id", "invalid");
+      const snap = await db.collection(storeReviews.internals.COLLECTION).doc(request.reviewId).get();
+      if (!snap.exists) throw refused("no such review", "not_found", 404);
+      const review = snap.data();
+      const answer = await gemini({ key: keys.gemini, prompt: reviewReplyPrompt(review, request), schema: REVIEW_REPLY_SCHEMA, uid: caller.uid, kind: "text", fetchImpl });
+      const max = storeReviews.internals.MAX_REPLY[review.platform] || 350;
+      return { reply: String((answer && answer.reply) || "").trim().slice(0, max), translation: String((answer && answer.translation) || "").trim(), language: String((answer && answer.language) || "") };
+    }
 
     // --- what's new -------------------------------------------------------
     case "whatsnew.save": {

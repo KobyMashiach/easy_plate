@@ -15,6 +15,7 @@ import * as config from "./views/config.js";
 import * as audit from "./views/audit.js";
 import * as seed from "./views/seed.js";
 import * as stores from "./views/stores.js";
+import * as reviews from "./views/reviews.js";
 import * as notifications from "./views/notifications.js";
 import * as whatsnew from "./views/whatsnew.js";
 import * as instagram from "./views/instagram.js";
@@ -31,6 +32,7 @@ const ICONS = {
   seed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>',
   stores: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>',
   notifications: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+  reviews: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="m12 6.5 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg>',
   audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>',
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>',
   whatsnew: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z"/></svg>',
@@ -51,6 +53,7 @@ const ROUTES = [
   { key: "instagram", path: /^\/instagram$/, view: instagram },
   { key: "config", path: /^\/config$/, view: config },
   { key: "stores", path: /^\/stores$/, view: stores },
+  { key: "reviews", path: /^\/reviews$/, view: reviews },
   { key: "audit", path: /^\/audit$/, view: audit },
 ];
 
@@ -95,15 +98,32 @@ function stopUnreadTickets() {
   unreadCapped = false;
 }
 
+// Store reviews still waiting for an answer (new, or edited after one).
+let openReviews = 0;
+let stopReviews = null;
+function watchOpenReviews() {
+  if (stopReviews) return;
+  stopReviews = onSnapshot(query(collection(db, "store_reviews"), where("needsReply", "==", true), limit(UNREAD_CAP)), (snap) => {
+    openReviews = snap.size;
+    const el = document.getElementById("reviewsBadge");
+    if (el) { el.hidden = !openReviews; el.textContent = openReviews >= UNREAD_CAP ? `${UNREAD_CAP - 1}+` : String(openReviews); }
+  }, () => {});
+}
+function stopOpenReviews() {
+  if (stopReviews) { stopReviews(); stopReviews = null; }
+  openReviews = 0;
+}
+
 function renderNav() {
   const { nav } = els();
   clear(nav);
   const route = location.hash.slice(1) || "/dashboard";
-  for (const key of ["dashboard", "stores", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "whatsnew", "instagram", "config", "audit"]) {
+  for (const key of ["dashboard", "stores", "reviews", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "whatsnew", "instagram", "config", "audit"]) {
     const here = route.startsWith("/" + key);
     const a = h(`a${here ? ".active" : ""}`, { href: `#/${key}`, html: ICONS[key], ...(here ? { "aria-current": "page" } : {}) });
     a.append(h("span", t(`nav.${key}`)));
     if (key === "tickets") a.append(h("span.badge.brand", { id: "ticketsBadge", hidden: !unreadTickets }, unreadText()));
+    if (key === "reviews") a.append(h("span.badge.brand", { id: "reviewsBadge", hidden: !openReviews }, openReviews >= UNREAD_CAP ? `${UNREAD_CAP - 1}+` : String(openReviews)));
     nav.append(a);
   }
 }
@@ -172,6 +192,7 @@ function showShell(user) {
   clear(me);
   me.append(avatar(user.displayName || user.email, user.photoURL, "sm"), h("span.ellipsis", user.email));
   watchUnreadTickets();
+  watchOpenReviews();
   mount();
 }
 
@@ -240,6 +261,7 @@ function init() {
       // A mount still awaiting must not install listeners after sign-out.
       mountSeq++;
       stopUnreadTickets();
+      stopOpenReviews();
       if (unmount) { try { unmount(); } catch (_) {} unmount = null; }
       showGate();
     }
