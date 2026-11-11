@@ -14,3 +14,4 @@ export 'clay_scaffold.dart';
 export 'clay_section.dart';
 export 'clay_tag.dart';
 export 'clay_floating_header.dart';
+export 'min_tap_target.dart';

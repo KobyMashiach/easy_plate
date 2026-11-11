@@ -255,6 +255,16 @@
         "source": "/en/:rest*",
         "destination": "/:rest*",
         "type": 301
+      },
+      {
+        "source": "/upgrade",
+        "destination": "/app/pricing",
+        "type": 302
+      },
+      {
+        "source": "/list",
+        "destination": "/app/groceries",
+        "type": 302
       }
     ]
   }

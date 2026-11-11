@@ -32,6 +32,8 @@ import '../../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../../features/recipe_books/presentation/pages/book_viewer_page.dart';
 import '../../../features/recipe_ingestion/domain/entities/ingestion_file.dart';
 import '../../../features/recipe_ingestion/presentation/pages/ingestion_page.dart';
+import '../../../features/recipe_ingestion/domain/bulk_import.dart';
+import '../../../features/recipe_ingestion/presentation/pages/bulk_import_page.dart';
 import '../../../features/settings/presentation/pages/notification_settings_page.dart';
 import '../../../features/settings/presentation/pages/preferences_page.dart';
 import '../../../features/settings/presentation/pages/settings_page.dart';
@@ -47,6 +49,7 @@ import '../../../features/admin_dashboard/presentation/pages/admin_dashboard_pag
 import '../../../features/auth/presentation/pages/blocked_page.dart';
 import '../../../features/auth/presentation/pages/session_gate_page.dart';
 import '../../../features/household/presentation/pages/household_page.dart';
+import '../../../features/whatsapp_bot/presentation/pages/whatsapp_link_page.dart';
 import '../../../features/share_codes/domain/pending_share_code.dart';
 import '../../../features/share_codes/presentation/pages/join_by_code_page.dart';
 import '../../../features/share_codes/presentation/pages/scan_share_code_page.dart';
@@ -378,6 +381,12 @@ GoRouter buildRouter() {
             builder: (context, state) => const SharingManagementPage(),
           ),
           GoRoute(
+            path: Routing.whatsappBot,
+            name: Routing.whatsappBot,
+            redirect: featureRedirect(FeaturesFlags.whatsappBot),
+            builder: (context, state) => const WhatsappLinkPage(),
+          ),
+          GoRoute(
             path: Routing.household,
             name: Routing.household,
             redirect: featureRedirect(FeaturesFlags.households),
@@ -445,6 +454,15 @@ GoRouter buildRouter() {
             name: Routing.ingestion,
             builder: (context, state) =>
                 IngestionPage(launch: state.extra as IngestionLaunch?),
+          ),
+          // Several recipes at once: a share of many links, a WhatsApp chat
+          // export, or opened empty from the add-recipe screen.
+          GoRoute(
+            path: Routing.bulkImport,
+            name: Routing.bulkImport,
+            redirect: featureRedirect(FeaturesFlags.bulkImport),
+            builder: (context, state) =>
+                BulkImportPage(launch: state.extra as BulkImportLaunch?),
           ),
           GoRoute(
             path: Routing.tutorial,

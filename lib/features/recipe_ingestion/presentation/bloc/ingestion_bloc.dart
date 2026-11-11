@@ -175,6 +175,19 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   RecipeIngestionChannel _channel;
   static const _uuid = Uuid();
 
+  /// True while the category on screen is the app's guess from the text
+  /// (ChannelDetector) rather than the user's choice: typing keeps moving
+  /// it, a tap on a chip ends it for the rest of the screen's life. False
+  /// from the start when the screen was opened on a set channel.
+  bool autoChannel;
+
+  /// Set once a link that came in with the screen was handed to the
+  /// countdown, so a form rebuilt later does not run it again.
+  bool initialAutoRunUsed = false;
+
+  /// The recipe the last save wrote, for the "add it to a book?" prompt.
+  String? lastSavedRecipeId;
+
   /// How long an analysis may run before the raw text is offered instead.
   /// Injectable so a test does not have to wait it out.
   ///
@@ -197,6 +210,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   IngestionBloc({
     this.analysisTimeout = const Duration(seconds: 45),
     RecipeIngestionChannel initialChannel = RecipeIngestionChannel.rawText,
+    this.autoChannel = false,
     required this.parseRawTextUseCase,
     required this.searchWebRecipesUseCase,
     this.suggestRecipesUseCase,
@@ -239,9 +253,11 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
   factory IngestionBloc.fromContext(
     BuildContext context, {
     RecipeIngestionChannel initialChannel = RecipeIngestionChannel.rawText,
+    bool autoChannel = false,
   }) {
     return IngestionBloc(
       initialChannel: initialChannel,
+      autoChannel: autoChannel,
       parseRecipeFromFileUseCase: ParseRecipeFromFileUseCase(context.read()),
       parseRawTextUseCase: ParseRawTextUseCase(context.read()),
       searchWebRecipesUseCase: SearchWebRecipesUseCase(context.read()),
@@ -606,6 +622,7 @@ class IngestionBloc extends Bloc<IngestionEvent, IngestionState> {
     _saving = true;
     try {
       await saveRecipeUseCase(recipe);
+      lastSavedRecipeId = recipe.id;
       // The picked picture is the recipe's now; the others go with close().
       _savedImage = recipe.imageFileName;
       // Out of the suggestions, the next one is a tap away: the list comes

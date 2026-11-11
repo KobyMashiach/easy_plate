@@ -328,6 +328,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         leadingIcon: Icons.arrow_back_rounded,
         onLeadingTap: () => Navigator.of(context).maybePop(),
         trailingIcon: Icons.delete_sweep_rounded,
+        trailingTooltip: t.notifications.deleteAll,
         onTrailingTap: _deleteAll,
       ),
       body: ValueListenableBuilder<List<AppNotificationEntity>>(

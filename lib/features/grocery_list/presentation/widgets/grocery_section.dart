@@ -19,11 +19,16 @@ class GrocerySection extends StatefulWidget {
   final List<GroceryItemEntity> items;
   final bool initiallyExpanded;
 
+  /// The same lines split under small headings (supermarket aisles), in
+  /// the order given. Null for one plain run of [items].
+  final List<(String, List<GroceryItemEntity>)>? groups;
+
   const GrocerySection({
     super.key,
     required this.title,
     required this.items,
     this.initiallyExpanded = true,
+    this.groups,
   });
 
   @override
@@ -69,25 +74,60 @@ class _GrocerySectionState extends State<GrocerySection>
   /// between sections or are removed.
   int? _indexOfKey(Key key) {
     if (key is! ValueKey<String>) return null;
-    final index = widget.items.indexWhere((item) => item.id == key.value);
+    final index = _rows.indexWhere(
+      (row) => row is GroceryItemEntity && row.id == key.value,
+    );
     return index < 0 ? null : index + 1;
+  }
+
+  /// What the list shows under the header: the lines, or — grouped — each
+  /// group's heading (a String) followed by its lines. Worked out once per
+  /// build, not once per row.
+  List<Object> _rows = const [];
+
+  List<Object> _rowsOf(GrocerySection widget) {
+    final groups = widget.groups;
+    if (groups == null) return widget.items;
+    return [
+      for (final (label, items) in groups) ...[label, ...items],
+    ];
   }
 
   Widget _row(BuildContext context, int index) {
     // Row 0 is the gap under the header, sized with the rows.
-    final item = index == 0 ? null : widget.items[index - 1];
+    final row = index == 0 ? null : _rows[index - 1];
     return SizeTransition(
-      key: item == null ? null : ValueKey<String>(item.id),
+      key: row is GroceryItemEntity ? ValueKey<String>(row.id) : null,
       sizeFactor: _size,
       axisAlignment: -1,
       child: FadeTransition(
         opacity: _reveal,
-        child: item == null
-            ? const SizedBox(width: double.infinity, height: AppSpacing.gutter)
-            : Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: GroceryItemCard(item: item),
+        child: switch (row) {
+          null => const SizedBox(
+            width: double.infinity,
+            height: AppSpacing.gutter,
+          ),
+          final GroceryItemEntity item => Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: GroceryItemCard(item: item),
+          ),
+          _ => Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: AppSpacing.xs,
+              top: AppSpacing.xs,
+              bottom: AppSpacing.base,
+            ),
+            child: Semantics(
+              header: true,
+              child: Text(
+                '$row',
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.primary,
+                ),
               ),
+            ),
+          ),
+        },
       ),
     );
   }
@@ -95,12 +135,13 @@ class _GrocerySectionState extends State<GrocerySection>
   @override
   Widget build(BuildContext context) {
     final showRows = _expanded || !_reveal.isDismissed;
+    _rows = _rowsOf(widget);
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(child: _header()),
         if (showRows)
           SliverList.builder(
-            itemCount: widget.items.length + 1,
+            itemCount: _rows.length + 1,
             findChildIndexCallback: _indexOfKey,
             itemBuilder: _row,
           ),

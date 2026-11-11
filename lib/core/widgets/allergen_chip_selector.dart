@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'clay/min_tap_target.dart';
+
 import '../constants/app_colors.dart';
 import '../constants/app_enums.dart';
 import '../constants/app_spacing.dart';
@@ -38,34 +40,42 @@ class AllergenChipSelector extends StatelessWidget {
       runSpacing: AppSpacing.base,
       children: Allergen.values.map((allergen) {
         final isSelected = selected.contains(allergen);
-        return GestureDetector(
-          onTap: () => onToggle(allergen),
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedContainer(
-            duration: AppMotion.quick,
-            curve: AppMotion.easeOut,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.base,
-            ),
-            decoration: ShapeDecoration(
-              color: isSelected
-                  ? AppColors.errorContainer
-                  : AppColors.surfaceContainerLow,
-              shape: StadiumBorder(
-                side: BorderSide(
+        return MinTapTarget(
+          // Read as a choice with its state, and touched at 48 high even
+          // where the pill is drawn smaller.
+          child: Semantics(
+            button: true,
+            selected: isSelected,
+            child: GestureDetector(
+              onTap: () => onToggle(allergen),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: AppMotion.quick,
+                curve: AppMotion.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.base,
+                ),
+                decoration: ShapeDecoration(
                   color: isSelected
                       ? AppColors.errorContainer
-                      : AppColors.outlineVariant,
+                      : AppColors.surfaceContainerLow,
+                  shape: StadiumBorder(
+                    side: BorderSide(
+                      color: isSelected
+                          ? AppColors.errorContainer
+                          : AppColors.outlineVariant,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            child: Text(
-              allergenLabel(allergen),
-              style: AppTextStyles.labelMd.copyWith(
-                color: isSelected
-                    ? AppColors.onErrorContainer
-                    : AppColors.tertiary,
+                child: Text(
+                  allergenLabel(allergen),
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: isSelected
+                        ? AppColors.onErrorContainer
+                        : AppColors.tertiary,
+                  ),
+                ),
               ),
             ),
           ),

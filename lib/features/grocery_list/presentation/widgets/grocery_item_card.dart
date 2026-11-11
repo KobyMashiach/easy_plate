@@ -9,7 +9,9 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/measurement_unit_label.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../domain/entities/grocery_item_entity.dart';
+import '../../domain/grocery_list_edits.dart';
 import '../bloc/grocery_list_bloc.dart';
 import 'item_breakdown_sheet.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +56,26 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
       direction: DismissDirection.endToStart,
       onDismissed: (_) {
         HapticFeedback.mediumImpact();
+        // Its place in the list, taken before it goes, for the undo.
+        final state = bloc.state;
+        final list = state is GroceryListLoaded ? state.list : null;
+        final removed = list == null
+            ? const <(int, GroceryItemEntity)>[]
+            : GroceryListEdits.positionsOf(list, (i) => i.id == item.id);
         bloc.add(.removeItem(item.id));
+        if (list == null ||
+            removed.isEmpty ||
+            !FeaturesFlags.undoInsteadOfConfirm.isEnabled) {
+          return;
+        }
+        AppDialog.undo(
+          context,
+          message: t.groceryList.itemRemoved,
+          onUndo: () => bloc.editList(
+            list.id,
+            (l) => GroceryListEdits.restore(l, removed),
+          ),
+        );
       },
       background: Container(
         decoration: BoxDecoration(
@@ -168,6 +189,7 @@ class _GroceryItemCardState extends State<GroceryItemCard> {
                   BouncyCheckbox(
                     value: item.isChecked,
                     onChanged: (_) => bloc.add(.toggleItem(item.id)),
+                    semanticLabel: item.name,
                   ),
                 ],
               ),

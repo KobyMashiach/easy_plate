@@ -20,6 +20,9 @@ import '../../domain/entities/recipe_book_entity.dart';
 import '../widgets/spine_color_picker.dart';
 import '../../domain/entities/book_spine.dart';
 import '../bloc/library_bloc.dart';
+import '../../domain/repositories/recipe_books_repository.dart';
+import '../../domain/usecases/delete_book_usecase.dart';
+import '../../../../core/utils/undoable_removals.dart';
 import '../widgets/book_cover_card.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
@@ -367,6 +370,20 @@ class LibraryPage extends StatelessWidget {
     LibraryBloc bloc,
     RecipeBookEntity book,
   ) async {
+    // A book of this account's alone goes at once, with an undo. A shared
+    // one keeps the confirm: the owner's delete takes the document down for
+    // every member and a member's leave drops them from it, neither of which
+    // a local undo could put back.
+    if (FeaturesFlags.undoInsteadOfConfirm.isEnabled && !book.isShared) {
+      final delete = DeleteBookUseCase(context.read<RecipeBooksRepository>());
+      UndoableRemovals.instance.remove(
+        context,
+        key: LibraryBloc.removalKey(book.id),
+        message: t.recipe.bookDeleted(title: book.title),
+        commit: () => delete(book.id),
+      );
+      return;
+    }
     final leaving = book.isShared && !book.isMine;
     final confirmed = await AppDialog.warning(
       title: leaving ? t.sharing.leave : t.common.delete,

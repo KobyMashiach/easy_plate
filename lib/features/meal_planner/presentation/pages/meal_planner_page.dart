@@ -27,6 +27,8 @@ import '../../../../core/walkthrough/app_walkthroughs.dart';
 import '../../../collab_containers/presentation/widgets/container_share_sheets.dart';
 import '../../../../core/features/feature_gate.dart';
 import '../../../assistant/domain/assistant_scope.dart';
+import '../../data/datasources/planner_memory_store.dart';
+import '../widgets/week_actions.dart';
 
 class MealPlannerPage extends StatelessWidget {
   const MealPlannerPage({super.key});
@@ -317,6 +319,35 @@ void _showPlanOptions(BuildContext context, MealPlanEntity plan) {
                 ),
               ),
             ),
+            // The whole-week shortcuts, for whoever may edit the plan.
+            if (plan.canEdit) ...[
+              FeatureGate(
+                feature: FeaturesFlags.planAutofill,
+                gapAfter: AppSpacing.base,
+                child: PlanActionRow(
+                  icon: Icons.auto_awesome_rounded,
+                  label: t.mealPlanner.fillWeek,
+                  hint: t.mealPlanner.fillWeekHint,
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    fillWeek(context, bloc, plan);
+                  },
+                ),
+              ),
+              FeatureGate(
+                feature: FeaturesFlags.planCopyWeek,
+                gapAfter: AppSpacing.base,
+                child: PlanActionRow(
+                  icon: Icons.content_copy_rounded,
+                  label: t.mealPlanner.copyWeek,
+                  hint: t.mealPlanner.copyWeekHint,
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    copyWeek(context, bloc, plan);
+                  },
+                ),
+              ),
+            ],
             // Only the owner hands a plan on; a member cannot share it
             // further. The same door as the header's share button.
             if (plan.isMine)
@@ -437,11 +468,22 @@ class _PlanBoard extends StatefulWidget {
 class _PlanBoardState extends State<_PlanBoard> {
   int _weekday = 0;
 
+  /// Set once the day was chosen here or by a widget: the remembered day,
+  /// read a beat after the board is built, must not move it then.
+  bool _dayChosen = false;
+
   @override
   void initState() {
     super.initState();
     HomeWidgetRequests.planner.addListener(_onWidgetRequest);
     _onWidgetRequest();
+    // Opens on the day a dish was last put on, on this device.
+    if (FeaturesFlags.rememberLastChoices.isEnabled) {
+      PlannerMemoryStore.instance.lastWeekday().then((day) {
+        if (day == null || !mounted || _dayChosen) return;
+        setState(() => _weekday = day);
+      });
+    }
   }
 
   @override
@@ -461,6 +503,7 @@ class _PlanBoardState extends State<_PlanBoard> {
       context.read<MealPlannerBloc>().add(.selectPlan(planId));
     }
     if (!mounted) return;
+    _dayChosen = true;
     setState(() => _weekday = request.weekday.clamp(0, 6));
   }
 
@@ -611,9 +654,23 @@ class _PlanBoardState extends State<_PlanBoard> {
                     widget.plan.mealsForWeekday(i).length,
                 ],
                 selectedIndex: _weekday,
-                onSelected: (index) => setState(() => _weekday = index),
+                onSelected: (index) => setState(() {
+                  _dayChosen = true;
+                  _weekday = index;
+                }),
               ),
               const SizedBox(height: AppSpacing.gutter),
+              // A week with no dish yet: fill it, or copy the last one.
+              if (EmptyWeekCard.showsFor(widget.plan))
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.marginMobile,
+                    0,
+                    AppSpacing.marginMobile,
+                    AppSpacing.gutter,
+                  ),
+                  child: EmptyWeekCard(plan: widget.plan),
+                ),
               FeatureGate(
                 feature: FeaturesFlags.nutrition,
                 gapAfter: AppSpacing.gutter,
@@ -639,6 +696,23 @@ class _PlanBoardState extends State<_PlanBoard> {
                 ),
                 child: Column(
                   children: [
+                    // Clearing a day exists only with its undo: without one
+                    // it would be a destructive tap with no way back.
+                    if (widget.plan.canEdit &&
+                        FeaturesFlags.undoInsteadOfConfirm.isEnabled &&
+                        meals.any((m) => m.items.isNotEmpty))
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: TextButton.icon(
+                          icon: const Icon(
+                            Icons.layers_clear_rounded,
+                            size: 18,
+                          ),
+                          label: Text(t.mealPlanner.clearDay),
+                          onPressed: () =>
+                              clearDay(context, bloc, widget.plan, _weekday),
+                        ),
+                      ),
                     for (final meal in meals)
                       Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.md),

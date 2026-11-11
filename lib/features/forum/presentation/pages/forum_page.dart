@@ -173,6 +173,7 @@ class _ForumPageState extends State<ForumPage> with WidgetsBindingObserver {
             bottom: ClayNavDock.fabBottom(context),
             child: FloatingActionButton(
               heroTag: 'forum-new-post',
+              tooltip: t.community.newPost,
               backgroundColor: AppColors.primary,
               onPressed: () => _openComposer(context),
               child: Icon(Icons.edit_rounded, color: AppColors.onPrimary),

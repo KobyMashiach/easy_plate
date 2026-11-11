@@ -21,6 +21,12 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   final IconData? trailingIcon;
   final VoidCallback? onTrailingTap;
 
+  /// Spoken (and long-press) names for the two icon buttons. The back and
+  /// close arrows name themselves from the platform's own words; any other
+  /// icon needs one passed, or a screen reader only says "button".
+  final String? leadingTooltip;
+  final String? trailingTooltip;
+
   /// Takes the leading slot instead of [leadingIcon] — the account avatar needs
   /// to render an image, which an IconData cannot.
   final Widget? leading;
@@ -37,6 +43,8 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onLeadingTap,
     this.trailingIcon,
     this.onTrailingTap,
+    this.leadingTooltip,
+    this.trailingTooltip,
     this.leading,
     this.actions = const [],
   });
@@ -44,12 +52,33 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(68);
 
+  /// The platform's own word for the common navigation icons.
+  static String? _standardLabel(BuildContext context, IconData? icon) {
+    final words = MaterialLocalizations.of(context);
+    if (icon == Icons.arrow_back_rounded ||
+        icon == Icons.arrow_back ||
+        icon == Icons.arrow_back_ios_new_rounded) {
+      return words.backButtonTooltip;
+    }
+    if (icon == Icons.close_rounded || icon == Icons.close) {
+      return words.closeButtonTooltip;
+    }
+    if (icon == Icons.more_horiz_rounded || icon == Icons.more_vert_rounded) {
+      return words.moreButtonTooltip;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final lead =
         leading ??
         (leadingIcon != null
-            ? ClayIconButton(icon: leadingIcon, onTap: onLeadingTap)
+            ? ClayIconButton(
+                icon: leadingIcon,
+                onTap: onLeadingTap,
+                tooltip: leadingTooltip ?? _standardLabel(context, leadingIcon),
+              )
             : null);
 
     return DecoratedBox(
@@ -75,12 +104,16 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
                   const SizedBox(width: AppSpacing.sm),
                 ],
                 Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.headlineMd.copyWith(
-                      color: AppColors.primary,
+                  // A heading, so a screen reader can jump to it.
+                  child: Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.headlineMd.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -90,7 +123,13 @@ class ClayTopAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ],
                 if (trailingIcon != null) ...[
                   const SizedBox(width: AppSpacing.base),
-                  ClayIconButton(icon: trailingIcon, onTap: onTrailingTap),
+                  ClayIconButton(
+                    icon: trailingIcon,
+                    onTap: onTrailingTap,
+                    tooltip:
+                        trailingTooltip ??
+                        _standardLabel(context, trailingIcon),
+                  ),
                 ],
               ],
             ),

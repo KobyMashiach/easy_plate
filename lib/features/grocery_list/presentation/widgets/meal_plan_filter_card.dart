@@ -286,6 +286,7 @@ class _MealPlanPickerSheetState extends State<_MealPlanPickerSheet> {
             BouncyCheckbox(
               value: checked,
               onChanged: (_) => onChanged(!checked),
+              semanticLabel: label,
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(

@@ -21,7 +21,7 @@ const TARGETS = ["", "tab:recipes", "tab:library", "tab:mealPlan", "tab:grocerie
 // A flag's default icon, so a picked feature starts with something fitting.
 const DEFAULT_ICONS = {
   ff_books: "menu_book", ff_meal_plans: "calendar_today", ff_grocery_lists: "shopping_cart", ff_community: "groups",
-  ff_ingest_text: "text_fields", ff_ingest_web_search: "image_search", ff_ingest_link: "link", ff_ingest_social_video: "video_library", ff_ingest_ai_request: "smart_toy", ff_ingest_file: "picture_as_pdf", ff_share_in: "share", ff_save_with_ai: "auto_awesome",
+  ff_ingest_text: "text_fields", ff_ingest_web_search: "image_search", ff_ingest_link: "link", ff_ingest_social_video: "video_library", ff_ingest_ai_request: "smart_toy", ff_ingest_file: "picture_as_pdf", ff_ingest_auto_channel: "auto_fix_high", ff_ingest_paste_autorun: "bolt", ff_ingest_recent: "history", ff_ingest_voice: "mic", ff_save_to_book_prompt: "library_add", ff_clipboard_link_prompt: "content_paste_go", ff_ingest_photo: "photo_camera", ff_review_sticky_save: "save", ff_bulk_import: "library_books", ff_recipe_quick_menu: "touch_app", ff_undo_instead_of_confirm: "undo", ff_remember_last_choices: "history_toggle_off", ff_recent_cooked: "restaurant", ff_plan_autofill: "auto_mode", ff_plan_copy_week: "content_copy", ff_grocery_voice_add: "mic", ff_grocery_aisle_sort: "storefront", ff_grocery_check_all: "done_all", ff_text_size: "format_size", ff_cook_voice_next: "record_voice_over", ff_share_in: "share", ff_save_with_ai: "auto_awesome",
   ff_cook_mode: "local_fire_department", ff_cook_timers: "timer", ff_nutrition: "monitor_heart", ff_recipe_image_ai: "image", ff_recipe_image_search: "image_search", ff_grocery_from_recipe: "shopping_cart",
   ff_shared_recipes: "restaurant_menu", ff_forum: "forum", ff_likes: "favorite",
   ff_share_recipes: "share", ff_share_books: "share", ff_share_plans: "share", ff_share_grocery_lists: "share", ff_share_codes: "qr_code", ff_households: "family_restroom",
@@ -29,7 +29,7 @@ const DEFAULT_ICONS = {
   ff_assistant: "smart_toy", ff_assistant_scoped: "smart_toy", ff_assistant_voice: "mic", ff_notifications: "notifications", ff_premium: "workspace_premium", ff_content_translation: "translate", ff_theming: "palette", ff_walkthrough: "school", ff_tutorial_book: "school", ff_feedback: "feedback",
   ff_single_session: "devices", ff_phone_optional: "phone_disabled", ff_home_widgets: "widgets", ff_wake_word: "mic", ff_voice_assistants: "record_voice_over", ff_shefi_launcher: "smart_toy", ff_whats_new: "new_releases",
   ff_support_chat: "feedback", ff_store_review: "star", ff_quick_actions: "bolt", ff_multi_shopping_days: "event_repeat", ff_web_checkout: "workspace_premium", ff_social_video_photo: "image", ff_recipe_source_link: "link",
-  ff_delete_recipe: "restaurant_menu", ff_ingredient_sections: "restaurant_menu", ff_recipe_suggestions: "lightbulb",
+  ff_delete_recipe: "restaurant_menu", ff_ingredient_sections: "restaurant_menu", ff_recipe_suggestions: "lightbulb", ff_whatsapp_bot: "forum",
 };
 
 let labels = null;

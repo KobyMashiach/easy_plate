@@ -747,4 +747,31 @@ void main() {
     expect(GroceryListBloc.sourcePosition([a, b], 1), 1);
     expect(GroceryListBloc.sourcePosition([a], 3), -1);
   });
+
+  group('edits made outside the bloc', () {
+    test('editList writes the open list and another one', () async {
+      lists.stored['primary'] = storedList('primary');
+      lists.stored['b'] = storedList('b', createdAt: DateTime(2026, 2, 1));
+      final bloc = build();
+      await settle();
+      const line = GroceryItemEntity(
+        id: 'x',
+        name: 'חלב',
+        unit: MeasurementUnit.unit,
+        sources: [],
+        category: 'c',
+      );
+      bloc.editList('primary', (l) => l.copyWith(items: [...l.items, line]));
+      await settle();
+      expect(loaded(bloc).list.items.single.id, 'x', reason: 'on screen');
+      expect(lists.stored['primary']!.items.single.id, 'x', reason: 'saved');
+
+      // A list that is not open is still written, in the box.
+      bloc.editList('b', (l) => l.copyWith(items: [line]));
+      await settle();
+      expect(lists.stored['b']!.items.single.id, 'x');
+      expect(loaded(bloc).list.id, 'primary');
+      await bloc.close();
+    });
+  });
 }

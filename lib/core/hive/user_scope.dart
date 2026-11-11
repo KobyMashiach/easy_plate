@@ -28,6 +28,8 @@ class UserScope {
     'mealPlansBox',
     'groceryListsBox',
     'groceryUiBox',
+    'ingestionUiBox',
+    'recipesUiBox',
     'dailyUsageBox',
     'priceRecordsBox',
     'receiptsBox',

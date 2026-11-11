@@ -26,6 +26,14 @@ service cloud.firestore {
       return request.resource.data.get('permission', 'user');
     }
 
+    // The WhatsApp bot's fields on users/{uid} (whatsappBot.js): only the
+    // server writes them, or a user could link a number that is not theirs,
+    // reset the monthly counter or call themselves Premium.
+    function whatsappKeys() {
+      return ['whatsapp_phone_number', 'whatsapp_link_code', 'whatsapp_link_code_expires_at',
+              'whatsapp_monthly_usage', 'whatsapp_list_id', 'whatsapp_linked_at', 'is_premium'];
+    }
+
     // An account the console switched off (account_status disabled) is held
     // on the blocked screen by the app, but its token still works against
     // these rules until it expires — and the website, or a script, never
@@ -190,9 +198,11 @@ service cloud.firestore {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       // The owner writes their profile, but `permission` is never theirs:
       // created only as "user" (or left out), and never changed or dropped.
-      allow create: if signedIn() && request.auth.uid == uid && permissionAfter() == 'user';
+      allow create: if signedIn() && request.auth.uid == uid && permissionAfter() == 'user'
+                    && !request.resource.data.keys().hasAny(whatsappKeys());
       allow update: if signedIn() && request.auth.uid == uid
-                    && permissionAfter() == resource.data.get('permission', 'user');
+                    && permissionAfter() == resource.data.get('permission', 'user')
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(whatsappKeys());
       allow delete: if signedIn() && request.auth.uid == uid;
 
       // The account's own data — preferences, recipes, books, meal plans and
@@ -918,6 +928,13 @@ service cloud.firestore {
     // A household (Pro Duo / Pro Family): the document is written by the
     // households function only; members read it, and read and write the
     // mirrored collections beneath it — the same shape as users/{uid}/…
+    // The WhatsApp bot's own bookkeeping (whatsappBot.js): number index,
+    // link codes, delivered-message ids, wrong-code counters. Server only.
+    match /whatsapp_numbers/{phone} { allow read, write: if false; }
+    match /whatsapp_link_codes/{code} { allow read, write: if false; }
+    match /whatsapp_inbound/{id} { allow read, write: if false; }
+    match /whatsapp_attempts/{phone} { allow read, write: if false; }
+
     match /households/{hid} {
       function isHouseholdMember() {
         return signedIn()

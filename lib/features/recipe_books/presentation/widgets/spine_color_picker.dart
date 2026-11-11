@@ -40,38 +40,42 @@ class SpineColorPicker extends StatelessWidget {
       alignment: WrapAlignment.center,
       children: [
         for (final spine in BookSpine.values)
-          GestureDetector(
-            onTap: () => onSelect(spine),
-            behavior: HitTestBehavior.opaque,
-            child: AnimatedContainer(
-              duration: AppMotion.quick,
-              curve: AppMotion.easeOut,
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: bookSpineColor(spine),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: spine == selected
-                      ? AppColors.onSurface
-                      : AppColors.surfaceContainerLowest,
-                  width: spine == selected ? 3 : 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: bookSpineColor(spine).withValues(alpha: 0.35),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+          Semantics(
+            button: true,
+            selected: spine == selected,
+            child: GestureDetector(
+              onTap: () => onSelect(spine),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: AppMotion.quick,
+                curve: AppMotion.easeOut,
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: bookSpineColor(spine),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: spine == selected
+                        ? AppColors.onSurface
+                        : AppColors.surfaceContainerLowest,
+                    width: spine == selected ? 3 : 2,
                   ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: bookSpineColor(spine).withValues(alpha: 0.35),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: spine == selected
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      )
+                    : null,
               ),
-              child: spine == selected
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    )
-                  : null,
             ),
           ),
       ],

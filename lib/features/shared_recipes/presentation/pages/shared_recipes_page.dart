@@ -107,6 +107,7 @@ class SharedRecipesPage extends StatelessWidget {
                         id: WalkthroughIds.communityShare,
                         child: FloatingActionButton(
                           heroTag: 'share-recipe',
+                          tooltip: t.community.shareRecipe,
                           backgroundColor: AppColors.primary,
                           onPressed: () => _pickAndShare(context),
                           child: Icon(
@@ -349,12 +350,18 @@ class _FeedState extends State<_Feed> {
             ),
           ),
           if (_query.search.isNotEmpty)
-            GestureDetector(
-              onTap: () => setState(() {
-                _search.clear();
-                _query = _query.copyWith(search: '');
-              }),
-              child: Icon(Icons.close_rounded, color: AppColors.outline),
+            MinTapTarget(
+              child: Semantics(
+                button: true,
+                label: MaterialLocalizations.of(context).clearButtonTooltip,
+                child: GestureDetector(
+                  onTap: () => setState(() {
+                    _search.clear();
+                    _query = _query.copyWith(search: '');
+                  }),
+                  child: Icon(Icons.close_rounded, color: AppColors.outline),
+                ),
+              ),
             ),
         ],
       ),
@@ -367,80 +374,88 @@ class _FeedState extends State<_Feed> {
   Widget _filterButton() {
     final active = _query.isNarrowed || !_query.isDefaultSort;
 
-    return GestureDetector(
-      onTap: _openFilters,
-      behavior: HitTestBehavior.opaque,
-      child: Stack(
-        // The dot sits half outside the button, so it needs to paint beyond
-        // the stack's bounds.
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.gutter),
-            decoration: ShapeDecoration(
-              color: AppColors.surfaceContainerLow,
-              shape: StadiumBorder(
-                side: BorderSide(color: AppColors.outlineVariant),
-              ),
-            ),
-            child: Icon(
-              Icons.tune_rounded,
-              size: 20,
-              color: AppColors.tertiary,
-            ),
-          ),
-          if (active)
-            PositionedDirectional(
-              top: -2,
-              end: -2,
-              child: Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: AppColors.error,
-                  shape: BoxShape.circle,
-                  // Ringed in the page background so the dot stays legible
-                  // against the button's own edge.
-                  border: Border.all(color: AppColors.background, width: 2),
+    return Semantics(
+      button: true,
+      label: t.common.filters,
+      child: GestureDetector(
+        onTap: _openFilters,
+        behavior: HitTestBehavior.opaque,
+        child: Stack(
+          // The dot sits half outside the button, so it needs to paint beyond
+          // the stack's bounds.
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.gutter),
+              decoration: ShapeDecoration(
+                color: AppColors.surfaceContainerLow,
+                shape: StadiumBorder(
+                  side: BorderSide(color: AppColors.outlineVariant),
                 ),
               ),
+              child: Icon(
+                Icons.tune_rounded,
+                size: 20,
+                color: AppColors.tertiary,
+              ),
             ),
-        ],
+            if (active)
+              PositionedDirectional(
+                top: -2,
+                end: -2,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: AppColors.error,
+                    shape: BoxShape.circle,
+                    // Ringed in the page background so the dot stays legible
+                    // against the button's own edge.
+                    border: Border.all(color: AppColors.background, width: 2),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _scopeChip({required String label, required SharedFeedScope value}) {
     final selected = _query.scope == value;
-    return GestureDetector(
-      onTap: () {
-        setState(() => _query = _query.copyWith(scope: value));
-        context.read<SharedRecipesBloc>().add(
-          SharedRecipesEvent.scopeOpened(value),
-        );
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: AppMotion.quick,
-        curve: AppMotion.easeOut,
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
-        decoration: ShapeDecoration(
-          color: selected
-              ? AppColors.primaryFixed
-              : AppColors.surfaceContainerLow,
-          shape: StadiumBorder(
-            side: BorderSide(
-              color: selected ? AppColors.primary : AppColors.outlineVariant,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
+        onTap: () {
+          setState(() => _query = _query.copyWith(scope: value));
+          context.read<SharedRecipesBloc>().add(
+            SharedRecipesEvent.scopeOpened(value),
+          );
+        },
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: AppMotion.quick,
+          curve: AppMotion.easeOut,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
+          decoration: ShapeDecoration(
+            color: selected
+                ? AppColors.primaryFixed
+                : AppColors.surfaceContainerLow,
+            shape: StadiumBorder(
+              side: BorderSide(
+                color: selected ? AppColors.primary : AppColors.outlineVariant,
+              ),
             ),
           ),
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.labelSm.copyWith(
-            color: selected ? AppColors.primary : AppColors.tertiary,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.labelSm.copyWith(
+              color: selected ? AppColors.primary : AppColors.tertiary,
+            ),
           ),
         ),
       ),

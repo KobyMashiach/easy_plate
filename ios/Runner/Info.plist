@@ -270,9 +270,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>EasyPlate uses the camera to take a photo of a recipe you are saving, a cover for a recipe book, or a grocery receipt whose prices you want recorded, and to scan a QR share code from a friend. Photos are stored with your recipes; the scanner keeps no picture.</string>
+	<string>EasyPlate uses the camera to take a photo of a recipe you are saving, a cover for a recipe book, a cookbook page or handwritten recipe to read the recipe from, or a grocery receipt whose prices you want recorded, and to scan a QR share code from a friend. Photos are stored with your recipes; a page photographed to be read is sent for analysis and not kept; the scanner keeps no picture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>EasyPlate opens your photo library so you can pick an existing picture for a recipe, a recipe book cover or a profile photo, or a photo of a grocery receipt to read prices from. Only the pictures you pick are used.</string>
+	<string>EasyPlate opens your photo library so you can pick an existing picture for a recipe, a recipe book cover or a profile photo, a photo or screenshot of a recipe to read it from, or a photo of a grocery receipt to read prices from. Only the pictures you pick are used.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>EasyPlate uses the microphone so you can talk to the in-app assistant instead of typing: what you say is turned into text on the device or by Apple's speech service and nothing is recorded or stored. If you turn on “Hey Shefi”, it also listens for those words while EasyPlate is open (on the device where the iPhone supports it) and stops when you leave the app. The camera screen for receipts and photos may also request it as part of the camera session.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

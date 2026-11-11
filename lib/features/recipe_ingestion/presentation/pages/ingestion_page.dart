@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -31,6 +32,11 @@ import '../../../../core/widgets/pop_if_current.dart';
 import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../../../my_recipes/presentation/widgets/ingredient_section_heading.dart';
+import '../../../recipe_books/presentation/widgets/add_to_book_prompt.dart';
+import '../../../assistant/presentation/assistant_voice.dart';
+import '../../data/datasources/recent_inputs_store.dart';
+import '../../data/recipe_image_shrinker.dart';
+import '../../domain/channel_detector.dart';
 import '../../domain/entities/ingestion_file.dart';
 import '../../domain/entities/original_recipe_page_entity.dart';
 import '../../domain/entities/recipe_image_candidate.dart';
@@ -38,6 +44,7 @@ import '../../domain/entities/web_search_result_entity.dart';
 import '../../domain/usecases/build_template_recipe.dart';
 import '../bloc/ingestion_bloc.dart';
 import '../widgets/suggestion_request_sheet.dart';
+import 'bulk_import_page.dart' show BulkImportEntry;
 import '../widgets/ai_quota_indicator.dart';
 import '../widgets/video_image_picker.dart';
 import '../../../../core/widgets/recipe_source_link.dart';
@@ -81,8 +88,14 @@ String _channelLabel(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.socialVideo => t.ingestion.socialVideo,
   RecipeIngestionChannel.aiRequest => t.ingestion.aiRequest,
   RecipeIngestionChannel.manual => t.ingestion.manual,
-  RecipeIngestionChannel.file => t.ingestion.file,
+  RecipeIngestionChannel.file =>
+    _photosAllowed ? t.ingestion.filePhoto : t.ingestion.file,
 };
+
+/// Whether the file channel takes photos too (a cookbook page, a
+/// screenshot, handwriting). With the switch off it is the recording / PDF
+/// channel it always was, copy and all.
+bool get _photosAllowed => FeaturesFlags.ingestPhoto.isEnabled;
 
 /// What each channel does, in a few sentences: what to give it, what the
 /// app does with it, and what it costs. Shown on the channel's card, so the
@@ -94,7 +107,10 @@ String _channelDescription(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.socialVideo => t.ingestion.socialVideoDescription,
   RecipeIngestionChannel.aiRequest => t.ingestion.aiRequestDescription,
   RecipeIngestionChannel.manual => t.ingestion.manualDescription,
-  RecipeIngestionChannel.file => t.ingestion.fileDescription,
+  RecipeIngestionChannel.file =>
+    _photosAllowed
+        ? t.ingestion.filePhotoDescription
+        : t.ingestion.fileDescription,
 };
 
 /// The console switch for each way in. Manual entry has none: an editor
@@ -115,6 +131,28 @@ bool _channelAllowed(RecipeIngestionChannel channel) {
   return feature == null || feature.isEnabled;
 }
 
+/// The channel the text points to, moved to the nearest one the console
+/// allows: a video link falls back to reading the page, a request and a
+/// search stand in for each other, and pasted text is the floor. Null when
+/// none of them is allowed — the screen then stays where it is.
+RecipeIngestionChannel? autoChannelFor(String text) {
+  const c = RecipeIngestionChannel.values;
+  final detected = ChannelDetector.detect(text);
+  final chain = switch (detected) {
+    RecipeIngestionChannel.socialVideo => [c[3], c[2]],
+    RecipeIngestionChannel.urlScrape => [c[2]],
+    RecipeIngestionChannel.aiRequest => [c[4], c[1], c[0]],
+    RecipeIngestionChannel.webSearch => [c[1], c[4], c[0]],
+    _ => [c[0], c[4]],
+  };
+  return chain.where(_channelAllowed).firstOrNull;
+}
+
+/// The channels the text box serves (the others have their own controls).
+bool _hasTextField(RecipeIngestionChannel channel) =>
+    channel != RecipeIngestionChannel.manual &&
+    channel != RecipeIngestionChannel.file;
+
 IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.rawText => Icons.content_paste_rounded,
   RecipeIngestionChannel.webSearch => Icons.travel_explore_rounded,
@@ -122,7 +160,8 @@ IconData _channelIcon(RecipeIngestionChannel channel) => switch (channel) {
   RecipeIngestionChannel.socialVideo => Icons.play_circle_rounded,
   RecipeIngestionChannel.aiRequest => Icons.auto_awesome_rounded,
   RecipeIngestionChannel.manual => Icons.edit_note_rounded,
-  RecipeIngestionChannel.file => Icons.mic_rounded,
+  RecipeIngestionChannel.file =>
+    _photosAllowed ? Icons.perm_media_rounded : Icons.mic_rounded,
 };
 
 class IngestionPage extends StatelessWidget {
@@ -134,10 +173,27 @@ class IngestionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Opened empty, or on a shared piece of text, the screen picks the
+    // category itself from the text; opened on a set channel (Shefi, a
+    // shared file) it keeps that one.
+    final launch = this.launch;
+    final auto =
+        FeaturesFlags.ingestAutoChannel.isEnabled &&
+        (launch == null || (launch.text != null && launch.files.isEmpty));
+    final fixed = launch?.channel ?? RecipeIngestionChannel.rawText;
+    final initialChannel = auto
+        ? autoChannelFor(
+                launch?.text ??
+                    Walkthrough.prefill(t.walkthrough.demo.recipeText) ??
+                    '',
+              ) ??
+              fixed
+        : fixed;
     return BlocProvider(
       create: (context) => IngestionBloc.fromContext(
         context,
-        initialChannel: launch?.channel ?? RecipeIngestionChannel.rawText,
+        initialChannel: initialChannel,
+        autoChannel: auto,
       ),
       child: BlocConsumer<IngestionBloc, IngestionState>(
         listener: (context, state) {
@@ -149,16 +205,26 @@ class IngestionPage extends StatelessWidget {
           if (notice != null) {
             AppDialog.error(message: notice).notify(context);
           }
+          final savedId = context.read<IngestionBloc>().lastSavedRecipeId;
           if (state case IngestionSearchResults(justSaved: true)) {
             AppDialog.success(
               message: t.ingestion.savedFromList,
             ).notify(context);
-            unawaited(StoreReviewService().onSuccessMoment());
+            unawaited(() async {
+              if (savedId != null) await offerAddToBook(context, savedId);
+              unawaited(StoreReviewService().onSuccessMoment());
+            }());
           }
           if (state is IngestionSaved) {
-            Navigator.of(context).pop();
-            // After the pop so the store's sheet lands on the recipes list.
-            unawaited(StoreReviewService().onSuccessMoment());
+            unawaited(() async {
+              // Offered before the screen closes: the sheet needs this
+              // screen's providers, and the spinner stays up behind it.
+              if (savedId != null) await offerAddToBook(context, savedId);
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+              // After the pop so the store's sheet lands on the recipes list.
+              unawaited(StoreReviewService().onSuccessMoment());
+            }());
           }
         },
         builder: (context, state) {
@@ -183,12 +249,22 @@ class IngestionPage extends StatelessWidget {
                 child: switch (state) {
                   IngestionIdle(channel: final channel) => _ChannelForm(
                     channel: channel,
+                    // A link that came in with the screen counts as pasted —
+                    // once: a draft is what a failed run left behind, and
+                    // running it again on its own would spend another try.
+                    autoRunInitial:
+                        context.read<IngestionBloc>().draftText(channel) ==
+                            null &&
+                        launch?.text != null,
                     // What this channel last submitted comes back after a
                     // failure; otherwise only the channel it was shared to
                     // starts filled in.
                     initialText:
                         context.read<IngestionBloc>().draftText(channel) ??
-                        (launch?.channel == channel ? launch?.text : null),
+                        (launch?.channel == channel ||
+                                context.read<IngestionBloc>().autoChannel
+                            ? launch?.text
+                            : null),
                     initialFiles: switch (context
                         .read<IngestionBloc>()
                         .draftFiles) {
@@ -283,9 +359,11 @@ class _ChannelForm extends StatefulWidget {
   final RecipeIngestionChannel channel;
   final String? initialText;
   final List<IngestionFile> initialFiles;
+  final bool autoRunInitial;
 
   const _ChannelForm({
     required this.channel,
+    this.autoRunInitial = false,
     this.initialText,
     this.initialFiles = const [],
   });
@@ -316,10 +394,36 @@ class _ChannelFormState extends State<_ChannelForm> {
   /// rather than a missing input.
   late bool _hasInput = _controller.text.trim().isNotEmpty;
 
+  /// The chip whose explanation is open under the row — the last one
+  /// tapped; null until a chip is tapped, or after it is tapped again.
+  RecipeIngestionChannel? _explained;
+
+  /// Whether the category is still the app's pick (see
+  /// [IngestionBloc.autoChannel]) and the console lets it pick.
+  bool get _auto =>
+      context.read<IngestionBloc>().autoChannel &&
+      FeaturesFlags.ingestAutoChannel.isEnabled;
+
   @override
   void initState() {
     super.initState();
     _controller.addListener(_syncHasInput);
+    _controller.addListener(_detectChannel);
+    _controller.addListener(_watchForPaste);
+    if (FeaturesFlags.ingestRecent.isEnabled) {
+      RecentInputsStore.instance.read().then((recent) {
+        if (mounted) setState(() => _recent = recent);
+      });
+    }
+    final bloc = context.read<IngestionBloc>();
+    if (widget.autoRunInitial && !bloc.initialAutoRunUsed) {
+      bloc.initialAutoRunUsed = true;
+      _previousText = '';
+      // After the first frame, so the category picked from it is in place.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _watchForPaste();
+      });
+    }
     // While this form is up, a share from another app lands here rather
     // than opening a second screen: the user went back to WhatsApp for the
     // next voice note of the same recipe.
@@ -345,10 +449,154 @@ class _ChannelFormState extends State<_ChannelForm> {
       return;
     }
     if (launch.text case final text?) {
-      _controller.text = text;
+      // A recipe sent over WhatsApp in several messages arrives as several
+      // shares: each one after the first is added under what is already
+      // in the box. A link replaces, never joins — two links are not one.
+      final current = _controller.text.trim();
+      final append =
+          current.isNotEmpty &&
+          current != text.trim() &&
+          _hasTextField(widget.channel) &&
+          !IngestionLaunch.isWebUrl(current) &&
+          !IngestionLaunch.isWebUrl(text);
+      _controller.text = append ? '$current\n\n${text.trim()}' : text;
+      if (append) {
+        AppDialog.info(message: t.ingestion.sharedAppended).notify(context);
+      }
+      // In auto mode the text listener has already picked the category.
+      if (_auto) return;
       final channel = launch.channel ?? RecipeIngestionChannel.rawText;
       if (widget.channel != channel) bloc.add(.selectChannel(channel));
     }
+  }
+
+  // ---- A pasted link runs on its own --------------------------------------
+
+  /// The text as the last change left it, to tell a paste (empty → a whole
+  /// link in one change) from typing.
+  late String _previousText = _controller.text.trim();
+  Timer? _autoRunTimer;
+
+  /// Seconds left before a pasted link runs; 0 when nothing is counting.
+  int _autoRunLeft = 0;
+
+  void _watchForPaste() {
+    final text = _controller.text.trim();
+    final previous = _previousText;
+    _previousText = text;
+    // The listener also fires on cursor moves.
+    if (text == previous) return;
+    _cancelAutoRun();
+    if (previous.isEmpty && IngestionLaunch.isWebUrl(text)) _startAutoRun();
+  }
+
+  /// Only when it costs nothing more than the run itself: an extraction is
+  /// left without a video, or the day is not counted at all.
+  bool get _freeToRun =>
+      !MonetizationConfig.aiGated ||
+      DailyQuotaPolicy.aiExtraction(
+            usedToday: DailyUsageService().aiExtractionsToday,
+            premium: MonetizationConfig.isPremium,
+            limits: MonetizationConfig.limits,
+          ) ==
+          GateVerdict.free;
+
+  void _startAutoRun() {
+    if (!FeaturesFlags.ingestPasteAutoRun.isEnabled || !_freeToRun) return;
+    setState(() => _autoRunLeft = 2);
+    _autoRunTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return timer.cancel();
+      if (_autoRunLeft > 1) return setState(() => _autoRunLeft--);
+      timer.cancel();
+      _autoRunTimer = null;
+      setState(() => _autoRunLeft = 0);
+      // By now the category follows the link; one the user set to a search
+      // or a request is theirs, and a link there is not run.
+      if (widget.channel == RecipeIngestionChannel.urlScrape ||
+          widget.channel == RecipeIngestionChannel.socialVideo) {
+        _once(_submit);
+      }
+    });
+  }
+
+  void _cancelAutoRun() {
+    _autoRunTimer?.cancel();
+    _autoRunTimer = null;
+    if (_autoRunLeft != 0 && mounted) setState(() => _autoRunLeft = 0);
+  }
+
+  // ---- Recent inputs ------------------------------------------------------
+
+  List<RecentInput> _recent = const [];
+
+  void _useRecent(RecentInput recent) {
+    _controller.value = TextEditingValue(
+      text: recent.text,
+      selection: TextSelection.collapsed(offset: recent.text.length),
+    );
+    // It goes back in as what it was sent as, even where the app would
+    // have guessed otherwise.
+    if (widget.channel != recent.channel && _channelAllowed(recent.channel)) {
+      final bloc = context.read<IngestionBloc>();
+      bloc.autoChannel = false;
+      bloc.add(.selectChannel(recent.channel));
+    }
+  }
+
+  Future<void> _removeRecent(RecentInput recent) async {
+    final next = await RecentInputsStore.instance.remove(recent.text);
+    if (mounted) setState(() => _recent = next);
+  }
+
+  // ---- Voice --------------------------------------------------------------
+
+  /// Shefi's recognizer — the device's own, in the app's language. Made on
+  /// the first tap, so the screen opens without touching the microphone.
+  AssistantVoice? _voice;
+
+  Future<void> _toggleVoice() async {
+    if (!guardFeature(context, FeaturesFlags.ingestVoice)) return;
+    final voice = _voice ??= AssistantVoice();
+    if (voice.listening.value) return voice.stopListening();
+    setState(() {});
+    _cancelAutoRun();
+    final base = _controller.text.trimRight();
+    final ok = await voice.listen((words, {required isFinal}) {
+      if (!mounted) return;
+      final joined = base.isEmpty ? words : '$base $words';
+      _controller.value = TextEditingValue(
+        text: joined,
+        selection: TextSelection.collapsed(offset: joined.length),
+      );
+    });
+    if (!ok && mounted) {
+      AppDialog.warning(message: t.ingestion.voiceUnavailable).notify(context);
+    }
+  }
+
+  /// Moves the category to what the text now looks like, while it is still
+  /// the app's to choose.
+  void _detectChannel() {
+    if (!_auto || !_hasTextField(widget.channel)) return;
+    final next = autoChannelFor(_controller.text);
+    if (next != null && next != widget.channel) {
+      context.read<IngestionBloc>().add(.selectChannel(next));
+    }
+  }
+
+  /// A tap on a chip is the user's choice: the app stops picking for the
+  /// rest of this screen, and the chip's explanation opens (a second tap on
+  /// the same chip closes it).
+  void _pickChannel(RecipeIngestionChannel channel) {
+    _cancelAutoRun();
+    final bloc = context.read<IngestionBloc>();
+    bloc.autoChannel = false;
+    setState(
+      () => _explained = _explained == channel && widget.channel == channel
+          ? null
+          : channel,
+    );
+    if (channel != widget.channel) bloc.add(.selectChannel(channel));
   }
 
   void _syncHasInput() {
@@ -361,11 +609,17 @@ class _ChannelFormState extends State<_ChannelForm> {
     ShareIntentService().latest.removeListener(_onShared);
     ShareIntentService().formClosed();
     _controller.removeListener(_syncHasInput);
+    _controller.removeListener(_detectChannel);
+    _controller.removeListener(_watchForPaste);
+    _autoRunTimer?.cancel();
+    unawaited(_voice?.dispose());
     _controller.dispose();
     super.dispose();
   }
 
-  String get _hint => switch (widget.channel) {
+  String get _hint => _auto ? t.ingestion.autoHint : _channelHint;
+
+  String get _channelHint => switch (widget.channel) {
     RecipeIngestionChannel.rawText => t.ingestion.pasteHint,
     RecipeIngestionChannel.webSearch => t.ingestion.webSearchHint,
     RecipeIngestionChannel.urlScrape => t.ingestion.urlScrapeHint,
@@ -393,28 +647,38 @@ class _ChannelFormState extends State<_ChannelForm> {
   };
 
   Future<void> _submit() async {
-    final value = _controller.text.trim();
-    if (value.isEmpty) return;
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
     final bloc = context.read<IngestionBloc>();
     final max = maxCharsFor(widget.channel);
-    if (max > 0 && value.length > max) {
+    if (max > 0 && text.length > max) {
       AppDialog.warning(
         message: t.ingestion.textTooLong(max: max),
       ).notify(context);
       return;
     }
     // A link that is not one is refused here, before the gate below spends
-    // an extraction on it.
-    if ((widget.channel == RecipeIngestionChannel.urlScrape ||
-            widget.channel == RecipeIngestionChannel.socialVideo) &&
-        !IngestionLaunch.isWebUrl(value)) {
-      AppDialog.warning(message: t.ingestion.invalidUrl).notify(context);
-      return;
+    // an extraction on it. A link inside a caption (a WhatsApp share, "look
+    // at this https://…") is taken out of it.
+    var value = text;
+    if (widget.channel == RecipeIngestionChannel.urlScrape ||
+        widget.channel == RecipeIngestionChannel.socialVideo) {
+      final url = IngestionLaunch.findWebUrl(text);
+      if (url == null) {
+        AppDialog.warning(message: t.ingestion.invalidUrl).notify(context);
+        return;
+      }
+      value = url;
     }
     // The AI channels cost a daily extraction, and a video: asked for
     // before the model is touched, so a refused gate costs nothing.
     if (_isAiExtraction(widget.channel)) {
       if (!await QuotaGates.extractWithAi(context)) return;
+    }
+    _cancelAutoRun();
+    await _voice?.stopListening();
+    if (FeaturesFlags.ingestRecent.isEnabled) {
+      unawaited(RecentInputsStore.instance.add(value, widget.channel));
     }
     switch (widget.channel) {
       case RecipeIngestionChannel.rawText:
@@ -442,9 +706,13 @@ class _ChannelFormState extends State<_ChannelForm> {
     if (_picking) return;
     setState(() => _picking = true);
     try {
+      final images = _photosAllowed;
       final picked = await FilePicker.pickFiles(
         type: FileType.custom,
-        allowedExtensions: IngestionFile.pickerExtensions,
+        allowedExtensions: [
+          ...IngestionFile.pickerExtensions,
+          if (images) ...IngestionFile.imageMimeTypes.keys,
+        ],
       );
       if (!mounted) return;
       final added = <IngestionFile>[];
@@ -456,12 +724,34 @@ class _ChannelFormState extends State<_ChannelForm> {
         final path = entry.path;
         if (path == null) continue;
         final name = path.split(Platform.pathSeparator).last;
-        final mimeType = IngestionFile.mimeTypeFor(name);
+        final mimeType = IngestionFile.mimeTypeFor(name, images: images);
         if (mimeType == null) {
           unsupported = true;
           continue;
         }
         final file = File(path);
+        // A photo is counted after it is made small, below; a phone
+        // photo's size on disk says little about what is sent.
+        if (mimeType.startsWith('image/')) {
+          final shrunk = await RecipeImageShrinker.shrink(
+            IngestionFile(
+              name: name,
+              bytes: await file.readAsBytes(),
+              mimeType: mimeType,
+            ),
+          );
+          total += shrunk.bytes.length;
+          if (total > IngestionFile.maxBytes) {
+            if (mounted) {
+              AppDialog.warning(
+                message: t.ingestion.fileTooLarge,
+              ).notify(context);
+            }
+            return;
+          }
+          added.add(shrunk);
+          continue;
+        }
         total += await file.length();
         if (total > IngestionFile.maxBytes) {
           if (mounted) {
@@ -476,7 +766,11 @@ class _ChannelFormState extends State<_ChannelForm> {
       }
       if (!mounted) return;
       if (unsupported) {
-        AppDialog.warning(message: t.ingestion.fileUnsupported).notify(context);
+        AppDialog.warning(
+          message: images
+              ? t.ingestion.filePhotoUnsupported
+              : t.ingestion.fileUnsupported,
+        ).notify(context);
       }
       if (added.isEmpty) return;
       if (IngestionFile.tooLarge([..._files, ...added])) {
@@ -484,6 +778,64 @@ class _ChannelFormState extends State<_ChannelForm> {
         return;
       }
       setState(() => _files.addAll(added));
+    } finally {
+      if (mounted) setState(() => _picking = false);
+    }
+  }
+
+  static final _imagePicker = ImagePicker();
+
+  /// A photo of a recipe from the camera, or several from the gallery (the
+  /// pages of one recipe). The picker scales and re-encodes on the way out;
+  /// the shrinker then evens out what it leaves (a PNG screenshot stays a
+  /// PNG on Android), so every page goes as a JPEG of a few hundred KB.
+  Future<void> _pickPhotos(ImageSource source) async {
+    if (!guardFeature(context, FeaturesFlags.ingestPhoto)) return;
+    if (_picking) return;
+    setState(() => _picking = true);
+    try {
+      final List<XFile> picked;
+      if (source == ImageSource.camera) {
+        final shot = await _imagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: RecipeImageShrinker.maxSide.toDouble(),
+          maxHeight: RecipeImageShrinker.maxSide.toDouble(),
+          imageQuality: RecipeImageShrinker.quality,
+        );
+        picked = [?shot];
+      } else {
+        picked = await _imagePicker.pickMultiImage(
+          maxWidth: RecipeImageShrinker.maxSide.toDouble(),
+          maxHeight: RecipeImageShrinker.maxSide.toDouble(),
+          imageQuality: RecipeImageShrinker.quality,
+        );
+      }
+      if (picked.isEmpty || !mounted) return;
+      final added = <IngestionFile>[];
+      for (final photo in picked) {
+        final mimeType =
+            IngestionFile.mimeTypeFor(photo.name, images: true) ?? 'image/jpeg';
+        added.add(
+          await RecipeImageShrinker.shrink(
+            IngestionFile(
+              name: photo.name,
+              bytes: await photo.readAsBytes(),
+              mimeType: mimeType,
+            ),
+          ),
+        );
+      }
+      if (!mounted) return;
+      if (IngestionFile.tooLarge([..._files, ...added])) {
+        AppDialog.warning(message: t.ingestion.fileTooLarge).notify(context);
+        return;
+      }
+      setState(() => _files.addAll(added));
+    } catch (e) {
+      // A refused camera permission or a picker that broke: said, not
+      // swallowed.
+      debugPrint('Recipe photo failed: $e');
+      if (mounted) AppDialog.error(message: t.common.error).notify(context);
     } finally {
       if (mounted) setState(() => _picking = false);
     }
@@ -524,7 +876,7 @@ class _ChannelFormState extends State<_ChannelForm> {
           const _ChannelIntro(channel: RecipeIngestionChannel.file),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            t.ingestion.fileHint,
+            _photosAllowed ? t.ingestion.filePhotoHint : t.ingestion.fileHint,
             style: AppTextStyles.labelMd.copyWith(
               color: AppColors.onSurfaceVariant,
             ),
@@ -565,8 +917,52 @@ class _ChannelFormState extends State<_ChannelForm> {
                 : Icons.add_rounded,
             onPressed: _picking ? null : _pickFiles,
           ),
+          // A cookbook page, a screenshot, a handwritten card — straight
+          // from the camera or the gallery, without going through Files.
+          FeatureGate(
+            feature: FeaturesFlags.ingestPhoto,
+            gapBefore: AppSpacing.sm,
+            child: Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                ClayButton(
+                  label: t.ingestion.takePhoto,
+                  icon: Icons.photo_camera_rounded,
+                  onPressed: _picking
+                      ? null
+                      : () => _pickPhotos(ImageSource.camera),
+                ),
+                ClayButton(
+                  label: t.ingestion.fromGallery,
+                  icon: Icons.photo_library_rounded,
+                  onPressed: _picking
+                      ? null
+                      : () => _pickPhotos(ImageSource.gallery),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  /// The microphone at the end of the box; a stop square while it listens.
+  Widget _voiceButton() {
+    final voice = _voice;
+    Widget button(bool listening) => IconButton(
+      tooltip: listening ? t.ingestion.voiceStop : t.ingestion.voiceStart,
+      icon: Icon(
+        listening ? Icons.stop_circle_rounded : Icons.mic_rounded,
+        color: listening ? AppColors.error : AppColors.primary,
+      ),
+      onPressed: _toggleVoice,
+    );
+    if (voice == null) return button(false);
+    return ValueListenableBuilder<bool>(
+      valueListenable: voice.listening,
+      builder: (context, listening, _) => button(listening),
     );
   }
 
@@ -643,11 +1039,92 @@ class _ChannelFormState extends State<_ChannelForm> {
         });
       }
     }
+    final channel = widget.channel;
+    final textChannel = _hasTextField(channel);
+    Widget chip(RecipeIngestionChannel c) => _ChannelChip(
+      channel: c,
+      selected: channel == c,
+      onTap: () => _pickChannel(c),
+    );
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.marginMobile),
       children: [
         ClayPageHeader(title: t.ingestion.title),
         const SizedBox(height: AppSpacing.md),
+        // What to give first — the text, the files, or the empty editor —
+        // then the day's allowance, then the category it is read as.
+        if (channel == RecipeIngestionChannel.manual)
+          ClayCard(
+            radius: AppRadius.md,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: _ChannelIntro(channel: channel),
+          )
+        else if (channel == RecipeIngestionChannel.file)
+          _fileCard()
+        else
+          ClayCard(
+            radius: AppRadius.md,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                WalkthroughTarget(
+                  id: WalkthroughIds.ingestionInput,
+                  child: TextField(
+                    controller: _controller,
+                    // In auto mode the box keeps one size while the category
+                    // moves under it; a chosen category sizes it to its input.
+                    minLines: _auto ? 3 : null,
+                    maxLines: _auto
+                        ? 8
+                        : switch (channel) {
+                            RecipeIngestionChannel.rawText => 8,
+                            RecipeIngestionChannel.aiRequest => 4,
+                            _ => 2,
+                          },
+                    inputFormatters: [
+                      // While the app picks, a pasted recipe must not be cut to
+                      // the search box's length before it is recognised; the
+                      // submit checks the chosen channel's own limit.
+                      LengthLimitingTextInputFormatter(
+                        _auto
+                            ? maxCharsFor(RecipeIngestionChannel.rawText)
+                            : maxCharsFor(channel),
+                      ),
+                    ],
+                    style: AppTextStyles.bodyMd,
+                    decoration: InputDecoration(
+                      hintText: _hint,
+                      suffixIcon: FeaturesFlags.ingestVoice.isVisible
+                          ? _voiceButton()
+                          : null,
+                    ),
+                  ),
+                ),
+                AnimatedSize(
+                  duration: AppMotion.quick,
+                  curve: AppMotion.easeOut,
+                  alignment: AlignmentDirectional.topStart,
+                  child: _autoRunLeft > 0
+                      ? _AutoRunBar(
+                          seconds: _autoRunLeft,
+                          onCancel: _cancelAutoRun,
+                        )
+                      : const SizedBox(width: double.infinity),
+                ),
+                if (_recent.isNotEmpty &&
+                    !_hasInput &&
+                    FeaturesFlags.ingestRecent.isEnabled)
+                  _RecentInputs(
+                    recent: _recent,
+                    onTap: _useRecent,
+                    onRemove: _removeRecent,
+                  ),
+              ],
+            ),
+          ),
+        const SizedBox(height: AppSpacing.md),
+        if (_showsAiQuota(channel)) const AiQuotaIndicator(),
         // The question the chips answer, so the row reads as a choice and
         // not as a set of tags.
         Text(
@@ -663,84 +1140,40 @@ class _ChannelFormState extends State<_ChannelForm> {
             spacing: AppSpacing.base,
             runSpacing: AppSpacing.base,
             children: [
-              for (final channel in RecipeIngestionChannel.values)
-                if (channelFeature(channel) case final feature?)
-                  FeatureGate(
-                    feature: feature,
-                    compact: true,
-                    child: _ChannelChip(
-                      channel: channel,
-                      selected: widget.channel == channel,
-                      onTap: () => context.read<IngestionBloc>().add(
-                        .selectChannel(channel),
-                      ),
-                    ),
-                  )
+              for (final c in RecipeIngestionChannel.values)
+                if (channelFeature(c) case final feature?)
+                  FeatureGate(feature: feature, compact: true, child: chip(c))
                 else
-                  _ChannelChip(
-                    channel: channel,
-                    selected: widget.channel == channel,
-                    onTap: () => context.read<IngestionBloc>().add(
-                      .selectChannel(channel),
-                    ),
-                  ),
+                  chip(c),
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        // The day's allowance sits between the choice and the card it
-        // applies to, so it reads before the input, not after it.
-        if (_showsAiQuota(widget.channel)) const AiQuotaIndicator(),
-        // The card for the chosen channel: what it is, in full, then its
-        // input. The same shape for every channel, so switching between
-        // them reads as turning a page rather than landing on a new form.
-        if (widget.channel == RecipeIngestionChannel.manual) ...[
-          ClayCard(
-            radius: AppRadius.md,
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: _ChannelIntro(channel: widget.channel),
-          ),
-          const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: AppSpacing.sm),
+        _CategoryNote(
+          auto: _auto,
+          empty: !_hasInput,
+          explaining: _explained == channel && textChannel,
+        ),
+        AnimatedSize(
+          duration: AppMotion.quick,
+          curve: AppMotion.easeOut,
+          alignment: AlignmentDirectional.topStart,
+          child: _explained == channel && textChannel
+              ? Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: _ChannelExplanation(channel: channel),
+                )
+              : const SizedBox(width: double.infinity),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        if (channel == RecipeIngestionChannel.manual)
           ClayButton(
             label: t.ingestion.openBlankEditor,
             icon: Icons.edit_note_rounded,
             expanded: true,
             onPressed: _openBlankEditor,
-          ),
-        ] else ...[
-          if (widget.channel == RecipeIngestionChannel.file)
-            _fileCard()
-          else
-            ClayCard(
-              radius: AppRadius.md,
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _ChannelIntro(channel: widget.channel),
-                  const SizedBox(height: AppSpacing.gutter),
-                  WalkthroughTarget(
-                    id: WalkthroughIds.ingestionInput,
-                    child: TextField(
-                      controller: _controller,
-                      maxLines: switch (widget.channel) {
-                        RecipeIngestionChannel.rawText => 8,
-                        RecipeIngestionChannel.aiRequest => 4,
-                        _ => 2,
-                      },
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(
-                          _ChannelFormState.maxCharsFor(widget.channel),
-                        ),
-                      ],
-                      style: AppTextStyles.bodyMd,
-                      decoration: InputDecoration(hintText: _hint),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          const SizedBox(height: AppSpacing.lg),
+          )
+        else ...[
           ListenableBuilder(
             listenable: Listenable.merge([
               DailyUsageService(),
@@ -784,7 +1217,154 @@ class _ChannelFormState extends State<_ChannelForm> {
               ),
             ),
         ],
+        // Several recipes at once: a pasted list or a WhatsApp export.
+        const BulkImportEntry(),
       ],
+    );
+  }
+}
+
+/// The line under the category chips: that the app picked the category
+/// (or will, once something is typed), or else how to learn what each one
+/// does. Hidden while an explanation is open.
+class _CategoryNote extends StatelessWidget {
+  final bool auto;
+  final bool empty;
+  final bool explaining;
+
+  const _CategoryNote({
+    required this.auto,
+    required this.empty,
+    required this.explaining,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (explaining && !auto) return const SizedBox.shrink();
+    final color = auto ? AppColors.primary : AppColors.onSurfaceVariant;
+    return Row(
+      children: [
+        Icon(
+          auto ? Icons.auto_awesome_rounded : Icons.info_outline_rounded,
+          size: 16,
+          color: color,
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        Expanded(
+          child: Text(
+            !auto
+                ? t.ingestion.tapForInfo
+                : empty
+                ? t.ingestion.autoWaiting
+                : t.ingestion.autoPicked,
+            style: AppTextStyles.labelMd.copyWith(color: color),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// What the tapped category does, opened under the chip row.
+class _ChannelExplanation extends StatelessWidget {
+  final RecipeIngestionChannel channel;
+
+  const _ChannelExplanation({required this.channel});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClayCard(
+      radius: AppRadius.md,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: _ChannelIntro(channel: channel),
+    );
+  }
+}
+
+/// "Starting in 2…" under a pasted link, with a way to stop it.
+class _AutoRunBar extends StatelessWidget {
+  final int seconds;
+  final VoidCallback onCancel;
+
+  const _AutoRunBar({required this.seconds, required this.onCancel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Row(
+        children: [
+          Icon(Icons.bolt_rounded, size: 18, color: AppColors.primary),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              t.ingestion.autoRunIn(seconds: seconds),
+              style: AppTextStyles.labelMd.copyWith(color: AppColors.primary),
+            ),
+          ),
+          TextButton(onPressed: onCancel, child: Text(t.common.cancel)),
+        ],
+      ),
+    );
+  }
+}
+
+/// The last few searches, links and requests, under an empty box: a tap
+/// puts one back, the x forgets it.
+class _RecentInputs extends StatelessWidget {
+  final List<RecentInput> recent;
+  final ValueChanged<RecentInput> onTap;
+  final ValueChanged<RecentInput> onRemove;
+
+  const _RecentInputs({
+    required this.recent,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t.ingestion.recentTitle,
+            style: AppTextStyles.labelMd.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            children: [
+              for (final input in recent)
+                InputChip(
+                  avatar: Icon(
+                    _channelIcon(input.channel),
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                  label: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 200),
+                    child: Text(
+                      input.text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.labelMd,
+                    ),
+                  ),
+                  onPressed: () => onTap(input),
+                  onDeleted: () => onRemove(input),
+                  deleteIcon: const Icon(Icons.close_rounded, size: 16),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -932,6 +1512,8 @@ class _FileRow extends StatelessWidget {
               : Icon(
                   file.isPdf
                       ? Icons.picture_as_pdf_rounded
+                      : file.isImage
+                      ? Icons.image_rounded
                       : Icons.graphic_eq_rounded,
                   color: AppColors.primary,
                 ),
@@ -948,7 +1530,11 @@ class _FileRow extends StatelessWidget {
                 style: AppTextStyles.bodyMd,
               ),
               Text(
-                '${file.isPdf ? 'PDF' : t.ingestion.recordingTag} · '
+                '${file.isPdf
+                    ? 'PDF'
+                    : file.isImage
+                    ? t.ingestion.photoTag
+                    : t.ingestion.recordingTag} · '
                 '${_sizeLabel(file.bytes.length)}',
                 style: AppTextStyles.labelMd.copyWith(
                   color: AppColors.onSurfaceVariant,
@@ -1094,6 +1680,25 @@ class _ReviewRecipe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final actions = Row(
+      children: [
+        ClayButton(
+          label: t.common.edit,
+          icon: Icons.edit_rounded,
+          onPressed: () => _openEditor(context, recipe),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: ClayButton(
+            label: t.common.save,
+            icon: Icons.bookmark_added_rounded,
+            expanded: true,
+            onPressed: () =>
+                context.read<IngestionBloc>().add(.saveRecipe(recipe)),
+          ),
+        ),
+      ],
+    );
     return Column(
       children: [
         Expanded(
@@ -1244,29 +1849,54 @@ class _ReviewRecipe extends StatelessWidget {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(AppSpacing.marginMobile),
-          child: Row(
-            children: [
-              ClayButton(
-                label: t.common.edit,
-                icon: Icons.edit_rounded,
-                onPressed: () => _openEditor(context, recipe),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: ClayButton(
-                  label: t.common.save,
-                  icon: Icons.bookmark_added_rounded,
-                  expanded: true,
-                  onPressed: () =>
-                      context.read<IngestionBloc>().add(.saveRecipe(recipe)),
-                ),
-              ),
-            ],
+        if (FeaturesFlags.reviewStickySave.isEnabled)
+          _PinnedActionBar(child: actions)
+        else
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.marginMobile),
+            child: actions,
           ),
-        ),
       ],
+    );
+  }
+}
+
+/// The review's edit and save, as a bar that sits on the screen's bottom
+/// edge: raised above the list with a hairline and a shadow, so on a long
+/// recipe it reads as always there rather than as the list's last row. It
+/// sits under the list, never over it, so nothing scrolls behind it; the
+/// bottom inset (a home indicator in landscape) is kept clear.
+class _PinnedActionBar extends StatelessWidget {
+  final Widget child;
+
+  const _PinnedActionBar({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        border: BorderDirectional(
+          top: BorderSide(color: AppColors.outlineVariant),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lavenderGlow.withValues(alpha: 0.12),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.marginMobile,
+            vertical: AppSpacing.sm,
+          ),
+          child: child,
+        ),
+      ),
     );
   }
 }

@@ -21,14 +21,25 @@ class ClayTag extends StatelessWidget {
     this.foreground,
   });
 
+  /// labelSm's line height at the normal size.
+  static const _lineHeight = 16.0;
+
   @override
   Widget build(BuildContext context) {
     final background = this.background ?? AppColors.primaryFixed;
     final foreground = this.foreground ?? AppColors.primary;
+    // A larger text size takes its extra line height out of the padding,
+    // so the pill stays the height the rows that hold it were drawn for
+    // (the recipe card's tag line is a fixed 26) while the text grows.
+    final line = MediaQuery.textScalerOf(context).scale(_lineHeight);
+    final vertical = (AppSpacing.xs - (line - _lineHeight) / 2).clamp(
+      1.0,
+      AppSpacing.xs,
+    );
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.base,
-        vertical: AppSpacing.xs,
+        vertical: vertical,
       ),
       decoration: ShapeDecoration(
         color: background,

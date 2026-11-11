@@ -9,6 +9,7 @@ import '../../../../core/widgets/image_source_sheet.dart';
 import '../../../../core/widgets/ai_cover_prompt_sheet.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../bloc/book_viewer_bloc.dart';
+import '../../../../core/features/features_flags.dart';
 import '../widgets/open_book_shell.dart';
 import '../widgets/quick_jump_capsule.dart';
 import '../widgets/quick_nav_sheet.dart';
@@ -114,20 +115,46 @@ class _BookViewerBody extends StatelessWidget {
                     icon: Icons.add_rounded,
                     label: t.recipe.addToBook,
                     walkthroughId: WalkthroughIds.bookAddRecipe,
-                    onTap: () {
+                    onTap: () async {
                       // Multi-select: the sheet stays open so several recipes can
                       // be added in one visit, and tapping an already-added
                       // recipe removes it again.
                       final bloc = context.read<BookViewerBloc>();
-                      showRecipePickerSheet(
+                      final before = [
+                        for (final ref in book.orderedRefs) ref.recipeId,
+                      ];
+                      await showRecipePickerSheet(
                         context,
-                        selectedIds: book.recipeRefs
-                            .map((r) => r.recipeId)
-                            .toSet(),
+                        selectedIds: before.toSet(),
                         onToggle: (recipe, selected) => bloc.add(
                           selected
                               ? BookViewerEvent.addRecipe(recipe.id)
                               : BookViewerEvent.removeRecipe(recipe.id),
+                        ),
+                      );
+                      if (!FeaturesFlags.undoInsteadOfConfirm.isEnabled) return;
+                      // Offered once the sheet is closed, for all that left
+                      // in the visit together: inside the sheet a second tap
+                      // is already the undo, and a notice there would leave
+                      // its ticks out of date.
+                      await bloc.settled;
+                      final now = bloc.state;
+                      if (!context.mounted || now is! BookViewerLoaded) return;
+                      final kept = {
+                        for (final ref in now.book.recipeRefs) ref.recipeId,
+                      };
+                      final removed = {
+                        for (final id in before)
+                          if (!kept.contains(id)) id,
+                      };
+                      if (removed.isEmpty) return;
+                      AppDialog.undo(
+                        context,
+                        message: t.recipe.removedFromBook,
+                        icon: Icons.bookmark_remove_rounded,
+                        onUndo: () => bloc.restoreRemoved(
+                          before: before,
+                          removed: removed,
                         ),
                       );
                     },

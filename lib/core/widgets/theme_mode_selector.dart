@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'clay/min_tap_target.dart';
+
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
 import '../constants/app_text_styles.dart';
@@ -41,55 +43,63 @@ class ThemeModeSelector extends StatelessWidget {
           alignment: WrapAlignment.center,
           children: AppThemeMode.values.map((mode) {
             final isSelected = mode == selected;
-            return GestureDetector(
-              onTapUp: (details) async {
-                // The reveal first, the account afterwards: a save that
-                // lands mid-animation must not touch the palette.
-                await ThemeSwitcher.of(
-                  context,
-                ).switchTo(mode, origin: details.globalPosition);
-                onChanged?.call(mode);
-              },
-              behavior: HitTestBehavior.opaque,
-              child: AnimatedContainer(
-                duration: AppMotion.quick,
-                curve: AppMotion.easeOut,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                  vertical: AppSpacing.base,
-                ),
-                decoration: ShapeDecoration(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.surfaceContainerLow,
-                  shape: StadiumBorder(
-                    side: BorderSide(
+            return MinTapTarget(
+              // Read as a choice with its state, and touched at 48 high even
+              // where the pill is drawn smaller.
+              child: Semantics(
+                button: true,
+                selected: isSelected,
+                child: GestureDetector(
+                  onTapUp: (details) async {
+                    // The reveal first, the account afterwards: a save that
+                    // lands mid-animation must not touch the palette.
+                    await ThemeSwitcher.of(
+                      context,
+                    ).switchTo(mode, origin: details.globalPosition);
+                    onChanged?.call(mode);
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: AnimatedContainer(
+                    duration: AppMotion.quick,
+                    curve: AppMotion.easeOut,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.gutter,
+                      vertical: AppSpacing.base,
+                    ),
+                    decoration: ShapeDecoration(
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.outlineVariant,
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _icon(mode),
-                      size: 16,
-                      color: isSelected
-                          ? AppColors.onPrimary
-                          : AppColors.tertiary,
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      _label(mode),
-                      style: AppTextStyles.labelMd.copyWith(
-                        color: isSelected
-                            ? AppColors.onPrimary
-                            : AppColors.tertiary,
+                          : AppColors.surfaceContainerLow,
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.outlineVariant,
+                        ),
                       ),
                     ),
-                  ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _icon(mode),
+                          size: 16,
+                          color: isSelected
+                              ? AppColors.onPrimary
+                              : AppColors.tertiary,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          _label(mode),
+                          style: AppTextStyles.labelMd.copyWith(
+                            color: isSelected
+                                ? AppColors.onPrimary
+                                : AppColors.tertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );

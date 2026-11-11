@@ -113,6 +113,28 @@ List<Map<String, dynamic>> inlineMediaBlocks(List<InlineMediaPart> parts) => [
     },
 ];
 
+/// The prompt for files that include at least one photo. A photo of a
+/// recipe is a cookbook page, a screenshot of a post, or a handwritten
+/// card; the model is told to read all of the text in it, handwriting
+/// included, and several photos are the pages of one recipe — the same
+/// rule as voice notes in parts. Overlap between two shots is counted
+/// once, as on a long receipt. The language the recipe comes back in is the
+/// system instruction's, not this prompt's.
+@visibleForTesting
+String filesPromptWithImages(List<IngestionFile> files) {
+  if (files.length == 1) {
+    return 'התמונה המצורפת היא מתכון — דף מספר בישול, צילום מסך (למשל של פוסט ברשת חברתית) או מתכון בכתב יד. '
+        'קרא את כל הטקסט שבה, כולל כתב יד, וחלץ ממנה את המתכון לפורמט מובנה — שם, מצרכים עם כמויות, ושלבי הכנה. '
+        'אם יש בה כמה מתכונים, חלץ את הראשון. אם אין בה מתכון, החזר רשימות ריקות.';
+  }
+  final onlyImages = files.every((f) => f.isImage);
+  final what = onlyImages
+      ? 'התמונות המצורפות (${files.length}) הן עמודים או צילומי מסך של מתכון אחד, לפי הסדר — למשל מתכון שנמשך על פני שני עמודים בספר.'
+      : 'הקבצים המצורפים (${files.length}) — תמונות, הקלטות או מסמכים — הם חלקים של מתכון אחד, לפי הסדר שבו הם מופיעים.';
+  return '$what קרא את כולם ברצף, כולל כתב יד (ותמלל לעצמך הקלטות אם יש), וחלץ מתכון אחד לפורמט מובנה — שם, מצרכים עם כמויות, ושלבי הכנה בסדר הנכון. '
+      'מה שמופיע בשתי תמונות בגלל חפיפה נספר פעם אחת. אל תחזיר כמה מתכונים.';
+}
+
 /// [inlineMediaBlocks] off the UI isolate. A receipt is up to 10 MB of
 /// photos, and base64 of that on the main isolate held the frame for the
 /// whole encode — the spinner froze exactly when the user was told to wait.
@@ -1041,7 +1063,9 @@ $_dietaryTagRules
   /// `audio` blocks, a PDF as a `document`. The prompt names what they are
   /// — the parts of one recipe, in order — so a recording is transcribed and
   /// then read as a recipe, not described, and three voice notes are one
-  /// dictation rather than three dishes.
+  /// dictation rather than three dishes. Photos (a cookbook page, a
+  /// screenshot of a post, handwriting) go as `image` blocks; several are
+  /// the pages of one recipe.
   @override
   Future<RecipeEntity> parseFromFiles(
     List<IngestionFile> files,
@@ -1055,7 +1079,9 @@ $_dietaryTagRules
         : hasAudio
         ? 'ההקלטות המצורפות'
         : 'המסמכים המצורפים';
-    final prompt = files.length == 1
+    final prompt = files.any((f) => f.isImage)
+        ? filesPromptWithImages(files)
+        : files.length == 1
         ? (files.single.isPdf
               ? 'קרא את המסמך המצורף וחלץ ממנו את המתכון לפורמט מובנה. אם יש בו כמה מתכונים, חלץ את הראשון.'
               : 'ההקלטה המצורפת היא מתכון שמישהו מקריא או מספר. תמלל אותה לעצמך, וחלץ ממנה את המתכון לפורמט מובנה — שם, מצרכים עם כמויות, ושלבי הכנה בסדר שנאמרו.')
@@ -1067,7 +1093,11 @@ $_dietaryTagRules
           ...await encodeInlineMedia([
             for (final file in files)
               (
-                type: file.isPdf ? 'document' : 'audio',
+                type: file.isPdf
+                    ? 'document'
+                    : file.isImage
+                    ? 'image'
+                    : 'audio',
                 mimeType: file.mimeType,
                 bytes: file.bytes,
               ),

@@ -27,7 +27,12 @@ class ClayPageHeader extends StatelessWidget {
     final text = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTextStyles.headlineLgMobile),
+        // A heading, so a screen reader can jump to it — also when the
+        // header floats (ClayFloatingHeaderView draws this same widget).
+        Semantics(
+          header: true,
+          child: Text(title, style: AppTextStyles.headlineLgMobile),
+        ),
         if (subtitle != null) ...[
           const SizedBox(height: AppSpacing.base),
           Text(
@@ -73,7 +78,12 @@ class ClaySectionHeader extends StatelessWidget {
     final row = Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Expanded(child: Text(title, style: AppTextStyles.headlineMd)),
+        Expanded(
+          child: Semantics(
+            header: true,
+            child: Text(title, style: AppTextStyles.headlineMd),
+          ),
+        ),
         ?trailing,
       ],
     );

@@ -337,7 +337,11 @@ class _SplitToggle extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
         child: Row(
           children: [
-            BouncyCheckbox(value: value, onChanged: (_) => onChanged(!value)),
+            BouncyCheckbox(
+              value: value,
+              onChanged: (_) => onChanged(!value),
+              semanticLabel: t.community.splitTimes,
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(t.community.splitTimes, style: AppTextStyles.bodyMd),

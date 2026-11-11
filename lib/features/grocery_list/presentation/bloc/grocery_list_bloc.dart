@@ -123,6 +123,21 @@ sealed class GroceryListState with _$GroceryListState {
   const factory GroceryListState.errorMessage(String error) = GroceryListError;
 }
 
+/// An edit worked out outside the bloc — lines heard by voice, "bought
+/// everything", an undo — made the way every other edit is: on screen
+/// first, then on the list as stored, then published to a shared list.
+///
+/// Hand-written rather than a freezed factory: this repo does not run
+/// build_runner, and a new subclass of the sealed event would break the
+/// generated exhaustive switches. It rides on [_ListsChanged], whose handler
+/// steps aside for it.
+class _EditList extends _ListsChanged {
+  final String listId;
+  final GroceryListEntity Function(GroceryListEntity list) change;
+
+  const _EditList(this.listId, this.change) : super(const []);
+}
+
 class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
   StreamSubscription<void>? _contentChanges;
   StreamSubscription<List<MealPlanEntity>>? _plans;
@@ -183,6 +198,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       onError: (Object e) => debugPrint('Plans stream failed: $e'),
     );
     on<_ListsChanged>(_listsChanged);
+    on<_EditList>(_editList);
     _listsStream = watchGroceryListsUseCase?.call().listen(
       (lists) => add(GroceryListEvent.listsChanged(lists)),
       onError: (Object e) => debugPrint('Lists stream failed: $e'),
@@ -273,6 +289,7 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     _ListsChanged event,
     Emitter<GroceryListState> emit,
   ) async {
+    if (event is _EditList) return;
     final current = state;
     if (current is! GroceryListLoaded) return;
     final lists = _ordered(event.lists);
@@ -515,6 +532,31 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
       current.copyWith(list: updated, lists: _withList(current.lists, updated)),
     );
     await _save(current.list, change);
+  }
+
+  /// Applies [change] to the list [listId]; see [_EditList]. The open list
+  /// shows it at once; another list (switched away from before Undo) is
+  /// written in the box and reaches the switcher through its stream.
+  void editList(
+    String listId,
+    GroceryListEntity Function(GroceryListEntity list) change,
+  ) => add(_EditList(listId, change));
+
+  Future<void> _editList(_EditList event, Emitter<GroceryListState> emit) async {
+    final current = state;
+    if (current is! GroceryListLoaded) return;
+    if (current.list.id == event.listId) {
+      return _persist(current.list, event.change, emit);
+    }
+    final target = current.lists
+        .where((l) => l.id == event.listId)
+        .firstOrNull;
+    if (target == null || !target.canEdit) return;
+    try {
+      await _save(target, event.change);
+    } catch (e) {
+      debugPrint('Editing the list failed: $e');
+    }
   }
 
   Future<void> _init(_Init event, Emitter<GroceryListState> emit) =>

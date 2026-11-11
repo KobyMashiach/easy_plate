@@ -73,11 +73,45 @@ class MainActivity : FlutterFragmentActivity() {
                     result.notImplemented()
                 }
             }
+        // The "link on your clipboard" prompt (Dart: ClipboardLinkPrompt) asks
+        // what is on the clipboard from its description only: reading the clip
+        // itself shows Android 12's "pasted from your clipboard" toast.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "easy_plate/clipboard")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "probe") result.success(clipboardProbe()) else result.notImplemented()
+            }
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine,
             nativeAdFactoryId,
             EasyPlateNativeAdFactory(layoutInflater),
         )
+    }
+
+    /** `stamp`: when the clip was set (API 26+), so the same clip is offered
+     *  once. `url`: the system's own verdict that the text is a link (API 31+,
+     *  once it has classified it); null when there is no verdict and Dart
+     *  reads the text itself — on those versions a read shows no toast.
+     *  `pending`: still classifying, ask again on the next resume. Null when
+     *  the clipboard is empty or this app is not focused. */
+    private fun clipboardProbe(): Map<String, Any?>? {
+        val manager = getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+            as? android.content.ClipboardManager ?: return null
+        val description = manager.primaryClipDescription ?: return null
+        val stamp = if (android.os.Build.VERSION.SDK_INT >= 26) description.timestamp.toString() else null
+        if (!description.hasMimeType("text/*")) return mapOf("stamp" to stamp, "url" to false)
+        if (android.os.Build.VERSION.SDK_INT >= 31) {
+            when (description.classificationStatus) {
+                android.content.ClipDescription.CLASSIFICATION_COMPLETE -> {
+                    val score = description.getConfidenceScore(
+                        android.view.textclassifier.TextClassifier.TYPE_URL,
+                    )
+                    return mapOf("stamp" to stamp, "url" to (score >= 0.5f))
+                }
+                android.content.ClipDescription.CLASSIFICATION_NOT_COMPLETE ->
+                    return mapOf("stamp" to stamp, "pending" to true)
+            }
+        }
+        return mapOf("stamp" to stamp, "url" to null)
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {

@@ -14,6 +14,7 @@ import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../../domain/entities/grocery_list_entity.dart';
 import '../bloc/grocery_list_bloc.dart';
+import 'grocery_quick_actions.dart';
 import '../../../../core/features/feature_gate.dart';
 import '../../../collab_containers/presentation/widgets/container_share_sheets.dart';
 
@@ -186,11 +187,12 @@ class _ListsSheet extends StatelessWidget {
                   Flexible(
                     child: ListView.separated(
                       shrinkWrap: true,
-                      itemCount: state.lists.length,
+                      // Lists waiting out a delete's undo are not offered.
+                      itemCount: visibleGroceryLists(state.lists).length,
                       separatorBuilder: (_, _) =>
                           const SizedBox(height: AppSpacing.sm),
                       itemBuilder: (context, index) {
-                        final list = state.lists[index];
+                        final list = visibleGroceryLists(state.lists)[index];
                         return _ListRow(
                           list: list,
                           isOpen: list.id == state.list.id,
@@ -262,6 +264,15 @@ class _ListsSheet extends StatelessWidget {
     GroceryListBloc bloc,
     GroceryListEntity list,
   ) async {
+    // One of this account's own, not shared, not the last: gone at once,
+    // with an undo, instead of the question.
+    final state = bloc.state;
+    if (state is GroceryListLoaded &&
+        canDeleteListWithUndo(list, state.lists)) {
+      popIfCurrent(context);
+      deleteListWithUndo(context, bloc, list, state.lists);
+      return;
+    }
     final leaves = list.isShared && !list.isMine;
     final confirmed = await AppDialog.warning(
       title: leaves ? t.sharing.leave : t.groceryList.deleteList,
@@ -685,6 +696,7 @@ class RecipeScaleStepper extends StatelessWidget {
         Expanded(child: Text(label, style: AppTextStyles.bodyMd)),
         IconButton.filledTonal(
           onPressed: canLower ? () => onChanged(_step(-1)) : null,
+          tooltip: t.common.decrease,
           icon: const Icon(Icons.remove_rounded),
         ),
         SizedBox(
@@ -698,6 +710,7 @@ class RecipeScaleStepper extends StatelessWidget {
         ),
         IconButton.filledTonal(
           onPressed: canRaise ? () => onChanged(_step(1)) : null,
+          tooltip: t.common.increase,
           icon: const Icon(Icons.add_rounded),
         ),
       ],

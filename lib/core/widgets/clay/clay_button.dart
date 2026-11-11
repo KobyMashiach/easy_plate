@@ -43,6 +43,21 @@ class _ClayButtonState extends State<ClayButton> {
         ? AppColors.onErrorContainer
         : AppColors.onPrimaryFixedVariant;
 
+    // Read as a button (and as dimmed when it cannot be pressed) rather
+    // than as loose text.
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      child: _face(enabled: enabled, sunk: sunk, face: face, slab: slab),
+    );
+  }
+
+  Widget _face({
+    required bool enabled,
+    required bool sunk,
+    required Color face,
+    required Color slab,
+  }) {
     return GestureDetector(
       onTap: widget.onPressed,
       onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,

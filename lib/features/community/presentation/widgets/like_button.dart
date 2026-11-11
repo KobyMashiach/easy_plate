@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/features/feature_gate.dart';
+import '../../../../core/utils/i18n/strings.g.dart';
 
 /// Heart plus count, shared by the community feed, forum threads and their
 /// replies, so a like looks and feels the same wherever it is given.
@@ -32,6 +33,8 @@ class LikeButton extends StatelessWidget {
               size: 20,
               color: liked ? AppColors.error : AppColors.tertiary,
             ),
+            tooltip: t.common.like,
+            isSelected: liked,
             onPressed: onPressed,
           ),
           Text(

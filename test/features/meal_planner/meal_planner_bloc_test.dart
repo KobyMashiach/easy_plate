@@ -2,6 +2,7 @@ import 'package:easy_plate/core/constants/app_enums.dart';
 import 'package:easy_plate/core/utils/i18n/strings.g.dart';
 import 'package:easy_plate/features/meal_planner/domain/entities/meal_entity.dart';
 import 'package:easy_plate/features/meal_planner/domain/entities/meal_plan_entity.dart';
+import 'package:easy_plate/features/meal_planner/domain/plan_fill.dart';
 import 'package:easy_plate/features/meal_planner/domain/repositories/meal_plans_repository.dart';
 import 'package:easy_plate/features/meal_planner/domain/usecases/delete_meal_plan_usecase.dart';
 import 'package:easy_plate/features/meal_planner/domain/usecases/get_meal_plans_usecase.dart';
@@ -287,6 +288,56 @@ void main() {
     bloc.add(const MealPlannerEvent.deletePlan('p'));
     final state = await loaded(bloc);
     expect(state.plans, isEmpty);
+    await bloc.close();
+  });
+
+  test(
+    'editPlan applies a fill on screen and in the box, and undoes it',
+    () async {
+      plans.store['p'] = MealPlanEntity(
+        id: 'p',
+        name: 'Week',
+        meals: const [
+          MealEntity(id: 'm', weekday: 0, name: 'Lunch', order: 0, items: []),
+        ],
+        createdAt: DateTime(2026),
+      );
+      final bloc = build();
+      final start = await loaded(bloc);
+      var n = 0;
+      final fill = WeekAutofill.plan(
+        start.selectedPlan!,
+        recipes.recipes,
+        newId: () => 'i${n++}',
+      );
+      bloc.editPlan('p', fill.apply);
+      final state = await loaded(bloc);
+      expect(state.selectedPlan!.meals.single.items.single.recipeId, 'r1');
+      await pumpEventQueue();
+      expect(plans.store['p']!.meals.single.items, hasLength(1));
+
+      bloc.editPlan('p', fill.undo);
+      await loaded(bloc);
+      await pumpEventQueue();
+      expect(plans.store['p']!.meals.single.items, isEmpty);
+      await bloc.close();
+    },
+  );
+
+  test('editPlan on a plan that is not on screen still writes it', () async {
+    plans.store['q'] = MealPlanEntity(
+      id: 'q',
+      name: 'Other',
+      meals: const [],
+      createdAt: DateTime(2027),
+    );
+    final bloc = build();
+    final start = await loaded(bloc);
+    final other = start.selectedPlan!.id == 'p' ? 'q' : 'p';
+    bloc.editPlan(other, (plan) => plan.copyWith(name: 'Renamed'));
+    await loaded(bloc);
+    await pumpEventQueue();
+    expect(plans.store[other]!.name, 'Renamed');
     await bloc.close();
   });
 }

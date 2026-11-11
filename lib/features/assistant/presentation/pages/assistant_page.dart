@@ -410,6 +410,7 @@ class _ChatViewState extends State<_ChatView> implements AssistantUiBridge {
               leadingIcon: Icons.arrow_back_rounded,
               onLeadingTap: () => Navigator.of(context).maybePop(),
               trailingIcon: Icons.add_comment_outlined,
+              trailingTooltip: t.assistant.clear,
               onTrailingTap: state.busy
                   ? null
                   : () {

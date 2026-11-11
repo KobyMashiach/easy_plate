@@ -77,6 +77,21 @@ sealed class MealPlannerState with _$MealPlannerState {
   const factory MealPlannerState.errorMessage(String error) = MealPlannerError;
 }
 
+/// An edit worked out outside the bloc — "fill my week", "copy last week",
+/// an undo — made the way every other edit is: on screen first, then again
+/// on the plan as stored, then published to a shared plan's members.
+///
+/// Hand-written rather than a freezed factory: this repo does not run
+/// build_runner, and a new subclass of the sealed event would break the
+/// generated exhaustive switches. It rides on [_PlansChanged], whose handler
+/// steps aside for it.
+class _EditPlan extends _PlansChanged {
+  final String planId;
+  final MealPlanEntity Function(MealPlanEntity plan) transform;
+
+  const _EditPlan(this.planId, this.transform) : super(const []);
+}
+
 class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   StreamSubscription<void>? _contentChanges;
   StreamSubscription<List<MealPlanEntity>>? _plans;
@@ -123,6 +138,7 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     on<_UpdateFreeTextItem>(_updateFreeTextItem);
     on<_RemoveItem>(_removeItem);
     on<_PlansChanged>(_plansChanged);
+    on<_EditPlan>(_editPlan);
     on<_RecipesChanged>(_recipesChanged);
     add(const MealPlannerEvent.init());
     // A plan accepted from an invite, or rewritten by the resume refresh,
@@ -157,6 +173,7 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
   /// The plans moved under the board: keep the selection by id, or fall
   /// back to the first plan when the selected one is gone.
   void _plansChanged(_PlansChanged event, Emitter<MealPlannerState> emit) {
+    if (event is _EditPlan) return;
     final current = state;
     if (current is! MealPlannerLoaded) return;
     final selectedId = current.selectedPlan?.id;
@@ -361,6 +378,46 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
       }
     }
     await _reload(emit, selectedPlanId: updated.id, recipes: current.recipes);
+  }
+
+  /// Applies [transform] to the plan [planId], through the same path as the
+  /// board's own edits; see [_EditPlan]. A plan that is no longer the one on
+  /// screen (the user switched before tapping Undo) is still edited, in the
+  /// box, and the board reloaded.
+  void editPlan(
+    String planId,
+    MealPlanEntity Function(MealPlanEntity plan) transform,
+  ) => add(_EditPlan(planId, transform));
+
+  Future<void> _editPlan(_EditPlan event, Emitter<MealPlannerState> emit) async {
+    final current = state;
+    if (current is! MealPlannerLoaded) return;
+    if (current.selectedPlan?.id == event.planId) {
+      return _updateSelectedPlan(emit, event.transform);
+    }
+    MealPlanEntity? saved;
+    try {
+      saved = await _serial(() async {
+        final stored = await saveMealPlanUseCase.repository.getPlanById(
+          event.planId,
+        );
+        if (stored == null || !stored.canEdit) return null;
+        final next = event.transform(stored);
+        await saveMealPlanUseCase(next);
+        return next;
+      });
+    } catch (e) {
+      debugPrint('Editing the plan failed: $e');
+    }
+    final uid = UserScope().uid;
+    if (saved != null && saved.isShared && uid != null) {
+      try {
+        await _publish(saved.id, uid);
+      } catch (e) {
+        debugPrint('Shared plan publish failed: $e');
+      }
+    }
+    await _reload(emit, recipes: current.recipes);
   }
 
   Future<void> _init(_Init event, Emitter<MealPlannerState> emit) =>

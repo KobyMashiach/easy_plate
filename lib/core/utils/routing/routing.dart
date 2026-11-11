@@ -19,6 +19,7 @@ class Routing {
   static const assistant = 'assistant';
   static const ingestion = 'ingestion';
   static const ingestionReview = 'ingestion_review';
+  static const bulkImport = 'bulk_import';
   static const mealPlanDetails = 'meal_plan_details';
   static const nutritionDashboard = 'nutrition_dashboard';
   static const receiptReview = 'receipt_review';
@@ -38,6 +39,7 @@ class Routing {
   static const household = 'household';
   static const scanCode = 'scan_code';
   static const homeWidgets = 'home_widgets';
+  static const whatsappBot = 'whatsapp_bot';
   static const wakeWord = 'wake_word';
 
   /// A home-screen widget's tap, `/widget/<action>`: see HomeWidgetLaunch.

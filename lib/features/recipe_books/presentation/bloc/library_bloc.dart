@@ -12,6 +12,7 @@ import '../../../../core/services/image_storage_service.dart';
 import '../../../../core/sync/recipe_image_store.dart';
 import '../../../collab_containers/domain/container_sharing_service.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/utils/undoable_removals.dart';
 import '../../domain/entities/book_spine.dart';
 import '../../domain/entities/recipe_book_entity.dart';
 import '../../domain/usecases/delete_book_usecase.dart';
@@ -94,6 +95,23 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       (books) => add(LibraryEvent.booksChanged(books)),
       onError: (Object e) => debugPrint('Books stream failed: $e'),
     );
+    // A book deleted with an undo is only hidden until its notice goes.
+    UndoableRemovals.instance.pending.addListener(_pendingChanged);
+  }
+
+  /// The key a book waiting out its undo window is hidden under.
+  static String removalKey(String id) => UndoableRemovals.keyFor('book', id);
+
+  void _pendingChanged() {
+    if (!isClosed) add(const LibraryEvent.init());
+  }
+
+  static List<RecipeBookEntity> _visible(List<RecipeBookEntity> books) {
+    final removals = UndoableRemovals.instance;
+    return [
+      for (final book in books)
+        if (!removals.isPending(removalKey(book.id))) book,
+    ];
   }
 
   factory LibraryBloc.fromContext(BuildContext context) {
@@ -109,7 +127,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   void _booksChanged(_BooksChanged event, Emitter<LibraryState> emit) {
     // The first read is still on its way: it will show the same list.
     if (state is LibraryLoading) return;
-    emit(.loaded(event.books));
+    emit(.loaded(_visible(event.books)));
   }
 
   /// Saves, then — for a shared book — publishes. A read-only copy is left
@@ -152,7 +170,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   ]) async {
     try {
       await action?.call();
-      emit(.loaded(await getBooksUseCase()));
+      emit(.loaded(_visible(await getBooksUseCase())));
     } catch (e) {
       debugPrint('Library error: $e');
       emit(.errorMessage(t.common.loadFailed));
@@ -247,6 +265,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
 
   @override
   Future<void> close() async {
+    UndoableRemovals.instance.pending.removeListener(_pendingChanged);
     await _contentChanges?.cancel();
     await _books?.cancel();
     return super.close();

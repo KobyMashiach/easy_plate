@@ -29,12 +29,17 @@ class RecipeCard extends StatelessWidget {
   /// The feed only ever adds; this is the one place a saved recipe leaves.
   final VoidCallback? onRemove;
 
+  /// A long press that does more than share — the quick menu. Takes the
+  /// place of [onShare] on the long press when given.
+  final VoidCallback? onLongPress;
+
   const RecipeCard({
     super.key,
     required this.recipe,
     required this.onTap,
     this.onShare,
     this.onRemove,
+    this.onLongPress,
   });
 
   static const height = 248.0;
@@ -52,7 +57,7 @@ class RecipeCard extends StatelessWidget {
         radius: AppRadius.md,
         padding: const EdgeInsets.all(AppSpacing.base),
         onTap: onTap,
-        onLongPress: onShare,
+        onLongPress: onLongPress ?? onShare,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

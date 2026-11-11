@@ -327,6 +327,7 @@ class _Composer extends StatelessWidget {
             icon: Icons.send_rounded,
             filled: true,
             size: 48,
+            tooltip: t.feedback.send,
             onTap: enabled ? onSend : null,
           ),
         ],

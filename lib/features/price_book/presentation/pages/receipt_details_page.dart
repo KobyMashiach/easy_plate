@@ -111,6 +111,7 @@ class _ReceiptDetailsPageState extends State<ReceiptDetailsPage> {
         leadingIcon: Icons.arrow_back_rounded,
         onLeadingTap: () => Navigator.of(context).maybePop(),
         trailingIcon: Icons.delete_outline_rounded,
+        trailingTooltip: t.receipt.deleteReceipt,
         onTrailingTap: _delete,
       ),
       body: ListView(

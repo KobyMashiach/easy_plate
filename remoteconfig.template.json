@@ -379,6 +379,20 @@
       },
       "description": "App Check בפונקציות בתשלום: 0 = כבוי, 1 = בודק ורושם ללוג בלבד, 2 = חוסם חשבון בלי טלפון שאין לו אסימון App Check תקין (לפני כן לרשום את האפליקציות ב-App Check בקונסול). חשבון עם טלפון לא נחסם.",
       "valueType": "NUMBER"
+    },
+    "quota_whatsapp_free_monthly": {
+      "defaultValue": {
+        "value": "10"
+      },
+      "description": "כמה הודעות בחודש לבוט הוואטסאפ במסלול החינמי. הודעה בלי מצרכים או שנכשלה לא נספרת. ברירת מחדל בקוד 10.",
+      "valueType": "NUMBER"
+    },
+    "quota_whatsapp_premium_monthly": {
+      "defaultValue": {
+        "value": "300"
+      },
+      "description": "כמה הודעות בחודש לבוט הוואטסאפ למנוי פרימיום (כל הודעה = קריאת AI, לכן לא בלי הגבלה). ברירת מחדל בקוד 300.",
+      "valueType": "NUMBER"
     }
   },
   "parameterGroups": {
@@ -453,6 +467,13 @@
             "value": "2"
           },
           "description": "בקשת מתכון מה-AI בשפה חופשית (צ׳יפ \"בקשה מ-AI\").",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_auto_channel": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "במסך הוספת מתכון: בחירת הקטגוריה אוטומטית לפי הטקסט (קישור רשתות/אתר, מתכון מודבק, חיפוש או בקשה). כבוי = קטגוריה ידנית בלבד.",
           "valueType": "NUMBER"
         },
         "ff_ingest_file": {
@@ -845,6 +866,146 @@
             "value": "0"
           },
           "description": "רכישה באתר לחשבון מחוץ לישראל דרך RevenueCat (Paddle Billing, Paddle = merchant of record, דף pay.rev.cat). דורש ff_web_checkout = 2 ו-revenuecat.purchaseLink במחירון web_billing_catalog. 0 = מוסתר, 1 = בקרוב, 2 = פעיל.",
+          "valueType": "NUMBER"
+        },
+        "ff_whatsapp_bot": {
+          "defaultValue": {
+            "value": "0"
+          },
+          "description": "בוט וואטסאפ לרשימת הקניות: הוספת מצרכים בהודעה חופשית, חיבור המספר בקוד 6 ספרות (הגדרות ← חיבור לוואטסאפ). 0 = מוסתר (רק סופר-משתמש/מנהל), 2 = לכולם עם מכסה חודשית, 3 = פרימיום בלבד. השרת קורא את אותו דגל.",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_paste_autorun": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "במסך הוספת מתכון: קישור שהודבק או שותף מתחיל להתנתח לבד אחרי 2 שניות (עם ביטול), רק כשיש ניתוח פנוי בלי סרטון.",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_recent": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "במסך הוספת מתכון: 3 החיפושים/הקישורים/הבקשות האחרונים כצ׳יפים מתחת לשדה (נשמרים רק במכשיר).",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_voice": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "במסך הוספת מתכון: כפתור מיקרופון בשדה הטקסט להקלדה בקול (זיהוי הדיבור של המכשיר).",
+          "valueType": "NUMBER"
+        },
+        "ff_save_to_book_prompt": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "אחרי שמירת מתכון חדש: חלון \"להוסיף לספר?\" עם רשימת הספרים לבחירה.",
+          "valueType": "NUMBER"
+        },
+        "ff_clipboard_link_prompt": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "באנר \"יש קישור מתכון בלוח, להוסיף?\" בפתיחת האפליקציה (בדיקה במכשיר בלבד).",
+          "valueType": "NUMBER"
+        },
+        "ff_ingest_photo": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "הוספת מתכון מתמונה: צילום, צילום מסך או תמונה מהגלריה (נקרא ב-AI).",
+          "valueType": "NUMBER"
+        },
+        "ff_review_sticky_save": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "במסך הסקירה אחרי ניתוח: כפתור \"שמור\" קבוע בתחתית בלי לגלול.",
+          "valueType": "NUMBER"
+        },
+        "ff_bulk_import": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "ייבוא כמה מתכונים בבת אחת: כמה קישורים יחד או ייצוא צ׳אט וואטסאפ, עם רשימה לאישור. כל מתכון סופר ניתוח.",
+          "valueType": "NUMBER"
+        },
+        "ff_recipe_quick_menu": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "לחיצה ארוכה על כרטיס מתכון: תפריט מהיר (לספר, לתפריט, לרשימת קניות, שיתוף).",
+          "valueType": "NUMBER"
+        },
+        "ff_undo_instead_of_confirm": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "מחיקות שאפשר להחזיר קורות מיד עם \"ביטול\" בהודעה, במקום חלון \"בטוח?\".",
+          "valueType": "NUMBER"
+        },
+        "ff_remember_last_choices": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "זוכר בחירות אחרונות (מנות, ספר, רשימת קניות, יום בתפריט) כברירת מחדל.",
+          "valueType": "NUMBER"
+        },
+        "ff_recent_cooked": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "בראש מסך המתכונים: \"בישלת לאחרונה\" ו\"הכי מבושלים\".",
+          "valueType": "NUMBER"
+        },
+        "ff_plan_autofill": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "בתפריט: \"מלא לי את השבוע\" מהמתכונים שלי ולפי ההעדפות, בלי AI.",
+          "valueType": "NUMBER"
+        },
+        "ff_plan_copy_week": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "בתפריט: \"העתק את השבוע שעבר\".",
+          "valueType": "NUMBER"
+        },
+        "ff_grocery_voice_add": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "ברשימת קניות: הוספה בקול של כמה פריטים עם כמויות במשפט אחד.",
+          "valueType": "NUMBER"
+        },
+        "ff_grocery_aisle_sort": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "ברשימת קניות: סידור אוטומטי לפי מחלקות בסופר.",
+          "valueType": "NUMBER"
+        },
+        "ff_grocery_check_all": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "ברשימת קניות: כפתור \"קניתי הכל\".",
+          "valueType": "NUMBER"
+        },
+        "ff_text_size": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "בהגדרות: גודל טקסט באפליקציה (רגיל/גדול/גדול מאוד). ברירת המחדל נשארת קבועה.",
+          "valueType": "NUMBER"
+        },
+        "ff_cook_voice_next": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "במצב בישול: אומרים \"הבא\"/\"הקודם\" בלי לגעת במסך ובלי מילת הפעלה, כל עוד המסך פתוח.",
           "valueType": "NUMBER"
         }
       }

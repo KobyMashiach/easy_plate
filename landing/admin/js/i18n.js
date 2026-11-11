@@ -142,6 +142,7 @@ const en = {
     deleteAll: "Delete all personas", deleteAllTitle: "Delete all {n} personas?", deleting: "Deleting {i} of {n}…", deletedAll: "{n} personas deleted",
     edit: "Edit persona", photoUpload: "Upload portrait", photoUrl: "Portrait link",
   },
+  wa: { title: "WhatsApp bot", phone: "Linked number", usage: "This month", usageValue: "{used} messages ({month})", list: "Target list", listAuto: "Automatic", none: "Not linked", codeOpen: "Link code open until {date}" },
   hh: { tier: "Plan", seats: "Seats", owner: "Owner", members: "Members", remove: "Remove member", dissolve: "Dissolve household", dissolveHint: "Members lose the inherited Premium; the shared data is deleted from the server. The owner's phone keeps its copy.", none: "No households yet.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} households", created: "Created", removed: "Member removed", dissolved: "Household dissolved" },
   tickets: {
     unread: "Unread", read: "Read", markRead: "Mark read", markUnread: "Mark unread", reply: "Reply", replied: "Replied", replies: "Your replies",
@@ -318,6 +319,7 @@ const he = {
     deleteAll: "מחיקת כל הדמויות", deleteAllTitle: "למחוק את כל {n} הדמויות?", deleting: "מוחק {i} מתוך {n}…", deletedAll: "{n} דמויות נמחקו",
     edit: "עריכת דמות", photoUpload: "העלאת תמונה", photoUrl: "קישור לתמונה",
   },
+  wa: { title: "בוט וואטסאפ", phone: "מספר מחובר", usage: "החודש", usageValue: "{used} הודעות ({month})", list: "רשימת יעד", listAuto: "אוטומטי", none: "לא מחובר", codeOpen: "קוד חיבור פתוח עד {date}" },
   hh: { tier: "תוכנית", seats: "מקומות", owner: "בעלים", members: "חברים", remove: "הסרת חבר", dissolve: "פירוק החשבון המשותף", dissolveHint: "החברים מאבדים את הפרימיום שירשו; המידע המשותף נמחק מהשרת. הטלפון של הבעלים שומר עותק.", none: "אין חשבונות משותפים עדיין.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} חשבונות משותפים", created: "נוצר", removed: "החבר הוסר", dissolved: "החשבון המשותף פורק" },
   tickets: {
     unread: "לא נקראו", read: "נקראו", markRead: "סימון כנקרא", markUnread: "סימון כלא נקרא", reply: "תגובה", replied: "נענה", replies: "התשובות שלך",
@@ -487,6 +489,7 @@ const ar = {
     deleteAll: "حذف كل الشخصيات", deleteAllTitle: "حذف كل الشخصيات ({n})؟", deleting: "جارٍ حذف {i} من {n}…", deletedAll: "حُذفت {n} شخصيات",
     edit: "تعديل الشخصية", photoUpload: "رفع صورة", photoUrl: "رابط الصورة",
   },
+  wa: { title: "بوت واتساب", phone: "الرقم المربوط", usage: "هذا الشهر", usageValue: "{used} رسائل ({month})", list: "القائمة الهدف", listAuto: "تلقائي", none: "غير مربوط", codeOpen: "رمز ربط مفتوح حتى {date}" },
   hh: { tier: "الخطة", seats: "المقاعد", owner: "المالك", members: "الأعضاء", remove: "إزالة عضو", dissolve: "حل الحساب المشترك", dissolveHint: "يفقد الأعضاء البريميوم الموروث؛ تُحذف البيانات المشتركة من الخادم. يحتفظ هاتف المالك بنسخته.", none: "لا حسابات مشتركة بعد.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} حسابات مشتركة", created: "أُنشئ", removed: "أُزيل العضو", dissolved: "تم حل الحساب المشترك" },
   tickets: {
     unread: "غير مقروءة", read: "مقروءة", markRead: "تعليم كمقروء", markUnread: "تعليم كغير مقروء", reply: "رد", replied: "تم الرد", replies: "ردودك",
@@ -656,6 +659,7 @@ const fr = {
     deleteAll: "Supprimer toutes les personas", deleteAllTitle: "Supprimer les {n} personas ?", deleting: "Suppression {i} sur {n}…", deletedAll: "{n} personas supprimées",
     edit: "Modifier la persona", photoUpload: "Téléverser un portrait", photoUrl: "Lien du portrait",
   },
+  wa: { title: "Bot WhatsApp", phone: "Numéro lié", usage: "Ce mois-ci", usageValue: "{used} messages ({month})", list: "Liste cible", listAuto: "Automatique", none: "Non lié", codeOpen: "Code de liaison ouvert jusqu'au {date}" },
   hh: { tier: "Formule", seats: "Places", owner: "Propriétaire", members: "Membres", remove: "Retirer le membre", dissolve: "Dissoudre le compte partagé", dissolveHint: "Les membres perdent le Premium hérité ; les données partagées sont supprimées du serveur. Le téléphone du propriétaire garde sa copie.", none: "Pas encore de comptes partagés.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} comptes partagés", created: "Créé", removed: "Membre retiré", dissolved: "Compte partagé dissous" },
   tickets: {
     unread: "Non lus", read: "Lus", markRead: "Marquer lu", markUnread: "Marquer non lu", reply: "Répondre", replied: "Répondu", replies: "Vos réponses",
@@ -825,6 +829,7 @@ const ru = {
     deleteAll: "Удалить всех персонажей", deleteAllTitle: "Удалить всех персонажей ({n})?", deleting: "Удаляю {i} из {n}…", deletedAll: "Удалено персонажей: {n}",
     edit: "Изменить персонажа", photoUpload: "Загрузить портрет", photoUrl: "Ссылка на портрет",
   },
+  wa: { title: "Бот WhatsApp", phone: "Привязанный номер", usage: "В этом месяце", usageValue: "{used} сообщений ({month})", list: "Целевой список", listAuto: "Автоматически", none: "Не привязан", codeOpen: "Код привязки открыт до {date}" },
   hh: { tier: "Тариф", seats: "Мест", owner: "Владелец", members: "Участники", remove: "Удалить участника", dissolve: "Расформировать общий аккаунт", dissolveHint: "Участники теряют унаследованный Premium; общие данные удаляются с сервера. Телефон владельца сохраняет копию.", none: "Общих аккаунтов пока нет.", tiers: { duo: "Pro Duo", family: "Pro Family" }, count: "{n} общих аккаунтов", created: "Создан", removed: "Участник удалён", dissolved: "Общий аккаунт расформирован" },
   tickets: {
     unread: "Непрочитанные", read: "Прочитанные", markRead: "Отметить прочитанным", markUnread: "Отметить непрочитанным", reply: "Ответить", replied: "Отвечено", replies: "Ваши ответы",

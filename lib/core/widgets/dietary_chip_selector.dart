@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'clay/min_tap_target.dart';
+
 import '../../core/utils/i18n/strings.g.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_enums.dart';
@@ -53,45 +55,55 @@ class DietaryChipSelector extends StatelessWidget {
         final isSelected = selected.contains(preference);
         final (background, foreground) = dietaryColors(preference);
 
-        return GestureDetector(
-          onTap: () => onToggle(preference),
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedContainer(
-            duration: AppMotion.quick,
-            curve: AppMotion.easeOut,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.base,
-            ),
-            decoration: ShapeDecoration(
-              color: isSelected ? background : AppColors.surfaceContainerLow,
-              shape: StadiumBorder(
-                side: BorderSide(
-                  color: isSelected ? background : AppColors.outlineVariant,
+        return MinTapTarget(
+          // Read as a choice with its state, and touched at 48 high even
+          // where the pill is drawn smaller.
+          child: Semantics(
+            button: true,
+            selected: isSelected,
+            child: GestureDetector(
+              onTap: () => onToggle(preference),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: AppMotion.quick,
+                curve: AppMotion.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.base,
                 ),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  dietaryIcon(preference),
-                  size: 16,
-                  color: isSelected ? foreground : AppColors.tertiary,
-                ),
-                const SizedBox(width: AppSpacing.xs),
-                // Flexible: a label wider than the line ("Produits
-                // laitiers" at a large text size on a narrow phone) wraps
-                // inside the chip instead of overflowing it.
-                Flexible(
-                  child: Text(
-                    dietaryLabel(preference),
-                    style: AppTextStyles.labelMd.copyWith(
-                      color: isSelected ? foreground : AppColors.tertiary,
+                decoration: ShapeDecoration(
+                  color: isSelected
+                      ? background
+                      : AppColors.surfaceContainerLow,
+                  shape: StadiumBorder(
+                    side: BorderSide(
+                      color: isSelected ? background : AppColors.outlineVariant,
                     ),
                   ),
                 ),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      dietaryIcon(preference),
+                      size: 16,
+                      color: isSelected ? foreground : AppColors.tertiary,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    // Flexible: a label wider than the line ("Produits
+                    // laitiers" at a large text size on a narrow phone) wraps
+                    // inside the chip instead of overflowing it.
+                    Flexible(
+                      child: Text(
+                        dietaryLabel(preference),
+                        style: AppTextStyles.labelMd.copyWith(
+                          color: isSelected ? foreground : AppColors.tertiary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );

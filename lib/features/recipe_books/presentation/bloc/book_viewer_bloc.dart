@@ -18,6 +18,28 @@ import '../../domain/usecases/save_book_usecase.dart';
 
 part 'book_viewer_bloc.freezed.dart';
 
+/// The book's recipe order after an undo puts [removed] back: every id of
+/// [before] that is in the book now or is coming back, in [before]'s order,
+/// then whatever was added since, in its current order. So a restored
+/// recipe takes its old page again, and nothing added meanwhile is lost.
+List<String> restoredOrder({
+  required List<String> before,
+  required List<String> current,
+  required Set<String> removed,
+}) {
+  final now = current.toSet();
+  final ordered = [
+    for (final id in before)
+      if (now.contains(id) || removed.contains(id)) id,
+  ];
+  final placed = ordered.toSet();
+  return [
+    ...ordered,
+    for (final id in current)
+      if (!placed.contains(id)) id,
+  ];
+}
+
 @freezed
 sealed class BookViewerEvent with _$BookViewerEvent {
   const factory BookViewerEvent.init(String bookId) = _Init;
@@ -283,6 +305,38 @@ class BookViewerBloc extends Bloc<BookViewerEvent, BookViewerState> {
       await _publish(updatedBook, uid);
     }
     await _loadAndEmit(updatedBook, emit);
+  }
+
+  /// The undo of removing [removed] from the open book: they go back to the
+  /// places [before] (the book's order before the removals) had them, and a
+  /// shared book is published again so its members get them back too. A
+  /// method rather than an event: events are generated code here. Runs in
+  /// the same queue as every edit, then reopens the book to show it.
+  Future<void> restoreRemoved({
+    required List<String> before,
+    required Set<String> removed,
+  }) async {
+    final current = state;
+    if (current is! BookViewerLoaded || removed.isEmpty) return;
+    final bookId = current.book.id;
+    await _serial(() async {
+      final book = await getBookByIdUseCase(bookId);
+      if (book == null || !book.canEdit) return;
+      final ids = restoredOrder(
+        before: before,
+        current: [for (final ref in book.orderedRefs) ref.recipeId],
+        removed: removed,
+      );
+      await _saveAndPublish(
+        book.copyWith(
+          recipeRefs: [
+            for (var i = 0; i < ids.length; i++)
+              BookRecipeRefEntity(recipeId: ids[i], order: i),
+          ],
+        ),
+      );
+    });
+    if (!isClosed) add(BookViewerEvent.init(bookId));
   }
 
   Future<void> _removeRecipe(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'clay/min_tap_target.dart';
+
 import '../../core/utils/i18n/strings.g.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_enums.dart';
@@ -59,32 +61,42 @@ class WeekdaySelector extends StatelessWidget {
       runSpacing: AppSpacing.base,
       children: ShoppingDay.values.map((day) {
         final isSelected = selected.contains(day);
-        return GestureDetector(
-          onTap: () => _tap(day),
-          behavior: HitTestBehavior.opaque,
-          child: AnimatedContainer(
-            duration: AppMotion.quick,
-            curve: AppMotion.easeOut,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter,
-              vertical: AppSpacing.base,
-            ),
-            decoration: ShapeDecoration(
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.surfaceContainerLow,
-              shape: StadiumBorder(
-                side: BorderSide(
+        return MinTapTarget(
+          // Read as a choice with its state, and touched at 48 high even
+          // where the pill is drawn smaller.
+          child: Semantics(
+            button: true,
+            selected: isSelected,
+            child: GestureDetector(
+              onTap: () => _tap(day),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: AppMotion.quick,
+                curve: AppMotion.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.gutter,
+                  vertical: AppSpacing.base,
+                ),
+                decoration: ShapeDecoration(
                   color: isSelected
                       ? AppColors.primary
-                      : AppColors.outlineVariant,
+                      : AppColors.surfaceContainerLow,
+                  shape: StadiumBorder(
+                    side: BorderSide(
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.outlineVariant,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            child: Text(
-              weekdayLabel(day),
-              style: AppTextStyles.labelMd.copyWith(
-                color: isSelected ? AppColors.onPrimary : AppColors.tertiary,
+                child: Text(
+                  weekdayLabel(day),
+                  style: AppTextStyles.labelMd.copyWith(
+                    color: isSelected
+                        ? AppColors.onPrimary
+                        : AppColors.tertiary,
+                  ),
+                ),
               ),
             ),
           ),

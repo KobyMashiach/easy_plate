@@ -7,6 +7,7 @@ import '../services/notifications_service.dart';
 import '../utils/routing/routing.dart';
 import 'clay/clay_icon_button.dart';
 import 'count_badge.dart';
+import '../utils/i18n/strings.g.dart';
 import '../walkthrough/walkthrough_targets.dart';
 import '../features/feature_gate.dart';
 
@@ -47,6 +48,9 @@ class NotificationBellButton extends StatelessWidget {
           id: 'bar.bell',
           child: ClayIconButton(
             onTap: () => context.pushNamed(Routing.notifications),
+            semanticLabel: unread + cooking > 0
+                ? '${t.notifications.title} (${unread + cooking})'
+                : t.notifications.title,
             child: BadgedBox(
               count: unread + cooking,
               child: Icon(

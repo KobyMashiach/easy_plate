@@ -29,10 +29,14 @@
 			<!-- Only what the app takes in (share_intent_service.dart): recordings and
 			     voice notes, PDFs, a caption as text, a web link — up to ten
 			     items, since a voice note can come in parts. A file URL also
-			     conforms to public.url, so it is excluded: a photo or a .docx
+			     conforms to public.url, so it is excluded: a .docx
 			     shared from Files must not list EasyPlate. Ogg/Opus (WhatsApp voice
 			     notes) and WebM are named too, in case an iOS version types them
-			     outside public.audio (IngestionFile.mimeTypeFor reads them). -->
+			     outside public.audio (IngestionFile.mimeTypeFor reads them).
+			     A photo of a recipe (public.image: a cookbook page, a screenshot,
+			     handwriting) is taken too; the app reads it only while
+			     ff_ingest_photo is on. A zip is a WhatsApp chat export (an
+			     iPhone always zips it), for the bulk import. -->
 			<key>NSExtensionActivationRule</key>
 			<string>SUBQUERY (
   extensionItems, $extensionItem,
@@ -45,7 +49,9 @@
       OR $uti UTI-CONFORMS-TO "org.xiph.opus"
       OR $uti UTI-CONFORMS-TO "org.webmproject.webm"
       OR $uti UTI-CONFORMS-TO "com.adobe.pdf"
+      OR $uti UTI-CONFORMS-TO "public.image"
       OR $uti UTI-CONFORMS-TO "public.plain-text"
+      OR $uti UTI-CONFORMS-TO "public.zip-archive"
       OR ($uti UTI-CONFORMS-TO "public.url" AND NOT ($uti UTI-CONFORMS-TO "public.file-url"))
     ).@count &gt;= 1
   ).@count BETWEEN {1, 10}

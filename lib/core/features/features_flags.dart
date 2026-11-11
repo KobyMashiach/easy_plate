@@ -87,6 +87,26 @@ enum FeaturesFlags {
   socialVideoPhoto('ff_social_video_photo'),
   ingestAiRequest('ff_ingest_ai_request'),
   ingestFile('ff_ingest_file'),
+  ingestAutoChannel('ff_ingest_auto_channel'),
+  ingestPasteAutoRun('ff_ingest_paste_autorun'),
+  ingestRecent('ff_ingest_recent'),
+  ingestVoice('ff_ingest_voice'),
+  saveToBookPrompt('ff_save_to_book_prompt'),
+  clipboardLinkPrompt('ff_clipboard_link_prompt'),
+  ingestPhoto('ff_ingest_photo'),
+  reviewStickySave('ff_review_sticky_save'),
+  bulkImport('ff_bulk_import'),
+  recipeQuickMenu('ff_recipe_quick_menu'),
+  undoInsteadOfConfirm('ff_undo_instead_of_confirm'),
+  rememberLastChoices('ff_remember_last_choices'),
+  recentCooked('ff_recent_cooked'),
+  planAutofill('ff_plan_autofill'),
+  planCopyWeek('ff_plan_copy_week'),
+  groceryVoiceAdd('ff_grocery_voice_add'),
+  groceryAisleSort('ff_grocery_aisle_sort'),
+  groceryCheckAll('ff_grocery_check_all'),
+  textSize('ff_text_size'),
+  cookVoiceNext('ff_cook_voice_next'),
   shareIn('ff_share_in'),
   saveWithAi('ff_save_with_ai'),
 
@@ -229,7 +249,14 @@ enum FeaturesFlags {
   /// flag, so hidden here also refuses checkout and upgrade links there.
   /// Store policy on linking out to an external purchase differs by
   /// region, which is why this one ships hidden.
-  webCheckout('ff_web_checkout')
+  webCheckout('ff_web_checkout'),
+
+  /// The WhatsApp grocery bot: groceries written in a WhatsApp message to
+  /// EasyPlate's number land on the grocery list. The "Connect WhatsApp"
+  /// row in settings and its screen (link code, usage, target list,
+  /// unlink). The server reads the same flag (whatsappBot.js); it ships
+  /// hidden, which leaves it to the superuser and the administrator.
+  whatsappBot('ff_whatsapp_bot')
   ;
 
   /// The Remote Config parameter name.

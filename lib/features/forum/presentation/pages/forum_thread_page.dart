@@ -539,6 +539,9 @@ class _ReplyComposerState extends State<_ReplyComposer> {
                         size: 18,
                         color: AppColors.tertiary,
                       ),
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).deleteButtonTooltip,
                       onPressed: () => setState(() => _attached = null),
                     ),
                   ],

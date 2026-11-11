@@ -15,8 +15,10 @@ import '../../../../core/widgets/dietary_chip_selector.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../bloc/my_recipes_bloc.dart';
-import '../../../recipe_sharing/presentation/widgets/recipe_share_sheet.dart';
+import '../recipe_actions.dart';
+import '../widgets/cooked_rows.dart';
 import '../widgets/recipe_card.dart';
+import '../widgets/recipe_quick_menu.dart';
 import 'recipe_details_page.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/walkthrough/walkthrough.dart';
@@ -54,8 +56,13 @@ class MyRecipesPage extends StatelessWidget {
                 MyRecipesLoaded(
                   recipes: final recipes,
                   dietaryFilters: final filters,
+                  query: final query,
                 ) =>
-                  _RecipesBody(recipes: recipes, filters: filters),
+                  _RecipesBody(
+                    recipes: recipes,
+                    filters: filters,
+                    narrowed: query.isNotEmpty || filters.isNotEmpty,
+                  ),
                 MyRecipesError(error: final error) => ErrorRetryView(
                   error: error,
                   onRetry: () => context.read<MyRecipesBloc>().add(
@@ -75,7 +82,15 @@ class _RecipesBody extends StatefulWidget {
   final List<RecipeEntity> recipes;
   final List<DietaryPreference> filters;
 
-  const _RecipesBody({required this.recipes, required this.filters});
+  /// A search or a topic chip is on: [recipes] is then only part of the
+  /// collection, and the cooked rows above it would mislead.
+  final bool narrowed;
+
+  const _RecipesBody({
+    required this.recipes,
+    required this.filters,
+    this.narrowed = false,
+  });
 
   @override
   State<_RecipesBody> createState() => _RecipesBodyState();
@@ -105,6 +120,79 @@ class _RecipesBodyState extends State<_RecipesBody> {
       context,
       bloc,
       MyRecipesEvent.deleteRecipe(recipe.id),
+    );
+  }
+
+  /// The confirm for deleting a recipe this account wrote or was let into,
+  /// worded as the details page words it; the undo flag skips it.
+  Future<void> _confirmDelete(
+    BuildContext context,
+    MyRecipesBloc bloc,
+    RecipeEntity recipe,
+  ) async {
+    final confirmed = await AppDialog.warning(
+      title: t.recipe.delete,
+      message: recipe.isShared
+          ? t.recipe.deleteSharedConfirm
+          : t.recipe.deleteConfirm,
+      icon: Icons.delete_outline_rounded,
+      confirmLabel: t.common.delete,
+      cancelLabel: t.common.cancel,
+      destructive: true,
+    ).show(context);
+    if (!(confirmed ?? false) || !context.mounted) return;
+    await AppDialog.busyEvent(
+      context,
+      bloc,
+      MyRecipesEvent.deleteRecipe(recipe.id),
+    );
+  }
+
+  /// A delete from the list: at once with an undo when the console says so,
+  /// otherwise behind the confirm that fits the recipe.
+  void _delete(BuildContext context, MyRecipesBloc bloc, RecipeEntity recipe) {
+    if (FeaturesFlags.undoInsteadOfConfirm.isEnabled) {
+      deleteRecipeWithUndo(context, recipe);
+    } else if (recipe.isSavedFromCommunity) {
+      _confirmRemove(context, bloc, recipe);
+    } else {
+      _confirmDelete(context, bloc, recipe);
+    }
+  }
+
+  /// One card, with the same taps in the grid and in the cooked rows.
+  Widget _card(BuildContext context, MyRecipesBloc bloc, RecipeEntity recipe) {
+    final quickMenu = FeaturesFlags.recipeQuickMenu.isEnabled;
+    return RecipeCard(
+      recipe: recipe,
+      // No reload on return: the list is driven by the box, so an
+      // edit made on the details page arrives on its own.
+      onTap: () => context.pushNamed(
+        Routing.recipeDetails,
+        extra: RecipeDetailsArgs(recipe: recipe),
+      ),
+      onRemove: recipe.isSavedFromCommunity
+          ? () => FeaturesFlags.undoInsteadOfConfirm.isEnabled
+                ? deleteRecipeWithUndo(context, recipe)
+                : _confirmRemove(context, bloc, recipe)
+          : null,
+      // The quick menu, when the console has it on; it carries the share
+      // among its rows.
+      onLongPress: quickMenu
+          ? () => showRecipeQuickMenu(
+              context,
+              recipe,
+              onDelete: FeaturesFlags.deleteRecipe.isVisible
+                  ? () => _delete(context, bloc, recipe)
+                  : null,
+            )
+          : null,
+      // Long-press to share otherwise. Only for recipes this account wrote —
+      // a member of someone else's recipe cannot invite others, and a copy
+      // saved from the community is not this account's to pass on.
+      onShare: !quickMenu && canShareRecipe(recipe)
+          ? () => shareRecipe(context, recipe)
+          : null,
     );
   }
 
@@ -143,6 +231,11 @@ class _RecipesBodyState extends State<_RecipesBody> {
           ),
           sliver: SliverList.list(
             children: [
+              if (!widget.narrowed && FeaturesFlags.recentCooked.isEnabled)
+                CookedRows(
+                  recipes: widget.recipes,
+                  cardBuilder: (recipe) => _card(context, bloc, recipe),
+                ),
               // The switch between what was written and what was saved is the
               // page's main division, so it stands on its own right under the
               // title; the search and the topic chips, which only narrow the list,
@@ -275,44 +368,8 @@ class _RecipesBodyState extends State<_RecipesBody> {
                 mainAxisExtent: RecipeCard.height,
               ),
               itemCount: recipes.length,
-              itemBuilder: (context, index) {
-                final recipe = recipes[index];
-                return RecipeCard(
-                  recipe: recipe,
-                  // No reload on return: the list is driven by the box, so an
-                  // edit made on the details page arrives on its own.
-                  onTap: () => context.pushNamed(
-                    Routing.recipeDetails,
-                    extra: RecipeDetailsArgs(recipe: recipe),
-                  ),
-                  // Long-press to share. Only for recipes this account wrote —
-                  // a member of someone else's recipe cannot invite others, and
-                  // a copy saved from the community is not this account's to
-                  // pass on.
-                  onRemove: recipe.isSavedFromCommunity
-                      ? () => _confirmRemove(context, bloc, recipe)
-                      : null,
-                  onShare: recipe.isMine && FeaturesFlags.shareRecipes.isVisible
-                      ? () async {
-                          if (!guardFeature(
-                            context,
-                            FeaturesFlags.shareRecipes,
-                          )) {
-                            return;
-                          }
-                          final sent = await showRecipeShareSheet(
-                            context,
-                            recipe,
-                          );
-                          if (sent == true && context.mounted) {
-                            AppDialog.success(
-                              message: t.sharing.sent,
-                            ).notify(context);
-                          }
-                        }
-                      : null,
-                );
-              },
+              itemBuilder: (context, index) =>
+                  _card(context, bloc, recipes[index]),
             ),
           ),
       ],

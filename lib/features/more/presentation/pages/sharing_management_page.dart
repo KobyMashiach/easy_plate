@@ -321,6 +321,7 @@ class _SharingManagementPageState extends State<SharingManagementPage> {
           trailingIcon: FeaturesFlags.shareCodes.isVisible
               ? Icons.qr_code_scanner_rounded
               : null,
+          trailingTooltip: t.shareCode.scanQr,
           onTrailingTap: () async {
             if (!guardFeature(context, FeaturesFlags.shareCodes)) return;
             final joined = await context.pushNamed<bool>(Routing.joinCode);

@@ -61,6 +61,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$sharing$ar sharing = _Translations$sharing$ar._(_root);
 	@override late final _Translations$notifications$ar notifications = _Translations$notifications$ar._(_root);
 	@override late final _Translations$editor$ar editor = _Translations$editor$ar._(_root);
+	@override late final _Translations$bulkImport$ar bulkImport = _Translations$bulkImport$ar._(_root);
+	@override late final _Translations$clipboardPrompt$ar clipboardPrompt = _Translations$clipboardPrompt$ar._(_root);
 	@override late final _Translations$ingestion$ar ingestion = _Translations$ingestion$ar._(_root);
 	@override late final _Translations$mealPlanner$ar mealPlanner = _Translations$mealPlanner$ar._(_root);
 	@override late final _Translations$groceryList$ar groceryList = _Translations$groceryList$ar._(_root);
@@ -87,6 +89,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminConfig$ar adminConfig = _Translations$adminConfig$ar._(_root);
 	@override late final _Translations$quickActions$ar quickActions = _Translations$quickActions$ar._(_root);
 	@override late final _Translations$countries$ar countries = _Translations$countries$ar._(_root);
+	@override late final _Translations$whatsappBot$ar whatsappBot = _Translations$whatsappBot$ar._(_root);
 }
 
 // Path: common
@@ -101,6 +104,10 @@ class _Translations$common$ar extends Translations$common$he {
 	@override String get ok => 'حسناً';
 	@override String get next => 'التالي';
 	@override String get back => 'رجوع';
+	@override String get like => 'إعجاب';
+	@override String get increase => 'زيادة';
+	@override String get decrease => 'تقليل';
+	@override String get filters => 'تصفية';
 	@override String get done => 'تم';
 	@override String get add => 'إضافة';
 	@override String get edit => 'تعديل';
@@ -346,6 +353,11 @@ class _Translations$settings$ar extends Translations$settings$he {
 	@override String get themeSystem => 'حسب الجهاز';
 	@override String get themeLight => 'فاتح';
 	@override String get themeDark => 'داكن';
+	@override String get textSize => 'حجم النص';
+	@override String get textSizeNormal => 'عادي';
+	@override String get textSizeLarge => 'كبير';
+	@override String get textSizeExtraLarge => 'كبير جدًا';
+	@override String get textSizePreview => 'هكذا سيبدو النص في التطبيق';
 	@override String get soundEffects => 'المؤثرات الصوتية (تقليب الصفحات)';
 	@override String get fastPageTurn => 'تصفّح سريع في الكتاب';
 	@override String get fastPageTurnHint => 'القفز من جدول المحتويات أو التنقل السريع يقلّب صفحة واحدة فقط إلى الوجهة. أوقفه لتقليب كل الصفحات في الطريق.';
@@ -554,6 +566,22 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String get deleteConfirm => 'ستُحذف الوصفة نهائيًا. لا يمكن التراجع عن ذلك.';
 	@override String get deleteSharedConfirm => 'ستُزال الوصفة لديك فقط. سيحتفظ بها باقي المشاركين.';
 	@override String get deleted => 'تم حذف الوصفة';
+	@override String get undo => 'تراجع';
+	@override String get savedRemoved => 'أُزيلت من وصفاتك المحفوظة';
+	@override String bookDeleted({required Object title}) => 'حُذف الكتاب «${title}»';
+	@override String get removedFromBook => 'أُزيلت من الكتاب';
+	@override String get noBookToAdd => 'لا يوجد كتاب لإضافتها إليه — فهي موجودة في كل الكتب، أو ليس لديك كتاب بعد';
+	@override String get lastUsedBook => 'المستخدم آخر مرة';
+	@override String get alreadyInBook => 'موجودة في هذا الكتاب';
+	@override String get viewOnlyBook => 'للعرض فقط';
+	@override String get addToPlan => 'إضافة إلى قائمة الوجبات';
+	@override String get planLabel => 'القائمة';
+	@override String get dayLabel => 'اليوم';
+	@override String get mealLabel => 'الوجبة';
+	@override String get noPlanToAdd => 'لا توجد قائمة وجبات بعد. أنشئ واحدة في تبويب القائمة';
+	@override String addedToPlan({required Object day, required Object meal}) => 'أُضيفت إلى القائمة: ${day} · ${meal}';
+	@override String get recentlyCooked => 'طبختها مؤخرًا';
+	@override String get mostCooked => 'الأكثر طبخًا';
 }
 
 // Path: cookMode
@@ -591,6 +619,13 @@ class _Translations$cookMode$ar extends Translations$cookMode$he {
 	@override String timeUpBody({required Object n}) => 'الخطوة ${n}: انتهى الوقت';
 	@override String get runningTimers => 'مؤقّتات تعمل';
 	@override String get premiumOnly => 'وضع الطبخ جزء من EasyPlate Premium';
+	@override String get voiceOn => 'تشغيل الأوامر الصوتية';
+	@override String get voiceOff => 'إيقاف الأوامر الصوتية';
+	@override String get voiceListening => 'أستمع… قل «التالي» أو «السابق» أو «مرة أخرى» أو «مؤقت»';
+	@override String voiceHeard({required Object command}) => 'سمعت: ${command}';
+	@override String get voiceMicDenied => 'الأوامر الصوتية تحتاج إلى إذن الميكروفون';
+	@override String get voiceUnavailable => 'التعرف على الكلام غير متاح على هذا الجهاز';
+	@override String get repeat => 'مرة أخرى';
 }
 
 // Path: nutrition
@@ -878,6 +913,60 @@ class _Translations$editor$ar extends Translations$editor$he {
 	@override String get saveWithAiHint => 'تصحيح الإملاء ومطابقة الأوقات المذكورة في الخطوات';
 }
 
+// Path: bulkImport
+class _Translations$bulkImport$ar extends Translations$bulkImport$he {
+	_Translations$bulkImport$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'استيراد عدة وصفات';
+	@override String get entry => 'استيراد عدة وصفات دفعة واحدة';
+	@override String get entryHint => 'الصقوا قائمة روابط، أو اختاروا محادثة مُصدَّرة من واتساب';
+	@override String get pasteHint => 'الصقوا هنا روابط أو وصفات — كل واحدة في سطر أو فقرة خاصة بها';
+	@override String get findInText => 'البحث عن وصفات في النص';
+	@override String get pickExport => 'اختيار محادثة مُصدَّرة (txt أو zip)';
+	@override String get exportHelp => 'في واتساب: افتحوا المحادثة ← المزيد ← تصدير المحادثة ← بدون وسائط، ثم شاركوها مع EasyPlate أو احفظوها في الملفات.';
+	@override String get privacyNote => 'يُرسَل فقط نص الرسائل التي تحددونها — بلا أسماء ولا أرقام ولا تواريخ.';
+	@override String get noneFound => 'لم نجد هنا روابط أو وصفات';
+	@override String get fileUnreadable => 'تعذّرت قراءة هذا الملف';
+	@override String foundCount({required Object count}) => 'تم العثور على: ${count}';
+	@override String get quotaNote => 'كل وصفة تُحسب من الحصة اليومية، تماماً مثل الاستيراد العادي.';
+	@override String get selectAll => 'تحديد الكل';
+	@override String get selectNone => 'إلغاء التحديد';
+	@override String importCount({required Object count}) => 'استيراد ${count}';
+	@override String get stop => 'إيقاف';
+	@override String get done => 'تم';
+	@override String get leaveWhileRunning => 'الاستيراد ما زال جارياً. الإيقاف والخروج؟ ما حُفظ يبقى.';
+	@override String get kindPage => 'صفحة وصفة';
+	@override String get kindVideo => 'فيديو';
+	@override String get kindText => 'وصفة مكتوبة';
+	@override String get statusWaiting => 'بالانتظار';
+	@override String get statusRunning => 'جارٍ الاستيراد…';
+	@override String get statusDone => 'حُفظت';
+	@override String get statusFailed => 'فشلت';
+	@override String get statusSkipped => 'تم التخطي';
+	@override String quotaStopped({required Object done}) => 'انتهت الحصة اليومية فتوقفنا. حُفظت ${done} وصفات — يمكن استيراد الباقي غداً.';
+	@override String refusedStopped({required Object done}) => 'توقفنا: هذا الحساب لا يستطيع تحليل الوصفات حالياً. حُفظت ${done} وصفات.';
+	@override String stopped({required Object done}) => 'توقفنا. حُفظت ${done} وصفات.';
+	@override String finished({required Object done}) => 'انتهينا! حُفظت ${done} وصفات.';
+	@override String finishedWithFailures({required Object done, required Object failed}) => 'انتهينا: حُفظت ${done}، وفشلت ${failed}.';
+}
+
+// Path: clipboardPrompt
+class _Translations$clipboardPrompt$ar extends Translations$clipboardPrompt$he {
+	_Translations$clipboardPrompt$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'يوجد رابط في الحافظة';
+	@override String get message => 'إضافته كوصفة؟';
+	@override String get add => 'إضافة';
+	@override String get dismiss => 'ليس الآن';
+	@override String get noLink => 'لم تعد الحافظة تحتوي على رابط';
+}
+
 // Path: ingestion
 class _Translations$ingestion$ar extends Translations$ingestion$he {
 	_Translations$ingestion$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -936,6 +1025,19 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String filesAsOne({required Object count}) => '${count} ملفات — تُحلَّل معًا كوصفة واحدة، بالترتيب';
 	@override String get shareMoreHint => 'يمكنك العودة إلى واتساب ومشاركة تسجيل آخر — سينضم إلى القائمة هنا.';
 	@override String get chooseSource => 'من أين تأتي الوصفة؟';
+	@override String get autoHint => 'الصق رابطًا أو وصفة، أو اكتب ما تشتهيه — سنتعرّف عليه بأنفسنا';
+	@override String get autoPicked => 'تم اختيار الفئة تلقائيًا حسب النص · يمكنك اختيار غيرها';
+	@override String get autoWaiting => 'ستُختار الفئة تلقائيًا حسب ما تكتبه';
+	@override String get tapForInfo => 'اضغط على فئة لرؤية شرحها';
+	@override String get sharedAppended => 'أُضيف النص المُشارَك في النهاية';
+	@override String autoRunIn({required Object seconds}) => 'يبدأ خلال ${seconds}…';
+	@override String get recentTitle => 'الأخيرة';
+	@override String get voiceStart => 'الكتابة بالصوت';
+	@override String get voiceStop => 'إيقاف التسجيل';
+	@override String get voiceUnavailable => 'التعرّف على الكلام غير متاح على هذا الجهاز';
+	@override String get addToBookTitle => 'هل تضيف الوصفة إلى كتاب؟';
+	@override String get addToBookSkip => 'ليس الآن';
+	@override String addedToBook({required Object book}) => 'أُضيفت إلى «${book}»';
 	@override String get pasteTextDescription => 'وصلتك وصفة على واتساب أو نسختها من موقع أو رسالة؟ الصق النص هنا كما هو. سيتعرّف النموذج على اسم الطبق والمكوّنات بكمياتها وخطوات التحضير، ويرتّب كل شيء بصيغة موحّدة. بلا حدّ يومي.';
 	@override String get webSearchDescription => 'اكتب ما تشتهي تحضيره وسنبحث لك عن وصفات في الإنترنت. من النتائج يمكنك قراءة الوصفة الأصلية كما هي، أو استيرادها إلى الصيغة المنظّمة في التطبيق.';
 	@override String get webSearchHint => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر';
@@ -948,6 +1050,13 @@ class _Translations$ingestion$ar extends Translations$ingestion$he {
 	@override String get fileDescription => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة أو يرويها، أو رسالة صوتية من واتساب، أو ملف PDF لوصفة. سنفرّغ ونقرأ كل شيء ونستخرج وصفة مرتّبة. يمكن إرفاق عدة ملفات وتُحلَّل معًا كوصفة واحدة.';
 	@override String get saveFailed => 'تعذّر حفظ الوصفة. حاول مرة أخرى.';
 	@override String get recordingTag => 'تسجيل';
+	@override String get filePhoto => 'ملف / صورة';
+	@override String get filePhotoDescription => 'صوّر صفحة من كتاب طبخ أو وصفة مكتوبة بخط اليد، أو اختر من المعرض لقطة شاشة (لمنشور على إنستغرام مثلًا)، أو أرفق تسجيلًا أو رسالة صوتية من واتساب أو ملف PDF. سنقرأ كل شيء ونستخرج وصفة مرتّبة. تُحلَّل عدة صور أو ملفات معًا كوصفة واحدة — مثل وصفة تمتد على صفحتين.';
+	@override String get filePhotoHint => 'يمكنك أيضًا مشاركة صورة أو لقطة شاشة أو تسجيل أو PDF مباشرةً إلى Easy Plate من أي تطبيق عبر زر المشاركة المعتاد.';
+	@override String get takePhoto => 'التقاط صورة';
+	@override String get fromGallery => 'من المعرض';
+	@override String get photoTag => 'صورة';
+	@override String get filePhotoUnsupported => 'يمكن تحليل الصور وملفات الصوت وملفات PDF فقط.';
 	@override String sizeKb({required Object n}) => '${n} ك.ب';
 	@override String sizeMb({required Object n}) => '${n} م.ب';
 	@override String get videoPhotoTitle => 'صورة من الفيديو';
@@ -981,6 +1090,24 @@ class _Translations$mealPlanner$ar extends Translations$mealPlanner$he {
 
 	// Translations
 	@override String get title => 'تخطيط الوجبات';
+	@override String get fillWeek => 'املأ أسبوعي';
+	@override String get fillWeekHint => 'يملأ الوجبات الفارغة من وصفاتك دون تكرار';
+	@override String fillWeekDone({required Object count}) => 'تم ملء ${count} وجبات من وصفاتك';
+	@override String fillWeekPartial({required Object filled, required Object total}) => 'تم ملء ${filled} من ${total} وجبات — لا توجد وصفات مناسبة كافية للباقي';
+	@override String get fillWeekNothing => 'لا توجد وجبات فارغة';
+	@override String get fillWeekNoRecipes => 'لا توجد وصفات محفوظة تناسب الوجبات الفارغة';
+	@override String get copyWeek => 'نسخ الأسبوع الماضي';
+	@override String get copyWeekHint => 'ينسخ الأطباق من قائمة سابقة إلى الوجبات الفارغة';
+	@override String get copyWeekPick => 'من أي قائمة تريد النسخ؟';
+	@override String copyWeekDone({required Object count, required Object name}) => 'تم نسخ ${count} وجبات من «${name}»';
+	@override String get copyWeekNothing => 'لا توجد وجبات فارغة للنسخ إليها';
+	@override String get copyWeekNoSource => 'لا توجد قائمة سابقة فيها أطباق';
+	@override String get clearDay => 'مسح اليوم';
+	@override String get dayCleared => 'تمت إزالة أطباق اليوم';
+	@override String get mealRemoved => 'تم حذف الوجبة';
+	@override String get dishRemoved => 'تمت إزالة الطبق';
+	@override String get emptyWeek => 'هذا الأسبوع ما زال فارغًا';
+	@override String get emptyWeekHint => 'املأه من وصفاتك بلمسة واحدة، أو انسخ الأسبوع الماضي';
 	@override String get newPlan => 'خطة جديدة';
 	@override String get planName => 'اسم الخطة';
 	@override String get addMeal => 'إضافة وجبة';
@@ -1025,6 +1152,27 @@ class _Translations$groceryList$ar extends Translations$groceryList$he {
 
 	// Translations
 	@override String get title => 'قائمة التسوّق';
+	@override String get voiceAdd => 'إملاء صوتي';
+	@override String get voiceListening => 'أستمع… مثلًا: حليب، بيض واثنين خبز';
+	@override String voiceHeard({required Object count}) => 'سمعنا ${count} عناصر — يمكنك إزالة أي منها قبل الإضافة';
+	@override String voiceAddAll({required Object count}) => 'إضافة ${count} عناصر';
+	@override String get voiceNothing => 'لم نلتقط أي عنصر، حاول مرة أخرى';
+	@override String get voiceUnavailable => 'التعرّف على الكلام غير متاح على هذا الجهاز';
+	@override String itemsAdded({required Object count}) => 'تمت إضافة ${count} عناصر';
+	@override String get boughtAll => 'اشتريت كل شيء';
+	@override String boughtAllDone({required Object count}) => 'تم تحديد ${count} عناصر';
+	@override String get itemRemoved => 'تم حذف العنصر';
+	@override String checkedDeleted({required Object count}) => 'تم حذف ${count} عناصر';
+	@override String listDeletedUndo({required Object name}) => 'تم حذف القائمة «${name}»';
+	@override String get aisleSort => 'حسب الأقسام';
+	@override String get aisleProduce => 'خضار وفواكه';
+	@override String get aisleDairy => 'ألبان وبيض';
+	@override String get aisleBakery => 'مخبوزات';
+	@override String get aisleMeat => 'لحوم وأسماك';
+	@override String get aisleDryGoods => 'مواد غذائية';
+	@override String get aisleFrozen => 'مجمدات';
+	@override String get aisleCleaning => 'تنظيف ومنزل';
+	@override String get aisleOther => 'أخرى';
 	@override String get aggregated => 'مجمّعة من كل الخطط النشطة';
 	@override String get addItem => 'عنصر جديد';
 	@override String get category => 'الفئة';
@@ -1965,6 +2113,26 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get ingestSocialVideo => 'وصفة من فيديو';
 	@override String get ingestAiRequest => 'طلب وصفة من الذكاء الاصطناعي';
 	@override String get ingestFile => 'وصفة من ملف';
+	@override String get ingestAutoChannel => 'اختيار الفئة تلقائيًا عند إضافة وصفة';
+	@override String get ingestPasteAutoRun => 'تحليل تلقائي للرابط الملصق';
+	@override String get ingestRecent => 'المدخلات الأخيرة عند إضافة وصفة';
+	@override String get ingestVoice => 'الكتابة بالصوت عند إضافة وصفة';
+	@override String get saveToBookPrompt => 'اقتراح الإضافة إلى كتاب بعد الحفظ';
+	@override String get clipboardLinkPrompt => 'اقتراح رابط من الحافظة';
+	@override String get ingestPhoto => 'وصفة من صورة';
+	@override String get reviewStickySave => 'زر حفظ ثابت في المراجعة';
+	@override String get bulkImport => 'استيراد عدة وصفات معًا';
+	@override String get recipeQuickMenu => 'قائمة سريعة بالضغط المطوّل';
+	@override String get undoInsteadOfConfirm => 'تراجع بدل التأكيد';
+	@override String get rememberLastChoices => 'تذكّر آخر الاختيارات';
+	@override String get recentCooked => 'طُهيت مؤخرًا / الأكثر طهيًا';
+	@override String get planAutofill => 'املأ أسبوعي';
+	@override String get planCopyWeek => 'نسخ الأسبوع الماضي';
+	@override String get groceryVoiceAdd => 'الإضافة بالصوت إلى القائمة';
+	@override String get groceryAisleSort => 'الترتيب حسب أقسام المتجر';
+	@override String get groceryCheckAll => 'اشتريت كل شيء';
+	@override String get textSize => 'حجم النص';
+	@override String get cookVoiceNext => '«التالي» بالصوت في وضع الطهي';
 	@override String get shareIn => 'المشاركة من تطبيق آخر';
 	@override String get saveWithAi => 'الحفظ بالذكاء الاصطناعي';
 	@override String get cookMode => 'وضع الطهي';
@@ -2021,6 +2189,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get recipeSuggestions => 'اقتراح وصفات حسب التفضيلات';
 	@override String get webCheckoutIl => 'الشراء عبر الموقع (إسرائيل)';
 	@override String get webCheckoutIntl => 'الشراء عبر الموقع (خارج إسرائيل)';
+	@override String get whatsappBot => 'بوت واتساب لقائمة المشتريات';
 }
 
 // Path: wakeWord
@@ -2153,6 +2322,54 @@ class _Translations$countries$ar extends Translations$countries$he {
 	@override String get ET => 'إثيوبيا';
 	@override String get AU => 'أستراليا';
 	@override String get BR => 'البرازيل';
+}
+
+// Path: whatsappBot
+class _Translations$whatsappBot$ar extends Translations$whatsappBot$he {
+	_Translations$whatsappBot$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'الربط مع واتساب';
+	@override String get hint => 'أضف مشتريات إلى قائمتك برسالة واتساب';
+	@override String get connected => 'واتساب مربوط';
+	@override String get notConnected => 'واتساب غير مربوط';
+	@override String get intro => 'اكتب لبوت EasyPlate على واتساب ما تريد شراءه — "حليب، رغيفا خبز وزيت زيتون" — فتُضاف المشتريات إلى قائمتك.';
+	@override String get howTitle => 'طريقة الربط';
+	@override String get step1 => 'اضغط "الحصول على رمز ربط" لتحصل على رمز من 6 أرقام.';
+	@override String get step2 => 'اضغط "إرسال الرمز عبر واتساب" — تُفتح محادثة مع البوت والرسالة جاهزة.';
+	@override String get step3 => 'أرسلها. يُربط الرقم الذي أُرسلت منه بحسابك.';
+	@override String get getCode => 'الحصول على رمز ربط';
+	@override String get yourCode => 'رمز الربط الخاص بك';
+	@override String validUntil({required Object time}) => 'صالح حتى ${time}';
+	@override String get copy => 'نسخ';
+	@override String get copied => 'تم نسخ الرمز';
+	@override String get sendCode => 'إرسال الرمز عبر واتساب';
+	@override String codeMessage({required Object code}) => 'رمز الربط الخاص بي في EasyPlate: ${code}';
+	@override String get waiting => 'بعد الإرسال تتحدّث هذه الشاشة تلقائيًا.';
+	@override String get newCode => 'رمز جديد';
+	@override String get linkedNumber => 'الرقم المربوط';
+	@override String get usageTitle => 'هذا الشهر';
+	@override String usage({required Object used, required Object limit}) => 'استُخدمت ${used} من ${limit} رسائل شهرية';
+	@override String get premiumTag => 'Premium';
+	@override String get freeNote => 'للخطة المجانية حصة شهرية. الرسالة التي لا تحتوي على مشتريات لا تُحتسب.';
+	@override String get quotaReached => 'نفدت حصة هذا الشهر. تتجدد في بداية الشهر القادم، أو بالترقية إلى Premium.';
+	@override String get upgrade => 'الترقية إلى Premium';
+	@override String get targetList => 'إلى أي قائمة تتم الإضافة';
+	@override String get targetAuto => 'تلقائي (قائمتك الرئيسية)';
+	@override String get targetHint => 'القوائم المشتركة لا تظهر هنا — البوت يضيف إلى قوائمك فقط.';
+	@override String get openChat => 'فتح محادثة مع البوت';
+	@override String get unlink => 'فصل الرقم';
+	@override String get unlinkConfirm => 'فصل هذا الرقم عن البوت؟ لن تصل رسائله إلى قائمة مشترياتك بعد الآن. يمكنك ربطه مجددًا في أي وقت.';
+	@override String get unlinked => 'تم فصل الرقم';
+	@override String get unavailable => 'الربط مع واتساب غير متاح حاليًا.';
+	@override String get listGone => 'هذه القائمة لم تعد موجودة أو لا يمكن تعديلها.';
+	@override String get failed => 'حدث خطأ. حاول مرة أخرى.';
+	@override String get offline => 'لا يوجد اتصال بالإنترنت. تحقق منه وحاول مرة أخرى.';
+	@override String get botNotReady => 'البوت غير جاهز بعد. حاول لاحقًا.';
+	@override String get cannotOpen => 'تعذّر فتح واتساب. تأكد من أنه مثبت.';
+	@override String get retry => 'إعادة المحاولة';
 }
 
 // Path: walkthrough.topics
@@ -2354,6 +2571,8 @@ class _Translations$adminConfig$labels$ar extends Translations$adminConfig$label
 
 	// Translations
 	@override String get admin_all_features => 'إظهار كل الميزات للمسؤول';
+	@override String get quota_whatsapp_free_monthly => 'حصة واتساب الشهرية (مجاني)';
+	@override String get quota_whatsapp_premium_monthly => 'حصة واتساب الشهرية (Premium)';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -2509,6 +2728,10 @@ extension on TranslationsAr {
 			'common.ok' => 'حسناً',
 			'common.next' => 'التالي',
 			'common.back' => 'رجوع',
+			'common.like' => 'إعجاب',
+			'common.increase' => 'زيادة',
+			'common.decrease' => 'تقليل',
+			'common.filters' => 'تصفية',
 			'common.done' => 'تم',
 			'common.add' => 'إضافة',
 			'common.edit' => 'تعديل',
@@ -2691,6 +2914,11 @@ extension on TranslationsAr {
 			'settings.themeSystem' => 'حسب الجهاز',
 			'settings.themeLight' => 'فاتح',
 			'settings.themeDark' => 'داكن',
+			'settings.textSize' => 'حجم النص',
+			'settings.textSizeNormal' => 'عادي',
+			'settings.textSizeLarge' => 'كبير',
+			'settings.textSizeExtraLarge' => 'كبير جدًا',
+			'settings.textSizePreview' => 'هكذا سيبدو النص في التطبيق',
 			'settings.soundEffects' => 'المؤثرات الصوتية (تقليب الصفحات)',
 			'settings.fastPageTurn' => 'تصفّح سريع في الكتاب',
 			'settings.fastPageTurnHint' => 'القفز من جدول المحتويات أو التنقل السريع يقلّب صفحة واحدة فقط إلى الوجهة. أوقفه لتقليب كل الصفحات في الطريق.',
@@ -2836,6 +3064,22 @@ extension on TranslationsAr {
 			'recipe.deleteConfirm' => 'ستُحذف الوصفة نهائيًا. لا يمكن التراجع عن ذلك.',
 			'recipe.deleteSharedConfirm' => 'ستُزال الوصفة لديك فقط. سيحتفظ بها باقي المشاركين.',
 			'recipe.deleted' => 'تم حذف الوصفة',
+			'recipe.undo' => 'تراجع',
+			'recipe.savedRemoved' => 'أُزيلت من وصفاتك المحفوظة',
+			'recipe.bookDeleted' => ({required Object title}) => 'حُذف الكتاب «${title}»',
+			'recipe.removedFromBook' => 'أُزيلت من الكتاب',
+			'recipe.noBookToAdd' => 'لا يوجد كتاب لإضافتها إليه — فهي موجودة في كل الكتب، أو ليس لديك كتاب بعد',
+			'recipe.lastUsedBook' => 'المستخدم آخر مرة',
+			'recipe.alreadyInBook' => 'موجودة في هذا الكتاب',
+			'recipe.viewOnlyBook' => 'للعرض فقط',
+			'recipe.addToPlan' => 'إضافة إلى قائمة الوجبات',
+			'recipe.planLabel' => 'القائمة',
+			'recipe.dayLabel' => 'اليوم',
+			'recipe.mealLabel' => 'الوجبة',
+			'recipe.noPlanToAdd' => 'لا توجد قائمة وجبات بعد. أنشئ واحدة في تبويب القائمة',
+			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'أُضيفت إلى القائمة: ${day} · ${meal}',
+			'recipe.recentlyCooked' => 'طبختها مؤخرًا',
+			'recipe.mostCooked' => 'الأكثر طبخًا',
 			'cookMode.title' => 'وضع الطبخ',
 			'cookMode.start' => 'ابدأ الطبخ',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'الخطوة ${n} من ${total}',
@@ -2864,6 +3108,13 @@ extension on TranslationsAr {
 			'cookMode.timeUpBody' => ({required Object n}) => 'الخطوة ${n}: انتهى الوقت',
 			'cookMode.runningTimers' => 'مؤقّتات تعمل',
 			'cookMode.premiumOnly' => 'وضع الطبخ جزء من EasyPlate Premium',
+			'cookMode.voiceOn' => 'تشغيل الأوامر الصوتية',
+			'cookMode.voiceOff' => 'إيقاف الأوامر الصوتية',
+			'cookMode.voiceListening' => 'أستمع… قل «التالي» أو «السابق» أو «مرة أخرى» أو «مؤقت»',
+			'cookMode.voiceHeard' => ({required Object command}) => 'سمعت: ${command}',
+			'cookMode.voiceMicDenied' => 'الأوامر الصوتية تحتاج إلى إذن الميكروفون',
+			'cookMode.voiceUnavailable' => 'التعرف على الكلام غير متاح على هذا الجهاز',
+			'cookMode.repeat' => 'مرة أخرى',
 			'nutrition.title' => 'القيم الغذائية',
 			'nutrition.perServing' => 'للحصة',
 			'nutrition.perServingHint' => 'جميع القيم لحصة واحدة. اتركه فارغًا لإزالة التقدير.',
@@ -2983,6 +3234,8 @@ extension on TranslationsAr {
 			'sharing.send' => 'إرسال الدعوة',
 			'sharing.sent' => 'تم إرسال الدعوة',
 			'sharing.invalidContact' => 'أدخلوا بريدًا صالحًا، أو رقم هاتف مع رمز الدولة (+…)',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.',
 			'sharing.self' => 'لا يمكنك المشاركة مع نفسك',
 			'sharing.failed' => 'فشلت المشاركة، حاولوا مجددًا',
@@ -3015,8 +3268,6 @@ extension on TranslationsAr {
 			'sharing.shareAction' => 'مشاركة',
 			'sharing.directoryUnavailable' => 'المشاركة غير مهيّأة على الخادم بعد. سجّلوا الخروج والدخول مجددًا؛ وإن استمرّ الأمر فيجب نشر قواعد Firestore.',
 			'sharing.shareBook' => 'مشاركة الكتاب',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharePlan' => 'مشاركة الخطة',
 			'sharing.acceptedBook' => 'تمت إضافة الكتاب إلى مكتبتك',
 			'sharing.acceptedPlan' => 'تمت إضافة الخطة إلى خططك',
@@ -3092,6 +3343,42 @@ extension on TranslationsAr {
 			'editor.savePlainHint' => 'حفظ التغييرات كما هي، بدون انتظار',
 			'editor.saveWithAi' => 'حفظ مع مراجعة AI',
 			'editor.saveWithAiHint' => 'تصحيح الإملاء ومطابقة الأوقات المذكورة في الخطوات',
+			'bulkImport.title' => 'استيراد عدة وصفات',
+			'bulkImport.entry' => 'استيراد عدة وصفات دفعة واحدة',
+			'bulkImport.entryHint' => 'الصقوا قائمة روابط، أو اختاروا محادثة مُصدَّرة من واتساب',
+			'bulkImport.pasteHint' => 'الصقوا هنا روابط أو وصفات — كل واحدة في سطر أو فقرة خاصة بها',
+			'bulkImport.findInText' => 'البحث عن وصفات في النص',
+			'bulkImport.pickExport' => 'اختيار محادثة مُصدَّرة (txt أو zip)',
+			'bulkImport.exportHelp' => 'في واتساب: افتحوا المحادثة ← المزيد ← تصدير المحادثة ← بدون وسائط، ثم شاركوها مع EasyPlate أو احفظوها في الملفات.',
+			'bulkImport.privacyNote' => 'يُرسَل فقط نص الرسائل التي تحددونها — بلا أسماء ولا أرقام ولا تواريخ.',
+			'bulkImport.noneFound' => 'لم نجد هنا روابط أو وصفات',
+			'bulkImport.fileUnreadable' => 'تعذّرت قراءة هذا الملف',
+			'bulkImport.foundCount' => ({required Object count}) => 'تم العثور على: ${count}',
+			'bulkImport.quotaNote' => 'كل وصفة تُحسب من الحصة اليومية، تماماً مثل الاستيراد العادي.',
+			'bulkImport.selectAll' => 'تحديد الكل',
+			'bulkImport.selectNone' => 'إلغاء التحديد',
+			'bulkImport.importCount' => ({required Object count}) => 'استيراد ${count}',
+			'bulkImport.stop' => 'إيقاف',
+			'bulkImport.done' => 'تم',
+			'bulkImport.leaveWhileRunning' => 'الاستيراد ما زال جارياً. الإيقاف والخروج؟ ما حُفظ يبقى.',
+			'bulkImport.kindPage' => 'صفحة وصفة',
+			'bulkImport.kindVideo' => 'فيديو',
+			'bulkImport.kindText' => 'وصفة مكتوبة',
+			'bulkImport.statusWaiting' => 'بالانتظار',
+			'bulkImport.statusRunning' => 'جارٍ الاستيراد…',
+			'bulkImport.statusDone' => 'حُفظت',
+			'bulkImport.statusFailed' => 'فشلت',
+			'bulkImport.statusSkipped' => 'تم التخطي',
+			'bulkImport.quotaStopped' => ({required Object done}) => 'انتهت الحصة اليومية فتوقفنا. حُفظت ${done} وصفات — يمكن استيراد الباقي غداً.',
+			'bulkImport.refusedStopped' => ({required Object done}) => 'توقفنا: هذا الحساب لا يستطيع تحليل الوصفات حالياً. حُفظت ${done} وصفات.',
+			'bulkImport.stopped' => ({required Object done}) => 'توقفنا. حُفظت ${done} وصفات.',
+			'bulkImport.finished' => ({required Object done}) => 'انتهينا! حُفظت ${done} وصفات.',
+			'bulkImport.finishedWithFailures' => ({required Object done, required Object failed}) => 'انتهينا: حُفظت ${done}، وفشلت ${failed}.',
+			'clipboardPrompt.title' => 'يوجد رابط في الحافظة',
+			'clipboardPrompt.message' => 'إضافته كوصفة؟',
+			'clipboardPrompt.add' => 'إضافة',
+			'clipboardPrompt.dismiss' => 'ليس الآن',
+			'clipboardPrompt.noLink' => 'لم تعد الحافظة تحتوي على رابط',
 			'ingestion.title' => 'إضافة وصفة',
 			'ingestion.pasteText' => 'لصق نص',
 			'ingestion.pasteHint' => 'الصق هنا وصفة من واتساب أو من أي مصدر آخر',
@@ -3143,6 +3430,19 @@ extension on TranslationsAr {
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} ملفات — تُحلَّل معًا كوصفة واحدة، بالترتيب',
 			'ingestion.shareMoreHint' => 'يمكنك العودة إلى واتساب ومشاركة تسجيل آخر — سينضم إلى القائمة هنا.',
 			'ingestion.chooseSource' => 'من أين تأتي الوصفة؟',
+			'ingestion.autoHint' => 'الصق رابطًا أو وصفة، أو اكتب ما تشتهيه — سنتعرّف عليه بأنفسنا',
+			'ingestion.autoPicked' => 'تم اختيار الفئة تلقائيًا حسب النص · يمكنك اختيار غيرها',
+			'ingestion.autoWaiting' => 'ستُختار الفئة تلقائيًا حسب ما تكتبه',
+			'ingestion.tapForInfo' => 'اضغط على فئة لرؤية شرحها',
+			'ingestion.sharedAppended' => 'أُضيف النص المُشارَك في النهاية',
+			'ingestion.autoRunIn' => ({required Object seconds}) => 'يبدأ خلال ${seconds}…',
+			'ingestion.recentTitle' => 'الأخيرة',
+			'ingestion.voiceStart' => 'الكتابة بالصوت',
+			'ingestion.voiceStop' => 'إيقاف التسجيل',
+			'ingestion.voiceUnavailable' => 'التعرّف على الكلام غير متاح على هذا الجهاز',
+			'ingestion.addToBookTitle' => 'هل تضيف الوصفة إلى كتاب؟',
+			'ingestion.addToBookSkip' => 'ليس الآن',
+			'ingestion.addedToBook' => ({required Object book}) => 'أُضيفت إلى «${book}»',
 			'ingestion.pasteTextDescription' => 'وصلتك وصفة على واتساب أو نسختها من موقع أو رسالة؟ الصق النص هنا كما هو. سيتعرّف النموذج على اسم الطبق والمكوّنات بكمياتها وخطوات التحضير، ويرتّب كل شيء بصيغة موحّدة. بلا حدّ يومي.',
 			'ingestion.webSearchDescription' => 'اكتب ما تشتهي تحضيره وسنبحث لك عن وصفات في الإنترنت. من النتائج يمكنك قراءة الوصفة الأصلية كما هي، أو استيرادها إلى الصيغة المنظّمة في التطبيق.',
 			'ingestion.webSearchHint' => 'مثلًا: شكشوكة، كعكة الجبن، كبة شمندر',
@@ -3155,6 +3455,13 @@ extension on TranslationsAr {
 			'ingestion.fileDescription' => 'اختر ملفًا صوتيًا يقرأ فيه أحدهم الوصفة أو يرويها، أو رسالة صوتية من واتساب، أو ملف PDF لوصفة. سنفرّغ ونقرأ كل شيء ونستخرج وصفة مرتّبة. يمكن إرفاق عدة ملفات وتُحلَّل معًا كوصفة واحدة.',
 			'ingestion.saveFailed' => 'تعذّر حفظ الوصفة. حاول مرة أخرى.',
 			'ingestion.recordingTag' => 'تسجيل',
+			'ingestion.filePhoto' => 'ملف / صورة',
+			'ingestion.filePhotoDescription' => 'صوّر صفحة من كتاب طبخ أو وصفة مكتوبة بخط اليد، أو اختر من المعرض لقطة شاشة (لمنشور على إنستغرام مثلًا)، أو أرفق تسجيلًا أو رسالة صوتية من واتساب أو ملف PDF. سنقرأ كل شيء ونستخرج وصفة مرتّبة. تُحلَّل عدة صور أو ملفات معًا كوصفة واحدة — مثل وصفة تمتد على صفحتين.',
+			'ingestion.filePhotoHint' => 'يمكنك أيضًا مشاركة صورة أو لقطة شاشة أو تسجيل أو PDF مباشرةً إلى Easy Plate من أي تطبيق عبر زر المشاركة المعتاد.',
+			'ingestion.takePhoto' => 'التقاط صورة',
+			'ingestion.fromGallery' => 'من المعرض',
+			'ingestion.photoTag' => 'صورة',
+			'ingestion.filePhotoUnsupported' => 'يمكن تحليل الصور وملفات الصوت وملفات PDF فقط.',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} ك.ب',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} م.ب',
 			'ingestion.videoPhotoTitle' => 'صورة من الفيديو',
@@ -3179,6 +3486,24 @@ extension on TranslationsAr {
 			'ingestion.suggestDietReset' => 'العودة إلى تفضيلاتي',
 			'ingestion.suggestSearch' => 'ابحث عن اقتراحات',
 			'mealPlanner.title' => 'تخطيط الوجبات',
+			'mealPlanner.fillWeek' => 'املأ أسبوعي',
+			'mealPlanner.fillWeekHint' => 'يملأ الوجبات الفارغة من وصفاتك دون تكرار',
+			'mealPlanner.fillWeekDone' => ({required Object count}) => 'تم ملء ${count} وجبات من وصفاتك',
+			'mealPlanner.fillWeekPartial' => ({required Object filled, required Object total}) => 'تم ملء ${filled} من ${total} وجبات — لا توجد وصفات مناسبة كافية للباقي',
+			'mealPlanner.fillWeekNothing' => 'لا توجد وجبات فارغة',
+			'mealPlanner.fillWeekNoRecipes' => 'لا توجد وصفات محفوظة تناسب الوجبات الفارغة',
+			'mealPlanner.copyWeek' => 'نسخ الأسبوع الماضي',
+			'mealPlanner.copyWeekHint' => 'ينسخ الأطباق من قائمة سابقة إلى الوجبات الفارغة',
+			'mealPlanner.copyWeekPick' => 'من أي قائمة تريد النسخ؟',
+			'mealPlanner.copyWeekDone' => ({required Object count, required Object name}) => 'تم نسخ ${count} وجبات من «${name}»',
+			'mealPlanner.copyWeekNothing' => 'لا توجد وجبات فارغة للنسخ إليها',
+			'mealPlanner.copyWeekNoSource' => 'لا توجد قائمة سابقة فيها أطباق',
+			'mealPlanner.clearDay' => 'مسح اليوم',
+			'mealPlanner.dayCleared' => 'تمت إزالة أطباق اليوم',
+			'mealPlanner.mealRemoved' => 'تم حذف الوجبة',
+			'mealPlanner.dishRemoved' => 'تمت إزالة الطبق',
+			'mealPlanner.emptyWeek' => 'هذا الأسبوع ما زال فارغًا',
+			'mealPlanner.emptyWeekHint' => 'املأه من وصفاتك بلمسة واحدة، أو انسخ الأسبوع الماضي',
 			'mealPlanner.newPlan' => 'خطة جديدة',
 			'mealPlanner.planName' => 'اسم الخطة',
 			'mealPlanner.addMeal' => 'إضافة وجبة',
@@ -3214,6 +3539,27 @@ extension on TranslationsAr {
 			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'مغادرة الخطة المشتركة "${name}"؟ ستُزال من قائمتك.',
 			'mealPlanner.planDeleted' => 'تم حذف الخطة',
 			'groceryList.title' => 'قائمة التسوّق',
+			'groceryList.voiceAdd' => 'إملاء صوتي',
+			'groceryList.voiceListening' => 'أستمع… مثلًا: حليب، بيض واثنين خبز',
+			'groceryList.voiceHeard' => ({required Object count}) => 'سمعنا ${count} عناصر — يمكنك إزالة أي منها قبل الإضافة',
+			'groceryList.voiceAddAll' => ({required Object count}) => 'إضافة ${count} عناصر',
+			'groceryList.voiceNothing' => 'لم نلتقط أي عنصر، حاول مرة أخرى',
+			'groceryList.voiceUnavailable' => 'التعرّف على الكلام غير متاح على هذا الجهاز',
+			'groceryList.itemsAdded' => ({required Object count}) => 'تمت إضافة ${count} عناصر',
+			'groceryList.boughtAll' => 'اشتريت كل شيء',
+			'groceryList.boughtAllDone' => ({required Object count}) => 'تم تحديد ${count} عناصر',
+			'groceryList.itemRemoved' => 'تم حذف العنصر',
+			'groceryList.checkedDeleted' => ({required Object count}) => 'تم حذف ${count} عناصر',
+			'groceryList.listDeletedUndo' => ({required Object name}) => 'تم حذف القائمة «${name}»',
+			'groceryList.aisleSort' => 'حسب الأقسام',
+			'groceryList.aisleProduce' => 'خضار وفواكه',
+			'groceryList.aisleDairy' => 'ألبان وبيض',
+			'groceryList.aisleBakery' => 'مخبوزات',
+			'groceryList.aisleMeat' => 'لحوم وأسماك',
+			'groceryList.aisleDryGoods' => 'مواد غذائية',
+			'groceryList.aisleFrozen' => 'مجمدات',
+			'groceryList.aisleCleaning' => 'تنظيف ومنزل',
+			'groceryList.aisleOther' => 'أخرى',
 			'groceryList.aggregated' => 'مجمّعة من كل الخطط النشطة',
 			'groceryList.addItem' => 'عنصر جديد',
 			'groceryList.category' => 'الفئة',
@@ -3402,6 +3748,8 @@ extension on TranslationsAr {
 			'image.remove' => 'إزالة الصورة',
 			'image.generate' => 'إنشاء صورة بالذكاء الاصطناعي',
 			'image.generating' => 'جارٍ إنشاء الصورة… يستغرق ذلك بضع ثوانٍ',
+			_ => null,
+		} ?? switch (path) {
 			'image.generateFailed' => 'فشل إنشاء الصورة، حاول مرة أخرى',
 			'image.coverTitle' => 'أي غلاف تريد إنشاءه؟',
 			'image.coverHint' => 'اختر فئة أو اكتب شيئًا أو كليهما',
@@ -3529,8 +3877,6 @@ extension on TranslationsAr {
 			'walkthrough.startHint' => 'جولة إرشادية في كل وظائف التطبيق، خطوة بخطوة',
 			'walkthrough.startFull' => 'ابدأ الجولة الكاملة',
 			'walkthrough.focused' => 'عرض إرشاد مركّز',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.next' => 'التالي',
 			'walkthrough.finish' => 'إنهاء',
 			'walkthrough.skipStep' => 'تخطّي الخطوة',
@@ -3916,6 +4262,8 @@ extension on TranslationsAr {
 			'assistant.suggest.food.2' => 'خبز',
 			'assistant.suggest.food.3' => 'طماطم',
 			'assistant.suggest.food.4' => 'بصل',
+			_ => null,
+		} ?? switch (path) {
 			'assistant.suggest.food.5' => 'زيت زيتون',
 			'assistant.suggest.food.6' => 'أرز',
 			'assistant.suggest.food.7' => 'دجاج',
@@ -4043,8 +4391,6 @@ extension on TranslationsAr {
 			'household.seats' => ({required Object used, required Object total}) => '${used} من ${total} مقاعد مستخدمة',
 			'household.intro' => 'افتح حسابًا مشتركًا: الوصفات والكتب والخطط والقوائم تظهر لكل من فيه، ويحصلون على بريميوم معك.',
 			'household.create' => 'فتح حساب مشترك',
-			_ => null,
-		} ?? switch (path) {
 			'household.nameHint' => 'الاسم، مثلًا عائلة أحمد',
 			'household.notEligible' => 'يأتي الحساب المشترك مع Pro Duo (حسابان) أو Pro Family (حتى 6 حسابات).',
 			'household.seePlans' => 'عرض الخطط',
@@ -4139,6 +4485,26 @@ extension on TranslationsAr {
 			'featureName.ingestSocialVideo' => 'وصفة من فيديو',
 			'featureName.ingestAiRequest' => 'طلب وصفة من الذكاء الاصطناعي',
 			'featureName.ingestFile' => 'وصفة من ملف',
+			'featureName.ingestAutoChannel' => 'اختيار الفئة تلقائيًا عند إضافة وصفة',
+			'featureName.ingestPasteAutoRun' => 'تحليل تلقائي للرابط الملصق',
+			'featureName.ingestRecent' => 'المدخلات الأخيرة عند إضافة وصفة',
+			'featureName.ingestVoice' => 'الكتابة بالصوت عند إضافة وصفة',
+			'featureName.saveToBookPrompt' => 'اقتراح الإضافة إلى كتاب بعد الحفظ',
+			'featureName.clipboardLinkPrompt' => 'اقتراح رابط من الحافظة',
+			'featureName.ingestPhoto' => 'وصفة من صورة',
+			'featureName.reviewStickySave' => 'زر حفظ ثابت في المراجعة',
+			'featureName.bulkImport' => 'استيراد عدة وصفات معًا',
+			'featureName.recipeQuickMenu' => 'قائمة سريعة بالضغط المطوّل',
+			'featureName.undoInsteadOfConfirm' => 'تراجع بدل التأكيد',
+			'featureName.rememberLastChoices' => 'تذكّر آخر الاختيارات',
+			'featureName.recentCooked' => 'طُهيت مؤخرًا / الأكثر طهيًا',
+			'featureName.planAutofill' => 'املأ أسبوعي',
+			'featureName.planCopyWeek' => 'نسخ الأسبوع الماضي',
+			'featureName.groceryVoiceAdd' => 'الإضافة بالصوت إلى القائمة',
+			'featureName.groceryAisleSort' => 'الترتيب حسب أقسام المتجر',
+			'featureName.groceryCheckAll' => 'اشتريت كل شيء',
+			'featureName.textSize' => 'حجم النص',
+			'featureName.cookVoiceNext' => '«التالي» بالصوت في وضع الطهي',
 			'featureName.shareIn' => 'المشاركة من تطبيق آخر',
 			'featureName.saveWithAi' => 'الحفظ بالذكاء الاصطناعي',
 			'featureName.cookMode' => 'وضع الطهي',
@@ -4195,6 +4561,7 @@ extension on TranslationsAr {
 			'featureName.recipeSuggestions' => 'اقتراح وصفات حسب التفضيلات',
 			'featureName.webCheckoutIl' => 'الشراء عبر الموقع (إسرائيل)',
 			'featureName.webCheckoutIntl' => 'الشراء عبر الموقع (خارج إسرائيل)',
+			'featureName.whatsappBot' => 'بوت واتساب لقائمة المشتريات',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',
@@ -4251,6 +4618,8 @@ extension on TranslationsAr {
 			'voiceAssistants.geminiPanel' => 'كنافذة عائمة',
 			'voiceAssistants.geminiPanelHint' => 'يفتح شيفي كنافذة عائمة أسفل الشاشة، فوق ما كان مفتوحًا، بدلًا من فتح التطبيق. اضغط خارجها للعودة.',
 			'adminConfig.labels.admin_all_features' => 'إظهار كل الميزات للمسؤول',
+			'adminConfig.labels.quota_whatsapp_free_monthly' => 'حصة واتساب الشهرية (مجاني)',
+			'adminConfig.labels.quota_whatsapp_premium_monthly' => 'حصة واتساب الشهرية (Premium)',
 			'quickActions.shefi' => 'تحدّث مع شيفي',
 			'quickActions.groceryAdd' => 'إضافة إلى قائمة التسوق',
 			'quickActions.receipt' => 'إضافة إيصال',
@@ -4276,6 +4645,45 @@ extension on TranslationsAr {
 			'countries.ET' => 'إثيوبيا',
 			'countries.AU' => 'أستراليا',
 			'countries.BR' => 'البرازيل',
+			'whatsappBot.title' => 'الربط مع واتساب',
+			'whatsappBot.hint' => 'أضف مشتريات إلى قائمتك برسالة واتساب',
+			'whatsappBot.connected' => 'واتساب مربوط',
+			'whatsappBot.notConnected' => 'واتساب غير مربوط',
+			'whatsappBot.intro' => 'اكتب لبوت EasyPlate على واتساب ما تريد شراءه — "حليب، رغيفا خبز وزيت زيتون" — فتُضاف المشتريات إلى قائمتك.',
+			'whatsappBot.howTitle' => 'طريقة الربط',
+			'whatsappBot.step1' => 'اضغط "الحصول على رمز ربط" لتحصل على رمز من 6 أرقام.',
+			'whatsappBot.step2' => 'اضغط "إرسال الرمز عبر واتساب" — تُفتح محادثة مع البوت والرسالة جاهزة.',
+			'whatsappBot.step3' => 'أرسلها. يُربط الرقم الذي أُرسلت منه بحسابك.',
+			'whatsappBot.getCode' => 'الحصول على رمز ربط',
+			'whatsappBot.yourCode' => 'رمز الربط الخاص بك',
+			'whatsappBot.validUntil' => ({required Object time}) => 'صالح حتى ${time}',
+			'whatsappBot.copy' => 'نسخ',
+			'whatsappBot.copied' => 'تم نسخ الرمز',
+			'whatsappBot.sendCode' => 'إرسال الرمز عبر واتساب',
+			'whatsappBot.codeMessage' => ({required Object code}) => 'رمز الربط الخاص بي في EasyPlate: ${code}',
+			'whatsappBot.waiting' => 'بعد الإرسال تتحدّث هذه الشاشة تلقائيًا.',
+			'whatsappBot.newCode' => 'رمز جديد',
+			'whatsappBot.linkedNumber' => 'الرقم المربوط',
+			'whatsappBot.usageTitle' => 'هذا الشهر',
+			'whatsappBot.usage' => ({required Object used, required Object limit}) => 'استُخدمت ${used} من ${limit} رسائل شهرية',
+			'whatsappBot.premiumTag' => 'Premium',
+			'whatsappBot.freeNote' => 'للخطة المجانية حصة شهرية. الرسالة التي لا تحتوي على مشتريات لا تُحتسب.',
+			'whatsappBot.quotaReached' => 'نفدت حصة هذا الشهر. تتجدد في بداية الشهر القادم، أو بالترقية إلى Premium.',
+			'whatsappBot.upgrade' => 'الترقية إلى Premium',
+			'whatsappBot.targetList' => 'إلى أي قائمة تتم الإضافة',
+			'whatsappBot.targetAuto' => 'تلقائي (قائمتك الرئيسية)',
+			'whatsappBot.targetHint' => 'القوائم المشتركة لا تظهر هنا — البوت يضيف إلى قوائمك فقط.',
+			'whatsappBot.openChat' => 'فتح محادثة مع البوت',
+			'whatsappBot.unlink' => 'فصل الرقم',
+			'whatsappBot.unlinkConfirm' => 'فصل هذا الرقم عن البوت؟ لن تصل رسائله إلى قائمة مشترياتك بعد الآن. يمكنك ربطه مجددًا في أي وقت.',
+			'whatsappBot.unlinked' => 'تم فصل الرقم',
+			'whatsappBot.unavailable' => 'الربط مع واتساب غير متاح حاليًا.',
+			'whatsappBot.listGone' => 'هذه القائمة لم تعد موجودة أو لا يمكن تعديلها.',
+			'whatsappBot.failed' => 'حدث خطأ. حاول مرة أخرى.',
+			'whatsappBot.offline' => 'لا يوجد اتصال بالإنترنت. تحقق منه وحاول مرة أخرى.',
+			'whatsappBot.botNotReady' => 'البوت غير جاهز بعد. حاول لاحقًا.',
+			'whatsappBot.cannotOpen' => 'تعذّر فتح واتساب. تأكد من أنه مثبت.',
+			'whatsappBot.retry' => 'إعادة المحاولة',
 			_ => null,
 		};
 	}

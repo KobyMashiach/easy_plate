@@ -50,6 +50,10 @@ abstract class ApiConfig {
   static String get adminUsersUrl =>
       aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/adminUsers');
 
+  /// The WhatsApp grocery bot's link / status calls, same deploy.
+  static String get whatsappLinkUrl =>
+      aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/whatsappLink');
+
   static String get shareCodesUrl =>
       aiBaseUrl.replaceFirst(RegExp(r'/aiProxy/?$'), '/shareCodes');
 

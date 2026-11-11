@@ -39,6 +39,7 @@ import 'core/services/cook_session_service.dart';
 import 'core/services/shopping_reminder_service.dart';
 import 'core/styles/app_theme.dart';
 import 'core/theme/theme_controller.dart';
+import 'core/theme/text_size_controller.dart';
 import 'core/theme/theme_switcher.dart';
 import 'core/utils/i18n/app_language_mapper.dart';
 import 'core/utils/i18n/strings.g.dart';
@@ -53,6 +54,8 @@ import 'features/notifications/domain/repositories/notifications_repository.dart
 import 'features/user_profile/domain/entities/user_preferences_entity.dart';
 import 'core/features/feature_gate.dart';
 import 'features/recipe_ingestion/presentation/pages/ingestion_page.dart';
+import 'features/recipe_ingestion/presentation/bulk_share_route.dart';
+import 'features/recipe_ingestion/presentation/clipboard_link_prompt.dart';
 import 'core/home_widgets/home_widgets_service.dart';
 import 'core/wake_word/wake_word_service.dart';
 import 'features/assistant/voice/shefi_voice_channel.dart';
@@ -127,9 +130,10 @@ Future<void> main() async {
   // previous run) and the device language — run together rather than one
   // after another: each is a platform channel or a disk read, and the
   // first frame waited on the sum of them.
-  final (_, _, _, _, deviceLanguage) = await (
+  final (_, _, _, _, _, deviceLanguage) = await (
     portrait,
     ThemeController().init(),
+    TextSizeController().init(),
     ImageStorageService().init(),
     AppUpdateService().init(),
     // Preferences are stored per account, so they cannot be read until
@@ -238,6 +242,9 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     // A recording, a PDF or a link shared in from another app opens the
     // ingestion screen on it.
     ShareIntentService().latest.addListener(_onShared);
+    // Several recipes in one share (many links, a chat export) take the
+    // same listener; _onShared hands them to the bulk import screen.
+    ShareIntentService().latestBulk.addListener(_onShared);
     ShareIntentService().bind();
     // A tap on a cook-mode timer notification lands back on the step.
     CookSessionService().openCookMode = (recipe) =>
@@ -331,6 +338,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     AuthSessionService().releaseRequest.removeListener(_onReleaseRequest);
     AuthSessionService().removeListener(_restoreCookSession);
     ShareIntentService().latest.removeListener(_onShared);
+    ShareIntentService().latestBulk.removeListener(_onShared);
     ForegroundPushService().latest.removeListener(_onForegroundPush);
     AuthSessionService().removeListener(_onSessionChanged);
     WidgetsBinding.instance.removeObserver(this);
@@ -352,8 +360,21 @@ class _EasyPlateAppState extends State<EasyPlateApp>
     }
   }
 
+  /// Whether the last session change found the session ready, so the
+  /// clipboard prompt runs once per arrival at ready, not on every change.
+  bool _wasReady = false;
+
   void _onSessionChanged() {
-    if (AuthSessionService().stage != AuthStage.ready) return;
+    final ready = AuthSessionService().stage == AuthStage.ready;
+    // The clipboard link prompt on a cold start: once signed in, a beat
+    // after the gate's redirect to /home. Resumes ask it themselves.
+    if (ready && !_wasReady) {
+      Future.delayed(const Duration(milliseconds: 1200), () {
+        if (mounted) unawaited(ClipboardLinkPrompt.check(_router));
+      });
+    }
+    _wasReady = ready;
+    if (!ready) return;
     final pending = _pendingPush;
     if (pending != null) {
       _pendingPush = null;
@@ -363,7 +384,7 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         if (mounted) _navigateForPush(pending);
       });
     }
-    if (ShareIntentService().latest.value != null) {
+    if (ShareIntentService().hasPending) {
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) _onShared();
       });
@@ -374,6 +395,12 @@ class _EasyPlateAppState extends State<EasyPlateApp>
   /// a signed-in session to receive it; before that it waits in the service
   /// and [_onSessionChanged] delivers it.
   void _onShared() {
+    // Several recipes in one share go to the bulk import screen (or, with
+    // it switched off, back through the single path below).
+    if (AuthSessionService().stage == AuthStage.ready &&
+        deliverBulkShare(_router)) {
+      return;
+    }
     final service = ShareIntentService();
     final launch = service.latest.value;
     if (launch == null || AuthSessionService().stage != AuthStage.ready) {
@@ -532,6 +559,9 @@ class _EasyPlateAppState extends State<EasyPlateApp>
       // And for the widgets: a line added or ticked from the home screen
       // while the app was in the background.
       HomeWidgetsService().onResumed();
+      // A link copied in another app: offered once, without reading the
+      // clipboard until the user taps "add".
+      unawaited(ClipboardLinkPrompt.check(_router));
     }
   }
 
@@ -557,12 +587,23 @@ class _EasyPlateAppState extends State<EasyPlateApp>
         // Above the router, so a forced update outlives whatever route the
         // user is on — including one a notification tap pushed — and so the
         // theme switch can freeze the whole screen, dialogs included.
-        builder: (context, child) => MediaQuery.withNoTextScaling(
+        builder: (context, child) => ListenableBuilder(
+          listenable: Listenable.merge([
+            TextSizeController(),
+            FeaturesFlags.listenable,
+          ]),
           // The phone's font-size setting is not applied: the layouts are
           // drawn for one text size, and an enlarged system font clipped
-          // titles and labels across the app. The text stays as designed.
-          child: ThemeSwitcher(
-            child: UpdateGate(child: child ?? const SizedBox.shrink()),
+          // titles and labels across the app. The app's own text-size
+          // setting (normal / large / extra large, checked against the
+          // screens) is applied instead, as a fixed scaler.
+          builder: (context, _) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextSizeController().scaler),
+            child: ThemeSwitcher(
+              child: UpdateGate(child: child ?? const SizedBox.shrink()),
+            ),
           ),
         ),
       ),

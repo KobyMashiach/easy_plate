@@ -5,7 +5,11 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/features/features_flags.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../data/datasources/planner_memory_store.dart';
+import '../../domain/plan_fill.dart';
 import '../../../my_recipes/presentation/widgets/recipe_picker_sheet.dart';
 import '../../domain/entities/meal_entity.dart';
 import '../../domain/entities/meal_item_entity.dart';
@@ -51,7 +55,7 @@ class MealCard extends StatelessWidget {
                   icon: const Icon(Icons.delete_outline_rounded, size: 20),
                   color: AppColors.outline,
                   tooltip: t.common.delete,
-                  onPressed: () => bloc.add(.removeMeal(meal.id)),
+                  onPressed: () => _removeMeal(context, bloc),
                 ),
             ],
           ),
@@ -110,15 +114,23 @@ class MealCard extends StatelessWidget {
                         ),
                       ),
                       if (!readOnly)
-                        GestureDetector(
-                          onTap: () => bloc.add(.removeItem(meal.id, item.id)),
-                          behavior: HitTestBehavior.opaque,
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.xs),
-                            child: Icon(
-                              Icons.close_rounded,
-                              size: 16,
-                              color: AppColors.outline,
+                        MinTapTarget(
+                          child: Semantics(
+                            button: true,
+                            label: MaterialLocalizations.of(
+                              context,
+                            ).deleteButtonTooltip,
+                            child: GestureDetector(
+                              onTap: () => _removeItem(context, bloc, item),
+                              behavior: HitTestBehavior.opaque,
+                              child: Padding(
+                                padding: const EdgeInsets.all(AppSpacing.xs),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 16,
+                                  color: AppColors.outline,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -138,6 +150,7 @@ class MealCard extends StatelessWidget {
                       final recipe = await showRecipePickerSheet(context);
                       if (recipe != null) {
                         bloc.add(.addRecipeItem(meal.id, recipe.id));
+                        _remember();
                       }
                     },
                   ),
@@ -166,6 +179,58 @@ class MealCard extends StatelessWidget {
     final result = await showQuickEntrySheet(context);
     if (result == null) return;
     bloc.add(.addFreeTextItem(mealId, result.text, result.ingredients));
+    _remember();
+  }
+
+  /// The day a dish was last put on, so the board reopens there.
+  void _remember() {
+    if (FeaturesFlags.rememberLastChoices.isEnabled) {
+      PlannerMemoryStore.instance.rememberWeekday(meal.weekday);
+    }
+  }
+
+  String? _planId(MealPlannerBloc bloc) {
+    final state = bloc.state;
+    return state is MealPlannerLoaded ? state.selectedPlan?.id : null;
+  }
+
+  /// Gone at once, as before; with the undo flag on, the notice can put the
+  /// meal back with its dishes — onto the plan as stored by then.
+  void _removeMeal(BuildContext context, MealPlannerBloc bloc) {
+    final planId = _planId(bloc);
+    bloc.add(.removeMeal(meal.id));
+    if (planId == null || !FeaturesFlags.undoInsteadOfConfirm.isEnabled) {
+      return;
+    }
+    final removed = meal;
+    AppDialog.undo(
+      context,
+      message: t.mealPlanner.mealRemoved,
+      onUndo: () =>
+          bloc.editPlan(planId, (plan) => PlanRestore.meal(plan, removed)),
+    );
+  }
+
+  void _removeItem(
+    BuildContext context,
+    MealPlannerBloc bloc,
+    MealItemEntity item,
+  ) {
+    final planId = _planId(bloc);
+    final index = meal.items.indexWhere((i) => i.id == item.id);
+    bloc.add(.removeItem(meal.id, item.id));
+    if (planId == null || !FeaturesFlags.undoInsteadOfConfirm.isEnabled) {
+      return;
+    }
+    final mealId = meal.id;
+    AppDialog.undo(
+      context,
+      message: t.mealPlanner.dishRemoved,
+      onUndo: () => bloc.editPlan(
+        planId,
+        (plan) => PlanRestore.item(plan, mealId, item, index),
+      ),
+    );
   }
 
   Future<void> _editQuickEntry(

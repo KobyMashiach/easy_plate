@@ -15,6 +15,7 @@ import '../../../../core/widgets/clay/clay.dart';
 import '../../../../core/widgets/error_retry_view.dart';
 import '../../../../core/widgets/language_selector.dart';
 import '../../../../core/widgets/theme_mode_selector.dart';
+import '../../../../core/widgets/text_size_selector.dart';
 import '../../../user_profile/domain/entities/user_preferences_entity.dart';
 import '../bloc/settings_bloc.dart';
 import '../widgets/settings_widgets.dart';
@@ -133,6 +134,16 @@ class _SettingsBody extends StatelessWidget {
             ),
           ),
         ),
+        // Groceries added from a WhatsApp message (whatsappBot.js).
+        FeatureGate(
+          feature: FeaturesFlags.whatsappBot,
+          child: SettingsNavRow(
+            icon: Icons.forum_rounded,
+            label: t.whatsappBot.title,
+            hint: t.whatsappBot.hint,
+            onTap: () => context.pushNamed(Routing.whatsappBot),
+          ),
+        ),
         // The home-screen widgets and their defaults; device-wide too.
         FeatureGate(
           feature: FeaturesFlags.homeWidgets,
@@ -172,6 +183,14 @@ class _SettingsBody extends StatelessWidget {
                     bloc.add(SettingsEvent.setThemeMode(mode.name)),
               ),
             ),
+          ),
+        ),
+        // Device-wide too: see TextSizeController.
+        FeatureGate(
+          feature: FeaturesFlags.textSize,
+          child: SettingsCard(
+            title: t.settings.textSize,
+            child: const TextSizeSelector(),
           ),
         ),
         // The stores require account deletion to be reachable in the app.

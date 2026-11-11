@@ -209,6 +209,9 @@ class _QuickEntryFormState extends State<_QuickEntryForm> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.close_rounded, size: 18),
+                            tooltip: MaterialLocalizations.of(
+                              context,
+                            ).deleteButtonTooltip,
                             color: AppColors.error,
                             onPressed: () => setState(() {
                               _products.removeAt(entry.key).dispose();

@@ -12,7 +12,9 @@ import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../features/my_recipes/data/datasources/recipes_ui_store.dart';
 import '../../features/my_recipes/data/models/recipe_model.dart';
+import '../features/features_flags.dart';
 import '../../features/my_recipes/domain/entities/recipe_entity.dart';
 import '../../features/my_recipes/domain/entities/recipe_ingredient_entity.dart';
 import '../utils/i18n/strings.g.dart';
@@ -312,6 +314,11 @@ class CookSessionService extends ChangeNotifier with WidgetsBindingObserver {
       if (seconds != null) session.timers[i] = CookTimer(total: seconds);
     }
     _sessions[recipe.id] = session;
+    // A new session is one cook, for the "recently / most cooked" rows; a
+    // resumed one above is the same cook continuing.
+    if (FeaturesFlags.recentCooked.isEnabled) {
+      unawaited(RecipesUiStore.instance.recordCook(recipe.id));
+    }
     _observe();
     _persist();
     _notify();

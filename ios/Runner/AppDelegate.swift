@@ -47,6 +47,37 @@ import google_mobile_ads
         result(FlutterMethodNotImplemented)
       }
     }
+    // The "link on your clipboard" prompt (Dart: ClipboardLinkPrompt). Reading
+    // the pasteboard's text shows iOS's "Allow Paste" alert, so this only asks
+    // whether it probably holds a web link — detectPatterns shows nothing —
+    // and its changeCount, so the same clip is offered once. The text is read
+    // by Dart only after the user taps "add".
+    let clipboard = FlutterMethodChannel(
+      name: "easy_plate/clipboard",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    clipboard.setMethodCallHandler { call, result in
+      guard call.method == "probe" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      let board = UIPasteboard.general
+      let stamp = String(board.changeCount)
+      guard board.hasURLs || board.hasStrings else {
+        result(["stamp": stamp, "url": false])
+        return
+      }
+      let webURL: PartialKeyPath<UIPasteboard.DetectedValues> = \.probableWebURL
+      board.detectPatterns(for: [webURL]) { outcome in
+        let found: Bool
+        if case .success(let patterns) = outcome {
+          found = patterns.contains(webURL)
+        } else {
+          found = false
+        }
+        DispatchQueue.main.async { result(["stamp": stamp, "url": found]) }
+      }
+    }
   }
 }
 

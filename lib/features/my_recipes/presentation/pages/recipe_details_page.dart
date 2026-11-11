@@ -29,17 +29,13 @@ import '../widgets/nutrition_facts_card.dart';
 import '../widgets/ingredient_section_heading.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../cook_mode_entry.dart';
+import '../recipe_actions.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../../domain/repositories/recipes_repository.dart';
 import '../../domain/usecases/save_recipe_usecase.dart';
 import '../../../recipe_ingestion/domain/repositories/recipe_ingestion_repository.dart';
 import '../../../recipe_sharing/domain/repositories/recipe_sharing_repository.dart';
 import '../../../shared_recipes/domain/usecases/update_shared_recipe_usecase.dart';
-import '../../../grocery_list/data/datasources/active_grocery_list_store.dart';
-import '../../../grocery_list/domain/repositories/grocery_lists_repository.dart';
-import '../../../grocery_list/domain/usecases/create_recipe_grocery_list_usecase.dart';
-import '../../../grocery_list/presentation/widgets/grocery_lists_ui.dart';
-import '../../../../core/navigation/main_tabs.dart';
 import '../../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
 import '../../../recipe_sharing/domain/usecases/save_collab_recipe_usecase.dart';
 import '../../../recipe_sharing/domain/usecases/sync_collab_recipe_usecase.dart';
@@ -435,35 +431,8 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
 
   /// A new shopping list holding this recipe's ingredients, scaled to how
   /// much is being made — then, if the user wants, straight to it.
-  Future<void> _createGroceryList() async {
-    final options = await showRecipeGroceryListSheet(context, recipe);
-    if (options == null || !mounted) return;
-    final create = CreateRecipeGroceryListUseCase(
-      context.read<GroceryListsRepository>(),
-      HiveActiveGroceryListStore.instance,
-    );
-    try {
-      final list = await AppDialog.busy(
-        context,
-        () => create(recipe, name: options.name, scale: options.scale),
-      );
-      if (!mounted) return;
-      final open = await AppDialog.info(
-        message: t.groceryList.listCreated(name: list.name),
-        icon: Icons.shopping_cart_rounded,
-        confirmLabel: t.groceryList.openList,
-        cancelLabel: t.groceryList.stayHere,
-      ).show(context);
-      if (open != true || !mounted) return;
-      // The groceries tab already opened the new list (it follows the
-      // active-list store); this only takes the user there.
-      MainTabs.index.value = MainTabs.groceries;
-      context.goNamed(Routing.home);
-    } catch (e) {
-      debugPrint('Grocery list from recipe failed: $e');
-      if (mounted) AppDialog.error(message: t.common.error).show(context);
-    }
-  }
+  Future<void> _createGroceryList() =>
+      createGroceryListFromRecipe(context, recipe);
 
   /// The bin: on any recipe of this account's own list — written, saved
   /// from the community, or let into by someone (a viewer too: removing it
@@ -476,6 +445,13 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
 
   Future<void> _delete() async {
     if (!guardFeature(context, FeaturesFlags.deleteRecipe)) return;
+    if (FeaturesFlags.undoInsteadOfConfirm.isEnabled) {
+      // At once, with the undo on the notice; the lists hide the recipe
+      // until the notice goes, and the screen has nothing left to show.
+      deleteRecipeWithUndo(context, recipe);
+      Navigator.of(context).maybePop();
+      return;
+    }
     final repository = context.read<RecipesRepository>();
     final confirmed = await AppDialog.warning(
       title: t.recipe.delete,
@@ -633,22 +609,28 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
                     PositionedDirectional(
                       end: AppSpacing.sm,
                       bottom: AppSpacing.sm,
-                      child: GestureDetector(
-                        // The pencil edits; the picture around it opens the viewer.
-                        onTap: _changePhoto,
-                        behavior: HitTestBehavior.opaque,
-                        child: Container(
-                          padding: const EdgeInsets.all(AppSpacing.base),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerLowest,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            recipe.imageFileName == null
-                                ? Icons.add_a_photo_rounded
-                                : Icons.edit_rounded,
-                            size: 20,
-                            color: AppColors.primary,
+                      child: Semantics(
+                        button: true,
+                        label: recipe.imageFileName == null
+                            ? t.image.add
+                            : t.common.edit,
+                        child: GestureDetector(
+                          // The pencil edits; the picture around it opens the viewer.
+                          onTap: _changePhoto,
+                          behavior: HitTestBehavior.opaque,
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.base),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceContainerLowest,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              recipe.imageFileName == null
+                                  ? Icons.add_a_photo_rounded
+                                  : Icons.edit_rounded,
+                              size: 20,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),

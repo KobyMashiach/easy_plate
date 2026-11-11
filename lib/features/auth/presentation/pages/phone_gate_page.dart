@@ -160,6 +160,7 @@ class _PhoneGatePageState extends State<PhoneGatePage> with SmsAutoFill {
             // The only way out for someone who signed in with an account they
             // cannot attach a number to.
             trailingIcon: Icons.logout_rounded,
+            trailingTooltip: t.auth.signOut,
             onTrailingTap: _busy
                 ? null
                 : () => signOutWithFeedback(context, context.read<AuthBloc>()),

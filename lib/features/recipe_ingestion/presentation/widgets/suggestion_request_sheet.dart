@@ -87,13 +87,14 @@ class _SuggestionRequestSheetState extends State<_SuggestionRequestSheet> {
     super.dispose();
   }
 
-  void _search() => Navigator.of(
-    context,
-  ).pop<SuggestionRequest>((
-    topic: _topic.text.trim(),
-    diet: List.of(_diet),
-    allergens: _allergy ? Allergen.fromNames(_allergens.names) : const [],
-  ));
+  void _search() =>
+      Navigator.of(
+        context,
+      ).pop<SuggestionRequest>((
+        topic: _topic.text.trim(),
+        diet: List.of(_diet),
+        allergens: _allergy ? Allergen.fromNames(_allergens.names) : const [],
+      ));
 
   @override
   Widget build(BuildContext context) {

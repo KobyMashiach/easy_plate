@@ -168,6 +168,13 @@ async function deleteOwned(db, uid) {
   await db.doc(`sessions/${uid}`).delete().catch(() => {});
   // The household lock (households.js) names the last household joined.
   await db.doc(`household_locks/${uid}`).delete().catch(() => {});
+  // The WhatsApp bot's number index and any open link code (whatsappBot.js).
+  try {
+    const user = await db.doc(`users/${uid}`).get();
+    await require("./whatsappBot").internals.forgetAccount(db, uid, user.exists ? user.data() : null);
+  } catch (err) {
+    logger.warn("whatsapp cleanup incomplete", { uid, reason: err.message });
+  }
   out.shareCodes = await deleteQuery(db, db.collection("share_codes").where("ownerUid", "==", uid));
   out.invitesSent = await deleteQuery(db, db.collection("share_invites").where("ownerUid", "==", uid));
   out.invitesReceived = await deleteQuery(db, db.collection("share_invites").where("targetUid", "==", uid));

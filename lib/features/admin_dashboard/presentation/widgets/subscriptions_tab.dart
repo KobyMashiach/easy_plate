@@ -682,6 +682,7 @@ class _AccountCard extends StatelessWidget {
               ClayIconButton(
                 icon: Icons.more_horiz_rounded,
                 size: 34,
+                tooltip: t.adminUser.actions,
                 onTap: onActions,
               ),
             ],

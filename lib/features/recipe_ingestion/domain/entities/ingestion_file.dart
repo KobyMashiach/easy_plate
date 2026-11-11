@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import '../../../../core/constants/app_enums.dart';
 
 /// A file handed to the analysis: a recording of someone reading out a
-/// recipe, a voice note, a PDF. Read into memory, since it goes to the
-/// model inline.
+/// recipe, a voice note, a PDF, or a photo of a recipe (a cookbook page, a
+/// screenshot, handwriting). Read into memory, since it goes to the model
+/// inline.
 class IngestionFile {
   final String name;
   final Uint8List bytes;
@@ -23,7 +24,8 @@ class IngestionFile {
 
   bool get isPdf => mimeType == 'application/pdf';
   bool get isAudio => mimeType.startsWith('audio/');
-  bool get isSupported => isPdf || isAudio;
+  bool get isImage => mimeType.startsWith('image/');
+  bool get isSupported => isPdf || isAudio || isImage;
 
   /// Whether [files] together exceed what one request may carry.
   static bool tooLarge(Iterable<IngestionFile> files) =>
@@ -31,10 +33,16 @@ class IngestionFile {
 
   /// The MIME type a file's extension implies, for the formats the model
   /// reads; null for anything else. The share sheet often hands a file over
-  /// with no type, so this is what the type falls back to.
-  static String? mimeTypeFor(String path) {
+  /// with no type, so this is what the type falls back to. Pictures count
+  /// only when [images] is set — the photo channel has its own console
+  /// switch, and with it off a picture is refused as it always was.
+  static String? mimeTypeFor(String path, {bool images = false}) {
     final dot = path.lastIndexOf('.');
     final ext = dot == -1 ? '' : path.substring(dot + 1).toLowerCase();
+    if (images) {
+      final image = imageMimeTypes[ext];
+      if (image != null) return image;
+    }
     return switch (ext) {
       'pdf' => 'application/pdf',
       'mp3' => 'audio/mpeg',
@@ -49,6 +57,26 @@ class IngestionFile {
       'webm' || 'weba' => 'audio/webm',
       _ => null,
     };
+  }
+
+  /// The picture formats the model reads, by extension. HEIC goes as it
+  /// is: Gemini reads it, and the picker path re-encodes to JPEG anyway.
+  static const imageMimeTypes = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'webp': 'image/webp',
+    'heic': 'image/heic',
+    'heif': 'image/heif',
+  };
+
+  /// A declared share-sheet type as the picture type the model reads, or
+  /// null when it is not one (a GIF, an SVG). `image/jpg` is not a real
+  /// type but some apps declare it.
+  static String? readableImageType(String mimeType) {
+    final type = mimeType.toLowerCase();
+    if (type == 'image/jpg') return 'image/jpeg';
+    return imageMimeTypes.containsValue(type) ? type : null;
   }
 
   /// Extensions the picker offers, matching [mimeTypeFor].
@@ -95,6 +123,25 @@ class IngestionLaunch {
     return uri != null &&
         (uri.scheme == 'http' || uri.scheme == 'https') &&
         uri.host.isNotEmpty;
+  }
+
+  /// The first web address in [text], ready to fetch: the whole text when
+  /// it is one, else the first `http(s)://…` or `www.…` inside it (a
+  /// caption shared along with a link), with trailing punctuation dropped
+  /// and `https://` added to a bare `www.`. Null when there is none.
+  static String? findWebUrl(String text) {
+    final value = text.trim();
+    if (isWebUrl(value)) return value;
+    final match = RegExp(
+      r'(https?://|www\.)\S+',
+      caseSensitive: false,
+    ).firstMatch(value);
+    if (match == null) return null;
+    var url = match
+        .group(0)!
+        .replaceFirst(RegExp(r'''[)\].,!?;:'"»”]+$'''), '');
+    if (url.toLowerCase().startsWith('www.')) url = 'https://$url';
+    return isWebUrl(url) ? url : null;
   }
 
   /// The channel a shared piece of text belongs to: a link to one of the

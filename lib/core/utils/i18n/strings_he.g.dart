@@ -65,6 +65,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$sharing$he sharing = Translations$sharing$he.internal(_root);
 	late final Translations$notifications$he notifications = Translations$notifications$he.internal(_root);
 	late final Translations$editor$he editor = Translations$editor$he.internal(_root);
+	late final Translations$bulkImport$he bulkImport = Translations$bulkImport$he.internal(_root);
+	late final Translations$clipboardPrompt$he clipboardPrompt = Translations$clipboardPrompt$he.internal(_root);
 	late final Translations$ingestion$he ingestion = Translations$ingestion$he.internal(_root);
 	late final Translations$mealPlanner$he mealPlanner = Translations$mealPlanner$he.internal(_root);
 	late final Translations$groceryList$he groceryList = Translations$groceryList$he.internal(_root);
@@ -92,6 +94,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$adminUser$he adminUser = Translations$adminUser$he.internal(_root);
 	late final Translations$quickActions$he quickActions = Translations$quickActions$he.internal(_root);
 	late final Translations$countries$he countries = Translations$countries$he.internal(_root);
+	late final Translations$whatsappBot$he whatsappBot = Translations$whatsappBot$he.internal(_root);
 }
 
 // Path: common
@@ -116,6 +119,18 @@ class Translations$common$he {
 
 	/// he: 'חזרה'
 	String get back => 'חזרה';
+
+	/// he: 'לייק'
+	String get like => 'לייק';
+
+	/// he: 'להגדיל'
+	String get increase => 'להגדיל';
+
+	/// he: 'להקטין'
+	String get decrease => 'להקטין';
+
+	/// he: 'סינון'
+	String get filters => 'סינון';
 
 	/// he: 'סיום'
 	String get done => 'סיום';
@@ -726,6 +741,21 @@ class Translations$settings$he {
 	/// he: 'כהה'
 	String get themeDark => 'כהה';
 
+	/// he: 'גודל טקסט'
+	String get textSize => 'גודל טקסט';
+
+	/// he: 'רגיל'
+	String get textSizeNormal => 'רגיל';
+
+	/// he: 'גדול'
+	String get textSizeLarge => 'גדול';
+
+	/// he: 'גדול מאוד'
+	String get textSizeExtraLarge => 'גדול מאוד';
+
+	/// he: 'ככה ייראה הטקסט באפליקציה'
+	String get textSizePreview => 'ככה ייראה הטקסט באפליקציה';
+
 	/// he: 'אפקטי קול (דפדוף עמודים)'
 	String get soundEffects => 'אפקטי קול (דפדוף עמודים)';
 
@@ -1223,6 +1253,54 @@ class Translations$recipe$he {
 
 	/// he: 'המתכון נמחק'
 	String get deleted => 'המתכון נמחק';
+
+	/// he: 'ביטול'
+	String get undo => 'ביטול';
+
+	/// he: 'הוסר מהמתכונים השמורים'
+	String get savedRemoved => 'הוסר מהמתכונים השמורים';
+
+	/// he: 'הספר „$title” נמחק'
+	String bookDeleted({required Object title}) => 'הספר „${title}” נמחק';
+
+	/// he: 'הוסר מהספר'
+	String get removedFromBook => 'הוסר מהספר';
+
+	/// he: 'אין ספר להוסיף אליו — המתכון כבר בכל הספרים, או שעוד לא יצרתם ספר'
+	String get noBookToAdd => 'אין ספר להוסיף אליו — המתכון כבר בכל הספרים, או שעוד לא יצרתם ספר';
+
+	/// he: 'בשימוש האחרון'
+	String get lastUsedBook => 'בשימוש האחרון';
+
+	/// he: 'כבר בספר'
+	String get alreadyInBook => 'כבר בספר';
+
+	/// he: 'צפייה בלבד'
+	String get viewOnlyBook => 'צפייה בלבד';
+
+	/// he: 'הוספה לתפריט'
+	String get addToPlan => 'הוספה לתפריט';
+
+	/// he: 'תפריט'
+	String get planLabel => 'תפריט';
+
+	/// he: 'יום'
+	String get dayLabel => 'יום';
+
+	/// he: 'ארוחה'
+	String get mealLabel => 'ארוחה';
+
+	/// he: 'עוד אין תפריט להוסיף אליו. צרו אחד בלשונית התפריט'
+	String get noPlanToAdd => 'עוד אין תפריט להוסיף אליו. צרו אחד בלשונית התפריט';
+
+	/// he: 'נוסף לתפריט: $day · $meal'
+	String addedToPlan({required Object day, required Object meal}) => 'נוסף לתפריט: ${day} · ${meal}';
+
+	/// he: 'בישלתם לאחרונה'
+	String get recentlyCooked => 'בישלתם לאחרונה';
+
+	/// he: 'הכי הרבה בישלתם'
+	String get mostCooked => 'הכי הרבה בישלתם';
 }
 
 // Path: cookMode
@@ -1316,6 +1394,27 @@ class Translations$cookMode$he {
 
 	/// he: 'מצב בישול הוא חלק מ-EasyPlate Premium'
 	String get premiumOnly => 'מצב בישול הוא חלק מ-EasyPlate Premium';
+
+	/// he: 'להפעיל פקודות קוליות'
+	String get voiceOn => 'להפעיל פקודות קוליות';
+
+	/// he: 'לכבות פקודות קוליות'
+	String get voiceOff => 'לכבות פקודות קוליות';
+
+	/// he: 'מקשיב… אמרו "הבא", "הקודם", "שוב" או "טיימר"'
+	String get voiceListening => 'מקשיב… אמרו "הבא", "הקודם", "שוב" או "טיימר"';
+
+	/// he: 'שמעתי: $command'
+	String voiceHeard({required Object command}) => 'שמעתי: ${command}';
+
+	/// he: 'כדי לשמוע פקודות צריך הרשאת מיקרופון'
+	String get voiceMicDenied => 'כדי לשמוע פקודות צריך הרשאת מיקרופון';
+
+	/// he: 'זיהוי דיבור לא זמין במכשיר הזה'
+	String get voiceUnavailable => 'זיהוי דיבור לא זמין במכשיר הזה';
+
+	/// he: 'שוב'
+	String get repeat => 'שוב';
 }
 
 // Path: nutrition
@@ -2047,6 +2146,132 @@ class Translations$editor$he {
 	String get saveWithAiHint => 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה';
 }
 
+// Path: bulkImport
+class Translations$bulkImport$he {
+	Translations$bulkImport$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'ייבוא כמה מתכונים'
+	String get title => 'ייבוא כמה מתכונים';
+
+	/// he: 'ייבוא כמה מתכונים בבת אחת'
+	String get entry => 'ייבוא כמה מתכונים בבת אחת';
+
+	/// he: 'הדביקו רשימת קישורים, או בחרו ייצוא של צ'אט מוואטסאפ'
+	String get entryHint => 'הדביקו רשימת קישורים, או בחרו ייצוא של צ\'אט מוואטסאפ';
+
+	/// he: 'הדביקו כאן קישורים או מתכונים — כל אחד בשורה או בפסקה משלו'
+	String get pasteHint => 'הדביקו כאן קישורים או מתכונים — כל אחד בשורה או בפסקה משלו';
+
+	/// he: 'חיפוש מתכונים בטקסט'
+	String get findInText => 'חיפוש מתכונים בטקסט';
+
+	/// he: 'בחירת ייצוא צ'אט (txt או zip)'
+	String get pickExport => 'בחירת ייצוא צ\'אט (txt או zip)';
+
+	/// he: 'בוואטסאפ: פותחים את הצ'אט ← עוד ← ייצוא צ'אט ← בלי מדיה, ומשתפים ל-EasyPlate או שומרים בקבצים.'
+	String get exportHelp => 'בוואטסאפ: פותחים את הצ\'אט ← עוד ← ייצוא צ\'אט ← בלי מדיה, ומשתפים ל-EasyPlate או שומרים בקבצים.';
+
+	/// he: 'נשלח רק תוכן ההודעות שתסמנו — בלי שמות, בלי מספרים ובלי תאריכים.'
+	String get privacyNote => 'נשלח רק תוכן ההודעות שתסמנו — בלי שמות, בלי מספרים ובלי תאריכים.';
+
+	/// he: 'לא מצאנו כאן קישורים או מתכונים'
+	String get noneFound => 'לא מצאנו כאן קישורים או מתכונים';
+
+	/// he: 'לא הצלחנו לקרוא את הקובץ הזה'
+	String get fileUnreadable => 'לא הצלחנו לקרוא את הקובץ הזה';
+
+	/// he: 'נמצאו: $count'
+	String foundCount({required Object count}) => 'נמצאו: ${count}';
+
+	/// he: 'כל מתכון נספר במכסה היומית, בדיוק כמו ייבוא רגיל.'
+	String get quotaNote => 'כל מתכון נספר במכסה היומית, בדיוק כמו ייבוא רגיל.';
+
+	/// he: 'סימון הכול'
+	String get selectAll => 'סימון הכול';
+
+	/// he: 'ביטול הסימון'
+	String get selectNone => 'ביטול הסימון';
+
+	/// he: 'ייבוא $count'
+	String importCount({required Object count}) => 'ייבוא ${count}';
+
+	/// he: 'עצירה'
+	String get stop => 'עצירה';
+
+	/// he: 'סיום'
+	String get done => 'סיום';
+
+	/// he: 'הייבוא עוד רץ. לעצור ולצאת? מה שכבר נשמר יישאר.'
+	String get leaveWhileRunning => 'הייבוא עוד רץ. לעצור ולצאת? מה שכבר נשמר יישאר.';
+
+	/// he: 'דף מתכון'
+	String get kindPage => 'דף מתכון';
+
+	/// he: 'סרטון'
+	String get kindVideo => 'סרטון';
+
+	/// he: 'מתכון כתוב'
+	String get kindText => 'מתכון כתוב';
+
+	/// he: 'ממתין'
+	String get statusWaiting => 'ממתין';
+
+	/// he: 'מייבאים…'
+	String get statusRunning => 'מייבאים…';
+
+	/// he: 'נשמר'
+	String get statusDone => 'נשמר';
+
+	/// he: 'לא הצליח'
+	String get statusFailed => 'לא הצליח';
+
+	/// he: 'דולג'
+	String get statusSkipped => 'דולג';
+
+	/// he: 'המכסה היומית נגמרה, אז עצרנו. $done מתכונים נשמרו — את השאר אפשר לייבא מחר.'
+	String quotaStopped({required Object done}) => 'המכסה היומית נגמרה, אז עצרנו. ${done} מתכונים נשמרו — את השאר אפשר לייבא מחר.';
+
+	/// he: 'עצרנו: החשבון לא יכול לנתח מתכונים כרגע. $done מתכונים נשמרו.'
+	String refusedStopped({required Object done}) => 'עצרנו: החשבון לא יכול לנתח מתכונים כרגע. ${done} מתכונים נשמרו.';
+
+	/// he: 'עצרנו. $done מתכונים נשמרו.'
+	String stopped({required Object done}) => 'עצרנו. ${done} מתכונים נשמרו.';
+
+	/// he: 'סיימנו! $done מתכונים נשמרו.'
+	String finished({required Object done}) => 'סיימנו! ${done} מתכונים נשמרו.';
+
+	/// he: 'סיימנו: $done נשמרו, $failed לא הצליחו.'
+	String finishedWithFailures({required Object done, required Object failed}) => 'סיימנו: ${done} נשמרו, ${failed} לא הצליחו.';
+}
+
+// Path: clipboardPrompt
+class Translations$clipboardPrompt$he {
+	Translations$clipboardPrompt$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'יש קישור בלוח'
+	String get title => 'יש קישור בלוח';
+
+	/// he: 'להוסיף אותו כמתכון?'
+	String get message => 'להוסיף אותו כמתכון?';
+
+	/// he: 'הוספה'
+	String get add => 'הוספה';
+
+	/// he: 'לא עכשיו'
+	String get dismiss => 'לא עכשיו';
+
+	/// he: 'בלוח כבר אין קישור'
+	String get noLink => 'בלוח כבר אין קישור';
+}
+
 // Path: ingestion
 class Translations$ingestion$he {
 	Translations$ingestion$he.internal(this._root);
@@ -2208,6 +2433,45 @@ class Translations$ingestion$he {
 	/// he: 'מאיפה מגיע המתכון?'
 	String get chooseSource => 'מאיפה מגיע המתכון?';
 
+	/// he: 'הדביקו קישור או מתכון, או כתבו מה בא לכם — נזהה לבד מה זה'
+	String get autoHint => 'הדביקו קישור או מתכון, או כתבו מה בא לכם — נזהה לבד מה זה';
+
+	/// he: 'הקטגוריה נבחרה אוטומטית לפי הטקסט · אפשר לבחור אחרת'
+	String get autoPicked => 'הקטגוריה נבחרה אוטומטית לפי הטקסט · אפשר לבחור אחרת';
+
+	/// he: 'הקטגוריה תיבחר אוטומטית לפי מה שתכתבו'
+	String get autoWaiting => 'הקטגוריה תיבחר אוטומטית לפי מה שתכתבו';
+
+	/// he: 'לחיצה על קטגוריה מציגה הסבר'
+	String get tapForInfo => 'לחיצה על קטגוריה מציגה הסבר';
+
+	/// he: 'הטקסט ששותף נוסף לסוף'
+	String get sharedAppended => 'הטקסט ששותף נוסף לסוף';
+
+	/// he: 'מתחיל לנתח בעוד $seconds…'
+	String autoRunIn({required Object seconds}) => 'מתחיל לנתח בעוד ${seconds}…';
+
+	/// he: 'אחרונים'
+	String get recentTitle => 'אחרונים';
+
+	/// he: 'הקלדה בקול'
+	String get voiceStart => 'הקלדה בקול';
+
+	/// he: 'עצירת ההקלטה'
+	String get voiceStop => 'עצירת ההקלטה';
+
+	/// he: 'זיהוי דיבור לא זמין במכשיר הזה'
+	String get voiceUnavailable => 'זיהוי דיבור לא זמין במכשיר הזה';
+
+	/// he: 'להוסיף את המתכון לספר?'
+	String get addToBookTitle => 'להוסיף את המתכון לספר?';
+
+	/// he: 'לא עכשיו'
+	String get addToBookSkip => 'לא עכשיו';
+
+	/// he: 'המתכון נוסף לספר „$book”'
+	String addedToBook({required Object book}) => 'המתכון נוסף לספר „${book}”';
+
 	/// he: 'קיבלתם מתכון בוואטסאפ, העתקתם מאתר או מהודעה? הדביקו כאן את הטקסט כמו שהוא. המודל יזהה את שם המנה, המצרכים עם הכמויות ושלבי ההכנה, ויסדר הכול בפורמט אחיד. בלי מגבלה יומית.'
 	String get pasteTextDescription => 'קיבלתם מתכון בוואטסאפ, העתקתם מאתר או מהודעה? הדביקו כאן את הטקסט כמו שהוא. המודל יזהה את שם המנה, המצרכים עם הכמויות ושלבי ההכנה, ויסדר הכול בפורמט אחיד. בלי מגבלה יומית.';
 
@@ -2243,6 +2507,27 @@ class Translations$ingestion$he {
 
 	/// he: 'הקלטה'
 	String get recordingTag => 'הקלטה';
+
+	/// he: 'קובץ / תמונה'
+	String get filePhoto => 'קובץ / תמונה';
+
+	/// he: 'צלמו דף מספר בישול או מתכון בכתב יד, בחרו מהגלריה צילום מסך (למשל של פוסט באינסטגרם), או צרפו הקלטה, הודעה קולית מוואטסאפ או PDF. נקרא את הכול ונחלץ מתכון מסודר. כמה תמונות או קבצים ינותחו יחד כמתכון אחד — למשל מתכון שנמשך על שני עמודים.'
+	String get filePhotoDescription => 'צלמו דף מספר בישול או מתכון בכתב יד, בחרו מהגלריה צילום מסך (למשל של פוסט באינסטגרם), או צרפו הקלטה, הודעה קולית מוואטסאפ או PDF. נקרא את הכול ונחלץ מתכון מסודר. כמה תמונות או קבצים ינותחו יחד כמתכון אחד — למשל מתכון שנמשך על שני עמודים.';
+
+	/// he: 'אפשר גם לשתף תמונה, צילום מסך, הקלטה או PDF ישירות מכל אפליקציה אל Easy Plate, דרך כפתור השיתוף הרגיל.'
+	String get filePhotoHint => 'אפשר גם לשתף תמונה, צילום מסך, הקלטה או PDF ישירות מכל אפליקציה אל Easy Plate, דרך כפתור השיתוף הרגיל.';
+
+	/// he: 'צילום'
+	String get takePhoto => 'צילום';
+
+	/// he: 'מהגלריה'
+	String get fromGallery => 'מהגלריה';
+
+	/// he: 'תמונה'
+	String get photoTag => 'תמונה';
+
+	/// he: 'אפשר לנתח רק תמונות, קובצי אודיו ו‑PDF.'
+	String get filePhotoUnsupported => 'אפשר לנתח רק תמונות, קובצי אודיו ו‑PDF.';
 
 	/// he: '$n KB'
 	String sizeKb({required Object n}) => '${n} KB';
@@ -2324,6 +2609,60 @@ class Translations$mealPlanner$he {
 
 	/// he: 'תכנון ארוחות'
 	String get title => 'תכנון ארוחות';
+
+	/// he: 'מלאו לי את השבוע'
+	String get fillWeek => 'מלאו לי את השבוע';
+
+	/// he: 'ממלא את הארוחות הריקות מהמתכונים שלכם, בלי חזרות'
+	String get fillWeekHint => 'ממלא את הארוחות הריקות מהמתכונים שלכם, בלי חזרות';
+
+	/// he: 'מילאנו $count ארוחות מהמתכונים שלכם'
+	String fillWeekDone({required Object count}) => 'מילאנו ${count} ארוחות מהמתכונים שלכם';
+
+	/// he: 'מילאנו $filled מתוך $total ארוחות — אין מספיק מתכונים מתאימים לשאר'
+	String fillWeekPartial({required Object filled, required Object total}) => 'מילאנו ${filled} מתוך ${total} ארוחות — אין מספיק מתכונים מתאימים לשאר';
+
+	/// he: 'אין ארוחות ריקות למלא'
+	String get fillWeekNothing => 'אין ארוחות ריקות למלא';
+
+	/// he: 'אין מתכונים שמורים שמתאימים לארוחות הריקות'
+	String get fillWeekNoRecipes => 'אין מתכונים שמורים שמתאימים לארוחות הריקות';
+
+	/// he: 'העתקת השבוע הקודם'
+	String get copyWeek => 'העתקת השבוע הקודם';
+
+	/// he: 'מעתיק מנות מתפריט קודם לארוחות הריקות'
+	String get copyWeekHint => 'מעתיק מנות מתפריט קודם לארוחות הריקות';
+
+	/// he: 'מאיזה תפריט להעתיק?'
+	String get copyWeekPick => 'מאיזה תפריט להעתיק?';
+
+	/// he: 'הועתקו $count ארוחות מ„$name”'
+	String copyWeekDone({required Object count, required Object name}) => 'הועתקו ${count} ארוחות מ„${name}”';
+
+	/// he: 'אין ארוחות ריקות שמתאימות להעתקה'
+	String get copyWeekNothing => 'אין ארוחות ריקות שמתאימות להעתקה';
+
+	/// he: 'אין תפריט קודם עם מנות להעתקה'
+	String get copyWeekNoSource => 'אין תפריט קודם עם מנות להעתקה';
+
+	/// he: 'ניקוי היום'
+	String get clearDay => 'ניקוי היום';
+
+	/// he: 'המנות של היום נוקו'
+	String get dayCleared => 'המנות של היום נוקו';
+
+	/// he: 'הארוחה נמחקה'
+	String get mealRemoved => 'הארוחה נמחקה';
+
+	/// he: 'המנה הוסרה'
+	String get dishRemoved => 'המנה הוסרה';
+
+	/// he: 'השבוע עדיין ריק'
+	String get emptyWeek => 'השבוע עדיין ריק';
+
+	/// he: 'אפשר למלא אותו מהמתכונים שלכם בלחיצה, או להעתיק את השבוע הקודם'
+	String get emptyWeekHint => 'אפשר למלא אותו מהמתכונים שלכם בלחיצה, או להעתיק את השבוע הקודם';
 
 	/// he: 'תפריט חדש'
 	String get newPlan => 'תפריט חדש';
@@ -2438,6 +2777,69 @@ class Translations$groceryList$he {
 
 	/// he: 'רשימת קניות'
 	String get title => 'רשימת קניות';
+
+	/// he: 'הכתבה בקול'
+	String get voiceAdd => 'הכתבה בקול';
+
+	/// he: 'מקשיבים… למשל: חלב, ביצים ושתי חבילות לחם'
+	String get voiceListening => 'מקשיבים… למשל: חלב, ביצים ושתי חבילות לחם';
+
+	/// he: 'שמענו $count פריטים — אפשר להסיר לפני ההוספה'
+	String voiceHeard({required Object count}) => 'שמענו ${count} פריטים — אפשר להסיר לפני ההוספה';
+
+	/// he: 'הוספת $count פריטים'
+	String voiceAddAll({required Object count}) => 'הוספת ${count} פריטים';
+
+	/// he: 'לא קלטנו פריטים, נסו שוב'
+	String get voiceNothing => 'לא קלטנו פריטים, נסו שוב';
+
+	/// he: 'זיהוי דיבור לא זמין במכשיר הזה'
+	String get voiceUnavailable => 'זיהוי דיבור לא זמין במכשיר הזה';
+
+	/// he: 'נוספו $count פריטים'
+	String itemsAdded({required Object count}) => 'נוספו ${count} פריטים';
+
+	/// he: 'קניתי הכל'
+	String get boughtAll => 'קניתי הכל';
+
+	/// he: 'סומנו $count פריטים כנקנו'
+	String boughtAllDone({required Object count}) => 'סומנו ${count} פריטים כנקנו';
+
+	/// he: 'הפריט נמחק'
+	String get itemRemoved => 'הפריט נמחק';
+
+	/// he: 'נמחקו $count פריטים'
+	String checkedDeleted({required Object count}) => 'נמחקו ${count} פריטים';
+
+	/// he: 'הרשימה „$name” נמחקה'
+	String listDeletedUndo({required Object name}) => 'הרשימה „${name}” נמחקה';
+
+	/// he: 'לפי מחלקות'
+	String get aisleSort => 'לפי מחלקות';
+
+	/// he: 'פירות וירקות'
+	String get aisleProduce => 'פירות וירקות';
+
+	/// he: 'מוצרי חלב וביצים'
+	String get aisleDairy => 'מוצרי חלב וביצים';
+
+	/// he: 'מאפייה'
+	String get aisleBakery => 'מאפייה';
+
+	/// he: 'בשר ודגים'
+	String get aisleMeat => 'בשר ודגים';
+
+	/// he: 'מזווה'
+	String get aisleDryGoods => 'מזווה';
+
+	/// he: 'קפואים'
+	String get aisleFrozen => 'קפואים';
+
+	/// he: 'ניקיון ובית'
+	String get aisleCleaning => 'ניקיון ובית';
+
+	/// he: 'שונות'
+	String get aisleOther => 'שונות';
 
 	/// he: 'מרוכז מכל התפריטים הפעילים'
 	String get aggregated => 'מרוכז מכל התפריטים הפעילים';
@@ -4905,6 +5307,66 @@ class Translations$featureName$he {
 	/// he: 'הוספת מתכון מקובץ'
 	String get ingestFile => 'הוספת מתכון מקובץ';
 
+	/// he: 'בחירת קטגוריה אוטומטית בהוספת מתכון'
+	String get ingestAutoChannel => 'בחירת קטגוריה אוטומטית בהוספת מתכון';
+
+	/// he: 'ניתוח אוטומטי של קישור שהודבק'
+	String get ingestPasteAutoRun => 'ניתוח אוטומטי של קישור שהודבק';
+
+	/// he: 'חיפושים אחרונים בהוספת מתכון'
+	String get ingestRecent => 'חיפושים אחרונים בהוספת מתכון';
+
+	/// he: 'הקלדה בקול בהוספת מתכון'
+	String get ingestVoice => 'הקלדה בקול בהוספת מתכון';
+
+	/// he: 'הצעה להוסיף לספר אחרי שמירה'
+	String get saveToBookPrompt => 'הצעה להוסיף לספר אחרי שמירה';
+
+	/// he: 'הצעה להוסיף קישור מהלוח'
+	String get clipboardLinkPrompt => 'הצעה להוסיף קישור מהלוח';
+
+	/// he: 'הוספת מתכון מתמונה'
+	String get ingestPhoto => 'הוספת מתכון מתמונה';
+
+	/// he: 'כפתור שמירה קבוע בסקירה'
+	String get reviewStickySave => 'כפתור שמירה קבוע בסקירה';
+
+	/// he: 'ייבוא כמה מתכונים יחד'
+	String get bulkImport => 'ייבוא כמה מתכונים יחד';
+
+	/// he: 'תפריט מהיר בלחיצה ארוכה'
+	String get recipeQuickMenu => 'תפריט מהיר בלחיצה ארוכה';
+
+	/// he: 'ביטול במקום אישור'
+	String get undoInsteadOfConfirm => 'ביטול במקום אישור';
+
+	/// he: 'זכירת הבחירה האחרונה'
+	String get rememberLastChoices => 'זכירת הבחירה האחרונה';
+
+	/// he: 'בישלת לאחרונה / הכי מבושלים'
+	String get recentCooked => 'בישלת לאחרונה / הכי מבושלים';
+
+	/// he: 'מלא לי את השבוע'
+	String get planAutofill => 'מלא לי את השבוע';
+
+	/// he: 'העתקת השבוע הקודם'
+	String get planCopyWeek => 'העתקת השבוע הקודם';
+
+	/// he: 'הוספה בקול לרשימת קניות'
+	String get groceryVoiceAdd => 'הוספה בקול לרשימת קניות';
+
+	/// he: 'סידור לפי מחלקות בסופר'
+	String get groceryAisleSort => 'סידור לפי מחלקות בסופר';
+
+	/// he: 'קניתי הכל'
+	String get groceryCheckAll => 'קניתי הכל';
+
+	/// he: 'גודל טקסט'
+	String get textSize => 'גודל טקסט';
+
+	/// he: '"הבא" בקול במצב בישול'
+	String get cookVoiceNext => '"הבא" בקול במצב בישול';
+
 	/// he: 'שיתוף מאפליקציה אחרת'
 	String get shareIn => 'שיתוף מאפליקציה אחרת';
 
@@ -5072,6 +5534,9 @@ class Translations$featureName$he {
 
 	/// he: 'רכישה באתר (חו"ל)'
 	String get webCheckoutIntl => 'רכישה באתר (חו"ל)';
+
+	/// he: 'בוט וואטסאפ לרשימת קניות'
+	String get whatsappBot => 'בוט וואטסאפ לרשימת קניות';
 }
 
 // Path: adminConfig
@@ -5596,6 +6061,132 @@ class Translations$countries$he {
 	String get BR => 'ברזיל';
 }
 
+// Path: whatsappBot
+class Translations$whatsappBot$he {
+	Translations$whatsappBot$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'חיבור לוואטסאפ'
+	String get title => 'חיבור לוואטסאפ';
+
+	/// he: 'הוספת מצרכים לרשימת הקניות בהודעת וואטסאפ'
+	String get hint => 'הוספת מצרכים לרשימת הקניות בהודעת וואטסאפ';
+
+	/// he: 'וואטסאפ מחובר'
+	String get connected => 'וואטסאפ מחובר';
+
+	/// he: 'וואטסאפ לא מחובר'
+	String get notConnected => 'וואטסאפ לא מחובר';
+
+	/// he: 'כתבו לבוט של EasyPlate בוואטסאפ מה לקנות — "חלב, 2 כיכרות לחם ושמן זית" — והמצרכים נכנסים לרשימת הקניות שלכם.'
+	String get intro => 'כתבו לבוט של EasyPlate בוואטסאפ מה לקנות — "חלב, 2 כיכרות לחם ושמן זית" — והמצרכים נכנסים לרשימת הקניות שלכם.';
+
+	/// he: 'איך מחברים'
+	String get howTitle => 'איך מחברים';
+
+	/// he: 'לוחצים על "קבלת קוד חיבור" ומקבלים קוד בן 6 ספרות.'
+	String get step1 => 'לוחצים על "קבלת קוד חיבור" ומקבלים קוד בן 6 ספרות.';
+
+	/// he: 'לוחצים על "שליחת הקוד בוואטסאפ" — נפתחת שיחה עם הבוט וההודעה כבר כתובה.'
+	String get step2 => 'לוחצים על "שליחת הקוד בוואטסאפ" — נפתחת שיחה עם הבוט וההודעה כבר כתובה.';
+
+	/// he: 'שולחים את ההודעה. המספר שממנו נשלחה מתחבר לחשבון.'
+	String get step3 => 'שולחים את ההודעה. המספר שממנו נשלחה מתחבר לחשבון.';
+
+	/// he: 'קבלת קוד חיבור'
+	String get getCode => 'קבלת קוד חיבור';
+
+	/// he: 'קוד החיבור שלך'
+	String get yourCode => 'קוד החיבור שלך';
+
+	/// he: 'בתוקף עד $time'
+	String validUntil({required Object time}) => 'בתוקף עד ${time}';
+
+	/// he: 'העתקה'
+	String get copy => 'העתקה';
+
+	/// he: 'הקוד הועתק'
+	String get copied => 'הקוד הועתק';
+
+	/// he: 'שליחת הקוד בוואטסאפ'
+	String get sendCode => 'שליחת הקוד בוואטסאפ';
+
+	/// he: 'קוד החיבור שלי ל-EasyPlate: $code'
+	String codeMessage({required Object code}) => 'קוד החיבור שלי ל-EasyPlate: ${code}';
+
+	/// he: 'אחרי השליחה המסך יתעדכן לבד.'
+	String get waiting => 'אחרי השליחה המסך יתעדכן לבד.';
+
+	/// he: 'קוד חדש'
+	String get newCode => 'קוד חדש';
+
+	/// he: 'מספר מחובר'
+	String get linkedNumber => 'מספר מחובר';
+
+	/// he: 'שימוש החודש'
+	String get usageTitle => 'שימוש החודש';
+
+	/// he: '$used מתוך $limit הודעות חודשיות נוצלו'
+	String usage({required Object used, required Object limit}) => '${used} מתוך ${limit} הודעות חודשיות נוצלו';
+
+	/// he: 'פרימיום'
+	String get premiumTag => 'פרימיום';
+
+	/// he: 'במסלול החינמי יש מכסה חודשית. הודעה בלי מצרכים לא נספרת.'
+	String get freeNote => 'במסלול החינמי יש מכסה חודשית. הודעה בלי מצרכים לא נספרת.';
+
+	/// he: 'המכסה החודשית נוצלה. היא מתאפסת בתחילת החודש הבא, או בשדרוג לפרימיום.'
+	String get quotaReached => 'המכסה החודשית נוצלה. היא מתאפסת בתחילת החודש הבא, או בשדרוג לפרימיום.';
+
+	/// he: 'שדרוג לפרימיום'
+	String get upgrade => 'שדרוג לפרימיום';
+
+	/// he: 'לאיזו רשימה להוסיף'
+	String get targetList => 'לאיזו רשימה להוסיף';
+
+	/// he: 'אוטומטי (הרשימה הראשית)'
+	String get targetAuto => 'אוטומטי (הרשימה הראשית)';
+
+	/// he: 'רשימות משותפות לא מופיעות כאן — הבוט מוסיף רק לרשימות שלך.'
+	String get targetHint => 'רשימות משותפות לא מופיעות כאן — הבוט מוסיף רק לרשימות שלך.';
+
+	/// he: 'פתיחת שיחה עם הבוט'
+	String get openChat => 'פתיחת שיחה עם הבוט';
+
+	/// he: 'ניתוק המספר'
+	String get unlink => 'ניתוק המספר';
+
+	/// he: 'לנתק את המספר מהבוט? הודעות ממנו כבר לא ייכנסו לרשימת הקניות. אפשר לחבר שוב מתי שרוצים.'
+	String get unlinkConfirm => 'לנתק את המספר מהבוט? הודעות ממנו כבר לא ייכנסו לרשימת הקניות. אפשר לחבר שוב מתי שרוצים.';
+
+	/// he: 'המספר נותק'
+	String get unlinked => 'המספר נותק';
+
+	/// he: 'החיבור לוואטסאפ לא זמין כרגע.'
+	String get unavailable => 'החיבור לוואטסאפ לא זמין כרגע.';
+
+	/// he: 'הרשימה הזו כבר לא קיימת או שאי אפשר לערוך אותה.'
+	String get listGone => 'הרשימה הזו כבר לא קיימת או שאי אפשר לערוך אותה.';
+
+	/// he: 'משהו השתבש. נסו שוב.'
+	String get failed => 'משהו השתבש. נסו שוב.';
+
+	/// he: 'אין חיבור לאינטרנט. בדקו את החיבור ונסו שוב.'
+	String get offline => 'אין חיבור לאינטרנט. בדקו את החיבור ונסו שוב.';
+
+	/// he: 'הבוט עוד לא הוגדר. נסו שוב מאוחר יותר.'
+	String get botNotReady => 'הבוט עוד לא הוגדר. נסו שוב מאוחר יותר.';
+
+	/// he: 'לא הצלחנו לפתוח את וואטסאפ. ודאו שהאפליקציה מותקנת.'
+	String get cannotOpen => 'לא הצלחנו לפתוח את וואטסאפ. ודאו שהאפליקציה מותקנת.';
+
+	/// he: 'ניסיון חוזר'
+	String get retry => 'ניסיון חוזר';
+}
+
 // Path: walkthrough.topics
 class Translations$walkthrough$topics$he {
 	Translations$walkthrough$topics$he.internal(this._root);
@@ -5962,6 +6553,12 @@ class Translations$adminConfig$labels$he {
 
 	/// he: 'להציג למנהל את כל הפיצ'רים'
 	String get admin_all_features => 'להציג למנהל את כל הפיצ\'רים';
+
+	/// he: 'מכסת וואטסאפ חודשית (חינמי)'
+	String get quota_whatsapp_free_monthly => 'מכסת וואטסאפ חודשית (חינמי)';
+
+	/// he: 'מכסת וואטסאפ חודשית (פרימיום)'
+	String get quota_whatsapp_premium_monthly => 'מכסת וואטסאפ חודשית (פרימיום)';
 }
 
 // Path: adminUser.groups
@@ -6461,6 +7058,10 @@ extension on Translations {
 			'common.ok' => 'הבנתי',
 			'common.next' => 'הבא',
 			'common.back' => 'חזרה',
+			'common.like' => 'לייק',
+			'common.increase' => 'להגדיל',
+			'common.decrease' => 'להקטין',
+			'common.filters' => 'סינון',
 			'common.done' => 'סיום',
 			'common.add' => 'הוספה',
 			'common.edit' => 'עריכה',
@@ -6643,6 +7244,11 @@ extension on Translations {
 			'settings.themeSystem' => 'לפי המכשיר',
 			'settings.themeLight' => 'בהיר',
 			'settings.themeDark' => 'כהה',
+			'settings.textSize' => 'גודל טקסט',
+			'settings.textSizeNormal' => 'רגיל',
+			'settings.textSizeLarge' => 'גדול',
+			'settings.textSizeExtraLarge' => 'גדול מאוד',
+			'settings.textSizePreview' => 'ככה ייראה הטקסט באפליקציה',
 			'settings.soundEffects' => 'אפקטי קול (דפדוף עמודים)',
 			'settings.fastPageTurn' => 'מעבר מהיר בספר',
 			'settings.fastPageTurnHint' => 'קפיצה מתוכן העניינים או מהניווט המהיר מדפדפת דף אחד בלבד אל היעד. בכיבוי מדפדפים דרך כל העמודים שבדרך.',
@@ -6788,6 +7394,22 @@ extension on Translations {
 			'recipe.deleteConfirm' => 'המתכון יימחק לצמיתות. אי אפשר לבטל את הפעולה.',
 			'recipe.deleteSharedConfirm' => 'המתכון יוסר רק אצלך. שאר המשתתפים בשיתוף ימשיכו לראות אותו.',
 			'recipe.deleted' => 'המתכון נמחק',
+			'recipe.undo' => 'ביטול',
+			'recipe.savedRemoved' => 'הוסר מהמתכונים השמורים',
+			'recipe.bookDeleted' => ({required Object title}) => 'הספר „${title}” נמחק',
+			'recipe.removedFromBook' => 'הוסר מהספר',
+			'recipe.noBookToAdd' => 'אין ספר להוסיף אליו — המתכון כבר בכל הספרים, או שעוד לא יצרתם ספר',
+			'recipe.lastUsedBook' => 'בשימוש האחרון',
+			'recipe.alreadyInBook' => 'כבר בספר',
+			'recipe.viewOnlyBook' => 'צפייה בלבד',
+			'recipe.addToPlan' => 'הוספה לתפריט',
+			'recipe.planLabel' => 'תפריט',
+			'recipe.dayLabel' => 'יום',
+			'recipe.mealLabel' => 'ארוחה',
+			'recipe.noPlanToAdd' => 'עוד אין תפריט להוסיף אליו. צרו אחד בלשונית התפריט',
+			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'נוסף לתפריט: ${day} · ${meal}',
+			'recipe.recentlyCooked' => 'בישלתם לאחרונה',
+			'recipe.mostCooked' => 'הכי הרבה בישלתם',
 			'cookMode.title' => 'מצב בישול',
 			'cookMode.start' => 'להתחיל לבשל',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'שלב ${n} מתוך ${total}',
@@ -6816,6 +7438,13 @@ extension on Translations {
 			'cookMode.timeUpBody' => ({required Object n}) => 'שלב ${n}: הזמן נגמר',
 			'cookMode.runningTimers' => 'טיימרים פועלים',
 			'cookMode.premiumOnly' => 'מצב בישול הוא חלק מ-EasyPlate Premium',
+			'cookMode.voiceOn' => 'להפעיל פקודות קוליות',
+			'cookMode.voiceOff' => 'לכבות פקודות קוליות',
+			'cookMode.voiceListening' => 'מקשיב… אמרו "הבא", "הקודם", "שוב" או "טיימר"',
+			'cookMode.voiceHeard' => ({required Object command}) => 'שמעתי: ${command}',
+			'cookMode.voiceMicDenied' => 'כדי לשמוע פקודות צריך הרשאת מיקרופון',
+			'cookMode.voiceUnavailable' => 'זיהוי דיבור לא זמין במכשיר הזה',
+			'cookMode.repeat' => 'שוב',
 			'nutrition.title' => 'ערכים תזונתיים',
 			'nutrition.perServing' => 'למנה',
 			'nutrition.perServingHint' => 'כל הערכים הם למנה אחת. השאירו ריק כדי להוריד את ההערכה.',
@@ -6935,6 +7564,8 @@ extension on Translations {
 			'sharing.send' => 'שליחת הזמנה',
 			'sharing.sent' => 'ההזמנה נשלחה',
 			'sharing.invalidContact' => 'יש להזין אימייל תקין, או מספר טלפון (עם קידומת מדינה +… למספר מחוץ לישראל)',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.notFound' => 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.',
 			'sharing.self' => 'אי אפשר לשתף עם עצמכם',
 			'sharing.failed' => 'השיתוף נכשל, נסו שוב',
@@ -6967,8 +7598,6 @@ extension on Translations {
 			'sharing.shareAction' => 'שיתוף',
 			'sharing.directoryUnavailable' => 'השיתוף עדיין לא מוגדר בשרת. נסו לצאת ולהיכנס שוב; אם זה נמשך, יש לפרוס את חוקי Firestore.',
 			'sharing.shareBook' => 'שיתוף ספר',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharePlan' => 'שיתוף תפריט',
 			'sharing.acceptedBook' => 'הספר נוסף לספרייה שלכם',
 			'sharing.acceptedPlan' => 'התפריט נוסף לתפריטים שלכם',
@@ -7044,6 +7673,42 @@ extension on Translations {
 			'editor.savePlainHint' => 'שמירת השינויים כפי שהם, ללא המתנה',
 			'editor.saveWithAi' => 'שמירה עם עיבוד AI',
 			'editor.saveWithAiHint' => 'תיקון שגיאות כתיב והתאמת הזמנים שבשלבי ההכנה',
+			'bulkImport.title' => 'ייבוא כמה מתכונים',
+			'bulkImport.entry' => 'ייבוא כמה מתכונים בבת אחת',
+			'bulkImport.entryHint' => 'הדביקו רשימת קישורים, או בחרו ייצוא של צ\'אט מוואטסאפ',
+			'bulkImport.pasteHint' => 'הדביקו כאן קישורים או מתכונים — כל אחד בשורה או בפסקה משלו',
+			'bulkImport.findInText' => 'חיפוש מתכונים בטקסט',
+			'bulkImport.pickExport' => 'בחירת ייצוא צ\'אט (txt או zip)',
+			'bulkImport.exportHelp' => 'בוואטסאפ: פותחים את הצ\'אט ← עוד ← ייצוא צ\'אט ← בלי מדיה, ומשתפים ל-EasyPlate או שומרים בקבצים.',
+			'bulkImport.privacyNote' => 'נשלח רק תוכן ההודעות שתסמנו — בלי שמות, בלי מספרים ובלי תאריכים.',
+			'bulkImport.noneFound' => 'לא מצאנו כאן קישורים או מתכונים',
+			'bulkImport.fileUnreadable' => 'לא הצלחנו לקרוא את הקובץ הזה',
+			'bulkImport.foundCount' => ({required Object count}) => 'נמצאו: ${count}',
+			'bulkImport.quotaNote' => 'כל מתכון נספר במכסה היומית, בדיוק כמו ייבוא רגיל.',
+			'bulkImport.selectAll' => 'סימון הכול',
+			'bulkImport.selectNone' => 'ביטול הסימון',
+			'bulkImport.importCount' => ({required Object count}) => 'ייבוא ${count}',
+			'bulkImport.stop' => 'עצירה',
+			'bulkImport.done' => 'סיום',
+			'bulkImport.leaveWhileRunning' => 'הייבוא עוד רץ. לעצור ולצאת? מה שכבר נשמר יישאר.',
+			'bulkImport.kindPage' => 'דף מתכון',
+			'bulkImport.kindVideo' => 'סרטון',
+			'bulkImport.kindText' => 'מתכון כתוב',
+			'bulkImport.statusWaiting' => 'ממתין',
+			'bulkImport.statusRunning' => 'מייבאים…',
+			'bulkImport.statusDone' => 'נשמר',
+			'bulkImport.statusFailed' => 'לא הצליח',
+			'bulkImport.statusSkipped' => 'דולג',
+			'bulkImport.quotaStopped' => ({required Object done}) => 'המכסה היומית נגמרה, אז עצרנו. ${done} מתכונים נשמרו — את השאר אפשר לייבא מחר.',
+			'bulkImport.refusedStopped' => ({required Object done}) => 'עצרנו: החשבון לא יכול לנתח מתכונים כרגע. ${done} מתכונים נשמרו.',
+			'bulkImport.stopped' => ({required Object done}) => 'עצרנו. ${done} מתכונים נשמרו.',
+			'bulkImport.finished' => ({required Object done}) => 'סיימנו! ${done} מתכונים נשמרו.',
+			'bulkImport.finishedWithFailures' => ({required Object done, required Object failed}) => 'סיימנו: ${done} נשמרו, ${failed} לא הצליחו.',
+			'clipboardPrompt.title' => 'יש קישור בלוח',
+			'clipboardPrompt.message' => 'להוסיף אותו כמתכון?',
+			'clipboardPrompt.add' => 'הוספה',
+			'clipboardPrompt.dismiss' => 'לא עכשיו',
+			'clipboardPrompt.noLink' => 'בלוח כבר אין קישור',
 			'ingestion.title' => 'הוספת מתכון',
 			'ingestion.pasteText' => 'הדבקת טקסט',
 			'ingestion.pasteHint' => 'הדביקו כאן מתכון מוואטסאפ או מכל מקור אחר',
@@ -7095,6 +7760,19 @@ extension on Translations {
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} קבצים — ינותחו יחד כמתכון אחד, לפי הסדר',
 			'ingestion.shareMoreHint' => 'אפשר לחזור לוואטסאפ ולשתף עוד הקלטה — היא תצטרף לרשימה כאן.',
 			'ingestion.chooseSource' => 'מאיפה מגיע המתכון?',
+			'ingestion.autoHint' => 'הדביקו קישור או מתכון, או כתבו מה בא לכם — נזהה לבד מה זה',
+			'ingestion.autoPicked' => 'הקטגוריה נבחרה אוטומטית לפי הטקסט · אפשר לבחור אחרת',
+			'ingestion.autoWaiting' => 'הקטגוריה תיבחר אוטומטית לפי מה שתכתבו',
+			'ingestion.tapForInfo' => 'לחיצה על קטגוריה מציגה הסבר',
+			'ingestion.sharedAppended' => 'הטקסט ששותף נוסף לסוף',
+			'ingestion.autoRunIn' => ({required Object seconds}) => 'מתחיל לנתח בעוד ${seconds}…',
+			'ingestion.recentTitle' => 'אחרונים',
+			'ingestion.voiceStart' => 'הקלדה בקול',
+			'ingestion.voiceStop' => 'עצירת ההקלטה',
+			'ingestion.voiceUnavailable' => 'זיהוי דיבור לא זמין במכשיר הזה',
+			'ingestion.addToBookTitle' => 'להוסיף את המתכון לספר?',
+			'ingestion.addToBookSkip' => 'לא עכשיו',
+			'ingestion.addedToBook' => ({required Object book}) => 'המתכון נוסף לספר „${book}”',
 			'ingestion.pasteTextDescription' => 'קיבלתם מתכון בוואטסאפ, העתקתם מאתר או מהודעה? הדביקו כאן את הטקסט כמו שהוא. המודל יזהה את שם המנה, המצרכים עם הכמויות ושלבי ההכנה, ויסדר הכול בפורמט אחיד. בלי מגבלה יומית.',
 			'ingestion.webSearchDescription' => 'כתבו מה בא לכם להכין, ונחפש בשבילכם מתכונים ברחבי האינטרנט. מתוך התוצאות תוכלו לקרוא את המתכון המקורי כפי שהוא, או לייבא אותו לפורמט המובנה של האפליקציה.',
 			'ingestion.webSearchHint' => 'לדוגמה: קובה סלק, שקשוקה, עוגת גבינה',
@@ -7107,6 +7785,13 @@ extension on Translations {
 			'ingestion.fileDescription' => 'בחרו קובץ אודיו שבו מישהו מקריא או מספר את המתכון, הודעה קולית מוואטסאפ, או PDF של מתכון. נתמלל ונקרא את הכול ונחלץ ממנו מתכון מסודר. אפשר לצרף כמה קבצים, והם ינותחו יחד כמתכון אחד.',
 			'ingestion.saveFailed' => 'לא הצלחנו לשמור את המתכון. נסו שוב.',
 			'ingestion.recordingTag' => 'הקלטה',
+			'ingestion.filePhoto' => 'קובץ / תמונה',
+			'ingestion.filePhotoDescription' => 'צלמו דף מספר בישול או מתכון בכתב יד, בחרו מהגלריה צילום מסך (למשל של פוסט באינסטגרם), או צרפו הקלטה, הודעה קולית מוואטסאפ או PDF. נקרא את הכול ונחלץ מתכון מסודר. כמה תמונות או קבצים ינותחו יחד כמתכון אחד — למשל מתכון שנמשך על שני עמודים.',
+			'ingestion.filePhotoHint' => 'אפשר גם לשתף תמונה, צילום מסך, הקלטה או PDF ישירות מכל אפליקציה אל Easy Plate, דרך כפתור השיתוף הרגיל.',
+			'ingestion.takePhoto' => 'צילום',
+			'ingestion.fromGallery' => 'מהגלריה',
+			'ingestion.photoTag' => 'תמונה',
+			'ingestion.filePhotoUnsupported' => 'אפשר לנתח רק תמונות, קובצי אודיו ו‑PDF.',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} KB',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} MB',
 			'ingestion.videoPhotoTitle' => 'תמונה מהסרטון',
@@ -7131,6 +7816,24 @@ extension on Translations {
 			'ingestion.suggestDietReset' => 'חזרה להעדפות שלי',
 			'ingestion.suggestSearch' => 'חפש הצעות',
 			'mealPlanner.title' => 'תכנון ארוחות',
+			'mealPlanner.fillWeek' => 'מלאו לי את השבוע',
+			'mealPlanner.fillWeekHint' => 'ממלא את הארוחות הריקות מהמתכונים שלכם, בלי חזרות',
+			'mealPlanner.fillWeekDone' => ({required Object count}) => 'מילאנו ${count} ארוחות מהמתכונים שלכם',
+			'mealPlanner.fillWeekPartial' => ({required Object filled, required Object total}) => 'מילאנו ${filled} מתוך ${total} ארוחות — אין מספיק מתכונים מתאימים לשאר',
+			'mealPlanner.fillWeekNothing' => 'אין ארוחות ריקות למלא',
+			'mealPlanner.fillWeekNoRecipes' => 'אין מתכונים שמורים שמתאימים לארוחות הריקות',
+			'mealPlanner.copyWeek' => 'העתקת השבוע הקודם',
+			'mealPlanner.copyWeekHint' => 'מעתיק מנות מתפריט קודם לארוחות הריקות',
+			'mealPlanner.copyWeekPick' => 'מאיזה תפריט להעתיק?',
+			'mealPlanner.copyWeekDone' => ({required Object count, required Object name}) => 'הועתקו ${count} ארוחות מ„${name}”',
+			'mealPlanner.copyWeekNothing' => 'אין ארוחות ריקות שמתאימות להעתקה',
+			'mealPlanner.copyWeekNoSource' => 'אין תפריט קודם עם מנות להעתקה',
+			'mealPlanner.clearDay' => 'ניקוי היום',
+			'mealPlanner.dayCleared' => 'המנות של היום נוקו',
+			'mealPlanner.mealRemoved' => 'הארוחה נמחקה',
+			'mealPlanner.dishRemoved' => 'המנה הוסרה',
+			'mealPlanner.emptyWeek' => 'השבוע עדיין ריק',
+			'mealPlanner.emptyWeekHint' => 'אפשר למלא אותו מהמתכונים שלכם בלחיצה, או להעתיק את השבוע הקודם',
 			'mealPlanner.newPlan' => 'תפריט חדש',
 			'mealPlanner.planName' => 'שם התפריט',
 			'mealPlanner.addMeal' => 'הוספת ארוחה',
@@ -7166,6 +7869,27 @@ extension on Translations {
 			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'לצאת מהשיתוף של התפריט "${name}"? הוא יוסר מהרשימה שלך.',
 			'mealPlanner.planDeleted' => 'התפריט נמחק',
 			'groceryList.title' => 'רשימת קניות',
+			'groceryList.voiceAdd' => 'הכתבה בקול',
+			'groceryList.voiceListening' => 'מקשיבים… למשל: חלב, ביצים ושתי חבילות לחם',
+			'groceryList.voiceHeard' => ({required Object count}) => 'שמענו ${count} פריטים — אפשר להסיר לפני ההוספה',
+			'groceryList.voiceAddAll' => ({required Object count}) => 'הוספת ${count} פריטים',
+			'groceryList.voiceNothing' => 'לא קלטנו פריטים, נסו שוב',
+			'groceryList.voiceUnavailable' => 'זיהוי דיבור לא זמין במכשיר הזה',
+			'groceryList.itemsAdded' => ({required Object count}) => 'נוספו ${count} פריטים',
+			'groceryList.boughtAll' => 'קניתי הכל',
+			'groceryList.boughtAllDone' => ({required Object count}) => 'סומנו ${count} פריטים כנקנו',
+			'groceryList.itemRemoved' => 'הפריט נמחק',
+			'groceryList.checkedDeleted' => ({required Object count}) => 'נמחקו ${count} פריטים',
+			'groceryList.listDeletedUndo' => ({required Object name}) => 'הרשימה „${name}” נמחקה',
+			'groceryList.aisleSort' => 'לפי מחלקות',
+			'groceryList.aisleProduce' => 'פירות וירקות',
+			'groceryList.aisleDairy' => 'מוצרי חלב וביצים',
+			'groceryList.aisleBakery' => 'מאפייה',
+			'groceryList.aisleMeat' => 'בשר ודגים',
+			'groceryList.aisleDryGoods' => 'מזווה',
+			'groceryList.aisleFrozen' => 'קפואים',
+			'groceryList.aisleCleaning' => 'ניקיון ובית',
+			'groceryList.aisleOther' => 'שונות',
 			'groceryList.aggregated' => 'מרוכז מכל התפריטים הפעילים',
 			'groceryList.addItem' => 'פריט חדש',
 			'groceryList.category' => 'קטגוריה',
@@ -7354,6 +8078,8 @@ extension on Translations {
 			'image.remove' => 'הסרת התמונה',
 			'image.generate' => 'צור תמונה ב-AI',
 			'image.generating' => 'יוצר תמונה… זה לוקח כמה שניות',
+			_ => null,
+		} ?? switch (path) {
 			'image.generateFailed' => 'יצירת התמונה נכשלה, נסו שוב',
 			'image.coverTitle' => 'איזו כריכה ליצור?',
 			'image.coverHint' => 'בחרו קטגוריה, כתבו משהו, או שניהם',
@@ -7481,8 +8207,6 @@ extension on Translations {
 			'walkthrough.startHint' => 'סיור מודרך בכל הפעולות באפליקציה, צעד אחר צעד',
 			'walkthrough.startFull' => 'התחל הדרכה מלאה',
 			'walkthrough.focused' => 'הצג הנחיה ממוקדת',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.next' => 'הבא',
 			'walkthrough.finish' => 'סיום',
 			'walkthrough.skipStep' => 'דלג על שלב',
@@ -7868,6 +8592,8 @@ extension on Translations {
 			'assistant.suggest.templates.14' => 'תיצור תוכנית לשבוע הבא',
 			'assistant.suggest.templates.15' => 'מה מתוכנן ליום {day}?',
 			'assistant.suggest.templates.16' => 'תשנה את יום הקניות ל{day}',
+			_ => null,
+		} ?? switch (path) {
 			'assistant.suggest.templates.17' => 'תציע ארוחת ערב {diet} ליום {day}',
 			'assistant.suggest.templates.18' => 'כמה זמן מבשלים ביצה קשה?',
 			'assistant.suggest.templates.19' => 'במה אפשר להחליף {food} במתכון?',
@@ -7995,8 +8721,6 @@ extension on Translations {
 			'shareCode.revoked' => 'הקוד בוטל.',
 			'shareCode.usedUp' => 'הקוד נוצל עד תום.',
 			'shareCode.self' => 'זה הקוד שלכם.',
-			_ => null,
-		} ?? switch (path) {
 			'shareCode.gone' => 'מה שהקוד שיתף כבר לא קיים.',
 			'shareCode.tooManyRecipes' => 'השיתוף הזה מכיל יותר מדי מתכונים להצטרפות בבת אחת. בקשו מהבעלים לפצל אותו.',
 			'shareCode.failed' => 'ההצטרפות נכשלה. נסו שוב.',
@@ -8109,6 +8833,26 @@ extension on Translations {
 			'featureName.ingestSocialVideo' => 'הוספת מתכון מסרטון',
 			'featureName.ingestAiRequest' => 'בקשת מתכון מה-AI',
 			'featureName.ingestFile' => 'הוספת מתכון מקובץ',
+			'featureName.ingestAutoChannel' => 'בחירת קטגוריה אוטומטית בהוספת מתכון',
+			'featureName.ingestPasteAutoRun' => 'ניתוח אוטומטי של קישור שהודבק',
+			'featureName.ingestRecent' => 'חיפושים אחרונים בהוספת מתכון',
+			'featureName.ingestVoice' => 'הקלדה בקול בהוספת מתכון',
+			'featureName.saveToBookPrompt' => 'הצעה להוסיף לספר אחרי שמירה',
+			'featureName.clipboardLinkPrompt' => 'הצעה להוסיף קישור מהלוח',
+			'featureName.ingestPhoto' => 'הוספת מתכון מתמונה',
+			'featureName.reviewStickySave' => 'כפתור שמירה קבוע בסקירה',
+			'featureName.bulkImport' => 'ייבוא כמה מתכונים יחד',
+			'featureName.recipeQuickMenu' => 'תפריט מהיר בלחיצה ארוכה',
+			'featureName.undoInsteadOfConfirm' => 'ביטול במקום אישור',
+			'featureName.rememberLastChoices' => 'זכירת הבחירה האחרונה',
+			'featureName.recentCooked' => 'בישלת לאחרונה / הכי מבושלים',
+			'featureName.planAutofill' => 'מלא לי את השבוע',
+			'featureName.planCopyWeek' => 'העתקת השבוע הקודם',
+			'featureName.groceryVoiceAdd' => 'הוספה בקול לרשימת קניות',
+			'featureName.groceryAisleSort' => 'סידור לפי מחלקות בסופר',
+			'featureName.groceryCheckAll' => 'קניתי הכל',
+			'featureName.textSize' => 'גודל טקסט',
+			'featureName.cookVoiceNext' => '"הבא" בקול במצב בישול',
 			'featureName.shareIn' => 'שיתוף מאפליקציה אחרת',
 			'featureName.saveWithAi' => 'שמירה עם AI',
 			'featureName.cookMode' => 'מצב בישול',
@@ -8165,6 +8909,7 @@ extension on Translations {
 			'featureName.recipeSuggestions' => 'הצעות מתכונים לפי העדפות',
 			'featureName.webCheckoutIl' => 'רכישה באתר (ישראל)',
 			'featureName.webCheckoutIntl' => 'רכישה באתר (חו"ל)',
+			'featureName.whatsappBot' => 'בוט וואטסאפ לרשימת קניות',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -8224,6 +8969,8 @@ extension on Translations {
 			'adminConfig.labels.support_phone' => 'מספר WhatsApp לתמיכה',
 			'adminConfig.labels.support_email' => 'מייל תמיכה',
 			'adminConfig.labels.admin_all_features' => 'להציג למנהל את כל הפיצ\'רים',
+			'adminConfig.labels.quota_whatsapp_free_monthly' => 'מכסת וואטסאפ חודשית (חינמי)',
+			'adminConfig.labels.quota_whatsapp_premium_monthly' => 'מכסת וואטסאפ חודשית (פרימיום)',
 			'wakeWord.title' => 'היי שפי',
 			'wakeWord.hint' => 'פותחים שיחה עם שפי בקול, בלי לגעת בטלפון',
 			'wakeWord.intro' => 'אומרים "היי שפי" ושפי נפתח ומקשיב. אפשר גם להמשיך באותו משפט, ושפי יענה ישר.',
@@ -8359,6 +9106,8 @@ extension on Translations {
 			'adminUser.collections.recipes' => 'מתכונים',
 			'adminUser.collections.books' => 'ספרי מתכונים',
 			'adminUser.collections.meal_plans' => 'תפריטים',
+			_ => null,
+		} ?? switch (path) {
 			'adminUser.collections.grocery_lists' => 'רשימות קניות',
 			'adminUser.collections.receipts' => 'קבלות',
 			'adminUser.collections.price_records' => 'רשומות מחיר',
@@ -8418,6 +9167,45 @@ extension on Translations {
 			'countries.ET' => 'אתיופיה',
 			'countries.AU' => 'אוסטרליה',
 			'countries.BR' => 'ברזיל',
+			'whatsappBot.title' => 'חיבור לוואטסאפ',
+			'whatsappBot.hint' => 'הוספת מצרכים לרשימת הקניות בהודעת וואטסאפ',
+			'whatsappBot.connected' => 'וואטסאפ מחובר',
+			'whatsappBot.notConnected' => 'וואטסאפ לא מחובר',
+			'whatsappBot.intro' => 'כתבו לבוט של EasyPlate בוואטסאפ מה לקנות — "חלב, 2 כיכרות לחם ושמן זית" — והמצרכים נכנסים לרשימת הקניות שלכם.',
+			'whatsappBot.howTitle' => 'איך מחברים',
+			'whatsappBot.step1' => 'לוחצים על "קבלת קוד חיבור" ומקבלים קוד בן 6 ספרות.',
+			'whatsappBot.step2' => 'לוחצים על "שליחת הקוד בוואטסאפ" — נפתחת שיחה עם הבוט וההודעה כבר כתובה.',
+			'whatsappBot.step3' => 'שולחים את ההודעה. המספר שממנו נשלחה מתחבר לחשבון.',
+			'whatsappBot.getCode' => 'קבלת קוד חיבור',
+			'whatsappBot.yourCode' => 'קוד החיבור שלך',
+			'whatsappBot.validUntil' => ({required Object time}) => 'בתוקף עד ${time}',
+			'whatsappBot.copy' => 'העתקה',
+			'whatsappBot.copied' => 'הקוד הועתק',
+			'whatsappBot.sendCode' => 'שליחת הקוד בוואטסאפ',
+			'whatsappBot.codeMessage' => ({required Object code}) => 'קוד החיבור שלי ל-EasyPlate: ${code}',
+			'whatsappBot.waiting' => 'אחרי השליחה המסך יתעדכן לבד.',
+			'whatsappBot.newCode' => 'קוד חדש',
+			'whatsappBot.linkedNumber' => 'מספר מחובר',
+			'whatsappBot.usageTitle' => 'שימוש החודש',
+			'whatsappBot.usage' => ({required Object used, required Object limit}) => '${used} מתוך ${limit} הודעות חודשיות נוצלו',
+			'whatsappBot.premiumTag' => 'פרימיום',
+			'whatsappBot.freeNote' => 'במסלול החינמי יש מכסה חודשית. הודעה בלי מצרכים לא נספרת.',
+			'whatsappBot.quotaReached' => 'המכסה החודשית נוצלה. היא מתאפסת בתחילת החודש הבא, או בשדרוג לפרימיום.',
+			'whatsappBot.upgrade' => 'שדרוג לפרימיום',
+			'whatsappBot.targetList' => 'לאיזו רשימה להוסיף',
+			'whatsappBot.targetAuto' => 'אוטומטי (הרשימה הראשית)',
+			'whatsappBot.targetHint' => 'רשימות משותפות לא מופיעות כאן — הבוט מוסיף רק לרשימות שלך.',
+			'whatsappBot.openChat' => 'פתיחת שיחה עם הבוט',
+			'whatsappBot.unlink' => 'ניתוק המספר',
+			'whatsappBot.unlinkConfirm' => 'לנתק את המספר מהבוט? הודעות ממנו כבר לא ייכנסו לרשימת הקניות. אפשר לחבר שוב מתי שרוצים.',
+			'whatsappBot.unlinked' => 'המספר נותק',
+			'whatsappBot.unavailable' => 'החיבור לוואטסאפ לא זמין כרגע.',
+			'whatsappBot.listGone' => 'הרשימה הזו כבר לא קיימת או שאי אפשר לערוך אותה.',
+			'whatsappBot.failed' => 'משהו השתבש. נסו שוב.',
+			'whatsappBot.offline' => 'אין חיבור לאינטרנט. בדקו את החיבור ונסו שוב.',
+			'whatsappBot.botNotReady' => 'הבוט עוד לא הוגדר. נסו שוב מאוחר יותר.',
+			'whatsappBot.cannotOpen' => 'לא הצלחנו לפתוח את וואטסאפ. ודאו שהאפליקציה מותקנת.',
+			'whatsappBot.retry' => 'ניסיון חוזר',
 			_ => null,
 		};
 	}

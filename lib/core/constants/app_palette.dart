@@ -151,7 +151,10 @@ class AppPalette {
     inverseSurface: Color(0xFF2D2A5B),
     inverseOnSurface: Color(0xFFF3EEFF),
     surfaceTint: Color(0xFF5D3FE0),
-    outline: Color(0xFF797587),
+    // Darker than Stitch's 0xFF797587, which is used for secondary text
+    // (hints, meta lines, crossed-off rows) and read 3.8–4.5:1 on the light
+    // surfaces — under WCAG AA's 4.5:1. Same hue, 4.6–5.3:1 now.
+    outline: Color(0xFF6D6979),
     outlineVariant: Color(0xFFC9C4D8),
     primary: Color(0xFF5B3CDD),
     onPrimary: Color(0xFFFFFFFF),

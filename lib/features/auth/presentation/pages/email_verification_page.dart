@@ -131,6 +131,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           appBar: ClayTopAppBar(
             title: t.auth.verifyEmailTitle,
             trailingIcon: Icons.logout_rounded,
+            trailingTooltip: t.auth.signOut,
             onTrailingTap: _busy
                 ? null
                 : () => signOutWithFeedback(context, context.read<AuthBloc>()),

@@ -345,8 +345,76 @@ class AppDialog extends StatelessWidget {
   /// [duration] or on a tap or a swipe up. One at a time — a new notice takes
   /// the place of whatever is still showing, so a burst of them never stacks
   /// into a wall.
-  void notify(BuildContext context, {Duration duration = noticeDuration}) {
-    _Notices.show(Overlay.of(context, rootOverlay: true), this, duration);
+  ///
+  /// [actionLabel] with [onAction] adds one text button at the notice's end
+  /// ("Undo"); a tap runs [onAction] and takes the notice away. [onClosed]
+  /// runs exactly once when the notice is gone for any reason — its time ran
+  /// out, it was tapped or swiped away, its action was used, or a newer
+  /// notice replaced it. Every existing call passes neither and is unchanged.
+  void notify(
+    BuildContext context, {
+    Duration duration = noticeDuration,
+    String? actionLabel,
+    VoidCallback? onAction,
+    VoidCallback? onClosed,
+  }) {
+    _Notices.show(
+      Overlay.of(context, rootOverlay: true),
+      this,
+      duration,
+      action: actionLabel != null && onAction != null
+          ? (label: actionLabel, onTap: onAction)
+          : null,
+      onClosed: onClosed,
+    );
+  }
+
+  /// How long an undo notice waits before the change it offers to take back
+  /// becomes final. Longer than [noticeDuration]: reaching for the button
+  /// takes a moment more than reading.
+  static const undoDuration = Duration(seconds: 5);
+
+  /// The undo notice — the app's replacement for "are you sure?" on a
+  /// change that can be taken back. The one generic API for it; use it for
+  /// any delete or removal that can be restored exactly.
+  ///
+  /// The change has already been made (or hidden) by the caller when this is
+  /// called. The notice says [message] with an "Undo" button for
+  /// [undoDuration]:
+  ///
+  /// * a tap on Undo runs [onUndo] — put things back exactly as they were;
+  /// * otherwise [onCommit] runs once the notice is gone (time out, tapped or
+  ///   swiped away, or replaced by any newer notice) — the place for the
+  ///   irreversible part: deleting a photo file, the record itself when the
+  ///   caller only hid it (see `UndoableRemovals`).
+  ///
+  /// Exactly one of the two runs. Keep the confirm dialog instead for a
+  /// change with server-side effects that cannot be reverted (leaving a
+  /// shared container, deleting one for every member).
+  static void undo(
+    BuildContext context, {
+    required String message,
+    required VoidCallback onUndo,
+    VoidCallback? onCommit,
+    IconData? icon,
+    Duration duration = undoDuration,
+  }) {
+    var undone = false;
+    AppDialog.info(
+      message: message,
+      icon: icon ?? Icons.delete_outline_rounded,
+    ).notify(
+      context,
+      duration: duration,
+      actionLabel: t.recipe.undo,
+      onAction: () {
+        undone = true;
+        onUndo();
+      },
+      onClosed: () {
+        if (!undone) onCommit?.call();
+      },
+    );
   }
 
   /// This widget standing alone is the modal card, so a popup can also be
@@ -569,10 +637,22 @@ class _ModalCard extends StatelessWidget {
 }
 
 /// The single floating notice, and its replacement policy.
+typedef _NoticeAction = ({String label, VoidCallback onTap});
+
 abstract class _Notices {
   static OverlayEntry? _entry;
 
-  static void show(OverlayState overlay, AppDialog dialog, Duration duration) {
+  /// The showing notice's [AppDialog.notify] `onClosed`, taken (and so run
+  /// at most once) by [dismiss].
+  static VoidCallback? _onClosed;
+
+  static void show(
+    OverlayState overlay,
+    AppDialog dialog,
+    Duration duration, {
+    _NoticeAction? action,
+    VoidCallback? onClosed,
+  }) {
     // A notice still on screen leaves at once — no exit animation, so the
     // new one is not read as a continuation of it.
     dismiss();
@@ -583,10 +663,12 @@ abstract class _Notices {
       builder: (_) => _Notice(
         dialog: dialog,
         duration: duration,
+        action: action,
         onDone: dismiss,
       ),
     );
     _entry = entry;
+    _onClosed = onClosed;
     overlay.insert(entry);
   }
 
@@ -594,18 +676,25 @@ abstract class _Notices {
     _entry?.remove();
     _entry?.dispose();
     _entry = null;
+    // After the entry is gone, so a callback that shows a notice of its own
+    // does not dismiss itself.
+    final closed = _onClosed;
+    _onClosed = null;
+    closed?.call();
   }
 }
 
 class _Notice extends StatefulWidget {
   final AppDialog dialog;
   final Duration duration;
+  final _NoticeAction? action;
   final VoidCallback onDone;
 
   const _Notice({
     required this.dialog,
     required this.duration,
     required this.onDone,
+    this.action,
   });
 
   @override
@@ -731,6 +820,24 @@ class _NoticeState extends State<_Notice> with SingleTickerProviderStateMixin {
                                 ],
                               ),
                             ),
+                            if (widget.action case final action?) ...[
+                              const SizedBox(width: AppSpacing.xs),
+                              TextButton(
+                                onPressed: () {
+                                  // Run before the notice leaves, so the
+                                  // close that follows knows it was used.
+                                  action.onTap();
+                                  _leave();
+                                },
+                                child: Text(
+                                  action.label,
+                                  style: AppTextStyles.labelMd.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

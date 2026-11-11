@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_motion.dart';
 import '../../constants/app_shadows.dart';
+import 'min_tap_target.dart';
 
 /// A round clay control for a single icon: the bar buttons, the actions on a
 /// page header. Ghost by default — faint lavender face, hairline edge, a light lift —
@@ -11,6 +12,11 @@ class ClayIconButton extends StatefulWidget {
   final IconData? icon;
   final VoidCallback? onTap;
   final String? tooltip;
+
+  /// What a screen reader says for the button when it should differ from
+  /// [tooltip], or when a long-press tooltip is not wanted. Every button
+  /// that does something needs one of the two: the icon alone is silent.
+  final String? semanticLabel;
   final bool filled;
   final double size;
 
@@ -22,6 +28,7 @@ class ClayIconButton extends StatefulWidget {
     this.icon,
     this.onTap,
     this.tooltip,
+    this.semanticLabel,
     this.filled = false,
     this.size = 40,
     this.child,
@@ -68,16 +75,35 @@ class _ClayIconButtonState extends State<ClayIconButton> {
     );
 
     if (widget.tooltip case final tooltip?) {
-      button = Tooltip(message: tooltip, child: button);
+      // The label below already says it; the tooltip is for sighted
+      // long-pressers only, so it is not read twice.
+      button = Tooltip(
+        message: tooltip,
+        excludeFromSemantics: true,
+        child: button,
+      );
     }
 
-    return GestureDetector(
+    final label = widget.semanticLabel ?? widget.tooltip;
+    final detector = GestureDetector(
       onTap: widget.onTap,
       onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
       onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
       onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
       behavior: HitTestBehavior.opaque,
       child: button,
+    );
+    // A decorative medallion (no tap, no label) stays out of the way of a
+    // screen reader and of touches meant for what is around it.
+    if (!enabled && label == null) return detector;
+    // Drawn at [size] (40 by default), touched at 48: see MinTapTarget.
+    return MinTapTarget(
+      child: Semantics(
+        button: true,
+        enabled: enabled,
+        label: label,
+        child: detector,
+      ),
     );
   }
 }

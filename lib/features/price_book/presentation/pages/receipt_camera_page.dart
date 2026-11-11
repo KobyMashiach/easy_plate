@@ -259,6 +259,7 @@ class _ReceiptCameraPageState extends State<ReceiptCameraPage>
                   foregroundColor: Colors.white,
                 ),
                 icon: const Icon(Icons.close_rounded),
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
             ),

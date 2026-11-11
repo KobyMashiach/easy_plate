@@ -133,6 +133,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <!-- A WhatsApp chat export that comes zipped, for the bulk import
+                 (the plain .txt export arrives through text/plain above). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/zip" />
+            </intent-filter>
+            <!-- A photo of a recipe: a cookbook page, a screenshot of a
+                 post, handwriting (read only while ff_ingest_photo is on). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
             <!-- Several at once: a voice note that came in parts. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
@@ -143,6 +157,12 @@
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/pdf" />
+            </intent-filter>
+            <!-- The pages of one recipe, photographed one by one. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
         <!-- "שפי" in the app drawer: a second icon that opens straight into

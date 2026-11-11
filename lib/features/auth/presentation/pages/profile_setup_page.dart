@@ -219,6 +219,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             // The only way out for someone who signed in with the wrong account
             // before their profile exists.
             trailingIcon: widget.isEditing ? null : Icons.logout_rounded,
+            trailingTooltip: t.auth.signOut,
             onTrailingTap: widget.isEditing || _busy
                 ? null
                 : () => signOutWithFeedback(context, context.read<AuthBloc>()),

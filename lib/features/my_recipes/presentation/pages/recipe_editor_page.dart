@@ -401,6 +401,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
               leadingIcon: Icons.close_rounded,
               onLeadingTap: () => Navigator.of(context).maybePop(),
               trailingIcon: Icons.spellcheck_rounded,
+              trailingTooltip: t.editor.fixSpelling,
               onTrailingTap: _busy ? null : _fixSpelling,
             ),
       body: SafeArea(
@@ -573,7 +574,12 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       behavior: HitTestBehavior.opaque,
       child: Row(
         children: [
-          BouncyCheckbox(value: value, onChanged: (_) => onTap(), size: 20),
+          BouncyCheckbox(
+            value: value,
+            onChanged: (_) => onTap(),
+            size: 20,
+            semanticLabel: label,
+          ),
           const SizedBox(width: AppSpacing.sm),
           Text(label, style: AppTextStyles.labelMd),
         ],

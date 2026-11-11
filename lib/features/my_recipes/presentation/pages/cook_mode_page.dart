@@ -18,6 +18,9 @@ import '../../../../core/widgets/press_scale.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/entities/recipe_ingredient_entity.dart';
 import '../widgets/ingredient_section_heading.dart';
+import '../../domain/cook_voice_command.dart';
+import '../cook_voice_listener.dart';
+import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/features/feature_gate.dart';
 
 /// One step at a time, in type large enough to read from across the counter,
@@ -52,11 +55,58 @@ class _CookModePageState extends State<CookModePage> {
     _session.addListener(_followSession);
     // No wakelock on the web and in tests; cooking carries on without it.
     unawaited(WakelockPlus.enable().catchError((_) {}));
+    // Made only when the console allows it; it resumes listening by itself
+    // when the cook left it on last time.
+    if (FeaturesFlags.cookVoiceNext.isEnabled) {
+      final voice = _voice = CookVoiceListener(onCommand: _onVoiceCommand);
+      voice.problem.addListener(_onVoiceProblem);
+      unawaited(voice.init());
+    }
+  }
+
+  /// Spoken "next / back / again / timer" (see CookVoiceListener). Null
+  /// while the feature is off.
+  CookVoiceListener? _voice;
+
+  void _onVoiceCommand(CookVoiceCommand command) {
+    if (!mounted || _steps.isEmpty) return;
+    HapticFeedback.selectionClick();
+    switch (command) {
+      case CookVoiceCommand.next:
+        // On the last step "next" stays put: finishing ends the session,
+        // which a half-heard word should not do.
+        _go(_index + 1);
+      case CookVoiceCommand.previous:
+        _go(_index - 1);
+      case CookVoiceCommand.repeat:
+        unawaited(_voice?.speak(_steps[_index]));
+      case CookVoiceCommand.timer:
+        final timer = _cook?.timers[_index];
+        if (FeaturesFlags.cookTimers.isEnabled &&
+            timer != null &&
+            !timer.running) {
+          _session.toggleTimer(_id, _index);
+        }
+    }
+  }
+
+  void _onVoiceProblem() {
+    if (!mounted || _voice?.problem.value == null) return;
+    AppDialog.warning(message: t.cookMode.voiceMicDenied).notify(context);
+  }
+
+  Future<void> _toggleVoice() async {
+    final voice = _voice;
+    if (voice == null) return;
+    if (!guardFeature(context, FeaturesFlags.cookVoiceNext)) return;
+    await voice.setEnabled(!voice.enabled.value);
   }
 
   @override
   void dispose() {
     _session.removeListener(_followSession);
+    _voice?.problem.removeListener(_onVoiceProblem);
+    unawaited(_voice?.dispose());
     _session.screenHidden(_id);
     unawaited(WakelockPlus.disable().catchError((_) {}));
     _pages.dispose();
@@ -213,6 +263,27 @@ class _CookModePageState extends State<CookModePage> {
                                     ],
                                   ),
                                 ),
+                                // The microphone switch for spoken
+                                // commands sits with the step it moves
+                                // (the bar is full: close, title,
+                                // ingredients, done).
+                                if (_voice case final voice?) ...[
+                                  const SizedBox(width: AppSpacing.sm),
+                                  ValueListenableBuilder<bool>(
+                                    valueListenable: voice.enabled,
+                                    builder: (context, on, _) => ClayIconButton(
+                                      icon: on
+                                          ? Icons.mic_rounded
+                                          : Icons.mic_off_rounded,
+                                      size: 32,
+                                      filled: on,
+                                      tooltip: on
+                                          ? t.cookMode.voiceOff
+                                          : t.cookMode.voiceOn,
+                                      onTap: _toggleVoice,
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                             const SizedBox(height: AppSpacing.base),
@@ -220,6 +291,8 @@ class _CookModePageState extends State<CookModePage> {
                               value: (_index + 1) / total,
                               height: AppSpacing.sm,
                             ),
+                            if (_voice case final voice?)
+                              _VoiceIndicator(voice: voice),
                           ],
                         ),
                       ),
@@ -289,6 +362,74 @@ class _CookModePageState extends State<CookModePage> {
                 );
               },
             ),
+    );
+  }
+}
+
+/// While voice commands are on: a mic dot that is lit while the microphone
+/// is open, and the last command understood (or what can be said).
+class _VoiceIndicator extends StatelessWidget {
+  final CookVoiceListener voice;
+
+  const _VoiceIndicator({required this.voice});
+
+  static String _name(CookVoiceCommand command) => switch (command) {
+    CookVoiceCommand.next => t.cookMode.next,
+    CookVoiceCommand.previous => t.cookMode.previous,
+    CookVoiceCommand.repeat => t.cookMode.repeat,
+    CookVoiceCommand.timer => t.cookMode.startTimer,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        voice.enabled,
+        voice.listening,
+        voice.lastHeard,
+      ]),
+      builder: (context, _) {
+        if (!voice.enabled.value) return const SizedBox.shrink();
+        final open = voice.listening.value;
+        final heard = voice.lastHeard.value;
+        return Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.sm),
+          // Announced when it changes, so a screen-reader user hears what
+          // the app understood.
+          child: Semantics(
+            liveRegion: true,
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: AppMotion.fade(context, AppMotion.quick),
+                  curve: AppMotion.easeOut,
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: open ? AppColors.error : AppColors.outlineVariant,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Icon(Icons.mic_rounded, size: 14, color: AppColors.primary),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    heard == null
+                        ? t.cookMode.voiceListening
+                        : t.cookMode.voiceHeard(command: _name(heard)),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.labelSm.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -795,7 +936,11 @@ class _IngredientRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.base),
         child: Row(
           children: [
-            BouncyCheckbox(value: done, onChanged: (_) => onTap()),
+            BouncyCheckbox(
+              value: done,
+              onChanged: (_) => onTap(),
+              semanticLabel: line,
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: AnimatedDefaultTextStyle(

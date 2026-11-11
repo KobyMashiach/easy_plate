@@ -4,8 +4,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
+import '../../features/recipe_ingestion/data/recipe_image_shrinker.dart';
+import '../../features/recipe_ingestion/data/chat_export_reader.dart';
+import '../../features/recipe_ingestion/domain/bulk_import.dart';
 import '../../features/recipe_ingestion/domain/entities/ingestion_file.dart';
 import '../constants/app_enums.dart';
+import '../features/features_flags.dart';
 
 /// What another app handed over through the system share sheet: a voice
 /// note, a recording, a PDF, a link or some text, already shaped into the
@@ -20,6 +24,15 @@ class ShareIntentService {
   factory ShareIntentService() => _instance;
 
   final latest = ValueNotifier<IngestionLaunch?>(null);
+
+  /// A share that holds several recipes — a text with many links, a
+  /// WhatsApp chat export — for the bulk import screen rather than the
+  /// single form. Routed by the app like [latest].
+  final latestBulk = ValueNotifier<BulkImportLaunch?>(null);
+
+  /// Whether a share of either kind is waiting for the session.
+  bool get hasPending => latest.value != null || latestBulk.value != null;
+
   StreamSubscription<List<SharedMediaFile>>? _subscription;
   bool _bound = false;
 
@@ -50,6 +63,14 @@ class ShareIntentService {
     // ingestion screen.
     if (files.every((f) => isOwnLink(f.path))) return;
     try {
+      // Several recipes in one share go to the bulk screen; whether that
+      // screen is switched on is decided when it is routed, since the
+      // console's flags may not be in yet on a cold start.
+      final bulk = await bulkLaunchFor(files);
+      if (bulk != null) {
+        latestBulk.value = bulk;
+        return;
+      }
       final launch = await launchFor(files);
       if (launch != null) latest.value = launch;
     } catch (e) {
@@ -58,8 +79,8 @@ class ShareIntentService {
   }
 
   /// `easyplate://…` and `https://aieasyplate.app/s/…`: links the app opens
-  /// itself, never recipe sources.
-  @visibleForTesting
+  /// itself, never recipe sources. Also asked by the clipboard prompt and
+  /// the bulk import, which must not offer them either.
   static bool isOwnLink(String text) {
     final uri = Uri.tryParse(text.trim());
     if (uri == null) return false;
@@ -102,17 +123,71 @@ class ShareIntentService {
         debugPrint('Shared file skipped: larger than the read cap');
         continue;
       }
+      // A photo is made small here, before the form's 10 MB check sees
+      // it: two phone photos of a cookbook page would otherwise be refused.
       read.add(
-        IngestionFile(
-          name: shared.path.split(Platform.pathSeparator).last,
-          bytes: await file.readAsBytes(),
-          mimeType: mimeType,
+        await RecipeImageShrinker.shrink(
+          IngestionFile(
+            name: shared.path.split(Platform.pathSeparator).last,
+            bytes: await file.readAsBytes(),
+            mimeType: mimeType,
+          ),
         ),
       );
     }
     if (read.isEmpty) return null;
     return IngestionLaunch(channel: RecipeIngestionChannel.file, files: read);
   }
+
+  /// The bulk import a share maps to, or null when it is one recipe (or
+  /// nothing the bulk import reads):
+  ///
+  /// * text with two or more links — one row per link, the text kept as
+  ///   the fallback for the single form;
+  /// * a WhatsApp chat export — the `.txt` (Android shares it as a text
+  ///   file, so it arrives typed as text with a file path) or the `.zip`
+  ///   around it (iPhone) — its links and recipe-looking messages, with
+  ///   who sent them left out.
+  @visibleForTesting
+  static Future<BulkImportLaunch?> bulkLaunchFor(
+    List<SharedMediaFile> files,
+  ) async {
+    final first = files.first;
+    final path = first.path.trim();
+    final isText =
+        first.type == SharedMediaType.text || first.type == SharedMediaType.url;
+    if (isText && !_isLocalFile(path)) {
+      final candidates = BulkImportParser.fromSharedText(path);
+      if (candidates == null) return null;
+      return BulkImportLaunch(candidates: candidates, fallbackText: path);
+    }
+    for (final shared in files) {
+      final name = shared.path.split(Platform.pathSeparator).last;
+      final mime = shared.mimeType?.toLowerCase() ?? '';
+      final isExport =
+          ChatExportReader.isExportName(name) ||
+          mime == 'application/zip' ||
+          mime == 'text/plain';
+      if (!isExport) continue;
+      final file = File(shared.path);
+      if (!await file.exists() || await file.length() > readCap) continue;
+      final text = ChatExportReader.textOf(await file.readAsBytes());
+      if (text == null) continue;
+      return BulkImportLaunch(
+        candidates: BulkImportParser.fromChat(text),
+        fromChat: true,
+      );
+    }
+    return null;
+  }
+
+  /// A shared "text" that is really a file on disk: Android hands a shared
+  /// `.txt` over with its path in the text slot.
+  static bool _isLocalFile(String path) =>
+      path.startsWith('/') &&
+      !path.contains('\n') &&
+      ChatExportReader.isExportName(path) &&
+      File(path).existsSync();
 
   /// An ingestion form that is open right now and will take the next share
   /// itself — adding the files to the ones it already holds — so the app
@@ -123,18 +198,27 @@ class ShareIntentService {
   void formClosed() => _openForms--;
 
   /// The share sheet's type when it is one the model reads, else the one
-  /// the extension implies; null when the file is neither audio nor a PDF.
+  /// the extension implies; null when the file is neither audio nor a PDF
+  /// — nor, while the photo channel is on, a picture the model reads.
   static String? _mimeTypeOf(SharedMediaFile file) {
     final declared = file.mimeType?.toLowerCase();
     if (declared != null &&
         (declared == 'application/pdf' || declared.startsWith('audio/'))) {
       return declared;
     }
-    return IngestionFile.mimeTypeFor(file.path);
+    final images = FeaturesFlags.ingestPhoto.isEnabled;
+    if (images && declared != null && declared.startsWith('image/')) {
+      final image = IngestionFile.readableImageType(declared);
+      if (image != null) return image;
+    }
+    return IngestionFile.mimeTypeFor(file.path, images: images);
   }
 
   /// Marks [latest] as handled.
   void clear() => latest.value = null;
+
+  /// Marks [latestBulk] as handled.
+  void clearBulk() => latestBulk.value = null;
 
   @visibleForTesting
   void dispose() {

@@ -42,6 +42,10 @@ exports.imageSearch = require("./imageSearch").imageSearch;
 // The signed-in user deleting their own account, as the stores require.
 exports.deleteAccount = require("./deleteAccount").deleteAccount;
 
+// The WhatsApp grocery bot: Meta's webhook, and the app's link / status calls.
+exports.whatsappWebhook = require("./whatsappBot").whatsappWebhook;
+exports.whatsappLink = require("./whatsappBot").whatsappLink;
+
 // Shefi's voice: a reply read out by Google Cloud Text-to-Speech.
 exports.speak = require("./speak").speak;
 

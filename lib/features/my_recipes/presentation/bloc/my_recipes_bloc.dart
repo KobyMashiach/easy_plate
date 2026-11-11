@@ -7,6 +7,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/constants/app_enums.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
+import '../../../../core/utils/undoable_removals.dart';
+import '../recipe_actions.dart';
 import '../../domain/entities/recipe_entity.dart';
 import '../../domain/usecases/delete_recipe_usecase.dart';
 import '../../domain/usecases/get_recipes_usecase.dart';
@@ -66,6 +68,14 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
       (recipes) => add(MyRecipesEvent.recipesUpdated(recipes)),
       onError: (Object e) => debugPrint('Recipe watch error: $e'),
     );
+    // A recipe deleted with an undo is only hidden until its notice goes;
+    // hiding it and bringing it back both re-filter the same list.
+    UndoableRemovals.instance.pending.addListener(_pendingChanged);
+  }
+
+  void _pendingChanged() {
+    if (isClosed || state is! MyRecipesLoaded) return;
+    add(MyRecipesEvent.recipesUpdated(_allRecipes));
   }
 
   factory MyRecipesBloc.fromContext(BuildContext context) {
@@ -80,7 +90,9 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
     String query,
     List<DietaryPreference> filters,
   ) {
+    final removals = UndoableRemovals.instance;
     return _allRecipes.where((recipe) {
+      if (removals.isPending(recipeRemovalKey(recipe.id))) return false;
       final matchesQuery =
           query.isEmpty ||
           recipe.title.toLowerCase().contains(query.toLowerCase());
@@ -93,6 +105,7 @@ class MyRecipesBloc extends Bloc<MyRecipesEvent, MyRecipesState> {
 
   @override
   Future<void> close() {
+    UndoableRemovals.instance.pending.removeListener(_pendingChanged);
     _subscription?.cancel();
     return super.close();
   }

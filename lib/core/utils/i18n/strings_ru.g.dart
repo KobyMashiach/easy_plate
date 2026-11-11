@@ -61,6 +61,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$sharing$ru sharing = _Translations$sharing$ru._(_root);
 	@override late final _Translations$notifications$ru notifications = _Translations$notifications$ru._(_root);
 	@override late final _Translations$editor$ru editor = _Translations$editor$ru._(_root);
+	@override late final _Translations$bulkImport$ru bulkImport = _Translations$bulkImport$ru._(_root);
+	@override late final _Translations$clipboardPrompt$ru clipboardPrompt = _Translations$clipboardPrompt$ru._(_root);
 	@override late final _Translations$ingestion$ru ingestion = _Translations$ingestion$ru._(_root);
 	@override late final _Translations$mealPlanner$ru mealPlanner = _Translations$mealPlanner$ru._(_root);
 	@override late final _Translations$groceryList$ru groceryList = _Translations$groceryList$ru._(_root);
@@ -87,6 +89,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminConfig$ru adminConfig = _Translations$adminConfig$ru._(_root);
 	@override late final _Translations$quickActions$ru quickActions = _Translations$quickActions$ru._(_root);
 	@override late final _Translations$countries$ru countries = _Translations$countries$ru._(_root);
+	@override late final _Translations$whatsappBot$ru whatsappBot = _Translations$whatsappBot$ru._(_root);
 }
 
 // Path: common
@@ -101,6 +104,10 @@ class _Translations$common$ru extends Translations$common$he {
 	@override String get ok => 'ОК';
 	@override String get next => 'Далее';
 	@override String get back => 'Назад';
+	@override String get like => 'Нравится';
+	@override String get increase => 'Увеличить';
+	@override String get decrease => 'Уменьшить';
+	@override String get filters => 'Фильтры';
 	@override String get done => 'Готово';
 	@override String get add => 'Добавить';
 	@override String get edit => 'Изменить';
@@ -346,6 +353,11 @@ class _Translations$settings$ru extends Translations$settings$he {
 	@override String get themeSystem => 'Как в системе';
 	@override String get themeLight => 'Светлая';
 	@override String get themeDark => 'Тёмная';
+	@override String get textSize => 'Размер текста';
+	@override String get textSizeNormal => 'Обычный';
+	@override String get textSizeLarge => 'Крупный';
+	@override String get textSizeExtraLarge => 'Очень крупный';
+	@override String get textSizePreview => 'Так будет выглядеть текст в приложении';
 	@override String get soundEffects => 'Звуковые эффекты (перелистывание страниц)';
 	@override String get fastPageTurn => 'Быстрое перелистывание';
 	@override String get fastPageTurnHint => 'Переход из оглавления или быстрой навигации переворачивает одну страницу до цели. Выключите, чтобы листать все страницы по пути.';
@@ -554,6 +566,22 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String get deleteConfirm => 'Рецепт будет удалён навсегда. Это нельзя отменить.';
 	@override String get deleteSharedConfirm => 'Рецепт удалится только у вас. У остальных участников он останется.';
 	@override String get deleted => 'Рецепт удалён';
+	@override String get undo => 'Отменить';
+	@override String get savedRemoved => 'Удалено из сохранённых рецептов';
+	@override String bookDeleted({required Object title}) => 'Книга «${title}» удалена';
+	@override String get removedFromBook => 'Убрано из книги';
+	@override String get noBookToAdd => 'Некуда добавить — рецепт уже во всех книгах, или книг пока нет';
+	@override String get lastUsedBook => 'В прошлый раз';
+	@override String get alreadyInBook => 'Уже в этой книге';
+	@override String get viewOnlyBook => 'Только просмотр';
+	@override String get addToPlan => 'Добавить в меню';
+	@override String get planLabel => 'Меню';
+	@override String get dayLabel => 'День';
+	@override String get mealLabel => 'Приём пищи';
+	@override String get noPlanToAdd => 'Пока нет меню, куда добавить. Создайте его во вкладке меню';
+	@override String addedToPlan({required Object day, required Object meal}) => 'Добавлено в меню: ${day} · ${meal}';
+	@override String get recentlyCooked => 'Недавно готовили';
+	@override String get mostCooked => 'Чаще всего готовили';
 }
 
 // Path: cookMode
@@ -591,6 +619,13 @@ class _Translations$cookMode$ru extends Translations$cookMode$he {
 	@override String timeUpBody({required Object n}) => 'Шаг ${n}: время вышло';
 	@override String get runningTimers => 'Идут таймеры';
 	@override String get premiumOnly => 'Режим готовки входит в EasyPlate Premium';
+	@override String get voiceOn => 'Включить голосовые команды';
+	@override String get voiceOff => 'Выключить голосовые команды';
+	@override String get voiceListening => 'Слушаю… скажите «дальше», «назад», «повтори» или «таймер»';
+	@override String voiceHeard({required Object command}) => 'Услышал: ${command}';
+	@override String get voiceMicDenied => 'Для голосовых команд нужен доступ к микрофону';
+	@override String get voiceUnavailable => 'Распознавание речи недоступно на этом устройстве';
+	@override String get repeat => 'Повтори';
 }
 
 // Path: nutrition
@@ -874,6 +909,60 @@ class _Translations$editor$ru extends Translations$editor$he {
 	@override String get saveWithAiHint => 'Исправить орфографию и согласовать время в шагах';
 }
 
+// Path: bulkImport
+class _Translations$bulkImport$ru extends Translations$bulkImport$he {
+	_Translations$bulkImport$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Импорт нескольких рецептов';
+	@override String get entry => 'Импортировать несколько рецептов сразу';
+	@override String get entryHint => 'Вставьте список ссылок или выберите экспорт чата WhatsApp';
+	@override String get pasteHint => 'Вставьте сюда ссылки или рецепты — каждый с новой строки или абзаца';
+	@override String get findInText => 'Найти рецепты в тексте';
+	@override String get pickExport => 'Выбрать экспорт чата (txt или zip)';
+	@override String get exportHelp => 'В WhatsApp: откройте чат → Ещё → Экспорт чата → Без медиафайлов, затем поделитесь им с EasyPlate или сохраните в Файлы.';
+	@override String get privacyNote => 'Отправляется только текст отмеченных сообщений — без имён, номеров и дат.';
+	@override String get noneFound => 'Здесь не найдено ссылок или рецептов';
+	@override String get fileUnreadable => 'Не удалось прочитать этот файл';
+	@override String foundCount({required Object count}) => 'Найдено: ${count}';
+	@override String get quotaNote => 'Каждый рецепт расходует дневной лимит, как обычный импорт.';
+	@override String get selectAll => 'Отметить все';
+	@override String get selectNone => 'Снять отметки';
+	@override String importCount({required Object count}) => 'Импортировать: ${count}';
+	@override String get stop => 'Остановить';
+	@override String get done => 'Готово';
+	@override String get leaveWhileRunning => 'Импорт ещё идёт. Остановить и выйти? Уже сохранённое останется.';
+	@override String get kindPage => 'Страница рецепта';
+	@override String get kindVideo => 'Видео';
+	@override String get kindText => 'Текст рецепта';
+	@override String get statusWaiting => 'В очереди';
+	@override String get statusRunning => 'Импорт…';
+	@override String get statusDone => 'Сохранён';
+	@override String get statusFailed => 'Не удалось';
+	@override String get statusSkipped => 'Пропущен';
+	@override String quotaStopped({required Object done}) => 'Дневной лимит закончился, поэтому мы остановились. Сохранено рецептов: ${done} — остальные можно импортировать завтра.';
+	@override String refusedStopped({required Object done}) => 'Мы остановились: этот аккаунт сейчас не может анализировать рецепты. Сохранено рецептов: ${done}.';
+	@override String stopped({required Object done}) => 'Остановлено. Сохранено рецептов: ${done}.';
+	@override String finished({required Object done}) => 'Готово! Сохранено рецептов: ${done}.';
+	@override String finishedWithFailures({required Object done, required Object failed}) => 'Готово: сохранено ${done}, не удалось ${failed}.';
+}
+
+// Path: clipboardPrompt
+class _Translations$clipboardPrompt$ru extends Translations$clipboardPrompt$he {
+	_Translations$clipboardPrompt$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'В буфере обмена есть ссылка';
+	@override String get message => 'Добавить её как рецепт?';
+	@override String get add => 'Добавить';
+	@override String get dismiss => 'Не сейчас';
+	@override String get noLink => 'В буфере обмена уже нет ссылки';
+}
+
 // Path: ingestion
 class _Translations$ingestion$ru extends Translations$ingestion$he {
 	_Translations$ingestion$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -932,6 +1021,19 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String filesAsOne({required Object count}) => '${count} файлов — будут проанализированы вместе как один рецепт, по порядку';
 	@override String get shareMoreHint => 'Можно вернуться в WhatsApp и поделиться ещё одной записью — она добавится к списку здесь.';
 	@override String get chooseSource => 'Откуда рецепт?';
+	@override String get autoHint => 'Вставьте ссылку или рецепт, или напишите, чего хочется — мы сами поймём, что это';
+	@override String get autoPicked => 'Категория выбрана автоматически по тексту · можно выбрать другую';
+	@override String get autoWaiting => 'Категория выберется автоматически по тому, что вы напишете';
+	@override String get tapForInfo => 'Нажмите на категорию, чтобы увидеть пояснение';
+	@override String get sharedAppended => 'Присланный текст добавлен в конец';
+	@override String autoRunIn({required Object seconds}) => 'Начинаем через ${seconds}…';
+	@override String get recentTitle => 'Недавние';
+	@override String get voiceStart => 'Ввод голосом';
+	@override String get voiceStop => 'Остановить запись';
+	@override String get voiceUnavailable => 'Распознавание речи недоступно на этом устройстве';
+	@override String get addToBookTitle => 'Добавить рецепт в книгу?';
+	@override String get addToBookSkip => 'Не сейчас';
+	@override String addedToBook({required Object book}) => 'Добавлено в «${book}»';
 	@override String get pasteTextDescription => 'Получили рецепт в WhatsApp или скопировали с сайта или из сообщения? Вставьте текст как есть. Модель найдёт название блюда, ингредиенты с количествами и шаги и оформит всё в едином формате. Без дневного лимита.';
 	@override String get webSearchDescription => 'Напишите, что хочется приготовить, и мы поищем рецепты в интернете. Из результатов можно прочитать оригинальную страницу как есть или импортировать её в структурированный формат приложения.';
 	@override String get webSearchHint => 'Например: шакшука, чизкейк, свекольная кубба';
@@ -944,6 +1046,13 @@ class _Translations$ingestion$ru extends Translations$ingestion$he {
 	@override String get fileDescription => 'Выберите аудиофайл, где кто-то читает или рассказывает рецепт, голосовое сообщение из WhatsApp или PDF с рецептом. Мы расшифруем и прочитаем всё и извлечём аккуратный рецепт. Можно приложить несколько файлов — они анализируются вместе как один рецепт.';
 	@override String get saveFailed => 'Не удалось сохранить рецепт. Попробуйте ещё раз.';
 	@override String get recordingTag => 'Запись';
+	@override String get filePhoto => 'Файл / фото';
+	@override String get filePhotoDescription => 'Сфотографируйте страницу кулинарной книги или рецепт от руки, выберите в галерее скриншот (например, поста в Instagram) или приложите запись, голосовое сообщение из WhatsApp или PDF. Мы прочитаем всё и извлечём аккуратный рецепт. Несколько фото или файлов анализируются вместе как один рецепт — например, рецепт на двух страницах.';
+	@override String get filePhotoHint => 'Фото, скриншот, запись или PDF можно также отправить в Easy Plate прямо из любого приложения через обычную кнопку «Поделиться».';
+	@override String get takePhoto => 'Сфотографировать';
+	@override String get fromGallery => 'Из галереи';
+	@override String get photoTag => 'Фото';
+	@override String get filePhotoUnsupported => 'Анализировать можно только фото, аудиофайлы и PDF.';
 	@override String sizeKb({required Object n}) => '${n} КБ';
 	@override String sizeMb({required Object n}) => '${n} МБ';
 	@override String get videoPhotoTitle => 'Картинка из видео';
@@ -977,6 +1086,24 @@ class _Translations$mealPlanner$ru extends Translations$mealPlanner$he {
 
 	// Translations
 	@override String get title => 'Планирование питания';
+	@override String get fillWeek => 'Заполнить неделю';
+	@override String get fillWeekHint => 'Заполняет пустые приёмы пищи вашими рецептами, без повторов';
+	@override String fillWeekDone({required Object count}) => 'Заполнено приёмов пищи: ${count}';
+	@override String fillWeekPartial({required Object filled, required Object total}) => 'Заполнено ${filled} из ${total} — для остальных не хватило подходящих рецептов';
+	@override String get fillWeekNothing => 'Нет пустых приёмов пищи';
+	@override String get fillWeekNoRecipes => 'Ни один из ваших рецептов не подходит для пустых приёмов пищи';
+	@override String get copyWeek => 'Скопировать прошлую неделю';
+	@override String get copyWeekHint => 'Копирует блюда из прошлого меню в пустые приёмы пищи';
+	@override String get copyWeekPick => 'Из какого меню скопировать?';
+	@override String copyWeekDone({required Object name, required Object count}) => 'Скопировано из «${name}»: ${count}';
+	@override String get copyWeekNothing => 'Нет пустых приёмов пищи для копирования';
+	@override String get copyWeekNoSource => 'Нет прошлого меню с блюдами';
+	@override String get clearDay => 'Очистить день';
+	@override String get dayCleared => 'Блюда этого дня убраны';
+	@override String get mealRemoved => 'Приём пищи удалён';
+	@override String get dishRemoved => 'Блюдо убрано';
+	@override String get emptyWeek => 'Неделя пока пустая';
+	@override String get emptyWeekHint => 'Заполните её своими рецептами одним нажатием или скопируйте прошлую неделю';
 	@override String get newPlan => 'Новое меню';
 	@override String get planName => 'Название меню';
 	@override String get addMeal => 'Добавить приём пищи';
@@ -1021,6 +1148,27 @@ class _Translations$groceryList$ru extends Translations$groceryList$he {
 
 	// Translations
 	@override String get title => 'Список покупок';
+	@override String get voiceAdd => 'Надиктовать';
+	@override String get voiceListening => 'Слушаю… например: молоко, яйца и две пачки хлеба';
+	@override String voiceHeard({required Object count}) => 'Распознано: ${count} — уберите лишнее перед добавлением';
+	@override String voiceAddAll({required Object count}) => 'Добавить (${count})';
+	@override String get voiceNothing => 'Ничего не распознано, попробуйте ещё раз';
+	@override String get voiceUnavailable => 'Распознавание речи недоступно на этом устройстве';
+	@override String itemsAdded({required Object count}) => 'Добавлено: ${count}';
+	@override String get boughtAll => 'Всё куплено';
+	@override String boughtAllDone({required Object count}) => 'Отмечено: ${count}';
+	@override String get itemRemoved => 'Товар удалён';
+	@override String checkedDeleted({required Object count}) => 'Удалено: ${count}';
+	@override String listDeletedUndo({required Object name}) => 'Список «${name}» удалён';
+	@override String get aisleSort => 'По отделам';
+	@override String get aisleProduce => 'Овощи и фрукты';
+	@override String get aisleDairy => 'Молочное и яйца';
+	@override String get aisleBakery => 'Хлеб и выпечка';
+	@override String get aisleMeat => 'Мясо и рыба';
+	@override String get aisleDryGoods => 'Бакалея';
+	@override String get aisleFrozen => 'Заморозка';
+	@override String get aisleCleaning => 'Бытовая химия';
+	@override String get aisleOther => 'Прочее';
 	@override String get aggregated => 'Собран из всех активных меню';
 	@override String get addItem => 'Новая позиция';
 	@override String get category => 'Категория';
@@ -1949,6 +2097,26 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get ingestSocialVideo => 'Рецепт из видео';
 	@override String get ingestAiRequest => 'Запрос рецепта у ИИ';
 	@override String get ingestFile => 'Рецепт из файла';
+	@override String get ingestAutoChannel => 'Автовыбор категории при добавлении рецепта';
+	@override String get ingestPasteAutoRun => 'Автоанализ вставленной ссылки';
+	@override String get ingestRecent => 'Недавние запросы при добавлении рецепта';
+	@override String get ingestVoice => 'Голосовой ввод при добавлении рецепта';
+	@override String get saveToBookPrompt => 'Предложение добавить в книгу после сохранения';
+	@override String get clipboardLinkPrompt => 'Ссылка из буфера обмена';
+	@override String get ingestPhoto => 'Рецепт из фото';
+	@override String get reviewStickySave => 'Закреплённая кнопка сохранения';
+	@override String get bulkImport => 'Импорт нескольких рецептов';
+	@override String get recipeQuickMenu => 'Быстрое меню по долгому нажатию';
+	@override String get undoInsteadOfConfirm => 'Отмена вместо подтверждения';
+	@override String get rememberLastChoices => 'Запоминать последний выбор';
+	@override String get recentCooked => 'Недавно / чаще всего готовили';
+	@override String get planAutofill => 'Заполнить неделю';
+	@override String get planCopyWeek => 'Копировать прошлую неделю';
+	@override String get groceryVoiceAdd => 'Голосовое добавление в список';
+	@override String get groceryAisleSort => 'Сортировка по отделам';
+	@override String get groceryCheckAll => 'Купил всё';
+	@override String get textSize => 'Размер текста';
+	@override String get cookVoiceNext => '«Дальше» голосом в режиме готовки';
 	@override String get shareIn => 'Импорт из другого приложения';
 	@override String get saveWithAi => 'Сохранение с ИИ';
 	@override String get cookMode => 'Режим готовки';
@@ -2005,6 +2173,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get recipeSuggestions => 'Подбор рецептов по предпочтениям';
 	@override String get webCheckoutIl => 'Покупка на сайте (Израиль)';
 	@override String get webCheckoutIntl => 'Покупка на сайте (за рубежом)';
+	@override String get whatsappBot => 'Бот WhatsApp для списка покупок';
 }
 
 // Path: wakeWord
@@ -2137,6 +2306,54 @@ class _Translations$countries$ru extends Translations$countries$he {
 	@override String get ET => 'Эфиопия';
 	@override String get AU => 'Австралия';
 	@override String get BR => 'Бразилия';
+}
+
+// Path: whatsappBot
+class _Translations$whatsappBot$ru extends Translations$whatsappBot$he {
+	_Translations$whatsappBot$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Подключить WhatsApp';
+	@override String get hint => 'Добавляйте покупки в список сообщением в WhatsApp';
+	@override String get connected => 'WhatsApp подключён';
+	@override String get notConnected => 'WhatsApp не подключён';
+	@override String get intro => 'Напишите боту EasyPlate в WhatsApp, что купить — «молоко, 2 батона и оливковое масло» — и покупки появятся в вашем списке.';
+	@override String get howTitle => 'Как подключить';
+	@override String get step1 => 'Нажмите «Получить код», чтобы получить 6-значный код.';
+	@override String get step2 => 'Нажмите «Отправить код в WhatsApp» — откроется чат с ботом с готовым сообщением.';
+	@override String get step3 => 'Отправьте его. Номер, с которого оно пришло, привяжется к аккаунту.';
+	@override String get getCode => 'Получить код';
+	@override String get yourCode => 'Ваш код привязки';
+	@override String validUntil({required Object time}) => 'Действует до ${time}';
+	@override String get copy => 'Копировать';
+	@override String get copied => 'Код скопирован';
+	@override String get sendCode => 'Отправить код в WhatsApp';
+	@override String codeMessage({required Object code}) => 'Мой код привязки EasyPlate: ${code}';
+	@override String get waiting => 'После отправки экран обновится сам.';
+	@override String get newCode => 'Новый код';
+	@override String get linkedNumber => 'Привязанный номер';
+	@override String get usageTitle => 'В этом месяце';
+	@override String usage({required Object used, required Object limit}) => 'Использовано ${used} из ${limit} сообщений в месяц';
+	@override String get premiumTag => 'Premium';
+	@override String get freeNote => 'В бесплатном тарифе есть месячный лимит. Сообщение без покупок не засчитывается.';
+	@override String get quotaReached => 'Лимит месяца исчерпан. Он обнулится в начале следующего месяца, или оформите Premium.';
+	@override String get upgrade => 'Перейти на Premium';
+	@override String get targetList => 'В какой список добавлять';
+	@override String get targetAuto => 'Автоматически (основной список)';
+	@override String get targetHint => 'Общие списки здесь не показаны — бот добавляет только в ваши списки.';
+	@override String get openChat => 'Открыть чат с ботом';
+	@override String get unlink => 'Отвязать номер';
+	@override String get unlinkConfirm => 'Отвязать номер от бота? Его сообщения больше не будут попадать в список покупок. Привязать снова можно в любой момент.';
+	@override String get unlinked => 'Номер отвязан';
+	@override String get unavailable => 'Подключение WhatsApp сейчас недоступно.';
+	@override String get listGone => 'Этого списка больше нет или его нельзя изменить.';
+	@override String get failed => 'Что-то пошло не так. Попробуйте ещё раз.';
+	@override String get offline => 'Нет подключения к интернету. Проверьте его и повторите.';
+	@override String get botNotReady => 'Бот ещё не настроен. Попробуйте позже.';
+	@override String get cannotOpen => 'Не удалось открыть WhatsApp. Убедитесь, что он установлен.';
+	@override String get retry => 'Повторить';
 }
 
 // Path: walkthrough.topics
@@ -2338,6 +2555,8 @@ class _Translations$adminConfig$labels$ru extends Translations$adminConfig$label
 
 	// Translations
 	@override String get admin_all_features => 'Показывать администратору все функции';
+	@override String get quota_whatsapp_free_monthly => 'Месячный лимит WhatsApp (бесплатно)';
+	@override String get quota_whatsapp_premium_monthly => 'Месячный лимит WhatsApp (Premium)';
 }
 
 // Path: walkthrough.topics.addRecipe
@@ -2493,6 +2712,10 @@ extension on TranslationsRu {
 			'common.ok' => 'ОК',
 			'common.next' => 'Далее',
 			'common.back' => 'Назад',
+			'common.like' => 'Нравится',
+			'common.increase' => 'Увеличить',
+			'common.decrease' => 'Уменьшить',
+			'common.filters' => 'Фильтры',
 			'common.done' => 'Готово',
 			'common.add' => 'Добавить',
 			'common.edit' => 'Изменить',
@@ -2675,6 +2898,11 @@ extension on TranslationsRu {
 			'settings.themeSystem' => 'Как в системе',
 			'settings.themeLight' => 'Светлая',
 			'settings.themeDark' => 'Тёмная',
+			'settings.textSize' => 'Размер текста',
+			'settings.textSizeNormal' => 'Обычный',
+			'settings.textSizeLarge' => 'Крупный',
+			'settings.textSizeExtraLarge' => 'Очень крупный',
+			'settings.textSizePreview' => 'Так будет выглядеть текст в приложении',
 			'settings.soundEffects' => 'Звуковые эффекты (перелистывание страниц)',
 			'settings.fastPageTurn' => 'Быстрое перелистывание',
 			'settings.fastPageTurnHint' => 'Переход из оглавления или быстрой навигации переворачивает одну страницу до цели. Выключите, чтобы листать все страницы по пути.',
@@ -2820,6 +3048,22 @@ extension on TranslationsRu {
 			'recipe.deleteConfirm' => 'Рецепт будет удалён навсегда. Это нельзя отменить.',
 			'recipe.deleteSharedConfirm' => 'Рецепт удалится только у вас. У остальных участников он останется.',
 			'recipe.deleted' => 'Рецепт удалён',
+			'recipe.undo' => 'Отменить',
+			'recipe.savedRemoved' => 'Удалено из сохранённых рецептов',
+			'recipe.bookDeleted' => ({required Object title}) => 'Книга «${title}» удалена',
+			'recipe.removedFromBook' => 'Убрано из книги',
+			'recipe.noBookToAdd' => 'Некуда добавить — рецепт уже во всех книгах, или книг пока нет',
+			'recipe.lastUsedBook' => 'В прошлый раз',
+			'recipe.alreadyInBook' => 'Уже в этой книге',
+			'recipe.viewOnlyBook' => 'Только просмотр',
+			'recipe.addToPlan' => 'Добавить в меню',
+			'recipe.planLabel' => 'Меню',
+			'recipe.dayLabel' => 'День',
+			'recipe.mealLabel' => 'Приём пищи',
+			'recipe.noPlanToAdd' => 'Пока нет меню, куда добавить. Создайте его во вкладке меню',
+			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'Добавлено в меню: ${day} · ${meal}',
+			'recipe.recentlyCooked' => 'Недавно готовили',
+			'recipe.mostCooked' => 'Чаще всего готовили',
 			'cookMode.title' => 'Режим готовки',
 			'cookMode.start' => 'Начать готовить',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Шаг ${n} из ${total}',
@@ -2848,6 +3092,13 @@ extension on TranslationsRu {
 			'cookMode.timeUpBody' => ({required Object n}) => 'Шаг ${n}: время вышло',
 			'cookMode.runningTimers' => 'Идут таймеры',
 			'cookMode.premiumOnly' => 'Режим готовки входит в EasyPlate Premium',
+			'cookMode.voiceOn' => 'Включить голосовые команды',
+			'cookMode.voiceOff' => 'Выключить голосовые команды',
+			'cookMode.voiceListening' => 'Слушаю… скажите «дальше», «назад», «повтори» или «таймер»',
+			'cookMode.voiceHeard' => ({required Object command}) => 'Услышал: ${command}',
+			'cookMode.voiceMicDenied' => 'Для голосовых команд нужен доступ к микрофону',
+			'cookMode.voiceUnavailable' => 'Распознавание речи недоступно на этом устройстве',
+			'cookMode.repeat' => 'Повтори',
 			'nutrition.title' => 'Пищевая ценность',
 			'nutrition.perServing' => 'на порцию',
 			'nutrition.perServingHint' => 'Все значения указаны на одну порцию. Оставьте пустым, чтобы убрать оценку.',
@@ -2967,6 +3218,8 @@ extension on TranslationsRu {
 			'sharing.send' => 'Отправить приглашение',
 			'sharing.sent' => 'Приглашение отправлено',
 			'sharing.invalidContact' => 'Введите корректную почту или телефон с кодом страны (+…)',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.notFound' => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.',
 			'sharing.self' => 'Нельзя поделиться с самим собой',
 			'sharing.failed' => 'Не удалось поделиться, попробуйте снова',
@@ -2999,8 +3252,6 @@ extension on TranslationsRu {
 			'sharing.shareAction' => 'Поделиться',
 			'sharing.directoryUnavailable' => 'Общий доступ ещё не настроен на сервере. Выйдите и войдите снова; если не помогает — нужно развернуть правила Firestore.',
 			'sharing.shareBook' => 'Поделиться книгой',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharePlan' => 'Поделиться меню',
 			'sharing.acceptedBook' => 'Книга добавлена в вашу библиотеку',
 			'sharing.acceptedPlan' => 'Меню добавлено в ваши меню',
@@ -3076,6 +3327,42 @@ extension on TranslationsRu {
 			'editor.savePlainHint' => 'Сохранить изменения как есть, без ожидания',
 			'editor.saveWithAi' => 'Сохранить с проверкой AI',
 			'editor.saveWithAiHint' => 'Исправить орфографию и согласовать время в шагах',
+			'bulkImport.title' => 'Импорт нескольких рецептов',
+			'bulkImport.entry' => 'Импортировать несколько рецептов сразу',
+			'bulkImport.entryHint' => 'Вставьте список ссылок или выберите экспорт чата WhatsApp',
+			'bulkImport.pasteHint' => 'Вставьте сюда ссылки или рецепты — каждый с новой строки или абзаца',
+			'bulkImport.findInText' => 'Найти рецепты в тексте',
+			'bulkImport.pickExport' => 'Выбрать экспорт чата (txt или zip)',
+			'bulkImport.exportHelp' => 'В WhatsApp: откройте чат → Ещё → Экспорт чата → Без медиафайлов, затем поделитесь им с EasyPlate или сохраните в Файлы.',
+			'bulkImport.privacyNote' => 'Отправляется только текст отмеченных сообщений — без имён, номеров и дат.',
+			'bulkImport.noneFound' => 'Здесь не найдено ссылок или рецептов',
+			'bulkImport.fileUnreadable' => 'Не удалось прочитать этот файл',
+			'bulkImport.foundCount' => ({required Object count}) => 'Найдено: ${count}',
+			'bulkImport.quotaNote' => 'Каждый рецепт расходует дневной лимит, как обычный импорт.',
+			'bulkImport.selectAll' => 'Отметить все',
+			'bulkImport.selectNone' => 'Снять отметки',
+			'bulkImport.importCount' => ({required Object count}) => 'Импортировать: ${count}',
+			'bulkImport.stop' => 'Остановить',
+			'bulkImport.done' => 'Готово',
+			'bulkImport.leaveWhileRunning' => 'Импорт ещё идёт. Остановить и выйти? Уже сохранённое останется.',
+			'bulkImport.kindPage' => 'Страница рецепта',
+			'bulkImport.kindVideo' => 'Видео',
+			'bulkImport.kindText' => 'Текст рецепта',
+			'bulkImport.statusWaiting' => 'В очереди',
+			'bulkImport.statusRunning' => 'Импорт…',
+			'bulkImport.statusDone' => 'Сохранён',
+			'bulkImport.statusFailed' => 'Не удалось',
+			'bulkImport.statusSkipped' => 'Пропущен',
+			'bulkImport.quotaStopped' => ({required Object done}) => 'Дневной лимит закончился, поэтому мы остановились. Сохранено рецептов: ${done} — остальные можно импортировать завтра.',
+			'bulkImport.refusedStopped' => ({required Object done}) => 'Мы остановились: этот аккаунт сейчас не может анализировать рецепты. Сохранено рецептов: ${done}.',
+			'bulkImport.stopped' => ({required Object done}) => 'Остановлено. Сохранено рецептов: ${done}.',
+			'bulkImport.finished' => ({required Object done}) => 'Готово! Сохранено рецептов: ${done}.',
+			'bulkImport.finishedWithFailures' => ({required Object done, required Object failed}) => 'Готово: сохранено ${done}, не удалось ${failed}.',
+			'clipboardPrompt.title' => 'В буфере обмена есть ссылка',
+			'clipboardPrompt.message' => 'Добавить её как рецепт?',
+			'clipboardPrompt.add' => 'Добавить',
+			'clipboardPrompt.dismiss' => 'Не сейчас',
+			'clipboardPrompt.noLink' => 'В буфере обмена уже нет ссылки',
 			'ingestion.title' => 'Добавить рецепт',
 			'ingestion.pasteText' => 'Вставить текст',
 			'ingestion.pasteHint' => 'Вставьте сюда рецепт из WhatsApp или любого другого источника',
@@ -3127,6 +3414,19 @@ extension on TranslationsRu {
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} файлов — будут проанализированы вместе как один рецепт, по порядку',
 			'ingestion.shareMoreHint' => 'Можно вернуться в WhatsApp и поделиться ещё одной записью — она добавится к списку здесь.',
 			'ingestion.chooseSource' => 'Откуда рецепт?',
+			'ingestion.autoHint' => 'Вставьте ссылку или рецепт, или напишите, чего хочется — мы сами поймём, что это',
+			'ingestion.autoPicked' => 'Категория выбрана автоматически по тексту · можно выбрать другую',
+			'ingestion.autoWaiting' => 'Категория выберется автоматически по тому, что вы напишете',
+			'ingestion.tapForInfo' => 'Нажмите на категорию, чтобы увидеть пояснение',
+			'ingestion.sharedAppended' => 'Присланный текст добавлен в конец',
+			'ingestion.autoRunIn' => ({required Object seconds}) => 'Начинаем через ${seconds}…',
+			'ingestion.recentTitle' => 'Недавние',
+			'ingestion.voiceStart' => 'Ввод голосом',
+			'ingestion.voiceStop' => 'Остановить запись',
+			'ingestion.voiceUnavailable' => 'Распознавание речи недоступно на этом устройстве',
+			'ingestion.addToBookTitle' => 'Добавить рецепт в книгу?',
+			'ingestion.addToBookSkip' => 'Не сейчас',
+			'ingestion.addedToBook' => ({required Object book}) => 'Добавлено в «${book}»',
 			'ingestion.pasteTextDescription' => 'Получили рецепт в WhatsApp или скопировали с сайта или из сообщения? Вставьте текст как есть. Модель найдёт название блюда, ингредиенты с количествами и шаги и оформит всё в едином формате. Без дневного лимита.',
 			'ingestion.webSearchDescription' => 'Напишите, что хочется приготовить, и мы поищем рецепты в интернете. Из результатов можно прочитать оригинальную страницу как есть или импортировать её в структурированный формат приложения.',
 			'ingestion.webSearchHint' => 'Например: шакшука, чизкейк, свекольная кубба',
@@ -3139,6 +3439,13 @@ extension on TranslationsRu {
 			'ingestion.fileDescription' => 'Выберите аудиофайл, где кто-то читает или рассказывает рецепт, голосовое сообщение из WhatsApp или PDF с рецептом. Мы расшифруем и прочитаем всё и извлечём аккуратный рецепт. Можно приложить несколько файлов — они анализируются вместе как один рецепт.',
 			'ingestion.saveFailed' => 'Не удалось сохранить рецепт. Попробуйте ещё раз.',
 			'ingestion.recordingTag' => 'Запись',
+			'ingestion.filePhoto' => 'Файл / фото',
+			'ingestion.filePhotoDescription' => 'Сфотографируйте страницу кулинарной книги или рецепт от руки, выберите в галерее скриншот (например, поста в Instagram) или приложите запись, голосовое сообщение из WhatsApp или PDF. Мы прочитаем всё и извлечём аккуратный рецепт. Несколько фото или файлов анализируются вместе как один рецепт — например, рецепт на двух страницах.',
+			'ingestion.filePhotoHint' => 'Фото, скриншот, запись или PDF можно также отправить в Easy Plate прямо из любого приложения через обычную кнопку «Поделиться».',
+			'ingestion.takePhoto' => 'Сфотографировать',
+			'ingestion.fromGallery' => 'Из галереи',
+			'ingestion.photoTag' => 'Фото',
+			'ingestion.filePhotoUnsupported' => 'Анализировать можно только фото, аудиофайлы и PDF.',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} КБ',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} МБ',
 			'ingestion.videoPhotoTitle' => 'Картинка из видео',
@@ -3163,6 +3470,24 @@ extension on TranslationsRu {
 			'ingestion.suggestDietReset' => 'Вернуть мои предпочтения',
 			'ingestion.suggestSearch' => 'Найти предложения',
 			'mealPlanner.title' => 'Планирование питания',
+			'mealPlanner.fillWeek' => 'Заполнить неделю',
+			'mealPlanner.fillWeekHint' => 'Заполняет пустые приёмы пищи вашими рецептами, без повторов',
+			'mealPlanner.fillWeekDone' => ({required Object count}) => 'Заполнено приёмов пищи: ${count}',
+			'mealPlanner.fillWeekPartial' => ({required Object filled, required Object total}) => 'Заполнено ${filled} из ${total} — для остальных не хватило подходящих рецептов',
+			'mealPlanner.fillWeekNothing' => 'Нет пустых приёмов пищи',
+			'mealPlanner.fillWeekNoRecipes' => 'Ни один из ваших рецептов не подходит для пустых приёмов пищи',
+			'mealPlanner.copyWeek' => 'Скопировать прошлую неделю',
+			'mealPlanner.copyWeekHint' => 'Копирует блюда из прошлого меню в пустые приёмы пищи',
+			'mealPlanner.copyWeekPick' => 'Из какого меню скопировать?',
+			'mealPlanner.copyWeekDone' => ({required Object name, required Object count}) => 'Скопировано из «${name}»: ${count}',
+			'mealPlanner.copyWeekNothing' => 'Нет пустых приёмов пищи для копирования',
+			'mealPlanner.copyWeekNoSource' => 'Нет прошлого меню с блюдами',
+			'mealPlanner.clearDay' => 'Очистить день',
+			'mealPlanner.dayCleared' => 'Блюда этого дня убраны',
+			'mealPlanner.mealRemoved' => 'Приём пищи удалён',
+			'mealPlanner.dishRemoved' => 'Блюдо убрано',
+			'mealPlanner.emptyWeek' => 'Неделя пока пустая',
+			'mealPlanner.emptyWeekHint' => 'Заполните её своими рецептами одним нажатием или скопируйте прошлую неделю',
 			'mealPlanner.newPlan' => 'Новое меню',
 			'mealPlanner.planName' => 'Название меню',
 			'mealPlanner.addMeal' => 'Добавить приём пищи',
@@ -3198,6 +3523,27 @@ extension on TranslationsRu {
 			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'Выйти из общего плана «${name}»? Он исчезнет из вашего списка.',
 			'mealPlanner.planDeleted' => 'План удалён',
 			'groceryList.title' => 'Список покупок',
+			'groceryList.voiceAdd' => 'Надиктовать',
+			'groceryList.voiceListening' => 'Слушаю… например: молоко, яйца и две пачки хлеба',
+			'groceryList.voiceHeard' => ({required Object count}) => 'Распознано: ${count} — уберите лишнее перед добавлением',
+			'groceryList.voiceAddAll' => ({required Object count}) => 'Добавить (${count})',
+			'groceryList.voiceNothing' => 'Ничего не распознано, попробуйте ещё раз',
+			'groceryList.voiceUnavailable' => 'Распознавание речи недоступно на этом устройстве',
+			'groceryList.itemsAdded' => ({required Object count}) => 'Добавлено: ${count}',
+			'groceryList.boughtAll' => 'Всё куплено',
+			'groceryList.boughtAllDone' => ({required Object count}) => 'Отмечено: ${count}',
+			'groceryList.itemRemoved' => 'Товар удалён',
+			'groceryList.checkedDeleted' => ({required Object count}) => 'Удалено: ${count}',
+			'groceryList.listDeletedUndo' => ({required Object name}) => 'Список «${name}» удалён',
+			'groceryList.aisleSort' => 'По отделам',
+			'groceryList.aisleProduce' => 'Овощи и фрукты',
+			'groceryList.aisleDairy' => 'Молочное и яйца',
+			'groceryList.aisleBakery' => 'Хлеб и выпечка',
+			'groceryList.aisleMeat' => 'Мясо и рыба',
+			'groceryList.aisleDryGoods' => 'Бакалея',
+			'groceryList.aisleFrozen' => 'Заморозка',
+			'groceryList.aisleCleaning' => 'Бытовая химия',
+			'groceryList.aisleOther' => 'Прочее',
 			'groceryList.aggregated' => 'Собран из всех активных меню',
 			'groceryList.addItem' => 'Новая позиция',
 			'groceryList.category' => 'Категория',
@@ -3386,6 +3732,8 @@ extension on TranslationsRu {
 			'image.remove' => 'Удалить фото',
 			'image.generate' => 'Создать с помощью ИИ',
 			'image.generating' => 'Создаём изображение… это займёт несколько секунд',
+			_ => null,
+		} ?? switch (path) {
 			'image.generateFailed' => 'Не удалось создать изображение, попробуйте ещё раз',
 			'image.coverTitle' => 'Какую обложку создать?',
 			'image.coverHint' => 'Выберите категорию, напишите что-нибудь или и то и другое',
@@ -3513,8 +3861,6 @@ extension on TranslationsRu {
 			'walkthrough.startHint' => 'Пошаговая экскурсия по всем возможностям приложения',
 			'walkthrough.startFull' => 'Начать полную экскурсию',
 			'walkthrough.focused' => 'Показать подсказку по действию',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.next' => 'Далее',
 			'walkthrough.finish' => 'Готово',
 			'walkthrough.skipStep' => 'Пропустить шаг',
@@ -3900,6 +4246,8 @@ extension on TranslationsRu {
 			'assistant.suggest.food.2' => 'хлеб',
 			'assistant.suggest.food.3' => 'помидоры',
 			'assistant.suggest.food.4' => 'лук',
+			_ => null,
+		} ?? switch (path) {
 			'assistant.suggest.food.5' => 'оливковое масло',
 			'assistant.suggest.food.6' => 'рис',
 			'assistant.suggest.food.7' => 'курицу',
@@ -4027,8 +4375,6 @@ extension on TranslationsRu {
 			'household.seats' => ({required Object used, required Object total}) => 'Занято мест: ${used} из ${total}',
 			'household.intro' => 'Откройте общий аккаунт: рецепты, книги, планы и списки синхронизируются у всех участников, и они получают Premium вместе с вами.',
 			'household.create' => 'Открыть общий аккаунт',
-			_ => null,
-		} ?? switch (path) {
 			'household.nameHint' => 'Название, например семья Ивановых',
 			'household.notEligible' => 'Общий аккаунт входит в Pro Duo (2 аккаунта) или Pro Family (до 6 аккаунтов).',
 			'household.seePlans' => 'Смотреть тарифы',
@@ -4123,6 +4469,26 @@ extension on TranslationsRu {
 			'featureName.ingestSocialVideo' => 'Рецепт из видео',
 			'featureName.ingestAiRequest' => 'Запрос рецепта у ИИ',
 			'featureName.ingestFile' => 'Рецепт из файла',
+			'featureName.ingestAutoChannel' => 'Автовыбор категории при добавлении рецепта',
+			'featureName.ingestPasteAutoRun' => 'Автоанализ вставленной ссылки',
+			'featureName.ingestRecent' => 'Недавние запросы при добавлении рецепта',
+			'featureName.ingestVoice' => 'Голосовой ввод при добавлении рецепта',
+			'featureName.saveToBookPrompt' => 'Предложение добавить в книгу после сохранения',
+			'featureName.clipboardLinkPrompt' => 'Ссылка из буфера обмена',
+			'featureName.ingestPhoto' => 'Рецепт из фото',
+			'featureName.reviewStickySave' => 'Закреплённая кнопка сохранения',
+			'featureName.bulkImport' => 'Импорт нескольких рецептов',
+			'featureName.recipeQuickMenu' => 'Быстрое меню по долгому нажатию',
+			'featureName.undoInsteadOfConfirm' => 'Отмена вместо подтверждения',
+			'featureName.rememberLastChoices' => 'Запоминать последний выбор',
+			'featureName.recentCooked' => 'Недавно / чаще всего готовили',
+			'featureName.planAutofill' => 'Заполнить неделю',
+			'featureName.planCopyWeek' => 'Копировать прошлую неделю',
+			'featureName.groceryVoiceAdd' => 'Голосовое добавление в список',
+			'featureName.groceryAisleSort' => 'Сортировка по отделам',
+			'featureName.groceryCheckAll' => 'Купил всё',
+			'featureName.textSize' => 'Размер текста',
+			'featureName.cookVoiceNext' => '«Дальше» голосом в режиме готовки',
 			'featureName.shareIn' => 'Импорт из другого приложения',
 			'featureName.saveWithAi' => 'Сохранение с ИИ',
 			'featureName.cookMode' => 'Режим готовки',
@@ -4179,6 +4545,7 @@ extension on TranslationsRu {
 			'featureName.recipeSuggestions' => 'Подбор рецептов по предпочтениям',
 			'featureName.webCheckoutIl' => 'Покупка на сайте (Израиль)',
 			'featureName.webCheckoutIntl' => 'Покупка на сайте (за рубежом)',
+			'featureName.whatsappBot' => 'Бот WhatsApp для списка покупок',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',
@@ -4235,6 +4602,8 @@ extension on TranslationsRu {
 			'voiceAssistants.geminiPanel' => 'Плавающей панелью',
 			'voiceAssistants.geminiPanelHint' => 'Шефи открывается плавающей панелью внизу экрана, поверх того, что было открыто, а не как приложение. Коснитесь вне панели, чтобы вернуться.',
 			'adminConfig.labels.admin_all_features' => 'Показывать администратору все функции',
+			'adminConfig.labels.quota_whatsapp_free_monthly' => 'Месячный лимит WhatsApp (бесплатно)',
+			'adminConfig.labels.quota_whatsapp_premium_monthly' => 'Месячный лимит WhatsApp (Premium)',
 			'quickActions.shefi' => 'Поговорить с Шефи',
 			'quickActions.groceryAdd' => 'Добавить в список покупок',
 			'quickActions.receipt' => 'Добавить чек',
@@ -4260,6 +4629,45 @@ extension on TranslationsRu {
 			'countries.ET' => 'Эфиопия',
 			'countries.AU' => 'Австралия',
 			'countries.BR' => 'Бразилия',
+			'whatsappBot.title' => 'Подключить WhatsApp',
+			'whatsappBot.hint' => 'Добавляйте покупки в список сообщением в WhatsApp',
+			'whatsappBot.connected' => 'WhatsApp подключён',
+			'whatsappBot.notConnected' => 'WhatsApp не подключён',
+			'whatsappBot.intro' => 'Напишите боту EasyPlate в WhatsApp, что купить — «молоко, 2 батона и оливковое масло» — и покупки появятся в вашем списке.',
+			'whatsappBot.howTitle' => 'Как подключить',
+			'whatsappBot.step1' => 'Нажмите «Получить код», чтобы получить 6-значный код.',
+			'whatsappBot.step2' => 'Нажмите «Отправить код в WhatsApp» — откроется чат с ботом с готовым сообщением.',
+			'whatsappBot.step3' => 'Отправьте его. Номер, с которого оно пришло, привяжется к аккаунту.',
+			'whatsappBot.getCode' => 'Получить код',
+			'whatsappBot.yourCode' => 'Ваш код привязки',
+			'whatsappBot.validUntil' => ({required Object time}) => 'Действует до ${time}',
+			'whatsappBot.copy' => 'Копировать',
+			'whatsappBot.copied' => 'Код скопирован',
+			'whatsappBot.sendCode' => 'Отправить код в WhatsApp',
+			'whatsappBot.codeMessage' => ({required Object code}) => 'Мой код привязки EasyPlate: ${code}',
+			'whatsappBot.waiting' => 'После отправки экран обновится сам.',
+			'whatsappBot.newCode' => 'Новый код',
+			'whatsappBot.linkedNumber' => 'Привязанный номер',
+			'whatsappBot.usageTitle' => 'В этом месяце',
+			'whatsappBot.usage' => ({required Object used, required Object limit}) => 'Использовано ${used} из ${limit} сообщений в месяц',
+			'whatsappBot.premiumTag' => 'Premium',
+			'whatsappBot.freeNote' => 'В бесплатном тарифе есть месячный лимит. Сообщение без покупок не засчитывается.',
+			'whatsappBot.quotaReached' => 'Лимит месяца исчерпан. Он обнулится в начале следующего месяца, или оформите Premium.',
+			'whatsappBot.upgrade' => 'Перейти на Premium',
+			'whatsappBot.targetList' => 'В какой список добавлять',
+			'whatsappBot.targetAuto' => 'Автоматически (основной список)',
+			'whatsappBot.targetHint' => 'Общие списки здесь не показаны — бот добавляет только в ваши списки.',
+			'whatsappBot.openChat' => 'Открыть чат с ботом',
+			'whatsappBot.unlink' => 'Отвязать номер',
+			'whatsappBot.unlinkConfirm' => 'Отвязать номер от бота? Его сообщения больше не будут попадать в список покупок. Привязать снова можно в любой момент.',
+			'whatsappBot.unlinked' => 'Номер отвязан',
+			'whatsappBot.unavailable' => 'Подключение WhatsApp сейчас недоступно.',
+			'whatsappBot.listGone' => 'Этого списка больше нет или его нельзя изменить.',
+			'whatsappBot.failed' => 'Что-то пошло не так. Попробуйте ещё раз.',
+			'whatsappBot.offline' => 'Нет подключения к интернету. Проверьте его и повторите.',
+			'whatsappBot.botNotReady' => 'Бот ещё не настроен. Попробуйте позже.',
+			'whatsappBot.cannotOpen' => 'Не удалось открыть WhatsApp. Убедитесь, что он установлен.',
+			'whatsappBot.retry' => 'Повторить',
 			_ => null,
 		};
 	}

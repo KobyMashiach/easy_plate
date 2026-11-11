@@ -33,6 +33,14 @@ class _PressScaleState extends State<PressScale> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onTap != null || widget.onLongPress != null;
+    // A tappable card is announced as a button; its text is the label.
+    return Semantics(
+      button: widget.onTap != null,
+      child: _detector(enabled),
+    );
+  }
+
+  Widget _detector(bool enabled) {
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,

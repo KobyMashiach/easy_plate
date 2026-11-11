@@ -194,7 +194,18 @@ export async function mount({ view, params, setTitle }) {
       session.releaseRequest ? [t("users.releaseRequest"), h("span", platformLabel(session.releaseRequest.platform), " · ", fmtDate(session.releaseRequest.at), " · ", session.releaseRequest.declinedAt ? badge(t("users.declined"), "amber") : session.releaseRequest.takeoverAt ? t("users.takeoverAt", { date: fmtDate(session.releaseRequest.takeoverAt) }) : "")] : null,
     ].filter(Boolean)) : h("p.muted", t("users.noSession")));
 
-    return h("div.cards", profileCard, entCard, authCard, sessionCard);
+    // The WhatsApp grocery bot (whatsappBot.js): the fields live on users/{uid}.
+    const wa = user || {};
+    const waUsage = wa.whatsapp_monthly_usage || null;
+    const waCodeUntil = wa.whatsapp_link_code_expires_at && typeof wa.whatsapp_link_code_expires_at.toMillis === "function" ? wa.whatsapp_link_code_expires_at.toMillis() : 0;
+    const waCard = persona ? null : h("div.card", h("h2", t("wa.title")), wa.whatsapp_phone_number ? kv([
+      [t("wa.phone"), h("span.mono", { dir: "ltr" }, wa.whatsapp_phone_number)],
+      [t("wa.usage"), waUsage ? t("wa.usageValue", { used: waUsage.message_count || 0, month: waUsage.month || "—" }) : "—"],
+      [t("wa.list"), wa.whatsapp_list_id ? h("span.mono.small", wa.whatsapp_list_id) : t("wa.listAuto")],
+      [t("user.created"), fmtDate(wa.whatsapp_linked_at)],
+    ]) : h("p.muted", waCodeUntil > now ? t("wa.codeOpen", { date: fmtDate(new Date(waCodeUntil)) }) : t("wa.none")));
+
+    return h("div.cards", profileCard, entCard, authCard, sessionCard, waCard);
   }
 
   async function grantPremium() {

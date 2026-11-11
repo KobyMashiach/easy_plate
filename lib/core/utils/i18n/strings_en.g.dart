@@ -61,6 +61,8 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$sharing$en sharing = _Translations$sharing$en._(_root);
 	@override late final _Translations$notifications$en notifications = _Translations$notifications$en._(_root);
 	@override late final _Translations$editor$en editor = _Translations$editor$en._(_root);
+	@override late final _Translations$bulkImport$en bulkImport = _Translations$bulkImport$en._(_root);
+	@override late final _Translations$clipboardPrompt$en clipboardPrompt = _Translations$clipboardPrompt$en._(_root);
 	@override late final _Translations$ingestion$en ingestion = _Translations$ingestion$en._(_root);
 	@override late final _Translations$mealPlanner$en mealPlanner = _Translations$mealPlanner$en._(_root);
 	@override late final _Translations$groceryList$en groceryList = _Translations$groceryList$en._(_root);
@@ -88,6 +90,7 @@ class TranslationsEn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$adminUser$en adminUser = _Translations$adminUser$en._(_root);
 	@override late final _Translations$quickActions$en quickActions = _Translations$quickActions$en._(_root);
 	@override late final _Translations$countries$en countries = _Translations$countries$en._(_root);
+	@override late final _Translations$whatsappBot$en whatsappBot = _Translations$whatsappBot$en._(_root);
 }
 
 // Path: common
@@ -102,6 +105,10 @@ class _Translations$common$en extends Translations$common$he {
 	@override String get ok => 'OK';
 	@override String get next => 'Next';
 	@override String get back => 'Back';
+	@override String get like => 'Like';
+	@override String get increase => 'Increase';
+	@override String get decrease => 'Decrease';
+	@override String get filters => 'Filters';
 	@override String get done => 'Done';
 	@override String get add => 'Add';
 	@override String get edit => 'Edit';
@@ -347,6 +354,11 @@ class _Translations$settings$en extends Translations$settings$he {
 	@override String get themeSystem => 'System';
 	@override String get themeLight => 'Light';
 	@override String get themeDark => 'Dark';
+	@override String get textSize => 'Text size';
+	@override String get textSizeNormal => 'Normal';
+	@override String get textSizeLarge => 'Large';
+	@override String get textSizeExtraLarge => 'Extra large';
+	@override String get textSizePreview => 'This is how text will look in the app';
 	@override String get soundEffects => 'Sound effects (page turns)';
 	@override String get fastPageTurn => 'Fast page-through';
 	@override String get fastPageTurnHint => 'Jumping from the table of contents or quick navigation turns a single page to the destination. Turn it off to flip through every page on the way.';
@@ -555,6 +567,22 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String get deleteConfirm => 'The recipe will be deleted for good. This cannot be undone.';
 	@override String get deleteSharedConfirm => 'The recipe is removed only for you. Everyone else in the share keeps it.';
 	@override String get deleted => 'Recipe deleted';
+	@override String get undo => 'Undo';
+	@override String get savedRemoved => 'Removed from your saved recipes';
+	@override String bookDeleted({required Object title}) => 'Book “${title}” deleted';
+	@override String get removedFromBook => 'Removed from the book';
+	@override String get noBookToAdd => 'No book to add it to — it is already in all of them, or you have no book yet';
+	@override String get lastUsedBook => 'Used last time';
+	@override String get alreadyInBook => 'Already in this book';
+	@override String get viewOnlyBook => 'View only';
+	@override String get addToPlan => 'Add to meal plan';
+	@override String get planLabel => 'Plan';
+	@override String get dayLabel => 'Day';
+	@override String get mealLabel => 'Meal';
+	@override String get noPlanToAdd => 'No meal plan to add it to yet. Create one in the plan tab';
+	@override String addedToPlan({required Object day, required Object meal}) => 'Added to the plan: ${day} · ${meal}';
+	@override String get recentlyCooked => 'Recently cooked';
+	@override String get mostCooked => 'Most cooked';
 }
 
 // Path: cookMode
@@ -592,6 +620,13 @@ class _Translations$cookMode$en extends Translations$cookMode$he {
 	@override String timeUpBody({required Object n}) => 'Step ${n}: time\'s up';
 	@override String get runningTimers => 'Running timers';
 	@override String get premiumOnly => 'Cook mode is part of EasyPlate Premium';
+	@override String get voiceOn => 'Turn on voice commands';
+	@override String get voiceOff => 'Turn off voice commands';
+	@override String get voiceListening => 'Listening… say "next", "back", "again" or "timer"';
+	@override String voiceHeard({required Object command}) => 'Heard: ${command}';
+	@override String get voiceMicDenied => 'Voice commands need microphone access';
+	@override String get voiceUnavailable => 'Speech recognition isn\'t available on this device';
+	@override String get repeat => 'Again';
 }
 
 // Path: nutrition
@@ -871,6 +906,60 @@ class _Translations$editor$en extends Translations$editor$he {
 	@override String get saveWithAiHint => 'Fix spelling and align the times written in the steps';
 }
 
+// Path: bulkImport
+class _Translations$bulkImport$en extends Translations$bulkImport$he {
+	_Translations$bulkImport$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Import several recipes';
+	@override String get entry => 'Import several recipes at once';
+	@override String get entryHint => 'Paste a list of links, or pick a WhatsApp chat export';
+	@override String get pasteHint => 'Paste links or recipes here — each on its own line or paragraph';
+	@override String get findInText => 'Find recipes in the text';
+	@override String get pickExport => 'Pick a chat export (txt or zip)';
+	@override String get exportHelp => 'In WhatsApp: open the chat → More → Export chat → Without media, then share it to EasyPlate or save it to Files.';
+	@override String get privacyNote => 'Only the text of the messages you tick is sent — no names, numbers or dates.';
+	@override String get noneFound => 'No links or recipes found here';
+	@override String get fileUnreadable => 'We couldn\'t read that file';
+	@override String foundCount({required Object count}) => 'Found: ${count}';
+	@override String get quotaNote => 'Each recipe counts toward your daily allowance, just like a single import.';
+	@override String get selectAll => 'Select all';
+	@override String get selectNone => 'Clear selection';
+	@override String importCount({required Object count}) => 'Import ${count}';
+	@override String get stop => 'Stop';
+	@override String get done => 'Done';
+	@override String get leaveWhileRunning => 'The import is still running. Stop and leave? What\'s already saved stays.';
+	@override String get kindPage => 'Recipe page';
+	@override String get kindVideo => 'Video';
+	@override String get kindText => 'Written recipe';
+	@override String get statusWaiting => 'Waiting';
+	@override String get statusRunning => 'Importing…';
+	@override String get statusDone => 'Saved';
+	@override String get statusFailed => 'Failed';
+	@override String get statusSkipped => 'Skipped';
+	@override String quotaStopped({required Object done}) => 'Your daily allowance ran out, so we stopped. ${done} recipes saved — the rest can be imported tomorrow.';
+	@override String refusedStopped({required Object done}) => 'We stopped: this account can\'t analyse recipes right now. ${done} recipes saved.';
+	@override String stopped({required Object done}) => 'Stopped. ${done} recipes saved.';
+	@override String finished({required Object done}) => 'All done! ${done} recipes saved.';
+	@override String finishedWithFailures({required Object done, required Object failed}) => 'Done: ${done} saved, ${failed} failed.';
+}
+
+// Path: clipboardPrompt
+class _Translations$clipboardPrompt$en extends Translations$clipboardPrompt$he {
+	_Translations$clipboardPrompt$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'There\'s a link on your clipboard';
+	@override String get message => 'Add it as a recipe?';
+	@override String get add => 'Add';
+	@override String get dismiss => 'Not now';
+	@override String get noLink => 'The clipboard no longer holds a link';
+}
+
 // Path: ingestion
 class _Translations$ingestion$en extends Translations$ingestion$he {
 	_Translations$ingestion$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -929,6 +1018,19 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String filesAsOne({required Object count}) => '${count} files — analysed together as one recipe, in order';
 	@override String get shareMoreHint => 'You can go back to WhatsApp and share another recording — it will join the list here.';
 	@override String get chooseSource => 'Where is the recipe coming from?';
+	@override String get autoHint => 'Paste a link or a recipe, or type what you feel like — we’ll work out what it is';
+	@override String get autoPicked => 'Category picked automatically from your text · you can choose another';
+	@override String get autoWaiting => 'The category is picked automatically from what you type';
+	@override String get tapForInfo => 'Tap a category to see what it does';
+	@override String get sharedAppended => 'The shared text was added at the end';
+	@override String autoRunIn({required Object seconds}) => 'Starting in ${seconds}…';
+	@override String get recentTitle => 'Recent';
+	@override String get voiceStart => 'Type by voice';
+	@override String get voiceStop => 'Stop recording';
+	@override String get voiceUnavailable => 'Speech recognition isn’t available on this device';
+	@override String get addToBookTitle => 'Add the recipe to a book?';
+	@override String get addToBookSkip => 'Not now';
+	@override String addedToBook({required Object book}) => 'Added to “${book}”';
 	@override String get pasteTextDescription => 'Got a recipe on WhatsApp, or copied one from a site or a message? Paste the text here as it is. The model picks out the dish name, the ingredients with their amounts and the steps, and lays it all out in one format. No daily limit.';
 	@override String get webSearchDescription => 'Tell us what you feel like making and we will search the web for recipes. From the results you can read the original page as it is, or import it into the app’s structured format.';
 	@override String get webSearchHint => 'For example: shakshuka, cheesecake, beetroot kubbeh';
@@ -941,6 +1043,13 @@ class _Translations$ingestion$en extends Translations$ingestion$he {
 	@override String get fileDescription => 'Pick an audio file in which someone reads or tells the recipe, a WhatsApp voice note, or a recipe PDF. We transcribe and read all of it and extract a tidy recipe. Several files can be attached; they are analysed together as one recipe.';
 	@override String get saveFailed => 'Could not save the recipe. Try again.';
 	@override String get recordingTag => 'Recording';
+	@override String get filePhoto => 'File / photo';
+	@override String get filePhotoDescription => 'Snap a cookbook page or a handwritten recipe, pick a screenshot from your gallery (of an Instagram post, say), or attach a recording, a WhatsApp voice note or a PDF. We read all of it and extract a tidy recipe. Several photos or files are analysed together as one recipe — a recipe that runs over two pages, for example.';
+	@override String get filePhotoHint => 'You can also share a photo, a screenshot, a recording or a PDF straight into Easy Plate from any app, through the usual share button.';
+	@override String get takePhoto => 'Take a photo';
+	@override String get fromGallery => 'From gallery';
+	@override String get photoTag => 'Photo';
+	@override String get filePhotoUnsupported => 'Only photos, audio files and PDFs can be analysed.';
 	@override String sizeKb({required Object n}) => '${n} KB';
 	@override String sizeMb({required Object n}) => '${n} MB';
 	@override String get videoPhotoTitle => 'Picture from the video';
@@ -974,6 +1083,24 @@ class _Translations$mealPlanner$en extends Translations$mealPlanner$he {
 
 	// Translations
 	@override String get title => 'Meal planning';
+	@override String get fillWeek => 'Fill my week';
+	@override String get fillWeekHint => 'Fills the empty meals from your recipes, no repeats';
+	@override String fillWeekDone({required Object count}) => 'Filled ${count} meals from your recipes';
+	@override String fillWeekPartial({required Object filled, required Object total}) => 'Filled ${filled} of ${total} meals — not enough matching recipes for the rest';
+	@override String get fillWeekNothing => 'No empty meals to fill';
+	@override String get fillWeekNoRecipes => 'None of your saved recipes fit the empty meals';
+	@override String get copyWeek => 'Copy last week';
+	@override String get copyWeekHint => 'Copies dishes from an earlier plan into the empty meals';
+	@override String get copyWeekPick => 'Copy from which plan?';
+	@override String copyWeekDone({required Object count, required Object name}) => 'Copied ${count} meals from “${name}”';
+	@override String get copyWeekNothing => 'No empty meals to copy into';
+	@override String get copyWeekNoSource => 'No earlier plan with dishes to copy';
+	@override String get clearDay => 'Clear the day';
+	@override String get dayCleared => 'The day\'s dishes were cleared';
+	@override String get mealRemoved => 'Meal removed';
+	@override String get dishRemoved => 'Dish removed';
+	@override String get emptyWeek => 'This week is still empty';
+	@override String get emptyWeekHint => 'Fill it from your recipes in one tap, or copy last week';
 	@override String get newPlan => 'New plan';
 	@override String get planName => 'Plan name';
 	@override String get addMeal => 'Add a meal';
@@ -1018,6 +1145,27 @@ class _Translations$groceryList$en extends Translations$groceryList$he {
 
 	// Translations
 	@override String get title => 'Grocery list';
+	@override String get voiceAdd => 'Say the items';
+	@override String get voiceListening => 'Listening… e.g. milk, eggs and two packs of bread';
+	@override String voiceHeard({required Object count}) => 'Heard ${count} items — remove any before adding';
+	@override String voiceAddAll({required Object count}) => 'Add ${count} items';
+	@override String get voiceNothing => 'Didn\'t catch any items, try again';
+	@override String get voiceUnavailable => 'Speech recognition isn\'t available on this device';
+	@override String itemsAdded({required Object count}) => '${count} items added';
+	@override String get boughtAll => 'Bought everything';
+	@override String boughtAllDone({required Object count}) => '${count} items ticked off';
+	@override String get itemRemoved => 'Item removed';
+	@override String checkedDeleted({required Object count}) => '${count} items deleted';
+	@override String listDeletedUndo({required Object name}) => 'List “${name}” deleted';
+	@override String get aisleSort => 'By aisle';
+	@override String get aisleProduce => 'Fruit & vegetables';
+	@override String get aisleDairy => 'Dairy & eggs';
+	@override String get aisleBakery => 'Bakery';
+	@override String get aisleMeat => 'Meat & fish';
+	@override String get aisleDryGoods => 'Pantry';
+	@override String get aisleFrozen => 'Frozen';
+	@override String get aisleCleaning => 'Cleaning & home';
+	@override String get aisleOther => 'Other';
 	@override String get aggregated => 'Combined from all active plans';
 	@override String get addItem => 'New item';
 	@override String get category => 'Category';
@@ -1964,6 +2112,26 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get ingestSocialVideo => 'Recipe from a video';
 	@override String get ingestAiRequest => 'Ask AI for a recipe';
 	@override String get ingestFile => 'Recipe from a file';
+	@override String get ingestAutoChannel => 'Automatic category when adding a recipe';
+	@override String get ingestPasteAutoRun => 'Auto-run a pasted link';
+	@override String get ingestRecent => 'Recent inputs when adding a recipe';
+	@override String get ingestVoice => 'Voice typing when adding a recipe';
+	@override String get saveToBookPrompt => 'Offer to add to a book after saving';
+	@override String get clipboardLinkPrompt => 'Offer a link from the clipboard';
+	@override String get ingestPhoto => 'Recipe from a photo';
+	@override String get reviewStickySave => 'Pinned save button on review';
+	@override String get bulkImport => 'Import several recipes at once';
+	@override String get recipeQuickMenu => 'Long-press quick menu';
+	@override String get undoInsteadOfConfirm => 'Undo instead of confirm';
+	@override String get rememberLastChoices => 'Remember last choices';
+	@override String get recentCooked => 'Recently / most cooked';
+	@override String get planAutofill => 'Fill my week';
+	@override String get planCopyWeek => 'Copy last week';
+	@override String get groceryVoiceAdd => 'Add to the grocery list by voice';
+	@override String get groceryAisleSort => 'Sort by supermarket aisle';
+	@override String get groceryCheckAll => 'Bought everything';
+	@override String get textSize => 'Text size';
+	@override String get cookVoiceNext => '"Next" by voice in cook mode';
 	@override String get shareIn => 'Share from another app';
 	@override String get saveWithAi => 'Save with AI';
 	@override String get cookMode => 'Cook mode';
@@ -2020,6 +2188,7 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get recipeSuggestions => 'Recipe suggestions by preferences';
 	@override String get webCheckoutIl => 'Buy on the web (Israel)';
 	@override String get webCheckoutIntl => 'Buy on the web (abroad)';
+	@override String get whatsappBot => 'WhatsApp grocery bot';
 }
 
 // Path: adminConfig
@@ -2244,6 +2413,54 @@ class _Translations$countries$en extends Translations$countries$he {
 	@override String get ET => 'Ethiopia';
 	@override String get AU => 'Australia';
 	@override String get BR => 'Brazil';
+}
+
+// Path: whatsappBot
+class _Translations$whatsappBot$en extends Translations$whatsappBot$he {
+	_Translations$whatsappBot$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Connect WhatsApp';
+	@override String get hint => 'Add groceries to your list with a WhatsApp message';
+	@override String get connected => 'WhatsApp connected';
+	@override String get notConnected => 'WhatsApp not connected';
+	@override String get intro => 'Message EasyPlate\'s bot on WhatsApp what to buy — "milk, 2 loaves of bread and olive oil" — and the items land on your grocery list.';
+	@override String get howTitle => 'How to connect';
+	@override String get step1 => 'Tap "Get a link code" to get a 6-digit code.';
+	@override String get step2 => 'Tap "Send the code on WhatsApp" — a chat with the bot opens with the message ready.';
+	@override String get step3 => 'Send it. The number it comes from is linked to your account.';
+	@override String get getCode => 'Get a link code';
+	@override String get yourCode => 'Your link code';
+	@override String validUntil({required Object time}) => 'Valid until ${time}';
+	@override String get copy => 'Copy';
+	@override String get copied => 'Code copied';
+	@override String get sendCode => 'Send the code on WhatsApp';
+	@override String codeMessage({required Object code}) => 'My EasyPlate link code: ${code}';
+	@override String get waiting => 'Once it\'s sent, this screen updates by itself.';
+	@override String get newCode => 'New code';
+	@override String get linkedNumber => 'Linked number';
+	@override String get usageTitle => 'This month';
+	@override String usage({required Object used, required Object limit}) => '${used} of ${limit} monthly messages used';
+	@override String get premiumTag => 'Premium';
+	@override String get freeNote => 'The free plan has a monthly allowance. A message with no groceries isn\'t counted.';
+	@override String get quotaReached => 'This month\'s allowance is used up. It resets at the start of next month, or upgrade to Premium.';
+	@override String get upgrade => 'Upgrade to Premium';
+	@override String get targetList => 'Which list to add to';
+	@override String get targetAuto => 'Automatic (your main list)';
+	@override String get targetHint => 'Shared lists aren\'t shown — the bot only adds to your own lists.';
+	@override String get openChat => 'Open the chat with the bot';
+	@override String get unlink => 'Unlink number';
+	@override String get unlinkConfirm => 'Unlink this number from the bot? Its messages will no longer reach your grocery list. You can link it again any time.';
+	@override String get unlinked => 'Number unlinked';
+	@override String get unavailable => 'WhatsApp connection isn\'t available right now.';
+	@override String get listGone => 'That list no longer exists or can\'t be edited.';
+	@override String get failed => 'Something went wrong. Please try again.';
+	@override String get offline => 'No internet connection. Check it and try again.';
+	@override String get botNotReady => 'The bot isn\'t set up yet. Please try again later.';
+	@override String get cannotOpen => 'Couldn\'t open WhatsApp. Make sure it\'s installed.';
+	@override String get retry => 'Try again';
 }
 
 // Path: walkthrough.topics
@@ -2504,6 +2721,8 @@ class _Translations$adminConfig$labels$en extends Translations$adminConfig$label
 	@override String get support_phone => 'Support WhatsApp number';
 	@override String get support_email => 'Support email';
 	@override String get admin_all_features => 'Show the admin every feature';
+	@override String get quota_whatsapp_free_monthly => 'WhatsApp monthly allowance (free)';
+	@override String get quota_whatsapp_premium_monthly => 'WhatsApp monthly allowance (Premium)';
 }
 
 // Path: adminUser.groups
@@ -2759,6 +2978,10 @@ extension on TranslationsEn {
 			'common.ok' => 'OK',
 			'common.next' => 'Next',
 			'common.back' => 'Back',
+			'common.like' => 'Like',
+			'common.increase' => 'Increase',
+			'common.decrease' => 'Decrease',
+			'common.filters' => 'Filters',
 			'common.done' => 'Done',
 			'common.add' => 'Add',
 			'common.edit' => 'Edit',
@@ -2941,6 +3164,11 @@ extension on TranslationsEn {
 			'settings.themeSystem' => 'System',
 			'settings.themeLight' => 'Light',
 			'settings.themeDark' => 'Dark',
+			'settings.textSize' => 'Text size',
+			'settings.textSizeNormal' => 'Normal',
+			'settings.textSizeLarge' => 'Large',
+			'settings.textSizeExtraLarge' => 'Extra large',
+			'settings.textSizePreview' => 'This is how text will look in the app',
 			'settings.soundEffects' => 'Sound effects (page turns)',
 			'settings.fastPageTurn' => 'Fast page-through',
 			'settings.fastPageTurnHint' => 'Jumping from the table of contents or quick navigation turns a single page to the destination. Turn it off to flip through every page on the way.',
@@ -3086,6 +3314,22 @@ extension on TranslationsEn {
 			'recipe.deleteConfirm' => 'The recipe will be deleted for good. This cannot be undone.',
 			'recipe.deleteSharedConfirm' => 'The recipe is removed only for you. Everyone else in the share keeps it.',
 			'recipe.deleted' => 'Recipe deleted',
+			'recipe.undo' => 'Undo',
+			'recipe.savedRemoved' => 'Removed from your saved recipes',
+			'recipe.bookDeleted' => ({required Object title}) => 'Book “${title}” deleted',
+			'recipe.removedFromBook' => 'Removed from the book',
+			'recipe.noBookToAdd' => 'No book to add it to — it is already in all of them, or you have no book yet',
+			'recipe.lastUsedBook' => 'Used last time',
+			'recipe.alreadyInBook' => 'Already in this book',
+			'recipe.viewOnlyBook' => 'View only',
+			'recipe.addToPlan' => 'Add to meal plan',
+			'recipe.planLabel' => 'Plan',
+			'recipe.dayLabel' => 'Day',
+			'recipe.mealLabel' => 'Meal',
+			'recipe.noPlanToAdd' => 'No meal plan to add it to yet. Create one in the plan tab',
+			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'Added to the plan: ${day} · ${meal}',
+			'recipe.recentlyCooked' => 'Recently cooked',
+			'recipe.mostCooked' => 'Most cooked',
 			'cookMode.title' => 'Cook mode',
 			'cookMode.start' => 'Start cooking',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Step ${n} of ${total}',
@@ -3114,6 +3358,13 @@ extension on TranslationsEn {
 			'cookMode.timeUpBody' => ({required Object n}) => 'Step ${n}: time\'s up',
 			'cookMode.runningTimers' => 'Running timers',
 			'cookMode.premiumOnly' => 'Cook mode is part of EasyPlate Premium',
+			'cookMode.voiceOn' => 'Turn on voice commands',
+			'cookMode.voiceOff' => 'Turn off voice commands',
+			'cookMode.voiceListening' => 'Listening… say "next", "back", "again" or "timer"',
+			'cookMode.voiceHeard' => ({required Object command}) => 'Heard: ${command}',
+			'cookMode.voiceMicDenied' => 'Voice commands need microphone access',
+			'cookMode.voiceUnavailable' => 'Speech recognition isn\'t available on this device',
+			'cookMode.repeat' => 'Again',
 			'nutrition.title' => 'Nutrition',
 			'nutrition.perServing' => 'per serving',
 			'nutrition.perServingHint' => 'All values are for one serving. Leave blank to drop the estimate.',
@@ -3233,6 +3484,8 @@ extension on TranslationsEn {
 			'sharing.send' => 'Send invite',
 			'sharing.sent' => 'Invite sent',
 			'sharing.invalidContact' => 'Enter a valid email, or a phone number with its country code (+…)',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.notFound' => 'No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.',
 			'sharing.self' => 'You can\'t share with yourself',
 			'sharing.failed' => 'Sharing failed, try again',
@@ -3265,8 +3518,6 @@ extension on TranslationsEn {
 			'sharing.shareAction' => 'Share',
 			'sharing.directoryUnavailable' => 'Sharing is not set up on the server yet. Sign out and back in; if it persists, the Firestore rules need deploying.',
 			'sharing.shareBook' => 'Share book',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.sharePlan' => 'Share plan',
 			'sharing.acceptedBook' => 'The book was added to your library',
 			'sharing.acceptedPlan' => 'The plan was added to your plans',
@@ -3342,6 +3593,42 @@ extension on TranslationsEn {
 			'editor.savePlainHint' => 'Save the changes as they are, no waiting',
 			'editor.saveWithAi' => 'Save with AI review',
 			'editor.saveWithAiHint' => 'Fix spelling and align the times written in the steps',
+			'bulkImport.title' => 'Import several recipes',
+			'bulkImport.entry' => 'Import several recipes at once',
+			'bulkImport.entryHint' => 'Paste a list of links, or pick a WhatsApp chat export',
+			'bulkImport.pasteHint' => 'Paste links or recipes here — each on its own line or paragraph',
+			'bulkImport.findInText' => 'Find recipes in the text',
+			'bulkImport.pickExport' => 'Pick a chat export (txt or zip)',
+			'bulkImport.exportHelp' => 'In WhatsApp: open the chat → More → Export chat → Without media, then share it to EasyPlate or save it to Files.',
+			'bulkImport.privacyNote' => 'Only the text of the messages you tick is sent — no names, numbers or dates.',
+			'bulkImport.noneFound' => 'No links or recipes found here',
+			'bulkImport.fileUnreadable' => 'We couldn\'t read that file',
+			'bulkImport.foundCount' => ({required Object count}) => 'Found: ${count}',
+			'bulkImport.quotaNote' => 'Each recipe counts toward your daily allowance, just like a single import.',
+			'bulkImport.selectAll' => 'Select all',
+			'bulkImport.selectNone' => 'Clear selection',
+			'bulkImport.importCount' => ({required Object count}) => 'Import ${count}',
+			'bulkImport.stop' => 'Stop',
+			'bulkImport.done' => 'Done',
+			'bulkImport.leaveWhileRunning' => 'The import is still running. Stop and leave? What\'s already saved stays.',
+			'bulkImport.kindPage' => 'Recipe page',
+			'bulkImport.kindVideo' => 'Video',
+			'bulkImport.kindText' => 'Written recipe',
+			'bulkImport.statusWaiting' => 'Waiting',
+			'bulkImport.statusRunning' => 'Importing…',
+			'bulkImport.statusDone' => 'Saved',
+			'bulkImport.statusFailed' => 'Failed',
+			'bulkImport.statusSkipped' => 'Skipped',
+			'bulkImport.quotaStopped' => ({required Object done}) => 'Your daily allowance ran out, so we stopped. ${done} recipes saved — the rest can be imported tomorrow.',
+			'bulkImport.refusedStopped' => ({required Object done}) => 'We stopped: this account can\'t analyse recipes right now. ${done} recipes saved.',
+			'bulkImport.stopped' => ({required Object done}) => 'Stopped. ${done} recipes saved.',
+			'bulkImport.finished' => ({required Object done}) => 'All done! ${done} recipes saved.',
+			'bulkImport.finishedWithFailures' => ({required Object done, required Object failed}) => 'Done: ${done} saved, ${failed} failed.',
+			'clipboardPrompt.title' => 'There\'s a link on your clipboard',
+			'clipboardPrompt.message' => 'Add it as a recipe?',
+			'clipboardPrompt.add' => 'Add',
+			'clipboardPrompt.dismiss' => 'Not now',
+			'clipboardPrompt.noLink' => 'The clipboard no longer holds a link',
 			'ingestion.title' => 'Add a recipe',
 			'ingestion.pasteText' => 'Paste text',
 			'ingestion.pasteHint' => 'Paste a recipe here from WhatsApp or any other source',
@@ -3393,6 +3680,19 @@ extension on TranslationsEn {
 			'ingestion.filesAsOne' => ({required Object count}) => '${count} files — analysed together as one recipe, in order',
 			'ingestion.shareMoreHint' => 'You can go back to WhatsApp and share another recording — it will join the list here.',
 			'ingestion.chooseSource' => 'Where is the recipe coming from?',
+			'ingestion.autoHint' => 'Paste a link or a recipe, or type what you feel like — we’ll work out what it is',
+			'ingestion.autoPicked' => 'Category picked automatically from your text · you can choose another',
+			'ingestion.autoWaiting' => 'The category is picked automatically from what you type',
+			'ingestion.tapForInfo' => 'Tap a category to see what it does',
+			'ingestion.sharedAppended' => 'The shared text was added at the end',
+			'ingestion.autoRunIn' => ({required Object seconds}) => 'Starting in ${seconds}…',
+			'ingestion.recentTitle' => 'Recent',
+			'ingestion.voiceStart' => 'Type by voice',
+			'ingestion.voiceStop' => 'Stop recording',
+			'ingestion.voiceUnavailable' => 'Speech recognition isn’t available on this device',
+			'ingestion.addToBookTitle' => 'Add the recipe to a book?',
+			'ingestion.addToBookSkip' => 'Not now',
+			'ingestion.addedToBook' => ({required Object book}) => 'Added to “${book}”',
 			'ingestion.pasteTextDescription' => 'Got a recipe on WhatsApp, or copied one from a site or a message? Paste the text here as it is. The model picks out the dish name, the ingredients with their amounts and the steps, and lays it all out in one format. No daily limit.',
 			'ingestion.webSearchDescription' => 'Tell us what you feel like making and we will search the web for recipes. From the results you can read the original page as it is, or import it into the app’s structured format.',
 			'ingestion.webSearchHint' => 'For example: shakshuka, cheesecake, beetroot kubbeh',
@@ -3405,6 +3705,13 @@ extension on TranslationsEn {
 			'ingestion.fileDescription' => 'Pick an audio file in which someone reads or tells the recipe, a WhatsApp voice note, or a recipe PDF. We transcribe and read all of it and extract a tidy recipe. Several files can be attached; they are analysed together as one recipe.',
 			'ingestion.saveFailed' => 'Could not save the recipe. Try again.',
 			'ingestion.recordingTag' => 'Recording',
+			'ingestion.filePhoto' => 'File / photo',
+			'ingestion.filePhotoDescription' => 'Snap a cookbook page or a handwritten recipe, pick a screenshot from your gallery (of an Instagram post, say), or attach a recording, a WhatsApp voice note or a PDF. We read all of it and extract a tidy recipe. Several photos or files are analysed together as one recipe — a recipe that runs over two pages, for example.',
+			'ingestion.filePhotoHint' => 'You can also share a photo, a screenshot, a recording or a PDF straight into Easy Plate from any app, through the usual share button.',
+			'ingestion.takePhoto' => 'Take a photo',
+			'ingestion.fromGallery' => 'From gallery',
+			'ingestion.photoTag' => 'Photo',
+			'ingestion.filePhotoUnsupported' => 'Only photos, audio files and PDFs can be analysed.',
 			'ingestion.sizeKb' => ({required Object n}) => '${n} KB',
 			'ingestion.sizeMb' => ({required Object n}) => '${n} MB',
 			'ingestion.videoPhotoTitle' => 'Picture from the video',
@@ -3429,6 +3736,24 @@ extension on TranslationsEn {
 			'ingestion.suggestDietReset' => 'Back to my preferences',
 			'ingestion.suggestSearch' => 'Find suggestions',
 			'mealPlanner.title' => 'Meal planning',
+			'mealPlanner.fillWeek' => 'Fill my week',
+			'mealPlanner.fillWeekHint' => 'Fills the empty meals from your recipes, no repeats',
+			'mealPlanner.fillWeekDone' => ({required Object count}) => 'Filled ${count} meals from your recipes',
+			'mealPlanner.fillWeekPartial' => ({required Object filled, required Object total}) => 'Filled ${filled} of ${total} meals — not enough matching recipes for the rest',
+			'mealPlanner.fillWeekNothing' => 'No empty meals to fill',
+			'mealPlanner.fillWeekNoRecipes' => 'None of your saved recipes fit the empty meals',
+			'mealPlanner.copyWeek' => 'Copy last week',
+			'mealPlanner.copyWeekHint' => 'Copies dishes from an earlier plan into the empty meals',
+			'mealPlanner.copyWeekPick' => 'Copy from which plan?',
+			'mealPlanner.copyWeekDone' => ({required Object count, required Object name}) => 'Copied ${count} meals from “${name}”',
+			'mealPlanner.copyWeekNothing' => 'No empty meals to copy into',
+			'mealPlanner.copyWeekNoSource' => 'No earlier plan with dishes to copy',
+			'mealPlanner.clearDay' => 'Clear the day',
+			'mealPlanner.dayCleared' => 'The day\'s dishes were cleared',
+			'mealPlanner.mealRemoved' => 'Meal removed',
+			'mealPlanner.dishRemoved' => 'Dish removed',
+			'mealPlanner.emptyWeek' => 'This week is still empty',
+			'mealPlanner.emptyWeekHint' => 'Fill it from your recipes in one tap, or copy last week',
 			'mealPlanner.newPlan' => 'New plan',
 			'mealPlanner.planName' => 'Plan name',
 			'mealPlanner.addMeal' => 'Add a meal',
@@ -3464,6 +3789,27 @@ extension on TranslationsEn {
 			'mealPlanner.leavePlanConfirm' => ({required Object name}) => 'Leave the shared plan "${name}"? It will be removed from your list.',
 			'mealPlanner.planDeleted' => 'Plan deleted',
 			'groceryList.title' => 'Grocery list',
+			'groceryList.voiceAdd' => 'Say the items',
+			'groceryList.voiceListening' => 'Listening… e.g. milk, eggs and two packs of bread',
+			'groceryList.voiceHeard' => ({required Object count}) => 'Heard ${count} items — remove any before adding',
+			'groceryList.voiceAddAll' => ({required Object count}) => 'Add ${count} items',
+			'groceryList.voiceNothing' => 'Didn\'t catch any items, try again',
+			'groceryList.voiceUnavailable' => 'Speech recognition isn\'t available on this device',
+			'groceryList.itemsAdded' => ({required Object count}) => '${count} items added',
+			'groceryList.boughtAll' => 'Bought everything',
+			'groceryList.boughtAllDone' => ({required Object count}) => '${count} items ticked off',
+			'groceryList.itemRemoved' => 'Item removed',
+			'groceryList.checkedDeleted' => ({required Object count}) => '${count} items deleted',
+			'groceryList.listDeletedUndo' => ({required Object name}) => 'List “${name}” deleted',
+			'groceryList.aisleSort' => 'By aisle',
+			'groceryList.aisleProduce' => 'Fruit & vegetables',
+			'groceryList.aisleDairy' => 'Dairy & eggs',
+			'groceryList.aisleBakery' => 'Bakery',
+			'groceryList.aisleMeat' => 'Meat & fish',
+			'groceryList.aisleDryGoods' => 'Pantry',
+			'groceryList.aisleFrozen' => 'Frozen',
+			'groceryList.aisleCleaning' => 'Cleaning & home',
+			'groceryList.aisleOther' => 'Other',
 			'groceryList.aggregated' => 'Combined from all active plans',
 			'groceryList.addItem' => 'New item',
 			'groceryList.category' => 'Category',
@@ -3652,6 +3998,8 @@ extension on TranslationsEn {
 			'image.remove' => 'Remove photo',
 			'image.generate' => 'Create with AI',
 			'image.generating' => 'Creating a picture… this takes a few seconds',
+			_ => null,
+		} ?? switch (path) {
 			'image.generateFailed' => 'Creating the picture failed, please try again',
 			'image.coverTitle' => 'What cover to create?',
 			'image.coverHint' => 'Pick a category, write something, or both',
@@ -3779,8 +4127,6 @@ extension on TranslationsEn {
 			'walkthrough.startHint' => 'A guided tour of everything in the app, step by step',
 			'walkthrough.startFull' => 'Start the full tour',
 			'walkthrough.focused' => 'Show focused guidance',
-			_ => null,
-		} ?? switch (path) {
 			'walkthrough.next' => 'Next',
 			'walkthrough.finish' => 'Done',
 			'walkthrough.skipStep' => 'Skip step',
@@ -4166,6 +4512,8 @@ extension on TranslationsEn {
 			'assistant.suggest.templates.14' => 'Create a plan for next week',
 			'assistant.suggest.templates.15' => 'Show me what\'s planned for {day}',
 			'assistant.suggest.templates.16' => 'Change my shopping day to {day}',
+			_ => null,
+		} ?? switch (path) {
 			'assistant.suggest.templates.17' => 'Suggest a {diet} dinner for {day}',
 			'assistant.suggest.templates.18' => 'How long do I boil an egg?',
 			'assistant.suggest.templates.19' => 'What can replace {food} in a recipe?',
@@ -4293,8 +4641,6 @@ extension on TranslationsEn {
 			'shareCode.revoked' => 'This code was cancelled.',
 			'shareCode.usedUp' => 'This code has been used up.',
 			'shareCode.self' => 'That is your own code.',
-			_ => null,
-		} ?? switch (path) {
 			'shareCode.gone' => 'What this code shared no longer exists.',
 			'shareCode.tooManyRecipes' => 'This share holds too many recipes to join at once. Ask the owner to split it.',
 			'shareCode.failed' => 'Could not join. Try again.',
@@ -4407,6 +4753,26 @@ extension on TranslationsEn {
 			'featureName.ingestSocialVideo' => 'Recipe from a video',
 			'featureName.ingestAiRequest' => 'Ask AI for a recipe',
 			'featureName.ingestFile' => 'Recipe from a file',
+			'featureName.ingestAutoChannel' => 'Automatic category when adding a recipe',
+			'featureName.ingestPasteAutoRun' => 'Auto-run a pasted link',
+			'featureName.ingestRecent' => 'Recent inputs when adding a recipe',
+			'featureName.ingestVoice' => 'Voice typing when adding a recipe',
+			'featureName.saveToBookPrompt' => 'Offer to add to a book after saving',
+			'featureName.clipboardLinkPrompt' => 'Offer a link from the clipboard',
+			'featureName.ingestPhoto' => 'Recipe from a photo',
+			'featureName.reviewStickySave' => 'Pinned save button on review',
+			'featureName.bulkImport' => 'Import several recipes at once',
+			'featureName.recipeQuickMenu' => 'Long-press quick menu',
+			'featureName.undoInsteadOfConfirm' => 'Undo instead of confirm',
+			'featureName.rememberLastChoices' => 'Remember last choices',
+			'featureName.recentCooked' => 'Recently / most cooked',
+			'featureName.planAutofill' => 'Fill my week',
+			'featureName.planCopyWeek' => 'Copy last week',
+			'featureName.groceryVoiceAdd' => 'Add to the grocery list by voice',
+			'featureName.groceryAisleSort' => 'Sort by supermarket aisle',
+			'featureName.groceryCheckAll' => 'Bought everything',
+			'featureName.textSize' => 'Text size',
+			'featureName.cookVoiceNext' => '"Next" by voice in cook mode',
 			'featureName.shareIn' => 'Share from another app',
 			'featureName.saveWithAi' => 'Save with AI',
 			'featureName.cookMode' => 'Cook mode',
@@ -4463,6 +4829,7 @@ extension on TranslationsEn {
 			'featureName.recipeSuggestions' => 'Recipe suggestions by preferences',
 			'featureName.webCheckoutIl' => 'Buy on the web (Israel)',
 			'featureName.webCheckoutIntl' => 'Buy on the web (abroad)',
+			'featureName.whatsappBot' => 'WhatsApp grocery bot',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
@@ -4522,6 +4889,8 @@ extension on TranslationsEn {
 			'adminConfig.labels.support_phone' => 'Support WhatsApp number',
 			'adminConfig.labels.support_email' => 'Support email',
 			'adminConfig.labels.admin_all_features' => 'Show the admin every feature',
+			'adminConfig.labels.quota_whatsapp_free_monthly' => 'WhatsApp monthly allowance (free)',
+			'adminConfig.labels.quota_whatsapp_premium_monthly' => 'WhatsApp monthly allowance (Premium)',
 			'wakeWord.title' => 'Hey Shefi',
 			'wakeWord.hint' => 'Start talking to Shefi by voice, hands-free',
 			'wakeWord.intro' => 'Say "Hey Shefi" and Shefi opens and listens. You can keep going in the same sentence and Shefi answers right away.',
@@ -4657,6 +5026,8 @@ extension on TranslationsEn {
 			'adminUser.collections.recipes' => 'Recipes',
 			'adminUser.collections.books' => 'Recipe books',
 			'adminUser.collections.meal_plans' => 'Meal plans',
+			_ => null,
+		} ?? switch (path) {
 			'adminUser.collections.grocery_lists' => 'Grocery lists',
 			'adminUser.collections.receipts' => 'Receipts',
 			'adminUser.collections.price_records' => 'Price records',
@@ -4716,6 +5087,45 @@ extension on TranslationsEn {
 			'countries.ET' => 'Ethiopia',
 			'countries.AU' => 'Australia',
 			'countries.BR' => 'Brazil',
+			'whatsappBot.title' => 'Connect WhatsApp',
+			'whatsappBot.hint' => 'Add groceries to your list with a WhatsApp message',
+			'whatsappBot.connected' => 'WhatsApp connected',
+			'whatsappBot.notConnected' => 'WhatsApp not connected',
+			'whatsappBot.intro' => 'Message EasyPlate\'s bot on WhatsApp what to buy — "milk, 2 loaves of bread and olive oil" — and the items land on your grocery list.',
+			'whatsappBot.howTitle' => 'How to connect',
+			'whatsappBot.step1' => 'Tap "Get a link code" to get a 6-digit code.',
+			'whatsappBot.step2' => 'Tap "Send the code on WhatsApp" — a chat with the bot opens with the message ready.',
+			'whatsappBot.step3' => 'Send it. The number it comes from is linked to your account.',
+			'whatsappBot.getCode' => 'Get a link code',
+			'whatsappBot.yourCode' => 'Your link code',
+			'whatsappBot.validUntil' => ({required Object time}) => 'Valid until ${time}',
+			'whatsappBot.copy' => 'Copy',
+			'whatsappBot.copied' => 'Code copied',
+			'whatsappBot.sendCode' => 'Send the code on WhatsApp',
+			'whatsappBot.codeMessage' => ({required Object code}) => 'My EasyPlate link code: ${code}',
+			'whatsappBot.waiting' => 'Once it\'s sent, this screen updates by itself.',
+			'whatsappBot.newCode' => 'New code',
+			'whatsappBot.linkedNumber' => 'Linked number',
+			'whatsappBot.usageTitle' => 'This month',
+			'whatsappBot.usage' => ({required Object used, required Object limit}) => '${used} of ${limit} monthly messages used',
+			'whatsappBot.premiumTag' => 'Premium',
+			'whatsappBot.freeNote' => 'The free plan has a monthly allowance. A message with no groceries isn\'t counted.',
+			'whatsappBot.quotaReached' => 'This month\'s allowance is used up. It resets at the start of next month, or upgrade to Premium.',
+			'whatsappBot.upgrade' => 'Upgrade to Premium',
+			'whatsappBot.targetList' => 'Which list to add to',
+			'whatsappBot.targetAuto' => 'Automatic (your main list)',
+			'whatsappBot.targetHint' => 'Shared lists aren\'t shown — the bot only adds to your own lists.',
+			'whatsappBot.openChat' => 'Open the chat with the bot',
+			'whatsappBot.unlink' => 'Unlink number',
+			'whatsappBot.unlinkConfirm' => 'Unlink this number from the bot? Its messages will no longer reach your grocery list. You can link it again any time.',
+			'whatsappBot.unlinked' => 'Number unlinked',
+			'whatsappBot.unavailable' => 'WhatsApp connection isn\'t available right now.',
+			'whatsappBot.listGone' => 'That list no longer exists or can\'t be edited.',
+			'whatsappBot.failed' => 'Something went wrong. Please try again.',
+			'whatsappBot.offline' => 'No internet connection. Check it and try again.',
+			'whatsappBot.botNotReady' => 'The bot isn\'t set up yet. Please try again later.',
+			'whatsappBot.cannotOpen' => 'Couldn\'t open WhatsApp. Make sure it\'s installed.',
+			'whatsappBot.retry' => 'Try again',
 			_ => null,
 		};
 	}
