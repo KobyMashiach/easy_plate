@@ -750,10 +750,6 @@ exports.onUserCreated = require("./permissions").onUserCreated;
 // Notification templates on a schedule (adminNotifications.js).
 exports.runNotificationTemplates = require("./adminNotifications").runNotificationTemplates;
 
-// The app's Instagram account: scheduled posts, daily stats, the weekly
-// token refresh (adminInstagram.js).
-exports.runInstagram = require("./adminInstagram").runInstagram;
-
 exports.sessions = require("./sessions").sessions;
 exports.expireSessions = require("./sessions").expireSessions;
 

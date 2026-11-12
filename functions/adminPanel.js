@@ -30,10 +30,6 @@
 //   what's new whatsnew.save / whatsnew.delete / whatsnew.translate — the
 //              release highlights (whats_new_releases/{versionCode}) the app
 //              shows a returning account once after an update
-//   instagram  ig.account.get|connect|disconnect|refresh, ig.post.save|
-//              approve|unapprove|schedule|unschedule|publish|delete,
-//              ig.insights.refresh, ig.comments.list, ig.comment.reply|hide
-//              — the app's Instagram account (adminInstagram.js)
 //   content    translation.purge — drops a line from the shared translation
 //              cache (translateContent.js), one language or all of them
 //
@@ -49,7 +45,6 @@ const proxy = require("./aiProxy").internals;
 const accounts = require("./adminUsers").internals;
 const permissions = require("./permissions");
 const notifications = require("./adminNotifications");
-const instagram = require("./adminInstagram");
 const remoteConfig = require("./adminRemoteConfig").internals;
 const imageSearch = require("./imageSearch").internals;
 const aiUsage = require("./aiUsage");
@@ -175,21 +170,6 @@ const ACTIONS = {
   "whatsnew.translate": { title: str(200), description: str(2000), from: anyOf(WHATS_NEW_LANGS, true) },
   // One past the longest line translateContent caches, so a longer paste is
   // refused rather than cut to a different line's key.
-  "ig.account.get": {},
-  "ig.account.connect": { token: str(1000, true) },
-  "ig.account.disconnect": {},
-  "ig.account.refresh": {},
-  "ig.post.save": { id: str(128), type: anyOf(["image", "carousel", "reel", "story"], true), title: str(120, false, { clear: true }), caption: str(2300, false, { clear: true }), media: objList(10, true), source: anyOf(["claude", "upload"]) },
-  "ig.post.approve": { id: str(128, true) },
-  "ig.post.unapprove": { id: str(128, true) },
-  "ig.post.schedule": { id: str(128, true), at: num(true) },
-  "ig.post.unschedule": { id: str(128, true) },
-  "ig.post.publish": { id: str(128, true) },
-  "ig.post.delete": { id: str(128, true) },
-  "ig.insights.refresh": { id: str(128) },
-  "ig.comments.list": { id: str(128, true) },
-  "ig.comment.reply": { commentId: str(128, true), text: str(2200, true) },
-  "ig.comment.hide": { commentId: str(128, true), hide: bool() },
   "translation.purge": { text: str(translation.MAX_TEXT + 1, true), lang: anyOf(Object.keys(translation.LANGUAGE_NAMES)) },
 };
 
@@ -468,7 +448,7 @@ function summarize(request) {
     if (key === "action") continue;
     if (key === "photoDataUrl" || key === "data") {
       out[key] = typeof value === "string" ? `<${value.length} chars>` : "<object>";
-    } else if (key === "applePrivateKey" || (key === "token" && String(request.action).startsWith("ig."))) {
+    } else if (key === "applePrivateKey") {
       out[key] = "<secret>";
     } else if (key === "image" && value && typeof value === "object") {
       out[key] = value.storagePath ? { storagePath: value.storagePath } : value.url ? { url: String(value.url).slice(0, 300) } : value.dataUrl ? { dataUrl: `<${String(value.dataUrl).length} chars>` } : {};
@@ -824,9 +804,6 @@ async function personaList(db) {
 
 async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
   const now = Date.now();
-  // The Instagram page: its own module. Publishing waits for Instagram to
-  // process the media, inside this function's 300 s.
-  if (request.action.startsWith("ig.")) return instagram.handle(request, { caller, db, bucket, fetchImpl, deadline: now + 270000 });
   switch (request.action) {
     case "ping":
       return { uid: caller.uid, email: caller.email, now };

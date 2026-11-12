@@ -870,10 +870,9 @@ service cloud.firestore {
     // App Store Connect private key the storeStats function signs with is
     // read only by the server (the console sends a new one through
     // adminPanel and is shown "key present", never the key), so a script
-    // running in a signed-in admin page cannot lift it. The same for
-    // `instagram_private`, the Instagram access token (adminInstagram.js).
+    // running in a signed-in admin page cannot lift it.
     match /admin_config/{name} {
-      allow read, write: if isAdmin() && name != 'stores_private' && name != 'instagram_private';
+      allow read, write: if isAdmin() && name != 'stores_private';
     }
 
     // Store reviews (Google Play + App Store) the storeReviews function
@@ -981,14 +980,6 @@ service cloud.firestore {
       allow write: if false;
     }
     match /notification_templates/{templateId} {
-      allow read: if isAdmin();
-      allow write: if false;
-    }
-
-    // The app's Instagram posts (drafts, scheduled, published). The console
-    // reads them live; every change goes through adminPanel, which is what
-    // keeps "only an approved post is published" true.
-    match /instagram_posts/{postId} {
       allow read: if isAdmin();
       allow write: if false;
     }

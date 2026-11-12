@@ -18,7 +18,6 @@ import * as stores from "./views/stores.js";
 import * as reviews from "./views/reviews.js";
 import * as notifications from "./views/notifications.js";
 import * as whatsnew from "./views/whatsnew.js";
-import * as instagram from "./views/instagram.js";
 
 const ICONS = {
   dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
@@ -34,7 +33,6 @@ const ICONS = {
   notifications: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
   reviews: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="m12 6.5 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg>',
   audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>',
-  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>',
   whatsnew: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 16.8l.9-5L4.8 8.3l5-.7z"/></svg>',
 };
 
@@ -50,7 +48,6 @@ const ROUTES = [
   { key: "tickets", path: /^\/tickets$/, view: tickets },
   { key: "notifications", path: /^\/notifications$/, view: notifications },
   { key: "whatsnew", path: /^\/whatsnew$/, view: whatsnew },
-  { key: "instagram", path: /^\/instagram$/, view: instagram },
   { key: "config", path: /^\/config$/, view: config },
   { key: "stores", path: /^\/stores$/, view: stores },
   { key: "reviews", path: /^\/reviews$/, view: reviews },
@@ -118,7 +115,7 @@ function renderNav() {
   const { nav } = els();
   clear(nav);
   const route = location.hash.slice(1) || "/dashboard";
-  for (const key of ["dashboard", "stores", "reviews", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "whatsnew", "instagram", "config", "audit"]) {
+  for (const key of ["dashboard", "stores", "reviews", "users", "seed", "community", "recipes", "personas", "households", "tickets", "notifications", "whatsnew", "config", "audit"]) {
     const here = route.startsWith("/" + key);
     const a = h(`a${here ? ".active" : ""}`, { href: `#/${key}`, html: ICONS[key], ...(here ? { "aria-current": "page" } : {}) });
     a.append(h("span", t(`nav.${key}`)));

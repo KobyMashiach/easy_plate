@@ -61,18 +61,6 @@ service firebase.storage {
                     && request.auth.uid == uid;
     }
 
-    // The Instagram page's media (adminInstagram.js): uploaded from the web
-    // console by the administrator only, JPEG images up to 8 MB and MP4/MOV
-    // video up to 100 MB. Instagram itself fetches them through the
-    // download-token URL the function adds at publish time, which these
-    // rules do not govern.
-    match /marketing/instagram/{postId}/{fileName} {
-      allow get, delete: if isAdmin();
-      allow create, update: if isAdmin()
-                   && ((request.resource.contentType == 'image/jpeg' && request.resource.size < 8 * 1024 * 1024)
-                       || (request.resource.contentType.matches('video/(mp4|quicktime)') && request.resource.size < 100 * 1024 * 1024));
-    }
-
     match /{allPaths=**} {
       allow read, write: if false;
     }
