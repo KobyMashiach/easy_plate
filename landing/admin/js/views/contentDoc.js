@@ -42,11 +42,50 @@ export function ingredientGroups(ingredients) {
   return groups;
 }
 
+const PLATFORMS = [["tiktok", "TikTok"], ["instagram", "Instagram"], ["youtu", "YouTube"], ["facebook", "Facebook"], ["fb.watch", "Facebook"], ["pinterest", "Pinterest"], ["x.com", "X"], ["twitter", "X"]];
+const FILE_ACTIONS = { recipe_photo: "photo", recipe_pdf: "pdf", recipe_audio: "audio" };
+const millis = (v) => (!v ? null : typeof v.toMillis === "function" ? v.toMillis() : typeof v.toDate === "function" ? v.toDate().getTime() : typeof v === "number" ? v : Date.parse(v) || null);
+
+/// How a recipe came in, as a source key: the chip it was made with
+/// (sourceChannel), refined where the recipe alone cannot tell — a file is
+/// a photo, a PDF or a recording by the AI call that read it (the closest
+/// one in the 15 minutes before it was created), a video names its
+/// platform. Pure; `calls` are the account's ai_calls rows.
+export function recipeSource(d, calls = []) {
+  if (!d || typeof d !== "object") return { key: "unknown" };
+  if (d.savedFromSharedId) return { key: "community" };
+  if (d.collabId && d.collabRole && d.collabRole !== "owner") return { key: "sharedWithMe" };
+  const ch = String(d.sourceChannel || "");
+  if (ch === "socialVideo") {
+    const url = String(d.sourceUrl || "").toLowerCase();
+    const hit = PLATFORMS.find(([needle]) => url.includes(needle));
+    return { key: "socialVideo", platform: hit ? hit[1] : null };
+  }
+  if (ch === "file") {
+    const at = millis(d.createdAt);
+    let best = null;
+    for (const c of calls) {
+      const kind = FILE_ACTIONS[c.action];
+      const t0 = millis(c.at);
+      if (!kind || at === null || t0 === null || t0 > at + 60000 || at - t0 > 15 * 60000) continue;
+      if (!best || t0 > best.t0) best = { kind, t0 };
+    }
+    return { key: best ? best.kind : "file" };
+  }
+  const known = ["rawText", "webSearch", "urlScrape", "aiRequest", "manual"];
+  return { key: known.includes(ch) ? ch : ch ? "other" : "unknown" };
+}
+
+export function sourceLabel(src) {
+  const label = t(`content.source.${src.key}`);
+  return src.platform ? `${label} · ${src.platform}` : label;
+}
+
 export function isRecipe(col, d) {
   return col === "recipes" && d && typeof d === "object" && (Array.isArray(d.ingredients) || Array.isArray(d.steps));
 }
 
-function recipeView(d) {
+function recipeView(d, calls) {
   const facts = [
     d.prepTimeMinutes ? `${t("content.prep")}: ${d.prepTimeMinutes} ${t("content.minutes")}` : null,
     d.cookTimeMinutes ? `${t("content.cook")}: ${d.cookTimeMinutes} ${t("content.minutes")}` : null,
@@ -55,7 +94,7 @@ function recipeView(d) {
   const n = d.nutrition;
   return h("div.stack.recipe-view",
     h("h2", d.title || t("common.unnamed")),
-    facts.length ? h("p.muted", facts.join(" · ")) : null,
+    h("p.muted", `${t("content.sourceCol")}: ${sourceLabel(recipeSource(d, calls))}`, facts.length ? ` · ${facts.join(" · ")}` : ""),
     h("h3", t("content.ingredients")),
     ...ingredientGroups(d.ingredients).map((g) => h("div",
       g.section ? h("h4", g.section) : null,
@@ -89,8 +128,8 @@ function genericView(d) {
 }
 
 /// The read-only text view of one item.
-export function viewDoc(col, d, title) {
-  modal({ title: `${t("content.view")}: ${title}`, wide: true, body: isRecipe(col, d) ? recipeView(d) : genericView(d), actions: [(c) => button(t("common.close"), { onclick: c })] });
+export function viewDoc(col, d, title, calls = []) {
+  modal({ title: `${t("content.view")}: ${title}`, wide: true, body: isRecipe(col, d) ? recipeView(d, calls) : genericView(d), actions: [(c) => button(t("common.close"), { onclick: c })] });
 }
 
 /// The recipe from the form's values, onto the stored document. The words

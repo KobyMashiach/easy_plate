@@ -6,7 +6,7 @@ import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, t
 import { isOnline, premiumActive, platformLabel, pricing, tally, costIls, isPersona, profiles } from "../data.js";
 import { call } from "../api.js";
 import { subscriptionHistory } from "../subscriptionHistory.js";
-import { viewDoc, editRecipe, isRecipe } from "./contentDoc.js";
+import { viewDoc, editRecipe, isRecipe, recipeSource, sourceLabel } from "./contentDoc.js";
 import { actionOf, actionTallies, actionKey, categoryOf, categoryTallies } from "../aiActions.js";
 
 // Which "bought on the website" label an entitlement gets: PayPlus / Stripe
@@ -299,6 +299,11 @@ export async function mount({ view, params, setTitle }) {
     // A failed read shows the console's error card (not a spinner for ever),
     // and a slow collection cannot overwrite the one clicked after it.
     let seq = 0;
+    // The account's AI calls, read once: they tell a photo from a PDF or a
+    // recording for recipes that came in as a file.
+    let callsP = null;
+    const calls = () => (callsP ||= getDocs(query(collection(db, "ai_calls"), where("uid", "==", uid), orderBy("at", "desc"), limit(500)))
+      .then((snap) => snap.docs.map((x) => x.data())).catch(() => []));
     const render = async () => {
       const mine = ++seq;
       clear(list);
@@ -317,14 +322,16 @@ export async function mount({ view, params, setTitle }) {
         console.error(err);
         return;
       }
+      const aiCalls = col === "recipes" ? await calls() : [];
       if (mine !== seq) return;
       clear(list);
       list.append(h("div.toolbar", tabs(available.map((c) => [c, t(`user.collections.${c}`)]), col, (c) => { col = c; render(); }), h("span.muted.small", t("user.items", { n: docs.length }))));
       list.append(table([
         { label: t("common.title"), cell: (d) => h("div", h("div", docTitle(d) || t("common.unnamed")), h("div.small.muted.mono", d.id)) },
+        ...(col === "recipes" ? [{ label: t("content.sourceCol"), cell: (d) => badge(sourceLabel(recipeSource(d, aiCalls)), "brand") }] : []),
         { label: t("common.date"), cell: (d) => h("span.small", fmtDate(d.updatedAt || d.createdAt)) },
         { label: t("common.actions"), cell: (d) => h("div.row",
-          button(t("content.view"), { kind: "small", onclick: () => viewDoc(col, d, docTitle(d) || t("common.unnamed")) }),
+          button(t("content.view"), { kind: "small", onclick: () => viewDoc(col, d, docTitle(d) || t("common.unnamed"), aiCalls) }),
           button(t("content.edit"), { kind: "small", onclick: () => isRecipe(col, d)
             ? editRecipe(d, { save: (next) => saveDoc(root, rootId, col, next), advanced: () => editJson(root, rootId, col, d) })
             : editJson(root, rootId, col, d) }),
