@@ -582,6 +582,11 @@ class _Translations$recipe$fr extends Translations$recipe$he {
 	@override String addedToPlan({required Object day, required Object meal}) => 'Ajoutée au menu : ${day} · ${meal}';
 	@override String get recentlyCooked => 'Cuisinées récemment';
 	@override String get mostCooked => 'Les plus cuisinées';
+	@override String get shareWithUsers => 'Partager avec des personnes';
+	@override String get shareToCommunity => 'Partager dans la communauté';
+	@override String get sharedToCommunity => 'Recette partagée dans la communauté';
+	@override String get alreadyInCommunity => 'Cette recette est déjà dans la communauté';
+	@override String get cookedHint => 'Faites défiler vers le haut pour vos derniers plats';
 }
 
 // Path: cookMode
@@ -752,6 +757,7 @@ class _Translations$community$fr extends Translations$community$he {
 	@override String ageMinutes({required Object n}) => '${n} min';
 	@override String ageHours({required Object n}) => '${n} h';
 	@override String ageDays({required Object n}) => '${n} j';
+	@override String get offensiveText => 'Les grossièretés et propos offensants ne peuvent pas être publiés. Merci de reformuler.';
 }
 
 // Path: sharing
@@ -2179,6 +2185,7 @@ class _Translations$featureName$fr extends Translations$featureName$he {
 	@override String get webCheckoutIl => 'Achat sur le site (Israël)';
 	@override String get webCheckoutIntl => 'Achat sur le site (étranger)';
 	@override String get whatsappBot => 'Bot WhatsApp de liste de courses';
+	@override String get profanityFilter => 'Filtre de grossièretés';
 }
 
 // Path: wakeWord
@@ -3180,6 +3187,11 @@ extension on TranslationsFr {
 			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'Ajoutée au menu : ${day} · ${meal}',
 			'recipe.recentlyCooked' => 'Cuisinées récemment',
 			'recipe.mostCooked' => 'Les plus cuisinées',
+			'recipe.shareWithUsers' => 'Partager avec des personnes',
+			'recipe.shareToCommunity' => 'Partager dans la communauté',
+			'recipe.sharedToCommunity' => 'Recette partagée dans la communauté',
+			'recipe.alreadyInCommunity' => 'Cette recette est déjà dans la communauté',
+			'recipe.cookedHint' => 'Faites défiler vers le haut pour vos derniers plats',
 			'cookMode.title' => 'Mode cuisine',
 			'cookMode.start' => 'Commencer à cuisiner',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Étape ${n} sur ${total}',
@@ -3323,19 +3335,20 @@ extension on TranslationsFr {
 			'community.ageMinutes' => ({required Object n}) => '${n} min',
 			'community.ageHours' => ({required Object n}) => '${n} h',
 			'community.ageDays' => ({required Object n}) => '${n} j',
+			'community.offensiveText' => 'Les grossièretés et propos offensants ne peuvent pas être publiés. Merci de reformuler.',
 			'sharing.title' => 'Partager la recette',
 			'sharing.contactLabel' => 'E-mail ou téléphone de la personne',
 			'sharing.contactHint' => 'nom@exemple.com ou 05…',
 			'sharing.roleTitle' => 'Autorisation',
 			'sharing.roleViewer' => 'Lecture seule',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.roleViewerHint' => 'Voit la recette sans pouvoir la modifier',
 			'sharing.roleEditor' => 'Modification',
 			'sharing.roleEditorHint' => 'Ses modifications apparaissent aussi chez vous',
 			'sharing.send' => 'Envoyer l\'invitation',
 			'sharing.sent' => 'Invitation envoyée',
 			'sharing.invalidContact' => 'Saisissez un e-mail valide, ou un téléphone avec son indicatif pays (+…)',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.notFound' => 'Aucun compte ne correspond. Vérifiez que l\'e-mail ou le téléphone est lié à son compte et qu\'il/elle a ouvert l\'application récemment.',
 			'sharing.self' => 'Impossible de partager avec vous-même',
 			'sharing.failed' => 'Le partage a échoué, réessayez',
@@ -3842,14 +3855,14 @@ extension on TranslationsFr {
 			'unit.pinch' => 'pincée',
 			'unit.unspecified' => '—',
 			'image.add' => 'Ajouter une photo',
+			_ => null,
+		} ?? switch (path) {
 			'image.change' => 'Changer la photo',
 			'image.gallery' => 'Choisir dans la galerie',
 			'image.camera' => 'Prendre une photo',
 			'image.remove' => 'Supprimer la photo',
 			'image.generate' => 'Créer avec l’IA',
 			'image.generating' => 'Création de l’image… cela prend quelques secondes',
-			_ => null,
-		} ?? switch (path) {
 			'image.generateFailed' => 'La création de l’image a échoué, réessayez',
 			'image.coverTitle' => 'Quelle couverture créer ?',
 			'image.coverHint' => 'Choisissez une catégorie, écrivez quelque chose, ou les deux',
@@ -4356,14 +4369,14 @@ extension on TranslationsFr {
 			'adminDashboard.osPlan.premium' => 'Premium',
 			'adminDashboard.osPlan.free' => 'Gratuit',
 			'adminDashboard.osPlan.premiumShare' => '% Premium',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.osPlan.ofUsers' => '% des utilisateurs',
 			'adminDashboard.osPlan.ofPremium' => '% du Premium',
 			'adminDashboard.osPlan.total' => 'Total',
 			'adminDashboard.osPlan.hint' => '% Premium = parmi les utilisateurs de ce système',
 			'adminDashboard.premiumSince' => ({required Object date}) => 'Premium depuis le ${date}',
 			'adminDashboard.cancelledOn' => ({required Object date}) => 'Résilié le ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.chartCategories' => 'Par domaine',
 			'adminDashboard.categories.recipes' => 'Recettes',
 			'adminDashboard.categories.books' => 'Livres',
@@ -4732,6 +4745,7 @@ extension on TranslationsFr {
 			'featureName.webCheckoutIl' => 'Achat sur le site (Israël)',
 			'featureName.webCheckoutIntl' => 'Achat sur le site (étranger)',
 			'featureName.whatsappBot' => 'Bot WhatsApp de liste de courses',
+			'featureName.profanityFilter' => 'Filtre de grossièretés',
 			'wakeWord.title' => 'Hé Shefi',
 			'wakeWord.hint' => 'Parlez à Shefi à la voix, sans toucher le téléphone',
 			'wakeWord.intro' => 'Dites « Hé Shefi » : Shefi s\'ouvre et écoute. Vous pouvez enchaîner dans la même phrase et Shefi répond aussitôt.',

@@ -385,7 +385,12 @@
     "noPlanToAdd": "Пока нет меню, куда добавить. Создайте его во вкладке меню",
     "addedToPlan": "Добавлено в меню: $day · $meal",
     "recentlyCooked": "Недавно готовили",
-    "mostCooked": "Чаще всего готовили"
+    "mostCooked": "Чаще всего готовили",
+    "shareWithUsers": "Поделиться с людьми",
+    "shareToCommunity": "Поделиться в сообществе",
+    "sharedToCommunity": "Рецепт опубликован в сообществе",
+    "alreadyInCommunity": "Этот рецепт уже в сообществе",
+    "cookedHint": "Прокрутите вверх к недавно приготовленному"
   },
   "cookMode": {
     "title": "Режим готовки",
@@ -534,7 +539,8 @@
     "importFailed": "Не удалось сохранить рецепт",
     "ageMinutes": "$n мин",
     "ageHours": "$n ч",
-    "ageDays": "$n д"
+    "ageDays": "$n д",
+    "offensiveText": "Нельзя публиковать ругательства и оскорбления. Пожалуйста, перефразируйте."
   },
   "sharing": {
     "title": "Поделиться рецептом",
@@ -2080,7 +2086,8 @@
     "recipeSuggestions": "Подбор рецептов по предпочтениям",
     "webCheckoutIl": "Покупка на сайте (Израиль)",
     "webCheckoutIntl": "Покупка на сайте (за рубежом)",
-    "whatsappBot": "Бот WhatsApp для списка покупок"
+    "whatsappBot": "Бот WhatsApp для списка покупок",
+    "profanityFilter": "Фильтр ругательств"
   },
   "wakeWord": {
     "title": "Эй, Шефи",

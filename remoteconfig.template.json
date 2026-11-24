@@ -581,6 +581,13 @@
           "description": "הפורום (פיד, דיונים, תגובות, פתיחת דיון מהתראה).",
           "valueType": "NUMBER"
         },
+        "ff_profanity_filter": {
+          "defaultValue": {
+            "value": "2"
+          },
+          "description": "חסימת קללות ומילים פוגעניות בקהילה (דיונים, תגובות, מתכונים לקהילה). לא מוצג = המסנן כבוי. השרת מסתיר מילים כאלה בכוכביות בכל מקרה.",
+          "valueType": "NUMBER"
+        },
         "ff_likes": {
           "defaultValue": {
             "value": "2"

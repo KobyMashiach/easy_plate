@@ -582,6 +582,11 @@ class _Translations$recipe$ar extends Translations$recipe$he {
 	@override String addedToPlan({required Object day, required Object meal}) => 'أُضيفت إلى القائمة: ${day} · ${meal}';
 	@override String get recentlyCooked => 'طبختها مؤخرًا';
 	@override String get mostCooked => 'الأكثر طبخًا';
+	@override String get shareWithUsers => 'مشاركة مع أشخاص';
+	@override String get shareToCommunity => 'مشاركة في المجتمع';
+	@override String get sharedToCommunity => 'تمت مشاركة الوصفة في المجتمع';
+	@override String get alreadyInCommunity => 'هذه الوصفة موجودة في المجتمع بالفعل';
+	@override String get cookedHint => 'مرّر للأعلى لرؤية ما طبخته مؤخرًا';
 }
 
 // Path: cookMode
@@ -752,6 +757,7 @@ class _Translations$community$ar extends Translations$community$he {
 	@override String ageMinutes({required Object n}) => '${n} د';
 	@override String ageHours({required Object n}) => '${n} س';
 	@override String ageDays({required Object n}) => '${n} ي';
+	@override String get offensiveText => 'لا يمكن نشر الشتائم أو الكلمات المسيئة. يرجى إعادة الصياغة.';
 }
 
 // Path: sharing
@@ -2199,6 +2205,7 @@ class _Translations$featureName$ar extends Translations$featureName$he {
 	@override String get webCheckoutIl => 'الشراء عبر الموقع (إسرائيل)';
 	@override String get webCheckoutIntl => 'الشراء عبر الموقع (خارج إسرائيل)';
 	@override String get whatsappBot => 'بوت واتساب لقائمة المشتريات';
+	@override String get profanityFilter => 'تصفية الشتائم في المجتمع';
 }
 
 // Path: wakeWord
@@ -3200,6 +3207,11 @@ extension on TranslationsAr {
 			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'أُضيفت إلى القائمة: ${day} · ${meal}',
 			'recipe.recentlyCooked' => 'طبختها مؤخرًا',
 			'recipe.mostCooked' => 'الأكثر طبخًا',
+			'recipe.shareWithUsers' => 'مشاركة مع أشخاص',
+			'recipe.shareToCommunity' => 'مشاركة في المجتمع',
+			'recipe.sharedToCommunity' => 'تمت مشاركة الوصفة في المجتمع',
+			'recipe.alreadyInCommunity' => 'هذه الوصفة موجودة في المجتمع بالفعل',
+			'recipe.cookedHint' => 'مرّر للأعلى لرؤية ما طبخته مؤخرًا',
 			'cookMode.title' => 'وضع الطبخ',
 			'cookMode.start' => 'ابدأ الطبخ',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'الخطوة ${n} من ${total}',
@@ -3343,19 +3355,20 @@ extension on TranslationsAr {
 			'community.ageMinutes' => ({required Object n}) => '${n} د',
 			'community.ageHours' => ({required Object n}) => '${n} س',
 			'community.ageDays' => ({required Object n}) => '${n} ي',
+			'community.offensiveText' => 'لا يمكن نشر الشتائم أو الكلمات المسيئة. يرجى إعادة الصياغة.',
 			'sharing.title' => 'مشاركة الوصفة',
 			'sharing.contactLabel' => 'بريد أو هاتف الشريك',
 			'sharing.contactHint' => 'name@example.com أو 05…',
 			'sharing.roleTitle' => 'الصلاحية',
 			'sharing.roleViewer' => 'عرض فقط',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.roleViewerHint' => 'يرى الوصفة ولا يمكنه تغييرها',
 			'sharing.roleEditor' => 'تعديل',
 			'sharing.roleEditorHint' => 'تعديلاته تظهر لديكم أيضًا',
 			'sharing.send' => 'إرسال الدعوة',
 			'sharing.sent' => 'تم إرسال الدعوة',
 			'sharing.invalidContact' => 'أدخلوا بريدًا صالحًا، أو رقم هاتف مع رمز الدولة (+…)',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.notFound' => 'لا يوجد حساب بهذه البيانات. تأكدوا أن البريد أو الهاتف مرتبط بحسابه/ها وأن التطبيق فُتح لديه/ها مؤخرًا.',
 			'sharing.self' => 'لا يمكنك المشاركة مع نفسك',
 			'sharing.failed' => 'فشلت المشاركة، حاولوا مجددًا',
@@ -3862,14 +3875,14 @@ extension on TranslationsAr {
 			'unit.pinch' => 'رشّة',
 			'unit.unspecified' => '—',
 			'image.add' => 'إضافة صورة',
+			_ => null,
+		} ?? switch (path) {
 			'image.change' => 'تغيير الصورة',
 			'image.gallery' => 'اختيار من المعرض',
 			'image.camera' => 'التقاط صورة',
 			'image.remove' => 'إزالة الصورة',
 			'image.generate' => 'إنشاء صورة بالذكاء الاصطناعي',
 			'image.generating' => 'جارٍ إنشاء الصورة… يستغرق ذلك بضع ثوانٍ',
-			_ => null,
-		} ?? switch (path) {
 			'image.generateFailed' => 'فشل إنشاء الصورة، حاول مرة أخرى',
 			'image.coverTitle' => 'أي غلاف تريد إنشاءه؟',
 			'image.coverHint' => 'اختر فئة أو اكتب شيئًا أو كليهما',
@@ -4376,14 +4389,14 @@ extension on TranslationsAr {
 			'adminDashboard.osPlan.premium' => 'بريميوم',
 			'adminDashboard.osPlan.free' => 'مجاني',
 			'adminDashboard.osPlan.premiumShare' => '% بريميوم',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.osPlan.ofUsers' => '% من المستخدمين',
 			'adminDashboard.osPlan.ofPremium' => '% من بريميوم',
 			'adminDashboard.osPlan.total' => 'المجموع',
 			'adminDashboard.osPlan.hint' => '% بريميوم = من مستخدمي ذلك النظام',
 			'adminDashboard.premiumSince' => ({required Object date}) => 'بريميوم منذ ${date}',
 			'adminDashboard.cancelledOn' => ({required Object date}) => 'ألغى في ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.chartCategories' => 'حسب المجال',
 			'adminDashboard.categories.recipes' => 'الوصفات',
 			'adminDashboard.categories.books' => 'الكتب',
@@ -4752,6 +4765,7 @@ extension on TranslationsAr {
 			'featureName.webCheckoutIl' => 'الشراء عبر الموقع (إسرائيل)',
 			'featureName.webCheckoutIntl' => 'الشراء عبر الموقع (خارج إسرائيل)',
 			'featureName.whatsappBot' => 'بوت واتساب لقائمة المشتريات',
+			'featureName.profanityFilter' => 'تصفية الشتائم في المجتمع',
 			'wakeWord.title' => 'هاي شيفي',
 			'wakeWord.hint' => 'ابدأ الحديث مع شيفي بصوتك دون لمس الهاتف',
 			'wakeWord.intro' => 'قل "هاي شيفي" فيفتح شيفي ويستمع. يمكنك متابعة الجملة نفسها وسيجيب شيفي فورًا.',

@@ -710,6 +710,7 @@ class _SharedCard extends StatelessWidget {
 
 String _noticeText(SharedFeedNotice notice) => switch (notice) {
   SharedFeedNotice.shareFailed => t.community.shareFailed,
+  SharedFeedNotice.offensive => t.community.offensiveText,
   SharedFeedNotice.updateFailed => t.community.updateFailed,
   SharedFeedNotice.unshareFailed => t.community.unshareFailed,
   SharedFeedNotice.importFailed => t.community.importFailed,

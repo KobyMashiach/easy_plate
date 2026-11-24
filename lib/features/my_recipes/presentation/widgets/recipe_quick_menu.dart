@@ -99,8 +99,20 @@ Future<void> showRecipeQuickMenu(
                   gapAfter: AppSpacing.base,
                   child: _Row(
                     icon: Icons.person_add_alt_1_rounded,
-                    label: t.sharing.shareAction,
+                    label: t.recipe.shareWithUsers,
                     onTap: run(() => shareRecipe(context, recipe)),
+                  ),
+                ),
+              if (canShareToCommunity(recipe))
+                FeatureGate(
+                  feature: FeaturesFlags.sharedRecipes,
+                  gapAfter: AppSpacing.base,
+                  child: _Row(
+                    icon: Icons.groups_rounded,
+                    label: recipe.sharedRecipeId == null
+                        ? t.recipe.shareToCommunity
+                        : t.recipe.alreadyInCommunity,
+                    onTap: run(() => shareRecipeToCommunity(context, recipe)),
                   ),
                 ),
               if (recipe.steps.isNotEmpty)

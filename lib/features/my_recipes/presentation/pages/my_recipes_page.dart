@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/navigation/main_tabs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -102,6 +104,47 @@ class _RecipesBodyState extends State<_RecipesBody> {
   /// published original.
   bool _savedTab = false;
 
+  /// "Recently cooked" stays folded until the list is pulled past its top
+  /// (Koby, 2026-11-24), and folds again when the page is left — another
+  /// tab, or a screen opened over it.
+  bool _cookedOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    MainTabs.index.addListener(_onTab);
+  }
+
+  @override
+  void dispose() {
+    MainTabs.index.removeListener(_onTab);
+    super.dispose();
+  }
+
+  void _onTab() {
+    if (MainTabs.index.value != MainTabs.recipes) _foldCooked();
+  }
+
+  void _foldCooked() {
+    if (_cookedOpen && mounted) setState(() => _cookedOpen = false);
+  }
+
+  /// A drag down past the top of the list: an overscroll on Android, the
+  /// bounce on iOS.
+  bool _onScroll(ScrollNotification n) {
+    if (_cookedOpen || n.depth != 0) return false;
+    final pulled = switch (n) {
+      OverscrollNotification(:final overscroll) => overscroll < 0,
+      ScrollUpdateNotification(:final metrics) =>
+        metrics.pixels < metrics.minScrollExtent - 24,
+      _ => false,
+    };
+    if (pulled && n.metrics.extentBefore == 0) {
+      setState(() => _cookedOpen = true);
+    }
+    return false;
+  }
+
   Future<void> _confirmRemove(
     BuildContext context,
     MyRecipesBloc bloc,
@@ -167,10 +210,13 @@ class _RecipesBodyState extends State<_RecipesBody> {
       recipe: recipe,
       // No reload on return: the list is driven by the box, so an
       // edit made on the details page arrives on its own.
-      onTap: () => context.pushNamed(
-        Routing.recipeDetails,
-        extra: RecipeDetailsArgs(recipe: recipe),
-      ),
+      onTap: () async {
+        await context.pushNamed(
+          Routing.recipeDetails,
+          extra: RecipeDetailsArgs(recipe: recipe),
+        );
+        _foldCooked();
+      },
       onRemove: recipe.isSavedFromCommunity
           ? () => FeaturesFlags.undoInsteadOfConfirm.isEnabled
                 ? deleteRecipeWithUndo(context, recipe)
@@ -206,173 +252,182 @@ class _RecipesBodyState extends State<_RecipesBody> {
 
     // The title floats away as the list scrolls and returns on the first
     // scroll back up; the add button stays in its corner throughout.
-    return ClayFloatingHeaderView(
-      title: t.books.myRecipes,
-      subtitle: t.books.recipesSubtitle,
-      // A plus, not the AI sparkle: people did not read the sparkle as
-      // "add a recipe".
-      trailing: WalkthroughTarget(
-        id: WalkthroughIds.recipesAdd,
-        child: ClayIconButton(
-          icon: Icons.add_rounded,
-          filled: true,
-          size: 48,
-          tooltip: t.ingestion.title,
-          onTap: () async {
-            await context.pushNamed(Routing.ingestion);
-            if (context.mounted) bloc.add(const MyRecipesEvent.init());
-          },
-        ),
-      ),
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.marginMobile,
+    return NotificationListener<ScrollNotification>(
+      onNotification: _onScroll,
+      child: ClayFloatingHeaderView(
+        // Lets a short list be pulled past its top too, to open the cooked rows.
+        physics: const AlwaysScrollableScrollPhysics(),
+        title: t.books.myRecipes,
+        subtitle: t.books.recipesSubtitle,
+        // A plus, not the AI sparkle: people did not read the sparkle as
+        // "add a recipe".
+        trailing: WalkthroughTarget(
+          id: WalkthroughIds.recipesAdd,
+          child: ClayIconButton(
+            icon: Icons.add_rounded,
+            filled: true,
+            size: 48,
+            tooltip: t.ingestion.title,
+            onTap: () async {
+              await context.pushNamed(Routing.ingestion);
+              if (context.mounted) bloc.add(const MyRecipesEvent.init());
+            },
           ),
-          sliver: SliverList.list(
-            children: [
-              if (!widget.narrowed && FeaturesFlags.recentCooked.isEnabled)
-                CookedRows(
-                  recipes: widget.recipes,
-                  cardBuilder: (recipe) => _card(context, bloc, recipe),
-                ),
-              // The switch between what was written and what was saved is the
-              // page's main division, so it stands on its own right under the
-              // title; the search and the topic chips, which only narrow the list,
-              // sit together in one card below it.
-              WalkthroughTarget(
-                id: WalkthroughIds.recipesSegments,
-                child: ClaySegmentedControl(
-                  segments: [
-                    ClaySegment(
-                      label: t.recipe.mine,
-                      icon: Icons.edit_note_rounded,
-                    ),
-                    ClaySegment(
-                      label: t.recipe.saved,
-                      icon: Icons.bookmark_rounded,
-                    ),
-                  ],
-                  selectedIndex: _savedTab ? 1 : 0,
-                  onSelected: (index) => setState(() => _savedTab = index == 1),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              WalkthroughTarget(
-                id: WalkthroughIds.recipesFilters,
-                child: ClayCard(
-                  radius: AppRadius.md,
-                  padding: const EdgeInsets.all(AppSpacing.gutter),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Recessed search pill, per the Stitch library screen.
-                      ClayInset(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.gutter,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.search_rounded,
-                              color: AppColors.outline,
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: TextField(
-                                style: AppTextStyles.bodyMd,
-                                decoration: InputDecoration(
-                                  hintText: t.common.search,
-                                  filled: false,
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: AppSpacing.gutter,
-                                  ),
-                                ),
-                                onChanged: (value) => bloc.add(.search(value)),
-                              ),
-                            ),
-                          ],
-                        ),
+        ),
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.marginMobile,
+            ),
+            sliver: SliverList.list(
+              children: [
+                if (!widget.narrowed && FeaturesFlags.recentCooked.isEnabled)
+                  CookedRows(
+                    recipes: widget.recipes,
+                    cardBuilder: (recipe) => _card(context, bloc, recipe),
+                    collapsed: !_cookedOpen,
+                    onReveal: () => setState(() => _cookedOpen = true),
+                  ),
+                // The switch between what was written and what was saved is the
+                // page's main division, so it stands on its own right under the
+                // title; the search and the topic chips, which only narrow the list,
+                // sit together in one card below it.
+                WalkthroughTarget(
+                  id: WalkthroughIds.recipesSegments,
+                  child: ClaySegmentedControl(
+                    segments: [
+                      ClaySegment(
+                        label: t.recipe.mine,
+                        icon: Icons.edit_note_rounded,
                       ),
-                      const SizedBox(height: AppSpacing.gutter),
-                      Text(
-                        t.editor.topics,
-                        style: AppTextStyles.labelSm.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.base),
-                      DietaryChipSelector(
-                        selected: filters,
-                        onToggle: (pref) {
-                          final updated = [...filters];
-                          updated.contains(pref)
-                              ? updated.remove(pref)
-                              : updated.add(pref);
-                          bloc.add(.filterByDietary(updated));
-                        },
+                      ClaySegment(
+                        label: t.recipe.saved,
+                        icon: Icons.bookmark_rounded,
                       ),
                     ],
+                    selectedIndex: _savedTab ? 1 : 0,
+                    onSelected: (index) =>
+                        setState(() => _savedTab = index == 1),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-            ],
+                const SizedBox(height: AppSpacing.lg),
+                WalkthroughTarget(
+                  id: WalkthroughIds.recipesFilters,
+                  child: ClayCard(
+                    radius: AppRadius.md,
+                    padding: const EdgeInsets.all(AppSpacing.gutter),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Recessed search pill, per the Stitch library screen.
+                        ClayInset(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.gutter,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search_rounded,
+                                color: AppColors.outline,
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              Expanded(
+                                child: TextField(
+                                  style: AppTextStyles.bodyMd,
+                                  decoration: InputDecoration(
+                                    hintText: t.common.search,
+                                    filled: false,
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: AppSpacing.gutter,
+                                    ),
+                                  ),
+                                  onChanged: (value) =>
+                                      bloc.add(.search(value)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.gutter),
+                        Text(
+                          t.editor.topics,
+                          style: AppTextStyles.labelSm.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.base),
+                        DietaryChipSelector(
+                          selected: filters,
+                          onToggle: (pref) {
+                            final updated = [...filters];
+                            updated.contains(pref)
+                                ? updated.remove(pref)
+                                : updated.add(pref);
+                            bloc.add(.filterByDietary(updated));
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+              ],
+            ),
           ),
-        ),
-        // The grid is a sliver of its own, not a shrink-wrapped GridView
-        // inside the list above: shrink-wrap lays out and decodes every
-        // card at once, so nothing was virtualised and a long collection
-        // paid for all its photos before the first frame.
-        if (recipes.isEmpty)
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.marginMobile,
-              AppSpacing.lg,
-              AppSpacing.marginMobile,
-              ClayNavDock.bottomPadding(context),
-            ),
-            sliver: SliverToBoxAdapter(
-              child: ClayEmptyState(
-                icon: _savedTab
-                    ? Icons.bookmark_border_rounded
-                    : Icons.restaurant_menu_rounded,
-                message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
-                action: _savedTab
-                    ? null
-                    : ClayButton(
-                        label: t.ingestion.title,
-                        icon: Icons.add_rounded,
-                        onPressed: () => context.pushNamed(Routing.ingestion),
-                      ),
+          // The grid is a sliver of its own, not a shrink-wrapped GridView
+          // inside the list above: shrink-wrap lays out and decodes every
+          // card at once, so nothing was virtualised and a long collection
+          // paid for all its photos before the first frame.
+          if (recipes.isEmpty)
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.marginMobile,
+                AppSpacing.lg,
+                AppSpacing.marginMobile,
+                ClayNavDock.bottomPadding(context),
+              ),
+              sliver: SliverToBoxAdapter(
+                child: ClayEmptyState(
+                  icon: _savedTab
+                      ? Icons.bookmark_border_rounded
+                      : Icons.restaurant_menu_rounded,
+                  message: _savedTab ? t.recipe.noneSaved : t.recipe.noneMine,
+                  action: _savedTab
+                      ? null
+                      : ClayButton(
+                          label: t.ingestion.title,
+                          icon: Icons.add_rounded,
+                          onPressed: () => context.pushNamed(Routing.ingestion),
+                        ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.marginMobile,
+                0,
+                AppSpacing.marginMobile,
+                ClayNavDock.bottomPadding(context),
+              ),
+              // Two photo cards to a row, like a cookbook's picture index.
+              sliver: SliverGrid.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: AppSpacing.sm,
+                  crossAxisSpacing: AppSpacing.sm,
+                  mainAxisExtent: RecipeCard.height,
+                ),
+                itemCount: recipes.length,
+                itemBuilder: (context, index) =>
+                    _card(context, bloc, recipes[index]),
               ),
             ),
-          )
-        else
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.marginMobile,
-              0,
-              AppSpacing.marginMobile,
-              ClayNavDock.bottomPadding(context),
-            ),
-            // Two photo cards to a row, like a cookbook's picture index.
-            sliver: SliverGrid.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: AppSpacing.sm,
-                crossAxisSpacing: AppSpacing.sm,
-                mainAxisExtent: RecipeCard.height,
-              ),
-              itemCount: recipes.length,
-              itemBuilder: (context, index) =>
-                  _card(context, bloc, recipes[index]),
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

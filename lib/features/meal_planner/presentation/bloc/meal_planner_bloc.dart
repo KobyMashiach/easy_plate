@@ -389,7 +389,10 @@ class MealPlannerBloc extends Bloc<MealPlannerEvent, MealPlannerState> {
     MealPlanEntity Function(MealPlanEntity plan) transform,
   ) => add(_EditPlan(planId, transform));
 
-  Future<void> _editPlan(_EditPlan event, Emitter<MealPlannerState> emit) async {
+  Future<void> _editPlan(
+    _EditPlan event,
+    Emitter<MealPlannerState> emit,
+  ) async {
     final current = state;
     if (current is! MealPlannerLoaded) return;
     if (current.selectedPlan?.id == event.planId) {

@@ -68,7 +68,8 @@ class NotificationsFirestoreDataSource
       feedbackId: docNonEmpty(data['feedbackId']),
       // An administrator's ticket item carries the writer's name as
       // `authorName`; it reads as the row's title.
-      title: docStringOrNull(data['title']) ?? docStringOrNull(data['authorName']),
+      title:
+          docStringOrNull(data['title']) ?? docStringOrNull(data['authorName']),
       postId: docNonEmpty(data['postId']),
       replyId: docNonEmpty(data['replyId']),
       postTitle: docStringOrNull(data['postTitle']),

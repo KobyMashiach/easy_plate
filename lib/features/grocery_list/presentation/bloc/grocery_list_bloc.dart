@@ -542,15 +542,16 @@ class GroceryListBloc extends Bloc<GroceryListEvent, GroceryListState> {
     GroceryListEntity Function(GroceryListEntity list) change,
   ) => add(_EditList(listId, change));
 
-  Future<void> _editList(_EditList event, Emitter<GroceryListState> emit) async {
+  Future<void> _editList(
+    _EditList event,
+    Emitter<GroceryListState> emit,
+  ) async {
     final current = state;
     if (current is! GroceryListLoaded) return;
     if (current.list.id == event.listId) {
       return _persist(current.list, event.change, emit);
     }
-    final target = current.lists
-        .where((l) => l.id == event.listId)
-        .firstOrNull;
+    final target = current.lists.where((l) => l.id == event.listId).firstOrNull;
     if (target == null || !target.canEdit) return;
     try {
       await _save(target, event.change);

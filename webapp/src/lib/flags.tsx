@@ -15,7 +15,7 @@ export type Flag =
   | "ff_books" | "ff_meal_plans" | "ff_grocery_lists" | "ff_community"
   | "ff_ingest_text" | "ff_ingest_web_search" | "ff_ingest_link" | "ff_ingest_social_video" | "ff_ingest_ai_request" | "ff_ingest_file"
   | "ff_save_with_ai" | "ff_cook_mode" | "ff_cook_timers" | "ff_nutrition" | "ff_recipe_image_ai" | "ff_recipe_image_search" | "ff_grocery_from_recipe"
-  | "ff_shared_recipes" | "ff_forum" | "ff_likes"
+  | "ff_shared_recipes" | "ff_forum" | "ff_likes" | "ff_profanity_filter"
   | "ff_share_recipes" | "ff_share_books" | "ff_share_plans" | "ff_share_grocery_lists" | "ff_share_codes" | "ff_households"
   | "ff_price_book" | "ff_receipt_scan" | "ff_grocery_cost" | "ff_shopping_reminder" | "ff_multi_shopping_days"
   | "ff_assistant" | "ff_assistant_scoped" | "ff_assistant_voice" | "ff_notifications" | "ff_premium" | "ff_content_translation"

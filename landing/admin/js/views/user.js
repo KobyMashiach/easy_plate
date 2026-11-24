@@ -6,6 +6,7 @@ import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, t
 import { isOnline, premiumActive, platformLabel, pricing, tally, costIls, isPersona, profiles } from "../data.js";
 import { call } from "../api.js";
 import { subscriptionHistory } from "../subscriptionHistory.js";
+import { viewDoc, editRecipe, isRecipe } from "./contentDoc.js";
 import { actionOf, actionTallies, actionKey, categoryOf, categoryTallies } from "../aiActions.js";
 
 // Which "bought on the website" label an entitlement gets: PayPlus / Stripe
@@ -322,7 +323,12 @@ export async function mount({ view, params, setTitle }) {
       list.append(table([
         { label: t("common.title"), cell: (d) => h("div", h("div", docTitle(d) || t("common.unnamed")), h("div.small.muted.mono", d.id)) },
         { label: t("common.date"), cell: (d) => h("span.small", fmtDate(d.updatedAt || d.createdAt)) },
-        { label: t("common.actions"), cell: (d) => h("div.row", button(t("user.editJson"), { kind: "small", onclick: () => editJson(root, rootId, col, d) }), button(t("common.delete"), { kind: "small danger", onclick: async () => {
+        { label: t("common.actions"), cell: (d) => h("div.row",
+          button(t("content.view"), { kind: "small", onclick: () => viewDoc(col, d, docTitle(d) || t("common.unnamed")) }),
+          button(t("content.edit"), { kind: "small", onclick: () => isRecipe(col, d)
+            ? editRecipe(d, { save: (next) => saveDoc(root, rootId, col, next), advanced: () => editJson(root, rootId, col, d) })
+            : editJson(root, rootId, col, d) }),
+          button(t("common.delete"), { kind: "small danger", onclick: async () => {
           if (!(await confirmDialog({ title: `${t("common.delete")}: ${docTitle(d)}` }))) return;
           try { await call("user.content.delete", { root, rootId, collection: col, id: d.id }); toast(t("common.deleted"), "ok"); render(); } catch (e) { toastError(e); }
         } })) },
@@ -333,10 +339,17 @@ export async function mount({ view, params, setTitle }) {
     return wrap;
   }
 
+  // The recipe form's save: same path as the JSON editor's.
+  async function saveDoc(root, rootId, col, d) {
+    const { id, ...rest } = d;
+    await call("user.content.set", { root, rootId, collection: col, id, data: plain(rest) });
+    renderTab();
+  }
+
   function editJson(root, rootId, col, d) {
     const { id, ...rest } = d;
     const area = textarea({ value: JSON.stringify(toEditable({ id, ...rest }), null, 2), style: { minHeight: "60vh", fontFamily: "ui-monospace, Menlo, monospace", fontSize: "12.5px", direction: "ltr" } });
-    modal({ title: `${t("user.editJson")}: ${docTitle(d)}`, wide: true, body: area, actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.save"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => {
+    modal({ title: `${t("content.edit")} (JSON): ${docTitle(d)}`, wide: true, body: area, actions: [(c) => button(t("common.cancel"), { onclick: c }), (c) => { const b = button(t("common.save"), { kind: "primary" }); b.addEventListener("click", busy(b, async () => {
       let parsed;
       try { parsed = JSON.parse(area.value); } catch (_) { toast(t("common.invalidJson"), "error"); return; }
       try { await call("user.content.set", { root, rootId, collection: col, id, data: plain(fromEditable(parsed)) }); toast(t("common.saved"), "ok"); c(); renderTab(); } catch (e) { toastError(e); }

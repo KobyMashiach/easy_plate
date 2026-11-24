@@ -127,6 +127,10 @@ enum FeaturesFlags {
   forum('ff_forum'),
   likes('ff_likes'),
 
+  /// Swear words and slurs refused in threads, replies and community
+  /// recipes (ProfanityFilter); hidden = the filter is off.
+  profanityFilter('ff_profanity_filter'),
+
   // Sharing with other accounts.
   shareRecipes('ff_share_recipes'),
   shareBooks('ff_share_books'),

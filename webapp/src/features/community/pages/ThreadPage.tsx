@@ -16,6 +16,8 @@ import { validDocId } from "../../sharing/data/types";
 import { useIsPhone } from "../../../components/useIsPhone";
 import { usePullToRefresh } from "../../../components/PullToRefresh";
 import { PhoneBar } from "../../../components/PhoneBar";
+import { useAccess } from "../../../lib/flags";
+import { hasProfanity } from "../../../lib/profanity";
 
 export function ThreadPage() {
   const { id = "" } = useParams();
@@ -37,6 +39,7 @@ function Thread() {
   const { user } = useAuth();
   const uid = user?.uid ?? "";
   const navigate = useNavigate();
+  const filterOn = useAccess("ff_profanity_filter") !== "hidden";
   const [post, setPost] = useState<ForumPost | null | undefined>(undefined);
   const [replies, setReplies] = useState<ForumReply[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -169,6 +172,11 @@ function Thread() {
     e.preventDefault();
     const body = text.trim();
     if ((!body && !attached) || sending) return;
+    // Refused here, so the words stay in the box for the author to fix.
+    if (filterOn && hasProfanity(body)) {
+      alert(t("community.offensiveText"));
+      return;
+    }
     setSending(true);
     try {
       await addReply(id, body, attached ? { id: attached.id, title: attached.recipe.title } : null);

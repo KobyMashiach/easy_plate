@@ -2,6 +2,8 @@ import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../repositories/shared_recipes_repository.dart';
 import '../shared_feed_changes.dart';
+import '../../../../core/moderation/profanity_filter.dart';
+import '../../../my_recipes/domain/entities/recipe_community_texts.dart';
 
 class UpdateSharedRecipeUseCase {
   final SharedRecipesRepository repository;
@@ -19,6 +21,7 @@ class UpdateSharedRecipeUseCase {
     RecipeEntity recipe, {
     bool persist = true,
   }) async {
+    ProfanityFilter.check(recipe.communityTexts);
     final ready = await recipes.readyForSharing(recipe, persist: persist);
     await repository.updateShared(sharedRecipeId, ready);
     SharedFeedChanges.instance.notify(sharedRecipeId);

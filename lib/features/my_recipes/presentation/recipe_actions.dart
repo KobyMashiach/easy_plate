@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/features/feature_gate.dart';
+import '../../../core/moderation/profanity_filter.dart';
+import '../../../core/services/auth_session_service.dart';
 import '../../../core/navigation/main_tabs.dart';
 import '../../../core/utils/i18n/strings.g.dart';
 import '../../../core/utils/routing/routing.dart';
@@ -15,6 +17,8 @@ import '../../grocery_list/presentation/widgets/grocery_lists_ui.dart';
 import '../../recipe_sharing/presentation/widgets/recipe_share_sheet.dart';
 import '../domain/entities/recipe_entity.dart';
 import '../domain/repositories/recipes_repository.dart';
+import '../../shared_recipes/domain/repositories/shared_recipes_repository.dart';
+import '../../shared_recipes/domain/usecases/share_recipe_usecase.dart';
 
 // The actions a recipe offers from more than one screen — the details page
 // and the card's quick menu — written once so both behave the same.
@@ -68,6 +72,59 @@ Future<void> shareRecipe(BuildContext context, RecipeEntity recipe) async {
   final sent = await showRecipeShareSheet(context, recipe);
   if (sent == true && context.mounted) {
     AppDialog.success(message: t.sharing.sent).notify(context);
+  }
+}
+
+/// Whether [recipe] can go to the community feed from here: one this
+/// account wrote, with the community recipes on.
+bool canShareToCommunity(RecipeEntity recipe) =>
+    recipe.isMine && FeaturesFlags.sharedRecipes.isVisible;
+
+/// Publishes [recipe] to the community feed — what the feed's share button
+/// does, straight from the recipe. A recipe already there says so instead.
+Future<void> shareRecipeToCommunity(
+  BuildContext context,
+  RecipeEntity recipe,
+) async {
+  if (!guardFeature(context, FeaturesFlags.sharedRecipes)) return;
+  if (recipe.sharedRecipeId != null) {
+    AppDialog.info(message: t.recipe.alreadyInCommunity).notify(context);
+    return;
+  }
+  final recipes = context.read<RecipesRepository>();
+  final session = AuthSessionService();
+  try {
+    await AppDialog.busy(context, () async {
+      final postId =
+          await ShareRecipeUseCase(
+            context.read<SharedRecipesRepository>(),
+            recipes,
+          )(
+            recipe,
+            authorUid: session.user?.uid ?? '',
+            authorName: session.profile?.fullName ?? '',
+            authorPhotoUrl: session.profile?.photoUrl,
+          );
+      // Remembered on the recipe, so a later edit offers to update the post.
+      final local = (await recipes.getRecipes())
+          .where((r) => r.id == recipe.id)
+          .firstOrNull;
+      if (local != null) {
+        await recipes.saveRecipe(local.copyWith(sharedRecipeId: postId));
+      }
+    });
+    if (context.mounted) {
+      AppDialog.success(message: t.recipe.sharedToCommunity).notify(context);
+    }
+  } on OffensiveContentException {
+    if (context.mounted) {
+      AppDialog.warning(message: t.community.offensiveText).notify(context);
+    }
+  } catch (e) {
+    debugPrint('Community share failed: $e');
+    if (context.mounted) {
+      AppDialog.error(message: t.community.shareFailed).notify(context);
+    }
   }
 }
 

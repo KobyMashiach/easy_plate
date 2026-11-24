@@ -2,6 +2,8 @@ import '../../../my_recipes/domain/entities/recipe_entity.dart';
 import '../../../my_recipes/domain/repositories/recipes_repository.dart';
 import '../repositories/shared_recipes_repository.dart';
 import '../shared_feed_changes.dart';
+import '../../../../core/moderation/profanity_filter.dart';
+import '../../../my_recipes/domain/entities/recipe_community_texts.dart';
 
 class ShareRecipeUseCase {
   final SharedRecipesRepository repository;
@@ -26,6 +28,8 @@ class ShareRecipeUseCase {
     if (!recipe.isMine) {
       throw StateError('Only recipes this account wrote can be shared');
     }
+    // The community sees every word of it.
+    ProfanityFilter.check(recipe.communityTexts);
     final ready = await recipes.readyForSharing(recipe);
     final id = await repository.share(
       ready,

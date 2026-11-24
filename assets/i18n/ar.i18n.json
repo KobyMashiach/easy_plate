@@ -385,7 +385,12 @@
     "noPlanToAdd": "لا توجد قائمة وجبات بعد. أنشئ واحدة في تبويب القائمة",
     "addedToPlan": "أُضيفت إلى القائمة: $day · $meal",
     "recentlyCooked": "طبختها مؤخرًا",
-    "mostCooked": "الأكثر طبخًا"
+    "mostCooked": "الأكثر طبخًا",
+    "shareWithUsers": "مشاركة مع أشخاص",
+    "shareToCommunity": "مشاركة في المجتمع",
+    "sharedToCommunity": "تمت مشاركة الوصفة في المجتمع",
+    "alreadyInCommunity": "هذه الوصفة موجودة في المجتمع بالفعل",
+    "cookedHint": "مرّر للأعلى لرؤية ما طبخته مؤخرًا"
   },
   "cookMode": {
     "title": "وضع الطبخ",
@@ -534,7 +539,8 @@
     "importFailed": "تعذّر حفظ الوصفة",
     "ageMinutes": "$n د",
     "ageHours": "$n س",
-    "ageDays": "$n ي"
+    "ageDays": "$n ي",
+    "offensiveText": "لا يمكن نشر الشتائم أو الكلمات المسيئة. يرجى إعادة الصياغة."
   },
   "sharing": {
     "title": "مشاركة الوصفة",
@@ -2096,7 +2102,8 @@
     "recipeSuggestions": "اقتراح وصفات حسب التفضيلات",
     "webCheckoutIl": "الشراء عبر الموقع (إسرائيل)",
     "webCheckoutIntl": "الشراء عبر الموقع (خارج إسرائيل)",
-    "whatsappBot": "بوت واتساب لقائمة المشتريات"
+    "whatsappBot": "بوت واتساب لقائمة المشتريات",
+    "profanityFilter": "تصفية الشتائم في المجتمع"
   },
   "wakeWord": {
     "title": "هاي شيفي",

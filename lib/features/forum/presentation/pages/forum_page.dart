@@ -25,6 +25,7 @@ import '../../domain/entities/forum_post_entity.dart';
 import '../bloc/forum_bloc.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/constants/app_motion.dart';
+import '../../../../core/moderation/profanity_filter.dart';
 
 /// The forum tab. Live: the bloc holds a Firestore listener on the thread
 /// window, so a reply or a new thread from anyone shows without a pull.
@@ -503,6 +504,10 @@ class _PostComposerState extends State<_PostComposer> {
     }
     if (body.isEmpty) {
       setState(() => _error = t.community.postBodyRequired);
+      return;
+    }
+    if (ProfanityFilter.blocks([title, body])) {
+      setState(() => _error = t.community.offensiveText);
       return;
     }
     _submitted = true;

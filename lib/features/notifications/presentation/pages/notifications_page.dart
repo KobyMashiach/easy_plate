@@ -292,6 +292,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Future<void> _deleteAll() async {
+    if (NotificationsService().items.value.every(
+      (i) => _dismissed.contains(i.id),
+    )) {
+      return;
+    }
     final ok = await AppDialog.warning(
       title: t.notifications.deleteAll,
       message: t.notifications.deleteAllBody,
@@ -323,13 +328,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return ClayScaffold(
       // The timers are listed in the body below; no banner on top as well.
       showCookTimers: false,
-      appBar: ClayTopAppBar(
-        title: t.notifications.title,
-        leadingIcon: Icons.arrow_back_rounded,
-        onLeadingTap: () => Navigator.of(context).maybePop(),
-        trailingIcon: Icons.delete_sweep_rounded,
-        trailingTooltip: t.notifications.deleteAll,
-        onTrailingTap: _deleteAll,
+      // The bin is greyed out with nothing to delete: a tap there used to ask
+      // to delete "all" of nothing.
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(68), // ClayTopAppBar's own
+        child: ValueListenableBuilder<List<AppNotificationEntity>>(
+          valueListenable: NotificationsService().items,
+          builder: (context, all, _) => ClayTopAppBar(
+            title: t.notifications.title,
+            leadingIcon: Icons.arrow_back_rounded,
+            onLeadingTap: () => Navigator.of(context).maybePop(),
+            trailingIcon: Icons.delete_sweep_rounded,
+            trailingTooltip: t.notifications.deleteAll,
+            onTrailingTap: all.any((i) => !_dismissed.contains(i.id))
+                ? _deleteAll
+                : null,
+          ),
+        ),
       ),
       body: ValueListenableBuilder<List<AppNotificationEntity>>(
         valueListenable: NotificationsService().items,
@@ -678,7 +693,8 @@ extension on _NotificationsPageState {
   /// For an administrator: a support conversation opened, or a new line in
   /// one. A tap opens the dashboard on its tickets tab.
   Widget _ticketCard(AppNotificationEntity item) {
-    final name = (item.title?.trim().isNotEmpty == true
+    final name =
+        (item.title?.trim().isNotEmpty == true
             ? item.title!.trim()
             : item.fromName) ??
         '';

@@ -583,6 +583,11 @@ class _Translations$recipe$en extends Translations$recipe$he {
 	@override String addedToPlan({required Object day, required Object meal}) => 'Added to the plan: ${day} · ${meal}';
 	@override String get recentlyCooked => 'Recently cooked';
 	@override String get mostCooked => 'Most cooked';
+	@override String get shareWithUsers => 'Share with people';
+	@override String get shareToCommunity => 'Share to the community';
+	@override String get sharedToCommunity => 'Recipe shared to the community';
+	@override String get alreadyInCommunity => 'This recipe is already in the community';
+	@override String get cookedHint => 'Scroll up for what you cooked lately';
 }
 
 // Path: cookMode
@@ -753,6 +758,7 @@ class _Translations$community$en extends Translations$community$he {
 	@override String ageMinutes({required Object n}) => '${n}m';
 	@override String ageHours({required Object n}) => '${n}h';
 	@override String ageDays({required Object n}) => '${n}d';
+	@override String get offensiveText => 'Swear words and offensive language can\'t be posted. Please rephrase.';
 }
 
 // Path: sharing
@@ -2198,6 +2204,7 @@ class _Translations$featureName$en extends Translations$featureName$he {
 	@override String get webCheckoutIl => 'Buy on the web (Israel)';
 	@override String get webCheckoutIntl => 'Buy on the web (abroad)';
 	@override String get whatsappBot => 'WhatsApp grocery bot';
+	@override String get profanityFilter => 'Community swear filter';
 }
 
 // Path: adminConfig
@@ -3450,6 +3457,11 @@ extension on TranslationsEn {
 			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'Added to the plan: ${day} · ${meal}',
 			'recipe.recentlyCooked' => 'Recently cooked',
 			'recipe.mostCooked' => 'Most cooked',
+			'recipe.shareWithUsers' => 'Share with people',
+			'recipe.shareToCommunity' => 'Share to the community',
+			'recipe.sharedToCommunity' => 'Recipe shared to the community',
+			'recipe.alreadyInCommunity' => 'This recipe is already in the community',
+			'recipe.cookedHint' => 'Scroll up for what you cooked lately',
 			'cookMode.title' => 'Cook mode',
 			'cookMode.start' => 'Start cooking',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Step ${n} of ${total}',
@@ -3593,19 +3605,20 @@ extension on TranslationsEn {
 			'community.ageMinutes' => ({required Object n}) => '${n}m',
 			'community.ageHours' => ({required Object n}) => '${n}h',
 			'community.ageDays' => ({required Object n}) => '${n}d',
+			'community.offensiveText' => 'Swear words and offensive language can\'t be posted. Please rephrase.',
 			'sharing.title' => 'Share recipe',
 			'sharing.contactLabel' => 'Email or phone of the person',
 			'sharing.contactHint' => 'name@example.com or 05…',
 			'sharing.roleTitle' => 'Permission',
 			'sharing.roleViewer' => 'View only',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.roleViewerHint' => 'Can see the recipe, not change it',
 			'sharing.roleEditor' => 'Edit',
 			'sharing.roleEditorHint' => 'Their changes show up for you too',
 			'sharing.send' => 'Send invite',
 			'sharing.sent' => 'Invite sent',
 			'sharing.invalidContact' => 'Enter a valid email, or a phone number with its country code (+…)',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.notFound' => 'No account matches those details. Make sure the email or phone is linked to their account and that they have opened the app recently.',
 			'sharing.self' => 'You can\'t share with yourself',
 			'sharing.failed' => 'Sharing failed, try again',
@@ -4112,14 +4125,14 @@ extension on TranslationsEn {
 			'unit.pinch' => 'pinch',
 			'unit.unspecified' => '—',
 			'image.add' => 'Add a photo',
+			_ => null,
+		} ?? switch (path) {
 			'image.change' => 'Change photo',
 			'image.gallery' => 'Choose from gallery',
 			'image.camera' => 'Take a photo',
 			'image.remove' => 'Remove photo',
 			'image.generate' => 'Create with AI',
 			'image.generating' => 'Creating a picture… this takes a few seconds',
-			_ => null,
-		} ?? switch (path) {
 			'image.generateFailed' => 'Creating the picture failed, please try again',
 			'image.coverTitle' => 'What cover to create?',
 			'image.coverHint' => 'Pick a category, write something, or both',
@@ -4626,14 +4639,14 @@ extension on TranslationsEn {
 			'adminDashboard.subHistory.steps.cancelledNoDate' => 'Cancelled',
 			'adminDashboard.subHistory.steps.uncancelled' => 'Took the cancellation back',
 			'adminDashboard.subHistory.steps.ended' => 'Subscription ended',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.subHistory.steps.billingIssue' => 'Billing issue',
 			'adminDashboard.subHistory.steps.changedPlan' => 'Changed plan',
 			'adminDashboard.subHistory.steps.oneTime' => 'One-time purchase',
 			'adminDashboard.subHistory.steps.paused' => 'Paused',
 			'adminDashboard.subHistory.steps.transferred' => 'Transferred',
 			'adminDashboard.subHistory.steps.refunded' => 'Refunded',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'Granted by an admin · until ${date}',
 			'adminDashboard.subHistory.steps.adminGrantForever' => 'Granted by an admin · forever',
 			'adminDashboard.subHistory.steps.adminRevoke' => 'Removed by an admin',
@@ -5020,6 +5033,7 @@ extension on TranslationsEn {
 			'featureName.webCheckoutIl' => 'Buy on the web (Israel)',
 			'featureName.webCheckoutIntl' => 'Buy on the web (abroad)',
 			'featureName.whatsappBot' => 'WhatsApp grocery bot',
+			'featureName.profanityFilter' => 'Community swear filter',
 			'adminConfig.intro' => 'Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).',
 			'adminConfig.loadFailed' => 'Could not load the configuration',
 			'adminConfig.saveFailed' => 'Publishing failed. Check the value and try again',
@@ -5139,6 +5153,8 @@ extension on TranslationsEn {
 			'adminUser.open' => 'Full details',
 			'adminUser.tabOverview' => 'Overview',
 			'adminUser.tabActivity' => 'Activity',
+			_ => null,
+		} ?? switch (path) {
 			'adminUser.tabContent' => 'Content',
 			'adminUser.tabPublished' => 'Published',
 			'adminUser.tabMore' => 'More',
@@ -5146,8 +5162,6 @@ extension on TranslationsEn {
 			'adminUser.failed' => 'Couldn\'t load this user',
 			'adminUser.partial' => ({required Object names}) => 'Some data couldn\'t be loaded: ${names}',
 			'adminUser.copyUid' => 'Copy uid',
-			_ => null,
-		} ?? switch (path) {
 			'adminUser.copied' => 'Copied',
 			'adminUser.online' => 'Online now',
 			'adminUser.blocked' => 'Blocked',

@@ -21,6 +21,10 @@ export function h(tag, attrs, ...children) {
     else if (key === "dataset") Object.assign(el.dataset, value);
     else if (key.startsWith("on") && typeof value === "function") el.addEventListener(key.slice(2).toLowerCase(), value);
     else if (key === "html") el.innerHTML = value;
+    // A textarea ignores the value attribute, so its text has to go through
+    // the property (an editor opened empty); inputs take it the same way.
+    // A select gets its value from its options' `selected`, added later.
+    else if (key === "value" && name !== "select" && "value" in el) el.value = String(value);
     else if (key in el && typeof value !== "string") el[key] = value;
     else el.setAttribute(key, value === true ? "" : String(value));
   }

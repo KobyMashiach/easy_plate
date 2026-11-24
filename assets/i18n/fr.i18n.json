@@ -385,7 +385,12 @@
     "noPlanToAdd": "Pas encore de menu où l’ajouter. Créez-en un dans l’onglet menu",
     "addedToPlan": "Ajoutée au menu : $day · $meal",
     "recentlyCooked": "Cuisinées récemment",
-    "mostCooked": "Les plus cuisinées"
+    "mostCooked": "Les plus cuisinées",
+    "shareWithUsers": "Partager avec des personnes",
+    "shareToCommunity": "Partager dans la communauté",
+    "sharedToCommunity": "Recette partagée dans la communauté",
+    "alreadyInCommunity": "Cette recette est déjà dans la communauté",
+    "cookedHint": "Faites défiler vers le haut pour vos derniers plats"
   },
   "cookMode": {
     "title": "Mode cuisine",
@@ -534,7 +539,8 @@
     "importFailed": "La recette n’a pas pu être enregistrée",
     "ageMinutes": "$n min",
     "ageHours": "$n h",
-    "ageDays": "$n j"
+    "ageDays": "$n j",
+    "offensiveText": "Les grossièretés et propos offensants ne peuvent pas être publiés. Merci de reformuler."
   },
   "sharing": {
     "title": "Partager la recette",
@@ -2076,7 +2082,8 @@
     "recipeSuggestions": "Suggestions de recettes selon les préférences",
     "webCheckoutIl": "Achat sur le site (Israël)",
     "webCheckoutIntl": "Achat sur le site (étranger)",
-    "whatsappBot": "Bot WhatsApp de liste de courses"
+    "whatsappBot": "Bot WhatsApp de liste de courses",
+    "profanityFilter": "Filtre de grossièretés"
   },
   "wakeWord": {
     "title": "Hé Shefi",

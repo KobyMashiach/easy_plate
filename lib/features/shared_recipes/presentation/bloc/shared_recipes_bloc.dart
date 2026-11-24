@@ -20,6 +20,7 @@ import '../../domain/usecases/toggle_shared_recipe_like_usecase.dart';
 import '../../domain/usecases/unshare_recipe_usecase.dart';
 import '../../domain/usecases/update_shared_recipe_usecase.dart';
 import '../widgets/shared_feed_query.dart';
+import '../../../../core/moderation/profanity_filter.dart';
 
 part 'shared_recipes_bloc.freezed.dart';
 
@@ -63,6 +64,9 @@ sealed class SharedRecipesEvent with _$SharedRecipesEvent {
 /// failed at, or that the post was updated. The page holds the words.
 enum SharedFeedNotice {
   shareFailed,
+
+  /// The recipe holds a word the community filter refuses; not posted.
+  offensive,
   updateFailed,
   unshareFailed,
   importFailed,
@@ -318,7 +322,13 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
       await _init(const _Init(), emit);
     } catch (e) {
       debugPrint('Share recipe error: $e');
-      _notify(SharedFeedNotice.shareFailed, e, emit);
+      _notify(
+        e is OffensiveContentException
+            ? SharedFeedNotice.offensive
+            : SharedFeedNotice.shareFailed,
+        e,
+        emit,
+      );
     } finally {
       _writing = false;
     }
@@ -392,7 +402,13 @@ class SharedRecipesBloc extends Bloc<SharedRecipesEvent, SharedRecipesState> {
       }
     } catch (e) {
       debugPrint('Update shared recipe error: $e');
-      _notify(SharedFeedNotice.updateFailed, e, emit);
+      _notify(
+        e is OffensiveContentException
+            ? SharedFeedNotice.offensive
+            : SharedFeedNotice.updateFailed,
+        e,
+        emit,
+      );
     } finally {
       _writing = false;
     }

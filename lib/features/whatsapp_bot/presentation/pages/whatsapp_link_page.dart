@@ -95,8 +95,9 @@ class _WhatsappLinkPageState extends State<WhatsappLinkPage>
       final lists = await context.read<GroceryListsRepository>().getLists();
       if (!mounted) return;
       setState(
-        () => _lists = lists.where((l) => !l.isShared && l.canEdit).toList()
-          ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
+        () =>
+            _lists = lists.where((l) => !l.isShared && l.canEdit).toList()
+              ..sort((a, b) => a.createdAt.compareTo(b.createdAt)),
       );
     } catch (e) {
       debugPrint('Grocery lists unavailable: $e');
@@ -149,8 +150,10 @@ class _WhatsappLinkPageState extends State<WhatsappLinkPage>
       AppDialog.error(message: t.whatsappBot.botNotReady).notify(context);
       return;
     }
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication)
-        .catchError((_) => false);
+    final opened = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    ).catchError((_) => false);
     if (!opened && mounted) {
       AppDialog.error(message: t.whatsappBot.cannotOpen).notify(context);
     }

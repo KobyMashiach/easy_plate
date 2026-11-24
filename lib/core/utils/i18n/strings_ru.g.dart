@@ -582,6 +582,11 @@ class _Translations$recipe$ru extends Translations$recipe$he {
 	@override String addedToPlan({required Object day, required Object meal}) => 'Добавлено в меню: ${day} · ${meal}';
 	@override String get recentlyCooked => 'Недавно готовили';
 	@override String get mostCooked => 'Чаще всего готовили';
+	@override String get shareWithUsers => 'Поделиться с людьми';
+	@override String get shareToCommunity => 'Поделиться в сообществе';
+	@override String get sharedToCommunity => 'Рецепт опубликован в сообществе';
+	@override String get alreadyInCommunity => 'Этот рецепт уже в сообществе';
+	@override String get cookedHint => 'Прокрутите вверх к недавно приготовленному';
 }
 
 // Path: cookMode
@@ -752,6 +757,7 @@ class _Translations$community$ru extends Translations$community$he {
 	@override String ageMinutes({required Object n}) => '${n} мин';
 	@override String ageHours({required Object n}) => '${n} ч';
 	@override String ageDays({required Object n}) => '${n} д';
+	@override String get offensiveText => 'Нельзя публиковать ругательства и оскорбления. Пожалуйста, перефразируйте.';
 }
 
 // Path: sharing
@@ -2183,6 +2189,7 @@ class _Translations$featureName$ru extends Translations$featureName$he {
 	@override String get webCheckoutIl => 'Покупка на сайте (Израиль)';
 	@override String get webCheckoutIntl => 'Покупка на сайте (за рубежом)';
 	@override String get whatsappBot => 'Бот WhatsApp для списка покупок';
+	@override String get profanityFilter => 'Фильтр ругательств';
 }
 
 // Path: wakeWord
@@ -3184,6 +3191,11 @@ extension on TranslationsRu {
 			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'Добавлено в меню: ${day} · ${meal}',
 			'recipe.recentlyCooked' => 'Недавно готовили',
 			'recipe.mostCooked' => 'Чаще всего готовили',
+			'recipe.shareWithUsers' => 'Поделиться с людьми',
+			'recipe.shareToCommunity' => 'Поделиться в сообществе',
+			'recipe.sharedToCommunity' => 'Рецепт опубликован в сообществе',
+			'recipe.alreadyInCommunity' => 'Этот рецепт уже в сообществе',
+			'recipe.cookedHint' => 'Прокрутите вверх к недавно приготовленному',
 			'cookMode.title' => 'Режим готовки',
 			'cookMode.start' => 'Начать готовить',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'Шаг ${n} из ${total}',
@@ -3327,19 +3339,20 @@ extension on TranslationsRu {
 			'community.ageMinutes' => ({required Object n}) => '${n} мин',
 			'community.ageHours' => ({required Object n}) => '${n} ч',
 			'community.ageDays' => ({required Object n}) => '${n} д',
+			'community.offensiveText' => 'Нельзя публиковать ругательства и оскорбления. Пожалуйста, перефразируйте.',
 			'sharing.title' => 'Поделиться рецептом',
 			'sharing.contactLabel' => 'Почта или телефон человека',
 			'sharing.contactHint' => 'name@example.com или 05…',
 			'sharing.roleTitle' => 'Права',
 			'sharing.roleViewer' => 'Только просмотр',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.roleViewerHint' => 'Видит рецепт, но не может менять',
 			'sharing.roleEditor' => 'Редактирование',
 			'sharing.roleEditorHint' => 'Его изменения появятся и у вас',
 			'sharing.send' => 'Отправить приглашение',
 			'sharing.sent' => 'Приглашение отправлено',
 			'sharing.invalidContact' => 'Введите корректную почту или телефон с кодом страны (+…)',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.notFound' => 'Аккаунт с такими данными не найден. Убедитесь, что почта или телефон привязаны к его аккаунту и что приложение недавно открывалось.',
 			'sharing.self' => 'Нельзя поделиться с самим собой',
 			'sharing.failed' => 'Не удалось поделиться, попробуйте снова',
@@ -3846,14 +3859,14 @@ extension on TranslationsRu {
 			'unit.pinch' => 'щепотка',
 			'unit.unspecified' => '—',
 			'image.add' => 'Добавить фото',
+			_ => null,
+		} ?? switch (path) {
 			'image.change' => 'Изменить фото',
 			'image.gallery' => 'Выбрать из галереи',
 			'image.camera' => 'Сделать фото',
 			'image.remove' => 'Удалить фото',
 			'image.generate' => 'Создать с помощью ИИ',
 			'image.generating' => 'Создаём изображение… это займёт несколько секунд',
-			_ => null,
-		} ?? switch (path) {
 			'image.generateFailed' => 'Не удалось создать изображение, попробуйте ещё раз',
 			'image.coverTitle' => 'Какую обложку создать?',
 			'image.coverHint' => 'Выберите категорию, напишите что-нибудь или и то и другое',
@@ -4360,14 +4373,14 @@ extension on TranslationsRu {
 			'adminDashboard.osPlan.premium' => 'Premium',
 			'adminDashboard.osPlan.free' => 'Бесплатно',
 			'adminDashboard.osPlan.premiumShare' => '% Premium',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.osPlan.ofUsers' => '% от пользователей',
 			'adminDashboard.osPlan.ofPremium' => '% от Premium',
 			'adminDashboard.osPlan.total' => 'Итого',
 			'adminDashboard.osPlan.hint' => '% Premium = от пользователей этой ОС',
 			'adminDashboard.premiumSince' => ({required Object date}) => 'Premium с ${date}',
 			'adminDashboard.cancelledOn' => ({required Object date}) => 'Отменил ${date}',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.chartCategories' => 'По разделам',
 			'adminDashboard.categories.recipes' => 'Рецепты',
 			'adminDashboard.categories.books' => 'Книги',
@@ -4736,6 +4749,7 @@ extension on TranslationsRu {
 			'featureName.webCheckoutIl' => 'Покупка на сайте (Израиль)',
 			'featureName.webCheckoutIntl' => 'Покупка на сайте (за рубежом)',
 			'featureName.whatsappBot' => 'Бот WhatsApp для списка покупок',
+			'featureName.profanityFilter' => 'Фильтр ругательств',
 			'wakeWord.title' => 'Эй, Шефи',
 			'wakeWord.hint' => 'Начните разговор с Шефи голосом, не касаясь телефона',
 			'wakeWord.intro' => 'Скажите «Эй, Шефи», и Шефи откроется и будет слушать. Можно продолжить той же фразой, и Шефи сразу ответит.',

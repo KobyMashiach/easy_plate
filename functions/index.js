@@ -529,7 +529,8 @@ async function tellThreadOfReply(db, { postId, replyId, reply }, { allowed = rep
 
   const body = String(reply.body || "").trim();
   const attached = String(reply.sharedRecipeTitle || "").trim();
-  const excerpt = (body || (attached ? `🍽 ${attached}` : "")).slice(0, 140);
+  // Masked here too: the push goes out before the moderation trigger lands.
+  const excerpt = require("./profanity").maskProfanity(body || (attached ? `🍽 ${attached}` : "")).slice(0, 140);
   const uids = [...recipients.keys()];
   const written = await write(db, uids, (uid) => ({
     type: "forumReply",
@@ -552,6 +553,13 @@ async function tellThreadOfReply(db, { postId, replyId, reply }, { allowed = rep
 // their own notification choices. The reply's opening words travel with
 // the item so the inbox row reads without a second lookup, and the ids
 // are what a tap on the push opens.
+// Swear words that reached a thread, reply or community recipe anyway
+// (an older build, a direct write) are masked with asterisks.
+const moderation = require("./communityModeration");
+exports.moderateForumPost = moderation.moderateForumPost;
+exports.moderateForumReply = moderation.moderateForumReply;
+exports.moderateSharedRecipe = moderation.moderateSharedRecipe;
+
 exports.onForumReplyCreated = onDocumentCreated(
   "forum_posts/{postId}/replies/{replyId}",
   async (event) => {

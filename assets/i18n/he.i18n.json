@@ -385,7 +385,12 @@
     "noPlanToAdd": "עוד אין תפריט להוסיף אליו. צרו אחד בלשונית התפריט",
     "addedToPlan": "נוסף לתפריט: $day · $meal",
     "recentlyCooked": "בישלתם לאחרונה",
-    "mostCooked": "הכי הרבה בישלתם"
+    "mostCooked": "הכי הרבה בישלתם",
+    "shareWithUsers": "שיתוף משתמשים",
+    "shareToCommunity": "שיתוף בקהילה",
+    "sharedToCommunity": "המתכון שותף בקהילה",
+    "alreadyInCommunity": "המתכון כבר משותף בקהילה",
+    "cookedHint": "גללו למעלה לבישולים האחרונים"
   },
   "cookMode": {
     "title": "מצב בישול",
@@ -534,7 +539,8 @@
     "importFailed": "לא הצלחנו לשמור את המתכון",
     "ageMinutes": "$n דק׳",
     "ageHours": "$n שע׳",
-    "ageDays": "$n ימ׳"
+    "ageDays": "$n ימ׳",
+    "offensiveText": "אי אפשר לפרסם קללות או מילים פוגעניות. נא לנסח מחדש."
   },
   "sharing": {
     "title": "שיתוף מתכון",
@@ -2094,7 +2100,8 @@
     "recipeSuggestions": "הצעות מתכונים לפי העדפות",
     "webCheckoutIl": "רכישה באתר (ישראל)",
     "webCheckoutIntl": "רכישה באתר (חו\"ל)",
-    "whatsappBot": "בוט וואטסאפ לרשימת קניות"
+    "whatsappBot": "בוט וואטסאפ לרשימת קניות",
+    "profanityFilter": "סינון קללות בקהילה"
   },
   "adminConfig": {
     "intro": "כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).",

@@ -1301,6 +1301,21 @@ class Translations$recipe$he {
 
 	/// he: 'הכי הרבה בישלתם'
 	String get mostCooked => 'הכי הרבה בישלתם';
+
+	/// he: 'שיתוף משתמשים'
+	String get shareWithUsers => 'שיתוף משתמשים';
+
+	/// he: 'שיתוף בקהילה'
+	String get shareToCommunity => 'שיתוף בקהילה';
+
+	/// he: 'המתכון שותף בקהילה'
+	String get sharedToCommunity => 'המתכון שותף בקהילה';
+
+	/// he: 'המתכון כבר משותף בקהילה'
+	String get alreadyInCommunity => 'המתכון כבר משותף בקהילה';
+
+	/// he: 'גללו למעלה לבישולים האחרונים'
+	String get cookedHint => 'גללו למעלה לבישולים האחרונים';
 }
 
 // Path: cookMode
@@ -1757,6 +1772,9 @@ class Translations$community$he {
 
 	/// he: '$n ימ׳'
 	String ageDays({required Object n}) => '${n} ימ׳';
+
+	/// he: 'אי אפשר לפרסם קללות או מילים פוגעניות. נא לנסח מחדש.'
+	String get offensiveText => 'אי אפשר לפרסם קללות או מילים פוגעניות. נא לנסח מחדש.';
 }
 
 // Path: sharing
@@ -5558,6 +5576,9 @@ class Translations$featureName$he {
 
 	/// he: 'בוט וואטסאפ לרשימת קניות'
 	String get whatsappBot => 'בוט וואטסאפ לרשימת קניות';
+
+	/// he: 'סינון קללות בקהילה'
+	String get profanityFilter => 'סינון קללות בקהילה';
 }
 
 // Path: adminConfig
@@ -7673,6 +7694,11 @@ extension on Translations {
 			'recipe.addedToPlan' => ({required Object day, required Object meal}) => 'נוסף לתפריט: ${day} · ${meal}',
 			'recipe.recentlyCooked' => 'בישלתם לאחרונה',
 			'recipe.mostCooked' => 'הכי הרבה בישלתם',
+			'recipe.shareWithUsers' => 'שיתוף משתמשים',
+			'recipe.shareToCommunity' => 'שיתוף בקהילה',
+			'recipe.sharedToCommunity' => 'המתכון שותף בקהילה',
+			'recipe.alreadyInCommunity' => 'המתכון כבר משותף בקהילה',
+			'recipe.cookedHint' => 'גללו למעלה לבישולים האחרונים',
 			'cookMode.title' => 'מצב בישול',
 			'cookMode.start' => 'להתחיל לבשל',
 			'cookMode.stepOf' => ({required Object n, required Object total}) => 'שלב ${n} מתוך ${total}',
@@ -7816,19 +7842,20 @@ extension on Translations {
 			'community.ageMinutes' => ({required Object n}) => '${n} דק׳',
 			'community.ageHours' => ({required Object n}) => '${n} שע׳',
 			'community.ageDays' => ({required Object n}) => '${n} ימ׳',
+			'community.offensiveText' => 'אי אפשר לפרסם קללות או מילים פוגעניות. נא לנסח מחדש.',
 			'sharing.title' => 'שיתוף מתכון',
 			'sharing.contactLabel' => 'אימייל או טלפון של השותף/ה',
 			'sharing.contactHint' => 'name@example.com או 05…',
 			'sharing.roleTitle' => 'הרשאה',
 			'sharing.roleViewer' => 'צפייה בלבד',
+			_ => null,
+		} ?? switch (path) {
 			'sharing.roleViewerHint' => 'רואה את המתכון, לא יכול/ה לשנות אותו',
 			'sharing.roleEditor' => 'עריכה',
 			'sharing.roleEditorHint' => 'שינויים שלו/ה יופיעו גם אצלכם',
 			'sharing.send' => 'שליחת הזמנה',
 			'sharing.sent' => 'ההזמנה נשלחה',
 			'sharing.invalidContact' => 'יש להזין אימייל תקין, או מספר טלפון (עם קידומת מדינה +… למספר מחוץ לישראל)',
-			_ => null,
-		} ?? switch (path) {
 			'sharing.notFound' => 'לא נמצא חשבון עם הפרטים האלה. ודאו שהאימייל או הטלפון מקושרים לחשבון שלו/ה, ושהאפליקציה נפתחה אצלו/ה לאחרונה.',
 			'sharing.self' => 'אי אפשר לשתף עם עצמכם',
 			'sharing.failed' => 'השיתוף נכשל, נסו שוב',
@@ -8335,14 +8362,14 @@ extension on Translations {
 			'unit.pinch' => 'קורט',
 			'unit.unspecified' => '—',
 			'image.add' => 'הוספת תמונה',
+			_ => null,
+		} ?? switch (path) {
 			'image.change' => 'שינוי תמונה',
 			'image.gallery' => 'בחירה מהגלריה',
 			'image.camera' => 'צילום תמונה',
 			'image.remove' => 'הסרת התמונה',
 			'image.generate' => 'צור תמונה ב-AI',
 			'image.generating' => 'יוצר תמונה… זה לוקח כמה שניות',
-			_ => null,
-		} ?? switch (path) {
 			'image.generateFailed' => 'יצירת התמונה נכשלה, נסו שוב',
 			'image.coverTitle' => 'איזו כריכה ליצור?',
 			'image.coverHint' => 'בחרו קטגוריה, כתבו משהו, או שניהם',
@@ -8849,14 +8876,14 @@ extension on Translations {
 			'adminDashboard.subHistory.steps.cancelledNoDate' => 'ביטל',
 			'adminDashboard.subHistory.steps.uncancelled' => 'חזר בו מהביטול',
 			'adminDashboard.subHistory.steps.ended' => 'המנוי הסתיים',
+			_ => null,
+		} ?? switch (path) {
 			'adminDashboard.subHistory.steps.billingIssue' => 'בעיית חיוב',
 			'adminDashboard.subHistory.steps.changedPlan' => 'החליף חבילה',
 			'adminDashboard.subHistory.steps.oneTime' => 'רכישה חד־פעמית',
 			'adminDashboard.subHistory.steps.paused' => 'הושהה',
 			'adminDashboard.subHistory.steps.transferred' => 'הועבר',
 			'adminDashboard.subHistory.steps.refunded' => 'הוחזר כסף',
-			_ => null,
-		} ?? switch (path) {
 			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'הוענק ע״י מנהל · עד ${date}',
 			'adminDashboard.subHistory.steps.adminGrantForever' => 'הוענק ע״י מנהל · לתמיד',
 			'adminDashboard.subHistory.steps.adminRevoke' => 'נשלל ע״י מנהל',
@@ -9243,6 +9270,7 @@ extension on Translations {
 			'featureName.webCheckoutIl' => 'רכישה באתר (ישראל)',
 			'featureName.webCheckoutIntl' => 'רכישה באתר (חו"ל)',
 			'featureName.whatsappBot' => 'בוט וואטסאפ לרשימת קניות',
+			'featureName.profanityFilter' => 'סינון קללות בקהילה',
 			'adminConfig.intro' => 'כל ערך כאן הוא ה-Remote Config של Firebase. שינוי מתפרסם מיד לכל המשתמשים (ערכי ברירת המחדל; תנאים בקונסול נשארים כפי שהם).',
 			'adminConfig.loadFailed' => 'לא הצלחנו לטעון את התצורה',
 			'adminConfig.saveFailed' => 'הפרסום נכשל. בדקו את הערך ונסו שוב',
@@ -9362,6 +9390,8 @@ extension on Translations {
 			'adminUser.open' => 'פרטים מלאים',
 			'adminUser.tabOverview' => 'סקירה',
 			'adminUser.tabActivity' => 'פעילות',
+			_ => null,
+		} ?? switch (path) {
 			'adminUser.tabContent' => 'תוכן',
 			'adminUser.tabPublished' => 'פרסומים',
 			'adminUser.tabMore' => 'עוד',
@@ -9369,8 +9399,6 @@ extension on Translations {
 			'adminUser.failed' => 'לא הצלחנו לטעון את המשתמש',
 			'adminUser.partial' => ({required Object names}) => 'חלק מהמידע לא נטען: ${names}',
 			'adminUser.copyUid' => 'העתקת uid',
-			_ => null,
-		} ?? switch (path) {
 			'adminUser.copied' => 'הועתק',
 			'adminUser.online' => 'מחובר עכשיו',
 			'adminUser.blocked' => 'חסום',

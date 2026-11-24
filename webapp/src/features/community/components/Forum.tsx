@@ -16,6 +16,8 @@ import { usePullToRefresh } from "../../../components/PullToRefresh";
 import { PageFab } from "../../../components/FloatingActions";
 import { usePhoneNavigate } from "../../../components/pageTransition";
 import { ClayButton } from "../../../components/clay";
+import { useAccess } from "../../../lib/flags";
+import { hasProfanity } from "../../../lib/profanity";
 
 export function Forum() {
   const { t } = useI18n();
@@ -304,6 +306,7 @@ export function Forum() {
 
 function Composer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useI18n();
+  const filterOn = useAccess("ff_profanity_filter") !== "hidden";
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -316,6 +319,7 @@ function Composer({ open, onClose }: { open: boolean; onClose: () => void }) {
     const bb = body.trim();
     if (!tt) return setError(t("community.postTitleRequired"));
     if (!bb) return setError(t("community.postBodyRequired"));
+    if (filterOn && hasProfanity(tt, bb)) return setError(t("community.offensiveText"));
     setBusy(true);
     setError(null);
     try {

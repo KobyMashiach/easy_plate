@@ -48,6 +48,7 @@ import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/features/feature_gate.dart';
 import '../../../assistant/domain/assistant_scope.dart';
 import '../../../assistant/presentation/widgets/assistant_fab.dart';
+import '../../../../core/moderation/profanity_filter.dart';
 
 /// Route payload for [RecipeDetailsPage]. A bare entity was not enough once
 /// the same screen started opening community recipes: those must not expose
@@ -335,6 +336,9 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
         // — returning the old copy here let "nutrition estimated" show over
         // a refused save.
         debugPrint('Post update failed: $e');
+        if (e is OffensiveContentException && mounted) {
+          AppDialog.warning(message: t.community.offensiveText).notify(context);
+        }
         rethrow;
       }
       return updated;
@@ -384,6 +388,12 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       }
     } catch (e) {
       debugPrint('Community update failed: $e');
+      if (e is OffensiveContentException) {
+        if (mounted) {
+          AppDialog.warning(message: t.community.offensiveText).notify(context);
+        }
+        return stored;
+      }
       // Offline, a timeout, a refusal: the post is still there, so the link
       // stays and the user hears the update did not go out.
       if (!isPostGone(e)) {

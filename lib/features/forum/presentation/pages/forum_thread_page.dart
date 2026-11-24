@@ -20,6 +20,7 @@ import '../../../shared_recipes/presentation/widgets/shared_recipe_picker_sheet.
 import '../bloc/forum_thread_bloc.dart';
 import '../widgets/reply_recipe_link.dart';
 import '../../../../core/constants/app_motion.dart';
+import '../../../../core/moderation/profanity_filter.dart';
 
 /// One thread: the opening post, its replies (live), and the composer.
 ///
@@ -453,6 +454,11 @@ class _ReplyComposerState extends State<_ReplyComposer> {
     final body = _reply.text.trim();
     // A recipe link is a complete reply on its own — the title carries it.
     if (body.isEmpty && _attached == null) return;
+    // Refused here, so the words stay in the box for the author to fix.
+    if (ProfanityFilter.blocks([body])) {
+      AppDialog.warning(message: t.community.offensiveText).notify(context);
+      return;
+    }
 
     context.read<ForumThreadBloc>().add(
       ForumThreadEvent.addReply(

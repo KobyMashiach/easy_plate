@@ -385,7 +385,12 @@
     "noPlanToAdd": "No meal plan to add it to yet. Create one in the plan tab",
     "addedToPlan": "Added to the plan: $day · $meal",
     "recentlyCooked": "Recently cooked",
-    "mostCooked": "Most cooked"
+    "mostCooked": "Most cooked",
+    "shareWithUsers": "Share with people",
+    "shareToCommunity": "Share to the community",
+    "sharedToCommunity": "Recipe shared to the community",
+    "alreadyInCommunity": "This recipe is already in the community",
+    "cookedHint": "Scroll up for what you cooked lately"
   },
   "cookMode": {
     "title": "Cook mode",
@@ -534,7 +539,8 @@
     "importFailed": "The recipe could not be saved",
     "ageMinutes": "${n}m",
     "ageHours": "${n}h",
-    "ageDays": "${n}d"
+    "ageDays": "${n}d",
+    "offensiveText": "Swear words and offensive language can't be posted. Please rephrase."
   },
   "sharing": {
     "title": "Share recipe",
@@ -2094,7 +2100,8 @@
     "recipeSuggestions": "Recipe suggestions by preferences",
     "webCheckoutIl": "Buy on the web (Israel)",
     "webCheckoutIntl": "Buy on the web (abroad)",
-    "whatsappBot": "WhatsApp grocery bot"
+    "whatsappBot": "WhatsApp grocery bot",
+    "profanityFilter": "Community swear filter"
   },
   "adminConfig": {
     "intro": "Every value here is Firebase Remote Config. A change is published to all users at once (default values; console conditions are left as they are).",

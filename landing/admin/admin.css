@@ -309,3 +309,11 @@ a.btn { text-decoration: none; text-align: center; display: block; }
 .emoji-search:focus { outline: none; border-color: var(--brand2); }
 .emoji-none { grid-column: 1 / -1; text-align: center; padding: 16px 0; }
 
+
+/* User content: recipe read as text, recipe form */
+.recipe-view h2 { margin: 0; }
+.recipe-view h3 { margin: 10px 0 0; font-size: 16px; }
+.recipe-view h4 { margin: 8px 0 2px; font-size: 14px; color: var(--muted); }
+.recipe-view ul, .recipe-view ol { margin: 4px 0; padding-inline-start: 22px; line-height: 1.7; }
+.ing-row { display: grid; grid-template-columns: 90px 130px 1fr 140px auto; gap: 8px; align-items: center; }
+@media (max-width: 700px) { .ing-row { grid-template-columns: 70px 1fr auto; } .ing-row > :nth-child(3), .ing-row > :nth-child(4) { grid-column: 1 / -2; } }

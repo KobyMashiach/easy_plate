@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_motion.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -21,10 +23,20 @@ class CookedRows extends StatefulWidget {
   /// wherever it is drawn.
   final Widget Function(RecipeEntity recipe) cardBuilder;
 
+  /// Folded away (Koby, 2026-11-24): the page opens on its title, search
+  /// and the mine/saved switch; the rows come down only when the list is
+  /// pulled past its top, and a small hint with an up arrow says so.
+  final bool collapsed;
+
+  /// Opens the rows from the hint, for whoever does not pull.
+  final VoidCallback? onReveal;
+
   const CookedRows({
     super.key,
     required this.recipes,
     required this.cardBuilder,
+    this.collapsed = false,
+    this.onReveal,
   });
 
   static const _cardWidth = 168.0;
@@ -60,12 +72,55 @@ class _CookedRowsState extends State<CookedRows> {
     final recent = recentlyCooked(_history, widget.recipes);
     final most = mostCooked(_history, widget.recipes);
     if (recent.isEmpty && most.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (recent.isNotEmpty) _row(t.recipe.recentlyCooked, recent),
-        if (most.isNotEmpty) _row(t.recipe.mostCooked, most),
-      ],
+    return AnimatedSize(
+      duration: AppMotion.reduced(context)
+          ? Duration.zero
+          : AppMotion.emphasized,
+      curve: AppMotion.easeOut,
+      alignment: Alignment.topCenter,
+      child: widget.collapsed
+          ? _hint()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (recent.isNotEmpty) _row(t.recipe.recentlyCooked, recent),
+                if (most.isNotEmpty) _row(t.recipe.mostCooked, most),
+              ],
+            ),
+    );
+  }
+
+  Widget _hint() {
+    final color = AppColors.onSurfaceVariant;
+    return Semantics(
+      button: true,
+      label: t.recipe.cookedHint,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: widget.onReveal,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.xs,
+            bottom: AppSpacing.sm,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.keyboard_double_arrow_up_rounded,
+                size: 16,
+                color: color,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                t.recipe.cookedHint,
+                style: AppTextStyles.labelSm.copyWith(color: color),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
