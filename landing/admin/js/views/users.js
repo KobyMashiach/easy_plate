@@ -38,6 +38,17 @@ function permissionBadge(permission) {
   return h("span.small.muted", t("users.permissionUser"));
 }
 
+// The status column's second line, from the entitlement the list already
+// follows (no per-row read): a cancelled plan still running shows until
+// when, a dated plan that ran out shows when it ended.
+function subscriptionLine(ent, premium, now) {
+  if (!ent) return null;
+  const until = millisOf(ent.premiumUntil);
+  if (premium && ent.cancelAtPeriodEnd === true && until) return t("subs.listCancelled", { date: fmtDate(until, false) });
+  if (!premium && ent.premium === true && until && until <= now) return t("subs.listEnded", { date: fmtDate(until, false) });
+  return null;
+}
+
 // What each sortable column orders by; null or "" = nothing to sort on.
 const SORTS = {
   name: (r) => r.fullName || r.email || r.phoneNumber || "",
@@ -104,6 +115,7 @@ export async function mount({ view, actions }) {
       disabled: !!(statuses[u.uid] && statuses[u.uid].disabled),
       premium: premiumActive(entitlements[u.uid], now),
     }));
+    for (const r of rows) r.subLine = subscriptionLine(entitlements[r.uid], r.premium, now);
     if (filter === "online") rows = rows.filter((r) => r.online);
     if (filter === "premium") rows = rows.filter((r) => r.premium);
     if (filter === "disabled") rows = rows.filter((r) => r.disabled);
@@ -128,14 +140,14 @@ export async function mount({ view, actions }) {
     count.textContent = t("users.count", { n: fmtNumber(rows.length) });
     const page = rows.slice(0, shown);
     const signature = JSON.stringify([sort, rows.length, page.map((r) => [r.uid, r.online, r.premium, r.disabled, r.fullName, r.email, r.phoneNumber, r.photoUrl, r.platform, r.permission, r.appVersion,
-      r.session ? [r.session.platform, millis(r.session.expiresAt)] : null, millis(r.createdAt), r.online ? 0 : millis(r.lastSeenAt)])]);
+      r.subLine, r.session ? [r.session.platform, millis(r.session.expiresAt)] : null, millis(r.createdAt), r.online ? 0 : millis(r.lastSeenAt)])]);
     if (!force && signature === drawn) return;
     drawn = signature;
     clear(body);
     body.append(table([
       { label: "", cell: (r) => dot(r.online) },
       { label: t("common.name"), sort: "name", cell: (r) => h("div.row", avatar(r.fullName, r.photoUrl, "sm"), h("div", h("div", r.fullName || t("common.unnamed")), h("div.small.muted", r.email || r.phoneNumber || r.uid))) },
-      { label: t("common.status"), sort: "status", cell: (r) => h("div.row", r.premium ? badge(t("users.premium"), "mint") : badge(t("users.free")), r.disabled ? badge(t("users.disabled"), "red") : null) },
+      { label: t("common.status"), sort: "status", cell: (r) => h("div", h("div.row", r.premium ? badge(t("users.premium"), "mint") : badge(t("users.free")), r.disabled ? badge(t("users.disabled"), "red") : null), r.subLine ? h("div.small.muted", r.subLine) : null) },
       { label: t("users.permission"), sort: "permission", cell: (r) => permissionBadge(r.permission) },
       { label: t("users.lastSeen"), sort: "lastSeen", cell: (r) => r.online ? badge(t("users.online"), "green") : when(r.lastSeenAt) },
       { label: t("users.device"), sort: "device", cell: (r) => h("span.small", platformLabel(r.platform)) },

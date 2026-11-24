@@ -34,7 +34,8 @@ class _FakeIngestionRepository implements RecipeIngestionRepository {
   Future<RecipeEntity> estimateNutrition(RecipeEntity recipe) async => recipe;
 
   @override
-  Future<Uint8List> generateImage(String prompt) => throw UnimplementedError();
+  Future<Uint8List> generateImage(String prompt, {String purpose = 'image_other'}) =>
+      throw UnimplementedError();
   @override
   Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) =>
       throw UnimplementedError();

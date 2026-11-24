@@ -72,7 +72,10 @@ abstract class RecipeAiDataSource {
   Future<RecipeEntity> estimateNutrition(RecipeEntity recipe);
 
   /// A picture for [prompt], as JPEG bytes.
-  Future<Uint8List> generateImage(String prompt);
+  Future<Uint8List> generateImage(
+    String prompt, {
+    String purpose = 'image_other',
+  });
 
   /// The products and prices on a receipt, from one or more photos of it
   /// or a PDF. Several photos are parts of the same receipt.
@@ -576,10 +579,11 @@ $_dietaryTagRules
   Future<Map<String, dynamic>> _callStructured(
     Map<String, dynamic> body, {
     required String feature,
+    required String action,
     Map<String, String>? headers,
   }) async {
     return _decodeRecipe(
-      await _callRaw(body, feature: feature, headers: headers),
+      await _callRaw(body, feature: feature, action: action, headers: headers),
     );
   }
 
@@ -587,6 +591,20 @@ $_dietaryTagRules
   /// breakdown. The proxy records it next to the token counts; Google
   /// ignores it when talked to directly.
   static const featureHeader = 'x-easyplate-feature';
+
+  /// What the user did ("recipe from a photo", "cover for a book"), finer
+  /// than the feature — the administrator's "what they did" column. Ids are
+  /// the functions' (functions/aiUsage.js ACTIONS).
+  static const actionHeader = 'x-easyplate-action';
+
+  /// The action a set of attached files makes: a photo, a PDF, a recording.
+  @visibleForTesting
+  static String filesAction(List<IngestionFile> files) {
+    if (files.any((f) => f.isImage)) return 'recipe_photo';
+    if (files.any((f) => f.isAudio)) return 'recipe_audio';
+    if (files.any((f) => f.isPdf)) return 'recipe_pdf';
+    return 'recipe_file';
+  }
 
   Future<Map<String, dynamic>> _postSocial(Map<String, dynamic> body) async {
     _assertConfigured();
@@ -631,10 +649,11 @@ $_dietaryTagRules
   Future<Map<String, dynamic>> _callRaw(
     Map<String, dynamic> body, {
     required String feature,
+    required String action,
     Map<String, String>? headers,
   }) async {
     _assertConfigured();
-    headers = {featureHeader: feature, ...?headers};
+    headers = {featureHeader: feature, actionHeader: action, ...?headers};
     // Encoded once for every attempt, and off the UI isolate when it is
     // megabytes of attachments; a text-only body is small enough for Dio.
     final Object payload = carriesInlineMedia(body)
@@ -849,6 +868,7 @@ $_dietaryTagRules
     ];
     final data = await _callStructured(
       feature: 'receipt',
+      action: 'receipt_scan',
       _body(
         input: blocks,
         schema: _receiptSchema,
@@ -907,17 +927,24 @@ $_dietaryTagRules
   /// same proxy, quota and auth apply. (No `delivery` field: the API rejects
   /// it, inline is what it does.)
   @override
-  Future<Uint8List> generateImage(String prompt) async {
-    final data = await _callRaw({
-      'model': ApiConfig.imageModel,
-      'input': prompt,
-      'response_format': {
-        'type': 'image',
-        'aspect_ratio': '4:3',
-        'image_size': '1K',
-        'mime_type': 'image/jpeg',
+  Future<Uint8List> generateImage(
+    String prompt, {
+    String purpose = 'image_other',
+  }) async {
+    final data = await _callRaw(
+      {
+        'model': ApiConfig.imageModel,
+        'input': prompt,
+        'response_format': {
+          'type': 'image',
+          'aspect_ratio': '4:3',
+          'image_size': '1K',
+          'mime_type': 'image/jpeg',
+        },
       },
-    }, feature: 'image');
+      feature: 'image',
+      action: purpose,
+    );
     for (final step in (data['steps'] as List?) ?? const []) {
       if (step is! Map) continue;
       for (final block in (step['content'] as List?) ?? const []) {
@@ -1022,6 +1049,7 @@ $_dietaryTagRules
   ) async {
     final data = await _callStructured(
       feature: 'nutrition',
+      action: 'nutrition',
       _body(
         input:
             'הערך את מספר המנות ואת הערכים התזונתיים למנה אחת של המתכון הבא. '
@@ -1051,6 +1079,7 @@ $_dietaryTagRules
   ) async {
     final input = await _callStructured(
       feature: 'text',
+      action: 'recipe_text',
       _body(
         input: 'נתח את המתכון הבא לפורמט מובנה:\n\n$text',
         schema: _recipeSchema,
@@ -1088,6 +1117,7 @@ $_dietaryTagRules
         : '$what (${files.length}) הם חלקים של מתכון אחד, לפי הסדר שבו הם מופיעים — למשל הודעה קולית שנשלחה בכמה קטעים. התייחס אליהם כהקלטה אחת רצופה: תמלל לעצמך את כולם ברצף, וחלץ מתכון אחד לפורמט מובנה — שם, מצרכים עם כמויות, ושלבי הכנה בסדר שנאמרו. אל תחזיר כמה מתכונים.';
     final input = await _callStructured(
       feature: 'file',
+      action: filesAction(files),
       _body(
         input: [
           ...await encodeInlineMedia([
@@ -1117,6 +1147,7 @@ $_dietaryTagRules
   ) async {
     final input = await _callStructured(
       feature: 'url',
+      action: 'recipe_url',
       _body(
         input:
             'שלוף את המתכון מהכתובת הבאה והחזר אותו בפורמט מובנה. התעלם מפרסומות ותוכן שאינו חלק מהמתכון.\n$url',
@@ -1174,6 +1205,7 @@ $_dietaryTagRules
     }
     final input = await _callStructured(
       feature: 'social',
+      action: 'recipe_video',
       _body(
         input:
             'שלוף את המתכון מהכותרת, מהתיאור ומהתגובות בעמוד הסרטון הבא. אם אין מספיק מידע למתכון מלא, החזר את מה שקיים בלבד.\n$url',
@@ -1240,6 +1272,7 @@ $_dietaryTagRules
   ) async {
     final input = await _callStructured(
       feature: 'generate',
+      action: 'recipe_generate',
       _body(
         input:
             'כתוב מתכון מלא לפי הבקשה הבאה:\n\n$request${_dietaryHint(preferences)}',
@@ -1260,6 +1293,7 @@ $_dietaryTagRules
   ) async {
     final data = await _callStructured(
       feature: 'search',
+      action: 'recipe_search',
       _body(
         input:
             'חפש 3 עד 5 מתכונים באינטרנט עבור: $query.${_dietaryHint(preferences)}',
@@ -1333,6 +1367,7 @@ $_dietaryTagRules
   }) async {
     final data = await _callStructured(
       feature: 'search',
+      action: 'recipe_suggest',
       _body(
         input: dishesPrompt(
           preferences,
@@ -1415,6 +1450,7 @@ $_dietaryTagRules
     final known = knownTitles.take(30).toList();
     final data = await _callStructured(
       feature: 'search',
+      action: 'recipe_suggest',
       _body(
         input: suggestionPrompt(
           preferences,
@@ -1484,6 +1520,7 @@ $_dietaryTagRules
 
     final data = await _callStructured(
       feature: 'refine',
+      action: 'recipe_refine',
       _body(
         input: '$instruction\n\n$payload',
         schema: _refineSchema,

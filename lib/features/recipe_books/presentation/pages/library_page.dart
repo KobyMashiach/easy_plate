@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
+import '../../../recipe_ingestion/domain/usecases/generate_image_usecase.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -212,6 +213,7 @@ class LibraryPage extends StatelessWidget {
                       final result = await showImageSourceSheet(
                         context,
                         hasImage: book.coverImageFileName != null,
+                        aiPurpose: GenerateImageUseCase.forBookCover,
                         aiPromptPicker: (ctx) =>
                             showCoverPromptSheet(ctx, bookTitle: book.title),
                       );

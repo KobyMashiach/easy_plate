@@ -252,6 +252,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       context,
       hasImage: recipe.imageFileName != null,
       aiPrompt: GenerateImageUseCase.recipePrompt(recipe),
+      aiPurpose: GenerateImageUseCase.forRecipe,
       searchQuery: recipe.title,
     );
     if (result == null || !mounted) return;

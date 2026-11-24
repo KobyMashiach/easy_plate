@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../recipe_ingestion/domain/usecases/generate_image_usecase.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
@@ -77,6 +78,7 @@ class _BookViewerBody extends StatelessWidget {
                           final result = await showImageSourceSheet(
                             context,
                             hasImage: book.coverImageFileName != null,
+                            aiPurpose: GenerateImageUseCase.forBookCover,
                             aiPromptPicker: (ctx) => showCoverPromptSheet(
                               ctx,
                               bookTitle: book.title,

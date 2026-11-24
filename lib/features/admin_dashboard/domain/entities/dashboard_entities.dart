@@ -304,8 +304,12 @@ class UserAiUsage {
     required this.total,
     required this.byModel,
     this.byKind = const {},
+    this.byAction = const {},
     this.lastCallAt,
   });
+
+  /// What the account did with the calls ([AiActions]), all-time.
+  final Map<String, TokenTally> byAction;
 
   double cost(AiPricing pricing) => pricing.costOfModels(byModel);
 
@@ -336,7 +340,11 @@ class DailyAiUsage {
     required this.byModel,
     required this.byKind,
     required this.byUser,
+    this.byAction = const {},
   });
+
+  /// What the day's calls were for ([AiActions]).
+  final Map<String, TokenTally> byAction;
 
   double cost(AiPricing pricing) => pricing.costOfModels(byModel);
 }
@@ -365,7 +373,14 @@ class AiCallEntity {
     required this.cacheHit,
     required this.tokens,
     required this.at,
+    this.action = '',
   });
+
+  /// The action the function stored, blank on rows from before it did.
+  final String action;
+
+  /// What the user did with this call, for old rows too.
+  String get whatTheyDid => AiActions.of(action: action, fn: fn, kind: kind);
 
   double cost(AiPricing pricing) =>
       pricing.costOf(AiPricing.keyFor(model), tokens);
@@ -443,6 +458,8 @@ class DashboardOverview {
     required this.aiTotal,
     required this.aiByModel,
     required this.aiByKind,
+    this.aiByAction = const {},
+    this.platformPlans = const {},
     required this.aiUsers,
     required this.sharedRecipes,
     required this.forumPosts,
@@ -453,6 +470,12 @@ class DashboardOverview {
     this.usersCap,
     this.eventsCap,
   });
+
+  /// What the period's calls were for ([AiActions]).
+  final Map<String, TokenTally> aiByAction;
+
+  /// Accounts and Premium accounts per platform (`ios`, `android`, blank…).
+  final Map<String, PlatformPlan> platformPlans;
 
   DashboardRange get range => period.range;
   double get aiCostUsd => pricing.costOfModels(aiByModel);
@@ -465,4 +488,135 @@ class DashboardOverview {
   /// Revenue in shekels, the plan's currency; other currencies are shown
   /// on their own beside it.
   double get paymentsIls => paymentsByCurrency['ILS'] ?? 0;
+}
+
+/// One platform's accounts, split by plan, for the users-vs-Premium table.
+class PlatformPlan {
+  final int users;
+  final int premium;
+  const PlatformPlan({this.users = 0, this.premium = 0});
+
+  int get free => math.max(0, users - premium);
+
+  /// Share of this platform's users that are Premium, 0–100; null without users.
+  double? get premiumPercent => users == 0 ? null : premium * 100 / users;
+
+  PlatformPlan operator +(PlatformPlan o) =>
+      PlatformPlan(users: users + o.users, premium: premium + o.premium);
+
+  static PlatformPlan totalOf(Iterable<PlatformPlan> plans) =>
+      plans.fold(const PlatformPlan(), (a, b) => a + b);
+}
+
+/// What a user did with an AI call ("recipe from a photo", "cover for a
+/// book"). The functions store `action` per call (functions/aiUsage.js,
+/// same ids); rows and aggregates from before that are read from the
+/// function and the kind, the way the server derives it.
+abstract class AiActions {
+  static const ids = [
+    'recipe_text',
+    'recipe_photo',
+    'recipe_pdf',
+    'recipe_audio',
+    'recipe_file',
+    'recipe_url',
+    'recipe_video',
+    'recipe_generate',
+    'recipe_refine',
+    'recipe_search',
+    'recipe_suggest',
+    'nutrition',
+    'receipt_scan',
+    'image_recipe',
+    'image_book_cover',
+    'image_other',
+    'assistant_chat',
+    'translate',
+    'whatsapp',
+    'admin',
+    'other',
+  ];
+
+  static const _byFn = {
+    'adminPanel': 'admin',
+    'translateContent': 'translate',
+    'whatsappWebhook': 'whatsapp',
+    'socialRecipe': 'recipe_video',
+  };
+
+  static const _byKind = {
+    'text': 'recipe_text',
+    'url': 'recipe_url',
+    'social': 'recipe_video',
+    'social_video': 'recipe_video',
+    'video': 'recipe_video',
+    'file': 'recipe_file',
+    'search': 'recipe_search',
+    'image': 'image_other',
+    'receipt': 'receipt_scan',
+    'nutrition': 'nutrition',
+    'refine': 'recipe_refine',
+    'generate': 'recipe_generate',
+    'assistant': 'assistant_chat',
+    'translate': 'translate',
+    'whatsapp': 'whatsapp',
+  };
+
+  static String of({String action = '', String fn = '', String kind = ''}) {
+    if (action.isNotEmpty) return ids.contains(action) ? action : 'other';
+    return _byFn[fn] ?? fromKind(kind);
+  }
+
+  static String fromKind(String kind) => _byKind[kind] ?? 'other';
+
+  /// The areas, the main split of "what they did"; the action is the detail.
+  static const categories = [
+    'recipes',
+    'books',
+    'shopping',
+    'assistant',
+    'translate',
+    'admin',
+    'other',
+  ];
+
+  static String categoryOf(String action) => switch (action) {
+    'image_book_cover' => 'books',
+    'receipt_scan' || 'whatsapp' => 'shopping',
+    'assistant_chat' => 'assistant',
+    'translate' => 'translate',
+    'admin' => 'admin',
+    'nutrition' || 'image_recipe' => 'recipes',
+    _ when action.startsWith('recipe_') => 'recipes',
+    _ => 'other',
+  };
+
+  /// An action split folded into areas.
+  static Map<String, TokenTally> byCategory(Map<String, TokenTally> byAction) {
+    final out = <String, TokenTally>{};
+    byAction.forEach((action, tally) {
+      final key = categoryOf(action);
+      out[key] = (out[key] ?? TokenTally.zero) + tally;
+    });
+    return out;
+  }
+
+  /// An aggregate's split by action: its own `actions` map when it covers
+  /// every call, else its `kinds` map read through [fromKind] — a document
+  /// that counted calls before actions were stored (until the dashboard's
+  /// repair rebuilds it) would otherwise lose those calls.
+  static Map<String, TokenTally> split(
+    Map<String, TokenTally> actions,
+    Map<String, TokenTally> kinds,
+  ) {
+    int calls(Map<String, TokenTally> m) =>
+        m.values.fold(0, (sum, t) => sum + t.calls);
+    if (actions.isNotEmpty && calls(actions) >= calls(kinds)) return actions;
+    final out = <String, TokenTally>{};
+    kinds.forEach((kind, tally) {
+      final key = fromKind(kind);
+      out[key] = (out[key] ?? TokenTally.zero) + tally;
+    });
+    return out;
+  }
 }

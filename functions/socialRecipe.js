@@ -1069,6 +1069,7 @@ exports.socialRecipe = onRequest(
         fn: "socialRecipe",
         model,
         kind: aiUsage.kindOf({ headers: req.headers, body: req.body, fn: "socialRecipe" }),
+        action: req.headers[aiUsage.ACTION_HEADER],
         status,
         ms: Date.now() - started,
         usage,

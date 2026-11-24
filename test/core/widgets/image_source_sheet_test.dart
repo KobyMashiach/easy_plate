@@ -27,7 +27,7 @@ void main() {
     final repository = _Repository();
     final answer = Completer<Uint8List>();
     when(
-      () => repository.generateImage(any()),
+      () => repository.generateImage(any(), purpose: any(named: 'purpose')),
     ).thenAnswer((_) => answer.future);
 
     await tester.pumpWidget(
@@ -56,7 +56,7 @@ void main() {
     await tester.tap(tile, warnIfMissed: false);
     await tester.pump();
 
-    verify(() => repository.generateImage(any())).called(1);
+    verify(() => repository.generateImage(any(), purpose: any(named: 'purpose'))).called(1);
     answer.completeError(StateError('done'));
     await tester.pumpAndSettle();
   });

@@ -348,6 +348,29 @@ function personaUid(random = crypto.randomBytes(15)) {
 // A date the console asked for, held within the last year and never in
 // the future: a thread "from" next month would sit on top of the feed
 // forever.
+/// The purchase_events row for a premium grant or removal made by hand, so
+/// the subscription history shows it among the store's events. Pure.
+function adminEntitlementEvent({ uid, premium, until = null, by = "", at = admin.firestore.Timestamp.now() }) {
+  return {
+    uid,
+    appUserId: uid,
+    aliases: [],
+    type: premium ? "ADMIN_GRANT" : "ADMIN_REVOKE",
+    productId: "",
+    store: "admin",
+    entitlementIds: [],
+    grantsPremium: !!premium,
+    environment: "",
+    periodType: "",
+    eventAt: at,
+    expiresAt: premium ? until || null : null,
+    price: null,
+    currency: "",
+    by: by || "",
+    receivedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
 function backdated(ms, now = Date.now()) {
   if (typeof ms !== "number" || !Number.isFinite(ms)) return now;
   return Math.min(now, Math.max(now - YEAR_MS, Math.round(ms)));
@@ -884,6 +907,13 @@ async function run(request, { caller, db, bucket, keys, fetchImpl = fetch }) {
       data.premiumUntil = request.premiumUntil ? ts(request.premiumUntil) : null;
       data.premiumFrom = request.premium ? admin.firestore.Timestamp.now() : null;
       await db.doc(`entitlements/${request.uid}`).set(data, { merge: true });
+      // The subscription history reads purchase_events: a gift or a
+      // removal by hand is a step in it like a store event.
+      if (request.premium !== undefined) {
+        await db.collection("purchase_events").add(adminEntitlementEvent({
+          uid: request.uid, premium: request.premium, until: data.premiumUntil, by: caller.email,
+        }));
+      }
       return {};
     }
     case "user.permission": {
@@ -1551,6 +1581,7 @@ exports.internals = {
   recipeImage,
   MAX_PREMIUM_UNTIL_MS,
   backdated,
+  adminEntitlementEvent,
   normalizeRecipe,
   portraitUrl,
   trustedPhotoUrl,

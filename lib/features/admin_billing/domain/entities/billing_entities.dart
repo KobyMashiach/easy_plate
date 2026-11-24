@@ -22,6 +22,12 @@ class PurchaseEventEntity {
   final double? price;
   final String currency;
 
+  /// `TRIAL`, `NORMAL`, `INTRO`… as the store reported it; blank when unknown.
+  final String periodType;
+
+  /// For a grant or removal made by hand: the administrator's email.
+  final String by;
+
   const PurchaseEventEntity({
     required this.id,
     required this.uid,
@@ -36,6 +42,8 @@ class PurchaseEventEntity {
     required this.expiresAt,
     required this.price,
     required this.currency,
+    this.periodType = '',
+    this.by = '',
   });
 
   static const _paymentTypes = {
@@ -182,4 +190,161 @@ class BroadcastResult {
     required this.sent,
     required this.failed,
   });
+}
+
+/// What one subscription event meant for the account, in plain words.
+enum SubscriptionStep {
+  joined,
+  trial,
+  renewed,
+  cancelled,
+  uncancelled,
+  ended,
+  billingIssue,
+  changedPlan,
+  oneTime,
+  paused,
+  transferred,
+  refunded,
+  adminGrant,
+  adminRevoke,
+  other,
+}
+
+class SubscriptionHistoryEntry {
+  final PurchaseEventEntity event;
+  final SubscriptionStep step;
+  const SubscriptionHistoryEntry(this.event, this.step);
+
+  DateTime get at => event.eventAt;
+
+  /// Until when the step leaves the account premium: the paid period after
+  /// a cancellation, a gift's last day.
+  DateTime? get until => event.expiresAt;
+}
+
+/// An account's subscription told as a story: when it joined Premium, when
+/// it cancelled, when it ended — from the purchase_events rows, store and
+/// web providers alike, plus the grants made by hand. The console's
+/// `subscriptionHistory` (landing/admin/js) applies the same rules.
+class SubscriptionHistory {
+  /// Oldest first.
+  final List<SubscriptionHistoryEntry> entries;
+  const SubscriptionHistory(this.entries);
+
+  static const _byType = {
+    'RENEWAL': SubscriptionStep.renewed,
+    'CANCELLATION': SubscriptionStep.cancelled,
+    'UNCANCELLATION': SubscriptionStep.uncancelled,
+    'EXPIRATION': SubscriptionStep.ended,
+    'BILLING_ISSUE': SubscriptionStep.billingIssue,
+    'PRODUCT_CHANGE': SubscriptionStep.changedPlan,
+    'NON_RENEWING_PURCHASE': SubscriptionStep.oneTime,
+    'SUBSCRIPTION_PAUSED': SubscriptionStep.paused,
+    'TRANSFER': SubscriptionStep.transferred,
+    'REFUND': SubscriptionStep.refunded,
+    'ADMIN_GRANT': SubscriptionStep.adminGrant,
+    'ADMIN_REVOKE': SubscriptionStep.adminRevoke,
+  };
+
+  factory SubscriptionHistory.of(Iterable<PurchaseEventEntity> events) {
+    final sorted = [...events]..sort((a, b) => a.eventAt.compareTo(b.eventAt));
+    final out = <SubscriptionHistoryEntry>[];
+    var active = false;
+    for (final e in sorted) {
+      final step = _stepOf(e, active);
+      out.add(SubscriptionHistoryEntry(e, step));
+      switch (step) {
+        case SubscriptionStep.joined ||
+            SubscriptionStep.trial ||
+            SubscriptionStep.renewed ||
+            SubscriptionStep.uncancelled ||
+            SubscriptionStep.changedPlan ||
+            SubscriptionStep.oneTime ||
+            SubscriptionStep.adminGrant:
+          active = true;
+        case SubscriptionStep.ended ||
+            SubscriptionStep.refunded ||
+            SubscriptionStep.adminRevoke:
+          active = false;
+        default:
+      }
+    }
+    return SubscriptionHistory(out);
+  }
+
+  static SubscriptionStep _stepOf(PurchaseEventEntity e, bool active) {
+    final type = e.type.toUpperCase();
+    if (type == 'INITIAL_PURCHASE') {
+      return e.periodType.toUpperCase() == 'TRIAL'
+          ? SubscriptionStep.trial
+          : SubscriptionStep.joined;
+    }
+    final known = _byType[type];
+    if (known != null) return known;
+    // The web providers name their events their own way (payplus.…,
+    // subscription.…, Stripe's): read the words.
+    final lower = e.type.toLowerCase();
+    if (lower.contains('refund')) return SubscriptionStep.refunded;
+    if (lower.contains('cancel')) return SubscriptionStep.cancelled;
+    if (lower.contains('fail') || lower.contains('past_due')) {
+      return SubscriptionStep.billingIssue;
+    }
+    if (lower.contains('expire') ||
+        lower.contains('ended') ||
+        lower.contains('deleted')) {
+      return SubscriptionStep.ended;
+    }
+    if (e.grantsPremium) {
+      return active ? SubscriptionStep.renewed : SubscriptionStep.joined;
+    }
+    return SubscriptionStep.other;
+  }
+
+  bool get isEmpty => entries.isEmpty;
+
+  DateTime? _first(Set<SubscriptionStep> steps) =>
+      entries.where((e) => steps.contains(e.step)).firstOrNull?.at;
+  DateTime? _last(Set<SubscriptionStep> steps) =>
+      entries.where((e) => steps.contains(e.step)).lastOrNull?.at;
+
+  /// The first time the account became Premium, by payment, trial or gift.
+  DateTime? get joinedAt => _first(const {
+    SubscriptionStep.joined,
+    SubscriptionStep.trial,
+    SubscriptionStep.oneTime,
+    SubscriptionStep.adminGrant,
+  });
+
+  DateTime? get lastCancelledAt => _last(const {SubscriptionStep.cancelled});
+
+  DateTime? get lastEndedAt => _last(const {
+    SubscriptionStep.ended,
+    SubscriptionStep.refunded,
+    SubscriptionStep.adminRevoke,
+  });
+
+  static const _paid = {
+    SubscriptionStep.joined,
+    SubscriptionStep.renewed,
+    SubscriptionStep.oneTime,
+    SubscriptionStep.changedPlan,
+    SubscriptionStep.uncancelled,
+  };
+
+  /// Store payments, not gifts or trials; a missing price still counts
+  /// (some providers leave it out), a price of zero does not.
+  Iterable<SubscriptionHistoryEntry> get payments => entries.where(
+    (e) => _paid.contains(e.step) && e.event.price != 0,
+  );
+
+  DateTime? get firstPaidAt => payments.firstOrNull?.at;
+
+  SubscriptionHistoryEntry? get lastPayment => payments.lastOrNull;
+
+  int get renewals =>
+      entries.where((e) => e.step == SubscriptionStep.renewed).length;
+
+  /// Newest first, for a list.
+  List<SubscriptionHistoryEntry> get newestFirst => entries.reversed.toList();
 }

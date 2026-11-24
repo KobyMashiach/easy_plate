@@ -30,6 +30,10 @@ const USERS_MAP_IN_DAY = true;
 
 const FEATURE_HEADER = "x-easyplate-feature";
 const SOURCE_KIND_HEADER = "x-easyplate-source-kind";
+// What the user actually did ("recipe from a photo", "cover for a book"),
+// finer than the kind: the app names it per call. Old builds and the
+// server-side callers do not send it, and then it follows from fn + kind.
+const ACTION_HEADER = "x-easyplate-action";
 
 function num(value) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
@@ -150,6 +154,52 @@ function kindOf({ headers = {}, body = null, fn = "aiProxy" } = {}) {
   return "text";
 }
 
+// The actions a client may name; anything else is "other", for the same
+// reason as CLIENT_KINDS (a map key per value in the aggregates). Labels
+// live in the app (dashboard_format.dart) and the console
+// (landing/admin/js); a new action adds its name in all three places.
+const ACTIONS = new Set([
+  "recipe_text", "recipe_photo", "recipe_pdf", "recipe_audio", "recipe_file",
+  "recipe_url", "recipe_video", "recipe_generate", "recipe_refine",
+  "recipe_search", "recipe_suggest", "nutrition", "receipt_scan",
+  "image_recipe", "image_book_cover", "image_other", "assistant_chat",
+  "translate", "whatsapp", "admin", "other",
+]);
+
+const FN_ACTIONS = {
+  adminPanel: "admin",
+  translateContent: "translate",
+  whatsappWebhook: "whatsapp",
+  socialRecipe: "recipe_video",
+};
+
+const KIND_ACTIONS = {
+  text: "recipe_text",
+  url: "recipe_url",
+  social: "recipe_video",
+  social_video: "recipe_video",
+  video: "recipe_video",
+  file: "recipe_file",
+  search: "recipe_search",
+  image: "image_other",
+  receipt: "receipt_scan",
+  nutrition: "nutrition",
+  refine: "recipe_refine",
+  generate: "recipe_generate",
+  assistant: "assistant_chat",
+  translate: "translate",
+  whatsapp: "whatsapp",
+};
+
+/// What the user did: the client's action header when it is one we know,
+/// else what the function and the kind imply.
+function actionOf({ headers = {}, fn = "aiProxy", kind = "" } = {}) {
+  const named = headers && headers[ACTION_HEADER];
+  if (typeof named === "string" && named) return ACTIONS.has(named) ? named : "other";
+  if (FN_ACTIONS[fn]) return FN_ACTIONS[fn];
+  return KIND_ACTIONS[kind] || "other";
+}
+
 /// Firestore map keys may not contain dots, and model ids do.
 ///
 /// The model is whatever the caller put in the body, and the key becomes a
@@ -201,7 +251,7 @@ function rowTokens(spent) {
 }
 
 /// The aggregate documents one call contributes to, as set-merge data.
-function aggregateWrites({ uid, kind, key, spent, tally, day, now }) {
+function aggregateWrites({ uid, kind, action, key, spent, tally, day, now }) {
   const userShare = { ...counters(spent, tally), models: { [key]: counters(spent, tally) } };
   return {
     daily: {
@@ -210,6 +260,7 @@ function aggregateWrites({ uid, kind, key, spent, tally, day, now }) {
       ...counters(spent, tally),
       models: { [key]: counters(spent, tally) },
       kinds: { [kind]: counters(spent, tally) },
+      actions: { [action]: counters(spent, tally) },
       ...(USERS_MAP_IN_DAY ? { users: { [uid]: userShare } } : {}),
     },
     dailyUser: { uid, day, updatedAt: now, ...userShare },
@@ -218,13 +269,15 @@ function aggregateWrites({ uid, kind, key, spent, tally, day, now }) {
       totals: counters(spent, tally),
       models: { [key]: counters(spent, tally) },
       kinds: { [kind]: counters(spent, tally) },
+      actions: { [action]: counters(spent, tally) },
     },
   };
 }
 
 /// Records one call. Never throws and is not awaited by the callers: the
 /// user's answer goes out first, the bookkeeping lands a moment later.
-function recordCall({ uid, fn, model, kind, status, ms, usage, cacheHit = false }) {
+function recordCall({ uid, fn, model, kind, action, status, ms, usage, cacheHit = false }) {
+  action = action && ACTIONS.has(action) ? action : actionOf({ fn, kind });
   const db = admin.firestore();
   const day = utcDay();
   const key = modelKey(model);
@@ -238,6 +291,7 @@ function recordCall({ uid, fn, model, kind, status, ms, usage, cacheHit = false 
     fn,
     model: typeof model === "string" ? model.slice(0, 128) : "",
     kind,
+    action,
     status,
     ms: num(ms),
     cacheHit: !!cacheHit,
@@ -247,7 +301,7 @@ function recordCall({ uid, fn, model, kind, status, ms, usage, cacheHit = false 
     at: now,
   };
 
-  const writes = aggregateWrites({ uid, kind, key, spent, tally, day, now });
+  const writes = aggregateWrites({ uid, kind, action, key, spent, tally, day, now });
   const batch = db.batch();
   batch.set(db.collection(CALLS_COLLECTION).doc(), row);
   batch.set(db.collection(DAILY_COLLECTION).doc(day), writes.daily, { merge: true });
@@ -314,6 +368,7 @@ async function repairUsage() {
       const day = row.day || utcDay(row.at && row.at.toDate ? row.at.toDate() : new Date());
       const key = modelKey(row.model);
       const kind = row.kind || "text";
+      const action = row.action && ACTIONS.has(row.action) ? row.action : actionOf({ fn: row.fn, kind });
       const tally = { cacheHits: row.cacheHit ? 1 : 0, errors: ok ? 0 : 1 };
       const plain = (u) => ({
         calls: 1,
@@ -332,17 +387,19 @@ async function repairUsage() {
         for (const k of Object.keys(p)) target[k] = num(target[k]) + p[k];
         return target;
       };
-      const d = (daily[day] = daily[day] || { day, models: {}, kinds: {}, users: {} });
+      const d = (daily[day] = daily[day] || { day, models: {}, kinds: {}, actions: {}, users: {} });
       add(d, spent);
       add((d.models[key] = d.models[key] || {}), spent);
       add((d.kinds[kind] = d.kinds[kind] || {}), spent);
+      add((d.actions[action] = d.actions[action] || {}), spent);
       const du = (d.users[row.uid] = d.users[row.uid] || { models: {} });
       add(du, spent);
       add((du.models[key] = du.models[key] || {}), spent);
-      const u = (usage[row.uid] = usage[row.uid] || { totals: {}, models: {}, kinds: {}, lastCallAt: null });
+      const u = (usage[row.uid] = usage[row.uid] || { totals: {}, models: {}, kinds: {}, actions: {}, lastCallAt: null });
       add(u.totals, spent);
       add((u.models[key] = u.models[key] || {}), spent);
       add((u.kinds[kind] = u.kinds[kind] || {}), spent);
+      add((u.actions[action] = u.actions[action] || {}), spent);
       if (row.at && (!u.lastCallAt || row.at.toMillis() > u.lastCallAt.toMillis())) u.lastCallAt = row.at;
     }
   });
@@ -378,8 +435,8 @@ async function repairUsage() {
     const data = usage[doc.id];
     const del = admin.firestore.FieldValue.delete();
     const totals = data
-      ? { totals: data.totals, models: data.models, kinds: data.kinds, lastCallAt: data.lastCallAt }
-      : { totals: del, models: del, kinds: del, lastCallAt: del };
+      ? { totals: data.totals, models: data.models, kinds: data.kinds, actions: data.actions, lastCallAt: data.lastCallAt }
+      : { totals: del, models: del, kinds: del, actions: del, lastCallAt: del };
     batch.set(doc.ref, totals, { mergeFields: Object.keys(totals) });
     delete usage[doc.id];
     if (++pending === 400) await flush();
@@ -453,6 +510,9 @@ module.exports = {
   forEachPage,
   REPAIR_PAGE,
   kindOf,
+  actionOf,
+  ACTIONS,
+  ACTION_HEADER,
   CLIENT_KINDS,
   modelKey,
   recordCall,

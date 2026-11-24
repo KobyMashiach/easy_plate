@@ -182,6 +182,20 @@ const en = {
     footnote: "Google Play reports arrive once a day for the previous day; Apple's daily report is ready around 15:00 Israel time. The server refreshes at 16:30 daily.",
   },
   err: { network: "Network error", forbidden: "The server refused: administrator only", generic: "Failed: {message}", notConfigured: "Not configured on the server" },
+  subs: {
+    title: "Subscription history", empty: "No subscription events", joinedAt: "Joined Premium", lastCancelledAt: "Last cancelled", lastEndedAt: "Ended", renewals: "Renewals", firstPaidAt: "First payment", lastPaidAt: "Last payment",
+    what: "What happened", product: "Product", store: "Store", price: "Price", test: "test", by: "by {email}",
+    listCancelled: "Cancelled — Premium until {date}", listEnded: "Ended {date}",
+    step: { joined: "Joined Premium", trial: "Started a free trial", renewed: "Renewed", cancelled: "Cancelled — Premium until {date}", cancelledNoDate: "Cancelled", uncancelled: "Took the cancellation back", ended: "Subscription ended", billingIssue: "Billing problem", changedPlan: "Changed plan", oneTime: "One-time purchase", paused: "Paused", transferred: "Transferred", refunded: "Refunded", adminGrant: "Granted by an admin — until {date}", adminGrantForever: "Granted by an admin — forever", adminRevoke: "Revoked by an admin", other: "Other ({type})" },
+  },
+  ai: {
+    what: "What they did", byAction: "By action", area: "Area", byCategory: "By area",
+    categories: { recipes: "Recipes", books: "Books", shopping: "Shopping", assistant: "Shefi", translate: "Translation", admin: "Console", other: "Other" },
+    actions: { recipe_text: "Recipe from text", recipe_photo: "Recipe from a photo", recipe_pdf: "Recipe from a PDF", recipe_audio: "Recipe from a recording", recipe_file: "Recipe from a file", recipe_url: "Recipe from a link", recipe_video: "Recipe from a video", recipe_generate: "New recipe generated", recipe_refine: "Recipe improved", recipe_search: "Recipe web search", recipe_suggest: "Recipe suggestions", nutrition: "Nutrition values", receipt_scan: "Receipt scan", image_recipe: "Picture for a recipe", image_book_cover: "Book cover", image_other: "Picture", assistant_chat: "Chat with Shefi", translate: "Content translation", whatsapp: "WhatsApp bot", admin: "Console content", other: "Other" },
+  },
+  os: {
+    title: "Users and Premium by OS", os: "System", users: "Users", premium: "Premium", free: "Free", pctPremium: "% Premium", pctUsers: "% of all users", pctAllPremium: "% of all Premium", other: "Other / unknown", total: "Total",
+  },
 };
 
 const he = {
@@ -358,6 +372,20 @@ const he = {
     footnote: "דוחות Google Play מגיעים פעם ביום על היום הקודם; הדוח היומי של Apple מוכן בסביבות 15:00 שעון ישראל. השרת מרענן מדי יום ב-16:30.",
   },
   err: { network: "שגיאת רשת", forbidden: "השרת סירב: למנהל בלבד", generic: "נכשל: {message}", notConfigured: "לא מוגדר בשרת" },
+  subs: {
+    title: "היסטוריית מנוי", empty: "אין אירועי מנוי", joinedAt: "הצטרף לפרימיום", lastCancelledAt: "ביטול אחרון", lastEndedAt: "הסתיים", renewals: "חידושים", firstPaidAt: "תשלום ראשון", lastPaidAt: "תשלום אחרון",
+    what: "מה קרה", product: "מוצר", store: "חנות", price: "מחיר", test: "בדיקה", by: "ע״י {email}",
+    listCancelled: "ביטל — פרימיום עד {date}", listEnded: "הסתיים {date}",
+    step: { joined: "הצטרף לפרימיום", trial: "התחיל תקופת ניסיון", renewed: "חידוש", cancelled: "ביטל — פרימיום עד {date}", cancelledNoDate: "ביטל", uncancelled: "חזר בו מהביטול", ended: "המנוי הסתיים", billingIssue: "בעיית חיוב", changedPlan: "החליף חבילה", oneTime: "רכישה חד־פעמית", paused: "הושהה", transferred: "הועבר", refunded: "הוחזר כסף", adminGrant: "הוענק ע״י מנהל — עד {date}", adminGrantForever: "הוענק ע״י מנהל — לתמיד", adminRevoke: "נשלל ע״י מנהל", other: "אחר ({type})" },
+  },
+  ai: {
+    what: "מה עשו", byAction: "לפי פעולה", area: "תחום", byCategory: "לפי תחום",
+    categories: { recipes: "מתכונים", books: "ספרים", shopping: "קניות", assistant: "שפי", translate: "תרגום", admin: "קונסולה", other: "אחר" },
+    actions: { recipe_text: "קריאת מתכון מטקסט", recipe_photo: "קריאת מתכון מתמונה", recipe_pdf: "קריאת מתכון מ־PDF", recipe_audio: "קריאת מתכון מהקלטה", recipe_file: "קריאת מתכון מקובץ", recipe_url: "קריאת מתכון מקישור", recipe_video: "קריאת מתכון מסרטון", recipe_generate: "יצירת מתכון חדש", recipe_refine: "שיפור מתכון", recipe_search: "חיפוש מתכונים ברשת", recipe_suggest: "הצעות מתכונים", nutrition: "חישוב ערכים תזונתיים", receipt_scan: "סריקת קבלה", image_recipe: "תמונה למתכון", image_book_cover: "כריכה לספר", image_other: "תמונה", assistant_chat: "שיחה עם שפי", translate: "תרגום תוכן", whatsapp: "בוט וואטסאפ", admin: "תוכן מהקונסולה", other: "אחר" },
+  },
+  os: {
+    title: "משתמשים ופרימיום לפי מערכת הפעלה", os: "מערכת", users: "משתמשים", premium: "פרימיום", free: "חינמי", pctPremium: "% פרימיום", pctUsers: "% מכלל המשתמשים", pctAllPremium: "% מכלל הפרימיום", other: "אחר / לא ידוע", total: "סה״כ",
+  },
 };
 
 const ar = {
@@ -527,6 +555,20 @@ const ar = {
     footnote: "تصل تقارير Google Play مرة يوميًا عن اليوم السابق؛ وتقرير Apple اليومي جاهز نحو 15:00 بتوقيت إسرائيل. يُحدّث الخادم يوميًا في 16:30.",
   },
   err: { network: "خطأ في الشبكة", forbidden: "رفض الخادم: للمسؤول فقط", generic: "فشل: {message}", notConfigured: "غير مهيأ على الخادم" },
+  subs: {
+    title: "سجل الاشتراك", empty: "لا توجد أحداث اشتراك", joinedAt: "انضم إلى بريميوم", lastCancelledAt: "آخر إلغاء", lastEndedAt: "انتهى", renewals: "التجديدات", firstPaidAt: "أول دفعة", lastPaidAt: "آخر دفعة",
+    what: "ماذا حدث", product: "المنتج", store: "المتجر", price: "السعر", test: "تجربة", by: "بواسطة {email}",
+    listCancelled: "ألغى — بريميوم حتى {date}", listEnded: "انتهى {date}",
+    step: { joined: "انضم إلى بريميوم", trial: "بدأ فترة تجريبية", renewed: "تجديد", cancelled: "ألغى — بريميوم حتى {date}", cancelledNoDate: "ألغى", uncancelled: "تراجع عن الإلغاء", ended: "انتهى الاشتراك", billingIssue: "مشكلة في الدفع", changedPlan: "غيّر الباقة", oneTime: "شراء لمرة واحدة", paused: "متوقف مؤقتًا", transferred: "نُقل", refunded: "استُرد المبلغ", adminGrant: "منحه المسؤول — حتى {date}", adminGrantForever: "منحه المسؤول — دائمًا", adminRevoke: "سحبه المسؤول", other: "أخرى ({type})" },
+  },
+  ai: {
+    what: "ماذا فعلوا", byAction: "حسب الإجراء", area: "المجال", byCategory: "حسب المجال",
+    categories: { recipes: "الوصفات", books: "الكتب", shopping: "التسوق", assistant: "شيفي", translate: "الترجمة", admin: "لوحة الإدارة", other: "أخرى" },
+    actions: { recipe_text: "وصفة من نص", recipe_photo: "وصفة من صورة", recipe_pdf: "وصفة من PDF", recipe_audio: "وصفة من تسجيل", recipe_file: "وصفة من ملف", recipe_url: "وصفة من رابط", recipe_video: "وصفة من فيديو", recipe_generate: "إنشاء وصفة جديدة", recipe_refine: "تحسين وصفة", recipe_search: "بحث وصفات على الويب", recipe_suggest: "اقتراحات وصفات", nutrition: "القيم الغذائية", receipt_scan: "مسح إيصال", image_recipe: "صورة لوصفة", image_book_cover: "غلاف كتاب", image_other: "صورة", assistant_chat: "محادثة مع شيفي", translate: "ترجمة المحتوى", whatsapp: "بوت واتساب", admin: "محتوى من لوحة الإدارة", other: "أخرى" },
+  },
+  os: {
+    title: "المستخدمون وبريميوم حسب نظام التشغيل", os: "النظام", users: "المستخدمون", premium: "بريميوم", free: "مجاني", pctPremium: "% بريميوم", pctUsers: "% من كل المستخدمين", pctAllPremium: "% من كل بريميوم", other: "أخرى / غير معروف", total: "المجموع",
+  },
 };
 
 const fr = {
@@ -696,6 +738,20 @@ const fr = {
     footnote: "Les rapports Google Play arrivent une fois par jour pour la veille ; le rapport quotidien d’Apple est prêt vers 15 h (heure d’Israël). Le serveur actualise chaque jour à 16 h 30.",
   },
   err: { network: "Erreur réseau", forbidden: "Le serveur a refusé : administrateur seulement", generic: "Échec : {message}", notConfigured: "Non configuré côté serveur" },
+  subs: {
+    title: "Historique d’abonnement", empty: "Aucun événement d’abonnement", joinedAt: "Passé à Premium", lastCancelledAt: "Dernière résiliation", lastEndedAt: "Terminé", renewals: "Renouvellements", firstPaidAt: "Premier paiement", lastPaidAt: "Dernier paiement",
+    what: "Ce qui s’est passé", product: "Produit", store: "Boutique", price: "Prix", test: "test", by: "par {email}",
+    listCancelled: "Résilié — Premium jusqu’au {date}", listEnded: "Terminé le {date}",
+    step: { joined: "Passé à Premium", trial: "Essai gratuit commencé", renewed: "Renouvelé", cancelled: "Résilié — Premium jusqu’au {date}", cancelledNoDate: "Résilié", uncancelled: "Résiliation annulée", ended: "Abonnement terminé", billingIssue: "Problème de paiement", changedPlan: "Formule changée", oneTime: "Achat unique", paused: "En pause", transferred: "Transféré", refunded: "Remboursé", adminGrant: "Offert par un admin — jusqu’au {date}", adminGrantForever: "Offert par un admin — pour toujours", adminRevoke: "Retiré par un admin", other: "Autre ({type})" },
+  },
+  ai: {
+    what: "Ce qu’ils ont fait", byAction: "Par action", area: "Domaine", byCategory: "Par domaine",
+    categories: { recipes: "Recettes", books: "Livres", shopping: "Courses", assistant: "Shefi", translate: "Traduction", admin: "Console", other: "Autre" },
+    actions: { recipe_text: "Recette depuis un texte", recipe_photo: "Recette depuis une photo", recipe_pdf: "Recette depuis un PDF", recipe_audio: "Recette depuis un enregistrement", recipe_file: "Recette depuis un fichier", recipe_url: "Recette depuis un lien", recipe_video: "Recette depuis une vidéo", recipe_generate: "Nouvelle recette générée", recipe_refine: "Recette améliorée", recipe_search: "Recherche de recettes sur le web", recipe_suggest: "Suggestions de recettes", nutrition: "Valeurs nutritionnelles", receipt_scan: "Scan de ticket", image_recipe: "Image pour une recette", image_book_cover: "Couverture de livre", image_other: "Image", assistant_chat: "Discussion avec Shefi", translate: "Traduction du contenu", whatsapp: "Bot WhatsApp", admin: "Contenu de la console", other: "Autre" },
+  },
+  os: {
+    title: "Utilisateurs et Premium par système", os: "Système", users: "Utilisateurs", premium: "Premium", free: "Gratuit", pctPremium: "% Premium", pctUsers: "% de tous les utilisateurs", pctAllPremium: "% de tous les Premium", other: "Autre / inconnu", total: "Total",
+  },
 };
 
 const ru = {
@@ -865,6 +921,20 @@ const ru = {
     footnote: "Отчёты Google Play приходят раз в день за предыдущий день; дневной отчёт Apple готов около 15:00 по Израилю. Сервер обновляет данные ежедневно в 16:30.",
   },
   err: { network: "Ошибка сети", forbidden: "Сервер отказал: только администратор", generic: "Ошибка: {message}", notConfigured: "Не настроено на сервере" },
+  subs: {
+    title: "История подписки", empty: "Нет событий подписки", joinedAt: "Перешёл на Premium", lastCancelledAt: "Последняя отмена", lastEndedAt: "Закончилась", renewals: "Продления", firstPaidAt: "Первый платёж", lastPaidAt: "Последний платёж",
+    what: "Что произошло", product: "Продукт", store: "Магазин", price: "Цена", test: "тест", by: "кем: {email}",
+    listCancelled: "Отменил — Premium до {date}", listEnded: "Закончилась {date}",
+    step: { joined: "Перешёл на Premium", trial: "Начал пробный период", renewed: "Продление", cancelled: "Отменил — Premium до {date}", cancelledNoDate: "Отменил", uncancelled: "Отозвал отмену", ended: "Подписка закончилась", billingIssue: "Проблема с оплатой", changedPlan: "Сменил тариф", oneTime: "Разовая покупка", paused: "Приостановлена", transferred: "Перенесена", refunded: "Возврат денег", adminGrant: "Выдано админом — до {date}", adminGrantForever: "Выдано админом — навсегда", adminRevoke: "Отозвано админом", other: "Другое ({type})" },
+  },
+  ai: {
+    what: "Что сделали", byAction: "По действию", area: "Раздел", byCategory: "По разделам",
+    categories: { recipes: "Рецепты", books: "Книги", shopping: "Покупки", assistant: "Шефи", translate: "Перевод", admin: "Консоль", other: "Другое" },
+    actions: { recipe_text: "Рецепт из текста", recipe_photo: "Рецепт по фото", recipe_pdf: "Рецепт из PDF", recipe_audio: "Рецепт из записи", recipe_file: "Рецепт из файла", recipe_url: "Рецепт по ссылке", recipe_video: "Рецепт из видео", recipe_generate: "Новый рецепт", recipe_refine: "Улучшение рецепта", recipe_search: "Поиск рецептов в сети", recipe_suggest: "Подборка рецептов", nutrition: "Пищевая ценность", receipt_scan: "Скан чека", image_recipe: "Картинка для рецепта", image_book_cover: "Обложка книги", image_other: "Картинка", assistant_chat: "Чат с Шефи", translate: "Перевод контента", whatsapp: "Бот WhatsApp", admin: "Контент из консоли", other: "Другое" },
+  },
+  os: {
+    title: "Пользователи и Premium по ОС", os: "Система", users: "Пользователи", premium: "Premium", free: "Бесплатно", pctPremium: "% Premium", pctUsers: "% от всех пользователей", pctAllPremium: "% от всех Premium", other: "Другая / неизвестна", total: "Итого",
+  },
 };
 
 const DICT = { en, he, ar, fr, ru };

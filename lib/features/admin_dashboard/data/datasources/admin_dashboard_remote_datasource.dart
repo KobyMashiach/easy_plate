@@ -165,6 +165,7 @@ class AdminDashboardFirestoreDataSource
     var withPush = 0;
     var newUsers = 0;
     final byPlatform = <String, int>{};
+    final platformPlans = <String, PlatformPlan>{};
     final byVersion = <String, int>{};
     final signups = <String, int>{};
     for (final d in users) {
@@ -174,6 +175,9 @@ class AdminDashboardFirestoreDataSource
       if (_str(p['pushToken'])?.isNotEmpty == true) withPush++;
       final platform = _str(p['platform'])?.trim() ?? '';
       byPlatform[platform] = (byPlatform[platform] ?? 0) + 1;
+      platformPlans[platform] =
+          (platformPlans[platform] ?? const PlatformPlan()) +
+          PlatformPlan(users: 1, premium: premiumOf(d.id) ? 1 : 0);
       final version = _str(p['appVersion'])?.trim() ?? '';
       if (version.isNotEmpty) {
         byVersion[version] = (byVersion[version] ?? 0) + 1;
@@ -231,11 +235,18 @@ class AdminDashboardFirestoreDataSource
     final aiTotal = _aggregate.total(rangeDays);
     final aiByModel = _aggregate.byModel(rangeDays);
     final aiByKind = _aggregate.byKind(rangeDays);
+    final aiByAction = <String, TokenTally>{};
+    for (final day in rangeDays) {
+      day.byAction.forEach((key, tally) {
+        aiByAction[key] = (aiByAction[key] ?? TokenTally.zero) + tally;
+      });
+    }
 
     UserAiUsage userRow(
       String uid,
       Map<String, TokenTally> byModel, {
       Map<String, TokenTally> byKind = const {},
+      Map<String, TokenTally> byAction = const {},
       DateTime? lastCallAt,
     }) {
       final p = profiles[uid];
@@ -249,6 +260,7 @@ class AdminDashboardFirestoreDataSource
         total: AggregateUsageUseCase.sumOf(byModel),
         byModel: byModel,
         byKind: byKind,
+        byAction: byAction,
         lastCallAt: lastCallAt,
       );
     }
@@ -264,6 +276,10 @@ class AdminDashboardFirestoreDataSource
             d.id,
             byModel,
             byKind: _tallies(data['kinds']),
+            byAction: AiActions.split(
+              _tallies(data['actions']),
+              _tallies(data['kinds']),
+            ),
             lastCallAt: (data['lastCallAt'] as Timestamp?)?.toDate(),
           ),
         );
@@ -308,6 +324,8 @@ class AdminDashboardFirestoreDataSource
       aiTotal: aiTotal,
       aiByModel: aiByModel,
       aiByKind: aiByKind,
+      aiByAction: aiByAction,
+      platformPlans: platformPlans,
       aiUsers: aiUsers,
       sharedRecipes: sharedRecipes,
       forumPosts: forumPosts,
@@ -392,6 +410,10 @@ class AdminDashboardFirestoreDataSource
       total: TokenTally.fromMap(data),
       byModel: _tallies(data['models']),
       byKind: _tallies(data['kinds']),
+      byAction: AiActions.split(
+        _tallies(data['actions']),
+        _tallies(data['kinds']),
+      ),
       byUser: users,
     );
   }
@@ -479,6 +501,10 @@ class AdminDashboardFirestoreDataSource
       total: AggregateUsageUseCase.sumOf(byModel),
       byModel: byModel,
       byKind: _tallies(data['kinds']),
+      byAction: AiActions.split(
+        _tallies(data['actions']),
+        _tallies(data['kinds']),
+      ),
       lastCallAt: (data['lastCallAt'] as Timestamp?)?.toDate(),
     );
   }
@@ -499,6 +525,7 @@ class AdminDashboardFirestoreDataSource
           fn: (doc.data()['fn'] as String?) ?? '',
           model: (doc.data()['model'] as String?) ?? '',
           kind: (doc.data()['kind'] as String?) ?? '',
+          action: (doc.data()['action'] as String?) ?? '',
           status: switch (doc.data()['status']) {
             final num n => n.toInt(),
             final String v => int.tryParse(v) ?? 0,

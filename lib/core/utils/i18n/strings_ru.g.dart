@@ -1857,6 +1857,15 @@ class _Translations$adminDashboard$ru extends Translations$adminDashboard$he {
 	@override String grantStarts({required Object date}) => 'Начнётся ${date}';
 	@override String cappedAccounts({required Object count}) => 'Показаны только первые ${count} аккаунтов';
 	@override String cappedEvents({required Object count}) => 'Показаны только первые ${count} событий покупки';
+	@override String get chartActions => 'Что делали с ИИ';
+	@override String get whatTheyDid => 'Что делали';
+	@override late final _Translations$adminDashboard$actions$ru actions = _Translations$adminDashboard$actions$ru._(_root);
+	@override late final _Translations$adminDashboard$subHistory$ru subHistory = _Translations$adminDashboard$subHistory$ru._(_root);
+	@override late final _Translations$adminDashboard$osPlan$ru osPlan = _Translations$adminDashboard$osPlan$ru._(_root);
+	@override String premiumSince({required Object date}) => 'Premium с ${date}';
+	@override String cancelledOn({required Object date}) => 'Отменил ${date}';
+	@override String get chartCategories => 'По разделам';
+	@override late final _Translations$adminDashboard$categories$ru categories = _Translations$adminDashboard$categories$ru._(_root);
 }
 
 // Path: assistant
@@ -2403,6 +2412,91 @@ class _Translations$feedback$reasons$ru extends Translations$feedback$reasons$he
 	@override String get other => 'Другое';
 }
 
+// Path: adminDashboard.actions
+class _Translations$adminDashboard$actions$ru extends Translations$adminDashboard$actions$he {
+	_Translations$adminDashboard$actions$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipe_text => 'Рецепт из текста';
+	@override String get recipe_photo => 'Рецепт из фото';
+	@override String get recipe_pdf => 'Рецепт из PDF';
+	@override String get recipe_audio => 'Рецепт из записи';
+	@override String get recipe_file => 'Рецепт из файла';
+	@override String get recipe_url => 'Рецепт по ссылке';
+	@override String get recipe_video => 'Рецепт из видео';
+	@override String get recipe_generate => 'Создан новый рецепт';
+	@override String get recipe_refine => 'Улучшение рецепта';
+	@override String get recipe_search => 'Поиск рецептов в сети';
+	@override String get recipe_suggest => 'Подборка рецептов';
+	@override String get nutrition => 'Расчёт пищевой ценности';
+	@override String get receipt_scan => 'Скан чека';
+	@override String get image_recipe => 'Картинка для рецепта';
+	@override String get image_book_cover => 'Обложка для книги';
+	@override String get image_other => 'Картинка';
+	@override String get assistant_chat => 'Чат с Шефи';
+	@override String get translate => 'Перевод контента';
+	@override String get whatsapp => 'Бот WhatsApp';
+	@override String get admin => 'Контент из консоли';
+	@override String get other => 'Другое';
+}
+
+// Path: adminDashboard.subHistory
+class _Translations$adminDashboard$subHistory$ru extends Translations$adminDashboard$subHistory$he {
+	_Translations$adminDashboard$subHistory$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'История подписки';
+	@override String get empty => 'Нет событий подписки';
+	@override String get joinedAt => 'Оформил Premium';
+	@override String get lastCancelledAt => 'Последняя отмена';
+	@override String get lastEndedAt => 'Подписка закончилась';
+	@override String get renewals => 'Продления';
+	@override String get sandbox => 'Тест';
+	@override String by({required Object email}) => 'от ${email}';
+	@override late final _Translations$adminDashboard$subHistory$steps$ru steps = _Translations$adminDashboard$subHistory$steps$ru._(_root);
+	@override String get firstPaidAt => 'Первый платёж';
+	@override String get lastPaidAt => 'Последний платёж';
+}
+
+// Path: adminDashboard.osPlan
+class _Translations$adminDashboard$osPlan$ru extends Translations$adminDashboard$osPlan$he {
+	_Translations$adminDashboard$osPlan$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Пользователи и Premium по ОС';
+	@override String get os => 'ОС';
+	@override String get users => 'Пользователи';
+	@override String get premium => 'Premium';
+	@override String get free => 'Бесплатно';
+	@override String get premiumShare => '% Premium';
+	@override String get ofUsers => '% от пользователей';
+	@override String get ofPremium => '% от Premium';
+	@override String get total => 'Итого';
+	@override String get hint => '% Premium = от пользователей этой ОС';
+}
+
+// Path: adminDashboard.categories
+class _Translations$adminDashboard$categories$ru extends Translations$adminDashboard$categories$he {
+	_Translations$adminDashboard$categories$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipes => 'Рецепты';
+	@override String get books => 'Книги';
+	@override String get shopping => 'Покупки';
+	@override String get assistant => 'Шефи';
+	@override String get translate => 'Перевод';
+	@override String get admin => 'Консоль';
+	@override String get other => 'Другое';
+}
+
 // Path: assistant.suggest
 class _Translations$assistant$suggest$ru extends Translations$assistant$suggest$he {
 	_Translations$assistant$suggest$ru._(TranslationsRu root) : this._root = root, super.internal(root);
@@ -2696,6 +2790,32 @@ class _Translations$walkthrough$topics$settings$ru extends Translations$walkthro
 	@override String get s13 => 'Пищевые предпочтения и аллергены: отметьте их здесь, и приложение выделит их в рецептах и общих рецептах.';
 	@override String get s14 => 'Быстрое перелистывание книг: прыжок на далёкую страницу переворачивает одну страницу. Выключено — листаются все страницы по пути.';
 	@override String get s15 => 'Звуки: звуковые эффекты при перелистывании и действиях. Можно выключить.';
+}
+
+// Path: adminDashboard.subHistory.steps
+class _Translations$adminDashboard$subHistory$steps$ru extends Translations$adminDashboard$subHistory$steps$he {
+	_Translations$adminDashboard$subHistory$steps$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get joined => 'Оформил Premium';
+	@override String get trial => 'Начал пробный период';
+	@override String get renewed => 'Продление';
+	@override String cancelled({required Object date}) => 'Отменил · Premium до ${date}';
+	@override String get cancelledNoDate => 'Отменил';
+	@override String get uncancelled => 'Передумал отменять';
+	@override String get ended => 'Подписка закончилась';
+	@override String get billingIssue => 'Проблема с оплатой';
+	@override String get changedPlan => 'Сменил тариф';
+	@override String get oneTime => 'Разовая покупка';
+	@override String get paused => 'Приостановлена';
+	@override String get transferred => 'Перенесена';
+	@override String get refunded => 'Возврат денег';
+	@override String adminGrant({required Object date}) => 'Выдано админом · до ${date}';
+	@override String get adminGrantForever => 'Выдано админом · бессрочно';
+	@override String get adminRevoke => 'Снято админом';
+	@override String other({required Object type}) => 'Событие: ${type}';
 }
 
 /// The flat map containing all translations for locale <ru>.
@@ -4184,6 +4304,78 @@ extension on TranslationsRu {
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Начнётся ${date}',
 			'adminDashboard.cappedAccounts' => ({required Object count}) => 'Показаны только первые ${count} аккаунтов',
 			'adminDashboard.cappedEvents' => ({required Object count}) => 'Показаны только первые ${count} событий покупки',
+			'adminDashboard.chartActions' => 'Что делали с ИИ',
+			'adminDashboard.whatTheyDid' => 'Что делали',
+			'adminDashboard.actions.recipe_text' => 'Рецепт из текста',
+			'adminDashboard.actions.recipe_photo' => 'Рецепт из фото',
+			'adminDashboard.actions.recipe_pdf' => 'Рецепт из PDF',
+			'adminDashboard.actions.recipe_audio' => 'Рецепт из записи',
+			'adminDashboard.actions.recipe_file' => 'Рецепт из файла',
+			'adminDashboard.actions.recipe_url' => 'Рецепт по ссылке',
+			'adminDashboard.actions.recipe_video' => 'Рецепт из видео',
+			'adminDashboard.actions.recipe_generate' => 'Создан новый рецепт',
+			'adminDashboard.actions.recipe_refine' => 'Улучшение рецепта',
+			'adminDashboard.actions.recipe_search' => 'Поиск рецептов в сети',
+			'adminDashboard.actions.recipe_suggest' => 'Подборка рецептов',
+			'adminDashboard.actions.nutrition' => 'Расчёт пищевой ценности',
+			'adminDashboard.actions.receipt_scan' => 'Скан чека',
+			'adminDashboard.actions.image_recipe' => 'Картинка для рецепта',
+			'adminDashboard.actions.image_book_cover' => 'Обложка для книги',
+			'adminDashboard.actions.image_other' => 'Картинка',
+			'adminDashboard.actions.assistant_chat' => 'Чат с Шефи',
+			'adminDashboard.actions.translate' => 'Перевод контента',
+			'adminDashboard.actions.whatsapp' => 'Бот WhatsApp',
+			'adminDashboard.actions.admin' => 'Контент из консоли',
+			'adminDashboard.actions.other' => 'Другое',
+			'adminDashboard.subHistory.title' => 'История подписки',
+			'adminDashboard.subHistory.empty' => 'Нет событий подписки',
+			'adminDashboard.subHistory.joinedAt' => 'Оформил Premium',
+			'adminDashboard.subHistory.lastCancelledAt' => 'Последняя отмена',
+			'adminDashboard.subHistory.lastEndedAt' => 'Подписка закончилась',
+			'adminDashboard.subHistory.renewals' => 'Продления',
+			'adminDashboard.subHistory.sandbox' => 'Тест',
+			'adminDashboard.subHistory.by' => ({required Object email}) => 'от ${email}',
+			'adminDashboard.subHistory.steps.joined' => 'Оформил Premium',
+			'adminDashboard.subHistory.steps.trial' => 'Начал пробный период',
+			'adminDashboard.subHistory.steps.renewed' => 'Продление',
+			'adminDashboard.subHistory.steps.cancelled' => ({required Object date}) => 'Отменил · Premium до ${date}',
+			'adminDashboard.subHistory.steps.cancelledNoDate' => 'Отменил',
+			'adminDashboard.subHistory.steps.uncancelled' => 'Передумал отменять',
+			'adminDashboard.subHistory.steps.ended' => 'Подписка закончилась',
+			'adminDashboard.subHistory.steps.billingIssue' => 'Проблема с оплатой',
+			'adminDashboard.subHistory.steps.changedPlan' => 'Сменил тариф',
+			'adminDashboard.subHistory.steps.oneTime' => 'Разовая покупка',
+			'adminDashboard.subHistory.steps.paused' => 'Приостановлена',
+			'adminDashboard.subHistory.steps.transferred' => 'Перенесена',
+			'adminDashboard.subHistory.steps.refunded' => 'Возврат денег',
+			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'Выдано админом · до ${date}',
+			'adminDashboard.subHistory.steps.adminGrantForever' => 'Выдано админом · бессрочно',
+			'adminDashboard.subHistory.steps.adminRevoke' => 'Снято админом',
+			'adminDashboard.subHistory.steps.other' => ({required Object type}) => 'Событие: ${type}',
+			'adminDashboard.subHistory.firstPaidAt' => 'Первый платёж',
+			'adminDashboard.subHistory.lastPaidAt' => 'Последний платёж',
+			'adminDashboard.osPlan.title' => 'Пользователи и Premium по ОС',
+			'adminDashboard.osPlan.os' => 'ОС',
+			'adminDashboard.osPlan.users' => 'Пользователи',
+			'adminDashboard.osPlan.premium' => 'Premium',
+			'adminDashboard.osPlan.free' => 'Бесплатно',
+			'adminDashboard.osPlan.premiumShare' => '% Premium',
+			'adminDashboard.osPlan.ofUsers' => '% от пользователей',
+			'adminDashboard.osPlan.ofPremium' => '% от Premium',
+			'adminDashboard.osPlan.total' => 'Итого',
+			'adminDashboard.osPlan.hint' => '% Premium = от пользователей этой ОС',
+			'adminDashboard.premiumSince' => ({required Object date}) => 'Premium с ${date}',
+			'adminDashboard.cancelledOn' => ({required Object date}) => 'Отменил ${date}',
+			_ => null,
+		} ?? switch (path) {
+			'adminDashboard.chartCategories' => 'По разделам',
+			'adminDashboard.categories.recipes' => 'Рецепты',
+			'adminDashboard.categories.books' => 'Книги',
+			'adminDashboard.categories.shopping' => 'Покупки',
+			'adminDashboard.categories.assistant' => 'Шефи',
+			'adminDashboard.categories.translate' => 'Перевод',
+			'adminDashboard.categories.admin' => 'Консоль',
+			'adminDashboard.categories.other' => 'Другое',
 			'assistant.title' => 'Шефи',
 			'assistant.subtitle' => 'Ваш су-шеф: вопросы, планы, покупки, готовка',
 			'assistant.placeholder' => 'Спросите или скажите, что сделать…',
@@ -4246,8 +4438,6 @@ extension on TranslationsRu {
 			'assistant.suggest.food.2' => 'хлеб',
 			'assistant.suggest.food.3' => 'помидоры',
 			'assistant.suggest.food.4' => 'лук',
-			_ => null,
-		} ?? switch (path) {
 			'assistant.suggest.food.5' => 'оливковое масло',
 			'assistant.suggest.food.6' => 'рис',
 			'assistant.suggest.food.7' => 'курицу',

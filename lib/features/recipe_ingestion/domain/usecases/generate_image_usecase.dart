@@ -12,7 +12,14 @@ class GenerateImageUseCase {
   final RecipeIngestionRepository repository;
   GenerateImageUseCase(this.repository);
 
-  Future<Uint8List> call(String prompt) => repository.generateImage(prompt);
+  /// [purpose] tells the administrator's usage log what the picture was
+  /// for — one of [forRecipe], [forBookCover], or a plain picture.
+  Future<Uint8List> call(String prompt, {String purpose = forOther}) =>
+      repository.generateImage(prompt, purpose: purpose);
+
+  static const forRecipe = 'image_recipe';
+  static const forBookCover = 'image_book_cover';
+  static const forOther = 'image_other';
 
   /// A plated shot of the dish, in the style of the community photos.
   static String recipePrompt(RecipeEntity recipe) {

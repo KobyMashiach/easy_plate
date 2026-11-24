@@ -6,6 +6,7 @@ import { h, clear, spinner, button, busy, chips, bars, hbars, table, toast, toas
 import { pricing, tally, addTally, ZERO, costUsd, costIls, isOnline, premiumActive, platformLabel, modelName } from "../data.js";
 import { call } from "../api.js";
 import { platformPies } from "./stores.js";
+import { actionTallies, actionKey, categoryTallies } from "../aiActions.js";
 
 const CLAUDE_UID = "claude";
 
@@ -36,6 +37,17 @@ function sortCostRows(rows, sort, profiles) {
 
 const RANGES = [["today", "dash.range.today"], ["30", "dash.range.d30"], ["60", "dash.range.d60"], ["all", "dash.range.all"]];
 const PAYMENT_TYPES = new Set(["INITIAL_PURCHASE", "RENEWAL", "NON_RENEWING_PURCHASE", "UNCANCELLATION", "PRODUCT_CHANGE"]);
+
+// The OS rows of the "Users and Premium by OS" card: users/{uid}.platform.
+function osOf(platform) {
+  const p = String(platform || "").toLowerCase();
+  return p === "ios" || p === "android" ? p : "other";
+}
+
+// A share with one decimal, or "—" when there is nothing to divide by.
+function pct(part, whole) {
+  return whole > 0 ? `${fmtNumber((part / whole) * 100, 1)}%` : "—";
+}
 
 function dayKey(d) {
   return d.toISOString().slice(0, 10);
@@ -75,11 +87,14 @@ async function load(range) {
   const profiles = {};
   let premium = 0, disabled = 0, online = 0, withPush = 0, newUsers = 0;
   const byPlatform = {}, byVersion = {}, signups = {};
+  const byOs = { ios: { users: 0, premium: 0 }, android: { users: 0, premium: 0 }, other: { users: 0, premium: 0 } };
   const nowMs = now.getTime();
   for (const d of users.docs) {
     const p = d.data();
     profiles[d.id] = p;
-    if (premiumActive(entitlements[d.id], nowMs)) premium++;
+    const os = byOs[osOf(p.platform)];
+    os.users++;
+    if (premiumActive(entitlements[d.id], nowMs)) { premium++; os.premium++; }
     if (status[d.id] && status[d.id].disabled === true) disabled++;
     if (isOnline(p, nowMs)) online++;
     if (p.pushToken) withPush++;
@@ -109,11 +124,12 @@ async function load(range) {
   const days = dailySnap.docs.map((d) => ({ day: d.id, data: d.data() })).sort((a, b) => a.day.localeCompare(b.day));
   const inRange = days.filter((d) => !since || d.day >= since);
   let total = { ...ZERO };
-  const byModel = {}, byKind = {}, byUser = {};
+  const byModel = {}, byAction = {}, byUser = {};
   for (const { data } of inRange) {
     total = addTally(total, tally(data));
     for (const [k, v] of Object.entries(data.models || {})) byModel[k] = addTally(byModel[k] || ZERO, tally(v));
-    for (const [k, v] of Object.entries(data.kinds || {})) byKind[k] = addTally(byKind[k] || ZERO, tally(v));
+    // Per day: its `actions` map, or (older days) its kinds mapped to actions.
+    for (const [k, v] of Object.entries(actionTallies(data))) byAction[k] = addTally(byAction[k] || ZERO, tally(v));
     if (!usageSnap) for (const [uid, u] of Object.entries(data.users || {})) {
       byUser[uid] = byUser[uid] || {};
       for (const [k, v] of Object.entries(u.models || {})) byUser[uid][k] = addTally(byUser[uid][k] || ZERO, tally(v));
@@ -143,13 +159,42 @@ async function load(range) {
 
   return {
     usersTotal: users.docs.length, newUsers, premium, disabled, online, withPush, byPlatform, byVersion,
-    payments, paymentsCount, sandbox, total, byModel, byKind, usersByCost, profiles, entitlements, chart, prices,
+    payments, paymentsCount, sandbox, total, byModel, byAction, byOs, usersByCost, profiles, entitlements, chart, prices,
     counts: { recipes: counts[0], posts: counts[1], tickets: counts[2], personas: counts[3], households: counts[4] },
   };
 }
 
 function tile(label, value, sub, accent) {
   return h(`div.tile${accent ? ".accent" : ""}`, h("div.label", label), h("div.value", value), sub ? h("div.sub", sub) : null);
+}
+
+// Users vs Premium per operating system: a table (users, premium, free and
+// the three shares) and a stacked premium/free bar per system.
+function osCard(byOs) {
+  const all = Object.values(byOs).reduce((a, r) => ({ users: a.users + r.users, premium: a.premium + r.premium }), { users: 0, premium: 0 });
+  const rows = [["ios", "iOS"], ["android", "Android"], ["other", t("os.other")]]
+    .filter(([k]) => k !== "other" || byOs.other.users > 0)
+    .map(([k, label]) => ({ label, ...byOs[k] }));
+  rows.push({ label: t("os.total"), ...all, total: true });
+  const strong = (r, v) => (r.total ? h("strong", v) : v);
+  const card = h("div.card", h("h2", t("os.title")), table([
+    { label: t("os.os"), cell: (r) => strong(r, r.label) },
+    { label: t("os.users"), num: true, cell: (r) => strong(r, fmtNumber(r.users)) },
+    { label: t("os.premium"), num: true, cell: (r) => strong(r, fmtNumber(r.premium)) },
+    { label: t("os.free"), num: true, cell: (r) => strong(r, fmtNumber(r.users - r.premium)) },
+    { label: t("os.pctPremium"), num: true, cell: (r) => strong(r, pct(r.premium, r.users)) },
+    { label: t("os.pctUsers"), num: true, cell: (r) => strong(r, pct(r.users, all.users)) },
+    { label: t("os.pctAllPremium"), num: true, cell: (r) => strong(r, pct(r.premium, all.premium)) },
+  ], rows));
+  const legend = h("div.row.small.muted", h("span.row", h("span.swatch.premium"), t("os.premium")), h("span.row", h("span.swatch.free"), t("os.free")));
+  card.append(h("div.osbars", rows.filter((r) => !r.total && r.users > 0).map((r) => h("div.osbar",
+    h("span.ellipsis", r.label),
+    h("div.stackbar", { title: `${t("os.premium")}: ${fmtNumber(r.premium)} · ${t("os.free")}: ${fmtNumber(r.users - r.premium)}` },
+      h("div.seg.premium", { style: { width: `${(r.premium / r.users) * 100}%` } }),
+      h("div.seg.free", { style: { width: `${((r.users - r.premium) / r.users) * 100}%` } })),
+    h("span.n", pct(r.premium, r.users)),
+  ))), legend);
+  return card;
 }
 
 export async function mount({ view, actions }) {
@@ -199,12 +244,15 @@ export async function mount({ view, actions }) {
       ));
 
       body.append(platformPies());
+      body.append(osCard(d.byOs));
 
       const modelRows = Object.entries(d.byModel).map(([k, v]) => [modelName(k), costUsd(v, k, d.prices) * (d.prices.usdToIls || 3.7)]).sort((a, b) => b[1] - a[1]);
-      const kindRows = Object.entries(d.byKind).map(([k, v]) => [k, v.calls]).sort((a, b) => b[1] - a[1]);
+      const actionRows = Object.entries(d.byAction).map(([k, v]) => [actionKey(k) ? t(actionKey(k)) : k, v.calls]).sort((a, b) => b[1] - a[1]);
+      const categoryRows = Object.entries(categoryTallies(d.byAction)).map(([k, v]) => [t(`ai.categories.${k}`), v.calls]).sort((a, b) => b[1] - a[1]);
       body.append(h("div.grid2",
+        h("div.card", h("h2", t("ai.byCategory")), categoryRows.length ? hbars(categoryRows, (v) => fmtNumber(v)) : h("p.muted", t("dash.noData"))),
         h("div.card", h("h2", t("dash.byModel")), modelRows.length ? hbars(modelRows, (v) => fmtMoney(v)) : h("p.muted", t("dash.noData"))),
-        h("div.card", h("h2", t("dash.byKind")), kindRows.length ? hbars(kindRows, (v) => fmtNumber(v)) : h("p.muted", t("dash.noData"))),
+        h("div.card", h("h2", t("ai.byAction")), actionRows.length ? hbars(actionRows, (v) => fmtNumber(v)) : h("p.muted", t("dash.noData"))),
         h("div.card", h("h2", t("dash.byPlatform")), hbars(Object.entries(d.byPlatform).sort((a, b) => b[1] - a[1]), fmtNumber)),
         h("div.card", h("h2", t("dash.byVersion")), hbars(Object.entries(d.byVersion).sort((a, b) => b[1] - a[1]).slice(0, 8), fmtNumber)),
       ));

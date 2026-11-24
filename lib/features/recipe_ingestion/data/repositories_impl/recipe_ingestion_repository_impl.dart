@@ -220,8 +220,10 @@ class RecipeIngestionRepositoryImpl implements RecipeIngestionRepository {
       aiDataSource.estimateNutrition(recipe);
 
   @override
-  Future<Uint8List> generateImage(String prompt) =>
-      aiDataSource.generateImage(prompt);
+  Future<Uint8List> generateImage(
+    String prompt, {
+    String purpose = 'image_other',
+  }) => aiDataSource.generateImage(prompt, purpose: purpose);
 
   @override
   Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages) =>

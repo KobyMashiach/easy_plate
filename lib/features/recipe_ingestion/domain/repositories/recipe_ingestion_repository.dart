@@ -72,7 +72,10 @@ abstract class RecipeIngestionRepository {
   Future<RecipeEntity> estimateNutrition(RecipeEntity recipe);
 
   /// A generated picture for [prompt], as JPEG bytes.
-  Future<Uint8List> generateImage(String prompt);
+  Future<Uint8List> generateImage(
+    String prompt, {
+    String purpose = 'image_other',
+  });
 
   /// Products and prices read off a receipt (photos or a PDF).
   Future<ReceiptScanEntity> scanReceipt(List<ReceiptPage> pages);

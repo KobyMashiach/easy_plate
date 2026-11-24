@@ -18,6 +18,7 @@ import '../../domain/repositories/admin_dashboard_repository.dart';
 import '../../domain/usecases/aggregate_usage_usecase.dart';
 import 'dashboard_charts.dart';
 import 'dashboard_format.dart';
+import 'platform_plan_table.dart';
 import 'pricing_sheet.dart';
 import 'stat_tile.dart';
 import 'user_usage_sheet.dart';
@@ -443,16 +444,40 @@ class _DashboardTabState extends State<DashboardTab> {
               format: (v) => DashboardFormat.count(v),
             ),
           ),
+          DashboardSection(
+            title: s.osPlan.title,
+            child: PlatformPlanTable(plans: o.platformPlans),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           const SizedBox(height: AppSpacing.sm),
           DashboardSection(
-            title: s.chartKinds,
-            child: o.aiByKind.isEmpty
+            title: s.chartCategories,
+            child: o.aiByAction.isEmpty
                 ? Text(s.noAiUsage, style: muted)
                 : ClayDonutChart(
                     slices: [
-                      for (final e in _sorted(o.aiByKind, (t) => t.calls))
+                      for (final e in _sorted(
+                        AiActions.byCategory(o.aiByAction),
+                        (t) => t.calls,
+                      ))
                         DonutSlice(
-                          label: DashboardFormat.kind(e.key),
+                          label: DashboardFormat.category(e.key),
+                          value: e.value.calls.toDouble(),
+                        ),
+                    ],
+                    format: (v) => DashboardFormat.count(v),
+                  ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          DashboardSection(
+            title: s.chartActions,
+            child: o.aiByAction.isEmpty
+                ? Text(s.noAiUsage, style: muted)
+                : ClayDonutChart(
+                    slices: [
+                      for (final e in _sorted(o.aiByAction, (t) => t.calls))
+                        DonutSlice(
+                          label: DashboardFormat.action(e.key),
                           value: e.value.calls.toDouble(),
                         ),
                     ],

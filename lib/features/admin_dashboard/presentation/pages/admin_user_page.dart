@@ -13,9 +13,13 @@ import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/i18n/strings.g.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/clay/clay.dart';
+import '../../../admin_billing/data/datasources/admin_billing_remote_datasource.dart';
 import '../../../admin_billing/data/datasources/admin_user_detail_datasource.dart';
+import '../../../admin_billing/domain/entities/billing_entities.dart';
 import '../../../admin_billing/domain/entities/user_detail_entities.dart';
 import '../../../community/presentation/widgets/author_row.dart';
+import '../../domain/entities/dashboard_entities.dart';
+import '../widgets/dashboard_format.dart';
 
 /// Everything about one account, for the administrator: who they are, their
 /// plan and device, everything they did as one timeline, everything they
@@ -538,6 +542,7 @@ class _Overview extends StatelessWidget {
                   _Field('productId', _str(ent['productId'])),
               ],
       ),
+      _SubscriptionHistorySection(detail: detail),
       _Section(
         title: s.session,
         children: session == null
@@ -1027,11 +1032,132 @@ class _More extends StatelessWidget {
         items: detail.aiCalls,
         icon: Icons.auto_awesome_rounded,
         subtitle: (i) => [
-          i.data['fn'],
-          i.data['kind'],
-          i.data['status'],
+          DashboardFormat.action(
+            AiActions.of(
+              action: (i.data['action'] as String?) ?? '',
+              fn: (i.data['fn'] as String?) ?? '',
+              kind: (i.data['kind'] as String?) ?? '',
+            ),
+          ),
+          i.data['model'],
+          i.data['status']?.toString(),
         ].whereType<String>().join(' · '),
       ),
     ]);
   }
 }
+
+// ---- subscription history -------------------------------------------------
+
+/// When the account joined Premium, cancelled, ended — the purchase_events
+/// rows (store, web and grants by hand) told as steps, newest first.
+class _SubscriptionHistorySection extends StatelessWidget {
+  final AdminUserDetail detail;
+  const _SubscriptionHistorySection({required this.detail});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = t.adminDashboard.subHistory;
+    final history = SubscriptionHistory.of([
+      for (final i in detail.purchases)
+        AdminBillingFirestoreDataSource.eventFromMap(i.id, i.data),
+    ]);
+    if (history.isEmpty) {
+      return _Section(
+        title: s.title,
+        children: [Text(s.empty, style: AppTextStyles.bodyMd)],
+      );
+    }
+    final muted = AppTextStyles.labelSm.copyWith(
+      color: AppColors.onSurfaceVariant,
+    );
+    return _Section(
+      title: s.title,
+      children: [
+        _Field(s.joinedAt, _date(history.joinedAt)),
+        _Field(s.firstPaidAt, _date(history.firstPaidAt)),
+        if (history.lastPayment case final last?)
+          _Field(
+            s.lastPaidAt,
+            [
+              _date(last.at),
+              if (last.event.price case final price? when price > 0)
+                DashboardFormat.money(price, last.event.currency.toUpperCase()),
+              if (last.event.isSandbox) s.sandbox,
+            ].join(' · '),
+          ),
+        if (history.lastCancelledAt != null)
+          _Field(s.lastCancelledAt, _date(history.lastCancelledAt)),
+        if (history.lastEndedAt != null)
+          _Field(s.lastEndedAt, _date(history.lastEndedAt)),
+        _Field(s.renewals, '${history.renewals}'),
+        const Divider(height: AppSpacing.md),
+        for (final e in history.newestFirst)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(_stepIcon(e.step), size: 18, color: _stepColor(e.step)),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DashboardFormat.step(e),
+                        style: AppTextStyles.labelMd,
+                      ),
+                      Text(
+                        [
+                          _date(e.at),
+                          if (e.event.productId.isNotEmpty) e.event.productId,
+                          if (e.event.store.isNotEmpty) e.event.store,
+                          if (e.event.price != null && e.event.price! > 0)
+                            DashboardFormat.money(
+                              e.event.price!,
+                              e.event.currency.toUpperCase(),
+                            ),
+                          if (e.event.isSandbox) s.sandbox,
+                          if (e.event.by.isNotEmpty) s.by(email: e.event.by),
+                        ].join(' · '),
+                        style: muted,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+IconData _stepIcon(SubscriptionStep step) => switch (step) {
+  SubscriptionStep.joined ||
+  SubscriptionStep.trial ||
+  SubscriptionStep.oneTime => Icons.workspace_premium_rounded,
+  SubscriptionStep.renewed ||
+  SubscriptionStep.uncancelled => Icons.autorenew_rounded,
+  SubscriptionStep.cancelled => Icons.cancel_rounded,
+  SubscriptionStep.ended ||
+  SubscriptionStep.adminRevoke => Icons.stop_circle_rounded,
+  SubscriptionStep.refunded => Icons.money_off_rounded,
+  SubscriptionStep.billingIssue => Icons.error_rounded,
+  SubscriptionStep.changedPlan => Icons.swap_horiz_rounded,
+  SubscriptionStep.adminGrant => Icons.card_giftcard_rounded,
+  SubscriptionStep.paused => Icons.pause_circle_rounded,
+  SubscriptionStep.transferred => Icons.move_up_rounded,
+  SubscriptionStep.other => Icons.info_rounded,
+};
+
+Color _stepColor(SubscriptionStep step) => switch (step) {
+  SubscriptionStep.cancelled ||
+  SubscriptionStep.ended ||
+  SubscriptionStep.refunded ||
+  SubscriptionStep.billingIssue ||
+  SubscriptionStep.adminRevoke => AppColors.error,
+  SubscriptionStep.other => AppColors.onSurfaceVariant,
+  _ => AppColors.primary,
+};

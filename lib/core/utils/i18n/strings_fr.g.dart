@@ -1853,6 +1853,15 @@ class _Translations$adminDashboard$fr extends Translations$adminDashboard$he {
 	@override String grantStarts({required Object date}) => 'Commence le ${date}';
 	@override String cappedAccounts({required Object count}) => 'Seuls les ${count} premiers comptes sont affichés';
 	@override String cappedEvents({required Object count}) => 'Seuls les ${count} premiers événements d\'achat sont affichés';
+	@override String get chartActions => 'Ce qu\'ils ont fait avec l\'IA';
+	@override String get whatTheyDid => 'Ce qu\'ils ont fait';
+	@override late final _Translations$adminDashboard$actions$fr actions = _Translations$adminDashboard$actions$fr._(_root);
+	@override late final _Translations$adminDashboard$subHistory$fr subHistory = _Translations$adminDashboard$subHistory$fr._(_root);
+	@override late final _Translations$adminDashboard$osPlan$fr osPlan = _Translations$adminDashboard$osPlan$fr._(_root);
+	@override String premiumSince({required Object date}) => 'Premium depuis le ${date}';
+	@override String cancelledOn({required Object date}) => 'Résilié le ${date}';
+	@override String get chartCategories => 'Par domaine';
+	@override late final _Translations$adminDashboard$categories$fr categories = _Translations$adminDashboard$categories$fr._(_root);
 }
 
 // Path: assistant
@@ -2399,6 +2408,91 @@ class _Translations$feedback$reasons$fr extends Translations$feedback$reasons$he
 	@override String get other => 'Autre';
 }
 
+// Path: adminDashboard.actions
+class _Translations$adminDashboard$actions$fr extends Translations$adminDashboard$actions$he {
+	_Translations$adminDashboard$actions$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipe_text => 'Recette depuis un texte';
+	@override String get recipe_photo => 'Recette depuis une photo';
+	@override String get recipe_pdf => 'Recette depuis un PDF';
+	@override String get recipe_audio => 'Recette depuis un enregistrement';
+	@override String get recipe_file => 'Recette depuis un fichier';
+	@override String get recipe_url => 'Recette depuis un lien';
+	@override String get recipe_video => 'Recette depuis une vidéo';
+	@override String get recipe_generate => 'Nouvelle recette générée';
+	@override String get recipe_refine => 'Recette améliorée';
+	@override String get recipe_search => 'Recherche de recettes sur le web';
+	@override String get recipe_suggest => 'Suggestions de recettes';
+	@override String get nutrition => 'Estimation nutritionnelle';
+	@override String get receipt_scan => 'Scan de ticket';
+	@override String get image_recipe => 'Image pour une recette';
+	@override String get image_book_cover => 'Couverture de livre';
+	@override String get image_other => 'Image';
+	@override String get assistant_chat => 'Discussion avec Shefi';
+	@override String get translate => 'Traduction du contenu';
+	@override String get whatsapp => 'Bot WhatsApp';
+	@override String get admin => 'Contenu de la console';
+	@override String get other => 'Autre';
+}
+
+// Path: adminDashboard.subHistory
+class _Translations$adminDashboard$subHistory$fr extends Translations$adminDashboard$subHistory$he {
+	_Translations$adminDashboard$subHistory$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Historique d\'abonnement';
+	@override String get empty => 'Aucun événement d\'abonnement';
+	@override String get joinedAt => 'Passé à Premium';
+	@override String get lastCancelledAt => 'Dernière résiliation';
+	@override String get lastEndedAt => 'Abonnement terminé';
+	@override String get renewals => 'Renouvellements';
+	@override String get sandbox => 'Test';
+	@override String by({required Object email}) => 'par ${email}';
+	@override late final _Translations$adminDashboard$subHistory$steps$fr steps = _Translations$adminDashboard$subHistory$steps$fr._(_root);
+	@override String get firstPaidAt => 'Premier paiement';
+	@override String get lastPaidAt => 'Dernier paiement';
+}
+
+// Path: adminDashboard.osPlan
+class _Translations$adminDashboard$osPlan$fr extends Translations$adminDashboard$osPlan$he {
+	_Translations$adminDashboard$osPlan$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Utilisateurs et Premium par système';
+	@override String get os => 'Système';
+	@override String get users => 'Utilisateurs';
+	@override String get premium => 'Premium';
+	@override String get free => 'Gratuit';
+	@override String get premiumShare => '% Premium';
+	@override String get ofUsers => '% des utilisateurs';
+	@override String get ofPremium => '% du Premium';
+	@override String get total => 'Total';
+	@override String get hint => '% Premium = parmi les utilisateurs de ce système';
+}
+
+// Path: adminDashboard.categories
+class _Translations$adminDashboard$categories$fr extends Translations$adminDashboard$categories$he {
+	_Translations$adminDashboard$categories$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipes => 'Recettes';
+	@override String get books => 'Livres';
+	@override String get shopping => 'Courses';
+	@override String get assistant => 'Shefi';
+	@override String get translate => 'Traduction';
+	@override String get admin => 'Console';
+	@override String get other => 'Autre';
+}
+
 // Path: assistant.suggest
 class _Translations$assistant$suggest$fr extends Translations$assistant$suggest$he {
 	_Translations$assistant$suggest$fr._(TranslationsFr root) : this._root = root, super.internal(root);
@@ -2692,6 +2786,32 @@ class _Translations$walkthrough$topics$settings$fr extends Translations$walkthro
 	@override String get s13 => 'Préférences alimentaires et allergènes : cochez-les ici et l’application les met en évidence dans les recettes et les recettes partagées.';
 	@override String get s14 => 'Tourne-page rapide dans les livres : sauter à une page lointaine ne tourne qu’une page. Désactivé, toutes les pages du chemin défilent.';
 	@override String get s15 => 'Sons : effets sonores au tourne-page et aux actions. Peut être désactivé.';
+}
+
+// Path: adminDashboard.subHistory.steps
+class _Translations$adminDashboard$subHistory$steps$fr extends Translations$adminDashboard$subHistory$steps$he {
+	_Translations$adminDashboard$subHistory$steps$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get joined => 'Passé à Premium';
+	@override String get trial => 'Essai commencé';
+	@override String get renewed => 'Renouvelé';
+	@override String cancelled({required Object date}) => 'Résilié · Premium jusqu\'au ${date}';
+	@override String get cancelledNoDate => 'Résilié';
+	@override String get uncancelled => 'Résiliation annulée';
+	@override String get ended => 'Abonnement terminé';
+	@override String get billingIssue => 'Problème de paiement';
+	@override String get changedPlan => 'Formule changée';
+	@override String get oneTime => 'Achat unique';
+	@override String get paused => 'En pause';
+	@override String get transferred => 'Transféré';
+	@override String get refunded => 'Remboursé';
+	@override String adminGrant({required Object date}) => 'Accordé par un admin · jusqu\'au ${date}';
+	@override String get adminGrantForever => 'Accordé par un admin · sans limite';
+	@override String get adminRevoke => 'Retiré par un admin';
+	@override String other({required Object type}) => 'Événement : ${type}';
 }
 
 /// The flat map containing all translations for locale <fr>.
@@ -4180,6 +4300,78 @@ extension on TranslationsFr {
 			'adminDashboard.grantStarts' => ({required Object date}) => 'Commence le ${date}',
 			'adminDashboard.cappedAccounts' => ({required Object count}) => 'Seuls les ${count} premiers comptes sont affichés',
 			'adminDashboard.cappedEvents' => ({required Object count}) => 'Seuls les ${count} premiers événements d\'achat sont affichés',
+			'adminDashboard.chartActions' => 'Ce qu\'ils ont fait avec l\'IA',
+			'adminDashboard.whatTheyDid' => 'Ce qu\'ils ont fait',
+			'adminDashboard.actions.recipe_text' => 'Recette depuis un texte',
+			'adminDashboard.actions.recipe_photo' => 'Recette depuis une photo',
+			'adminDashboard.actions.recipe_pdf' => 'Recette depuis un PDF',
+			'adminDashboard.actions.recipe_audio' => 'Recette depuis un enregistrement',
+			'adminDashboard.actions.recipe_file' => 'Recette depuis un fichier',
+			'adminDashboard.actions.recipe_url' => 'Recette depuis un lien',
+			'adminDashboard.actions.recipe_video' => 'Recette depuis une vidéo',
+			'adminDashboard.actions.recipe_generate' => 'Nouvelle recette générée',
+			'adminDashboard.actions.recipe_refine' => 'Recette améliorée',
+			'adminDashboard.actions.recipe_search' => 'Recherche de recettes sur le web',
+			'adminDashboard.actions.recipe_suggest' => 'Suggestions de recettes',
+			'adminDashboard.actions.nutrition' => 'Estimation nutritionnelle',
+			'adminDashboard.actions.receipt_scan' => 'Scan de ticket',
+			'adminDashboard.actions.image_recipe' => 'Image pour une recette',
+			'adminDashboard.actions.image_book_cover' => 'Couverture de livre',
+			'adminDashboard.actions.image_other' => 'Image',
+			'adminDashboard.actions.assistant_chat' => 'Discussion avec Shefi',
+			'adminDashboard.actions.translate' => 'Traduction du contenu',
+			'adminDashboard.actions.whatsapp' => 'Bot WhatsApp',
+			'adminDashboard.actions.admin' => 'Contenu de la console',
+			'adminDashboard.actions.other' => 'Autre',
+			'adminDashboard.subHistory.title' => 'Historique d\'abonnement',
+			'adminDashboard.subHistory.empty' => 'Aucun événement d\'abonnement',
+			'adminDashboard.subHistory.joinedAt' => 'Passé à Premium',
+			'adminDashboard.subHistory.lastCancelledAt' => 'Dernière résiliation',
+			'adminDashboard.subHistory.lastEndedAt' => 'Abonnement terminé',
+			'adminDashboard.subHistory.renewals' => 'Renouvellements',
+			'adminDashboard.subHistory.sandbox' => 'Test',
+			'adminDashboard.subHistory.by' => ({required Object email}) => 'par ${email}',
+			'adminDashboard.subHistory.steps.joined' => 'Passé à Premium',
+			'adminDashboard.subHistory.steps.trial' => 'Essai commencé',
+			'adminDashboard.subHistory.steps.renewed' => 'Renouvelé',
+			'adminDashboard.subHistory.steps.cancelled' => ({required Object date}) => 'Résilié · Premium jusqu\'au ${date}',
+			'adminDashboard.subHistory.steps.cancelledNoDate' => 'Résilié',
+			'adminDashboard.subHistory.steps.uncancelled' => 'Résiliation annulée',
+			'adminDashboard.subHistory.steps.ended' => 'Abonnement terminé',
+			'adminDashboard.subHistory.steps.billingIssue' => 'Problème de paiement',
+			'adminDashboard.subHistory.steps.changedPlan' => 'Formule changée',
+			'adminDashboard.subHistory.steps.oneTime' => 'Achat unique',
+			'adminDashboard.subHistory.steps.paused' => 'En pause',
+			'adminDashboard.subHistory.steps.transferred' => 'Transféré',
+			'adminDashboard.subHistory.steps.refunded' => 'Remboursé',
+			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'Accordé par un admin · jusqu\'au ${date}',
+			'adminDashboard.subHistory.steps.adminGrantForever' => 'Accordé par un admin · sans limite',
+			'adminDashboard.subHistory.steps.adminRevoke' => 'Retiré par un admin',
+			'adminDashboard.subHistory.steps.other' => ({required Object type}) => 'Événement : ${type}',
+			'adminDashboard.subHistory.firstPaidAt' => 'Premier paiement',
+			'adminDashboard.subHistory.lastPaidAt' => 'Dernier paiement',
+			'adminDashboard.osPlan.title' => 'Utilisateurs et Premium par système',
+			'adminDashboard.osPlan.os' => 'Système',
+			'adminDashboard.osPlan.users' => 'Utilisateurs',
+			'adminDashboard.osPlan.premium' => 'Premium',
+			'adminDashboard.osPlan.free' => 'Gratuit',
+			'adminDashboard.osPlan.premiumShare' => '% Premium',
+			'adminDashboard.osPlan.ofUsers' => '% des utilisateurs',
+			'adminDashboard.osPlan.ofPremium' => '% du Premium',
+			'adminDashboard.osPlan.total' => 'Total',
+			'adminDashboard.osPlan.hint' => '% Premium = parmi les utilisateurs de ce système',
+			'adminDashboard.premiumSince' => ({required Object date}) => 'Premium depuis le ${date}',
+			'adminDashboard.cancelledOn' => ({required Object date}) => 'Résilié le ${date}',
+			_ => null,
+		} ?? switch (path) {
+			'adminDashboard.chartCategories' => 'Par domaine',
+			'adminDashboard.categories.recipes' => 'Recettes',
+			'adminDashboard.categories.books' => 'Livres',
+			'adminDashboard.categories.shopping' => 'Courses',
+			'adminDashboard.categories.assistant' => 'Shefi',
+			'adminDashboard.categories.translate' => 'Traduction',
+			'adminDashboard.categories.admin' => 'Console',
+			'adminDashboard.categories.other' => 'Autre',
 			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Votre sous-chef : questions, planning, courses, cuisine',
 			'assistant.placeholder' => 'Demandez ou dites-moi quoi faire…',
@@ -4242,8 +4434,6 @@ extension on TranslationsFr {
 			'assistant.suggest.food.2' => 'du pain',
 			'assistant.suggest.food.3' => 'des tomates',
 			'assistant.suggest.food.4' => 'des oignons',
-			_ => null,
-		} ?? switch (path) {
 			'assistant.suggest.food.5' => 'de l\'huile d\'olive',
 			'assistant.suggest.food.6' => 'du riz',
 			'assistant.suggest.food.7' => 'du poulet',

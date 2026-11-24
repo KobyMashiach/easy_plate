@@ -132,17 +132,33 @@ class _UserUsageSheetState extends State<_UserUsageSheet> {
                 );
               }
               final (allTime, calls) = snapshot.data!;
-              final kinds = allTime?.byKind ?? const <String, TokenTally>{};
+              final kinds = allTime?.byAction ?? const <String, TokenTally>{};
               return Column(
                 children: [
+                  if (kinds.isNotEmpty) ...[
+                    DashboardSection(
+                      title: '${s.chartCategories} · ${s.allTime}',
+                      child: ClayDonutChart(
+                        slices: [
+                          for (final e in AiActions.byCategory(kinds).entries)
+                            DonutSlice(
+                              label: DashboardFormat.category(e.key),
+                              value: e.value.calls.toDouble(),
+                            ),
+                        ],
+                        format: (v) => DashboardFormat.count(v),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
                   if (kinds.isNotEmpty)
                     DashboardSection(
-                      title: '${s.chartKinds} · ${s.allTime}',
+                      title: '${s.chartActions} · ${s.allTime}',
                       child: ClayDonutChart(
                         slices: [
                           for (final e in kinds.entries)
                             DonutSlice(
-                              label: DashboardFormat.kind(e.key),
+                              label: DashboardFormat.action(e.key),
                               value: e.value.calls.toDouble(),
                             ),
                         ],
@@ -181,7 +197,9 @@ class _UserUsageSheetState extends State<_UserUsageSheet> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '${DashboardFormat.kind(c.kind)} · ${AiPricing.displayName(AiPricing.keyFor(c.model))}',
+                                              DashboardFormat.whatTheyDid(
+                                                c.whatTheyDid,
+                                              ),
                                               style: AppTextStyles.labelMd,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,

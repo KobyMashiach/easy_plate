@@ -1869,6 +1869,15 @@ class _Translations$adminDashboard$ar extends Translations$adminDashboard$he {
 	@override String grantStarts({required Object date}) => 'يبدأ في ${date}';
 	@override String cappedAccounts({required Object count}) => 'يتم عرض أول ${count} حساب فقط';
 	@override String cappedEvents({required Object count}) => 'يتم عرض أول ${count} حدث شراء فقط';
+	@override String get chartActions => 'ماذا فعلوا بالذكاء الاصطناعي';
+	@override String get whatTheyDid => 'ماذا فعلوا';
+	@override late final _Translations$adminDashboard$actions$ar actions = _Translations$adminDashboard$actions$ar._(_root);
+	@override late final _Translations$adminDashboard$subHistory$ar subHistory = _Translations$adminDashboard$subHistory$ar._(_root);
+	@override late final _Translations$adminDashboard$osPlan$ar osPlan = _Translations$adminDashboard$osPlan$ar._(_root);
+	@override String premiumSince({required Object date}) => 'بريميوم منذ ${date}';
+	@override String cancelledOn({required Object date}) => 'ألغى في ${date}';
+	@override String get chartCategories => 'حسب المجال';
+	@override late final _Translations$adminDashboard$categories$ar categories = _Translations$adminDashboard$categories$ar._(_root);
 }
 
 // Path: assistant
@@ -2419,6 +2428,91 @@ class _Translations$feedback$reasons$ar extends Translations$feedback$reasons$he
 	@override String get other => 'أخرى';
 }
 
+// Path: adminDashboard.actions
+class _Translations$adminDashboard$actions$ar extends Translations$adminDashboard$actions$he {
+	_Translations$adminDashboard$actions$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipe_text => 'وصفة من نص';
+	@override String get recipe_photo => 'وصفة من صورة';
+	@override String get recipe_pdf => 'وصفة من PDF';
+	@override String get recipe_audio => 'وصفة من تسجيل';
+	@override String get recipe_file => 'وصفة من ملف';
+	@override String get recipe_url => 'وصفة من رابط';
+	@override String get recipe_video => 'وصفة من فيديو';
+	@override String get recipe_generate => 'إنشاء وصفة جديدة';
+	@override String get recipe_refine => 'تحسين وصفة';
+	@override String get recipe_search => 'بحث وصفات على الويب';
+	@override String get recipe_suggest => 'اقتراحات وصفات';
+	@override String get nutrition => 'تقدير القيم الغذائية';
+	@override String get receipt_scan => 'مسح فاتورة';
+	@override String get image_recipe => 'صورة لوصفة';
+	@override String get image_book_cover => 'غلاف لكتاب';
+	@override String get image_other => 'صورة';
+	@override String get assistant_chat => 'محادثة مع شيفي';
+	@override String get translate => 'ترجمة المحتوى';
+	@override String get whatsapp => 'بوت واتساب';
+	@override String get admin => 'محتوى من لوحة الإدارة';
+	@override String get other => 'أخرى';
+}
+
+// Path: adminDashboard.subHistory
+class _Translations$adminDashboard$subHistory$ar extends Translations$adminDashboard$subHistory$he {
+	_Translations$adminDashboard$subHistory$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'سجل الاشتراك';
+	@override String get empty => 'لا توجد أحداث اشتراك';
+	@override String get joinedAt => 'انضم إلى بريميوم';
+	@override String get lastCancelledAt => 'آخر إلغاء';
+	@override String get lastEndedAt => 'انتهى الاشتراك';
+	@override String get renewals => 'التجديدات';
+	@override String get sandbox => 'تجربة';
+	@override String by({required Object email}) => 'بواسطة ${email}';
+	@override late final _Translations$adminDashboard$subHistory$steps$ar steps = _Translations$adminDashboard$subHistory$steps$ar._(_root);
+	@override String get firstPaidAt => 'أول دفعة';
+	@override String get lastPaidAt => 'آخر دفعة';
+}
+
+// Path: adminDashboard.osPlan
+class _Translations$adminDashboard$osPlan$ar extends Translations$adminDashboard$osPlan$he {
+	_Translations$adminDashboard$osPlan$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'المستخدمون وبريميوم حسب نظام التشغيل';
+	@override String get os => 'النظام';
+	@override String get users => 'المستخدمون';
+	@override String get premium => 'بريميوم';
+	@override String get free => 'مجاني';
+	@override String get premiumShare => '% بريميوم';
+	@override String get ofUsers => '% من المستخدمين';
+	@override String get ofPremium => '% من بريميوم';
+	@override String get total => 'المجموع';
+	@override String get hint => '% بريميوم = من مستخدمي ذلك النظام';
+}
+
+// Path: adminDashboard.categories
+class _Translations$adminDashboard$categories$ar extends Translations$adminDashboard$categories$he {
+	_Translations$adminDashboard$categories$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipes => 'الوصفات';
+	@override String get books => 'الكتب';
+	@override String get shopping => 'التسوق';
+	@override String get assistant => 'شيفي';
+	@override String get translate => 'الترجمة';
+	@override String get admin => 'لوحة الإدارة';
+	@override String get other => 'أخرى';
+}
+
 // Path: assistant.suggest
 class _Translations$assistant$suggest$ar extends Translations$assistant$suggest$he {
 	_Translations$assistant$suggest$ar._(TranslationsAr root) : this._root = root, super.internal(root);
@@ -2712,6 +2806,32 @@ class _Translations$walkthrough$topics$settings$ar extends Translations$walkthro
 	@override String get s13 => 'التفضيلات الغذائية ومسببات الحساسية: علّمها هنا ويبرزها التطبيق في الوصفات والوصفات المشتركة.';
 	@override String get s14 => 'تقليب سريع في الكتب: القفز إلى صفحة بعيدة يقلّب صفحة واحدة فقط. عند الإيقاف يقلّب كل الصفحات في الطريق.';
 	@override String get s15 => 'الأصوات: مؤثرات صوتية عند التقليب والإجراءات. يمكن إيقافها.';
+}
+
+// Path: adminDashboard.subHistory.steps
+class _Translations$adminDashboard$subHistory$steps$ar extends Translations$adminDashboard$subHistory$steps$he {
+	_Translations$adminDashboard$subHistory$steps$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get joined => 'انضم إلى بريميوم';
+	@override String get trial => 'بدأ فترة تجريبية';
+	@override String get renewed => 'تجديد';
+	@override String cancelled({required Object date}) => 'ألغى · بريميوم حتى ${date}';
+	@override String get cancelledNoDate => 'ألغى';
+	@override String get uncancelled => 'تراجع عن الإلغاء';
+	@override String get ended => 'انتهى الاشتراك';
+	@override String get billingIssue => 'مشكلة في الدفع';
+	@override String get changedPlan => 'غيّر الباقة';
+	@override String get oneTime => 'شراء لمرة واحدة';
+	@override String get paused => 'متوقف مؤقتًا';
+	@override String get transferred => 'تم النقل';
+	@override String get refunded => 'تم استرداد المبلغ';
+	@override String adminGrant({required Object date}) => 'منحه المسؤول · حتى ${date}';
+	@override String get adminGrantForever => 'منحه المسؤول · بلا حد';
+	@override String get adminRevoke => 'أزاله المسؤول';
+	@override String other({required Object type}) => 'حدث: ${type}';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -4200,6 +4320,78 @@ extension on TranslationsAr {
 			'adminDashboard.grantStarts' => ({required Object date}) => 'يبدأ في ${date}',
 			'adminDashboard.cappedAccounts' => ({required Object count}) => 'يتم عرض أول ${count} حساب فقط',
 			'adminDashboard.cappedEvents' => ({required Object count}) => 'يتم عرض أول ${count} حدث شراء فقط',
+			'adminDashboard.chartActions' => 'ماذا فعلوا بالذكاء الاصطناعي',
+			'adminDashboard.whatTheyDid' => 'ماذا فعلوا',
+			'adminDashboard.actions.recipe_text' => 'وصفة من نص',
+			'adminDashboard.actions.recipe_photo' => 'وصفة من صورة',
+			'adminDashboard.actions.recipe_pdf' => 'وصفة من PDF',
+			'adminDashboard.actions.recipe_audio' => 'وصفة من تسجيل',
+			'adminDashboard.actions.recipe_file' => 'وصفة من ملف',
+			'adminDashboard.actions.recipe_url' => 'وصفة من رابط',
+			'adminDashboard.actions.recipe_video' => 'وصفة من فيديو',
+			'adminDashboard.actions.recipe_generate' => 'إنشاء وصفة جديدة',
+			'adminDashboard.actions.recipe_refine' => 'تحسين وصفة',
+			'adminDashboard.actions.recipe_search' => 'بحث وصفات على الويب',
+			'adminDashboard.actions.recipe_suggest' => 'اقتراحات وصفات',
+			'adminDashboard.actions.nutrition' => 'تقدير القيم الغذائية',
+			'adminDashboard.actions.receipt_scan' => 'مسح فاتورة',
+			'adminDashboard.actions.image_recipe' => 'صورة لوصفة',
+			'adminDashboard.actions.image_book_cover' => 'غلاف لكتاب',
+			'adminDashboard.actions.image_other' => 'صورة',
+			'adminDashboard.actions.assistant_chat' => 'محادثة مع شيفي',
+			'adminDashboard.actions.translate' => 'ترجمة المحتوى',
+			'adminDashboard.actions.whatsapp' => 'بوت واتساب',
+			'adminDashboard.actions.admin' => 'محتوى من لوحة الإدارة',
+			'adminDashboard.actions.other' => 'أخرى',
+			'adminDashboard.subHistory.title' => 'سجل الاشتراك',
+			'adminDashboard.subHistory.empty' => 'لا توجد أحداث اشتراك',
+			'adminDashboard.subHistory.joinedAt' => 'انضم إلى بريميوم',
+			'adminDashboard.subHistory.lastCancelledAt' => 'آخر إلغاء',
+			'adminDashboard.subHistory.lastEndedAt' => 'انتهى الاشتراك',
+			'adminDashboard.subHistory.renewals' => 'التجديدات',
+			'adminDashboard.subHistory.sandbox' => 'تجربة',
+			'adminDashboard.subHistory.by' => ({required Object email}) => 'بواسطة ${email}',
+			'adminDashboard.subHistory.steps.joined' => 'انضم إلى بريميوم',
+			'adminDashboard.subHistory.steps.trial' => 'بدأ فترة تجريبية',
+			'adminDashboard.subHistory.steps.renewed' => 'تجديد',
+			'adminDashboard.subHistory.steps.cancelled' => ({required Object date}) => 'ألغى · بريميوم حتى ${date}',
+			'adminDashboard.subHistory.steps.cancelledNoDate' => 'ألغى',
+			'adminDashboard.subHistory.steps.uncancelled' => 'تراجع عن الإلغاء',
+			'adminDashboard.subHistory.steps.ended' => 'انتهى الاشتراك',
+			'adminDashboard.subHistory.steps.billingIssue' => 'مشكلة في الدفع',
+			'adminDashboard.subHistory.steps.changedPlan' => 'غيّر الباقة',
+			'adminDashboard.subHistory.steps.oneTime' => 'شراء لمرة واحدة',
+			'adminDashboard.subHistory.steps.paused' => 'متوقف مؤقتًا',
+			'adminDashboard.subHistory.steps.transferred' => 'تم النقل',
+			'adminDashboard.subHistory.steps.refunded' => 'تم استرداد المبلغ',
+			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'منحه المسؤول · حتى ${date}',
+			'adminDashboard.subHistory.steps.adminGrantForever' => 'منحه المسؤول · بلا حد',
+			'adminDashboard.subHistory.steps.adminRevoke' => 'أزاله المسؤول',
+			'adminDashboard.subHistory.steps.other' => ({required Object type}) => 'حدث: ${type}',
+			'adminDashboard.subHistory.firstPaidAt' => 'أول دفعة',
+			'adminDashboard.subHistory.lastPaidAt' => 'آخر دفعة',
+			'adminDashboard.osPlan.title' => 'المستخدمون وبريميوم حسب نظام التشغيل',
+			'adminDashboard.osPlan.os' => 'النظام',
+			'adminDashboard.osPlan.users' => 'المستخدمون',
+			'adminDashboard.osPlan.premium' => 'بريميوم',
+			'adminDashboard.osPlan.free' => 'مجاني',
+			'adminDashboard.osPlan.premiumShare' => '% بريميوم',
+			'adminDashboard.osPlan.ofUsers' => '% من المستخدمين',
+			'adminDashboard.osPlan.ofPremium' => '% من بريميوم',
+			'adminDashboard.osPlan.total' => 'المجموع',
+			'adminDashboard.osPlan.hint' => '% بريميوم = من مستخدمي ذلك النظام',
+			'adminDashboard.premiumSince' => ({required Object date}) => 'بريميوم منذ ${date}',
+			'adminDashboard.cancelledOn' => ({required Object date}) => 'ألغى في ${date}',
+			_ => null,
+		} ?? switch (path) {
+			'adminDashboard.chartCategories' => 'حسب المجال',
+			'adminDashboard.categories.recipes' => 'الوصفات',
+			'adminDashboard.categories.books' => 'الكتب',
+			'adminDashboard.categories.shopping' => 'التسوق',
+			'adminDashboard.categories.assistant' => 'شيفي',
+			'adminDashboard.categories.translate' => 'الترجمة',
+			'adminDashboard.categories.admin' => 'لوحة الإدارة',
+			'adminDashboard.categories.other' => 'أخرى',
 			'assistant.title' => 'شيفي',
 			'assistant.subtitle' => 'مساعد الطاهي: اسأل، خطط، تسوّق، اطبخ',
 			'assistant.placeholder' => 'اسأل أو قل لي ماذا أفعل…',
@@ -4262,8 +4454,6 @@ extension on TranslationsAr {
 			'assistant.suggest.food.2' => 'خبز',
 			'assistant.suggest.food.3' => 'طماطم',
 			'assistant.suggest.food.4' => 'بصل',
-			_ => null,
-		} ?? switch (path) {
 			'assistant.suggest.food.5' => 'زيت زيتون',
 			'assistant.suggest.food.6' => 'أرز',
 			'assistant.suggest.food.7' => 'دجاج',

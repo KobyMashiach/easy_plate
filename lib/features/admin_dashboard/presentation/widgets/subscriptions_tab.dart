@@ -779,6 +779,10 @@ class _AccountCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(s.lastSeen(date: _date(seen)), style: muted),
           ],
+          if (_historyLine(a) case final line?) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(line, style: muted),
+          ],
           if (a.disabled && a.blockMessage.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.xs),
             Text(s.disabledSince(message: a.blockMessage), style: muted),
@@ -920,4 +924,20 @@ DateTime _addMonths(DateTime at, int months) {
     at.hour,
     at.minute,
   );
+}
+
+/// "Premium since …", and "· cancelled on …" when it was cancelled since:
+/// the short form of the user page's subscription history.
+String? _historyLine(BillingAccountEntity a) {
+  if (a.events.isEmpty) return null;
+  final history = SubscriptionHistory.of(a.events);
+  final joined = history.joinedAt;
+  final cancelled = history.lastCancelledAt;
+  final s = t.adminDashboard;
+  final parts = [
+    if (joined != null) s.premiumSince(date: DashboardFormat.dayFull(joined)),
+    if (cancelled != null && (joined == null || cancelled.isAfter(joined)))
+      s.cancelledOn(date: DashboardFormat.dayFull(cancelled)),
+  ];
+  return parts.isEmpty ? null : parts.join(' · ');
 }

@@ -45,6 +45,7 @@ Future<ImagePickResult?> showImageSourceSheet(
   required bool hasImage,
   String? aiPrompt,
   Future<String?> Function(BuildContext context)? aiPromptPicker,
+  String aiPurpose = GenerateImageUseCase.forOther,
   String? searchQuery,
 }) {
   assert(
@@ -60,6 +61,7 @@ Future<ImagePickResult?> showImageSourceSheet(
         hasImage: hasImage,
         aiPrompt: aiPrompt,
         aiPromptPicker: aiPromptPicker,
+        aiPurpose: aiPurpose,
         searchQuery: searchQuery,
       ),
     ),
@@ -70,12 +72,16 @@ class _ImageSourceSheet extends StatefulWidget {
   final bool hasImage;
   final String? aiPrompt;
   final Future<String?> Function(BuildContext context)? aiPromptPicker;
+
+  /// What the generated picture is for, for the usage log.
+  final String aiPurpose;
   final String? searchQuery;
 
   const _ImageSourceSheet({
     required this.hasImage,
     required this.aiPrompt,
     required this.aiPromptPicker,
+    this.aiPurpose = GenerateImageUseCase.forOther,
     required this.searchQuery,
   });
 
@@ -160,6 +166,7 @@ class _ImageSourceSheetState extends State<_ImageSourceSheet> {
       final bytes =
           await GenerateImageUseCase(context.read<RecipeIngestionRepository>())(
             prompt,
+            purpose: widget.aiPurpose,
           ).timeout(const Duration(seconds: 60));
       // Asked for as a 1K JPEG, so this is far under the cap; one that is
       // not would upload, but no other device would ever download it.

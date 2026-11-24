@@ -430,3 +430,17 @@ test("config.set keeps the store a value is for", () => {
   assert.equal(parseRequest({ action: "config.set", name: "minimumVersion", value: "1.0.7", platform: "ios" }).platform, "ios");
   assert.ok(parseRequest({ action: "config.set", name: "minimumVersion", value: "1", platform: "web" }).error);
 });
+
+test("a premium grant or removal by hand becomes a subscription history row", () => {
+  const { adminEntitlementEvent } = require("./adminPanel").internals;
+  const grant = adminEntitlementEvent({ uid: "u1", premium: true, until: "UNTIL", by: "a@b", at: "AT" });
+  assert.equal(grant.type, "ADMIN_GRANT");
+  assert.equal(grant.store, "admin");
+  assert.equal(grant.grantsPremium, true);
+  assert.equal(grant.expiresAt, "UNTIL");
+  assert.equal(grant.eventAt, "AT");
+  const revoke = adminEntitlementEvent({ uid: "u1", premium: false, until: "UNTIL", at: "AT" });
+  assert.equal(revoke.type, "ADMIN_REVOKE");
+  assert.equal(revoke.expiresAt, null);
+  assert.equal(revoke.price, null);
+});

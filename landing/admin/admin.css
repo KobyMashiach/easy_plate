@@ -202,6 +202,14 @@ td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; white-spac
 .hbar .track { height: 8px; background: rgba(255, 255, 255, 0.06); border-radius: 4px; overflow: hidden; }
 .hbar .fill { height: 100%; background: var(--mint); border-radius: 4px; }
 .hbar .n { text-align: end; font-variant-numeric: tabular-nums; }
+/* Users vs Premium per OS: one stacked premium/free bar per system. */
+.osbars { margin-top: 12px; }
+.osbar { display: grid; grid-template-columns: 140px 1fr 70px; gap: 10px; align-items: center; font-size: 13px; padding: 4px 0; }
+.osbar .n { text-align: end; font-variant-numeric: tabular-nums; }
+.stackbar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, 0.06); }
+.stackbar .seg.premium, .swatch.premium { background: var(--mint); }
+.stackbar .seg.free, .swatch.free { background: rgba(255, 255, 255, 0.18); }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
 .grid2 { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
 .grid3 { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
 .imggrid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
@@ -244,7 +252,7 @@ details.card summary { cursor: pointer; font-weight: 600; }
   .topbar h1 { font-size: 17px; }
   .view { padding: 14px 16px 60px; }
   .grid2, .grid3 { grid-template-columns: 1fr; }
-  .hbar { grid-template-columns: 100px 1fr 60px; }
+  .hbar, .osbar { grid-template-columns: 100px 1fr 60px; }
   .kv { grid-template-columns: 1fr; gap: 2px 0; }
   .kv dt { margin-top: 6px; }
   .reply { margin-inline-start: 16px; }

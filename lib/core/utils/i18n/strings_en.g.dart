@@ -1872,6 +1872,15 @@ class _Translations$adminDashboard$en extends Translations$adminDashboard$he {
 	@override String get permissionDone => 'Permission updated';
 	@override String cappedAccounts({required Object count}) => 'Showing the first ${count} accounts only';
 	@override String cappedEvents({required Object count}) => 'Showing the first ${count} purchase events only';
+	@override String get chartActions => 'What they did with AI';
+	@override String get whatTheyDid => 'What they did';
+	@override late final _Translations$adminDashboard$actions$en actions = _Translations$adminDashboard$actions$en._(_root);
+	@override late final _Translations$adminDashboard$subHistory$en subHistory = _Translations$adminDashboard$subHistory$en._(_root);
+	@override late final _Translations$adminDashboard$osPlan$en osPlan = _Translations$adminDashboard$osPlan$en._(_root);
+	@override String premiumSince({required Object date}) => 'Premium since ${date}';
+	@override String cancelledOn({required Object date}) => 'Cancelled on ${date}';
+	@override String get chartCategories => 'By area';
+	@override late final _Translations$adminDashboard$categories$en categories = _Translations$adminDashboard$categories$en._(_root);
 }
 
 // Path: assistant
@@ -2510,6 +2519,91 @@ class _Translations$feedback$reasons$en extends Translations$feedback$reasons$he
 	@override String get other => 'Other';
 }
 
+// Path: adminDashboard.actions
+class _Translations$adminDashboard$actions$en extends Translations$adminDashboard$actions$he {
+	_Translations$adminDashboard$actions$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipe_text => 'Recipe from text';
+	@override String get recipe_photo => 'Recipe from a photo';
+	@override String get recipe_pdf => 'Recipe from a PDF';
+	@override String get recipe_audio => 'Recipe from a recording';
+	@override String get recipe_file => 'Recipe from a file';
+	@override String get recipe_url => 'Recipe from a link';
+	@override String get recipe_video => 'Recipe from a video';
+	@override String get recipe_generate => 'New recipe generated';
+	@override String get recipe_refine => 'Recipe refined';
+	@override String get recipe_search => 'Web recipe search';
+	@override String get recipe_suggest => 'Recipe suggestions';
+	@override String get nutrition => 'Nutrition estimate';
+	@override String get receipt_scan => 'Receipt scan';
+	@override String get image_recipe => 'Picture for a recipe';
+	@override String get image_book_cover => 'Cover for a book';
+	@override String get image_other => 'Picture';
+	@override String get assistant_chat => 'Chat with Shefi';
+	@override String get translate => 'Content translation';
+	@override String get whatsapp => 'WhatsApp bot';
+	@override String get admin => 'Console content';
+	@override String get other => 'Other';
+}
+
+// Path: adminDashboard.subHistory
+class _Translations$adminDashboard$subHistory$en extends Translations$adminDashboard$subHistory$he {
+	_Translations$adminDashboard$subHistory$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Subscription history';
+	@override String get empty => 'No subscription events';
+	@override String get joinedAt => 'Joined Premium';
+	@override String get lastCancelledAt => 'Last cancelled';
+	@override String get lastEndedAt => 'Ended';
+	@override String get renewals => 'Renewals';
+	@override String get sandbox => 'Test';
+	@override String by({required Object email}) => 'by ${email}';
+	@override late final _Translations$adminDashboard$subHistory$steps$en steps = _Translations$adminDashboard$subHistory$steps$en._(_root);
+	@override String get firstPaidAt => 'First payment';
+	@override String get lastPaidAt => 'Last payment';
+}
+
+// Path: adminDashboard.osPlan
+class _Translations$adminDashboard$osPlan$en extends Translations$adminDashboard$osPlan$he {
+	_Translations$adminDashboard$osPlan$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Users and Premium by OS';
+	@override String get os => 'OS';
+	@override String get users => 'Users';
+	@override String get premium => 'Premium';
+	@override String get free => 'Free';
+	@override String get premiumShare => '% Premium';
+	@override String get ofUsers => '% of users';
+	@override String get ofPremium => '% of Premium';
+	@override String get total => 'Total';
+	@override String get hint => '% Premium = out of that OS\'s users';
+}
+
+// Path: adminDashboard.categories
+class _Translations$adminDashboard$categories$en extends Translations$adminDashboard$categories$he {
+	_Translations$adminDashboard$categories$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get recipes => 'Recipes';
+	@override String get books => 'Books';
+	@override String get shopping => 'Shopping';
+	@override String get assistant => 'Shefi';
+	@override String get translate => 'Translation';
+	@override String get admin => 'Console';
+	@override String get other => 'Other';
+}
+
 // Path: assistant.suggest
 class _Translations$assistant$suggest$en extends Translations$assistant$suggest$he {
 	_Translations$assistant$suggest$en._(TranslationsEn root) : this._root = root, super.internal(root);
@@ -2962,6 +3056,32 @@ class _Translations$walkthrough$topics$settings$en extends Translations$walkthro
 	@override String get s13 => 'Dietary preferences and allergens: mark them here and the app highlights them in recipes and shared recipes.';
 	@override String get s14 => 'Fast page turn in books: jumping to a distant page turns a single page. Off, it flips through every page on the way.';
 	@override String get s15 => 'Sounds: sound effects on page turns and actions. Can be switched off.';
+}
+
+// Path: adminDashboard.subHistory.steps
+class _Translations$adminDashboard$subHistory$steps$en extends Translations$adminDashboard$subHistory$steps$he {
+	_Translations$adminDashboard$subHistory$steps$en._(TranslationsEn root) : this._root = root, super.internal(root);
+
+	final TranslationsEn _root; // ignore: unused_field
+
+	// Translations
+	@override String get joined => 'Joined Premium';
+	@override String get trial => 'Started a trial';
+	@override String get renewed => 'Renewed';
+	@override String cancelled({required Object date}) => 'Cancelled · Premium until ${date}';
+	@override String get cancelledNoDate => 'Cancelled';
+	@override String get uncancelled => 'Took the cancellation back';
+	@override String get ended => 'Subscription ended';
+	@override String get billingIssue => 'Billing issue';
+	@override String get changedPlan => 'Changed plan';
+	@override String get oneTime => 'One-time purchase';
+	@override String get paused => 'Paused';
+	@override String get transferred => 'Transferred';
+	@override String get refunded => 'Refunded';
+	@override String adminGrant({required Object date}) => 'Granted by an admin · until ${date}';
+	@override String get adminGrantForever => 'Granted by an admin · forever';
+	@override String get adminRevoke => 'Removed by an admin';
+	@override String other({required Object type}) => 'Event: ${type}';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -4468,6 +4588,78 @@ extension on TranslationsEn {
 			'adminDashboard.permissionDone' => 'Permission updated',
 			'adminDashboard.cappedAccounts' => ({required Object count}) => 'Showing the first ${count} accounts only',
 			'adminDashboard.cappedEvents' => ({required Object count}) => 'Showing the first ${count} purchase events only',
+			'adminDashboard.chartActions' => 'What they did with AI',
+			'adminDashboard.whatTheyDid' => 'What they did',
+			'adminDashboard.actions.recipe_text' => 'Recipe from text',
+			'adminDashboard.actions.recipe_photo' => 'Recipe from a photo',
+			'adminDashboard.actions.recipe_pdf' => 'Recipe from a PDF',
+			'adminDashboard.actions.recipe_audio' => 'Recipe from a recording',
+			'adminDashboard.actions.recipe_file' => 'Recipe from a file',
+			'adminDashboard.actions.recipe_url' => 'Recipe from a link',
+			'adminDashboard.actions.recipe_video' => 'Recipe from a video',
+			'adminDashboard.actions.recipe_generate' => 'New recipe generated',
+			'adminDashboard.actions.recipe_refine' => 'Recipe refined',
+			'adminDashboard.actions.recipe_search' => 'Web recipe search',
+			'adminDashboard.actions.recipe_suggest' => 'Recipe suggestions',
+			'adminDashboard.actions.nutrition' => 'Nutrition estimate',
+			'adminDashboard.actions.receipt_scan' => 'Receipt scan',
+			'adminDashboard.actions.image_recipe' => 'Picture for a recipe',
+			'adminDashboard.actions.image_book_cover' => 'Cover for a book',
+			'adminDashboard.actions.image_other' => 'Picture',
+			'adminDashboard.actions.assistant_chat' => 'Chat with Shefi',
+			'adminDashboard.actions.translate' => 'Content translation',
+			'adminDashboard.actions.whatsapp' => 'WhatsApp bot',
+			'adminDashboard.actions.admin' => 'Console content',
+			'adminDashboard.actions.other' => 'Other',
+			'adminDashboard.subHistory.title' => 'Subscription history',
+			'adminDashboard.subHistory.empty' => 'No subscription events',
+			'adminDashboard.subHistory.joinedAt' => 'Joined Premium',
+			'adminDashboard.subHistory.lastCancelledAt' => 'Last cancelled',
+			'adminDashboard.subHistory.lastEndedAt' => 'Ended',
+			'adminDashboard.subHistory.renewals' => 'Renewals',
+			'adminDashboard.subHistory.sandbox' => 'Test',
+			'adminDashboard.subHistory.by' => ({required Object email}) => 'by ${email}',
+			'adminDashboard.subHistory.steps.joined' => 'Joined Premium',
+			'adminDashboard.subHistory.steps.trial' => 'Started a trial',
+			'adminDashboard.subHistory.steps.renewed' => 'Renewed',
+			'adminDashboard.subHistory.steps.cancelled' => ({required Object date}) => 'Cancelled · Premium until ${date}',
+			'adminDashboard.subHistory.steps.cancelledNoDate' => 'Cancelled',
+			'adminDashboard.subHistory.steps.uncancelled' => 'Took the cancellation back',
+			'adminDashboard.subHistory.steps.ended' => 'Subscription ended',
+			'adminDashboard.subHistory.steps.billingIssue' => 'Billing issue',
+			'adminDashboard.subHistory.steps.changedPlan' => 'Changed plan',
+			'adminDashboard.subHistory.steps.oneTime' => 'One-time purchase',
+			'adminDashboard.subHistory.steps.paused' => 'Paused',
+			'adminDashboard.subHistory.steps.transferred' => 'Transferred',
+			'adminDashboard.subHistory.steps.refunded' => 'Refunded',
+			_ => null,
+		} ?? switch (path) {
+			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'Granted by an admin · until ${date}',
+			'adminDashboard.subHistory.steps.adminGrantForever' => 'Granted by an admin · forever',
+			'adminDashboard.subHistory.steps.adminRevoke' => 'Removed by an admin',
+			'adminDashboard.subHistory.steps.other' => ({required Object type}) => 'Event: ${type}',
+			'adminDashboard.subHistory.firstPaidAt' => 'First payment',
+			'adminDashboard.subHistory.lastPaidAt' => 'Last payment',
+			'adminDashboard.osPlan.title' => 'Users and Premium by OS',
+			'adminDashboard.osPlan.os' => 'OS',
+			'adminDashboard.osPlan.users' => 'Users',
+			'adminDashboard.osPlan.premium' => 'Premium',
+			'adminDashboard.osPlan.free' => 'Free',
+			'adminDashboard.osPlan.premiumShare' => '% Premium',
+			'adminDashboard.osPlan.ofUsers' => '% of users',
+			'adminDashboard.osPlan.ofPremium' => '% of Premium',
+			'adminDashboard.osPlan.total' => 'Total',
+			'adminDashboard.osPlan.hint' => '% Premium = out of that OS\'s users',
+			'adminDashboard.premiumSince' => ({required Object date}) => 'Premium since ${date}',
+			'adminDashboard.cancelledOn' => ({required Object date}) => 'Cancelled on ${date}',
+			'adminDashboard.chartCategories' => 'By area',
+			'adminDashboard.categories.recipes' => 'Recipes',
+			'adminDashboard.categories.books' => 'Books',
+			'adminDashboard.categories.shopping' => 'Shopping',
+			'adminDashboard.categories.assistant' => 'Shefi',
+			'adminDashboard.categories.translate' => 'Translation',
+			'adminDashboard.categories.admin' => 'Console',
+			'adminDashboard.categories.other' => 'Other',
 			'assistant.title' => 'Shefi',
 			'assistant.subtitle' => 'Your sous-chef: ask, plan, shop, cook',
 			'assistant.placeholder' => 'Ask or tell me what to do…',
@@ -4512,8 +4704,6 @@ extension on TranslationsEn {
 			'assistant.suggest.templates.14' => 'Create a plan for next week',
 			'assistant.suggest.templates.15' => 'Show me what\'s planned for {day}',
 			'assistant.suggest.templates.16' => 'Change my shopping day to {day}',
-			_ => null,
-		} ?? switch (path) {
 			'assistant.suggest.templates.17' => 'Suggest a {diet} dinner for {day}',
 			'assistant.suggest.templates.18' => 'How long do I boil an egg?',
 			'assistant.suggest.templates.19' => 'What can replace {food} in a recipe?',
@@ -4956,6 +5146,8 @@ extension on TranslationsEn {
 			'adminUser.failed' => 'Couldn\'t load this user',
 			'adminUser.partial' => ({required Object names}) => 'Some data couldn\'t be loaded: ${names}',
 			'adminUser.copyUid' => 'Copy uid',
+			_ => null,
+		} ?? switch (path) {
 			'adminUser.copied' => 'Copied',
 			'adminUser.online' => 'Online now',
 			'adminUser.blocked' => 'Blocked',
@@ -5026,8 +5218,6 @@ extension on TranslationsEn {
 			'adminUser.collections.recipes' => 'Recipes',
 			'adminUser.collections.books' => 'Recipe books',
 			'adminUser.collections.meal_plans' => 'Meal plans',
-			_ => null,
-		} ?? switch (path) {
 			'adminUser.collections.grocery_lists' => 'Grocery lists',
 			'adminUser.collections.receipts' => 'Receipts',
 			'adminUser.collections.price_records' => 'Price records',

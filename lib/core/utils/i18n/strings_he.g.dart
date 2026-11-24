@@ -4702,6 +4702,27 @@ class Translations$adminDashboard$he {
 
 	/// he: 'מוצגים רק $count אירועי הרכישה הראשונים'
 	String cappedEvents({required Object count}) => 'מוצגים רק ${count} אירועי הרכישה הראשונים';
+
+	/// he: 'מה עשו עם ה-AI'
+	String get chartActions => 'מה עשו עם ה-AI';
+
+	/// he: 'מה עשו'
+	String get whatTheyDid => 'מה עשו';
+
+	late final Translations$adminDashboard$actions$he actions = Translations$adminDashboard$actions$he.internal(_root);
+	late final Translations$adminDashboard$subHistory$he subHistory = Translations$adminDashboard$subHistory$he.internal(_root);
+	late final Translations$adminDashboard$osPlan$he osPlan = Translations$adminDashboard$osPlan$he.internal(_root);
+
+	/// he: 'פרימיום מאז $date'
+	String premiumSince({required Object date}) => 'פרימיום מאז ${date}';
+
+	/// he: 'ביטל ב־$date'
+	String cancelledOn({required Object date}) => 'ביטל ב־${date}';
+
+	/// he: 'לפי תחום'
+	String get chartCategories => 'לפי תחום';
+
+	late final Translations$adminDashboard$categories$he categories = Translations$adminDashboard$categories$he.internal(_root);
 }
 
 // Path: assistant
@@ -6258,6 +6279,188 @@ class Translations$feedback$reasons$he {
 	String get other => 'אחר';
 }
 
+// Path: adminDashboard.actions
+class Translations$adminDashboard$actions$he {
+	Translations$adminDashboard$actions$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'קריאת מתכון מטקסט'
+	String get recipe_text => 'קריאת מתכון מטקסט';
+
+	/// he: 'קריאת מתכון מתמונה'
+	String get recipe_photo => 'קריאת מתכון מתמונה';
+
+	/// he: 'קריאת מתכון מ־PDF'
+	String get recipe_pdf => 'קריאת מתכון מ־PDF';
+
+	/// he: 'קריאת מתכון מהקלטה'
+	String get recipe_audio => 'קריאת מתכון מהקלטה';
+
+	/// he: 'קריאת מתכון מקובץ'
+	String get recipe_file => 'קריאת מתכון מקובץ';
+
+	/// he: 'קריאת מתכון מקישור'
+	String get recipe_url => 'קריאת מתכון מקישור';
+
+	/// he: 'קריאת מתכון מסרטון'
+	String get recipe_video => 'קריאת מתכון מסרטון';
+
+	/// he: 'יצירת מתכון חדש'
+	String get recipe_generate => 'יצירת מתכון חדש';
+
+	/// he: 'שיפור מתכון'
+	String get recipe_refine => 'שיפור מתכון';
+
+	/// he: 'חיפוש מתכונים ברשת'
+	String get recipe_search => 'חיפוש מתכונים ברשת';
+
+	/// he: 'הצעות מתכונים'
+	String get recipe_suggest => 'הצעות מתכונים';
+
+	/// he: 'חישוב ערכים תזונתיים'
+	String get nutrition => 'חישוב ערכים תזונתיים';
+
+	/// he: 'סריקת קבלה'
+	String get receipt_scan => 'סריקת קבלה';
+
+	/// he: 'תמונה למתכון'
+	String get image_recipe => 'תמונה למתכון';
+
+	/// he: 'כריכה לספר'
+	String get image_book_cover => 'כריכה לספר';
+
+	/// he: 'תמונה'
+	String get image_other => 'תמונה';
+
+	/// he: 'שיחה עם שפי'
+	String get assistant_chat => 'שיחה עם שפי';
+
+	/// he: 'תרגום תוכן'
+	String get translate => 'תרגום תוכן';
+
+	/// he: 'בוט וואטסאפ'
+	String get whatsapp => 'בוט וואטסאפ';
+
+	/// he: 'תוכן מהקונסולה'
+	String get admin => 'תוכן מהקונסולה';
+
+	/// he: 'אחר'
+	String get other => 'אחר';
+}
+
+// Path: adminDashboard.subHistory
+class Translations$adminDashboard$subHistory$he {
+	Translations$adminDashboard$subHistory$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'היסטוריית מנוי'
+	String get title => 'היסטוריית מנוי';
+
+	/// he: 'אין אירועי מנוי'
+	String get empty => 'אין אירועי מנוי';
+
+	/// he: 'הצטרף לפרימיום'
+	String get joinedAt => 'הצטרף לפרימיום';
+
+	/// he: 'ביטל לאחרונה'
+	String get lastCancelledAt => 'ביטל לאחרונה';
+
+	/// he: 'המנוי הסתיים'
+	String get lastEndedAt => 'המנוי הסתיים';
+
+	/// he: 'חידושים'
+	String get renewals => 'חידושים';
+
+	/// he: 'בדיקה'
+	String get sandbox => 'בדיקה';
+
+	/// he: 'ע״י $email'
+	String by({required Object email}) => 'ע״י ${email}';
+
+	late final Translations$adminDashboard$subHistory$steps$he steps = Translations$adminDashboard$subHistory$steps$he.internal(_root);
+
+	/// he: 'תשלום ראשון'
+	String get firstPaidAt => 'תשלום ראשון';
+
+	/// he: 'תשלום אחרון'
+	String get lastPaidAt => 'תשלום אחרון';
+}
+
+// Path: adminDashboard.osPlan
+class Translations$adminDashboard$osPlan$he {
+	Translations$adminDashboard$osPlan$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'משתמשים ופרימיום לפי מערכת הפעלה'
+	String get title => 'משתמשים ופרימיום לפי מערכת הפעלה';
+
+	/// he: 'מערכת'
+	String get os => 'מערכת';
+
+	/// he: 'משתמשים'
+	String get users => 'משתמשים';
+
+	/// he: 'פרימיום'
+	String get premium => 'פרימיום';
+
+	/// he: 'חינמי'
+	String get free => 'חינמי';
+
+	/// he: '% פרימיום'
+	String get premiumShare => '% פרימיום';
+
+	/// he: '% מהמשתמשים'
+	String get ofUsers => '% מהמשתמשים';
+
+	/// he: '% מהפרימיום'
+	String get ofPremium => '% מהפרימיום';
+
+	/// he: 'סה״כ'
+	String get total => 'סה״כ';
+
+	/// he: '% פרימיום = מתוך המשתמשים של אותה מערכת'
+	String get hint => '% פרימיום = מתוך המשתמשים של אותה מערכת';
+}
+
+// Path: adminDashboard.categories
+class Translations$adminDashboard$categories$he {
+	Translations$adminDashboard$categories$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'מתכונים'
+	String get recipes => 'מתכונים';
+
+	/// he: 'ספרים'
+	String get books => 'ספרים';
+
+	/// he: 'קניות'
+	String get shopping => 'קניות';
+
+	/// he: 'שפי'
+	String get assistant => 'שפי';
+
+	/// he: 'תרגום'
+	String get translate => 'תרגום';
+
+	/// he: 'קונסולה'
+	String get admin => 'קונסולה';
+
+	/// he: 'אחר'
+	String get other => 'אחר';
+}
+
 // Path: assistant.suggest
 class Translations$assistant$suggest$he {
 	Translations$assistant$suggest$he.internal(this._root);
@@ -7042,6 +7245,66 @@ class Translations$walkthrough$topics$settings$he {
 
 	/// he: 'צלילים: אפקטים קוליים בדפדוף ובפעולות. אפשר לכבות.'
 	String get s15 => 'צלילים: אפקטים קוליים בדפדוף ובפעולות. אפשר לכבות.';
+}
+
+// Path: adminDashboard.subHistory.steps
+class Translations$adminDashboard$subHistory$steps$he {
+	Translations$adminDashboard$subHistory$steps$he.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// he: 'הצטרף לפרימיום'
+	String get joined => 'הצטרף לפרימיום';
+
+	/// he: 'התחיל תקופת ניסיון'
+	String get trial => 'התחיל תקופת ניסיון';
+
+	/// he: 'חידוש'
+	String get renewed => 'חידוש';
+
+	/// he: 'ביטל · פרימיום עד $date'
+	String cancelled({required Object date}) => 'ביטל · פרימיום עד ${date}';
+
+	/// he: 'ביטל'
+	String get cancelledNoDate => 'ביטל';
+
+	/// he: 'חזר בו מהביטול'
+	String get uncancelled => 'חזר בו מהביטול';
+
+	/// he: 'המנוי הסתיים'
+	String get ended => 'המנוי הסתיים';
+
+	/// he: 'בעיית חיוב'
+	String get billingIssue => 'בעיית חיוב';
+
+	/// he: 'החליף חבילה'
+	String get changedPlan => 'החליף חבילה';
+
+	/// he: 'רכישה חד־פעמית'
+	String get oneTime => 'רכישה חד־פעמית';
+
+	/// he: 'הושהה'
+	String get paused => 'הושהה';
+
+	/// he: 'הועבר'
+	String get transferred => 'הועבר';
+
+	/// he: 'הוחזר כסף'
+	String get refunded => 'הוחזר כסף';
+
+	/// he: 'הוענק ע״י מנהל · עד $date'
+	String adminGrant({required Object date}) => 'הוענק ע״י מנהל · עד ${date}';
+
+	/// he: 'הוענק ע״י מנהל · לתמיד'
+	String get adminGrantForever => 'הוענק ע״י מנהל · לתמיד';
+
+	/// he: 'נשלל ע״י מנהל'
+	String get adminRevoke => 'נשלל ע״י מנהל';
+
+	/// he: 'אירוע: $type'
+	String other({required Object type}) => 'אירוע: ${type}';
 }
 
 /// The flat map containing all translations for locale <he>.
@@ -8548,6 +8811,78 @@ extension on Translations {
 			'adminDashboard.permissionDone' => 'ההרשאה עודכנה',
 			'adminDashboard.cappedAccounts' => ({required Object count}) => 'מוצגים רק ${count} החשבונות הראשונים',
 			'adminDashboard.cappedEvents' => ({required Object count}) => 'מוצגים רק ${count} אירועי הרכישה הראשונים',
+			'adminDashboard.chartActions' => 'מה עשו עם ה-AI',
+			'adminDashboard.whatTheyDid' => 'מה עשו',
+			'adminDashboard.actions.recipe_text' => 'קריאת מתכון מטקסט',
+			'adminDashboard.actions.recipe_photo' => 'קריאת מתכון מתמונה',
+			'adminDashboard.actions.recipe_pdf' => 'קריאת מתכון מ־PDF',
+			'adminDashboard.actions.recipe_audio' => 'קריאת מתכון מהקלטה',
+			'adminDashboard.actions.recipe_file' => 'קריאת מתכון מקובץ',
+			'adminDashboard.actions.recipe_url' => 'קריאת מתכון מקישור',
+			'adminDashboard.actions.recipe_video' => 'קריאת מתכון מסרטון',
+			'adminDashboard.actions.recipe_generate' => 'יצירת מתכון חדש',
+			'adminDashboard.actions.recipe_refine' => 'שיפור מתכון',
+			'adminDashboard.actions.recipe_search' => 'חיפוש מתכונים ברשת',
+			'adminDashboard.actions.recipe_suggest' => 'הצעות מתכונים',
+			'adminDashboard.actions.nutrition' => 'חישוב ערכים תזונתיים',
+			'adminDashboard.actions.receipt_scan' => 'סריקת קבלה',
+			'adminDashboard.actions.image_recipe' => 'תמונה למתכון',
+			'adminDashboard.actions.image_book_cover' => 'כריכה לספר',
+			'adminDashboard.actions.image_other' => 'תמונה',
+			'adminDashboard.actions.assistant_chat' => 'שיחה עם שפי',
+			'adminDashboard.actions.translate' => 'תרגום תוכן',
+			'adminDashboard.actions.whatsapp' => 'בוט וואטסאפ',
+			'adminDashboard.actions.admin' => 'תוכן מהקונסולה',
+			'adminDashboard.actions.other' => 'אחר',
+			'adminDashboard.subHistory.title' => 'היסטוריית מנוי',
+			'adminDashboard.subHistory.empty' => 'אין אירועי מנוי',
+			'adminDashboard.subHistory.joinedAt' => 'הצטרף לפרימיום',
+			'adminDashboard.subHistory.lastCancelledAt' => 'ביטל לאחרונה',
+			'adminDashboard.subHistory.lastEndedAt' => 'המנוי הסתיים',
+			'adminDashboard.subHistory.renewals' => 'חידושים',
+			'adminDashboard.subHistory.sandbox' => 'בדיקה',
+			'adminDashboard.subHistory.by' => ({required Object email}) => 'ע״י ${email}',
+			'adminDashboard.subHistory.steps.joined' => 'הצטרף לפרימיום',
+			'adminDashboard.subHistory.steps.trial' => 'התחיל תקופת ניסיון',
+			'adminDashboard.subHistory.steps.renewed' => 'חידוש',
+			'adminDashboard.subHistory.steps.cancelled' => ({required Object date}) => 'ביטל · פרימיום עד ${date}',
+			'adminDashboard.subHistory.steps.cancelledNoDate' => 'ביטל',
+			'adminDashboard.subHistory.steps.uncancelled' => 'חזר בו מהביטול',
+			'adminDashboard.subHistory.steps.ended' => 'המנוי הסתיים',
+			'adminDashboard.subHistory.steps.billingIssue' => 'בעיית חיוב',
+			'adminDashboard.subHistory.steps.changedPlan' => 'החליף חבילה',
+			'adminDashboard.subHistory.steps.oneTime' => 'רכישה חד־פעמית',
+			'adminDashboard.subHistory.steps.paused' => 'הושהה',
+			'adminDashboard.subHistory.steps.transferred' => 'הועבר',
+			'adminDashboard.subHistory.steps.refunded' => 'הוחזר כסף',
+			_ => null,
+		} ?? switch (path) {
+			'adminDashboard.subHistory.steps.adminGrant' => ({required Object date}) => 'הוענק ע״י מנהל · עד ${date}',
+			'adminDashboard.subHistory.steps.adminGrantForever' => 'הוענק ע״י מנהל · לתמיד',
+			'adminDashboard.subHistory.steps.adminRevoke' => 'נשלל ע״י מנהל',
+			'adminDashboard.subHistory.steps.other' => ({required Object type}) => 'אירוע: ${type}',
+			'adminDashboard.subHistory.firstPaidAt' => 'תשלום ראשון',
+			'adminDashboard.subHistory.lastPaidAt' => 'תשלום אחרון',
+			'adminDashboard.osPlan.title' => 'משתמשים ופרימיום לפי מערכת הפעלה',
+			'adminDashboard.osPlan.os' => 'מערכת',
+			'adminDashboard.osPlan.users' => 'משתמשים',
+			'adminDashboard.osPlan.premium' => 'פרימיום',
+			'adminDashboard.osPlan.free' => 'חינמי',
+			'adminDashboard.osPlan.premiumShare' => '% פרימיום',
+			'adminDashboard.osPlan.ofUsers' => '% מהמשתמשים',
+			'adminDashboard.osPlan.ofPremium' => '% מהפרימיום',
+			'adminDashboard.osPlan.total' => 'סה״כ',
+			'adminDashboard.osPlan.hint' => '% פרימיום = מתוך המשתמשים של אותה מערכת',
+			'adminDashboard.premiumSince' => ({required Object date}) => 'פרימיום מאז ${date}',
+			'adminDashboard.cancelledOn' => ({required Object date}) => 'ביטל ב־${date}',
+			'adminDashboard.chartCategories' => 'לפי תחום',
+			'adminDashboard.categories.recipes' => 'מתכונים',
+			'adminDashboard.categories.books' => 'ספרים',
+			'adminDashboard.categories.shopping' => 'קניות',
+			'adminDashboard.categories.assistant' => 'שפי',
+			'adminDashboard.categories.translate' => 'תרגום',
+			'adminDashboard.categories.admin' => 'קונסולה',
+			'adminDashboard.categories.other' => 'אחר',
 			'assistant.title' => 'שפי',
 			'assistant.subtitle' => 'הסו-שף שלך: שאלות, תכנון, קניות ובישול',
 			'assistant.placeholder' => 'שאלו או אמרו לי מה לעשות…',
@@ -8592,8 +8927,6 @@ extension on Translations {
 			'assistant.suggest.templates.14' => 'תיצור תוכנית לשבוע הבא',
 			'assistant.suggest.templates.15' => 'מה מתוכנן ליום {day}?',
 			'assistant.suggest.templates.16' => 'תשנה את יום הקניות ל{day}',
-			_ => null,
-		} ?? switch (path) {
 			'assistant.suggest.templates.17' => 'תציע ארוחת ערב {diet} ליום {day}',
 			'assistant.suggest.templates.18' => 'כמה זמן מבשלים ביצה קשה?',
 			'assistant.suggest.templates.19' => 'במה אפשר להחליף {food} במתכון?',
@@ -9036,6 +9369,8 @@ extension on Translations {
 			'adminUser.failed' => 'לא הצלחנו לטעון את המשתמש',
 			'adminUser.partial' => ({required Object names}) => 'חלק מהמידע לא נטען: ${names}',
 			'adminUser.copyUid' => 'העתקת uid',
+			_ => null,
+		} ?? switch (path) {
 			'adminUser.copied' => 'הועתק',
 			'adminUser.online' => 'מחובר עכשיו',
 			'adminUser.blocked' => 'חסום',
@@ -9106,8 +9441,6 @@ extension on Translations {
 			'adminUser.collections.recipes' => 'מתכונים',
 			'adminUser.collections.books' => 'ספרי מתכונים',
 			'adminUser.collections.meal_plans' => 'תפריטים',
-			_ => null,
-		} ?? switch (path) {
 			'adminUser.collections.grocery_lists' => 'רשימות קניות',
 			'adminUser.collections.receipts' => 'קבלות',
 			'adminUser.collections.price_records' => 'רשומות מחיר',

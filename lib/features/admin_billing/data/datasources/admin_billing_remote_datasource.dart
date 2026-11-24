@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../user_profile/domain/entities/user_permission.dart';
@@ -128,17 +129,67 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
     DateTime? from,
     DateTime? until,
   }) {
-    return _firestore.collection(entitlementsCollection).doc(uid).set({
-      'premium': premium,
-      'premiumFrom': premium && from != null ? Timestamp.fromDate(from) : null,
-      'premiumUntil': premium && until != null
-          ? Timestamp.fromDate(until)
-          : null,
-      'adminLock': true,
-      'source': 'admin',
-      'updatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    final batch = _firestore.batch()
+      ..set(
+        _firestore.collection(entitlementsCollection).doc(uid),
+        {
+          'premium': premium,
+          'premiumFrom': premium && from != null
+              ? Timestamp.fromDate(from)
+              : null,
+          'premiumUntil': premium && until != null
+              ? Timestamp.fromDate(until)
+              : null,
+          'adminLock': true,
+          'source': 'admin',
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      )
+      // The subscription history reads purchase_events, so a grant or a
+      // removal by hand is a step in it like a store event.
+      ..set(
+        _firestore.collection(eventsCollection).doc(),
+        adminEventRow(
+          uid: uid,
+          premium: premium,
+          from: from,
+          until: until,
+          by: FirebaseAuth.instance.currentUser?.email ?? '',
+        ),
+      );
+    return batch.commit();
   }
+
+  /// The purchase_events row for a grant or removal made from this screen;
+  /// the rules accept exactly this shape from the administrator.
+  @visibleForTesting
+  static Map<String, dynamic> adminEventRow({
+    required String uid,
+    required bool premium,
+    DateTime? from,
+    DateTime? until,
+    String by = '',
+  }) => {
+    'uid': uid,
+    'appUserId': uid,
+    'aliases': const <String>[],
+    'type': premium ? 'ADMIN_GRANT' : 'ADMIN_REVOKE',
+    'productId': '',
+    'store': 'admin',
+    'entitlementIds': const <String>[],
+    'grantsPremium': premium,
+    'environment': '',
+    'periodType': '',
+    'eventAt': premium && from != null
+        ? Timestamp.fromDate(from)
+        : FieldValue.serverTimestamp(),
+    'expiresAt': premium && until != null ? Timestamp.fromDate(until) : null,
+    'price': null,
+    'currency': '',
+    'by': by,
+    'receivedAt': FieldValue.serverTimestamp(),
+  };
 
   @override
   Future<void> releaseLock(String uid) {
@@ -203,11 +254,17 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
     );
   }
 
-  PurchaseEventEntity _toEvent(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data() ?? const <String, dynamic>{};
+  PurchaseEventEntity _toEvent(DocumentSnapshot<Map<String, dynamic>> doc) =>
+      eventFromMap(doc.id, doc.data() ?? const <String, dynamic>{});
+
+  /// A purchase_events document as an entity; shared with the user page.
+  static PurchaseEventEntity eventFromMap(
+    String id,
+    Map<String, dynamic> data,
+  ) {
     final uid = data['uid'];
     return PurchaseEventEntity(
-      id: doc.id,
+      id: id,
       uid: uid is String && uid.isNotEmpty ? uid : null,
       appUserId: (data['appUserId'] as String?) ?? '',
       type: (data['type'] as String?) ?? '',
@@ -219,10 +276,12 @@ class AdminBillingFirestoreDataSource implements AdminBillingRemoteDataSource {
       ],
       grantsPremium: data['grantsPremium'] == true,
       environment: (data['environment'] as String?) ?? '',
-      eventAt: (data['eventAt'] as Timestamp?)?.toDate() ?? DateTime(0),
-      expiresAt: (data['expiresAt'] as Timestamp?)?.toDate(),
+      eventAt: _time(data['eventAt']) ?? DateTime(0),
+      expiresAt: _time(data['expiresAt']),
       price: (data['price'] as num?)?.toDouble(),
       currency: (data['currency'] as String?) ?? '',
+      periodType: (data['periodType'] as String?) ?? '',
+      by: (data['by'] as String?) ?? '',
     );
   }
 }

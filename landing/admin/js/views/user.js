@@ -5,6 +5,8 @@ import { t, fmtNumber, fmtMoney, fmtDate } from "../i18n.js";
 import { h, clear, spinner, table, kv, avatar, dot, badge, when, button, busy, tabs, input, textarea, select, field, toggle, modal, confirmDialog, promptDialog, toast, toastError, copyText, empty, withEmoji } from "../ui.js";
 import { isOnline, premiumActive, platformLabel, pricing, tally, costIls, isPersona, profiles } from "../data.js";
 import { call } from "../api.js";
+import { subscriptionHistory } from "../subscriptionHistory.js";
+import { actionOf, actionTallies, actionKey, categoryOf, categoryTallies } from "../aiActions.js";
 
 // Which "bought on the website" label an entitlement gets: PayPlus / Stripe
 // by source, Paddle when RevenueCat reports it (store PADDLE, since
@@ -42,6 +44,24 @@ function plain(value) {
   if (Array.isArray(value)) return value.map(plain);
   if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, plain(v)]));
   return value;
+}
+
+// One step of the subscription history as a sentence: "Cancelled —
+// Premium until 3 Dec", "Granted by an admin — forever".
+function stepLabel(s) {
+  if (s.step === "cancelled") return s.until ? t("subs.step.cancelled", { date: fmtDate(s.until, false) }) : t("subs.step.cancelledNoDate");
+  if (s.step === "adminGrant") return s.until ? t("subs.step.adminGrant", { date: fmtDate(s.until, false) }) : t("subs.step.adminGrantForever");
+  if (s.step === "other") return t("subs.step.other", { type: s.type || "—" });
+  return t(`subs.step.${s.step}`);
+}
+
+const STEP_COLORS = { joined: "mint", trial: "brand", renewed: "green", uncancelled: "green", oneTime: "mint", adminGrant: "brand", cancelled: "amber", billingIssue: "red", paused: "amber", ended: "red", refunded: "red", adminRevoke: "red" };
+
+// "Recipe from a photo" for an action id; an id the console does not know
+// yet shows as itself.
+function actionLabel(action) {
+  const key = actionKey(action);
+  return key ? t(key) : action;
 }
 
 function docTitle(d) {
@@ -144,9 +164,22 @@ export async function mount({ view, params, setTitle }) {
       try { auth = (await call("user.auth", { uid })).auth; } catch (_) { auth = null; }
     }
     const now = Date.now();
+    // Every purchase event of this account (no orderBy: sorted here, so no
+    // composite index is needed). A failed read leaves the card empty.
+    const events = persona ? [] : await getDocs(query(collection(db, "purchase_events"), where("uid", "==", uid), limit(500)))
+      .then((snap) => snap.docs.map((d) => d.data())).catch((err) => { console.error(err); return []; });
     const entCard = h("div.card", h("h2", t("user.entitlement")));
+    const hist = subscriptionHistory(events, now);
+    const paidLine = (at) => at ? fmtDate(at) : "—";
+    const lastPaidLine = hist.lastPaid
+      ? h("span", fmtDate(hist.lastPaid.at), hist.lastPaid.price ? ` · ${hist.lastPaid.price} ${hist.lastPaid.currency}` : "", hist.lastPaid.sandbox ? h("span", " ", badge(t("subs.test"), "amber")) : "")
+      : "—";
     entCard.append(kv([
       [t("common.status"), premiumActive(ent, now) ? badge(t("users.premium"), "mint") : badge(t("users.free"))],
+      [t("subs.joinedAt"), paidLine(hist.joinedAt)],
+      [t("subs.firstPaidAt"), paidLine(hist.firstPaidAt)],
+      [t("subs.lastPaidAt"), lastPaidLine],
+      ...(hist.lastCancelledAt ? [[t("subs.lastCancelledAt"), paidLine(hist.lastCancelledAt)]] : []),
       [t("user.premiumUntil"), ent && ent.premiumUntil ? fmtDate(ent.premiumUntil) : "—"],
       [t("user.source"), ent && webSourceKey(ent) ? h("span", t(webSourceKey(ent)), ent.cancelAtPeriodEnd ? ` · ${t("user.cancelsAtPeriodEnd")}` : "") : ent && ent.source], [t("user.product"), ent && ent.productId], [t("user.stripeCustomer"), ent && ent.stripeCustomerId ? h("a", { href: `https://dashboard.stripe.com/customers/${ent.stripeCustomerId}`, target: "_blank", rel: "noopener" }, ent.stripeCustomerId) : null], [t("user.webSubscription"), ent && (ent.source === "payplus" || ent.source === "paddle") && ent.subscriptionId ? ent.subscriptionId : null], [t("user.adminLock"), ent && ent.adminLock ? t("common.yes") : t("common.no")],
       [t("user.household"), household ? h("a", { href: "#/households" }, household.title || household.id) : null],
@@ -205,7 +238,29 @@ export async function mount({ view, params, setTitle }) {
       [t("user.created"), fmtDate(wa.whatsapp_linked_at)],
     ]) : h("p.muted", waCodeUntil > now ? t("wa.codeOpen", { date: fmtDate(new Date(waCodeUntil)) }) : t("wa.none")));
 
-    return h("div.cards", profileCard, entCard, authCard, sessionCard, waCard);
+    return h("div.stack", h("div.cards", profileCard, entCard, authCard, sessionCard, waCard), persona ? null : historyCard(events, now));
+  }
+
+  // ---- subscription history ----
+  function historyCard(events, now) {
+    const hist = subscriptionHistory(events, now);
+    const card = h("div.card", h("h2", t("subs.title")));
+    if (!hist.steps.length) { card.append(h("p.muted", t("subs.empty"))); return card; }
+    card.append(kv([
+      [t("subs.joinedAt"), hist.joinedAt ? fmtDate(hist.joinedAt, false) : "—"],
+      [t("subs.firstPaidAt"), hist.firstPaidAt ? fmtDate(hist.firstPaidAt, false) : "—"],
+      [t("subs.lastCancelledAt"), hist.lastCancelledAt ? fmtDate(hist.lastCancelledAt, false) : "—"],
+      [t("subs.lastEndedAt"), hist.lastEndedAt ? fmtDate(hist.lastEndedAt, false) : "—"],
+      [t("subs.renewals"), fmtNumber(hist.renewals)],
+    ]));
+    card.append(table([
+      { label: t("common.date"), cell: (s) => h("span.small", fmtDate(s.at)) },
+      { label: t("subs.what"), cell: (s) => h("div", h("div.row", badge(stepLabel(s), STEP_COLORS[s.step] || ""), s.sandbox ? badge(t("subs.test"), "amber") : null), s.by ? h("div.small.muted", t("subs.by", { email: s.by })) : null) },
+      { label: t("subs.product"), cell: (s) => s.productId ? h("span.small.mono", s.productId) : h("span.small.muted", "—") },
+      { label: t("subs.store"), cell: (s) => h("span.small", s.store || "—") },
+      { label: t("subs.price"), num: true, cell: (s) => s.price > 0 ? fmtMoney(s.price, s.currency || "ILS") : h("span.small.muted", "—") },
+    ], hist.steps.slice().reverse()));
+    return card;
   }
 
   async function grantPremium() {
@@ -297,16 +352,18 @@ export async function mount({ view, params, setTitle }) {
     if (!usageSnap.exists()) return h("div.card", h("p.muted", t("user.noUsage")));
     const u = usageSnap.data();
     const models = Object.entries(u.models || {}).map(([k, v]) => ({ key: k, tally: tally(v) }));
-    const kinds = Object.entries(u.kinds || {}).map(([k, v]) => ({ key: k, tally: tally(v) }));
+    const actions = Object.entries(actionTallies(u)).map(([k, v]) => ({ key: k, tally: tally(v) })).sort((a, b) => b.tally.calls - a.tally.calls);
+    const categories = Object.entries(categoryTallies(actionTallies(u))).map(([k, v]) => ({ key: k, tally: tally(v) })).sort((a, b) => b.tally.calls - a.tally.calls);
     const cost = costIls(u.models, prices);
     return h("div.stack",
       h("div.tiles", h("div.tile.accent", h("div.label", t("dash.aiCost")), h("div.value", fmtMoney(cost))), h("div.tile", h("div.label", t("dash.aiCalls")), h("div.value", fmtNumber(tally(u.totals).calls))), h("div.tile", h("div.label", t("dash.tokens")), h("div.value", fmtNumber(tally(u.totals).total))), h("div.tile", h("div.label", t("users.lastSeen")), h("div.value.small", fmtDate(u.lastCallAt)))),
       h("div.grid2",
+        h("div.card", h("h2", t("ai.byCategory")), table([{ label: t("ai.area"), cell: (r) => t(`ai.categories.${r.key}`) }, { label: t("dash.calls"), num: true, cell: (r) => fmtNumber(r.tally.calls) }, { label: t("dash.tokens"), num: true, cell: (r) => fmtNumber(r.tally.total) }], categories)),
         h("div.card", h("h2", t("dash.byModel")), table([{ label: t("user.model"), cell: (r) => r.key.replace(/_/g, ".") }, { label: t("dash.calls"), num: true, cell: (r) => fmtNumber(r.tally.calls) }, { label: t("dash.tokens"), num: true, cell: (r) => fmtNumber(r.tally.total) }], models)),
-        h("div.card", h("h2", t("dash.byKind")), table([{ label: t("user.kind"), cell: (r) => r.key }, { label: t("dash.calls"), num: true, cell: (r) => fmtNumber(r.tally.calls) }, { label: t("dash.tokens"), num: true, cell: (r) => fmtNumber(r.tally.total) }], kinds)),
+        h("div.card", h("h2", t("ai.byAction")), table([{ label: t("ai.what"), cell: (r) => actionLabel(r.key) }, { label: t("dash.calls"), num: true, cell: (r) => fmtNumber(r.tally.calls) }, { label: t("dash.tokens"), num: true, cell: (r) => fmtNumber(r.tally.total) }], actions)),
       ),
       h("div.card", h("h2", t("user.recentCalls")), table([
-        { label: t("user.when"), cell: (d) => h("span.small", fmtDate(d.at)) }, { label: t("user.fn"), cell: (d) => h("span.small", d.fn) }, { label: t("user.model"), cell: (d) => h("span.small", d.model) }, { label: t("user.kind"), cell: (d) => d.kind },
+        { label: t("user.when"), cell: (d) => h("span.small", fmtDate(d.at)) }, { label: t("user.fn"), cell: (d) => h("span.small", d.fn) }, { label: t("ai.area"), cell: (d) => badge(t(`ai.categories.${categoryOf(actionOf(d))}`), "brand") }, { label: t("ai.what"), cell: (d) => h("span", { title: d.kind ? `${t("user.kind")}: ${d.kind}` : "" }, actionLabel(actionOf(d))) }, { label: t("user.model"), cell: (d) => h("span.small", d.model) },
         { label: t("user.statusCol"), cell: (d) => badge(String(d.status), d.status === 200 ? "green" : "red") }, { label: t("user.ms"), num: true, cell: (d) => fmtNumber(d.ms) }, { label: t("dash.tokens"), num: true, cell: (d) => d.cacheHit ? t("user.cacheHit") : fmtNumber(d.totalTokens) },
       ], callsSnap.docs.map((d) => d.data()))),
     );

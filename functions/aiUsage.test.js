@@ -189,3 +189,27 @@ test("a deleted account's call rows, day shares and map entries are removed; tot
   assert.ok(!ops.some((o) => o.includes("2026-10-02")));
   assert.deepEqual(await deleteUserUsage(db, "a/b"), { calls: 0, days: 0 });
 });
+
+test("actionOf: a known header wins, an unknown one is other", () => {
+  const { actionOf, ACTION_HEADER } = require("./aiUsage");
+  assert.equal(actionOf({ headers: { [ACTION_HEADER]: "image_book_cover" }, kind: "image" }), "image_book_cover");
+  assert.equal(actionOf({ headers: { [ACTION_HEADER]: "made-up" }, kind: "text" }), "other");
+});
+
+test("actionOf: without a header it follows the function, then the kind", () => {
+  const { actionOf } = require("./aiUsage");
+  assert.equal(actionOf({ fn: "socialRecipe", kind: "social_video" }), "recipe_video");
+  assert.equal(actionOf({ fn: "translateContent", kind: "translate" }), "translate");
+  assert.equal(actionOf({ fn: "adminPanel", kind: "generate" }), "admin");
+  assert.equal(actionOf({ kind: "receipt" }), "receipt_scan");
+  assert.equal(actionOf({ kind: "file" }), "recipe_file");
+  assert.equal(actionOf({ kind: "weird" }), "other");
+});
+
+test("aggregateWrites counts the action next to the kind", () => {
+  const { aggregateWrites } = require("./aiUsage");
+  const w = aggregateWrites({ uid: "u1", kind: "image", action: "image_recipe", key: "m", spent: null, tally: {}, day: "2026-11-24", now: "NOW" });
+  assert.ok(w.daily.actions.image_recipe);
+  assert.ok(w.usage.actions.image_recipe);
+  assert.ok(w.usage.kinds.image);
+});
