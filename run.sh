@@ -1,5 +1,5 @@
 #!/bin/bash
-# 📱 Flutter Run & Build Helpers for Sharvit Project
+# 📱 Flutter Run & Build Helpers for Project
 # Organized by Android, iOS, and Tools
 # Supports both interactive menu and direct commands (androidRun, iosBuildIpa, etc.)
 
@@ -327,7 +327,7 @@ EOF
 # === INTERACTIVE MENU ===
 function menu() {
   echo ""
-  echo "🚀 Sharvit Flutter Helper Menu"
+  echo "🚀 Flutter Helper Menu"
   echo "======================================"
   echo "📱 ANDROID"
   echo "--------------------------------------"

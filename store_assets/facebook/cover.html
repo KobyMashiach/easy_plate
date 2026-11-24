@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1640px;height:924px;overflow:hidden}
+  body{font-family:'Rubik',sans-serif;color:#fff;position:relative;
+    background:
+      radial-gradient(900px 600px at 18% 20%, rgba(116,89,247,.55), transparent 60%),
+      radial-gradient(700px 500px at 95% 110%, rgba(31,190,170,.35), transparent 60%),
+      linear-gradient(135deg,#1d1250 0%,#120c33 55%,#0b0a22 100%);}
+  .grid{position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:56px 56px;}
+  .phones{position:absolute;top:0;bottom:0;width:820px}
+  .phone{position:absolute;width:300px;border-radius:44px;background:#0d0b1f;padding:10px;
+    box-shadow:0 40px 80px rgba(0,0,0,.55),0 0 0 2px rgba(255,255,255,.12) inset}
+  .phone img{display:block;width:100%;border-radius:36px}
+  .text{position:absolute;top:150px;height:624px;width:760px;display:flex;flex-direction:column;justify-content:center;gap:26px}
+  .brand{display:flex;align-items:center;gap:20px}
+  .brand img{width:92px;height:92px;border-radius:24px;box-shadow:0 10px 30px rgba(93,63,224,.6)}
+  .brand span{font-size:46px;font-weight:700;letter-spacing:-.5px}
+  .brand b{background:linear-gradient(90deg,#c9bfff,#62fae3);-webkit-background-clip:text;color:transparent}
+  h1{font-size:70px;line-height:1.08;font-weight:800;letter-spacing:-1px}
+  h1 em{font-style:normal;background:linear-gradient(90deg,#b3a5ff,#62fae3);-webkit-background-clip:text;color:transparent}
+  .chips{display:flex;flex-wrap:wrap;gap:12px}
+  .chip{font-size:24px;font-weight:500;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+  /* RTL */
+  [dir=rtl] .phones{left:0}
+  [dir=rtl] .text{right:90px;text-align:right}
+  [dir=ltr] .phones{right:0}
+  [dir=ltr] .text{left:90px}
+</style></head>
+<body>
+<div class="grid"></div>
+<div id="root"></div>
+<script>
+const L = new URLSearchParams(location.search).get('l') || 'he';
+const T = {
+  he:{dir:'rtl',h1:'כל סרטון אוכל<br>הופך ל<em>מתכון מסודר</em>',
+      chips:['ייבוא מטיקטוק ואינסטגרם','תכנון ארוחות','רשימת קניות חכמה','שפי – עוזר AI']},
+  en:{dir:'ltr',h1:'Any food video<br>becomes a <em>real recipe</em>',
+      chips:['Import from TikTok & Instagram','Meal planning','Smart grocery list','Shefi AI assistant']},
+}[L];
+document.documentElement.dir = T.dir;
+const p = (src,x,y,r,z,w=300)=>`<div class="phone" style="left:${x}px;top:${y}px;transform:rotate(${r}deg);z-index:${z};width:${w}px"><img src="${L}_${src}.png"></div>`;
+// phone positions in an 820px column; mirrored for LTR
+let ph = [
+  ['06_meal_plan',  60, 200, -10, 1, 280],
+  ['02_recipe_details',470, 210, 9, 1, 280],
+  ['01_recipes',   255, 105, 0, 3, 320],
+];
+if (T.dir==='ltr') ph = ph.map(([s,x,y,r,z,w])=>[s,820-x-w,y,-r,z,w]);
+document.getElementById('root').innerHTML = `
+  <div class="phones">${ph.map(a=>p(...a)).join('')}</div>
+  <div class="text">
+    <div class="brand"><img src="app_icon.png"><span>Easy Plate <b>AI</b></span></div>
+    <h1>${T.h1}</h1>
+    <div class="chips">${T.chips.map(c=>`<div class="chip">${c}</div>`).join('')}</div>
+  </div>`;
+</script>
+</body></html>
